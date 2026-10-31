@@ -417,6 +417,14 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~22:30: **Shared-input siblings do not share `suh`** (our K6 quant's dumped suh, every layer; CPU).
+  Signs agree 100% (one seed per input-Hessian group), but the per-channel input scales differ: gate vs up median
+  |ratio| 1.015 (p99/p1 spread 1.27), GDN qkv vs z 1.036 (1.19), attn q vs k / v 1.092 (1.92); no pair identical.
+  The difference is exllamav3's per-tensor scale refit (`refit_scales`). Consequence: on V2's quants each sibling
+  needs its own rotate + int8-quantize prep pass (cheap: ~20 MB of activations at M = 2048), not one shared tile.
+  If shared tiles pay in the time table, the Phase-B requant can tie su across siblings (joint refit), at a quality
+  cost still to be measured.
+
 - 2026-10-31 ~22:10: **Fractional-K trellis works on real tensors** (`v3/e3/fracsweep`, CPU box A, 14 tensors of
   layers 10/11/42/43, every family, 128 sampled rows, same rows at every K; `fracreport.py`). Measured proxy error
   over the log-linear interpolation of the integer neighbours, median: K1.25 0.990, K1.5 0.988, K1.75 0.990, K2.25

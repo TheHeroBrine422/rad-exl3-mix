@@ -48,7 +48,8 @@ Open decisions are marked **[decide]**.
 3. **Group sizes are solver options**, speed vs quality: per-token, 1024, 512, 256, 128, 64 for A8 and A4
    (E0, iu8 TOPS: 64 220 / 128 265 / 256 295 / 512 312 / 1024 323; E1b, A8 on K6: g128 +0.00005, g256–1024
    +0.00015–0.00018, per-token +0.00047). Kernels instantiated per group size at compile time.
-4. **Shared-input linears share one mode** (q/k/v, gate/up, GDN qkv/z).
+4. **Shared-input linears share one mode** (q/k/v, gate/up, GDN qkv/z). Not one activation tile, though: their input scales (`suh`)
+   differ (per-tensor scale refit; signs agree), so each needs its own prep pass unless the requant ties them.
 5. **Head activations: f16 only** (2026-10-31). Why, since it is easy to forget:
    - **Prefill** runs every prompt token through the trunk (each hidden state feeds later tokens' attention), but
      the head only on the **last** position: logits for earlier prompt positions would be thrown away, so the server
