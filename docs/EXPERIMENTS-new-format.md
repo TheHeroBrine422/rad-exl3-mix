@@ -417,6 +417,24 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~21:50: **Sub-2-bit pricing, turboderp's tensors (CPU, V2 data).**
+  - Proxy error per bit (ours, all 337 tensors, median log2 ratio): K1→K2 2.11, K2→K3 2.00, then 1.97 … 1.88.
+  - V2's fitted model (q = 1.004, one factor for K1–K3) under-predicts the three K1-dominated band swaps by 20%
+    in-sample / 36% CV (K2 5%, K3–K8 ±1–4%). A refit with its own K1 factor: K1 1.35 vs K2–K3 1.09 per unit proxy
+    error; CV log-RMSE 0.870 → 0.845, pair ranking 3,115 → 3,119 / 3,786. Its solutions use far fewer K1 tensors
+    (1.5 bpw 180 → 105, 1.75 106 → 52, 2.0 54 → 21; his low-bpw SC tensors and our K2 instead). The K1→K2 KLD slope
+    is ~2.3–2.5 bits per bit, as turboderp notes for this model (~2.35). V3: K1 and each sub-2 level get their own
+    factor and must be measured; K0.25/K0.75 only if K0.5 earns picks. (Thin evidence: 3 K1 swaps.)
+  - What V2 takes from turboderp at high bpw: mostly the tensors his recipes **raised** to K7/K8 (6.0: 37 of 49;
+    8.0: 36 of 42), i.e. his most sensitive ones by trace attribution (his 6.00 recipe: 22 at K8, 63 at K7). The fit
+    prices our K7–K8 at 1.58× KLD per unit proxy error (K4–K6 1.25×, his ~1.0×): our quantizer lowers the input-side
+    proxy harder, plausibly by moving error into output directions the proxy cannot see -- what YAQA's H_out targets.
+    The ours-vs-his single-group swap test should use his 85 boosted tensors.
+  - His per-tensor sensitivity S (`kld_table.json`) vs our fitted per-tensor K4 cost: Spearman 0.71 overall, family
+    shares close (gate_up 45/41%, down 22/27%), within families weak (+0.6 gate_up/down, ~0 or negative attn k/v and
+    GDN qkv/z), depth differs (layers 0–15: 14% ours / 23% his; 48–63: 45% / 39%). Not worth a per-tensor prior.
+  - Final kfit2 model dump: `data/v3/kfit2-model-final.json`.
+
 - 2026-10-31 ~21:00: **radiance PR #362** (prefill softmax rescaled per row, not per wave) measured on our eval
   (`eval/pr362/run.sh`, golden-ver1, V2 3.00): KLD −0.12% (unpacked) / −0.13% (packed), z ≈ −2.2; 6.00 −0.5% ± 1.0%.
   Packed vs unpacked differs by +0.007% today, −0.001% with the fix. Real but ~10× below the ±1.5% decision noise:
