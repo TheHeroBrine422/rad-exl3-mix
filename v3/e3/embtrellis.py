@@ -9,7 +9,9 @@ ROWS random rows of the checkpoint's token table (seeded), quantized with H = I 
           alone                                                                    (K + 0.125 bits)
 One JSON line per (method, bits): rel = Σ (w - ŵ)² / Σ w² over the rows.  Env E3_CKPT, OMP_NUM_THREADS,
 EMB_KS (trellis K list), EMB_G (trellis scale group, a multiple of 128 dividing 5120; 16-bit scale = 16/G bits),
-EMB_LLOYD=0 (skip the Lloyd rows)."""
+EMB_LLOYD=0 (skip the Lloyd rows), EMB_FACTORS (scale = RMS x factor, searched per group; default 0.9,1.05,1.2),
+EMB_ROWS_OUT=PREFIX (also save PREFIX-K<k>-G<g>.npz: row ids, row energy Σw², per-row error Σ(w-ŵ)², per-group chosen
+factor index -- for tail rows, edge-factor checks and token-frequency reweighting later)."""
 import json, math, os, sys, time
 import numpy as np, torch
 from safetensors import safe_open
@@ -59,11 +61,17 @@ Gs = Vr.reshape(R, C // SG, SG)
 rms = np.sqrt((Gs ** 2).mean(2, keepdims=True)); rms = np.where(rms > 0, rms, 1.0)
 for K in [float(k) for k in os.environ.get("EMB_KS", "1,1.5,2,2.5,3,3.5,4,5").split(",")]:
     t0 = time.time(); cb = np.ascontiguousarray(T.codebook("mul1"), dtype=np.float32); best_e = best_v = None
-    for f in (0.9, 1.05, 1.2):
+    FAC = [float(v) for v in os.environ.get("EMB_FACTORS", "0.9,1.05,1.2").split(",")]; best_f = None
+    for fi, f in enumerate(FAC):
         s = bf(rms * f); x = (Gs / s).reshape(R * C // 256, 256)
         q = T.vit(x, cb, K).astype(np.float64).reshape(R, C // SG, SG) * s
         er = ((q - Gs) ** 2).sum(2, keepdims=True)
-        if best_e is None: best_e, best_v = er, q
-        else: m = er < best_e; best_e = np.where(m, er, best_e); best_v = np.where(m, q, best_v)
-    rel = ((unrot(best_v.reshape(R, C)) - W) ** 2).sum() / ref
-    emit({"method": "trellis", "bits": K, "group": SG, "bpv": K + 16 / SG, "rel": rel, "rows": R, "sec": round(time.time() - t0, 1)})
+        if best_e is None: best_e, best_v, best_f = er, q, np.zeros(er.shape, np.int8)
+        else: m = er < best_e; best_e = np.where(m, er, best_e); best_v = np.where(m, q, best_v); best_f = np.where(m, fi, best_f)
+    rowerr = ((unrot(best_v.reshape(R, C)) - W) ** 2).sum(1)
+    rel = rowerr.sum() / ref
+    edge = float(((best_f == 0) | (best_f == len(FAC) - 1)).mean())
+    if os.environ.get("EMB_ROWS_OUT"):
+        np.savez(f"{os.environ['EMB_ROWS_OUT']}-K{K}-G{SG}.npz", rows=rows, energy=(W ** 2).sum(1), err=rowerr,
+                 fac=best_f.reshape(R, -1), factors=np.array(FAC))
+    emit({"method": "trellis", "bits": K, "group": SG, "bpv": K + 16 / SG, "rel": rel, "edge_factor_frac": round(edge, 4), "rows": R, "sec": round(time.time() - t0, 1)})
