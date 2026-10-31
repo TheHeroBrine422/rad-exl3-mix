@@ -417,6 +417,32 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~19:00 CT: **Quarter-step quantizer instances written** (exllamav3 branch `rxm-frac-quarter`,
+  worktree `/workspace/forks/exllamav3-frac`, not yet built). The fractional kernel is already generic in the mask
+  (step shape per bit, scratch sized by KA, ring end width from MASK & 1), so: 15 instances for the V3 menu (KA 1–4
+  x 0x8888/0xAAAA/0xEEEE, KA 5–7 x 0xAAAA), one compile unit per KA; `frac_k` derives the canonical even mask for
+  any K = KA + n/16 (n even); exllamav3's own decode refuses non-0xAAAA rates instead of misdecoding. Build and a
+  K2.25/2.75 smoke quant on iceman after the head test (separate TORCH_EXTENSIONS_DIR: the live tree JIT-builds).
+- 2026-10-31 ~18:55 CT: **Fractional-K at the menu's ends** (`v3/e3/fracsweep-hi.sh`, colo, 21 tensors = the 14 of
+  fracsweep + layers 0 and 63): K5–8 half steps and K0.25, K4.5/5 overlapping. Running, ~1.5 h. Found while setting
+  it up: `trellis.py`'s scale search {1, 1.15, 1.3} hit its top edge at K7.5 and its BOTTOM edge (1.0) for most
+  tensors at K ≤ 2 in the earlier sweep, so those low-K proxy numbers may be slightly pessimistic (relative K steps
+  less affected; real quants search their own scale). Now `E3_FACTORS`, here 0.85–1.75.
+- 2026-10-31 ~18:45 CT: **Embedding menu sweep** (`v3/e3/emb/run3.sh`, Thor, 4096 sampled rows, 47 runs): quarter
+  steps K1.5–6 x {one scale per row, G1024}, + G512 from K4; per-row error/energy/chosen-factor saved (tail rows,
+  later token-frequency reweighting). Smoke test: at K5.75 9% of groups took the top factor 1.25, so the scale search
+  is now 0.85–1.35. Running, ~1 h.
+- 2026-10-31 ~18:35 CT: **Embedding scale group size** (Thor, 1024 rows, K2/3/4): error vs G128 = 1.016–1.018 at
+  G256, 1.02–1.025 at G512, 1.022–1.031 at G1024, 1.023–1.040 at one scale per row (G5120). Scale overhead 0.125 →
+  0.003 bit/value; on the trellis curve (~4x error per bit) 0.12 bit is worth ~18% error, so per-row wins by ~15%
+  at equal bits. Per-row vs G1024: 0.013 bit (~1.8%) saved against +0.1/+0.2/+0.9% error at K2/3/4: G1024 likely
+  wins only around K5–6 (menu sweep above settles it). Menu: per-row scale, G1024 where it is on the hull.
+- 2026-10-31 ~18:05 CT: **Trellis embedding vs V2's Lloyd tables** (`v3/e3/embtrellis.py`, Thor, 1024 random rows,
+  H = I, same fwht128 + per-(row,128) scale): relative error at equal bits, trellis/Lloyd 0.70 (1 bit), 0.56 (2),
+  0.51 (3), 0.53 (4), 0.51 (5); trellis K matches Lloyd at K + 0.46–0.49 bits for K ≥ 2 (DESIGN's "trellis-3 ≈
+  Lloyd-4" was too optimistic: trellis-3 ≈ Lloyd-3.5). ~0.023 bpw saved at equal error, ~1% KLD at ~3 bpw by V2's
+  fitted embedding costs. Quarter steps adopted. `v3/e3/data/embtrellis.jsonl`.
+
 - 2026-10-31 ~18:25 CT: **YAQA gate 2b failed too** (fp32 backward, 200-sequence sampled-row pilot, blocks 22+23 into
   V2 6.00, golden-ver1, paired vs the same one-sided quants). KLD increment over base, two-sided vs one-sided:
   K2 +17% (sigma_reg_out 0.025) / +6% (0.3); K3 +19% / +10% (all z ≥ 2). bf16 gate 2 was +23% / +28%, so fp32 helped and

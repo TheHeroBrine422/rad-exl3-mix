@@ -7,6 +7,17 @@ idea is dropped.
 
 ## Quantization / format
 
+- **YAQA output-side Hessians from sampled positions** — 2026-10-31. *Idea:* two-sided LDLQ with H_out = Σ w dy dyᵀ
+  from the model's backward pass (YAQA), collected as rows r = ‖x‖·dy at 32 random positions per 2048-token
+  sequence (fit pool). *Test:* blocks 22+23 requantized two-sided vs one-sided at K2/K3, spliced into V2 6.00, paired
+  KLD on golden-ver1 (124k positions). *Result:* (a) bf16 backward, 200 seqs: two-sided +23% (K2) / +28% (K3) worse
+  increment; the bf16 gradients are noisy toward early layers (down_proj per-row cosine vs fp32 p10: 0.999 at layer
+  63, 0.02 at layer 20) and the bad rows are ~3x too large, dominating H_out. (b) fp32 backward, 200 seqs:
+  +17%/+19% worse at sigma_reg_out 0.025, +6%/+10% at 0.3 (z ≥ 2); more output regularisation keeps helping, i.e.
+  the trend is toward one-sided. *Conclusion:* bf16 backward is unusable; sampled-position H_out (6,400 rows) still
+  hurts. Not yet tested: full-token sums (upstream sums every token; H_out is dominated by few high-gradient tokens)
+  — `v3/yaqa/collect.py YAQA_FULL=22,23`. YAQA is dropped if that fails too. `v3/yaqa/`, tracker 2026-10-31.
+
 - **Per-group gain scales (finer than EXL3's per-row + per-column scales)** — 2026-10-30. *Idea:* IQR-V2 uses
   E4M3 scales per (row, 128); maybe that is their low-bit edge. *Test:* in EXL3's rotated domain (128-Hadamard both
   dims, random signs) after per-row/col RMS normalisation, 0.5·log2(AM/GM) of group variances (= bits a per-group

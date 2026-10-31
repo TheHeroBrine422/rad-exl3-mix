@@ -70,7 +70,8 @@ Open decisions are marked **[decide]**.
    **Measured (CPU, 2026-10-31, `v3/e3/embtrellis.py`):** at equal bits the trellis has 0.51–0.56× Lloyd's
    reconstruction error (K ≥ 2): ~0.48 bits a value saved = ~0.023 bpw (so trellis-3 ≈ Lloyd-3.5, not Lloyd-4);
    worth ~1% KLD at ~3 bpw by V2's fitted embedding costs. **Menu: quarter steps** (one quarter = 0.012 bpw; the
-   generic pattern decode serves them at no extra kernel cost). Scale group size: being measured.
+   generic pattern decode serves them at no extra kernel cost). Scale group size: one scale per row (0.003 bit/value) beats
+   G128 by ~15% at equal bits; G1024 kept only where it is on the hull (K ≳ 5, menu sweep running).
 7. **Fresh held-out slices** ver3 (~80 docs, monitoring) and ver4 (~240, final) from the unused verify docs, plus
    search-pool selection slices; built once, frozen.
 8. **Fractional K: compiled everywhere**. One instance per shift pattern for the GEMV, the narrow tile and the
