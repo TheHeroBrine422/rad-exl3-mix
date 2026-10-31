@@ -417,6 +417,14 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~22:10: **Fractional-K trellis works on real tensors** (`v3/e3/fracsweep`, CPU box A, 14 tensors of
+  layers 10/11/42/43, every family, 128 sampled rows, same rows at every K; `fracreport.py`). Measured proxy error
+  over the log-linear interpolation of the integer neighbours, median: K1.25 0.990, K1.5 0.988, K1.75 0.990, K2.25
+  0.999, K2.5 1.000, K2.75 1.002, K3.5 0.998, K4.5 0.996 (all tensors within 0.95–1.02). Quarter and half steps
+  land on the curve: the shift-pattern trellis costs nothing over the integer ones, so the −5…−7% menu estimate
+  stands. Sub-1 (K0.5 / K0.75) can't be judged this way (K0 = dropped is not a curve point); they sit well below
+  the line to "dropped" and need real swaps. Integer slopes match the hproxy table (K1→2 2.12, K2→3 1.99).
+
 - 2026-10-31 ~21:50: **Sub-2-bit pricing, turboderp's tensors (CPU, V2 data).**
   - Proxy error per bit (ours, all 337 tensors, median log2 ratio): K1→K2 2.11, K2→K3 2.00, then 1.97 … 1.88.
   - V2's fitted model (q = 1.004, one factor for K1–K3) under-predicts the three K1-dominated band swaps by 20%
