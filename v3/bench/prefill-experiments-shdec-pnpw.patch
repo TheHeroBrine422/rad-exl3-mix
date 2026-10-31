@@ -1,0 +1,173 @@
+# Origin: a patch to this project's derived exl3r4d kernels (radiance-exl3 / radiance libr4d, Apache-2.0; see NOTICE).
+diff --git a/plugin/exl3r4d/exl3r4d.hip b/plugin/exl3r4d/exl3r4d.hip
+index e942dcd..e38ac33 100644
+--- a/plugin/exl3r4d/exl3r4d.hip
++++ b/plugin/exl3r4d/exl3r4d.hip
+@@ -3652,6 +3652,14 @@ extern "C" int exl3r4d_debug_capacity(int* regs, int* shared, int* nwgp) {
+ #ifndef EXL3R4D_NT_MT
+ #define EXL3R4D_NT_MT 4
+ #endif
++// The prefill form's wave shape: PNPW column tiles x MT row tiles a wave. PNPW 1 with MT 8 decodes one fragment
++// per 8 WMMAs (PNPW 2 x MT 4: per 4) at the same 8 accumulator tiles; a workgroup is 8 / PNPW waves x 16 MT rows.
++#ifndef EXL3R4D_NT_PNPW
++#define EXL3R4D_NT_PNPW 1
++#endif
++#ifndef EXL3R4D_NT_PMT
++#define EXL3R4D_NT_PMT (EXL3R4D_NT_PNPW == 1 ? 8 : EXL3R4D_NT_MT)
++#endif
+ // ALDS (prefill form): the activation slab [16 MT rows][64 features] staged once a workgroup in LDS (coalesced 16-B
+ // loads, double-buffered, one barrier a slab) instead of each wave loading the same fragments from global -- the 4
+ // waves of a workgroup read identical A, and a 16-row fragment load uses a quarter of each line. Same values, same
+@@ -3663,11 +3671,20 @@ extern "C" int exl3r4d_debug_capacity(int* regs, int* shared, int* nwgp) {
+ // RG (prefill form, ALDS): row groups a workgroup -- RG sets of 8 / NPW waves over the same 128 columns, each its own
+ // 16 MT rows: one staged slab and one column block's weight stream serve RG x the rows, each wave's registers as at RG 1.
+ #ifndef EXL3R4D_NT_RG
+-#define EXL3R4D_NT_RG 1
++#define EXL3R4D_NT_RG (EXL3R4D_NT_SHDEC ? 2 : 1)
+ #endif
+ #ifndef EXL3R4D_NT_ALDS
+ #define EXL3R4D_NT_ALDS 1
+ #endif
++// SHDEC (prefill form, RG 2, NPW 2): the two row groups share one decode. A column pair's two weight tiles are
++// decoded once a workgroup -- row group g decodes tile g of its pair -- into a double-buffered LDS slab of f16
++// fragments, which both groups read: half the decode and half the weight loads a WMMA. The same fragments,
++// the same sums in the same order: bit-identical to the unshared form.
++#ifndef EXL3R4D_NT_SHDEC
++#define EXL3R4D_NT_SHDEC 0
++#endif
++#define EXL3R4D_NT_SKC 2                          // SHDEC: k steps a slab
++#define EXL3R4D_NT_SAP (16 * EXL3R4D_NT_SKC + 8)  // SHDEC: the activation slab's row pitch, halfs
+ #define EXL3R4D_NT_KC 4                       // k steps a slab (64 features)
+ #define EXL3R4D_NT_AP (16 * EXL3R4D_NT_KC + 8)  // the slab's LDS row pitch, halfs (+16 B against bank conflicts)
+ 
+@@ -3824,7 +3841,89 @@ static __device__ __forceinline__ void nt_pass(const Exl3r4dGemm& p, const Plane
+     }                                                                                \
+   } while (0)
+ 
+-  if constexpr (PREP && EXL3R4D_NT_ALDS) {
++  if constexpr (PREP && EXL3R4D_NT_ALDS && EXL3R4D_NT_SHDEC && RG == 2 && NPW == 2) {
++    constexpr int KC = EXL3R4D_NT_SKC, AP = EXL3R4D_NT_SAP, ROWS = 16 * MT * RG, SLAB = ROWS * AP;
++    constexpr int nth = WVC * RG * WAVE32;
++    constexpr int NLD = (ROWS * KC * 2 + nth - 1) / nth;   // 16-B activation loads a thread
++    constexpr int WFRAG = WAVE32 * 8;                      // one fragment in LDS: 32 lanes x 8 halfs
++    constexpr int WBUF = WVC * 2 * KC * WFRAG;             // one buffer: every column pair's two tiles, KC steps
++    _Float16* const abuf = (_Float16*)lds;                 // [2][ROWS][AP]
++    _Float16* const wbuf = abuf + 2 * SLAB;                // [2][WVC][2 tiles][KC][32 lanes][8]
++    const _Float16* const xrow = (const _Float16*)p.xr + (size_t)mat_a * w.cols;
++    v4u stg[NLD];
++    unsigned ws[KC][2][NW];                                // this wave's tile (rg of the pair), KC steps
++    auto slab_load = [&](int c) {
++#pragma unroll
++      for (int i = 0; i < NLD; i++) {
++        const int idx = tid + nth * i, r = idx / (2 * KC), q = idx % (2 * KC);
++        const int rr = rc + r < r1 ? rc + r : rc;
++        stg[i] = idx < ROWS * 2 * KC ? *(const v4u*)(xrow + (size_t)rr * p.xr_pitch + c * KC * 16 + q * 8) : (v4u)(0u);
++      }
++    };
++    auto slab_store = [&](int b) {
++#pragma unroll
++      for (int i = 0; i < NLD; i++) {
++        const int idx = tid + nth * i, r = idx / (2 * KC), q = idx % (2 * KC);
++        if (idx < ROWS * 2 * KC) *(v4u*)(abuf + b * SLAB + r * AP + q * 8) = stg[i];
++      }
++    };
++    auto w_load = [&](int c) {   // tile rg of the pair, steps [c KC, c KC + KC)
++#pragma unroll
++      for (int u = 0; u < KC; u++) {
++        const unsigned so_ = bso + (unsigned)(c * KC + u) * (unsigned)kbytes;
++        if constexpr (kBuf && BITS == 4) {
++          const unsigned m_ = __builtin_amdgcn_raw_buffer_load_b32(wrs, bwm + rg * 128, so_, kAux);
++          const unsigned z_ = __builtin_amdgcn_raw_buffer_load_b32(wrs, bw0 + rg * 128, so_, kAux);
++          const unsigned q_ = __builtin_amdgcn_raw_buffer_load_b32(wrs, bwp + rg * 128, so_, kAux);
++          ws[u][0][0] = m_; ws[u][0][1] = z_; ws[u][1][0] = z_; ws[u][1][1] = q_;
++        } else if constexpr (kBuf) {
++#pragma unroll
++          for (int r = 0; r < 2; r++)
++#pragma unroll
++            for (int x = 0; x < NW; x++)
++              ws[u][r][x] = __builtin_amdgcn_raw_buffer_load_b32(wrs, wvo[r][x] + rg * WORDS * 4, so_, kAux);
++        } else {
++          const gu8 tb_ = wt[rg] + (size_t)(c * KC + u) * kbytes;
++#pragma unroll
++          for (int r = 0; r < 2; r++)
++#pragma unroll
++            for (int x = 0; x < NW; x++) ws[u][r][x] = *(gu32)(tb_ + wvo[r][x]);
++        }
++      }
++    };
++    auto w_store = [&](int b) {  // decode the staged words, the fragments to LDS
++#pragma unroll
++      for (int u = 0; u < KC; u++) {
++        const v8h f = decode_frag<BITS, NW>(ws[u], plan.shift);
++        *(v8h*)(wbuf + b * WBUF + ((col_local * 2 + rg) * KC + u) * WFRAG + lane * 8) = f;
++      }
++    };
++    const int nchunks = (int)kps / KC;
++    w_load(0);
++    slab_load(0);
++    w_store(0);
++    slab_store(0);
++    lds_barrier();
++    for (int c = 0; c < nchunks; c++) {
++      if (c + 1 < nchunks) { w_load(c + 1); slab_load(c + 1); }
++      const _Float16* const ab_ = abuf + (c & 1) * SLAB;
++      const _Float16* const wb_ = wbuf + (c & 1) * WBUF + col_local * 2 * KC * WFRAG + lane * 8;
++#pragma unroll
++      for (int u = 0; u < KC; u++) {
++        v8h af[MT];
++#pragma unroll
++        for (int t = 0; t < MT; t++) af[t] = frag_lds(ab_ + (16 * (MT * rg + t) + nl) * AP + u * 16 + 4 * h);
++#pragma unroll
++        for (int j = 0; j < 2; j++) {
++          const v8h wf = *(const v8h*)(wb_ + (j * KC + u) * WFRAG);
++#pragma unroll
++          for (int t = 0; t < MT; t++) acc[t][j] = mma(wf, af[t], acc[t][j]);
++        }
++      }
++      if (c + 1 < nchunks) { w_store((c + 1) & 1); slab_store((c + 1) & 1); }
++      lds_barrier();
++    }
++  } else if constexpr (PREP && EXL3R4D_NT_ALDS) {
+     constexpr int KC = EXL3R4D_NT_KC, AP = EXL3R4D_NT_AP, ROWS = 16 * MT * RG, SLAB = ROWS * AP;
+     static_assert(KC % PF == 0, "the weight stages index by the slab's step");
+     _Float16* const abuf = (_Float16*)lds;          // [2][16 MT][AP] (the epilogue reuses it after the loop)
+@@ -3964,8 +4063,9 @@ __global__ void __launch_bounds__(256) exl3r4d_nt_prep_kernel(Exl3r4dGemm p) {
+ 
+ template <int B>
+ static const void* nt_fn(int npw, int mt) {
+-  if (mt == EXL3R4D_NT_MT && EXL3R4D_NT_MT != 1)
+-    return npw == 2 ? (const void*)exl3r4d_gemm_nt_kernel<B, 2, EXL3R4D_NT_MT, true, EXL3R4D_NT_RG> : nullptr;
++  if (mt == EXL3R4D_NT_PMT && EXL3R4D_NT_PMT != 1)
++    return npw == EXL3R4D_NT_PNPW ? (const void*)exl3r4d_gemm_nt_kernel<B, EXL3R4D_NT_PNPW, EXL3R4D_NT_PMT, true, EXL3R4D_NT_RG>
++                                  : nullptr;
+   if (mt != 1) return nullptr;
+   switch (npw) {
+     case 1: return (const void*)exl3r4d_gemm_nt_kernel<B, 1, 1, false, 1>;
+@@ -3985,12 +4085,14 @@ extern "C" int exl3r4d_launch_nt(const Exl3r4dGemm* a, int bits, int npw, void*
+   if (npw != 1 && npw != 2 && npw != 4) return RAD_E_SHAPE;
+   const int sk = a->sk > 0 && a->sk <= 8 ? a->sk : 1;
+   if (sk != 1) return RAD_E_UNSUPPORTED;   // first pass: the split-K 1 form (the fit logic is the tuning arm)
++  // past 16 rows: the prefill form's wave shape (PNPW x PMT), whatever the decode band's NPW
++  const bool pf = a->T > 16 && EXL3R4D_NT_PMT > 1;
++  if (pf) npw = EXL3R4D_NT_PNPW;
+   const int wv = 8 / npw;
+   const int K = a->cls[0].cols;
+   int64_t smem = exl3r4d_gemm_lds(0, npw, sk, 0, K);
+   if (smem < 0) return (int)smem;
+-  // MT: one 16-row tile a workgroup at decode, EXL3R4D_NT_MT of them past 16 rows (NPW 2, the shipped arm)
+-  const int mt = a->T > 16 && npw == 2 ? EXL3R4D_NT_MT : 1;
++  const int mt = pf ? EXL3R4D_NT_PMT : 1;
+   const int rg = mt > 1 ? EXL3R4D_NT_RG : 1;
+   const int rows_wg = 16 * mt * rg;
+   if (a->T < 1 || (a->T + rows_wg - 1) / rows_wg > 65535) return RAD_E_UNSUPPORTED;
+@@ -4008,6 +4110,10 @@ extern "C" int exl3r4d_launch_nt(const Exl3r4dGemm* a, int bits, int npw, void*
+     const int64_t slab = 2LL * 16 * mt * rg * EXL3R4D_NT_AP * 2;
+     if (smem < slab) smem = slab;
+     if (smem < 16384LL * rg) smem = 16384LL * rg;   // each row group's epilogue tiles
++    if (EXL3R4D_NT_SHDEC && rg == 2 && npw == 2) {   // SHDEC: the activation slab and the fragment slab
++      const int64_t sh = 2LL * 16 * mt * rg * EXL3R4D_NT_SAP * 2 + 2LL * (8 / npw) * 2 * EXL3R4D_NT_SKC * WAVE32 * 8 * 2;
++      if (smem < sh) smem = sh;
++    }
+   }
+   if (mt > 1) {   // the prefill form: the rows rotated once, by their own dispatch (stream-ordered before the GEMM)
+     const int mats = a->cls[0].suh1 ? 2 : 1;

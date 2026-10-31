@@ -1,0 +1,10 @@
+{"bpw": "6.00", "prompt_tok": 8192, "prefill_s": 5.962, "prefill_tps": 1374.0, "decode_tps": 24.0, "kld8k": 0.0006899717295571038, "top1": 0.9847393480649493, "ppl_ratio": 1.00068443187508, "cache_hit": 4}
+{"bpw": "1.40", "prompt_tok": 8192, "prefill_s": 5.44, "prefill_tps": 1505.8, "decode_tps": 32.5, "kld8k": 0.6557970403142507, "top1": 0.6324014161884995, "ppl_ratio": 1.8447599604581661, "cache_hit": 4}
+{"bpw": "1.60", "prompt_tok": 8192, "prefill_s": 5.694, "prefill_tps": 1438.7, "decode_tps": 32.3, "kld8k": 0.38914023862369046, "top1": 0.7002807959956049, "ppl_ratio": 1.4077579941049536, "cache_hit": 4}
+{"bpw": "1.80", "prompt_tok": 8192, "prefill_s": 5.481, "prefill_tps": 1494.6, "decode_tps": 32.2, "kld8k": 0.245921846058198, "top1": 0.754486631668905, "ppl_ratio": 1.2364899093197228, "cache_hit": 4}
+{"bpw": "2.00", "prompt_tok": 8192, "prefill_s": 5.485, "prefill_tps": 1493.4, "decode_tps": 32.3, "kld8k": 0.1453129451197087, "top1": 0.815651324624588, "ppl_ratio": 1.1171435551871067, "cache_hit": 4}
+{"bpw": "2.20", "prompt_tok": 8192, "prefill_s": 5.514, "prefill_tps": 1485.6, "decode_tps": 32.1, "kld8k": 0.09299718250390743, "top1": 0.848492247588817, "ppl_ratio": 1.0704279977720608, "cache_hit": 4}
+{"bpw": "3.00", "prompt_tok": 8192, "prefill_s": 5.576, "prefill_tps": 1469.1, "decode_tps": 31.0, "kld8k": 0.028988087827752498, "top1": 0.9145403491637163, "ppl_ratio": 1.0195598895244553, "cache_hit": 4}
+{"bpw": "4.00", "prompt_tok": 8192, "prefill_s": 5.37, "prefill_tps": 1525.4, "decode_tps": 30.2, "kld8k": 0.006406194527958308, "top1": 0.9608106458307899, "ppl_ratio": 1.0043708990543532, "cache_hit": 4}
+{"bpw": "5.00", "prompt_tok": 8192, "prefill_s": 5.719, "prefill_tps": 1432.4, "decode_tps": 26.8, "kld8k": 0.001758888585153982, "top1": 0.9782688316444879, "ppl_ratio": 1.001214515014176, "cache_hit": 4}
+PTDONE

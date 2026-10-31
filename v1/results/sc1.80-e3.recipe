@@ -1,0 +1,11 @@
+blk.*.attn_qg.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.attn_k.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.attn_v.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.attn_output.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.ffn_gate_up.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.ffn_down.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.ssm_qkv.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.ssm_z.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+blk.*.ssm_out.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+output.weight exl3 src=/workspace/references/td-SC_1.80bpw_H3 codebook=mul1
+token_embd.weight rtn table=-0.7804199;-0.484901;-0.2714554;-0.08783046;0.08764949;0.2711211;0.4839097;0.7787641 group=128 scale=bf16 transform=fwht128 rule=search

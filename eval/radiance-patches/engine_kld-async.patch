@@ -1,0 +1,127 @@
+--- engine_kld.cpp.orig	2026-10-30 04:39:40.096816089 +0000
++++ engine_kld.cpp	2026-10-30 04:39:40.193476203 +0000
+@@ -7,6 +7,8 @@
+ #include "server/sink.h"
+ 
+ #include <algorithm>
++#include <atomic>
++#include <cstdlib>
+ #include <chrono>
+ #include <cstdint>
+ #include <memory>
+@@ -15,6 +17,30 @@
+ 
+ namespace rad {
+ 
++/* LOCAL MEASUREMENT PATCH (not for upstream): asynchronous scored-row copies. The sync path copies a step's f32
++ * logits (n_rows x vocab, ~2 GB at 2048 rows) to the host and scores them while the card idles; over a PCIe3 x4
++ * link that is ~40 s an eval. Here each rank copies the rows into a device staging buffer on the compute stream
++ * (cheap D2D), a second stream moves them to the pinned host buffer, and a host thread waits for that copy and
++ * scores, while the card already runs the next step. At most one step in flight: score_rows joins the previous
++ * job before it reuses the buffers, and run_kld joins the last one before finish(). RADIANCE_KLD_SYNC=1 keeps the
++ * old path; a staging buffer that cannot be allocated falls back to it too. */
++namespace {
++struct KldAsync {
++    bool on = false;
++    std::vector<void*> stage;
++    std::vector<RadStream> copy_stream;
++    std::vector<RadEvent> staged, copied;
++    std::thread job;
++    std::atomic<int> rc{ RAD_OK };
++    int join() {
++        if (job.joinable()) job.join();
++        return rc.exchange(RAD_OK);
++    }
++    ~KldAsync() { if (job.joinable()) job.join(); }
++};
++KldAsync g_async;
++}  /* namespace */
++
+ int Engine::run_kld() {
+     /* Each rank's logits buffer must hold a step's tokens after the sampler's rows
+      * (RadBuildCtx::max_out_rows); a plugin that ignored the field is refused here rather than
+@@ -67,6 +93,32 @@
+         }
+     }
+ 
++    {
++        const char* e = std::getenv("RADIANCE_KLD_SYNC");
++        g_async.on = !(e && *e == '1');
++        if (g_async.on) {
++            const size_t nr = kld_width_.size();
++            g_async.stage.assign(nr, nullptr);
++            g_async.copy_stream.assign(nr, nullptr);
++            g_async.staged.assign(nr, nullptr);
++            g_async.copied.assign(nr, nullptr);
++            for (size_t r = 0; r < nr && g_async.on; ++r) {
++                RAD_TRY(rad_dev_set(ranks_[r]->device));
++                g_async.stage[r] = rad_dev_alloc(cfg_.max_tok * kld_width_[r] * (int64_t)sizeof(float), RAD_MEM_DEVICE);
++                if (!g_async.stage[r] || rad_stream_create(&g_async.copy_stream[r], 0) != RAD_OK ||
++                    rad_event_create_local(&g_async.staged[r]) != RAD_OK ||
++                    rad_event_create(&g_async.copied[r]) != RAD_OK) {
++                    RAD_WARN("kld: no room for the async staging buffer (%lld MiB) on rank %zu; scoring synchronously",
++                             (long long)(cfg_.max_tok * kld_width_[r] * 4 >> 20), r);
++                    g_async.on = false;
++                }
++            }
++            RAD_TRY(rad_dev_set(ranks_[0]->device));
++            if (g_async.on) RAD_INFO("kld: scored rows copied and scored asynchronously (staging %lld MiB a rank)",
++                                     (long long)(cfg_.max_tok * kld_width_[0] * 4 >> 20));
++        }
++    }
++
+     auto kld = std::make_unique<Kld>();
+     RAD_TRY(kld->open(cfg_, vocab_, nv, cfg_.model));
+     /* Published before add_all takes the scheduler's lock; the step loop reads it only on steps
+@@ -169,6 +221,10 @@
+         }
+         sched_.reap(sinks[d]->id);
+     }
++    {
++        const int jrc = g_async.join();
++        if (jrc < 0) { RAD_ERR("kld: the last scoring job failed: %s", rad_strerror(jrc)); return jrc; }
++    }
+     if (bad) return RAD_E_STATE;
+     RAD_INFO("kld: %zu documents in %.0f s, %lld preemption(s)", n,
+              std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count(),
+@@ -196,6 +252,40 @@
+                 (long long)row);
+         return RAD_E_STATE;
+     }
++    if (g_async.on) {
++        /* the previous step's job is done with the staging and host buffers before they are reused */
++        const int jrc = g_async.join();
++        if (jrc < 0) return jrc;
++        for (size_t r = 0; r < kld_width_.size(); ++r) {
++            Rank& rk = *ranks_[r];
++            RAD_TRY(rad_dev_set(rk.device));
++            const auto* src = static_cast<const float*>(rk.ctx.buf_ptr(rk.program.logits_buf));
++            if (!src) return RAD_E_STATE;
++            const int64_t bytes = n * kld_width_[r] * (int64_t)sizeof(float);
++            RAD_TRY(rad_memcpy_async(g_async.stage[r], src + (int64_t)so.n_rows * kld_width_[r], bytes, rk.ctx.stream()));
++            RAD_TRY(rad_event_record(g_async.staged[r], rk.ctx.stream()));
++            RAD_TRY(rad_event_wait(g_async.copy_stream[r], g_async.staged[r]));
++            RAD_TRY(rad_memcpy_async(kld_host_[r], g_async.stage[r], bytes, g_async.copy_stream[r]));
++            RAD_TRY(rad_event_record(g_async.copied[r], g_async.copy_stream[r]));
++        }
++        RAD_TRY(rad_dev_set(ranks_[0]->device));
++        std::vector<KldShard> shards(kld_width_.size());
++        for (size_t r = 0; r < shards.size(); ++r)
++            shards[r] = { kld_host_[r], kld_vocab0_[r], kld_width_[r] };
++        std::vector<int> devs;
++        for (size_t r = 0; r < kld_width_.size(); ++r) devs.push_back(ranks_[r]->device);
++        Kld* k = kld_.get();
++        g_async.job = std::thread([k, spans = std::move(spans), shards = std::move(shards), devs]() {
++            for (size_t r = 0; r < devs.size(); ++r) {
++                rad_dev_set(devs[r]);
++                const int e = rad_event_sync(g_async.copied[r]);
++                if (e < 0) { g_async.rc.store(e); return; }
++            }
++            const int s = k->score(spans, shards);
++            if (s < 0) g_async.rc.store(s);
++        });
++        return RAD_OK;
++    }
+     for (size_t r = 0; r < kld_width_.size(); ++r) {
+         Rank& rk = *ranks_[r];
+         RAD_TRY(rad_dev_set(rk.device));

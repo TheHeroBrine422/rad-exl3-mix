@@ -1,0 +1,1 @@
+{"bpw": "4.00", "run": "rc=0 wall=2885s errs=0", "golden": "golden/public", "positions": 1167650, "kld": 0.008512423976228286, "p99": 0.08479682393372062, "top1": 0.9678216931443497, "ppl_ratio": 1.004186405146418, "nonfinite": 0}

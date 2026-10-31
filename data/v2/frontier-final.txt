@@ -1,0 +1,7 @@
+knap-s105-sc4.00-e4-8.00     bpw 8.000  pred KLD 0.00027 +-12.2%  head ours-K8       emb bf16 ours-K8:210 ours-K7:77 sc6.00-e6:26 sc5.00-e5:12 ours-K6:9 plain6.00-e6:3
+knap-s105-sc4.00-e4-9.00     bpw 8.999  pred KLD 0.00023 +-13.4%  head ours-K8       emb bf16 ours-K8:287 bf16:34 sc6.00-e6:16
+knap-s105-sc4.00-e4-10.00    bpw 10.000  pred KLD 0.00022 +-13.9%  head ours-K8       emb bf16 ours-K8:227 bf16:96 sc6.00-e6:14
+knap-s105-ls0-sc4.00-e4-8.00 bpw 8.000  from a-knap-r9-ts1-sc4.00-e4-8.00 (meas 0.00026, pred 0.00027 -> 0.00027, 7 tensors)
+knap-s105-ts0-sc4.00-e4-8.00 bpw 8.000  pred (mean model) 0.00027  differs in 39 tensors
+knap-s105-ts0-sc4.00-e4-9.00 bpw 8.999  pred (mean model) 0.00023  differs in 9 tensors
+knap-s105-ts0-sc4.00-e4-10.00 bpw 10.000  pred (mean model) 0.00022  differs in 27 tensors

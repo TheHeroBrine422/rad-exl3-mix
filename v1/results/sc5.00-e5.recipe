@@ -1,0 +1,11 @@
+blk.*.attn_qg.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.attn_k.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.attn_v.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.attn_output.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.ffn_gate_up.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.ffn_down.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.ssm_qkv.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.ssm_z.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+blk.*.ssm_out.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+output.weight exl3 src=/workspace/references/td-SC_5.00bpw_H6 codebook=mul1
+token_embd.weight rtn table=-0.9582477;-0.7906595;-0.6669133;-0.5682556;-0.4861008;-0.4164616;-0.3564059;-0.3038365;-0.2570794;-0.2150876;-0.1769513;-0.1414881;-0.1081895;-0.07637744;-0.0454837;-0.01514439;0.01497454;0.04519694;0.07605142;0.107849;0.1410785;0.1764999;0.2147309;0.2567003;0.3033727;0.3560335;0.4162583;0.4860349;0.5681689;0.6673748;0.7911306;0.9586339 group=128 scale=bf16 transform=fwht128 rule=search
