@@ -212,7 +212,8 @@ work overlaps it:
 - Build the trellis generically once (per-position shift pattern → any rational K). **Menu (2026-10-31): quarter steps
   K0.25–K5, half steps K5–K8**, 26 levels, ~285 GB of trunk quants. Quantize in order of use: 2.25–4.75, then
   1.0–2.0, then 5.5–8, then the sub-1 levels. Heads at half steps (one K step of the head is 0.047 bpw; a half step
-  halves the rounding the trunk has to absorb); quarter-step heads only if the head's cost curve proves steep.
+  halves the rounding the trunk has to absorb); quarter-step heads are the fallback if the row-slab head (§2) fails
+  (a quarter step = 0.012 bpw, near the trunk's own granularity; cost: head quant runs only).
 - **The quantizer side already exists for K ≥ 1 (found 2026-10-31):** exllamav3 1.6.3 (the build on the GPU box)
   quantizes half-integer K: `frac_k`, `quantize_tiles_frac_kernel<KA, MASK>`, step width = KA + bit (i mod 16) of a
   16-bit mask (rate KA + popcount/16, in 1/16-bit steps), tile = 16K uint16 words. Only MASK 0xAAAA (KA + 0.5) is
