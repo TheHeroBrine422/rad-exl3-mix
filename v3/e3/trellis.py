@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """trellis.py LAYER TENSOR CODEBOOKS BITS [ROWS] [OUT.jsonl] -- E3 trellis check on a sample of output rows (CPU).
 
+BITS may be fractional (V3 §6b): K = a/b runs a shift pattern of b steps summing to a bits, spread evenly
+(2.5 = [2,3], 2.25 = [2,2,2,3], 0.5 = [0,1]; a 0-bit step keeps the state and reads the codebook at a salted index,
+viterbi_tiles_pat). Integer K uses the same pattern code path (one-element pattern).
+
 Block LDLQ (QuIP#/EXL3 form): 16-column blocks of the rotated weight, each block's 16x16 tiles quantized jointly by
 a bitshift-trellis Viterbi (viterbi.c), the block's error fed forward through the Hessian:
   W[:, b:] -= (W_blk - Q_blk) @ inv(U_blk,blk) @ U_blk,b:,   U = chol(H^-1) upper.
@@ -26,6 +30,14 @@ torch.set_grad_enabled(False)
 OUT = None
 LIB = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libviterbi.so"))
 LIB.viterbi_tiles.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+LIB.viterbi_tiles_pat.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+from fractions import Fraction
+
+
+def pattern(K):
+    """bits per step for K = a/b: b steps, a bits, spread evenly"""
+    f = Fraction(K).limit_denominator(8); a, b = f.numerator, f.denominator
+    return [((i + 1) * a) // b - (i * a) // b for i in range(b)]
 
 
 def codebook(name):
@@ -50,7 +62,8 @@ def codebook(name):
 def vit(x, cb, K):
     """x [ntiles, 256] float32 -> quantized [ntiles, 256]"""
     x = np.ascontiguousarray(x, dtype=np.float32); out = np.empty_like(x)
-    LIB.viterbi_tiles(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, K)
+    p = np.ascontiguousarray(pattern(K), dtype=np.int32)
+    LIB.viterbi_tiles_pat(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, p.ctypes.data, len(p))
     return out
 
 
@@ -102,7 +115,7 @@ def run(layer, tensor, cbs, bits, rows):
 
 if __name__ == "__main__":
     layer, tensor = int(sys.argv[1]), sys.argv[2]
-    cbs = sys.argv[3].split(","); bits = [int(x) for x in sys.argv[4].split(",")]
+    cbs = sys.argv[3].split(","); bits = [float(Fraction(x)) for x in sys.argv[4].split(",")]
     rows = int(sys.argv[5]) if len(sys.argv) > 5 else 256
     OUT = sys.argv[6] if len(sys.argv) > 6 else None
     run(layer, tensor, cbs, bits, rows)
