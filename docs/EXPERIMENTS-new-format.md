@@ -36,7 +36,7 @@ This file holds every experiment for the new fast format: questions, status, res
 | E3-sweep2 | integer codes (1024 sampled rows) + trellis codebooks (256 rows), every linear of layers 10/43 (`sweep2.sh`, resumable) | CPU box B | running, 44 jobs at once (`/data/work/e3`); 70/264 were done on the VM |
 | DL | calib Hessians from HF onto the VM (47 GB, rev `2dcf0061`) | net | done → `/workspace/e3data/challenge` |
 | E2 | int8 / int4 GEMM at real tiling (`igemm.hip`) | card | per-token, M sweep, group scales measured; next: decode pre-pass, scale tricks, split-K |
-| YAQA | output-side Hessians (`v3/yaqa/`): gate 1 TP2 throughput, gate 2 two-sided LDLQ on blocks 22/23 at K2/K3 (`gate2.sh`) | both cards | gate 1 passed (5 s per 2048-token sequence); 200-sequence pilot + gate 2 running; then `noise.sh`: bf16 vs fp32 backward on the same 8 sequences (`cmp.py`) |
+| YAQA | output-side Hessians (`v3/yaqa/`): gate 1 TP2 throughput, gate 2 two-sided LDLQ on blocks 22/23 at K2/K3 (`gate2.sh`) | both cards | gate 1 passed (5 s per 2048-token sequence); gate 2 (bf16 backward) failed: two-sided +23% (K2) / +28% (K3) worse; noise test: bf16 backward wrong in early/mid layers; gate 2b (fp32 backward, `gate2b.sh`) running |
 
 ---
 
@@ -416,6 +416,27 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 ---
 
 ## Log (newest first)
+
+- 2026-10-31 ~21:00: **radiance PR #362** (prefill softmax rescaled per row, not per wave) measured on our eval
+  (`eval/pr362/run.sh`, golden-ver1, V2 3.00): KLD −0.12% (unpacked) / −0.13% (packed), z ≈ −2.2; 6.00 −0.5% ± 1.0%.
+  Packed vs unpacked differs by +0.007% today, −0.001% with the fix. Real but ~10× below the ±1.5% decision noise:
+  no V2 action; take it with the 1.15.x port (V3 re-baseline then).
+
+- 2026-10-31 ~21:00: **YAQA: bf16 backward is too noisy** (`noise.sh`, `cmp.py`: same 8 sequences, positions and
+  labels, rows kept in fp32). Per-row cosine bf16 vs fp32 for down_proj: layer 63 median 1.000 (p10 0.999), 40:
+  0.998 (p10 0.66), 20: 0.988 (p10 0.02), 2: 0.92 (p10 < 0); the bad rows are 2.7–3.2× too large, so they dominate
+  H_out. H_out diagonal cosine 0.88 at layers 48–63, 0.36 at 0–15. The bf16 forward itself diverges on 2/8
+  sequences (seq 7 loss/token 1.03 vs 0.83). fp32 mode: 30 s per sequence (5.3 s bf16) after a ~15 min warm-up,
+  28.4 GiB peak per card. Likely cause of gate 2's failure (blocks 22/23, diag cosine ~0.5).
+
+- 2026-10-31 ~19:50: **YAQA gate 2 failed with the bf16 pilot** (200 sequences, blocks 22+23 swapped into the V2
+  6.00 release, golden-ver1; base 0.000703). KLD increment over base: K2 one-sided +0.00290, two-sided +0.00357
+  (+23%); K3 one-sided +0.00067, two-sided +0.00086 (+28%). Suspects: bf16 noise (confirmed above), 6,400 rows for
+  17,408-wide H_out, output regularisation 0.025. Rerun in fp32 with sigma_reg_out 0.025 and 0.3 (`gate2b.sh`).
+
+- 2026-10-31 ~20:00: **LM head sensitivity** (`v3/yaqa/headsens.py`, exact Fisher diagonal sum_t p(1−p) from the
+  calib golden's top-512): ~400 of 248,320 rows hold 50% of the mass, 16–19k hold 90%, 68–90k hold 99%; the four
+  pools agree (verify included). Supports a row-slab head; slab test next (needs `ourq.py --save-wq` head quants).
 
 - 2026-10-31 ~19:00: **YAQA gate 1 passed.** `v3/yaqa/collect.py`: bf16 text model streamed tensor by tensor
   onto both cards (layers split 32/32; the transformers loader OOMs host RAM on the 30 GB box), fla 0.6.0 chunked

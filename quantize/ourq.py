@@ -38,6 +38,8 @@ ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
                 "two-sided LDLQ for the linears that have one")
+ap.add_argument("--save-wq", action="store_true", help="also write each linear's dequantized weight (out, in) f16 to "
+                "OUTDIR/wq/<key>.safetensors (v3/yaqa/headslab.py)")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
 a = ap.parse_args()
 dev = torch.device("cuda", a.device)
@@ -91,8 +93,12 @@ def quantize_group(hname, keys, seed0, log):
         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
         if hp and os.path.exists(hp):
             with safe_open(hp, "pt", device="cpu") as f: qa["H_out"] = f.get_tensor("hout").to(dev)
-        _, perr, t = quantize_exl3(w, Hd, qa, False)
+        wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
         del w
+        if a.save_wq:
+            os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
+            save_file({"weight": wq.T.half().contiguous().cpu()}, os.path.join(a.o, "wq", f"{key}.safetensors"))
+        del wq
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
