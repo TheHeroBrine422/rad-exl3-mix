@@ -102,10 +102,19 @@ Open decisions are marked **[decide]**.
    calibrate (as E1c), the stream refines with whole mixes.
 6. **Submission size:** leaderboard scoring is expensive (tens of minutes a checkpoint). Score every variant
    locally and submit only the variants on our own measured frontier, in a modest number per round.
-7. **Fractional K in the format:** the codes plane has no `u2.5` dtype. Fix one convention before any kernel:
-   codes as a byte stream plus a pattern id, a dtype-string grammar for it, and how the encoding reader's equality
-   check treats the new fields (`act=`, group, pattern). Then grep every K gate (V1's K=1 support touched five sites
-   and three tests).
+7. **Fractional K in the format (convention, 2026-10-31):** follow exllamav3 1.6.3, which already stores half-K:
+   - The rate is implied by the tile width: a 256-weight tile is 16·K uint16 words (K2 32, K2.25 36, K2.5 40,
+     K2.75 44), so the trellis plane is u16 `[tiles_k, tiles_n, 16K]` for every K, integer or not. K must be a
+     multiple of 1/16; the menu uses quarters.
+   - No pattern is stored: each rate has one canonical step mask, the even spread (KA + 0.25: 0x8888, + 0.5: 0xAAAA,
+     + 0.75: 0xEEEE; step i shifts KA + bit (i mod 16) bits). exllamav3 export → radiance import → kernels all derive
+     (KA, MASK) from the width; a new mask would need a new rate or a stored field (not planned).
+   - Sub-1 rates (K0.25–0.75, KA = 0) add the salted 0-bit read (`viterbi_tiles_pat`): same width rule, plus a codebook
+     variant flag in the encoding (`mul1s`), since a reader without the salt would decode wrong values silently.
+   - Encoding string: today's EXL3 encoding plus the new fields, e.g. `exl3i:k=2.25,cb=mul1,act=a8,g=128`;
+     the import derives `k` from the width and refuses a mismatch; the reader's equality check compares all fields.
+   - Then grep every K gate in the plugin (V1's K=1 support touched five sites and three tests) and add refusal
+     tests for malformed K / mask / act / group values to the selftest matrix.
 8. **Engine version:** V3 targets radiance 1.15.x (ABI 32: plugins export a layout fingerprint). Take the
    prefill-softmax fix (PR #362: rescale per row, not per wave; measured on our eval: KLD −0.12%, packed and unpacked
    runs agree with it) with the port, and re-baseline a few V2 picks on the new engine once.
