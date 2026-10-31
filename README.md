@@ -3,7 +3,6 @@
 Mixed-K EXL3 quantization for [radiance](https://codeberg.org/StillDeadcode/radiance): our own EXL3 quants at
 K1–8 per tensor, a fitted sensitivity model plus an exact knapsack solver choosing the per-tensor mix, and the
 KLD evaluation and search pipeline around it. Built for the radiance quantization challenge (Qwen3.8-27B).
-An independent project; not part of radiance-exl3 or exllamav3 (credits in NOTICE).
 
 **Released:** [EXL3-V2 containers](https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad), 16 sizes from 1.5 to
 9.0 bpw. Method: [`docs/METHOD.md`](docs/METHOD.md). Next: EXL3-V3 (integer compute, finer K;
