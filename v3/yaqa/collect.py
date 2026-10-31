@@ -12,7 +12,12 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
      YAQA_FP32=1 -> fp32 activations and gradients end to end (weights stay bf16, cast per op in row chunks;
                     norms / conv / gates promoted to fp32), against bf16 rounding noise in the backward pass.
      YAQA_ROWS_F32=1 -> store rows as fp32 (<seq>.f32) instead of bf16 (noise comparisons).
-     YAQA_LABELS=DIR -> use the sampled labels another run saved in DIR/.labels (paired comparisons)."""
+     YAQA_LABELS=DIR -> use the sampled labels another run saved in DIR/.labels (paired comparisons).
+     YAQA_FULL=L[,L..] -> for the linears of these layers, sum H_out = Σ_t w_t dy_t dy_tᵀ over EVERY position
+                    (from 16 on) instead of keeping sampled rows; w_t = ||x_t||² (YAQA_UNWEIGHTED=1: w_t = 1). The
+                    sums live in fp32 on the CPU (dyᵀdy per sequence, ~2.5 s for a 17,408-wide output), written
+                    as OUTDIR/hout/<checkpoint key>.safetensors ("hout", the ourq.py --hout layout) every
+                    YAQA_SAVE_EVERY sequences (default 25) and at the end. Sampled rows are not written then."""
 import json, math, os, sys, time
 sys.path.insert(0, "/data/yaqa/pylib")
 import numpy as np, torch
@@ -95,9 +100,37 @@ print(f"loaded in {time.time() - t0:.0f}s; " + ", ".join(f"cuda{i} {torch.cuda.m
 
 # ---- hooks on every trunk linear
 lin = {name: m for name, m in model.model.layers.named_modules() if isinstance(m, torch.nn.Linear)}
-state = {"pos": None, "rows": {}}
-def fwd_hook(name):
+state = {"pos": None, "rows": {}, "full_done": set()}
+FULL = {int(x) for x in os.environ.get("YAQA_FULL", "").split(",") if x}
+UNW = os.environ.get("YAQA_UNWEIGHTED") == "1"
+HACC, HN = {}, {}          # full-mode accumulators (CPU fp32) and token counts, by linear name
+torch.set_num_threads(int(os.environ.get("YAQA_CPU_THREADS", 12)))
+def fwd_hook_full(name):
     def h(mod, inp, out):
+        if not out.requires_grad: return
+        w = None if UNW else inp[0][0, 16:].float().pow(2).sum(1, keepdim=True)   # [T, 1]
+        def bh(g):
+            if name in state["full_done"]: return     # checkpoint recompute guard
+            state["full_done"].add(name)
+            r = g[0, 16:].float()
+            if w is not None: r = r * w.to(r.device).sqrt()
+            r = r.cpu()
+            if name not in HACC: HACC[name] = torch.zeros(r.shape[1], r.shape[1]); HN[name] = 0
+            HACC[name].addmm_(r.T, r); HN[name] += r.shape[0]
+        out.register_hook(bh)
+    return h
+def save_full():
+    os.makedirs(f"{OUT}/hout", exist_ok=True)
+    from safetensors.torch import save_file
+    for name, H in HACC.items():
+        key = "model.language_model.layers." + name
+        save_file({"hout": H.contiguous()}, f"{OUT}/hout/{key}.safetensors.part",
+                  metadata={"rows": str(HN[name]), "weight": "none" if UNW else "x2", "fp32_act": str(FP32)})
+        os.replace(f"{OUT}/hout/{key}.safetensors.part", f"{OUT}/hout/{key}.safetensors")
+def fwd_hook(name):
+    if FULL and int(name.split(".")[0]) in FULL: return fwd_hook_full(name)
+    def h(mod, inp, out):
+        if FULL: return                                # full mode: no sampled rows
         if not out.requires_grad: return              # the no-grad first pass of checkpointing
         x = inp[0][0, state["pos"].to(inp[0].device)].float()   # [NPOS, in]
         nx = x.norm(dim=1, keepdim=True)
@@ -120,7 +153,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
     ids = torch.from_numpy(toks[wins[s]:wins[s] + L].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
-    state["rows"] = {}
+    state["rows"] = {}; state["full_done"] = set()
     ts = time.time()
     emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(True)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
@@ -136,7 +169,9 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
     loss.backward()
     dt = time.time() - ts
-    if not GATE:
+    if FULL and not GATE:
+        if (done + 1) % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_full()
+    elif not GATE:
         for name, r in state["rows"].items():
             d = f"{OUT}/{name}"; os.makedirs(d, exist_ok=True)
             if ROWS_F32: r.numpy().tofile(f"{d}/{s:05d}.f32")
@@ -148,4 +183,5 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     print(f"seq {s}: {dt:.1f}s, {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
     del hid, loss, emb
+if FULL and not GATE: save_full()
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)
