@@ -417,6 +417,15 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~18:25 CT: **YAQA gate 2b failed too** (fp32 backward, 200-sequence sampled-row pilot, blocks 22+23 into
+  V2 6.00, golden-ver1, paired vs the same one-sided quants). KLD increment over base, two-sided vs one-sided:
+  K2 +17% (sigma_reg_out 0.025) / +6% (0.3); K3 +19% / +10% (all z ≥ 2). bf16 gate 2 was +23% / +28%, so fp32 helped and
+  more output regularisation helps further -- but the trend runs toward one-sided (infinite regularisation), i.e. our
+  sampled H_out still hurts. Remaining suspect: 32 sampled positions a sequence (1.6%) miss the few high-gradient
+  tokens that dominate H_out (upstream's note). Last test before dropping YAQA: full-token sums for blocks 22/23
+  (`collect.py YAQA_FULL=22,23`, fp32, CPU accumulators), ~1.5 h with quant + eval. Not run tonight (head test has
+  the cards).
+
 - 2026-10-31 ~22:45: **Upstream exllamav3 already has a YAQA collector** (`util/yaqa_hessians.py`, reference
   checkout v1.6.3), plus `convert.py -hess/-h1/-hreg/-sh` and `--out_scales yaqa`. Differences from ours: it sums
   d dᵀ over **every** token on the GPU (layer ranges per run for memory), we keep 32 sampled positions per sequence
