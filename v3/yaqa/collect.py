@@ -8,7 +8,11 @@ For each sequence (qad-pool documents of the challenge's calib golden, cut into 
      for every trunk linear  r_t = ||x_t|| * dy_t  (dy_t = dL/d(output) of that linear, x_t its input).
 The output-side Hessian of a linear is then H_out ~ sum_t r_t r_tᵀ (H_in ≈ I weighting of Sketch A's first step).
 Rows go to OUTDIR/<linear>/<seq>.bf16 ([NPOS][out_features]); build.py folds them into H_out.
-Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1)."""
+Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
+     YAQA_FP32=1 -> fp32 activations and gradients end to end (weights stay bf16, cast per op in row chunks;
+                    norms / conv / gates promoted to fp32), against bf16 rounding noise in the backward pass.
+     YAQA_ROWS_F32=1 -> store rows as fp32 (<seq>.f32) instead of bf16 (noise comparisons).
+     YAQA_LABELS=DIR -> use the sampled labels another run saved in DIR/.labels (paired comparisons)."""
 import json, math, os, sys, time
 sys.path.insert(0, "/data/yaqa/pylib")
 import numpy as np, torch
@@ -19,6 +23,10 @@ NPOS = int(sys.argv[4]) if len(sys.argv) > 4 else 32
 W = os.environ.get("RXM_WORK", "/root")
 CK = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
 GATE = os.environ.get("YAQA_GATE") == "1"
+FP32 = os.environ.get("YAQA_FP32") == "1"
+ROWS_F32 = os.environ.get("YAQA_ROWS_F32") == "1"
+LABELS = os.environ.get("YAQA_LABELS")
+ADT = torch.float32 if FP32 else torch.bfloat16      # activation dtype
 SEED = int(os.environ.get("YAQA_SEED", 0))
 START = int(os.environ.get("YAQA_START", 0))   # window index to start at (shuffled order is fixed by SEED)
 
@@ -57,6 +65,26 @@ for f, ks in byfile.items():
         for k in ks:
             name = "lm_head.weight" if k == "lm_head.weight" else "model." + k[len("model.language_model."):]
             set_module_tensor_to_device(model, name, f"cuda:{card(name)}", value=h.get_tensor(k), dtype=torch.bfloat16)
+if FP32:
+    class Lin32(torch.autograd.Function):   # x @ W.T in fp32 with W bf16, cast per 32k-row chunk (lm_head: 5 GB in fp32)
+        @staticmethod
+        def forward(ctx, x, w):
+            ctx.save_for_backward(w)
+            return torch.cat([x @ w[i:i + 32768].float().T for i in range(0, w.shape[0], 32768)], -1)
+        @staticmethod
+        def backward(ctx, g):
+            (w,) = ctx.saved_tensors
+            gx = 0
+            for i in range(0, w.shape[0], 32768): gx = gx + g[..., i:i + 32768] @ w[i:i + 32768].float()
+            return gx, None
+    import types
+    def fwd32(self, x):
+        y = Lin32.apply(x.float(), self.weight)
+        return y if self.bias is None else y + self.bias.float()
+    for m in model.modules():
+        if isinstance(m, torch.nn.Linear): m.forward = types.MethodType(fwd32, m)
+        elif not isinstance(m, torch.nn.Embedding):
+            for pn, p_ in list(m.named_parameters(recurse=False)): p_.data = p_.data.float()
 dmap = {"model.embed_tokens": 0, "model.rotary_emb": 0, "model.norm": 1, "lm_head": 1}
 for l in range(n): dmap[f"model.layers.{l}"] = 0 if l < SPLIT else 1
 model = dispatch_model(model, device_map=dmap)
@@ -75,7 +103,7 @@ def fwd_hook(name):
         nx = x.norm(dim=1, keepdim=True)
         def bh(g):
             if name in state["rows"]: return          # first gradient wins (checkpoint recompute guard)
-            state["rows"][name] = (g[0, state["pos"].to(g.device)].float() * nx.to(g.device)).to(torch.bfloat16).cpu()
+            state["rows"][name] = (g[0, state["pos"].to(g.device)].float() * nx.to(g.device)).to(torch.float32 if ROWS_F32 else torch.bfloat16).cpu()
         out.register_hook(bh)
     return h
 for name, m in lin.items(): m.register_forward_hook(fwd_hook(name))
@@ -94,23 +122,30 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
     state["rows"] = {}
     ts = time.time()
-    emb = model.model.embed_tokens(ids).detach().requires_grad_(True)
+    emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(True)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
-    loss = 0
+    loss = 0; ys = []
     for c0 in range(0, hid.shape[0], CH):
         h = hid[c0:c0 + CH]
-        with torch.no_grad():
-            y = torch.multinomial(torch.softmax(model.lm_head(h).float(), -1), 1)[:, 0]
+        if LABELS:
+            y = torch.from_numpy(np.fromfile(f"{LABELS}/.labels/{s:05d}.i32", np.int32)[c0:c0 + CH].astype(np.int64)).to(h.device)
+        else:
+            with torch.no_grad():
+                y = torch.multinomial(torch.softmax(model.lm_head(h).float(), -1), 1)[:, 0]
+        ys.append(y)
         loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
     loss.backward()
     dt = time.time() - ts
     if not GATE:
         for name, r in state["rows"].items():
             d = f"{OUT}/{name}"; os.makedirs(d, exist_ok=True)
-            r.view(torch.int16).numpy().tofile(f"{d}/{s:05d}.bf16")
+            if ROWS_F32: r.numpy().tofile(f"{d}/{s:05d}.f32")
+            else: r.view(torch.int16).numpy().tofile(f"{d}/{s:05d}.bf16")
+        os.makedirs(f"{OUT}/.labels", exist_ok=True)
+        torch.cat(ys).cpu().numpy().astype(np.int32).tofile(f"{OUT}/.labels/{s:05d}.i32")
         os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
-    print(f"seq {s}: {dt:.1f}s, {len(state['rows'])} linears recorded, peak " +
+    print(f"seq {s}: {dt:.1f}s, {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
     del hid, loss, emb
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)

@@ -36,7 +36,7 @@ This file holds every experiment for the new fast format: questions, status, res
 | E3-sweep2 | integer codes (1024 sampled rows) + trellis codebooks (256 rows), every linear of layers 10/43 (`sweep2.sh`, resumable) | CPU box B | running, 44 jobs at once (`/data/work/e3`); 70/264 were done on the VM |
 | DL | calib Hessians from HF onto the VM (47 GB, rev `2dcf0061`) | net | done → `/workspace/e3data/challenge` |
 | E2 | int8 / int4 GEMM at real tiling (`igemm.hip`) | card | per-token, M sweep, group scales measured; next: decode pre-pass, scale tricks, split-K |
-| YAQA | output-side Hessians (`v3/yaqa/`): gate 1 TP2 throughput, gate 2 two-sided LDLQ on blocks 22/23 at K2/K3 (`gate2.sh`) | both cards | gate 1 passed (5 s per 2048-token sequence); 200-sequence pilot + gate 2 running |
+| YAQA | output-side Hessians (`v3/yaqa/`): gate 1 TP2 throughput, gate 2 two-sided LDLQ on blocks 22/23 at K2/K3 (`gate2.sh`) | both cards | gate 1 passed (5 s per 2048-token sequence); 200-sequence pilot + gate 2 running; then `noise.sh`: bf16 vs fp32 backward on the same 8 sequences (`cmp.py`) |
 
 ---
 
