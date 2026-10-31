@@ -39,7 +39,11 @@ ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diago
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
                 "two-sided LDLQ for the linears that have one")
 ap.add_argument("--save-wq", action="store_true", help="also write each linear's dequantized weight (out, in) f16 to "
-                "OUTDIR/wq/<key>.safetensors (v3/yaqa/headslab.py)")
+                "OUTDIR/wq/<key>.safetensors, and per output row the error (w-q)ᵀH(w-q) and the reference wᵀHw (H: the "
+                "raw input Hessian) to OUTDIR/wq/<key>.rowerr.npz (v3/yaqa/headslab.py)")
+ap.add_argument("--head-perm", default=None, help="int64 .npy permutation of the head's vocab rows: lm_head is "
+                "quantized in that row order (rows sorted by sensitivity: slabs = contiguous 128-row blocks); --save-wq "
+                "outputs stay in the permuted order")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
 a = ap.parse_args()
 dev = torch.device("cuda", a.device)
@@ -86,6 +90,9 @@ def quantize_group(hname, keys, seed0, log):
     for j, key in enumerate(keys):
         t0 = time.time()
         w = ck(key + ".weight").to(dev).float().T.contiguous()     # (in_features, out_features)
+        if a.head_perm and key == "lm_head":
+            import numpy as np
+            w = w[:, torch.from_numpy(np.load(a.head_perm)).to(dev)].contiguous()
         qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
         if a.sigma_reg is not None: qa["sigma_reg"] = a.sigma_reg
@@ -94,11 +101,20 @@ def quantize_group(hname, keys, seed0, log):
         if hp and os.path.exists(hp):
             with safe_open(hp, "pt", device="cpu") as f: qa["H_out"] = f.get_tensor("hout").to(dev)
         wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
-        del w
         if a.save_wq:
+            import numpy as np
             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
+            H = hessian(hname)["H"]                     # fresh: quantize_exl3 may have regularised Hd in place
+            err, ref = [], []
+            for c in range(0, w.shape[1], 8192):        # per output row, in column chunks
+                E = w[:, c:c + 8192] - wq[:, c:c + 8192]
+                err.append(((H @ E) * E).sum(0).double().cpu())
+                W = w[:, c:c + 8192]; ref.append(((H @ W) * W).sum(0).double().cpu())
+                del E, W
+            np.savez(os.path.join(a.o, "wq", f"{key}.rowerr.npz"), err=torch.cat(err).numpy(), ref=torch.cat(ref).numpy())
+            del H
             save_file({"weight": wq.T.half().contiguous().cpu()}, os.path.join(a.o, "wq", f"{key}.safetensors"))
-        del wq
+        del w, wq
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
