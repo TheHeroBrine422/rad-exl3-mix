@@ -1,0 +1,13 @@
+{"method": "lloyd", "bits": 1, "bpv": 1.125, "rel": 0.36061122137353835, "rows": 1024, "sec": 2.8}
+{"method": "lloyd", "bits": 2, "bpv": 2.125, "rel": 0.11426999815181653, "rows": 1024, "sec": 2.9}
+{"method": "lloyd", "bits": 3, "bpv": 3.125, "rel": 0.03161961242543906, "rows": 1024, "sec": 3.6}
+{"method": "lloyd", "bits": 4, "bpv": 4.125, "rel": 0.007794534953789087, "rows": 1024, "sec": 4.9}
+{"method": "lloyd", "bits": 5, "bpv": 5.125, "rel": 0.0020707252934834674, "rows": 1024, "sec": 5.4}
+{"method": "trellis", "bits": 1.5, "bpv": 1.625, "rel": 0.12720333011080764, "rows": 1024, "sec": 153.2}
+{"method": "trellis", "bits": 1.0, "bpv": 1.125, "rel": 0.2529545291631994, "rows": 1024, "sec": 158.9}
+{"method": "trellis", "bits": 2.5, "bpv": 2.625, "rel": 0.03206137487554877, "rows": 1024, "sec": 147.8}
+{"method": "trellis", "bits": 2.0, "bpv": 2.125, "rel": 0.06346450974904749, "rows": 1024, "sec": 148.3}
+{"method": "trellis", "bits": 3.5, "bpv": 3.625, "rel": 0.008162894478892256, "rows": 1024, "sec": 143.5}
+{"method": "trellis", "bits": 3.0, "bpv": 3.125, "rel": 0.016145089132053873, "rows": 1024, "sec": 137.2}
+{"method": "trellis", "bits": 4.0, "bpv": 4.125, "rel": 0.004123727893866684, "rows": 1024, "sec": 143.6}
+{"method": "trellis", "bits": 5.0, "bpv": 5.125, "rel": 0.0010573244334620804, "rows": 1024, "sec": 135.3}

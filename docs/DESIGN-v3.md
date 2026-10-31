@@ -67,6 +67,10 @@ Open decisions are marked **[decide]**.
    Quantize it with **uniform weighting (H = I)**, like the Lloyd tables: its true Hessian is diagonal = token
    frequency, which is the dropped vocab-tiering in disguise (starves rare / multilingual tokens). Est. 2–5% KLD at
    ≤ 3 bpw (trellis-3 ≈ Lloyd-4). Plain int4/int8 tables are dominated by Lloyd at the same bits.
+   **Measured (CPU, 2026-10-31, `v3/e3/embtrellis.py`):** at equal bits the trellis has 0.51–0.56× Lloyd's
+   reconstruction error (K ≥ 2): ~0.48 bits a value saved = ~0.023 bpw (so trellis-3 ≈ Lloyd-3.5, not Lloyd-4);
+   worth ~1% KLD at ~3 bpw by V2's fitted embedding costs. **Menu: quarter steps** (one quarter = 0.012 bpw; the
+   generic pattern decode serves them at no extra kernel cost). Scale group size: being measured.
 7. **Fresh held-out slices** ver3 (~80 docs, monitoring) and ver4 (~240, final) from the unused verify docs, plus
    search-pool selection slices; built once, frozen.
 8. **Fractional K: compiled everywhere**. One instance per shift pattern for the GEMV, the narrow tile and the
