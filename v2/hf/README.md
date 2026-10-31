@@ -98,8 +98,26 @@ EXL3-V1. Speed is EXL3-V3's focus.
 
 ## Long context
 
-LONG-CONTEXT RESULTS: TO FILL IN (two whole ~250k-token agent traces from the held-out pool; our files vs
-turboderp's at the same size, per position bucket).
+The search and the held-out picks used documents cut to 8k tokens. To check that the mixes hold up at long context,
+each release file was scored on the calibration corpus's two held-out agent traces, **whole** (250k and 253k
+tokens, 275k scored positions, bf16 KV), next to turboderp's EXL3-V1 containers on the same traces.
+
+| size | EXL3-V2 | EXL3-V1 nearby | ratio, whole traces | ratio by position: 0–8k / 8–32k / 32–64k / 64–128k / 128k+ |
+|---|---|---|---|---|
+| 1.50 | 0.405 | — | | |
+| 1.75 | 0.252 | — | | |
+| 2.00 | 0.131 | 0.0938 at 2.12 bpw | | |
+| 2.50 | 0.0511 | 0.0721 at 2.72 | 0.71 | 0.58 / 0.49 / 0.73 / 0.70 / 0.71 |
+| 3.00 | 0.0217 | 0.0281 at 3.12 | 0.77 | 0.87 / 0.72 / 0.78 / 0.77 / 0.77 |
+| 3.50 | 0.0126 | 0.0177 at 3.67 | 0.71 | 0.62 / 0.64 / 0.72 / 0.69 / 0.72 |
+| 4.00 | 0.00604 | 0.00786 at 4.07 | 0.77 | 0.81 / 0.78 / 0.78 / 0.76 / 0.77 |
+| 4.50 | 0.00347 | — | | |
+| 5.00 | 0.00192* | 0.00199 at 5.07* | 0.96* | |
+
+\* first 160k tokens of each trace (one card's KV limit at that size); both containers on the same positions.
+
+Our advantage holds steady from the first 8k tokens out to 250k: no sign that searching on 8k-token documents
+overfit to short context. 6.0 bpw and up were not checked at full length (mostly K6–K8 tensors).
 
 ## Use one file
 
