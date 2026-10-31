@@ -36,6 +36,7 @@ This file holds every experiment for the new fast format: questions, status, res
 | E3-sweep2 | integer codes (1024 sampled rows) + trellis codebooks (256 rows), every linear of layers 10/43 (`sweep2.sh`, resumable) | CPU box B | running, 44 jobs at once (`/data/work/e3`); 70/264 were done on the VM |
 | DL | calib Hessians from HF onto the VM (47 GB, rev `2dcf0061`) | net | done → `/workspace/e3data/challenge` |
 | E2 | int8 / int4 GEMM at real tiling (`igemm.hip`) | card | per-token, M sweep, group scales measured; next: decode pre-pass, scale tricks, split-K |
+| YAQA | output-side Hessians (`v3/yaqa/`): gate 1 TP2 throughput, gate 2 two-sided LDLQ on blocks 22/23 at K2/K3 (`gate2.sh`) | both cards | gate 1 passed (5 s per 2048-token sequence); 200-sequence pilot + gate 2 running |
 
 ---
 
@@ -415,6 +416,16 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 ---
 
 ## Log (newest first)
+
+- 2026-10-31 ~19:00: **YAQA gate 1 passed.** `v3/yaqa/collect.py`: bf16 text model streamed tensor by tensor
+  onto both cards (layers split 32/32; the transformers loader OOMs host RAM on the 30 GB box), fla 0.6.0 chunked
+  gated-delta, gradient checkpointing, chunked sampled-label CE (labels drawn from the model's own distribution, as
+  YAQA's Fisher). Per sequence it records r_t = ||x_t|| dy_t at 32 random positions for all 496 trunk linears (≈233 MB
+  bf16). 5.0 s per 2048-token sequence including writes, peak 26.9 GiB per card; the qad pool (1,819 windows,
+  3.7M tokens) is ~2.7 h and ~425 GB of rows. `fold.py` sums them into H_out (exllamav3 `--hessians` layout,
+  "hout"). `ourq.py --hout DIR` passes them to exllamav3's two-sided LDLQ (`ldlq_2hess`). Gate 2 (`gate2.sh`):
+  200-sequence pilot H_out (6,400 rows: rank-deficient for the 17,408-wide gate/up, which leans on sigma_reg_out),
+  blocks 22+23 at K2/K3, one- vs two-sided, swapped into the V2 6.00 release, golden-ver1.
 
 - 2026-10-31 ~04:30: **vocab-tiered embedding dropped**. Early data: 30k@3+rest@1 KLD 0.0140 vs uniform e4
   0.0081 (bf16 emb 0.0080); 30k@3+rest@2 (2.25 b/value) 0.0094 vs uniform e3 (3.125) 0.0086; on the multilingual

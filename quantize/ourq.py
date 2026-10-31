@@ -36,6 +36,9 @@ ap.add_argument("--head", action="store_true", help="also lm_head")
 ap.add_argument("--only-head", action="store_true")
 ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
+ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
+                "two-sided LDLQ for the linears that have one")
+ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
 a = ap.parse_args()
 dev = torch.device("cuda", a.device)
 os.makedirs(a.o, exist_ok=True)
@@ -84,10 +87,15 @@ def quantize_group(hname, keys, seed0, log):
         qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
         if a.sigma_reg is not None: qa["sigma_reg"] = a.sigma_reg
+        if a.sigma_reg_out is not None: qa["sigma_reg_out"] = a.sigma_reg_out
+        hp = f"{a.hout}/{key}.safetensors" if a.hout else None
+        if hp and os.path.exists(hp):
+            with safe_open(hp, "pt", device="cpu") as f: qa["H_out"] = f.get_tensor("hout").to(dev)
         _, perr, t = quantize_exl3(w, Hd, qa, False)
         del w
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
-        log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")),
+        two = qa.pop("H_out", None) is not None
+        log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()
