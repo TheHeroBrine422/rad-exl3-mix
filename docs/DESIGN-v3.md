@@ -9,7 +9,7 @@ Open decisions are marked **[decide]**.
   ~8,030 µs. IQR-V3: 4,935–5,236. FP8: 4,901. Target: **≤ ~5,200 µs at every size**, i.e. ~1.55× faster prefill GEMMs,
   at V2's KLD or better. At ≤ 2.5 bpw, beat IQR-V3's ~4,935 µs: that needs A4 on part of the trunk.
 - **Sizes:** ≤ 7.5 bpw (above that V2 is effectively lossless; K7/K8 stay f16 anyway).
-- **Hardware:** card 1 only (06:00.0, PCIe x4), TP1. TP2 only at times (when both cards are available).
+- **Hardware:** card 0 only (03:00.0, PCIe x16), TP1. TP2 only at times (when both cards are available).
 - **Not in V3:** QAD (V4), vocab-tiered embedding (dropped), head tiering (~2%, backlog).
 
 ## 1. Compute format (the speed)
@@ -67,7 +67,7 @@ Open decisions are marked **[decide]**.
 8. **Fractional K: compiled everywhere**. One instance per shift pattern for the GEMV, the narrow tile and the
    prefill pre-decode pass. The prefill GEMM itself only sees decoded int8/f16 fragments, so instances are
    patterns + (mode × group size), not their product.
-9. **Speed objective = real-world prefill time** (2026-10-31). Per option, measured on card 1 at M = 2048
+9. **Speed objective = real-world prefill time** (2026-10-31). Per option, measured on card 0 at M = 2048
    (the recommended chunk), summed over the trunk; the head (last token only) and the embedding (one row a token)
    are ~0 in prefill, so the board's `gemm_us` and real prefill rank options the same (reports show both; `gemm_us`
    calibrated on the V1 entries). **Decode is not in the solve:** at a given size it is ~bytes-bound and nearly fixed
@@ -123,7 +123,7 @@ All improvements ship together (they compound; the knapsack drops what does not 
 work overlaps it:
 - **Phase A:** fold kernel (A8) → time table → speed-aware knap3 → stream on V2's quants with modes {f16, A8}.
   Meanwhile, off-card: half-step trellis, int4-grid codebook, A4 tile, R1 test (§7).
-- **Phase B:** one requant (one to two nights on card 1, ~16 runs): K1–K8 + half steps + int4-grid K2/K3, damping
+- **Phase B:** one requant (one to two nights on card 0, ~16 runs): K1–K8 + half steps + int4-grid K2/K3, damping
   and gain baked in, R1 if it passes. New options join the stream; the fitted model carries over as the prior.
 - **R1 is all-or-nothing:** a residual-stream rotation changes every tensor's basis, so rotated and unrotated
   quants cannot be mixed. Decide R1 before Phase B. If adopted, Phase A's measurements only inform the prior.
@@ -131,7 +131,7 @@ work overlaps it:
 ## 4. Solver
 
 - `knap3.py`: min KLD s.t. bytes ≤ B, via a Lagrangian on time inside the exact byte DP (cost = KLD-cost + λ·time).
-- **Time table:** microbench per (shape, K, mode) at M = 2048 on card 1, the board's own measurement point. Sum over
+- **Time table:** microbench per (shape, K, mode) at M = 2048 on card 0, the board's own measurement point. Sum over
   the trunk = predicted `gemm_us`.
 - **KLD model:** kfit2's structured model as the prior (V2's ~1,250 measurements, activation error 0), plus the
   activation-quant terms from E1b/E1c (`aqcal.py` family factors) as the new, fitted part.
@@ -154,7 +154,7 @@ work overlaps it:
 1. Fold kernel: A8-g128 × int8-rounded EXL3 decode, row scale at store; byte-exact torch reference; E2 re-measure.
 2. End-to-end on one container (K4, all A8): KLD and `gemm_us` vs V2's kernel. Gate: ≥ 1.4× faster GEMMs at
    ≤ +10% KLD, else stop and rethink.
-3. Time table (all shapes × K × mode) on card 1.
+3. Time table (all shapes × K × mode) on card 0.
 4. knap3 with the time constraint; first mixes; stream.
 5. Phase B requant once the off-card pieces work; options join the stream; final, long check, release.
 
