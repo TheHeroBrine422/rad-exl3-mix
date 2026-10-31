@@ -417,6 +417,18 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~22:45: **Upstream exllamav3 already has a YAQA collector** (`util/yaqa_hessians.py`, reference
+  checkout v1.6.3), plus `convert.py -hess/-h1/-hreg/-sh` and `--out_scales yaqa`. Differences from ours: it sums
+  d dᵀ over **every** token on the GPU (layer ranges per run for memory), we keep 32 sampled positions per sequence
+  (1.6%) as rows on disk; it weights tokens by xᵀ H_in x (Sketch A), we by ‖x‖² (H_in = I); bf16 activations with
+  fp32 sums. Its notes (Qwen3.5-2B): the benefit comes from the output side alone (online H_in + this H_out beat
+  the iterated pair); H_out is "dominated by relatively few high-gradient tokens"; two seeds differ ~20% at 250 full
+  2048-token rows. So our 6,400 sampled rows likely miss most of the mass: second suspect for gate 2 next to the
+  bf16 noise. If gate 2b (fp32, sampled) fails too: full-token sums for blocks 22/23 (≈ 6 GB of fp32 accumulators;
+  no room on the cards beside fp32 activations, so on the GPU box's CPU, ~10 s a sequence) before giving up.
+  Also: turboderp's SC quants take their GPTQ Hessians from the self-sampled trace (`convert.py --cal_data`), i.e.
+  model-written text only -- the kind of position the board scores; ours cover every calib token, prompts included.
+
 - 2026-10-31 ~22:30: **Shared-input siblings do not share `suh`** (our K6 quant's dumped suh, every layer; CPU).
   Signs agree 100% (one seed per input-Hessian group), but the per-channel input scales differ: gate vs up median
   |ratio| 1.015 (p99/p1 spread 1.27), GDN qkv vs z 1.036 (1.19), attn q vs k / v 1.092 (1.92); no pair identical.
