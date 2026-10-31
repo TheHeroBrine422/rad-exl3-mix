@@ -158,9 +158,9 @@ or one TP2 night when both cards are available).
 All improvements ship together (they compound; the knapsack drops what does not pay). The card is the bottleneck, so
 work overlaps it:
 - **Phase A:** fold kernel (A8) → time table → speed-aware knap3 → stream on V2's quants with modes {f16, A8}.
-  Meanwhile, off-card: half-step trellis, int4-grid codebook, A4 tile, R1 test (§7).
+  Meanwhile, off-card: half-step trellis, int4-grid codebook, A4 tile (R1 tested and dropped, §7).
 - **Phase B:** one requant (one to two nights on card 0, ~16 runs): K1–K8 + half steps + int4-grid K2/K3, damping
-  and gain baked in, R1 if it passes. New options join the stream; the fitted model carries over as the prior.
+  and gain baked in. New options join the stream; the fitted model carries over as the prior.
 - **R1 is all-or-nothing:** a residual-stream rotation changes every tensor's basis, so rotated and unrotated
   quants cannot be mixed. Decide R1 before Phase B. If adopted, Phase A's measurements only inform the prior.
 
@@ -227,7 +227,9 @@ work overlaps it:
 
 ## 7. Outside research
 
-- **R1, SpinQuant's residual-stream rotation folded into the weights.** Exact only for R1 (Qwen3.8's conv1d,
+- **R1: tested and dropped (2026-10-31, `EXPERIMENTS.md`):** A8-g128 activation error 6.6× worse, because the norm
+  gains that shrink the outlier channel must be folded into the weights. Original note:
+  **R1, SpinQuant's residual-stream rotation folded into the weights.** Exact only for R1 (Qwen3.8's conv1d,
   sigmoid/SiLU gates and SwiGLU block head-dim and MLP rotations); norm gains absorbed first; Hessians transformed
   analytically, H' = Qᵀ D⁻¹ H D⁻¹ Q. For weights alone little is expected after fwht128. **For V3 it is an activation
   question:** a massive-activation channel dominates its 128-block's A8/A4 scale; R1 spreads it over 5120. Test on

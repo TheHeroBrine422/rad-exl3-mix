@@ -108,3 +108,16 @@ idea is dropped.
 - **fp8 KV cache** moves KLD; all measurements use bf16 KV.
 - **Reference curve including dominated containers** (bigger *and* worse, e.g. plain 2.00/4.00/5.00/6.00) made mixes
   look better than they were; compare against the Pareto envelope only.
+
+## R1 residual-stream rotation for int8/int4 activations (2026-10-31, dropped)
+SpinQuant-style R1: one random orthogonal 5120² Q folded into the residual stream, the readers' norm gains (1 + w)
+folded into their weights. CPU proxy on the K6 activation dumps (`v3/e1b/r1test.py`, all 208 residual-reader
+linears, output-error energy vs today's block Hadamard with the quant's own suh): **A8-g128 6.6× worse**, A8
+per-token 2.1×, A4-g64 5.7× (layers 0–15: 17× / 4.9× / 15×; 48–63: 1.3× / 0.66× / 1.3×). R1 does spread the
+massive-activation channel (top channel's share of input energy 65% → 0.3% in layers 0–15), but this model's norm
+gains shrink that channel, and R1 must fold the gains into the weights: the rotation then spreads a much larger
+outlier over every 128-block, where today's per-block Hadamard keeps it inside one block's scale. Only per-token A8
+in deep layers gains, and per-token is ~5× worse than g128 there to begin with. A learned Q (SpinQuant's Cayley
+optimisation) would not close a 6.6× gap. Side result: the quant's learned input scales (suh vs signs only) lower
+the A8-g128 error 5%, per-token 35%. Data: `v3/e1b/data/r1.jsonl`.
+

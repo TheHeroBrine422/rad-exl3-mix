@@ -54,7 +54,8 @@ def main():
         Ws = A.weight(A.hf_names(fam, layer, n, k, A.shapes_for(cands)))
         assert len(Ws) == len(suhs)
         gm = gain(layer, fam)
-        u = ((x / gm) @ Q).astype(np.float32)
+        xn = np.divide(x, gm, out=np.zeros_like(x), where=gm != 0)    # gain 0: a dead channel, x is 0 there too
+        u = (xn @ Q).astype(np.float32)
         ref = sum(float(((x @ W.T).astype(np.float64) ** 2).sum()) for W in Ws)
         # outlier stats: share of input energy in the top channel, before / after R1
         xe = (x.astype(np.float64) ** 2).sum(0); ue = (u.astype(np.float64) ** 2).sum(0)
