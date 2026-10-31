@@ -10,7 +10,8 @@ Open decisions are marked **[decide]**.
   at V2's KLD or better. At ≤ 2.5 bpw, beat IQR-V3's ~4,935 µs: that needs A4 on part of the trunk.
 - **Sizes:** ≤ 7.5 bpw (above that V2 is effectively lossless; K7/K8 stay f16 anyway).
 - **Hardware:** card 0 only (03:00.0, PCIe x16), TP1. TP2 only at times (when both cards are available).
-- **Not in V3:** QAD (V4), vocab-tiered embedding (dropped), head tiering (~2%, backlog).
+- **Not in V3:** QAD (V4), vocab-tiered embedding and frequency-tiered head (dropped; a Fisher-driven row-slab
+  head is under test, §2).
 
 ## 1. Compute format (the speed)
 
@@ -31,6 +32,9 @@ Open decisions are marked **[decide]**.
   is ~+45%, so A4 only pays at the bottom. Needs int4-grid codes (codebook; E3: ×1.01 at K2, ×1.07 at K3) and an
   iu4 tile with the same fold.
 - **Head:** f16. At serving prefill it runs once (last token); it is not in `gemm_us`.
+- **GDN a/b projections** (N = 48 and 128, bf16) run as separate `gemm_nt` ops beside the trellis path, each
+  re-reading the activation tile. Measure their share of the layer at M = 2048 (`--profile-ops`); if > ~2%, merge
+  them into one N = 176 op or fold them into the qkv tile.
 - **Decode (M = 1–16):** keep exl3r4d's GEMV; measure it against bytes/bandwidth (4 bpw: 29.4 tok/s ≈ 63% of
   bandwidth). IQR-V3's computed-code GEMV is a reference for later.
 - **Open check first:** E2 measured −12…−29% for group scales at 128×128; re-measure with the fold above (activation
@@ -83,11 +87,31 @@ Open decisions are marked **[decide]**.
    V1/V2 containers keep loading through the frozen exl3r4d / exl3dense untouched (no format version bump, no risk
    to V2's byte-identity); the qwen35_exl3 architecture plugin dispatches by encoding. Shared code (trellis decode)
    copied or factored into a common header.
-4. **Kernel selftest matrix:** every (mode × group) and every K pattern against a torch reference, automated.
+4. **Kernel selftest matrix:** every (mode × group) and every K pattern against a torch reference, automated. Cases
+   that bit the V1 bring-up and must be in it (unit tests built on synthetic 2-D f16 operands missed all of them):
+   - the real row count differs from the band's M (M = 1, 15, 511, 512, 513, 952, 2048): the op must compute
+     `rows` of the operand, and the A8/A4 threshold and tile / split-K choice must see the real M;
+   - bf16 and f32 output stores (the graph is bf16; logits f32), not only f16;
+   - the GDN `ssm_out` input, a 3-D `[T, 48, 128]` buffer read as `[T, 6144]` (row pitch from the flat layout);
+   - refusal tests for malformed K / mode / group strings in the encoding, so the gates cannot rot;
+   - a per-container **census** of the resolved (kernel, K pattern, mode, group) per tensor, diffed against the
+     `.mix`: a mis-parsed `act=` that silently falls back to f16 is correct and slower, invisible to KLD;
+   - the loaded plugin's build hash printed (a stale `.so` was benchmarked as new more than once in V1).
 5. **Activation-cost model:** CPU proxy (`aqproxy.py` on activation dumps) for the shape, ~30 real probes to
    calibrate (as E1c), the stream refines with whole mixes.
 6. **Submission size:** leaderboard scoring is expensive (tens of minutes a checkpoint). Score every variant
    locally and submit only the variants on our own measured frontier, in a modest number per round.
+7. **Fractional K in the format:** the codes plane has no `u2.5` dtype. Fix one convention before any kernel:
+   codes as a byte stream plus a pattern id, a dtype-string grammar for it, and how the encoding reader's equality
+   check treats the new fields (`act=`, group, pattern). Then grep every K gate (V1's K=1 support touched five sites
+   and three tests).
+8. **Engine version:** V3 targets radiance 1.15.x (ABI 32: plugins export a layout fingerprint). Take the
+   prefill-softmax fix (PR #362: rescale per row, not per wave; measured on our eval: KLD −0.12%, packed and unpacked
+   runs agree with it) with the port, and re-baseline a few V2 picks on the new engine once.
+9. **Output store dtype and range:** the int8 epilogue picks its store dtype fresh. Check f16 vs bf16 vs f32 rounding
+   of linear outputs with the E1b hook (bf16 storage is ~1.1e-3 relative L2 a GEMM, comparable to A8-g128's cost at
+   ≥ 6 bpw), and record max |y| of the residual writers (down, ssm_out, attn_output) over the long verify traces:
+   the f16 tile kept for K7/K8 overflows at 65,504, and one inf costs more than any quant choice.
 
 ## 1d. turboderp's tensors (2026-10-31)
 
@@ -101,6 +125,16 @@ Open decisions are marked **[decide]**.
   measured end to end. If his win despite worse proxy error, the input-side proxy misleads at high K: then
   output-side Hessians (YAQA) or calibrating on model-written text (as his self-calibrated "SC" quants do) should
   shape the V3 requant.
+- **Free evidence first (CPU):** his repository ships per-tensor tables for this model (`kld_table.json`: a
+  sensitivity S and KLD at K1–8 from trace-based noise attribution; `measurement.json`: per-group 2→3-bit dKLD), and
+  his recipes give ~22 tensors the top K and ~65 the next one at each size. Rank-correlate S with kfit2's
+  sensitivities, and intersect his top-K tensors with the ones V2 takes from him: a large overlap means his trace
+  sees something our input-side proxy does not. His S is also a prior for options we have no measurements of
+  (the sub-2 Ks). And read where his SC calibration trace (self-sampled, ~250 × 2048 tokens) enters: the GPTQ
+  Hessian, or only the allocation.
+- **Fused GEMMs force K ties:** his recipes tie k+v and gate+up to one K because his fast path runs them as one GEMM.
+  If V3's time table measures fused launches (q/k/v, gate/up, GDN qkv/z), the solver must tie K and group size
+  across them, or price the unfused launches. Decide which before the time table.
 
 ## 2. Quality items
 
@@ -108,7 +142,8 @@ Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`
 
 | item | est. gain | needs |
 |---|---|---|
-| fractional K: one generic trellis (shift pattern, any K = a/b); quant half steps K0.5–K7.5 + quarter steps 0.25–1.75 and 2.25–3.75, K0 = drop | −5 to −7% (more below 2 bpw) | quantizer + decode kernels take the pattern as a parameter; one quant run per K (~20 runs) |
+| fractional K: one generic trellis (shift pattern, any K = a/b); quarter steps K0.25–K5, half steps K5–K8 (26 levels), K0 = drop | −5 to −7% (more below 2 bpw) | quantizer + decode kernels take the pattern as a parameter; one quant run per K |
+| row-slab LM head: a K per run of 128-row blocks, vocab rows sorted by the head's Fisher diagonal (~400 rows hold half of it, one block 39%) | under test | a few head GEMMs + a gather in the plugin; heads quantized at half steps as the baseline |
 | scale gain per K and family (attn_output / ssm_out larger at ≥ 5 bits) | 0 to −4% | sweep (`quantize/gaintest.py`), then requant |
 | damping 0.005 for attention / GDN input projections | ~−0.5 to −1% | requant (`quantize/damptest.py`: −2…−6% on those tensors) |
 | K0 / K0.5 | large at < 2 bpw only | as half steps |
@@ -160,18 +195,26 @@ work overlaps it:
 
 ## 6b. Finer K: what to build (2026-10-31)
 
-- Build the trellis generically once (per-position shift pattern → any rational K); choose which Ks to quantize
-  by card budget. Half steps everywhere, quarter steps only in the focus band (2–4 bpw).
-- Sub-2 quarter steps (2026-10-31): K0.25, K0.75, K1.25, K1.75 as well (K0.5 / K1.5 already in), last in the
-  requant queue (they only matter for the 1.5–2.0 bpw sizes). Below 1 bit the trellis keeps little (Gaussian
+- Build the trellis generically once (per-position shift pattern → any rational K). **Menu (2026-10-31): quarter steps
+  K0.25–K5, half steps K5–K8**, 26 levels, ~285 GB of trunk quants. Quantize in order of use: 2.25–4.75, then
+  1.0–2.0, then 5.5–8, then the sub-1 levels. Heads at half steps (one K step of the head is 0.047 bpw; a half step
+  halves the rounding the trunk has to absorb); quarter-step heads only if the head's cost curve proves steep.
+- **Below K2 the damage steepens (measured 2026-10-31):** our proxy error falls 2.11 bits per bit from K1 to K2
+  (2.00 from K2 to K3, 1.97–1.88 above), and V2's fitted model (KLD ∝ proxy^1.004, one factor for K1–K3)
+  under-predicts the K1-dominated swaps by 20% in-sample, 36% cross-validated (K2: 5%, K3–K8: ±1–4%; only three
+  K1 swaps). The real K1→K2 slope is ~2.3–2.5 bits per bit, matching turboderp's note (~2.35 vs ~2.0 on this
+  model). So: price every sub-2 option from measurements, never by extrapolating the proxy; give K1 and each sub-2
+  level its own family factor in the fit; quantize K0.5 first and K0.25 / K0.75 only if K0.5 earns picks.
+- Sub-2 steps matter only for the 1.5–2.0 bpw sizes. Below 1 bit the trellis keeps little (Gaussian
   D(R) = 2^-2R: K0.25 removes ~29% of a weight's error energy, K0.5 50%, K1 75%), so they suit only very insensitive
   tensors. K0 = drop the tensor (zero) or a small low-rank stand-in: no trellis; testable early with zero-donor
   probes on the cheapest tensors (L0–L3 ffn_down, K2 cost there +0.00006). Continuous K beyond
   quarter steps: < 1% more, each K costs a quant run → no.
-- Row-slab K (a K per 128-row slab inside a tensor): deferred. E3c put its ceiling at ~0.05 bit, but E3c saw only
-  the input-side Hessian, which cannot tell rows apart; the output-side Hessian (YAQA's H_out diagonal) can.
-  Revisit if H_out shows large per-row sensitivity spread. Needs a K per slab and per-slab scales in the format.
-- YAQA: deferred until both cards are available for a night.
+- Row-slab K (a K per 128-row slab inside a tensor): deferred for the trunk. E3c put its ceiling at ~0.05 bit, but
+  E3c saw only the input-side Hessian, which cannot tell rows apart; the output-side Hessian (YAQA's H_out diagonal)
+  can. Revisit if H_out shows large per-row sensitivity spread. Needs a K per slab and per-slab scales in the format.
+  **For the LM head it is being tested now** (the head's Fisher diagonal is exact and cheap: Σ p(1−p) from the bf16
+  golden's top-512, no backward), see §2.
 
 ## 7. Outside research
 
@@ -194,7 +237,14 @@ work overlaps it:
   a bf16 backward over the qad pool (5.7M tokens ≈ 2.8K × 2K sequences, the paper's cheap setting), fp32 factors;
   H_out is m×m per linear (gate_up 34816² fp32 = 4.8 GB each, ~0.4 TB for the model), so it runs in several passes over
   layer groups, one or two TP2 nights. Expected −15…−30% KLD at ≤ 4 bpw: **the largest quality item in V3**.
-  One-layer pilot first (Sketch A on one or two layers, single card, K2/K3 proxy error with vs without H_out).
+  **Status (2026-10-31):** collection runs (`v3/yaqa/collect.py`: text model streamed onto two cards, sampled-label
+  CE, |x|-weighted dy rows at 32 positions per sequence, all 496 trunk linears). Gate 1 passed (5.3 s per 2048-token
+  sequence in bf16). Gate 2 with a bf16 backward failed: two-sided LDLQ on blocks 22/23 was +23% (K2) / +28% (K3)
+  worse than one-sided. A bf16-vs-fp32 comparison on identical sequences showed why: the bf16 backward's rows are
+  wrong for a minority of positions, increasingly toward early layers (H_out diagonal cosine vs fp32: 0.88 at
+  layers 48–63, ~0.5 mid-depth, 0.36 at 0–15), and those rows are 3× too large, so they dominate H_out. Collection
+  must run with fp32 activations (30 s a sequence; the qad pool ≈ 15 h on two cards). Gate 2b (fp32, two output
+  regularisations) decides whether to collect.
 - **Teacher Intervention (arXiv 2302.11812):** a QAT technique → V4 (QAD), not V3.
 
 ## 8. Vision tower and DFlash2 drafter (2026-10-31; was hoped for V2)
@@ -203,7 +253,9 @@ IQR's releases bundle the bf16 vision tower and z-lab's DFlash2 block-diffusion 
 gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plugin declares only the 64 text layers
 (no `model.visual.*`, no drafter), so V2 ships text-only. For V3's plugin (new anyway, §1c.3):
 - **Vision:** port the media path from radiance's `qwen35_bf16` / `qwen35_fp8` (`rad_block_vit.h`); the tower stays
-  bf16; radiance skips it when media is off, so it costs disk only.
+  bf16; radiance skips it when media is off, so it costs disk only. **The board does not count it either:** it
+  scores the language model's bytes (IQR-V3's IQ4R lists 14.99 GB against a 17.57 GB file carrying the tower and
+  DFlash2), so bundling costs no bpw.
 - **DFlash2:** port the drafter from `qwen35_fp8` (`rad_block_dflash2.h`): the trunk taps at layers 5/19/33/47/61
   into `dflash_src`, the context pass and the query pass; containers via `rad-convert --draft-model`.
 - Validate: drafts are verified, so KLD is unchanged; measure acceptance and decode tok/s vs no drafter.
@@ -213,3 +265,5 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 
 - YAQA output-side Hessians: bf16 forward + backward over the qad pool, a full TP2 night; time it once V3.0 works.
 - Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
+- V4 healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
+  of them (on a proxy metric). Start scale-only healing on late layers, judge on verify-pool KLD.
