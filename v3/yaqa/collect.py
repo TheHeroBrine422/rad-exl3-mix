@@ -94,7 +94,7 @@ if FP32:
         def backward(ctx, g):
             (w,) = ctx.saved_tensors
             gx = 0
-            for i in range(0, w.shape[0], 32768): gx = gx + g[..., i:i + 32768] @ w[i:i + 32768].float()
+            for i in range(0, w.shape[0], 8192): gx = gx + g[..., i:i + 8192] @ w[i:i + 8192].float()   # 8192: card 0 sits ~1 GB from full in fp32 mode
             return gx, None
     import types
     def fwd32(self, x):
@@ -274,6 +274,6 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     done += 1
     print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
-    del hid, loss, emb
+    del hid, loss, emb; torch.cuda.empty_cache()
 if FULL and not GATE: save_full()
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)
