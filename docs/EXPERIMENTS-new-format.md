@@ -23,6 +23,35 @@ This file holds every experiment for the new fast format: questions, status, res
 
 ---
 
+## Plan to the V3 stream (2026-11-01, user)
+
+Goal: start the eval stream soon after the level ladder finishes (late Nov 2 at the earliest). Phases:
+1. **Quants:** the level ladder (running; ~3 h a level a card), head curve (running tonight), slab-head and
+   trellis-embedding containers, a code-stamp (B13) deploy.
+2. **Kernel / eval optimization: 2-4 passes before the stream** (each eval at the stream's pace pays back many
+   times): the V3 int8 path (fold kernel, decode pre-pass vs fused, decided by the A4 timing), eval runner overhead,
+   packing. Every pass ends with a byte-exact / KLD-identical check against the previous build.
+3. **Quantizer optimization pass(es):** only output-identical speedups (profile one level end to end with a stage
+   split first; the sigma sweep triples the input-group time). Pays off for any later requant (V3.5 sub-1 K, heads,
+   fixes); changing the quantizer under a running ladder is out unless the shards are bit-identical (B13 stamps).
+4. **Solver model, before the stream (CPU, needs no cards):**
+   - [ ] **Uncertainty-aware solve (B11):** fit the model on bootstrap resamples; each option pays a penalty
+     proportional to how much the fits disagree about it. Stays per-tensor additive (exact solver). Test on V2's data:
+     does it avoid the V0-style extrapolation picks (K1 at 6 bpw, 31x misses)?
+   - [ ] **Partial pooling** of the per-family / per-K factors (hierarchical kfit2): each factor shrunk toward its
+     group unless the data supports it; new V3 terms (fractional levels, slab heads, trellis embedding, int8 mode)
+     start from a prior, not a free fit.
+5. **During the stream:**
+   - [ ] **Measure where the model is unsure:** a fixed share of evals on the options the bootstrap fits disagree on
+     most (sub-2 levels, new fractional levels, slab heads), not only near-optimal mixes.
+   - [ ] **Residual re-ranker retry (XGBoost etc.) at the halfway point,** pass rule fixed now: beat kfit2 on grouped-CV
+     pair ranking by more than the bootstrap noise AND on a held-out search slice; else dropped for good.
+   - **Stop rule:** a size band stops when its held-out (ver3) best-so-far stops decreasing (no gain beyond its paired
+     SE over N candidates, N fixed before the run). No fixed budget (~1,500-3,000 evals expected).
+6. **D3** (re-run the 12 V0 mixes with the current fit on a search slice) as soon as the ladder has its first levels:
+   the check of the solver's predicted -8...-21%.
+7. Final: ver4 once; public only to report.
+
 ## Running / queued now
 
 | id | what | where | status |
