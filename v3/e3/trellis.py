@@ -12,7 +12,8 @@ Rows are independent given H, so ROWS (default 256) random rows give an unbiased
 proxy error rel = tr(dW H dW^T) / tr(W H W^T) -- the hproxy metric, comparable with our EXL3 ours-K rows.
 Each row is scaled to unit RMS (a per-output-channel scale, free in any epilogue) times a global factor searched on
 {1, 1.15, 1.3} (env E3_FACTORS overrides). E3_SEED: the input rotation's sign seed (default 0);
-E3_ROWSEED: which row sample (default 0) -- for the best-of-N seed test (seedtest.sh).
+E3_DAMP: LDLQ damping x mean diag(H) (default 0.01;
+exllamav3's sigma_reg default is 0.025). E3_ROWSEED: which row sample (default 0) -- for the best-of-N seed test (seedtest.sh).
 CODEBOOKS (comma list), each a 65536-entry table indexed by the 16-bit state, standardised to unit variance:
   mul1        exllamav3's mul1 (bytesum of state * 0x83DCD12D), in float
   mul1_i8     mul1 rounded to an int8 grid (+-127 = 3.5 sd), i.e. what an int8 WMMA would multiply
@@ -102,12 +103,12 @@ def run(layer, tensor, cbs, bits, rows):
         for K in bits:
             t0 = time.time(); best = None; F = tuple(float(v) for v in os.environ.get("E3_FACTORS", "1.0,1.15,1.3").split(","))
             # the scale factors' rows are independent given H: one LDLQ pass over all of them stacked
-            Qs = ldlq_trellis(torch.cat([Wr / (rms * f) for f in F], 0), Hr, cb, K)
+            Qs = ldlq_trellis(torch.cat([Wr / (rms * f) for f in F], 0), Hr, cb, K, float(os.environ.get("E3_DAMP", 0.01)))
             for i, f in enumerate(F):
                 r = e3.rel(Wr, Qs[i * rows:(i + 1) * rows] * rms * f, Hr)
                 if best is None or r < best[0]: best = (r, f)
             o = {"layer": layer, "w": tensor, "method": "trellis_" + name, "seed": int(os.environ.get("E3_SEED", 0)),
-                 "rowseed": int(os.environ.get("E3_ROWSEED", 0)), "bits": K, "bpw": K + 16 / Kd,
+                 "rowseed": int(os.environ.get("E3_ROWSEED", 0)), "damp": float(os.environ.get("E3_DAMP", 0.01)), "bits": K, "bpw": K + 16 / Kd,
                  "rel": best[0], "scale_f": best[1], "rows": rows, "N": N, "K": Kd, "sec": round(time.time() - t0, 1)}
             print(json.dumps(o), flush=True); out.append(o)
             if OUT:
