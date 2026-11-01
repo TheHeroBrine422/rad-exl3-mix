@@ -60,7 +60,8 @@ Open decisions are marked **[decide]**.
      logits at every position: there the head runs at full M (~10% of the linear FLOPs in eval profiles). Keeping
      it f16 keeps the evals faithful to serving.
    - So the head's cost is **decode bytes**: every generated token reads all 248k × 5120 weights. Its **K** stays a
-     solver option, priced by decode time; its activation mode does not.
+     solver option, priced like every tensor by KLD and bytes (decode time is checked at the end, not solved for);
+     its activation mode does not.
 6. **Embedding (a lookup, no GEMM, so no activation format):** options = V2's Lloyd/fwht128 tables (e1–e8) and a
    **trellis-coded embedding** from the requant, same quantizer as every other tensor but laid out so one row decodes
    alone (no rotation across rows); the solver picks by bytes vs KLD. Needs a row-decode gather kernel.
@@ -144,8 +145,8 @@ Open decisions are marked **[decide]**.
   sensitivity S and KLD at K1–8 from trace-based noise attribution; `measurement.json`: per-group 2→3-bit dKLD), and
   his recipes give ~22 tensors the top K and ~65 the next one at each size. Rank-correlate S with kfit2's
   sensitivities, and intersect his top-K tensors with the ones V2 takes from him: a large overlap means his trace
-  sees something our input-side proxy does not. His S is also a prior for options we have no measurements of
-  (the sub-2 Ks). And read where his SC calibration trace (self-sampled, ~250 × 2048 tokens) enters: the GPTQ
+  sees something our input-side proxy does not. (Done 2026-10-31: his S vs our fit Spearman 0.71, weak within families: not
+  used as a per-tensor prior; sub-2 options are priced from our own measurements.) And read where his SC calibration trace (self-sampled, ~250 × 2048 tokens) enters: the GPTQ
   Hessian, or only the allocation.
 - **Fused GEMMs force K ties:** his recipes tie k+v and gate+up to one K because his fast path runs them as one GEMM.
   If V3's time table measures fused launches (q/k/v, gate/up, GDN qkv/z), the solver must tie K and group size
@@ -162,7 +163,7 @@ Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`
 | scale gain per K and family (attn_output / ssm_out larger at ≥ 5 bits) | 0 to −4% | sweep (`quantize/gaintest.py`), then requant |
 | damping 0.005 for attention / GDN input projections | ~−0.5 to −1% | requant (`quantize/damptest.py`: −2…−6% on those tensors) |
 | K0 / K0.5 | large at < 2 bpw only | as half steps |
-| **YAQA output-side Hessians** (§7) | −15 to −30% | H_out collection (TP2 night[s]); quantizer support exists |
+| YAQA output-side Hessians (§7) | paper: −15 to −30%; **ours so far: worse** (gates 2, 2b) | full-token gate 2c running; diagonal-only output weighting next |
 
 All of these need a **requant**: K1–K6.5 in half steps is ~12 runs at ~1 h each on one card ≈ 12–14 h (two nights,
 or one TP2 night when both cards are available).
@@ -207,6 +208,20 @@ work overlaps it:
 3. Time table (all shapes × K × mode) on card 0.
 4. knap3 with the time constraint; first mixes; stream.
 5. Phase B requant once the off-card pieces work; options join the stream; final, long check, release.
+
+Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2026-10-31.md`):
+- **Before step 3 (one card slot):** time gate_up / down / gdn_in at full and half N (the board may time per TP2 rank)
+  at stock and 210 W, f16 and A8-g128, plus an M = 16–511 sweep (f16 vs iu8; "same speed below 512" is unmeasured).
+  One calibration point (all V1 entries share a kernel) cannot show per-shape ratio changes.
+- **Activation prices:** the E1b hook quantizes every prefill step with T > 16, V3 only M ≥ 512 (E1/E1c costs are
+  slight upper bounds); and activation costs were measured on a K6 base only. One E1b batch on a K2/K3 base, gated
+  at M ≥ 512 vs ungated, checks both.
+- **Before step 5:** requant one layer at K5/K6 with the int8-rounded codebook on the card and swap it in (expect ≈ the
+  float quant); rerun E3b's float-vs-int8 comparison with the widened scale search. Phase B is 1–2 nights.
+- **Selection and release hygiene:** freeze pick rules before held-out reads and log each ver3 read with the decision
+  it informed; smoke tests on fit/search slices only; reserve long verify docs for a later slice; record each
+  measured container's sha256 (the release must be byte-identical to what was measured); distinct op names for the
+  V3 plugin (kernel choice follows plugin file order); radiance #328 (split-KV row sum) joins #362 in the 1.15 port.
 
 ## 6b. Finer K: what to build (2026-10-31)
 
@@ -259,18 +274,22 @@ work overlaps it:
   end-to-end KL, H ≈ H_out ⊗ H_in, and LDLQ with error feedback on both axes. ~30% lower KL than LDLQ on QTIP trellis
   codes; Qwen3-8B 2-bit: KL 0.285 → 0.227 with 2K sequences (Sketch B, ~1 GPU-h at 8B) → 0.205 with 64K.
   **Our exllamav3 already has the quantizer side** (`ldlq_2hess`, `prepare_H_out`); only H_out is missing.
-  Reports of no gain elsewhere were on scalar int8 grids with GPTQ, not on a trellis. Cost is all in collecting H_out:
-  a bf16 backward over the qad pool (5.7M tokens ≈ 2.8K × 2K sequences, the paper's cheap setting), fp32 factors;
-  H_out is m×m per linear (gate_up 34816² fp32 = 4.8 GB each, ~0.4 TB for the model), so it runs in several passes over
-  layer groups, one or two TP2 nights. Expected −15…−30% KLD at ≤ 4 bpw: **the largest quality item in V3**.
+  Another competitor reported no gain (method unknown to us). Cost is all in collecting H_out: an fp32 backward over
+  qad windows (1,819 × 2048 = 3.7M tokens), fp32 sums; H_out is m×m for each of the 496 linears (gate and up separate:
+  17408² fp32 = 1.2 GB each, ~0.2 TB for the model, ~0.1 TB as triangles), so it runs in passes over layer groups.
+  The paper's −15…−30% is **unverified here: two gates so far came out worse than one-sided** (below).
   **Status (2026-10-31):** collection runs (`v3/yaqa/collect.py`: text model streamed onto two cards, sampled-label
   CE, |x|-weighted dy rows at 32 positions per sequence, all 496 trunk linears). Gate 1 passed (5.3 s per 2048-token
   sequence in bf16). Gate 2 with a bf16 backward failed: two-sided LDLQ on blocks 22/23 was +23% (K2) / +28% (K3)
   worse than one-sided. A bf16-vs-fp32 comparison on identical sequences showed why: the bf16 backward's rows are
   wrong for a minority of positions, increasingly toward early layers (H_out diagonal cosine vs fp32: 0.88 at
   layers 48–63, ~0.5 mid-depth, 0.36 at 0–15), and those rows are 3× too large, so they dominate H_out. Collection
-  must run with fp32 activations (30 s a sequence; the qad pool ≈ 15 h on two cards). Gate 2b (fp32, two output
-  regularisations) decides whether to collect.
+  must run with fp32 activations (30 s a sequence; the qad pool ≈ 15 h on two cards). **Gate 2b (fp32, 6,400 sampled
+  rows) failed too:** +17%/+19% worse at sigma_reg_out 0.025, +6%/+10% at 0.3 (K2/K3), trending toward one-sided.
+  **Gate 2c** (running): full-token sums over the same 200 windows (backward truncated at layer 22, ~22 s/seq). If it
+  fails, one more cheap test before dropping: **diagonal-only output weighting** (exllamav3 `--out_scales yaqa`,
+  or a row-weighted trellis as in PR #364), since a 17k diagonal is well estimated from rows already on disk while a
+  17408² matrix is not. If it passes, add a split-half check (two halves' H_out agree?) before any full collection.
 - **Teacher Intervention (arXiv 2302.11812):** a QAT technique → V4 (QAD), not V3.
 
 ## 8. Vision tower and DFlash2 drafter (2026-10-31; was hoped for V2)

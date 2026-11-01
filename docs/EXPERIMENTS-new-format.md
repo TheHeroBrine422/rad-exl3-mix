@@ -385,7 +385,7 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
     - explicit pairing for same-slice A/Bs (the slice offsets are already fitted);
     - fit→mix provenance for pred-vs-meas tracking;
     - Thompson exploration kept.
-- [ ] **V3: ours-only option set** (2026-10-30). Drop turboderp's containers as options. V3's K≥5 requant
+- [x] ~~**V3: ours-only option set** (2026-10-30).~~ SUPERSEDED (2026-10-31): DESIGN-v3 §1d keeps turboderp's tensors as options at every K. Drop turboderp's containers as options. V3's K≥5 requant
       with the int8-rounded codebook makes every option ours anyway, since turboderp's quants can't be requantized.
       - Keep their existing measurements in the fit, as data on the per-tensor sensitivities. Those don't depend on
         which quantizer made the tensor.

@@ -19,11 +19,9 @@ EXL3-V3 = integer compute.
   and delta-net input projections), scale gain (larger for attn_output / ssm_out at ≥5 bits).
 - Finer K (2026-10-31), all from one generalised trellis whose per-weight shift follows a repeating
   pattern (2,3,2,3 = K2.5; 2,3,3,3 = K2.75; any rational K = a/b):
-  - sub-1 K: K0 (drop / low-rank), K0.5;
-  - half steps K1.5 … K7.5;
-  - quarter steps (K2.25, K2.75, …) in the focus range;
-  - effectively continuous K per tensor (any a/b), the knapsack choosing from a dense menu;
-  - row-by-row K: a K per row slab within a tensor (rows sorted by sensitivity).
+  - quarter steps K0.25 … K5, half steps K5 … K8 (26 levels), K0 = drop;
+  - the same quarter steps for the embedding and, if row slabs do not pay, the LM head;
+  - row-by-row K for the LM head (rows sorted by sensitivity), under test.
   Expected (knapsack discretisation, exponential D(R)): whole → half steps ~−5% KLD, half → quarter ~−1.5% more,
   quarter → continuous < 1% more; row-slab K ~0.05 bit on large tensors (E3c). Each extra K is a quant run;
   kernels take the shift pattern as a parameter.
