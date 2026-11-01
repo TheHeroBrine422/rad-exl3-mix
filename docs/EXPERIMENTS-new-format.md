@@ -475,6 +475,9 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:50 CDT: **B19 closed: our K1 decode is bit-exact with exllamav3's** (`v3/e3/b19k1.py`: the plugin's
+  C oracle `exl3_trellis_decode` vs exllamav3's `reconstruct` on turboderp's SC 1.40 tensors: 4 K1, 4 K2, 4 K3 incl.
+  lm_head, 0 differing f16 values). The +12% of our 1.40 vs his chart is not a decode bug.
 - 2026-11-01 ~01:47 CDT: **D2 done: our proxy edge over turboderp is ~9% in-sample, the rest is real; damping holds.**
   Split-half input Hessians (layers 3/10/43, 1,200 non-verify windows by document parity), ours quantized on H_A at
   K4 / K6, scored on H_A / H_B / published H (`v3/yaqa/d2report.py`, data `v3/yaqa/data/d2-score.jsonl`). Ours /

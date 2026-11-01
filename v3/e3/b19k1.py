@@ -16,7 +16,13 @@ lib = ctypes.CDLL(SO)
 lib.exl3_trellis_decode.argtypes = [ctypes.c_void_p, ctypes.c_int64, ctypes.c_int64, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 lib.exl3_trellis_decode.restype = ctypes.c_int
 from exllamav3.ext import exllamav3_ext as ext
-ix = json.load(open(f"{TD}/model.safetensors.index.json"))["weight_map"]
+if os.path.exists(f"{TD}/model.safetensors.index.json"):
+    ix = json.load(open(f"{TD}/model.safetensors.index.json"))["weight_map"]
+else:                                           # single-file exports
+    import glob as _g
+    ix = {}
+    for fn in sorted(_g.glob(f"{TD}/*.safetensors")):
+        with safe_open(fn, "pt") as f: ix.update({k: os.path.basename(fn) for k in f.keys()})
 keys = sorted(k[:-len(".trellis")] for k in ix if k.endswith(".trellis"))
 byK = {}
 for key in keys:
