@@ -28,7 +28,10 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     H_in = Σ_t (Σ over the group's linears ||dy_t||²) x_t x_tᵀ per input group (q/k/v or GDN qkv/z,
                     o_proj / out_proj, gate/up, down), positions 16 on, fp32 CPU sums, written next to the snapshots as
                     OUTDIR/hin[-snapN]/<ourq input-Hessian name>.safetensors (the challenge layout: hessian_upper,
-                    metadata k / rows) for ourq.py --hin."""
+                    metadata k / rows) for ourq.py --hin.
+     YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
+                    top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
+                    sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
 import json, math, os, sys, time
 sys.path.insert(0, "/data/yaqa/pylib")
 import numpy as np, torch
@@ -222,6 +225,11 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     ids = torch.from_numpy(toks[wins[s]:wins[s] + L].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
     state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
+    PROF = int(os.environ.get("YAQA_PROFILE", 0)) == done + 1
+    if PROF:
+        from torch.profiler import profile, ProfilerActivity
+        prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True); prof.__enter__()
+    for i in range(2): torch.cuda.synchronize(i)
     ts = time.time()
     emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(not TRUNC)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
@@ -235,7 +243,20 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
                 y = torch.multinomial(torch.softmax(model.lm_head(h).float(), -1), 1)[:, 0]
         ys.append(y)
         loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
+    for i in range(2): torch.cuda.synchronize(i)
+    t_fwd = time.time() - ts
     loss.backward()
+    for i in range(2): torch.cuda.synchronize(i)
+    t_bwd = time.time() - ts - t_fwd
+    t_j = time.time()
+    if FULL: join_full()
+    t_wait = time.time() - t_j
+    if PROF:
+        prof.__exit__(None, None, None)
+        with open(f"{OUT}/profile.txt", "w") as fh:
+            fh.write(prof.key_averages().table(sort_by="cuda_time_total", row_limit=40) + "\n\n")
+            fh.write(prof.key_averages().table(sort_by="cpu_time_total", row_limit=25))
+        prof.export_chrome_trace(f"{OUT}/profile.json")
     dt = time.time() - ts
     if FULL: join_full()
     if FULL and not GATE and done + 1 in SNAPS: save_full(f"hout-snap{done + 1}")
@@ -250,7 +271,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         torch.cat(ys).cpu().numpy().astype(np.int32).tofile(f"{OUT}/.labels/{s:05d}.i32")
         os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
-    print(f"seq {s}: {dt:.1f}s, {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
+    print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
     del hid, loss, emb
 if FULL and not GATE: save_full()
