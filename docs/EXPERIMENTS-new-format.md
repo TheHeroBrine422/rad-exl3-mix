@@ -509,7 +509,9 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   (~90 card-h at today's speed). CPU fracsweep below K1: rel error K0.5 0.227, K0.75 0.137, K1 0.089 (2.3-2.5x per bit),
   so sub-1 is a usable curve. Also today: search slices capped at 2k positions, held-out 8k (`eval/capstudy.py`:
   ~27% less noise per GPU-second, calls agree 0.993-0.997); damping sweep kept (per-tensor winners agree only
-  65-70% across levels); upstream's output-scale test flags up_proj in ~18 of 47 layers (L26-47), gate ~never.
+  65-70% across levels); upstream's output-scale test (`v3/e3/osr/osr.py`, all 64 layers, `v3/e3/data/osr.jsonl`) flags up_proj in
+  35 of 64 layers (nearly all of L26-63) and gate_proj in 17 (L49-63, L0, L2): a paired swap test decides it before the
+  requant.
 - 2026-11-01 ~01:25 CST: **Night repairs.**
   - **A4 timing was invalid:** `/root/ntbench` (Oct 29) predates the T2 / NFQ struct fields, so both arms ran the
     fused NT kernel (identical hashes, no wdec kernels in the profile). Rebuilt as `/data/bench/ntbench2`; rerun in
