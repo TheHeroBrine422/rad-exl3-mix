@@ -8,6 +8,10 @@ OUTDIR becomes an EXL3 export radiance's exl3 import reads (src=OUTDIR): config.
 model.safetensors.index.json + one shard per layer (q-LNN.safetensors, q-head.safetensors). Each shard is written
 whole when its layer is done, so a run can be resumed: layers whose shard exists are skipped. proxy.jsonl beside
 them holds exllamav3's own proxy error per tensor.
+Every shard carries a code stamp in its metadata ("ourq_stamp": a hash of this file, exllamav3's quantize.py, the
+--frac-ext sources and every result-affecting argument; STAMP_SRC lists the inputs in OUTDIR/stamp.json). A resume
+refuses to mix stamps (OURQ_MIXED=1 overrides); shards without a stamp (written before 2026-11-01) are accepted with a
+warning.
 
 Run in $RXM_VENV (torch ROCm + exllamav3 built for gfx1201)."""
 import argparse, json, os, struct, sys, time
@@ -191,16 +195,50 @@ if GAINS:
     def _gss(*x, **k):
         g_, m_ = _orig_gss(*x, **k); return g_ * GAIN[0], m_
     _Q.g_scale_gss = _gss
+# ---- code stamp (mining merge B13): never resume a run with different code or settings
+import hashlib, glob
+def _stamp():
+    h = hashlib.sha256(); src = []
+    files = [os.path.abspath(__file__), _Q.__file__]
+    if a.frac_ext:
+        files += sorted(f for e in ("cu", "cuh", "cpp", "h", "py") for f in glob.glob(f"{a.frac_ext}/**/*.{e}", recursive=True))
+        files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac", "*.py")))
+        files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3cb", "*")))
+    for f in files:
+        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
+    h.update(json.dumps(keep, sort_keys=True).encode())
+    return h.hexdigest()[:16], src, keep
+STAMP, STAMP_SRC, STAMP_ARGS = _stamp()
+def _shard_stamp(f):
+    with open(f, "rb") as fh:
+        n = struct.unpack("<Q", fh.read(8))[0]; return (json.loads(fh.read(n)).get("__metadata__") or {}).get("ourq_stamp")
+def resume_ok(shard):
+    """True: the shard is done and was made by this code / settings. Exits on a mismatch."""
+    if not os.path.exists(shard): return False
+    st = _shard_stamp(shard)
+    if st is None: print(f"warning: {os.path.basename(shard)} has no code stamp (pre-2026-11-01): resumed as is", flush=True)
+    elif st != STAMP and not os.environ.get("OURQ_MIXED"):
+        sys.exit(f"{shard}: stamp {st} != this run's {STAMP} (code or settings changed): refusing to resume; "
+                 f"new OUTDIR, or OURQ_MIXED=1 to override")
+    return True
+_sj = os.path.join(a.o, "stamp.json")
+_prev = json.load(open(_sj)) if os.path.exists(_sj) else []
+if not _prev or _prev[-1]["stamp"] != STAMP:
+    json.dump(_prev + [{"stamp": STAMP, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": STAMP_ARGS,
+                        "sources": STAMP_SRC}], open(_sj, "w"), indent=1)
+print(f"code stamp {STAMP}", flush=True)
+
 log = open(os.path.join(a.o, "proxy.jsonl"), "a")
 lo, hi = map(int, a.layers.split("-"))
 if not a.only_head:
     for l in range(lo, hi + 1):
         shard = os.path.join(a.o, f"q-L{l:02d}.safetensors")
-        if os.path.exists(shard): continue
+        if resume_ok(shard): continue
         t0 = time.time(); out = {}
         for gi, (hn, keys) in enumerate(layer_plan(l)):
             out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
-        save_file(out, shard + ".part"); os.replace(shard + ".part", shard)
+        save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
         # drop the checkpoint shard handles (their mapped pages piled up to ~23 GB over a run: K8 OOM, 2026-10-30)
         del out; _open.clear(); import gc; gc.collect(); torch.cuda.empty_cache()
         rss = next((l.split()[1] for l in open("/proc/self/status") if l.startswith("RssAnon")), "?")
@@ -208,8 +246,8 @@ if not a.only_head:
         write_index()
 if a.head or a.only_head:
     shard = os.path.join(a.o, "q-head.safetensors")
-    if not os.path.exists(shard):
+    if not resume_ok(shard):
         out = quantize_group("lm_head.input", ["lm_head"], 9999, log)
-        save_file(out, shard + ".part"); os.replace(shard + ".part", shard)
+        save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
 write_index()
 print("done", flush=True)

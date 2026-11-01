@@ -29,4 +29,12 @@ EXL3-V3 = integer compute.
   than token frequency predicts and hurt multilingual text (+40% KLD on the guard slice), for an estimated 0–3% gain.
 - Backlog: 2-tier head (~2%), residual re-ranker with more data.
 - Vision tower and DFlash2 drafter in the containers (V2 is text-only).
+
+## EXL3-V3.5 (between V3 and QAD)
+- Sub-1 K (K0.25–0.75, a salted 0-bit read in the quantizer and every decode kernel) and K0 (drop the tensor or a
+  small low-rank stand-in), for the < 2 bpw sizes. Before QAD because low-bit quants are where healing should gain
+  the most, so they are the natural QAD targets and their menu should exist when V4 starts.
+- First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
+
+## EXL3-V4
 - QAD / scale-only healing: not before V3 is done.

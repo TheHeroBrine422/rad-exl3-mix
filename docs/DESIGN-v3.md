@@ -193,7 +193,7 @@ Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`
 | row-slab LM head: a K per run of 128-row blocks, vocab rows sorted by the head's Fisher diagonal (~400 rows hold half of it, one block 39%) | under test | a few head GEMMs + a gather in the plugin; heads quantized at half steps as the baseline |
 | scale gain per K and family (attn_output / ssm_out larger at ≥ 5 bits) | 0 to −4% | sweep (`quantize/gaintest.py`), then requant |
 | damping 0.005 for attention / GDN input projections | ~−0.5 to −1% | requant (`quantize/damptest.py`: −2…−6% on those tensors) |
-| K0 / K0.25–0.75 | < 2 bpw only; **backlog** (2026-11-01) | salted 0-bit read in quantizer + every decode kernel |
+| K0 / K0.25–0.75 | < 2 bpw only; **V3.5** (2026-11-01) | salted 0-bit read in quantizer + every decode kernel |
 | YAQA output-side Hessians (§7) | paper: −15 to −30%; **ours so far: worse** (gates 2, 2b) | full-token gate 2c running; diagonal-only output weighting next |
 
 All of these need a **requant**: K1–K6.5 in half steps is ~12 runs at ~1 h each on one card ≈ 12–14 h (two nights,
@@ -276,7 +276,7 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 
 - Build the trellis generically once (per-position shift pattern → any rational K). **Menu: quarter steps K1–K5,
   half steps K5–K6.5** (V3 stops below 7 bpw; K7 / K8 from existing quants). Quantize in order of use: 2.25–4.75,
-  then 1.0–2.0, then 5.5–6.5. **Sub-1 K (K0.25–0.75) and K0: backlog, not in the V3 ladder (decided 2026-11-01).**
+  then 1.0–2.0, then 5.5–6.5. **Sub-1 K (K0.25–0.75) and K0: V3.5, not in the V3 ladder (decided 2026-11-01).**
   They only matter for the < 2 bpw sizes, which are not a focus, and need the salted 0-bit read in the quantizer and
   every decode kernel. Caveat (mining merge B16): knap4's "nothing below K1.5 picked at 2.5" came from a menu with
   no sub-1 options; the cheap check before reviving them is proxy-priced K0.5 / K0.75 options in knap4 at 2.0–2.5. Heads at half steps (one K step of the head is 0.047 bpw; a half step
@@ -364,7 +364,7 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 
 - YAQA output-side Hessians: bf16 forward + backward over the qad pool, a full TP2 night; time it once V3.0 works.
 - Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
-- Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): only for < 2 bpw; revive only if
-  proxy-priced options earn picks in knap4 at 2.0–2.5.
+- Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): **V3.5** (user, 2026-11-01), before
+  QAD, since sub-2 quants are the natural QAD targets. First check: proxy-priced options in knap4 at 1.5–2.5 bpw.
 - V4 healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
   of them (on a proxy metric). Start scale-only healing on late layers, judge on verify-pool KLD.
