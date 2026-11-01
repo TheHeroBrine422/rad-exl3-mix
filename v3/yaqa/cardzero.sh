@@ -52,7 +52,7 @@ else log "E2E FAIL at headsim (see e2e.json.log): stop"; trap - EXIT; exit 1; fi
 a=$($B/ntbench2 $SO 2048 34816 5120 4 5 1 | tail -1); b=$(NFQ_MASK=8 $B/ntbench2 $SO 2048 34816 5120 4 5 1 | tail -1)
 log "sanity f16:  $a"; log "sanity nfq8: $b"
 ha=$(echo "$a" | grep -o 'out-hash [0-9a-f]*'); hb=$(echo "$b" | grep -o 'out-hash [0-9a-f]*')
-if [ -n "$ha" ] && [ "$ha" != "$hb" ]; then
+if [ -n "$ha" ] && [ -n "$hb" ] && [ "$ha" != "$hb" ]; then
   mv -f $B/a4time.jsonl $B/a4time-invalid.jsonl 2>/dev/null
   NB=$B/ntbench2 $B/a4time.sh $B/a4time.jsonl >> $B/a4time.log 2>&1
   python3 $B/a4report.py $B/a4time.jsonl $B/speedcal-stock.jsonl > $B/a4report.txt 2>&1
