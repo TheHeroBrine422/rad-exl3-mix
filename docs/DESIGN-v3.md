@@ -219,6 +219,9 @@ work overlaps it:
   score them from there, `score_from`). ver3 / ver4 are drawn ONLY from never-used verify docs + the moved ones
   (`calib_slice.py ... verify` with `POOLS=pools-v3.json EXCLUDE_GOLDEN=<every existing golden>`), disjoint from each
   other, category mix matched to the corpus; one moved trace each. Every qad collection reads pools-v3 (collect.py).
+- **Document-use ledger:** `eval/pools/ledger.jsonl` (one line per document and use: role, model line, decisions,
+  scored range; `mkledger.py` + `ledger-roles.json`). New slices get a role entry and a re-run; non-golden uses (QAD
+  training, new Hessian collections) are appended by hand. Pools after V4 are drawn per comparison from the ledger.
 - **Public: reports only, never selects** -- not as a finalist tie-break either. **Gate pass rules are written
   before the run** and not changed after seeing its result (the fracsmoke re-judgement was a fix to a wrong check,
   recorded as such; do not repeat).
