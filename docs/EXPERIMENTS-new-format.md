@@ -415,6 +415,23 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ---
 
+## Candidate experiments (2026-10-31; queue nothing until the YAQA decision)
+
+Scope: sizes below 6.00 bpw only (6.00 is already 0.00076). Stop exploring when a full round finds nothing worth
+more than ~1% KLD at the target sizes; then freeze menu + settings and build.
+
+- [ ] **int8 codebook for K ≥ 5** (planned): write, validate one layer (DESIGN §6 A3), then requant K5–8 (~6–7 h).
+- [ ] **Activation cost on a low-K base** (mining B1/B2): E1b on a K2/K3 base, int path gated at M ≥ 512 vs not (~1 h card).
+- [ ] **Speed calibration** (mining A4/B7): key shapes at full/half N, stock/210 W, M = 16–511 (minutes, existing bench).
+- [ ] **Best-of-N rotation seeds** (new): pick each tensor's sign/rotation seed from 2–4 by proxy; free at inference.
+      CPU test of the per-tensor seed spread first (trellis.py with other seeds), expect 1–3% if anything.
+- [ ] Depends on tonight: YAQA count test / full collection (gate 2c/2e); gradient-weighted H_in if it wins;
+      SC-style (model-written text) input Hessians or **sequential calibration** (each layer on the quantized
+      model's inputs, as exllamav3's converter does; we use bf16-model Hessians) if low damping doesn't explain
+      turboderp's K6 win; quarter-step heads if the slab head fails; row-weighted trellis (PR #364) if gate 2d helps.
+- [ ] Blocked / later: sub-1 K and K0 (needs the salted 0-bit read); fused-GEMM K ties (after the time table);
+      radiance #328 check at the 1.15 port.
+
 ## Log (newest first)
 
 - 2026-10-31 ~20:40 CT: **Embedding menu sweep done** (`v3/e3/emb/run3.sh`, Thor, 4096 rows, `v3/e3/data/embmenu.jsonl`).

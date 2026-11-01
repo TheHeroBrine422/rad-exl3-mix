@@ -221,7 +221,9 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 - **Selection and release hygiene:** freeze pick rules before held-out reads and log each ver3 read with the decision
   it informed; smoke tests on fit/search slices only; reserve long verify docs for a later slice; record each
   measured container's sha256 (the release must be byte-identical to what was measured); distinct op names for the
-  V3 plugin (kernel choice follows plugin file order); radiance #328 (split-KV row sum) joins #362 in the 1.15 port.
+  V3 plugin (kernel choice follows plugin file order). radiance #328 (split-KV row sum in libr4d attention) is an
+  open PR, not in 1.15.0: our plugins don't implement attention, so check during the port whether our shapes take
+  the split-KV path, and if so A/B it like #362.
 
 ## 6b. Finer K: what to build (2026-10-31)
 
