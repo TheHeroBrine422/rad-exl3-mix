@@ -35,9 +35,9 @@ Open decisions are marked **[decide]**.
   is ~+45%, so A4 only pays at the bottom. Needs int4-grid codes (codebook; E3: ×1.01 at K2, ×1.07 at K3) and an
   iu4 tile with the same fold.
 - **Head:** f16. At serving prefill it runs once (last token); it is not in `gemm_us`.
-- **GDN a/b projections** (N = 48 and 128, bf16) run as separate `gemm_nt` ops beside the trellis path, each
-  re-reading the activation tile. Measure their share of the layer at M = 2048 (`--profile-ops`); if > ~2%, merge
-  them into one N = 176 op or fold them into the qkv tile.
+- **GDN a/b projections** (N = 48 and 128, bf16) stay separate `gemm_nt` ops, f16, no A8 path. **Decided
+  2026-11-01 (mining merge D6):** measured share 0.27–0.4% of the step (below the ~2% bar), and a merged N = 176 op
+  would misalign (10,416 / 176). Closed.
 - **Decode (M = 1–16):** keep exl3r4d's GEMV; measure it against bytes/bandwidth (4 bpw: 29.4 tok/s ≈ 63% of
   bandwidth). IQR-V3's computed-code GEMV is a reference for later.
 - **Open check first:** E2 measured −12…−29% for group scales at 128×128; re-measure with the fold above (activation
@@ -108,6 +108,20 @@ Open decisions are marked **[decide]**.
    - a per-container **census** of the resolved (kernel, K pattern, mode, group) per tensor, diffed against the
      `.mix`: a mis-parsed `act=` that silently falls back to f16 is correct and slower, invisible to KLD;
    - the loaded plugin's build hash printed (a stale `.so` was benchmarked as new more than once in V1).
+   Added from the V1/V2 bring-up (mining merge A5; each of these failed silently, or only on long / TP2 runs):
+   - launch structs value-initialized with a `static_assert` on their size, plus a >= 4096-token multi-replay run
+     (struct padding and graph replay broke V1);
+   - one stored weight form across every M band: declare-time checks at M = 1, 16, 17, 511, 512, 2048;
+   - operand arity checked against the op schema;
+   - the harness fails when it checked 0 cases (it reported "0 checked" as a pass before);
+   - two or more scratch / split-K sizes (a chunk-size change moved KLD +1.5% while op-level checks passed);
+   - `RADIANCE_OP_ORACLE` and `RADIANCE_OP_REPEAT` on a real container, not only synthetic operands;
+   - device code present for gfx1201 in the bundle (a missing kernel fell back silently);
+   - a finite-value assert on outputs; fits and reports refuse non-finite rows instead of skipping them;
+   - refusal of any tile width other than 16K words (half-K widths 16K + 8 were accepted once);
+   - the epilogue's fused `v_fma_mixlo_f16` rounding compared against the reference store;
+   - K7 / K8 and every fractional pattern exercised at least once;
+   - TP2 declare-shape checks (a wrong shard declaration ran finite and wrong), only if V3 ships TP2.
 5. **Activation-cost model:** CPU proxy (`aqproxy.py` on activation dumps) for the shape, ~30 real probes to
    calibrate (as E1c), the stream refines with whole mixes.
 6. **Submission size:** leaderboard scoring is expensive (tens of minutes a checkpoint). Score every variant
@@ -175,11 +189,11 @@ Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`
 
 | item | est. gain | needs |
 |---|---|---|
-| fractional K: one generic trellis (shift pattern, any K = a/b); quarter steps K0.25–K5, half steps K5–K8 (26 levels), K0 = drop | −5 to −7% (more below 2 bpw) | quantizer + decode kernels take the pattern as a parameter; one quant run per K |
+| fractional K: one generic trellis (shift pattern, any K = a/b); quarter steps K1–K5, half steps K5–K8 (sub-1 levels: backlog) | −5 to −7% (more below 2 bpw) | quantizer + decode kernels take the pattern as a parameter; one quant run per K |
 | row-slab LM head: a K per run of 128-row blocks, vocab rows sorted by the head's Fisher diagonal (~400 rows hold half of it, one block 39%) | under test | a few head GEMMs + a gather in the plugin; heads quantized at half steps as the baseline |
 | scale gain per K and family (attn_output / ssm_out larger at ≥ 5 bits) | 0 to −4% | sweep (`quantize/gaintest.py`), then requant |
 | damping 0.005 for attention / GDN input projections | ~−0.5 to −1% | requant (`quantize/damptest.py`: −2…−6% on those tensors) |
-| K0 / K0.5 | large at < 2 bpw only | as half steps |
+| K0 / K0.25–0.75 | < 2 bpw only; **backlog** (2026-11-01) | salted 0-bit read in quantizer + every decode kernel |
 | YAQA output-side Hessians (§7) | paper: −15 to −30%; **ours so far: worse** (gates 2, 2b) | full-token gate 2c running; diagonal-only output weighting next |
 
 All of these need a **requant**: K1–K6.5 in half steps is ~12 runs at ~1 h each on one card ≈ 12–14 h (two nights,
@@ -260,9 +274,12 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 
 ## 6b. Finer K: what to build (2026-10-31)
 
-- Build the trellis generically once (per-position shift pattern → any rational K). **Menu (2026-10-31): quarter steps
-  K0.25–K5, half steps K5–K8**, 26 levels, ~285 GB of trunk quants. Quantize in order of use: 2.25–4.75, then
-  1.0–2.0, then 5.5–8, then the sub-1 levels. Heads at half steps (one K step of the head is 0.047 bpw; a half step
+- Build the trellis generically once (per-position shift pattern → any rational K). **Menu: quarter steps K1–K5,
+  half steps K5–K6.5** (V3 stops below 7 bpw; K7 / K8 from existing quants). Quantize in order of use: 2.25–4.75,
+  then 1.0–2.0, then 5.5–6.5. **Sub-1 K (K0.25–0.75) and K0: backlog, not in the V3 ladder (decided 2026-11-01).**
+  They only matter for the < 2 bpw sizes, which are not a focus, and need the salted 0-bit read in the quantizer and
+  every decode kernel. Caveat (mining merge B16): knap4's "nothing below K1.5 picked at 2.5" came from a menu with
+  no sub-1 options; the cheap check before reviving them is proxy-priced K0.5 / K0.75 options in knap4 at 2.0–2.5. Heads at half steps (one K step of the head is 0.047 bpw; a half step
   halves the rounding the trunk has to absorb); quarter-step heads are the fallback if the row-slab head (§2) fails
   (a quarter step = 0.012 bpw, near the trunk's own granularity; cost: head quant runs only).
 - **The quantizer side already exists for K ≥ 1 (found 2026-10-31):** exllamav3 1.6.3 (the build on the GPU box)
@@ -347,5 +364,7 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 
 - YAQA output-side Hessians: bf16 forward + backward over the qad pool, a full TP2 night; time it once V3.0 works.
 - Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
+- Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): only for < 2 bpw; revive only if
+  proxy-priced options earn picks in knap4 at 2.0–2.5.
 - V4 healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
   of them (on a proxy metric). Start scale-only healing on late layers, judge on verify-pool KLD.

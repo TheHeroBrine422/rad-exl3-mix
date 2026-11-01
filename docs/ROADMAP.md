@@ -19,7 +19,7 @@ EXL3-V3 = integer compute.
   and delta-net input projections), scale gain (larger for attn_output / ssm_out at ≥5 bits).
 - Finer K (2026-10-31), all from one generalised trellis whose per-weight shift follows a repeating
   pattern (2,3,2,3 = K2.5; 2,3,3,3 = K2.75; any rational K = a/b):
-  - quarter steps K0.25 … K5, half steps K5 … K8 (26 levels), K0 = drop;
+  - quarter steps K1 … K5, half steps K5 … K6.5 (sub-1 K and K0: later, < 2 bpw only);
   - the same quarter steps for the embedding and, if row slabs do not pay, the LM head;
   - row-by-row K for the LM head (rows sorted by sensitivity), under test.
   Expected (knapsack discretisation, exponential D(R)): whole → half steps ~−5% KLD, half → quarter ~−1.5% more,
