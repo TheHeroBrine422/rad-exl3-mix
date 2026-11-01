@@ -8,7 +8,7 @@ Open decisions are marked **[decide]**.
 - **Speed:** the board scores trunk GEMM time per decoder layer at 2048 tokens (`gemm_us`). EXL3 (V1/V2 kernel):
   ~8,030 µs. IQR-V3: 4,935–5,236. FP8: 4,901. Target: **≤ ~5,200 µs at every size**, i.e. ~1.55× faster prefill GEMMs,
   at V2's KLD or better. At ≤ 2.5 bpw, beat IQR-V3's ~4,935 µs: that needs A4 on part of the trunk.
-- **Sizes:** ≤ 7.5 bpw (above that V2 is effectively lossless; K7/K8 stay f16 anyway).
+- **Sizes:** below 7 bpw (user, 2026-11-01); 7.0 / 7.5 / 8.0 stay V2. Focus below 6 bpw.
 - **Hardware:** card 0 only (03:00.0, PCIe x16), TP1. TP2 only at times (when both cards are available).
 - **Not in V3:** QAD (V4), vocab-tiered embedding and frequency-tiered head (dropped; a Fisher-driven row-slab
   head is under test, §2).
@@ -17,7 +17,9 @@ Open decisions are marked **[decide]**.
 
 - **W8A8 on int8 WMMA** (iu8 ~323 TOPS dense, E2 ~255 TOPS real at M ≥ 1024 vs our f16 path ~130–137):
   - **Weights:** EXL3 trellis codes as stored; the decoded mul1 value rounded to int8 (fixed global factor). E3:
-    ×1.000–1.004 proxy error at K2–6, so **no requant needed for the int8 path** at K ≤ 6. K7/K8 keep the f16 tile.
+    ×1.000–1.004 proxy error at K2–6 *when the trellis is searched with the rounded codebook*; post-hoc rounding of
+    existing quants costs K5 +17%, K6 +60% (E4). So V3 requantizes everything with `--codebook i8` (§1c-bis). K7/K8
+    keep the f16 tile.
   - **Activations:** rotated (same Hadamard), int8 with one scale per (token, 128 inputs). E1b on K6: g128 costs
     +0.00005 KLD (~5%), per-token +0.00047.
   - **Fold (IQR-V3's, the key to FP8 speed):** the K loop sees no per-row weight scale. Per 128-input block: one
@@ -28,7 +30,8 @@ Open decisions are marked **[decide]**.
 - **A4 (iu4; real GEMM ~490 vs ~255 TOPS for iu8, E2) as a per-tensor option at ≤ ~2.5 bpw.** E1b on K6 (base
   0.00101): all linears A4-g128 +0.030; per family (per-row) gate_up +0.025 / down +0.025 / gdn_in +0.023 / attn qkv
   +0.023 / ssm_out +0.013 / attn_out +0.0075; best found: down g64 +0.0038, gate_up g64 +0.008. At 2 bpw (KLD ~0.155)
-  A4-g64 on gate_up + down (~42% of the FLOPs) costs ~+8% KLD for an est. ~14% lower `gemm_us`; at 3 bpw the same
+  A4-g64 on gate_up + down (~67% of the trunk FLOPs by shapes: gate_up ~45%, down ~22%; the E1b table's 28/14% was
+  wrong, so the time saved is ~1.5x the old estimate) costs ~+8% KLD for an est. ~14% lower `gemm_us`; at 3 bpw the same
   is ~+45%, so A4 only pays at the bottom. Needs int4-grid codes (codebook; E3: ×1.01 at K2, ×1.07 at K3) and an
   iu4 tile with the same fold.
 - **Head:** f16. At serving prefill it runs once (last token); it is not in `gemm_us`.
@@ -81,7 +84,8 @@ Open decisions are marked **[decide]**.
 9. **Speed objective = real-world prefill time** (2026-10-31). Per option, measured on card 0 at M = 2048
    (the recommended chunk), summed over the trunk; the head (last token only) and the embedding (one row a token)
    are ~0 in prefill, so the board's `gemm_us` and real prefill rank options the same (reports show both; `gemm_us`
-   calibrated on the V1 entries). **Decode is not in the solve:** at a given size it is ~bytes-bound and nearly fixed
+   calibrated on the V1 entries). **Decode is not in the solve:** at a given size it is nearly fixed (and measured
+   nearly flat in K below ~4 bpw -- a fixed per-token cost, not bytes: 32.5 tok/s at 1.40 vs 24 at 6.00)
    (the A8/A4 modes never run at decode M, and the K mix barely changes total bytes); decode work (GEMV per K and
    fractional pattern, the spec-decode narrow tile at M 4–16, head K) is done at the end on the chosen mixes.
 
@@ -280,8 +284,10 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 - Row-slab K (a K per 128-row slab inside a tensor): deferred for the trunk. E3c put its ceiling at ~0.05 bit, but
   E3c saw only the input-side Hessian, which cannot tell rows apart; the output-side Hessian (YAQA's H_out diagonal)
   can. Revisit if H_out shows large per-row sensitivity spread. Needs a K per slab and per-slab scales in the format.
-  **For the LM head it is being tested now** (the head's Fisher diagonal is exact and cheap: Σ p(1−p) from the bf16
-  golden's top-512, no backward), see §2.
+  **For the LM head it is being tested now** (the head's Fisher diagonal is cheap: Σ p(1−p) from the bf16 golden's
+  top-512 -- truncated, not exact; no backward). Result: −36…−40% head KL at K5–6 budgets (headsim). The head is
+  ~5–7% of total KLD by the log's own numbers (not 1.5–3%), so ≈ −2…−3% total at 3–5 bpw; add the rare-token guard
+  KL to the slab price (x1.2–1.5 at K5–6) and keep the K3 floor, see §2.
 
 ## 7. Outside research
 
