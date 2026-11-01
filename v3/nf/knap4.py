@@ -23,7 +23,13 @@ KLD model:
     exponent q, family factors phi, depth compounding P_l = P_{l-1}(1 + kappa_l X_l) + X_l, embedding level costs.
   - activations: additive, k_family x rel_out(tensor, bits, group) (E1c proxy, AQFACTORS calibrated on E1b KLDs).
 Time: GEMM time per prefill step of M = 4096 tokens (E2 table) + a weight-decode pre-pass; nonlinear ops are a fixed
-  8% of today's all-f16 step (eval profile: 92% of the time in the EXL3 GEMMs).
+  8% of today's all-f16 step (eval profile: 92% of the time in the EXL3 GEMMs). The LM head runs on the last token
+  only: no prefill time.
+  KN_SPEED=speedcal.jsonl: measured matmul cores instead of the E2 TOPS (v3/bench/speedcal.sh, TP1 shapes, M 4096,
+    per-token; the group penalty stays E2's ratio; attn_k / attn_v (1024 rows, not measured) take gdn_z's rate).
+  KN_A4=a4time.jsonl: measured whole paths (decode included) per shape and K (v3/bench/a4time.sh, M 4096): f16 = T2,
+    a8 per-token = the NFQ int8 path; a8 groups add the matmul penalty; a4 = the int8 path with its matmul swapped
+    for speedcal's iu4 core (no int4 kernel yet). K between measured points: linear; outside 2..6: clamped.
 Objective per (target bytes, lambda): min KLD + lambda * time_ms (lambda in KLD per ms), bytes strictly under the target.
   The per-layer stages minimise g_l X_l + A_l + lambda T_l, with g_l = dKLD/dX_l at the lambda = 0 solution of the same
   target (two passes), then the layered DP over 1 MiB buckets carries (P, A, T) exactly.
@@ -57,6 +63,24 @@ TOPS = {"a8": {0: 254, 1024: 225, 512: 220, 256: 210, 128: 185, 64: 153},
         "a4": {0: 488, 1024: 390, 512: 375, 256: 346, 128: 274, 64: 205}}
 TF16 = 135.0                                             # T2's f16 GEMM core, TFLOPS
 DEC_NS = float(os.environ.get("KN_DEC_NS", 0.006))       # weight-decode pre-pass, ns per weight per step (placeholder)
+FAMSHAPE = {"attn_qg": "attn_qg", "ssm_qkv": "gdn_qkv", "ssm_z": "gdn_z", "ffn_gate_up": "gate_up", "ffn_down": "down",
+            "attn_output": "attn_o", "ssm_out": "ssm_out", "attn_k": "gdn_z", "attn_v": "gdn_z"}
+CORE = {}                                                 # (kern f16/iu8/iu4, speedcal shape) -> TOPS
+if os.environ.get("KN_SPEED"):
+    for l in open(os.environ["KN_SPEED"]):
+        d = json.loads(l)
+        if "ms" in d and d["split"] == "tp1" and d["M"] == 4096: CORE[(d["kern"], d["shape"])] = 2.0 * d["M"] * d["N"] * d["K"] / d["ms"] / 1e9
+PATH = {}                                                 # (path f16/nfq8, speedcal shape, bits) -> ms at M 4096, per weight
+if os.environ.get("KN_A4"):
+    for l in open(os.environ["KN_A4"]):
+        d = json.loads(l)
+        if "ms" in d and d["M"] == 4096: PATH[(d["path"], d["shape"], d["bits"])] = d["ms"] / (d["N"] * d["K"])
+def path_ms(path, sh, bits, NK):   # measured whole-path time for N*K weights at bits (linear in K, clamped)
+    ks = sorted(b for (p, s_, b) in PATH if p == path and s_ == sh)
+    if not ks: return None
+    b = min(max(bits, ks[0]), ks[-1]); lo = max(k for k in ks if k <= b); hi = min(k for k in ks if k >= b)
+    v = PATH[(path, sh, lo)] if lo == hi else PATH[(path, sh, lo)] + (b - lo) / (hi - lo) * (PATH[(path, sh, hi)] - PATH[(path, sh, lo)])
+    return v * NK
 
 md = json.load(open(MJ))
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -138,17 +162,36 @@ def wcost(t, c, e):
     fam = t["family_of"].get(c); ph = math.exp(phi.get(fam, 0.0)) if fam in phi else 1.0
     return t["s"] * t["eb"] * (ph * e / t["eb"]) ** q
 
-def gemm_ms(N, K, mode, g):
+def gemm_ms(N, K, mode, g, fam=None):
     fl = 2.0 * M * N * K
+    sh = FAMSHAPE.get(fam)
+    if CORE and sh:
+        kern = {"f16": "f16", "a8": "iu8", "a4": "iu4"}[mode]
+        tops = CORE[(kern, sh)] * (1.0 if mode == "f16" else TOPS[mode][g] / TOPS[mode][0])
+        return fl / (tops * 1e12) * 1e3
     return fl / (TF16 * 1e12) * 1e3 if mode == "f16" else fl / (TOPS[mode][g] * 1e12) * 1e3
+
+def time_ms(t, mode, g, bits):
+    """prefill time of tensor t in a mode: measured whole path (KN_A4) when there is one, else core + decode estimate"""
+    if t["w"] == "output.weight": return 0.0          # last token only
+    N, K = shape(t); fam = t["w"].split(".")[-2]; sh = FAMSHAPE.get(fam)
+    if PATH and sh:
+        if mode == "f16":
+            v = path_ms("f16", sh, bits, N * K)
+        else:
+            v = path_ms("nfq8", sh, bits, N * K)
+            if v is not None:   # swap the per-token int8 matmul for this mode / group's
+                v += gemm_ms(N, K, mode, g, fam) - gemm_ms(N, K, "a8", 0, fam)
+        if v is not None: return v
+    return gemm_ms(N, K, mode, g, fam) + N * K * DEC_NS * 1e-6
 
 def options(t):
     """[(mode, group, label, bytes, weight cost, act cost, time ms)] for one tensor"""
-    N, K = shape(t); o = []
-    dec = N * K * DEC_NS * 1e-6
+    N, K = shape(t); o = []; fam = t["w"].split(".")[-2]
     for c, (b, e, bits) in t["opts"].items():
-        o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, gemm_ms(N, K, "f16", 0) + dec))
-    if t["bf16_bytes"]: o.append(("f16", 0, "bf16", t["bf16_bytes"], 0.0, 0.0, gemm_ms(N, K, "f16", 0)))
+        o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, time_ms(t, "f16", 0, bits)))
+    if t["bf16_bytes"]: o.append(("f16", 0, "bf16", t["bf16_bytes"], 0.0, 0.0,
+                                   0.0 if t["w"] == "output.weight" else gemm_ms(N, K, "f16", 0, fam)))
     for c, (b, e, bits) in t["opts"].items():
         m = re.fullmatch(r"ours-K([\d.]+)", c)
         if not m or os.environ.get("KN_MODES") == "f16": continue
@@ -159,10 +202,10 @@ def options(t):
             for g in G:
                 a = AQ[t["w"]].get((bits_a, g))
                 if a is None: continue
-                o.append((mode, g, c, b, wcost(t, c, e * fK), a, gemm_ms(N, K, mode, g) + dec))
+                o.append((mode, g, c, b, wcost(t, c, e * fK), a, time_ms(t, mode, g, bits)))
     return o
 
-T_F16 = sum(gemm_ms(*shape(t), "f16", 0) + shape(t)[0] * shape(t)[1] * DEC_NS * 1e-6 for t in TS)   # today's path
+T_F16 = sum(time_ms(t, "f16", 0, 4) for t in TS)   # today's path (all f16; decode at K4 when measured)
 T_OTHER = T_F16 * 0.08 / 0.92
 
 def units_of_layer(l):
@@ -294,12 +337,16 @@ with open(OUT, "a") as f:
             modes = collections.Counter(f"{o[0]}{'' if o[0] == 'f16' else '-g' + str(o[1] or 'pt')}" for _, o in s["picks"])
             flops = collections.Counter()
             for i, o in s["picks"]:
+                if TS[i]["w"] == "output.weight": continue   # last token only: not prefill FLOPs
                 N, K = shape(TS[i]); flops[o[0]] += 2.0 * N * K
             tot = sum(flops.values())
             r = {"target": tg, "lambda": lam, "bpw": s["bytes"] * 8 / PARAMS, "kld": s["kld"], "kld_w": s["kld_w"],
                  "kld_a": s["kld_a"], "t_lin_ms": s["t_lin"], "t_f16_ms": T_F16,
                  "prefill_speedup": (T_F16 + T_OTHER) / (s["t_lin"] + T_OTHER), "emb": s["emb"],
                  "flop_share": {k: round(v / tot, 3) for k, v in flops.items()}, "modes": dict(modes.most_common())}
+            ps = collections.Counter()
+            for i, o in s["picks"]: N, K = shape(TS[i]); ps[o[2]] += N * K
+            pt = sum(ps.values()); r["param_share"] = {k: round(v / pt, 4) for k, v in ps.most_common()}
             r["name"] = f"nf-{tg:.2f}-l{lam:.0e}"
             if WDIR: write_set(WDIR, r["name"], s)
             f.write(json.dumps(r) + "\n"); f.flush()

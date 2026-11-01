@@ -475,6 +475,15 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~00:55 CT: **knap4 on the measured speed table** (`KN_SPEED=v3/bench/data/speedcal-stock.jsonl`, now
+  k4grid's default; `KN_A4=a4time.jsonl` swaps in whole measured paths with decode once A4 has run). Also fixed: the
+  LM head was timed at M 4096 (~77 ms, ~5% of the step) though prefill runs it on the last token only; flop shares
+  now exclude it. Measured f16 core ~116 TF (not 135), iu8 ~2.2x. Same picks and KLDs as before at 2.5 / 3.0 / 4.0
+  (the int8 choice was already saturated); all-int8 speedup estimate x1.65 -> x1.88, at +0.9% (3.0) / +5% (4.0)
+  KLD. Decode is still the placeholder (0.006 ns/weight): A4 decides whether x1.88 holds.
+- 2026-11-01: **Gate 2e MARGINAL rule** (decided before the verdict): both K negative (even at z ~ -0.5) -> a
+  blend test alpha*H_grad + (1-alpha)*H_plain (quants + evals only, ~40 min) before any 200/400-sequence
+  collection; either K positive -> drop.
 - 2026-11-01 ~00:45 CT: **D1 closed by reading the code: no auto-vs-always confound in gate 2d.** In exllamav3's
   `regularize`, output scales on auto differ from "always" only for tensors given an `out_sensitivity` (the gated-MLP
   path of convert.py); ourq.py never passes one. With a diagonal, the Hessian-derived scales replace the plain ones
