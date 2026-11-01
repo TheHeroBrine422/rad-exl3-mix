@@ -29,6 +29,10 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     o_proj / out_proj, gate/up, down), positions 16 on, fp32 CPU sums, written next to the snapshots as
                     OUTDIR/hin[-snapN]/<ourq input-Hessian name>.safetensors (the challenge layout: hessian_upper,
                     metadata k / rows) for ourq.py --hin.
+     YAQA_HSPLIT=L[,L..] -> forward only (D2): input Hessians x xᵀ of those layers' input groups (q/k/v or GDN qkv/z,
+                    o_proj / out_proj, gate/up; down_proj with HS_DOWN=1) from NSEQ windows of the NON-verify docs
+                    (pools-v3), split by document parity into OUTDIR/hA and OUTDIR/hB (challenge layout, ourq.py --hin /
+                    hproxy). The forward stops after the last needed module. GPU fp32 sums.
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
@@ -111,6 +115,59 @@ model.requires_grad_(False)
 model.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
 model.model.train()          # checkpointing is active in train mode; this model has no dropout
 print(f"loaded in {time.time() - t0:.0f}s; " + ", ".join(f"cuda{i} {torch.cuda.memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
+
+# ---- YAQA_HSPLIT=L[,L..]: forward-only split-half input Hessians (D2), then exit
+HSPLIT = [int(x) for x in os.environ.get("YAQA_HSPLIT", "").split(",") if x]
+if HSPLIT:
+    from safetensors.torch import save_file
+    DOWN = os.environ.get("HS_DOWN") == "1"
+    pv = json.load(open(os.environ.get("YAQA_POOLS", f"{W}/challenge/pools-v3.json")))["pool"]
+    hw = []                                   # (window start, half): every non-verify doc's windows, half = doc parity
+    for i, d in enumerate(meta["docs"]):
+        if pv[i] == "verify": continue
+        for a in range(0, d["tokens"] - L + 1, L): hw.append((int(off[i] + a), i % 2))
+    np.random.default_rng(SEED + 1).shuffle(hw)
+    ACC, CNT = {}, {}
+    def gname_of(l, mod):
+        p = f"model.language_model.layers.{l}"
+        if mod in ("self_attn.q_proj", "linear_attn.in_proj_qkv"): return f"{p}.input"
+        if mod in ("self_attn.o_proj", "linear_attn.out_proj"): return f"{p}.self_attn.o_proj.input" if "self_attn" in mod else f"{p}.linear_attn.out_proj.input"
+        if mod == "mlp.gate_proj": return f"{p}.post_attention.input"
+        if mod == "mlp.down_proj" and DOWN: return f"{p}.mlp.down_proj.input"
+        return None
+    cur = {"half": 0}
+    class Stop(Exception): pass
+    def hk(gn, last):
+        def h(mod, inp):
+            x = inp[0][0].float()
+            key = (cur["half"], gn)
+            if key not in ACC: ACC[key] = torch.zeros(x.shape[1], x.shape[1], device=x.device); CNT[key] = 0
+            ACC[key].addmm_(x.T, x); CNT[key] += x.shape[0]
+            if last: raise Stop()
+        return h
+    LMAX = max(HSPLIT)
+    for l in HSPLIT:
+        lay = model.model.layers[l]
+        for mname, m in lay.named_modules():
+            gn = gname_of(l, mname)
+            if gn: m.register_forward_pre_hook(hk(gn, l == LMAX and mname == ("mlp.down_proj" if DOWN else "mlp.gate_proj")))
+    print(f"hsplit: layers {HSPLIT}, {len(hw)} non-verify windows, taking {NSEQ}", flush=True)
+    dev0 = torch.device("cuda:0")
+    t_all = time.time()
+    with torch.no_grad():
+        for s in range(NSEQ):
+            w0, cur["half"] = hw[s]
+            ids = torch.from_numpy(toks[w0:w0 + L].astype(np.int64))[None].to(dev0)
+            try: model.model(input_ids=ids, use_cache=False)
+            except Stop: pass
+            if s % 50 == 0: print(f"seq {s}: {(time.time() - t_all) / (s + 1):.2f} s/seq", flush=True)
+    for (hf, gn), H in ACC.items():
+        d = f"{OUT}/h{'AB'[hf]}"; os.makedirs(d, exist_ok=True)
+        k = H.shape[0]; iu = torch.triu_indices(k, k, device=H.device)
+        save_file({"hessian_upper": H[iu[0], iu[1]].cpu().contiguous()}, f"{d}/{gn}.safetensors",
+                  metadata={"k": str(k), "rows": str(CNT[(hf, gn)]), "source": f"collect.py hsplit half {'AB'[hf]}"})
+    print(f"DONE hsplit {NSEQ} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)
+    sys.exit(0)
 
 # ---- hooks on every trunk linear
 lin = {name: m for name, m in model.model.layers.named_modules() if isinstance(m, torch.nn.Linear)}
