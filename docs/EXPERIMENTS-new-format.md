@@ -417,6 +417,18 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~20:20 CT: **Overnight queue (TP2 to ~13:00 CT Nov 1), all on iceman, ordered by locks:**
+  1. gate 2c (running) -> `gate2e.sh`: blocks 22/23 again with gradient-weighted H_in (`collect.py YAQA_HIN`); if 2c
+     passed also 400 sequences with snapshots at 100/200/400 and split halves (`hhalf.py`) = the sample-count test.
+  2. quarter-step smoke test, gate 2d, head rerun (card 0 / both).
+  3. `v3/levels/chain0.sh` (card 0): gain sweep (layers 3/10/43, K2/4/6) and high-K damping sweep (K6/8), then waits
+     for `/data/v3levels/settings.env` (default `--sigma-reg-in 0.005` at 2:30 AM CT) and builds the levels
+     K2.25…K4.75 (exports, trunk only).
+  4. `v3/levels/chain1.sh` (card 1): real trellis embedding K2–4 vs Lloyd e2–e5 on V2 6.00 (fit3 + ml); ours vs
+     turboderp K6 (even layers on an ours-K5 base: ours-K6 / his plain6.00 / ours-K6 at sigma 0.005), fit3.
+  Store index done: 53 packs; his plain6.00/5.00 packs are uniform K6/K5; 3–6 of his tensors per pack in some sizes
+  are byte-identical to another of his packs (counted once).
+
 - 2026-10-31 ~20:00 CT: **High-K half steps land on the curve** (`v3/e3/fracsweep-hi.sh`, colo, 18 tensors of layers
   0/10 (GDN), 11/63 (attention), 43 (MLP); scale search 0.85–1.75; `v3/e3/data/fracsweep-hi.jsonl`). Error / log-linear
   interpolation of the integer neighbours, median [range]: K5.5 0.997 [0.993, 1.042], K6.5 1.003 [0.980, 1.010], K7.5
