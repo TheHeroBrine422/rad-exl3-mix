@@ -64,8 +64,30 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   the 27B dense model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
 - Speed variants per size (fast / balanced from the final V3 fit), A4 variants if V3.5 shows a useful point.
 - Vision tower and DFlash2 drafter in the containers, if not already in V3.
+- **Disaggregated quantization (DQ, arXiv 2609.26333):** different compute formats (and optionally different weights)
+  for prefill and decode. The shared-weight form is what V3 already does (int8 activations only for prefill steps of
+  M >= 512, decode stays f16-activation); worth reading for their accuracy data. The separate-prefill-weights form
+  (compute-native prefill weights, streamed from SSD: "ODP") is a serving variant, not a board entry (the board
+  counts every stored tensor).
+- **Generation-quality check (looping):** KLD does not show repetition loops in long free generation. Compare our
+  quants with IQR-V3 at <= 4.5 bpw on long sampled / greedy generations (repetition rate, loop onset).
+- **Decode speed is the largest practical gap:** V2 decodes roughly 3x slower than IQR-V3 at TP1 (user's estimate,
+  ~30 vs ~100 tok/s; prefill ~1,500 vs ~2,500 tok/s). The V4 decode work (profile, then a decode-optimized kernel /
+  variant) matters more for real use than the board does.
 - **REAL-Q (arXiv 2609.00049), tested before QAD:** a measured trial on a few sizes, so V5 starts from the best
   non-trained quantizer.
+
+## Research method and scale (after V3)
+- **Small-model proxy for method research:** develop and screen quantizer / allocation ideas on a small model of the
+  same family (Qwen3.5-0.4B, or a 1-layer random-init model with Qwen3.8-27B's architecture), on the workstation GPU,
+  while the big runs use the GPU box; confirm only the winners on 27B. Caveats: sensitivities and speed results may
+  not transfer (different shapes), and it saves research time, not the final quantization / search GPU time.
+- **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
+  hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
+  so contributors never give shell access.
+- **Larger / MoE models (Qwen Flash, Qwen4):** need the bf16 reference logits and input Hessians of the full model --
+  feasible with SSD-streamed bf16 weights (the challenge author did it that way) or cloud hardware; quantization itself
+  can then run locally. Most of this pipeline applies to any recent LLM; MoE needs per-expert handling.
 
 ## Data (any time after V3)
 - Clean held-out text runs out after QAD (V5, trains on the qad pool). Options: reuse documents by their ledger record
