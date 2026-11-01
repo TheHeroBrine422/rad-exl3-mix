@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""prelim2.py RESULTS.jsonl TAG... -- the prelim KLD table (prelim-exl3-v2-kld.md format) for held-out ver1 results.
+"""prelim2.py RESULTS.jsonl TAG... -- a prelim KLD table (format of the removed docs/prelim-exl3-v2-kld.md, in git history) for held-out ver1 results.
 
 TAGs: w-... mixes (one per row). Columns: real bpw, ver1 KLD, top-1, the nearest IQR-V3 entries below / above in
 size (leaderboard), and 'vs leaderboard frontier': our ver1 KLD mapped to the leaderboard via the same EXL3-V1
