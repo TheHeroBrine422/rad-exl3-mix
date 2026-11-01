@@ -28,7 +28,7 @@ EOF
 )
 log "gate 2c verdict: $VERDICT (sigma_reg_out $SO)"
 cd ${RXM_WORK}
-export YAQA_FP32=1 YAQA_START=0 YAQA_FULL=22,23 YAQA_LABELS=$Y/rows32 YAQA_HIN=1 TRITON_CACHE_AUTOTUNING=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export YAQA_FP32=1 YAQA_START=0 YAQA_FULL=22,23 YAQA_LABELS=$Y/rows32 YAQA_HIN=1 TRITON_CACHE_AUTOTUNING=1
 if [ $VERDICT = PASS ]; then N=400; export YAQA_SNAP=100,200,400 YAQA_HALVES=1; else N=200; export YAQA_SNAP=100,200; fi
 if ! grep -q "^DONE" $Y/full64.log 2>/dev/null; then
   ( exec 8>${RXM_WORK}/card0.lock 9>${RXM_WORK}/card1.lock 7>${RXM_WORK}/ram.lock; flock 8; flock 9; flock -s 7
