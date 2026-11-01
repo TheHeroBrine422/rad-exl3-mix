@@ -24,6 +24,8 @@ idea is dropped.
   scale saves at high rate), sampling bias removed, 23 layers × all projections + head. *Result:* 0.000–0.0025
   bit/weight (MLP ≈ 0, worst tensor 0.006). *Conclusion:* dead; rotation + row/col scales already flatten the
   variance. Not tested: Hessian weighting, heavy tails, K ≤ 2. `quantize/amgm.py`, `logs/amgm.jsonl`.
+  *Retest 2026-10-31* (`v3/e3/gscale.py`, Hessian-weighted, real trellis + LDLQ, K0.5–2, G64/G128 8-bit scales):
+  raw gain 1.3–1.8% at equal K, so groups lose 8–20% at equal bits. Dead at low K too.
 - **Trellis (EXL3-style) token embedding instead of Lloyd** — 2026-10-29. Measured 4-bit Lloyd at ≈ +2% KLD at
   4.00 bpw vs IQR's trellis embedding ≈ +0.6% → at most ~1.5% total to win, and it needs a row-wise trellis gather
   kernel. *Deferred*; only reconsider for vocabulary-tiered embeddings (TODO: simulate both first).

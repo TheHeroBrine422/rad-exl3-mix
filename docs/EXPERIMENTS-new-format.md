@@ -417,6 +417,16 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~20:40 CT: **Embedding menu sweep done** (`v3/e3/emb/run3.sh`, Thor, 4096 rows, `v3/e3/data/embmenu.jsonl`).
+  One scale per row wins at equal bits at every K: G1024 is x1.015 worse at K1.5–2.5, x1.008 at K4, x1.003 at K5, even
+  only at K5.75; G512 x1.01–1.02 worse throughout. The quarter-step curve is smooth (x1.40 error per quarter step at
+  every K, i.e. ~3.9x per bit). **Embedding menu: quarter steps, one bf16 scale per row, no group options.** The
+  best scale factor reaches the search edge (1.35) for 0.6–3% of rows at K5–6 only.
+- 2026-10-31 ~20:40 CT: **Per-group weight scales stay dead at low K, Hessian-weighted** (`v3/e3/gscale.py`, colo, 12 of
+  16 tensors so far): the raw gain at equal K is only 1.3–1.8% (ratio 0.982–0.987 at K1–2; at K0.5 groups are even
+  slightly worse, 1.008–1.035), so after the 8/G-bit scale overhead groups lose: x1.08 (G128) / x1.17–1.20 (G64)
+  worse at equal bits, K1–2. Confirms the Oct-30 amgm null result where it was untested (weighted, K ≤ 2).
+
 - 2026-10-31 ~20:20 CT: **Overnight queue (TP2 to ~13:00 CT Nov 1), all on iceman, ordered by locks:**
   1. gate 2c (running) -> `gate2e.sh`: blocks 22/23 again with gradient-weighted H_in (`collect.py YAQA_HIN`); if 2c
      passed also 400 sequences with snapshots at 100/200/400 and split halves (`hhalf.py`) = the sample-count test.
