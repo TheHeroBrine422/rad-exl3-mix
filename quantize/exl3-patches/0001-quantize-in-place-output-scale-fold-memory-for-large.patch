@@ -1,0 +1,38 @@
+From 249f0adbf2da057eb9e2ded5ede6401d969c10be Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sat, 31 Oct 2026 23:57:49 +0000
+Subject: [PATCH 1/2] quantize: in-place output-scale fold (memory for large
+ heads), as deployed on iceman
+
+---
+ exllamav3/modules/quant/exl3_lib/quantize.py | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index 63f53591..c89b20ee 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -1631,15 +1631,17 @@ def refit_scales(weight: torch.Tensor, weight_q: torch.Tensor, H: torch.Tensor,
+             num[a:b] = (Q[:, a:b] * HW[:, a:b]).sum(0)
+             dn[a:b] = (Q[:, a:b] * HQ).sum(0)
+         c = torch.where(dn > 1e-30, num / dn.clamp(min = 1e-30), torch.ones_like(num))
+-        Q = Q * c.view(1, n)
++        Q = Q.mul_(c.view(1, n))   # in place: Q and HW are each (k, n), a full temporary copy does not fit for a large head
+         sv = sv * c.view(1, n)
+         # input-side scales
+         A = (Q @ Q.T) * H
+-        b_ = (Q * HW).sum(1)
++        b_ = torch.zeros(k, device = dev)
++        for a in range(0, n, chunk):
++            b_ += (Q[:, a:a + chunk] * HW[:, a:a + chunk]).sum(1)
+         A.diagonal().add_(1e-6 * A.diagonal().mean())
+         r = torch.linalg.solve(A, b_)
+         r = torch.where(torch.isfinite(r) & (r > 0), r, torch.ones_like(r))
+-        Q = Q * r.view(k, 1)
++        Q = Q.mul_(r.view(k, 1))
+         su = su * r.view(k, 1)
+     e_after = err(Q)
+     return Q, su, sv, e_before, e_after
+-- 
+2.56.0
+

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ourq.py -K K -o OUTDIR [--layers A-B] [--head] [--device N] -- our own EXL3 quantization of Qwen3.8-27B's linears at a
-uniform K (1..8), with exllamav3's quantize_exl3 (LDLQ over the trellis, mul1 codebook, output scales always -- the
+uniform K (1..8, or fractional e.g. 2.25 / 5.5), with exllamav3's quantize_exl3 (LDLQ over the trellis, mul1 codebook, output scales always -- the
 settings of turboderp's published exports) on the challenge's calibration Hessians (hessians/calib: every linear's
 input over the whole 10.26M-token calib corpus, the same distribution as the private scoring set).
 
@@ -29,7 +29,10 @@ TEMPLATE = os.environ.get("RXM_TEMPLATE", "/data/workspace/references/td-SC_4.00
 L = "model.language_model.layers"
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-K", type=int, required=True)
+ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
+                "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
+ap.add_argument("-K", type=lambda v: int(v) if float(v).is_integer() else float(v), required=True,
+                help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8)")
 ap.add_argument("-o", required=True)
 ap.add_argument("--layers", default="0-63")
 ap.add_argument("--head", action="store_true", help="also lm_head")
@@ -46,6 +49,11 @@ ap.add_argument("--head-perm", default=None, help="int64 .npy permutation of the
                 "outputs stay in the permuted order")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
 a = ap.parse_args()
+if a.frac_ext:
+    _h = os.path.dirname(os.path.abspath(__file__))           # next to ourq.py (GPU box copy) or in the repo
+    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
+    import exl3frac
+    exl3frac.install(a.frac_ext)
 dev = torch.device("cuda", a.device)
 os.makedirs(a.o, exist_ok=True)
 

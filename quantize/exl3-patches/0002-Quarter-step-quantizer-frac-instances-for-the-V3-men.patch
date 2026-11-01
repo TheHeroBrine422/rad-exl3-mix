@@ -1,0 +1,232 @@
+From 1afc6f4606a8f046a882d2c1cd0f3933ca02e9fa Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sat, 31 Oct 2026 23:59:02 +0000
+Subject: [PATCH 2/2] Quarter-step quantizer: frac instances for the V3 menu
+ (KA 1-4 x 0x8888/0xAAAA/0xEEEE, KA 5-7 x 0xAAAA), canonical frac_mask, decode
+ refuses non-half rates
+
+---
+ .../comp_units/quantize_tiles_frac_inst.cu    |  6 ------
+ .../comp_units/quantize_tiles_frac_inst_a1.cu |  7 +++++++
+ .../comp_units/quantize_tiles_frac_inst_a2.cu |  7 +++++++
+ .../comp_units/quantize_tiles_frac_inst_a3.cu |  7 +++++++
+ .../comp_units/quantize_tiles_frac_inst_a4.cu |  7 +++++++
+ .../comp_units/quantize_tiles_frac_inst_a5.cu |  5 +++++
+ .../comp_units/quantize_tiles_frac_inst_a6.cu |  5 +++++
+ .../comp_units/quantize_tiles_frac_inst_a7.cu |  5 +++++
+ .../comp_units/quantize_tiles_instances.cuh   | 12 +++++++++++
+ exllamav3/exllamav3_ext/quant/quantize.cu     | 12 +++++++++++
+ exllamav3/modules/quant/exl3.py               |  3 +++
+ exllamav3/modules/quant/exl3_lib/quantize.py  | 21 ++++++++++++-------
+ 12 files changed, 84 insertions(+), 13 deletions(-)
+ delete mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a1.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a2.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a3.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a4.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a5.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a6.cu
+ create mode 100644 exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a7.cu
+
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst.cu
+deleted file mode 100644
+index d4fb0d3c..00000000
+--- a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst.cu
++++ /dev/null
+@@ -1,6 +0,0 @@
+-#include "quantize_tiles_instances.cuh"
+-#include "../quantize_tiles_frac_kernel.cuh"
+-
+-fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_maaaa() { return quantize_tiles_frac_kernel<1, 0xaaaau>; }
+-fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_maaaa() { return quantize_tiles_frac_kernel<2, 0xaaaau>; }
+-fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_maaaa() { return quantize_tiles_frac_kernel<3, 0xaaaau>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a1.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a1.cu
+new file mode 100644
+index 00000000..7f7fc21a
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a1.cu
+@@ -0,0 +1,7 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_m8888() { return quantize_tiles_frac_kernel<1, 0x8888u>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_maaaa() { return quantize_tiles_frac_kernel<1, 0xaaaau>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_meeee() { return quantize_tiles_frac_kernel<1, 0xeeeeu>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a2.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a2.cu
+new file mode 100644
+index 00000000..abfd8500
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a2.cu
+@@ -0,0 +1,7 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_m8888() { return quantize_tiles_frac_kernel<2, 0x8888u>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_maaaa() { return quantize_tiles_frac_kernel<2, 0xaaaau>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_meeee() { return quantize_tiles_frac_kernel<2, 0xeeeeu>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a3.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a3.cu
+new file mode 100644
+index 00000000..bdbfef1a
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a3.cu
+@@ -0,0 +1,7 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_m8888() { return quantize_tiles_frac_kernel<3, 0x8888u>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_maaaa() { return quantize_tiles_frac_kernel<3, 0xaaaau>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_meeee() { return quantize_tiles_frac_kernel<3, 0xeeeeu>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a4.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a4.cu
+new file mode 100644
+index 00000000..71fd63fa
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a4.cu
+@@ -0,0 +1,7 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_m8888() { return quantize_tiles_frac_kernel<4, 0x8888u>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_maaaa() { return quantize_tiles_frac_kernel<4, 0xaaaau>; }
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_meeee() { return quantize_tiles_frac_kernel<4, 0xeeeeu>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a5.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a5.cu
+new file mode 100644
+index 00000000..353aca06
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a5.cu
+@@ -0,0 +1,5 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a5_maaaa() { return quantize_tiles_frac_kernel<5, 0xaaaau>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a6.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a6.cu
+new file mode 100644
+index 00000000..18930e08
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a6.cu
+@@ -0,0 +1,5 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a6_maaaa() { return quantize_tiles_frac_kernel<6, 0xaaaau>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a7.cu b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a7.cu
+new file mode 100644
+index 00000000..2a92b2d6
+--- /dev/null
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_frac_inst_a7.cu
+@@ -0,0 +1,5 @@
++#include "quantize_tiles_instances.cuh"
++#include "../quantize_tiles_frac_kernel.cuh"
++
++// one compile unit per KA (the KB = KA + 1 step unrolls 2^KB candidates; KA 7 is the slow one)
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a7_maaaa() { return quantize_tiles_frac_kernel<7, 0xaaaau>; }
+diff --git a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_instances.cuh b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_instances.cuh
+index 8f38d3cb..657d4f26 100644
+--- a/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_instances.cuh
++++ b/exllamav3/exllamav3_ext/quant/comp_units/quantize_tiles_instances.cuh
+@@ -40,6 +40,18 @@ fp_quantize_tiles_kernel quantize_tiles_kernel_k8_cb2_l160(bool optimized = fals
+ 
+ 
+ // Fractional-rate instances (mul1 codebook only): quantize_tiles_frac_kernel<KA, MASK>, rate KA + popcount(MASK)/16
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_m8888();
+ fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a1_meeee();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_m8888();
+ fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a2_meeee();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_m8888();
+ fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a3_meeee();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_m8888();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a4_meeee();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a5_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a6_maaaa();
++fp_quantize_tiles_kernel quantize_tiles_frac_kernel_a7_maaaa();
+diff --git a/exllamav3/exllamav3_ext/quant/quantize.cu b/exllamav3/exllamav3_ext/quant/quantize.cu
+index 5306dba9..11387310 100644
+--- a/exllamav3/exllamav3_ext/quant/quantize.cu
++++ b/exllamav3/exllamav3_ext/quant/quantize.cu
+@@ -290,9 +290,21 @@ void quantize_tiles_frac
+         TORCH_CHECK(tensor.is_contiguous() && tensor.device() == input_tiles.device(), "quantize_tiles_frac: layout");
+     fp_quantize_tiles_kernel kernel = nullptr;
+     struct { int ka; uint32_t mask; fp_quantize_tiles_kernel (*fn)(); } const table[] = {
++        {1, 0x8888u, &quantize_tiles_frac_kernel_a1_m8888},
+         {1, 0xaaaau, &quantize_tiles_frac_kernel_a1_maaaa},
++        {1, 0xeeeeu, &quantize_tiles_frac_kernel_a1_meeee},
++        {2, 0x8888u, &quantize_tiles_frac_kernel_a2_m8888},
+         {2, 0xaaaau, &quantize_tiles_frac_kernel_a2_maaaa},
++        {2, 0xeeeeu, &quantize_tiles_frac_kernel_a2_meeee},
++        {3, 0x8888u, &quantize_tiles_frac_kernel_a3_m8888},
+         {3, 0xaaaau, &quantize_tiles_frac_kernel_a3_maaaa},
++        {3, 0xeeeeu, &quantize_tiles_frac_kernel_a3_meeee},
++        {4, 0x8888u, &quantize_tiles_frac_kernel_a4_m8888},
++        {4, 0xaaaau, &quantize_tiles_frac_kernel_a4_maaaa},
++        {4, 0xeeeeu, &quantize_tiles_frac_kernel_a4_meeee},
++        {5, 0xaaaau, &quantize_tiles_frac_kernel_a5_maaaa},
++        {6, 0xaaaau, &quantize_tiles_frac_kernel_a6_maaaa},
++        {7, 0xaaaau, &quantize_tiles_frac_kernel_a7_maaaa},
+     };
+     for (const auto& e : table) if (e.ka == KA && e.mask == (uint32_t) MASK) kernel = e.fn();
+     TORCH_CHECK(kernel, "quantize_tiles_frac: no instance for (KA, MASK) = (", KA, ", ", MASK, ")");
+diff --git a/exllamav3/modules/quant/exl3.py b/exllamav3/modules/quant/exl3.py
+index 795bc40e..c34f7ed0 100644
+--- a/exllamav3/modules/quant/exl3.py
++++ b/exllamav3/modules/quant/exl3.py
+@@ -79,6 +79,9 @@ class LinearEXL3:
+         self.mcg = self.mcg_tensor is not None
+         self.mul1 = self.mul1_tensor is not None
+         assert self.frac is None or self.mul1, f"{key}: half-integer bitrate {self.K} requires the mul1 codebook"
++        # The quantizer takes other step patterns (frac_k); exllamav3's own decode kernels only the alternating one
++        assert self.frac is None or self.frac[1] == 0xAAAA, \
++            f"{key}: bitrate {self.K} has no exllamav3 decode kernel (half-integer rates only)"
+ 
+         self._fused_reconstruct = None
+         self.bsz1_xh_args = (self.trellis.device, (1, self.in_features), self.out_dtype)
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index c89b20ee..7c3b8fdd 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -99,20 +99,27 @@ def get_temp_buffers(device, K: int, tile_len: int = 256, cb: int = 0):
+     return temp_costs, temp_edges
+ 
+ 
++def frac_mask(n: int) -> int:
++    """Canonical period-16 step mask with n extra bits per 16 steps, spread evenly: bit i is set when step i
++    carries the extra bit, i.e. floor((i + 1) n / 16) - floor(i n / 16) = 1 (n = 4: 0x8888, 8: 0xAAAA, 12: 0xEEEE)"""
++    return sum(1 << i for i in range(16) if ((i + 1) * n) // 16 - (i * n) // 16)
++
++
+ def frac_k(K):
+-    """(KA, MASK) for a half-integer bitrate K = KA + 0.5: alternating KA- and (KA + 1)-bit trellis
+-    steps (MASK 0xAAAA, period 16). None for integer K. Half steps keep every tile a whole number of
+-    32-bit words (streamable with int4 loads); the kernels accept any period-16 pattern, but only the
+-    alternating one is instantiated."""
++    """(KA, MASK) for a fractional bitrate K = KA + n / 16 (0 < n < 16): KA- and (KA + 1)-bit trellis steps in the
++    canonical even pattern (frac_mask), period 16. None for integer K. The tile must stay a whole number of 32-bit
++    words, so n is even; the quantizer has instances for the V3 menu (n = 4, 8, 12 for KA 1-4; n = 8 for KA 5-7)."""
+     if isinstance(K, int) or float(K).is_integer():
+         return None
+     ka = int(K)
+-    assert abs(ka + 0.5 - K) < 1e-9, f"fractional bitrate {K} must be a half-integer"
+-    return ka, 0xAAAA
++    n = (K - ka) * 16
++    assert ka >= 1 and abs(n - round(n)) < 1e-9 and round(n) % 2 == 0, \
++        f"fractional bitrate {K}: need KA >= 1 and K = KA + n / 16 with n even"
++    return ka, frac_mask(round(n))
+ 
+ 
+ def trellis_words(K) -> int:
+-    """uint16 words per 256-weight tile at bitrate K (16 * K, an integer for half-integer K)"""
++    """uint16 words per 256-weight tile at bitrate K (16 * K, an integer for any K in steps of 1/16)"""
+     w = 16 * K
+     assert float(w).is_integer(), f"bitrate {K}: tile is not a whole number of uint16 words"
+     return int(w)
+-- 
+2.56.0
+
