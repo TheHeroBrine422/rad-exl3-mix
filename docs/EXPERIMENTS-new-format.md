@@ -504,6 +504,22 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~5:45 PM CST: **Kernel pass, head curve, levels.**
+  - **qtf2 v1** (`v3/e3/exl3frac2`, gate `qtf2check.py`): bit-identical to the fork's fractional kernel on all 15 old
+    rates in both codebooks (0 index / value differences, tie-heavy and extreme tiles included); new rates (1/8 steps
+    K0.125-2.875, sub-1 with the salted 0-bit read) pass the window-structure and pack round-trip checks. Speed: x1.27
+    at KA 2-4, x2.1 at K5.5, x1.03 at KA 1 -- still ~2x slower than the integer kernel (K3 43k vs 18.6k tiles/s). v2
+    caches every codebook value a thread needs in registers (as the integer K2-5 kernel does) and keeps KA 1's costs
+    in one LDS buffer (register-staged): gate running.
+  - **Head donors at half steps work alone** (K3.5 25.6 GB peak); K4.5 / K5.5 segfaulted in refit_scales: a kernel's
+    code object could not load at full VRAM (HSA_STATUS_ERROR_OUT_OF_RESOURCES). Fix in ourq (empty cache + preload the
+    refit kernels); K4.5-6.5 then fine. K7.5 hung (50 min): skipped.
+  - **Slab-head curve is smooth except at the floor rule:** with half-step donors every 1/8-bit budget step gains 7-10%
+    head KL, but the fixed tail floor round(budget - 1.5) jumps K3 -> K4 at budget 5 (-63%) and K5 -> K6 at 7 (-45%);
+    between 4.25 and 4.875 the slab plans are worse than uniform half-step heads. Fix: one plan per floor, headsim
+    chooses (`headslab.py HS_FLOOR_ALL`, `floorcurve.sh`). Quarter-step donors not needed for smoothness.
+  - **Extra trunk levels don't pay** (knap4 `KN_FRACS_EXTRA`, `k4levels.sh`): K5.25/5.75 <= 0.7% (6.0 bpw), 1/8 steps at
+    K3-5 <= 0.8% (4.0). Base list stands.
 - 2026-11-01 ~3:10 PM CST: **Full uniform requant planned (user):** K0.125-3 at 1/8 steps (sub-1 included as
   research), quarter steps to 4.75, K5/5.5/6; after a quantizer-kernel pass designed for 0-bit steps and 1/8 masks
   (~90 card-h at today's speed). CPU fracsweep below K1: rel error K0.5 0.227, K0.75 0.137, K1 0.089 (2.3-2.5x per bit),
