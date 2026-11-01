@@ -475,6 +475,26 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:20 CT: **B10: the board's `bytes` is the tensor payload, not the file** (`store/sizedef.py`, 4 V1
+  containers; the HF files are byte-identical to ours): board vs sum of plane bytes -0.13 / -0.04 / +0.18 / +0.01 MB,
+  vs file size -9.6 to -9.9 MB (header, directory, alignment). So real bpw = payload bytes x 8 / 26,895,998,464;
+  "container bytes" overstates by ~10 MB = 0.003 bpw. radiance 1.15.1's Qwen3.5 plugins do not declare or load the
+  `mtp.` block; whether an MTP drafter shipped in the container would count toward size is not knowable from the
+  board data (none of the entries has one): ask the challenge author before planning on it.
+- 2026-11-01 (results from ~23:50 CT Oct 31, read now): **chain1.**
+  - Real trellis-embedding swaps on V2 6.00, golden-ml (multilingual, 67 docs), KLD increment vs base: trellis t2
+    +0.0047 vs Lloyd 2-bit +0.0092; t3 +0.0012 vs Lloyd 3 +0.0021; t4 +0.00017 vs Lloyd 4 +0.00030; t2.5 +0.0022 ~
+    Lloyd 3. **Trellis costs ~0.5-0.6x Lloyd at equal bits, ~0.5 bit saved at K2-3**: confirms the CPU result on real
+    KLD. The fit3 half of the comparison is empty (no base6 score on golden-fit3: the base eval did not run). On the
+    fit pool, so not a held-out number.
+  - Even-layer K6 swaps into V2 5.00 (fit3, 98 docs): ours K6 -24.2%, turboderp K6 -23.1%; turboderp vs ours +1.3%
+    (z 1.26, n.s.). Ours and his K6 are equal on real KLD. The low-damping arm (ours-K6-d005) did not quantize.
+- **tdverify complete:** all 16 turboderp downloads byte-exact against our packs (337 tensors each, 0 problems); each
+  has 8 MTP trellis tensors that exist only in the downloads -- keep them (or pack them) before deleting.
+- **damp2** (CPU, colo, layers 1/5/19/30/47/58, K3/5/7): best lower damping vs 0.025 is a much smaller win away from
+  layers 11/43/63: attention inputs 0.989-0.996 (first sweep: 0.94-0.97), GDN inputs median 0.992-0.998 but one
+  tensor 0.94, everything else >= 0.993. The gain is tensor-specific, which is what the per-tensor sweep in the level
+  ladder (--sigma-in-sweep) is for; expect well under 1% total. Data `v3/e3/data/damp2.jsonl`.
 - 2026-11-01 ~01:05 CT: **B4 closed: KLD rises with position for every quant alike** (`eval/posbins.py`, golden-long2,
   2 traces, ratio to turboderp SC 4.00 per bin 0-2k / 2-8k / 8-32k / 32-64k / 64-128k / 128k+). The reference's own
   KLD doubles (0.0040 -> ~0.008 past 32k), but the ratios are flat: V2 4.00 0.76-0.84, V2 4.50 0.42-0.51, td SC 3.00

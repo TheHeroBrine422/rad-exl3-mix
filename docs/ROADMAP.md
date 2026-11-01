@@ -36,5 +36,10 @@ EXL3-V3 = integer compute.
   the most, so they are the natural QAD targets and their menu should exist when V4 starts.
 - First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
 
+## Data (any time after V3)
+- Clean held-out text runs out after V4 (QAD trains on the qad pool). Options: reuse documents by their ledger record
+  (`eval/pools/ledger.jsonl`; measure the bias of reused search-pool docs first), new agentic traces generated in the
+  corpus's style, openly licensed text matched per category, or asking the challenge author for more held-out text.
+
 ## EXL3-V4
 - QAD / scale-only healing: not before V3 is done.
