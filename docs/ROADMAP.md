@@ -31,24 +31,36 @@ EXL3-V3 = integer compute.
 - Vision tower and DFlash2 drafter in the containers (V2 is text-only).
 
 ## EXL3-V3.5 (between V3 and QAD)
+- **Finer sizes below 2.5 bpw.** The released steps 2.5 → 2.0 → 1.75 are wide where KLD changes fastest (0.067 →
+  0.164 → 0.297 on the board). Add release sizes in between (2.25 at least; 1.875 if it earns its place), and the
+  trunk levels they need: K1.25 / 1.5 / 1.75 in the ladder (each ~3 card-hours; today they are interpolated from
+  V2's K1, the level the fit under-predicts most). Measure K1.5 with a few swaps first.
 - Sub-1 K (K0.25–0.75, a salted 0-bit read in the quantizer and every decode kernel) and K0 (drop the tensor or a
   small low-rank stand-in), for the < 2 bpw sizes. Before QAD because low-bit quants are where healing should gain
-  the most, so they are the natural QAD targets and their menu should exist when V4 starts.
+  the most, so they are the natural QAD targets and their menu should exist when QAD (V5) starts.
 - First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
 - Embedding menu at both ends: sub-1 trellis embedding (t0.25–0.75) for the smallest sizes, once t1 / t1.25 show
   whether the < 2 bpw solves sit at the menu floor; t6.25–t8 for the 7.0 / 8.0 releases (at 7.0 bpw the solver
   already sits on t6, the menu top). CPU sweeps (`v3/e3/emb/run4.sh` pattern).
+- **A4 (int4 activations), measured in full.** Dropped from V3 on the solver's estimate (≤ 14% of FLOPs at
+  x1.88 → x1.94 for +2–5% KLD), but never built or measured end to end. Build the iu4 path, measure real speed and
+  KLD per size, and publish the frontier whatever it shows.
 
-- **Decode speed as its own axis** (V3.5 / V4, not V3). Decode time is not proportional to size: trellis
-  dequant and other per-token costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs
-  24 at 6.00, DESIGN-v3 §9). First profile where decode time goes per K and fractional pattern, then consider a
-  decode-optimized variant. Longer term, treat the frontier as 4-D (size, KLD, decode, prefill): for the 27B dense
-  model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
+## EXL3-V4: variety pack
+Variants that matter to some users but not to the main frontier, built on V3 / V3.5's tooling:
+- 7.0 / 7.5 / 8.0 rebuilt with V3's embedding and head (t6.25–t8 embedding levels).
+- **Decode speed as its own axis.** Decode time is not proportional to size: trellis dequant and other per-token
+  costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs 24 at 6.00, DESIGN-v3 §9).
+  First profile where decode time goes per K and fractional pattern (and whether an int8-activation decode GEMV
+  helps), then decode-optimized variants. Longer term, treat the frontier as 4-D (size, KLD, decode, prefill): for
+  the 27B dense model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
+- Speed variants per size (fast / balanced from the final V3 fit), A4 variants if V3.5 shows a useful point.
+- Vision tower and DFlash2 drafter in the containers, if not already in V3.
 
 ## Data (any time after V3)
-- Clean held-out text runs out after V4 (QAD trains on the qad pool). Options: reuse documents by their ledger record
+- Clean held-out text runs out after QAD (V5, trains on the qad pool). Options: reuse documents by their ledger record
   (`eval/pools/ledger.jsonl`; measure the bias of reused search-pool docs first), new agentic traces generated in the
   corpus's style, openly licensed text matched per category, or asking the challenge author for more held-out text.
 
-## EXL3-V4
+## EXL3-V5
 - QAD / scale-only healing: not before V3 is done.

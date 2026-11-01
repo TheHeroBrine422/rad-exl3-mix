@@ -10,7 +10,7 @@ Open decisions are marked **[decide]**.
   at V2's KLD or better. At ≤ 2.5 bpw, beat IQR-V3's ~4,935 µs: that needs A4 on part of the trunk.
 - **Sizes:** below 7 bpw (user, 2026-11-01); 7.0 / 7.5 / 8.0 stay V2. Focus below 6 bpw.
 - **Hardware:** card 0 only (03:00.0, PCIe x16), TP1. TP2 only at times (when both cards are available).
-- **Not in V3:** QAD (V4), vocab-tiered embedding and frequency-tiered head (dropped; a Fisher-driven row-slab
+- **Not in V3:** QAD (V5), vocab-tiered embedding and frequency-tiered head (dropped; a Fisher-driven row-slab
   head is under test, §2).
 
 ## 1. Compute format (the speed)
@@ -235,7 +235,7 @@ work overlaps it:
   other, category mix matched to the corpus; one moved trace each. Every qad collection reads pools-v3 (collect.py).
 - **Document-use ledger:** `eval/pools/ledger.jsonl` (one line per document and use: role, model line, decisions,
   scored range; `mkledger.py` + `ledger-roles.json`). New slices get a role entry and a re-run; non-golden uses (QAD
-  training, new Hessian collections) are appended by hand. Pools after V4 are drawn per comparison from the ledger.
+  training, new Hessian collections) are appended by hand. Pools after QAD (V5) are drawn per comparison from the ledger.
 - **Public: reports only, never selects** -- not as a finalist tie-break either. **Gate pass rules are written
   before the run** and not changed after seeing its result (the fracsmoke re-judgement was a fix to a wrong check,
   recorded as such; do not repeat).
@@ -354,7 +354,7 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
   fails, one more cheap test before dropping: **diagonal-only output weighting** (exllamav3 `--out_scales yaqa`,
   or a row-weighted trellis as in PR #364), since a 17k diagonal is well estimated from rows already on disk while a
   17408² matrix is not. If it passes, add a split-half check (two halves' H_out agree?) before any full collection.
-- **Teacher Intervention (arXiv 2302.11812):** a QAT technique → V4 (QAD), not V3.
+- **Teacher Intervention (arXiv 2302.11812):** a QAT technique → V5 (QAD), not V3.
 
 ## 8. Vision tower and DFlash2 drafter (2026-10-31; was hoped for V2)
 
@@ -376,5 +376,5 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 - Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
 - Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): **V3.5** (user, 2026-11-01), before
   QAD, since sub-2 quants are the natural QAD targets. First check: proxy-priced options in knap4 at 1.5–2.5 bpw.
-- V4 healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
+- V5 (QAD) healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
   of them (on a proxy metric). Start scale-only healing on late layers, judge on verify-pool KLD.
