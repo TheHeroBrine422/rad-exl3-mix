@@ -421,8 +421,12 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
   worktree `/workspace/forks/exllamav3-frac`, not yet built). The fractional kernel is already generic in the mask
   (step shape per bit, scratch sized by KA, ring end width from MASK & 1), so: 15 instances for the V3 menu (KA 1–4
   x 0x8888/0xAAAA/0xEEEE, KA 5–7 x 0xAAAA), one compile unit per KA; `frac_k` derives the canonical even mask for
-  any K = KA + n/16 (n even); exllamav3's own decode refuses non-0xAAAA rates instead of misdecoding. Build and a
-  K2.25/2.75 smoke quant on iceman after the head test (separate TORCH_EXTENSIONS_DIR: the live tree JIT-builds).
+  any K = KA + n/16 (n even); exllamav3's own decode refuses non-0xAAAA rates instead of misdecoding. The live
+  exllamav3 is a prebuilt 159 MB .so (no build tree), so instead of a full rebuild `v3/e3/exl3frac` builds only
+  quantize_tiles_frac + the 7 per-KA units as a side extension and swaps it in (`ourq.py --frac-ext SRC`; prebuilt
+  pack/unpack already take any mask). `v3/e3/fracrun.sh` (iceman, queued behind the head test) builds it and runs
+  `fracsmoke.py`: every menu K on 8192 Gaussian tiles -- on-curve vs integer neighbours, GPU vs CPU Viterbi error,
+  pack/unpack round trip, decode check.
 - 2026-10-31 ~18:55 CT: **Fractional-K at the menu's ends** (`v3/e3/fracsweep-hi.sh`, colo, 21 tensors = the 14 of
   fracsweep + layers 0 and 63): K5–8 half steps and K0.25, K4.5/5 overlapping. Running, ~1.5 h. Found while setting
   it up: `trellis.py`'s scale search {1, 1.15, 1.3} hit its top edge at K7.5 and its BOTTOM edge (1.0) for most
