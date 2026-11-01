@@ -11,7 +11,8 @@
       Fisher(v) * err(v) (KLD ≈ ½ Σ_v p(1-p) Δlogit_v², cross terms dropped). 
       For budgets "uniform K4 / K5 / K6 bytes": uniform, S-slab (contiguous in sensitivity order, DP) and per-block
       (Lagrangian, the ceiling) assignments, a
-      floor of max(HS_FLOOR = 3, round(budget K - 1.5)) (a K2 tail leaks mass into rare tokens: vtsim), costs under the training Fisher and the held-out verify Fisher.
+      floor of max(HS_FLOOR = 3, round(budget K - 1.5)) (a K2 tail leaks mass into rare tokens: vtsim; HS_FLOOR_ALL=1:
+      one plan per floor K >= HS_FLOOR, named s<B>-f<K>, for headsim to choose), costs under the training Fisher and the held-out verify Fisher.
       Curve mode (the solver's slab-head menu): HS_BUDGETS=3.5,3.625,.. -> for every budget a 3-slab plan "s<B>-3"
       plus the uniform plan "u<K>" of every donor K; HS_KS=3,3.5,.. restricts the donors (headsim keeps every
       donor on the card: ~2.5 GB each, so a long K range runs as two passes). Donor dirs may be fractional (K3.5).
@@ -106,6 +107,10 @@ def cmd_plan(hs, permf, qdir, out):
         for B in (float(x) for x in os.environ["HS_BUDGETS"].split(",")):
             lo = max(k for k in Ks if k <= B) if any(k <= B for k in Ks) else Ks[0]
             u = np.full(nb, Ks.index(lo)); ref = {c: C[c][u, np.arange(nb)].sum() for c in C}
+            if os.environ.get("HS_FLOOR_ALL") == "1":   # one plan per tail floor: headsim (exact KL) picks, since
+                for kf in [k for k in Ks if FLOOR <= k <= B]:   # the Fisher cost misses the tail leak the floor guards
+                    report(f"s{B:g}-f{kf:g}", slabs(C["train"], Ks, kf, B * nb, nb, 3), ref)
+                continue
             kmin = max(FLOOR, round(B - 1.5 + 1e-9))
             if kmin not in Ks: kmin = min(k for k in Ks if k >= kmin)
             report(f"s{B:g}-3", slabs(C["train"], Ks, kmin, B * nb, nb, 3), ref)

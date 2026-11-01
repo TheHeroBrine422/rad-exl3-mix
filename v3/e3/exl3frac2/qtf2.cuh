@@ -139,10 +139,95 @@ template <int KA>
 struct Qtf2Geom
 {
     static constexpr int edges_max = 65536 >> KA;
-    static constexpr bool lds = KA >= 2;                      // two cost arrays <= 64 KB
-    static constexpr int nt = KA == 2 ? 1024 : 512;           // one 64 KB block a CU at KA 2: more threads
-    static constexpr int shmem = lds ? 2 * edges_max * (int) sizeof(half) : 32 * (int) sizeof(int);
+    // CACHED (KA 1-4): every codebook value a thread needs, decoded once into registers (two state sets: one per
+    // out-width), 1024 threads; KA 1 keeps ONE cost buffer in LDS (64 KB, next costs staged in registers), KA 2-4 two.
+    static constexpr bool cached = KA >= 1 && KA <= 4;
+    static constexpr bool single = KA == 1;
+    static constexpr bool lds = KA >= 1;
+    static constexpr int nt = cached ? 1024 : 512;
+    static constexpr int shmem = !lds ? 32 * (int) sizeof(int) : (single ? 1 : 2) * edges_max * (int) sizeof(half);
 };
+
+// Cached step (KIN, KOUT >= 1): identical arithmetic and candidate order to qtf2_step, values from registers.
+// vals[j][k] = codebook pair of states (k << (16 - KOUT)) | out_j, out_j = 2 (thread + j NT). STAGE: the new costs go to
+// stage[] (written to the single buffer by the caller after a barrier) instead of costs_out.
+template <int NT, int KIN, int KOUT, bool STAGE, int NPS>
+__device__ __forceinline__ void qtf2_step_cached
+(
+    const half w,
+    const half* __restrict__ costs_in,
+    half* __restrict__ costs_out,
+    uint8_t* __restrict__ hist_row,
+    const bool first,
+    const int pre_state,
+    const bool write_hist,
+    const int thread,
+    const half2 (&vals)[(65536 >> KOUT) / (2 * NT)][1 << KOUT],
+    half2 (&stage)[NPS]
+)
+{
+    constexpr int Kr = 16 - KOUT;
+    constexpr int NP = (65536 >> KOUT) / (2 * NT);
+    constexpr int NC = 1 << KOUT;
+    const half2 w2 = __half2half2(w);
+    const half2 inf2 = __half2half2(H_INF);
+    #pragma unroll
+    for (int j = 0; j < NP; ++j)
+    {
+        const int out = 2 * (thread + j * NT);
+        half2 min_err2;
+        int min_k0 = 0, min_k1 = 0;
+        #pragma unroll
+        for (int k = 0; k < NC; ++k)
+        {
+            const int in_edge_idx = ((k << Kr) | out) >> KIN;
+            const half2 dh2 = __hsub2(vals[j][k], w2);
+            half2 err2;
+            if (first)
+            {
+                err2 = __hmul2(dh2, dh2);
+                if (pre_state >= 0 && in_edge_idx != pre_state) err2 = inf2;
+            }
+            else
+                err2 = __hfma2(dh2, dh2, __half2half2(costs_in[in_edge_idx]));
+            if (k == 0) { min_err2 = err2; continue; }
+            if (__hlt(__low2half(err2), __low2half(min_err2)))
+            {
+                min_err2 = __halves2half2(__low2half(err2), __high2half(min_err2));
+                min_k0 = k;
+            }
+            if (__hlt(__high2half(err2), __high2half(min_err2)))
+            {
+                min_err2 = __halves2half2(__low2half(min_err2), __high2half(err2));
+                min_k1 = k;
+            }
+        }
+        if constexpr (STAGE) stage[j] = min_err2;
+        else reinterpret_cast<half2*>(costs_out)[out >> 1] = min_err2;
+        if (write_hist)
+        {
+            hist_row[out] = (uint8_t) min_k0;
+            hist_row[out + 1] = (uint8_t) min_k1;
+        }
+    }
+}
+
+template <int NT, int KOUT>
+__device__ __forceinline__ void qtf2_fill(half2 (&vals)[(65536 >> KOUT) / (2 * NT)][1 << KOUT], const int thread)
+{
+    constexpr int Kr = 16 - KOUT;
+    #pragma unroll
+    for (int j = 0; j < (65536 >> KOUT) / (2 * NT); ++j)
+    {
+        const int out = 2 * (thread + j * NT);
+        #pragma unroll
+        for (int k = 0; k < (1 << KOUT); ++k)
+        {
+            const uint32_t p0 = (uint32_t) ((k << Kr) | out) * 0x83DCD12Du;
+            vals[j][k] = decode_mul1_product_2(p0, p0 + 0x83DCD12Du);
+        }
+    }
+}
 
 template <int KA, uint32_t MASK, int L = 256>
 __global__ __launch_bounds__(Qtf2Geom<KA>::nt, Qtf2Geom<KA>::lds ? 1 : 2)
@@ -178,8 +263,15 @@ void qtf2_kernel
     half* temp_costs;
     if constexpr (G::lds) temp_costs = reinterpret_cast<half*>(shbuf);
     else temp_costs = temp_costs_ptr + (size_t) 2 * edges_max * tile_idx;
-    half* temp_costs_inc = temp_costs + edges_max;
+    half* temp_costs_inc = temp_costs + (G::single ? 0 : edges_max);
     int* sh_idx = reinterpret_cast<int*>(shbuf);              // aliases the costs when they are in LDS (dead then)
+    constexpr int NPA = G::cached ? (65536 >> KA) / (2 * NT) : 1;
+    constexpr int NPB = G::cached ? (65536 >> KB) / (2 * NT) : 1;
+    constexpr int NPS = G::single ? NPA : 1;
+    half2 valsA[G::cached ? NPA : 1][G::cached ? (1 << KA) : 1];
+    half2 valsB[G::cached ? NPB : 1][G::cached ? (1 << KB) : 1];
+    half2 stage[NPS];
+    if constexpr (G::cached) { qtf2_fill<NT, KA>(valsA, thread); qtf2_fill<NT, KB>(valsB, thread); }
 
     auto ring = [&](int i, int roll) { int ri = i + roll; if (ri >= L) ri -= L; return ri; };
     auto D = [&](int i) { return KA + (int) ((MASK >> (i & 15)) & 1u); };
@@ -196,6 +288,29 @@ void qtf2_kernel
             const half w = __float2half_rn(__ldg(input_tile + ri));
             const int din = (MASK >> (ri & 15)) & 1, dout = (MASK >> ((ri + 1) & 15)) & 1;
             const uint32_t salt = qtf2_salt(ri);
+            if constexpr (G::cached)
+            {
+                // KA 1: one buffer -- read it (costs_in), stage, barrier, write; else ping-pong as below
+                half* cin = G::single ? temp_costs : temp_costs_inc;
+                half* cout_ = G::single ? temp_costs : temp_costs;
+                switch (din * 2 + dout)
+                {
+                    case 0: qtf2_step_cached<NT, KA, KA, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    case 1: qtf2_step_cached<NT, KA, KB, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                    case 2: qtf2_step_cached<NT, KB, KA, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    default: qtf2_step_cached<NT, KB, KB, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                }
+                if constexpr (G::single)
+                {
+                    __syncthreads();
+                    const int np = (65536 >> (KA + dout)) / (2 * NT);
+                    #pragma unroll
+                    for (int j = 0; j < NPS; ++j)
+                        if (j < np) reinterpret_cast<half2*>(temp_costs)[thread + j * NT] = stage[j];
+                }
+                __syncthreads();
+                continue;
+            }
             switch (din * 2 + dout)
             {
                 case 0: qtf2_step<NT, KA, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread); break;
