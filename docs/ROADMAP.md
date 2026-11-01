@@ -36,6 +36,12 @@ EXL3-V3 = integer compute.
   the most, so they are the natural QAD targets and their menu should exist when V4 starts.
 - First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
 
+- **Decode speed as its own axis** (V3.5 / V4, not V3). Decode time is not proportional to size: trellis
+  dequant and other per-token costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs
+  24 at 6.00, DESIGN-v3 §9). First profile where decode time goes per K and fractional pattern, then consider a
+  decode-optimized variant. Longer term, treat the frontier as 4-D (size, KLD, decode, prefill): for the 27B dense
+  model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
+
 ## Data (any time after V3)
 - Clean held-out text runs out after V4 (QAD trains on the qad pool). Options: reuse documents by their ledger record
   (`eval/pools/ledger.jsonl`; measure the bias of reused search-pool docs first), new agentic traces generated in the
