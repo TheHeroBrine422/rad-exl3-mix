@@ -17,7 +17,11 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     (from 16 on) instead of keeping sampled rows; w_t = ||x_t||² (YAQA_UNWEIGHTED=1: w_t = 1). The
                     sums live in fp32 on the CPU (dyᵀdy per sequence, ~2.5 s for a 17,408-wide output), written
                     as OUTDIR/hout/<checkpoint key>.safetensors ("hout", the ourq.py --hout layout) every
-                    YAQA_SAVE_EVERY sequences (default 25) and at the end. Sampled rows are not written then."""
+                    YAQA_SAVE_EVERY sequences (default 25) and at the end. Sampled rows are not written then.
+                    The backward starts at the lowest full layer's input (layers below run forward only; gradients
+                    at and above it are unchanged; YAQA_TRUNC=0 runs it to the embedding, for checking), and the
+                    CPU sums run in a background thread, overlapping the GPU (joined at the end of each sequence).
+                    YAQA_SNAP=n also writes the sums after n sequences to OUTDIR/hout-snap (truncation check)."""
 import json, math, os, sys, time
 sys.path.insert(0, "/data/yaqa/pylib")
 import numpy as np, torch
@@ -105,6 +109,24 @@ FULL = {int(x) for x in os.environ.get("YAQA_FULL", "").split(",") if x}
 UNW = os.environ.get("YAQA_UNWEIGHTED") == "1"
 HACC, HN = {}, {}          # full-mode accumulators (CPU fp32) and token counts, by linear name
 torch.set_num_threads(int(os.environ.get("YAQA_CPU_THREADS", 12)))
+TRUNC = bool(FULL) and os.environ.get("YAQA_TRUNC", "1") == "1"
+from concurrent.futures import ThreadPoolExecutor
+POOL, PEND = ThreadPoolExecutor(1), []    # one worker: the sums of one tensor never race; torch threads inside
+def _acc(name, r):
+    if name not in HACC: HACC[name] = torch.zeros(r.shape[1], r.shape[1])
+    HACC[name].addmm_(r.T, r)
+def join_full():
+    for f in PEND: f.result()
+    PEND.clear()
+if TRUNC:
+    def _start_grad(mod, args, kwargs):          # the backward starts here: a fresh leaf at the layer's input
+        if args:
+            x = args[0]
+            return (x.detach().requires_grad_(True),) + tuple(args[1:]), kwargs
+        kwargs = dict(kwargs); kwargs["hidden_states"] = kwargs["hidden_states"].detach().requires_grad_(True)
+        return args, kwargs
+    model.model.layers[min(FULL)].register_forward_pre_hook(_start_grad, with_kwargs=True)
+    print(f"backward truncated at layer {min(FULL)}", flush=True)
 def fwd_hook_full(name):
     def h(mod, inp, out):
         if not out.requires_grad: return
@@ -115,18 +137,19 @@ def fwd_hook_full(name):
             r = g[0, 16:].float()
             if w is not None: r = r * w.to(r.device).sqrt()
             r = r.cpu()
-            if name not in HACC: HACC[name] = torch.zeros(r.shape[1], r.shape[1]); HN[name] = 0
-            HACC[name].addmm_(r.T, r); HN[name] += r.shape[0]
+            HN[name] = HN.get(name, 0) + r.shape[0]
+            PEND.append(POOL.submit(_acc, name, r))
         out.register_hook(bh)
     return h
-def save_full():
-    os.makedirs(f"{OUT}/hout", exist_ok=True)
+def save_full(sub="hout"):
+    join_full()
+    os.makedirs(f"{OUT}/{sub}", exist_ok=True)
     from safetensors.torch import save_file
     for name, H in HACC.items():
         key = "model.language_model.layers." + name
-        save_file({"hout": H.contiguous()}, f"{OUT}/hout/{key}.safetensors.part",
+        save_file({"hout": H.contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"rows": str(HN[name]), "weight": "none" if UNW else "x2", "fp32_act": str(FP32)})
-        os.replace(f"{OUT}/hout/{key}.safetensors.part", f"{OUT}/hout/{key}.safetensors")
+        os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
 def fwd_hook(name):
     if FULL and int(name.split(".")[0]) in FULL: return fwd_hook_full(name)
     def h(mod, inp, out):
@@ -155,7 +178,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
     state["rows"] = {}; state["full_done"] = set()
     ts = time.time()
-    emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(True)
+    emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(not TRUNC)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
     loss = 0; ys = []
     for c0 in range(0, hid.shape[0], CH):
@@ -169,6 +192,8 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
     loss.backward()
     dt = time.time() - ts
+    if FULL: join_full()
+    if FULL and not GATE and done + 1 == int(os.environ.get("YAQA_SNAP", 0)): save_full("hout-snap")
     if FULL and not GATE:
         if (done + 1) % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_full()
     elif not GATE:
