@@ -417,6 +417,15 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~20:00 CT: **High-K half steps land on the curve** (`v3/e3/fracsweep-hi.sh`, colo, 18 tensors of layers
+  0/10 (GDN), 11/63 (attention), 43 (MLP); scale search 0.85–1.75; `v3/e3/data/fracsweep-hi.jsonl`). Error / log-linear
+  interpolation of the integer neighbours, median [range]: K5.5 0.997 [0.993, 1.042], K6.5 1.003 [0.980, 1.010], K7.5
+  1.006 [0.994, 1.021]. Integer steps stay steep: ×3.77 / ×3.67 / ×3.81 error per bit at K5→6 / 6→7 / 7→8. So the
+  K5–8 half steps of the menu are sound. Scale: the best factor rises with K (1.15 to K6, 1.3 from K6.5–7, some 1.5
+  at K7.5–8): the old {1, 1.15, 1.3} grid capped high-K slightly; real quants search their own scale. K0.25: proxy
+  rel err median 0.36 [0.05, 0.59] (1.0 = dropped): judge only by real swaps. 3 jobs failed on a wrong tensor list
+  (layer 43 is full attention, has no GDN tensors); not rerun, every family is covered.
+
 - 2026-10-31 ~19:45 CT: **Mining merge acted on** (`local/mine/merged-2026-10-31.md`, Opus 5.5 via `mergep.sh`).
   DESIGN-v3 corrected (YAQA status and costs: 3.7M qad tokens, ~0.2 TB full H_out; head K priced by KLD + bytes;
   his S not a prior) and the merge's checks added to §6. Queued on iceman behind gate 2c:
