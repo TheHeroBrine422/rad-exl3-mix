@@ -1,5 +1,5 @@
 """exl3frac2 -- the V3 kernel pass's fractional trellis quantizer (qtf2.cuh) as a side extension for the prebuilt
-exllamav3 1.6.3: same call as quantize_tiles_frac, output bit-identical to the fork's kernel for every rate it has
+exllamav3 1.6.3 (with pack / unpack_trellis_frac that accept KA = 0): same call as quantize_tiles_frac, output bit-identical to the fork's kernel for every rate it has
 (check: qtf2check.py), plus 1/8 steps K0.125-2.875 (incl. sub-1, KA = 0: salted 0-bit read) and the menu's
 quarter / half steps. Built in two variants: "mul1" (plain codebook) and "i8" (EXL3_MUL1_I8, the int8-rounded one).
 Use after exl3frac / exl3cb's install:  exl3frac2.install(SRC, "i8")  (SRC = <fork>/exllamav3/exllamav3_ext, for
@@ -41,7 +41,15 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
         F.patch_hip_ninja_file_writer(C)
     units = sorted(glob.glob(f"{HERE}/qtf2_inst_a*.cu"))
     assert len(units) == 8, f"run mkqtf2.py first ({len(units)} instance units)"
-    return C.load(name=f"exl3frac2_{variant}", sources=[f"{HERE}/qtf2_bind.cu"] + units,
+    # pack / unpack: the fork's frac.cu with KA >= 0 allowed (its kernels are generic in D(i); only the range check
+    # refused KA = 0); generated here so the copy always matches the fork
+    fs = open(os.path.join(src, "quant", "frac.cu")).read()
+    a, b = "KA >= 1 && KA <= 7", "KA >= 0 && KA <= 7"
+    assert fs.count(a) == 1, "frac.cu changed: re-check the KA = 0 patch"
+    fs = fs.replace(a, b).replace('#include "../util.h"', '#include "util.h"').replace('#include "../util.cuh"', '#include "util.cuh"')
+    gen = os.path.join(HERE, "qtf2_frac_gen.cu")
+    if not os.path.exists(gen) or open(gen).read() != fs: open(gen, "w").write(fs)
+    return C.load(name=f"exl3frac2_{variant}", sources=[f"{HERE}/qtf2_bind.cu", gen] + units,
                   extra_include_paths=[HERE, os.path.join(src, "quant"), src], extra_cflags=cflags,
                   extra_cuda_cflags=cuda, verbose=verbose)
 
@@ -49,7 +57,8 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
 class _Ext:
     """exllamav3's extension (or exl3frac / exl3cb's wrapper) with quantize_tiles_frac from exl3frac2"""
     def __init__(self, base, q): self._base, self._q = base, q
-    def __getattr__(self, name): return getattr(self._q if name == "quantize_tiles_frac" else self._base, name)
+    NAMES = ("quantize_tiles_frac", "pack_trellis_frac", "unpack_trellis_frac")
+    def __getattr__(self, name): return getattr(self._q if name in self.NAMES else self._base, name)
 
 
 def install(src: str, variant: str = "mul1", verbose: bool = False):

@@ -79,6 +79,16 @@ ap.add_argument("--sigma-in-sweep", default=None, help="for the layer-input grou
 ap.add_argument("--gain", default=None, help="multipliers on exllamav3's chosen g_scale per linear, by key suffix, e.g. "
                 "'o_proj=1.16,out_proj=1.16' (gaintest.py)")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
+ap.add_argument("--out-scales-off", default=None, metavar="FILE", help="checkpoint keys (one per line, e.g. "
+                "model.language_model.layers.40.mlp.up_proj) quantized WITHOUT output channel scales (default: always on); "
+                "v3/e3/osr/mkoff.py writes it from upstream's test (osr.jsonl, ratio > 1.05)")
+ap.add_argument("--only", default=None, metavar="FILE", help="quantize only these checkpoint keys (one per line); "
+                "seeds stay those of the full run (by position in the layer); list whole Hessian groups (gate+up, q/k/v, ...) -- the first of a group prepares the shared H in place -- and a subset equals the full run")
+ap.add_argument("--head-mean-row", action="store_true", help="lm_head: subtract the mean vocabulary row before "
+                "quantizing (logits shift by one constant a position: softmax and KL unchanged). Every donor of a slab "
+                "head must agree on this, or mixed rows stop sharing the shift")
+ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
+                "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
 a = ap.parse_args()
 if a.frac_ext:
     _h = os.path.dirname(os.path.abspath(__file__))           # next to ourq.py (GPU box copy) or in the repo
@@ -90,6 +100,14 @@ if a.codebook != "mul1":
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3cb"), os.path.join(_h, "../v3/e3/exl3cb")) if os.path.isdir(d)))
     import exl3cb
     exl3cb.install(a.frac_ext, a.codebook)
+if a.qtf2:
+    assert a.frac_ext and a.codebook in ("mul1", "i8"), "--qtf2 needs --frac-ext SRC and the mul1 or i8 codebook"
+    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
+    import exl3frac2
+    exl3frac2.install(a.frac_ext, a.codebook)
+_keys = lambda f: set(l.strip() for l in open(f) if l.strip() and not l.startswith("#"))
+OFF = _keys(a.out_scales_off) if a.out_scales_off else set()
+ONLY = _keys(a.only) if a.only else None
 dev = torch.device("cuda", a.device)
 _warm_refit(dev)                                   # load the refit kernels while VRAM is empty
 os.makedirs(a.o, exist_ok=True)
@@ -134,13 +152,17 @@ def quantize_group(hname, keys, seed0, log):
     out = {}
     Hd = hessian(hname)
     for j, key in enumerate(keys):
+        if ONLY is not None and key not in ONLY: continue
         t0 = time.time()
         w = ck(key + ".weight").to(dev).float().T.contiguous()     # (in_features, out_features)
         if a.head_perm and key == "lm_head":
             import numpy as np
             w = w[:, torch.from_numpy(np.load(a.head_perm)).to(dev)].contiguous()
+        if a.head_mean_row and key == "lm_head":
+            w -= w.mean(dim=1, keepdim=True)              # columns are vocabulary rows: drop their mean
         qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
+        if key in OFF: qa["apply_out_scales"] = False
         if a.sigma_reg is not None: qa["sigma_reg"] = a.sigma_reg
         if a.sigma_reg_in is not None and hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input"):
             qa["sigma_reg"] = a.sigma_reg_in
@@ -184,6 +206,7 @@ def quantize_group(hname, keys, seed0, log):
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
                               "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "gain": GAIN[0], "codebook": a.codebook,
+                              "out_scales": qa.get("apply_out_scales"), "head_mean_row": bool(a.head_mean_row and key == "lm_head"),
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()
@@ -218,6 +241,9 @@ def _stamp():
         files += sorted(f for e in ("cu", "cuh", "cpp", "h", "py") for f in glob.glob(f"{a.frac_ext}/**/*.{e}", recursive=True))
         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac", "*.py")))
         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3cb", "*")))
+        files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac2", "*.*")))
+    if a.out_scales_off: files.append(os.path.abspath(a.out_scales_off))      # its contents, not just the path
+    if a.only: files.append(os.path.abspath(a.only))
     for f in files:
         if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
     keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
@@ -250,7 +276,9 @@ if not a.only_head:
         shard = os.path.join(a.o, f"q-L{l:02d}.safetensors")
         if resume_ok(shard): continue
         t0 = time.time(); out = {}
+        if ONLY is not None and not any(k in ONLY for _, ks in layer_plan(l) for k in ks): continue
         for gi, (hn, keys) in enumerate(layer_plan(l)):
+            if ONLY is not None and not any(k in ONLY for k in keys): continue
             out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
         save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
         # drop the checkpoint shard handles (their mapped pages piled up to ~23 GB over a run: K8 OOM, 2026-10-30)

@@ -8,6 +8,7 @@
 #include "qtf2_types.cuh"
 #include "qtf2.cuh"
 #include "qtf2_table.inc"
+#include "frac.cuh"                       // pack / unpack_trellis_frac (qtf2_frac_gen.cu: the fork's, KA >= 0)
 
 #define QTF2_CHECK(x) do { cudaError_t e_ = (x); TORCH_CHECK(e_ == cudaSuccess, "qtf2: ", cudaGetErrorString(e_)); } while (0)
 
@@ -59,4 +60,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 {
     m.def("quantize_tiles_frac", &quantize_tiles_frac, "qtf2 fractional trellis quantizer (V3 kernel pass)");
     m.def("qtf2_instances", &qtf2_instances, "(KA, MASK) instances in this build");
+    m.def("pack_trellis_frac", &pack_trellis_frac, "pack fractional trellis indices (KA >= 0)");
+    m.def("unpack_trellis_frac", &unpack_trellis_frac, "unpack fractional trellis indices (KA >= 0)");
 }

@@ -4,7 +4,7 @@
      int8-rounded), old vs qtf2 on the same N tiles (Gaussian, heavy-tailed, ties, zeros, large): indices and values
      must be identical, both codebooks. Any difference = FAIL (the pass is output-identical by rule).
   2. speed: tiles / s for old, qtf2 and the integer kernel at the neighbouring K (exllamav3's quantize_tiles).
-  3. new rates (1/8 steps, sub-1): the trellis structure holds (window overlap: state(i) >> D(i) == state(i - 1) &
+  3. every rate in qtf2 (1/8 steps, sub-1 included): pack -> unpack round trip is exact, the trellis structure holds (window overlap: state(i) >> D(i) == state(i - 1) &
      (2^(16 - D(i)) - 1), around the ring) and the error sits on the curve between its neighbours (a salt mismatch
      between search and traceback would show as a jump in rel_mse).
 Env as exl3frac2 (PYTORCH_ROCM_ARCH, TORCH_EXTENSIONS_DIR, ROCM_HOME). Writes one JSON line per rate to stdout."""
@@ -67,9 +67,14 @@ for ka, m in NEWR:
     for i in range(256):
         d = D(i, ka, m); p = (i - 1) % 256
         bad += int(((s[:, i] >> d) != (s[:, p] & ((1 << (16 - d)) - 1))).sum())
+    bpb = 16 * ka + bin(m).count("1")
+    packed = torch.zeros((1, len(G), bpb), dtype=torch.short, device=dev); back = torch.zeros_like(idx).view(1, len(G), 256)
+    NEW["i8"].pack_trellis_frac(packed, idx.view(1, len(G), 256).contiguous(), ka, m)
+    NEW["i8"].unpack_trellis_frac(back, packed, ka, m); torch.cuda.synchronize()
+    rt = int((back.view_as(idx) != idx).sum()); bad += rt
     mse = float(((out - G) ** 2).mean() / (G ** 2).mean())
     old = (ka, m) in OLD_RATES
-    print(json.dumps({"check": "rate", "K": rate(ka, m), "ka": ka, "mask": f"{m:04x}", "struct_violations": bad,
+    print(json.dumps({"check": "rate", "K": rate(ka, m), "ka": ka, "mask": f"{m:04x}", "struct_violations": bad - rt, "pack_roundtrip_diff": rt,
                       "rel_mse": round(mse, 5), "has_old": old,
                       "tps": round(tput(lambda: run(NEW["i8"], G[:1024].contiguous(), ka, m), 1024))}), flush=True)
     fails += bad
