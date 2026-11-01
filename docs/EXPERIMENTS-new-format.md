@@ -437,6 +437,11 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-10-31 ~22:30 CT: **Gate 2d failed: diagonal output scales hurt** (one-sided LDLQ, exllamav3's
+  sensitivity_out_scales from diag(H_out), blocks 22/23, vs one-sided): sampled-H_out diagonal K2 +14.9% (z 7.1);
+  full-token diagonal K2 +10.2% (z 5.9), K3 +4.3% (z 3.0). Output-side Hessian information hurts in every form we
+  tried. Only gradient-weighted H_in (gate 2e) is left of the backward-based ideas.
+
 - 2026-10-31 ~22:20 CT: **YAQA gate 2c failed: two-sided YAQA dropped.** Full-token fp32 H_out (200 seqs, every
   position) on blocks 22/23, KLD increment vs one-sided: K2 +30% (sigma_reg_out 0.025) / +7% (0.3), K3 +21% / +5%,
   all z ≥ 2.9; full-token is even WORSE than sampled at 0.025 (+15% K2, +10% K3), equal at 0.3. Truncated backward
