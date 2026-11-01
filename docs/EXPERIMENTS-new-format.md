@@ -417,6 +417,19 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~19:15 CT: **Head slab test INVALID (plumbing bug), rerun pending.** Every spliced variant (u3/u4,
+  slabs, Lagrange) scored KLD ~15 with top-1 0.0002 (V2 3.00 itself: 0.027). The donor heads are right (rows vs the
+  bf16 head: K4 rel err 0.076, cos 0.997; K3 0.15), so quantization and the un-permute work. Cause: `qwen35_exl3`'s
+  fallback for an unquantized head used `gemm_nt`, whose output is the activation dtype (bf16), into the f32 logits
+  buffer -- never exercised before (V1/V2 heads are always EXL3). Fix: `logits_gemm` as in the bf16 arch
+  (radiance-hero 9a156d0, local). Rerun: dev build of the plugin + the 14 evals (~20 min, both cards) after YAQA
+  gate 2c. Plan numbers (proxy) are unaffected.
+- 2026-10-31 ~19:10 CT: **YAQA gate 2c started** (`v3/yaqa/gate2c.sh`): full-token fp32 H_out for blocks 22/23 on
+  the pilot's 200 windows and labels; backward truncated at layer 22 (gradients at/above unchanged; checked against
+  an untruncated 2-sequence run) and CPU sums async. Then two-sided K2/K3 at sigma_reg_out 0.025 / 0.3 vs one-sided
+  and vs gate 2b's sampled two-sided. First fracsmoke build failed (torch's ROCM_HOME = pip runtime without
+  hipBLAS/thrust headers); now ROCM_HOME=/opt/rocm/core-10.1 as for the exllamav3 build.
+
 - 2026-10-31 ~19:00 CT: **Quarter-step quantizer instances written** (exllamav3 branch `rxm-frac-quarter`,
   worktree `/workspace/forks/exllamav3-frac`, not yet built). The fractional kernel is already generic in the mask
   (step shape per bit, scratch sized by KA, ring end width from MASK & 1), so: 15 instances for the V3 menu (KA 1–4
