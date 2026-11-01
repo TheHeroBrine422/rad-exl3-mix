@@ -33,6 +33,7 @@ OUT = None
 LIB = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libviterbi.so"))
 LIB.viterbi_tiles.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
 LIB.viterbi_tiles_pat.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
+if os.environ.get("E3_F16") == "1": LIB.viterbi_set_f16(1)   # emulate the GPU search's fp16 costs
 from fractions import Fraction
 
 
@@ -109,7 +110,7 @@ def run(layer, tensor, cbs, bits, rows):
                 r = e3.rel(Wr, Qs[i * rows:(i + 1) * rows] * rms * f, Hr); allf[f] = r
                 if best is None or r < best[0]: best = (r, f)
             o = {"layer": layer, "w": tensor, "method": "trellis_" + name, "seed": int(os.environ.get("E3_SEED", 0)),
-                 "rowseed": int(os.environ.get("E3_ROWSEED", 0)), "damp": float(os.environ.get("E3_DAMP", 0.01)), "bits": K, "bpw": K + 16 / Kd,
+                 "rowseed": int(os.environ.get("E3_ROWSEED", 0)), "damp": float(os.environ.get("E3_DAMP", 0.01)), "f16": os.environ.get("E3_F16") == "1", "bits": K, "bpw": K + 16 / Kd,
                  "rel": best[0], "scale_f": best[1], **({"allf": allf} if os.environ.get("E3_ALLF") else {}), "rows": rows, "N": N, "K": Kd, "sec": round(time.time() - t0, 1)}
             print(json.dumps(o), flush=True); out.append(o)
             if OUT:

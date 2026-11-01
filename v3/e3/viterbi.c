@@ -51,6 +51,11 @@ void viterbi_tiles(const float* x, float* out, int ntiles, const float* cb, int 
 // cb[s ^ salt(i)] (a step-specific XOR salt, so consecutive 0-bit steps do not repeat a value); steps of >= 1 bit
 // emit cb[s] as in viterbi_tiles. K = sum(pat) / plen bits a weight. Free initial state, as viterbi_tiles.
 static inline int salt_of(int i, int k) { return k ? 0 : (int)((0x9E37u * (unsigned)((i & 15) + 1)) & 0xffff); }
+/* fp16 emulation of exllamav3's GPU search (costs, inputs and codebook values in half; err = fma(dh, dh, cost)
+ * rounded to half): viterbi_set_f16(1). Only viterbi_tiles_pat. */
+static int F16 = 0;
+void viterbi_set_f16(int on) { F16 = on; }
+static inline float H(float v) { return F16 ? (float)(_Float16)v : v; }
 void viterbi_tiles_pat(const float* x, float* out, int ntiles, const float* cb, const int* pat, int plen) {
   const int NS = 65536;
   int kk[256];
@@ -64,12 +69,12 @@ void viterbi_tiles_pat(const float* x, float* out, int ntiles, const float* cb, 
 #pragma omp for schedule(dynamic, 1)
     for (int t = 0; t < ntiles; t++) {
       const float* xt = x + (size_t)t * 256;
-      { const int sa = salt_of(0, kk[0]); for (int s = 0; s < NS; s++) { const float d = xt[0] - cb[s ^ sa]; cost[s] = d * d; } }
+      { const int sa = salt_of(0, kk[0]); for (int s = 0; s < NS; s++) { const float d = H(H(cb[s ^ sa]) - H(xt[0])); cost[s] = H(d * d); } }
       for (int i = 1; i < 256; i++) {
         const int K = kk[i], sa = salt_of(i, K);
-        const float xi = xt[i];
+        const float xi = H(xt[i]);
         if (K == 0) {
-          for (int s = 0; s < NS; s++) { const float d = xi - cb[s ^ sa]; ncost[s] = cost[s] + d * d; }
+          for (int s = 0; s < NS; s++) { const float d = H(H(cb[s ^ sa]) - xi); ncost[s] = H(cost[s] + d * d); }
         } else {
           const int NG = NS >> K, SH = 16 - K, NJ = 1 << K;
           uint8_t* b = bp + (size_t)i * (NS >> 1);
@@ -78,7 +83,7 @@ void viterbi_tiles_pat(const float* x, float* out, int ntiles, const float* cb, 
             const float* cj = cost + (j << SH);
             for (int g = 0; g < NG; g++) { const int lt = cj[g] < gmin[g]; gmin[g] = lt ? cj[g] : gmin[g]; b[g] = lt ? (uint8_t)j : b[g]; }
           }
-          for (int s = 0; s < NS; s++) { const float d = xi - cb[s]; ncost[s] = gmin[s >> K] + d * d; }
+          for (int s = 0; s < NS; s++) { const float d = H(H(cb[s]) - xi); ncost[s] = H(gmin[s >> K] + d * d); }
         }
         float* tmp = cost; cost = ncost; ncost = tmp;
       }
