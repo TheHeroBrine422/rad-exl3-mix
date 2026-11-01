@@ -475,6 +475,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:05 CT: **B4 closed: KLD rises with position for every quant alike** (`eval/posbins.py`, golden-long2,
+  2 traces, ratio to turboderp SC 4.00 per bin 0-2k / 2-8k / 8-32k / 32-64k / 64-128k / 128k+). The reference's own
+  KLD doubles (0.0040 -> ~0.008 past 32k), but the ratios are flat: V2 4.00 0.76-0.84, V2 4.50 0.42-0.51, td SC 3.00
+  3.46-3.69, V2 3.00 2.5-3.3 (first bin highest). No quant compounds error with context faster than another, so
+  short-slice rankings hold at long context; the rise is a property of the text / position. 2 docs only.
+- 2026-11-01: **Sub-1 K moved to V3.5** (user): before QAD, since sub-2 quants are the natural QAD targets. **A5**
+  selftest classes added to DESIGN §1c.4; **D6** GDN a/b merge closed (0.27-0.4% share); **B13** ourq.py code stamp
+  (committed, deploy + smoke test in the morning); **B19** K1 bit-compare script queued after the gate 2e verdict.
 - 2026-11-01 ~00:55 CT: **knap4 on the measured speed table** (`KN_SPEED=v3/bench/data/speedcal-stock.jsonl`, now
   k4grid's default; `KN_A4=a4time.jsonl` swaps in whole measured paths with decode once A4 has run). Also fixed: the
   LM head was timed at M 4096 (~77 ms, ~5% of the step) though prefill runs it on the last token only; flop shares
