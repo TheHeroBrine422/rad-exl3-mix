@@ -5,6 +5,8 @@ tags:
 - radiance
 - exl3
 base_model_relation: quantized
+datasets:
+- StillDeadcode/qwen3.8-27b-quant-challenge
 ---
 # Qwen3.8-27B — EXL3-V2: mixed-K EXL3 radiance containers (all sizes in one repo)
 
@@ -15,8 +17,8 @@ fitted sensitivity model and an exact knapsack solver picked, per tensor, which 
 were then measured, refitted and searched over about 1,450 evaluations (800+ of them whole mixes), and the final choice per size was made on
 held-out data.
 
-Compared with turboderp's EXL3 ladder at the same size, KLD is roughly 5–30% lower (most at 2–4 bpw)
-(table below).
+**Leaderboard (private corpus, scored 2026-11-01):** 10–31% lower KLD than turboderp's EXL3 ladder at the same size,
+level with IQR-V3 from 2.5 to 4.5 bpw, and 11–37% below it from 5.5 bpw up (tables below).
 
 **Needs radiance 1.13.0 plus the [`qc-exl3-ladder` plugins](https://codeberg.org/StillDeadcode/radiance/pulls/292)**
 (`qwen35_exl3` architecture, `exl3_dense` / `exl3r4d` kernels, `embed_tq` gather). The same plugins serve
@@ -27,54 +29,56 @@ EXL3-V3.
 
 ## Files
 
-| file | GiB | real bpw | KLD (held-out calib) | est. leaderboard KLD | top-1 |
-|---|---|---|---|---|---|
-| `qwen3.8-27b-exl3-v2-1.50bpw.rad` | 4.68 | **1.494** | 0.49221 | ~0.49 | 72.7% |
-| `qwen3.8-27b-exl3-v2-1.75bpw.rad` | 5.44 | **1.738** | 0.28036 | ~0.29 | 79.0% |
-| `qwen3.8-27b-exl3-v2-2.00bpw.rad` | 6.22 | **1.988** | 0.15471 | ~0.16 | 84.8% |
-| `qwen3.8-27b-exl3-v2-2.50bpw.rad` | 7.81 | **2.494** | 0.06250 | ~0.067 | 90.0% |
-| `qwen3.8-27b-exl3-v2-3.00bpw.rad` | 9.39 | **2.999** | 0.02726 | ~0.030 | 93.5% |
-| `qwen3.8-27b-exl3-v2-3.50bpw.rad` | 10.95 | **3.498** | 0.01517 | ~0.018 | 95.3% |
-| `qwen3.8-27b-exl3-v2-4.00bpw.rad` | 12.52 | **3.998** | 0.00712 | ~0.0081 | 96.6% |
-| `qwen3.8-27b-exl3-v2-4.50bpw.rad` | 14.09 | **4.500** | 0.00374 | ~0.0043 | 97.6% |
-| `qwen3.8-27b-exl3-v2-5.00bpw.rad` | 15.65 | **5.000** | 0.00215 | ~0.0025 | 98.2% |
-| `qwen3.8-27b-exl3-v2-5.50bpw.rad` | 17.20 | **5.492** | 0.00122 | ~0.0015 | 98.6% |
-| `qwen3.8-27b-exl3-v2-6.00bpw.rad` | 18.73 | **5.981** | 0.00076 | ~0.00093 | 98.9% |
-| `qwen3.8-27b-exl3-v2-6.50bpw.rad` | 20.34 | **6.495** | 0.00047 | ~0.00058 | 99.1% |
-| `qwen3.8-27b-exl3-v2-7.00bpw.rad` | 21.92 | **7.001** | 0.00035 | ~0.00043 | 99.3% |
-| `qwen3.8-27b-exl3-v2-7.50bpw.rad` | 22.91 | **7.316** | 0.00031 | ~0.00038 | 99.3% |
-| `qwen3.8-27b-exl3-v2-8.00bpw.rad` | 25.05 | **8.001** | 0.00026 | ~0.00032 | 99.4% |
-| `qwen3.8-27b-exl3-v2-9.00bpw.rad` | 28.18 | **9.001** | 0.00021 | ~0.00026 | 99.4% |
+| file | GiB | real bpw | leaderboard KLD | leaderboard top-1 |
+|---|---|---|---|---|
+| `qwen3.8-27b-exl3-v2-1.50bpw.rad` | 4.68 | 1.494 | **0.51233** | 73.4% |
+| `qwen3.8-27b-exl3-v2-1.75bpw.rad` | 5.44 | 1.738 | **0.29688** | 79.4% |
+| `qwen3.8-27b-exl3-v2-2.00bpw.rad` | 6.22 | 1.988 | **0.16439** | 84.9% |
+| `qwen3.8-27b-exl3-v2-2.50bpw.rad` | 7.81 | 2.494 | **0.06660** | 90.2% |
+| `qwen3.8-27b-exl3-v2-3.00bpw.rad` | 9.39 | 2.999 | **0.03063** | 93.6% |
+| `qwen3.8-27b-exl3-v2-3.50bpw.rad` | 10.95 | 3.498 | **0.01712** | 95.4% |
+| `qwen3.8-27b-exl3-v2-4.00bpw.rad` | 12.52 | 3.998 | **0.00828** | 96.7% |
+| `qwen3.8-27b-exl3-v2-4.50bpw.rad` | 14.09 | 4.500 | **0.00480** | 97.6% |
+| `qwen3.8-27b-exl3-v2-5.00bpw.rad` | 15.65 | 5.000 | **0.00256** | 98.2% |
+| `qwen3.8-27b-exl3-v2-5.50bpw.rad` | 17.20 | 5.492 | **0.00153** | 98.6% |
+| `qwen3.8-27b-exl3-v2-6.00bpw.rad` | 18.73 | 5.981 | **0.000914** | 99.0% |
+| `qwen3.8-27b-exl3-v2-6.50bpw.rad` | 20.34 | 6.495 | **0.000602** | 99.2% |
+| `qwen3.8-27b-exl3-v2-7.00bpw.rad` | 21.92 | 7.001 | **0.000450** | 99.3% |
+| `qwen3.8-27b-exl3-v2-7.50bpw.rad` | 22.91 | 7.316 | **0.000393** | 99.3% |
+| `qwen3.8-27b-exl3-v2-8.00bpw.rad` | 25.05 | 8.001 | **0.000341** | 99.4% |
+| `qwen3.8-27b-exl3-v2-9.00bpw.rad` | 28.18 | 9.001 | **0.000283** | 99.4% |
 
 - **Real bpw** = file bytes × 8 / 26,895,998,464 (the challenge's parameter count; embedding and head included).
   The 7.50 file came out at 7.32 bpw: no mix closer to 7.5 measured better.
-- **KLD (held-out calib):** mean KL divergence vs the bf16 model on a slice of the challenge's calibration corpus
-  that the search never used (244 documents, 316k scored positions, documents cut to 8k tokens, bf16 KV cache).
-  The winner per size was picked on this slice from 2–6 candidates (1–3 finalists), so the values carry a small selection
-  optimism (well under the ±1.5% measurement noise).
-- **Est. leaderboard KLD:** the held-out KLD scaled by the ratio leaderboard / held-out of turboderp's EXL3
-  containers measured on both (×1.00 at 1.6 bpw rising to ×1.24 at 6 bpw; held at ×1.24 above 6, where we have no
-  reference). An estimate until the board scores these.
+- **Leaderboard KLD / top-1:** the challenge leaderboard's scores on its private corpus (595 documents, 1.05M scored
+  positions, bf16 KV), as published 2026-11-01. Sizes on the board count tensor bytes only, so its bpw is ~0.005 below
+  the real bpw here. The final pick per size was made on a held-out slice of the calibration corpus; the scores here
+  are the first time these mixes met the private corpus.
 - **1.50 and 1.75** are research points: at these sizes the model is not practically usable.
 
-### Against IQR-V3 and EXL3-V1 (estimated, at the same size)
+### Against IQR-V3 and EXL3-V1 on the leaderboard, at the same size
 
-| size | EXL3-V2 (est.) | nearest IQR-V3 | EXL3-V1 (turboderp's ladder) |
-|---|---|---|---|
-| 2.0 | 0.16 | — | 0.154 at 2.12 bpw |
-| 2.5 | 0.067 | IQ2R-V3 0.068 at 2.46 | 0.078 at 2.71 |
-| 3.0 | 0.030 | IQ3R-S-V3 0.026 at 3.15 | 0.035 at 3.12 |
-| 3.5 | 0.018 | IQ3R-V3 0.017 at 3.46 | 0.020 at 3.66 |
-| 4.0 | 0.0081 | IQ4R-S-V3 0.0076 at 4.13 | 0.0095 at 4.07 |
-| 4.5 | 0.0043 | IQ4R-V3 0.0051 at 4.46 | — |
-| 5.0 | 0.0025 | IQ5R-S-V3 0.0025 at 5.06 | 0.0026 at 5.07 |
-| 6.0 | 0.00093 | IQ6R-S-V3 0.0011 at 6.05 | 0.0011 at 6.02 |
-| 7.0 | 0.00043 | IQ6R-L-V3 0.00072 at 6.94 | — |
-| 8.0 | 0.00032 | IQ8R-V3 0.00047 at 8.04 | — |
+| size | EXL3-V2 | IQR-V3 at the same size | V2 vs IQR-V3 | EXL3-V1 (turboderp's ladder) at the same size | V2 vs V1 |
+|---|---|---|---|---|---|
+| 1.75 | 0.297 | — |  | 0.41 | **-28%** |
+| 2.00 | 0.164 | — |  | 0.226 | **-27%** |
+| 2.50 | 0.0666 | 0.0656 | +2% | 0.0902 | **-26%** |
+| 3.00 | 0.0306 | 0.0318 | -4% | 0.0444 | **-31%** |
+| 3.50 | 0.0171 | 0.0163 | +5% | 0.0247 | **-31%** |
+| 4.00 | 0.00828 | 0.00896 | **-8%** | 0.0109 | **-24%** |
+| 4.50 | 0.0048 | 0.00488 | -2% | 0.00549 | **-13%** |
+| 5.00 | 0.00256 | 0.00269 | -5% | 0.00286 | **-10%** |
+| 5.50 | 0.00153 | 0.00172 | **-11%** | 0.00173 | **-11%** |
+| 6.00 | 0.000914 | 0.00113 | **-19%** | 0.00108 | **-15%** |
+| 6.50 | 0.000602 | 0.000842 | **-28%** | — |  |
+| 7.00 | 0.00045 | 0.0007 | **-36%** | — |  |
+| 7.50 | 0.000393 | 0.000621 | **-37%** | — |  |
+| 8.00 | 0.000341 | 0.000479 | **-29%** | — |  |
 
-IQR-V3 and EXL3-V1 values are their leaderboard scores (sizes from the leaderboard's byte counts). Roughly level with IQR-V3 from 2.5 to 3.5 bpw and at 5.0, ahead at
-4.5 and from 6.0 bpw up. IQR-V3's GEMMs are faster (int8 compute); EXL3-V2 uses the same f16-activation kernels as
-EXL3-V1. Speed is EXL3-V3's focus.
+All values are leaderboard scores. Competitors are interpolated to EXL3-V2's size along their own entries (log KLD
+linear in bpw; EXL3-V1 = the better of turboderp's SC and plain containers); no value outside their range. We read differences
+under ~5% as a tie; larger wins are in bold. IQR-V3's GEMMs are faster (int8 compute); EXL3-V2
+uses the same f16-activation kernels as EXL3-V1. Speed is EXL3-V3's focus.
 
 ## How the mixes were made
 
