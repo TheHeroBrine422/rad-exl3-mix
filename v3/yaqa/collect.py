@@ -130,6 +130,7 @@ def hin_group(name):       # "22.self_attn.q_proj" -> ourq's input-Hessian name 
     return {"self_attn.o_proj": f"{p}.self_attn.o_proj.input", "linear_attn.out_proj": f"{p}.linear_attn.out_proj.input",
             "mlp.gate_proj": f"{p}.post_attention.input", "mlp.up_proj": f"{p}.post_attention.input",
             "mlp.down_proj": f"{p}.mlp.down_proj.input"}.get(rest)
+@torch.no_grad()           # worker threads start with grad mode ON (thread-local): an in-place sum would join the graph
 def _acc_hin(gname, x, gn):
     xw = x * gn.sqrt()[:, None]
     if gname not in HINACC: HINACC[gname] = torch.zeros(x.shape[1], x.shape[1])
@@ -138,6 +139,7 @@ torch.set_num_threads(int(os.environ.get("YAQA_CPU_THREADS", 12)))
 TRUNC = bool(FULL) and os.environ.get("YAQA_TRUNC", "1") == "1"
 from concurrent.futures import ThreadPoolExecutor
 POOL, PEND = ThreadPoolExecutor(1), []    # one worker: the sums of one tensor never race; torch threads inside
+@torch.no_grad()
 def _acc(name, r, even=False):
     if name not in HACC: HACC[name] = torch.zeros(r.shape[1], r.shape[1])
     HACC[name].addmm_(r.T, r)
@@ -159,10 +161,10 @@ if TRUNC:
 def fwd_hook_full(name):
     def h(mod, inp, out):
         if not out.requires_grad: return
-        w = None if UNW else inp[0][0, 16:].float().pow(2).sum(1, keepdim=True)   # [T, 1]
+        w = None if UNW else inp[0][0, 16:].detach().float().pow(2).sum(1, keepdim=True)   # [T, 1]
         gname = hin_group(name) if HIN else None
         if gname:                                   # the group's input, once per sequence, on the CPU
-            if gname not in state["xin"]: state["xin"][gname] = inp[0][0, 16:].float().cpu()
+            if gname not in state["xin"]: state["xin"][gname] = inp[0][0, 16:].detach().float().cpu()   # detach: no graph link
             xin = state["xin"][gname]
         def bh(g):
             if name in state["full_done"]: return     # checkpoint recompute guard
