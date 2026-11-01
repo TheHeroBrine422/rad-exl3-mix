@@ -434,6 +434,13 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-10-31 ~21:00 CT: **Embedding menu, token-frequency weighted** (`v3/e3/embfreq.py`, the sweep's saved per-row
+  errors x search+qad token counts): the error curve is unchanged (x1.40 per quarter step; frequency-weighted error
+  +1–3%). Per-row scale still wins to K4 (G1024 x1.011 / 1.006 / 1.003 at K2/3/4 frequency-weighted); from K5 G1024 is
+  0.5–1% better frequency-weighted. Caveat: 48% of the 4096 random rows never occur and the rest carry 1.2% of the
+  tokens, so the frequency weighting rests on few rows. Decision unchanged: per-row only (a 1% embedding-error
+  difference at K ≥ 5 is far below anything measurable in KLD). Group-scale recheck final (16 tensors): same as before.
+
 - 2026-10-31 ~20:40 CT: **Embedding menu sweep done** (`v3/e3/emb/run3.sh`, Thor, 4096 rows, `v3/e3/data/embmenu.jsonl`).
   One scale per row wins at equal bits at every K: G1024 is x1.015 worse at K1.5–2.5, x1.008 at K4, x1.003 at K5, even
   only at K5.75; G512 x1.01–1.02 worse throughout. The quarter-step curve is smooth (x1.40 error per quarter step at
