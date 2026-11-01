@@ -430,9 +430,8 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
       Before the Phase-B requant: check on real tensors with LDLQ (the gap may shrink or grow), then an fp32-cost
       kernel variant (slower search; quant time is not the bottleneck).
 - [ ] Depends on tonight: YAQA count test / full collection (gate 2c/2e); gradient-weighted H_in if it wins;
-      SC-style (model-written text) input Hessians or **sequential calibration** (each layer on the quantized
-      model's inputs, as exllamav3's converter does; we use bf16-model Hessians) if low damping doesn't explain
-      turboderp's K6 win; quarter-step heads if the slab head fails; row-weighted trellis (PR #364) if gate 2d helps.
+      (dropped 2026-11-01: why turboderp wins at K6–8 -- damping and gain ruled out; the rest only matters ≥ 6 bpw,
+      and his tensors stay options in the menu); quarter-step heads if the slab head fails; row-weighted trellis (PR #364) if gate 2d helps.
 - [ ] Blocked / later: sub-1 K and K0 (needs the salted 0-bit read); fused-GEMM K ties (after the time table);
       radiance #328 check at the 1.15 port.
 
