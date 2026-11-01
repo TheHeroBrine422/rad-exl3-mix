@@ -475,6 +475,19 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:47 CDT: **D2 done: our proxy edge over turboderp is ~9% in-sample, the rest is real; damping holds.**
+  Split-half input Hessians (layers 3/10/43, 1,200 non-verify windows by document parity), ours quantized on H_A at
+  K4 / K6, scored on H_A / H_B / published H (`v3/yaqa/d2report.py`, data `v3/yaqa/data/d2-score.jsonl`). Ours /
+  turboderp proxy, median of 17 tensors: K4 0.775 in-sample, 0.851 out of sample, 0.863 published; K6 0.774 / 0.852 /
+  0.862. So ~9% of the advantage is fitting to the Hessian sample at ~1.2M tokens per half; with the published 10M
+  tokens it should be much smaller. Ours-vs-ours comparisons (fractional K, damping, codebook) are not affected.
+  Damping: the H_A-best value is also H_B-best for 13/17 (K4) and 14/17 (K6) tensors; the median tensor keeps 0.025
+  (gain small, as damp2). The per-tensor sweep does not overfit.
+- 2026-11-01: **V3 stream budget raised to ~1,200-1,500 evals** (user), with a per-band stop on the ver3 validation
+  curve. Solver-model plan: an uncertainty-aware solve first (bootstrap fits, penalty per option, B11), targeted
+  evals where the fits disagree, partial pooling of factors; the XGBoost / residual re-ranker retried at the halfway
+  point with a pass rule fixed beforehand (beat kfit2 on grouped-CV pair ranking by more than the bootstrap noise and
+  on a held-out search slice).
 - 2026-11-01 ~01:40 CDT: **knap4 wired to real options** (quality only, V3 menu: frac + damp, measured speed table):
   - `KN_EMBT=2`: trellis embedding priced from chain1's real KLD swaps (golden-ml increments scaled to the pooled
     corpus by the Lloyd points, 0.333; other K along the CPU curve from the nearest measured point, as damage vs a
