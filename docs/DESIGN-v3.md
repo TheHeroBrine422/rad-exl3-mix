@@ -242,7 +242,9 @@ work overlaps it:
 - **Known taint:** the published input Hessians include every calib doc, verify too (every quant is fitted to them;
   affects all arms of a comparison equally); the moved docs were in the qad head Fisher (slab-head ranking).
 - **Validation curve from day one** (held-out score of the best-so-far picks), stop when it goes flat.
-- **Slices by role (user, 2026-11-01).** Everything in the search loop, held-out monitor included, scores only the
+- **Slices by role (user, 2026-11-01).** **Search slices: documents capped at 2k positions** (`eval/capstudy.py` on
+  V2's per-row scores: paired SE 1.7-1.9% at 2k vs 1.6% at 8k for 51-62% of the tokens, ~27% less noise per GPU-second,
+  calls agree at 0.993-0.997; spend the saved time on more documents). **Held-out monitor: 8k.** It scores the
   first 8k positions of each document: the stream reads **`golden-ver3-8k`** (the 104 ver3 docs cut at 8192: 156k
   scored rows), never `golden-ver3` (16k cut) or `golden-ver3-long`. Long context is checked once, at the end, on
   the finalists: ver4 (16k cut) plus `golden-ver4-long`, and `golden-ver3-long` as a second long trace. All slices
