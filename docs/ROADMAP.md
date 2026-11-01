@@ -42,6 +42,10 @@ EXL3-V3 = integer compute.
 - Embedding menu at both ends: sub-1 trellis embedding (t0.25–0.75) for the smallest sizes, once t1 / t1.25 show
   whether the < 2 bpw solves sit at the menu floor; t6.25–t8 for the 7.0 / 8.0 releases (at 7.0 bpw the solver
   already sits on t6, the menu top). CPU sweeps (`v3/e3/emb/run4.sh` pattern).
+- **Low-bpw research ladder:** release-style solves from 2.0 down to 1.0 in 0.1 bpw steps, then 0.9, 0.8, ... until
+  KLD blows up (1.2 is possible with V3's K1 + 1/8 levels alone; ~1.0 and below needs sub-1). Mechanical floor with
+  K0.125 everywhere ~0.15-0.19 bpw; the meaningful knee is expected around 0.8-1.0. Scored on our own held-out slices;
+  only a few points go to the board. Quantizer support for sub-1 (0-bit steps) is built in V3's kernel pass.
 - **A4 (int4 activations), measured in full.** Dropped from V3 on the solver's estimate (≤ 14% of FLOPs at
   x1.88 → x1.94 for +2–5% KLD), but never built or measured end to end. Build the iu4 path, measure real speed and
   KLD per size, and publish the frontier whatever it shows.
