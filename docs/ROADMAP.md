@@ -19,7 +19,7 @@ EXL3-V3 = integer compute.
   and delta-net input projections), scale gain (larger for attn_output / ssm_out at ≥5 bits).
 - Finer K (2026-10-31), all from one generalised trellis whose per-weight shift follows a repeating
   pattern (2,3,2,3 = K2.5; 2,3,3,3 = K2.75; any rational K = a/b):
-  - quarter steps K1 … K5, half steps K5 … K6.5 (sub-1 K and K0: later, < 2 bpw only);
+  - quarter steps K1 … K5, half steps K5 … K6.5 (sub-1 K: V3.5);
   - the same quarter steps for the embedding and, if row slabs do not pay, the LM head;
   - row-by-row K for the LM head (rows sorted by sensitivity), under test.
   Expected (knapsack discretisation, exponential D(R)): whole → half steps ~−5% KLD, half → quarter ~−1.5% more,
@@ -35,10 +35,10 @@ EXL3-V3 = integer compute.
   0.164 → 0.297 on the board). Add release sizes in between (2.25 at least; 1.875 if it earns its place), and the
   trunk levels they need: K1.25 / 1.5 / 1.75 in the ladder (each ~3 card-hours; today they are interpolated from
   V2's K1, the level the fit under-predicts most). Measure K1.5 with a few swaps first.
-- Sub-1 K (K0.25–0.75, a salted 0-bit read in the quantizer and every decode kernel) and K0 (drop the tensor or a
-  small low-rank stand-in), for the < 2 bpw sizes. Before QAD because low-bit quants are where healing should gain
+- Sub-1 K (K0.125–0.875 at 1/8 steps, a salted 0-bit read in the quantizer and every decode kernel), for the < 2 bpw
+  sizes. No K0 (dropping a tensor): it saves only 0.125 bit a weight over K0.125 on that tensor, for a far larger
+  error (user, 2026-11-01). Before QAD because low-bit quants are where healing should gain
   the most, so they are the natural QAD targets and their menu should exist when QAD (V5) starts.
-- First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
 - Embedding menu at both ends: sub-1 trellis embedding (t0.25–0.75) for the smallest sizes, once t1 / t1.25 show
   whether the < 2 bpw solves sit at the menu floor; t6.25–t8 for the 7.0 / 8.0 releases (at 7.0 bpw the solver
   already sits on t6, the menu top). CPU sweeps (`v3/e3/emb/run4.sh` pattern).
