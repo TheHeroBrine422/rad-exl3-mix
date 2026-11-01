@@ -52,6 +52,10 @@ ap.add_argument("--save-wq", action="store_true", help="also write each linear's
 ap.add_argument("--head-perm", default=None, help="int64 .npy permutation of the head's vocab rows: lm_head is "
                 "quantized in that row order (rows sorted by sensitivity: slabs = contiguous 128-row blocks); --save-wq "
                 "outputs stay in the permuted order")
+ap.add_argument("--sigma-reg-in", type=float, default=None, help="regularisation for the layer-input group only (attention "
+                "q/k/v, GDN qkv/z; damptest: 0.005 beats 0.025 there, ~0 elsewhere)")
+ap.add_argument("--gain", default=None, help="multipliers on exllamav3's chosen g_scale per linear, by key suffix, e.g. "
+                "'o_proj=1.16,out_proj=1.16' (gaintest.py)")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
 a = ap.parse_args()
 if a.frac_ext:
@@ -110,6 +114,9 @@ def quantize_group(hname, keys, seed0, log):
         qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
         if a.sigma_reg is not None: qa["sigma_reg"] = a.sigma_reg
+        if a.sigma_reg_in is not None and hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input"):
+            qa["sigma_reg"] = a.sigma_reg_in
+        GAIN[0] = next((float(m) for suf, m in GAINS.items() if key.endswith(suf)), 1.0)
         if a.sigma_reg_out is not None: qa["sigma_reg_out"] = a.sigma_reg_out
         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
         if hp and os.path.exists(hp):
@@ -137,7 +144,7 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
-                              "hout_diag_scales": bool(qa.get("out_scales_hessian")),
+                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "gain": GAIN[0],
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()
@@ -156,6 +163,13 @@ def write_index():
     c["quantization_config"].update({"bits": float(a.K), "head_bits": a.K, "calibration": {"source": "challenge calib Hessians"}})
     json.dump(c, open(os.path.join(a.o, "config.json"), "w"), indent=1)
 
+GAINS = dict(kv.split("=") for kv in a.gain.split(",")) if a.gain else {}
+GAIN = [1.0]
+if GAINS:
+    _orig_gss = _Q.g_scale_gss
+    def _gss(*x, **k):
+        g_, m_ = _orig_gss(*x, **k); return g_ * GAIN[0], m_
+    _Q.g_scale_gss = _gss
 log = open(os.path.join(a.o, "proxy.jsonl"), "a")
 lo, hi = map(int, a.layers.split("-"))
 if not a.only_head:
