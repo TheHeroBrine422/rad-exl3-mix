@@ -29,7 +29,7 @@ idx = json.load(open(f"{CK}/model.safetensors.index.json"))["weight_map"]["lm_he
 with safe_open(f"{CK}/{idx}", "pt") as f: Wref = f.get_tensor("lm_head.weight").to(dev)[perm]   # bf16, permuted
 W = {}
 for k in KS:
-    with safe_open(f"{QD}/K{k}/wq/lm_head.safetensors", "pt") as f: W[k] = f.get_tensor("weight").to(dev)
+    with safe_open(f"{QD}/K{k:g}/wq/lm_head.safetensors", "pt") as f: W[k] = f.get_tensor("weight").to(dev)
 print(f"{N} head inputs, {len(plans)} plans, weights on card {torch.cuda.memory_allocated() / 2**30:.1f} GiB",
       file=sys.stderr, flush=True)
 def mm(x, w): return torch.mm(x, w.T, out_dtype=torch.float32)
@@ -55,6 +55,8 @@ def blocks(v): return v[:nb * 512].numpy().reshape(nb, 512).mean(1)
 res = {}
 for n, pl in P["plans"].items():
     B = n.lstrip("usb").split("-")[0]; ref = f"u{B}"
+    if ref not in kl_pos:                              # curve plans: the uniform plan at the largest donor K <= budget
+        lo = [k for k in KS if k <= float(B) + 1e-9]; ref = f"u{max(lo):g}" if lo else ref
     r = {"avg_bits": pl["avg_bits"], "kl": float(kl_pos[n].mean()), "top1": hit[n] / N,
          "guard_kl": float(kl_pos[n][guard].mean()) if guard.any() else None, "guard_n": int(guard.sum()),
          "proxy_train_vs_uniform": pl.get("train_vs_uniform")}

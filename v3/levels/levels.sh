@@ -10,6 +10,8 @@ export ROCR_VISIBLE_DEVICES=$C EXL3_QT_OPTIMIZED=1 PYTORCH_CUDA_ALLOC_CONF=expan
 export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
 . $W/settings.env
 log "card $C levels $LEVELS with: $OURQ_ARGS"
+# card 0 waits while the slab-head curve (v3/yaqa/headcurve.sh) holds that card's slot
+while [ $C = 0 ] && [ -f /data/yaqa/headcurve.pending ]; do sleep 60; done
 for K in $LEVELS; do
   [ -f $W/K$K/q-L63.safetensors ] && continue
   s=$(date +%s)

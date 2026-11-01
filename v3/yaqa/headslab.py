@@ -12,6 +12,9 @@
       For budgets "uniform K4 / K5 / K6 bytes": uniform, S-slab (contiguous in sensitivity order, DP) and per-block
       (Lagrangian, the ceiling) assignments, a
       floor of max(HS_FLOOR = 3, round(budget K - 1.5)) (a K2 tail leaks mass into rare tokens: vtsim), costs under the training Fisher and the held-out verify Fisher.
+      Curve mode (the solver's slab-head menu): HS_BUDGETS=3.5,3.625,.. -> for every budget a 3-slab plan "s<B>-3"
+      plus the uniform plan "u<K>" of every donor K; HS_KS=3,3.5,.. restricts the donors (headsim keeps every
+      donor on the card: ~2.5 GB each, so a long K range runs as two passes). Donor dirs may be fractional (K3.5).
   headslab.py build PLAN.json NAME PERM.npy QDIR DONOR.rad
       writes plan NAME's head (rows from each K's dequantized quant, un-permuted, bf16) over output.weight of DONOR
       (a reflink copy of the bf16 container), in place."""
@@ -32,8 +35,9 @@ def cmd_perm(hs, out):
                               f"{F[perm[:BLK]].sum() / F.sum():.1%} of the training Fisher")
 
 def block_costs(hs, perm, qdir):
-    Ks = sorted(int(d[1:]) for d in os.listdir(qdir) if d[0] == "K" and os.path.exists(f"{qdir}/{d}/wq/lm_head.rowerr.npz"))
-    E = np.stack([np.load(f"{qdir}/K{k}/wq/lm_head.rowerr.npz")["err"] for k in Ks])        # [K, rows], permuted
+    Ks = sorted(float(d[1:]) for d in os.listdir(qdir) if d[0] == "K" and os.path.exists(f"{qdir}/{d}/wq/lm_head.rowerr.npz"))
+    if os.environ.get("HS_KS"): Ks = [k for k in Ks if k in {float(x) for x in os.environ["HS_KS"].split(",")}]
+    E = np.stack([np.load(f"{qdir}/K{k:g}/wq/lm_head.rowerr.npz")["err"] for k in Ks])      # [K, rows], permuted
     nb = E.shape[1] // BLK
     C = {}
     for name, pools in (("train", TRAIN), ("held", HELD)):
@@ -84,18 +88,28 @@ def cmd_plan(hs, permf, qdir, out):
     perm = np.load(permf); Ks, C, nb = block_costs(hs, perm, qdir); Kv = np.array(Ks)
     plans = {}
     def report(name, a, ref):
-        r = {"K_blocks": [int(Kv[i]) for i in a], "avg_bits": float(Kv[a].mean())}
+        r = {"K_blocks": [float(Kv[i]) for i in a], "avg_bits": float(Kv[a].mean())}
         for c in ("train", "held"):
             r[c] = float(C[c][a, np.arange(nb)].sum()); r[c + "_vs_uniform"] = r[c] / ref[c] - 1
         segs = []; i = 0
         while i < nb:
             j = i
             while j < nb and a[j] == a[i]: j += 1
-            segs.append(f"{(j - i) * BLK}@K{Kv[a[i]]}"); i = j
+            segs.append(f"{(j - i) * BLK}@K{Kv[a[i]]:g}"); i = j
         r["segments"] = segs if len(segs) <= 12 else f"{len(segs)} segments"
         plans[name] = r
         print(f"{name:10s} avg {r['avg_bits']:.3f} b  train {r['train_vs_uniform']:+.1%}  held-out {r['held_vs_uniform']:+.1%}  "
               f"{r['segments'] if isinstance(r['segments'], str) else ' '.join(r['segments'])}", flush=True)
+    if os.environ.get("HS_BUDGETS"):                  # curve mode
+        for k in Ks:
+            u = np.full(nb, Ks.index(k)); report(f"u{k:g}", u, {c: C[c][u, np.arange(nb)].sum() for c in C})
+        for B in (float(x) for x in os.environ["HS_BUDGETS"].split(",")):
+            lo = max(k for k in Ks if k <= B) if any(k <= B for k in Ks) else Ks[0]
+            u = np.full(nb, Ks.index(lo)); ref = {c: C[c][u, np.arange(nb)].sum() for c in C}
+            kmin = max(FLOOR, round(B - 1.5 + 1e-9))
+            if kmin not in Ks: kmin = min(k for k in Ks if k >= kmin)
+            report(f"s{B:g}-3", slabs(C["train"], Ks, kmin, B * nb, nb, 3), ref)
+        json.dump({"Ks": Ks, "plans": plans}, open(out, "w"), indent=1); return
     for B in (4, 5, 6):                               # where V2 mixes put the head (K4 at 2.5-3 bpw ... K6 at 4.5-5)
         if B not in Ks: continue
         u = np.full(nb, Ks.index(B))
@@ -132,14 +146,14 @@ def cmd_build(planf, name, permf, qdir, donor):
     out = np.memmap(donor, np.uint16, "r+", offset=off, shape=(V, HID))
     for k in sorted(set(rowK.tolist())):
         idx = np.nonzero(rowK == k)[0]
-        with safe_open(f"{qdir}/K{k}/wq/lm_head.safetensors", "pt", device="cpu") as f:
+        with safe_open(f"{qdir}/K{k:g}/wq/lm_head.safetensors", "pt", device="cpu") as f:
             W = f.get_tensor("weight")                # (V, HID) f16, permuted rows
         import torch
         for c in range(0, len(idx), 16384):
             ii = idx[c:c + 16384]
             out[perm[ii]] = W[torch.from_numpy(ii)].to(torch.bfloat16).view(torch.int16).numpy().view(np.uint16)
         del W
-        print(f"  K{k}: {len(idx)} rows", flush=True)
+        print(f"  K{k:g}: {len(idx)} rows", flush=True)
     out.flush(); del out
     print(f"{name} written into {donor} (output.weight at {off}, {nbytes} bytes)")
 
