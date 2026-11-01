@@ -69,8 +69,6 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   M >= 512, decode stays f16-activation); worth reading for their accuracy data. The separate-prefill-weights form
   (compute-native prefill weights, streamed from SSD: "ODP") is a serving variant, not a board entry (the board
   counts every stored tensor).
-- **Generation-quality check (looping):** KLD does not show repetition loops in long free generation. Compare our
-  quants with IQR-V3 at <= 4.5 bpw on long sampled / greedy generations (repetition rate, loop onset).
 - **Decode speed is the largest practical gap:** V2 decodes roughly 3x slower than IQR-V3 at TP1 (user's estimate,
   ~30 vs ~100 tok/s; prefill ~1,500 vs ~2,500 tok/s). The V4 decode work (profile, then a decode-optimized kernel /
   variant) matters more for real use than the board does.
