@@ -441,6 +441,17 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-01 ~23:20 CT: **Rounded-codebook quantizers pass** (exl3cb, `cbsmoke.py`, GPU): int8 on grid, x1.000 K1–6,
+  x1.024 K7, x1.347 K8; int4 on its 16 levels, x1.001 K1, x1.007 K2, x1.020 K2.5, x1.059 K3, x2.5 K4.
+  **Row-slab head works** (`headrun2.sh`, exact head-only KL on 32,768 held-out head inputs, paired vs uniform, 95% CI):
+  K5 budget −40% (−48…−31), K6 −36% (−42…−29), K4 −9.6% (−23…+5, n.s.); 3 slabs = per-block; without the K3
+  floor 3–12x worse; rare-token guard KL x1.2–1.5 at K5–6. Head ≈ 1.5–3% of total KLD: ~0.5–1% at 3.5–5 bpw.
+  **knap4 (V3 menu, quality only) vs V2 menu:** 1.75 −25%, 2.0 −21%, 2.5 −15%, 3.0 −10%, 3.5 −13%, 4.0 −10%, 4.5 −11%,
+  5.0 −6%; at 2.5: steps −9.6%, trellis embedding −5.4%, damping ~0, quarter heads 0. At 2.5 bpw nothing goes
+  below K1.5 (sub-1 K would not be used there); at 2.0 the embedding hits its K1.5 floor (extend to K1).
+  Speed: 3.0 at x1.53 prefill +0.6% KLD, 4.0 +2.5%. Gate 2e crashed twice more (profiler OOM, then expandable_segments
+  at load); restarted 23:05 without either. Levels: settings = int8 codebook + per-tensor damping sweep on inputs.
+
 - 2026-11-01 ~23:05 CT: **The GPU search's "4–6% gap" is the tail-biting constraint, not a flaw.** fp16 costs change
   nothing (CPU emulation, `f16gap.sh`: random tiles 1.000, real tensors with LDLQ median 1.000 at K2–6). The CPU
   reference Viterbi has a free start state, which EXL3's circular tiles cannot encode; a CPU tail-biting search with

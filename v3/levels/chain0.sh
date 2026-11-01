@@ -32,6 +32,13 @@ until [ -f $W/settings.env ] && grep -q "FRACSMOKE OK" /data/exl3frac/smoke.log 
 . $W/settings.env
 log "levels with: $OURQ_ARGS"
 export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
+if ! grep -q '"key"' $W/trial/proxy.jsonl 2>/dev/null; then          # one layer (3: attention inputs) with the settings
+  rm -rf $W/trial
+  ( exec 9>$RXM_WORK/card0.lock; flock 9
+    $PY -I ourq/ourq.py -K 3.25 -o $W/trial --layers 3-3 --device 0 --frac-ext /data/exl3frac/src $OURQ_ARGS 2>&1 | grep -v -e Warning -e "cpu = _conv" ) > $W/trial.log
+  [ -f $W/trial/q-L03.safetensors ] || { log "trial layer FAILED (see trial.log): levels not started"; exit 1; }
+  log "trial layer ok: $(grep -o '"sigma_reg": [0-9.e-]*' $W/trial/proxy.jsonl | sort | uniq -c | tr '\n' ' ')"
+fi
 for K in ${LEVELS:-3.25 2.75 3.75 3.5 2.5 3 4.25 4 2.25 4.5 4.75 2 5 5.5 6}; do   # 2.5-4 bpw first; integers rebuilt with the int8 codebook
   [ -f $W/K$K/q-L63.safetensors ] && continue
   s=$(date +%s)

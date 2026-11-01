@@ -129,6 +129,16 @@ Open decisions are marked **[decide]**.
    ≥ 6 bpw), and record max |y| of the residual writers (down, ssm_out, attn_output) over the long verify traces:
    the f16 tile kept for K7/K8 overflows at 65,504, and one inf costs more than any quant choice.
 
+## 1c-bis. Codebook (2026-11-01)
+
+- **Every V3 quant of ours is searched with the int8-rounded mul1 codebook** (`ourq.py --codebook i8`, exl3cb): free
+  to K6 (GPU smoke: x1.000 K1–6, x1.02 K7, x1.35 K8). So **both decode paths must round**: the int8 path natively,
+  the f16 path by decoding the rounded value (else it reads unrounded values the search never chose: E4's post-hoc
+  mismatch cost K5 +17%, K6 +60%). The codebook is part of the V3 encoding (`cb=mul1i8`); V1/V2 tensors keep mul1.
+- int4 grid (`--codebook i4`): x1.007 K2, x1.02 K2.5, x1.06 K3 -- only for a W4A4 path, if the A4 test pays.
+- Damping: attention/GDN input groups take, per tensor, the best of sigma_reg {0.025, 0.005, 0.001} by proxy error
+  against the undamped Hessian (`--sigma-in-sweep`); other families keep the default.
+
 ## 1d. turboderp's tensors (2026-10-31)
 
 - **Options at every K**: his published EXL3 tensors join ours in V3's option set, at all bit widths (V2
