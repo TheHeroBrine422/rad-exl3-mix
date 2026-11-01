@@ -2,21 +2,24 @@
 """headslab.py -- row-slab LM head: per-vocab-row bit allocation driven by the head's output-side Fisher diagonal.
 
   headslab.py perm HEADSENS.npz PERM.npy
-      vocab rows sorted by training-pool sensitivity (fit + search + qad, scored positions), most sensitive first.
+      vocab rows sorted by training-pool sensitivity (qad pool, scored positions; env HS_TRAIN), most sensitive first.
+      qad only, so the fit-pool slices that judge plans (calib-A head dump, golden-ml) stay out of sample.
       The head is then quantized in that order (ourq.py --head-perm), so a slab is a run of whole 128-row blocks
       (EXL3's output rotation mixes 128 rows; a slab cannot cut one).
   headslab.py plan HEADSENS.npz PERM.npy QDIR PLAN.json
       QDIR/K<k>/wq/lm_head.rowerr.npz: per-row error (w-q)ᵀH(w-q) at each K (permuted order). Row cost =
-      Fisher(v) * err(v) (KLD ≈ ½ Σ_v p(1-p) Δlogit_v², cross terms dropped). For budgets "uniform K3 / K4 bytes":
-      uniform, S-slab (contiguous in sensitivity order, DP) and per-block (Lagrangian, the ceiling) assignments, a
-      floor of round(budget K - 1.5), costs under the training Fisher and the held-out verify Fisher.
+      Fisher(v) * err(v) (KLD ≈ ½ Σ_v p(1-p) Δlogit_v², cross terms dropped). 
+      For budgets "uniform K4 / K5 / K6 bytes": uniform, S-slab (contiguous in sensitivity order, DP) and per-block
+      (Lagrangian, the ceiling) assignments, a
+      floor of max(HS_FLOOR = 3, round(budget K - 1.5)) (a K2 tail leaks mass into rare tokens: vtsim), costs under the training Fisher and the held-out verify Fisher.
   headslab.py build PLAN.json NAME PERM.npy QDIR DONOR.rad
       writes plan NAME's head (rows from each K's dequantized quant, un-permuted, bf16) over output.weight of DONOR
       (a reflink copy of the bf16 container), in place."""
 import json, os, struct, sys, numpy as np
 
 BLK, HID = 128, 5120
-TRAIN, HELD = ("fit", "search", "qad"), ("verify",)
+TRAIN, HELD = tuple(os.environ.get("HS_TRAIN", "qad").split(",")), ("verify",)
+FLOOR = int(os.environ.get("HS_FLOOR", 3))
 
 def fisher(npz, pools):
     z = np.load(npz); return sum(z[f"fisher_{p}_gen"] for p in pools)
@@ -93,12 +96,12 @@ def cmd_plan(hs, permf, qdir, out):
         plans[name] = r
         print(f"{name:10s} avg {r['avg_bits']:.3f} b  train {r['train_vs_uniform']:+.1%}  held-out {r['held_vs_uniform']:+.1%}  "
               f"{r['segments'] if isinstance(r['segments'], str) else ' '.join(r['segments'])}", flush=True)
-    for B in (3, 4):
+    for B in (4, 5, 6):                               # where V2 mixes put the head (K4 at 2.5-3 bpw ... K6 at 4.5-5)
         if B not in Ks: continue
         u = np.full(nb, Ks.index(B))
         ref = {c: C[c][u, np.arange(nb)].sum() for c in C}
         report(f"u{B}", u, ref)
-        kmin = round(B - 1.5 + 1e-9)
+        kmin = max(FLOOR, round(B - 1.5 + 1e-9))
         for S in (3, 4):
             report(f"s{B}-{S}", slabs(C["train"], Ks, kmin, B * nb, nb, S), ref)
         report(f"b{B}", lagrange(C["train"], Ks, kmin, B * nb, nb), ref)

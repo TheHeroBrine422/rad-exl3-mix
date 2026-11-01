@@ -417,6 +417,18 @@ Trellis → int8, W8A8 everywhere except the A16 picks. Measure KLD and prefill/
 
 ## Log (newest first)
 
+- 2026-10-31 ~19:45 CT: **Mining merge acted on** (`local/mine/merged-2026-10-31.md`, Opus 5.5 via `mergep.sh`).
+  DESIGN-v3 corrected (YAQA status and costs: 3.7M qad tokens, ~0.2 TB full H_out; head K priced by KLD + bytes;
+  his S not a prior) and the merge's checks added to §6. Queued on iceman behind gate 2c:
+  - `gate2d.sh` (merge D1): **diagonal-only output weighting** -- one-sided LDLQ with exllamav3's sensitivity output
+    scales from diag(H_out) (`ourq.py --hout-diag`), blocks 22/23 K2/K3, diagonal from the sampled fp32 H_out and from
+    the full-token one, paired vs one-sided.
+  - `headrun2.sh` (merge A2, replaces the invalid headrun): Fisher ranking from the **qad pool only** (vs fit+search+qad:
+    top-set overlap 0.93–0.98, fit-pool Fisher captured in the top 1,280 rows 0.610 vs 0.613: the old leak was small),
+    floor K3, budgets K4/K5/K6, judged by **`headsim.py`** (exact head-only KL on the 32,768 calib-A head inputs, fit
+    pool = out of sample; paired vs uniform with a 512-position block bootstrap). Whole-model check for the finalist
+    only, with the fixed plugin.
+
 - 2026-10-31 ~19:15 CT: **Head slab test INVALID (plumbing bug), rerun pending.** Every spliced variant (u3/u4,
   slabs, Lagrange) scored KLD ~15 with top-1 0.0002 (V2 3.00 itself: 0.027). The donor heads are right (rows vs the
   bf16 head: K4 rel err 0.076, cos 0.997; K3 0.15), so quantization and the un-permute work. Cause: `qwen35_exl3`'s

@@ -41,6 +41,9 @@ ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
                 "two-sided LDLQ for the linears that have one")
+ap.add_argument("--hout-diag", default=None, help="dir of output-side Hessians as for --hout, but only their diagonal is "
+                "used: one-sided LDLQ with exllamav3's sensitivity output scales (t ~ (sigma^2/s)^(1/4), as convert.py "
+                "--out_scales yaqa) for the linears that have one (output scales on auto instead of always)")
 ap.add_argument("--save-wq", action="store_true", help="also write each linear's dequantized weight (out, in) f16 to "
                 "OUTDIR/wq/<key>.safetensors, and per output row the error (w-q)ᵀH(w-q) and the reference wᵀHw (H: the "
                 "raw input Hessian) to OUTDIR/wq/<key>.rowerr.npz (v3/yaqa/headslab.py)")
@@ -108,6 +111,11 @@ def quantize_group(hname, keys, seed0, log):
         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
         if hp and os.path.exists(hp):
             with safe_open(hp, "pt", device="cpu") as f: qa["H_out"] = f.get_tensor("hout").to(dev)
+        hd = f"{a.hout_diag}/{key}.safetensors" if a.hout_diag else None
+        if hd and os.path.exists(hd):
+            with safe_open(hd, "pt", device="cpu") as f:
+                qa["out_hessian_diag"] = (f.get_tensor("hout_diag") if "hout_diag" in f.keys() else f.get_tensor("hout").diagonal()).float().to(dev)
+            qa["apply_out_scales"] = None             # the diagonal path runs only with output scales on auto
         wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
         if a.save_wq:
             import numpy as np
@@ -126,6 +134,7 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
+                              "hout_diag_scales": bool(qa.get("out_scales_hessian")),
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()
