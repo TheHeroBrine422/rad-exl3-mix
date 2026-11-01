@@ -436,6 +436,12 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 - [ ] Depends on tonight: YAQA count test / full collection (gate 2c/2e); gradient-weighted H_in if it wins;
       (dropped 2026-11-01: why turboderp wins at K6–8 -- damping and gain ruled out; the rest only matters ≥ 6 bpw,
       and his tensors stay options in the menu); quarter-step heads if the slab head fails; row-weighted trellis (PR #364) if gate 2d helps.
+- [ ] **Head as a slab-plan curve in the solver** (planned): ~33 options, slab plans at 1/8-bit budgets 3–7 bits/row
+      (headslab.py), each priced by headsim.py (exact head-only KL, validated vs whole-model head swaps); needs the
+      int8-codebook head quants (one per K).
+- [ ] **Later, during search/convergence: refine the head locally** (user idea, 2026-11-01): once the stream settles
+      on a head budget, search finer around it (1/32-bit budgets, slab boundaries moved by single 128-row blocks,
+      half-step K levels inside slabs), priced by headsim. Write after the search starts.
 - [ ] Blocked / later: sub-1 K and K0 (needs the salted 0-bit read); fused-GEMM K ties (after the time table);
       radiance #328 check at the 1.15 port.
 
