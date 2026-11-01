@@ -9,6 +9,16 @@ Switches (env, all default off = knap3's V2-like menu):
   KN_DAMP=1   attention inputs (q/k/v) requantized at sigma_reg 0.005: error x the CPU damping-sweep factor
               (K2 0.994, K4 0.981, K6 0.991, K8 0.955; log-linear in between).
   KN_MODES=f16  quality-only (no int compute modes).
+  KN_EMBT=2   trellis embedding priced from REAL KLD (chain1, 2026-11-01: swaps into V2 6.00 on golden-ml, t2 / t2.5 / t3
+              / t3.5 / t4 vs Lloyd 2-5): the ml increments are scaled to the pooled corpus by the Lloyd points
+              (model e3-e5, e4-e5 vs the same on ml: 0.333, both agree to 1%); other K from the nearest measured
+              point along the CPU error curve (embmenu.jsonl).
+  KN_HEADSLAB=1  slab heads (3 row slabs, K3 floor; headsim on 32,768 calib-A head inputs): offered at K5 / K5.5 / K6
+              at the conservative end of the 95% interval (head KL x0.69 / x0.70 / x0.71); NOT at K4 (gain n.s.,
+              rare-token KL x2.5). Bytes + 1 MB (row permutation). Containers hdslab-K<k>.rad (to build).
+  KN_LEVELS=DIR  measured fractional levels: DIR/K<k>/proxy.jsonl (ourq.py, the V3 ladder, int8 codebook) for k and
+              both neighbouring integers -> a tensor's fractional error sits where the measurement puts it between
+              the integers (log scale), instead of the midpoint interpolation. Tensors without all three: interpolated.
   F8 now uses the measured K7 x1.25 / K8 x4.5 (E3b full set), fractional K interpolated.
 The rest is knap3 (below).
 
@@ -96,6 +106,27 @@ def dampf(K):
     ks = sorted(DAMPF); K = min(max(K, ks[0]), ks[-1])
     lo = max(k for k in ks if k <= K); hi = min(k for k in ks if k >= K)
     return DAMPF[lo] if lo == hi else math.exp(math.log(DAMPF[lo]) + (K - lo) / (hi - lo) * (math.log(DAMPF[hi]) - math.log(DAMPF[lo])))
+# ---- measured ladder levels (KN_LEVELS)
+HF2KN = {"self_attn.q_proj": "attn_qg", "self_attn.k_proj": "attn_k", "self_attn.v_proj": "attn_v",
+         "self_attn.o_proj": "attn_output", "linear_attn.in_proj_qkv": "ssm_qkv", "linear_attn.in_proj_z": "ssm_z",
+         "linear_attn.out_proj": "ssm_out", "mlp.gate_proj": "ffn_gate_up", "mlp.up_proj": "ffn_gate_up",
+         "mlp.down_proj": "ffn_down"}
+LEV = collections.defaultdict(dict)     # knap name -> K -> proxy error (gate / up: geometric mean)
+if os.environ.get("KN_LEVELS"):
+    import glob as _g
+    for pj in _g.glob(f"{os.environ['KN_LEVELS']}/K*/proxy.jsonl"):
+        acc = collections.defaultdict(list)
+        for l in open(pj):
+            d = json.loads(l); k = d["key"].split(".")
+            if k[2] != "layers" or d.get("proxy_err") is None: continue
+            n = HF2KN.get(".".join(k[4:6]))
+            if n: acc[(f"blk.{k[3]}.{n}.weight", float(d["K"]))].append(d["proxy_err"])
+        for (n, K), v in acc.items(): LEV[n][K] = math.exp(sum(map(math.log, v)) / len(v))
+NLEV = [0]
+def level_pos(w, K):
+    m = LEV.get(w); a, b = float(math.floor(K)), float(math.ceil(K))
+    if not m or K not in m or a not in m or b not in m or not (m[b] < m[K] < m[a]): return None
+    return math.log(m[K] / m[a]) / math.log(m[b] / m[a])
 for t in md["tensors"]:
     o = t["opts"]
     if os.environ.get("KN_FRAC") == "1":
@@ -104,11 +135,23 @@ for t in md["tensors"]:
             a, b = f"ours-K{math.floor(K)}", f"ours-K{math.ceil(K)}"
             if a not in o or b not in o: continue
             f = K - math.floor(K); (ba, ea, _), (bb, eb_, _) = o[a], o[b]
-            e = math.exp(math.log(ea) + f * (math.log(eb_) - math.log(ea))) if ea > 0 and eb_ > 0 else ea
+            fm = level_pos(t["w"], K)
+            if fm is not None: f_e = fm; NLEV[0] += 1
+            else: f_e = f
+            e = math.exp(math.log(ea) + f_e * (math.log(eb_) - math.log(ea))) if ea > 0 and eb_ > 0 else ea
             o[f"ours-K{K:g}"] = [ba + f * (bb - ba), e, K]; t["family_of"][f"ours-K{K:g}"] = t["family_of"][a]
     if os.environ.get("KN_DAMP") == "1" and t["w"].split(".")[-2] in ("attn_qg", "attn_k", "attn_v"):
         for c in list(o):
             if c.startswith("ours-K"): o[c] = [o[c][0], o[c][1] * dampf(float(c[6:])), o[c][2]]
+if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positions: {NLEV[0]} tensor-levels", file=sys.stderr)
+SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
+if os.environ.get("KN_HEADSLAB") == "1":
+    for t in md["tensors"]:
+        if t["w"] != "output.weight": continue
+        o = t["opts"]
+        for K, fK in SLABF.items():
+            c = f"ours-K{K:g}"
+            if c in o: o[f"ours-slabK{K:g}"] = [o[c][0] + (1 << 20), o[c][1] * fK, o[c][2]]; t["family_of"][f"ours-slabK{K:g}"] = t["family_of"][c]
 if os.environ.get("KN_EMBT") == "1":
     E = md["emb"]; cb = E["bf16"]["cost"]
     lr = {}
@@ -127,6 +170,23 @@ if os.environ.get("KN_EMBT") == "1":
         if d["group"] != 5120: continue
         E[f"t{d['bits']:g}"] = {"cost": cb + dcost(d["rel"]), "container": f"trellis-K{d['bits']:g}",
                                 "bytes": V_ * C_ * d["bits"] / 8 + V_ * 2}
+if os.environ.get("KN_EMBT") == "2":
+    E = md["emb"]; cb = E["bf16"]["cost"]
+    LLOYD_ML = {2: 0.0091770, 3: 0.0021311, 4: 0.00029939}              # vs Lloyd 5 (the base's), golden-ml
+    TRE_ML = {2: 0.0047127, 2.5: 0.0022361, 3: 0.0011973, 3.5: 0.00051891, 4: 0.00017474}
+    SC = ((E["e3"]["cost"] - E["e5"]["cost"]) / LLOYD_ML[3] * (E["e4"]["cost"] - E["e5"]["cost"]) / LLOYD_ML[4]) ** 0.5
+    rel = {}
+    for l in open(f"{HERE}/../e3/data/embmenu.jsonl"):
+        d = json.loads(l)
+        if d["group"] == 5120: rel[float(d["bits"])] = d["rel"]
+    V_, C_ = 248320, 5120
+    for B, r in rel.items():
+        m = min(TRE_ML, key=lambda k: abs(k - B))
+        dm = SC * TRE_ML[m] + (E["e5"]["cost"] - cb)          # damage vs a bf16 embedding at the measured point
+        dmg = dm * (r / rel[float(m)] if B not in TRE_ML else 1.0)   # along the CPU error curve to B
+        E[f"t{B:g}"] = {"cost": cb + dmg, "container": f"trellis-K{B:g}", "bytes": V_ * C_ * B / 8 + V_ * 2}
+    print(f"real embedding costs: ml->pooled scale {SC:.3f}", file=sys.stderr)
+if os.environ.get("KN_EMBT") in ("1", "2"):
     print("embedding menu:", {k: (round(v["bytes"] * 8 / V_ / C_, 3), f"{v['cost'] - cb:.2e}") for k, v in sorted(E.items(), key=lambda x: x[1]["bytes"])}, file=sys.stderr)
 q, kap, NL = md["q"], np.array(md["kappa"]), md["NL"]
 PARAMS, FIXED = md["params"], md["fixed_bytes"]
@@ -314,6 +374,7 @@ def run(target, lam):
 RADF = os.environ.get("KN_F", RXM_MODELS)
 def rad(c, w):
     if not c.startswith("ours-"): return f"{RADF}/q38-27b-{c}.rad"
+    if c.startswith("ours-slab"): return f"{RXM_OURS}/hdslab-{c[9:]}.rad"
     return f"{RXM_OURS}/hd-{c[5:]}.rad" if w == "output.weight" else f"{RXM_OURS}/{c}.rad"
 name_idx = {n: i for i, n in idx_name.items()}
 GCODE = {0: "0", 1024: "1", 512: "2", 256: "3", 128: "4", 64: "5"}

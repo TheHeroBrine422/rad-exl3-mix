@@ -475,6 +475,18 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:40 CDT: **knap4 wired to real options** (quality only, V3 menu: frac + damp, measured speed table):
+  - `KN_EMBT=2`: trellis embedding priced from chain1's real KLD swaps (golden-ml increments scaled to the pooled
+    corpus by the Lloyd points, 0.333; other K along the CPU curve from the nearest measured point, as damage vs a
+    bf16 embedding). Result vs the CPU-priced menu (`KN_EMBT=1`): +0.0...+0.8% at 1.75-4.5 bpw, -0.8% at 5, -4.6%
+    at 6. **The CPU-based embedding estimate holds on real KLD.** Embedding still sits at its t1.5 floor at <= 2 bpw.
+  - `KN_HEADSLAB=1`: slab heads at K5 / 5.5 / 6 priced at the conservative end of headsim's interval (x0.69-0.71
+    head KL; K4 not offered: n.s. and rare-token KL x2.5). Picked at 3.5-5 bpw: **-1.3...-1.5% total KLD at 4-5**,
+    ~0 at <= 3 (the head stays at K <= 4 there) and at 6. Needs hdslab-K5/5.5/6 containers before validation.
+  - `KN_LEVELS=/data/v3levels` (copy of the ladder's proxy.jsonl files): measured fractional levels replace the
+    midpoint interpolation per tensor once the level and both neighbouring integers exist (tested on synthetic data).
+- 2026-11-01: **YAQA scratch deleted** on the GPU box (qfull, rows32, qdiag, full32/64, hout*, n16/n32, q*, qe:
+  192 GB; 649 GB free). Kept: headslab / headslab2 (head-slab quants), hs (head Fisher), pylib, scripts, logs.
 - 2026-11-01 01:17 CDT: **Gate 2e FAILED** (gradient-weighted H_in from the 100-sequence snapshot, blocks 22/23,
   ver1, paired vs one-sided): K2 +44% (z 10.3), K3 +31% (z 11.6). By the rule fixed beforehand (either K positive ->
   drop), no blend test (`gate2e-blend.sh` / `hblend.py` written and tested, unused). All backward-based Hessian ideas
