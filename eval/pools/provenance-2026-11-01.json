@@ -1,0 +1,4006 @@
+{
+ "calib_fnv1a64": 17581573529336960534,
+ "goldens": {
+  "golden-calA": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 64,
+   "pools": {
+    "fit": 62,
+    "qad": 2
+   },
+   "tokens": 709873
+  },
+  "golden-calB": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 82,
+   "pools": {
+    "verify": 79,
+    "qad": 2,
+    "search": 1
+   },
+   "tokens": 1508513
+  },
+  "golden-calBbig": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 275,
+   "pools": {
+    "verify": 271,
+    "search": 2,
+    "qad": 2
+   },
+   "tokens": 2171380
+  },
+  "golden-fit2": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 126,
+   "pools": {
+    "fit": 124,
+    "qad": 2
+   },
+   "tokens": 803886
+  },
+  "golden-fit3": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 98,
+   "pools": {
+    "fit": 96,
+    "qad": 2
+   },
+   "tokens": 788739
+  },
+  "golden-long2-c102400": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c131072": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c135168": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c155648": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c159744": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c180224": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c184320": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c200704": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c208896": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c225280": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2-c233472": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long2": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 2,
+   "pools": {
+    "verify": 2
+   },
+   "tokens": 503321
+  },
+  "golden-long64": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 1,
+   "pools": {
+    "qad": 1
+   },
+   "tokens": 246898
+  },
+  "golden-ml": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 67,
+   "pools": {
+    "fit": 67
+   },
+   "tokens": 77472
+  },
+  "golden-tp2long": {
+   "corpus": "corpus/public.jsonl",
+   "calib": false,
+   "docs": 2
+  },
+  "golden-tp2short": {
+   "corpus": "corpus/public.jsonl",
+   "calib": false,
+   "docs": 10
+  },
+  "golden-ver1": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 81,
+   "pools": {
+    "verify": 81
+   },
+   "tokens": 928140
+  },
+  "golden-ver2": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 244,
+   "pools": {
+    "verify": 244
+   },
+   "tokens": 1146719
+  },
+  "golden-ver2full": {
+   "corpus": "corpus/calib.jsonl",
+   "calib": true,
+   "docs": 244,
+   "pools": {
+    "verify": 244
+   },
+   "tokens": 1146719
+  }
+ },
+ "overlap": {
+  "golden-calA": {
+   "golden-fit2": 5,
+   "golden-fit3": 5,
+   "golden-long64": 1,
+   "golden-ml": 8
+  },
+  "golden-calB": {
+   "golden-calBbig": 13,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 8,
+   "golden-ver2": 30,
+   "golden-ver2full": 30
+  },
+  "golden-calBbig": {
+   "golden-calB": 13,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 32,
+   "golden-ver2": 73,
+   "golden-ver2full": 73
+  },
+  "golden-fit2": {
+   "golden-calA": 5,
+   "golden-fit3": 5,
+   "golden-long64": 1,
+   "golden-ml": 7
+  },
+  "golden-fit3": {
+   "golden-calA": 5,
+   "golden-fit2": 5,
+   "golden-long64": 1,
+   "golden-ml": 12
+  },
+  "golden-long2-c102400": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c131072": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c135168": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c155648": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c159744": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c180224": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c184320": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c200704": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c208896": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c225280": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2-c233472": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long2": {
+   "golden-calB": 2,
+   "golden-calBbig": 2,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-ver1": 2,
+   "golden-ver2": 2,
+   "golden-ver2full": 2
+  },
+  "golden-long64": {
+   "golden-calA": 1,
+   "golden-fit2": 1,
+   "golden-fit3": 1
+  },
+  "golden-ml": {
+   "golden-calA": 8,
+   "golden-fit2": 7,
+   "golden-fit3": 12
+  },
+  "golden-ver1": {
+   "golden-calB": 8,
+   "golden-calBbig": 32,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver2": 4,
+   "golden-ver2full": 4
+  },
+  "golden-ver2": {
+   "golden-calB": 30,
+   "golden-calBbig": 73,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 4,
+   "golden-ver2full": 244
+  },
+  "golden-ver2full": {
+   "golden-calB": 30,
+   "golden-calBbig": 73,
+   "golden-long2-c102400": 2,
+   "golden-long2-c131072": 2,
+   "golden-long2-c135168": 2,
+   "golden-long2-c155648": 2,
+   "golden-long2-c159744": 2,
+   "golden-long2-c180224": 2,
+   "golden-long2-c184320": 2,
+   "golden-long2-c200704": 2,
+   "golden-long2-c208896": 2,
+   "golden-long2-c225280": 2,
+   "golden-long2-c233472": 2,
+   "golden-long2": 2,
+   "golden-ver1": 4,
+   "golden-ver2": 244
+  }
+ },
+ "verify_docs": 845,
+ "verify_clean": 317,
+ "verify_clean_tokens": 433797,
+ "verify_clean_long": [],
+ "verify_spent_long": [
+  [
+   129,
+   44009,
+   [
+    "golden-calBbig",
+    "golden-ver1"
+   ]
+  ],
+  [
+   905,
+   250158,
+   [
+    "golden-calB",
+    "golden-calBbig",
+    "golden-long2-c102400",
+    "golden-long2-c131072",
+    "golden-long2-c135168",
+    "golden-long2-c155648",
+    "golden-long2-c159744",
+    "golden-long2-c180224",
+    "golden-long2-c184320",
+    "golden-long2-c200704",
+    "golden-long2-c208896",
+    "golden-long2-c225280",
+    "golden-long2-c233472",
+    "golden-long2",
+    "golden-ver1",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   1569,
+   56516,
+   [
+    "golden-calB",
+    "golden-ver1"
+   ]
+  ],
+  [
+   1809,
+   47076,
+   [
+    "golden-calBbig",
+    "golden-ver1"
+   ]
+  ],
+  [
+   2535,
+   54035,
+   [
+    "golden-calB",
+    "golden-ver1",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   2675,
+   253163,
+   [
+    "golden-calB",
+    "golden-calBbig",
+    "golden-long2-c102400",
+    "golden-long2-c131072",
+    "golden-long2-c135168",
+    "golden-long2-c155648",
+    "golden-long2-c159744",
+    "golden-long2-c180224",
+    "golden-long2-c184320",
+    "golden-long2-c200704",
+    "golden-long2-c208896",
+    "golden-long2-c225280",
+    "golden-long2-c233472",
+    "golden-long2",
+    "golden-ver1",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   2911,
+   65536,
+   [
+    "golden-calBbig",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   3885,
+   48360,
+   [
+    "golden-calB",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   3963,
+   100000,
+   [
+    "golden-calBbig",
+    "golden-ver1",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ],
+  [
+   4249,
+   34144,
+   [
+    "golden-calBbig",
+    "golden-ver2",
+    "golden-ver2full"
+   ]
+  ]
+ ],
+ "clean_ids": [
+  8,
+  23,
+  74,
+  81,
+  90,
+  95,
+  104,
+  120,
+  139,
+  146,
+  157,
+  158,
+  161,
+  173,
+  199,
+  202,
+  210,
+  226,
+  256,
+  258,
+  268,
+  276,
+  306,
+  307,
+  312,
+  333,
+  341,
+  365,
+  403,
+  451,
+  477,
+  484,
+  495,
+  501,
+  509,
+  513,
+  519,
+  522,
+  526,
+  535,
+  540,
+  550,
+  582,
+  602,
+  609,
+  628,
+  640,
+  674,
+  687,
+  711,
+  750,
+  762,
+  803,
+  804,
+  824,
+  847,
+  854,
+  874,
+  895,
+  930,
+  937,
+  963,
+  964,
+  973,
+  1009,
+  1019,
+  1020,
+  1027,
+  1084,
+  1100,
+  1124,
+  1125,
+  1128,
+  1133,
+  1141,
+  1152,
+  1184,
+  1210,
+  1227,
+  1234,
+  1251,
+  1267,
+  1269,
+  1305,
+  1316,
+  1325,
+  1328,
+  1342,
+  1365,
+  1368,
+  1371,
+  1389,
+  1415,
+  1419,
+  1442,
+  1509,
+  1524,
+  1528,
+  1530,
+  1536,
+  1562,
+  1600,
+  1676,
+  1682,
+  1687,
+  1693,
+  1696,
+  1705,
+  1720,
+  1725,
+  1737,
+  1740,
+  1755,
+  1769,
+  1802,
+  1807,
+  1815,
+  1852,
+  1870,
+  1895,
+  1933,
+  1965,
+  1975,
+  1977,
+  1988,
+  1993,
+  2003,
+  2059,
+  2060,
+  2065,
+  2067,
+  2068,
+  2069,
+  2097,
+  2103,
+  2120,
+  2122,
+  2128,
+  2138,
+  2142,
+  2146,
+  2149,
+  2152,
+  2161,
+  2162,
+  2168,
+  2179,
+  2180,
+  2253,
+  2254,
+  2262,
+  2270,
+  2290,
+  2292,
+  2294,
+  2314,
+  2321,
+  2363,
+  2372,
+  2380,
+  2384,
+  2398,
+  2402,
+  2423,
+  2469,
+  2497,
+  2500,
+  2521,
+  2530,
+  2562,
+  2564,
+  2620,
+  2629,
+  2635,
+  2640,
+  2655,
+  2673,
+  2684,
+  2707,
+  2710,
+  2730,
+  2742,
+  2763,
+  2774,
+  2778,
+  2783,
+  2785,
+  2811,
+  2812,
+  2822,
+  2834,
+  2838,
+  2861,
+  2871,
+  2872,
+  2882,
+  2898,
+  2930,
+  2939,
+  2976,
+  2980,
+  2997,
+  3008,
+  3010,
+  3052,
+  3058,
+  3091,
+  3120,
+  3158,
+  3161,
+  3171,
+  3183,
+  3186,
+  3234,
+  3236,
+  3240,
+  3244,
+  3259,
+  3262,
+  3277,
+  3289,
+  3290,
+  3295,
+  3364,
+  3386,
+  3397,
+  3406,
+  3438,
+  3487,
+  3492,
+  3495,
+  3509,
+  3522,
+  3525,
+  3544,
+  3557,
+  3561,
+  3563,
+  3587,
+  3596,
+  3599,
+  3605,
+  3607,
+  3627,
+  3639,
+  3665,
+  3669,
+  3726,
+  3750,
+  3757,
+  3781,
+  3812,
+  3828,
+  3829,
+  3833,
+  3869,
+  3877,
+  3899,
+  3901,
+  3905,
+  3912,
+  3917,
+  3924,
+  3926,
+  3930,
+  3940,
+  3955,
+  3960,
+  3975,
+  3976,
+  3993,
+  4004,
+  4031,
+  4043,
+  4083,
+  4100,
+  4117,
+  4143,
+  4149,
+  4150,
+  4201,
+  4218,
+  4229,
+  4233,
+  4256,
+  4298,
+  4336,
+  4354,
+  4365,
+  4373,
+  4442,
+  4481,
+  4510,
+  4512,
+  4514,
+  4518,
+  4525,
+  4538,
+  4561,
+  4576,
+  4585,
+  4588,
+  4596,
+  4620,
+  4629,
+  4652,
+  4655,
+  4676,
+  4680,
+  4706,
+  4718,
+  4719,
+  4725,
+  4764,
+  4766,
+  4767,
+  4781
+ ],
+ "doc_use": {
+  "5": [
+   "golden-ver1"
+  ],
+  "7": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "14": [
+   "golden-fit3"
+  ],
+  "15": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "26": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "34": [
+   "golden-fit3"
+  ],
+  "35": [
+   "golden-fit3"
+  ],
+  "53": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "57": [
+   "golden-fit3"
+  ],
+  "69": [
+   "golden-fit2"
+  ],
+  "71": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "78": [
+   "golden-ver1"
+  ],
+  "83": [
+   "golden-calB"
+  ],
+  "85": [
+   "golden-fit2"
+  ],
+  "87": [
+   "golden-fit3"
+  ],
+  "89": [
+   "golden-calBbig"
+  ],
+  "94": [
+   "golden-ml"
+  ],
+  "96": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "114": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "115": [
+   "golden-calBbig"
+  ],
+  "116": [
+   "golden-fit2"
+  ],
+  "117": [
+   "golden-calBbig"
+  ],
+  "129": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "138": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "140": [
+   "golden-calA"
+  ],
+  "142": [
+   "golden-ver1"
+  ],
+  "149": [
+   "golden-calBbig"
+  ],
+  "153": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "154": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "179": [
+   "golden-fit3"
+  ],
+  "185": [
+   "golden-calBbig"
+  ],
+  "191": [
+   "golden-calBbig"
+  ],
+  "203": [
+   "golden-calB"
+  ],
+  "207": [
+   "golden-fit2"
+  ],
+  "213": [
+   "golden-fit3"
+  ],
+  "223": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "227": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "231": [
+   "golden-fit2"
+  ],
+  "244": [
+   "golden-fit2"
+  ],
+  "253": [
+   "golden-calBbig"
+  ],
+  "262": [
+   "golden-calA"
+  ],
+  "265": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "267": [
+   "golden-calBbig"
+  ],
+  "275": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "287": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "290": [
+   "golden-fit2"
+  ],
+  "301": [
+   "golden-calB"
+  ],
+  "321": [
+   "golden-calBbig"
+  ],
+  "326": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "327": [
+   "golden-calBbig"
+  ],
+  "330": [
+   "golden-calA"
+  ],
+  "331": [
+   "golden-ver1"
+  ],
+  "348": [
+   "golden-ver1"
+  ],
+  "353": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "358": [
+   "golden-fit3"
+  ],
+  "359": [
+   "golden-calBbig"
+  ],
+  "361": [
+   "golden-fit3"
+  ],
+  "371": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "388": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "391": [
+   "golden-calBbig"
+  ],
+  "396": [
+   "golden-ml"
+  ],
+  "399": [
+   "golden-calB"
+  ],
+  "401": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "407": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "409": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "427": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "434": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "442": [
+   "golden-calA"
+  ],
+  "445": [
+   "golden-calBbig"
+  ],
+  "447": [
+   "golden-fit2"
+  ],
+  "453": [
+   "golden-calBbig"
+  ],
+  "455": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "468": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "485": [
+   "golden-fit2"
+  ],
+  "491": [
+   "golden-fit2"
+  ],
+  "497": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "507": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "514": [
+   "golden-fit3"
+  ],
+  "517": [
+   "golden-fit2"
+  ],
+  "527": [
+   "golden-fit2"
+  ],
+  "533": [
+   "golden-calBbig"
+  ],
+  "536": [
+   "golden-fit2"
+  ],
+  "554": [
+   "golden-fit3"
+  ],
+  "557": [
+   "golden-fit2"
+  ],
+  "572": [
+   "golden-ml"
+  ],
+  "574": [
+   "golden-fit3"
+  ],
+  "576": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "578": [
+   "golden-fit2"
+  ],
+  "579": [
+   "golden-calBbig"
+  ],
+  "587": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "588": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "589": [
+   "golden-calB"
+  ],
+  "590": [
+   "golden-calA",
+   "golden-fit2",
+   "golden-fit3"
+  ],
+  "591": [
+   "golden-calBbig"
+  ],
+  "596": [
+   "golden-ml"
+  ],
+  "603": [
+   "golden-fit2"
+  ],
+  "605": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "607": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "611": [
+   "golden-fit2"
+  ],
+  "615": [
+   "golden-calBbig"
+  ],
+  "618": [
+   "golden-calA"
+  ],
+  "622": [
+   "golden-ml"
+  ],
+  "630": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "631": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "639": [
+   "golden-fit2"
+  ],
+  "643": [
+   "golden-fit2"
+  ],
+  "648": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "664": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "667": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "683": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "691": [
+   "golden-calBbig"
+  ],
+  "694": [
+   "golden-fit3"
+  ],
+  "695": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "699": [
+   "golden-calBbig"
+  ],
+  "701": [
+   "golden-calB"
+  ],
+  "702": [
+   "golden-fit3"
+  ],
+  "710": [
+   "golden-fit2"
+  ],
+  "712": [
+   "golden-fit2"
+  ],
+  "715": [
+   "golden-calBbig"
+  ],
+  "716": [
+   "golden-calA"
+  ],
+  "721": [
+   "golden-calBbig"
+  ],
+  "728": [
+   "golden-ml"
+  ],
+  "733": [
+   "golden-ver1"
+  ],
+  "736": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "739": [
+   "golden-fit2"
+  ],
+  "745": [
+   "golden-calBbig"
+  ],
+  "747": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "759": [
+   "golden-calB"
+  ],
+  "765": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "766": [
+   "golden-fit2"
+  ],
+  "767": [
+   "golden-fit2"
+  ],
+  "773": [
+   "golden-fit3"
+  ],
+  "777": [
+   "golden-fit3"
+  ],
+  "783": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "791": [
+   "golden-calBbig"
+  ],
+  "792": [
+   "golden-ml"
+  ],
+  "802": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "809": [
+   "golden-fit2"
+  ],
+  "813": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "818": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "819": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "825": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "827": [
+   "golden-fit2"
+  ],
+  "859": [
+   "golden-calBbig"
+  ],
+  "863": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "865": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "873": [
+   "golden-calBbig"
+  ],
+  "885": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "887": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "898": [
+   "golden-ver1"
+  ],
+  "901": [
+   "golden-calBbig"
+  ],
+  "905": [
+   "golden-calB",
+   "golden-calBbig",
+   "golden-long2-c102400",
+   "golden-long2-c131072",
+   "golden-long2-c135168",
+   "golden-long2-c155648",
+   "golden-long2-c159744",
+   "golden-long2-c180224",
+   "golden-long2-c184320",
+   "golden-long2-c200704",
+   "golden-long2-c208896",
+   "golden-long2-c225280",
+   "golden-long2-c233472",
+   "golden-long2",
+   "golden-ver1",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "916": [
+   "golden-ver1"
+  ],
+  "925": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "926": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "933": [
+   "golden-calBbig"
+  ],
+  "938": [
+   "golden-fit3"
+  ],
+  "949": [
+   "golden-calBbig"
+  ],
+  "953": [
+   "golden-fit2"
+  ],
+  "960": [
+   "golden-ver1"
+  ],
+  "966": [
+   "golden-calA",
+   "golden-fit2",
+   "golden-fit3"
+  ],
+  "967": [
+   "golden-fit2"
+  ],
+  "981": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "985": [
+   "golden-fit3"
+  ],
+  "991": [
+   "golden-calBbig"
+  ],
+  "1000": [
+   "golden-fit2"
+  ],
+  "1003": [
+   "golden-ver1"
+  ],
+  "1011": [
+   "golden-ml"
+  ],
+  "1032": [
+   "golden-fit2"
+  ],
+  "1036": [
+   "golden-calA"
+  ],
+  "1041": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1043": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1063": [
+   "golden-calBbig"
+  ],
+  "1068": [
+   "golden-calA"
+  ],
+  "1072": [
+   "golden-fit2"
+  ],
+  "1074": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1078": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1082": [
+   "golden-ver1"
+  ],
+  "1087": [
+   "golden-calBbig"
+  ],
+  "1094": [
+   "golden-calA"
+  ],
+  "1097": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1099": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1104": [
+   "golden-ver1"
+  ],
+  "1110": [
+   "golden-fit2"
+  ],
+  "1112": [
+   "golden-calA"
+  ],
+  "1113": [
+   "golden-fit3"
+  ],
+  "1122": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1123": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1132": [
+   "golden-fit2"
+  ],
+  "1151": [
+   "golden-calB"
+  ],
+  "1157": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "1163": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1164": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1175": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1177": [
+   "golden-calBbig"
+  ],
+  "1179": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "1186": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "1189": [
+   "golden-fit2"
+  ],
+  "1191": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "1197": [
+   "golden-calBbig"
+  ],
+  "1199": [
+   "golden-calB"
+  ],
+  "1215": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1221": [
+   "golden-ver1"
+  ],
+  "1231": [
+   "golden-calBbig"
+  ],
+  "1232": [
+   "golden-calA"
+  ],
+  "1239": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1240": [
+   "golden-ml"
+  ],
+  "1241": [
+   "golden-calBbig"
+  ],
+  "1260": [
+   "golden-calA"
+  ],
+  "1271": [
+   "golden-calBbig"
+  ],
+  "1272": [
+   "golden-fit2"
+  ],
+  "1278": [
+   "golden-fit3"
+  ],
+  "1279": [
+   "golden-ver1"
+  ],
+  "1284": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1289": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1292": [
+   "golden-ml"
+  ],
+  "1295": [
+   "golden-calBbig"
+  ],
+  "1296": [
+   "golden-calA"
+  ],
+  "1315": [
+   "golden-ml"
+  ],
+  "1319": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1330": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1337": [
+   "golden-calBbig"
+  ],
+  "1348": [
+   "golden-fit3"
+  ],
+  "1350": [
+   "golden-fit3"
+  ],
+  "1355": [
+   "golden-fit3"
+  ],
+  "1361": [
+   "golden-calBbig"
+  ],
+  "1374": [
+   "golden-ver1"
+  ],
+  "1376": [
+   "golden-fit2"
+  ],
+  "1377": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1378": [
+   "golden-calA"
+  ],
+  "1381": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1392": [
+   "golden-fit2"
+  ],
+  "1396": [
+   "golden-fit3"
+  ],
+  "1397": [
+   "golden-calBbig"
+  ],
+  "1403": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "1404": [
+   "golden-ver1"
+  ],
+  "1409": [
+   "golden-ml"
+  ],
+  "1411": [
+   "golden-calBbig"
+  ],
+  "1417": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1425": [
+   "golden-fit2"
+  ],
+  "1427": [
+   "golden-calB"
+  ],
+  "1435": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1443": [
+   "golden-calB"
+  ],
+  "1454": [
+   "golden-calA"
+  ],
+  "1455": [
+   "golden-calBbig"
+  ],
+  "1461": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1465": [
+   "golden-calBbig"
+  ],
+  "1468": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1472": [
+   "golden-fit3"
+  ],
+  "1481": [
+   "golden-fit2"
+  ],
+  "1483": [
+   "golden-calBbig"
+  ],
+  "1485": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1488": [
+   "golden-fit2"
+  ],
+  "1489": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1491": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1499": [
+   "golden-calBbig"
+  ],
+  "1501": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1503": [
+   "golden-fit2"
+  ],
+  "1513": [
+   "golden-calBbig"
+  ],
+  "1519": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1527": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1533": [
+   "golden-fit2"
+  ],
+  "1535": [
+   "golden-calBbig"
+  ],
+  "1537": [
+   "golden-calBbig"
+  ],
+  "1539": [
+   "golden-calB"
+  ],
+  "1543": [
+   "golden-calBbig"
+  ],
+  "1549": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1551": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1558": [
+   "golden-fit2"
+  ],
+  "1565": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1569": [
+   "golden-calB",
+   "golden-ver1"
+  ],
+  "1570": [
+   "golden-fit3"
+  ],
+  "1582": [
+   "golden-calA"
+  ],
+  "1589": [
+   "golden-calBbig"
+  ],
+  "1602": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "1609": [
+   "golden-calBbig"
+  ],
+  "1611": [
+   "golden-calBbig"
+  ],
+  "1612": [
+   "golden-calA"
+  ],
+  "1615": [
+   "golden-calBbig"
+  ],
+  "1618": [
+   "golden-calA"
+  ],
+  "1619": [
+   "golden-fit2"
+  ],
+  "1621": [
+   "golden-calBbig"
+  ],
+  "1628": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "1629": [
+   "golden-calBbig"
+  ],
+  "1635": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1638": [
+   "golden-fit3"
+  ],
+  "1639": [
+   "golden-calBbig"
+  ],
+  "1640": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "1643": [
+   "golden-calBbig"
+  ],
+  "1645": [
+   "golden-calBbig"
+  ],
+  "1655": [
+   "golden-calBbig"
+  ],
+  "1657": [
+   "golden-calBbig"
+  ],
+  "1664": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1681": [
+   "golden-calBbig"
+  ],
+  "1683": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "1685": [
+   "golden-fit3"
+  ],
+  "1690": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "1692": [
+   "golden-fit2"
+  ],
+  "1695": [
+   "golden-calB"
+  ],
+  "1707": [
+   "golden-calBbig"
+  ],
+  "1708": [
+   "golden-ml"
+  ],
+  "1714": [
+   "golden-ver1"
+  ],
+  "1718": [
+   "golden-calA"
+  ],
+  "1736": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1767": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1770": [
+   "golden-calA"
+  ],
+  "1772": [
+   "golden-calA",
+   "golden-fit2",
+   "golden-fit3",
+   "golden-long64"
+  ],
+  "1789": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1805": [
+   "golden-fit2"
+  ],
+  "1809": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "1821": [
+   "golden-calBbig"
+  ],
+  "1825": [
+   "golden-fit2"
+  ],
+  "1827": [
+   "golden-calB"
+  ],
+  "1828": [
+   "golden-ml"
+  ],
+  "1831": [
+   "golden-calBbig"
+  ],
+  "1839": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1853": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "1865": [
+   "golden-fit2"
+  ],
+  "1867": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1876": [
+   "golden-fit2"
+  ],
+  "1881": [
+   "golden-fit3"
+  ],
+  "1882": [
+   "golden-ml"
+  ],
+  "1885": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1891": [
+   "golden-ml"
+  ],
+  "1902": [
+   "golden-ver1"
+  ],
+  "1925": [
+   "golden-calBbig"
+  ],
+  "1962": [
+   "golden-calA"
+  ],
+  "1964": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1969": [
+   "golden-calBbig"
+  ],
+  "1970": [
+   "golden-ver1"
+  ],
+  "1972": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "1982": [
+   "golden-fit2"
+  ],
+  "1983": [
+   "golden-calBbig"
+  ],
+  "1996": [
+   "golden-fit3"
+  ],
+  "2004": [
+   "golden-fit2"
+  ],
+  "2006": [
+   "golden-fit3"
+  ],
+  "2009": [
+   "golden-calBbig"
+  ],
+  "2010": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "2015": [
+   "golden-calBbig"
+  ],
+  "2036": [
+   "golden-ml"
+  ],
+  "2037": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2038": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2040": [
+   "golden-fit3"
+  ],
+  "2041": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "2047": [
+   "golden-fit2"
+  ],
+  "2049": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2050": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2054": [
+   "golden-fit3"
+  ],
+  "2064": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2071": [
+   "golden-calBbig"
+  ],
+  "2078": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "2082": [
+   "golden-fit2"
+  ],
+  "2085": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2087": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2111": [
+   "golden-fit2"
+  ],
+  "2117": [
+   "golden-fit3"
+  ],
+  "2119": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2121": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2125": [
+   "golden-fit3"
+  ],
+  "2126": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2141": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "2159": [
+   "golden-calBbig"
+  ],
+  "2165": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2167": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "2171": [
+   "golden-fit2"
+  ],
+  "2172": [
+   "golden-ml"
+  ],
+  "2182": [
+   "golden-ml"
+  ],
+  "2185": [
+   "golden-calBbig"
+  ],
+  "2189": [
+   "golden-calBbig"
+  ],
+  "2190": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2192": [
+   "golden-calA"
+  ],
+  "2193": [
+   "golden-calBbig"
+  ],
+  "2194": [
+   "golden-ver1"
+  ],
+  "2195": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2205": [
+   "golden-calBbig"
+  ],
+  "2209": [
+   "golden-calBbig"
+  ],
+  "2213": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "2215": [
+   "golden-calBbig"
+  ],
+  "2216": [
+   "golden-ml"
+  ],
+  "2217": [
+   "golden-calBbig"
+  ],
+  "2219": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2227": [
+   "golden-calBbig"
+  ],
+  "2229": [
+   "golden-calBbig"
+  ],
+  "2244": [
+   "golden-ver1"
+  ],
+  "2247": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2249": [
+   "golden-fit2"
+  ],
+  "2255": [
+   "golden-calBbig"
+  ],
+  "2256": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2259": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2264": [
+   "golden-fit2"
+  ],
+  "2268": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "2276": [
+   "golden-fit2"
+  ],
+  "2278": [
+   "golden-calA"
+  ],
+  "2293": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2300": [
+   "golden-calA",
+   "golden-fit2",
+   "golden-fit3"
+  ],
+  "2302": [
+   "golden-fit2"
+  ],
+  "2306": [
+   "golden-fit2"
+  ],
+  "2318": [
+   "golden-ver1"
+  ],
+  "2325": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2328": [
+   "golden-calA"
+  ],
+  "2333": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2338": [
+   "golden-fit2"
+  ],
+  "2339": [
+   "golden-calBbig"
+  ],
+  "2349": [
+   "golden-ver1"
+  ],
+  "2375": [
+   "golden-calBbig"
+  ],
+  "2377": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2379": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2381": [
+   "golden-calBbig"
+  ],
+  "2386": [
+   "golden-fit2"
+  ],
+  "2391": [
+   "golden-calBbig"
+  ],
+  "2395": [
+   "golden-calBbig"
+  ],
+  "2397": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2399": [
+   "golden-calBbig"
+  ],
+  "2410": [
+   "golden-calA"
+  ],
+  "2411": [
+   "golden-calBbig"
+  ],
+  "2433": [
+   "golden-calBbig"
+  ],
+  "2437": [
+   "golden-fit3"
+  ],
+  "2439": [
+   "golden-calBbig"
+  ],
+  "2444": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2445": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2446": [
+   "golden-fit3"
+  ],
+  "2449": [
+   "golden-calB"
+  ],
+  "2451": [
+   "golden-calBbig"
+  ],
+  "2453": [
+   "golden-fit2"
+  ],
+  "2455": [
+   "golden-fit3"
+  ],
+  "2461": [
+   "golden-fit2"
+  ],
+  "2463": [
+   "golden-calBbig"
+  ],
+  "2468": [
+   "golden-fit2"
+  ],
+  "2479": [
+   "golden-calBbig"
+  ],
+  "2481": [
+   "golden-calB"
+  ],
+  "2482": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2485": [
+   "golden-fit2"
+  ],
+  "2487": [
+   "golden-calB"
+  ],
+  "2491": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2506": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2509": [
+   "golden-fit3"
+  ],
+  "2517": [
+   "golden-fit3"
+  ],
+  "2519": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2525": [
+   "golden-ml"
+  ],
+  "2527": [
+   "golden-ml"
+  ],
+  "2533": [
+   "golden-calBbig"
+  ],
+  "2535": [
+   "golden-calB",
+   "golden-ver1",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2538": [
+   "golden-calA"
+  ],
+  "2539": [
+   "golden-calB"
+  ],
+  "2540": [
+   "golden-calA"
+  ],
+  "2541": [
+   "golden-calBbig"
+  ],
+  "2545": [
+   "golden-calB"
+  ],
+  "2565": [
+   "golden-fit3"
+  ],
+  "2568": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "2577": [
+   "golden-calBbig"
+  ],
+  "2584": [
+   "golden-fit2"
+  ],
+  "2592": [
+   "golden-calA"
+  ],
+  "2602": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2611": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2614": [
+   "golden-ml"
+  ],
+  "2621": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2625": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2631": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "2641": [
+   "golden-fit2"
+  ],
+  "2643": [
+   "golden-calBbig"
+  ],
+  "2651": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "2661": [
+   "golden-calBbig"
+  ],
+  "2667": [
+   "golden-calBbig"
+  ],
+  "2671": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2675": [
+   "golden-calB",
+   "golden-calBbig",
+   "golden-long2-c102400",
+   "golden-long2-c131072",
+   "golden-long2-c135168",
+   "golden-long2-c155648",
+   "golden-long2-c159744",
+   "golden-long2-c180224",
+   "golden-long2-c184320",
+   "golden-long2-c200704",
+   "golden-long2-c208896",
+   "golden-long2-c225280",
+   "golden-long2-c233472",
+   "golden-long2",
+   "golden-ver1",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2676": [
+   "golden-fit2"
+  ],
+  "2677": [
+   "golden-calB"
+  ],
+  "2678": [
+   "golden-fit2"
+  ],
+  "2681": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2682": [
+   "golden-fit2"
+  ],
+  "2683": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2687": [
+   "golden-calBbig"
+  ],
+  "2699": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2705": [
+   "golden-fit2"
+  ],
+  "2711": [
+   "golden-fit2"
+  ],
+  "2716": [
+   "golden-calA"
+  ],
+  "2719": [
+   "golden-calBbig"
+  ],
+  "2721": [
+   "golden-calB"
+  ],
+  "2722": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2723": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2727": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2732": [
+   "golden-ml"
+  ],
+  "2735": [
+   "golden-fit3"
+  ],
+  "2746": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2748": [
+   "golden-ver1"
+  ],
+  "2755": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2758": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2760": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2780": [
+   "golden-calA",
+   "golden-fit2",
+   "golden-fit3"
+  ],
+  "2787": [
+   "golden-calBbig"
+  ],
+  "2791": [
+   "golden-fit3"
+  ],
+  "2795": [
+   "golden-fit3"
+  ],
+  "2798": [
+   "golden-fit3"
+  ],
+  "2801": [
+   "golden-calBbig"
+  ],
+  "2807": [
+   "golden-calBbig"
+  ],
+  "2813": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2817": [
+   "golden-fit3"
+  ],
+  "2819": [
+   "golden-calBbig"
+  ],
+  "2820": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2821": [
+   "golden-calBbig"
+  ],
+  "2827": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2829": [
+   "golden-fit2"
+  ],
+  "2849": [
+   "golden-calBbig"
+  ],
+  "2851": [
+   "golden-calBbig"
+  ],
+  "2859": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "2876": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2901": [
+   "golden-fit3"
+  ],
+  "2907": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2909": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2911": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2913": [
+   "golden-ver1"
+  ],
+  "2916": [
+   "golden-ml"
+  ],
+  "2919": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "2920": [
+   "golden-fit2"
+  ],
+  "2935": [
+   "golden-fit2"
+  ],
+  "2953": [
+   "golden-calBbig"
+  ],
+  "2961": [
+   "golden-calBbig"
+  ],
+  "2970": [
+   "golden-calA"
+  ],
+  "2971": [
+   "golden-calBbig"
+  ],
+  "2977": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "2982": [
+   "golden-fit2"
+  ],
+  "2985": [
+   "golden-fit3"
+  ],
+  "2993": [
+   "golden-fit2"
+  ],
+  "3005": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3007": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3011": [
+   "golden-calB"
+  ],
+  "3012": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3027": [
+   "golden-fit3"
+  ],
+  "3035": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3044": [
+   "golden-fit2"
+  ],
+  "3046": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3053": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3054": [
+   "golden-ver1"
+  ],
+  "3055": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3056": [
+   "golden-fit2"
+  ],
+  "3070": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3073": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3079": [
+   "golden-calB"
+  ],
+  "3081": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3085": [
+   "golden-calBbig"
+  ],
+  "3092": [
+   "golden-fit2"
+  ],
+  "3107": [
+   "golden-fit3"
+  ],
+  "3111": [
+   "golden-ml"
+  ],
+  "3118": [
+   "golden-calA"
+  ],
+  "3125": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3127": [
+   "golden-calB"
+  ],
+  "3136": [
+   "golden-fit2"
+  ],
+  "3142": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3143": [
+   "golden-ml"
+  ],
+  "3144": [
+   "golden-fit3"
+  ],
+  "3157": [
+   "golden-calBbig"
+  ],
+  "3170": [
+   "golden-fit3"
+  ],
+  "3173": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3175": [
+   "golden-calB"
+  ],
+  "3180": [
+   "golden-ml"
+  ],
+  "3191": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3196": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3197": [
+   "golden-ver1"
+  ],
+  "3216": [
+   "golden-fit3"
+  ],
+  "3222": [
+   "golden-ver1"
+  ],
+  "3225": [
+   "golden-fit2"
+  ],
+  "3227": [
+   "golden-calBbig"
+  ],
+  "3229": [
+   "golden-fit3"
+  ],
+  "3233": [
+   "golden-calB"
+  ],
+  "3243": [
+   "golden-calB"
+  ],
+  "3253": [
+   "golden-calB"
+  ],
+  "3276": [
+   "golden-calA"
+  ],
+  "3284": [
+   "golden-calA"
+  ],
+  "3288": [
+   "golden-ml"
+  ],
+  "3291": [
+   "golden-calBbig"
+  ],
+  "3297": [
+   "golden-fit3"
+  ],
+  "3301": [
+   "golden-fit3"
+  ],
+  "3307": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3314": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3315": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3316": [
+   "golden-fit3"
+  ],
+  "3317": [
+   "golden-calBbig"
+  ],
+  "3323": [
+   "golden-calB"
+  ],
+  "3339": [
+   "golden-fit2"
+  ],
+  "3340": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3341": [
+   "golden-calBbig"
+  ],
+  "3343": [
+   "golden-calBbig"
+  ],
+  "3348": [
+   "golden-fit2"
+  ],
+  "3351": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3355": [
+   "golden-fit2"
+  ],
+  "3366": [
+   "golden-ver1"
+  ],
+  "3369": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3370": [
+   "golden-fit3"
+  ],
+  "3375": [
+   "golden-fit3"
+  ],
+  "3377": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "3379": [
+   "golden-calB"
+  ],
+  "3380": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "3392": [
+   "golden-fit2"
+  ],
+  "3401": [
+   "golden-ver1"
+  ],
+  "3408": [
+   "golden-fit2"
+  ],
+  "3409": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3419": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3428": [
+   "golden-fit3"
+  ],
+  "3435": [
+   "golden-calBbig"
+  ],
+  "3437": [
+   "golden-calBbig"
+  ],
+  "3439": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3443": [
+   "golden-fit3"
+  ],
+  "3451": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3461": [
+   "golden-calB",
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3465": [
+   "golden-calBbig"
+  ],
+  "3471": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3473": [
+   "golden-calBbig"
+  ],
+  "3477": [
+   "golden-calBbig"
+  ],
+  "3484": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "3486": [
+   "golden-ver1"
+  ],
+  "3491": [
+   "golden-calB"
+  ],
+  "3498": [
+   "golden-calA"
+  ],
+  "3503": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3505": [
+   "golden-ml"
+  ],
+  "3512": [
+   "golden-calA"
+  ],
+  "3514": [
+   "golden-fit3"
+  ],
+  "3515": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3516": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3517": [
+   "golden-calBbig"
+  ],
+  "3519": [
+   "golden-fit2"
+  ],
+  "3523": [
+   "golden-calB",
+   "golden-ver1"
+  ],
+  "3524": [
+   "golden-fit3"
+  ],
+  "3526": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "3527": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3528": [
+   "golden-calA"
+  ],
+  "3531": [
+   "golden-calBbig"
+  ],
+  "3533": [
+   "golden-calBbig"
+  ],
+  "3539": [
+   "golden-calB"
+  ],
+  "3540": [
+   "golden-calA"
+  ],
+  "3541": [
+   "golden-fit3"
+  ],
+  "3545": [
+   "golden-calBbig"
+  ],
+  "3549": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3556": [
+   "golden-ml"
+  ],
+  "3560": [
+   "golden-ver1"
+  ],
+  "3565": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3567": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3568": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3573": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3585": [
+   "golden-fit2",
+   "golden-ml"
+  ],
+  "3591": [
+   "golden-fit3"
+  ],
+  "3593": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "3604": [
+   "golden-fit2"
+  ],
+  "3606": [
+   "golden-fit2"
+  ],
+  "3611": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3619": [
+   "golden-fit2"
+  ],
+  "3625": [
+   "golden-fit2"
+  ],
+  "3629": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3631": [
+   "golden-calB"
+  ],
+  "3638": [
+   "golden-calA"
+  ],
+  "3658": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3663": [
+   "golden-ml"
+  ],
+  "3667": [
+   "golden-calB",
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3671": [
+   "golden-ml"
+  ],
+  "3698": [
+   "golden-ver1"
+  ],
+  "3699": [
+   "golden-fit3"
+  ],
+  "3705": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3706": [
+   "golden-fit2"
+  ],
+  "3707": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "3712": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3719": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3725": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3727": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3731": [
+   "golden-ver1"
+  ],
+  "3735": [
+   "golden-ver1"
+  ],
+  "3740": [
+   "golden-fit2"
+  ],
+  "3741": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3749": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3752": [
+   "golden-calA"
+  ],
+  "3764": [
+   "golden-calA"
+  ],
+  "3765": [
+   "golden-calBbig"
+  ],
+  "3773": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "3778": [
+   "golden-fit3"
+  ],
+  "3779": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3790": [
+   "golden-calA"
+  ],
+  "3791": [
+   "golden-calBbig"
+  ],
+  "3796": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3797": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3799": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3802": [
+   "golden-calA"
+  ],
+  "3808": [
+   "golden-fit3"
+  ],
+  "3809": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3815": [
+   "golden-ml"
+  ],
+  "3819": [
+   "golden-calBbig"
+  ],
+  "3831": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3839": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3841": [
+   "golden-calBbig"
+  ],
+  "3846": [
+   "golden-fit2"
+  ],
+  "3851": [
+   "golden-ver1"
+  ],
+  "3854": [
+   "golden-calA"
+  ],
+  "3864": [
+   "golden-ml"
+  ],
+  "3867": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3881": [
+   "golden-calB",
+   "golden-ver1"
+  ],
+  "3884": [
+   "golden-ver1"
+  ],
+  "3885": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3902": [
+   "golden-calA"
+  ],
+  "3907": [
+   "golden-calBbig"
+  ],
+  "3910": [
+   "golden-calA"
+  ],
+  "3915": [
+   "golden-calBbig"
+  ],
+  "3916": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3925": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3931": [
+   "golden-calBbig"
+  ],
+  "3933": [
+   "golden-calBbig"
+  ],
+  "3935": [
+   "golden-calBbig"
+  ],
+  "3942": [
+   "golden-ver1"
+  ],
+  "3945": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3952": [
+   "golden-fit3"
+  ],
+  "3963": [
+   "golden-calBbig",
+   "golden-ver1",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3969": [
+   "golden-ml"
+  ],
+  "3979": [
+   "golden-calBbig"
+  ],
+  "3981": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3989": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "3999": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4001": [
+   "golden-calBbig"
+  ],
+  "4003": [
+   "golden-fit3"
+  ],
+  "4007": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4008": [
+   "golden-calA"
+  ],
+  "4010": [
+   "golden-fit3"
+  ],
+  "4014": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4017": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "4020": [
+   "golden-fit2"
+  ],
+  "4025": [
+   "golden-calBbig"
+  ],
+  "4029": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "4035": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4036": [
+   "golden-calA"
+  ],
+  "4039": [
+   "golden-ml"
+  ],
+  "4051": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4052": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4060": [
+   "golden-fit2"
+  ],
+  "4067": [
+   "golden-calBbig"
+  ],
+  "4074": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4075": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4086": [
+   "golden-ml"
+  ],
+  "4095": [
+   "golden-calBbig"
+  ],
+  "4105": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "4108": [
+   "golden-fit3"
+  ],
+  "4110": [
+   "golden-fit2"
+  ],
+  "4136": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4142": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "4145": [
+   "golden-fit3"
+  ],
+  "4154": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4155": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4157": [
+   "golden-calB"
+  ],
+  "4158": [
+   "golden-fit2"
+  ],
+  "4159": [
+   "golden-ml"
+  ],
+  "4162": [
+   "golden-fit3"
+  ],
+  "4175": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4179": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "4184": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "4190": [
+   "golden-ver1"
+  ],
+  "4192": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4193": [
+   "golden-calBbig"
+  ],
+  "4199": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4204": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4205": [
+   "golden-calB"
+  ],
+  "4208": [
+   "golden-ml"
+  ],
+  "4220": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4223": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4225": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4231": [
+   "golden-fit2"
+  ],
+  "4236": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4243": [
+   "golden-fit2"
+  ],
+  "4246": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4249": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4257": [
+   "golden-calBbig"
+  ],
+  "4275": [
+   "golden-ver1"
+  ],
+  "4277": [
+   "golden-calBbig"
+  ],
+  "4280": [
+   "golden-fit3"
+  ],
+  "4286": [
+   "golden-ver1"
+  ],
+  "4287": [
+   "golden-calBbig"
+  ],
+  "4295": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4303": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "4304": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4308": [
+   "golden-ver1"
+  ],
+  "4309": [
+   "golden-fit2"
+  ],
+  "4311": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4327": [
+   "golden-fit2"
+  ],
+  "4329": [
+   "golden-calBbig"
+  ],
+  "4340": [
+   "golden-calA"
+  ],
+  "4342": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "4349": [
+   "golden-calBbig",
+   "golden-ver1"
+  ],
+  "4367": [
+   "golden-calBbig"
+  ],
+  "4374": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4385": [
+   "golden-calB"
+  ],
+  "4390": [
+   "golden-calA"
+  ],
+  "4399": [
+   "golden-calBbig"
+  ],
+  "4407": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4408": [
+   "golden-fit2"
+  ],
+  "4411": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4416": [
+   "golden-calA"
+  ],
+  "4417": [
+   "golden-calB"
+  ],
+  "4429": [
+   "golden-calBbig"
+  ],
+  "4433": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4435": [
+   "golden-fit2"
+  ],
+  "4449": [
+   "golden-fit3"
+  ],
+  "4452": [
+   "golden-fit2"
+  ],
+  "4457": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4461": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4465": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4471": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4475": [
+   "golden-calBbig"
+  ],
+  "4479": [
+   "golden-calBbig"
+  ],
+  "4483": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4487": [
+   "golden-calBbig"
+  ],
+  "4493": [
+   "golden-fit3"
+  ],
+  "4494": [
+   "golden-ver1"
+  ],
+  "4497": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4500": [
+   "golden-ver1"
+  ],
+  "4501": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4505": [
+   "golden-calBbig"
+  ],
+  "4509": [
+   "golden-calBbig"
+  ],
+  "4520": [
+   "golden-fit3"
+  ],
+  "4521": [
+   "golden-fit2"
+  ],
+  "4527": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4529": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4569": [
+   "golden-calBbig"
+  ],
+  "4573": [
+   "golden-fit3"
+  ],
+  "4578": [
+   "golden-fit2"
+  ],
+  "4606": [
+   "golden-calA",
+   "golden-ml"
+  ],
+  "4617": [
+   "golden-calBbig"
+  ],
+  "4621": [
+   "golden-ver1"
+  ],
+  "4627": [
+   "golden-fit2"
+  ],
+  "4628": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "4639": [
+   "golden-calB"
+  ],
+  "4640": [
+   "golden-fit2"
+  ],
+  "4646": [
+   "golden-fit3"
+  ],
+  "4647": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4651": [
+   "golden-calBbig"
+  ],
+  "4667": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4669": [
+   "golden-fit2"
+  ],
+  "4675": [
+   "golden-calBbig"
+  ],
+  "4681": [
+   "golden-calBbig"
+  ],
+  "4682": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4683": [
+   "golden-calBbig"
+  ],
+  "4687": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4693": [
+   "golden-calBbig"
+  ],
+  "4699": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4710": [
+   "golden-fit2"
+  ],
+  "4723": [
+   "golden-calB",
+   "golden-calBbig"
+  ],
+  "4729": [
+   "golden-fit3"
+  ],
+  "4730": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4738": [
+   "golden-fit3",
+   "golden-ml"
+  ],
+  "4739": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4740": [
+   "golden-calA"
+  ],
+  "4741": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4750": [
+   "golden-fit2"
+  ],
+  "4751": [
+   "golden-calBbig"
+  ],
+  "4755": [
+   "golden-calB",
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4759": [
+   "golden-ver2",
+   "golden-ver2full"
+  ],
+  "4773": [
+   "golden-calBbig"
+  ],
+  "4775": [
+   "golden-calBbig",
+   "golden-ver2",
+   "golden-ver2full"
+  ]
+ }
+}

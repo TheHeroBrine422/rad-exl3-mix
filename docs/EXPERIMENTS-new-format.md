@@ -447,6 +447,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-01 ~00:10 CT: **Held-out provenance** (`eval/pools/provenance.py`, every golden's kld.json docs vs pools.json;
+  `eval/pools/provenance-2026-11-01.json`). Verify pool: 845 docs; **317 never used by any slice (434k tokens), but
+  none longer than 16k tokens and none agentic / long-agentic / long** -- those categories (43.8% of verify tokens)
+  are entirely spent (calB/calBbig/ver1/ver2/long2). All 10 verify docs >= 32k are spent, both 250k traces 17 times.
+  Overlaps: ver1 shares 8 docs with calB and 32 with calBbig; ver2 shares 30 / 73. calA/fit2/fit3/ml are fit pool
+  (ml 8–12 docs shared with the fit slices). A ver3 drawn from clean docs only is clean but unrepresentative (no
+  agentic text, code/multilingual 2x over-weighted). Decision needed before building ver3/ver4 (see TODO).
+
 - 2026-11-01 ~23:20 CT: **Rounded-codebook quantizers pass** (exl3cb, `cbsmoke.py`, GPU): int8 on grid, x1.000 K1–6,
   x1.024 K7, x1.347 K8; int4 on its 16 levels, x1.001 K1, x1.007 K2, x1.020 K2.5, x1.059 K3, x2.5 K4.
   **Row-slab head works** (`headrun2.sh`, exact head-only KL on 32,768 held-out head inputs, paired vs uniform, 95% CI):
