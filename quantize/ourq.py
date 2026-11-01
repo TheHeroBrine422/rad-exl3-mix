@@ -56,6 +56,9 @@ ap.add_argument("--head-perm", default=None, help="int64 .npy permutation of the
                 "outputs stay in the permuted order")
 ap.add_argument("--sigma-reg-in", type=float, default=None, help="regularisation for the layer-input group only (attention "
                 "q/k/v, GDN qkv/z; damptest: 0.005 beats 0.025 there, ~0 elsewhere)")
+ap.add_argument("--sigma-in-sweep", default=None, help="for the layer-input group (attention q/k/v, GDN qkv/z): quantize at "
+                "each of these sigma_reg values (e.g. 0.025,0.005,0.001) and keep, per tensor, the one with the lowest "
+                "proxy error against the UNDAMPED Hessian (deterministic, no sampling noise)")
 ap.add_argument("--gain", default=None, help="multipliers on exllamav3's chosen g_scale per linear, by key suffix, e.g. "
                 "'o_proj=1.16,out_proj=1.16' (gaintest.py)")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
@@ -133,7 +136,18 @@ def quantize_group(hname, keys, seed0, log):
             with safe_open(hd, "pt", device="cpu") as f:
                 qa["out_hessian_diag"] = (f.get_tensor("hout_diag") if "hout_diag" in f.keys() else f.get_tensor("hout").diagonal()).float().to(dev)
             qa["apply_out_scales"] = None             # the diagonal path runs only with output scales on auto
-        wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
+        is_in = hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input") if ".layers." in hname else False
+        if a.sigma_in_sweep and is_in:
+            Hu = hessian(hname)["H"]; ref = float((w * (Hu @ w)).sum()); best = None
+            for sg in [float(v) for v in a.sigma_in_sweep.split(",")]:
+                qs = dict(qa); qs["sigma_reg"] = sg
+                wq_, perr_, t_ = quantize_exl3(w.clone(), hessian(hname), qs, True)
+                E = w - wq_.float(); rel = float((E * (Hu @ E)).sum()) / ref; del E
+                if best is None or rel < best[0]: best = (rel, sg, wq_, perr_, t_)
+                else: del wq_, t_
+            _, qa["sigma_reg"], wq, perr, t = best; qa["sweep_rel"] = best[0]; del Hu
+        else:
+            wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
         if a.save_wq:
             import numpy as np
             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
@@ -151,7 +165,7 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
-                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "gain": GAIN[0], "codebook": a.codebook,
+                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "gain": GAIN[0], "codebook": a.codebook,
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()

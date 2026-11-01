@@ -32,7 +32,7 @@ until [ -f $W/settings.env ] && grep -q "FRACSMOKE OK" /data/exl3frac/smoke.log 
 . $W/settings.env
 log "levels with: $OURQ_ARGS"
 export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
-for K in 2.25 2.75 3.25 3.75 2.5 3.5 4.25 4.75 4.5; do
+for K in ${LEVELS:-3.25 2.75 3.75 3.5 2.5 3 4.25 4 2.25 4.5 4.75 2 5 5.5 6}; do   # 2.5-4 bpw first; integers rebuilt with the int8 codebook
   [ -f $W/K$K/q-L63.safetensors ] && continue
   s=$(date +%s)
   ( exec 9>$RXM_WORK/card0.lock; flock 9
