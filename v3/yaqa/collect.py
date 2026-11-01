@@ -52,7 +52,7 @@ START = int(os.environ.get("YAQA_START", 0))   # window index to start at (shuff
 # ---- data: qad-pool windows from the calib golden's token stream
 G = f"{W}/challenge/golden/calib"
 meta = json.load(open(f"{G}/kld.json")); toks = np.fromfile(f"{G}/tokens.i32", np.int32)
-pools = json.load(open(f"{W}/challenge/pools.json"))["pool"]
+pools = json.load(open(os.environ.get("YAQA_POOLS", f"{W}/challenge/pools-v3.json")))["pool"]   # amended 2026-11-01
 off = np.cumsum([0] + [d["tokens"] for d in meta["docs"]])
 assert off[-1] == len(toks), (off[-1], len(toks))
 wins = []

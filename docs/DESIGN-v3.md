@@ -207,11 +207,24 @@ work overlaps it:
 - Streaming from the start; exploration kinds (tilt, random direction) and auto shares on per-kind beat rates.
 - **Data discipline:** fit on fit-pool slices; **select** (local-search accept/reject, best-measured picks) on
   search-pool slices; monitor on a fresh verify slice (**ver3**), final on another fresh one (**ver4**). ver1 / ver2
-  are spent. The verify pool has ~520 unused docs; both 250k traces already serve the long check.
+  are spent.
+- **Held-out sources (2026-11-01, `eval/pools/provenance.py`, `amend.py`):** of 845 verify docs only 317 (434k
+  tokens) were never in any slice, none > 16k and none agentic / long. Pool amendment (user, option 3;
+  `/root/challenge/pools-v3.json`, record `eval/pools/amend-2026-11-01.json`; pools.json stays read-only): 11 qad docs
+  moved to verify (7 agentic, 2 long, 2 long-agentic traces whose first 8k / 16k were scored before -- ver slices
+  score them from there, `score_from`). ver3 / ver4 are drawn ONLY from never-used verify docs + the moved ones
+  (`calib_slice.py ... verify` with `POOLS=pools-v3.json EXCLUDE_GOLDEN=<every existing golden>`), disjoint from each
+  other, category mix matched to the corpus; one moved trace each. Every qad collection reads pools-v3 (collect.py).
+- **Public: reports only, never selects** -- not as a finalist tie-break either. **Gate pass rules are written
+  before the run** and not changed after seeing its result (the fracsmoke re-judgement was a fix to a wrong check,
+  recorded as such; do not repeat).
+- **Known taint:** the published input Hessians include every calib doc, verify too (every quant is fitted to them;
+  affects all arms of a comparison equally); the moved docs were in the qad head Fisher (slab-head ranking).
 - **Validation curve from day one** (held-out score of the best-so-far picks), stop when it goes flat.
 - **Budget:** one card, ~30 evals/h (int8 evals ~25% faster), ~600–800 evals ≈ 20–30 h. Fewer targets (release
   sizes only), short high-bpw phases (V2's 6 h one bought ~nothing).
-- Long-context check: one card fits the 262k bf16 KV only up to ~4 bpw; above that cap the context or arrange TP2.
+- Long-context check: one card fits the 262k bf16 KV up to ~5 bpw on 1.13 at step 2048 (5.00: 255k, 6.00: 209k
+  tokens; the recorder at step 4096 shrinks the pool ~3%); re-probe on 1.15 and assert full KV coverage per run.
 
 ## 6. Order of work (Phase A first)
 
