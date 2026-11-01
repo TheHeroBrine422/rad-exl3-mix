@@ -20,6 +20,10 @@ idea is dropped.
   (c) **full-token fp32 H_out, 200 seqs: still worse** (+30%/+21% at 0.025, +7%/+5% at 0.3; worse than sampled).
   *Conclusion:* two-sided YAQA with exllamav3's ldlq_2hess does not help our trellis quants; dropped. Not tested:
   the paper's Sketch-B estimator with far more data (64K sequences), which we cannot afford.
+  (d) **diagonal output scales** (gate 2d, exllamav3's sensitivity_out_scales from diag(H_out)): K2 +10-15%, K3 +4%
+  (no auto-vs-always confound: D1, code reading). (e) **gradient-weighted input Hessian** (gate 2e, H_in =
+  sum ||dy||^2 x x^T, 100 seqs, one-sided LDLQ, 2026-11-01): K2 +44% (z 10), K3 +31% (z 12); far worse than the plain
+  Hessian, so the pre-set blend follow-up was skipped. **Every backward-based Hessian variant is dropped** (2026-11-01).
 - **Best-of-N rotation seeds** — 2026-10-31. Pick each tensor's rotation sign seed from 4 by proxy. Seed spread 0.5%,
   not reproducible across row samples (corr +0.22), honest gain ~0. Dead. `v3/e3/seedtest.sh`.
 

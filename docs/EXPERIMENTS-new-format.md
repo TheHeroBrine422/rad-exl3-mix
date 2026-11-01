@@ -475,6 +475,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 01:17 CDT: **Gate 2e FAILED** (gradient-weighted H_in from the 100-sequence snapshot, blocks 22/23,
+  ver1, paired vs one-sided): K2 +44% (z 10.3), K3 +31% (z 11.6). By the rule fixed beforehand (either K positive ->
+  drop), no blend test (`gate2e-blend.sh` / `hblend.py` written and tested, unused). All backward-based Hessian ideas
+  are now closed (EXPERIMENTS.md). D2 started right after (split-half collection 1.05 s/seq).
 - 2026-11-01 ~01:35 CT: **Document-reuse bias test: no measurable flattering from fit-slice reuse** (`eval/biastest.py`,
   existing scores only, `data/biastest-2026-11-01.out`). 76 V2 mixes scored on a fit-pool slice (calA / fit2 / fit3,
   where V2's models were fitted and the mixes picked) and on ver1; each as a ratio to turboderp's untuned SC reference
