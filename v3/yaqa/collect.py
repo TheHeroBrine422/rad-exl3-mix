@@ -21,7 +21,14 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     The backward starts at the lowest full layer's input (layers below run forward only; gradients
                     at and above it are unchanged; YAQA_TRUNC=0 runs it to the embedding, for checking), and the
                     CPU sums run in a background thread, overlapping the GPU (joined at the end of each sequence).
-                    YAQA_SNAP=n also writes the sums after n sequences to OUTDIR/hout-snap (truncation check)."""
+                    YAQA_SNAP=n[,n..] also writes the sums after n sequences to OUTDIR/hout-snapN (truncation check,
+                    sample-count test); YAQA_HALVES=1 keeps a second sum over the even-numbered sequences, written as
+                    OUTDIR/hout-even[-snapN] (split-half agreement: even vs total - even).
+     YAQA_HIN=1 -> with YAQA_FULL, also the gradient-weighted input Hessians of those layers:
+                    H_in = Σ_t (Σ over the group's linears ||dy_t||²) x_t x_tᵀ per input group (q/k/v or GDN qkv/z,
+                    o_proj / out_proj, gate/up, down), positions 16 on, fp32 CPU sums, written next to the snapshots as
+                    OUTDIR/hin[-snapN]/<ourq input-Hessian name>.safetensors (the challenge layout: hessian_upper,
+                    metadata k / rows) for ourq.py --hin."""
 import json, math, os, sys, time
 sys.path.insert(0, "/data/yaqa/pylib")
 import numpy as np, torch
@@ -108,13 +115,32 @@ state = {"pos": None, "rows": {}, "full_done": set()}
 FULL = {int(x) for x in os.environ.get("YAQA_FULL", "").split(",") if x}
 UNW = os.environ.get("YAQA_UNWEIGHTED") == "1"
 HACC, HN = {}, {}          # full-mode accumulators (CPU fp32) and token counts, by linear name
+HACC_E = {}                # the even-sequence half (YAQA_HALVES)
+HALVES = os.environ.get("YAQA_HALVES") == "1"
+HIN = os.environ.get("YAQA_HIN") == "1"
+SNAPS = {int(x) for x in os.environ.get("YAQA_SNAP", "").split(",") if x}
+HINACC, HINN = {}, {}      # gradient-weighted input Hessians by ourq input-Hessian name
+def hin_group(name):       # "22.self_attn.q_proj" -> ourq's input-Hessian name (None: not quantized, e.g. GDN a/b)
+    L, rest = name.split(".", 1); p = f"model.language_model.layers.{L}"
+    if rest in ("self_attn.q_proj", "self_attn.k_proj", "self_attn.v_proj", "linear_attn.in_proj_qkv", "linear_attn.in_proj_z"):
+        return f"{p}.input"
+    return {"self_attn.o_proj": f"{p}.self_attn.o_proj.input", "linear_attn.out_proj": f"{p}.linear_attn.out_proj.input",
+            "mlp.gate_proj": f"{p}.post_attention.input", "mlp.up_proj": f"{p}.post_attention.input",
+            "mlp.down_proj": f"{p}.mlp.down_proj.input"}.get(rest)
+def _acc_hin(gname, x, gn):
+    xw = x * gn.sqrt()[:, None]
+    if gname not in HINACC: HINACC[gname] = torch.zeros(x.shape[1], x.shape[1])
+    HINACC[gname].addmm_(xw.T, xw)
 torch.set_num_threads(int(os.environ.get("YAQA_CPU_THREADS", 12)))
 TRUNC = bool(FULL) and os.environ.get("YAQA_TRUNC", "1") == "1"
 from concurrent.futures import ThreadPoolExecutor
 POOL, PEND = ThreadPoolExecutor(1), []    # one worker: the sums of one tensor never race; torch threads inside
-def _acc(name, r):
+def _acc(name, r, even=False):
     if name not in HACC: HACC[name] = torch.zeros(r.shape[1], r.shape[1])
     HACC[name].addmm_(r.T, r)
+    if even:
+        if name not in HACC_E: HACC_E[name] = torch.zeros(r.shape[1], r.shape[1])
+        HACC_E[name].addmm_(r.T, r)
 def join_full():
     for f in PEND: f.result()
     PEND.clear()
@@ -131,21 +157,40 @@ def fwd_hook_full(name):
     def h(mod, inp, out):
         if not out.requires_grad: return
         w = None if UNW else inp[0][0, 16:].float().pow(2).sum(1, keepdim=True)   # [T, 1]
+        gname = hin_group(name) if HIN else None
+        if gname:                                   # the group's input, once per sequence, on the CPU
+            if gname not in state["xin"]: state["xin"][gname] = inp[0][0, 16:].float().cpu()
+            xin = state["xin"][gname]
         def bh(g):
             if name in state["full_done"]: return     # checkpoint recompute guard
             state["full_done"].add(name)
             r = g[0, 16:].float()
+            if gname:
+                gn = r.pow(2).sum(1).cpu()
+                HINN[gname] = HINN.get(gname, 0) + (r.shape[0] if name.endswith(("q_proj", "in_proj_qkv", "o_proj", "out_proj", "gate_proj", "down_proj")) else 0)
+                PEND.append(POOL.submit(_acc_hin, gname, xin, gn))
             if w is not None: r = r * w.to(r.device).sqrt()
             r = r.cpu()
             HN[name] = HN.get(name, 0) + r.shape[0]
-            PEND.append(POOL.submit(_acc, name, r))
+            PEND.append(POOL.submit(_acc, name, r, HALVES and state["seq"] % 2 == 0))
         out.register_hook(bh)
     return h
 def save_full(sub="hout"):
     join_full()
+    from safetensors.torch import save_file
+    _save_hout(sub, HACC)
+    if HALVES: _save_hout(sub.replace("hout", "hout-even"), HACC_E)
+    if HIN:
+        hd = sub.replace("hout", "hin"); os.makedirs(f"{OUT}/{hd}", exist_ok=True)
+        for gname, H in HINACC.items():
+            k = H.shape[0]; iu = torch.triu_indices(k, k)
+            save_file({"hessian_upper": H[iu[0], iu[1]].contiguous()}, f"{OUT}/{hd}/{gname}.safetensors.part",
+                      metadata={"k": str(k), "rows": str(HINN.get(gname, 0)), "weight": "sum ||dy||^2 over the group"})
+            os.replace(f"{OUT}/{hd}/{gname}.safetensors.part", f"{OUT}/{hd}/{gname}.safetensors")
+def _save_hout(sub, ACC):
     os.makedirs(f"{OUT}/{sub}", exist_ok=True)
     from safetensors.torch import save_file
-    for name, H in HACC.items():
+    for name, H in ACC.items():
         key = "model.language_model.layers." + name
         save_file({"hout": H.contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"rows": str(HN[name]), "weight": "none" if UNW else "x2", "fp32_act": str(FP32)})
@@ -176,14 +221,14 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
     ids = torch.from_numpy(toks[wins[s]:wins[s] + L].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
-    state["rows"] = {}; state["full_done"] = set()
+    state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
     ts = time.time()
     emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(not TRUNC)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
     loss = 0; ys = []
     for c0 in range(0, hid.shape[0], CH):
         h = hid[c0:c0 + CH]
-        if LABELS:
+        if LABELS and os.path.exists(f"{LABELS}/.labels/{s:05d}.i32"):   # past the labelled run's range: sample
             y = torch.from_numpy(np.fromfile(f"{LABELS}/.labels/{s:05d}.i32", np.int32)[c0:c0 + CH].astype(np.int64)).to(h.device)
         else:
             with torch.no_grad():
@@ -193,7 +238,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     loss.backward()
     dt = time.time() - ts
     if FULL: join_full()
-    if FULL and not GATE and done + 1 == int(os.environ.get("YAQA_SNAP", 0)): save_full("hout-snap")
+    if FULL and not GATE and done + 1 in SNAPS: save_full(f"hout-snap{done + 1}")
     if FULL and not GATE:
         if (done + 1) % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_full()
     elif not GATE:

@@ -41,6 +41,8 @@ ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
                 "two-sided LDLQ for the linears that have one")
+ap.add_argument("--hin", default=None, help="dir of replacement input Hessians in the challenge layout "
+                "(<name>.safetensors, hessian_upper; v3/yaqa/collect.py YAQA_HIN): used for the groups that have one")
 ap.add_argument("--hout-diag", default=None, help="dir of output-side Hessians as for --hout, but only their diagonal is "
                 "used: one-sided LDLQ with exllamav3's sensitivity output scales (t ~ (sigma^2/s)^(1/4), as convert.py "
                 "--out_scales yaqa) for the linears that have one (output scales on auto instead of always)")
@@ -71,6 +73,7 @@ def ck(name):
 # ------------------------------------------------------------------ a Hessian (packed upper triangle, sum over rows)
 def hessian(name):
     p = f"{HESS}/{name}.safetensors"
+    if a.hin and os.path.exists(f"{a.hin}/{name}.safetensors"): p = f"{a.hin}/{name}.safetensors"
     with open(p, "rb") as fh:
         n = struct.unpack("<Q", fh.read(8))[0]; hdr = json.loads(fh.read(n))
     meta = hdr["__metadata__"]; k = int(meta["k"]); rows = int(meta["rows"])
