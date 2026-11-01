@@ -274,6 +274,9 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     done += 1
     print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
-    del hid, loss, emb; torch.cuda.empty_cache()
+    del hid, loss, emb
+    import gc; gc.collect(); torch.cuda.empty_cache()     # hook closures can hold graph pieces in reference cycles
+    print(f"  mem after seq {s}: " + ", ".join(f"cuda{i} alloc {torch.cuda.memory_allocated(i) / 2**30:.2f} GiB" for i in range(2)), flush=True)
+    for i in range(2): torch.cuda.reset_peak_memory_stats(i)     # the next line's peak is that sequence's own
 if FULL and not GATE: save_full()
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)
