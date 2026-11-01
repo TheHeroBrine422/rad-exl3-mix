@@ -19,6 +19,8 @@
 
 #include <cuda_fp16.h>
 #include <cstdint>
+#include "util.h"              // exllamav3_ext/: half_uint16 etc., before codebook.cuh (as the fork's kernels do)
+#include "util.cuh"
 #include "codebook.cuh"
 
 #ifndef H_INF

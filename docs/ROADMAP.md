@@ -69,9 +69,9 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   M >= 512, decode stays f16-activation); worth reading for their accuracy data. The separate-prefill-weights form
   (compute-native prefill weights, streamed from SSD: "ODP") is a serving variant, not a board entry (the board
   counts every stored tensor).
-- **Decode speed is the largest practical gap:** V2 decodes roughly 3x slower than IQR-V3 at TP1 (user's estimate,
-  ~30 vs ~100 tok/s; prefill ~1,500 vs ~2,500 tok/s). The V4 decode work (profile, then a decode-optimized kernel /
-  variant) matters more for real use than the board does.
+- **Speed gap to IQR-V3, for the record (user, 2026-11-01):** decode (~30 vs ~100 tok/s at TP1) is mostly
+  speculative decoding: IQR-V3 ships DFlash2, V2 does not -- DFlash2 support (planned for V3) closes most of it.
+  Prefill (~1,500 vs ~2,500 tok/s) is the GEMM time (`gemm_us`), which V3's int8 path targets.
 - **REAL-Q (arXiv 2609.00049), tested before QAD:** a measured trial on a few sizes, so V5 starts from the best
   non-trained quantizer.
 
