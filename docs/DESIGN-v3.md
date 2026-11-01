@@ -194,7 +194,7 @@ Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`
 | scale gain per K and family (attn_output / ssm_out larger at ≥ 5 bits) | 0 to −4% | sweep (`quantize/gaintest.py`), then requant |
 | damping 0.005 for attention / GDN input projections | ~−0.5 to −1% | requant (`quantize/damptest.py`: −2…−6% on those tensors) |
 | K0 / K0.25–0.75 | < 2 bpw only; **V3.5** (2026-11-01) | salted 0-bit read in quantizer + every decode kernel |
-| YAQA output-side Hessians (§7) | paper: −15 to −30%; **ours so far: worse** (gates 2, 2b) | full-token gate 2c running; diagonal-only output weighting next |
+| YAQA / backward-based Hessians (§7) | **dropped 2026-11-01**: two-sided, diagonal output scales and gradient-weighted H_in all worse (gates 2–2e) | — |
 
 All of these need a **requant**: K1–K6.5 in half steps is ~12 runs at ~1 h each on one card ≈ 12–14 h (two nights,
 or one TP2 night when both cards are available).
@@ -303,7 +303,7 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
   quarter steps: < 1% more, each K costs a quant run → no.
 - Row-slab K (a K per 128-row slab inside a tensor): deferred for the trunk. E3c put its ceiling at ~0.05 bit, but
   E3c saw only the input-side Hessian, which cannot tell rows apart; the output-side Hessian (YAQA's H_out diagonal)
-  can. Revisit if H_out shows large per-row sensitivity spread. Needs a K per slab and per-slab scales in the format.
+  could, but output-side weighting hurt in every form we tried (gates 2–2e): row-slab K for the trunk is dropped. Needs a K per slab and per-slab scales in the format.
   **For the LM head it is being tested now** (the head's Fisher diagonal is cheap: Σ p(1−p) from the bf16 golden's
   top-512 -- truncated, not exact; no backward). Result: −36…−40% head KL at K5–6 budgets (headsim). The head is
   ~5–7% of total KLD by the log's own numbers (not 1.5–3%), so ≈ −2…−3% total at 3–5 bpw; add the rare-token guard
@@ -322,9 +322,10 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 - **REAL-Q (arXiv 2609.00049):** PTQ with a Fisher surrogate at each block's output (F = mean g gᵀ from one end-to-end
   backward pass) and one Adam step on the still-unquantized columns after every 128-column block; up to ~49% lower KL
   than GuidedQuant at W4A16 (scalar grids, small Qwen3 models, QuaRot). Costs: the stage-0 backward (bf16 27B:
-  a TP2 night, same as YAQA's Hessians — collect both in one night) and a rewrite of the quantizer loop around
+  a TP2 night) and a rewrite of the quantizer loop around
   exllamav3's LDLQ/trellis. Potentially the largest quality item; research track after Phase B, not on V3's path.
-- **YAQA (arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
+- **YAQA — DROPPED 2026-11-01** (every variant measured worse: two-sided K2 +7…+30%, diagonal output scales +4…+15%,
+  gradient-weighted H_in +31…+44%; EXPERIMENTS.md). Background kept: **(arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
   end-to-end KL, H ≈ H_out ⊗ H_in, and LDLQ with error feedback on both axes. ~30% lower KL than LDLQ on QTIP trellis
   codes; Qwen3-8B 2-bit: KL 0.285 → 0.227 with 2K sequences (Sketch B, ~1 GPU-h at 8B) → 0.205 with 64K.
   **Our exllamav3 already has the quantizer side** (`ldlq_2hess`, `prepare_H_out`); only H_out is missing.
@@ -362,7 +363,7 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 
 ## Later / backlog
 
-- YAQA output-side Hessians: bf16 forward + backward over the qad pool, a full TP2 night; time it once V3.0 works.
+- (YAQA output-side Hessians: dropped 2026-11-01, gates 2–2e; the qad pool is free for QAD.)
 - Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
 - Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): **V3.5** (user, 2026-11-01), before
   QAD, since sub-2 quants are the natural QAD targets. First check: proxy-priced options in knap4 at 1.5–2.5 bpw.
