@@ -242,9 +242,10 @@ work overlaps it:
 - **Known taint:** the published input Hessians include every calib doc, verify too (every quant is fitted to them;
   affects all arms of a comparison equally); the moved docs were in the qad head Fisher (slab-head ranking).
 - **Validation curve from day one** (held-out score of the best-so-far picks), stop when it goes flat.
-- **Budget (2026-11-01):** ~1,200–1,500 evals as a cap, ~30 evals/h a card (int8 evals ~25% faster): ~35–50 h on one
-  card, ~17–25 h on two; each size band stops when its ver3 validation curve goes flat (V2's mid band ran ~700 evals
-  past its held-out minimum). Fewer targets (release
+- **Budget and stop rule (user, 2026-11-01):** no fixed budget (expect ~1,500–3,000 evals with the larger menu;
+  ~30 evals/h a card, int8 evals ~25% faster). **Each size band stops when its held-out score stops decreasing:** the
+  ver3 score of the band's best-so-far mix has not improved by more than its paired SE over the last N candidates
+  (N fixed before the run, e.g. 40). V2's long tail was deliberate (spare overnight compute), not a mistake. Fewer targets (release
   sizes only), short high-bpw phases (V2's 6 h one bought ~nothing).
 - Long-context check: one card fits the 262k bf16 KV up to ~5 bpw on 1.13 at step 2048 (5.00: 255k, 6.00: 209k
   tokens; the recorder at step 4096 shrinks the pool ~3%); re-probe on 1.15 and assert full KV coverage per run.
