@@ -1,0 +1,68 @@
+{"check": "exact", "cb": "mul1", "K": 1.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 1.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 1.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 2.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 2.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 2.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 3.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 3.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 3.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 4.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 4.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 4.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 5.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 6.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "mul1", "K": 7.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432}
+{"check": "exact", "cb": "i8", "K": 1.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 12946, "new_tps": 25025}
+{"check": "exact", "cb": "i8", "K": 1.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 13114, "new_tps": 25236}
+{"check": "exact", "cb": "i8", "K": 1.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 13419, "new_tps": 25440}
+{"check": "exact", "cb": "i8", "K": 2.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 14482, "new_tps": 37110}
+{"check": "exact", "cb": "i8", "K": 2.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 14722, "new_tps": 37737}
+{"check": "exact", "cb": "i8", "K": 2.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 14834, "new_tps": 36328}
+{"check": "exact", "cb": "i8", "K": 3.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15237, "new_tps": 37722}
+{"check": "exact", "cb": "i8", "K": 3.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15235, "new_tps": 38105}
+{"check": "exact", "cb": "i8", "K": 3.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15190, "new_tps": 36777}
+{"check": "exact", "cb": "i8", "K": 4.25, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15414, "new_tps": 37340}
+{"check": "exact", "cb": "i8", "K": 4.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15539, "new_tps": 37028}
+{"check": "exact", "cb": "i8", "K": 4.75, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 15583, "new_tps": 36382}
+{"check": "exact", "cb": "i8", "K": 5.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 6292, "new_tps": 13844}
+{"check": "exact", "cb": "i8", "K": 6.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 4086, "new_tps": 4447}
+{"check": "exact", "cb": "i8", "K": 7.5, "idx_diff": 0, "val_diff": 0, "tiles": 1432, "old_tps": 2669, "new_tps": 2634}
+{"check": "int_speed", "K": 1, "tps": 36498}
+{"check": "int_speed", "K": 2, "tps": 38810}
+{"check": "int_speed", "K": 3, "tps": 46737}
+{"check": "int_speed", "K": 4, "tps": 71975}
+{"check": "int_speed", "K": 5, "tps": 39065}
+{"check": "int_speed", "K": 6, "tps": 35660}
+{"check": "int_speed", "K": 7, "tps": 8539}
+{"check": "rate", "K": 0.125, "ka": 0, "mask": "8080", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 1.26548, "has_old": false, "tps": 10683}
+{"check": "rate", "K": 0.25, "ka": 0, "mask": "8888", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.91848, "has_old": false, "tps": 10786}
+{"check": "rate", "K": 0.375, "ka": 0, "mask": "a4a4", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.71974, "has_old": false, "tps": 10926}
+{"check": "rate", "K": 0.5, "ka": 0, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.58219, "has_old": false, "tps": 11037}
+{"check": "rate", "K": 0.625, "ka": 0, "mask": "dada", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.47753, "has_old": false, "tps": 11339}
+{"check": "rate", "K": 0.75, "ka": 0, "mask": "eeee", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.39603, "has_old": false, "tps": 11670}
+{"check": "rate", "K": 0.875, "ka": 0, "mask": "fefe", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.33026, "has_old": false, "tps": 11994}
+{"check": "rate", "K": 1.125, "ka": 1, "mask": "8080", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.23237, "has_old": false, "tps": 24559}
+{"check": "rate", "K": 1.25, "ka": 1, "mask": "8888", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.19508, "has_old": true, "tps": 24696}
+{"check": "rate", "K": 1.375, "ka": 1, "mask": "a4a4", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.16391, "has_old": false, "tps": 24736}
+{"check": "rate", "K": 1.5, "ka": 1, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.13751, "has_old": true, "tps": 24906}
+{"check": "rate", "K": 1.625, "ka": 1, "mask": "dada", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.11567, "has_old": false, "tps": 24871}
+{"check": "rate", "K": 1.75, "ka": 1, "mask": "eeee", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.09712, "has_old": true, "tps": 24998}
+{"check": "rate", "K": 1.875, "ka": 1, "mask": "fefe", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.08165, "has_old": false, "tps": 25030}
+{"check": "rate", "K": 2.125, "ka": 2, "mask": "8080", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.05776, "has_old": false, "tps": 37898}
+{"check": "rate", "K": 2.25, "ka": 2, "mask": "8888", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.04865, "has_old": true, "tps": 37707}
+{"check": "rate", "K": 2.375, "ka": 2, "mask": "a4a4", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.04105, "has_old": false, "tps": 37775}
+{"check": "rate", "K": 2.5, "ka": 2, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.03474, "has_old": true, "tps": 38423}
+{"check": "rate", "K": 2.625, "ka": 2, "mask": "dada", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.02936, "has_old": false, "tps": 37247}
+{"check": "rate", "K": 2.75, "ka": 2, "mask": "eeee", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.02477, "has_old": true, "tps": 36984}
+{"check": "rate", "K": 2.875, "ka": 2, "mask": "fefe", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.02087, "has_old": false, "tps": 36480}
+{"check": "rate", "K": 3.25, "ka": 3, "mask": "8888", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.01259, "has_old": true, "tps": 38136}
+{"check": "rate", "K": 3.5, "ka": 3, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00899, "has_old": true, "tps": 38575}
+{"check": "rate", "K": 3.75, "ka": 3, "mask": "eeee", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00645, "has_old": true, "tps": 37346}
+{"check": "rate", "K": 4.25, "ka": 4, "mask": "8888", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00331, "has_old": true, "tps": 37536}
+{"check": "rate", "K": 4.5, "ka": 4, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00239, "has_old": true, "tps": 37083}
+{"check": "rate", "K": 4.75, "ka": 4, "mask": "eeee", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00174, "has_old": true, "tps": 36332}
+{"check": "rate", "K": 5.5, "ka": 5, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.0007, "has_old": true, "tps": 13547}
+{"check": "rate", "K": 6.5, "ka": 6, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00026, "has_old": true, "tps": 4347}
+{"check": "rate", "K": 7.5, "ka": 7, "mask": "aaaa", "struct_violations": 0, "pack_roundtrip_diff": 0, "rel_mse": 0.00017, "has_old": true, "tps": 2595}
+{"check": "summary", "fails": 0, "verdict": "PASS"}
