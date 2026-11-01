@@ -425,6 +425,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 - [ ] **Speed calibration** (mining A4/B7): key shapes at full/half N, stock/210 W, M = 16–511 (minutes, existing bench).
 - [ ] **Best-of-N rotation seeds** (new): pick each tensor's sign/rotation seed from 2–4 by proxy; free at inference.
       CPU test of the per-tensor seed spread first (trellis.py with other seeds), expect 1–3% if anything.
+- [ ] **fp32 costs in the GPU trellis search** (new, 2026-11-01): fracsmoke shows exllamav3's GPU Viterbi (fp16 path
+      costs) 4–6% worse in tile MSE than the exact float CPU search at every K (K1 0.936 … K8 0.989, same tiles).
+      Before the Phase-B requant: check on real tensors with LDLQ (the gap may shrink or grow), then an fp32-cost
+      kernel variant (slower search; quant time is not the bottleneck).
 - [ ] Depends on tonight: YAQA count test / full collection (gate 2c/2e); gradient-weighted H_in if it wins;
       SC-style (model-written text) input Hessians or **sequential calibration** (each layer on the quantized
       model's inputs, as exllamav3's converter does; we use bf16-model Hessians) if low damping doesn't explain
@@ -433,6 +437,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
       radiance #328 check at the 1.15 port.
 
 ## Log (newest first)
+
+- 2026-11-01 ~21:20 CT: **Quarter-step quantizer works on the GPU** (`fracsmoke.py`, 8192 Gaussian tiles, card 0):
+  pack/unpack round trips and decode exact at every menu K; quarter/half steps on the curve (0.993–1.003 to K4.75).
+  The first verdict said FAIL only because the CPU-vs-GPU check expected agreement within 3%: the GPU search is
+  4–6% worse than the exact CPU Viterbi at every K, integer K (exllamav3's own kernel) included, and fractional K
+  sits within 0.4% of its integer neighbours' offset. Check fixed; the levels (chain0) are unblocked. The 4–6% gap
+  itself is a candidate (above). Overnight CPU chains queued: fine gain sweep on Thor after the seed test, damping at
+  6 more depths (K3/5/7) on colo after the damping sweep.
 
 - 2026-10-31 ~21:00 CT: **Embedding menu, token-frequency weighted** (`v3/e3/embfreq.py`, the sweep's saved per-row
   errors x search+qad token counts): the error curve is unchanged (x1.40 per quarter step; frequency-weighted error
