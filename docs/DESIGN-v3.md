@@ -242,6 +242,11 @@ work overlaps it:
 - **Known taint:** the published input Hessians include every calib doc, verify too (every quant is fitted to them;
   affects all arms of a comparison equally); the moved docs were in the qad head Fisher (slab-head ranking).
 - **Validation curve from day one** (held-out score of the best-so-far picks), stop when it goes flat.
+- **Slices by role (user, 2026-11-01).** Everything in the search loop, held-out monitor included, scores only the
+  first 8k positions of each document: the stream reads **`golden-ver3-8k`** (the 104 ver3 docs cut at 8192: 156k
+  scored rows), never `golden-ver3` (16k cut) or `golden-ver3-long`. Long context is checked once, at the end, on
+  the finalists: ver4 (16k cut) plus `golden-ver4-long`, and `golden-ver3-long` as a second long trace. All slices
+  are cut from the published bf16 reference (`challenge/golden/calib`); no reference run is needed.
 - **Budget and stop rule (user, 2026-11-01):** no fixed budget (expect ~1,500–3,000 evals with the larger menu;
   ~30 evals/h a card, int8 evals ~25% faster). **Each size band stops when its held-out score stops decreasing:** the
   ver3 score of the band's best-so-far mix has not improved by more than its paired SE over the last N ver3 reads

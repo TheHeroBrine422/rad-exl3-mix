@@ -454,6 +454,12 @@
    "doc": 2300,
    "score_from": 8192,
    "tokens": 248066
+  },
+  "stream_slice": {
+   "golden": "golden-ver3-8k",
+   "maxtok": 8192,
+   "rows": 156027,
+   "note": "2026-11-01: stream monitor reads the 8k cut only; 16k cut and the long trace are for the final check"
   }
  },
  "reserve": {
