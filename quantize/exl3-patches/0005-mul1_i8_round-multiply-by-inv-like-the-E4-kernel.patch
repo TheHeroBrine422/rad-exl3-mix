@@ -1,0 +1,26 @@
+From 8211a7a14eff293be9213ac068a34ac0a737f31f Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sun, 1 Nov 2026 03:31:40 +0000
+Subject: [PATCH 5/6] mul1_i8_round: multiply by inv like the E4 kernel
+
+---
+ exllamav3/exllamav3_ext/quant/codebook.cuh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/exllamav3/exllamav3_ext/quant/codebook.cuh b/exllamav3/exllamav3_ext/quant/codebook.cuh
+index d0ab60a9..55f1b2f0 100644
+--- a/exllamav3/exllamav3_ext/quant/codebook.cuh
++++ b/exllamav3/exllamav3_ext/quant/codebook.cuh
+@@ -40,7 +40,8 @@ __device__ inline half mul1_i8_round(half v)
+ {
+ #ifdef EXL3_MUL1_I8
+     const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee));
+-    return __float2half_rn(fminf(fmaxf(rintf(__half2float(v) / s4), -127.f), 127.f) * s4);
++    const float inv = 1.0f / s4;                    // multiply by inv, as nfq_wdec_i8 does (same rounding at ties)
++    return __float2half_rn(fminf(fmaxf(rintf(__half2float(v) * inv), -127.f), 127.f) * s4);
+ #else
+     return v;
+ #endif
+-- 
+2.56.0
+

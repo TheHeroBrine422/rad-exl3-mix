@@ -1,0 +1,51 @@
+From 6ae6166b7fced5bb9eb68029bcceb4b793e507de Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sun, 1 Nov 2026 03:31:20 +0000
+Subject: [PATCH 3/6] codebook: EXL3_MUL1_I8 compile option (int8-rounded mul1,
+ matches the E4 int8 decode)
+
+---
+ exllamav3/exllamav3_ext/quant/codebook.cuh   | 13 ++++++++++++-
+ exllamav3/modules/quant/exl3_lib/quantize.py |  2 +-
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/exllamav3/exllamav3_ext/quant/codebook.cuh b/exllamav3/exllamav3_ext/quant/codebook.cuh
+index bd1e2f99..f4be685b 100644
+--- a/exllamav3/exllamav3_ext/quant/codebook.cuh
++++ b/exllamav3/exllamav3_ext/quant/codebook.cuh
+@@ -48,7 +48,18 @@ __device__ inline half2 decode_mul1_product_2(uint32_t x0, uint32_t x1)
+     half2 k_bias_h2 = __half2half2(__ushort_as_half(0xc931));  // -10.39 = (-1024.0 - 510.0) * k_inv_h
+     half_uint16 h0((uint16_t) sum0);
+     half_uint16 h1((uint16_t) sum1);
+-    return __hfma2(__halves2half2(h0.as_half, h1.as_half), k_inv_h2, k_bias_h2);
++    half2 v = __hfma2(__halves2half2(h0.as_half, h1.as_half), k_inv_h2, k_bias_h2);
++#ifdef EXL3_MUL1_I8
++    // int8-rounded mul1 (V3's int8 prefill path, E4 nfq_wdec_i8): q = clamp(rint(v / (4 k_inv)), -127, 127),
++    // value = q * 4 k_inv. One int8 step = 4 bytesum units. Built only into the exl3i8 side extension, so the
++    // trellis search, LDLQ feedback and output values all see exactly what the int8 kernel multiplies.
++    const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee)), inv = 1.0f / s4;
++    float2 f = __half22float2(v);
++    f.x = fminf(fmaxf(rintf(f.x * inv), -127.f), 127.f) * s4;
++    f.y = fminf(fmaxf(rintf(f.y * inv), -127.f), 127.f) * s4;
++    v = __float22half2_rn(f);
++#endif
++    return v;
+ }
+ 
+ // Ditto mcg (cb 1)
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index 7c3b8fdd..2597c54d 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -134,7 +134,7 @@ def get_temp_buffers_frac(device, ka: int):
+ 
+ 
+ def quantize_tiles_frac(tiles, quant_args: dict):
+-    """Half-integer bitrate (KA + 0.5): alternating pattern of KA / KA+1-bit steps. mul1 codebook only"""
++    """Fractional bitrate (frac_k: KA- and KA+1-bit steps in the canonical pattern). mul1 codebook only"""
+     tiles = tiles.contiguous()
+     assert tiles.shape[1] == 256 and tiles.dtype == torch.float
+     assert quant_codebook(quant_args)[1], "fractional bitrates require the mul1 codebook"
+-- 
+2.56.0
+

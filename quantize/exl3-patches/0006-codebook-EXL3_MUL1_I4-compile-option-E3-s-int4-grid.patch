@@ -1,0 +1,37 @@
+From 08004077275aa809509a4531b5b73a8f989cee78 Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sun, 1 Nov 2026 03:32:11 +0000
+Subject: [PATCH 6/6] codebook: EXL3_MUL1_I4 compile option (E3's int4 grid)
+
+---
+ exllamav3/exllamav3_ext/quant/codebook.cuh | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/exllamav3/exllamav3_ext/quant/codebook.cuh b/exllamav3/exllamav3_ext/quant/codebook.cuh
+index 55f1b2f0..d61562c7 100644
+--- a/exllamav3/exllamav3_ext/quant/codebook.cuh
++++ b/exllamav3/exllamav3_ext/quant/codebook.cuh
+@@ -33,6 +33,7 @@ uint32_t mul_const_u32(uint32_t x)
+     #endif
+ }
+ 
++// EXL3_MUL1_I4: the int4 grid instead, see below.
+ // int8-rounded mul1 (V3's int8 prefill path, E4 nfq_wdec_i8): q = clamp(rint(v / (4 k_inv)), -127, 127), value
+ // q * 4 k_inv; one int8 step = 4 bytesum units. Only with EXL3_MUL1_I8 (the exl3i8 side extension), so the trellis
+ // search, the LDLQ feedback and the output values all see exactly what the int8 kernel multiplies; else identity.
+@@ -42,6 +43,12 @@ __device__ inline half mul1_i8_round(half v)
+     const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee));
+     const float inv = 1.0f / s4;                    // multiply by inv, as nfq_wdec_i8 does (same rounding at ties)
+     return __float2half_rn(fminf(fmaxf(rintf(__half2float(v) * inv), -127.f), 127.f) * s4);
++#elif defined(EXL3_MUL1_I4)
++    // int4 grid (E3 "int4grid", for an iu4 W4A4 path at K <= 3): 16 half-integer levels +-0.5 .. +-7.5 in steps of
++    // 2.6 / 7.5 (mul1 values have sd ~1.0; the global rescale E3 applied is absorbed by the g_scale search). An iu4
++    // kernel would store level - 0.5 in -8..7 and fold the half step into its epilogue.
++    const float st = 2.6f / 7.5f, inv = 7.5f / 2.6f;
++    return __float2half_rn((fminf(fmaxf(rintf(__half2float(v) * inv - 0.5f), -8.f), 7.f) + 0.5f) * st);
+ #else
+     return v;
+ #endif
+-- 
+2.56.0
+

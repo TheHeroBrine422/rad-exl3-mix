@@ -1,7 +1,7 @@
 From 1afc6f4606a8f046a882d2c1cd0f3933ca02e9fa Mon Sep 17 00:00:00 2001
 From: Hero <caleb@calebgj.io>
 Date: Sat, 31 Oct 2026 23:59:02 +0000
-Subject: [PATCH 2/2] Quarter-step quantizer: frac instances for the V3 menu
+Subject: [PATCH 2/6] Quarter-step quantizer: frac instances for the V3 menu
  (KA 1-4 x 0x8888/0xAAAA/0xEEEE, KA 5-7 x 0xAAAA), canonical frac_mask, decode
  refuses non-half rates
 

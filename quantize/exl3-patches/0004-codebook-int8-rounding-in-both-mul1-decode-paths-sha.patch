@@ -1,0 +1,65 @@
+From b7acdc20a0746758071e7735eb4ec4b66688dfc9 Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sun, 1 Nov 2026 03:31:34 +0000
+Subject: [PATCH 4/6] codebook: int8 rounding in both mul1 decode paths (shared
+ mul1_i8_round)
+
+---
+ exllamav3/exllamav3_ext/quant/codebook.cuh | 27 ++++++++++++----------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/exllamav3/exllamav3_ext/quant/codebook.cuh b/exllamav3/exllamav3_ext/quant/codebook.cuh
+index f4be685b..d0ab60a9 100644
+--- a/exllamav3/exllamav3_ext/quant/codebook.cuh
++++ b/exllamav3/exllamav3_ext/quant/codebook.cuh
+@@ -33,6 +33,19 @@ uint32_t mul_const_u32(uint32_t x)
+     #endif
+ }
+ 
++// int8-rounded mul1 (V3's int8 prefill path, E4 nfq_wdec_i8): q = clamp(rint(v / (4 k_inv)), -127, 127), value
++// q * 4 k_inv; one int8 step = 4 bytesum units. Only with EXL3_MUL1_I8 (the exl3i8 side extension), so the trellis
++// search, the LDLQ feedback and the output values all see exactly what the int8 kernel multiplies; else identity.
++__device__ inline half mul1_i8_round(half v)
++{
++#ifdef EXL3_MUL1_I8
++    const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee));
++    return __float2half_rn(fminf(fmaxf(rintf(__half2float(v) / s4), -127.f), 127.f) * s4);
++#else
++    return v;
++#endif
++}
++
+ // Decode two mul1 (cb 2) codebook entries from precomputed products x0 = idx0 * 0x83DCD12D,
+ // x1 = idx1 * 0x83DCD12D
+ __device__ inline half2 decode_mul1_product_2(uint32_t x0, uint32_t x1)
+@@ -49,17 +62,7 @@ __device__ inline half2 decode_mul1_product_2(uint32_t x0, uint32_t x1)
+     half_uint16 h0((uint16_t) sum0);
+     half_uint16 h1((uint16_t) sum1);
+     half2 v = __hfma2(__halves2half2(h0.as_half, h1.as_half), k_inv_h2, k_bias_h2);
+-#ifdef EXL3_MUL1_I8
+-    // int8-rounded mul1 (V3's int8 prefill path, E4 nfq_wdec_i8): q = clamp(rint(v / (4 k_inv)), -127, 127),
+-    // value = q * 4 k_inv. One int8 step = 4 bytesum units. Built only into the exl3i8 side extension, so the
+-    // trellis search, LDLQ feedback and output values all see exactly what the int8 kernel multiplies.
+-    const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee)), inv = 1.0f / s4;
+-    float2 f = __half22float2(v);
+-    f.x = fminf(fmaxf(rintf(f.x * inv), -127.f), 127.f) * s4;
+-    f.y = fminf(fmaxf(rintf(f.y * inv), -127.f), 127.f) * s4;
+-    v = __float22half2_rn(f);
+-#endif
+-    return v;
++    return __halves2half2(mul1_i8_round(__low2half(v)), mul1_i8_round(__high2half(v)));
+ }
+ 
+ // Ditto mcg (cb 1)
+@@ -106,7 +109,7 @@ __device__ inline half decode_3inst(uint32_t x)
+         const __half k_inv_h = __ushort_as_half(0x1eee);  //  0.00677 = 1/147.7
+         const __half k_bias_h = __ushort_as_half(0xc931);  // -10.39 = (-1024.0 - 510.0) * k_inv_h
+         half_uint16 h((uint16_t) sum);
+-        return __hfma(h.as_half, k_inv_h, k_bias_h);
++        return mul1_i8_round(__hfma(h.as_half, k_inv_h, k_bias_h));
+     }
+ }
+ 
+-- 
+2.56.0
+
