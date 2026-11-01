@@ -26,6 +26,19 @@ RXM_CKPT = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
 # block_trace only feeds a logged proxy that the scale refit overwrites (quantize.py ~1843): 55% of the time, no effect
 # on the output. OURQ_TRACE=1 restores it.
 if not os.environ.get("OURQ_TRACE"): _Q.block_trace = lambda A, B, block_size=1024: 1.0
+# refit_scales on the head runs with VRAM full: a kernel used there for the first time cannot load its code object
+# (HSA_STATUS_ERROR_OUT_OF_RESOURCES) and the HIP runtime segfaults (K4.5 / K5.5 heads, 2026-11-01). Before it: hand
+# the caching allocator's free blocks back and load every kernel the refit uses on a tiny problem. Output unchanged.
+_orig_refit = _Q.refit_scales
+def _warm_refit(dev_):
+    t = torch.rand(4, 4, device=dev_) + torch.eye(4, device=dev_)
+    r = torch.linalg.solve(t, torch.ones(4, device=dev_))
+    r = torch.where(torch.isfinite(r) & (r > 0), r, torch.ones_like(r)); _ = (t.diagonal().mean(), (t * t).sum(0), t @ t.T)
+    torch.cuda.synchronize(dev_)
+def _refit(*args, **kw):
+    torch.cuda.empty_cache(); _warm_refit(dev); torch.cuda.empty_cache()
+    return _orig_refit(*args, **kw)
+_Q.refit_scales = _refit
 
 CKPT = RXM_CKPT
 HESS = f"{RXM_WORK}/challenge/hessians/calib"
@@ -78,6 +91,7 @@ if a.codebook != "mul1":
     import exl3cb
     exl3cb.install(a.frac_ext, a.codebook)
 dev = torch.device("cuda", a.device)
+_warm_refit(dev)                                   # load the refit kernels while VRAM is empty
 os.makedirs(a.o, exist_ok=True)
 
 # ------------------------------------------------------------------ the bf16 checkpoint
