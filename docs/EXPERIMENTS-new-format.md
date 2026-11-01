@@ -475,6 +475,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~00:45 CT: **D1 closed by reading the code: no auto-vs-always confound in gate 2d.** In exllamav3's
+  `regularize`, output scales on auto differ from "always" only for tensors given an `out_sensitivity` (the gated-MLP
+  path of convert.py); ourq.py never passes one. With a diagonal, the Hessian-derived scales replace the plain ones
+  and output scaling stays on; every gate-2d tensor took them (proxy.jsonl `hout_diag_scales` true for 13/13 in
+  dsamp-K2, dfull-K2, dfull-K3; dsamp-K3 only got 5 tensors). Gate 2d's failure stands. No GPU run needed.
+- 2026-11-01 ~00:45 CT: **A4 timing slot written** (`v3/bench/a4time.sh`, `a4report.py`): ntbench on the NFQ build,
+  f16 T2 vs the int8 path *with* its decode (nfq_act_i8 + nfq_wdec_i8 + nfq_gemm_i8), 5 TP1 shapes, K2–6,
+  M 512/2048/4096, rocprofv3 decode share at M 2048. Queued after D2 (`a4wait.sh`, card 0).
 - 2026-10-31 ~22:30 CT: **Gate 2d failed: diagonal output scales hurt** (one-sided LDLQ, exllamav3's
   sensitivity_out_scales from diag(H_out), blocks 22/23, vs one-sided): sampled-H_out diagonal K2 +14.9% (z 7.1);
   full-token diagonal K2 +10.2% (z 5.9), K3 +4.3% (z 3.0). Output-side Hessian information hurts in every form we
