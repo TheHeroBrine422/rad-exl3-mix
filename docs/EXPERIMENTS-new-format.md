@@ -504,6 +504,12 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~3:10 PM CST: **Full uniform requant planned (user):** K0.125-3 at 1/8 steps (sub-1 included as
+  research), quarter steps to 4.75, K5/5.5/6; after a quantizer-kernel pass designed for 0-bit steps and 1/8 masks
+  (~90 card-h at today's speed). CPU fracsweep below K1: rel error K0.5 0.227, K0.75 0.137, K1 0.089 (2.3-2.5x per bit),
+  so sub-1 is a usable curve. Also today: search slices capped at 2k positions, held-out 8k (`eval/capstudy.py`:
+  ~27% less noise per GPU-second, calls agree 0.993-0.997); damping sweep kept (per-tensor winners agree only
+  65-70% across levels); upstream's output-scale test flags up_proj in ~18 of 47 layers (L26-47), gate ~never.
 - 2026-11-01 ~01:25 CST: **Night repairs.**
   - **A4 timing was invalid:** `/root/ntbench` (Oct 29) predates the T2 / NFQ struct fields, so both arms ran the
     fused NT kernel (identical hashes, no wdec kernels in the profile). Rebuilt as `/data/bench/ntbench2`; rerun in
