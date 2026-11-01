@@ -60,6 +60,8 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   the 27B dense model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
 - Speed variants per size (fast / balanced from the final V3 fit), A4 variants if V3.5 shows a useful point.
 - Vision tower and DFlash2 drafter in the containers, if not already in V3.
+- **REAL-Q (arXiv 2609.00049), tested before QAD:** a measured trial on a few sizes, so V5 starts from the best
+  non-trained quantizer.
 
 ## Data (any time after V3)
 - Clean held-out text runs out after QAD (V5, trains on the qad pool). Options: reuse documents by their ledger record
