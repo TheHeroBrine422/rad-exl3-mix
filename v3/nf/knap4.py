@@ -23,7 +23,7 @@ Switches (env, all default off = knap3's V2-like menu):
   KN_V3=1     the V3 option table (critique 2026-11-02 C3.2): only options with a container (built or queued):
               ours fractional / integer K = the ladder's levels (KN_LADDER, default 2..6 in quarter steps to 4.75, then
               5, 5.5, 6), i8 codebook, the only ones offered int8 modes; V2's mul1 ours-K1 / K7 / K8 stay f16-only;
-              head = integer hd-K3..8 plus slab K5 / K6 (KN_HEADSLAB=1; no half-step or fractional heads); KN_M
+              head = integer K1..8 plus slab K5 / K6 (KN_HEADSLAB=1; no half-step or fractional heads); KN_M
               default 2048 (speedcal's M rows, other shapes scaled by the kernel's measured 2048 / 4096 ratio);
               containers: ladder levels RXM_V3/ours-K<k>.rad, trellis embeddings RXM_V3/emb-trellis-K<k>.rad; the
               writer refuses to write a set that names a missing file (KN_WRITE_CHECK=0 to override). KN_GROUPS=0,128
@@ -169,9 +169,9 @@ if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positio
 SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
 if V3:
     SLABF = {5: 0.69, 6: 0.71}       # measured budgets only: between them the slab is a staircase (critique C3.5)
-    for t in md["tensors"]:          # head: the integer containers that exist (hd-K3..8)
-        if t["w"] == "output.weight":
-            for c in [c for c in t["opts"] if c.startswith("ours-K") and (not float(c[6:]).is_integer() or float(c[6:]) < 3)]:
+    for t in md["tensors"]:          # head: the integer containers that exist (hd-K3..8; K1 / K2 inside ours-K1 / K2,
+        if t["w"] == "output.weight":  # V2's 1.50 / 1.75 picked the K2 head); fractional heads: not until headsim prices them
+            for c in [c for c in t["opts"] if c.startswith("ours-K") and not float(c[6:]).is_integer()]:
                 del t["opts"][c]
 if os.environ.get("KN_HEADSLAB") == "1":
     for t in md["tensors"]:
