@@ -58,6 +58,18 @@ for K in range(1, 8):
     print(json.dumps({"check": "int_speed", "K": K, "tps": round(tput(lambda: Q.quantize_tiles(T, {"K": K, "mul1": True}), len(T)))}), flush=True)
 # new rates: structure, salt, error on the curve
 def D(i, ka, m): return ka + ((m >> (i % 16)) & 1)
+# KA = 0: the table path (default) must equal the procedural 0-bit reads, both codebooks
+for v in ("mul1", "i8"):
+    for ka, m in [tuple(x) for x in NEW[v].qtf2_instances() if x[0] == 0]:
+        os.environ["QTF2_LUT"] = "0"; p_out, p_idx, _ = run(NEW[v], tiles, ka, m)
+        os.environ["QTF2_LUT"] = "1"; l_out, l_idx, _ = run(NEW[v], tiles, ka, m)
+        d = int((p_idx != l_idx).sum()) + int((p_out != l_out).sum()); fails += d
+        r = {"check": "lut", "cb": v, "K": ka + bin(m).count("1") / 16, "diff": d}
+        if v == "i8":
+            T = tiles[:1024].contiguous()
+            os.environ["QTF2_LUT"] = "0"; r["proc_tps"] = round(tput(lambda: run(NEW[v], T, ka, m), len(T)))
+            os.environ["QTF2_LUT"] = "1"; r["lut_tps"] = round(tput(lambda: run(NEW[v], T, ka, m), len(T)))
+        print(json.dumps(r), flush=True)
 NEWR = [tuple(x) for x in NEW["i8"].qtf2_instances()]
 G = tiles[:N].contiguous()
 for ka, m in NEWR:

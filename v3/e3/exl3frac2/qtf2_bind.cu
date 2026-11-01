@@ -5,10 +5,28 @@
 #include <torch/extension.h>
 #include <c10/cuda/CUDAGuard.h>
 #include <ATen/cuda/CUDAContext.h>
+#include <map>
+#include <cstdlib>
 #include "qtf2_types.cuh"
 #include "qtf2.cuh"
 #include "qtf2_table.inc"
 #include "frac.cuh"                       // pack / unpack_trellis_frac (qtf2_frac_gen.cu: the fork's, KA >= 0)
+
+__global__ void qtf2_lut_kernel(half* t) { const int s = blockIdx.x * blockDim.x + threadIdx.x; t[s] = qtf2_value(s); }
+
+// decode_3inst<2> of every state (this build's codebook, i8-rounded or not): the 0-bit steps' table (KA = 0)
+static const half* qtf2_lut(const at::Tensor& like)
+{
+    static std::map<int, at::Tensor> tabs;
+    const int dev = like.device().index();
+    auto& t = tabs[dev];
+    if (!t.defined())
+    {
+        t = at::empty({65536}, like.options().dtype(at::kHalf));
+        qtf2_lut_kernel<<<256, 256, 0, at::cuda::getCurrentCUDAStream().stream()>>>((half*) t.data_ptr());
+    }
+    return (const half*) t.data_ptr();
+}
 
 #define QTF2_CHECK(x) do { cudaError_t e_ = (x); TORCH_CHECK(e_ == cudaSuccess, "qtf2: ", cudaGetErrorString(e_)); } while (0)
 
@@ -35,6 +53,8 @@ void quantize_tiles_frac(at::Tensor input_tiles, at::Tensor output_tiles, at::Te
     const int num_tiles = input_tiles.size(0);
     if (!num_tiles) return;
     const fp_qtf2 kernel = e->fn();
+    const char* nl = std::getenv("QTF2_LUT");                // QTF2_LUT=0: procedural 0-bit reads (the gate compares both)
+    const half2* lut = (KA == 0 && !(nl && nl[0] == '0')) ? (const half2*) qtf2_lut(input_tiles) : nullptr;
     QTF2_CHECK(cudaFuncSetAttribute((const void*) kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, e->shmem));
     const int max_batch = (int) std::min(temp_costs.size(0), temp_edges.size(0));
     for (int b = 0; b < num_tiles; b += max_batch)
@@ -43,7 +63,7 @@ void quantize_tiles_frac(at::Tensor input_tiles, at::Tensor output_tiles, at::Te
         kernel<<<bsz, e->nt, e->shmem, stream>>>(
             (const float*) input_tiles.data_ptr() + (int64_t) 256 * b, (float*) output_tiles.data_ptr() + (int64_t) 256 * b,
             (uint16_t*) output_indices.data_ptr() + (int64_t) 256 * b, (half*) temp_costs.data_ptr(),
-            (uint16_t*) temp_edges.data_ptr(), nullptr);
+            (uint16_t*) temp_edges.data_ptr(), lut);
         QTF2_CHECK(cudaPeekAtLastError());
     }
 }

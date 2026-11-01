@@ -43,7 +43,8 @@ __device__ __forceinline__ void qtf2_step
     const int pre_state,
     const bool write_hist,
     const uint32_t salt,              // KIN == 0 only (the 0-bit step's codebook read)
-    const int thread
+    const int thread,
+    const half* __restrict__ lut      // KIN == 0: decode_3inst<2> of all 65536 states (same values), or null
 )
 {
     constexpr int Kr = 16 - KOUT;
@@ -56,7 +57,12 @@ __device__ __forceinline__ void qtf2_step
     // kernel's exact operations. KIN == 0: in-node = state, each half has its own predecessor; values at state ^ salt
     auto pair_err = [&](int state0, int in0, uint32_t p0, uint32_t p1) -> half2
     {
-        const half2 dh2 = __hsub2(decode_mul1_product_2(p0, p1), w2);
+        half2 dec;
+        if constexpr (KIN == 0)
+            dec = lut ? __halves2half2(__ldg(lut + ((uint32_t) state0 ^ salt)), __ldg(lut + ((uint32_t) (state0 + 1) ^ salt)))
+                      : decode_mul1_product_2(p0, p1);
+        else dec = decode_mul1_product_2(p0, p1);
+        const half2 dh2 = __hsub2(dec, w2);
         if constexpr (KIN > 0)
         {
             if (first)
@@ -313,10 +319,10 @@ void qtf2_kernel
             }
             switch (din * 2 + dout)
             {
-                case 0: qtf2_step<NT, KA, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread); break;
-                case 1: qtf2_step<NT, KA, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread); break;
-                case 2: qtf2_step<NT, KB, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread); break;
-                default: qtf2_step<NT, KB, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread); break;
+                case 0: qtf2_step<NT, KA, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 1: qtf2_step<NT, KA, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 2: qtf2_step<NT, KB, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                default: qtf2_step<NT, KB, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
             }
             __syncthreads();
         }
