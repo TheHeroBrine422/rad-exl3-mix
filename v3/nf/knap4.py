@@ -76,6 +76,8 @@ V3 = os.environ.get("KN_V3") == "1"
 M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
 RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
 LADDER = [float(x) for x in os.environ.get("KN_LADDER", "2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.5,6").split(",")]
+if os.environ.get("KN_FRACS_EXTRA"):      # interpolated extra levels (pricing what-ifs; no containers)
+    _x = [float(x) for x in os.environ["KN_FRACS_EXTRA"].split(",")]; LADDER = sorted(set(LADDER) | set(_x))
 BK = 1 << 20
 G = [int(g) for g in os.environ.get("KN_GROUPS", "0,1024,512,256,128,64").split(",")]   # activation groups (0 = per token)
 F8 = {1: 1.0, 2: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 7: 1.25, 8: 4.5}    # E3b full set (K7, K8 measured)

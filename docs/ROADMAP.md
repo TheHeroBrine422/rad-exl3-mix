@@ -50,6 +50,10 @@ EXL3-V3 = integer compute.
   x1.88 → x1.94 for +2–5% KLD), but never built or measured end to end. Build the iu4 path, measure real speed and
   KLD per size, and publish the frontier whatever it shows.
 
+- **Sequential (quantized-prefix) Hessians** (somewhere V3.5-V5; user, 2026-11-01): calibrate each layer on inputs
+  from the already-quantized prefix, as upstream exllamav3 does; most relevant at K2-3. Caveat: our own collections
+  have far fewer tokens than the published 10M-token Hessians, so the test must beat that noise.
+
 ## EXL3-V4: variety pack
 Variants that matter to some users but not to the main frontier, built on V3 / V3.5's tooling:
 - 7.0 / 7.5 / 8.0 rebuilt with V3's embedding and head (t6.25–t8 embedding levels).
