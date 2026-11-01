@@ -35,6 +35,9 @@ EXL3-V3 = integer compute.
   small low-rank stand-in), for the < 2 bpw sizes. Before QAD because low-bit quants are where healing should gain
   the most, so they are the natural QAD targets and their menu should exist when V4 starts.
 - First check (CPU): proxy-priced K0.5 / K0.75 options in knap4 at 1.5–2.5 bpw; build them only if they earn picks.
+- Embedding menu at both ends: sub-1 trellis embedding (t0.25–0.75) for the smallest sizes, once t1 / t1.25 show
+  whether the < 2 bpw solves sit at the menu floor; t6.25–t8 for the 7.0 / 8.0 releases (at 7.0 bpw the solver
+  already sits on t6, the menu top). CPU sweeps (`v3/e3/emb/run4.sh` pattern).
 
 - **Decode speed as its own axis** (V3.5 / V4, not V3). Decode time is not proportional to size: trellis
   dequant and other per-token costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs
