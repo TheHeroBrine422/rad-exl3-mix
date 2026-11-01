@@ -31,6 +31,8 @@ L = "model.language_model.layers"
 ap = argparse.ArgumentParser()
 ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
+ap.add_argument("--codebook", choices=("mul1", "i8", "i4"), default="mul1", help="search with the int8- or int4-"
+                "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
 ap.add_argument("-K", type=lambda v: int(v) if float(v).is_integer() else float(v), required=True,
                 help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8)")
 ap.add_argument("-o", required=True)
@@ -63,6 +65,11 @@ if a.frac_ext:
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
     import exl3frac
     exl3frac.install(a.frac_ext)
+if a.codebook != "mul1":
+    assert a.frac_ext, "--codebook needs --frac-ext SRC (the fork's exllamav3_ext sources)"
+    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3cb"), os.path.join(_h, "../v3/e3/exl3cb")) if os.path.isdir(d)))
+    import exl3cb
+    exl3cb.install(a.frac_ext, a.codebook)
 dev = torch.device("cuda", a.device)
 os.makedirs(a.o, exist_ok=True)
 
@@ -144,7 +151,7 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
-                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "gain": GAIN[0],
+                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "gain": GAIN[0], "codebook": a.codebook,
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
     del Hd; torch.cuda.empty_cache()
