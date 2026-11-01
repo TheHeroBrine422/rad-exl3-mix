@@ -11,7 +11,8 @@ a bitshift-trellis Viterbi (viterbi.c), the block's error fed forward through th
 Rows are independent given H, so ROWS (default 256) random rows give an unbiased estimate of the tensor's relative
 proxy error rel = tr(dW H dW^T) / tr(W H W^T) -- the hproxy metric, comparable with our EXL3 ours-K rows.
 Each row is scaled to unit RMS (a per-output-channel scale, free in any epilogue) times a global factor searched on
-{1, 1.15, 1.3} (env E3_FACTORS overrides).
+{1, 1.15, 1.3} (env E3_FACTORS overrides). E3_SEED: the input rotation's sign seed (default 0);
+E3_ROWSEED: which row sample (default 0) -- for the best-of-N seed test (seedtest.sh).
 CODEBOOKS (comma list), each a 65536-entry table indexed by the 16-bit state, standardised to unit variance:
   mul1        exllamav3's mul1 (bytesum of state * 0x83DCD12D), in float
   mul1_i8     mul1 rounded to an int8 grid (+-127 = 3.5 sd), i.e. what an int8 WMMA would multiply
@@ -90,9 +91,9 @@ def run(layer, tensor, cbs, bits, rows):
     names, hn = e3.ROUTE[tensor]
     W0 = e3.load_w(layer, names); H0 = e3.load_h(layer, hn)
     N, Kd = W0.shape
-    g = torch.Generator().manual_seed(7 + layer)
+    g = torch.Generator().manual_seed(7 + layer + 100003 * int(os.environ.get("E3_ROWSEED", 0)))
     idx = torch.randperm(N, generator=g)[:rows].sort()[0]
-    rk = e3.had_blocks(Kd, 1000 + layer)
+    rk = e3.had_blocks(Kd, 1000 + layer + 7919 * int(os.environ.get("E3_SEED", 0)))
     Wr = rk(W0[idx]); Hr = rk(rk(H0).T).T
     rms = Wr.pow(2).mean(1, keepdim=True).sqrt().clamp(min=1e-12)
     out = []
@@ -105,7 +106,8 @@ def run(layer, tensor, cbs, bits, rows):
             for i, f in enumerate(F):
                 r = e3.rel(Wr, Qs[i * rows:(i + 1) * rows] * rms * f, Hr)
                 if best is None or r < best[0]: best = (r, f)
-            o = {"layer": layer, "w": tensor, "method": "trellis_" + name, "bits": K, "bpw": K + 16 / Kd,
+            o = {"layer": layer, "w": tensor, "method": "trellis_" + name, "seed": int(os.environ.get("E3_SEED", 0)),
+                 "rowseed": int(os.environ.get("E3_ROWSEED", 0)), "bits": K, "bpw": K + 16 / Kd,
                  "rel": best[0], "scale_f": best[1], "rows": rows, "N": N, "K": Kd, "sec": round(time.time() - t0, 1)}
             print(json.dumps(o), flush=True); out.append(o)
             if OUT:
