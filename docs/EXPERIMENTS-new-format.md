@@ -504,6 +504,16 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:25 CST: **Night repairs.**
+  - **A4 timing was invalid:** `/root/ntbench` (Oct 29) predates the T2 / NFQ struct fields, so both arms ran the
+    fused NT kernel (identical hashes, no wdec kernels in the profile). Rebuilt as `/data/bench/ntbench2`; rerun in
+    cardzero.sh with a hash sanity check. The A4 drop above rests on the matmul-core table, not on this slot.
+  - **Fractional-K heads do not fit the GPU box's RAM** (K3.5 / K4.5 OOM-killed; integer heads ~22 GB fit alone).
+    The slab-head curve uses integer donors K3-K8 (1/8-bit slab budgets still give a continuous curve). Head quants
+    pause card 1's ladder (an OOM kill also took the card-1 K2.75 run once; it resumes per layer).
+  - **Ladder profile (py-spy, 150 s of K2.75):** 84% in ldlq, 77% of wall time waiting on the GPU (trellis search
+    kernel), 9% g_scale search, 4% refit. No host-side speedup is possible; only the frac Viterbi kernel or fewer
+    passes (the input-group damping sweep runs that group 3x: ~+40% time per level for a gain D2 / damp2 put under 1%).
 - 2026-11-01 ~01:55 CDT: **A4 (int4 activations) not worth building at any size** (knap4, V3 menu + measured speed
   table, sizes 1.75 / 2.0 / 2.5 / 3.0, lambda up to 1e-4): even under the strongest speed pressure the solver puts
   only 7-14% of FLOPs on A4, buying x1.88 -> x1.91-1.94 prefill for +2...+5% KLD. int8 already takes most of the
@@ -511,7 +521,8 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   post-hoc int4 rounding costs x1.06 at K3, x2.5 at K4) and no iu4 kernel. Revisit only if the A4 timing slot
   (int8 with decode) comes out far worse than the matmul-core table.
 - 2026-11-01: **stop rule (user):** a size band's search stops when its held-out (ver3) best-so-far stops decreasing
-  (no gain beyond its paired SE over N candidates fixed beforehand); no fixed eval budget (~1,500-3,000 expected).
+  (no gain beyond its paired SE over N ver3 reads fixed beforehand); no fixed eval budget (~1,500-3,000 expected).
+  ver3 is read for ~1 in 10 evals only (a candidate that becomes its band's best on the search slice), as in V2.
 - 2026-11-01 ~01:50 CDT: **B19 closed: our K1 decode is bit-exact with exllamav3's** (`v3/e3/b19k1.py`: the plugin's
   C oracle `exl3_trellis_decode` vs exllamav3's `reconstruct` on turboderp's SC 1.40 tensors: 4 K1, 4 K2, 4 K3 incl.
   lm_head, 0 differing f16 values). The +12% of our 1.40 vs his chart is not a decode bug.

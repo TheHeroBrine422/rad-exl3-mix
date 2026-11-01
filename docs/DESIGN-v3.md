@@ -244,8 +244,9 @@ work overlaps it:
 - **Validation curve from day one** (held-out score of the best-so-far picks), stop when it goes flat.
 - **Budget and stop rule (user, 2026-11-01):** no fixed budget (expect ~1,500–3,000 evals with the larger menu;
   ~30 evals/h a card, int8 evals ~25% faster). **Each size band stops when its held-out score stops decreasing:** the
-  ver3 score of the band's best-so-far mix has not improved by more than its paired SE over the last N candidates
-  (N fixed before the run, e.g. 40). V2's long tail was deliberate (spare overnight compute), not a mistake. Fewer targets (release
+  ver3 score of the band's best-so-far mix has not improved by more than its paired SE over the last N ver3 reads
+  (N fixed before the run). **ver3 is read for ~1 eval in 10:** only candidates that become their band's best on the
+  search slice (V2's ratio), which saves eval time and keeps ver3's selection bias low. V2's long tail was deliberate (spare overnight compute), not a mistake. Fewer targets (release
   sizes only), short high-bpw phases (V2's 6 h one bought ~nothing).
 - Long-context check: one card fits the 262k bf16 KV up to ~5 bpw on 1.13 at step 2048 (5.00: 255k, 6.00: 209k
   tokens; the recorder at step 4096 shrinks the pool ~3%); re-probe on 1.15 and assert full KV coverage per run.
