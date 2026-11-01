@@ -43,7 +43,7 @@ Data behind it: `data/v2/` (every measurement, proxy tables, the final fit, the 
 | `eval/` | KLD scoring helpers, calib pools (`pools/pools.json`), radiance KLD-path patches |
 | `search/` | `kfit2.py` sensitivity model + DP, the streaming search pipeline (`auto/`), leaderboard tools (`lb/`) |
 | `v2/` | EXL3-V2: the released mix files (`v2/mixes/`), HF upload and model card (`v2/hf/`) |
-| `v1/` | EXL3-V1: the turboderp-ladder port's run scripts, recipes and results, as run (absolute paths kept); `v1/hf/` is the first, superseded upload (nine repos); the current V1 card is `docs/ladder-README.md` |
+| `v1/` | EXL3-V1: the turboderp-ladder port's run scripts, recipes and results, as run (absolute paths kept); HF upload and model card (`v1/hf/`) |
 | `v3/` | EXL3-V3 (integer activations) experiments: activation-quant hook, int8 kernels, trellis sweeps, GEMM benches |
 | `data/` | small result tables (proxy errors, measured mixes) |
 | `docs/` | experiment logs (incl. what did not work), design notes, research surveys |
