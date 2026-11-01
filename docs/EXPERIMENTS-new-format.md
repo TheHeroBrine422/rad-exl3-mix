@@ -475,6 +475,16 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
   arms are unaffected.
 
+- 2026-11-01 ~01:35 CT: **Document-reuse bias test: no measurable flattering from fit-slice reuse** (`eval/biastest.py`,
+  existing scores only, `data/biastest-2026-11-01.out`). 76 V2 mixes scored on a fit-pool slice (calA / fit2 / fit3,
+  where V2's models were fitted and the mixes picked) and on ver1; each as a ratio to turboderp's untuned SC reference
+  at the nearest bpw. bias = ratio on the fit slice / ratio on ver1: median 1.024, weighted mean 1.014
+  [1.005, 1.023]; by slice calA 1.027, fit2 1.009, fit3 1.033; by size < 2.5 bpw 0.97 (n = 8), above 1.02-1.03. If
+  anything the mixes look ~2% WORSE on the slices they were fitted and selected on (slice-to-slice spread, not
+  winner's curse). So fit / search reuse costs at most a couple of percent here and is not the problem; the
+  ledger's strict "spent" rule can be relaxed for non-trained documents (QAD-trained ones stay excluded until the same
+  test is run after V4). Caveat: ver1 itself was the V2 monitor slice (no selection on it, mixes were queued there
+  because of their fit-slice scores).
 - 2026-11-01 ~01:20 CT: **B10: the board's `bytes` is the tensor payload, not the file** (`store/sizedef.py`, 4 V1
   containers; the HF files are byte-identical to ours): board vs sum of plane bytes -0.13 / -0.04 / +0.18 / +0.01 MB,
   vs file size -9.6 to -9.9 MB (header, directory, alignment). So real bpw = payload bytes x 8 / 26,895,998,464;
