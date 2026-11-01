@@ -438,6 +438,27 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-10-31 ~22:20 CT: **YAQA gate 2c failed: two-sided YAQA dropped.** Full-token fp32 H_out (200 seqs, every
+  position) on blocks 22/23, KLD increment vs one-sided: K2 +30% (sigma_reg_out 0.025) / +7% (0.3), K3 +21% / +5%,
+  all z ≥ 2.9; full-token is even WORSE than sampled at 0.025 (+15% K2, +10% K3), equal at 0.3. Truncated backward
+  checked exact (0 difference). Sampling was not the problem. Remaining backward arms: gradient-weighted H_in
+  (gate 2e: crashed on a profiler-path bug before collecting, fixed, not rerun) and diagonal output scales (gate 2d,
+  evals running). Collector profile (seq 1): fwd 8.8 s, bwd 13.8 s, CPU-sum wait 11.3 s with H_in on (the CPU sums,
+  not the GPU, are the bottleneck once H_in is added).
+- 2026-10-31 ~22:20 CT: **Best-of-N rotation seeds: dead** (`seedtest.sh`, Thor, 9 tensors x 4 seeds x 2 row samples,
+  K2–4): seed spread 0.5%, A-vs-B correlation +0.22, best-of-4 picked on A measured on B: −0.2% / +0.2% / +0.0%.
+- 2026-10-31 ~22:20 CT: **Damping vs K** (`dampsweep.sh`, colo, 16 tensors, error vs undamped H; ratio to 0.025):
+  attention inputs (q/k/v) gain with less damping, more at high K: K4 0.970 (0.0025) / 0.961 (0.001), K8 0.938–0.955;
+  GDN inputs, out-projections, FFN: 0.994–1.000 at every K. 0.05 is worse everywhere. **Damping does not explain
+  turboderp's K6–8 wins** (attention inputs are a small share). Settings: 0.005 (or 0.0025) for attention inputs,
+  0.01 elsewhere is harmless. Depth extension running (colo).
+- 2026-10-31 ~22:20 CT: **Gain (global scale) vs K** (`gainsweep.sh`, Thor, 16 tensors, RMS x f, f = 0.8–1.8): the best
+  factor rises with K in every family: ~1.1 to K5, 1.2 at K6, 1.3 at K7–8; out-projections (attn_output, ssm_out)
+  more: 1.2 (K5), 1.3 (K6), 1.4 (K7), 1.5 (K8; range to 1.8). A fixed 1.1 costs x1.05 (K6), x1.2 (K7), x2 (K8)
+  error; for out-projections x1.2 (K6), x1.7 (K7), x4 (K8). This is the CPU tool's RMS scale, not exllamav3's own
+  g_scale search: the GPU gaintest (running) shows whether exllamav3's choice already tracks this. If it doesn't,
+  it is a strong candidate for the high-K gap.
+
 - 2026-11-01 ~21:20 CT: **Quarter-step quantizer works on the GPU** (`fracsmoke.py`, 8192 Gaussian tiles, card 0):
   pack/unpack round trips and decode exact at every menu K; quarter/half steps on the curve (0.993–1.003 to K4.75).
   The first verdict said FAIL only because the CPU-vs-GPU check expected agreement within 3%: the GPU search is

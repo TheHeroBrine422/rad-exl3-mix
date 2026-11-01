@@ -17,6 +17,11 @@ idea is dropped.
   the trend is toward one-sided. *Conclusion:* bf16 backward is unusable; sampled-position H_out (6,400 rows) still
   hurts. Not yet tested: full-token sums (upstream sums every token; H_out is dominated by few high-gradient tokens)
   — `v3/yaqa/collect.py YAQA_FULL=22,23`. YAQA is dropped if that fails too. `v3/yaqa/`, tracker 2026-10-31.
+  (c) **full-token fp32 H_out, 200 seqs: still worse** (+30%/+21% at 0.025, +7%/+5% at 0.3; worse than sampled).
+  *Conclusion:* two-sided YAQA with exllamav3's ldlq_2hess does not help our trellis quants; dropped. Not tested:
+  the paper's Sketch-B estimator with far more data (64K sequences), which we cannot afford.
+- **Best-of-N rotation seeds** — 2026-10-31. Pick each tensor's rotation sign seed from 4 by proxy. Seed spread 0.5%,
+  not reproducible across row samples (corr +0.22), honest gain ~0. Dead. `v3/e3/seedtest.sh`.
 
 - **Per-group gain scales (finer than EXL3's per-row + per-column scales)** — 2026-10-30. *Idea:* IQR-V2 uses
   E4M3 scales per (row, 128); maybe that is their low-bit edge. *Test:* in EXL3's rotated domain (128-Hadamard both

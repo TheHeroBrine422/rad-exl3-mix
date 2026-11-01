@@ -227,6 +227,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
     PROF = int(os.environ.get("YAQA_PROFILE", 0)) == done + 1
     if PROF:
+        os.makedirs(OUT, exist_ok=True)
         from torch.profiler import profile, ProfilerActivity
         prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True); prof.__enter__()
     for i in range(2): torch.cuda.synchronize(i)
