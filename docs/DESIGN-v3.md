@@ -135,8 +135,9 @@ Open decisions are marked **[decide]**.
   to K6 (GPU smoke: x1.000 K1–6, x1.02 K7, x1.35 K8). So **both decode paths must round**: the int8 path natively,
   the f16 path by decoding the rounded value (else it reads unrounded values the search never chose: E4's post-hoc
   mismatch cost K5 +17%, K6 +60%). The codebook is part of the V3 encoding (`cb=mul1i8`); V1/V2 tensors keep mul1.
-- No plain-codebook (f16-only) fractional levels: above 6 bpw KLD is already ~0.0004 or lower (knap4 at 7.0:
-  0.00039), so a plain K7.5 is not worth a quant. Existing plain K7/K8 (ours, turboderp's) stay as f16 options.
+- **Release scope (user, 2026-11-01): V3 sizes stop below 7 bpw; 7.0 / 7.5 / 8.0 stay V2** (already ~0.00035 KLD or
+  lower). So no plain-codebook (f16-only) fractional or improved high-K quants; existing plain K7/K8 (ours,
+  turboderp's) remain f16 options for the top V3 sizes.
 - int4 grid (`--codebook i4`): x1.007 K2, x1.02 K2.5, x1.06 K3 -- only for a W4A4 path, if the A4 test pays.
 - Damping: attention/GDN input groups take, per tensor, the best of sigma_reg {0.025, 0.005, 0.001} by proxy error
   against the undamped Hessian (`--sigma-in-sweep`); other families keep the default.
