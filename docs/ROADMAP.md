@@ -94,3 +94,7 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
 
 ## EXL3-V5
 - QAD / scale-only healing: not before V3 is done.
+- Field reports to start from: QAD on an EXL3 quant gained ~6-13% KLD overall at a 1,024-token window, ~22% when
+  trained only on the last 16 layers (48-63; trellis codes interfere with training earlier in the stack); a 2,048
+  window was out of memory. Ideas to test on a small model first: QAD before the trellis step (train continuous
+  weights / scales, then quantize), and rotations other than the 128-point Hadamard (e.g. ParoQuant's).

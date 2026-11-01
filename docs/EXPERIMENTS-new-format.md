@@ -518,6 +518,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     head KL, but the fixed tail floor round(budget - 1.5) jumps K3 -> K4 at budget 5 (-63%) and K5 -> K6 at 7 (-45%);
     between 4.25 and 4.875 the slab plans are worse than uniform half-step heads. Fix: one plan per floor, headsim
     chooses (`headslab.py HS_FLOOR_ALL`, `floorcurve.sh`). Quarter-step donors not needed for smoothness.
+  - **Floor search fixes the slab head** (`fcurve-A/B.json`): with half-step donors and the tail floor chosen per
+    budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
+    (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
+    donors needed. (Whole-model check still to do, critique C3.5.)
   - **Extra trunk levels don't pay** (knap4 `KN_FRACS_EXTRA`, `k4levels.sh`): K5.25/5.75 <= 0.7% (6.0 bpw), 1/8 steps at
     K3-5 <= 0.8% (4.0). Base list stands.
 - 2026-11-01 ~3:10 PM CST: **Full uniform requant planned (user):** K0.125-3 at 1/8 steps (sub-1 included as
