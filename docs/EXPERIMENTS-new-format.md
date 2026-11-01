@@ -432,10 +432,7 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 - [ ] **Speed calibration** (mining A4/B7): key shapes at full/half N, stock/210 W, M = 16–511 (minutes, existing bench).
 - [ ] **Best-of-N rotation seeds** (new): pick each tensor's sign/rotation seed from 2–4 by proxy; free at inference.
       CPU test of the per-tensor seed spread first (trellis.py with other seeds), expect 1–3% if anything.
-- [ ] **fp32 costs in the GPU trellis search** (new, 2026-11-01): fracsmoke shows exllamav3's GPU Viterbi (fp16 path
-      costs) 4–6% worse in tile MSE than the exact float CPU search at every K (K1 0.936 … K8 0.989, same tiles).
-      Before the Phase-B requant: check on real tensors with LDLQ (the gap may shrink or grow), then an fp32-cost
-      kernel variant (slower search; quant time is not the bottleneck).
+- [x] ~~fp32 costs in the GPU trellis search~~ (2026-11-01): explained, nothing to gain. See log.
 - [ ] Depends on tonight: YAQA count test / full collection (gate 2c/2e); gradient-weighted H_in if it wins;
       (dropped 2026-11-01: why turboderp wins at K6–8 -- damping and gain ruled out; the rest only matters ≥ 6 bpw,
       and his tensors stay options in the menu); quarter-step heads if the slab head fails; row-weighted trellis (PR #364) if gate 2d helps.
@@ -443,6 +440,15 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
       radiance #328 check at the 1.15 port.
 
 ## Log (newest first)
+
+- 2026-11-01 ~23:05 CT: **The GPU search's "4–6% gap" is the tail-biting constraint, not a flaw.** fp16 costs change
+  nothing (CPU emulation, `f16gap.sh`: random tiles 1.000, real tensors with LDLQ median 1.000 at K2–6). The CPU
+  reference Viterbi has a free start state, which EXL3's circular tiles cannot encode; a CPU tail-biting search with
+  exllamav3's heuristic (`viterbi_tiles_tb`, NTRY 1) reproduces the GPU exactly (free/TB 0.948 K2, 0.962 K4 vs GPU
+  0.949 / 0.960). Trying 16 wrap candidates recovers 12% / 8% / 4% of the gap at K1/2/3 (0.8% / 0.4% / 0.16% error):
+  exllamav3's heuristic is near-optimal. Not worth a kernel change. Note: all earlier CPU trellis sweeps (E3b,
+  fracsweep, gscale, damping) used the free start, so their absolute errors are 4–6% optimistic; ratios between
+  arms are unaffected.
 
 - 2026-10-31 ~22:30 CT: **Gate 2d failed: diagonal output scales hurt** (one-sided LDLQ, exllamav3's
   sensitivity_out_scales from diag(H_out), blocks 22/23, vs one-sided): sampled-H_out diagonal K2 +14.9% (z 7.1);
