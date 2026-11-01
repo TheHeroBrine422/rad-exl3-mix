@@ -20,6 +20,16 @@ Switches (env, all default off = knap3's V2-like menu):
               both neighbouring integers -> a tensor's fractional error sits where the measurement puts it between
               the integers (log scale), instead of the midpoint interpolation. Tensors without all three: interpolated.
   F8 now uses the measured K7 x1.25 / K8 x4.5 (E3b full set), fractional K interpolated.
+  KN_V3=1     the V3 option table (critique 2026-11-02 C3.2): only options with a container (built or queued):
+              ours fractional / integer K = the ladder's levels (KN_LADDER, default 2..6 in quarter steps to 4.75, then
+              5, 5.5, 6), i8 codebook, the only ones offered int8 modes; V2's mul1 ours-K1 / K7 / K8 stay f16-only;
+              head = integer hd-K3..8 plus slab K5 / K6 (KN_HEADSLAB=1; no half-step or fractional heads); KN_M
+              default 2048 (speedcal's M rows, other shapes scaled by the kernel's measured 2048 / 4096 ratio);
+              containers: ladder levels RXM_V3/ours-K<k>.rad, trellis embeddings RXM_V3/emb-trellis-K<k>.rad; the
+              writer refuses to write a set that names a missing file (KN_WRITE_CHECK=0 to override). KN_GROUPS=0,128
+              restricts the int8 activation groups (0 = per token: what the real kernel runs today).
+              Pricing caveat: ladder integers still carry V2's hproxy error x DAMPF (V3 ladder hproxy needs the ladder's
+              .rad import); fractional levels sit at their measured ladder positions (KN_LEVELS).
 The rest is knap3 (below).
 
 Per tensor, the options are (compute mode, activation group, weight code):
@@ -62,9 +72,12 @@ RXM_OURS = os.environ.get("RXM_OURS", "/data/ours")
 MJ, AQJ, AQF, MAP, OUT = sys.argv[1:6]
 TARGETS = [float(x) for x in sys.argv[6].split(",")]
 LAMBDAS = [float(x) for x in sys.argv[7].split(",")]
-M = int(os.environ.get("KN_M", 4096))
+V3 = os.environ.get("KN_V3") == "1"
+M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
+RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
+LADDER = [float(x) for x in os.environ.get("KN_LADDER", "2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.5,6").split(",")]
 BK = 1 << 20
-G = [0, 1024, 512, 256, 128, 64]                         # activation scale groups (0 = per token)
+G = [int(g) for g in os.environ.get("KN_GROUPS", "0,1024,512,256,128,64").split(",")]   # activation groups (0 = per token)
 F8 = {1: 1.0, 2: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 7: 1.25, 8: 4.5}    # E3b full set (K7, K8 measured)
 F4 = {1: 1.0, 2: 1.01, 3: 1.065, 4: 2.72}               # E3b int4grid; K >= 5 not offered (x10 and up)
 # E2 (gfx1201, M = 4096, first version): TOPS by mode and group; per-token from the 128x256 tile, groups from 128x128.
@@ -77,9 +90,17 @@ FAMSHAPE = {"attn_qg": "attn_qg", "ssm_qkv": "gdn_qkv", "ssm_z": "gdn_z", "ffn_g
             "attn_output": "attn_o", "ssm_out": "ssm_out", "attn_k": "gdn_z", "attn_v": "gdn_z"}
 CORE = {}                                                 # (kern f16/iu8/iu4, speedcal shape) -> TOPS
 if os.environ.get("KN_SPEED"):
+    _cm = collections.defaultdict(dict)
     for l in open(os.environ["KN_SPEED"]):
         d = json.loads(l)
-        if "ms" in d and d["split"] == "tp1" and d["M"] == 4096: CORE[(d["kern"], d["shape"])] = 2.0 * d["M"] * d["N"] * d["K"] / d["ms"] / 1e9
+        if "ms" in d and d["split"] == "tp1" and d["M"] in (M, 4096): _cm[(d["kern"], d["shape"])][d["M"]] = 2.0 * d["M"] * d["N"] * d["K"] / d["ms"] / 1e9
+    _rat = collections.defaultdict(list)    # per kernel: TOPS at M / TOPS at 4096 where both are measured
+    for (kn, sh), v in _cm.items():
+        if M in v and 4096 in v: _rat[kn].append(v[M] / v[4096])
+    for (kn, sh), v in _cm.items():
+        if M in v: CORE[(kn, sh)] = v[M]
+        elif 4096 in v: CORE[(kn, sh)] = v[4096] * (sorted(_rat[kn])[len(_rat[kn]) // 2] if _rat[kn] else 1.0)
+    if M != 4096: print(f"speed at M {M}: measured/4096 ratios {({k: [round(x, 3) for x in v] for k, v in _rat.items()})}", file=sys.stderr)
 PATH = {}                                                 # (path f16/nfq8, speedcal shape, bits) -> ms at M 4096, per weight
 if os.environ.get("KN_A4"):
     for l in open(os.environ["KN_A4"]):
@@ -101,6 +122,7 @@ def lerp_log(tab, K):   # log-linear interpolation of a {int K: factor} table at
     return math.exp(math.log(tab[a]) + (K - a) * (math.log(tab[b]) - math.log(tab[a])))
 FRACS = [1.25, 1.5, 1.75, 2.25, 2.5, 2.75, 3.25, 3.5, 3.75, 4.25, 4.5, 4.75, 5.5, 6.5, 7.5]
 HEAD_STEP = float(os.environ.get("KN_HEAD_STEP", 0.5))
+if V3: FRACS = [k for k in LADDER if not float(k).is_integer()]; HEAD_STEP = 1.0
 DAMPF = {2: 0.994, 4: 0.981, 6: 0.991, 8: 0.955}
 def dampf(K):
     ks = sorted(DAMPF); K = min(max(K, ks[0]), ks[-1])
@@ -145,6 +167,12 @@ for t in md["tensors"]:
             if c.startswith("ours-K"): o[c] = [o[c][0], o[c][1] * dampf(float(c[6:])), o[c][2]]
 if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positions: {NLEV[0]} tensor-levels", file=sys.stderr)
 SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
+if V3:
+    SLABF = {5: 0.69, 6: 0.71}       # measured budgets only: between them the slab is a staircase (critique C3.5)
+    for t in md["tensors"]:          # head: the integer containers that exist (hd-K3..8)
+        if t["w"] == "output.weight":
+            for c in [c for c in t["opts"] if c.startswith("ours-K") and (not float(c[6:]).is_integer() or float(c[6:]) < 3)]:
+                del t["opts"][c]
 if os.environ.get("KN_HEADSLAB") == "1":
     for t in md["tensors"]:
         if t["w"] != "output.weight": continue
@@ -256,6 +284,7 @@ def options(t):
         m = re.fullmatch(r"ours-K([\d.]+)", c)
         if not m or os.environ.get("KN_MODES") == "f16": continue
         Kb = float(m.group(1)); Kb = int(Kb) if Kb.is_integer() else Kb
+        if V3 and (float(Kb) not in LADDER or t["w"] == "output.weight"): continue   # int8 only on the i8-codebook ladder
         for mode, F, bits_a in (("a8", F8, 8), ("a4", F4, 4)):
             fK = lerp_log(F, Kb)
             if fK is None: continue
@@ -373,12 +402,18 @@ def run(target, lam):
 
 RADF = os.environ.get("KN_F", RXM_MODELS)
 def rad(c, w):
+    if V3 and c.startswith("trellis-K"): return f"{RXM_V3}/emb-{c}.rad"
+    if V3 and re.fullmatch(r"ours-K[\d.]+", c) and float(c[6:]) in LADDER and w != "output.weight": return f"{RXM_V3}/{c}.rad"
     if not c.startswith("ours-"): return f"{RADF}/q38-27b-{c}.rad"
     if c.startswith("ours-slab"): return f"{RXM_OURS}/hdslab-{c[9:]}.rad"
     return f"{RXM_OURS}/hd-{c[5:]}.rad" if w == "output.weight" else f"{RXM_OURS}/{c}.rad"
 name_idx = {n: i for i, n in idx_name.items()}
 GCODE = {0: "0", 1024: "1", 512: "2", 256: "3", 128: "4", 64: "5"}
 def write_set(dirn, name, sol):
+    if os.environ.get("KN_WRITE_CHECK", "1") == "1":
+        need = {rad(o[2], TS[i]["w"]) for i, o in sol["picks"]} | {rad(md["emb"][sol["emb"]]["container"], "token_embd.weight")}
+        miss = sorted(p for p in need if not os.path.exists(p))
+        if miss: print(f"{name}: NOT written, {len(miss)} containers missing: {miss[:6]}", file=sys.stderr); return
     os.makedirs(dirn, exist_ok=True)
     mask = ["0"] * len(lab); grp = ["0"] * len(lab)
     with open(f"{dirn}/{name}.mix", "w") as f:
