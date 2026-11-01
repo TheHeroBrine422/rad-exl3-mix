@@ -23,7 +23,7 @@ export ROCR_VISIBLE_DEVICES=$C
 for arm in on off; do
   [ -f $D/$arm.rad ] && continue
   X=""; [ $arm = off ] && X="--out-scales-off $S/off-1.05.txt"
-  $PY -I ourq/ourq.py -K $K -o $D/$arm --only $D/only.txt --device 0 $X > $D/$arm.log 2>&1 || { log "$arm: ourq FAIL"; exit 1; }
+  $PY -I ourq/ourq.py -K $K -o $D/$arm --only $D/only.txt --device 0 $X > $D/$arm.ourq.log 2>&1 || { log "$arm: ourq FAIL"; exit 1; }
   GL=""; for l in $LAYERS; do GL="$GL blk.$l.ffn_gate_up.weight"; done
   flock -u 7
   ourq/ourconv.sh $D/$arm.rad $B $D/$arm $GL >> $D/run.log 2>&1 || { log "$arm: ourconv FAIL"; exit 1; }

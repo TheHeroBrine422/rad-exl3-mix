@@ -14,7 +14,7 @@ export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 
 for V in mr mr-d0.01 mr-d0.005; do
   X="--head-mean-row"; case $V in *d0.01) X="$X --sigma-reg 0.01";; *d0.005) X="$X --sigma-reg 0.005";; esac
   for K in 3 5; do
-    D=$O/$V/K$K; [ -f $D/wq/lm_head.rowerr.npz ] && continue
+    D=$O/$V/K$K; mkdir -p $O/$V; [ -f $D/wq/lm_head.rowerr.npz ] && continue
     ( exec 9>$RXM_WORK/card0.lock; flock 9; exec 7>$RXM_WORK/ram.lock; flock 7
       $PY -I ourq/ourq.py -K $K -o $D --only-head --device 0 --save-wq --head-perm $H/perm.npy $X > $D.log 2>&1 )
     [ -f $D/wq/lm_head.rowerr.npz ] && log "$V K$K OK: $(grep -o '"proxy_err": [0-9.e-]*' $D/proxy.jsonl)" || log "$V K$K FAIL"
@@ -22,7 +22,7 @@ for V in mr mr-d0.01 mr-d0.005; do
 done
 mkdir -p $O/default; for K in 3 5; do ln -sfn $H/K$K $O/default/K$K; done
 for V in default mr mr-d0.01 mr-d0.005; do
-  [ -s $O/$V.json ] && continue
+  [ -s $O/$V.json ] && [ $V != default ] && continue
   ( exec 9>$RXM_WORK/card0.lock; flock 9
     HS_TRAIN=qad HS_FLOOR=3 HS_KS=3,5 HS_BUDGETS=4 $PY -I $Y/headslab.py plan $Y/hs/headsens.npz $H/perm.npy $O/$V $O/$V-plan.json >> $O/run.log 2>&1
     $PY -I $Y/headsim.py $DUMP $O/$V $H/perm.npy $O/$V-plan.json $CK $O/$V.json > $O/$V.json.log 2>&1 )
