@@ -7,7 +7,7 @@ Open decisions are marked **[decide]**.
 
 - **Speed:** the board scores trunk GEMM time per decoder layer at 2048 tokens (`gemm_us`). EXL3 (V1/V2 kernel):
   ~8,030 µs. IQR-V3: 4,935–5,236. FP8: 4,901. Target: **≤ ~5,200 µs at every size**, i.e. ~1.55× faster prefill GEMMs,
-  at V2's KLD or better. At ≤ 2.5 bpw, beat IQR-V3's ~4,935 µs: that needs A4 on part of the trunk.
+  at V2's KLD or better. (Beating IQR-V3's ~4,935 µs at ≤ 2.5 bpw would need A4: not in V3, see below.)
 - **Sizes:** below 7 bpw (user, 2026-11-01); 7.0 / 7.5 / 8.0 stay V2. Focus below 6 bpw.
 - **Hardware:** card 0 only (03:00.0, PCIe x16), TP1. TP2 only at times (when both cards are available).
 - **Not in V3:** QAD (V5), vocab-tiered embedding and frequency-tiered head (dropped; a Fisher-driven row-slab
@@ -27,7 +27,7 @@ Open decisions are marked **[decide]**.
     (EXL3's `svh`) is applied once at the store. EXL3 already has exactly this scale structure.
   - Per tensor the solver chooses the compute mode: **f16** (today's kernel) or **A8-g128**; later maybe A8 with
     other group sizes.
-- **A4 (iu4; real GEMM ~490 vs ~255 TOPS for iu8, E2) as a per-tensor option at ≤ ~2.5 bpw.** E1b on K6 (base
+- **A4: not in V3 (dropped 2026-11-01; measured in full in V3.5, ROADMAP).** Kept for reference: iu4 real GEMM ~490 vs ~255 TOPS for iu8 (E2). E1b on K6 (base
   0.00101): all linears A4-g128 +0.030; per family (per-row) gate_up +0.025 / down +0.025 / gdn_in +0.023 / attn qkv
   +0.023 / ssm_out +0.013 / attn_out +0.0075; best found: down g64 +0.0038, gate_up g64 +0.008. At 2 bpw (KLD ~0.155)
   A4-g64 on gate_up + down (~67% of the trunk FLOPs by shapes: gate_up ~45%, down ~22%; the E1b table's 28/14% was
@@ -156,7 +156,7 @@ Open decisions are marked **[decide]**.
 - **Release scope (user, 2026-11-01): V3 sizes stop below 7 bpw; 7.0 / 7.5 / 8.0 stay V2** (already ~0.00035 KLD or
   lower). So no plain-codebook (f16-only) fractional or improved high-K quants; existing plain K7/K8 (ours,
   turboderp's) remain f16 options for the top V3 sizes.
-- int4 grid (`--codebook i4`): x1.007 K2, x1.02 K2.5, x1.06 K3 -- only for a W4A4 path, if the A4 test pays.
+- int4 grid (`--codebook i4`): x1.007 K2, x1.02 K2.5, x1.06 K3 -- for V3.5's A4 measurement only.
 - Damping: attention/GDN input groups take, per tensor, the best of sigma_reg {0.025, 0.005, 0.001} by proxy error
   against the undamped Hessian (`--sigma-in-sweep`); other families keep the default.
 
@@ -373,7 +373,7 @@ gain (published acceptance 4.1–5.5 tokens). Our `qwen35_exl3` architecture plu
 ## Later / backlog
 
 - (YAQA output-side Hessians: dropped 2026-11-01, gates 2–2e; the qad pool is free for QAD.)
-- Row-slab K, continuous K, 2-tier head, residual re-ranker with more data, A4.
+- Row-slab K, continuous K, 2-tier head, residual re-ranker with more data; A4 in V3.5.
 - Sub-1 K (K0.25–0.75, salted 0-bit read) and K0 (drop / low-rank stand-in): **V3.5** (user, 2026-11-01), before
   QAD, since sub-2 quants are the natural QAD targets. First check: proxy-priced options in knap4 at 1.5–2.5 bpw.
 - V5 (QAD) healing: a third-party fixed-code QAD on this model gained much more training only the last 16 layers than all
