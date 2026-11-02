@@ -121,7 +121,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 60-03 | Our quantizer on CUDA (qtf2 fixes, qtf2check) | proxy | done | 11-02 | bit-identical; HIP identity gate before syncing |
 | 60-04 | 2B calibration study (`CALIBRATION.md`) | proxy | dropped | 11-02 | stopped by the user, resumable |
 | 61 | xcorp v1: 96M-token proxy corpus from the upstream sources | data | done | 11-02 | proxy research only |
-| 62 | Research-idea run over 448 recent papers | research | running | 11-02 | 10 lenses + critic; 7 reports done |
+| 62 | Research-idea run over 448 recent papers | research | done | 11-02 | 10 lenses + critic, ~950 ideas → 120 ranked; published `docs/ideas/` |
 
 ## Added from the archive rewrite (2026-11-02)
 

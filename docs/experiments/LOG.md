@@ -2,6 +2,17 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 14:55 CST · #62 · Research-idea run done; published to docs/ideas/
+- **Status:** running → done · **Files:** `docs/ideas/` (ranked.md + 10 lens reports + papers.md); raw in
+  `local/papers/ideas/`
+- **Result:** 10 lenses (composable, open, crossarea, lowbpw, measure, hout, kernels, heal, codes, redteam), 35–61 KB
+  each; critic (13 min): ~950 ideas merged into 120, top 25, diagnostics, rejections, code and paper spot-checks
+  (one lens misread of H_Z-PTQ corrected; code facts: collector loss over all positions, `ourq --hout` silently skips
+  missing files, knap4 prices measured levels by the one-sided proxy). The codes agent ran heavy jobs on the VM
+  (stopped six times; see AGENTS.md rule and `local/bin/pi-capped`).
+- **Decision / next:** before the 27B diagonal collection, the critic's pre-run diagnostics on the 0.8B: A2
+  (estimator check), A1 (gen-masked loss), A5 (dose below 1K), plus A3 instrumentation and A8 asserts.
+
 ### 2026-11-02 14:25 CST · #33-17 · 27B diagonal collector: split halves, one-GPU mode, tested on 0.8B
 - **Status:** done · **Machine:** 4070 (≤ 7.2 GB, peak 4.8 GB) · **Code:** `v3/yaqa/collect.py` (even-sequence sums,
   halves.json per save, one-GPU and tied-head support, resumed sums moved to the card), `proxy2b/diag08test.sh`,
