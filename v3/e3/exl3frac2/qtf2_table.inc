@@ -6,6 +6,7 @@ fp_qtf2 qtf2_a0_maaaa();
 fp_qtf2 qtf2_a0_mdada();
 fp_qtf2 qtf2_a0_meeee();
 fp_qtf2 qtf2_a0_mfefe();
+fp_qtf2 qtf2_a1_m0000();
 fp_qtf2 qtf2_a1_m8080();
 fp_qtf2 qtf2_a1_m8888();
 fp_qtf2 qtf2_a1_ma4a4();
@@ -13,6 +14,7 @@ fp_qtf2 qtf2_a1_maaaa();
 fp_qtf2 qtf2_a1_mdada();
 fp_qtf2 qtf2_a1_meeee();
 fp_qtf2 qtf2_a1_mfefe();
+fp_qtf2 qtf2_a2_m0000();
 fp_qtf2 qtf2_a2_m8080();
 fp_qtf2 qtf2_a2_m8888();
 fp_qtf2 qtf2_a2_ma4a4();
@@ -20,9 +22,11 @@ fp_qtf2 qtf2_a2_maaaa();
 fp_qtf2 qtf2_a2_mdada();
 fp_qtf2 qtf2_a2_meeee();
 fp_qtf2 qtf2_a2_mfefe();
+fp_qtf2 qtf2_a3_m0000();
 fp_qtf2 qtf2_a3_m8888();
 fp_qtf2 qtf2_a3_maaaa();
 fp_qtf2 qtf2_a3_meeee();
+fp_qtf2 qtf2_a4_m0000();
 fp_qtf2 qtf2_a4_m8888();
 fp_qtf2 qtf2_a4_maaaa();
 fp_qtf2 qtf2_a4_meeee();
@@ -37,6 +41,7 @@ static const Qtf2Entry qtf2_table[] = {
     {0, 0xdadau, &qtf2_a0_mdada, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
     {0, 0xeeeeu, &qtf2_a0_meeee, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
     {0, 0xfefeu, &qtf2_a0_mfefe, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
+    {1, 0x0000u, &qtf2_a1_m0000, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
     {1, 0x8080u, &qtf2_a1_m8080, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
     {1, 0x8888u, &qtf2_a1_m8888, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
     {1, 0xa4a4u, &qtf2_a1_ma4a4, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
@@ -44,6 +49,7 @@ static const Qtf2Entry qtf2_table[] = {
     {1, 0xdadau, &qtf2_a1_mdada, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
     {1, 0xeeeeu, &qtf2_a1_meeee, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
     {1, 0xfefeu, &qtf2_a1_mfefe, Qtf2Geom<1>::nt, Qtf2Geom<1>::shmem},
+    {2, 0x0000u, &qtf2_a2_m0000, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
     {2, 0x8080u, &qtf2_a2_m8080, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
     {2, 0x8888u, &qtf2_a2_m8888, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
     {2, 0xa4a4u, &qtf2_a2_ma4a4, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
@@ -51,9 +57,11 @@ static const Qtf2Entry qtf2_table[] = {
     {2, 0xdadau, &qtf2_a2_mdada, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
     {2, 0xeeeeu, &qtf2_a2_meeee, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
     {2, 0xfefeu, &qtf2_a2_mfefe, Qtf2Geom<2>::nt, Qtf2Geom<2>::shmem},
+    {3, 0x0000u, &qtf2_a3_m0000, Qtf2Geom<3>::nt, Qtf2Geom<3>::shmem},
     {3, 0x8888u, &qtf2_a3_m8888, Qtf2Geom<3>::nt, Qtf2Geom<3>::shmem},
     {3, 0xaaaau, &qtf2_a3_maaaa, Qtf2Geom<3>::nt, Qtf2Geom<3>::shmem},
     {3, 0xeeeeu, &qtf2_a3_meeee, Qtf2Geom<3>::nt, Qtf2Geom<3>::shmem},
+    {4, 0x0000u, &qtf2_a4_m0000, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
     {4, 0x8888u, &qtf2_a4_m8888, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
     {4, 0xaaaau, &qtf2_a4_maaaa, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
     {4, 0xeeeeu, &qtf2_a4_meeee, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},

@@ -3,7 +3,8 @@ exllamav3 1.6.3 (with pack / unpack_trellis_frac that accept KA = 0): same call 
 (check: qtf2check.py), plus 1/8 steps K0.125-2.875 (incl. sub-1, KA = 0: salted 0-bit read) and the menu's
 quarter / half steps. Built in two variants: "mul1" (plain codebook) and "i8" (EXL3_MUL1_I8, the int8-rounded one).
 Use after exl3frac / exl3cb's install:  exl3frac2.install(SRC, "i8")  (SRC = <fork>/exllamav3/exllamav3_ext, for
-codebook.cuh). Only quantize_tiles_frac and frac_k are swapped. Env TORCH_EXTENSIONS_DIR, PYTORCH_ROCM_ARCH, MAX_JOBS."""
+codebook.cuh). quantize_tiles_frac and frac_k are swapped, and integer K1-4 tiles go to qtf2 too (MASK 0, identical
+output; QTF2_INT=0: off). Env TORCH_EXTENSIONS_DIR, PYTORCH_ROCM_ARCH, MAX_JOBS."""
 import glob, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -63,9 +64,34 @@ class _Ext:
     def __getattr__(self, name): return getattr(self._q if name in self.NAMES else self._base, name)
 
 
+INT_K = (1, 2, 3, 4)    # integer K run on qtf2 (MASK 0): bit-identical to exllamav3's integer kernels (prebuilt mul1 and
+                        # exl3cb i8, qtf2int6check.py) and 1.3-2.1x faster; K5-8 stay on the integer kernel (faster there)
+
+
 def install(src: str, variant: str = "mul1", verbose: bool = False):
+    """Swap qtf2 in for quantize_tiles_frac (all fractional rates) and, unless QTF2_INT=0, for integer K1-4 tiles of
+    the mul1 codebook (the variant's: plain or i8)."""
+    import torch
     import exllamav3.modules.quant.exl3_lib.quantize as Q
     if isinstance(Q.ext, _Ext): Q.ext = Q.ext._base
-    Q.ext = _Ext(Q.ext, load(src, variant, verbose))
+    ext = load(src, variant, verbose)
+    Q.ext = _Ext(Q.ext, ext)
     Q.frac_k = frac_k
+    orig = getattr(Q.quantize_tiles, "_qtf2_orig", Q.quantize_tiles)
+    if os.environ.get("QTF2_INT", "1") == "1":
+        def quantize_tiles(tiles, quant_args):
+            K = quant_args["K"]
+            mcg, mul1 = Q.quant_codebook(quant_args)
+            if not (float(K).is_integer() and int(K) in INT_K and mul1 and not mcg and tiles.shape[1] == 256):
+                return orig(tiles, quant_args)
+            tiles = tiles.contiguous()
+            assert tiles.dtype == torch.float
+            out, idx = torch.zeros_like(tiles), torch.zeros_like(tiles, dtype=torch.short)
+            temp_costs, temp_edges = Q.get_temp_buffers_frac(tiles.device, int(K))
+            ext.quantize_tiles_frac(tiles, out, idx, temp_costs, temp_edges, int(K), 0)
+            return out, idx
+        quantize_tiles._qtf2_orig = orig
+        Q.quantize_tiles = quantize_tiles
+    else:
+        Q.quantize_tiles = orig
     return Q

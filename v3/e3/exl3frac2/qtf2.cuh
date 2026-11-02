@@ -24,6 +24,8 @@
 //     outstanding global store (s_wait_storecnt), so each of the 512 steps stalled on its history store; the
 //     traceback reads the history only after argmin_cost's full barrier. KA 0 (costs in global) keeps the full one.
 //     Test builds: QTF2_FULLSYNC / QTF2_BYTEHIST restore the v4 barrier / byte history.
+//   - v6: the uncached path (KA >= 5) takes the cached path's packed minimum instead of the strict-less scan with
+//     per-candidate branches (same pick, ties to the lowest k). QTF2_SCANMIN restores the scan.
 
 #include <cuda_fp16.h>
 #include <cstdint>
@@ -134,7 +136,30 @@ __device__ __forceinline__ void qtf2_step
         }
         half2 min_err2 = pair_err(out_edge_idx, out_edge_idx >> KIN, product0, product1);
         int min_k0 = 0, min_k1 = 0;
-
+#ifndef QTF2_SCANMIN
+        if constexpr (KIN > 0)
+        {
+            // v6: packed minimum (cost bits << 16 | k), as the cached path (v4): for non-negative, non-NaN halves the
+            // bit patterns order like the values and ties go to the lowest k -- the strict-less scan's pick, without
+            // its per-candidate branches (the uncached path's main cost: K5.5 and up)
+            const uint32_t e0 = __builtin_bit_cast(uint32_t, min_err2);
+            uint32_t best0 = e0 << 16, best1 = e0 & 0xffff0000u;
+            #pragma unroll
+            for (int k = 1; k < max_q; ++k)
+            {
+                const int state0 = (k << Kr) | out_edge_idx;
+                constexpr uint32_t product_step = 0x83DCD12Du << Kr;
+                product0 += product_step;
+                product1 += product_step;
+                const uint32_t eb = __builtin_bit_cast(uint32_t, pair_err(state0, state0 >> KIN, product0, product1));
+                best0 = min(best0, (eb << 16) | (uint32_t) k);
+                best1 = min(best1, (eb & 0xffff0000u) | (uint32_t) k);
+            }
+            min_err2 = __builtin_bit_cast(half2, (best0 >> 16) | (best1 & 0xffff0000u));
+            min_k0 = (int) (best0 & 0xffffu); min_k1 = (int) (best1 & 0xffffu);
+        }
+        else
+#endif
         #pragma unroll
         for (int k = 1; k < max_q; ++k)
         {

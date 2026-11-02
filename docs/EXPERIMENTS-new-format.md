@@ -522,6 +522,21 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
     (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
     donors needed. (Whole-model check still to do, critique C3.5.)
+  - **Speed pass 2 (2026-11-02, all output-identical, gated):** profile of K2.5 layers 3-4 (ladder settings): kernel 73%
+    of wall, refit 11%, Cholesky / rotations / Hessians ~10%; the host thread waits on the GPU 86% of its samples (CPU is
+    not a limit). Kernel time split (timing-only builds): traceback 3-5%, history writes 11-27% (K5.5: 45%, really the
+    uncached path's per-candidate branches); tiles per call barely matters (64 tiles: 45k/s, 320: 50k/s).
+    - qtf2 v5: packed history (one 16/32-bit store a thread a position) +5-11% at K1.x-2.x, +3-4% at K3.x; LDS-only step
+      barrier ~+1%. v6: packed minimum in the uncached path: K5.5 14.1k -> 31.1k tiles/s (x2.2); K6.5 / 7.5 barely.
+    - **Integer K1-4 on qtf2 (MASK 0): bit-identical to both integer kernels, x1.9 / 2.1 / 1.9 / 1.3** (K1 67k, K2 81k,
+      K3 85k, K4 93k tiles/s vs 36k / 39k / 44k / 69k). K5-8 stay on the integer kernel (LDS barrier there: +1-6%).
+    - quantize_exl3: the regularized-domain proxy (overwritten by the refit's) and refit's e_before (verbose only) are
+      skipped; ourq caches the last Hessian (the sweep reloaded it 4x). e2e K2.5 L3-4: 52 tensors + 13 proxy rows
+      byte-identical to the old code, 63 -> 55.5 s a layer (-12%).
+    - Sub-1 (KA 0): 11.3k tiles/s at the ladder's batch (costs in global): ~3.9 card-h a level, ~27 for all seven.
+    - Not done: reusing K-independent work across levels (~7%, needs a tensor-major ladder); refit via Cholesky instead
+      of LU (faster, not bit-identical); KA 6-7 lane-cooperative search (head donors K6.5 / 7.5 only); sub-1 0-bit-step
+      fusion. Checks: qtf2v5check (v6 vs v4 every instance), qtf2int6check, qtint5check, e2e5, speed2deploy.
   - **Head mean-row subtraction: head-only KL -30%** (headremake.sh step 1, dry run 2026-11-02; exact headsim, uniform
     heads, 32,768 held-out head inputs): K3 0.00794 -> 0.00555, K5 0.000492 -> 0.000346 (geo ratio 0.70). Exact
     (softmax-invariant), free. Adopted for every head donor. Damping (with mean-row): K3 best sigma 0.005 (-2.6% vs

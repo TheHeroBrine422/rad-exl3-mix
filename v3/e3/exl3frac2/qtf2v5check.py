@@ -29,7 +29,8 @@ if os.environ.get("V5_CHILD"):             # byte build: dump outputs + speed
         res[(ka, m)] = (q.cpu(), i.cpu(), tput(lambda: run(ext, T[:1024].contiguous(), ka, m), 1024) if v == "i8" else None)
     torch.save(res, out); sys.exit(0)
 fails = 0
-BUILDS = {"ref": "QTF2_BYTEHIST QTF2_FULLSYNC", "pack_only": "QTF2_FULLSYNC", "bar_only": "QTF2_BYTEHIST"}
+BUILDS = {"ref": "QTF2_BYTEHIST QTF2_FULLSYNC QTF2_SCANMIN"} if os.environ.get("V6") else \
+         {"ref": "QTF2_BYTEHIST QTF2_FULLSYNC", "pack_only": "QTF2_FULLSYNC", "bar_only": "QTF2_BYTEHIST"}
 for v in ("mul1", "i8"):
     res = {}
     for name, defs in BUILDS.items():

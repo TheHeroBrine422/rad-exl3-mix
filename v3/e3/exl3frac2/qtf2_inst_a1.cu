@@ -2,6 +2,7 @@
 #include "qtf2_types.cuh"
 #include "qtf2.cuh"
 
+fp_qtf2 qtf2_a1_m0000() { return qtf2_kernel<1, 0x0000u>; }
 fp_qtf2 qtf2_a1_m8080() { return qtf2_kernel<1, 0x8080u>; }
 fp_qtf2 qtf2_a1_m8888() { return qtf2_kernel<1, 0x8888u>; }
 fp_qtf2 qtf2_a1_ma4a4() { return qtf2_kernel<1, 0xa4a4u>; }
