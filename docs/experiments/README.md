@@ -10,6 +10,13 @@ Every experiment we run, plan or drop is tracked here, whether it worked or not,
 | `LOG-legacy.md` | the archive's log, dead ends and topic sections rewritten into the template (166 entries, numbers checked verbatim) | frozen |
 | `archive/` | the trackers before 2026-11-02, verbatim | frozen |
 
+## What gets a number
+
+Anything that ends in a measurement or a pass/fail check: experiments, and also engineering work such as kernel
+optimization passes (speedup + identity gate), ports (KLD parity), new tools or pipelines with a validation, data
+builds with a check. Chores with no result to look up (restarts, uploads, doc edits, cleanup) stay out: they belong
+in TODO and the git log. If a chore turns up something worth knowing, log that finding as a `#—` entry.
+
 ## Numbers
 
 - Every experiment gets the next free number when it is planned or started: `#57`. Numbers are never reused or
