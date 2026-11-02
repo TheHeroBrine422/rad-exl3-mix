@@ -144,3 +144,11 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 - [ ] Blocked / later: sub-1 K and K0 (needs the salted 0-bit read); fused-GEMM K ties (after the time table);
       radiance #328 check at the 1.15 port.
 
+## Added 2026-11-02
+
+- [ ] **Rebase on radiance 1.16.0** (released 2026-11-02; fixes a small prefix-rounding issue that can move our
+  KLDs). Like the 1.15 port (#74): rebuild our plugins against it (exl3r4d, exl3dense, qwen35_exl3, exl3i,
+  exl3import; check the plugin ABI version), byte-identical / KLD-parity checks against 1.15.1, then decide whether
+  the goldens and the reference KLDs must be regenerated (the fix changes the bf16 path too?) — never compare KLDs
+  across engine versions without a paired re-run. Timing: before D3 / the V3 eval stream, after the 27B H_out run
+  (don't change the engine under a running comparison). Also move the `qc-exl3-v3` branch / upstream PR onto it.
