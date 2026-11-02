@@ -2,6 +2,31 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 10:30 CST · #33-11 · H_out follow-ups on 0.8B: holds at K2 and stacks on our settings
+- **Status:** done (positive) · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact2.sh` @ 6496e9e
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 4 (written before data).
+- **Setup:** 8K snapshot, i8, g08-search1. `hout` / `hdiag`: paper damping 0.01, no scaled Hessian. `bhout`: our
+  `base` settings (scaled Hessian, damping 0.025 / input 0.005) plus full H_out at output damping 0.01.
+- **Result:**
+
+  | K | arm | KL | vs ldlq (z) | vs base (z) |
+  |---|---|---|---|---|
+  | 3 | base | 0.0989 | −5.7% | — |
+  | 3 | hout (#33-10) | 0.0946 | −9.9% (−13.8) | −4.3% (−5.4) |
+  | 3 | **bhout** | **0.0893** | — | **−9.7% (−12.4)** |
+  | 2 | base | 0.535 | −3.7% | — |
+  | 2 | hout | 0.537 | −3.4% (−3.6) | +0.2% (0.2) |
+  | 2 | hdiag | 0.532 | −4.2% (−7.9) | −0.6% (−0.9) |
+  | 2 | **bhout** | **0.506** | — | **−5.6% (−6.3)** |
+
+- **Reading:** all three rules pass: H_out holds at K2; it stacks with the scaled Hessian and tuned damping (bhout vs
+  hout: K3 −5.6%, K2 −5.8%); bhout beats base at both K with z ≤ −2, which meets the user's switch bar **on the
+  0.8B**. At K2 the diagonal alone does as well as the full H_out without our settings.
+- **Decision / next:** plan a 27B check; its cost is set by two 0.8B tests first: (1) a mixed arm on base's settings,
+  full H_out except gate/up (diagonal only), and the all-diagonal arm — the full gate/up H_out is ~155 GB of fp32
+  accumulators at 27B, the diagonal a few MB; (2) dose: 1K / 2K / 4K snapshots on base's settings.
+- **Files:** 4070 `/data/yb/result-fact2.txt`
+
 ### 2026-11-02 10:15 CST · #33-10 · YAQA factorial on 0.8B: the H_in swap was the loss; H_out with calib H_in wins
 - **Status:** done (positive) · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact.sh` @ 053a640
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 3 (written before data).
