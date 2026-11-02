@@ -2,7 +2,7 @@
 """kfit2dump.py DIR OUT.json -- a COPY of kfit2.py (2026-10-30, after the nan fix) that fits the model and dumps it
 for the new-format solver (v3/nf/knap3.py); no mixes are written. Original doc:
 kfit2.py DIR [TARGETS] -- directional-depth KLD model, fitted to every fit-pool measurement, and an exact DP over
-byte buckets for the mix frontier. Successor of kfit.py (see docs/research-mix-allocation.md, R1/R2).
+byte buckets for the mix frontier. Successor of kfit.py (see docs/research/mix-allocation.md, R1/R2).
 
 Model (per measurement = assignment weight -> option, embedding -> level):
   cost_w   = s_w * eb_w * (phi_fam * e_w / eb_w)^q          e_w = hproxy error of the chosen option (bf16: 0),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """vocabtier.py CALIB.jsonl TOKENIZER_DIR OUT.json -- groundwork for the vocabulary-tiered head/embedding (O1 in
-research-quant-sota.md). Over the calib corpus, the pools in VT_POOLS (default fit,search,qad: verify excluded; pool
+research/quant-sota.md). Over the calib corpus, the pools in VT_POOLS (default fit,search,qad: verify excluded; pool
 file POOLS=eval/pools/pools.json):
   - input-token frequency per vocab id (what the embedding sees)
   - next-token frequency at scored positions (a proxy for E[p_v], the head's output Fisher diagonal)

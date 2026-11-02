@@ -1,12 +1,16 @@
 # Research: RCO (Helcig & Alistarh 2026, arXiv 2605.00649) for our mix allocation, plus SLQ (2605.02404)
 
+> **Status (2026-11-02).** Research snapshot from 2026-10-30, kept as written. Its recommendation (option C,
+> model-based local search) was **adopted** (#70); RCO itself was **dropped** (#17, numbers =
+> `../experiments/INDEX.md`). The RCO paper's digest is in the 2026-11 paper corpus (`2605.00649`).
+
 *Date: 2026-10-30.*
 
 **Sources read:**
 - RCO paper, v3 HTML and PDF tables.
 - RCO code: `IST-DASLab/RCO`, cloned to `/tmp/pi-github-repos/.../5440b0f…` (`src/search/quant.py`, `src/manifold.py`, `rco_search_quant.py`, `scripts/run_search_quant.sh`).
 - SLQ paper, HTML.
-- `docs/research-mix-allocation.md`, `kfit2.py`, `auto.sh`.
+- `docs/research/mix-allocation.md`, `kfit2.py`, `auto.sh`.
 
 **Labels:**
 - **[Lit]**: the source says it.
@@ -256,7 +260,7 @@
 - RCO paper ([arXiv 2605.00649 v3](https://arxiv.org/abs/2605.00649), [HTML](https://arxiv.org/html/2605.00649v3), [PDF](https://arxiv.org/pdf/2605.00649v3)): method, Tables 2, 3, 4, 12, 14–24.
 - RCO code ([github.com/IST-DASLab/RCO](https://github.com/IST-DASLab/RCO)): STE/interpolation mechanics, defaults, memory layout, shared cost vector.
 - SLQ ([arXiv 2605.02404](https://arxiv.org/html/2605.02404)): EAR, Shapley cost, single-point calibration.
-- Local: `research-mix-allocation.md`, `search/kfit2.py`, `search/auto/auto.sh`.
+- Local: `research/mix-allocation.md`, `search/kfit2.py`, `search/auto/auto.sh`.
 
 **Deprioritized:** EvoESAP and MxMoE details (pruning and MoE settings, not our problem).
 

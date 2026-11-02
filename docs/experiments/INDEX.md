@@ -4,7 +4,7 @@ One row per experiment. Status words and numbering: `README.md`. Detail: `LOG.md
 `archive/tracker-2026-11-02.md` ("tracker", its Log section by date) and
 `archive/deadends-2026-11-02.md`, "dead ends"). Last date = last entry about it.
 
-Bulk-numbered on 2026-11-02 from the old trackers (#1–#62, roughly by date) and `docs/METHOD.md` (V2 wins, #63–#73).
+Bulk-numbered on 2026-11-02 from the old trackers (#1–#62, roughly by date) and `docs/design/v2.md` (V2 wins, #63–#73).
 V2-era rows carry no exact dates. Positive and negative results both get rows: the status column says which.
 
 ## V2 era: dead ends
@@ -27,7 +27,7 @@ V2-era rows carry no exact dates. Positive and negative results both get rows: t
 | 14 | Measuring single-tensor swaps end to end | allocation | negative | ≤10-30 | too noisy per eval |
 | 15 | Noise-injection sensitivity calibration | allocation | negative | ≤10-30 | dead ends § Mix allocation |
 | 16 | Shapley-value interactions (IMPQ, SLQ) | allocation | dropped | ≤10-30 | dead ends § Mix allocation |
-| 17 | RCO (Riemannian constrained optimisation) | allocation | dropped | ≤10-30 | `docs/research-rco.md` |
+| 17 | RCO (Riemannian constrained optimisation) | allocation | dropped | ≤10-30 | `docs/research/rco.md` |
 | 18 | Gradient boosting / black-box surrogates | allocation | negative | ≤10-30 | dead ends § Mix allocation |
 | 19 | Per-layer edge offsets in kfit2 (KFIT_EDGE) | allocation | negative | 10-31 | dead ends § Mix allocation |
 | 20 | Residual re-ranker on top of kfit2 | allocation | negative | 10-31 | retry rule in BACKLOG (V3 stream) |
@@ -38,7 +38,7 @@ V2-era rows carry no exact dates. Positive and negative results both get rows: t
 
 ## V2 era: what worked
 
-Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assigned). Source: `docs/METHOD.md`.
+Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assigned). Source: `docs/design/v2.md`.
 
 | # | title | area | status | last | verdict / pointer |
 |---|---|---|---|---|---|

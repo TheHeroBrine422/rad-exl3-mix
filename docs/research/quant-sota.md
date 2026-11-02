@@ -1,5 +1,16 @@
 # Weight-only PTQ: state of the art (late 2026) and what to try next for Qwen3.8-27B / EXL3
 
+> **Status (2026-11-02).** Research snapshot from 2026-10-29, kept as written. What became of its shortlist
+> (numbers = `../experiments/INDEX.md`):
+> - O1 vocab-tiered head / embedding: **negative** (#32). The trellis embedding itself was adopted untiered (#35);
+>   the head got a mean-row correction and slabs (#34).
+> - YAQA two-sided LDLQ: **negative** in every form, including the paper's estimator (#33).
+> - Measured-KL allocation refinement: **adopted** as V2's local search (#70).
+> - Fixed-code QAD: **planned** for V5 (ROADMAP).
+> - Fractional K: **adopted** as whole-tensor fractional levels (qtf2, #36/#37); row-split K measured as a ceiling
+>   only (#29-02).
+> - O2 per-group gain scales: **negative** (#40).
+
 *Research brief. Scope: weight-only PTQ and light healing, measured by KL or perplexity. Date: 2026-10-29.*
 
 **Labels used throughout**

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """r1test.py DUMPDIR MAP Q.npy IDX[,IDX...] OUT.jsonl -- does an R1 residual-stream rotation (SpinQuant) lower the
-int8/int4 activation-quantization error of the residual readers? (DESIGN-v3 §7, the CPU test; aqproxy.py's dumps.)
+int8/int4 activation-quantization error of the residual readers? (design/v3.md §7, the CPU test; aqproxy.py's dumps.)
 
 Residual readers: attn q/k/v (attn_in), GDN in_proj qkv/z (gdn_in), gate_up -- their GEMM input is
 x = RMSNorm(h) * (1 + w) (Qwen3.5 norm gain). R1 folds one orthogonal Q (5120², shared by every layer) into the

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """census.py CONTAINER.rad [--mix MIXFILE] [--recipe RECIPE] [--json OUT] -- what a container holds, weight by weight:
 scheme (exl3 / exl3i / plain / affine ...), the trellis rate K and codebook, the activation mode (metadata key
-exl3.act.<weight>, f16 when absent), the bytes, and the real bpw (bytes x 8 / 26,895,998,464). DESIGN-v3 §1c.4: the
+exl3.act.<weight>, f16 when absent), the bytes, and the real bpw (bytes x 8 / 26,895,998,464). design/v3.md §1c.4: the
 container must be what the mix says before a KLD means anything.
 
 --mix: radmix's mix file ("<weight> <donor.rad>", "act <weight> <mode>"). Each named weight is checked byte-for-byte

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""amgm.py CKPT_DIR OUT.jsonl [LAYERS] -- would finer scales help EXL3? (O2 diagnostic, research-quant-sota.md)
+"""amgm.py CKPT_DIR OUT.jsonl [LAYERS] -- would finer scales help EXL3? (O2 diagnostic, research/quant-sota.md)
 
 EXL3 quantizes W' = had_n(sv * had_k(su * W)) (blockwise 128 Hadamard on both dims, random signs) with one scale per
 row (svh) and per column (suh) and no finer gain. For Gaussian sources at high rate, a separate scale per group saves

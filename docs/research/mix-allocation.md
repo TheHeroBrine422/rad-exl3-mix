@@ -1,5 +1,13 @@
 # Research: bit allocation / mix selection for the EXL3 entry (Qwen3.8-27B)
 
+> **Status (2026-11-02).** Research snapshot from 2026-10-30, kept as written. What became of its top 5
+> (numbers = `../experiments/INDEX.md`):
+> - R2 exact byte-bucket DP solver: **adopted** (#69).
+> - R4 model-based local search (Thompson + DP): **adopted** in V2's streaming search (#70).
+> - R3 low-bpw anchor data: done as targeted K1/K2 swaps (#71).
+> - R1 decision-focused CV and R5 category / position-aware objective: not tracked as experiments; KLD vs position
+>   was checked (#52). The black-box surrogate and residual re-ranker ideas were **negative** (#18, #20).
+
 *Date: 2026-10-30.*
 
 **Scope.** This brief covers:
@@ -7,7 +15,7 @@
 - the optimizer that picks one option per tensor under a size budget;
 - the choice of which mixes to measure next.
 
-It does not repeat the quantizer survey in `research-quant-sota.md`.
+It does not repeat the quantizer survey in `research/quant-sota.md`.
 
 **Labels.**
 - **[Lit]**: the source says it.
@@ -189,7 +197,7 @@ log y_obs  = log KLD_pred + slice_effect + ε,   ε ~ N(0, σ_model²)
 - GuidedQuant's end-loss-gradient-weighted output groups ([2505.07004](https://arxiv.org/abs/2505.07004));
 - the Fisher of FIT and SqueezeLLM.
 
-[Interp] For *allocation*, the per-tensor scalar s_w already absorbs the average output weighting. The output side matters only when **two options for the same tensor distribute their error differently across output rows or directions**. That is exactly our SC vs plain vs ours family factor (plain costs 1.23× SC per unit proxy). A per-(family × group) factor is the cheap patch. A real output-side proxy needs the O8 backward infrastructure (see `research-quant-sota.md`).
+[Interp] For *allocation*, the per-tensor scalar s_w already absorbs the average output weighting. The output side matters only when **two options for the same tensor distribute their error differently across output rows or directions**. That is exactly our SC vs plain vs ours family factor (plain costs 1.23× SC per unit proxy). A per-(family × group) factor is the cheap patch. A real output-side proxy needs the O8 backward infrastructure (see `research/quant-sota.md`).
 
 **2. [Lit] Noise injection is the literature's cheap calibration** (HIGGS J=15; Q-Palette 16 levels; exllamav3 2 shaped levels, ~35 min for a 27B).
 - **Caveats:**

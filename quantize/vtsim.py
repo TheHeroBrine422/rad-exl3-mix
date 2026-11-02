@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""vtsim.py DUMPDIR HEADDIR COUNTS.npy CKPT OUT.json -- vocab-tiered head simulation (O1, research-quant-sota.md).
+"""vtsim.py DUMPDIR HEADDIR COUNTS.npy CKPT OUT.json -- vocab-tiered head simulation (O1, research/quant-sota.md).
 
 Head-only KL of tiered heads against the bf16 head, on real head inputs:
   - X: the head's inputs from the E1b dump (DUMPDIR/336.x, [rows][5120] bf16/f16; EXL3_AQ_DUMP_ONLY=336)

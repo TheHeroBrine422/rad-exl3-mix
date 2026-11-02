@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""embtrellis.py ROWS OUT.jsonl -- trellis-coded token embedding vs V2's Lloyd tables (DESIGN-v3 §1b.6), CPU.
+"""embtrellis.py ROWS OUT.jsonl -- trellis-coded token embedding vs V2's Lloyd tables (design/v3.md §1b.6), CPU.
 
 ROWS random rows of the checkpoint's token table (seeded), quantized with H = I (plain reconstruction error):
   lloyd   V2's embedding: fwht128 per 128 columns, a 2^B-level Lloyd-Max codebook fitted to the amax-normalised

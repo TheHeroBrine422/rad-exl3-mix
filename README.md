@@ -5,8 +5,8 @@ K1–8 per tensor, a fitted sensitivity model plus an exact knapsack solver choo
 KLD evaluation and search pipeline around it. Built for the radiance quantization challenge (Qwen3.8-27B).
 
 **Released:** [EXL3-V2 containers](https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad), 16 sizes from 1.5 to
-9.0 bpw. Method: [`docs/METHOD.md`](docs/METHOD.md). Next: EXL3-V3 (integer compute, finer K;
-[`docs/DESIGN-v3.md`](docs/DESIGN-v3.md), [`docs/ROADMAP.md`](docs/ROADMAP.md)).
+9.0 bpw. Method: [`docs/design/v2.md`](docs/design/v2.md). Next: EXL3-V3 (integer compute, finer K;
+[`docs/design/v3.md`](docs/design/v3.md), [`docs/ROADMAP.md`](docs/ROADMAP.md)).
 
 ## EXL3-V2 results
 

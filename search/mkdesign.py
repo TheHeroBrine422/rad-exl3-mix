@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """mkdesign.py DIR MIX NAME N [FRAC] [SEED] -- budget-neutral random perturbations of a mix (R3 of
-research-mix-allocation.md): each design point moves a random FRAC (default 0.4) of the trunk tensors one bit up or
+research/mix-allocation.md): each design point moves a random FRAC (default 0.4) of the trunk tensors one bit up or
 down (random sign; the option one bit away with the lowest proxy error among SC/plain), then flips/drops moves until
 the size is within 0.005 bpw of the mix. Pairs: point 2k+1 is the antithetic of 2k (all moves reversed, re-balanced).
 Head and embedding stay as in the mix. Writes DIR/mixes/dz-NAME-NN.mix, prints queue lines (base sc4.00-e4)."""

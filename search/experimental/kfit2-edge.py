@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """kfit2.py DIR [TARGETS] -- directional-depth KLD model, fitted to every fit-pool measurement, and an exact DP over
-byte buckets for the mix frontier. Successor of kfit.py (see docs/research-mix-allocation.md, R1/R2).
+byte buckets for the mix frontier. Successor of kfit.py (see docs/research/mix-allocation.md, R1/R2).
 
 Model (per measurement = assignment weight -> option, embedding -> level):
   cost_w   = s_w * eb_w * (phi_fam * e_w / eb_w)^q          e_w = hproxy error of the chosen option (bf16: 0),

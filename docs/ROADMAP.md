@@ -10,7 +10,7 @@ EXL3-V3 = integer compute.
 - Turboderp's ≥5-bit tensors allowed where they measure better (most at 5.5, 6.0 and 8.0 bpw).
 
 ## EXL3-V3
-- int8 / int4 activations per tensor (`v3/`, design in `docs/DESIGN-v3.md` (earlier notes: `docs/DESIGN-new-format.md`), log in
+- int8 / int4 activations per tensor (`v3/`, design in `docs/design/v3.md`, experiments in
   `docs/experiments/`), a solver trading KLD against measured kernel time.
 - An int8-native trellis code (the Viterbi searches the exact integers the int8 tile multiplies) and a row-scale
   fold in the prefill tile.
@@ -58,7 +58,7 @@ EXL3-V3 = integer compute.
 Variants that matter to some users but not to the main frontier, built on V3 / V3.5's tooling:
 - 7.0 / 7.5 / 8.0 rebuilt with V3's embedding and head (t6.25–t8 embedding levels).
 - **Decode speed as its own axis.** Decode time is not proportional to size: trellis dequant and other per-token
-  costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs 24 at 6.00, DESIGN-v3 §9).
+  costs add overhead (measured nearly flat in K below ~4 bpw: 32.5 tok/s at 1.40 bpw vs 24 at 6.00, design/v3.md).
   First profile where decode time goes per K and fractional pattern (and whether an int8-activation decode GEMV
   helps), then decode-optimized variants. Longer term, treat the frontier as 4-D (size, KLD, decode, prefill): for
   the 27B dense model decode tracks size apart from the embedding, but for MoE models they can differ a lot.
@@ -72,46 +72,41 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
 - **Speed gap to IQR-V3, for the record (user, 2026-11-01):** decode (~30 vs ~100 tok/s at TP1) is mostly
   speculative decoding: IQR-V3 ships DFlash2, V2 does not -- DFlash2 support (planned for V3) closes most of it.
   Prefill (~1,500 vs ~2,500 tok/s) is the GEMM time (`gemm_us`), which V3's int8 path targets.
-- **REAL-Q (arXiv 2609.00049), tested before QAD:** a measured trial on a few sizes, so V5 starts from the best
-  non-trained quantizer.
+- **REAL-Q (arXiv 2609.00049), tested before QAD:** first on the proxy. Its correction depends on the exact mix
+  (sequential, per-mix), so it cannot enter the per-level library: at most a final pass on 2–3 shipped sizes
+  (~40–50 GPU-hours each at 27B). Its reported gains shrink with model size (−49% at 1.7B, −5…−9% at 8–70B), so a
+  proxy win overstates the 27B gain.
 
 ## Research method and scale (after V3)
-- **Small-model proxies: Qwen3.5-2B to screen, Qwen3.5-9B to confirm.** Same family and block design as the 27B
-  (3:1 Gated DeltaNet / gated attention, head_dim 256, same 248,320 vocab; Qwen3.8-27B is this architecture with
-  different weights). Sizes (trunk / embedding + head share): 0.8B 0.50B / 34%, tied; 2B 1.37B / 27%, tied; 4B
-  3.57B / 15%, tied; 9B 6.92B / 23%, **untied**, DeltaNet value heads 32 and attention 16/4 (closest shapes);
-  27B 24.35B / 9%, untied.
-  - **2B (~18x smaller trunk):** screening of trunk methods (codes, codebooks, LDLQ variants, damping, sequential
-    Hessians, rotations), QAD recipes, the low-bit ladder (method ranking, not the knee), whole search / stream runs,
-    pipeline tests. Not embedding / head work: tied, the head *is* the embedding.
-  - **9B (~3.5x smaller trunk, untied):** embedding / head work, and the step between a 2B win and a 27B run.
-  - 0.8B: too far (34% embedding, width 1024) for little extra speed. 4B: tied, so no gain over the 9B for head work.
+- **Small-model proxies: Qwen3.5-0.8B and 2B for general testing, 9B when a test needs it.** Same family and block
+  design as the 27B (3:1 Gated DeltaNet / gated attention, head_dim 256, same 248,320 vocab; Qwen3.8-27B is this
+  architecture with different weights). Sizes (trunk / embedding + head share): 0.8B 0.50B / 34%, tied; 2B 1.37B /
+  27%, tied; 4B 3.57B / 15%, tied; 9B 6.92B / 23%, **untied**, DeltaNet value heads 32 and attention 16/4 (closest
+  shapes); 27B 24.35B / 9%, untied.
+  - **0.8B and 2B:** most screening (codes, codebooks, LDLQ variants, damping, sequential Hessians, rotations, QAD
+    recipes, the low-bit ladder's method ranking, search / stream runs, pipeline tests). The 0.8B where speed or
+    memory decides (anything with gradients or output-side statistics on the 4070, e.g. the YAQA run, #33-08), the 2B
+    where the extra width matters. Not embedding / head work: both are tied, the head *is* the embedding.
+  - **9B (~3.5x smaller trunk than the 27B, untied):** embedding / head work, and the step between a small-model win
+    and a 27B run when the test needs it (closest shapes; gradients need a 32 GB card).
   - Nothing transfers as numbers (allocation, sensitivities, kernel speed, KLD per bpw); method rankings should.
-  - Setup (~1-2 days a model): bf16 reference logits on the calib pools (`--kld-record`), input Hessians
-    (`--calib-corpus`), parameterize the 27B constants in ourq / knap4 / eval.
   - Calibration first, pass rule fixed beforehand: replicate known 27B results (mixed vs uniform at ~3 bpw,
     damping-sweep gain, int8 codebook cost ~0, the fractional-level curve, output scales off = worse, the YAQA
-    gates). Screen on the 2B only if most reproduce in direction and roughly in size; winners are confirmed on the 27B.
-- **Hardware for the 2B: the user's RTX 4070 (12 GB, CUDA)** during V3's GPU downtime. Fits: 2B bf16 (3.8 GB) plus
-  quantizer scratch; evals by fake-quant (the quantizer's dequantized weights substituted into a torch model,
-  exact for KLD; A8 emulated), so no radiance / HIP plugins are needed. exllamav3's quantizer is CUDA-native (the fork
-  has Ada tunings); qtf2 is CUDA source (compile check needed). The 9B does not fit for reference logits / evals
-  (18 GB bf16) without offload. /workspace is shared from the same host, so a GPU container can work in it directly.
-- **A larger corpus for proxy research** (the calib's 10.26M tokens bound Hessians, QAD and YAQA). Evaluation stays on
+    gates) before trusting a screen (2B study: `proxy2b/CALIBRATION.md`, paused).
+- **Hardware: the user's RTX 4070 (12 GB, CUDA)** for the 0.8B and 2B (built: `proxy2b/`, goldens, fake-quant evals
+  through our quantizer on CUDA, input Hessians over all calib). The 9B does not fit there (18 GB bf16); it needs an
+  R9700 slot or offload.
+- **A larger corpus for proxy research** (the calib's 10.26M tokens bound Hessians and QAD). Built: xcorp v1, 96M
+  tokens from the calib's upstream sources (#61; proxy research only). Evaluation stays on
   the calib pools (the private corpus is drawn like calib). Training / statistics data, in order of preference:
   (1) generated by the bf16 model itself from calib-like prompts (no overlap with any test set); (2) more documents
   from the calib's own upstream sources (could overlap the private corpus: fine for proxy research, but check the
   challenge rules before anything trained on it ships); (3) generic text (distribution shift). Target ~100-150M
   tokens. For QAD the teacher runs on the fly; stored reference logits only for eval slices.
-- **YAQA at paper scale on the 2B:** the paper's Sketch-B setting (~64K sequences, ~134M tokens) is out of reach on
-  the 27B but ~1-2 card-days on the 2B with an fp32 backward (our gate 2a: bf16 gradients are unusable). Run it as a
-  dose-response, 1K / 4K / 16K / 64K sequences, two-sided vs one-sided at K2 / K3, paired. Pass rule: two-sided beats
-  one-sided by more than the paired SE at some scale, with the trend improving in sequence count; flat or worsening
-  = dead for good. Purpose (user, 2026-11-02): settle the question on the 0.8B (its output-side sums fit in VRAM; the 2B's do not, so no 2B YAQA run on the 4070;
-  a 2B confirmation fits one R9700 (32 GB: model + ~11.5 GB fp32 sums) in a free card slot after V3, its golden and
-  quants made on iceman too (kernel paths differ between machines) -- a 0.8B result is recorded as such, with the width caveat); a 27B YAQA run
-  is not planned either way -- paper-scale output-side Hessians at 27B are beyond our hardware. This is also
-  step 1 of the replication procedure before writing to the authors.
+- **YAQA at paper scale: done on the 0.8B, negative (2026-11-02, #33-08).** The paper's Sketch B (fp32, 2048-token
+  sequences) at 1K / 2K / 4K / 8K sequences stays worse than one-sided LDLQ at every point (8K: K3 +7%, K2 +15%;
+  +14% / +20% vs our tuned quant); 16K was not run. YAQA is not adopted. The output-side snapshots are kept for
+  research (as a sensitivity measure for the knapsack, H_out structure, and a diagnosis of why it fails here).
 - **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
   hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
   so contributors never give shell access.

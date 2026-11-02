@@ -84,7 +84,7 @@ Goal: start the eval stream soon after the level ladder finishes (late Nov 2 at 
     - explicit pairing for same-slice A/Bs (the slice offsets are already fitted);
     - fit→mix provenance for pred-vs-meas tracking;
     - Thompson exploration kept.
-- [x] ~~**V3: ours-only option set** (2026-10-30).~~ SUPERSEDED (2026-10-31): DESIGN-v3 §1d keeps turboderp's tensors as options at every K. Drop turboderp's containers as options. V3's K≥5 requant
+- [x] ~~**V3: ours-only option set** (2026-10-30).~~ SUPERSEDED (2026-10-31): design/v3.md §1d keeps turboderp's tensors as options at every K. Drop turboderp's containers as options. V3's K≥5 requant
       with the int8-rounded codebook makes every option ours anyway, since turboderp's quants can't be requantized.
       - Keep their existing measurements in the fit, as data on the per-tensor sensitivities. Those don't depend on
         which quantizer made the tensor.
