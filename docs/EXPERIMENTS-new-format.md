@@ -476,6 +476,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-02 ~04:00 CT: **2B proxy: bf16 vs fp32 inference** (`proxy2b/halves.py`, model in two halves so fp32 fits
+  the 4070; golden g2b-fit1 = 87 fit-pool docs, 2k cap, 86.9k gen rows, bf16, fla + causal-conv1d). Control: the
+  split run in bf16 reproduces the golden (KL -4e-7, top1 1.0000). **fp32 vs the bf16 golden: KL 3.75e-4, p99 1.8e-3,
+  top1 98.4%, flat by position** (3.9e-4 at 0-128, 3.6e-4 at 1k-2k: per-layer rounding, not state build-up). GDN
+  kernel-path differences on the same rows ~1.5e-4. Decision: goldens stay bf16 (the challenge's reference is bf16;
+  quants run on the same path, so the rounding is shared, not noise). Matters only at high bpw, where 2B KLDs approach
+  ~1e-3: there, check a screening result with an fp32 halves run.
+
 - 2026-11-02 ~02:00 CT: **exl3i serving path works on the GPU, up to the full model** (radiance-hero `qc-exl3-v3`
   4edad1f..340165b). Encoding `exl3i` (scheme exl3i, transform `<cb>/h128/k<rate>`, a u32 record TABLE plane of 16-row
   groups); the C oracle `common/exl3i_decode.c` (= the reference decoder, GPU quantizer vectors, exllamav3's oracle at
