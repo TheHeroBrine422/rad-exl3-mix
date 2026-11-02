@@ -6,5 +6,5 @@ T="10:ssm_qkv 10:ssm_out 10:ffn_gate_up 10:ffn_down 30:ssm_qkv 30:ssm_out 30:ffn
 for t in $T; do l=${t%%:*}; w=${t#*:}
   echo "CD=1 CD_SWEEPS=3 python3 -W ignore trellis2.py $l $w mul1_i8 2,2.5,3,4 256 $O > logs/cd-$l-$w.log 2>&1"
   echo "CD=0 python3 -W ignore trellis2.py $l $w gmul1_i8,cubic0.02_i8,cubic0.05_i8 2,2.5,3,4 256 $O > logs/cb-$l-$w.log 2>&1"
-done | (mkdir -p logs; xargs -P $PAR -I{} bash -c "nice -n 10 {}")
+done | (mkdir -p logs; xargs -P $PAR -I{} bash -c "nice -n 10 env {}")
 echo CDRUN DONE
