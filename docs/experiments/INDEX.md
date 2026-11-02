@@ -1,7 +1,7 @@
 # Experiment index
 
-One row per experiment. Status words and numbering: `README.md`. Detail: `LOG.md` (from 2026-11-02) or, for
-older work, `archive/tracker-2026-11-02.md` ("tracker", its Log section by date) and
+One row per experiment. Status words and numbering: `README.md`. Detail: `LOG.md` (from 2026-11-02) or `LOG-legacy.md` (before; originals in
+`archive/tracker-2026-11-02.md` ("tracker", its Log section by date) and
 `archive/deadends-2026-11-02.md` ("dead ends"). Last date = last entry about it.
 
 Bulk-numbered on 2026-11-02 from the old trackers (#1–#62, roughly by date) and `docs/METHOD.md` (V2 wins, #63–#73).
@@ -14,7 +14,7 @@ V2-era rows carry no exact dates. Positive and negative results both get rows: t
 | 1 | Two quantizer processes per card | quant speed | negative | ≤10-30 | dead ends § Quantizer speed |
 | 2 | Bigger tile batches in the quantizer | quant speed | null | ≤10-30 | dead ends § Quantizer speed |
 | 3 | Sharing work across K values in one run | quant speed | dropped | ≤10-30 | dead ends § Quantizer speed |
-| 4 | K7's slow trellis kernel | quant speed | done | ≤10-30 | dead ends § Quantizer speed |
+| 4 | K7's slow trellis kernel | quant speed | dropped | ≤10-30 | not fixed (needed an exllamav3 rebuild); qtf2 covers K7 (#37) |
 | 5 | Head quantization OOM at K5/K6 | quant speed | done | ≤10-30 | dead ends § Quantizer speed |
 | 6 | Bigger prefill steps in the eval | eval speed | null | ≤10-30 | dead ends § Eval speed |
 | 7 | rocprofv3 on radiance | eval speed | dropped | ≤10-30 | dead ends § Eval speed |
@@ -29,10 +29,10 @@ V2-era rows carry no exact dates. Positive and negative results both get rows: t
 | 16 | Shapley-value interactions (IMPQ, SLQ) | allocation | dropped | ≤10-30 | dead ends § Mix allocation |
 | 17 | RCO (Riemannian constrained optimisation) | allocation | dropped | ≤10-30 | `docs/research-rco.md` |
 | 18 | Gradient boosting / black-box surrogates | allocation | negative | ≤10-30 | dead ends § Mix allocation |
-| 19 | Per-layer edge offsets in kfit2 | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 19 | Per-layer edge offsets in kfit2 (KFIT_EDGE) | allocation | negative | 10-31 | dead ends § Mix allocation |
 | 20 | Residual re-ranker on top of kfit2 | allocation | negative | 10-31 | retry rule in BACKLOG (V3 stream) |
 | 21 | Layer 0 as a sensitivity spike | allocation | null | ≤10-30 | dead ends § Mix allocation |
-| 22 | GPTQ damping for our quants | quantizer | negative | 10-31 | see #38 for the tuned damping |
+| 22 | GPTQ damping for our quants | quantizer | superseded | 10-31 | deferred to the V3 requant; by #38 |
 | 23 | 2-bit Lloyd embedding | embedding | negative | ≤10-30 | dead ends § Quantization |
 | 24 | Head above K6 | head | null | ≤10-30 | dead ends § Quantization |
 
@@ -71,7 +71,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 31 | Real int8 prefill kernels (alias **E4**); NFQ int8 crash | kernels | blocked | 11-01 | crash blocks A8 timing |
 | 31-01 | End-to-end prototype at ~4 bpw (alias **E4b**) | kernels | planned | 10-30 | after #31 |
 | 32 | Vocab-tiered embedding and head | embedding | negative | 10-31 | dead ends § Vocabulary-tiered |
-| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | running | 11-02 | first five gates negative; #33-08 is the real test |
+| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | running | 11-02 | gates 1–2e negative, dropped 11-01; reopened with the paper's estimator (#33-08) |
 | 33-01 | Gate 1: TP2 collection throughput | quantizer | done | 10-31 | 5 s per 2048-token sequence |
 | 33-02 | Gate 2: bf16 backward, sampled rows, 200 seqs | quantizer | negative | 10-31 | +23% (K2) / +28% (K3) |
 | 33-03 | bf16 vs fp32 backward noise | quantizer | done | 10-31 | bf16 gradients unusable in early layers |
@@ -80,19 +80,19 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-06 | Gate 2d: diagonal output scales (alias **D1** = its confound check) | quantizer | negative | 11-01 | K2 +10–15%, K3 +4% |
 | 33-07 | Gate 2e: gradient-weighted H_in | quantizer | negative | 11-01 | K2 +44%, K3 +31% |
 | 33-08 | Sketch B (paper estimator) on the 0.8B proxy, 1K–16K sequences | quantizer | running | 11-02 | 1K: K3 +13%, K2 +24% vs paper LDLQ; 2K–16K pending |
-| 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | done | 11-01 | mean-row −30% |
+| 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
 | 37 | qtf2 fractional quantizer and its speed pass (v1–v10) | quantizer | done | 11-02 | finalgate PASS, 51 instances |
 | 38 | Damping vs K (dampsweep, damp2, damp3) | quantizer | done | 11-01 | input 0.005 (0.05 below K1), rest 0.025 |
-| 39 | Global gain scale vs K | quantizer | null | 10-31 | tracker 10-31 ~22:20 |
+| 39 | Global gain scale vs K | quantizer | blocked | 10-31 | best factor rises with K; GPU gaintest result never logged; on iceman |
 | 40 | Per-group weight scales at low K (Hessian-weighted) | quantizer | negative | 10-31 | dead ends § Per-group gain scales |
 | 41 | Best-of-N rotation seeds | quantizer | null | 10-31 | seed spread 0.5% |
 | 42 | Shared-input siblings sharing `suh` | quantizer | done | 10-31 | they do not share it |
 | 43 | Rounded-codebook quantizers (exl3cb, int8 grid) | weight codes | done | 11-01 | pass, ×1.000 K1–6 |
 | 44 | Sub-2-bit pricing on turboderp's tensors | allocation | done | 10-31 | tracker 10-31 ~21:50 |
 | 45 | knap4 on real options and the measured speed table | allocation | done | 11-01 | V3 option table |
-| 46 | A4 worth building at any size? | activations | negative | 11-01 | no, at any size (knap4) |
+| 46 | A4 worth building at any size? | activations | negative | 11-01 | no, at any size (knap4, matmul-core table); the A4 timing slot was never run |
 | 47 | R1 residual-stream rotation for int8/int4 activations | activations | negative | 10-31 | A8-g128 error 6.6× worse |
 | 48 | Output scales by upstream's auto rule | quantizer | negative | 11-01 | +2.5% (z 2.1) |
 | 49 | radiance PR #362 (prefill softmax per row) on our eval | eval | done | 10-31 | tracker 10-31 ~21:00 |
@@ -114,4 +114,11 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 61 | xcorp v1: 96M-token proxy corpus from the upstream sources | data | done | 11-02 | proxy research only |
 | 62 | Research-idea run over 448 recent papers | research | planned | 11-02 | `local/papers/`; runs while the user sleeps |
 
-Next free number: **74**.
+## Added from the archive rewrite (2026-11-02)
+
+| # | title | area | status | last | verdict / pointer |
+|---|---|---|---|---|---|
+| 74 | radiance 1.15.x plugin port (ABI 32) and KLD parity | kernels | done | 11-01 | 1.15.1 works; KLD 0.027122 vs 0.027122 |
+| 75 | tdverify: turboderp downloads vs our packs | eval | done | 11-01 | all 16 byte-exact, 0 problems |
+
+Next free number: **76**.
