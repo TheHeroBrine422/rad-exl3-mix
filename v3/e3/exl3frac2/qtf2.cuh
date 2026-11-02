@@ -16,6 +16,14 @@
 //     state ^ salt(i), salt(i) = (0x9E37 * ((i & 15) + 1)) & 0xFFFF (i = ring position), so consecutive 0-bit steps
 //     do not repeat a value; v3/e3/viterbi.c (CPU simulator) uses the same rule. Decoders must apply it too.
 //   - argmin ranking widened by one bit when the last node space is 65536 wide (KA = 0); identical otherwise.
+//   - v5 (packed history, KA 1-5): each thread's branches of one position go to ONE 16- or 32-bit store (entry
+//     2 j + h at bits (2 j + h) KOUT, j = the thread's pair slot, h = low / high state of the pair) in a row of
+//     4 NT bytes, instead of a byte per state: 2-8x less history traffic and no sub-word stores. The traceback reads
+//     word (edge >> 1) % NT, slot (edge >> 1) / NT. Same branches, so the same output. KA 0 and KA >= 6 keep bytes.
+//   - v5: the per-step barrier (costs in LDS: KA >= 1) waits for LDS only. __syncthreads() also waits for every
+//     outstanding global store (s_wait_storecnt), so each of the 512 steps stalled on its history store; the
+//     traceback reads the history only after argmin_cost's full barrier. KA 0 (costs in global) keeps the full one.
+//     Test builds: QTF2_FULLSYNC / QTF2_BYTEHIST restore the v4 barrier / byte history.
 
 #include <cuda_fp16.h>
 #include <cstdint>
@@ -27,12 +35,32 @@
 #define H_INF __ushort_as_half(0x7c00)
 #endif
 
+// barrier for the forward steps when the costs live in LDS: LDS ordering only (see v5 above)
+__device__ __forceinline__ void qtf2_lds_barrier()
+{
+#if defined(__HIP_PLATFORM_AMD__) && defined(__HIP_DEVICE_COMPILE__) && !defined(QTF2_FULLSYNC)
+    __builtin_amdgcn_fence(__ATOMIC_RELEASE, "workgroup", "local");
+    __builtin_amdgcn_s_barrier();
+    __builtin_amdgcn_fence(__ATOMIC_ACQUIRE, "workgroup", "local");
+#else
+    __syncthreads();
+#endif
+}
+
 __device__ __forceinline__ uint32_t qtf2_salt(int i) { return (0x9E37u * (uint32_t) ((i & 15) + 1)) & 0xFFFFu; }
 
 // mul1 value of a 16-bit state (decode_3inst<2> = what the old kernel's traceback writes)
 __device__ __forceinline__ half qtf2_value(uint32_t state) { return decode_3inst<2>(state); }
 
-template <int NT, int KIN, int KOUT>
+// packed history word: BITS used bits -> a 16- or 32-bit store at the thread's slot of a 4 NT-byte row
+template <int BITS>
+__device__ __forceinline__ void qtf2_hist_store(uint8_t* __restrict__ hist_row, const int thread, const uint32_t word)
+{
+    if constexpr (BITS <= 16) reinterpret_cast<uint16_t*>(hist_row)[thread] = (uint16_t) word;
+    else reinterpret_cast<uint32_t*>(hist_row)[thread] = word;
+}
+
+template <int NT, int KIN, int KOUT, bool PACK>
 __device__ __forceinline__ void qtf2_step
 (
     const half w,
@@ -87,7 +115,11 @@ __device__ __forceinline__ void qtf2_step
         }
     };
 
-    for (int out_edge_idx = 2 * thread; out_edge_idx < edges_out; out_edge_idx += 2 * NT)
+    constexpr int ITERS = (edges_out + 2 * NT - 1) / (2 * NT);
+    static_assert(!PACK || max_q == 1 || 2 * ITERS * KOUT <= 32, "packed history: one word a thread");
+    uint32_t word = 0;
+    int it = 0;
+    for (int out_edge_idx = 2 * thread; out_edge_idx < edges_out; out_edge_idx += 2 * NT, ++it)
     {
         uint32_t product0, product1;
         if constexpr (KIN == 0)
@@ -133,12 +165,17 @@ __device__ __forceinline__ void qtf2_step
 
         reinterpret_cast<half2*>(costs_out)[out_edge_idx >> 1] = min_err2;
         if constexpr (max_q > 1)
-            if (write_hist)
+        {
+            if constexpr (PACK) word |= ((uint32_t) min_k0 | ((uint32_t) min_k1 << KOUT)) << (2 * it * KOUT);
+            else if (write_hist)
             {
                 hist_row[out_edge_idx] = (uint8_t) min_k0;
                 hist_row[out_edge_idx + 1] = (uint8_t) min_k1;
             }
+        }
     }
+    if constexpr (PACK && max_q > 1)
+        if (write_hist && 2 * thread < edges_out) qtf2_hist_store<2 * ITERS * KOUT>(hist_row, thread, word);
 }
 
 template <int KA>
@@ -151,13 +188,20 @@ struct Qtf2Geom
     static constexpr bool single = KA == 1;
     static constexpr bool lds = KA >= 1;
     static constexpr int nt = cached ? 1024 : 512;
+    // v5 packed history rows of 4 nt bytes (KA 1-5: <= the byte layout's edges_max, so the scratch still fits)
+#ifdef QTF2_BYTEHIST
+    static constexpr bool pack = false;                       // the pre-v5 byte history (qtf2v5check.py compares)
+#else
+    static constexpr bool pack = KA >= 1 && 4 * nt <= edges_max;
+#endif
+    static constexpr int row_bytes = pack ? 4 * nt : edges_max;
     static constexpr int shmem = !lds ? 32 * (int) sizeof(int) : (single ? 1 : 2) * edges_max * (int) sizeof(half);
 };
 
 // Cached step (KIN, KOUT >= 1): identical arithmetic and candidate order to qtf2_step, values from registers.
 // vals[j][k] = codebook pair of states (k << (16 - KOUT)) | out_j, out_j = 2 (thread + j NT). STAGE: the new costs go to
 // stage[] (written to the single buffer by the caller after a barrier) instead of costs_out.
-template <int NT, int KIN, int KOUT, bool STAGE, int NPS>
+template <int NT, int KIN, int KOUT, bool STAGE, int NPS, bool PACK>
 __device__ __forceinline__ void qtf2_step_cached
 (
     const half w,
@@ -175,8 +219,10 @@ __device__ __forceinline__ void qtf2_step_cached
     constexpr int Kr = 16 - KOUT;
     constexpr int NP = (65536 >> KOUT) / (2 * NT);
     constexpr int NC = 1 << KOUT;
+    static_assert(!PACK || 2 * NP * KOUT <= 32, "packed history: one word a thread");
     const half2 w2 = __half2half2(w);
     const half2 inf2 = __half2half2(H_INF);
+    uint32_t word = 0;
     #pragma unroll
     for (int j = 0; j < NP; ++j)
     {
@@ -204,9 +250,11 @@ __device__ __forceinline__ void qtf2_step_cached
         const half2 min_err2 = __builtin_bit_cast(half2, (best0 >> 16) | (best1 & 0xffff0000u));
         if constexpr (STAGE) stage[j] = min_err2;
         else reinterpret_cast<half2*>(costs_out)[out >> 1] = min_err2;
-        if (write_hist)
+        if constexpr (PACK) word |= ((best0 & 0xffu) | ((best1 & 0xffu) << KOUT)) << (2 * j * KOUT);
+        else if (write_hist)
             *reinterpret_cast<uint16_t*>(hist_row + out) = (uint16_t) ((best0 & 0xffu) | ((best1 & 0xffu) << 8));
     }
+    if constexpr (PACK) if (write_hist) qtf2_hist_store<2 * NP * KOUT>(hist_row, thread, word);
 }
 
 template <int NT, int KOUT>
@@ -285,7 +333,7 @@ void qtf2_kernel
 #else
             const bool write_hist = pre_state >= 0 || ri < L / 2;
 #endif
-            uint8_t* hist_row = hist + (size_t) edges_max * ri;
+            uint8_t* hist_row = hist + (size_t) G::row_bytes * ri;
             const half w = __float2half_rn(__ldg(input_tile + ri));
             const int din = (MASK >> (ri & 15)) & 1, dout = (MASK >> ((ri + 1) & 15)) & 1;
             const uint32_t salt = qtf2_salt(ri);
@@ -296,30 +344,30 @@ void qtf2_kernel
                 half* cout_ = G::single ? temp_costs : temp_costs;
                 switch (din * 2 + dout)
                 {
-                    case 0: qtf2_step_cached<NT, KA, KA, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
-                    case 1: qtf2_step_cached<NT, KA, KB, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
-                    case 2: qtf2_step_cached<NT, KB, KA, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
-                    default: qtf2_step_cached<NT, KB, KB, G::single>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                    case 0: qtf2_step_cached<NT, KA, KA, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    case 1: qtf2_step_cached<NT, KA, KB, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                    case 2: qtf2_step_cached<NT, KB, KA, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    default: qtf2_step_cached<NT, KB, KB, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
                 }
                 if constexpr (G::single)
                 {
-                    __syncthreads();
+                    qtf2_lds_barrier();
                     const int np = (65536 >> (KA + dout)) / (2 * NT);
                     #pragma unroll
                     for (int j = 0; j < NPS; ++j)
                         if (j < np) reinterpret_cast<half2*>(temp_costs)[thread + j * NT] = stage[j];
                 }
-                __syncthreads();
+                qtf2_lds_barrier();
                 continue;
             }
             switch (din * 2 + dout)
             {
-                case 0: qtf2_step<NT, KA, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                case 1: qtf2_step<NT, KA, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                case 2: qtf2_step<NT, KB, KA>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                default: qtf2_step<NT, KB, KB>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 0: qtf2_step<NT, KA, KA, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 1: qtf2_step<NT, KA, KB, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 2: qtf2_step<NT, KB, KA, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                default: qtf2_step<NT, KB, KB, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
             }
-            __syncthreads();
+            if constexpr (G::lds) qtf2_lds_barrier(); else __syncthreads();   // KA 0: costs in global
         }
     };
 
@@ -365,7 +413,21 @@ void qtf2_kernel
             {
                 const int ri = ring(i, roll);
                 const int kin = D(ri), kout = D(ri + 1);
-                const int k = kout ? (int) hist[(size_t) edges_max * ri + edge] : 0;
+                int k = 0;
+                if (kout)
+                {
+                    if constexpr (G::pack)
+                    {
+                        const uint8_t* row = hist + (size_t) G::row_bytes * ri;
+                        const int t = (edge >> 1) & (NT - 1), sh = (2 * ((edge >> 1) / NT) + (edge & 1)) * kout;
+                        // the store's width follows the bits used at this out-width (qtf2_hist_store)
+                        const int np2 = ((65536 >> kout) + 2 * NT - 1) / (2 * NT) * 2;
+                        const uint32_t wd = np2 * kout <= 16 ? (uint32_t) reinterpret_cast<const uint16_t*>(row)[t]
+                                                             : reinterpret_cast<const uint32_t*>(row)[t];
+                        k = (int) ((wd >> sh) & ((1u << kout) - 1));
+                    }
+                    else k = (int) hist[(size_t) edges_max * ri + edge];
+                }
                 const uint32_t state = kout ? (((uint32_t) k << (16 - kout)) | (uint32_t) edge) : (uint32_t) edge;
                 edge = (int) (state >> kin);
                 if (write)

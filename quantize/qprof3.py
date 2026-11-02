@@ -9,7 +9,7 @@ import torch
 import exllamav3.modules.quant.exl3_lib.quantize as Q
 K, LAY, out, *extra = sys.argv[1:]
 tot = collections.Counter(); child = collections.Counter(); cnt = collections.Counter(); stack = []
-tiles = collections.defaultdict(collections.Counter)
+tiles = collections.defaultdict(collections.Counter); tiles_t = collections.defaultdict(collections.Counter)
 
 def timed(f, label, ntiles=False):
     def w(*a, **k):
@@ -18,7 +18,7 @@ def timed(f, label, ntiles=False):
         finally:
             torch.cuda.synchronize(); dt = time.perf_counter() - t; ch = stack.pop()
             tot[label] += dt; child[label] += ch; cnt[label] += 1
-            if ntiles and a and hasattr(a[0], "shape"): tiles[label][int(a[0].shape[0])] += 1
+            if ntiles and a and hasattr(a[0], "shape"): tiles[label][int(a[0].shape[0])] += 1; tiles_t[label][int(a[0].shape[0])] += dt
             if stack: stack[-1] += dt
     return w
 
@@ -48,15 +48,18 @@ assert src.count(a) == 1 and src.count(b) == 1
 src = src.replace(a, "quantize_exl3 = lambda *x, **k: __import__('exllamav3.modules.quant.exl3_lib.quantize', fromlist=['x']).quantize_exl3(*x, **k)")
 src = src.replace(b, b + "__qprof_hook__()\n")
 t0 = time.perf_counter(); c0 = os.times()
-exec(compile(src, "ourq/ourq.py", "exec"), {"__name__": "__main__", "__qprof_hook__": hook})
+exec(compile(src, os.path.abspath("ourq/ourq.py"), "exec"), {"__name__": "__main__", "__file__": os.path.abspath("ourq/ourq.py"), "__qprof_hook__": hook})
 wall = time.perf_counter() - t0; c1 = os.times()
 cpu_u, cpu_s = c1.user - c0.user, c1.system - c0.system   # all threads of this process
 rows = sorted(tot, key=lambda n: -(tot[n] - child[n]))
 ext_s = sum(tot[n] for n in tot if n.startswith("ext."))
 rep = {"plain": PLAIN, "K": K, "layers": LAY, "args": extra, "wall_s": round(wall, 1), "cpu_user_s": round(cpu_u, 1), "cpu_sys_s": round(cpu_s, 1), "ext_s": round(ext_s, 1),
        "stages": {n: {"incl": round(tot[n], 2), "self": round(tot[n] - child[n], 2), "calls": cnt[n]} for n in rows},
-       "tiles_per_call": {n: dict(sorted(c.items())) for n, c in tiles.items()}}
+       "tiles_per_call": {n: dict(sorted(c.items())) for n, c in tiles.items()},
+       "tps_by_call_size": {n: {k: round(k * v / tiles_t[n][k]) for k, v in sorted(c.items())} for n, c in tiles.items()}}
 json.dump(rep, open(out, "w"), indent=1)
 print(f"K{K} L{LAY}: wall {wall:.1f}s, CPU user {cpu_u:.1f}s sys {cpu_s:.1f}s, extension calls {ext_s:.1f}s ({ext_s / wall:.0%})")
 for n in rows[:22]: print(f"  {n:34} self {tot[n] - child[n]:7.2f}s  incl {tot[n]:7.2f}s  calls {cnt[n]}")
-for n, c in tiles.items(): print(f"  {n} tiles/call: " + ", ".join(f"{k}x{v}" for k, v in sorted(c.items())[:8]))
+for n, c in tiles.items():
+    print(f"  {n} tiles/call x calls: " + ", ".join(f"{k}x{v}" for k, v in sorted(c.items())[:10]))
+    print(f"  {n} tiles/s by call size: " + ", ".join(f"{k}: {k * v / tiles_t[n][k]:.0f}" for k, v in sorted(c.items())[:10]))

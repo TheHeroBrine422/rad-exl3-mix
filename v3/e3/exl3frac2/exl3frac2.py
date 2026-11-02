@@ -32,7 +32,7 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(HERE, "build"))
     hip = bool(torch.version.hip)
     d = ["-DEXL3_MUL1_I8"] if variant == "i8" else []
-    defs = os.environ.get("QTF2_DEFS", "").split()           # timing-only builds (qtf2bench.py): QTF2_NOBACK, QTF2_NOHIST
+    defs = os.environ.get("QTF2_DEFS", "").split()           # test builds: QTF2_NOBACK / QTF2_NOHIST (timing only), QTF2_BYTEHIST (pre-v5 history)
     d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d
     if hip:

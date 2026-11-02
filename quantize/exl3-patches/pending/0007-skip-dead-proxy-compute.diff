@@ -1,0 +1,47 @@
+--- /tmp/quantize-iceman.orig.py	2026-11-02 01:09:40.402756716 +0000
++++ /tmp/quantize-iceman.py	2026-11-02 01:10:11.074447041 +0000
+@@ -1574,7 +1574,7 @@
+ 
+ 
+ def refit_scales(weight: torch.Tensor, weight_q: torch.Tensor, H: torch.Tensor, su: torch.Tensor, sv: torch.Tensor,
+-                 rounds: int = 2, chunk: int = 16384, damping: float = 0.0):
++                 rounds: int = 2, chunk: int = 16384, damping: float = 0.0, need_before: bool = True):
+     """
+     Free post-quantization polish: refit the stored per-channel fp16 scales (suh on the input side, svh on
+     the output side) to the quantized weight in the Hessian metric, holding the trellis fixed. With
+@@ -1621,7 +1621,7 @@
+             E = cols(weight, a, b) - Qx[:, a:b]
+             e += (E * (H_err @ E)).sum().item()
+         return e / max(den_err, 1e-30)
+-    e_before = err(Q)
++    e_before = err(Q) if need_before else float("nan")     # report only (verbose); the fits do not use it
+     for _ in range(rounds):
+         # output-side scales
+         num = torch.zeros(n, device = dev); dn = torch.zeros(n, device = dev)
+@@ -1785,8 +1785,14 @@
+ 
+         pb.update(tiles_k)
+ 
+-        # Metrics
+-        if not q_fallback:
++        # Metrics. The regularized-domain proxy is replaced by the scale refit's whenever the refit runs: computed only
++        # when it is the result (no refit) or printed (verbose); weights and outputs are the same either way
++        refit_runs = not q_fallback and H is not None and not quant_args.get("no_refit")
++        if not q_fallback and refit_runs and not verbose:
++            weight_r = None
++            H_out_r = None
++            proxy_err = -1.0
++        elif not q_fallback:
+             try:
+                 E = weight_r - weight_q  # may run on CPU
+                 W = weight_r
+@@ -1831,7 +1837,8 @@
+         if not q_fallback and H is not None and not quant_args.get("no_refit"):
+             H_orig = unrotate_H(H, H_data["su"])
+             weight_q, su_f, sv_f, e_before, e_after = refit_scales(weight_orig, weight_q, H_orig, su, sv,
+-                                                                   damping = damping_share(quant_args))
++                                                                   damping = damping_share(quant_args),
++                                                                   need_before = verbose)
+             del H_orig
+             su = su_f.view(-1, 1).to(su.dtype)
+             sv = sv_f.view(1, -1).to(sv.dtype)

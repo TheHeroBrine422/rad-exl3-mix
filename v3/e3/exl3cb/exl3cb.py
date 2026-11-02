@@ -25,6 +25,8 @@ def load(src: str, variant: str, verbose: bool = False):
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(here, "build"))
     hip = bool(torch.version.hip)
     d = [f"-DEXL3_MUL1_{variant.upper()}"]
+    defs = os.environ.get("EXL3CB_DEFS", "").split()        # test builds (qtint5check.py): QT_FULLSYNC
+    d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d
     if hip:
         assert os.environ.get("PYTORCH_ROCM_ARCH"), "set PYTORCH_ROCM_ARCH (e.g. gfx1201)"
@@ -36,7 +38,7 @@ def load(src: str, variant: str, verbose: bool = False):
     units = [f"{q}/quantize.cu", f"{q}/exl3_devctx.cu"] + sorted(glob.glob(f"{q}/comp_units/quantize_tiles_inst_k*.cu")) \
         + sorted(glob.glob(f"{q}/comp_units/quantize_tiles_frac_inst_a*.cu"))
     assert len(units) == 2 + 8 + 7, f"unexpected source set under {q}: {len(units)}"
-    return C.load(name=f"exl3cb_{variant}", sources=[os.path.join(here, "cb_bind.cpp")] + units,
+    return C.load(name=f"exl3cb_{variant}" + "".join("_" + x.lower() for x in defs), sources=[os.path.join(here, "cb_bind.cpp")] + units,
                   extra_include_paths=[q, src], extra_cflags=cflags, extra_cuda_cflags=cuda,
                   extra_ldflags=["-lhipblas"] if hip else [], verbose=verbose)
 

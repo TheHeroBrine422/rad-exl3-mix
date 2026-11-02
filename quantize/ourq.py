@@ -121,14 +121,17 @@ def ck(name):
     return _open[f].get_tensor(name)
 
 # ------------------------------------------------------------------ a Hessian (packed upper triangle, sum over rows)
+_HUP = {}
 def hessian(name):
     p = f"{HESS}/{name}.safetensors"
     if a.hin and os.path.exists(f"{a.hin}/{name}.safetensors"): p = f"{a.hin}/{name}.safetensors"
     with open(p, "rb") as fh:
         n = struct.unpack("<Q", fh.read(8))[0]; hdr = json.loads(fh.read(n))
     meta = hdr["__metadata__"]; k = int(meta["k"]); rows = int(meta["rows"])
-    with safe_open(p, "pt", device="cpu") as f:
-        up = f.get_tensor("hessian_upper").to(dev)
+    if p not in _HUP:                              # the damping sweep reloads one Hessian up to 4x a tensor: keep the last
+        _HUP.clear()
+        with safe_open(p, "pt", device="cpu") as f: _HUP[p] = f.get_tensor("hessian_upper")
+    up = _HUP[p].to(dev)
     H = torch.zeros(k, k, dtype=torch.float32, device=dev)
     iu = torch.triu_indices(k, k, device=dev)
     H[iu[0], iu[1]] = up; del up
