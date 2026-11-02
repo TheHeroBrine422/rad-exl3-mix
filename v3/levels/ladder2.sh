@@ -8,14 +8,16 @@
 # A queue line "a,b,c" is a group: one ourq process quantizes those levels layer by layer, reusing each tensor's
 # K-independent work (output identical to one run per level: v3/levels/multik.sh). Group logs G<a_b_c>.log.
 # A line "mul1:K" (or "mul1:a,b") quantizes with the plain mul1 codebook into $D/mul1/K<k>; other lines use i8 into
-# $D/K<k>. env SWEEP (input-group damping grid), QUEUE.
+# $D/K<k>. env QUEUE. Lines mixing levels below and above K1 must not be grouped (damping differs).
 # Run one per card:  ladder2.sh 0 & ladder2.sh 1 &       Out /data/v3ladder2/K<k>/, log /data/v3ladder2/ladder-c<CARD>.log
 : ${RXM_WORK:=/root}; export RXM_WORK
 C=$1 D=${LADDER_D:-/data/v3ladder2} PY=${LADDER_PY:-/data/venv-exl3/bin/python} SRC=/data/exl3frac/src
 Q=${QUEUE:-$D/queue.txt} OFF=${OFF:-}
 mkdir -p $D; log() { echo "$(date -u +%H:%M:%S) card $C $*" | tee -a $D/ladder-c$C.log; }
-SWEEP=${SWEEP:-0.025,0.005,0.001}
-X="--qtf2 --frac-ext $SRC --sigma-in-sweep $SWEEP"
+# damping (damp3 / damp4, held out, scaled Hessian on; user 2026-11-02: fixed values, no per-tensor sweep):
+# input groups (q/k/v, GDN qkv/z) 0.005 at K >= 1, 0.05 below; every other tensor 0.025
+X="--qtf2 --frac-ext $SRC --scaled-hessian --sigma-reg 0.025"
+sigin() { python3 -c "import sys; print(0.05 if min(float(x) for x in sys.argv[1].split(',')) < 1 else 0.005)" $1; }
 cbof() { case $1 in mul1:*) echo mul1;; *) echo i8;; esac; }          # line -> codebook
 rootof() { case $1 in mul1:*) echo $D/mul1;; *) echo $D;; esac; }     # line -> output root
 levof() { echo ${1#mul1:}; }                                          # line -> level list
@@ -54,7 +56,7 @@ while k=$(pop) && [ -n "$k" ]; do
   fi
   R=$(rootof $k) lv=$(levof $k) cb=$(cbof $k); g=${cb}_${lv//,/_}
   ( exec 5>$RXM_WORK/card$C.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7
-    $PY -I ourq/ourq.py -K $lv -o "$R/K{K}" --device 0 --codebook $cb $X >> $D/K$g.log 2>&1 )
+    $PY -I ourq/ourq.py -K $lv -o "$R/K{K}" --device 0 --codebook $cb $X --sigma-reg-in $(sigin $lv) >> $D/K$g.log 2>&1 )
   rc=$?
   n=""; for kk in ${lv//,/ }; do n="$n $(ls $R/K$kk/q-L*.safetensors 2>/dev/null | wc -l)"; done
   [ $rc = 0 ] && [ -z "$(echo $n | tr ' ' '\n' | grep -v '^64$')" ] && { log "K$k done in $(( ($(date +%s) - s) / 60 )) min"
