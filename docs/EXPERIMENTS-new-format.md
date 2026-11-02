@@ -476,6 +476,14 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-02 ~04:20 CT: **2B: why a document's prefix run alone differs from the whole document** (`proxy2b/lencheck.py`).
+  Not a bug: cuBLAS picks its matmul kernel by matrix size, kernels sum in different orders, and the bf16 output
+  rounding then differs (one bf16 linear, 6144x2048: 27% of outputs differ between M = 512 and the same rows at
+  M = 3519; none at M = 64 or 2048). Layer 0 parts by ~1 bf16 ulp (3.4e-3 rel), 24 layers amplify it to ~7% hidden /
+  KL ~3e-3 on the first 64 rows. Deterministic per shape (repeat = 0), same on the pure-torch path. Rule: golden and
+  evals run each document whole, same cap, unbatched (mkgold / evalq do: self-KL -2.8e-7); never chunk or batch
+  differently between them.
+
 - 2026-11-02 ~04:00 CT: **2B proxy: bf16 vs fp32 inference** (`proxy2b/halves.py`, model in two halves so fp32 fits
   the 4070; golden g2b-fit1 = 87 fit-pool docs, 2k cap, 86.9k gen rows, bf16, fla + causal-conv1d). Control: the
   split run in bf16 reproduces the golden (KL -4e-7, top1 1.0000). **fp32 vs the bf16 golden: KL 3.75e-4, p99 1.8e-3,
