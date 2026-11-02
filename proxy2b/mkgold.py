@@ -7,7 +7,7 @@ the LM head and the log-softmax in float64 a chunk of rows at a time."""
 import json, os, sys, time
 import numpy as np, torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import load_model, doc_args, ref_rows, doc_logsoftmax, TOP
+from common import load_model, doc_args, ref_rows, doc_logsoftmax, kernel_paths, TOP
 
 model_path, full, od = sys.argv[1:4]
 want = doc_args(sys.argv[4:])
@@ -36,5 +36,5 @@ print(file=sys.stderr)
 ft.close(); fg.close()
 np.concatenate(T).tofile(f"{od}/tokens.i32"); np.concatenate(G).astype(np.uint8).tofile(f"{od}/gen.u8")
 mm = {k: v for k, v in m.items() if k != "docs"}
-mm.update(model=model_path, rows=r, docs=docs, created=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+mm.update(model=model_path, kernels=kernel_paths(), rows=r, docs=docs, created=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
 json.dump(mm, open(f"{od}/kld.json", "w"))
