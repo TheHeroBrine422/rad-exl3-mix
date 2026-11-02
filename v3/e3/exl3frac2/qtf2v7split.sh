@@ -1,0 +1,18 @@
+#!/bin/bash
+# qtf2v7split.sh CARD -- speed split on the v7 source (no fork check) in its own source copy and extension dir (a running ourq keeps the deployed build):
+# qtf2v5check (v5 vs byte history, every instance, both codebooks) then qtf2check (vs the fork's kernel, old rates).
+# Out /data/qtf2/v5/{v5check,check}.jsonl, log run.log
+: ${RXM_WORK:=/root}; export RXM_WORK
+C=${1:-0} O=/data/qtf2/v7s PY=/data/venv-exl3/bin/python SRC=/data/exl3frac/src
+mkdir -p $O; log() { echo "$(date -u +%H:%M:%S) $*" | tee -a $O/run.log; }
+rm -rf $O/src; mkdir -p $O/src; cp -r $RXM_WORK/ourq/exl3frac $RXM_WORK/ourq/exl3cb $O/src/; cp -r /data/qtf2/v7/exl3frac2 $O/src/
+export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=$O/build MAX_JOBS=6
+( exec 7>$RXM_WORK/ram.lock; flock -s 7
+  for vd in "i8|" "i8|QTF2_BYTEHIST QTF2_FULLSYNC" "i8|QTF2_FULLSYNC" "i8|QTF2_BYTEHIST"; do
+    v=${vd%%|*} d=${vd#*|}
+    QTF2_DEFS="$d" $PY -c "import sys; sys.path.insert(0, '$O/src/exl3frac2'); import exl3frac2; exl3frac2.load('$SRC', '$v')" >> $O/build.log 2>&1 \
+      || { log "build $v $d FAIL"; exit 1; }
+  done; log "builds OK" ) || exit 1
+exec 5>$RXM_WORK/card$C.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7
+export ROCR_VISIBLE_DEVICES=$C
+V5_I8ONLY=1 $PY -I $O/src/exl3frac2/qtf2v5check.py $SRC 1024 > $O/v5check.jsonl 2> $O/v5check.err; log "v5check: $(tail -1 $O/v5check.jsonl)"

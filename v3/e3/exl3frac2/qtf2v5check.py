@@ -31,7 +31,7 @@ if os.environ.get("V5_CHILD"):             # byte build: dump outputs + speed
 fails = 0
 BUILDS = {"ref": "QTF2_BYTEHIST QTF2_FULLSYNC QTF2_SCANMIN"} if os.environ.get("V6") else \
          {"ref": "QTF2_BYTEHIST QTF2_FULLSYNC", "pack_only": "QTF2_FULLSYNC", "bar_only": "QTF2_BYTEHIST"}
-for v in ("mul1", "i8"):
+for v in (("i8",) if os.environ.get("V5_I8ONLY") else ("mul1", "i8")):
     res = {}
     for name, defs in BUILDS.items():
         if v == "mul1" and name != "ref": continue

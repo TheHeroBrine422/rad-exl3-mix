@@ -533,7 +533,16 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     - quantize_exl3: the regularized-domain proxy (overwritten by the refit's) and refit's e_before (verbose only) are
       skipped; ourq caches the last Hessian (the sweep reloaded it 4x). e2e K2.5 L3-4: 52 tensors + 13 proxy rows
       byte-identical to the old code, 63 -> 55.5 s a layer (-12%).
-    - Sub-1 (KA 0): 11.3k tiles/s at the ladder's batch (costs in global): ~3.9 card-h a level, ~27 for all seven.
+    - **v7: step 0 peeled** (`first` a compile-time constant): with the 4-way width switch the compiler had kept an
+      `if (first)` branch on every candidate (55 KB of code, ~1,100 branches vs 15 KB / 14 at MASK 0). K1.x +70-80%,
+      K2.x +25%, K3-4.x +50-65%, K5.5 41k, K6.5 17k, sub-1 +50%.
+    - **RACE found and fixed (v8):** the LDS-only step barrier (v5) made KA 1 output nondeterministic (qtf2race.py: first
+      run after load differed in v6 / v7; random runs in a byte-history build). The cost arrays are reached through
+      generic pointers (flat loads / stores), which an LDS-scoped fence does not wait for. The earlier e2e passes were
+      luck. Every barrier is __syncthreads() again (the barrier was worth ~1%); the same patch on the integer kernel
+      was reverted before use. v8 also picks packing per rate (KA 1 and integer KA <= 3; byte history for mixed KA 2-5).
+      v8 gate: exact vs v4 arithmetic at all 34 instances, 0 vs the fork, integer identical, race 34 x 4 runs: 0.
+    - Sub-1 (KA 0): 11.3k tiles/s at the ladder's batch before v7 (costs in global): ~3.9 card-h a level, ~27 for all seven.
     - Not done: reusing K-independent work across levels (~7%, needs a tensor-major ladder); refit via Cholesky instead
       of LU (faster, not bit-identical); KA 6-7 lane-cooperative search (head donors K6.5 / 7.5 only); sub-1 0-bit-step
       fusion. Checks: qtf2v5check (v6 vs v4 every instance), qtf2int6check, qtint5check, e2e5, speed2deploy.

@@ -20,10 +20,9 @@
 //     2 j + h at bits (2 j + h) KOUT, j = the thread's pair slot, h = low / high state of the pair) in a row of
 //     4 NT bytes, instead of a byte per state: 2-8x less history traffic and no sub-word stores. The traceback reads
 //     word (edge >> 1) % NT, slot (edge >> 1) / NT. Same branches, so the same output. KA 0 and KA >= 6 keep bytes.
-//   - v5: the per-step barrier (costs in LDS: KA >= 1) waits for LDS only. __syncthreads() also waits for every
-//     outstanding global store (s_wait_storecnt), so each of the 512 steps stalled on its history store; the
-//     traceback reads the history only after argmin_cost's full barrier. KA 0 (costs in global) keeps the full one.
-//     Test builds: QTF2_FULLSYNC / QTF2_BYTEHIST restore the v4 barrier / byte history.
+//   - v5 also tried an LDS-only step barrier (~+1%): REVERTED in v8. The cost arrays are reached through generic
+//     pointers (flat loads / stores), which an LDS-scoped fence does not wait for: nondeterministic output at KA 1
+//     (qtf2race.py). Every barrier is __syncthreads() again. Test build QTF2_BYTEHIST forces the byte history.
 //   - v6: the uncached path (KA >= 5) takes the cached path's packed minimum instead of the strict-less scan with
 //     per-candidate branches (same pick, ties to the lowest k). QTF2_SCANMIN restores the scan.
 
@@ -37,17 +36,10 @@
 #define H_INF __ushort_as_half(0x7c00)
 #endif
 
-// barrier for the forward steps when the costs live in LDS: LDS ordering only (see v5 above)
-__device__ __forceinline__ void qtf2_lds_barrier()
-{
-#if defined(__HIP_PLATFORM_AMD__) && defined(__HIP_DEVICE_COMPILE__) && !defined(QTF2_FULLSYNC)
-    __builtin_amdgcn_fence(__ATOMIC_RELEASE, "workgroup", "local");
-    __builtin_amdgcn_s_barrier();
-    __builtin_amdgcn_fence(__ATOMIC_ACQUIRE, "workgroup", "local");
-#else
-    __syncthreads();
-#endif
-}
+// forward-step barrier: a full __syncthreads() (see the v8 note above; an LDS-only fence raced)
+__device__ __forceinline__ void qtf2_lds_barrier() { __syncthreads(); }
+
+template <bool B> struct qtf2_bool { static constexpr bool value = B; };
 
 __device__ __forceinline__ uint32_t qtf2_salt(int i) { return (0x9E37u * (uint32_t) ((i & 15) + 1)) & 0xFFFFu; }
 
@@ -213,13 +205,17 @@ struct Qtf2Geom
     static constexpr bool single = KA == 1;
     static constexpr bool lds = KA >= 1;
     static constexpr int nt = cached ? 1024 : 512;
-    // v5 packed history rows of 4 nt bytes (KA 1-5: <= the byte layout's edges_max, so the scratch still fits)
+    // v5 packed history rows of 4 nt bytes (KA 1-5: <= the byte layout's edges_max, so the scratch still fits).
+    // v8: used where it measured faster with full barriers (qtf2v7split): KA 1, and integer K (MASK 0) at KA <= 3;
+    // the mixed KA 2-5 kernels are faster with the byte history (packing costs more ALU than the stores it saves)
+    template <uint32_t MASK>
 #ifdef QTF2_BYTEHIST
-    static constexpr bool pack = false;                       // the pre-v5 byte history (qtf2v5check.py compares)
+    static constexpr bool pack = false;
 #else
-    static constexpr bool pack = KA >= 1 && 4 * nt <= edges_max;
+    static constexpr bool pack = KA >= 1 && 4 * nt <= edges_max && (KA == 1 || (MASK == 0 && KA <= 3));
 #endif
-    static constexpr int row_bytes = pack ? 4 * nt : edges_max;
+    template <uint32_t MASK>
+    static constexpr int row_bytes = pack<MASK> ? 4 * nt : edges_max;
     static constexpr int shmem = !lds ? 32 * (int) sizeof(int) : (single ? 1 : 2) * edges_max * (int) sizeof(half);
 };
 
@@ -346,19 +342,22 @@ void qtf2_kernel
     auto ring = [&](int i, int roll) { int ri = i + roll; if (ri >= L) ri -= L; return ri; };
     auto D = [&](int i) { return KA + (int) ((MASK >> (i & 15)) & 1u); };
 
+    // v7: step 0 is peeled with `first` a compile-time constant. With the 4-way width switch the compiler did not
+    // unswitch it, so every candidate of every step kept an `if (first)` branch (55 KB of code, ~1,100 branches vs
+    // 15 KB / 14 for MASK 0) -- the mixed-rate kernels ran ~35% slower than integer K. Same arithmetic, same output.
     auto forward = [&](int roll, int pre_state)
     {
-        for (int i = 0; i < L; ++i)
+        auto step = [&](auto first_c, int i)
         {
+            constexpr bool first = decltype(first_c)::value;
             const int ri = ring(i, roll);
             half* t = temp_costs; temp_costs = temp_costs_inc; temp_costs_inc = t;
-            const bool first = i == 0;
 #ifdef QTF2_NOHIST
             const bool write_hist = false;                    // timing-only build (output invalid)
 #else
             const bool write_hist = pre_state >= 0 || ri < L / 2;
 #endif
-            uint8_t* hist_row = hist + (size_t) G::row_bytes * ri;
+            uint8_t* hist_row = hist + (size_t) G::template row_bytes<MASK> * ri;
             const half w = __float2half_rn(__ldg(input_tile + ri));
             const int din = (MASK >> (ri & 15)) & 1, dout = (MASK >> ((ri + 1) & 15)) & 1;
             const uint32_t salt = qtf2_salt(ri);
@@ -369,10 +368,10 @@ void qtf2_kernel
                 half* cout_ = G::single ? temp_costs : temp_costs;
                 switch (din * 2 + dout)
                 {
-                    case 0: qtf2_step_cached<NT, KA, KA, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
-                    case 1: qtf2_step_cached<NT, KA, KB, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
-                    case 2: qtf2_step_cached<NT, KB, KA, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
-                    default: qtf2_step_cached<NT, KB, KB, G::single, NPS, G::pack>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                    case 0: qtf2_step_cached<NT, KA, KA, G::single, NPS, G::template pack<MASK>>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    case 1: qtf2_step_cached<NT, KA, KB, G::single, NPS, G::template pack<MASK>>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
+                    case 2: qtf2_step_cached<NT, KB, KA, G::single, NPS, G::template pack<MASK>>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsA, stage); break;
+                    default: qtf2_step_cached<NT, KB, KB, G::single, NPS, G::template pack<MASK>>(w, cin, cout_, hist_row, first, pre_state, write_hist, thread, valsB, stage); break;
                 }
                 if constexpr (G::single)
                 {
@@ -383,17 +382,19 @@ void qtf2_kernel
                         if (j < np) reinterpret_cast<half2*>(temp_costs)[thread + j * NT] = stage[j];
                 }
                 qtf2_lds_barrier();
-                continue;
+                return;
             }
             switch (din * 2 + dout)
             {
-                case 0: qtf2_step<NT, KA, KA, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                case 1: qtf2_step<NT, KA, KB, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                case 2: qtf2_step<NT, KB, KA, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
-                default: qtf2_step<NT, KB, KB, G::pack>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 0: qtf2_step<NT, KA, KA, G::template pack<MASK>>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 1: qtf2_step<NT, KA, KB, G::template pack<MASK>>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                case 2: qtf2_step<NT, KB, KA, G::template pack<MASK>>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
+                default: qtf2_step<NT, KB, KB, G::template pack<MASK>>(w, temp_costs_inc, temp_costs, hist_row, first, pre_state, write_hist, salt, thread, (const half*) lut); break;
             }
             if constexpr (G::lds) qtf2_lds_barrier(); else __syncthreads();   // KA 0: costs in global
-        }
+        };
+        step(qtf2_bool<true>{}, 0);
+        for (int i = 1; i < L; ++i) step(qtf2_bool<false>{}, i);
     };
 
     auto argmin_cost = [&]()
@@ -441,9 +442,9 @@ void qtf2_kernel
                 int k = 0;
                 if (kout)
                 {
-                    if constexpr (G::pack)
+                    if constexpr (G::template pack<MASK>)
                     {
-                        const uint8_t* row = hist + (size_t) G::row_bytes * ri;
+                        const uint8_t* row = hist + (size_t) G::template row_bytes<MASK> * ri;
                         const int t = (edge >> 1) & (NT - 1), sh = (2 * ((edge >> 1) / NT) + (edge & 1)) * kout;
                         // the store's width follows the bits used at this out-width (qtf2_hist_store)
                         const int np2 = ((65536 >> kout) + 2 * NT - 1) / (2 * NT) * 2;

@@ -50,9 +50,11 @@ ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step
                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
 ap.add_argument("--codebook", choices=("mul1", "i8", "i4"), default="mul1", help="search with the int8- or int4-"
                 "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
-ap.add_argument("-K", type=lambda v: int(v) if float(v).is_integer() else float(v), required=True,
-                help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8)")
-ap.add_argument("-o", required=True)
+ap.add_argument("-K", required=True,
+                help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8); "
+                "a comma list quantizes several levels in one pass, layer by layer, reusing each tensor's K-independent work "
+                "(Hessian factorization, its unrotated copy); -o must then contain {K}. Output identical to one run per level")
+ap.add_argument("-o", required=True, help="output dir; {K} is replaced by the level")
 ap.add_argument("--layers", default="0-63")
 ap.add_argument("--head", action="store_true", help="also lm_head")
 ap.add_argument("--only-head", action="store_true")
@@ -90,6 +92,12 @@ ap.add_argument("--head-mean-row", action="store_true", help="lm_head: subtract 
 ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
                 "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
 a = ap.parse_args()
+_kp = lambda v: int(v) if float(v).is_integer() else float(v)
+KS = [_kp(v) for v in a.K.split(",")]
+assert len(KS) == len(set(KS)), "duplicate level in -K"
+O_TMPL = a.o
+assert len(KS) == 1 or "{K}" in O_TMPL, "several levels: -o needs {K}"
+a.K = KS[0]; a.o = O_TMPL.replace("{K}", str(KS[0]))
 if a.frac_ext:
     _h = os.path.dirname(os.path.abspath(__file__))           # next to ourq.py (GPU box copy) or in the repo
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
@@ -110,7 +118,37 @@ OFF = _keys(a.out_scales_off) if a.out_scales_off else set()
 ONLY = _keys(a.only) if a.only else None
 dev = torch.device("cuda", a.device)
 _warm_refit(dev)                                   # load the refit kernels while VRAM is empty
-os.makedirs(a.o, exist_ok=True)
+for _k in KS: os.makedirs(O_TMPL.replace("{K}", str(_k)), exist_ok=True)
+
+# ------------------------------------------------------------------ several levels in one pass: K-independent work once
+# finalize_capture_H (Hessian scaling, damping, sign / Hadamard rotation, block LDL) and unrotate_H depend on the tensor,
+# the Hessian, the damping and the seed, not on K. With several levels, the first level's results are kept per (tensor,
+# damping) for the layer and replayed for the others: the dict fields finalize sets, and its one RNG draw (the sign
+# vector su), so every later draw -- sv, the g_scale samples -- sees the RNG exactly as in a single-level run.
+_CUR = [None]
+_MEMO, _UMEMO = {}, {}
+def _memo_clear(): _MEMO.clear(); _UMEMO.clear()
+if len(KS) > 1:
+    _orig_fin, _orig_unrot = _Q.finalize_capture_H, _Q.unrotate_H
+    _FIELDS = ("L", "H", "su", "finalized", "diag", "q_fallback")
+    def _fin(H_data, quant_args, verbose):
+        if _CUR[0] is None or H_data["finalized"] or H_data["H"].is_meta or "H_swap_device" in H_data:
+            return _orig_fin(H_data, quant_args, verbose)
+        mk = (_CUR[0], quant_args.get("sigma_reg", 0.025), quant_args.get("seed"))
+        if mk in _MEMO:
+            m = _MEMO[mk]
+            torch.randn(m["k"], device=H_data["H"].device)      # the su draw a fresh finalize makes
+            H_data.update(m["fields"])
+            return m["ret"]
+        k_ = H_data["H"].shape[0]
+        ret = _orig_fin(H_data, quant_args, verbose)
+        _MEMO[mk] = {"k": k_, "fields": {f: H_data[f] for f in _FIELDS}, "ret": ret}
+        return ret
+    def _unrot(H_rot, su):                         # pure; keyed by the (kept-alive) objects finalize returned
+        uk = (id(H_rot), id(su))
+        if uk not in _UMEMO: _UMEMO[uk] = (H_rot, su, _orig_unrot(H_rot, su))
+        return _UMEMO[uk][2]
+    _Q.finalize_capture_H, _Q.unrotate_H = _fin, _unrot
 
 # ------------------------------------------------------------------ the bf16 checkpoint
 idx = json.load(open(f"{CKPT}/model.safetensors.index.json"))["weight_map"]
@@ -184,13 +222,13 @@ def quantize_group(hname, keys, seed0, log):
             Hu = hessian(hname)["H"]; ref = float((w * (Hu @ w)).sum()); best = None
             for sg in [float(v) for v in a.sigma_in_sweep.split(",")]:
                 qs = dict(qa); qs["sigma_reg"] = sg
-                wq_, perr_, t_ = quantize_exl3(w.clone(), hessian(hname), qs, True)
+                _CUR[0] = key; wq_, perr_, t_ = quantize_exl3(w.clone(), hessian(hname), qs, True)
                 E = w - wq_.float(); rel = float((E * (Hu @ E)).sum()) / ref; del E
                 if best is None or rel < best[0]: best = (rel, sg, wq_, perr_, t_)
                 else: del wq_, t_
             _, qa["sigma_reg"], wq, perr, t = best; qa["sweep_rel"] = best[0]; del Hu
         else:
-            wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
+            _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
         if a.save_wq:
             import numpy as np
             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
@@ -252,6 +290,22 @@ def _stamp():
     keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
     h.update(json.dumps(keep, sort_keys=True).encode())
     return h.hexdigest()[:16], src, keep
+_LOGS, _STAMPS = {}, {}
+def set_level(K):
+    """switch a.K / a.o / STAMP / log to level K (stamp and stamp.json exactly as a single-level run's)"""
+    global STAMP, STAMP_SRC, STAMP_ARGS, log
+    a.K = K; a.o = O_TMPL.replace("{K}", str(K))
+    if K not in _STAMPS:
+        _STAMPS[K] = _stamp()
+        st, src, args = _STAMPS[K]
+        _sj = os.path.join(a.o, "stamp.json")
+        _prev = json.load(open(_sj)) if os.path.exists(_sj) else []
+        if not _prev or _prev[-1]["stamp"] != st:
+            json.dump(_prev + [{"stamp": st, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": args,
+                                "sources": src}], open(_sj, "w"), indent=1)
+        print(f"code stamp {st} (K{K})", flush=True)
+        _LOGS[K] = open(os.path.join(a.o, "proxy.jsonl"), "a")
+    STAMP, STAMP_SRC, STAMP_ARGS = _STAMPS[K]; log = _LOGS[K]
 STAMP, STAMP_SRC, STAMP_ARGS = _stamp()
 def _shard_stamp(f):
     with open(f, "rb") as fh:
@@ -265,34 +319,35 @@ def resume_ok(shard):
         sys.exit(f"{shard}: stamp {st} != this run's {STAMP} (code or settings changed): refusing to resume; "
                  f"new OUTDIR, or OURQ_MIXED=1 to override")
     return True
-_sj = os.path.join(a.o, "stamp.json")
-_prev = json.load(open(_sj)) if os.path.exists(_sj) else []
-if not _prev or _prev[-1]["stamp"] != STAMP:
-    json.dump(_prev + [{"stamp": STAMP, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": STAMP_ARGS,
-                        "sources": STAMP_SRC}], open(_sj, "w"), indent=1)
-print(f"code stamp {STAMP}", flush=True)
-
-log = open(os.path.join(a.o, "proxy.jsonl"), "a")
+for _k in KS: set_level(_k)
 lo, hi = map(int, a.layers.split("-"))
 if not a.only_head:
     for l in range(lo, hi + 1):
-        shard = os.path.join(a.o, f"q-L{l:02d}.safetensors")
-        if resume_ok(shard): continue
-        t0 = time.time(); out = {}
-        if ONLY is not None and not any(k in ONLY for _, ks in layer_plan(l) for k in ks): continue
-        for gi, (hn, keys) in enumerate(layer_plan(l)):
-            if ONLY is not None and not any(k in ONLY for k in keys): continue
-            out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
-        save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
-        # drop the checkpoint shard handles (their mapped pages piled up to ~23 GB over a run: K8 OOM, 2026-10-30)
-        del out; _open.clear(); import gc; gc.collect(); torch.cuda.empty_cache()
-        rss = next((l.split()[1] for l in open("/proc/self/status") if l.startswith("RssAnon")), "?")
-        print(f"layer {l}: {time.time() - t0:.0f}s  anon rss {int(rss) >> 10 if rss != chr(63) else rss} MiB", flush=True)
-        write_index()
+        _memo_clear()
+        for K in KS:
+            set_level(K)
+            shard = os.path.join(a.o, f"q-L{l:02d}.safetensors")
+            if resume_ok(shard): continue
+            t0 = time.time(); out = {}
+            if ONLY is not None and not any(k in ONLY for _, ks in layer_plan(l) for k in ks): continue
+            for gi, (hn, keys) in enumerate(layer_plan(l)):
+                if ONLY is not None and not any(k in ONLY for k in keys): continue
+                out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
+            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+            # drop the checkpoint shard handles (their mapped pages piled up to ~23 GB over a run: K8 OOM, 2026-10-30)
+            del out; _open.clear(); import gc; gc.collect(); torch.cuda.empty_cache()
+            rss = next((l.split()[1] for l in open("/proc/self/status") if l.startswith("RssAnon")), "?")
+            print(f"layer {l}{f' K{K}' if len(KS) > 1 else ''}: {time.time() - t0:.0f}s  anon rss {int(rss) >> 10 if rss != chr(63) else rss} MiB", flush=True)
+            write_index()
+        _memo_clear()
 if a.head or a.only_head:
-    shard = os.path.join(a.o, "q-head.safetensors")
-    if not resume_ok(shard):
-        out = quantize_group("lm_head.input", ["lm_head"], 9999, log)
-        save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
-write_index()
+    _memo_clear()
+    for K in KS:
+        set_level(K)
+        shard = os.path.join(a.o, "q-head.safetensors")
+        if not resume_ok(shard):
+            out = quantize_group("lm_head.input", ["lm_head"], 9999, log)
+            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+    _memo_clear()
+for K in KS: set_level(K); write_index()
 print("done", flush=True)
