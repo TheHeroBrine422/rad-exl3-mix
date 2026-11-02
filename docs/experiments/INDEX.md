@@ -90,6 +90,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | done | 11-02 | 3 seeds: diag H_out K3 −8.1%, K2 −5.4% vs base; seed SD ~1% / ~2%; identity H_out worse |
 | 33-17 | 27B diagonal collector: split halves, resume test on 0.8B | quantizer | done | 11-02 | resume bit-exact; stopping rule: 27B halves median ≥ 0.995, p5 ≥ 0.964 |
 | 33-18 | Estimators (Sketch B / xw / dy) + dose 128–1024, 0.8B, 3 seeds | quantizer | running | 11-02 | critic A2 / A5; decides the 27B collector |
+| 33-19 | H_out on own agentic traces (pisess) vs qad windows, 0.8B | quantizer | planned | 11-02 | queued after #33-18 |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
@@ -131,4 +132,6 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 74 | radiance 1.15.x plugin port (ABI 32) and KLD parity | kernels | done | 11-01 | 1.15.1 works; KLD 0.027122 vs 0.027122 |
 | 75 | tdverify: turboderp downloads vs our packs | eval | done | 11-01 | all 16 byte-exact, 0 problems |
 
-Next free number: **76**.
+| 76 | pisess v1: own pi sessions as an agentic-trace corpus | data | done | 11-02 | 539 docs, 18.5M tokens, redacted; training / statistics only |
+
+Next free number: **77**.

@@ -2,6 +2,26 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 15:55 CST · #76 · pisess v1: our own pi sessions as an agentic-trace corpus
+- **Status:** done · **Machine:** colo (CPU) · **Code:** `xcorp/pisess.py`, `xcorp/pisess_redact.py`,
+  `xcorp/tokenize.py` @ 2cf7666
+- **Setup:** active branch of every session, rendered with Qwen3.8's chat template (tools block from the tools each
+  session used, thinking → reasoning_content, structured tool calls, tool results clipped to 16k chars head + tail);
+  turns already emitted elsewhere skipped; print-mode runs' repeated attachments collapsed to placeholders (mining
+  chunks of our own logs dropped); cut at turn boundaries into ≤ 250k-token pieces. Redaction: key prefixes, PEM,
+  auth / password assignments, IPs, key-file names, emails, high-entropy non-hex tokens.
+- **Result:** main + subagent sessions 89 pieces / 11.9M tokens (975 duplicate turns skipped); print-mode runs 450 /
+  6.65M; **539 documents, 18.54M tokens**. Redaction hits: secrets 22, infra 2,162, email 774, entropy 532; integrity
+  flags on 24 documents (unpaired tool call 17, unbalanced think 8), kept. Much of the Claude reasoning is absent from
+  the logs (empty think blocks).
+- **Decision / next:** training / statistics only (AGENTS.md); first use #33-19. Lives on colo
+  `/data/work/pisess/v1` and the 4070 `/data/pisess/v1` (not in the repo: private content).
+
+### 2026-11-02 15:58 CST · #33-19 · H_out on our agentic traces vs calib qad windows (0.8B): queued
+- **Status:** planned · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact8.sh` · **Pass rule:** `proxy2b/YAQA08.md` amendment 12
+- **Setup:** 1,024-window diagonal on pisess v1 and the 50/50 mix with #33-18's qad diagonal; K3 / K2 × 3 seeds;
+  starts when #33-18 finishes (~17:00 CST), ~1 h.
+
 ### 2026-11-02 15:30 CST · #— · Own pi session logs allowed as a training / statistics corpus (user)
 - **Decision:** `/workspace/pi-sessions` (all our pi sessions: 117 main / subagent files, 459 print-mode runs, 396 MB)
   may be used for training and statistics (QAD, healing, H_out / Hessian collections), as a non-calib corpus like
