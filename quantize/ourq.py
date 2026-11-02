@@ -45,7 +45,7 @@ _Q.refit_scales = _refit
 # 1.08 below K1; the table points themselves are unchanged (identity gates hold there). OURQ_DRIFT_EXACT=1: old lookup.
 if not os.environ.get("OURQ_DRIFT_EXACT"):
     import math as _m
-    _DT = sorted(dict(_Q.LDLQ_DRIFT, **{4: 1.0}).items())
+    _DT = sorted({**_Q.LDLQ_DRIFT, 4: 1.0}.items())
     def _drift(K):
         K = float(K)
         if K in dict(_DT): return dict(_DT)[K]
