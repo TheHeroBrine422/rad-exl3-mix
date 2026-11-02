@@ -56,4 +56,7 @@ Short entries are fine: drop the lines that do not apply, but keep the header li
 - Tuning only on calib pools (fit / search / qad / verify); public only to report; say which pool a slice came from.
 - Report paired comparisons with uncertainty; differences under ~1.5% on 100k-position slices are noise.
 - bf16 KV cache for every KLD.
+- **Every experiment's raw results go into the repo** (`data/<topic>/`, with a README mapping files to numbers) in the
+  same commit as its LOG entry, and the entry's Files line points there. Results living only on a GPU box are lost
+  when it is wiped.
 - A dropped or null experiment says what was tried, the evidence, and what we do instead, so nobody repeats it.
