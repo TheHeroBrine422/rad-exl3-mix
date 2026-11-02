@@ -131,3 +131,17 @@ Reference (0.8B, `diaghalves.py`): split halves of 1,024 sequences each (where 1
 median cos 0.995, p5 0.964, min 0.916 over the 150 linears. The 27B collector writes `halves.json` (even vs odd
 sequences) at every snapshot. **Stop at the first snapshot ≥ 1,024 sequences whose median ≥ 0.995 and p5 ≥ 0.964**
 (halves of n/2 each, i.e. stricter than the 0.8B reference at equal n); otherwise continue to 2,048, then 4,096.
+
+## Amendment 11 (2026-11-02 ~15:10 CST, written before any data): estimators and dose below 1K, #33-18
+
+Critic items A2 / A5 (`docs/ideas/ranked.md`). One fp32 collection with the 27B collector (`collect.py` YAQA_DIAG +
+YAQA_DIAG_EXTRA, one GPU) on the 0.8B, calib qad-pool 2048-token windows (as the 27B run), snapshots 128 / 256 / 512 /
+1024. Estimators at 1024: Sketch B diag (`B`), Σ_t‖x_t‖²dy_t² (`xw`, the weighting of the failed 27B gates
+#33-02…05), Σ_t dy_t² (`dy`). Quants on base settings + the diagonal (output damping 0.01), i8, g08-search1, K3 and
+K2, rotation seed offsets 0 / 1 / 2, against the existing base seeds. Gain = mean(base) − mean(arm) over 3 seeds.
+- **A2 (estimator):** `xw` keeps the gain if its gain ≥ 2/3 of `B`'s at both K and every xw seed beats every base
+  seed. If it does, the old 27B negatives were not the estimator → a short 27B pilot swap before the full night.
+  `dy` is "as good" if its mean is within one per-seed SD (#33-16: ~1% K3, ~2% K2) of `B`'s.
+- **A5 (dose):** the smallest N ∈ {128, 256, 512} whose gain is ≥ 80% of the 1024 gain at both K, with every seed
+  beating every base seed. If one qualifies, the 27B stopping rule (amendment 10) is amended to allow an early
+  K3 swap test from that snapshot before the collection continues.

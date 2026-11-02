@@ -41,6 +41,7 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
                     OUTDIR/STOP ends the run cleanly after the current sequence. Every save also writes halves.json:
                     per linear the cosine between the even- and odd-sequence means (split-half agreement, #33-17).
+                    YAQA_DIAG_EXTRA=1: also hdiag*-xw (sum ||x||^2 dy^2) and hdiag*-dy (sum dy^2) next to each save (#33-18).
                     Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03); YAQA_PREC=x2 runs the linear GEMMs as
                     bf16 hi/lo splits (bf16x.py; check proxy2b/prectest.py first). With YAQA_GATE=1: 2 sequences, and
                     one linear's diagonal is checked against a whole fp32 G_b.
@@ -275,10 +276,13 @@ def _save_hout(sub, ACC):
 DIAG = os.environ.get("YAQA_DIAG") == "1"
 DCH = int(os.environ.get("DIAG_CHUNK", 2048))
 DACC, DACC_E, DSTATE = {}, {}, {"n": 0, "next": START}     # DACC_E: sum over the even-numbered sequences (split half)
+EXTRA = os.environ.get("YAQA_DIAG_EXTRA") == "1"     # also sum_t ||x_t||^2 dy_t^2 ("xw", the 27B gates' weighting) and sum_t dy_t^2 ("dy", H_Z)
+DACC_X, DACC_D = {}, {}
 DCHECK = os.environ.get("DIAG_CHECK", "63.self_attn.o_proj")   # small enough for a whole G on the head card
 if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     _st = torch.load(f"{OUT}/hdiag-state.pt")
     DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()}); DACC_E.update(_st.get("acc_even", {}))
+    DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
@@ -300,6 +304,12 @@ def fwd_hook_diag(name):
                     DACC[name] = DACC[name].to(d.device); DACC_E[name] = DACC_E[name].to(d.device)
                 DACC[name] += d
                 if DSTATE["n"] % 2 == 0: DACC_E[name] += d     # this sequence's index (0-based) is DSTATE["n"]
+                if EXTRA:
+                    g2 = gg.pow(2)
+                    xw = (g2 * xx.pow(2).sum(1, keepdim=True)).sum(0); dyy = g2.sum(0)
+                    if name not in DACC_X: DACC_X[name] = torch.zeros_like(xw); DACC_D[name] = torch.zeros_like(dyy)
+                    elif DACC_X[name].device != xw.device: DACC_X[name] = DACC_X[name].to(xw.device); DACC_D[name] = DACC_D[name].to(xw.device)
+                    DACC_X[name] += xw; DACC_D[name] += dyy
         out.register_hook(bh)
     return h
 def save_diag(sub="hdiag"):
@@ -310,6 +320,12 @@ def save_diag(sub="hdiag"):
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
+    for tag, acc in (("xw", DACC_X), ("dy", DACC_D)) if EXTRA else ():
+        os.makedirs(f"{OUT}/{sub}-{tag}", exist_ok=True)
+        for name, v in acc.items():
+            key = "model.language_model.layers." + name
+            save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}-{tag}/{key}.safetensors",
+                      metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": f"diag-{tag}", "fp32_act": str(FP32), "seed": str(SEED)})
     # split-half agreement: even vs odd sequences (independent halves), cosine per linear -> halves.json (#33-17)
     ne = (DSTATE["n"] + 1) // 2; no = DSTATE["n"] // 2
     if no > 0:
@@ -322,7 +338,8 @@ def save_diag(sub="hdiag"):
                   open(f"{OUT}/{sub}/halves.json", "w"), indent=0)
     if sub == "hdiag":
         torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()},
-                    "acc_even": {k: v.cpu() for k, v in DACC_E.items()}}, f"{OUT}/hdiag-state.pt.part")
+                    "acc_even": {k: v.cpu() for k, v in DACC_E.items()},
+                    "acc_xw": {k: v.cpu() for k, v in DACC_X.items()}, "acc_dy": {k: v.cpu() for k, v in DACC_D.items()}}, f"{OUT}/hdiag-state.pt.part")
         os.replace(f"{OUT}/hdiag-state.pt.part", f"{OUT}/hdiag-state.pt")
 def fwd_hook(name):
     if DIAG: return fwd_hook_diag(name)
