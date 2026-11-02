@@ -7,12 +7,18 @@
 # then runs the script with exclusive host RAM (head donor remake: needs ~26 GB; ladder levels hold shared RAM).
 # A queue line "a,b,c" is a group: one ourq process quantizes those levels layer by layer, reusing each tensor's
 # K-independent work (output identical to one run per level: v3/levels/multik.sh). Group logs G<a_b_c>.log.
+# A line "mul1:K" (or "mul1:a,b") quantizes with the plain mul1 codebook into $D/mul1/K<k>; other lines use i8 into
+# $D/K<k>. env SWEEP (input-group damping grid), QUEUE.
 # Run one per card:  ladder2.sh 0 & ladder2.sh 1 &       Out /data/v3ladder2/K<k>/, log /data/v3ladder2/ladder-c<CARD>.log
 : ${RXM_WORK:=/root}; export RXM_WORK
-C=$1 D=/data/v3ladder2 PY=/data/venv-exl3/bin/python SRC=/data/exl3frac/src
+C=$1 D=${LADDER_D:-/data/v3ladder2} PY=${LADDER_PY:-/data/venv-exl3/bin/python} SRC=/data/exl3frac/src
 Q=${QUEUE:-$D/queue.txt} OFF=${OFF:-}
 mkdir -p $D; log() { echo "$(date -u +%H:%M:%S) card $C $*" | tee -a $D/ladder-c$C.log; }
-X="--codebook i8 --qtf2 --frac-ext $SRC --sigma-in-sweep 0.025,0.005,0.001"
+SWEEP=${SWEEP:-0.025,0.005,0.001}
+X="--qtf2 --frac-ext $SRC --sigma-in-sweep $SWEEP"
+cbof() { case $1 in mul1:*) echo mul1;; *) echo i8;; esac; }          # line -> codebook
+rootof() { case $1 in mul1:*) echo $D/mul1;; *) echo $D;; esac; }     # line -> output root
+levof() { echo ${1#mul1:}; }                                          # line -> level list
 [ -n "$OFF" ] && X="$X --out-scales-off $OFF"
 log "start with: $X"
 pop() {   # next level not done and not taken; prints nothing when the queue is empty
@@ -21,10 +27,11 @@ pop() {   # next level not done and not taken; prints nothing when the queue is 
       [ -z "$k" ] && continue
       case $k in RUN:*) [ -f $D/$(basename ${k#RUN:}).done ] && continue; [ -f $D/slot.taken ] && kill -0 $(cat $D/slot.taken) 2>/dev/null && continue
                         echo $$ > $D/slot.taken; echo $k; break;; esac
-      done_all=1; for kk in ${k//,/ }; do
-        [ -f $D/K$kk/model.safetensors.index.json ] && [ $(ls $D/K$kk/q-L*.safetensors 2>/dev/null | wc -l) -eq 64 ] || done_all=0
+      R=$(rootof $k) lv=$(levof $k); mkdir -p $R
+      done_all=1; for kk in ${lv//,/ }; do
+        [ -f $R/K$kk/model.safetensors.index.json ] && [ $(ls $R/K$kk/q-L*.safetensors 2>/dev/null | wc -l) -eq 64 ] || done_all=0
       done; [ $done_all = 1 ] && continue
-      g=${k//,/_}
+      g=$(cbof $k)_${lv//,/_}
       [ -f $D/K$g.taken ] && kill -0 $(cat $D/K$g.taken) 2>/dev/null && continue
       echo $$ > $D/K$g.taken; echo $k; break      # $$ = this card's driver (a subshell keeps it)
     done < $Q ) 8>$D/queue.lock
@@ -44,11 +51,11 @@ while k=$(pop) && [ -n "$k" ]; do
       && touch $D/$(basename $sc).done && log "slot $sc done in $(( ($(date +%s) - s) / 60 )) min" || log "slot $sc FAIL (slot.log)"
     rm -f $D/slot.taken; continue
   fi
-  g=${k//,/_}
+  R=$(rootof $k) lv=$(levof $k) cb=$(cbof $k); g=${cb}_${lv//,/_}
   ( exec 5>$RXM_WORK/card$C.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7
-    $PY -I ourq/ourq.py -K $k -o "$D/K{K}" --device 0 $X >> $D/K$g.log 2>&1 )
+    $PY -I ourq/ourq.py -K $lv -o "$R/K{K}" --device 0 --codebook $cb $X >> $D/K$g.log 2>&1 )
   rc=$?
-  n=""; for kk in ${k//,/ }; do n="$n $(ls $D/K$kk/q-L*.safetensors 2>/dev/null | wc -l)"; done
+  n=""; for kk in ${lv//,/ }; do n="$n $(ls $R/K$kk/q-L*.safetensors 2>/dev/null | wc -l)"; done
   [ $rc = 0 ] && [ -z "$(echo $n | tr ' ' '\n' | grep -v '^64$')" ] && log "K$k done in $(( ($(date +%s) - s) / 60 )) min" \
     || log "K$k FAIL rc=$rc (layers per level:$n; resumes on rerun)"
   rm -f $D/K$g.taken

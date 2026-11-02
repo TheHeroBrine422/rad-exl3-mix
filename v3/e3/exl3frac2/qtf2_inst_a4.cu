@@ -3,6 +3,10 @@
 #include "qtf2.cuh"
 
 fp_qtf2 qtf2_a4_m0000() { return qtf2_kernel<4, 0x0000u>; }
+fp_qtf2 qtf2_a4_m8080() { return qtf2_kernel<4, 0x8080u>; }
 fp_qtf2 qtf2_a4_m8888() { return qtf2_kernel<4, 0x8888u>; }
+fp_qtf2 qtf2_a4_ma4a4() { return qtf2_kernel<4, 0xa4a4u>; }
 fp_qtf2 qtf2_a4_maaaa() { return qtf2_kernel<4, 0xaaaau>; }
+fp_qtf2 qtf2_a4_mdada() { return qtf2_kernel<4, 0xdadau>; }
 fp_qtf2 qtf2_a4_meeee() { return qtf2_kernel<4, 0xeeeeu>; }
+fp_qtf2 qtf2_a4_mfefe() { return qtf2_kernel<4, 0xfefeu>; }

@@ -64,8 +64,8 @@ class _Ext:
     def __getattr__(self, name): return getattr(self._q if name in self.NAMES else self._base, name)
 
 
-INT_K = (1, 2, 3, 4)    # integer K run on qtf2 (MASK 0): bit-identical to exllamav3's integer kernels (prebuilt mul1 and
-                        # exl3cb i8, qtf2int6check.py) and 1.3-2.1x faster; K5-8 stay on the integer kernel (faster there)
+INT_K = (1, 2, 3, 4, 6, 7)   # integer K run on qtf2 (MASK 0): bit-identical to exllamav3's integer kernels (prebuilt mul1 and
+                        # exl3cb i8, qtf2int6check.py) and 1.3-3x faster; K5 and K8 stay on the integer kernel
 
 
 def install(src: str, variant: str = "mul1", verbose: bool = False):

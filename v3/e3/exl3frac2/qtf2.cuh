@@ -39,6 +39,15 @@
 // forward-step barrier: a full __syncthreads() (see the v8 note above; an LDS-only fence raced)
 __device__ __forceinline__ void qtf2_lds_barrier() { __syncthreads(); }
 
+// v9 (QTF2_HIOPT): at KA 6-7 the forward / step lambdas were outlined as device functions (84-199 KB each, a 152-byte
+// stack frame, 249 VGPRs at KA 7) -- the mixed-rate KA 6 / 7 kernels ran at 17k / 4.5k tiles/s vs 93k / 87k for the
+// integer ones. Forced inlining and a bounded candidate unroll at KOUT >= 6; same operations in the same order.
+#ifdef QTF2_HIOPT
+#define QTF2_INLINE __attribute__((always_inline))
+#else
+#define QTF2_INLINE
+#endif
+
 template <bool B> struct qtf2_bool { static constexpr bool value = B; };
 
 __device__ __forceinline__ uint32_t qtf2_salt(int i) { return (0x9E37u * (uint32_t) ((i & 15) + 1)) & 0xFFFFu; }
@@ -135,8 +144,13 @@ __device__ __forceinline__ void qtf2_step
             // bit patterns order like the values and ties go to the lowest k -- the strict-less scan's pick, without
             // its per-candidate branches (the uncached path's main cost: K5.5 and up)
             const uint32_t e0 = __builtin_bit_cast(uint32_t, min_err2);
+#ifdef QTF2_HIOPT
+            constexpr int QTF2_UNR = max_q > 32 ? 16 : max_q;     // v9: bounded unroll at KOUT >= 6 (code size)
+#else
+            constexpr int QTF2_UNR = max_q;
+#endif
             uint32_t best0 = e0 << 16, best1 = e0 & 0xffff0000u;
-            #pragma unroll
+            #pragma unroll QTF2_UNR
             for (int k = 1; k < max_q; ++k)
             {
                 const int state0 = (k << Kr) | out_edge_idx;
@@ -345,9 +359,9 @@ void qtf2_kernel
     // v7: step 0 is peeled with `first` a compile-time constant. With the 4-way width switch the compiler did not
     // unswitch it, so every candidate of every step kept an `if (first)` branch (55 KB of code, ~1,100 branches vs
     // 15 KB / 14 for MASK 0) -- the mixed-rate kernels ran ~35% slower than integer K. Same arithmetic, same output.
-    auto forward = [&](int roll, int pre_state)
+    auto forward = [&](int roll, int pre_state) QTF2_INLINE
     {
-        auto step = [&](auto first_c, int i)
+        auto step = [&](auto first_c, int i) QTF2_INLINE
         {
             constexpr bool first = decltype(first_c)::value;
             const int ri = ring(i, roll);
