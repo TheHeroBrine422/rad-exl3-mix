@@ -152,3 +152,17 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   the goldens and the reference KLDs must be regenerated (the fix changes the bf16 path too?) — never compare KLDs
   across engine versions without a paired re-run. Timing: before D3 / the V3 eval stream, after the 27B H_out run
   (don't change the engine under a running comparison). Also move the `qc-exl3-v3` branch / upstream PR onto it.
+
+## 27B confirmation queue (nothing proven on the 0.8B / CPU proxy ships without a 27B check)
+
+The 0.8B / 2B proxies and CPU proxy-error tests decide what is worth a 27B run; they do not size the effect. Each
+item below needs a paired 27B test with its own pass rule (and the 27B quant-noise floor, ranked A7, measured once
+first). Keep this list current: add an item when a proxy test passes, strike it when the 27B test is logged.
+
+| proxy result | 27B test needed | depends on |
+|---|---|---|
+| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18) | 512-seq 27B collection (both cards), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
+| Estimator choice (dy vs Sketch B vs xw), 512 seqs (#33-18) | collect all three in one 27B pass, compare in the swap test | same run |
+| Cubic int8 codebook i8c (#78: CPU proxy −1.4% K2.5, −2.0% K3; 0.8B KL test running) | requant 2–3 trunk levels with i8c, swap test | #78 KL result |
+| Tile coordinate descent (#77: CPU proxy −0.9%, consistent) | only if judged worth its 2–3× quant time | ffn_down results, a seed-paired KL test |
+| (pending) agentic-trace H_out (#33-19), Sketch A refined (#33-20), gen-masked loss (w01) | ride on the 27B collection if they pass | their 0.8B results |
