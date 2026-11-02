@@ -476,6 +476,15 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-02 ~04:05 CT: **xcorp v1: 96.1M-token proxy corpus from the challenge's own upstream sources** (`xcorp/`,
+  colo `/data/xcorp/v1`). The manifest's 58 sources at their pinned revisions, categories, kinds and caps, 12x the
+  per-split budgets, rendered as the challenge (Qwen3.8 chat template: xhigh preamble, tools block, reasoning kept on
+  every turn, structured tool calls). Not the 8 long agentic traces (unpublished). Apart from the challenge: the
+  head of each stream skipped (multi-file: second half of the files; single-file: 1.1x the records it read) and a
+  line-level check against calib + public (2,205 documents rejected). Shortfall: hermes-fc 0.8M of 1.9M (source
+  exhausted). The private split is unpublished, so overlap with it cannot be checked: proxy research only; check the
+  challenge's rules before anything trained on xcorp ships. Build ~8 min on colo.
+
 - 2026-11-02 ~04:20 CT: **2B: why a document's prefix run alone differs from the whole document** (`proxy2b/lencheck.py`).
   Not a bug: cuBLAS picks its matmul kernel by matrix size, kernels sum in different orders, and the bf16 output
   rounding then differs (one bf16 linear, 6144x2048: 27% of outputs differ between M = 512 and the same rows at
