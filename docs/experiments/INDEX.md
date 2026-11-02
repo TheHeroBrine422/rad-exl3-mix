@@ -80,6 +80,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-06 | Gate 2d: diagonal output scales (alias **D1** = its confound check) | quantizer | negative | 11-01 | K2 +10–15%, K3 +4% |
 | 33-07 | Gate 2e: gradient-weighted H_in | quantizer | negative | 11-01 | K2 +44%, K3 +31% |
 | 33-08 | Sketch B (paper estimator) on the 0.8B proxy, 1K–8K sequences | quantizer | negative | 11-02 | 8K: K3 +7%, K2 +15% vs paper LDLQ (+14% / +20% vs base); 16K stopped |
+| 33-09 | Sketch B factors: structure and noise (CPU) | quantizer | done | 11-02 | H_out diag precise; full H_out noisy early / residual writers; YAQA arms also swapped H_in |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
