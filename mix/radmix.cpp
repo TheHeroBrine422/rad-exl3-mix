@@ -3,6 +3,10 @@
  *
  *   radmix OUT.rad BASE.rad MIXFILE
  *   MIXFILE lines: <weight name> <donor.rad>     ('#' comments; weights not named come from BASE)
+ *                  act <weight name> <mode>      the weight's activation mode, metadata key exl3.act.<weight name>
+ *                                                (exl3_act.h: f16 | a8t | a8g<N>, N a multiple of 128). The mix's
+ *                                                metadata is BASE's with these keys set; with no act line BASE's
+ *                                                metadata table is kept as is.
  *
  * The donor must hold a weight of the same name and logical shape; its encoding, planes, quantiser and options
  * come along. BASE's whole pre-data region (header, strings, metadata, the old tables, vocab, profile) is kept
@@ -23,6 +27,7 @@
 #include <string>
 #include <vector>
 #include "rad_format.h"
+#include "exl3_act.h"
 
 struct Src {
     int fd; size_t size; const uint8_t* m; const RadFileHeader* h;
@@ -63,12 +68,24 @@ static void move(int dfd, uint64_t doff, const Src* s, uint64_t soff, uint64_t n
 int main(int argc, char** argv) {
     if (argc != 4) { fprintf(stderr, "radmix OUT.rad BASE.rad MIXFILE\n"); return 2; }
     Src* B = open_src(argv[2]);
-    std::map<std::string, std::string> mix;
+    std::map<std::string, std::string> mix, act;
     { FILE* f = fopen(argv[3], "r"); if (!f) { perror(argv[3]); return 1; }
-      char a[512], b[1024], line[2048];
-      while (fgets(line, sizeof line, f)) { if (line[0] == '#' || sscanf(line, "%511s %1023s", a, b) != 2) continue; mix[a] = b; }
+      char a[512], b[1024], c[64], line[2048];
+      while (fgets(line, sizeof line, f)) {
+          if (line[0] == '#') continue;
+          if (sscanf(line, "act %1023s %63s", b, c) == 2) { act[b] = c; continue; }
+          if (sscanf(line, "%511s %1023s", a, b) != 2) continue;
+          mix[a] = b;
+      }
       fclose(f); }
     for (auto& kv : mix) if (!B->idx.count(kv.first)) { fprintf(stderr, "base has no weight %s\n", kv.first.c_str()); return 1; }
+    for (auto& kv : act) {
+        if (!B->idx.count(kv.first)) { fprintf(stderr, "act: base has no weight %s\n", kv.first.c_str()); return 1; }
+        if (exl3_act_parse(kv.second.c_str(), nullptr) != 0) {
+            fprintf(stderr, "act %s %s: not an activation mode (f16, a8t, a8g<N>)\n", kv.first.c_str(), kv.second.c_str());
+            return 1;
+        }
+    }
 
     const RadFileHeader& bh = *B->h;
     std::string strs(B->str(), bh.str_bytes);
@@ -109,6 +126,17 @@ int main(int argc, char** argv) {
         dir.push_back(d); picks.push_back({s, e});
     }
 
+    /* the metadata: BASE's (its string offsets are valid in the new blob, which starts with BASE's), the act keys
+     * set; appended as a new table only when there are act lines */
+    std::vector<RadFileKV> meta((const RadFileKV*)(B->m + bh.meta_off), (const RadFileKV*)(B->m + bh.meta_off) + bh.meta_count);
+    for (auto& kv : act) {
+        const std::string key = EXL3_ACT_KEY_PREFIX + kv.first;
+        RadFileKV v{}; v.key = intern(key.c_str()); v.type = RAD_P_STR; v.v.s = intern(kv.second.c_str());
+        bool set = false;
+        for (auto& m : meta) if (!strcmp(strs.c_str() + m.key, key.c_str())) { m = v; set = true; }
+        if (!set) meta.push_back(v);
+    }
+
     /* layout: BASE's pre-data region, then the new tables, then the data */
     uint64_t pre = bh.data_off;   /* everything before BASE's data */
     uint64_t o = al(pre, 256);
@@ -117,6 +145,7 @@ int main(int argc, char** argv) {
     h.dir_off = o; h.dir_count = dir.size();                      o = al(o + dir.size() * sizeof(RadFileEntry), 256);
     h.plane_off = o; h.plane_count = planes.size();               o = al(o + planes.size() * sizeof(RadFilePlane), 256);
     h.enc_off = o; h.enc_count = encs.size();                     o = al(o + encs.size() * sizeof(RadEncoding), 256);
+    if (!act.empty()) { h.meta_off = o; h.meta_count = meta.size(); o = al(o + meta.size() * sizeof(RadFileKV), 256); }
     h.data_off = al(o, RAD_ALIGN_POOL);
     uint64_t cur = h.data_off;
     for (size_t i = 0; i < dir.size(); ++i) {
@@ -136,11 +165,12 @@ int main(int argc, char** argv) {
     put(fd, h.dir_off, dir.data(), dir.size() * sizeof(RadFileEntry));
     put(fd, h.plane_off, planes.data(), planes.size() * sizeof(RadFilePlane));
     put(fd, h.enc_off, encs.data(), encs.size() * sizeof(RadEncoding));
+    if (!act.empty()) put(fd, h.meta_off, meta.data(), meta.size() * sizeof(RadFileKV));
     for (size_t i = 0; i < dir.size(); ++i) move(fd, dir[i].offset, picks[i].s, picks[i].e->offset, dir[i].bytes);
     put(fd, 0, &h, sizeof h);
     if (ftruncate(fd, h.file_bytes)) { perror("ftruncate"); return 1; }
     close(fd);
-    fprintf(stderr, "%s: %zu weights (%zu from donors), %.3f GiB, %d cloned, %d copied\n", argv[1], dir.size(), mix.size(),
-            h.file_bytes / 1073741824.0, n_clone, n_copy);
+    fprintf(stderr, "%s: %zu weights (%zu from donors, %zu act keys), %.3f GiB, %d cloned, %d copied\n", argv[1], dir.size(),
+            mix.size(), act.size(), h.file_bytes / 1073741824.0, n_clone, n_copy);
     return 0;
 }

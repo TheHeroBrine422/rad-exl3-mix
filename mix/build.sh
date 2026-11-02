@@ -10,5 +10,5 @@ gcc -O3 -march=native -fopenmp -c $P/common/exl3_decode.c -I$P/common -I$P/inclu
 hipcc -O3 -march=native -fopenmp -std=c++17 -c hproxy.cpp -I$P/common -I$P/include -I$INC -o hproxy.o
 hipcc -fopenmp hproxy.o exl3_decode.o -lhipblas -o hproxy
 g++ -O3 -march=native -fopenmp -std=c++17 headdec.cpp exl3_decode.o -I$P/common -I$P/include -I$INC -o headdec
-g++ -O2 -std=c++17 radmix.cpp -I$INC -o radmix
+g++ -O2 -std=c++17 radmix.cpp -I$INC -I$P/include -o radmix
 echo built
