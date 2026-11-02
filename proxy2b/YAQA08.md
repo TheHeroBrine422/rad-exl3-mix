@@ -56,3 +56,15 @@ Reference `k3ldlq` (calib H_in, one-sided, same damping). Paired per-document co
 - **H_out has value** if `k3hout` or `k3hdiag` beats ldlq with z ≤ −2. Then: the same arm against `base` (scaled
   Hessian, tuned damping) and at K2 before anything else. If neither beats ldlq, two-sided rounding is closed on the
   0.8B and H_out stays a measurement / pricing tool only.
+
+## Amendment 4 (2026-11-02 ~10:35 CST, written before any data): follow-ups #33-11
+
+Same golden, snapshot 8K, i8. Arms:
+- `k2hout`, `k2hdiag`: as `k3hout` / `k3hdiag` at K2 (paper damping 0.01, no scaled Hessian), vs `k2ldlq`, `k2base`;
+- `k3bhout`, `k2bhout`: `base`'s settings (scaled Hessian, damping 0.025 / input groups 0.005) plus the full H_out
+  with output damping 0.01 — the arm that would ship — vs `base` at the same K.
+Rules (paired, z = diff / se):
+- **H_out holds at K2** if `k2hout` beats `k2ldlq` with z ≤ −2.
+- **Stacks with our settings** if `bhout` beats `base` with z ≤ −2 at that K.
+- **The user's switch bar on the 0.8B** ("beat our tuned base"): `bhout` beats `base` with z ≤ −2 at **both** K3 and
+  K2. Even then, nothing changes for V3 until a 27B check; this only decides whether to plan one.
