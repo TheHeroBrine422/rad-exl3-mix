@@ -75,8 +75,8 @@ ap.add_argument("--head", action="store_true", help="also lm_head")
 ap.add_argument("--only-head", action="store_true")
 ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
-ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
-                "two-sided LDLQ for the linears that have one")
+ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout' square or 'hout_diag' "
+                "vector = a diagonal factor; v3/yaqa/fold.py, collect.py YAQA_DIAG): two-sided LDLQ for the linears that have one")
 ap.add_argument("--hin", default=None, help="dir of replacement input Hessians in the challenge layout (a file named "
                 "<checkpoint key>.safetensors replaces the input Hessian of that linear alone: YAQA Sketch B) "
                 "(<name>.safetensors, hessian_upper; v3/yaqa/collect.py YAQA_HIN): used for the groups that have one")
@@ -230,7 +230,8 @@ def quantize_group(hname, keys, seed0, log):
         if a.sigma_reg_out is not None: qa["sigma_reg_out"] = a.sigma_reg_out
         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
         if hp and os.path.exists(hp):
-            with safe_open(hp, "pt", device="cpu") as f: qa["H_out"] = f.get_tensor("hout").to(dev)
+            with safe_open(hp, "pt", device="cpu") as f:     # "hout_diag": a diagonal-only factor (collect.py YAQA_DIAG)
+                qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float())).to(dev)
         hd = f"{a.hout_diag}/{key}.safetensors" if a.hout_diag else None
         if hd and os.path.exists(hd):
             with safe_open(hd, "pt", device="cpu") as f:

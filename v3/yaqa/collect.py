@@ -33,6 +33,15 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     o_proj / out_proj, gate/up; down_proj with HS_DOWN=1) from NSEQ windows of the NON-verify docs
                     (pools-v3), split by document parity into OUTDIR/hA and OUTDIR/hB (challenge layout, ourq.py --hin /
                     hproxy). The forward stops after the last needed module. GPU fp32 sums.
+     YAQA_DIAG=1 -> the diagonal of YAQA Sketch B's output factor (#33-12): per sequence b and trunk linear (weight
+                    [m, n]), G_b = sum_t dy_t x_tᵀ over every position, diag(H_out) += rowsum(G_b ∘ G_b) (= diag G_b G_bᵀ),
+                    fp32 on the linear's card, G_b built in DIAG_CHUNK-row blocks (never whole). No sampled rows, no
+                    H_in (the calib input Hessians stay). Written as OUTDIR/hdiag[-snapN]/<checkpoint key>.safetensors,
+                    "hout_diag" (mean over sequences; ourq.py --hout reads it), every YAQA_SAVE_EVERY sequences and at
+                    YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
+                    OUTDIR/STOP ends the run cleanly after the current sequence.
+                    Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03). With YAQA_GATE=1: 2 sequences, and
+                    one linear's chunked diagonal is checked against the whole G_b.
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
@@ -257,7 +266,48 @@ def _save_hout(sub, ACC):
         save_file({"hout": H.contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"rows": str(HN[name]), "weight": "none" if UNW else "x2", "fp32_act": str(FP32)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
+DIAG = os.environ.get("YAQA_DIAG") == "1"
+DCH = int(os.environ.get("DIAG_CHUNK", 2048))
+DACC, DSTATE = {}, {"n": 0, "next": START}
+DCHECK = "63.self_attn.o_proj"          # small enough for a whole G on the head card
+if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
+    _st = torch.load(f"{OUT}/hdiag-state.pt")
+    DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()})
+    print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
+def fwd_hook_diag(name):
+    if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
+    def h(mod, inp, out):
+        if not out.requires_grad: return                 # the no-grad first pass of checkpointing
+        x = inp[0][0].detach()
+        def bh(g):
+            if name in state["full_done"]: return        # checkpoint recompute guard
+            state["full_done"].add(name)
+            with torch.no_grad():
+                gg, xx = g[0].float(), x.float()          # [T, m], [T, n]
+                d = torch.empty(gg.shape[1], device=gg.device)
+                for i in range(0, gg.shape[1], DCH):
+                    Gc = gg[:, i:i + DCH].T @ xx          # rows i.. of G_b
+                    d[i:i + DCH] = Gc.pow(2).sum(1)
+                if GATE and name == DCHECK:
+                    Gf = gg.T @ xx; ref = Gf.pow(2).sum(1)
+                    print(f"gate check {name}: chunked vs whole G rel err {float((d - ref).abs().max() / ref.abs().max()):.2e}", flush=True)
+                if name not in DACC: DACC[name] = torch.zeros_like(d)
+                DACC[name] += d
+        out.register_hook(bh)
+    return h
+def save_diag(sub="hdiag"):
+    from safetensors.torch import save_file
+    os.makedirs(f"{OUT}/{sub}", exist_ok=True)
+    for name, v in DACC.items():
+        key = "model.language_model.layers." + name
+        save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
+                  metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "seed": str(SEED)})
+        os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
+    if sub == "hdiag":
+        torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()}}, f"{OUT}/hdiag-state.pt.part")
+        os.replace(f"{OUT}/hdiag-state.pt.part", f"{OUT}/hdiag-state.pt")
 def fwd_hook(name):
+    if DIAG: return fwd_hook_diag(name)
     if FULL and int(name.split(".")[0]) in FULL: return fwd_hook_full(name)
     def h(mod, inp, out):
         if FULL: return                                # full mode: no sampled rows
@@ -279,7 +329,9 @@ def chunk_loss(h, y):   # sampled-label CE of one chunk of positions; recomputed
     return torch.nn.functional.cross_entropy(model.lm_head(h).float(), y, reduction="sum")
 done = 0; t_all = time.time()
 for s in range(START, START + (NSEQ if not GATE else 2)):
-    if not GATE and os.path.exists(f"{OUT}/.done/{s:05d}"): continue
+    if DIAG and s < DSTATE["next"]: continue           # resumed: already in the sums
+    if DIAG and os.path.exists(f"{OUT}/STOP"): print(f"STOP file at window {s}", flush=True); break
+    if not DIAG and not GATE and os.path.exists(f"{OUT}/.done/{s:05d}"): continue
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
     ids = torch.from_numpy(toks[wins[s]:wins[s] + L].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
@@ -320,7 +372,12 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     dt = time.time() - ts
     if FULL: join_full()
     if FULL and not GATE and done + 1 in SNAPS: save_full(f"hout-snap{done + 1}")
-    if FULL and not GATE:
+    if DIAG:
+        DSTATE["n"] += 1; DSTATE["next"] = s + 1
+        if not GATE:
+            if DSTATE["n"] in SNAPS: save_diag(f"hdiag-snap{DSTATE['n']}")
+            if DSTATE["n"] % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_diag()
+    elif FULL and not GATE:
         if (done + 1) % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_full()
     elif not GATE:
         for name, r in state["rows"].items():
@@ -331,11 +388,12 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         torch.cat(ys).cpu().numpy().astype(np.int32).tofile(f"{OUT}/.labels/{s:05d}.i32")
         os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
-    print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
+    print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['full_done']) if DIAG else len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
     del hid, loss, emb
     import gc; gc.collect(); torch.cuda.empty_cache()     # hook closures can hold graph pieces in reference cycles
     print(f"  mem after seq {s}: " + ", ".join(f"cuda{i} alloc {torch.cuda.memory_allocated(i) / 2**30:.2f} GiB" for i in range(2)), flush=True)
     for i in range(2): torch.cuda.reset_peak_memory_stats(i)     # the next line's peak is that sequence's own
 if FULL and not GATE: save_full()
+if DIAG and not GATE and done: save_diag()
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)

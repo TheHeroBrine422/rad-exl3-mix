@@ -80,3 +80,13 @@ Rules (gain = paired diff vs `base` at that K):
   by z ≥ 3 at either K. The cheapest arm that keeps the gain sets the 27B collection: `bdiag` → diagonal only
   (MB, one pass); else `bmix` → full H_out except gate/up (~25 GB, see the 27B plan); else full (~160 GB).
 - **Sequences needed:** the smallest N whose K3 gain is ≥ 80% of the 8K gain.
+
+## Amendment 6 (2026-11-02 ~11:50 CST, written before any data): diagonal dose, #33-13 (0.8B part)
+
+On `base`'s settings + diagonal H_out (output damping 0.01), i8, g08-search1:
+- `k3bdv8192`: the 8K diagonal written as a `hout_diag` vector file (ourq.py's new path) — **must equal `k3bdiag`**
+  (same KL to 1e-6); otherwise the new path is wrong and nothing else here counts.
+- `k3bdiagN`, `k2bdiagN` for N = 1024, 2048 (diagonals of those snapshots).
+**Sequences for the 27B diagonal collection:** the smallest N whose gain vs `base` is ≥ 80% of the 8K diagonal's at
+both K (8K gains: K3 −0.00790, K2 −0.04263). If 1K qualifies, the 27B run is planned at 1K (~8.5 h fp32, one night,
+both cards); else 2K (~17 h); else 4K.
