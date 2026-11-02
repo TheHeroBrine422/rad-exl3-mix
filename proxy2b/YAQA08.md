@@ -42,3 +42,17 @@ exllamav3's ldlq_2hess checked: L_out = 0 is bit-identical to one-sided LDLQ). S
 sequences (the paper's Table 9 range; their main setting is 64K). Arms at K2, K3: `base` (our tuned one-sided),
 `ldlq` (the paper's one-sided baseline: damping 0.01, no scaled Hessian), `ybN`. The pass rule above applies with
 `ldlq` as one-sided (the paper's comparison); yb vs `base` is reported beside it (does it beat our best).
+
+## Amendment 3 (2026-11-02 ~10:45 CST, written before any data): factorial #33-10
+
+The YAQA arms changed H_in (calib x xᵀ → Sketch B's gradient-weighted H_in from xcorp) and added H_out at once
+(#33-09). Three K3 arms, i8, damping 0.01 both sides, no scaled Hessian, 8K snapshot, golden g08-search1:
+- `k3hin`:  Sketch B H_in, no H_out (one-sided) — the cost of the H_in swap alone;
+- `k3hout`: calib H_in + Sketch B H_out (full) — H_out with the correct H_in;
+- `k3hdiag`: calib H_in + diag(H_out) as the output factor (off-diagonal zeroed) — the precise part of H_out only.
+Reference `k3ldlq` (calib H_in, one-sided, same damping). Paired per-document comparison (pcmp.py), z = diff / se.
+- **Attribution:** an arm worse than ldlq with z ≥ 2 carries a cost; if `k3hin` is worse and `k3hout` is not, the
+  YAQA loss was the H_in swap.
+- **H_out has value** if `k3hout` or `k3hdiag` beats ldlq with z ≤ −2. Then: the same arm against `base` (scaled
+  Hessian, tuned damping) and at K2 before anything else. If neither beats ldlq, two-sided rounding is closed on the
+  0.8B and H_out stays a measurement / pricing tool only.
