@@ -166,3 +166,18 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 | Cubic int8 codebook i8c (#78: CPU proxy −1.4% K2.5, −2.0% K3; 0.8B KL test running) | requant 2–3 trunk levels with i8c, swap test | #78 KL result |
 | Tile coordinate descent (#77: CPU proxy −0.9%, consistent) | only if judged worth its 2–3× quant time | ffn_down results, a seed-paired KL test |
 | (pending) agentic-trace H_out (#33-19), Sketch A refined (#33-20), gen-masked loss (w01) | ride on the 27B collection if they pass | their 0.8B results |
+
+## Faraway lens (2026-11-02, `local/papers/runs/2026-11-02-faraway/ideas/faraway.md`): ideas to test later
+
+- [ ] **A1 · down_proj predicted from its neuron's decoded up + gate rows, residual coded** ("chroma from luma"):
+  measured 0.09–0.23 bit on down_proj (mean ~0.16; up↔down |cos| 0.27–0.47), est. −3 to −8% KL at 2.5 bpw, P ~0.4.
+  **Constraint (challenge author, 2026-11-02): the target is VRAM, load-time expansion only as a stopgap** → it
+  needs the online-prediction kernel (faraway A2: transposed GEMMs re-reading the up / gate tiles, +1 GEMM with up
+  only keeps ~75% of the gain; +1–2 GEMMs in the MLP). Weigh the gain against that speed cost. Steps: (1) real-trellis
+  proxy test on iceman's GPU (quantize D vs R = D − αÛ − βĜ at K2 / K3 from the ladder levels; pass ≤ 0.85× at K2 on
+  layer 30); (2) 0.8B KL with load-time expansion (allowed for measuring); (3) kernel cost (ntbench); then decide.
+  Riders: A3 (GDN out_proj ← v), A4 (o_proj ← v / q-gate), A6 / A7 census (minutes on colo).
+- [ ] **E10 · dead-unit census** (E[h²] at down / out_proj / o_proj inputs from the calib Hessians; colo minutes).
+- [ ] **F2 · boundary diagonal affine repair** (closed form, 0.8B ~2 h). **F4 · exact last-layer output Hessian.**
+- Faraway's headroom audit: gate/up within ~0.1 bit of an ideal LDLQ + Gaussian coder; weights near-Gaussian; no
+  cross-layer redundancy (kills cross-layer sharing / global-basis ideas). The rest of its list: the report.
