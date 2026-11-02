@@ -76,10 +76,23 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   non-trained quantizer.
 
 ## Research method and scale (after V3)
-- **Small-model proxy for method research:** develop and screen quantizer / allocation ideas on a small model of the
-  same family (Qwen3.5-0.4B, or a 1-layer random-init model with Qwen3.8-27B's architecture), on the workstation GPU,
-  while the big runs use the GPU box; confirm only the winners on 27B. Caveats: sensitivities and speed results may
-  not transfer (different shapes), and it saves research time, not the final quantization / search GPU time.
+- **Small-model proxy for method research: Qwen3.5-2B.** Same family and block design as the 27B (3:1 Gated DeltaNet /
+  gated attention, head_dim 256, same 248,320 vocab and tokenizer), but 24 layers, hidden 2048, MLP 6144, GDN value
+  heads 16 (27B: 48), attention 8 / 2 KV heads (27B: 24 / 4), and **tied embeddings** (the embedding is 27% of its
+  ~1.9B parameters; embedding + head are 9% of the 27B). The trunk is ~18x smaller, so a uniform level takes minutes
+  and an eval well under a minute.
+  - Use it for: quantizer methods (codes, codebooks, LDLQ variants, damping, sequential Hessians, rotations), QAD
+    recipes, the low-bit research ladder (ranking of methods, not where the knee is), search / stream methods (whole
+    searches become cheap), and end-to-end pipeline tests.
+  - Do not use it for: embedding / head work (tied: the head *is* the embedding), allocation numbers or sensitivities
+    (different shape ratios), kernel speed (different GEMM shapes), absolute KLD-per-bpw targets.
+  - Setup (~1-2 days): bf16 reference logits on the same calib pools (radiance `--kld-record`), input Hessians
+    (`--calib-corpus`), parameterize the 27B constants in ourq / knap4 / eval. Same pool rules; public never.
+  - Calibration first, pass rule fixed beforehand: replicate known 27B results on the 2B (mixed vs uniform at ~3
+    bpw, damping-sweep gain, int8 codebook cost ~0, the fractional-level curve, output scales off = worse, an
+    output-side Hessian null). Screening is trusted only if most reproduce in direction and roughly in size; winners
+    are always confirmed on the 27B. If 4B / 9B have untied embeddings, one of them is the proxy for head / embedding
+    work.
 - **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
   hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
   so contributors never give shell access.
