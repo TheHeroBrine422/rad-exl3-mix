@@ -522,6 +522,16 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
     (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
     donors needed. (Whole-model check still to do, critique C3.5.)
+  - **Low-K heads** (`lcurve.json`, donors K2 / K3 / K3.5 / K4, floors >= K2): uniform K2 head 0.0379 (x4.8 K3), but
+    slab plans with a K2 floor are strong (budget 2.125: -48% vs uniform K2; budget 3.0: 0.0060 vs uniform K3 0.0079).
+    Cliffs where the floor switches (2.0 -> 2.125 -48%, 3.0 -> 3.125 -41%) = donors too coarse: the remake adds K2.25 /
+    2.5 / 2.75 (+ K1, K1.5), quarters at K2-3 if the cliffs remain.
+  - **qtf2 v3/v4 gate PASS** (packed-min: x3.1-3.5 vs the old kernel at KA 2-4, faster than the integer kernel; sub-1
+    table path = procedural, no speed gain: costs in global memory are the limit). **ourq --qtf2 end to end: 52 tensors
+    byte-identical** to the old path (K2.5, i8, damping sweep, layers 10-11).
+  - **exl3i oracle + decode plan** (`v3/infer`): plain-C reference decode (fractional, sub-1 salt, mul1 / mul1i8; codebook
+    exact on all 65,536 states) and the generalized per-lane plan of exl3r4d (host emulation: 409,600 lane-position
+    cases, every V3 rate, 0 failures).
   - **Extra trunk levels don't pay** (knap4 `KN_FRACS_EXTRA`, `k4levels.sh`): K5.25/5.75 <= 0.7% (6.0 bpw), 1/8 steps at
     K3-5 <= 0.8% (4.0). Base list stands.
 - 2026-11-01 ~3:10 PM CST: **Full uniform requant planned (user):** K0.125-3 at 1/8 steps (sub-1 included as
