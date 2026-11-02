@@ -486,6 +486,8 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
   (M 1..952 across T2, y bf16/f16/f32, stacked seam, GDN 3-D); T2 = nt_pass bytes; integer K = exl3r4d bytes; 19
   refusals. Mutation check: 6 of 10 mutants run (all caught) before iceman went down. qwen35_exl3 routes exl3i weights
   to exl3i_dense (host test). Not yet run: d0.sh (a level's trunk in V2 3.00, real KLD).
+- 2026-11-02 ~02:05 CT: **Embedding run6 (scale search 0.5..1.0): null.** K1 rel 0.25700 -> 0.25642 (-0.2%, edge rows
+  0%), K1.25 0.18289 -> 0.18287. The scale search was never what limits the K1 / K1.25 embedding; menu unchanged.
 - 2026-11-02 ~01:40 CT: **Embedding run5 was a no-op**: identical to run4 (K1 rel 0.25700, edge 0.2017). The edge rows
   sit at the LOW end: K1 826 / 4096 rows at factor 0.85 (the smallest), none above 0.95; K1.25 all at 0.95. run5 widened
   the top (to 1.75). run6 (colo) searches 0.5..1.0.

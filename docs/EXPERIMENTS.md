@@ -146,3 +146,7 @@ in deep layers gains, and per-token is ~5× worse than g128 there to begin with.
 optimisation) would not close a 6.6× gap. Side result: the quant's learned input scales (suh vs signs only) lower
 the A8-g128 error 5%, per-token 35%. Data: `v3/e1b/data/r1.jsonl`.
 
+## Embedding K1 / K1.25: wider per-group scale search (2026-11-02) -- null
+run5 (factors to 1.75) and run6 (0.5..1.0) on 4096 rows, trellis, group 5120: K1 rel 0.25700 -> 0.25642 (-0.2%),
+K1.25 unchanged. At K1 a fifth of the rows sat on the low edge of the old search, but moving the edge bought nothing:
+the error at K1 is the trellis's, not the scale's. Data: colo /data/work/embt/rows5, rows6.
