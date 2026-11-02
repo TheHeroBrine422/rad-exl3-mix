@@ -2,6 +2,32 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 11:15 CST · #33-12 · H_out for 27B sizing: diagonal is enough; ~4K sequences
+- **Status:** done · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact3.sh` @ 86f1233
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 5 (written before data).
+- **Setup:** all arms on `base`'s settings + H_out at output damping 0.01, i8, g08-search1.
+- **Result** (vs `base`: ratio, z; vs `bhout` = full H_out, 8K):
+
+  | arm | K3 KL | vs base | vs full | K2 KL | vs base | vs full |
+  |---|---|---|---|---|---|---|
+  | full (`bhout`, #33-11) | 0.0893 | −9.7% (−12.4) | — | 0.506 | −5.6% (−6.3) | — |
+  | full, gate/up diagonal (`bmix`) | 0.0891 | −9.9% (−13.5) | −0.2% (−0.4) | 0.494 | −7.7% (−11.0) | −2.2% (−5.0) |
+  | diagonal only (`bdiag`) | 0.0910 | −8.0% (−13.5) | +1.9% (2.4) | 0.493 | −8.0% (−13.1) | −2.5% (−3.0) |
+
+  Dose, full H_out at K3: 1K 0.0950 (−3.9%, 40% of the 8K gain), 2K 0.0922 (−6.8%, 70%), 4K 0.0890 (−10.0%,
+  103%; vs 8K z −0.4).
+- **Reading:** the diagonal keeps the gain by the rule (≥ 2/3 at both K, worse than full only at K3 by z 2.4 < 3), so
+  it sets the 27B collection: **diagonal only** (~10 MB of accumulators). The full gate/up H_out *hurts* at K2 (the
+  noisiest factors, #33-09). The mixed arm is the best at K3 (+~2% over diagonal) for 25 GB of accumulators at 27B.
+  Full H_out needs ~4K sequences (2K reaches 70%); the dose of the diagonal alone was not measured (its two halves
+  agree at ≥ 0.997, #33-09, so likely fewer).
+- **Decision / next:** plan the 27B collection: per-sequence weight-gradient row norms (diag of Sketch B's H_out)
+  with sampled targets, fp32 backward, calib H_in unchanged; ~4K sequences of 2048 tokens from the qad pool; then a
+  27B K3 / K2.5 swap test against the ladder's levels before anything changes in V3. Optional on 0.8B: dose of the
+  diagonal (1K/2K on `bdiag`).
+- **Files:** 4070 `/data/yb/result-fact3.txt`; 27B H_out sizes per type in this entry's commit message context
+  (full 206 GB fp32, without gate/up 51 GB, diagonal ~10 MB).
+
 ### 2026-11-02 10:30 CST · #33-11 · H_out follow-ups on 0.8B: holds at K2 and stacks on our settings
 - **Status:** done (positive) · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact2.sh` @ 6496e9e
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 4 (written before data).

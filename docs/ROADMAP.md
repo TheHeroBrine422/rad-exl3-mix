@@ -106,8 +106,9 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
 - **YAQA on the 0.8B (2026-11-02): full YAQA loses, H_out alone wins.** The paper's Sketch B as a whole stays worse
   than one-sided LDLQ at 1K–8K sequences (#33-08), but the loss comes from its gradient-weighted H_in: with our calib
   input Hessian kept and only Sketch B's H_out added, K3 is −9.9% vs LDLQ and −4.3% vs our tuned quant (z −5.4,
-  #33-10). On top of our tuned settings: K3 −9.7%, K2 −5.6% vs our tuned quant (#33-11). Next: size a 27B
-  collection (output side only; full vs diagonal H_out for gate/up, sequences needed), then a 27B check.
+  #33-10). On top of our tuned settings: K3 −9.7%, K2 −5.6% vs our tuned quant (#33-11). The diagonal of H_out alone
+  keeps the gain (K3 −8.0%, K2 −8.0%, #33-12), so the 27B collection is diagonal-only (~10 MB of accumulators,
+  one pass, ~4K sequences); then a 27B swap test before V3 changes.
 - **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
   hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
   so contributors never give shell access.
