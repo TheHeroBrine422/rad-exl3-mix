@@ -522,6 +522,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
     (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
     donors needed. (Whole-model check still to do, critique C3.5.)
+  - **Output scales off on upstream-flagged gate/up: WORSE, +2.5% KLD** (z 2.1; K3 mul1, gate+up of the 36 layers with
+    a flagged projection, 52 scales off, swapped into V2 3.00, golden-s2k: 583 search docs, 481k positions;
+    `v3/e3/osr/result-K3.json`). Upstream's auto rule (ratio > 1.05) misjudges this model, like gate 2d's output-side
+    model. Rule fixed beforehand: the requant keeps output scales always on; the K5 repeat was dropped.
   - **Low-K heads** (`lcurve.json`, donors K2 / K3 / K3.5 / K4, floors >= K2): uniform K2 head 0.0379 (x4.8 K3), but
     slab plans with a K2 floor are strong (budget 2.125: -48% vs uniform K2; budget 3.0: 0.0060 vs uniform K3 0.0079).
     Cliffs where the floor switches (2.0 -> 2.125 -48%, 3.0 -> 3.125 -41%) = donors too coarse: the remake adds K2.25 /

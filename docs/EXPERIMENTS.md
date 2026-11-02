@@ -7,6 +7,9 @@ idea is dropped.
 
 ## Quantization / format
 
+- **Output scales by upstream's auto rule** (2026-11-01): exllamav3's out_scales_ratio test flags up_proj in 35/64
+  layers and gate_proj in 17; turning their scales off (K3, swapped into V2 3.00, paired on 583 search docs) made KLD
+  2.5% worse (z 2.1). Output-side local sensitivity models keep failing on this model (cf. YAQA gate 2d). Not adopted.
 - **YAQA output-side Hessians from sampled positions** — 2026-10-31. *Idea:* two-sided LDLQ with H_out = Σ w dy dyᵀ
   from the model's backward pass (YAQA), collected as rows r = ‖x‖·dy at 32 random positions per 2048-token
   sequence (fit pool). *Test:* blocks 22+23 requantized two-sided vs one-sided at K2/K3, spliced into V2 6.00, paired
