@@ -5,7 +5,7 @@
 # the same build (/data/port115, 0.027122). LEVEL: K values under /data/v3ladder2 (default 3 2.5). Out /data/v3e2e/.
 #
 # Before running: sync the fork (plugin/exl3i, exl3import, exl3quant, qwen35_exl3, exl3r4d, exl3dense) into /root/rhv3, and
-# this script with eval/cmp115.py into /root/v3e2e/.
+# this script with eval/cmp115.py and store/census.py into /root/v3e2e/.
 #
 # PASS RULE (written 2026-11-02 before any run). Per level:
 #   1. the pack converts and the mix loads (rc 0), the bpw is what the level says (trunk K, V2's head / embedding);
@@ -15,7 +15,7 @@
 : ${RXM_WORK:=/root}
 C=${1:-1}; shift 2>/dev/null; LEVELS=${*:-3 2.5}
 O=/data/v3e2e L=/data/v3ladder2 R=/root/rhv3 I=/root/install-115 G=$RXM_WORK/golden-ver1
-V2=/data/release/qwen3.8-27b-exl3-v2-3.00bpw.rad REF=/data/port115/r115.json CMP=${CMP:-/root/v3e2e/cmp115.py}
+V2=/data/release/qwen3.8-27b-exl3-v2-3.00bpw.rad REF=/data/port115/r115.json CMP=${CMP:-/root/v3e2e/cmp115.py} CENSUS=${CENSUS:-/root/v3e2e/census.py}
 mkdir -p $O; log() { echo "$(date -u +%H:%M:%S) $*" | tee -a $O/result.txt; }
 export PATH=/opt/rocm/core-10.1/bin:$PATH ROCM_PATH=/opt/rocm/core-10.1
 
@@ -56,9 +56,12 @@ for k in $LEVELS; do
       echo "pack K$k rc=$? $(( $(date +%s) - s ))s" ) | tee -a $O/result.txt
     [ -f $P ] || { log "pack K$k FAIL ($O/conv-K$k.log)"; continue; }
   fi
+  python3 -I $CENSUS $P --recipe $O/K$k.recipe > $O/census-pack-K$k.txt || { log "pack K$k census FAIL ($O/census-pack-K$k.txt)"; continue; }
   # 4. the mix: V2 3.00 with the whole trunk from the pack
   TRUNK | sed "s|\$| $P|" > $O/K$k.mix
   /root/hproxy/radmix $M $V2 $O/K$k.mix > $O/mix-K$k.log 2>&1 || { log "radmix K$k FAIL"; continue; }
+  python3 -I $CENSUS $M --mix $O/K$k.mix --base $V2 > $O/census-K$k.txt || { log "mix K$k census FAIL ($O/census-K$k.txt)"; continue; }
+  grep -q "exl3i  *$k  *mul1i8 *f16  *336 " $O/census-K$k.txt || { log "mix K$k: not 336 exl3i K$k trunk weights ($O/census-K$k.txt)"; continue; }
   log "K$k: $(basename $M) $(python3 -c "import os; print(f'{os.path.getsize(\"$M\") * 8 / 26895998464:.4f} bpw')")"
   # 5. score (card lock, then ram, as everything on the cards)
   ( exec 5>$RXM_WORK/card$C.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7; s=$(date +%s)
