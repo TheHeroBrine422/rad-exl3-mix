@@ -2,6 +2,47 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 16:50 CST · #33-18 · Estimators and dose on 0.8B: Sketch A step 1 and Σdy² work too; 512 sequences suffice
+- **Status:** running → done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 11
+- **Result** (3 seeds, base settings + diagonal H_out from 1,024 calib qad windows unless noted; base mean K3 0.0986,
+  K2 0.5330):
+
+  | diagonal | K3 mean | vs base | K2 mean | vs base | every seed beats every base seed |
+  |---|---|---|---|---|---|
+  | Sketch B (`eB`) | 0.0910 | −7.7% | 0.5119 | −4.0% | K3 yes, K2 no |
+  | ‖x‖²dy² (`exw`, Sketch A step 1, the old 27B gates' weighting) | 0.0923 | −6.4% | 0.4988 | −6.4% | yes / yes |
+  | Σdy² (`edy`, H_Z) | 0.0899 | −8.8% | 0.4996 | −6.3% | yes / yes |
+  | Sketch B, 512 seqs | 0.0920 | −6.6% | 0.5072 | −4.8% | yes / yes |
+  | Sketch B, 256 | 0.0927 | −6.0% | 0.5198 | −2.5% | yes / no |
+  | Sketch B, 128 | 0.0918 | −6.8% | 0.5160 | −3.2% | yes / no |
+  | (xcorp 8K Sketch B, #33-16) | 0.0906 | −8.1% | 0.5043 | −5.4% | yes / yes |
+
+- **Reading:** A2: `exw` keeps the gain (83% at K3, more than Sketch B at K2) → the old 27B negatives were not the
+  estimator's fault (they were full-matrix two-sided rounding from few sampled rows, #33-02…05); per the rule, a
+  short 27B pilot swap comes before the full night. `dy` is as good as Sketch B or better (within / beyond one seed
+  SD): the cheapest estimator, per-token, needs no x, works on short documents. A5: **512 sequences** qualify (K3 86%,
+  K2 >100%, every seed beats base); 256 / 128 fail at K2.
+- **Decision / next:** 27B collector: per-token Σdy² (plus Sketch B and xw in the same pass for a 27B check), 512
+  sequences, then the pilot swap; YAQA08 amendment 10's stopping rule is replaced (see the next amendment).
+- **Files:** `data/yaqa08/result-fact7.txt`
+
+### 2026-11-02 16:52 CST · #77 / #78 · CPU proxy sweep, first read (13 of 16 tensors; ffn_down pending on colo)
+- **Result** (ratio to LDLQ with mul1_i8, mean over tensors / parameter-weighted):
+
+  | K | CD 3 sweeps | gmul1_i8 | cubic0.02_i8 | cubic0.05_i8 |
+  |---|---|---|---|---|
+  | 2 | 0.990 / 0.991 | 0.990 / 0.993 | 0.991 / 0.994 | 0.995 / 1.000 |
+  | 2.5 | 0.991 / 0.992 | 0.985 / 0.988 | 0.986 / 0.988 | 0.990 / 0.996 |
+  | 3 | 0.993 / 0.994 | 0.981 / 0.985 | 0.980 / 0.985 | 0.982 / 0.990 |
+  | 4 | 0.990 / 0.992 | 0.975 / 0.983 | 0.976 / 0.984 | 0.974 / 0.985 |
+
+  CD helps every tensor at every K but by ~1%, accepted tiles 25% / 14% / 9% per sweep.
+- **Reading (provisional):** #77 C2 fails its 2% bar (K2.5 0.991). #78: gmul1_i8 and cubic0.02_i8 pass (≤ 0.995 at
+  K2.5 and K3, ≤ 1 at K4) and are within 0.1% of each other → cubic0.02 (2 FMAs) by the rule; cubic0.05 fails at
+  K2.5. Final after ffn_down. Consistent with the faraway lens's M6 (the weights are near-Gaussian, mul1's bytesum is
+  not: matching the codebook to the weights helps).
+- **Files:** `data/e3/cd-thor.jsonl`
+
 ### 2026-11-02 16:35 CST · #77 / #78 · Tile coordinate descent (C2) and Gaussianized mul1 codebooks (D3): CPU sweep started
 - **Status:** running · **Machine:** Thor (20 jobs × 2 threads) · **Code:** `v3/e3/trellis2.py`, `v3/e3/cd/run.sh` @ 48e7b99
 - **Pass rules:** `v3/e3/cd/README.md` (written before data).
