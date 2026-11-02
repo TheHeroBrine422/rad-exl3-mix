@@ -2,6 +2,15 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 17:05 CST · #— · Challenge author: the target is VRAM size; load-time expansion only as a stopgap
+- **Decision (deadcode, asked by the user):** the challenge optimises VRAM size. Expanding weights at load time is
+  acceptable only as a temporary workaround while a kernel is missing; the goal is minimal VRAM.
+- **Consequence:** ideas whose storage is small but whose runtime form is larger (faraway A1 "down from up + gate",
+  C5 entropy-coded storage, any load-time transcoding) only count once they run from the stored form: A1 needs the
+  online-prediction kernel (faraway A2: transposed GEMMs re-reading the up / gate tiles, +1–2 GEMMs in the MLP), so
+  its gain must be weighed against that speed cost from the start. A proxy test of A1 is still worth it (it decides
+  whether the kernel is), but on the GPU (iceman), not a CPU day.
+
 ### 2026-11-02 16:50 CST · #33-18 · Estimators and dose on 0.8B: Sketch A step 1 and Σdy² work too; 512 sequences suffice
 - **Status:** running → done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 11
 - **Result** (3 seeds, base settings + diagonal H_out from 1,024 calib qad windows unless noted; base mean K3 0.0986,
