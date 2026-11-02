@@ -9,14 +9,17 @@ import numpy as np
 P, VEC = sys.argv[1], sys.argv[2]
 HERE = os.path.dirname(os.path.abspath(__file__)); REF = os.path.join(HERE, "..", "ref", "exl3i_ref.c")
 so_p, so_r = "/tmp/libexl3i_plug.so", "/tmp/libexl3i_ref.so"
+shim = "/tmp/exl3i_shim.c"   # the header's inline rate functions, exported for ctypes
+open(shim, "w").write('#include "exl3i_decode.h"\nint shim_rate_parse(const char* s) { return exl3i_rate_parse(s); }\n'
+                      'const char* shim_rate_str(int m, char* b) { return exl3i_rate_str(m, b); }\n')
 subprocess.run(["gcc", "-O2", "-ffp-contract=off", "-shared", "-fPIC", "-o", so_p, f"{P}/common/exl3i_decode.c",
-                f"{P}/common/exl3_decode.c", f"-I{P}/common", "-lm"], check=True)
+                f"{P}/common/exl3_decode.c", shim, f"-I{P}/common", "-lm"], check=True)
 subprocess.run(["gcc", "-O2", "-ffp-contract=off", "-shared", "-fPIC", "-o", so_r, REF, "-lm"], check=True)
 A, R = ctypes.CDLL(so_p), ctypes.CDLL(so_r)
 A.exl3i_decode_tile.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p]
 R.exl3i_decode_tile.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p]
-A.exl3i_rate_parse.argtypes = [ctypes.c_char_p]; A.exl3i_rate_str.restype = ctypes.c_char_p
-A.exl3i_rate_str.argtypes = [ctypes.c_int, ctypes.c_char_p]; A.exl3i_mask.argtypes = [ctypes.c_int]
+A.shim_rate_parse.argtypes = [ctypes.c_char_p]; A.shim_rate_str.restype = ctypes.c_char_p
+A.shim_rate_str.argtypes = [ctypes.c_int, ctypes.c_char_p]; A.exl3i_mask.argtypes = [ctypes.c_int]
 A.exl3_trellis_decode.argtypes = [ctypes.c_void_p, ctypes.c_int64, ctypes.c_int64, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 fails = 0; rng = np.random.default_rng(0)
 # (1) vs the reference oracle
@@ -58,9 +61,9 @@ fails += f3; print(f"(3) integer K1-8 mul1 vs exllamav3's oracle: {f3} differenc
 # (4) rate spelling
 f4 = 0
 for m in range(2, 129, 2):
-    b = ctypes.create_string_buffer(16); s = A.exl3i_rate_str(m, b)
-    f4 += A.exl3i_rate_parse(s) != m
+    b = ctypes.create_string_buffer(16); s = A.shim_rate_str(m, b)
+    f4 += A.shim_rate_parse(s) != m
 for bad in (b"2.250", b"02.5", b"2.3", b"0", b"8.125", b"-1", b"", b"2.5x"):
-    f4 += A.exl3i_rate_parse(bad) != -1
+    f4 += A.shim_rate_parse(bad) != -1
 fails += f4; print(f"(4) rate spelling: {f4} failures")
 print("EXL3I DECODE", "PASS" if fails == 0 else f"FAIL ({fails})"); sys.exit(1 if fails else 0)
