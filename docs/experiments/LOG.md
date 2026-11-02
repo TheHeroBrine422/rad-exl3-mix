@@ -2,6 +2,15 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 15:30 CST · #— · Own pi session logs allowed as a training / statistics corpus (user)
+- **Decision:** `/workspace/pi-sessions` (all our pi sessions: 117 main / subagent files, 459 print-mode runs, 396 MB)
+  may be used for training and statistics (QAD, healing, H_out / Hessian collections), as a non-calib corpus like
+  xcorp; not for selection or verification, never published (private material). AGENTS.md updated.
+- **Census** (characters of message text; md5 dedupe of identical blocks): main + subagent sessions 58.7M (assistant
+  22.1M, tool results 35.9M, user 0.7M), 42.4M unique ≈ 10–12M tokens — about the size of calib, and all agentic;
+  longest session 16.8M chars (~4M tokens). Print-mode runs: 175.8M of user messages = repeated attached documents
+  (low value), 19.7M of assistant reports. Private-looking blocks (IPs / key paths / emails): ~3,900.
+
 ### 2026-11-02 15:12 CST · #33-18 · Estimator check (Sketch B / ‖x‖²dy² / dy²) and dose 128–1024 on 0.8B: started
 - **Status:** running · **Machine:** 4070 (≤ 7.2 GB) · **Code:** `proxy2b/yaqaFact7.sh`, `collect.py` YAQA_DIAG_EXTRA @ 39e3cd3
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 11 (critic items A2, A5)
