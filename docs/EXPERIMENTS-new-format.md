@@ -476,6 +476,20 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-02 ~02:00 CT: **exl3i serving path works on the GPU, up to the full model** (radiance-hero `qc-exl3-v3`
+  4edad1f..340165b). Encoding `exl3i` (scheme exl3i, transform `<cb>/h128/k<rate>`, a u32 record TABLE plane of 16-row
+  groups); the C oracle `common/exl3i_decode.c` (= the reference decoder, GPU quantizer vectors, exllamav3's oracle at
+  integer K); the importer `exl3quant`'s `exl3i` quantiser (real K2.5 / K3 tensors: H-weighted error = ourq's logged
+  proxy_err, ratio 1.000, stacked gate_up included); the kernel library `exl3i` (op `exl3i_dense`: exl3r4d's kernel
+  with the decode a rate policy -- integer K exl3r4d's own plan, fractional / sub-1 a run-time plan). Selftest
+  `exl3i_gpu_test`: decode bit-exact at all 64 rates x 2 codebooks; 256 GEMMs over every rate; 48 shape / dtype cases
+  (M 1..952 across T2, y bf16/f16/f32, stacked seam, GDN 3-D); T2 = nt_pass bytes; integer K = exl3r4d bytes; 19
+  refusals. Mutation check: 6 of 10 mutants run (all caught) before iceman went down. qwen35_exl3 routes exl3i weights
+  to exl3i_dense (host test). Not yet run: d0.sh (a level's trunk in V2 3.00, real KLD).
+- 2026-11-02 ~01:40 CT: **Embedding run5 was a no-op**: identical to run4 (K1 rel 0.25700, edge 0.2017). The edge rows
+  sit at the LOW end: K1 826 / 4096 rows at factor 0.85 (the smallest), none above 0.95; K1.25 all at 0.95. run5 widened
+  the top (to 1.75). run6 (colo) searches 0.5..1.0.
+
 - 2026-11-01 ~00:10 CT: **Held-out provenance** (`eval/pools/provenance.py`, every golden's kld.json docs vs pools.json;
   `eval/pools/provenance-2026-11-01.json`). Verify pool: 845 docs; **317 never used by any slice (434k tokens), but
   none longer than 16k tokens and none agentic / long-agentic / long** -- those categories (43.8% of verify tokens)
