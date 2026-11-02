@@ -181,8 +181,9 @@ __device__ __forceinline__ void qtf2_step_cached
     for (int j = 0; j < NP; ++j)
     {
         const int out = 2 * (thread + j * NT);
-        half2 min_err2;
-        int min_k0 = 0, min_k1 = 0;
+        // v4: packed minimum (cost bits << 16 | k): for non-negative, non-NaN halves the bit patterns order like the
+        // values and ties go to the lowest k -- the same pick as the strict-less scan (qtf2check verifies it)
+        uint32_t best0 = 0xffffffffu, best1 = 0xffffffffu;
         #pragma unroll
         for (int k = 0; k < NC; ++k)
         {
@@ -196,25 +197,15 @@ __device__ __forceinline__ void qtf2_step_cached
             }
             else
                 err2 = __hfma2(dh2, dh2, __half2half2(costs_in[in_edge_idx]));
-            if (k == 0) { min_err2 = err2; continue; }
-            if (__hlt(__low2half(err2), __low2half(min_err2)))
-            {
-                min_err2 = __halves2half2(__low2half(err2), __high2half(min_err2));
-                min_k0 = k;
-            }
-            if (__hlt(__high2half(err2), __high2half(min_err2)))
-            {
-                min_err2 = __halves2half2(__low2half(min_err2), __high2half(err2));
-                min_k1 = k;
-            }
+            const uint32_t eb = __builtin_bit_cast(uint32_t, err2);
+            best0 = min(best0, (eb << 16) | (uint32_t) k);
+            best1 = min(best1, (eb & 0xffff0000u) | (uint32_t) k);
         }
+        const half2 min_err2 = __builtin_bit_cast(half2, (best0 >> 16) | (best1 & 0xffff0000u));
         if constexpr (STAGE) stage[j] = min_err2;
         else reinterpret_cast<half2*>(costs_out)[out >> 1] = min_err2;
         if (write_hist)
-        {
-            hist_row[out] = (uint8_t) min_k0;
-            hist_row[out + 1] = (uint8_t) min_k1;
-        }
+            *reinterpret_cast<uint16_t*>(hist_row + out) = (uint16_t) ((best0 & 0xffu) | ((best1 & 0xffu) << 8));
     }
 }
 
