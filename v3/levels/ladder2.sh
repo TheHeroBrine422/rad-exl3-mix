@@ -33,6 +33,7 @@ pop() {   # next level not done and not taken; prints nothing when the queue is 
       done; [ $done_all = 1 ] && continue
       g=$(cbof $k)_${lv//,/_}
       [ -f $D/K$g.taken ] && kill -0 $(cat $D/K$g.taken) 2>/dev/null && continue
+      [ $(cat $D/K$g.fails 2>/dev/null || echo 0) -ge 2 ] && continue      # fail cap: a level that failed twice is skipped
       echo $$ > $D/K$g.taken; echo $k; break      # $$ = this card's driver (a subshell keeps it)
     done < $Q ) 8>$D/queue.lock
 }
@@ -57,7 +58,8 @@ while k=$(pop) && [ -n "$k" ]; do
   rc=$?
   n=""; for kk in ${lv//,/ }; do n="$n $(ls $R/K$kk/q-L*.safetensors 2>/dev/null | wc -l)"; done
   [ $rc = 0 ] && [ -z "$(echo $n | tr ' ' '\n' | grep -v '^64$')" ] && log "K$k done in $(( ($(date +%s) - s) / 60 )) min" \
-    || log "K$k FAIL rc=$rc (layers per level:$n; resumes on rerun)"
+    || { echo $(( $(cat $D/K$g.fails 2>/dev/null || echo 0) + 1 )) > $D/K$g.fails
+         log "K$k FAIL rc=$rc (layers per level:$n; fail $(cat $D/K$g.fails) of 2; resumes on rerun)"; }
   rm -f $D/K$g.taken
 done
 log "queue empty"

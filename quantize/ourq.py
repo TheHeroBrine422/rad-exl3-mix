@@ -39,6 +39,21 @@ def _refit(*args, **kw):
     torch.cuda.empty_cache(); _warm_refit(dev); torch.cuda.empty_cache()
     return _orig_refit(*args, **kw)
 _Q.refit_scales = _refit
+# LDLQ drift (the expected inflation of the tiles LDLQ feeds the search; the global scale search pre-inflates its samples
+# by it): exllamav3 looks it up by exact K in {1, 1.5, 2, 2.5, 3} and gives every other K 1.0, so the 1/8 and quarter
+# levels below K4 got none (trunk review 2026-11-02). Log-linear interpolation between the table points, 1.0 from K4,
+# 1.08 below K1; the table points themselves are unchanged (identity gates hold there). OURQ_DRIFT_EXACT=1: old lookup.
+if not os.environ.get("OURQ_DRIFT_EXACT"):
+    import math as _m
+    _DT = sorted(dict(_Q.LDLQ_DRIFT, **{4: 1.0}).items())
+    def _drift(K):
+        K = float(K)
+        if K in dict(_DT): return dict(_DT)[K]
+        if K <= _DT[0][0]: return _DT[0][1]
+        if K >= _DT[-1][0]: return 1.0
+        (k0, d0), (k1, d1) = next((p, q) for p, q in zip(_DT, _DT[1:]) if p[0] < K < q[0])
+        return _m.exp(_m.log(d0) + (_m.log(d1) - _m.log(d0)) * (K - k0) / (k1 - k0))
+    _Q.ldlq_drift = _drift
 
 CKPT = RXM_CKPT
 HESS = f"{RXM_WORK}/challenge/hessians/calib"
@@ -89,6 +104,8 @@ ap.add_argument("--only", default=None, metavar="FILE", help="quantize only thes
 ap.add_argument("--head-mean-row", action="store_true", help="lm_head: subtract the mean vocabulary row before "
                 "quantizing (logits shift by one constant a position: softmax and KL unchanged). Every donor of a slab "
                 "head must agree on this, or mixed rows stop sharing the shift")
+ap.add_argument("--scaled-hessian", action="store_true", help="exllamav3's scaled_hessian: LDLQ factors P diag(su) H diag(su) P "
+                "per tensor (the metric of the row-scaled weight it actually quantizes) instead of the shared rotated H")
 ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
                 "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
 a = ap.parse_args()
@@ -204,6 +221,7 @@ def quantize_group(hname, keys, seed0, log):
         qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
         if key in OFF: qa["apply_out_scales"] = False
+        if a.scaled_hessian: qa["scaled_hessian"] = True
         if a.sigma_reg is not None: qa["sigma_reg"] = a.sigma_reg
         if a.sigma_reg_in is not None and hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input"):
             qa["sigma_reg"] = a.sigma_reg_in
@@ -220,13 +238,15 @@ def quantize_group(hname, keys, seed0, log):
         is_in = hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input") if ".layers." in hname else False
         if a.sigma_in_sweep and is_in:
             Hu = hessian(hname)["H"]; ref = float((w * (Hu @ w)).sum()); best = None
+            sweep_all = {}
             for sg in [float(v) for v in a.sigma_in_sweep.split(",")]:
                 qs = dict(qa); qs["sigma_reg"] = sg
                 _CUR[0] = key; wq_, perr_, t_ = quantize_exl3(w.clone(), hessian(hname), qs, True)
                 E = w - wq_.float(); rel = float((E * (Hu @ E)).sum()) / ref; del E
+                gs = qs.get("g_scale"); sweep_all[str(sg)] = [rel, None if gs is None else float(gs)]
                 if best is None or rel < best[0]: best = (rel, sg, wq_, perr_, t_)
                 else: del wq_, t_
-            _, qa["sigma_reg"], wq, perr, t = best; qa["sweep_rel"] = best[0]; del Hu
+            _, qa["sigma_reg"], wq, perr, t = best; qa["sweep_rel"] = best[0]; qa["sweep_all"] = sweep_all; del Hu
         else:
             _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
         if a.save_wq:
@@ -246,7 +266,8 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
-                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "gain": GAIN[0], "codebook": a.codebook,
+                              "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "sweep_all": qa.get("sweep_all"),
+                              "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook,
                               "out_scales": qa.get("apply_out_scales"), "head_mean_row": bool(a.head_mean_row and key == "lm_head"),
                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
