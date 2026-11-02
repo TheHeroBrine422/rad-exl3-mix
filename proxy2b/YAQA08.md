@@ -68,3 +68,15 @@ Rules (paired, z = diff / se):
 - **Stacks with our settings** if `bhout` beats `base` with z ≤ −2 at that K.
 - **The user's switch bar on the 0.8B** ("beat our tuned base"): `bhout` beats `base` with z ≤ −2 at **both** K3 and
   K2. Even then, nothing changes for V3 until a 27B check; this only decides whether to plan one.
+
+## Amendment 5 (2026-11-02 ~10:45 CST, written before any data): 27B sizing, #33-12
+
+All on `base`'s settings + H_out at output damping 0.01 (as `bhout`), i8, g08-search1. Arms:
+- `bmix` (K3, K2): full H_out everywhere except mlp.gate_proj / up_proj, which get only diag(H_out); 8K snapshot;
+- `bdiag` (K3, K2): diag(H_out) for every linear; 8K snapshot;
+- `bhoutN` (K3): full H_out from the N = 1024 / 2048 / 4096 snapshot (dose).
+Rules (gain = paired diff vs `base` at that K):
+- An approximation **keeps the gain** if its gain is ≥ 2/3 of `bhout`'s at both K and it is not worse than `bhout`
+  by z ≥ 3 at either K. The cheapest arm that keeps the gain sets the 27B collection: `bdiag` → diagonal only
+  (MB, one pass); else `bmix` → full H_out except gate/up (~25 GB, see the 27B plan); else full (~160 GB).
+- **Sequences needed:** the smallest N whose K3 gain is ≥ 80% of the 8K gain.
