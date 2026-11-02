@@ -25,14 +25,14 @@ def frac_k(K):
 
 
 def load(src: str, variant: str = "mul1", verbose: bool = False):
-    assert variant in ("mul1", "i8"), variant
+    assert variant in ("mul1", "i8", "i8c"), variant
     import torch
     from torch.utils import cpp_extension as C
     from exllamav3.util import cuda_flags as F
     src = os.path.abspath(src)
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(HERE, "build"))
     hip = bool(torch.version.hip)
-    d = ["-DEXL3_MUL1_I8"] if variant == "i8" else []
+    d = {"i8": ["-DEXL3_MUL1_I8"], "i8c": ["-DEXL3_MUL1_I8", "-DEXL3_I8_CUBIC=0.02f", "-DEXL3_I8_CUBIC_SD=1.0546900f"]}.get(variant, [])   # i8c: #78
     defs = os.environ.get("QTF2_DEFS", "").split()           # test builds: QTF2_NOBACK / QTF2_NOHIST (timing only), QTF2_BYTEHIST (pre-v5 history)
     d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d

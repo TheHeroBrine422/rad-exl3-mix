@@ -63,7 +63,7 @@ L = "model.language_model.layers"
 ap = argparse.ArgumentParser()
 ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
-ap.add_argument("--codebook", choices=("mul1", "i8", "i4"), default="mul1", help="search with the int8- or int4-"
+ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c"), default="mul1", help="search with the int8- or int4-"
                 "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
 ap.add_argument("-K", required=True,
                 help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8); "
@@ -128,7 +128,7 @@ if a.codebook != "mul1":
     import exl3cb
     exl3cb.install(a.frac_ext, a.codebook)
 if a.qtf2:
-    assert a.frac_ext and a.codebook in ("mul1", "i8"), "--qtf2 needs --frac-ext SRC and the mul1 or i8 codebook"
+    assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c"), "--qtf2 needs --frac-ext SRC and the mul1, i8 or i8c codebook"
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
     import exl3frac2
     exl3frac2.install(a.frac_ext, a.codebook)

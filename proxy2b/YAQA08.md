@@ -170,3 +170,13 @@ token weights. Quants on base settings + that diagonal, K3 / K2, seeds 0 / 1 / 2
   both K; **better** if ≤ 0.98× eB at both K with every xh seed beating every eB seed at one K at least.
 - Use for the 27B: if xh or xw is as good as Sketch B, the 27B collector may use the per-token form (no G_b per
   sequence: cheaper and works with short documents of any length); pick the cheaper unless one is better by the rule.
+
+## #78 KL test (2026-11-02 ~17:25 CST, written before any data): cubic int8 codebook (i8c) vs i8 on the 0.8B
+
+`ourq --codebook i8c` (codebook.cuh EXL3_I8_CUBIC 0.02: x + 0.02 x^3 on the bytesum, renormalised, same int8 grid;
+2 FMAs in the decode) vs `i8`, base settings (no H_out), g08-search1. K3 and K2 at rotation seed offsets 0–3 (base
+seeds 0–2 exist; seed 3 added), K4 at seeds 0–1 for both. Arms paired by seed (same rotation signs).
+- **Real** if, at K3 and K2, the mean over seeds of log(KL_i8c / KL_i8) is below zero by ≥ 2 standard errors (SE
+  from the spread of the per-seed log-ratios), or every i8c seed beats its paired i8 seed.
+- **Worth it:** the cost is a decoder constant and the requant V3 does anyway, so any real gain at K2–K3 is adopted
+  provided K4 is not worse by more than its seed spread. Proxy prediction (#78 CPU sweep): −1.4% (K2.5), −2.0% (K3).

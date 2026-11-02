@@ -16,7 +16,7 @@ import exl3frac
 
 
 def load(src: str, variant: str, verbose: bool = False):
-    assert variant in ("i8", "i4"), variant
+    assert variant in ("i8", "i4", "i8c"), variant
     import torch
     from torch.utils import cpp_extension as C
     from exllamav3.util import cuda_flags as F
@@ -24,7 +24,7 @@ def load(src: str, variant: str, verbose: bool = False):
     src = os.path.abspath(src)
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(here, "build"))
     hip = bool(torch.version.hip)
-    d = [f"-DEXL3_MUL1_{variant.upper()}"]
+    d = ["-DEXL3_MUL1_I8", "-DEXL3_I8_CUBIC=0.02f", "-DEXL3_I8_CUBIC_SD=1.0546900f"] if variant == "i8c" else [f"-DEXL3_MUL1_{variant.upper()}"]   # i8c: #78
     defs = os.environ.get("EXL3CB_DEFS", "").split()        # test builds (qtint5check.py): QT_FULLSYNC
     d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d

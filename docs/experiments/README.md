@@ -55,6 +55,12 @@ Short entries are fine: drop the lines that do not apply, but keep the header li
   used ("amendment 1, written ...").
 - Tuning only on calib pools (fit / search / qad / verify); public only to report; say which pool a slice came from.
 - Report paired comparisons with uncertainty; differences under ~1.5% on 100k-position slices are noise.
+- **Two questions, two criteria** (user, 2026-11-02): a pass rule says separately (1) **is it real** — judged against
+  measured noise with the least noisy design available (paired by document; by seed or with fixed codes where the
+  arms can share rounding noise; seed replicates otherwise: 0.8B per-seed SD ~1% K3 / ~2% K2, #33-16) — and (2) **is
+  it worth it** — a threshold set from the idea's cost (quant time, kernel work, format, complexity). A small effect
+  that is consistent goes to a tighter confirmation, not straight to "fail"; a real but tiny effect is judged on
+  cost. No fixed "≥ 2%" bars copied from idea lists.
 - bf16 KV cache for every KLD.
 - **Every experiment's raw results go into the repo** (`data/<topic>/`, with a README mapping files to numbers) in the
   same commit as its LOG entry, and the entry's Files line points there. Results living only on a GPU box are lost
