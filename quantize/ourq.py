@@ -74,6 +74,7 @@ ap.add_argument("--layers", default="0-63")
 ap.add_argument("--head", action="store_true", help="also lm_head")
 ap.add_argument("--only-head", action="store_true")
 ap.add_argument("--device", type=int, default=0)
+ap.add_argument("--seed-offset", type=int, default=0, help="added (x 100000) to every tensor's rotation seed: replicate quants of the same setting (0 = the usual seeds)")
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout' square or 'hout_diag' "
                 "vector = a diagonal factor; v3/yaqa/fold.py, collect.py YAQA_DIAG): two-sided LDLQ for the linears that have one")
@@ -219,7 +220,7 @@ def quantize_group(hname, keys, seed0, log):
             w = w[:, torch.from_numpy(np.load(a.head_perm)).to(dev)].contiguous()
         if a.head_mean_row and key == "lm_head":
             w -= w.mean(dim=1, keepdim=True)              # columns are vocabulary rows: drop their mean
-        qa = {"seed": seed0 + j, "K": a.K, "devices": [a.device], "device_ratios": None,
+        qa = {"seed": seed0 + j + 100000 * a.seed_offset, "K": a.K, "devices": [a.device], "device_ratios": None,
               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
         if key in OFF: qa["apply_out_scales"] = False
         if a.scaled_hessian: qa["scaled_hessian"] = True

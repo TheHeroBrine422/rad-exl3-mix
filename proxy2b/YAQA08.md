@@ -110,3 +110,17 @@ sequence), linear GEMMs in x2, and as a control in bf16. The fp32 reference is t
   Then the 27B collector runs with YAQA_PREC=x2 (its gate also reports one linear against fp32 on the 27B).
 - bf16 is the control: if bf16 also passes, the KL test cannot see collector precision at 1K sequences, and x2's pass
   is recorded with that caveat (the 27B gate's per-linear check then decides).
+
+## Amendment 9 (2026-11-02 ~13:30 CST, written before any data): replicates and the identity H_out, #33-16
+
+#33-15 showed quant-to-quant spread of ~2–3% that the paired per-document SE does not cover. Arms (i8, g08-search1):
+- replicates: `base` and `bdiag` (base settings + 8K diagonal H_out, output damping 0.01) at K3 and K2 with rotation
+  seed offsets 1 and 2 (`ourq.py --seed-offset`), next to the existing offset-0 arms: 3 seeds per arm;
+- `bident` at K3 and K2: base settings + H_out = I (output damping 0.01). Two-sided LDLQ with an identity output factor
+  still weights rows by svh² in the rotated basis (`prepare_H_out`), which one-sided LDLQ does not.
+Rules, per K:
+- **The H_out gain is real** if every `bdiag` seed beats every `base` seed, and the mean gain ≥ 3× the between-seed SD
+  of the per-arm mean KL. Report the seed SD as the 0.8B quant noise for later comparisons.
+- **The svh weighting explains part of it** if `bident` gets ≥ 1/3 of the mean bdiag gain vs mean base; if ≥ 2/3, the
+  gain is mostly the weighting and the 27B diagonal run is not needed for it (the weighting needs no backward pass).
+- Best-of-N: report the best/worst seed per arm; any pick of a seed is confirmed on another slice before use.
