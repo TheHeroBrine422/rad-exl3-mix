@@ -522,6 +522,12 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
     (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
     donors needed. (Whole-model check still to do, critique C3.5.)
+  - **Head mean-row subtraction: head-only KL -30%** (headremake.sh step 1, dry run 2026-11-02; exact headsim, uniform
+    heads, 32,768 held-out head inputs): K3 0.00794 -> 0.00555, K5 0.000492 -> 0.000346 (geo ratio 0.70). Exact
+    (softmax-invariant), free. Adopted for every head donor. Damping (with mean-row): K3 best sigma 0.005 (-2.6% vs
+    default), K5 best default (0.01 / 0.005 ~+1%): they disagree, so per the rule fixed beforehand every remade donor
+    runs all three and keeps the lowest headsim KL. `v3/yaqa/data/head-settings.json`. headsim's donor grouping
+    (HS_MAXK) reproduced the earlier pricing exactly.
   - **radiance 1.15.1 port works** (fork branch qc-exl3-115: ABI 32 pins + layout-fingerprint export; all 4 plugins build,
     qwen35_exl3 synthetic tests pass): V2 3.00 on golden-ver1, stock 1.15.1 `--kld-ref` vs the frozen 1.13 recorder,
     gen-masked: 0.027122 vs 0.027122 (+0.002%, SE 0.001%; max per-row difference 0.026). Stock --kld-ref scores every
