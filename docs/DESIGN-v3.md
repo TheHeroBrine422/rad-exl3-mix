@@ -255,6 +255,17 @@ work overlaps it:
   (N fixed before the run). **ver3 is read for ~1 eval in 10:** only candidates that become their band's best on the
   search slice (V2's ratio), which saves eval time and keeps ver3's selection bias low. V2's long tail was deliberate (spare overnight compute), not a mistake. Fewer targets (release
   sizes only), short high-bpw phases (V2's 6 h one bought ~nothing).
+- **Eval runner: a resident base (proposal, 2026-11-02; not started).** V2's eval cost ~80 s fixed + ~0.4 s per 1k
+  positions: on 200-300k-position slices the fixed part is about half. Why it is not a small patch: a candidate differs
+  from the last one in a handful of weights, but a swap can change a weight's stored size (another K) and its op's
+  kernel row (exl3 <-> exl3i), so the program is rebuilt; only the unchanged weights' device memory and the declare's
+  plan can be kept. Steps, each gated: (1) **measure first** -- split the 80 s on iceman (container read from page
+  cache, relayout, upload, graph build, warmup, scoring) with one eval under timers; if load + relayout + upload is
+  < 30 s the feature is not worth an engine change (cheaper: keep the container in page cache, a ramdisk for the mix,
+  two evals a card). (2) If it is: a `--kld-serve` mode in the fork -- the engine stays up, reads "swap <mixfile>"
+  lines, re-declares, keeps every weight whose (name, encoding, bytes) is unchanged in place (same device address,
+  no relayout), loads the rest, re-scores. (3) Gate: per-row scores byte-identical to a cold load of the same mix
+  on 20 candidates (V2 and V3 encodings, K up and down, exl3 <-> exl3i), and no device-memory growth over 200 swaps.
 - Long-context check: one card fits the 262k bf16 KV up to ~5 bpw on 1.13 at step 2048 (5.00: 255k, 6.00: 209k
   tokens; the recorder at step 4096 shrinks the pool ~3%); re-probe on 1.15 and assert full KV coverage per run.
 
