@@ -4,10 +4,10 @@ One row per experiment. Status words and numbering: `README.md`. Detail: `LOG.md
 older work, `archive/tracker-2026-11-02.md` ("tracker", its Log section by date) and
 `archive/deadends-2026-11-02.md` ("dead ends"). Last date = last entry about it.
 
-Bulk-numbered on 2026-11-02 from the old trackers (#1–#62), roughly by date. Rows for the V2 era (#1–#24) come from
-the dead-ends file and carry no exact dates.
+Bulk-numbered on 2026-11-02 from the old trackers (#1–#62, roughly by date) and `docs/METHOD.md` (V2 wins, #63–#73).
+V2-era rows carry no exact dates. Positive and negative results both get rows: the status column says which.
 
-## V2 era: quantizer, eval, allocation (dead ends)
+## V2 era: dead ends
 
 | # | title | area | status | last | verdict / pointer |
 |---|---|---|---|---|---|
@@ -35,6 +35,24 @@ the dead-ends file and carry no exact dates.
 | 22 | GPTQ damping for our quants | quantizer | negative | 10-31 | see #38 for the tuned damping |
 | 23 | 2-bit Lloyd embedding | embedding | negative | ≤10-30 | dead ends § Quantization |
 | 24 | Head above K6 | head | null | ≤10-30 | dead ends § Quantization |
+
+## V2 era: what worked
+
+Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assigned). Source: `docs/METHOD.md`.
+
+| # | title | area | status | last | verdict / pointer |
+|---|---|---|---|---|---|
+| 63 | Our own EXL3 quants on the challenge Hessians (vs turboderp's tensors) | quantizer | done | ≤10-30 | proxy error 0.75–0.80× turboderp's at K1–K4; METHOD §1, §7 |
+| 64 | Lloyd–Max embedding under a 128-point Hadamard, 1–8 bits (`embed_tq`) | embedding | done | ≤10-30 | used in V1 and V2; METHOD §1 |
+| 65 | Mixing turboderp's tensors where ≥ 5 bpw | allocation | done | ≤10-30 | used at 3.5 and 5.5–9.0; METHOD §1 |
+| 66 | bf16 options (33 tensors at 9.0, embedding at 8.0/9.0); bf16 head broke the model | allocation | done | ≤10-30 | METHOD §1 |
+| 67 | Hessian proxy error per (tensor, option) from the plugin's own decoder (`hproxy`) | allocation | done | ≤10-30 | ~8,100 rows; METHOD §2 |
+| 68 | Sensitivity model kfit2 with a depth-compounding term | allocation | done | ≤10-30 | the compounding term mattered; METHOD §3, §7 |
+| 69 | Exact DP solver over 1 MiB byte buckets, layer by layer | allocation | done | ≤10-30 | METHOD §4 |
+| 70 | Streaming search: refit, Thompson, local search, exploration, targeted swaps (~1,450 evals) | search | done | ≤10-30 | local search mattered; flat past ~step 500 at 2.75–4.5; METHOD §5 |
+| 71 | Targeted swaps to fix the K1/K2 misfit | allocation | done | ≤10-30 | mattered; METHOD §7 |
+| 72 | Fixed calib pools (fit / search / qad / verify) and held-out final picks (ver2) | eval | done | ≤10-30 | fit-slice picks were ~3% optimistic; METHOD §6, §7 |
+| 73 | Long-context check on the verify pool's two ~250k traces, whole | eval | done | ≤10-30 | METHOD §6; V2 card § Long context |
 
 ## V3 (tracker, 2026-10-30 → 11-02)
 
@@ -96,4 +114,4 @@ the dead-ends file and carry no exact dates.
 | 61 | xcorp v1: 96M-token proxy corpus from the upstream sources | data | done | 11-02 | proxy research only |
 | 62 | Research-idea run over 448 recent papers | research | planned | 11-02 | `local/papers/`; runs while the user sleeps |
 
-Next free number: **63**.
+Next free number: **74**.
