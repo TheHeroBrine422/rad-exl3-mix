@@ -2,6 +2,14 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 16:35 CST · #77 / #78 · Tile coordinate descent (C2) and Gaussianized mul1 codebooks (D3): CPU sweep started
+- **Status:** running · **Machine:** Thor (20 jobs × 2 threads) · **Code:** `v3/e3/trellis2.py`, `v3/e3/cd/run.sh` @ 48e7b99
+- **Pass rules:** `v3/e3/cd/README.md` (written before data).
+- **Setup:** 16 real 27B tensors (GDN layers 10/30/50 × qkv, out, gate_up, down; attention layers 19/43 × q, o),
+  256 rows, K 2 / 2.5 / 3 / 4, paired proxy error. Smoke test (one small tensor, 64 rows, K2.5): CD 2 sweeps
+  −0.5%, gmul1_i8 −0.7% vs mul1_i8 (not a result).
+- **Files:** (when done) `data/e3/cd.jsonl`
+
 ### 2026-11-02 15:55 CST · #76 · pisess v1: our own pi sessions as an agentic-trace corpus
 - **Status:** done · **Machine:** colo (CPU) · **Code:** `xcorp/pisess.py`, `xcorp/pisess_redact.py`,
   `xcorp/tokenize.py` @ 2cf7666

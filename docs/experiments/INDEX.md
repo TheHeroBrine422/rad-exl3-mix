@@ -133,5 +133,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 75 | tdverify: turboderp downloads vs our packs | eval | done | 11-01 | all 16 byte-exact, 0 problems |
 
 | 76 | pisess v1: own pi sessions as an agentic-trace corpus | data | done | 11-02 | 539 docs, 18.5M tokens, redacted; training / statistics only |
+| 77 | Tile coordinate descent after LDLQ (ranked C2), CPU proxy | quantizer | running | 11-02 | Thor sweep, 16 tensors |
+| 78 | Gaussianized mul1 codebooks (ranked D3), CPU proxy | weight codes | running | 11-02 | Thor sweep, 16 tensors |
 
-Next free number: **77**.
+Next free number: **79**.
