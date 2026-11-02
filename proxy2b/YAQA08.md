@@ -90,3 +90,11 @@ On `base`'s settings + diagonal H_out (output damping 0.01), i8, g08-search1:
 **Sequences for the 27B diagonal collection:** the smallest N whose gain vs `base` is ≥ 80% of the 8K diagonal's at
 both K (8K gains: K3 −0.00790, K2 −0.04263). If 1K qualifies, the 27B run is planned at 1K (~8.5 h fp32, one night,
 both cards); else 2K (~17 h); else 4K.
+
+## Amendment 7 (2026-11-02 ~12:20 CST, written before any data): split-precision check, #33-14
+
+`proxy2b/prectest.py` on the 0.8B: 16 xcorp windows, the same sampled targets, trunk linear GEMMs in fp32 / x2 / bf16
+(everything else fp32). **x2 is usable for the 27B collector** if, for the summed diagonal over the 16 sequences,
+the median relative L2 error vs fp32 is ≤ 1e-3 and the worst linear's ≤ 1e-2 in every depth band (the diagonal's
+own sampling noise is ~1e-2, #33-09), and bf16 shows a clearly larger error (the test can see a difference).
+Otherwise the 27B run stays fp32.

@@ -40,14 +40,16 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     "hout_diag" (mean over sequences; ourq.py --hout reads it), every YAQA_SAVE_EVERY sequences and at
                     YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
                     OUTDIR/STOP ends the run cleanly after the current sequence.
-                    Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03). With YAQA_GATE=1: 2 sequences, and
-                    one linear's chunked diagonal is checked against the whole G_b.
+                    Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03); YAQA_PREC=x2 runs the linear GEMMs as
+                    bf16 hi/lo splits (bf16x.py; check proxy2b/prectest.py first). With YAQA_GATE=1: 2 sequences, and
+                    one linear's diagonal is checked against a whole fp32 G_b.
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
 import json, math, os, sys, time
-sys.path.insert(0, "/data/yaqa/pylib")
+sys.path.insert(0, "/data/yaqa/pylib"); sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np, torch
+import bf16x                                       # near-fp32 GEMMs on bf16 cores (YAQA_PREC=x2)
 
 OUT, NSEQ = sys.argv[1], int(sys.argv[2])
 L = int(sys.argv[3]) if len(sys.argv) > 3 else 2048
@@ -56,6 +58,7 @@ W = os.environ.get("RXM_WORK", "/root")
 CK = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
 GATE = os.environ.get("YAQA_GATE") == "1"
 FP32 = os.environ.get("YAQA_FP32") == "1"
+PREC = os.environ.get("YAQA_PREC", "fp32")          # with YAQA_FP32: linear GEMMs in fp32 or x2 (bf16x.py)
 ROWS_F32 = os.environ.get("YAQA_ROWS_F32") == "1"
 LABELS = os.environ.get("YAQA_LABELS")
 ADT = torch.float32 if FP32 else torch.bfloat16      # activation dtype
@@ -102,13 +105,11 @@ if FP32:
         @staticmethod
         def forward(ctx, x, w):
             ctx.save_for_backward(w)
-            return torch.cat([x @ w[i:i + 32768].float().T for i in range(0, w.shape[0], 32768)], -1)
+            return bf16x.lin(x, w, PREC)                # PREC fp32: W cast per 32k-row chunk, fp32 GEMM (as before)
         @staticmethod
         def backward(ctx, g):
             (w,) = ctx.saved_tensors
-            gx = 0
-            for i in range(0, w.shape[0], 8192): gx = gx + g[..., i:i + 8192] @ w[i:i + 8192].float()   # 8192: card 0 sits ~1 GB from full in fp32 mode
-            return gx, None
+            return bf16x.lin_back(g, w, PREC), None     # 8192-row chunks: card 0 sits ~1 GB from full in fp32 mode
     import types
     def fwd32(self, x):
         y = Lin32.apply(x.float(), self.weight)
@@ -284,13 +285,11 @@ def fwd_hook_diag(name):
             state["full_done"].add(name)
             with torch.no_grad():
                 gg, xx = g[0].float(), x.float()          # [T, m], [T, n]
-                d = torch.empty(gg.shape[1], device=gg.device)
-                for i in range(0, gg.shape[1], DCH):
-                    Gc = gg[:, i:i + DCH].T @ xx          # rows i.. of G_b
-                    d[i:i + DCH] = Gc.pow(2).sum(1)
-                if GATE and name == DCHECK:
-                    Gf = gg.T @ xx; ref = Gf.pow(2).sum(1)
-                    print(f"gate check {name}: chunked vs whole G rel err {float((d - ref).abs().max() / ref.abs().max()):.2e}", flush=True)
+                d = bf16x.diag_gg(gg, xx, PREC, DCH)      # G_b in DCH-row blocks
+                if GATE and name == DCHECK:               # vs one whole fp32 G: chunking and (x2) precision
+                    ref = (gg.T @ xx).pow(2).sum(1)
+                    print(f"gate check {name} ({PREC}): vs whole fp32 G rel L2 {float((d - ref).norm() / ref.norm()):.2e}, "
+                          f"max row {float(((d - ref).abs() / ref.abs().clamp_min(float(ref.mean()) * 1e-3)).max()):.2e}", flush=True)
                 if name not in DACC: DACC[name] = torch.zeros_like(d)
                 DACC[name] += d
         out.register_hook(bh)
@@ -301,7 +300,7 @@ def save_diag(sub="hdiag"):
     for name, v in DACC.items():
         key = "model.language_model.layers." + name
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
-                  metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "seed": str(SEED)})
+                  metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
     if sub == "hdiag":
         torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()}}, f"{OUT}/hdiag-state.pt.part")

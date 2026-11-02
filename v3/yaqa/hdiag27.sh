@@ -1,5 +1,5 @@
 #!/bin/bash
-# hdiag27.sh NSEQ -- #33-13: the diagonal of YAQA Sketch B's output factor for Qwen3.8-27B (collect.py YAQA_DIAG=1,
+# hdiag27.sh NSEQ [YAQA_PREC=x2 in the env] -- #33-13: the diagonal of YAQA Sketch B's output factor for Qwen3.8-27B (collect.py YAQA_DIAG=1,
 # fp32), on the qad pool's 2048-token windows (pools-v3). Needs BOTH cards (TP2: the bf16 model is 54 GB): run only
 # when the user has given card 1. Steps:
 #   0. gate: 2 sequences, no files: time per sequence, peak memory, the chunked-vs-whole G check
@@ -11,9 +11,9 @@
 : ${RXM_WORK:=/root}; export RXM_WORK
 N=${1:?NSEQ}; Y=/data/yaqa O=/data/yaqa/hdiag PY=/data/venv-exl3/bin/python
 mkdir -p $O; log() { echo "$(date -u +%H:%M) $*" | tee -a $O/hdiag27.log; }
-export YAQA_FP32=1 YAQA_DIAG=1 YAQA_SEED=0 TRITON_CACHE_AUTOTUNING=1
+export YAQA_FP32=1 YAQA_DIAG=1 YAQA_SEED=0 YAQA_PREC=${YAQA_PREC:-fp32} TRITON_CACHE_AUTOTUNING=1   # YAQA_PREC=x2 after prectest.py passes
 COL="exec 8>${RXM_WORK}/card0.lock 9>${RXM_WORK}/card1.lock 7>${RXM_WORK}/ram.lock; flock 8; flock 9; flock -s 7"
-cp /workspace/rad-exl3-mix/v3/yaqa/collect.py $Y/collect.py
+cp /workspace/rad-exl3-mix/v3/yaqa/collect.py /workspace/rad-exl3-mix/v3/yaqa/bf16x.py $Y/
 cd ${RXM_WORK}
 if [ ! -f $O/gate.done ]; then
   ( eval "$COL"; cd $Y && YAQA_GATE=1 $PY -I collect.py $O 2 2048 ) > $O/gate.log 2>&1
