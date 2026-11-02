@@ -159,3 +159,14 @@ damping 0.01), i8, g08-search1, K3 and K2, seed offsets 0 / 1 / 2. Reference: #3
 - Caveat recorded: g08-search1 has few long agentic documents (capped at 2k); a gain specific to agentic text may not
   show on it. If pisess is not worse (≤ 1.01×) and the cosine is < 0.95, re-check on a slice of long agentic
   search-pool documents before deciding.
+
+## Amendment 13 (2026-11-02 ~16:10 CST, written before any data): Sketch A's refined weights, #33-20
+
+One more collection as #33-18 (same calib qad windows, seed, 1,024 sequences, fp32) with YAQA_DIAG_XH: the diagonal
+Σ_t (x_tᵀ H_in x_t) dy_t² (H_in = the calib input Hessian, mean-diagonal normalised), i.e. Sketch A's power-iteration
+token weights. Quants on base settings + that diagonal, K3 / K2, seeds 0 / 1 / 2, compared with #33-18's `eB`
+(Sketch B) and `exw` (Sketch A step 1) at the same K and seeds.
+- **xh is as good as Sketch B** if its 3-seed mean is within one per-seed SD (#33-16: ~1% K3, ~2% K2) of eB's at
+  both K; **better** if ≤ 0.98× eB at both K with every xh seed beating every eB seed at one K at least.
+- Use for the 27B: if xh or xw is as good as Sketch B, the 27B collector may use the per-token form (no G_b per
+  sequence: cheaper and works with short documents of any length); pick the cheaper unless one is better by the rule.

@@ -42,6 +42,7 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     OUTDIR/STOP ends the run cleanly after the current sequence. Every save also writes halves.json:
                     per linear the cosine between the even- and odd-sequence means (split-half agreement, #33-17).
                     YAQA_DIAG_EXTRA=1: also hdiag*-xw (sum ||x||^2 dy^2) and hdiag*-dy (sum dy^2) next to each save (#33-18).
+                    YAQA_DIAG_XH=DIR (input Hessians): also hdiag*-xh, sum (x' H_in x) dy^2, Sketch A's refined weights (#33-20).
                     Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03); YAQA_PREC=x2 runs the linear GEMMs as
                     bf16 hi/lo splits (bf16x.py; check proxy2b/prectest.py first). With YAQA_GATE=1: 2 sequences, and
                     one linear's diagonal is checked against a whole fp32 G_b.
@@ -278,11 +279,26 @@ DCH = int(os.environ.get("DIAG_CHUNK", 2048))
 DACC, DACC_E, DSTATE = {}, {}, {"n": 0, "next": START}     # DACC_E: sum over the even-numbered sequences (split half)
 EXTRA = os.environ.get("YAQA_DIAG_EXTRA") == "1"     # also sum_t ||x_t||^2 dy_t^2 ("xw", the 27B gates' weighting) and sum_t dy_t^2 ("dy", H_Z)
 DACC_X, DACC_D = {}, {}
+XH_DIR = os.environ.get("YAQA_DIAG_XH")   # dir of input Hessians (challenge layout): also sum_t (x_t' H_in x_t) dy_t^2
+DACC_H, XH_CACHE = {}, {}                 # ("xh": Sketch A's refined token weights, as upstream yaqa_hessians.py)
+def xh_matrix(name, dev):
+    """the linear's input Hessian, normalised to mean diagonal 1, cached per (group, device). 0.8B-sized: all groups
+    fit on the card; the 27B would need per-layer loading (not done here)."""
+    g = hin_group(name); key = (g, str(dev))
+    if key not in XH_CACHE:
+        import struct
+        from safetensors import safe_open
+        f = f"{XH_DIR}/{g}.safetensors"
+        with open(f, "rb") as fh: k = int(json.loads(fh.read(struct.unpack("<Q", fh.read(8))[0]))["__metadata__"]["k"])
+        with safe_open(f, "pt") as h: u = h.get_tensor("hessian_upper").float()
+        H = torch.zeros(k, k); iu = torch.triu_indices(k, k); H[iu[0], iu[1]] = u; H = H + H.triu(1).T
+        XH_CACHE[key] = (H / H.diagonal().mean()).to(dev)
+    return XH_CACHE[key]
 DCHECK = os.environ.get("DIAG_CHECK", "63.self_attn.o_proj")   # small enough for a whole G on the head card
 if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     _st = torch.load(f"{OUT}/hdiag-state.pt")
     DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()}); DACC_E.update(_st.get("acc_even", {}))
-    DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {}))
+    DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {})); DACC_H.update(_st.get("acc_xh", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
@@ -310,6 +326,13 @@ def fwd_hook_diag(name):
                     if name not in DACC_X: DACC_X[name] = torch.zeros_like(xw); DACC_D[name] = torch.zeros_like(dyy)
                     elif DACC_X[name].device != xw.device: DACC_X[name] = DACC_X[name].to(xw.device); DACC_D[name] = DACC_D[name].to(xw.device)
                     DACC_X[name] += xw; DACC_D[name] += dyy
+                if XH_DIR:
+                    H = xh_matrix(name, xx.device)
+                    w = ((xx @ H) * xx).sum(1, keepdim=True)          # x_t' H x_t per token
+                    xh = (gg.pow(2) * w).sum(0)
+                    if name not in DACC_H: DACC_H[name] = torch.zeros_like(xh)
+                    elif DACC_H[name].device != xh.device: DACC_H[name] = DACC_H[name].to(xh.device)
+                    DACC_H[name] += xh
         out.register_hook(bh)
     return h
 def save_diag(sub="hdiag"):
@@ -320,7 +343,7 @@ def save_diag(sub="hdiag"):
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
-    for tag, acc in (("xw", DACC_X), ("dy", DACC_D)) if EXTRA else ():
+    for tag, acc in ((("xw", DACC_X), ("dy", DACC_D)) if EXTRA else ()) + ((("xh", DACC_H),) if XH_DIR else ()):
         os.makedirs(f"{OUT}/{sub}-{tag}", exist_ok=True)
         for name, v in acc.items():
             key = "model.language_model.layers." + name
@@ -339,7 +362,8 @@ def save_diag(sub="hdiag"):
     if sub == "hdiag":
         torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()},
                     "acc_even": {k: v.cpu() for k, v in DACC_E.items()},
-                    "acc_xw": {k: v.cpu() for k, v in DACC_X.items()}, "acc_dy": {k: v.cpu() for k, v in DACC_D.items()}}, f"{OUT}/hdiag-state.pt.part")
+                    "acc_xw": {k: v.cpu() for k, v in DACC_X.items()}, "acc_dy": {k: v.cpu() for k, v in DACC_D.items()},
+                    "acc_xh": {k: v.cpu() for k, v in DACC_H.items()}}, f"{OUT}/hdiag-state.pt.part")
         os.replace(f"{OUT}/hdiag-state.pt.part", f"{OUT}/hdiag-state.pt")
 def fwd_hook(name):
     if DIAG: return fwd_hook_diag(name)
