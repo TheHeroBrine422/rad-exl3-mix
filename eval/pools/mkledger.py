@@ -7,7 +7,8 @@ from/to: the scored position range [from, to) of the document in that use (null 
 Uses: every calib golden (docs[].orig, score_from, tokens; ROLES key = golden name, or a "prefix*" entry), "@yaqa"
 (the qad windows the YAQA collections read), "@headsens" (qad-pool head Fisher); "@hessians-calib" is one line with
 "doc": "all". Public goldens (no orig into calib) are skipped. Append future uses by re-running (goldens) or by
-hand-appending lines for non-golden uses (e.g. QAD training: role train, one line per document trained on).
+hand-appending lines for non-golden uses (e.g. QAD training: role train, one line per document trained on);
+ledger_add.py appends goldens and whole-calib collections without a full rebuild.
 Query example (eligible verify docs for comparing two v3 arms): docs with no line whose role is train / fit-hessian /
 fit-diag / select / monitor for a line touching v3, ordered by summed decisions."""
 import datetime, fnmatch, json, os, sys

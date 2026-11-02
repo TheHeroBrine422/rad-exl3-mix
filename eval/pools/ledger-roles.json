@@ -1,22 +1,159 @@
 {
- "_doc": "Hand-written role of every slice / collection that touched calib documents (mkledger.py joins it with the goldens). role: train (weights fitted to the tokens; never verify for that line), fit-hessian (second-order stats with many parameters per layer), fit-diag (per-row diagonal stats), fit (proxy / knapsack calibration, smooth few-parameter fits), select (accept/reject or best-of picks judged on it), monitor (validation curve, reused often), check (a handful of before/after reads), final (one read of fixed finalists). decisions: rough number of choices judged on it (null = not a decision slice). line: the model line it can bias (all = every quant, including turboderp's).",
- "golden-calA":   {"role": "fit",     "line": "v2",       "decisions": 300,  "note": "hproxy calibration, kfit / knapsack refits, early A/B"},
- "golden-fit2":   {"role": "fit",     "line": "v2",       "decisions": 200,  "note": "stream pipeline fits"},
- "golden-fit3":   {"role": "fit",     "line": "v2",       "decisions": 200,  "note": "stream pipeline fits"},
- "golden-ml":     {"role": "select",  "line": "v2-emb",   "decisions": 20,   "note": "multilingual: embedding / vocab-tier variant choice"},
- "golden-calB":   {"role": "check",   "line": "v1,v2",    "decisions": 40,   "note": "V1 / early V2 comparisons"},
- "golden-calBbig":{"role": "check",   "line": "v1,v2",    "decisions": 30,   "note": "larger calB for V1 / V2 comparisons"},
- "golden-ver1":   {"role": "monitor", "line": "v2",       "decisions": 150,  "note": "w- tags: best-measured mixes, validation curve"},
- "golden-ver2":   {"role": "select",  "line": "v2",       "decisions": 50,   "note": "V2 final pick among finalists (finalsel / vpick)"},
- "golden-ver2full":{"role": "check",  "line": "v2",       "decisions": 16,   "note": "same docs as ver2, uncapped"},
- "golden-long2":  {"role": "check",   "line": "v1,v2",    "decisions": 10,   "note": "long-context check, 2 traces"},
- "golden-long2-c*":{"role": "check",  "line": "v1,v2",    "decisions": 12,   "note": "KV-cap sweep of the same 2 traces"},
- "golden-long64": {"role": "check",   "line": "v2",       "decisions": 5,    "note": "64k prefix of qad trace 1772"},
- "golden-ver3":   {"role": "monitor", "line": "v3",       "decisions": 0,    "note": "V3 monitor (lightly used docs); count decisions as they happen"},
- "golden-ver3-long":{"role": "monitor","line": "v3",      "decisions": 0,    "note": "trace 2300 from 8192"},
- "golden-ver4":   {"role": "final",   "line": "v3",       "decisions": 0,    "note": "V3 final check (clean)"},
- "golden-ver4-long":{"role": "final", "line": "v3",       "decisions": 0,    "note": "trace 4723 from 16384"},
- "@hessians-calib":{"role": "fit-hessian", "line": "all", "decisions": null, "note": "challenge-published input Hessians: sum x x^T over every calib token; every quant (ours, turboderp's) fits to them. Biases all arms alike; absolute KLDs slightly optimistic"},
- "@yaqa":         {"role": "fit-hessian", "line": "yaqa", "decisions": null, "note": "YAQA collections (rows32, hout32, full32, full64, pilots, noise): first 200 windows of the seed-0 shuffle of 2048-token qad windows (pools.json); YAQA dropped, no shipped quant used them"},
- "@headsens":     {"role": "fit-diag", "line": "v3-head", "decisions": null, "note": "headsens.npz qad-pool Fisher diagonal (pools.json qad docs, all positions): ranks the slab head's rows"}
+ "_doc": "Hand-written role of every slice / collection that touched calib documents (mkledger.py joins it with the goldens). role: train (weights fitted to the tokens; never verify for that line), fit-hessian (second-order stats with many parameters per layer), fit-diag (per-row diagonal stats), fit (proxy / knapsack calibration, smooth few-parameter fits), select (accept/reject or best-of picks judged on it), monitor (validation curve, reused often), check (a handful of before/after reads), final (one read of fixed finalists). decisions: rough number of choices judged on it (null = not a decision slice). line: the model line it can bias (all = every quant, including turboderp's). Proxy lines (proxy-2b, proxy-08): Qwen3.5 small-model work on the 4070; they bias only proxy decisions, but method choices made there carry to the 27B. The 0.8B YAQA collection (#33-08) read xcorp, not calib: no ledger line.",
+ "golden-calA": {
+  "role": "fit",
+  "line": "v2",
+  "decisions": 300,
+  "note": "hproxy calibration, kfit / knapsack refits, early A/B"
+ },
+ "golden-fit2": {
+  "role": "fit",
+  "line": "v2",
+  "decisions": 200,
+  "note": "stream pipeline fits"
+ },
+ "golden-fit3": {
+  "role": "fit",
+  "line": "v2",
+  "decisions": 200,
+  "note": "stream pipeline fits"
+ },
+ "golden-ml": {
+  "role": "select",
+  "line": "v2-emb",
+  "decisions": 20,
+  "note": "multilingual: embedding / vocab-tier variant choice"
+ },
+ "golden-calB": {
+  "role": "check",
+  "line": "v1,v2",
+  "decisions": 40,
+  "note": "V1 / early V2 comparisons"
+ },
+ "golden-calBbig": {
+  "role": "check",
+  "line": "v1,v2",
+  "decisions": 30,
+  "note": "larger calB for V1 / V2 comparisons"
+ },
+ "golden-ver1": {
+  "role": "monitor",
+  "line": "v2",
+  "decisions": 150,
+  "note": "w- tags: best-measured mixes, validation curve"
+ },
+ "golden-ver2": {
+  "role": "select",
+  "line": "v2",
+  "decisions": 50,
+  "note": "V2 final pick among finalists (finalsel / vpick)"
+ },
+ "golden-ver2full": {
+  "role": "check",
+  "line": "v2",
+  "decisions": 16,
+  "note": "same docs as ver2, uncapped"
+ },
+ "golden-long2": {
+  "role": "check",
+  "line": "v1,v2",
+  "decisions": 10,
+  "note": "long-context check, 2 traces"
+ },
+ "golden-long2-c*": {
+  "role": "check",
+  "line": "v1,v2",
+  "decisions": 12,
+  "note": "KV-cap sweep of the same 2 traces"
+ },
+ "golden-long64": {
+  "role": "check",
+  "line": "v2",
+  "decisions": 5,
+  "note": "64k prefix of qad trace 1772"
+ },
+ "golden-ver3": {
+  "role": "monitor",
+  "line": "v3",
+  "decisions": 0,
+  "note": "V3 monitor (lightly used docs); count decisions as they happen"
+ },
+ "golden-ver3-long": {
+  "role": "monitor",
+  "line": "v3",
+  "decisions": 0,
+  "note": "trace 2300 from 8192"
+ },
+ "golden-ver4": {
+  "role": "final",
+  "line": "v3",
+  "decisions": 0,
+  "note": "V3 final check (clean)"
+ },
+ "golden-ver4-long": {
+  "role": "final",
+  "line": "v3",
+  "decisions": 0,
+  "note": "trace 4723 from 16384"
+ },
+ "@hessians-calib": {
+  "role": "fit-hessian",
+  "line": "all",
+  "decisions": null,
+  "note": "challenge-published input Hessians: sum x x^T over every calib token; every quant (ours, turboderp's) fits to them. Biases all arms alike; absolute KLDs slightly optimistic"
+ },
+ "@yaqa": {
+  "role": "fit-hessian",
+  "line": "yaqa",
+  "decisions": null,
+  "note": "YAQA collections (rows32, hout32, full32, full64, pilots, noise): first 200 windows of the seed-0 shuffle of 2048-token qad windows (pools.json); YAQA dropped, no shipped quant used them"
+ },
+ "@headsens": {
+  "role": "fit-diag",
+  "line": "v3-head",
+  "decisions": null,
+  "note": "headsens.npz qad-pool Fisher diagonal (pools.json qad docs, all positions): ranks the slab head's rows"
+ },
+ "g2b-fit1": {
+  "role": "check",
+  "line": "proxy-2b",
+  "decisions": 3,
+  "note": "2B proxy pipeline checks on the 4070: bf16 vs fp32 halves (#60-01), kernel paths, score check vs score.py"
+ },
+ "g08-fit1": {
+  "role": "check",
+  "line": "proxy-08",
+  "decisions": 1,
+  "note": "0.8B golden gate (pipeline check), same docs as g2b-fit1"
+ },
+ "g2b-search1": {
+  "role": "select",
+  "line": "proxy-2b",
+  "decisions": 2,
+  "note": "2B screening slice: calibration study (proxy2b/CALIBRATION.md, #60-04); count decisions as they happen"
+ },
+ "g08-search1": {
+  "role": "select",
+  "line": "proxy-08",
+  "decisions": 1,
+  "note": "0.8B screening slice: YAQA Sketch B arms (#33-08), same docs as g2b-search1"
+ },
+ "g2b-test": {
+  "role": "check",
+  "line": "proxy-2b",
+  "decisions": 0,
+  "note": "4-document pipeline smoke test"
+ },
+ "@h2b-calib": {
+  "role": "fit-hessian",
+  "line": "proxy-2b",
+  "decisions": null,
+  "note": "2B input Hessians, sum x x^T over every calib token (long docs as independent 8k windows), for the 2B proxy quants"
+ },
+ "@h08-calib": {
+  "role": "fit-hessian",
+  "line": "proxy-08",
+  "decisions": null,
+  "note": "0.8B input Hessians, sum x x^T over every calib token, for the 0.8B proxy quants"
+ }
 }
