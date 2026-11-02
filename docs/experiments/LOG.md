@@ -2,6 +2,27 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 13:58 CST · #62 · Research-idea run started: 10 Opus 5.5 xhigh lenses + critic
+- **Status:** planned → running · **Machine:** VM (`pi -p`, shared cached prefix) · **Code:** `local/papers/ideasrun.sh`,
+  `ideaslane{2,3,4}.sh`, `ideasqueue.sh`, briefs in `local/papers/run/`
+- **Setup:** prefix = shared context, design/v3, experiment INDEX / LOG / BACKLOG / archives, ROADMAP, design/v2,
+  YAQA08 / CALIBRATION, the 448-paper index, 187 digests (~250k tokens); one instruction file per lens last. Lenses:
+  composable, open, crossarea, lowbpw, measure, hout, kernels, heal, codes, redteam; then a critic merges and ranks.
+  Run in parallel lanes (up to 8 at once), one lock per lens; the critic waits for every lens.
+- **Result so far:** 7 reports done (composable 61 KB / 94 ideas, open 56 KB, crossarea 59 KB, measure 43 KB, hout
+  51 KB, lowbpw 49 KB, kernels 61 KB); codes, redteam, heal running; critic after them. Usage: ~one 5-hour window.
+- **Decision / next:** critic → `ideas/ranked.md`; then publish to `docs/ideas/` (scrubbed, "untested").
+- **Files:** `local/papers/ideas/`
+
+### 2026-11-02 13:55 CST · #33-16 · Seed replicates and identity H_out on 0.8B: started; identity read
+- **Status:** running · **Machine:** 4070 (allocator ≤ 7.2 GB) · **Code:** `proxy2b/yaqaFact6.sh`,
+  `ourq.py --seed-offset` @ 5a5e596 · **Pass rule:** `proxy2b/YAQA08.md` amendment 9
+- **Result so far:** identity H_out (base settings + H_out = I) is **worse** than base: K3 0.1037 (+4.9%, z 7.5),
+  K2 0.5466 (+2.1%, z 3.9); vs the diagonal arm +14% / +11%. So the svh row weighting does not explain the gain: the
+  measured diagonal does, and the 27B diagonal collection is needed. Seed 1: K3 base 0.0994 (+0.6% vs seed 0),
+  bdiag 0.0906 (−8.8% vs its base, z −13); K2 base 0.5411 (+1.1%). Seed 2 and K2 bdiag pending.
+- **Decision / next:** full entry with the 3-seed noise floor when done (~14:10 CST).
+
 ### 2026-11-02 13:21 CST · #33-15 · Split precision judged by KL: fails as written; the test shows quant-to-quant noise instead
 - **Status:** done (negative as written) · **Machine:** 4070, capped at 7.2 GB (peak 3.4 GB)
 - **Code:** `proxy2b/yaqaFact5.sh`, `prectest.py --save` @ b005ba3 · **Pass rule:** `proxy2b/YAQA08.md` amendment 8

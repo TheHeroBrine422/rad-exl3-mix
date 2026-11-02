@@ -87,6 +87,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-13 | 27B diagonal H_out collection + 0.8B diagonal dose | quantizer | running | 11-02 | 0.8B: 1K seqs keep 85% (K3) / 99% (K2) of the gain; 27B run at 1K pending (both cards, ~8.5 h) |
 | 33-14 | Split-precision bf16 GEMMs for the fp32 collector | quantizer | negative | 11-02 | 0.8B: x2 diag error 1.2–5.5e-3 median (rule ≤ 1e-3), 10× better than bf16; collector stays fp32 |
 | 33-15 | Split precision judged by KL, 0.8B | quantizer | negative | 11-02 | x2 K2 +2.8%, but bf16 did better: KL test shows ~±2–3% quant-to-quant noise, not precision; collector stays fp32 |
+| 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | running | 11-02 | identity H_out worse than base (K3 +4.9%): the gain is the measured diagonal |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
@@ -119,7 +120,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 60-03 | Our quantizer on CUDA (qtf2 fixes, qtf2check) | proxy | done | 11-02 | bit-identical; HIP identity gate before syncing |
 | 60-04 | 2B calibration study (`CALIBRATION.md`) | proxy | dropped | 11-02 | stopped by the user, resumable |
 | 61 | xcorp v1: 96M-token proxy corpus from the upstream sources | data | done | 11-02 | proxy research only |
-| 62 | Research-idea run over 448 recent papers | research | planned | 11-02 | `local/papers/`; runs while the user sleeps |
+| 62 | Research-idea run over 448 recent papers | research | running | 11-02 | 10 lenses + critic; 7 reports done |
 
 ## Added from the archive rewrite (2026-11-02)
 
