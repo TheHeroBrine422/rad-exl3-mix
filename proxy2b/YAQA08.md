@@ -98,3 +98,15 @@ both cards); else 2K (~17 h); else 4K.
 the median relative L2 error vs fp32 is ≤ 1e-3 and the worst linear's ≤ 1e-2 in every depth band (the diagonal's
 own sampling noise is ~1e-2, #33-09), and bf16 shows a clearly larger error (the test can see a difference).
 Otherwise the 27B run stays fp32.
+
+## Amendment 8 (2026-11-02 ~13:05 CST, written before any data): split precision judged by KL, #33-15
+
+The user asked for the KL test of x2 (#33-14 failed its matrix-error bound). `prectest.py --save` collects the
+diagonal over the first 1,024 windows of yaqaB's order with yaqaB's targets (sampled from fp32 logits, seed s per
+sequence), linear GEMMs in x2, and as a control in bf16. The fp32 reference is the existing 1K snapshot's diagonal
+(`k3bdiag1024`, `k2bdiag1024`, same windows and targets). Quants on `base`'s settings + diagonal H_out (output damping
+0.01), i8, g08-search1, paired against the fp32 arm at the same K.
+- **x2 passes** if, at both K3 and K2: KL(x2) / KL(fp32) ≤ 1.005 and z < 2 (no detectable loss, and at most 0.5%).
+  Then the 27B collector runs with YAQA_PREC=x2 (its gate also reports one linear against fp32 on the 27B).
+- bf16 is the control: if bf16 also passes, the KL test cannot see collector precision at 1K sequences, and x2's pass
+  is recorded with that caveat (the 27B gate's per-linear check then decides).

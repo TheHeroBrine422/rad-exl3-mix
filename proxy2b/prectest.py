@@ -19,6 +19,7 @@ ap.add_argument("model"); ap.add_argument("meta"); ap.add_argument("out")
 ap.add_argument("--nseq", type=int, default=16); ap.add_argument("--len", type=int, default=2048)
 ap.add_argument("--chunk", type=int, default=128); ap.add_argument("--seed", type=int, default=42)
 ap.add_argument("--modes", default="fp32,x2,bf16")
+ap.add_argument("--save", default=None, help="write each mode's mean diagonal to SAVE/<mode>/hout/<key>.safetensors (\"hout_diag\", ourq.py --hout)")
 a = ap.parse_args()
 L, dev = a.len, torch.device("cuda")
 m = json.load(open(f"{a.meta}/kld.json")); toks = np.memmap(f"{a.meta}/tokens.i32", np.int32, "r")
@@ -72,11 +73,15 @@ for mode in a.modes.split(","):
         ids = torch.from_numpy(np.asarray(toks[wins[s]:wins[s] + L], np.int64))[None].to(dev)
         emb = dec.embed_tokens(ids).float().detach().requires_grad_(True)
         hid = dec(inputs_embeds=emb, use_cache=False).last_hidden_state[0]
-        if s not in LABELS:                       # drawn once (first mode), reused by the others
+        if s not in LABELS:                       # drawn once from fp32 logits (yaqaB.py's targets), reused by every mode
             gen = torch.Generator(device=dev); gen.manual_seed(s); ys = []
             with torch.no_grad():
-                for c in range(0, hid.shape[0], a.chunk):
-                    ys.append(torch.multinomial(torch.softmax(logits(hid[c:c + a.chunk]), -1), 1, generator=gen)[:, 0])
+                h32 = hid
+                if mode != "fp32":
+                    MODE[0] = "fp32"; h32 = dec(inputs_embeds=emb.detach(), use_cache=False).last_hidden_state[0]; MODE[0] = mode
+                for c in range(0, h32.shape[0], a.chunk):
+                    ys.append(torch.multinomial(torch.softmax(logits(h32[c:c + a.chunk]), -1), 1, generator=gen)[:, 0])
+                del h32
             LABELS[s] = ys
         loss = 0
         for i, c in enumerate(range(0, hid.shape[0], a.chunk)):
@@ -86,7 +91,15 @@ for mode in a.modes.split(","):
     torch.cuda.synchronize(); dt = (time.time() - t0) / a.nseq
     RES[mode] = {"acc": {k: v.cpu() for k, v in ACC.items()}, "loss": losses, "s_per_seq": dt}
     print(f"{mode}: {dt:.2f} s/seq, mean loss/tok {np.mean(losses):.5f}", flush=True)
+    if a.save:
+        from safetensors.torch import save_file
+        d = f"{a.save}/{mode}/hout"; os.makedirs(d, exist_ok=True)
+        for k, v in RES[mode]["acc"].items():
+            save_file({"hout_diag": (v / a.nseq).float().contiguous()}, f"{d}/model.language_model.layers.{k}.safetensors",
+                      metadata={"seqs": str(a.nseq), "ctx": str(L), "sketch": "B-diag", "prec": mode, "seed": str(a.seed)})
+        print(f"saved {d}", flush=True)
 
+if "fp32" not in RES: print("PRECTEST DONE (no fp32 run: no comparison)"); sys.exit(0)
 ref = RES["fp32"]
 with open(a.out, "w") as fo:
     for mode in RES:
