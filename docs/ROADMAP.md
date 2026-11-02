@@ -107,7 +107,8 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   the 27B but ~1-2 card-days on the 2B with an fp32 backward (our gate 2a: bf16 gradients are unusable). Run it as a
   dose-response, 1K / 4K / 16K / 64K sequences, two-sided vs one-sided at K2 / K3, paired. Pass rule: two-sided beats
   one-sided by more than the paired SE at some scale, with the trend improving in sequence count; flat or worsening
-  = dead for good. If it passes, the question becomes whether a cheaper estimator gets the 27B there. This is also
+  = dead for good. Purpose (user, 2026-11-02): settle the question on proxies (0.8B pilot, 2B confirm); a 27B YAQA run
+  is not planned either way -- paper-scale output-side Hessians at 27B are beyond our hardware. This is also
   step 1 of the replication procedure before writing to the authors.
 - **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
   hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
