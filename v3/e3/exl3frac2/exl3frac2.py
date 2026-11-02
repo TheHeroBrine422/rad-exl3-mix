@@ -53,7 +53,10 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
     gen = os.path.join(HERE, "qtf2_frac_gen.cu")
     if not os.path.exists(gen) or open(gen).read() != fs: open(gen, "w").write(fs)
     return C.load(name=f"exl3frac2_{variant}" + "".join("_" + x.lower() for x in defs), sources=[f"{HERE}/qtf2_bind.cu", gen] + units,
-                  extra_include_paths=[HERE, os.path.join(src, "quant"), src], extra_cflags=cflags,
+                  # CUDA: the extension root before quant/, so "util.cuh" is exllamav3_ext/util.cuh (half_uint16 etc.;
+                  # on HIP rocm/compat.h supplies them, and that build's order is kept as gated)
+                  extra_include_paths=[HERE, os.path.join(src, "quant"), src] if hip else [HERE, src, os.path.join(src, "quant")],
+                  extra_cflags=cflags,
                   extra_cuda_cflags=cuda, verbose=verbose)
 
 

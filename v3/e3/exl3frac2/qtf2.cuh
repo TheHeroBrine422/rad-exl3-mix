@@ -31,6 +31,19 @@
 #include "util.h"              // exllamav3_ext/: half_uint16 etc., before codebook.cuh (as the fork's kernels do)
 #include "util.cuh"
 #include "codebook.cuh"
+#include <cstring>
+
+// half2 <-> its 32 bits. HIP: __builtin_bit_cast (the gated build, unchanged). CUDA: cuda_fp16's half2 is not trivially
+// copyable, which __builtin_bit_cast refuses; memcpy compiles to a register move.
+#if defined(__HIPCC__) || defined(__HIP_PLATFORM_AMD__)
+#define QTF2_H2U(x) __builtin_bit_cast(uint32_t, (x))
+#define QTF2_U2H(x) __builtin_bit_cast(half2, (x))
+#else
+__device__ __forceinline__ uint32_t qtf2_h2u(const half2 h) { uint32_t u; memcpy(&u, &h, 4); return u; }
+__device__ __forceinline__ half2 qtf2_u2h(const uint32_t u) { half2 h; memcpy(&h, &u, 4); return h; }
+#define QTF2_H2U(x) qtf2_h2u(x)
+#define QTF2_U2H(x) qtf2_u2h(x)
+#endif
 
 #ifndef H_INF
 #define H_INF __ushort_as_half(0x7c00)
@@ -143,7 +156,7 @@ __device__ __forceinline__ void qtf2_step
             // v6: packed minimum (cost bits << 16 | k), as the cached path (v4): for non-negative, non-NaN halves the
             // bit patterns order like the values and ties go to the lowest k -- the strict-less scan's pick, without
             // its per-candidate branches (the uncached path's main cost: K5.5 and up)
-            const uint32_t e0 = __builtin_bit_cast(uint32_t, min_err2);
+            const uint32_t e0 = QTF2_H2U(min_err2);
 #ifdef QTF2_HIOPT
             constexpr int QTF2_UNR = max_q > 32 ? 16 : max_q;     // v9: bounded unroll at KOUT >= 6 (code size)
 #else
@@ -157,11 +170,11 @@ __device__ __forceinline__ void qtf2_step
                 constexpr uint32_t product_step = 0x83DCD12Du << Kr;
                 product0 += product_step;
                 product1 += product_step;
-                const uint32_t eb = __builtin_bit_cast(uint32_t, pair_err(state0, state0 >> KIN, product0, product1));
+                const uint32_t eb = QTF2_H2U(pair_err(state0, state0 >> KIN, product0, product1));
                 best0 = min(best0, (eb << 16) | (uint32_t) k);
                 best1 = min(best1, (eb & 0xffff0000u) | (uint32_t) k);
             }
-            min_err2 = __builtin_bit_cast(half2, (best0 >> 16) | (best1 & 0xffff0000u));
+            min_err2 = QTF2_U2H((best0 >> 16) | (best1 & 0xffff0000u));
             min_k0 = (int) (best0 & 0xffffu); min_k1 = (int) (best1 & 0xffffu);
         }
         else
@@ -278,11 +291,11 @@ __device__ __forceinline__ void qtf2_step_cached
             }
             else
                 err2 = __hfma2(dh2, dh2, __half2half2(costs_in[in_edge_idx]));
-            const uint32_t eb = __builtin_bit_cast(uint32_t, err2);
+            const uint32_t eb = QTF2_H2U(err2);
             best0 = min(best0, (eb << 16) | (uint32_t) k);
             best1 = min(best1, (eb & 0xffff0000u) | (uint32_t) k);
         }
-        const half2 min_err2 = __builtin_bit_cast(half2, (best0 >> 16) | (best1 & 0xffff0000u));
+        const half2 min_err2 = QTF2_U2H((best0 >> 16) | (best1 & 0xffff0000u));
         if constexpr (STAGE) stage[j] = min_err2;
         else reinterpret_cast<half2*>(costs_out)[out >> 1] = min_err2;
         if constexpr (PACK) word |= ((best0 & 0xffu) | ((best1 & 0xffu) << KOUT)) << (2 * j * KOUT);
