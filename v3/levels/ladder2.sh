@@ -45,7 +45,7 @@ others_running() {   # another card's level is in progress
 cd $RXM_WORK
 export ROCR_VISIBLE_DEVICES=$C EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
        TORCH_EXTENSIONS_DIR=/data/exl3frac/build
-while k=$(pop) && [ -n "$k" ]; do
+while [ ! -f $D/stop-c$C ] && k=$(pop) && [ -n "$k" ]; do      # touch $D/stop-c<CARD>: stop after the current level
   s=$(date +%s)
   if [ "${k#RUN:}" != "$k" ]; then
     sc=${k#RUN:}; log "slot $sc: waiting for the other card's level"
@@ -65,4 +65,4 @@ while k=$(pop) && [ -n "$k" ]; do
          log "K$k FAIL rc=$rc (layers per level:$n; fail $(cat $D/K$g.fails) of 2; resumes on rerun)"; }
   rm -f $D/K$g.taken
 done
-log "queue empty"
+[ -f $D/stop-c$C ] && log "stopped (stop-c$C)" || log "queue empty"
