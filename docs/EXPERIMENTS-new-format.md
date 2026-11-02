@@ -476,6 +476,13 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
 
 ## Log (newest first)
 
+- 2026-11-02 ~04:25 CT: **Quantizer on the 4070** (CUDA sm_89): the exllamav3 fork builds in place; qtf2 builds after
+  two CUDA-only fixes (include order; half2 bit casts via memcpy -- HIP code unchanged, rerun the HIP identity gate
+  before syncing to iceman); `qtf2check.py` PASS on CUDA (30 rate x codebook rows bit-identical to the fork's kernel,
+  1/8-step round trips). 2B input Hessians over all calib (34.7 min, long docs as 8k windows), 0.8B (14.9 min). First
+  2B quant, uniform K3 i8 trunk: KLD 0.0685, top1 88.9% on g2b-search1 (173 search-pool docs, 166k gen rows; about
+  2x the 27B's uniform K3). A whole-trunk 2B quant ~2.5 min, its eval 23 s.
+
 - 2026-11-02 ~04:05 CT: **xcorp v1: 96.1M-token proxy corpus from the challenge's own upstream sources** (`xcorp/`,
   colo `/data/xcorp/v1`). The manifest's 58 sources at their pinned revisions, categories, kinds and caps, 12x the
   per-split budgets, rendered as the challenge (Qwen3.8 chat template: xhigh preamble, tools block, reasoning kept on
