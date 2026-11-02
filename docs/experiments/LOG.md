@@ -2,6 +2,29 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 10:15 CST · #33-10 · YAQA factorial on 0.8B: the H_in swap was the loss; H_out with calib H_in wins
+- **Status:** done (positive) · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact.sh` @ 053a640
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 3 (written before data).
+- **Setup:** K3, i8, damping 0.01 both sides, no scaled Hessian, 8K snapshot, g08-search1; reference `ldlq`
+  (calib H_in, one-sided) and `base` (our tuned quant).
+- **Result:**
+
+  | arm | H_in | H_out | KL | vs ldlq (z) | vs base (z) |
+  |---|---|---|---|---|---|
+  | ldlq | calib | — | 0.1049 | — | +6.1% |
+  | hin | Sketch B | — | 0.1257 | +19.8% (16.5) | +27.1% (20.2) |
+  | yb8192 | Sketch B | full | 0.1123 | +7.0% (5.1) | +13.6% (8.1) |
+  | **hout** | calib | full | **0.0946** | **−9.9% (−13.8)** | **−4.3% (−5.4)** |
+  | hdiag | calib | diagonal | 0.0972 | −7.4% (−11.1) | −1.7% (−2.1) |
+
+- **Reading:** the earlier YAQA losses (#33-08) came from Sketch B's gradient-weighted H_in, not from H_out. With
+  the calib H_in, the full H_out beats paper LDLQ by ~10% and our tuned one-sided quant by ~4%, even without the
+  scaled Hessian and tuned damping `base` has; the diagonal alone gets about three quarters of the gain over ldlq.
+- **Decision / next:** H_out passes. Before anything at 27B, on the 0.8B: (1) the same arm at K2; (2) H_out on top of
+  `base`'s settings (scaled Hessian, tuned damping) — the arm that would actually ship; (3) dose (1K/2K/4K
+  snapshots) to size a 27B collection; (4) whether H_out damping matters. 27B collection only after those.
+- **Files:** 4070 `/data/yb/result-fact.txt`
+
 ### 2026-11-02 10:25 CST · #33-09 · Sketch B factors: structure and noise (CPU)
 - **Status:** done · **Machine:** 4070 box CPU (niced) · **Code:** `proxy2b/houtstruct.py`
 - **Question:** is the 0.8B Sketch B H_out noise-limited, how is it shaped, and how far is Sketch B's H_in from the

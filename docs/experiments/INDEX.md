@@ -71,7 +71,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 31 | Real int8 prefill kernels (alias **E4**); NFQ int8 crash | kernels | blocked | 11-01 | crash blocks A8 timing |
 | 31-01 | End-to-end prototype at ~4 bpw (alias **E4b**) | kernels | planned | 10-30 | after #31 |
 | 32 | Vocab-tiered embedding and head | embedding | negative | 10-31 | dead ends § Vocabulary-tiered |
-| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | negative | 11-02 | every variant worse, incl. the paper's estimator (#33-08); not in V3 |
+| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | running | 11-02 | full YAQA worse, but H_out with the calib H_in wins on 0.8B K3 (#33-10); follow-ups open |
 | 33-01 | Gate 1: TP2 collection throughput | quantizer | done | 10-31 | 5 s per 2048-token sequence |
 | 33-02 | Gate 2: bf16 backward, sampled rows, 200 seqs | quantizer | negative | 10-31 | +23% (K2) / +28% (K3) |
 | 33-03 | bf16 vs fp32 backward noise | quantizer | done | 10-31 | bf16 gradients unusable in early layers |
@@ -81,6 +81,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-07 | Gate 2e: gradient-weighted H_in | quantizer | negative | 11-01 | K2 +44%, K3 +31% |
 | 33-08 | Sketch B (paper estimator) on the 0.8B proxy, 1K–8K sequences | quantizer | negative | 11-02 | 8K: K3 +7%, K2 +15% vs paper LDLQ (+14% / +20% vs base); 16K stopped |
 | 33-09 | Sketch B factors: structure and noise (CPU) | quantizer | done | 11-02 | H_out diag precise; full H_out noisy early / residual writers; YAQA arms also swapped H_in |
+| 33-10 | Factorial: Sketch B H_in vs H_out, 0.8B K3 | quantizer | done | 11-02 | H_in swap +20%; calib H_in + H_out −9.9% vs ldlq, −4.3% vs base (z −5.4); diag only −1.7% vs base |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
