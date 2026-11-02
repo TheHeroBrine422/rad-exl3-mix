@@ -5,9 +5,9 @@
 : ${RXM_WORK:=/root}; export RXM_WORK
 O=/data/qtf2/newsmoke PY=/data/venv-exl3/bin/python SRC=/data/exl3frac/src
 mkdir -p $O; cd $RXM_WORK
-export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
+C=${CARD:-0}; export ROCR_VISIBLE_DEVICES=$C EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
 for K in 0.5 1.125; do
-  ( exec 9>$RXM_WORK/card0.lock; flock 9; exec 7>$RXM_WORK/ram.lock; flock -s 7
+  ( exec 9>$RXM_WORK/card$C.lock; flock 9; exec 7>$RXM_WORK/ram.lock; flock -s 7
     $PY -I ourq/ourq.py -K $K --layers 10-11 --device 0 --codebook i8 --qtf2 --frac-ext $SRC \
       --sigma-in-sweep 0.025,0.005,0.001 -o $O/K$K > $O/K$K.log 2>&1 ) && echo "K$K ran" >> $O/result.txt || echo "K$K FAIL" >> $O/result.txt
 done
