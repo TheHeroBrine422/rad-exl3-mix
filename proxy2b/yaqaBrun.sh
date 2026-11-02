@@ -21,10 +21,14 @@ evals() { for k in 3 2; do
     for n in "$@"; do for ref in ldlq base; do
       [ -f $O/k${k}yb$n.f32 ] && log "pair k${k}$ref -> k${k}yb$n: $(python3 $P/pcmp.py $G $O/k${k}$ref.f32 $O/k${k}yb$n.f32 | grep -o '"ratio": [0-9.]*, "diff": [0-9.e-]*, "se": [0-9.e-]*, "z": [0-9.e-]*')"; done; done
   done; }
-[ -f $O/snap8192/info.json ] || python3 $P/yaqaB.py $M /data/xcorp/v1/meta $O 8192 --snap 1024,2048,4096,8192 > $O/collect1.log 2>&1
+# early read (user, 2026-11-02): 1K snapshot first, its arms, then resume (bit-exact) to 8K
+[ -f $O/snap1024/info.json ] || python3 $P/yaqaB.py $M /data/xcorp/v1/meta $O 1024 --snap 1024 > $O/collect0.log 2>&1
+[ -f $O/snap1024/info.json ] || { log "COLLECT 1K FAIL"; exit 1; }
+evals 1024
+[ -f $O/snap8192/info.json ] || python3 $P/yaqaB.py $M /data/xcorp/v1/meta $O 8192 --snap 2048,4096,8192 --resume 1024 > $O/collect1.log 2>&1
 log "collect to 8K: $(grep -E 'YAQAB DONE|Error' $O/collect1.log | tail -1)"
 [ -f $O/snap8192/info.json ] || { log "COLLECT FAIL"; exit 1; }
-evals 1024 2048 4096 8192
+evals 2048 4096 8192
 [ -f $O/snap16384/info.json ] || python3 $P/yaqaB.py $M /data/xcorp/v1/meta $O 16384 --snap 16384 --resume 8192 > $O/collect2.log 2>&1
 log "collect to 16K: $(grep -E 'YAQAB DONE|Error' $O/collect2.log | tail -1)"
 evals 16384
