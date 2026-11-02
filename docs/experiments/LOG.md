@@ -2,6 +2,23 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 12:55 CST · #33-13 · Diagonal H_out dose on 0.8B: 1K sequences are enough
+- **Status:** running (27B part pending) · **Machine:** 4070, allocator capped at 7.2 GB (peak ~1.1 GB)
+- **Code:** `proxy2b/yaqaFact4.sh` @ f0fb687 · **Pass rule:** `proxy2b/YAQA08.md` amendment 6
+- **Result:** identity check: `k3bdv8192` (diagonal as a `hout_diag` vector file) = `k3bdiag` exactly (KL
+  0.0909878287 both, diff 0.0): ourq.py's new path is correct. Dose, base settings + diagonal H_out:
+
+  | seqs | K3 KL | vs base (z) | share of 8K gain | K2 KL | vs base (z) | share of 8K gain |
+  |---|---|---|---|---|---|---|
+  | 1K | 0.0922 | −6.8% (−10.4) | 85% | 0.4933 | −7.9% (−13.0) | 99% |
+  | 2K | 0.0911 | −7.8% (−11.9) | 98% | 0.4995 | −6.7% (−12.1) | 84% |
+  | 8K (#33-12) | 0.0910 | −8.0% | 100% | 0.4928 | −8.0% | 100% |
+
+- **Decision / next:** 1K passes the 80% bar at both K, so **the 27B diagonal collection is planned at 1K
+  sequences** (fp32, ~8.5 h on both cards; the split-precision speed-up failed, #33-14). Run `hdiag27.sh 1024`
+  when iceman is back and card 1 is given; snapshots at 256 / 512 / 1024.
+- **Files:** 4070 `/data/yb/result-fact4.txt`
+
 ### 2026-11-02 12:40 CST · #33-14 · Split-precision GEMMs on 0.8B: fails the pass rule (10× better than bf16)
 - **Status:** planned → negative (as written) · **Machine:** 4070, allocator capped at 7.2 GB (peak 3.6 GB)
 - **Code:** `proxy2b/prectest.py` @ 0ef4e99 · **Pass rule:** `proxy2b/YAQA08.md` amendment 7

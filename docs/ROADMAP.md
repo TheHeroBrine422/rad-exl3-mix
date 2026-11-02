@@ -108,7 +108,8 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   input Hessian kept and only Sketch B's H_out added, K3 is −9.9% vs LDLQ and −4.3% vs our tuned quant (z −5.4,
   #33-10). On top of our tuned settings: K3 −9.7%, K2 −5.6% vs our tuned quant (#33-11). The diagonal of H_out alone
   keeps the gain (K3 −8.0%, K2 −8.0%, #33-12), so the 27B collection is diagonal-only (~10 MB of accumulators,
-  one pass, ~4K sequences); then a 27B swap test before V3 changes.
+  one pass, 1K sequences suffice on the 0.8B: ~8.5 h fp32 on both cards, #33-13); then a 27B swap test before V3
+  changes.
 - **Donated GPU time:** quant creation is single-card and embarrassingly parallel (a container with the job
   hardcoded); the tensor search can run in batches (~100 evals, then a refit here), or against a coordination server,
   so contributors never give shell access.
