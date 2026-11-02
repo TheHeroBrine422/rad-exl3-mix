@@ -25,3 +25,8 @@ Recorded with the caveat that the 0.8B is width 1024 (the 27B 5120).
 
 **Inconclusive:** a gain only at 16K that still rises from 4K -> 16K: then the 64K point is the next step (about
 4x the 16K run's time), decided with the user.
+
+**Amendment (2026-11-02 10:40 UTC, before any collected data was used):** the 2048-token gate ran out of the 4070's
+memory (model + 5.7 GB of fp32 sums). Windows are 1024 tokens instead, and the run goes to 32,768 sequences, with
+snapshots at 1K / 4K / 16K / 32K sequences (1M / 4M / 17M / 34M tokens: the same top end as planned). The pass rule
+applies over these four snapshots unchanged ("16K" in it now reads "the last snapshot").
