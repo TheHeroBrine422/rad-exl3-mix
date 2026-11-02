@@ -77,7 +77,8 @@ ap.add_argument("--device", type=int, default=0)
 ap.add_argument("--sigma-reg", type=float, default=None, help="exllamav3's diagonal regularisation (default its own)")
 ap.add_argument("--hout", default=None, help="dir of output-side Hessians (<key>.safetensors, 'hout', v3/yaqa/fold.py): "
                 "two-sided LDLQ for the linears that have one")
-ap.add_argument("--hin", default=None, help="dir of replacement input Hessians in the challenge layout "
+ap.add_argument("--hin", default=None, help="dir of replacement input Hessians in the challenge layout (a file named "
+                "<checkpoint key>.safetensors replaces the input Hessian of that linear alone: YAQA Sketch B) "
                 "(<name>.safetensors, hessian_upper; v3/yaqa/collect.py YAQA_HIN): used for the groups that have one")
 ap.add_argument("--hout-diag", default=None, help="dir of output-side Hessians as for --hout, but only their diagonal is "
                 "used: one-sided LDLQ with exllamav3's sensitivity output scales (t ~ (sigma^2/s)^(1/4), as convert.py "
@@ -177,9 +178,9 @@ def ck(name):
 
 # ------------------------------------------------------------------ a Hessian (packed upper triangle, sum over rows)
 _HUP = {}
-def hessian(name):
-    p = f"{HESS}/{name}.safetensors"
-    if a.hin and os.path.exists(f"{a.hin}/{name}.safetensors"): p = f"{a.hin}/{name}.safetensors"
+def hessian(name, path=None):
+    p = path or f"{HESS}/{name}.safetensors"
+    if not path and a.hin and os.path.exists(f"{a.hin}/{name}.safetensors"): p = f"{a.hin}/{name}.safetensors"
     with open(p, "rb") as fh:
         n = struct.unpack("<Q", fh.read(8))[0]; hdr = json.loads(fh.read(n))
     meta = hdr["__metadata__"]; k = int(meta["k"]); rows = int(meta["rows"])
@@ -191,7 +192,7 @@ def hessian(name):
     iu = torch.triu_indices(k, k, device=dev)
     H[iu[0], iu[1]] = up; del up
     H = H + H.triu(1).T
-    return {"H": H, "first_key": name, "count": rows, "finalized": False, "num_total": rows,
+    return {"H": H, "first_key": name if not path else os.path.basename(path), "count": rows, "finalized": False, "num_total": rows,
             "inf_nan": torch.zeros(2, dtype=torch.long, device=dev), "device": dev}
 
 # ------------------------------------------------------------------ one layer's linears, grouped by their Hessian
@@ -248,7 +249,11 @@ def quantize_group(hname, keys, seed0, log):
                 else: del wq_, t_
             _, qa["sigma_reg"], wq, perr, t = best; qa["sweep_rel"] = best[0]; qa["sweep_all"] = sweep_all; del Hu
         else:
-            _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hd, qa, a.save_wq)
+            # a per-linear input Hessian (YAQA Sketch B: every linear its own) overrides the group's
+            pk = f"{a.hin}/{key}.safetensors" if a.hin else None
+            Hk = hessian(hname, pk) if pk and os.path.exists(pk) else Hd
+            if Hk is not Hd: qa["hin_key"] = True
+            _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hk, qa, a.save_wq)
         if a.save_wq:
             import numpy as np
             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
@@ -266,6 +271,7 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
+                              "hin_key": bool(qa.get("hin_key")),
                               "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "sweep_all": qa.get("sweep_all"),
                               "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook,
                               "out_scales": qa.get("apply_out_scales"), "head_mean_row": bool(a.head_mean_row and key == "lm_head"),

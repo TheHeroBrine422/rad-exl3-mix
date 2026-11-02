@@ -30,3 +30,15 @@ Recorded with the caveat that the 0.8B is width 1024 (the 27B 5120).
 memory (model + 5.7 GB of fp32 sums). Windows are 1024 tokens instead, and the run goes to 32,768 sequences, with
 snapshots at 1K / 4K / 16K / 32K sequences (1M / 4M / 17M / 34M tokens: the same top end as planned). The pass rule
 applies over these four snapshots unchanged ("16K" in it now reads "the last snapshot").
+
+**Amendment 2 (2026-11-02 ~10:55 UTC, before any Sketch B data):** the first collector (yaqa08.py) computed neither of
+the paper's sketches (it summed ||x_t||^2 dy_t dy_t^T over tokens -- half a step of Sketch A's power iteration from
+H_I = I -- and kept the calib input Hessian). Stopped at 525 sequences, nothing used. Replaced by **Sketch B exactly as
+the reference code** (Cornell-RelaxML/yaqa-quantization, custom_linear_B.py, power_iters 1): per sequence the weight
+gradient G_b, H_in += G_b^T G_b and H_out += G_b G_b^T per linear, sampled targets, 2048-token context
+(`yaqaB.py`, gated: H_out / H_in traces equal, resume bit-exact). Quantizer as the reference's: both Hessians
+normalized by their mean diagonal, damping 0.01 each side, no scaled Hessian (ourq: per-linear --hin, --hout;
+exllamav3's ldlq_2hess checked: L_out = 0 is bit-identical to one-sided LDLQ). Snapshots 1K / 2K / 4K / 8K / 16K
+sequences (the paper's Table 9 range; their main setting is 64K). Arms at K2, K3: `base` (our tuned one-sided),
+`ldlq` (the paper's one-sided baseline: damping 0.01, no scaled Hessian), `ybN`. The pass rule above applies with
+`ldlq` as one-sided (the paper's comparison); yb vs `base` is reported beside it (does it beat our best).
