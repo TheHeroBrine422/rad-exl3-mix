@@ -2,6 +2,18 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 12:20 CST · #33-14 · Split-precision (bf16 hi/lo) GEMMs for the fp32 collector: prepared
+- **Status:** planned · **Machine:** 4070 (check), iceman (use) · **Code:** `v3/yaqa/bf16x.py`, `proxy2b/prectest.py`,
+  `collect.py` YAQA_PREC=x2 @ 0ef4e99
+- **Question:** can the 27B collector's fp32 GEMMs (~30 s / sequence) run as bf16 hi/lo splits on the matrix cores
+  (2 GEMMs per product, 3 for the weight gradient; weights exact in bf16) without losing the fp32 gradient quality?
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 7.
+- **Setup:** CPU self-test on random data (emulated): x2 vs fp32 relative error 2.5e-6 (products), 6e-7 (diagonal);
+  bf16 1.7e-3 / 3.8e-4. The model-level test (`prectest.py`, ~10 min on the 4070) is not run yet.
+- **Decision / next:** run prectest + `yaqaFact4.sh` when the 4070 is free; on iceman, the gate run of `hdiag27.sh`
+  with YAQA_PREC=x2 also reports one linear's precision against a whole fp32 G and the time per sequence. Then the
+  two-stage pipeline (#33-13) if the GEMMs still dominate the profile.
+
 ### 2026-11-02 11:50 CST · #33-13 · 27B diagonal H_out: collector and 0.8B dose check prepared
 - **Status:** planned · **Machine:** iceman (both cards) + 4070 · **Code:** `v3/yaqa/collect.py` YAQA_DIAG,
   `v3/yaqa/hdiag27.sh`, `quantize/ourq.py` (`--hout` reads `hout_diag` vectors), `proxy2b/yaqaFact4.sh` @ f0fb687
