@@ -2,6 +2,30 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 12:40 CST · #33-14 · Split-precision GEMMs on 0.8B: fails the pass rule (10× better than bf16)
+- **Status:** planned → negative (as written) · **Machine:** 4070, allocator capped at 7.2 GB (peak 3.6 GB)
+- **Code:** `proxy2b/prectest.py` @ 0ef4e99 · **Pass rule:** `proxy2b/YAQA08.md` amendment 7
+- **Setup:** 16 xcorp windows, same sampled targets, trunk linear GEMMs fp32 / x2 / bf16, everything else fp32; the
+  summed diagonal per linear vs fp32.
+- **Result:** loss/token |diff| max: x2 8.2e-5, bf16 1.8e-3. Relative L2 error of the summed diagonal:
+
+  | layers | x2 median | x2 max | bf16 median | bf16 max |
+  |---|---|---|---|---|
+  | 0–5 | 5.5e-3 | 2.5e-2 | 5.3e-2 | 1.0e-1 |
+  | 6–11 | 4.5e-3 | 9.8e-3 | 3.4e-2 | 1.0e-1 |
+  | 12–17 | 3.1e-3 | 5.0e-3 | 2.5e-2 | 4.3e-2 |
+  | 18–23 | 1.2e-3 | 5.1e-3 | 1.3e-2 | 3.0e-2 |
+
+  Time (4070, not informative for the R9700): fp32 1.60, x2 1.43, bf16 1.04 s / sequence.
+- **Reading:** the products are ~1e-6 accurate (CPU self-test); the backward through 24 layers amplifies the
+  difference, most in the early layers. Misses the median bound (1e-3) everywhere and the worst-linear bound in
+  layers 0–5. Missing control: fp32's own spread under a harmless change (summation order), which would show
+  whether 1e-3 was attainable at all.
+- **Decision / next:** the 27B collector stays fp32 for now. Options if speed matters: the fp32 noise-floor control;
+  a three-way split (~2^-24, 3 / 6 GEMMs); or judge x2 by its effect on KL (a quant from an x2-collected diagonal
+  vs an fp32-collected one) instead of a matrix error bound — any of these needs a new pass rule first.
+- **Files:** `data/yaqa08/prectest.jsonl`
+
 ### 2026-11-02 12:20 CST · #33-14 · Split-precision (bf16 hi/lo) GEMMs for the fp32 collector: prepared
 - **Status:** planned · **Machine:** 4070 (check), iceman (use) · **Code:** `v3/yaqa/bf16x.py`, `proxy2b/prectest.py`,
   `collect.py` YAQA_PREC=x2 @ 0ef4e99
