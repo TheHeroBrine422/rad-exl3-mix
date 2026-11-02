@@ -43,7 +43,7 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
         cflags += inc; cuda += inc
         F.patch_hip_ninja_file_writer(C)
     units = sorted(glob.glob(f"{HERE}/qtf2_inst_a*.cu"))
-    assert len(units) == 8, f"run mkqtf2.py first ({len(units)} instance units)"
+    assert len(units) >= 8, f"run mkqtf2.py first ({len(units)} instance units)"
     # pack / unpack: the fork's frac.cu with KA >= 0 allowed (its kernels are generic in D(i); only the range check
     # refused KA = 0); generated here so the copy always matches the fork
     fs = open(os.path.join(src, "quant", "frac.cu")).read()

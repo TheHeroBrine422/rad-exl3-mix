@@ -42,14 +42,14 @@ fp_qtf2 qtf2_a5_m0000();
 fp_qtf2 qtf2_a5_m8888();
 fp_qtf2 qtf2_a5_maaaa();
 fp_qtf2 qtf2_a5_meeee();
-fp_qtf2 qtf2_a6_m0000();
 fp_qtf2 qtf2_a6_m8888();
 fp_qtf2 qtf2_a6_maaaa();
 fp_qtf2 qtf2_a6_meeee();
-fp_qtf2 qtf2_a7_m0000();
+fp_qtf2 qtf2_a6_m0000();
 fp_qtf2 qtf2_a7_m8888();
 fp_qtf2 qtf2_a7_maaaa();
 fp_qtf2 qtf2_a7_meeee();
+fp_qtf2 qtf2_a7_m0000();
 static const Qtf2Entry qtf2_table[] = {
     {0, 0x8080u, &qtf2_a0_m8080, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
     {0, 0x8888u, &qtf2_a0_m8888, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
@@ -94,12 +94,12 @@ static const Qtf2Entry qtf2_table[] = {
     {5, 0x8888u, &qtf2_a5_m8888, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
     {5, 0xaaaau, &qtf2_a5_maaaa, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
     {5, 0xeeeeu, &qtf2_a5_meeee, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
-    {6, 0x0000u, &qtf2_a6_m0000, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
     {6, 0x8888u, &qtf2_a6_m8888, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
     {6, 0xaaaau, &qtf2_a6_maaaa, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
     {6, 0xeeeeu, &qtf2_a6_meeee, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
-    {7, 0x0000u, &qtf2_a7_m0000, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+    {6, 0x0000u, &qtf2_a6_m0000, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
     {7, 0x8888u, &qtf2_a7_m8888, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
     {7, 0xaaaau, &qtf2_a7_maaaa, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
     {7, 0xeeeeu, &qtf2_a7_meeee, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+    {7, 0x0000u, &qtf2_a7_m0000, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
 };

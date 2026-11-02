@@ -550,6 +550,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     52 tensors + proxy rows + stamps), only -5% time (259 vs 272 s): the K-independent work is small. Integer K6 / K7 on
     qtf2: identical, x2.0 / x3.0 (i8); K5 slower on qtf2 (30k vs 45k tiles/s) -> stays on the integer kernel. Two ourq
     per card on v8: identical outputs, throughput x1.14.
+  - **qtf2 v9 (QTF2_HIOPT: inlined forward lambdas, unroll capped at 16 for KOUT >= 6):** identical at every KA 5-7
+    instance; levels it out at ~25k (i8) / ~35k (mul1) tiles/s: mixed KA 6 15-18k -> 25k, KA 7.5 4.3k -> 24k (i8) /
+    5.6k -> 33k (mul1), but integer K6 / K7 and KA 5 slower with it. Final build: HIOPT only for mixed KA 6-7 (own
+    compile units, qtf2_inst_a6f / a7f). K5 integer stays on the integer kernel.
   - **damp3 (running 2026-11-02):** damping held out across K0.5-7 (user: does the best spread change with K, and
     integer vs fractional?). Grid 0.025 / 0.01 / 0.005 / 0.0025 / 0.001 / 0.0003 / 0.0001, quantized on split-half
     H_A, scored on H_B; rule fixed before the run in `v3/e3/damp3/damp3report.py`. Old ladder data (K2-4.5): winners
