@@ -40,7 +40,10 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     "hout_diag" (mean over sequences; ourq.py --hout reads it), every YAQA_SAVE_EVERY sequences and at
                     YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
                     OUTDIR/STOP ends the run cleanly after the current sequence. More sequences than windows: the
-                    windows are reused with fresh sampled labels (2026-11-02: the qad pool has 1,350 of 2048 tokens). Every save also writes halves.json:
+                    windows are reused with fresh sampled labels (2026-11-02: the qad pool has 1,350 of 2048 tokens).
+     YAQA_SHORT=MIN (with YAQA_DIAG): qad docs of MIN..L-1 tokens join as whole-document sequences (in the same
+                    shuffle; without it the order is unchanged); extra saves hdiag*-long / hdiag*-dy-long hold the
+                    Sketch B / dy sums over the full L-token windows only (the 0.8B-validated method). Every save also writes halves.json:
                     per linear the cosine between the even- and odd-sequence means (split-half agreement, #33-17).
                     YAQA_DIAG_EXTRA=1: also hdiag*-xw (sum ||x||^2 dy^2) and hdiag*-dy (sum dy^2) next to each save (#33-18).
                     YAQA_DIAG_XH=DIR (input Hessians): also hdiag*-xh, sum (x' H_in x) dy^2, Sketch A's refined weights (#33-20).
@@ -76,10 +79,14 @@ pools = json.load(open(os.environ.get("YAQA_POOLS", f"{W}/challenge/pools-v3.jso
 off = np.cumsum([0] + [d["tokens"] for d in meta["docs"]])
 assert off[-1] == len(toks), (off[-1], len(toks))
 wins = []
+SHORT = int(os.environ.get("YAQA_SHORT", 0))   # > 0: qad docs of SHORT..L-1 tokens are sequences too (whole doc)
+WLEN = {}                                       # window start -> its length (L unless a short doc)
 for i, d in enumerate(meta["docs"]):
     if pools[i] != "qad": continue
     for a in range(0, d["tokens"] - L + 1, L): wins.append(int(off[i] + a))
-rng = np.random.default_rng(SEED); rng.shuffle(wins)
+    if SHORT and SHORT <= d["tokens"] < L: wins.append(int(off[i])); WLEN[int(off[i])] = d["tokens"]
+rng = np.random.default_rng(SEED); rng.shuffle(wins)   # without SHORT: the same order as before (same draws)
+if SHORT: print(f"YAQA_SHORT={SHORT}: {len(WLEN)} short docs added; {len(wins)} sequences", flush=True)
 print(f"{len(wins)} qad windows of {L} tokens", flush=True)
 
 # ---- model: text model only, built empty, every tensor streamed from the safetensors onto its card (the
@@ -280,6 +287,7 @@ DCH = int(os.environ.get("DIAG_CHUNK", 2048))
 DACC, DACC_E, DSTATE = {}, {}, {"n": 0, "next": START}     # DACC_E: sum over the even-numbered sequences (split half)
 EXTRA = os.environ.get("YAQA_DIAG_EXTRA") == "1"     # also sum_t ||x_t||^2 dy_t^2 ("xw", the 27B gates' weighting) and sum_t dy_t^2 ("dy", H_Z)
 DACC_X, DACC_D = {}, {}
+DACC_BL, DACC_DL = {}, {}                 # YAQA_SHORT: Sketch B and dy summed over the long (L-token) windows only
 XH_DIR = os.environ.get("YAQA_DIAG_XH")   # dir of input Hessians (challenge layout): also sum_t (x_t' H_in x_t) dy_t^2
 DACC_H, XH_CACHE = {}, {}                 # ("xh": Sketch A's refined token weights, as upstream yaqa_hessians.py)
 def xh_matrix(name, dev):
@@ -300,6 +308,7 @@ if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     _st = torch.load(f"{OUT}/hdiag-state.pt")
     DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()}); DACC_E.update(_st.get("acc_even", {}))
     DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {})); DACC_H.update(_st.get("acc_xh", {}))
+    DACC_BL.update(_st.get("acc_bl", {})); DACC_DL.update(_st.get("acc_dl", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
@@ -321,12 +330,20 @@ def fwd_hook_diag(name):
                     DACC[name] = DACC[name].to(d.device); DACC_E[name] = DACC_E[name].to(d.device)
                 DACC[name] += d
                 if DSTATE["n"] % 2 == 0: DACC_E[name] += d     # this sequence's index (0-based) is DSTATE["n"]
+                if SHORT and state.get("long", True):
+                    if name not in DACC_BL: DACC_BL[name] = torch.zeros_like(d)
+                    elif DACC_BL[name].device != d.device: DACC_BL[name] = DACC_BL[name].to(d.device)
+                    DACC_BL[name] += d
                 if EXTRA:
                     g2 = gg.pow(2)
                     xw = (g2 * xx.pow(2).sum(1, keepdim=True)).sum(0); dyy = g2.sum(0)
                     if name not in DACC_X: DACC_X[name] = torch.zeros_like(xw); DACC_D[name] = torch.zeros_like(dyy)
                     elif DACC_X[name].device != xw.device: DACC_X[name] = DACC_X[name].to(xw.device); DACC_D[name] = DACC_D[name].to(xw.device)
                     DACC_X[name] += xw; DACC_D[name] += dyy
+                    if SHORT and state.get("long", True):
+                        if name not in DACC_DL: DACC_DL[name] = torch.zeros_like(dyy)
+                        elif DACC_DL[name].device != dyy.device: DACC_DL[name] = DACC_DL[name].to(dyy.device)
+                        DACC_DL[name] += dyy
                 if XH_DIR:
                     H = xh_matrix(name, xx.device)
                     w = ((xx @ H) * xx).sum(1, keepdim=True)          # x_t' H x_t per token
@@ -344,6 +361,12 @@ def save_diag(sub="hdiag"):
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
+    nl = DSTATE.get("n_long", 0)
+    for tag, acc in (("long", DACC_BL), ("dy-long", DACC_DL)) if SHORT and nl else ():
+        os.makedirs(f"{OUT}/{sub}-{tag}", exist_ok=True)
+        for name, v in acc.items():
+            save_file({"hout_diag": (v / nl).float().cpu().contiguous()}, f"{OUT}/{sub}-{tag}/model.language_model.layers.{name}.safetensors",
+                      metadata={"seqs": str(nl), "ctx": str(L), "sketch": f"diag-{tag}", "fp32_act": str(FP32), "seed": str(SEED)})
     for tag, acc in ((("xw", DACC_X), ("dy", DACC_D)) if EXTRA else ()) + ((("xh", DACC_H),) if XH_DIR else ()):
         os.makedirs(f"{OUT}/{sub}-{tag}", exist_ok=True)
         for name, v in acc.items():
@@ -364,7 +387,8 @@ def save_diag(sub="hdiag"):
         torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()},
                     "acc_even": {k: v.cpu() for k, v in DACC_E.items()},
                     "acc_xw": {k: v.cpu() for k, v in DACC_X.items()}, "acc_dy": {k: v.cpu() for k, v in DACC_D.items()},
-                    "acc_xh": {k: v.cpu() for k, v in DACC_H.items()}}, f"{OUT}/hdiag-state.pt.part")
+                    "acc_xh": {k: v.cpu() for k, v in DACC_H.items()},
+                    "acc_bl": {k: v.cpu() for k, v in DACC_BL.items()}, "acc_dl": {k: v.cpu() for k, v in DACC_DL.items()}}, f"{OUT}/hdiag-state.pt.part")
         os.replace(f"{OUT}/hdiag-state.pt.part", f"{OUT}/hdiag-state.pt")
 def fwd_hook(name):
     if DIAG: return fwd_hook_diag(name)
@@ -395,8 +419,9 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
     w0 = wins[s % len(wins)]                 # beyond the last window: windows again, fresh labels (seed (SEED, s))
     if s == len(wins): print(f"window {s}: all {len(wins)} windows used, cycling with fresh labels", flush=True)
-    ids = torch.from_numpy(toks[w0:w0 + L].astype(np.int64))[None].to(dev0)
-    state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
+    wl = WLEN.get(w0, L); state["long"] = wl == L
+    ids = torch.from_numpy(toks[w0:w0 + wl].astype(np.int64))[None].to(dev0)
+    state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, wl - 1), min(NPOS, wl - 17), replace=False))).to(dev0)
     state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
     PROF = int(os.environ.get("YAQA_PROFILE", 0)) == done + 1
     if PROF:
@@ -436,6 +461,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     if FULL and not GATE and done + 1 in SNAPS: save_full(f"hout-snap{done + 1}")
     if DIAG:
         DSTATE["n"] += 1; DSTATE["next"] = s + 1
+        if state.get("long", True): DSTATE["n_long"] = DSTATE.get("n_long", 0) + 1
         if not GATE:
             if DSTATE["n"] in SNAPS: save_diag(f"hdiag-snap{DSTATE['n']}")
             if DSTATE["n"] % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_diag()

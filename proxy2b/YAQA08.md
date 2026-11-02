@@ -180,3 +180,14 @@ seeds 0–2 exist; seed 3 added), K4 at seeds 0–1 for both. Arms paired by see
   from the spread of the per-seed log-ratios), or every i8c seed beats its paired i8 seed.
 - **Worth it:** the cost is a decoder constant and the requant V3 does anyway, so any real gain at K2–K3 is adopted
   provided K4 is not worse by more than its seed spread. Proxy prediction (#78 CPU sweep): −1.4% (K2.5), −2.0% (K3).
+
+## Amendment 14 (2026-11-02 ~17:50 CST, written before any data): short documents in the collection, #33-21
+
+`collect.py YAQA_SHORT=256` adds the 2,041 qad docs of 256–2047 tokens as whole sequences (w01: the 1,350 long
+windows hold ~62% of the qad scored rows and over-weight long-text categories). 0.8B: 1,600 mixed sequences
+(≈ 2.07M tokens, ≈ #33-18's 1,024 long windows = 2.10M), Σdy² diagonal (`dymix`), K3 / K2 × seeds 0–2, vs #33-18's
+`edy` (long windows only) at the same seeds; the run's own long-only sum (`dylong`, ~640 windows) as a third arm.
+- **Real:** mean over seeds of log(KL_dymix / KL_edy) below zero by ≥ 2 SE, or every seed better (seed-paired: same
+  rotation). **Worth it:** free (same collection cost per token) → adopt if real at both K, or real at one and not
+  worse at the other. If dymix is worse by the same criterion, the 27B quants are redone from the long-only sums
+  (the 27B run keeps both).
