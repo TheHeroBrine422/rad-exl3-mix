@@ -32,6 +32,8 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(HERE, "build"))
     hip = bool(torch.version.hip)
     d = ["-DEXL3_MUL1_I8"] if variant == "i8" else []
+    defs = os.environ.get("QTF2_DEFS", "").split()           # timing-only builds (qtf2bench.py): QTF2_NOBACK, QTF2_NOHIST
+    d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d
     if hip:
         assert os.environ.get("PYTORCH_ROCM_ARCH"), "set PYTORCH_ROCM_ARCH (e.g. gfx1201)"
@@ -49,7 +51,7 @@ def load(src: str, variant: str = "mul1", verbose: bool = False):
     fs = fs.replace(a, b).replace('#include "../util.h"', '#include "util.h"').replace('#include "../util.cuh"', '#include "util.cuh"')
     gen = os.path.join(HERE, "qtf2_frac_gen.cu")
     if not os.path.exists(gen) or open(gen).read() != fs: open(gen, "w").write(fs)
-    return C.load(name=f"exl3frac2_{variant}", sources=[f"{HERE}/qtf2_bind.cu", gen] + units,
+    return C.load(name=f"exl3frac2_{variant}" + "".join("_" + x.lower() for x in defs), sources=[f"{HERE}/qtf2_bind.cu", gen] + units,
                   extra_include_paths=[HERE, os.path.join(src, "quant"), src], extra_cflags=cflags,
                   extra_cuda_cflags=cuda, verbose=verbose)
 

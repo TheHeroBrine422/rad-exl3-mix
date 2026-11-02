@@ -280,7 +280,11 @@ void qtf2_kernel
             const int ri = ring(i, roll);
             half* t = temp_costs; temp_costs = temp_costs_inc; temp_costs_inc = t;
             const bool first = i == 0;
+#ifdef QTF2_NOHIST
+            const bool write_hist = false;                    // timing-only build (output invalid)
+#else
             const bool write_hist = pre_state >= 0 || ri < L / 2;
+#endif
             uint8_t* hist_row = hist + (size_t) edges_max * ri;
             const half w = __float2half_rn(__ldg(input_tile + ri));
             const int din = (MASK >> (ri & 15)) & 1, dout = (MASK >> ((ri + 1) & 15)) & 1;
@@ -350,7 +354,12 @@ void qtf2_kernel
 
     auto backward = [&](int roll, bool write, int edge)
     {
+#ifdef QTF2_NOBACK
+        if (thread == 0) { sh_idx[0] = edge ^ (int) hist[edge]; }   // timing-only build: no traceback chain
+        if (false)
+#else
         if (thread == 0)
+#endif
         {
             for (int i = L - 1; i >= 0; --i)
             {
