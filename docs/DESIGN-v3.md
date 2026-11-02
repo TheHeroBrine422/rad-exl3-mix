@@ -347,7 +347,9 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
   a TP2 night) and a rewrite of the quantizer loop around
   exllamav3's LDLQ/trellis. Potentially the largest quality item; research track after Phase B, not on V3's path.
 - **YAQA — DROPPED 2026-11-01** (every variant measured worse: two-sided K2 +7…+30%, diagonal output scales +4…+15%,
-  gradient-weighted H_in +31…+44%; `experiments/` #33). Background kept: **(arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
+  gradient-weighted H_in +31…+44%; `experiments/` #33). **Re-tested 2026-11-02 with the paper's Sketch B on the 0.8B
+  proxy (#33-08): still worse at 1K–8K sequences** (8K: K3 +7%, K2 +15% vs one-sided LDLQ; +14% / +20% vs our
+  tuned quant). The V3 trunk stays as designed. Background kept: **(arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
   end-to-end KL, H ≈ H_out ⊗ H_in, and LDLQ with error feedback on both axes. ~30% lower KL than LDLQ on QTIP trellis
   codes; Qwen3-8B 2-bit: KL 0.285 → 0.227 with 2K sequences (Sketch B, ~1 GPU-h at 8B) → 0.205 with 64K.
   **Our exllamav3 already has the quantizer side** (`ldlq_2hess`, `prepare_H_out`); only H_out is missing.
