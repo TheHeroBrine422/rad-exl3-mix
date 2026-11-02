@@ -2,6 +2,18 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 14:25 CST · #33-17 · 27B diagonal collector: split halves, one-GPU mode, tested on 0.8B
+- **Status:** done · **Machine:** 4070 (≤ 7.2 GB, peak 4.8 GB) · **Code:** `v3/yaqa/collect.py` (even-sequence sums,
+  halves.json per save, one-GPU and tied-head support, resumed sums moved to the card), `proxy2b/diag08test.sh`,
+  `proxy2b/diaghalves.py`
+- **Result:** gate: chunked diagonal = whole fp32 G (rel L2 0.0); 40 sequences straight vs 20 + resumed 20:
+  **bit-exact** (max diff 0.0; the first resume attempt crashed on a CPU/GPU device mix, fixed); halves.json written
+  (40 seqs: median cos 0.94). 0.8B reference halves of 1,024 seqs: median 0.995, p5 0.964, min 0.916; at 2,048:
+  0.998 / 0.978; at 4,096: 0.999 / 0.990.
+- **Decision / next:** stopping rule for the 27B run in `proxy2b/YAQA08.md` amendment 10. The collector is ready for
+  `hdiag27.sh` once both iceman cards are free.
+- **Files:** `data/yaqa08/diag-halves-and-collector-test.txt`
+
 ### 2026-11-02 14:06 CST · #33-16 · Seed replicates: the diagonal H_out gain holds over 3 seeds; 0.8B quant noise measured
 - **Status:** running → done · **Machine:** 4070 (≤ 7.2 GB) · **Code:** `proxy2b/yaqaFact6.sh` @ 5a5e596
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 9

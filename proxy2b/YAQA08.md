@@ -124,3 +124,10 @@ Rules, per K:
 - **The svh weighting explains part of it** if `bident` gets ≥ 1/3 of the mean bdiag gain vs mean base; if ≥ 2/3, the
   gain is mostly the weighting and the 27B diagonal run is not needed for it (the weighting needs no backward pass).
 - Best-of-N: report the best/worst seed per arm; any pick of a seed is confirmed on another slice before use.
+
+## Amendment 10 (2026-11-02 ~14:25 CST, before the 27B run): stopping rule for the 27B diagonal collection, #33-17
+
+Reference (0.8B, `diaghalves.py`): split halves of 1,024 sequences each (where 1K sufficed, #33-13/16) agree at
+median cos 0.995, p5 0.964, min 0.916 over the 150 linears. The 27B collector writes `halves.json` (even vs odd
+sequences) at every snapshot. **Stop at the first snapshot ≥ 1,024 sequences whose median ≥ 0.995 and p5 ≥ 0.964**
+(halves of n/2 each, i.e. stricter than the 0.8B reference at equal n); otherwise continue to 2,048, then 4,096.

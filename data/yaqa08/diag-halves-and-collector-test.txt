@@ -1,0 +1,15 @@
+halves of 1024 seqs: all min 0.91590 p5 0.96409 median 0.99513; by type min/median: linear_attn.in_proj_qkv 0.9324/0.9908, linear_attn.in_proj_z 0.9487/0.9937, linear_attn.out_proj 0.9630/0.9946, mlp.down_proj 0.9963/0.9985, mlp.gate_proj 0.9159/0.9940, mlp.up_proj 0.9536/0.9946, self_attn.k_proj 0.9979/0.9982, self_attn.o_proj 0.9752/0.9907, self_attn.q_proj 0.9779/0.9977, self_attn.v_proj 0.9430/0.9917
+halves of 2048 seqs: all min 0.44964 p5 0.97820 median 0.99818; by type min/median: linear_attn.in_proj_qkv 0.9573/0.9964, linear_attn.in_proj_z 0.4496/0.9968, linear_attn.out_proj 0.9798/0.9980, mlp.down_proj 0.9985/0.9996, mlp.gate_proj 0.9601/0.9976, mlp.up_proj 0.7826/0.9972, self_attn.k_proj 0.9989/0.9997, self_attn.o_proj 0.9875/0.9956, self_attn.q_proj 0.9978/0.9989, self_attn.v_proj 0.9863/0.9960
+halves of 4096 seqs: all min 0.72851 p5 0.99029 median 0.99881; by type min/median: linear_attn.in_proj_qkv 0.9844/0.9976, linear_attn.in_proj_z 0.7285/0.9979, linear_attn.out_proj 0.9899/0.9986, mlp.down_proj 0.9989/0.9996, mlp.gate_proj 0.9951/0.9987, mlp.up_proj 0.9337/0.9986, self_attn.k_proj 0.9993/0.9997, self_attn.o_proj 0.9935/0.9974, self_attn.q_proj 0.9973/0.9989, self_attn.v_proj 0.9903/0.9980
+gate check 23.mlp.down_proj (fp32): vs whole fp32 G rel L2 0.00e+00, max row 0.00e+00
+seq 0: 1.9s (fwd 0.9 bwd 1.0 cpu-wait 0.0), 150 linears recorded, hid torch.float32, loss/tok 1.167, peak cuda0 3.7 GiB
+gate check 23.mlp.down_proj (fp32): vs whole fp32 G rel L2 0.00e+00, max row 0.00e+00
+seq 1: 1.4s (fwd 0.5 bwd 0.9 cpu-wait 0.0), 150 linears recorded, hid torch.float32, loss/tok 2.810, peak cuda0 4.8 GiB
+  mem after seq 39: cuda0 alloc 2.85 GiB
+DONE 40 seqs in 1.0 min
+hdiag: resuming after 20 sequences at window 20
+DONE 20 seqs in 0.5 min
+resume check: 150 linears, max |straight - resumed| = 0.000e+00 (BIT-EXACT)
+hdiag-snap20: halves cos min 0.2319 p5 0.5483 median 0.9063
+hdiag-snap40: halves cos min 0.2423 p5 0.6408 median 0.9387
+DIAG08TEST DONE

@@ -39,7 +39,8 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     H_in (the calib input Hessians stay). Written as OUTDIR/hdiag[-snapN]/<checkpoint key>.safetensors,
                     "hout_diag" (mean over sequences; ourq.py --hout reads it), every YAQA_SAVE_EVERY sequences and at
                     YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
-                    OUTDIR/STOP ends the run cleanly after the current sequence.
+                    OUTDIR/STOP ends the run cleanly after the current sequence. Every save also writes halves.json:
+                    per linear the cosine between the even- and odd-sequence means (split-half agreement, #33-17).
                     Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03); YAQA_PREC=x2 runs the linear GEMMs as
                     bf16 hi/lo splits (bf16x.py; check proxy2b/prectest.py first). With YAQA_GATE=1: 2 sequences, and
                     one linear's diagonal is checked against a whole fp32 G_b.
@@ -86,7 +87,9 @@ from accelerate.utils import set_module_tensor_to_device
 from safetensors import safe_open
 tcfg = AutoConfig.from_pretrained(CK).text_config
 n = tcfg.num_hidden_layers; SPLIT = int(os.environ.get("YAQA_SPLIT", n // 2))
+NG = torch.cuda.device_count()     # 1: everything on card 0 (proxy tests on one GPU)
 def card(name):   # model-side name -> device
+    if NG == 1: return 0
     if name.startswith("model.layers."): return 0 if int(name.split(".")[2]) < SPLIT else 1
     return 1 if name.startswith(("lm_head", "model.norm")) else 0
 t0 = time.time()
@@ -100,6 +103,8 @@ for f, ks in byfile.items():
         for k in ks:
             name = "lm_head.weight" if k == "lm_head.weight" else "model." + k[len("model.language_model."):]
             set_module_tensor_to_device(model, name, f"cuda:{card(name)}", value=h.get_tensor(k), dtype=torch.bfloat16)
+if "lm_head.weight" not in want:     # tied embedding (the small proxies): the head is the embedding
+    model.lm_head.weight = model.model.embed_tokens.weight
 if FP32:
     class Lin32(torch.autograd.Function):   # x @ W.T in fp32 with W bf16, cast per 32k-row chunk (lm_head: 5 GB in fp32)
         @staticmethod
@@ -118,13 +123,13 @@ if FP32:
         if isinstance(m, torch.nn.Linear): m.forward = types.MethodType(fwd32, m)
         elif not isinstance(m, torch.nn.Embedding):
             for pn, p_ in list(m.named_parameters(recurse=False)): p_.data = p_.data.float()
-dmap = {"model.embed_tokens": 0, "model.rotary_emb": 0, "model.norm": 1, "lm_head": 1}
-for l in range(n): dmap[f"model.layers.{l}"] = 0 if l < SPLIT else 1
+dmap = {"model.embed_tokens": 0, "model.rotary_emb": 0, "model.norm": min(1, NG - 1), "lm_head": min(1, NG - 1)}
+for l in range(n): dmap[f"model.layers.{l}"] = 0 if l < SPLIT or NG == 1 else 1
 model = dispatch_model(model, device_map=dmap)
 model.requires_grad_(False)
 model.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
 model.model.train()          # checkpointing is active in train mode; this model has no dropout
-print(f"loaded in {time.time() - t0:.0f}s; " + ", ".join(f"cuda{i} {torch.cuda.memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
+print(f"loaded in {time.time() - t0:.0f}s; " + ", ".join(f"cuda{i} {torch.cuda.memory_allocated(i) / 2**30:.1f} GiB" for i in range(NG)), flush=True)
 
 # ---- YAQA_HSPLIT=L[,L..]: forward-only split-half input Hessians (D2), then exit
 HSPLIT = [int(x) for x in os.environ.get("YAQA_HSPLIT", "").split(",") if x]
@@ -269,11 +274,11 @@ def _save_hout(sub, ACC):
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
 DIAG = os.environ.get("YAQA_DIAG") == "1"
 DCH = int(os.environ.get("DIAG_CHUNK", 2048))
-DACC, DSTATE = {}, {"n": 0, "next": START}
-DCHECK = "63.self_attn.o_proj"          # small enough for a whole G on the head card
+DACC, DACC_E, DSTATE = {}, {}, {"n": 0, "next": START}     # DACC_E: sum over the even-numbered sequences (split half)
+DCHECK = os.environ.get("DIAG_CHECK", "63.self_attn.o_proj")   # small enough for a whole G on the head card
 if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     _st = torch.load(f"{OUT}/hdiag-state.pt")
-    DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()})
+    DSTATE.update(_st["state"]); DACC.update({k: v for k, v in _st["acc"].items()}); DACC_E.update(_st.get("acc_even", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
@@ -290,8 +295,11 @@ def fwd_hook_diag(name):
                     ref = (gg.T @ xx).pow(2).sum(1)
                     print(f"gate check {name} ({PREC}): vs whole fp32 G rel L2 {float((d - ref).norm() / ref.norm()):.2e}, "
                           f"max row {float(((d - ref).abs() / ref.abs().clamp_min(float(ref.mean()) * 1e-3)).max()):.2e}", flush=True)
-                if name not in DACC: DACC[name] = torch.zeros_like(d)
+                if name not in DACC: DACC[name] = torch.zeros_like(d); DACC_E[name] = torch.zeros_like(d)
+                elif DACC[name].device != d.device:            # resumed sums load on the CPU: move to this linear's card
+                    DACC[name] = DACC[name].to(d.device); DACC_E[name] = DACC_E[name].to(d.device)
                 DACC[name] += d
+                if DSTATE["n"] % 2 == 0: DACC_E[name] += d     # this sequence's index (0-based) is DSTATE["n"]
         out.register_hook(bh)
     return h
 def save_diag(sub="hdiag"):
@@ -302,8 +310,19 @@ def save_diag(sub="hdiag"):
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
                   metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
+    # split-half agreement: even vs odd sequences (independent halves), cosine per linear -> halves.json (#33-17)
+    ne = (DSTATE["n"] + 1) // 2; no = DSTATE["n"] // 2
+    if no > 0:
+        hv = {}
+        for name in DACC:
+            e = (DACC_E[name] / ne).double(); o_ = ((DACC[name] - DACC_E[name]) / no).double()
+            hv["model.language_model.layers." + name] = float((e * o_).sum() / (e.norm() * o_.norm()))
+        v = sorted(hv.values())
+        json.dump({"seqs": DSTATE["n"], "min": v[0], "p5": v[max(0, len(v) // 20 - 1)], "median": v[len(v) // 2], "cos": hv},
+                  open(f"{OUT}/{sub}/halves.json", "w"), indent=0)
     if sub == "hdiag":
-        torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()}}, f"{OUT}/hdiag-state.pt.part")
+        torch.save({"state": dict(DSTATE), "acc": {k: v.cpu() for k, v in DACC.items()},
+                    "acc_even": {k: v.cpu() for k, v in DACC_E.items()}}, f"{OUT}/hdiag-state.pt.part")
         os.replace(f"{OUT}/hdiag-state.pt.part", f"{OUT}/hdiag-state.pt")
 def fwd_hook(name):
     if DIAG: return fwd_hook_diag(name)
@@ -340,7 +359,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         os.makedirs(OUT, exist_ok=True)
         from torch.profiler import profile, ProfilerActivity
         prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True); prof.__enter__()
-    for i in range(2): torch.cuda.synchronize(i)
+    for i in range(NG): torch.cuda.synchronize(i)
     ts = time.time()
     emb = model.model.embed_tokens(ids).to(ADT).detach().requires_grad_(not TRUNC)
     hid = model.model(inputs_embeds=emb, use_cache=False).last_hidden_state[0, :-1]
@@ -354,10 +373,10 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
                 y = torch.multinomial(torch.softmax(model.lm_head(h).float(), -1), 1)[:, 0]
         ys.append(y)
         loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
-    for i in range(2): torch.cuda.synchronize(i)
+    for i in range(NG): torch.cuda.synchronize(i)
     t_fwd = time.time() - ts
     loss.backward()
-    for i in range(2): torch.cuda.synchronize(i)
+    for i in range(NG): torch.cuda.synchronize(i)
     t_bwd = time.time() - ts - t_fwd
     t_j = time.time()
     if FULL: join_full()
@@ -388,11 +407,11 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
     print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['full_done']) if DIAG else len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
-          ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(2)), flush=True)
+          ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(NG)), flush=True)
     del hid, loss, emb
     import gc; gc.collect(); torch.cuda.empty_cache()     # hook closures can hold graph pieces in reference cycles
-    print(f"  mem after seq {s}: " + ", ".join(f"cuda{i} alloc {torch.cuda.memory_allocated(i) / 2**30:.2f} GiB" for i in range(2)), flush=True)
-    for i in range(2): torch.cuda.reset_peak_memory_stats(i)     # the next line's peak is that sequence's own
+    print(f"  mem after seq {s}: " + ", ".join(f"cuda{i} alloc {torch.cuda.memory_allocated(i) / 2**30:.2f} GiB" for i in range(NG)), flush=True)
+    for i in range(NG): torch.cuda.reset_peak_memory_stats(i)     # the next line's peak is that sequence's own
 if FULL and not GATE: save_full()
 if DIAG and not GATE and done: save_diag()
 print(f"DONE {done} seqs in {(time.time() - t_all) / 60:.1f} min", flush=True)
