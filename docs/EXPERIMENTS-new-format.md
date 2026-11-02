@@ -546,6 +546,15 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     - Not done: reusing K-independent work across levels (~7%, needs a tensor-major ladder); refit via Cholesky instead
       of LU (faster, not bit-identical); KA 6-7 lane-cooperative search (head donors K6.5 / 7.5 only); sub-1 0-bit-step
       fusion. Checks: qtf2v5check (v6 vs v4 every instance), qtf2int6check, qtint5check, e2e5, speed2deploy.
+  - **Speed pass 2, later results:** multi-level ourq (`-K a,b,c`) byte-identical to separate runs (K2.25 / 2.5 / 3,
+    52 tensors + proxy rows + stamps), only -5% time (259 vs 272 s): the K-independent work is small. Integer K6 / K7 on
+    qtf2: identical, x2.0 / x3.0 (i8); K5 slower on qtf2 (30k vs 45k tiles/s) -> stays on the integer kernel. Two ourq
+    per card on v8: identical outputs, throughput x1.14.
+  - **damp3 (running 2026-11-02):** damping held out across K0.5-7 (user: does the best spread change with K, and
+    integer vs fractional?). Grid 0.025 / 0.01 / 0.005 / 0.0025 / 0.001 / 0.0003 / 0.0001, quantized on split-half
+    H_A, scored on H_B; rule fixed before the run in `v3/e3/damp3/damp3report.py`. Old ladder data (K2-4.5): winners
+    integer 51 / 42 / 7% (0.001 / 0.005 / 0.025), fractional 55 / 37 / 8%; neighbour-level agreement ~53% for int-int,
+    frac-frac and int-frac alike -> no sign of a type effect, and the 0.005-vs-0.001 pick is mostly noise.
   - **Head mean-row subtraction: head-only KL -30%** (headremake.sh step 1, dry run 2026-11-02; exact headsim, uniform
     heads, 32,768 held-out head inputs): K3 0.00794 -> 0.00555, K5 0.000492 -> 0.000346 (geo ratio 0.70). Exact
     (softmax-invariant), free. Adopted for every head donor. Damping (with mean-row): K3 best sigma 0.005 (-2.6% vs
