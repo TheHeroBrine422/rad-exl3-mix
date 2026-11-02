@@ -57,7 +57,8 @@ while k=$(pop) && [ -n "$k" ]; do
     $PY -I ourq/ourq.py -K $lv -o "$R/K{K}" --device 0 --codebook $cb $X >> $D/K$g.log 2>&1 )
   rc=$?
   n=""; for kk in ${lv//,/ }; do n="$n $(ls $R/K$kk/q-L*.safetensors 2>/dev/null | wc -l)"; done
-  [ $rc = 0 ] && [ -z "$(echo $n | tr ' ' '\n' | grep -v '^64$')" ] && log "K$k done in $(( ($(date +%s) - s) / 60 )) min" \
+  [ $rc = 0 ] && [ -z "$(echo $n | tr ' ' '\n' | grep -v '^64$')" ] && { log "K$k done in $(( ($(date +%s) - s) / 60 )) min"
+    python3 $RXM_WORK/ourq/plaus.py $R $R/plaus.json > $R/plaus.txt 2>&1 || log "PLAUS FLAGS ($R/plaus.txt): $(sed -n 1p $R/plaus.txt)"; } \
     || { echo $(( $(cat $D/K$g.fails 2>/dev/null || echo 0) + 1 )) > $D/K$g.fails
          log "K$k FAIL rc=$rc (layers per level:$n; fail $(cat $D/K$g.fails) of 2; resumes on rerun)"; }
   rm -f $D/K$g.taken
