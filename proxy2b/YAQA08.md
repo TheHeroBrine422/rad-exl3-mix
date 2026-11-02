@@ -145,3 +145,17 @@ K2, rotation seed offsets 0 / 1 / 2, against the existing base seeds. Gain = mea
 - **A5 (dose):** the smallest N ∈ {128, 256, 512} whose gain is ≥ 80% of the 1024 gain at both K, with every seed
   beating every base seed. If one qualifies, the 27B stopping rule (amendment 10) is amended to allow an early
   K3 swap test from that snapshot before the collection continues.
+
+## Amendment 12 (2026-11-02 ~15:50 CST, written before any data): H_out on our own agentic traces, #33-19
+
+Corpus: `pisess v1` (our pi sessions rendered as Qwen3.8 agentic traces, redacted; 18.5M tokens; training /
+statistics only). Collection as #33-18 (`collect.py` YAQA_DIAG, fp32, one GPU, 2048-token windows, 1,024 windows),
+on pisess windows instead of calib qad windows; same seed and settings. Quants: base settings + diagonal (output
+damping 0.01), i8, g08-search1, K3 and K2, seed offsets 0 / 1 / 2. Reference: #33-18's `eB` arms (qad windows,
+1,024). Also the diagonal of the 50/50 mix (mean of the two diagonals).
+- **Different but not better:** report the per-linear cosine between the pisess and qad diagonals.
+- **pisess helps** if its 3-seed mean KL ≤ 0.98× the qad arm's at both K and every pisess seed beats every qad seed
+  at one K at least; **the mix helps** under the same rule. If neither, the 27B collection stays on qad windows.
+- Caveat recorded: g08-search1 has few long agentic documents (capped at 2k); a gain specific to agentic text may not
+  show on it. If pisess is not worse (≤ 1.01×) and the cosine is < 0.95, re-check on a slice of long agentic
+  search-pool documents before deciding.
