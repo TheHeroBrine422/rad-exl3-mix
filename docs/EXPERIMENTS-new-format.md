@@ -522,6 +522,10 @@ more than ~1% KLD at the target sizes; then freeze menu + settings and build.
     budget by headsim, the curve is smooth (5-24% per 1/8 bit) and 43-54% below a uniform head at every budget 3.5-7.5
     (exact head-only KL, 32,768 held-out head inputs). The best floor sits ~0.5-1 bit below the budget. No quarter-step
     donors needed. (Whole-model check still to do, critique C3.5.)
+  - **radiance 1.15.1 port works** (fork branch qc-exl3-115: ABI 32 pins + layout-fingerprint export; all 4 plugins build,
+    qwen35_exl3 synthetic tests pass): V2 3.00 on golden-ver1, stock 1.15.1 `--kld-ref` vs the frozen 1.13 recorder,
+    gen-masked: 0.027122 vs 0.027122 (+0.002%, SE 0.001%; max per-row difference 0.026). Stock --kld-ref scores every
+    row: mask with gen.u8 (`eval/cmp115.py`), as mergerep does.
   - **Output scales off on upstream-flagged gate/up: WORSE, +2.5% KLD** (z 2.1; K3 mul1, gate+up of the 36 layers with
     a flagged projection, 52 scales off, swapped into V2 3.00, golden-s2k: 583 search docs, 481k positions;
     `v3/e3/osr/result-K3.json`). Upstream's auto rule (ratio > 1.05) misjudges this model, like gate 2d's output-side
