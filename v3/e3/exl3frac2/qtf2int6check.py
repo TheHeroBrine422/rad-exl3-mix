@@ -23,7 +23,7 @@ fails = 0
 for cb in ("mul1", "i8"):
     if cb == "i8": exl3cb.install(SRC, "i8")         # integer reference: the ladder's kernel; mul1: the prebuilt one
     ext = exl3frac2.load(SRC, cb)
-    for K in (1, 2, 3, 4):
+    for K in [int(x) for x in os.environ.get("INT6_KS", "1,2,3,4").split(",")]:
         rq, ri = Q.quantize_tiles(T, {"K": K, "mul1": True}); nq, ni = qtf2(ext, T, K)
         di, dv = int((ri != ni).sum()), int((rq != nq).sum()); fails += di + dv
         T2 = T[:2048].contiguous()
