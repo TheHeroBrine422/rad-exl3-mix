@@ -2,6 +2,30 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 14:06 CST · #33-16 · Seed replicates: the diagonal H_out gain holds over 3 seeds; 0.8B quant noise measured
+- **Status:** running → done · **Machine:** 4070 (≤ 7.2 GB) · **Code:** `proxy2b/yaqaFact6.sh` @ 5a5e596
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 9
+- **Result** (KL, rotation seed offsets 0 / 1 / 2; base settings; bdiag = + 8K diagonal H_out):
+
+  | K | arm | seed 0 | seed 1 | seed 2 | mean | seed SD |
+  |---|---|---|---|---|---|---|
+  | 3 | base | 0.0989 | 0.0994 | 0.0974 | 0.0986 | 1.05% |
+  | 3 | bdiag | 0.0910 | 0.0906 | 0.0902 | 0.0906 | 0.44% |
+  | 2 | base | 0.5354 | 0.5411 | 0.5225 | 0.5330 | 1.79% |
+  | 2 | bdiag | 0.4928 | 0.5107 | 0.5093 | 0.5043 | 1.97% |
+
+  Mean gain K3 −8.1% (10.2 seed-SDs), K2 −5.4% (2.95 seed-SDs; 5.1 SDs of the 3-seed mean). Every bdiag seed beats
+  every base seed at both K. Identity H_out (earlier in this experiment): K3 +4.9%, K2 +2.1% vs base.
+- **Reading:** rule 1 passes at K3; at K2 the "every seed beats every seed" part passes and the 3×SD part is
+  borderline (2.95× the per-seed SD; the rule did not say per-seed or per-mean). Rule 2: the identity arm is worse
+  than base, so the svh weighting explains none of the gain. **0.8B quant-to-quant noise (seed SD): ~1% at K3,
+  ~2% at K2; best–worst of 3 seeds 1–2% (K3) and 3.5% (K2).** Paired z between single quants overstates confidence
+  by about this much. The K2 gain from seed 0 alone (−8.0%) was lucky; the 3-seed figure is −5.4%.
+- **Decision / next:** the diagonal H_out is worth the 27B collection (fp32, 1K sequences, ~8.5 h, both cards).
+  From now on, proxy comparisons under ~3% (K3) / ~5% (K2) need seed replicates. Best-of-N seeds: 1–3.5% best–worst
+  spread, mostly noise on the picking slice; not pursued (would need pick-on-search, confirm-on-verify).
+- **Files:** `data/yaqa08/result-fact6.txt`
+
 ### 2026-11-02 13:58 CST · #62 · Research-idea run started: 10 Opus 5.5 xhigh lenses + critic
 - **Status:** planned → running · **Machine:** VM (`pi -p`, shared cached prefix) · **Code:** `local/papers/ideasrun.sh`,
   `ideaslane{2,3,4}.sh`, `ideasqueue.sh`, briefs in `local/papers/run/`

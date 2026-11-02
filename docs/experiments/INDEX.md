@@ -87,7 +87,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-13 | 27B diagonal H_out collection + 0.8B diagonal dose | quantizer | running | 11-02 | 0.8B: 1K seqs keep 85% (K3) / 99% (K2) of the gain; 27B run at 1K pending (both cards, ~8.5 h) |
 | 33-14 | Split-precision bf16 GEMMs for the fp32 collector | quantizer | negative | 11-02 | 0.8B: x2 diag error 1.2–5.5e-3 median (rule ≤ 1e-3), 10× better than bf16; collector stays fp32 |
 | 33-15 | Split precision judged by KL, 0.8B | quantizer | negative | 11-02 | x2 K2 +2.8%, but bf16 did better: KL test shows ~±2–3% quant-to-quant noise, not precision; collector stays fp32 |
-| 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | running | 11-02 | identity H_out worse than base (K3 +4.9%): the gain is the measured diagonal |
+| 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | done | 11-02 | 3 seeds: diag H_out K3 −8.1%, K2 −5.4% vs base; seed SD ~1% / ~2%; identity H_out worse |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
