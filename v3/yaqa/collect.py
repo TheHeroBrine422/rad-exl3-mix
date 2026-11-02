@@ -39,7 +39,8 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     H_in (the calib input Hessians stay). Written as OUTDIR/hdiag[-snapN]/<checkpoint key>.safetensors,
                     "hout_diag" (mean over sequences; ourq.py --hout reads it), every YAQA_SAVE_EVERY sequences and at
                     YAQA_SNAP counts and at the end; OUTDIR/hdiag-state.pt makes a restart continue where it stopped (same SEED);
-                    OUTDIR/STOP ends the run cleanly after the current sequence. Every save also writes halves.json:
+                    OUTDIR/STOP ends the run cleanly after the current sequence. More sequences than windows: the
+                    windows are reused with fresh sampled labels (2026-11-02: the qad pool has 1,350 of 2048 tokens). Every save also writes halves.json:
                     per linear the cosine between the even- and odd-sequence means (split-half agreement, #33-17).
                     YAQA_DIAG_EXTRA=1: also hdiag*-xw (sum ||x||^2 dy^2) and hdiag*-dy (sum dy^2) next to each save (#33-18).
                     YAQA_DIAG_XH=DIR (input Hessians): also hdiag*-xh, sum (x' H_in x) dy^2, Sketch A's refined weights (#33-20).
@@ -392,7 +393,9 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     if DIAG and os.path.exists(f"{OUT}/STOP"): print(f"STOP file at window {s}", flush=True); break
     if not DIAG and not GATE and os.path.exists(f"{OUT}/.done/{s:05d}"): continue
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
-    ids = torch.from_numpy(toks[wins[s]:wins[s] + L].astype(np.int64))[None].to(dev0)
+    w0 = wins[s % len(wins)]                 # beyond the last window: windows again, fresh labels (seed (SEED, s))
+    if s == len(wins): print(f"window {s}: all {len(wins)} windows used, cycling with fresh labels", flush=True)
+    ids = torch.from_numpy(toks[w0:w0 + L].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, L - 1), NPOS, replace=False))).to(dev0)
     state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
     PROF = int(os.environ.get("YAQA_PROFILE", 0)) == done + 1
@@ -445,7 +448,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
             else: r.view(torch.int16).numpy().tofile(f"{d}/{s:05d}.bf16")
         os.makedirs(f"{OUT}/.labels", exist_ok=True)
         torch.cat(ys).cpu().numpy().astype(np.int32).tofile(f"{OUT}/.labels/{s:05d}.i32")
-        os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
+        os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s % len(wins)]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
     print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['full_done']) if DIAG else len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(NG)), flush=True)

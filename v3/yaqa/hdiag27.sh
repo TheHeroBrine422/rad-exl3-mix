@@ -23,7 +23,7 @@ if [ ! -f $O/gate.done ]; then
   log "gate: $(grep 'gate check' $O/gate.log | tail -1); $(grep '^seq' $O/gate.log | tail -1 | cut -c1-120)"
   touch $O/gate.done
 fi
-SNAPS=128,256,512,$N
+SNAPS=${SNAPS:-256,512,1024,$N}
 # one process for the whole run (the fp32 path has a ~15 min Triton warm-up per launch); a failure or a STOP
 # leaves hdiag-state.pt, and running this script again continues from it
 ( eval "$COL"; cd $Y && YAQA_SNAP=$SNAPS YAQA_SAVE_EVERY=25 $PY -I collect.py $O $N 2048 ) >> $O/collect.log 2>&1

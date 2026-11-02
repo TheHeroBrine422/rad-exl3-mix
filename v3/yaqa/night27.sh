@@ -1,11 +1,13 @@
 #!/bin/bash
 # night27.sh -- the unattended 27B night (2026-11-02/03), on iceman, both cards (user's arrangement):
 #   1. hdiag27.sh 512: diagonal H_out collection (Sketch B, sum dy^2, sum ||x||^2 dy^2; fp32; 2-seq gate first)
-#   2. card 0, after the collection: two K3 trunk quants with the ladder's settings (ladder2.sh: i8, qtf2, scaled
+#   2. card 0, after 512 sequences: two K3 trunk quants with the ladder's settings (ladder2.sh: i8, qtf2, scaled
 #      Hessian, damping 0.025 / input 0.005):
 #        a) + diagonal H_out from sum dy^2 (512 seqs), output damping 0.01    -> /data/v3night/K3-dy/K3
 #        b) no H_out, rotation seed offset 1 (the 27B quant-noise floor, ranked A7) -> /data/v3night/K3-s1/K3
 #      against the ladder's K3 (seed 0, /data/v3ladder2/K3). Evals and the swap test: morning, with a pass rule.
+#   3. resume the collection (bit-exact) to 1,536 sequences, snapshots 1,024 / 1,536 (user: run well past the night;
+#      beyond the 1,350 qad windows they are reused with fresh labels). ~13 h of collection in all.
 # Stops on any failure (log /data/v3night/night.log); nothing here deletes data. Stop: touch /data/yaqa/hdiag/STOP.
 : ${RXM_WORK:=/root}; export RXM_WORK
 N=/data/v3night; mkdir -p $N; L=$N/night.log; log() { echo "$(date -u +%H:%M) $*" | tee -a $L; }
@@ -27,4 +29,7 @@ quant() { tag=$1; shift
 }
 quant K3-dy --hout /data/yaqa/hdiag/hdiag-snap512-dy --sigma-reg-out 0.01 || exit 1
 quant K3-s1 --seed-offset 1 || exit 1
+log "resume collection to 1536"
+bash /root/ourq/hdiag27.sh 1536 >> $L 2>&1
+log "collection to 1536: $(ls -d /data/yaqa/hdiag/hdiag-snap* 2>/dev/null | tr '\n' ' ')"
 log "NIGHT DONE"
