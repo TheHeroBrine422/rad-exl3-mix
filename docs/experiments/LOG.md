@@ -2,6 +2,31 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 13:21 CST · #33-15 · Split precision judged by KL: fails as written; the test shows quant-to-quant noise instead
+- **Status:** done (negative as written) · **Machine:** 4070, capped at 7.2 GB (peak 3.4 GB)
+- **Code:** `proxy2b/yaqaFact5.sh`, `prectest.py --save` @ b005ba3 · **Pass rule:** `proxy2b/YAQA08.md` amendment 8
+- **Setup:** diagonals from the first 1,024 windows, yaqaB's targets, linear GEMMs x2 or bf16; quants on `base`'s
+  settings + diagonal H_out, paired against the fp32 1K-diagonal arm (`kXbdiag1024`). Collection 1.79 (x2) /
+  0.98 (bf16) s / sequence.
+- **Result** (KL ratio vs the fp32-diagonal arm, z):
+
+  | collector | K3 | K2 |
+  |---|---|---|
+  | x2 | 0.982 (−2.7) | 1.028 (+4.7) |
+  | bf16 | 0.982 (−2.4) | 1.005 (+0.9) |
+
+- **Reading:** x2 fails (K2 +2.8%). But the less precise bf16 collector does *better* than x2 at K2 and both beat
+  fp32 at K3, so the KL differences are not about precision: a tiny change in the diagonal gives a different quant,
+  and quant-to-quant spread is ~±2–3% at K2 and ~±2% at K3 on this slice, with |z| up to ~5. **The paired
+  per-document SE does not include this rounding variance**, so 0.8B arm-vs-arm differences below ~3% are not
+  trustworthy, whatever z says. The H_out gains (−8…−10% vs base) are larger than that spread; smaller effects in
+  #33-10 … #33-14 (e.g. diagonal vs full at K3, 1K vs 2K) are within it.
+- **Decision / next:** (1) the 27B collector stays fp32 (the KL test cannot separate x2 from fp32; fp32 is the safe
+  choice, ~8.5 h). (2) New rule for proxy comparisons: estimate quant-to-quant noise with replicate quants (e.g. 3
+  rotation seeds per arm) and require differences beyond it; write it into the proxy method before the next
+  comparisons. (3) Re-check the H_out gain with seed replicates (base and bdiag, 3 seeds each at K3 and K2).
+- **Files:** `data/yaqa08/result-fact5.txt`
+
 ### 2026-11-02 12:55 CST · #33-13 · Diagonal H_out dose on 0.8B: 1K sequences are enough
 - **Status:** running (27B part pending) · **Machine:** 4070, allocator capped at 7.2 GB (peak ~1.1 GB)
 - **Code:** `proxy2b/yaqaFact4.sh` @ f0fb687 · **Pass rule:** `proxy2b/YAQA08.md` amendment 6
