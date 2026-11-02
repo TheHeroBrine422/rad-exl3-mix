@@ -10,7 +10,8 @@ Every plan picks each permuted row's K from per-K logits computed once per posit
 extra. Per plan: mean KL(p_bf16 || q), top-1 agreement, real head bytes, a rare-token guard (KL where the bf16 argmax
 is outside the 20k most sensitive rows), and the paired difference vs the uniform plan of the same budget with a
 bootstrap over 512-position blocks (dump rows are consecutive positions, so blocks stand in for documents).
-One card, ~22 GB VRAM. env HS_BLOCK (256), HS_GUARD (20000)."""
+One card, ~22 GB VRAM. env HS_BLOCK (256), HS_GUARD (20000), HS_MAXK (7: donors on the card at once, 2.5 GB each; plans
+are run in groups whose donors fit, one pass over the inputs per group -- a single group when the plan set uses <= 7)."""
 import json, os, sys, time
 import numpy as np, torch
 from safetensors import safe_open
@@ -27,28 +28,36 @@ P = json.load(open(PLANF)); KS = P["Ks"]
 plans = {n: torch.from_numpy(np.repeat(np.array(p["K_blocks"]), RB)).to(dev) for n, p in P["plans"].items()}
 idx = json.load(open(f"{CK}/model.safetensors.index.json"))["weight_map"]["lm_head.weight"]
 with safe_open(f"{CK}/{idx}", "pt") as f: Wref = f.get_tensor("lm_head.weight").to(dev)[perm]   # bf16, permuted
-W = {}
-for k in KS:
-    with safe_open(f"{QD}/K{k:g}/wq/lm_head.safetensors", "pt") as f: W[k] = f.get_tensor("weight").to(dev)
-print(f"{N} head inputs, {len(plans)} plans, weights on card {torch.cuda.memory_allocated() / 2**30:.1f} GiB",
-      file=sys.stderr, flush=True)
+MAXK = int(os.environ.get("HS_MAXK", 7))
+groups = []                                                  # [donor Ks, plan names], plans ordered by their lowest K
+for n in sorted(plans, key=lambda n: (min(P["plans"][n]["K_blocks"]), max(P["plans"][n]["K_blocks"]))):
+    ks = {k for k in KS if k in set(P["plans"][n]["K_blocks"])}
+    if groups and len(groups[-1][0] | ks) <= MAXK: groups[-1][0].update(ks); groups[-1][1].append(n)
+    else: groups.append([set(ks), [n]])
 def mm(x, w): return torch.mm(x, w.T, out_dtype=torch.float32)
 kl_pos = {n: torch.zeros(N) for n in plans}; hit = {n: 0 for n in plans}; guard = torch.zeros(N, dtype=torch.bool)
 t0 = time.time()
-with torch.no_grad():
-    for b0 in range(0, N, BLK):
-        x = X[b0:b0 + BLK].to(dev); b1 = b0 + x.shape[0]
-        zr = mm(x.to(torch.bfloat16), Wref); lp = torch.log_softmax(zr, -1); p = lp.exp(); top = zr.argmax(-1)
-        guard[b0:b1] = (top >= GUARD).cpu()                    # permuted index = sensitivity rank
-        z = {k: mm(x.to(torch.float16), W[k]) for k in KS}
-        for n, kv in plans.items():
-            zq = torch.empty_like(zr)
-            for k in KS:
-                m = kv == k
-                if m.any(): zq[:, m] = z[k][:, m]
-            kl_pos[n][b0:b1] = (p * (lp - torch.log_softmax(zq, -1))).sum(-1).cpu()
-            hit[n] += int((zq.argmax(-1) == top).sum())
-        if b0 // BLK % 16 == 0: print(f"{b1}/{N} {time.time() - t0:.0f}s", file=sys.stderr, flush=True)
+for gi, (gks, gnames) in enumerate(groups):
+    gks = sorted(gks); W = {}
+    for k in gks:
+        with safe_open(f"{QD}/K{k:g}/wq/lm_head.safetensors", "pt") as f: W[k] = f.get_tensor("weight").to(dev)
+    print(f"{N} head inputs, group {gi + 1}/{len(groups)}: {len(gnames)} plans, donors {gks}, weights on card "
+          f"{torch.cuda.memory_allocated() / 2**30:.1f} GiB", file=sys.stderr, flush=True)
+    with torch.no_grad():
+        for b0 in range(0, N, BLK):
+            x = X[b0:b0 + BLK].to(dev); b1 = b0 + x.shape[0]
+            zr = mm(x.to(torch.bfloat16), Wref); lp = torch.log_softmax(zr, -1); p = lp.exp(); top = zr.argmax(-1)
+            guard[b0:b1] = (top >= GUARD).cpu()                # permuted index = sensitivity rank
+            z = {k: mm(x.to(torch.float16), W[k]) for k in gks}
+            for n in gnames:
+                kv = plans[n]; zq = torch.empty_like(zr)
+                for k in gks:
+                    m = kv == k
+                    if m.any(): zq[:, m] = z[k][:, m]
+                kl_pos[n][b0:b1] = (p * (lp - torch.log_softmax(zq, -1))).sum(-1).cpu()
+                hit[n] += int((zq.argmax(-1) == top).sum())
+            if b0 // BLK % 16 == 0: print(f"{b1}/{N} {time.time() - t0:.0f}s", file=sys.stderr, flush=True)
+    del W, z; torch.cuda.empty_cache()
 
 nb = N // 512; rng = np.random.default_rng(0); boot = rng.integers(0, nb, (2000, nb))
 def blocks(v): return v[:nb * 512].numpy().reshape(nb, 512).mean(1)

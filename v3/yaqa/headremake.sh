@@ -10,6 +10,8 @@
 #     quarters, 6-8 by halves.
 #  3. floor curves (HS_FLOOR_ALL: one plan per tail floor, headsim chooses): C donors K1-3.25 budgets 1.5-3.5,
 #     A K3-6 budgets 3.5-6, B K5-8 budgets 5.5-7.75; 1/8-bit budgets.
+# Each donor has a 45 min timeout (K7.5 hung once): a FAIL is logged and the curves price without it.
+# STOP_AFTER=settings: step 1 only (dry run outside the slot; the slot skips what is done).
 # Out /data/yaqa/headfinal/ (K*/ donors, curve-*.json, settings.json), log run.log.
 : ${RXM_WORK:=/root} ${CARD:=0}; export RXM_WORK
 Y=/data/yaqa H=/data/yaqa/headslab2 O=/data/yaqa/headfinal PY=/data/venv-exl3/bin/python DUMP=${RXM_WORK}/e1b/dumphead
@@ -22,7 +24,7 @@ hq() {   # DIR K EXTRA... : one head donor (skips a finished one)
   local d=$1 k=$2; shift 2
   [ -f $d/wq/lm_head.rowerr.npz ] && return 0
   mkdir -p $(dirname $d)
-  $PY -I ourq/ourq.py -K $k -o $d --only-head --device 0 --save-wq --head-perm $H/perm.npy --qtf2 --frac-ext $SRC "$@" \
+  timeout 45m $PY -I ourq/ourq.py -K $k -o $d --only-head --device 0 --save-wq --head-perm $H/perm.npy --qtf2 --frac-ext $SRC "$@" \
     > $d.log 2>&1
   [ -f $d/wq/lm_head.rowerr.npz ] && log "donor $d OK" || { log "donor $d FAIL"; return 1; }
 }
@@ -60,6 +62,12 @@ EOF
 MR=$(python3 -c "import json; print(int(json.load(open('$O/settings.json'))['use_mean_row']))")
 SIG=$(python3 -c "import json; print(json.load(open('$O/settings.json'))['sigma'])")
 log "settings: mean-row $MR, sigma $SIG"
+# headsim's donor grouping (HS_MAXK) must reproduce the pre-change pricing of the same donors exactly
+[ -s /data/yaqa/headset/default.json ] && python3 -c "
+import json, sys; a, b = (json.load(open(f))['plans'] for f in sys.argv[1:3])
+print('headsim regression', 'OK' if all(a[n]['kl'] == b[n]['kl'] for n in a) else f'DIFFERS {a} {b}')" \
+  /data/yaqa/headset/default.json $S/default.json | tee -a $O/run.log
+[ "$STOP_AFTER" = settings ] && exit 0
 
 # ---- 2. donors
 DONORS="1 1.25 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 3.75 4 4.25 4.5 4.75 5 5.25 5.5 5.75 6 6.5 7 7.5 8"
