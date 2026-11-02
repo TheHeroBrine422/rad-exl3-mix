@@ -2,6 +2,13 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 15:12 CST · #33-18 · Estimator check (Sketch B / ‖x‖²dy² / dy²) and dose 128–1024 on 0.8B: started
+- **Status:** running · **Machine:** 4070 (≤ 7.2 GB) · **Code:** `proxy2b/yaqaFact7.sh`, `collect.py` YAQA_DIAG_EXTRA @ 39e3cd3
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 11 (critic items A2, A5)
+- **Setup:** one fp32 collection with the 27B collector on calib qad windows (1,024 seqs, snapshots 128–1024), then
+  6 diagonals × K3/K2 × 3 seeds = 36 quants vs the existing base seeds. ETA ~17:00 CST.
+- **Files:** (when done) `data/yaqa08/result-fact7.txt`
+
 ### 2026-11-02 14:55 CST · #62 · Research-idea run done; published to docs/ideas/
 - **Status:** running → done · **Files:** `docs/ideas/` (ranked.md + 10 lens reports + papers.md); raw in
   `local/papers/ideas/`

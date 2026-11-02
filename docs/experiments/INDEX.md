@@ -89,6 +89,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-15 | Split precision judged by KL, 0.8B | quantizer | negative | 11-02 | x2 K2 +2.8%, but bf16 did better: KL test shows ~±2–3% quant-to-quant noise, not precision; collector stays fp32 |
 | 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | done | 11-02 | 3 seeds: diag H_out K3 −8.1%, K2 −5.4% vs base; seed SD ~1% / ~2%; identity H_out worse |
 | 33-17 | 27B diagonal collector: split halves, resume test on 0.8B | quantizer | done | 11-02 | resume bit-exact; stopping rule: 27B halves median ≥ 0.995, p5 ≥ 0.964 |
+| 33-18 | Estimators (Sketch B / xw / dy) + dose 128–1024, 0.8B, 3 seeds | quantizer | running | 11-02 | critic A2 / A5; decides the 27B collector |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
