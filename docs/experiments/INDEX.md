@@ -84,6 +84,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-10 | Factorial: Sketch B H_in vs H_out, 0.8B K3 | quantizer | done | 11-02 | H_in swap +20%; calib H_in + H_out −9.9% vs ldlq, −4.3% vs base (z −5.4); diag only −1.7% vs base |
 | 33-11 | H_out at K2 and stacked on base's settings, 0.8B | quantizer | done | 11-02 | bhout vs base: K3 −9.7% (z −12.4), K2 −5.6% (z −6.3); switch bar met on 0.8B |
 | 33-12 | H_out sizing: mixed / diagonal / dose, 0.8B | quantizer | done | 11-02 | diagonal only: K3 −8.0%, K2 −8.0% vs base; full needs ~4K seqs |
+| 33-13 | 27B diagonal H_out collection + 0.8B diagonal dose | quantizer | planned | 11-02 | collector written; needs both iceman cards (~8.5 h at 1K seqs) |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |

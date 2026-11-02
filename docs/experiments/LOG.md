@@ -2,6 +2,19 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 11:50 CST · #33-13 · 27B diagonal H_out: collector and 0.8B dose check prepared
+- **Status:** planned · **Machine:** iceman (both cards) + 4070 · **Code:** `v3/yaqa/collect.py` YAQA_DIAG,
+  `v3/yaqa/hdiag27.sh`, `quantize/ourq.py` (`--hout` reads `hout_diag` vectors), `proxy2b/yaqaFact4.sh` @ f0fb687
+- **Question:** how many sequences the diagonal needs (0.8B), then the 27B collection and a 27B swap test.
+- **Pass rule:** `proxy2b/YAQA08.md` amendment 6 (0.8B dose); the 27B swap test's rule is written before it runs.
+- **Setup:** 27B: per sequence and trunk linear, diag(G_b G_bᵀ) with G_b = Σ_t dy_t x_tᵀ, sampled targets, fp32
+  backward (~30 s / sequence on both cards, measured in gate 2b), qad-pool 2048-token windows (pools-v3), snapshots
+  at 256 / 512 / 1024 / 2048; accumulators ~10 MB. 27B H_out sizes for reference: full 206 GB fp32 (gate / up 155),
+  without gate / up 51 GB.
+- **Decision / next:** run `yaqaFact4.sh` when the 4070 is free (~12 min); the 27B run needs both cards (user's
+  arrangement, e.g. a night): 1K sequences ≈ 8.5 h. Faster near-fp32 backward (bf16 hi/lo split of activations,
+  weights exact in bf16) is a possible speed-up, to be checked for precision first.
+
 ### 2026-11-02 11:15 CST · #33-12 · H_out for 27B sizing: diagonal is enough; ~4K sequences
 - **Status:** done · **Machine:** 4070 · **Code:** `proxy2b/yaqaFact3.sh` @ 86f1233
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 5 (written before data).
