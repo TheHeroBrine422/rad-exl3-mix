@@ -30,7 +30,9 @@ fp_qtf2 qtf2_a4_m0000();
 fp_qtf2 qtf2_a4_m8888();
 fp_qtf2 qtf2_a4_maaaa();
 fp_qtf2 qtf2_a4_meeee();
+fp_qtf2 qtf2_a5_m8888();
 fp_qtf2 qtf2_a5_maaaa();
+fp_qtf2 qtf2_a5_meeee();
 fp_qtf2 qtf2_a6_maaaa();
 fp_qtf2 qtf2_a7_maaaa();
 static const Qtf2Entry qtf2_table[] = {
@@ -65,7 +67,9 @@ static const Qtf2Entry qtf2_table[] = {
     {4, 0x8888u, &qtf2_a4_m8888, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
     {4, 0xaaaau, &qtf2_a4_maaaa, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
     {4, 0xeeeeu, &qtf2_a4_meeee, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
+    {5, 0x8888u, &qtf2_a5_m8888, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
     {5, 0xaaaau, &qtf2_a5_maaaa, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
+    {5, 0xeeeeu, &qtf2_a5_meeee, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
     {6, 0xaaaau, &qtf2_a6_maaaa, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
     {7, 0xaaaau, &qtf2_a7_maaaa, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
 };

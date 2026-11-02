@@ -5,7 +5,8 @@ halves K5.5-7.5 (KA 5-7). Masks: the fork's canonical frac_mask(n), n = 16 x the
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 def frac_mask(n): return sum(1 << i for i in range(16) if ((i + 1) * n) // 16 - (i * n) // 16)
-MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: (4, 8, 12), 4: (4, 8, 12), 5: (8,), 6: (8,), 7: (8,)}
+MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: (4, 8, 12), 4: (4, 8, 12), 5: (4, 8, 12), 6: (8,), 7: (8,)}
+# KA 5 quarters (K5.25 / 5.75): head donors only (headremake.sh), the trunk ladder stops at K5.5 / 6
 # integer K1-4 (MASK 0): the same search as exllamav3's integer kernel; qtf2int6check.py tests identity / speed, and
 # integer levels run here only where it is identical and faster
 for ka in (1, 2, 3, 4): MENU[ka] = (0,) + tuple(MENU[ka])

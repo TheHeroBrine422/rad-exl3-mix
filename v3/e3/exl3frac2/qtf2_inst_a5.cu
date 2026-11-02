@@ -2,4 +2,6 @@
 #include "qtf2_types.cuh"
 #include "qtf2.cuh"
 
+fp_qtf2 qtf2_a5_m8888() { return qtf2_kernel<5, 0x8888u>; }
 fp_qtf2 qtf2_a5_maaaa() { return qtf2_kernel<5, 0xaaaau>; }
+fp_qtf2 qtf2_a5_meeee() { return qtf2_kernel<5, 0xeeeeu>; }
