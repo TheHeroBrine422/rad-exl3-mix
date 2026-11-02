@@ -1,6 +1,6 @@
 # EXL3-V3 design (draft, 2026-10-31)
 
-Consolidates `DESIGN-new-format.md` §8, the V3 experiments (`EXPERIMENTS-new-format.md`) and what V2's run taught.
+Consolidates `DESIGN-new-format.md` §8, the V3 experiments (`experiments/`) and what V2's run taught.
 Open decisions are marked **[decide]**.
 
 ## Goal and scope
@@ -185,7 +185,7 @@ Open decisions are marked **[decide]**.
 
 ## 2. Quality items
 
-Ranked by expected KLD gain at 3–4 bpw (estimates, `EXPERIMENTS-new-format.md`):
+Ranked by expected KLD gain at 3–4 bpw (estimates, `experiments/archive/tracker-2026-11-02.md`):
 
 | item | est. gain | needs |
 |---|---|---|
@@ -333,7 +333,7 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
 
 ## 7. Outside research
 
-- **R1: tested and dropped (2026-10-31, `EXPERIMENTS.md`):** A8-g128 activation error 6.6× worse, because the norm
+- **R1: tested and dropped (2026-10-31, `experiments/` #47):** A8-g128 activation error 6.6× worse, because the norm
   gains that shrink the outlier channel must be folded into the weights. Original note:
   **R1, SpinQuant's residual-stream rotation folded into the weights.** Exact only for R1 (Qwen3.8's conv1d,
   sigmoid/SiLU gates and SwiGLU block head-dim and MLP rotations); norm gains absorbed first; Hessians transformed
@@ -347,7 +347,7 @@ Checks added from the session-log mining merge (2026-10-31, `local/mine/merged-2
   a TP2 night) and a rewrite of the quantizer loop around
   exllamav3's LDLQ/trellis. Potentially the largest quality item; research track after Phase B, not on V3's path.
 - **YAQA — DROPPED 2026-11-01** (every variant measured worse: two-sided K2 +7…+30%, diagonal output scales +4…+15%,
-  gradient-weighted H_in +31…+44%; EXPERIMENTS.md). Background kept: **(arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
+  gradient-weighted H_in +31…+44%; `experiments/` #33). Background kept: **(arXiv 2505.22988, Cornell RelaxML, built on QTIP = EXL3's ancestor):** Kronecker-factored Hessian of the
   end-to-end KL, H ≈ H_out ⊗ H_in, and LDLQ with error feedback on both axes. ~30% lower KL than LDLQ on QTIP trellis
   codes; Qwen3-8B 2-bit: KL 0.285 → 0.227 with 2K sequences (Sketch B, ~1 GPU-h at 8B) → 0.205 with 64K.
   **Our exllamav3 already has the quantizer side** (`ldlq_2hess`, `prepare_H_out`); only H_out is missing.

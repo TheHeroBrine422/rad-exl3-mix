@@ -11,7 +11,7 @@ EXL3-V3 = integer compute.
 
 ## EXL3-V3
 - int8 / int4 activations per tensor (`v3/`, design in `docs/DESIGN-v3.md` (earlier notes: `docs/DESIGN-new-format.md`), log in
-  `docs/EXPERIMENTS-new-format.md`), a solver trading KLD against measured kernel time.
+  `docs/experiments/`), a solver trading KLD against measured kernel time.
 - An int8-native trellis code (the Viterbi searches the exact integers the int8 tile multiplies) and a row-scale
   fold in the prefill tile.
 - Quantizer settings swept per tensor family and K during the V3 bring-up, before the requant (`quantize/damptest.py`,

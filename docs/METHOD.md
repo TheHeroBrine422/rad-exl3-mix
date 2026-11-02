@@ -2,7 +2,7 @@
 
 EXL3-V2 is Qwen3.8-27B in EXL3 trellis codes with **a bit width per tensor**, chosen by a fitted sensitivity model and
 an exact knapsack solver, then refined by measuring whole mixes. This page is the method in short; the experiment log
-(`EXPERIMENTS.md`, incl. what did not work) and the design notes have the detail.
+(`experiments/`: INDEX.md, LOG.md, incl. what did not work) and the design notes have the detail.
 
 ## 1. Options per tensor
 

@@ -1,0 +1,99 @@
+# Experiment index
+
+One row per experiment. Status words and numbering: `README.md`. Detail: `LOG.md` (from 2026-11-02) or, for
+older work, `archive/tracker-2026-11-02.md` ("tracker", its Log section by date) and
+`archive/deadends-2026-11-02.md` ("dead ends"). Last date = last entry about it.
+
+Bulk-numbered on 2026-11-02 from the old trackers (#1–#62), roughly by date. Rows for the V2 era (#1–#24) come from
+the dead-ends file and carry no exact dates.
+
+## V2 era: quantizer, eval, allocation (dead ends)
+
+| # | title | area | status | last | verdict / pointer |
+|---|---|---|---|---|---|
+| 1 | Two quantizer processes per card | quant speed | negative | ≤10-30 | dead ends § Quantizer speed |
+| 2 | Bigger tile batches in the quantizer | quant speed | null | ≤10-30 | dead ends § Quantizer speed |
+| 3 | Sharing work across K values in one run | quant speed | dropped | ≤10-30 | dead ends § Quantizer speed |
+| 4 | K7's slow trellis kernel | quant speed | done | ≤10-30 | dead ends § Quantizer speed |
+| 5 | Head quantization OOM at K5/K6 | quant speed | done | ≤10-30 | dead ends § Quantizer speed |
+| 6 | Bigger prefill steps in the eval | eval speed | null | ≤10-30 | dead ends § Eval speed |
+| 7 | rocprofv3 on radiance | eval speed | dropped | ≤10-30 | dead ends § Eval speed |
+| 8 | Card 1 evals ~25% slower (x4 link) | eval speed | done | ≤10-30 | dead ends § Eval speed |
+| 9 | TP2 for whole-corpus runs | eval speed | negative | ≤10-30 | dead ends § Eval speed |
+| 10 | First knapsack: band sensitivities, linear model, Lagrangian | allocation | superseded | ≤10-30 | by kfit2 / knap4 (#45) |
+| 11 | Symmetric depth-compounding term | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 12 | Lagrangian multiple-choice-knapsack sweep | allocation | superseded | ≤10-30 | exact solver instead |
+| 13 | Treating all quantizer families alike | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 14 | Measuring single-tensor swaps end to end | allocation | negative | ≤10-30 | too noisy per eval |
+| 15 | Noise-injection sensitivity calibration | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 16 | Shapley-value interactions (IMPQ, SLQ) | allocation | dropped | ≤10-30 | dead ends § Mix allocation |
+| 17 | RCO (Riemannian constrained optimisation) | allocation | dropped | ≤10-30 | `docs/research-rco.md` |
+| 18 | Gradient boosting / black-box surrogates | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 19 | Per-layer edge offsets in kfit2 | allocation | negative | ≤10-30 | dead ends § Mix allocation |
+| 20 | Residual re-ranker on top of kfit2 | allocation | negative | 10-31 | retry rule in BACKLOG (V3 stream) |
+| 21 | Layer 0 as a sensitivity spike | allocation | null | ≤10-30 | dead ends § Mix allocation |
+| 22 | GPTQ damping for our quants | quantizer | negative | 10-31 | see #38 for the tuned damping |
+| 23 | 2-bit Lloyd embedding | embedding | negative | ≤10-30 | dead ends § Quantization |
+| 24 | Head above K6 | head | null | ≤10-30 | dead ends § Quantization |
+
+## V3 (tracker, 2026-10-30 → 11-02)
+
+| # | title | area | status | last | verdict / pointer |
+|---|---|---|---|---|---|
+| 25 | Hardware facts: iu8/iu4 peaks, scale-group cost, no fp4 (alias **E0**) | kernels | done | 10-30 | tracker § E0 |
+| 26 | Activation-quant cost by fake-quant hook (alias **E1/E1b**) | activations | done | 10-31 | A8 g128 +0.00005 at K6: fine; A4 all linears +0.149: no |
+| 26-01 | A8 variants: per-token, g128, g32, per family | activations | done | 10-30 | tracker § A8 |
+| 26-02 | A4 per family / depth band, g128, clipping | activations | done | 10-30 | tracker § A4; see #46 |
+| 27 | Per-tensor activation-quant proxy, 337 tensors × 32 configs (alias **E1c**, AQ-proxy) | activations | done | 10-31 | calibrated (`aqcal.py`) |
+| 28 | int8 / int4 GEMM at real tiling, `igemm.hip` (alias **E2**) | kernels | done | 10-30 | iu8 ~255 TOPS, iu4 ~490 (1.9× / 3.7× f16) |
+| 29 | Weight codes, quality per bit on the Hessian proxy (alias **E3**) | weight codes | done | 10-31 | tracker § E3 |
+| 29-01 | Trellis decoding to int8 / int4 codebooks (alias **E3b**, tsweep2) | weight codes | done | 10-31 | → i8 codebook (#43) |
+| 29-02 | Row-slab K ceiling (alias **E3c**) | weight codes | done | 10-31 | tracker § E3c |
+| 30 | New-format solver knap3 + 12-mix validation (aliases **K3**, **V0**) | allocation | superseded | 10-31 | by knap4 (#45) |
+| 31 | Real int8 prefill kernels (alias **E4**); NFQ int8 crash | kernels | blocked | 11-01 | crash blocks A8 timing |
+| 31-01 | End-to-end prototype at ~4 bpw (alias **E4b**) | kernels | planned | 10-30 | after #31 |
+| 32 | Vocab-tiered embedding and head | embedding | negative | 10-31 | dead ends § Vocabulary-tiered |
+| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | running | 11-02 | first five gates negative; #33-08 is the real test |
+| 33-01 | Gate 1: TP2 collection throughput | quantizer | done | 10-31 | 5 s per 2048-token sequence |
+| 33-02 | Gate 2: bf16 backward, sampled rows, 200 seqs | quantizer | negative | 10-31 | +23% (K2) / +28% (K3) |
+| 33-03 | bf16 vs fp32 backward noise | quantizer | done | 10-31 | bf16 gradients unusable in early layers |
+| 33-04 | Gate 2b: fp32 backward, sampled rows | quantizer | negative | 10-31 | +17% / +19%; trend toward one-sided |
+| 33-05 | Gate 2c: full-token fp32 H_out | quantizer | negative | 10-31 | +30% / +21% |
+| 33-06 | Gate 2d: diagonal output scales (alias **D1** = its confound check) | quantizer | negative | 11-01 | K2 +10–15%, K3 +4% |
+| 33-07 | Gate 2e: gradient-weighted H_in | quantizer | negative | 11-01 | K2 +44%, K3 +31% |
+| 33-08 | Sketch B (paper estimator) on the 0.8B proxy, 1K–16K sequences | quantizer | running | 11-02 | 1K: K3 +13%, K2 +24% vs paper LDLQ; 2K–16K pending |
+| 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | done | 11-01 | mean-row −30% |
+| 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
+| 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
+| 37 | qtf2 fractional quantizer and its speed pass (v1–v10) | quantizer | done | 11-02 | finalgate PASS, 51 instances |
+| 38 | Damping vs K (dampsweep, damp2, damp3) | quantizer | done | 11-01 | input 0.005 (0.05 below K1), rest 0.025 |
+| 39 | Global gain scale vs K | quantizer | null | 10-31 | tracker 10-31 ~22:20 |
+| 40 | Per-group weight scales at low K (Hessian-weighted) | quantizer | negative | 10-31 | dead ends § Per-group gain scales |
+| 41 | Best-of-N rotation seeds | quantizer | null | 10-31 | seed spread 0.5% |
+| 42 | Shared-input siblings sharing `suh` | quantizer | done | 10-31 | they do not share it |
+| 43 | Rounded-codebook quantizers (exl3cb, int8 grid) | weight codes | done | 11-01 | pass, ×1.000 K1–6 |
+| 44 | Sub-2-bit pricing on turboderp's tensors | allocation | done | 10-31 | tracker 10-31 ~21:50 |
+| 45 | knap4 on real options and the measured speed table | allocation | done | 11-01 | V3 option table |
+| 46 | A4 worth building at any size? | activations | negative | 11-01 | no, at any size (knap4) |
+| 47 | R1 residual-stream rotation for int8/int4 activations | activations | negative | 10-31 | A8-g128 error 6.6× worse |
+| 48 | Output scales by upstream's auto rule | quantizer | negative | 11-01 | +2.5% (z 2.1) |
+| 49 | radiance PR #362 (prefill softmax per row) on our eval | eval | done | 10-31 | tracker 10-31 ~21:00 |
+| 50 | Proxy edge over turboderp, in-sample share (alias **D2**) | allocation | done | 11-01 | ~9% in-sample, rest real |
+| 51 | Re-run the 12 V0 mixes with the current fit (alias **D3**) | allocation | blocked | 11-01 | on iceman and the ladder |
+| 52 | KLD vs position for every quant (alias **B4**) | eval | done | 11-01 | rises alike for all |
+| 53 | Board `bytes` = tensor payload (alias **B10**) | eval | done | 11-01 | `store/sizedef.py` |
+| 54 | Our K1 decode bit-exact with exllamav3 (alias **B19**) | weight codes | done | 11-01 | bit-exact |
+| 55 | Document-reuse bias from fit-slice reuse | eval | null | 11-01 | no measurable flattering |
+| 56 | Held-out provenance of every golden | eval | done | 11-01 | `eval/pools/provenance.py` |
+| 57 | GPU search's 4–6% gap = tail-biting constraint | weight codes | done | 11-01 | not a flaw |
+| 58 | Full uniform requant ladder (ladder2, K2.5 … ) | quantizer | blocked | 11-02 | K2.5, K3 done; K3.5/K4 lost in the iceman crash |
+| 59 | exl3i encoding, importer, kernel plugin, serving path | kernels | running | 11-02 | GPU selftests pass; mutation check 6/10; d0.sh not run |
+| 60 | 2B / 0.8B proxy pipeline on the 4070 | proxy | done | 11-02 | goldens, evalq, score check PASS |
+| 60-01 | bf16 vs fp32 inference on the 2B | proxy | done | 11-02 | KL 3.75e-4, flat by position; goldens stay bf16 |
+| 60-02 | Prefix run vs whole document | proxy | done | 11-02 | cuBLAS shape rounding; run docs whole, unbatched |
+| 60-03 | Our quantizer on CUDA (qtf2 fixes, qtf2check) | proxy | done | 11-02 | bit-identical; HIP identity gate before syncing |
+| 60-04 | 2B calibration study (`CALIBRATION.md`) | proxy | dropped | 11-02 | stopped by the user, resumable |
+| 61 | xcorp v1: 96M-token proxy corpus from the upstream sources | data | done | 11-02 | proxy research only |
+| 62 | Research-idea run over 448 recent papers | research | planned | 11-02 | `local/papers/`; runs while the user sleeps |
+
+Next free number: **63**.
