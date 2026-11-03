@@ -2,6 +2,13 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 09:35 CST · E10 · Dead-unit census of the writer inputs (27B calib Hessians)
+- **Status:** done · **Machine:** colo (`v3/e3/e10/census.py`)
+- **Result:** down_proj (64 × 17,408 units): none below 1e-2 × median (min 0.019); out_proj (48): 5 units below 1e-4,
+  131 below 1e-2; o_proj (16): 22 below 1e-4, 160 below 1e-2. Bottom 10% of units hold ≤ 6.7% of input energy.
+- **Reading:** null: no dead units worth a format feature (~0.03% of the writer columns near-dead). Faraway E10 closed.
+- **Files:** `data/e10/census.jsonl`
+
 ### 2026-11-03 09:25 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (iceman still down)
 - **Status:** planned → running · **Machine:** 4070 (`proxy2b/exp/d1103/run.sh`, ~10–12 h), Thor + colo (`v3/e3/a1/a1ctl.sh`, ~5 h), colo (E10 census, minutes)
 - **Pass rules:** `proxy2b/exp/d1103/README.md`, `v3/e3/a1/README.md` (#81-02 / #81-03), all written before data.

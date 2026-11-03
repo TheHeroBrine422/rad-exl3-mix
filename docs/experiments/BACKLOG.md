@@ -177,7 +177,7 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
   proxy test on iceman's GPU (quantize D vs R = D − αÛ − βĜ at K2 / K3 from the ladder levels; pass ≤ 0.85× at K2 on
   layer 30); (2) 0.8B KL with load-time expansion (allowed for measuring); (3) kernel cost (ntbench); then decide.
   Riders: A3 (GDN out_proj ← v), A4 (o_proj ← v / q-gate), A6 / A7 census (minutes on colo).
-- [ ] **E10 · dead-unit census** (E[h²] at down / out_proj / o_proj inputs from the calib Hessians; colo minutes).
+- [x] **E10 · dead-unit census** (done 11-03: null, LOG) (E[h²] at down / out_proj / o_proj inputs from the calib Hessians; colo minutes).
 - [ ] **F2 · boundary diagonal affine repair** (closed form, 0.8B ~2 h). **F4 · exact last-layer output Hessian.**
 - Faraway's headroom audit: gate/up within ~0.1 bit of an ideal LDLQ + Gaussian coder; weights near-Gaussian; no
   cross-layer redundancy (kills cross-layer sharing / global-basis ideas). The rest of its list: the report.
