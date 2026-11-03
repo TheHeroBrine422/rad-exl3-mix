@@ -124,6 +124,9 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
 
 ## EXL3-V5
 - QAD / scale-only healing: not before V3 is done.
+- **0.8B proxy results of 2026-11-03 (each needs a 27B check: BACKLOG "27B confirmation queue"):** sibling-sequential
+  asym target for the writers (K3 −14%, K2 −18%, #87); fixed-code scale refits (K2 −9%, #85); frozen-code healing
+  (K2 −38%, #89; needs the user); gen-masked H_out loss (#83). i8c's gain vanishes under H_out at K3 (#78-03).
 - Field reports to start from: QAD on an EXL3 quant gained ~6-13% KLD overall at a 1,024-token window, ~22% when
   trained only on the last 16 layers (48-63; trellis codes interfere with training earlier in the stack); a 2,048
   window was out of memory. Ideas to test on a small model first: QAD before the trellis step (train continuous

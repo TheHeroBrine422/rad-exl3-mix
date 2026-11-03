@@ -161,11 +161,15 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 
 | proxy result | 27B test needed | depends on |
 |---|---|---|
-| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18) | 512-seq 27B collection (both cards), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
+| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 512 then 1,024 sequences (no more: #33-22 saw nothing past 1,024; #33-23 checks 512), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
 | Estimator choice (dy vs Sketch B vs xw), 512 seqs (#33-18) | collect all three in one 27B pass, compare in the swap test | same run |
-| Cubic int8 codebook i8c (#78: 0.8B KL K3 −1.7%, K2 −2.7%, K4 −2.3%; adopted) | requant 2–3 trunk levels with i8c, swap test | iceman; HIP build of the i8c decode |
-| Tile coordinate descent (#77: CPU proxy −0.9%, consistent) | only if judged worth its 2–3× quant time | ffn_down results, a seed-paired KL test |
-| (#33-19 / #33-20 / #33-21 failed or neutral: none ride along.) Gen-masked loss (w01) | ride on the 27B collection if it passes | its 0.8B result |
+| Cubic int8 codebook i8c (#78: 0.8B KL K3 −1.7%, K2 −2.7%, K4 −2.3%; adopted). **But on top of H_out: no gain at K3 (#78-03, 1.000 / 1.015 / 1.005); #78-04 adds seeds 3–5** | requant 2–3 trunk levels with i8c **with and without H_out**, swap test | iceman; HIP build of the i8c decode; #78-04 |
+| Tile coordinate descent (#77: CPU proxy −0.8%, every tensor; replicates on other rows #80, stacks on cubic #79) | only if judged worth its 2–3× quant time | a GPU version + a seed-paired KL test |
+| (#33-19 / #33-20 / #33-21 / #33-22 failed or neutral: none ride along.) Gen-masked loss (#83: Sketch B K3 0.971, K2 0.950, every seed) | `YAQA_GENMASK=1` on the 27B collection (needs gen.u8 beside the calib golden on iceman) | #83-02 (the same on Σdy², the 27B estimator) |
+| Sibling-sequential asym target for the 48 writers (#87: K3 −14%, K2 −18%, every seed) | layer-streamed 27B forward with the quantized siblings (moments over ~1M qad tokens), requant the writers of 2 levels, swap test | #87-02 (stacks on H_out?), #87-04 (K4 / K5); iceman |
+| Fixed-code scale refits C9 α\* (#85: K3 −2.7%, K2 −8.9%) and C10 swj (K3 −3.1%, K2 −8.6%) | refit on existing 27B levels (no requant), fit-slice α\*, swap test | #85-02 (do they stack, on edy?); iceman |
+| Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
+| Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
 ## Faraway lens (2026-11-02, `local/papers/runs/2026-11-02-faraway/ideas/faraway.md`): ideas to test later
 
@@ -193,4 +197,6 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 
 | proxy negative | scale mechanism | 27B check |
 |---|---|---|
-| (none yet) | | |
+| #88 activation-denoising target (C1): K3 +3%, K2 +10% with level-matched noise | depth (64 layers: upstream error grows), error propagation | only if #87 / #88-02 show a depth trend |
+| #33-22 more H_out windows past 1,024 do not help (0.8B) | matrix size (5120 × 17408 diagonals are estimated from the same windows: noisier at 27B) | the 27B collection's own 512 / 1,024 snapshots (split-half agreement) |
+| #78-03 i8c gives nothing on top of H_out (0.8B K3) | matrix size / near-lossless regime (codebook-shape gains vs error-weighting overlap may differ) | the i8c 27B check with an H_out arm |
