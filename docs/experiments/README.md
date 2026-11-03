@@ -1,14 +1,12 @@
 # Experiments: how this folder works
 
-Every experiment we run, plan or drop is tracked here, whether it worked or not, from 2026-11-02 on. Three files, three jobs:
+Every experiment we run, plan or drop is tracked here, whether it worked or not, from 2026-10-29 on. Three files, three jobs (older versions: git history):
 
 | file | job | how it changes |
 |---|---|---|
-| `INDEX.md` | one row per experiment: number, title, area, status, last date, verdict | edited in place; **the only place status lives** |
+| `INDEX.md` | one row per experiment: number, title, area, runtime cost, status, dates, result | edited in place; **the only place status lives** |
 | `LOG.md` | dated entries, newest first, one template | **append-only**: old entries are never rewritten, only followed by newer ones |
 | `BACKLOG.md` | ideas and plans not yet started | items move to `INDEX.md` (with a number) when they start |
-| `LOG-legacy.md` | the archive's log, dead ends and topic sections rewritten into the template (166 entries, numbers checked verbatim) | frozen |
-| `archive/` | the trackers before 2026-11-02, verbatim | frozen |
 
 ## What gets a number
 
@@ -24,7 +22,7 @@ in TODO and the git log. If a chore turns up something worth knowing, log that f
 - A multi-part experiment (several gates, arms or reads under one question) is a parent `#58` with parts `#58-01`,
   `#58-02`, ... in the order they start. A simple experiment can grow parts later (`#57` → `#57-01`).
 - Events and decisions that are not experiments (a competitor publishes, the user sets a rule) are logged with `#—`.
-- Experiments before 2026-11-02 were numbered in bulk (#1–#73; V2 wins are #63–#73); their entries are in `LOG-legacy.md`, the originals in `archive/`.
+- Experiments before 2026-11-02 were numbered in bulk (#1–#73; V2 wins are #63–#73); their entries are in `LOG.md` (rewritten into the template).
   Old names (E1b, D3, B11, gate 2d, ...) are listed as aliases in the index.
 
 ## Status words
