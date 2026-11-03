@@ -1,0 +1,33 @@
+--- a/quantize/ourq.py
++++ b/quantize/ourq.py
+@@ -103,6 +103,10 @@
+                 "v3/e3/osr/mkoff.py writes it from upstream's test (osr.jsonl, ratio > 1.05)")
+ ap.add_argument("--only", default=None, metavar="FILE", help="quantize only these checkpoint keys (one per line); "
+                 "seeds stay those of the full run (by position in the layer); list whole Hessian groups (gate+up, q/k/v, ...) -- the first of a group prepares the shared H in place -- and a subset equals the full run")
++ap.add_argument("--wpre", default=argparse.SUPPRESS, metavar="DIR", help="target transforms: DIR/<input-Hessian "
++                "name>.safetensors, \"Ft\" (in x in, = F^T): every trunk linear of that group quantizes W F instead of its "
++                "weight (activation denoising, proxy2b/exp/w07-denoise/mkdenoise.py; pair with its --hin dir). A trunk group "
++                "without a file is an error. Unset: not in the code stamp's arguments")
+ ap.add_argument("--head-mean-row", action="store_true", help="lm_head: subtract the mean vocabulary row before "
+                 "quantizing (logits shift by one constant a position: softmax and KL unchanged). Every donor of a slab "
+                 "head must agree on this, or mixed rows stop sharing the shift")
+@@ -176,6 +180,19 @@
+     f = idx[name]
+     if f not in _open: _open[f] = safe_open(f"{CKPT}/{f}", "pt", device="cpu")
+     return _open[f].get_tensor(name)
++if getattr(a, "wpre", None):                       # --wpre: a trunk linear's weight is read as W F (out, in), fp32 on dev
++    _ck_raw = ck
++    def ck(name):
++        w = _ck_raw(name)
++        key = name[:-len(".weight")]
++        if not key.startswith(L + "."): return w      # lm_head: unchanged
++        hn = next(h for h, ks in layer_plan(int(key.split(".")[3])) if key in ks)
++        pf = f"{a.wpre}/{hn}.safetensors"
++        if not os.path.exists(pf): sys.exit(f"--wpre {a.wpre}: no transform for {hn} ({key})")
++        with safe_open(pf, "pt", device="cpu") as f: Ft = f.get_tensor("Ft").to(dev).float()
++        w = w.to(dev).float()
++        assert Ft.shape == (w.shape[1], w.shape[1]), (key, tuple(Ft.shape), tuple(w.shape))
++        return w @ Ft.T                                 # W F
+ 
+ # ------------------------------------------------------------------ a Hessian (packed upper triangle, sum over rows)
+ _HUP = {}

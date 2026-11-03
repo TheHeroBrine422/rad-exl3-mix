@@ -1,0 +1,55 @@
+== w07-denoise pass 1: exit 0, 51 log lines, last: 01:53:47 DENOISE DONE
+== w07-denoise pass 2: exit 0, 13 log lines, last: 01:53:53 DENOISE DONE
+   01:53:02 moments mom-quant3: MOMENTS DONE stub
+   01:53:03 moments mom-quant2: MOMENTS DONE stub
+   01:53:05 moments mom-pilot: MOMENTS DONE stub
+   01:53:08 moments mom-gauss3: MOMENTS DONE stub
+   01:53:14 moments mom-gauss2: MOMENTS DONE stub
+   noop gate: 150 wq tensors, 0 differ from k3base [] -> PASS
+   01:53:43 K3: fit-slice pick g3 (gauss 2 1.8)
+   01:53:45 K2: fit-slice pick q1 (quant 1 1)
+   K3 g3: mean-KL ratio 0.9508, per-seed ratios mean 0.9508 max 0.9509, every-beats-every True  =>  PASS (rule seed, bar 0.985)
+   K2 q1: mean-KL ratio 0.9514, per-seed ratios mean 0.9514 max 0.9515, every-beats-every True  =>  PASS (rule seed, bar 0.97)
+   01:53:47 DENOISE DONE
+   01:53:52 K3: fit-slice pick g3 (gauss 2 1.8)
+   01:53:53 K2: fit-slice pick q1 (quant 1 1)
+   K3 g3: mean-KL ratio 0.9508, per-seed ratios mean 0.9508 max 0.9509, every-beats-every True  =>  PASS (rule seed, bar 0.985)
+   K2 q1: mean-KL ratio 0.9514, per-seed ratios mean 0.9514 max 0.9515, every-beats-every True  =>  PASS (rule seed, bar 0.97)
+   01:53:53 DENOISE DONE
+== w07-seqsib pass 1: exit 0, 36 log lines, last: 01:54:32 SEQSIB DONE
+== w07-seqsib pass 2: exit 0, 11 log lines, last: 01:54:35 SEQSIB DONE
+   01:53:55 moments mom-k3base: MOMENTS DONE stub
+   01:53:58 moments mom-k3base_s1: MOMENTS DONE stub
+   01:54:01 moments mom-k3base_s2: MOMENTS DONE stub
+   01:54:04 moments mom-k2base: MOMENTS DONE stub
+   01:54:08 moments mom-k2base_s1: MOMENTS DONE stub
+   01:54:11 moments mom-k2base_s2: MOMENTS DONE stub
+   noop gate: 48 requantized tensors, 0 differ from k3base [] -> PASS
+   01:54:21 K3: fit-slice pick sym
+   K3 sym: mean-KL ratio 0.9888, per-seed ratios mean 0.9888 max 0.9888, every-beats-every False, control ratios ['1.0232', '0.9830', '1.0205'] sd 0.0225 -> bar 0.9611  =>  INCONCLUSIVE (rule ctrl, bar 0.98)
+   01:54:29 K2: fit-slice pick asym
+   K2 asym: mean-KL ratio 0.9905, per-seed ratios mean 0.9905 max 0.9906, every-beats-every False, control ratios ['0.9809', '1.0294', '0.9720'] sd 0.0309 -> bar 0.9465  =>  INCONCLUSIVE (rule ctrl, bar 0.98)
+   01:54:32 SEQSIB DONE
+   01:54:33 K3: fit-slice pick sym
+   K3 sym: mean-KL ratio 0.9888, per-seed ratios mean 0.9888 max 0.9888, every-beats-every False, control ratios ['1.0232', '0.9830', '1.0205'] sd 0.0225 -> bar 0.9611  =>  INCONCLUSIVE (rule ctrl, bar 0.98)
+   01:54:34 K2: fit-slice pick asym
+   K2 asym: mean-KL ratio 0.9905, per-seed ratios mean 0.9905 max 0.9906, every-beats-every False, control ratios ['0.9809', '1.0294', '0.9720'] sd 0.0309 -> bar 0.9465  =>  INCONCLUSIVE (rule ctrl, bar 0.98)
+   01:54:35 SEQSIB DONE
+== w07-genh pass 1: exit 0, 29 log lines, last: 01:54:46 GENH DONE
+== w07-genh pass 2: exit 0, 11 log lines, last: 01:54:47 GENH DONE
+   hgen gate: model.language_model.layers.0.input: rows 1000 vs 1000, rel diff 0.0e+00 (limit 1e-06)
+   hgen gate: model.language_model.layers.0.linear_attn.out_proj.input: rows 1000 vs 1000, rel diff 0.0e+00 (limit 1e-03)
+   hgen gate: model.language_model.layers.0.mlp.down_proj.input: rows 1000 vs 1000, rel diff 0.0e+00 (limit 1e-03)
+   hgen gate: model.language_model.layers.0.post_attention.input: rows 1000 vs 1000, rel diff 0.0e+00 (limit 1e-03)
+   hgen gate -> PASS
+   MKGENH DONE stub
+   01:54:40 K3: fit-slice pick g3 (w0 0.3)
+   K3 g3: mean-KL ratio 0.9509, per-seed ratios mean 0.9509 max 0.9510, every-beats-every True  =>  PASS (rule mean, bar 0.97)
+   01:54:44 K2: fit-slice pick g0 (w0 0)
+   K2 g0: mean-KL ratio 0.9627, per-seed ratios mean 0.9627 max 0.9627, every-beats-every True  =>  PASS (rule mean, bar 0.97)
+   01:54:46 GENH DONE
+   01:54:47 K3: fit-slice pick g3 (w0 0.3)
+   K3 g3: mean-KL ratio 0.9509, per-seed ratios mean 0.9509 max 0.9510, every-beats-every True  =>  PASS (rule mean, bar 0.97)
+   01:54:47 K2: fit-slice pick g0 (w0 0)
+   K2 g0: mean-KL ratio 0.9627, per-seed ratios mean 0.9627 max 0.9627, every-beats-every True  =>  PASS (rule mean, bar 0.97)
+   01:54:47 GENH DONE

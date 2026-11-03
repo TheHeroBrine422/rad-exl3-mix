@@ -1,0 +1,2 @@
+{"K": 3.0, "tensors": 336, "trunk_cost": 0.025945701053883916, "pred_total": 0.0263403309450998, "measured_rel": 0.0, "pred_rel_hf1": -0.12396270054131577, "KN_HF": 1.1438967370404796}
+roundtrip (measured = HF-1 prediction) -> KN_HF 1.0000 (checked in-session)

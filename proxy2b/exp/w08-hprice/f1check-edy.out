@@ -1,0 +1,12 @@
+K3 edy (3 seed pairs): whole-model KL ratio 0.912
+   one-sided      : geomean 1.064  median 1.046  tensors > 1.05: 49%  < 0.95: 18%
+      by type: down_proj 0.954  gate_proj 1.100  in_proj_qkv 1.173  in_proj_z 1.205  k_proj 1.016  o_proj 0.940  out_proj 0.940  q_proj 1.177  up_proj 1.057  v_proj 1.174
+   two-sided diag : geomean 0.863  median 0.887  tensors > 1.05: 0%  < 0.95: 82%
+      by type: down_proj 0.949  gate_proj 0.878  in_proj_qkv 0.790  in_proj_z 0.773  k_proj 0.808  o_proj 0.939  out_proj 0.942  q_proj 0.733  up_proj 0.865  v_proj 0.866
+   family factor KN_HF that maps the two-sided geomean onto the KL ratio: 1.058
+K2 edy (3 seed pairs): whole-model KL ratio 0.937
+   one-sided      : geomean 1.063  median 1.046  tensors > 1.05: 49%  < 0.95: 17%
+      by type: down_proj 0.960  gate_proj 1.096  in_proj_qkv 1.164  in_proj_z 1.196  k_proj 1.018  o_proj 0.948  out_proj 0.946  q_proj 1.174  up_proj 1.055  v_proj 1.167
+   two-sided diag : geomean 0.872  median 0.897  tensors > 1.05: 0%  < 0.95: 79%
+      by type: down_proj 0.955  gate_proj 0.887  in_proj_qkv 0.802  in_proj_z 0.788  k_proj 0.819  o_proj 0.947  out_proj 0.948  q_proj 0.747  up_proj 0.874  v_proj 0.881
+   family factor KN_HF that maps the two-sided geomean onto the KL ratio: 1.074

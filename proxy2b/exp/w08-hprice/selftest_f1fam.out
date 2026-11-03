@@ -1,0 +1,11 @@
+K3 gdn_in  : e1 x1.189  e2 x0.782  measured gain +9.81% +- 0.50% (2 seeds)  -> e2
+K3 attn_in : e1 x1.120  e2 x0.801  measured gain -5.97% +- 0.50% (2 seeds)  -> e1
+K3 mlp_in  : e1 x1.078  e2 x0.872  measured gain +4.81% +- 0.50% (2 seeds)  -> e2
+K3 writers : e1 x0.947  e2 x0.945  measured gain +0.11% +- 0.50% (2 seeds)
+K2 gdn_in  : e1 x1.180  e2 x0.795  measured gain +10.06% +- 0.50% (2 seeds)  -> e2
+K2 attn_in : e1 x1.117  e2 x0.814  measured gain -5.93% +- 0.50% (2 seeds)  -> e1
+K2 mlp_in  : e1 x1.076  e2 x0.880  measured gain +4.98% +- 0.50% (2 seeds)  -> e2
+K2 writers : e1 x0.953  e2 x0.951  measured gain -0.17% +- 0.50% (2 seeds)
+F1 per-family: FAIL (4 e2 / 2 e1 / 0 open, of 6 disagreeing cases)
+
+SELFTEST f1fam PASS

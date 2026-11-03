@@ -1,0 +1,27 @@
+q38-27b-plain2.00-e3.rad                 trunk  2.00  attn-trunk +0.00  gdn-trunk -0.00  head  6.00
+q38-27b-plain2.50-e3.rad                 trunk  2.50  attn-trunk +0.52  gdn-trunk +0.50  head  6.00
+q38-27b-plain3.00-e4.rad                 trunk  3.00  attn-trunk +0.00  gdn-trunk -0.00  head  6.00
+q38-27b-plain3.50-e4.rad                 trunk  3.50  attn-trunk +0.52  gdn-trunk +0.50  head  6.00
+q38-27b-plain4.00-e4.rad                 trunk  4.00  attn-trunk +0.00  gdn-trunk -0.00  head  6.00
+q38-27b-plain5.00-e5.rad                 trunk  5.00  attn-trunk +0.00  gdn-trunk -0.00  head  6.00
+q38-27b-plain6.00-e6.rad                 trunk  6.00  attn-trunk +0.00  gdn-trunk -0.00  head  6.00
+q38-27b-sc1.40-e3.rad                    trunk  1.40  attn-trunk +0.03  gdn-trunk +0.12  head  3.00
+q38-27b-sc1.60-e3.rad                    trunk  1.60  attn-trunk -0.04  gdn-trunk +0.08  head  3.00
+q38-27b-sc1.80-e3.rad                    trunk  1.80  attn-trunk -0.08  gdn-trunk +0.10  head  3.00
+q38-27b-sc2.00-e3.rad                    trunk  2.00  attn-trunk +0.18  gdn-trunk +0.04  head  3.00
+q38-27b-sc2.20-e3.rad                    trunk  2.20  attn-trunk +0.04  gdn-trunk +0.09  head  3.00
+q38-27b-sc3.00-e4.rad                    trunk  3.00  attn-trunk -0.07  gdn-trunk +0.04  head  4.00
+q38-27b-sc4.00-e4.rad                    trunk  4.00  attn-trunk -0.07  gdn-trunk +0.04  head  5.00
+q38-27b-sc5.00-e5.rad                    trunk  5.00  attn-trunk +0.17  gdn-trunk +0.09  head  6.00
+q38-27b-sc6.00-e6.rad                    trunk  6.00  attn-trunk +0.17  gdn-trunk +0.09  head  6.00
+knap-sc4.00-e4-2.00.mix                  trunk  1.66  attn-trunk +0.07  gdn-trunk -0.01  head  0.00
+knap-sc4.00-e4-2.50.mix                  trunk  2.22  attn-trunk +0.27  gdn-trunk +0.06  head  0.00
+knap-sc4.00-e4-2.99.mix                  trunk  2.78  attn-trunk +0.16  gdn-trunk -0.12  head  0.00
+knap-sc4.00-e4-3.50.mix                  trunk  3.35  attn-trunk +0.29  gdn-trunk -0.12  head  0.00
+knap-sc4.00-e4-3.99.mix                  trunk  3.90  attn-trunk +0.28  gdn-trunk -0.08  head  0.00
+knap-sc4.00-e4-4.00.mix                  trunk  3.91  attn-trunk +0.32  gdn-trunk -0.07  head  0.00
+knap-sc4.00-e4-4.50.mix                  trunk  4.48  attn-trunk +0.38  gdn-trunk -0.13  head  0.00
+knap-sc4.00-e4-5.00.mix                  trunk  5.07  attn-trunk +0.19  gdn-trunk +0.12  head  0.00
+knap-sc4.00-e4-5.49.mix                  trunk  5.58  attn-trunk +0.18  gdn-trunk -0.06  head  0.00
+knap-sc4.00-e4-6.00.mix                  trunk  6.13  attn-trunk +0.19  gdn-trunk +0.00  head  0.00
+26 arms; contrast SD: attn 0.169 bits, gdn 0.149 bits; corr(attn, gdn contrasts) +0.38; corr(trunk, attn) +0.15; condition (centred) 12.4

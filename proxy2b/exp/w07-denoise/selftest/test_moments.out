@@ -1,0 +1,29 @@
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+reference: 5 windows, 1899 tokens
+PASS  A. noise gamma 0 runs 
+PASS  A. 16 groups, n = tokens 
+PASS  A. gamma 0: C = N = 0 exactly 
+PASS  A. H = the batch-1 clean collection (bf16 rounding of the batch-2 forward) (rel by layer: 0 4.3e-05, 1 4.4e-04, 2 1.1e-03, 3 2.3e-03)
+PASS  B. noise gamma 0.05 runs 
+PASS  B. layer 0 input: diag N / n = sigma^2 (mean 1.0006, channel sd 0.033, expected ~0.032)
+PASS  B. layer 0 input: N's off-diagonal at its sampling level, C near 0 (offdiag/diag 0.679 vs sqrt(k/n) 0.734, |C|/sqrt(trH trN) 0.023)
+PASS  B. later groups: propagated noise on top of the local one (trN / tr sigma^2 > 1) 0.linear_attn.out_proj.input 1.27; 0.mlp.down_proj.input 1.62; 0.post_attention.input 6.64; 1.input 11.44; 1.linear_attn.out_proj.input 2.08; 1.mlp.down_proj.input 3.26 ...
+   B. trace shares tr(N)/tr(H), tr(C+C^T)/tr(H): 0.input 0.026 -0.000; 0.linear_attn.out_proj.input 0.069 -0.008; 0.mlp.down_proj.input 0.887 -0.244; 0.post_attention.input 0.202 -0.123; 1.input 0.349 -0.290; 1.linear_attn.out_proj.input 0.367 -0.201; 1.mlp.down_proj.input 1.209 -0.667; 1.post_attention.input 0.436 -0.328; 2.input 0.503 -0.461; 2.linear_attn.out_proj.input 0.407 -0.292; 2.mlp.down_proj.input 1.424 -0.761; 2.post_attention.input 0.529 -0.430; 3.input 0.578 -0.546; 3.mlp.down_proj.input 1.556 -1.057; 3.post_attention.input 0.721 -0.614; 3.self_attn.o_proj.input 0.528 -0.550
+PASS  C. layer ranges 0-1 / 2-3 run 
+PASS  C. split runs = one run (bit-exact) 
+PASS  D. sib mode with own weights runs 
+PASS  D. groups = o/out and down of layers 0, 3 
+PASS  D. own weights: C = N = 0 exactly 
+PASS  D. own weights: H = the clean collection (max rel 2.2e-07)
+PASS  E. sib mode with the K3 base siblings runs 
+   E. per group: tr(N)/tr(H), tr(C+C^T)/tr(H), ||H~ - H|| / ||H|| (H~ = H + C + C^T + N): 0.linear_attn.out_proj.input 0.0048 -0.0062 0.0123; 0.mlp.down_proj.input 0.0157 -0.0446 0.1414; 3.mlp.down_proj.input 0.0190 -0.0448 0.1561; 3.self_attn.o_proj.input 0.0075 -0.0232 0.0489
+PASS  E. quantized siblings perturb the inputs 
+PASS  E. layer 0 down: N and C = an independent act(Gq x)(Uq x) recomputation (rel N 9.0e-08, C 1.1e-07)
+PASS  F. quant mode with own weights runs 
+PASS  F. own weights: 16 groups, C = N = 0 exactly 
+PASS  F. own weights: H = the clean collection (max rel 2.2e-07)
+PASS  F. quant mode with the K3 base quant runs 
+PASS  F. K3 base: layer 0 input eta = 0 exactly, later groups eta != 0 
+   F. K3 base upstream error, tr(N)/tr(H), tr(C+C^T)/tr(H): 0.input 0.0000 +0.0000; 0.linear_attn.out_proj.input 0.0048 -0.0062; 0.mlp.down_proj.input 0.0437 -0.0934; 0.post_attention.input 0.0154 -0.0168; 1.input 0.0214 -0.0230; 1.linear_attn.out_proj.input 0.0124 -0.0314; 1.mlp.down_proj.input 0.0419 -0.0606; 1.post_attention.input 0.0202 -0.0231; 2.input 0.0185 -0.0191; 2.linear_attn.out_proj.input 0.0111 -0.0168; 2.mlp.down_proj.input 0.0297 -0.0514; 2.post_attention.input 0.0170 -0.0206; 3.input 0.0127 -0.0126; 3.mlp.down_proj.input 0.0567 -0.1030; 3.post_attention.input 0.0196 -0.0247; 3.self_attn.o_proj.input 0.0173 -0.0363
+ALL PASS

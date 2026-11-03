@@ -1,0 +1,10 @@
+fake ladders written
+800 ratios; one-sided vs two-sided by level:
+  K2.5: 400 linears, one-sided x1.060, two-sided x0.862, one-sided > 1.05 on 100%
+  K3: 400 linears, one-sided x1.060, two-sided x0.862, one-sided > 1.05 on 100%
+KN_HF from 1 swaps: 1.0510332016351007
+{"K": 3.0, "tensors": 336, "trunk_cost": 0.025945701053883916, "pred_total": 0.0263403309450998, "measured_rel": -0.07999999999999996, "pred_rel_hf1": -0.12396270054131577, "KN_HF": 1.0510332016351007}
+2.5 lam 0e+00: predicted KLD 0.05829 -> 0.05344 (-8.3%), oursH 95% of trunk params
+2.5 lam 3e-06: predicted KLD 0.05845 -> 0.05360 (-8.3%), oursH 95% of trunk params
+3.0 lam 0e+00: predicted KLD 0.02665 -> 0.02457 (-7.8%), oursH 91% of trunk params
+3.0 lam 3e-06: predicted KLD 0.02682 -> 0.02473 (-7.8%), oursH 91% of trunk params

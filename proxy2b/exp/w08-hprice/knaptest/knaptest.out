@@ -1,0 +1,10 @@
+1a REGRESSION OK: identical
+1b REGRESSION (V3) OK: identical
+2 IDENTITY OK: KLD / bpw / time equal with r = 1 (oursH replacing ours)
+3 illustration 2.5 lam 0e+00: predicted KLD 0.05827 -> 0.05444 (-6.6%), oursH share of trunk params 65%
+3 illustration 2.5 lam 3e-06: predicted KLD 0.05843 -> 0.05460 (-6.6%), oursH share of trunk params 65%
+3 illustration 3.0 lam 0e+00: predicted KLD 0.02663 -> 0.02483 (-6.8%), oursH share of trunk params 65%
+3 illustration 3.0 lam 3e-06: predicted KLD 0.02680 -> 0.02500 (-6.7%), oursH share of trunk params 65%
+H_out options: 5040 tensor-levels, KN_HF 1.0, one-sided twins dropped
+H_out options: 3024 tensor-levels, KN_HF 1.07
+KNAPTEST DONE

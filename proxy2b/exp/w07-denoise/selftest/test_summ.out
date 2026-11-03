@@ -1,0 +1,10 @@
+PASS  pick: lowest fit KL K3 fit b      0.09509  ratio to base 0.9500 |   K3 fit a      0.09910  ratio to base 0.9899
+PASS  seed rule: 5% gain at bar 0.97 -> PASS 
+PASS  seed rule: 1.5% gain at bar 0.97 -> INCONCLUSIVE 
+PASS  seed rule: 2% loss -> FAIL 
+PASS  mean rule: 5% gain at bar 0.97 -> PASS 
+PASS  mean rule: 1.5% gain at bar 0.97 -> INCONCLUSIVE 
+PASS  ctrl rule: 1.5% gain, control sd 0.15% at bar 0.98 -> INCONCLUSIVE (bar 0.98 not met) 
+PASS  ctrl rule: 1.5% gain, control sd 0.15% at bar 0.99 -> PASS 
+PASS  summary.jsonl written 
+ALL PASS

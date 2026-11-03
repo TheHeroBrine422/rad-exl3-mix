@@ -1,0 +1,25 @@
+# mkdenoise.py on colo CPU: calib H (layers 0 and 3) + the 1,024-token real moments of selftest/depth-profile.txt (quant = K3 base upstream error, gauss = gamma 0.05); G is the control-variate form (clip = share clipped, large at 1k tokens), F the subset's own filter
+quant3 1.0 0.75 0.input clip 0.0e+00 Fdev 0.000 {'linear_attn.in_proj_qkv': 1.0, 'linear_attn.in_proj_z': 1.0}
+quant3 1.0 0.75 0.linear_attn.out_proj.input clip 5.8e-03 Fdev 0.023 {'linear_attn.out_proj': 1.0002}
+quant3 1.0 0.75 0.mlp.down_proj.input clip 8.3e-02 Fdev 0.033 {'mlp.down_proj': 1.0}
+quant3 1.0 0.75 0.post_attention.input clip 1.5e-02 Fdev 0.035 {'mlp.gate_proj': 0.9993, 'mlp.up_proj': 0.9992}
+quant3 1.0 0.75 3.input clip 1.8e-02 Fdev 0.104 {'self_attn.q_proj': 0.9984, 'self_attn.k_proj': 0.9992, 'self_attn.v_proj': 0.9986}
+quant3 1.0 0.75 3.mlp.down_proj.input clip 1.3e-01 Fdev 0.063 {'mlp.down_proj': 0.9994}
+quant3 1.0 0.75 3.post_attention.input clip 2.9e-02 Fdev 0.076 {'mlp.gate_proj': 0.9976, 'mlp.up_proj': 0.9974}
+quant3 1.0 0.75 3.self_attn.o_proj.input clip 3.9e-02 Fdev 0.071 {'self_attn.o_proj': 1.0}
+quant3 1.0 0.5 0.input clip 0.0e+00 Fdev 0.000 {'linear_attn.in_proj_qkv': 1.0, 'linear_attn.in_proj_z': 1.0}
+quant3 1.0 0.5 0.linear_attn.out_proj.input clip 5.8e-03 Fdev 0.046 {'linear_attn.out_proj': 1.0007}
+quant3 1.0 0.5 0.mlp.down_proj.input clip 8.3e-02 Fdev 0.066 {'mlp.down_proj': 1.0011}
+quant3 1.0 0.5 0.post_attention.input clip 1.5e-02 Fdev 0.069 {'mlp.gate_proj': 0.9999, 'mlp.up_proj': 0.9997}
+quant3 1.0 0.5 3.input clip 1.8e-02 Fdev 0.209 {'self_attn.q_proj': 1.0085, 'self_attn.k_proj': 1.0098, 'self_attn.v_proj': 1.0088}
+quant3 1.0 0.5 3.mlp.down_proj.input clip 1.3e-01 Fdev 0.125 {'mlp.down_proj': 1.0029}
+quant3 1.0 0.5 3.post_attention.input clip 2.9e-02 Fdev 0.151 {'mlp.gate_proj': 1.0011, 'mlp.up_proj': 1.0007}
+quant3 1.0 0.5 3.self_attn.o_proj.input clip 3.9e-02 Fdev 0.142 {'self_attn.o_proj': 1.0035}
+noise 0.55 0.5 0.input clip 0.0e+00 Fdev 0.038 {'linear_attn.in_proj_qkv': 0.9805, 'linear_attn.in_proj_z': 0.9805}
+noise 0.55 0.5 0.linear_attn.out_proj.input clip 1.8e-03 Fdev 0.027 {'linear_attn.out_proj': 0.9933}
+noise 0.55 0.5 0.mlp.down_proj.input clip 6.6e-02 Fdev 0.039 {'mlp.down_proj': 0.9891}
+noise 0.55 0.5 0.post_attention.input clip 3.2e-03 Fdev 0.042 {'mlp.gate_proj': 0.9826, 'mlp.up_proj': 0.9824}
+noise 0.55 0.5 3.input clip 4.0e-02 Fdev 0.100 {'self_attn.q_proj': 0.981, 'self_attn.k_proj': 0.9842, 'self_attn.v_proj': 0.9793}
+noise 0.55 0.5 3.mlp.down_proj.input clip 2.0e-01 Fdev 0.046 {'mlp.down_proj': 0.9908}
+noise 0.55 0.5 3.post_attention.input clip 6.4e-02 Fdev 0.065 {'mlp.gate_proj': 0.9822, 'mlp.up_proj': 0.9817}
+noise 0.55 0.5 3.self_attn.o_proj.input clip 7.6e-02 Fdev 0.057 {'self_attn.o_proj': 0.9906}

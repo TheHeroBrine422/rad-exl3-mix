@@ -1,0 +1,26 @@
+g08-search1: 173 docs, 166155 scored rows, 196715 tokens, 113 score files, 1499 pairs; categories {'agentic': 4, 'books': 12, 'chat': 14, 'code': 35, 'encyclopedic': 12, 'legal': 2, 'long-agentic': 2, 'math': 9, 'multilingual': 21, 'qa': 8, 'reasoning': 13, 'science': 8, 'tools': 10, 'web': 23}
+
+G6  full-slice se of log(B/A), median over pairs:
+  plain 0.0075   ratio to plain: strat 0.935  strat-ratio 0.892  neyman(equal tokens) 0.882  cv-elasticity 0.9820866543528435
+
+G3  racing: 1499 candidates, 728 accepted on the full slice; stages [0.1, 0.2, 0.35, 0.5, 0.7]; 10 orders
+  variant  alpha   rej% wrong/acc% lost gain  saved@T0=80  saved@T0=15
+  ratio    0.001   40.2       0.04     0.00%        14.5%        24.6%
+  ratio    0.003   41.5       0.11     0.01%        15.3%        26.0%
+  ratio    0.010   43.5       0.40     0.02%        16.5%        27.9%
+  ratio    0.020   45.0       0.81     0.06%        17.3%        29.4%
+  ratio    0.050   47.3       1.77     0.16%        18.7%        31.7%
+  ratio   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 3660:0.004, [0.01,0.05) 944:0.062, [0.05,0.2) 1427:0.158, [0.2,0.5) 1730:0.379, [0.5,0.8) 1641:0.620, [0.8,1.01) 5588:0.950
+  cat      0.001   41.7       0.25     0.02%        15.9%        26.9%
+  cat      0.003   43.1       0.52     0.04%        16.7%        28.3%
+  cat      0.010   45.1       1.15     0.11%        17.7%        30.0%
+  cat      0.020   46.6       1.79     0.18%        18.5%        31.4%
+  cat      0.050   48.8       3.20     0.33%        19.8%        33.5%
+  cat     stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 4247:0.011, [0.01,0.05) 894:0.100, [0.05,0.2) 1196:0.217, [0.2,0.5) 1434:0.416, [0.5,0.8) 1323:0.580, [0.8,1.01) 5896:0.936
+  elast    0.001   40.8       0.12     0.01%        15.1%        25.5%
+  elast    0.003   42.3       0.30     0.02%        15.9%        26.9%
+  elast    0.010   44.2       0.73     0.06%        17.1%        28.9%
+  elast    0.020   45.7       1.32     0.14%        17.9%        30.3%
+  elast    0.050   48.2       2.77     0.32%        19.3%        32.7%
+  elast   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 4016:0.009, [0.01,0.05) 904:0.105, [0.05,0.2) 1352:0.189, [0.2,0.5) 1535:0.384, [0.5,0.8) 1473:0.624, [0.8,1.01) 5710:0.943
+{'se_plain_median': 0.00752956729017151, 'se_ratio_strat': 0.9348230765024371, 'se_ratio_strat_ratio': 0.8916195176819602, 'se_ratio_neyman': 0.8816720023785227, 'se_ratio_cv_elast': 0.9820866543528435, 'neyman_alloc_rel_docs': {'agentic': 0.383, 'books': 1.022, 'chat': 1.626, 'code': 1.091, 'encyclopedic': 0.989, 'legal': 0.884, 'long-agentic': 0.228, 'math': 1.055, 'multilingual': 2.921, 'qa': 0.777, 'reasoning': 1.068, 'science': 1.255, 'tools': 0.288, 'web': 1.004}}

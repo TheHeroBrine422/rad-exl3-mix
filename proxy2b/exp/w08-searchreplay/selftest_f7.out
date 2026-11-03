@@ -1,0 +1,21 @@
+357 stream candidates with an anchor; 357 with a logged prediction
+by n (tensors changed vs anchor):
+  n  1-  2: n 83 bias 0.0002 rms 0.0129 win 0.2169 gain 0.0053
+  n  3-  4: n 63 bias -0.0012 rms 0.0146 win 0.1746 gain 0.0034
+  n  5-  8: n 20 bias -0.0003 rms 0.0142 win 0.1500 gain 0.0041
+  n  9- 16: n 55 bias -0.0027 rms 0.0240 win 0.0727 gain 0.0014
+  n 17- 32: n 92 bias 0.0010 rms 0.0254 win 0.0217 gain 0.0006
+  n 33-inf: n 42 bias 0.0032 rms 0.0342 win 0.0000 gain 0.0000
+  mean: 1-2: n9 win 0.22 | 3-4: n5 win 0.00 | 5-8: n7 win 0.14 | 9-16: n23 win 0.09 | 17-32: n31 win 0.00 | 33-inf: n42 win 0.00
+  ts  : 1-2: n10 win 0.10 | 3-4: n3 win 0.00 | 5-8: n13 win 0.15 | 9-16: n32 win 0.06 | 17-32: n61 win 0.03
+  ls  : 1-2: n64 win 0.23 | 3-4: n55 win 0.20
+cap replay (per band: share of evals above the cap, their gain/eval vs below, estimated final-best gain):
+  cap  2 band 0-2.75: above   96 below   23  gain/eval 0.0006 vs 0.0087  win 0.04 vs 0.35  rms 0.023 vs 0.013  est. final-best gain +77.60%
+  cap  2 band 2.75-4.5: above  176 below   62  gain/eval 0.0021 vs 0.0042  win 0.09 vs 0.18  rms 0.025 vs 0.013  est. final-best gain +18.48%
+  cap  4 band 0-2.75: above   74 below   45  gain/eval 0.0002 vs 0.0054  win 0.01 vs 0.24  rms 0.025 vs 0.014  est. final-best gain +37.88%
+  cap  4 band 2.75-4.5: above  135 below  103  gain/eval 0.0015 vs 0.0042  win 0.06 vs 0.18  rms 0.027 vs 0.014  est. final-best gain +18.60%
+  cap  8 band 0-2.75: above   67 below   52  gain/eval 0.0003 vs 0.0046  win 0.01 vs 0.21  rms 0.026 vs 0.014  est. final-best gain +29.29%
+  cap  8 band 2.75-4.5: above  122 below  116  gain/eval 0.0009 vs 0.0044  win 0.04 vs 0.19  rms 0.028 vs 0.014  est. final-best gain +21.31%
+  cap 16 band 0-2.75: above   49 below   70  gain/eval 0.0004 vs 0.0034  win 0.02 vs 0.16  rms 0.025 vs 0.018  est. final-best gain +15.08%
+  cap 16 band 2.75-4.5: above   85 below  153  gain/eval 0.0004 vs 0.0039  win 0.01 vs 0.17  rms 0.030 vs 0.016  est. final-best gain +14.62%
+F7REPLAY DONE

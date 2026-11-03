@@ -1,0 +1,36 @@
+golden /tmp/tmpjd95s_t0/gl: 16 docs, gen rows by band {'0-2k': 22861, '2-8k': 68706, '8-32k': 71782, '32-64k': 10104}; within-doc set 16 docs
+base K3 KL by band: 0-2k 0.1203 2-8k 0.1325 8-32k 0.1465 32-64k 0.1833
+base K2 KL by band: 0-2k 0.1203 2-8k 0.1321 8-32k 0.1470 32-64k 0.1790
+arm        K seeds | pooled gain by band           0-2k          2-8k         8-32k        32-64k          long | search1 | within: g_short g_long D
+edy        3 3     | +0.091±0.001 +0.092±0.001 +0.091±0.001 +0.090±0.001 +0.091±0.001 | +0.093 | +0.091±0.001 +0.090±0.002 +0.030±0.001
+h-gdn_in   3 3     | +0.045±0.002 +0.046±0.001 +0.046±0.002 +0.044±0.002 +0.046±0.001 |   -    | +0.044±0.001 +0.046±0.001 +0.016±0.001
+edy        2 3     | +0.093±0.003 +0.092±0.001 +0.092±0.002 +0.091±0.001 +0.092±0.001 | +0.093 | +0.094±0.003 +0.092±0.001 +0.030±0.001
+PASS case A: verdict HOLDS (want HOLDS), by K {'3': 'HOLDS', '2': 'HOLDS'}
+PASS case A: band gains near 0.09
+PASS case A: subset arm share by band {'0-2k': 0.4902322753359372, 'long': 0.5028294055242084} (planted 0.5)
+golden /tmp/tmp4ts9hkc0/gl: 16 docs, gen rows by band {'0-2k': 22899, '2-8k': 68891, '8-32k': 71626, '32-64k': 10104}; within-doc set 16 docs
+base K3 KL by band: 0-2k 0.1175 2-8k 0.1285 8-32k 0.1649 32-64k 0.2391
+base K2 KL by band: 0-2k 0.1172 2-8k 0.1294 8-32k 0.1649 32-64k 0.2376
+arm        K seeds | pooled gain by band           0-2k          2-8k         8-32k        32-64k          long | search1 | within: g_short g_long D
+edy        3 3     | +0.094±0.002 +0.013±0.002 +0.012±0.003 +0.012±0.003 +0.013±0.003 | +0.091 | +0.094±0.002 +0.013±0.003 -0.050±0.002
+h-gdn_in   3 3     | +0.047±0.002 +0.005±0.001 +0.006±0.002 +0.002±0.002 +0.005±0.002 |   -    | +0.047±0.002 +0.005±0.002 -0.026±0.001
+edy        2 3     | +0.088±0.003 +0.007±0.003 +0.008±0.003 +0.005±0.002 +0.007±0.003 | +0.094 | +0.088±0.002 +0.007±0.003 -0.051±0.002
+PASS case B: verdict DECAYS (want DECAYS), by K {'3': 'DECAYS', '2': 'DECAYS'}
+golden /tmp/tmpfap8sqdw/gl: 16 docs, gen rows by band {'0-2k': 22936, '2-8k': 68658, '8-32k': 71614, '32-64k': 10092}; within-doc set 16 docs
+base K3 KL by band: 0-2k 0.1116 2-8k 0.1230 8-32k 0.1471 32-64k 0.1975
+base K2 KL by band: 0-2k 0.1124 2-8k 0.1234 8-32k 0.1467 32-64k 0.1984
+arm        K seeds | pooled gain by band           0-2k          2-8k         8-32k        32-64k          long | search1 | within: g_short g_long D
+edy        3 3     | +0.089±0.002 +0.049±0.001 +0.048±0.001 +0.048±0.002 +0.048±0.001 | +0.092 | +0.089±0.001 +0.049±0.000 -0.010±0.001
+h-gdn_in   3 3     | +0.047±0.003 +0.028±0.001 +0.026±0.001 +0.028±0.003 +0.027±0.001 |   -    | +0.046±0.002 +0.027±0.001 -0.003±0.001
+edy        2 3     | +0.095±0.001 +0.055±0.001 +0.055±0.001 +0.055±0.001 +0.055±0.001 | +0.089 | +0.095±0.001 +0.055±0.001 -0.008±0.001
+PASS case C: verdict PARTIAL (want PARTIAL), by K {'3': 'PARTIAL', '2': 'PARTIAL'}
+golden /tmp/tmpl7lc8jfk/gl: 16 docs, gen rows by band {'0-2k': 22874, '2-8k': 68902, '8-32k': 71655, '32-64k': 10054}; within-doc set 16 docs
+base K3 KL by band: 0-2k 0.1388 2-8k 0.1506 8-32k 0.1834 32-64k 0.2539
+base K2 KL by band: 0-2k 0.1380 2-8k 0.1518 8-32k 0.1837 32-64k 0.2530
+arm        K seeds | pooled gain by band           0-2k          2-8k         8-32k        32-64k          long | search1 | within: g_short g_long D
+edy        3 3     | +0.091±0.003 +0.066±0.003 +0.065±0.003 +0.066±0.003 +0.066±0.003 | +0.109 | +0.091±0.003 +0.065±0.003 +0.005±0.002
+h-gdn_in   3 3     | +0.047±0.001 +0.033±0.002 +0.033±0.002 +0.033±0.003 +0.033±0.002 |   -    | +0.047±0.001 +0.033±0.002 +0.002±0.002
+edy        2 3     | +0.091±0.002 +0.067±0.003 +0.066±0.003 +0.068±0.002 +0.067±0.003 | +0.108 | +0.091±0.002 +0.067±0.003 +0.006±0.002
+PASS case D: verdict INCONCLUSIVE (want INCONCLUSIVE), by K {'3': 'INCONCLUSIVE', '2': 'INCONCLUSIVE'}
+PASS case D extra seeds: ['3', 'edy', '3', '3', 'edy', '4', '2', 'edy', '3', '2', 'edy', '4']
+ALL PASS

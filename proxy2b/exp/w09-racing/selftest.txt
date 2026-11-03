@@ -1,0 +1,58 @@
+gold: 160 docs, 175116 scored rows, 175276 tokens, 61 score files, 3000 pairs; categories {'chat': 32, 'code': 30, 'multilingual': 53, 'web': 45}
+
+G6  full-slice se of log(B/A), median over pairs:
+  plain 0.0158   ratio to plain: strat 0.980  strat-ratio 0.948  neyman(equal tokens) 0.761  cv-elasticity 0.9805718765597516
+
+G3  racing: 3000 candidates, 1478 accepted on the full slice; stages [0.1, 0.2, 0.35, 0.5, 0.7]; 8 orders
+  variant  alpha   rej% wrong/acc% lost gain  saved@T0=80  saved@T0=15
+  ratio    0.001   34.1       0.26     0.05%        10.0%        17.7%
+  ratio    0.003   36.4       0.46     0.07%        11.2%        19.8%
+  ratio    0.010   39.6       1.03     0.23%        12.9%        22.7%
+  ratio    0.020   41.6       1.52     0.35%        14.0%        24.7%
+  ratio    0.050   45.1       2.94     0.69%        15.9%        28.0%
+  ratio   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 3378:0.020, [0.01,0.05) 2086:0.062, [0.05,0.2) 3137:0.148, [0.2,0.5) 3500:0.374, [0.5,0.8) 3423:0.618, [0.8,1.01) 8476:0.913
+  cat      0.001   36.6       0.84     0.18%        11.8%        20.8%
+  cat      0.003   38.9       1.30     0.32%        13.0%        22.9%
+  cat      0.010   41.9       2.19     0.59%        14.5%        25.5%
+  cat      0.020   43.9       3.01     0.80%        15.5%        27.3%
+  cat      0.050   47.0       4.76     1.38%        17.2%        30.2%
+  cat     stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 4748:0.036, [0.01,0.05) 1913:0.099, [0.05,0.2) 2555:0.213, [0.2,0.5) 2887:0.394, [0.5,0.8) 2799:0.601, [0.8,1.01) 9098:0.890
+  elast    0.001   36.1       0.88     0.27%        11.2%        19.8%
+  elast    0.003   38.6       1.33     0.39%        12.5%        22.0%
+  elast    0.010   41.7       2.29     0.69%        14.1%        24.8%
+  elast    0.020   43.8       3.10     0.96%        15.2%        26.7%
+  elast    0.050   47.1       5.20     1.68%        17.0%        29.9%
+  elast   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 4285:0.039, [0.01,0.05) 1908:0.115, [0.05,0.2) 2846:0.204, [0.2,0.5) 3210:0.384, [0.5,0.8) 2985:0.606, [0.8,1.01) 8766:0.891
+ 
+PASS calibration: |observed - bin centre| in the middle bins: [0.023, 0.024, 0.032]
+PASS wrong rejections: alpha 0.01: 1.03% of accepts
+  (additive strata: strat / plain 0.980; category effects here are multiplicative)
+PASS stratified ratio se: strat-ratio / plain 0.948 (category shifts built in)
+  (variant cat, not in the pass rule: alpha 0.01 2.19% wrong rejections -- overconfident at 10% of the docs)
+1) 126:0.000, [0.01,0.05) 27:0.000, [0.05,0.2) 21:0.048, [0.2,0.5) 21:0.048, [0.5,0.8) 19:0.053, [0.8,1.01) 22:0.227
+  elast    0.001   84.7      12.50     3.16%        30.3%        53.5%
+  elast    0.003   86.9      12.50     3.16%        31.8%        56.1%
+  elast    0.010   89.0      12.50     3.16%        33.2%        58.5%
+  elast    0.020   89.4      12.50     3.16%        33.9%        59.8%
+  elast    0.050   91.9      12.50     3.16%        35.7%        63.0%
+  elast   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 137:0.007, [0.01,0.05) 25:0.000, [0.05,0.2) 18:0.000, [0.2,0.5) 26:0.077, [0.5,0.8) 13:0.077, [0.8,1.01) 17:0.235
+  prior    0.001   80.5       0.00     0.00%        28.8%        50.9%
+  prior    0.003   83.9       0.00     0.00%        30.3%        53.4%
+  prior    0.010   86.4       0.00     0.00%        32.2%        56.8%
+  prior    0.020   88.6       0.00     0.00%        33.5%        59.1%
+  prior    0.050   90.7       0.00     0.00%        35.0%        61.7%
+  prior   stage-1 calibration (P bin: n, observed accept rate): [0,0.01) 155:0.000, [0.01,0.05) 23:0.000, [0.05,0.2) 20:0.000, [0.2,0.5) 19:0.000, [0.5,0.8) 9:0.333, [0.8,1.01) 10:0.500
+ 
+PASS stream path: pairs 59 (expect 59: one golden, one target), prior variant run
+PASS neyman: neyman / plain 0.761 (one noisy category)
+  k3base -> k3base_s1: delta 0.00688  bootstrap 0.00682
+  k3base -> k3bdiag: delta 0.00710  bootstrap 0.00712
+  k2base -> k2bdiag: delta 0.00648  bootstrap 0.00664
+  k2base -> k2base_s2: delta 0.00515  bootstrap 0.00520
+  k3ldlq -> k3hout: delta 0.00898  bootstrap 0.00891
+  k2ldlq -> k2yb8192: delta 0.00883  bootstrap 0.00911
+  k3base -> k3cub: delta 0.00734  bootstrap 0.00726
+  k2base -> k2eB: delta 0.00593  bootstrap 0.00595
+PASS delta vs bootstrap: ratios [1.008, 0.997, 0.976, 0.99, 1.009, 0.969, 1.011, 0.996]
+PASS aggsim bridge: sd / theory [0.9985, 1.0002, 1.0016, 1.0006, 0.9975]
+SELFTEST PASS

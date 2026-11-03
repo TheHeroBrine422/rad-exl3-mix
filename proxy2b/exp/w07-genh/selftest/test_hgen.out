@@ -1,0 +1,14 @@
+PASS  hgen --weight ng runs 
+PASS  hgen --weight gen runs 
+PASS  hgen --weight all runs 
+PASS  8 groups each 
+PASS  1. H_ng + H_gen = H_all (max rel 2.0e-07)
+PASS  1. rows add up (4173 + 1688)
+PASS  2. rows_gen = scored rows counted from gen.u8 (1688 scored of 5861 positions in 6 docs)
+PASS  3. --exclude runs 
+PASS  3. --exclude drops the golden's documents 
+PASS  4. mkgenh runs 
+PASS  4. w0 = 1: H_calib; w0 = 0: H_calib - H_ng (= H_gen here) (rel 0.0e+00, 7.5e-07)
+PASS  4. rows follow 
+PASS  4. a non-positive diagonal is refused (w0 = -1: calib - 2 x calib) 
+ALL PASS

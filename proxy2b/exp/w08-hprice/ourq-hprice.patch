@@ -1,0 +1,37 @@
+--- a/quantize/ourq.py
++++ b/quantize/ourq.py
+@@ -89,2 +89,6 @@
+                 "raw input Hessian) to OUTDIR/wq/<key>.rowerr.npz (v3/yaqa/headslab.py)")
++ap.add_argument("--hprice", default=None, metavar="DIR", help="output-side diagonals (as --hout: <key>.safetensors, "
++                "'hout_diag' or 'hout'), used for logging only: proxy.jsonl gets proxy_err1 (one-sided, raw H) and proxy_err2 "
++                "(the h-weighted two-sided error sum_r h_r e_rᵀHe_r / sum_r h_r w_rᵀHw_r) of every linear that has one "
++                "(knap4 KN_HRATIO prices H_out quants from it; w08). Quant output unchanged")
+ ap.add_argument("--head-perm", default=None, help="int64 .npy permutation of the head's vocab rows: lm_head is "
+@@ -261,5 +265,4 @@
+             _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hk, qa, a.save_wq)
+-        if a.save_wq:
++        if a.save_wq or a.hprice:
+             import numpy as np
+-            os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
+             H = hessian(hname)["H"]                     # fresh: quantize_exl3 may have regularised Hd in place
+@@ -272,4 +275,12 @@
+                 del E, W
+-            np.savez(os.path.join(a.o, "wq", f"{key}.rowerr.npz"), err=torch.cat(err).numpy(), ref=torch.cat(ref).numpy())
+-            del H
++            err, ref = torch.cat(err), torch.cat(ref); del H
++            qa["proxy_err1"] = float(err.sum() / ref.sum())
++            hp_ = f"{a.hprice}/{key}.safetensors" if a.hprice else None
++            if hp_ and os.path.exists(hp_) and key != "lm_head":
++                with safe_open(hp_, "pt", device="cpu") as f:
++                    h_ = (f.get_tensor("hout_diag") if "hout_diag" in f.keys() else f.get_tensor("hout").diagonal()).double()
++                qa["proxy_err2"] = float((h_ * err).sum() / (h_ * ref).sum())
++        if a.save_wq:
++            os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
++            np.savez(os.path.join(a.o, "wq", f"{key}.rowerr.npz"), err=err.numpy(), ref=ref.numpy())
+             save_file({"weight": wq.T.half().contiguous().cpu()}, os.path.join(a.o, "wq", f"{key}.safetensors"))
+@@ -278,3 +289,4 @@
+         two = qa.pop("H_out", None) is not None
+-        log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
++        log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), **{k_: qa[k_] for k_ in ("proxy_err1", "proxy_err2") if k_ in qa},
++                              "fallback": bool(qa.get("q_fallback")), "hout": two,
+                               "hin_key": bool(qa.get("hin_key")),

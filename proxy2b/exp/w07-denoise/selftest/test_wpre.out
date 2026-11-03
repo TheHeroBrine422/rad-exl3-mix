@@ -1,0 +1,12 @@
+PASS  original runs 
+PASS  patched, option off, runs 
+PASS  1. option off: every tensor identical (30 tensors)
+PASS  1. option off: proxy.jsonl identical (but timing) 
+PASS  1. option off: stamp argument dict identical (stamps 1c77f1c1cfb669f2 / 94a3d2fefa6fb3bd)
+PASS  2. identity transforms run 
+PASS  2. identity transforms: every tensor identical to the original 
+PASS  2. stamp args carry wpre 
+PASS  3. random transforms run 
+PASS  3. random transforms: wq = W F + c (f16) (6 linears, max rel dev 0.0e+00)
+PASS  4. missing transform exits naming its group --wpre /data/work/w07/t/run/wp-rand: no transform for model.language_model.layers.0.mlp.down_proj.input (model.language_model.layers.0.mlp.down_proj)
+ALL PASS

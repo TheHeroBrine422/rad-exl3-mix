@@ -1,0 +1,9 @@
+prof/quant3  lam 1.0 rho 0.75 0.mlp.down_proj.input        n 1024  sub: |WF|/|W| 1.0000  calib: |WF|/|W| 13.1944
+prof/quant3  lam 1.0 rho 0.75 3.input                      n 1024  sub: |WF|/|W| 0.9984  calib: |WF|/|W| 3.0427
+prof/quant3  lam 1.0 rho 0.75 3.self_attn.o_proj.input     n 1024  sub: |WF|/|W| 1.0000  calib: |WF|/|W| 1.5901
+prof/quant3  lam 1.0 rho 0.5 0.mlp.down_proj.input        n 1024  sub: |WF|/|W| 1.0011  calib: |WF|/|W| 26.3238
+prof/quant3  lam 1.0 rho 0.5 3.input                      n 1024  sub: |WF|/|W| 1.0085  calib: |WF|/|W| 5.8483
+prof/quant3  lam 1.0 rho 0.5 3.self_attn.o_proj.input     n 1024  sub: |WF|/|W| 1.0035  calib: |WF|/|W| 2.6704
+prof/noise   lam 0.55 rho 0.5 0.mlp.down_proj.input        n 1024  sub: |WF|/|W| 0.9891  calib: |WF|/|W| 4.7156
+prof/noise   lam 0.55 rho 0.5 3.input                      n 1024  sub: |WF|/|W| 0.9810  calib: |WF|/|W| 2.5832
+prof/noise   lam 0.55 rho 0.5 3.self_attn.o_proj.input     n 1024  sub: |WF|/|W| 0.9906  calib: |WF|/|W| 22.1116

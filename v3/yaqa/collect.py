@@ -50,6 +50,11 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     Use with YAQA_FP32=1 (bf16 gradients are too noisy, #33-03); YAQA_PREC=x2 runs the linear GEMMs as
                     bf16 hi/lo splits (bf16x.py; check proxy2b/prectest.py first). With YAQA_GATE=1: 2 sequences, and
                     one linear's diagonal is checked against a whole fp32 G_b.
+     YAQA_GENMASK=1 -> (with YAQA_DIAG) the sampled-label loss only at the positions the challenge scores (the golden's
+                    gen.u8, next to tokens.i32): every position still runs and feeds the later ones, every position's
+                    labels are still drawn (same RNG: the scored positions get the labels of an unmasked run), only the
+                    unscored positions' CE terms are dropped. A window without a scored position is skipped but counted,
+                    so snapshot n covers the same windows as an unmasked run's (w01 / ranked.md A1). Not with YAQA_SHORT.
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
@@ -78,6 +83,15 @@ meta = json.load(open(f"{G}/kld.json")); toks = np.fromfile(f"{G}/tokens.i32", n
 pools = json.load(open(os.environ.get("YAQA_POOLS", f"{W}/challenge/pools-v3.json")))["pool"]   # amended 2026-11-01
 off = np.cumsum([0] + [d["tokens"] for d in meta["docs"]])
 assert off[-1] == len(toks), (off[-1], len(toks))
+GENMASK = os.environ.get("YAQA_GENMASK") == "1"
+if GENMASK:                  # GPOS[t]: the prediction made at global token t is scored (gen row of its document)
+    _gen = np.fromfile(f"{G}/gen.u8", np.uint8); assert len(_gen) == meta["rows"], (len(_gen), meta["rows"])
+    GPOS = np.zeros(len(toks), np.float32)
+    for i, d in enumerate(meta["docs"]):
+        n_ = d["tokens"] - 1 - d["score_from"]
+        GPOS[off[i] + d["score_from"]:off[i] + d["tokens"] - 1] = _gen[d["row0"]:d["row0"] + n_]
+    assert os.environ.get("YAQA_DIAG") == "1", "YAQA_GENMASK needs YAQA_DIAG=1"
+    assert not int(os.environ.get("YAQA_SHORT", 0)), "YAQA_GENMASK is for long windows only"
 wins = []
 SHORT = int(os.environ.get("YAQA_SHORT", 0))   # > 0: qad docs of SHORT..L-1 tokens are sequences too (whole doc)
 WLEN = {}                                       # window start -> its length (L unless a short doc)
@@ -359,7 +373,8 @@ def save_diag(sub="hdiag"):
     for name, v in DACC.items():
         key = "model.language_model.layers." + name
         save_file({"hout_diag": (v / DSTATE["n"]).float().cpu().contiguous()}, f"{OUT}/{sub}/{key}.safetensors.part",
-                  metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED)})
+                  metadata={"seqs": str(DSTATE["n"]), "ctx": str(L), "sketch": "B-diag", "fp32_act": str(FP32), "prec": PREC, "seed": str(SEED),
+                            **({"genmask": "1"} if GENMASK else {})})
         os.replace(f"{OUT}/{sub}/{key}.safetensors.part", f"{OUT}/{sub}/{key}.safetensors")
     nl = DSTATE.get("n_long", 0)
     for tag, acc in (("long", DACC_BL), ("dy-long", DACC_DL)) if SHORT and nl else ():
@@ -411,11 +426,21 @@ CH = int(os.environ.get("YAQA_CHUNK", 256))
 from torch.utils.checkpoint import checkpoint
 def chunk_loss(h, y):   # sampled-label CE of one chunk of positions; recomputed in backward (no stored logits)
     return torch.nn.functional.cross_entropy(model.lm_head(h).float(), y, reduction="sum")
+def chunk_loss_m(h, y, m):   # YAQA_GENMASK: the same, scored positions only (m: 1 scored, 0 not)
+    return (torch.nn.functional.cross_entropy(model.lm_head(h).float(), y, reduction="none") * m).sum()
 done = 0; t_all = time.time()
 for s in range(START, START + (NSEQ if not GATE else 2)):
     if DIAG and s < DSTATE["next"]: continue           # resumed: already in the sums
     if DIAG and os.path.exists(f"{OUT}/STOP"): print(f"STOP file at window {s}", flush=True); break
     if not DIAG and not GATE and os.path.exists(f"{OUT}/.done/{s:05d}"): continue
+    if GENMASK:
+        gm = torch.from_numpy(GPOS[wins[s % len(wins)]:wins[s % len(wins)] + L - 1])   # loss positions 0 .. L-2
+        if not bool(gm.any()):                                    # nothing scored: no gradient; counted (paired snapshots)
+            DSTATE["n"] += 1; DSTATE["next"] = s + 1
+            if not GATE:
+                if DSTATE["n"] in SNAPS: save_diag(f"hdiag-snap{DSTATE['n']}")
+                if DSTATE["n"] % int(os.environ.get("YAQA_SAVE_EVERY", 25)) == 0: save_diag()
+            done += 1; print(f"seq {s}: no scored position, skipped (counted)", flush=True); continue
     srng = np.random.default_rng((SEED, s)); torch.manual_seed(SEED * 1_000_003 + s)
     w0 = wins[s % len(wins)]                 # beyond the last window: windows again, fresh labels (seed (SEED, s))
     if s == len(wins): print(f"window {s}: all {len(wins)} windows used, cycling with fresh labels", flush=True)
@@ -441,7 +466,8 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
             with torch.no_grad():
                 y = torch.multinomial(torch.softmax(model.lm_head(h).float(), -1), 1)[:, 0]
         ys.append(y)
-        loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
+        if GENMASK: loss = loss + checkpoint(chunk_loss_m, h, y, gm[c0:c0 + CH].to(h.device), use_reentrant=False)
+        else: loss = loss + checkpoint(chunk_loss, h, y, use_reentrant=False)
     for i in range(NG): torch.cuda.synchronize(i)
     t_fwd = time.time() - ts
     loss.backward()
@@ -476,6 +502,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
         torch.cat(ys).cpu().numpy().astype(np.int32).tofile(f"{OUT}/.labels/{s:05d}.i32")
         os.makedirs(f"{OUT}/.done", exist_ok=True); np.array([wins[s % len(wins)]], np.int64).tofile(f"{OUT}/.done/{s:05d}")   # marker = window start
     done += 1
+    if GENMASK: print(f"  seq {s}: {int(gm.sum())} scored positions of {L - 1}", flush=True)
     print(f"seq {s}: {dt:.1f}s (fwd {t_fwd:.1f} bwd {t_bwd:.1f} cpu-wait {t_wait:.1f}), {len(state['full_done']) if DIAG else len(state['rows'])} linears recorded, hid {hid.dtype}, loss/tok {loss.item() / hid.shape[0]:.3f}, peak " +
           ", ".join(f"cuda{i} {torch.cuda.max_memory_allocated(i) / 2**30:.1f} GiB" for i in range(NG)), flush=True)
     del hid, loss, emb

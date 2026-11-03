@@ -1,0 +1,22 @@
+K3 bdiag (3 seed pairs): whole-model KL ratio 0.919
+   one-sided      : geomean 1.065  median 1.050  tensors > 1.05: 49%  < 0.95: 17%
+      by type: down_proj 0.954  gate_proj 1.106  in_proj_qkv 1.158  in_proj_z 1.215  k_proj 1.006  o_proj 0.944  out_proj 0.941  q_proj 1.180  up_proj 1.061  v_proj 1.167
+   two-sided diag : geomean 0.866  median 0.888  tensors > 1.05: 0%  < 0.95: 82%
+      by type: down_proj 0.950  gate_proj 0.880  in_proj_qkv 0.795  in_proj_z 0.775  k_proj 0.817  o_proj 0.945  out_proj 0.948  q_proj 0.734  up_proj 0.864  v_proj 0.889
+   family factor KN_HF that maps the two-sided geomean onto the KL ratio: 1.062
+K3 bident (1 seed pair): whole-model KL ratio 1.049
+   one-sided      : geomean 0.919  median 0.919  tensors > 1.05: 0%  < 0.95: 66%
+      by type: down_proj 0.945  gate_proj 0.878  in_proj_qkv 0.894  in_proj_z 0.866  k_proj 0.896  o_proj 0.932  out_proj 0.934  q_proj 0.917  up_proj 0.983  v_proj 0.955
+   two-sided diag : geomean 1.039  median 1.007  tensors > 1.05: 35%  < 0.95: 18%
+      by type: down_proj 0.958  gate_proj 1.101  in_proj_qkv 1.053  in_proj_z 1.252  k_proj 1.023  o_proj 0.956  out_proj 0.955  q_proj 1.048  up_proj 0.997  v_proj 1.046
+K2 bdiag (3 seed pairs): whole-model KL ratio 0.946
+   one-sided      : geomean 1.063  median 1.049  tensors > 1.05: 50%  < 0.95: 16%
+      by type: down_proj 0.960  gate_proj 1.101  in_proj_qkv 1.151  in_proj_z 1.205  k_proj 1.007  o_proj 0.951  out_proj 0.948  q_proj 1.178  up_proj 1.059  v_proj 1.158
+   two-sided diag : geomean 0.875  median 0.896  tensors > 1.05: 0%  < 0.95: 80%
+      by type: down_proj 0.955  gate_proj 0.889  in_proj_qkv 0.805  in_proj_z 0.791  k_proj 0.827  o_proj 0.952  out_proj 0.953  q_proj 0.748  up_proj 0.873  v_proj 0.900
+   family factor KN_HF that maps the two-sided geomean onto the KL ratio: 1.081
+K2 bident (1 seed pair): whole-model KL ratio 1.021
+   one-sided      : geomean 0.925  median 0.924  tensors > 1.05: 0%  < 0.95: 66%
+      by type: down_proj 0.950  gate_proj 0.886  in_proj_qkv 0.898  in_proj_z 0.875  k_proj 0.903  o_proj 0.941  out_proj 0.940  q_proj 0.923  up_proj 0.984  v_proj 0.957
+   two-sided diag : geomean 1.038  median 1.006  tensors > 1.05: 35%  < 0.95: 13%
+      by type: down_proj 0.963  gate_proj 1.098  in_proj_qkv 1.049  in_proj_z 1.229  k_proj 1.028  o_proj 0.963  out_proj 0.960  q_proj 1.045  up_proj 0.999  v_proj 1.042

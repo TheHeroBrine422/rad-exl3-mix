@@ -1,0 +1,7 @@
+arm         K  n     gain      se  share     ±
+full edy    3  3   0.0919  0.0060   1.00
+full edy    2  3   0.0646  0.0061   1.00
+VERDICT K4: incomplete
+VERDICT K5: incomplete
+pending (need seeds / not run): [(3, 'h-gdn_in', 0), (3, 'h-attn_in', 0), (3, 'h-mlp_in', 0), (3, 'h-writers', 0), (3, 'h-d0', 0), (3, 'h-d1', 0), (3, 'h-d2', 0), (2, 'h-gdn_in', 0), (2, 'h-attn_in', 0), (2, 'h-mlp_in', 0), (2, 'h-writers', 0), (2, 'h-d0', 0), (2, 'h-d1', 0), (2, 'h-d2', 0), (4, 'edy', 0), (5, 'edy', 0)]
+{"subsets": {}, "khi": {"4": null, "5": null}, "full": {"3": {"n": 3, "seeds": [0, 1, 2], "g": 0.091872093536435, "se": 0.006008033023017761, "logs": [-0.0932, -0.10155, -0.08087]}, "2": {"n": 3, "seeds": [0, 1, 2], "g": 0.0646455666647854, "se": 0.006146541211709667, "logs": [-0.07167, -0.06987, -0.0524]}}, "verdicts": {"K4": "incomplete", "K5": "incomplete"}, "additivity": {}, "pending": [[3, "h-gdn_in", 0], [3, "h-attn_in", 0], [3, "h-mlp_in", 0], [3, "h-writers", 0], [3, "h-d0", 0], [3, "h-d1", 0], [3, "h-d2", 0], [2, "h-gdn_in", 0], [2, "h-attn_in", 0], [2, "h-mlp_in", 0], [2, "h-writers", 0], [2, "h-d0", 0], [2, "h-d1", 0], [2, "h-d2", 0], [4, "edy", 0], [5, "edy", 0]]}

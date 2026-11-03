@@ -1,0 +1,53 @@
+797 fit-slice mix measurements, slice offsets {'a': 1.0, 'f2': 0.845, 'f3': 0.958}
+
+1. calibration: 25 (held-out slice, target) groups, 113 mixes
+   w  1.0: within-group RMS error vs held-out log KLD 0.0478
+   w 0.75: within-group RMS error vs held-out log KLD 0.0410
+   w  0.5: within-group RMS error vs held-out log KLD 0.0376
+   w 0.25: within-group RMS error vs held-out log KLD 0.0385
+   w  0.0: within-group RMS error vs held-out log KLD 0.0434
+   leave-one-group-out best w: median 0.45 (range 0.40..0.45)
+   mean sq. deviation from held-out: meas 0.00228, model 0.00188, cross 0.00074 (both include the held-out eval's own noise; the cross term estimates it, as m and c share no error otherwise)
+   -> sigma (measurement) 0.0392, tau (model) 0.0338, implied w 0.43
+
+2. selection on held-out groups (w = 0.5): held-out KLD of the pick, ratio post / measured-best
+   v2   4.5: n 6  measured-best knap-r9-ts0-sc4.00-e4-4.50 0.00416  posterior knap-s55-ts0-sc4.00-e4-4.50 0.00378  (-9.3%)
+   v2   6.0: n 4  measured-best knap-s63-ls0-sc4.00-e4-6.00 0.00076  posterior knap-s45-ls0-sc4.00-e4-6.00 0.00076  (+0.2%)
+   w    4.5: n 9  measured-best knap-r9-ts0-sc4.00-e4-4.50 0.00389  posterior knap-s55-ts0-sc4.00-e4-4.50 0.00378  (-2.7%)
+   w    6.0: n 10  measured-best knap-s63-ls0-sc4.00-e4-6.00 0.00071  posterior knap-s45-ls0-sc4.00-e4-6.00 0.00071  (+0.2%)
+   25 groups, picks differ in 4; geomean ratio 0.9952, posterior better in 2, worse in 2
+   caveat: held-out evals went mostly to each target's measured-best finalists, so these sets favour the measured-best rule
+
+3. simulation, 2000 draws a target, sigma 0.0392, tau 0.0338: expected regret (pick's true KLD / best candidate's - 1)
+     1.2:   5 candidates  measured-best +1.31%  post w=0.5 +0.81%  post w* +0.81%  model-best +1.29%
+     1.3:   8 candidates  measured-best +1.61%  post w=0.5 +0.81%  post w* +0.73%  model-best +1.08%
+     1.4:   5 candidates  measured-best +1.18%  post w=0.5 +1.01%  post w* +1.01%  model-best +2.00%
+     1.5:   8 candidates  measured-best +1.54%  post w=0.5 +1.18%  post w* +1.16%  model-best +2.48%
+     1.6:  19 candidates  measured-best +1.19%  post w=0.5 +0.94%  post w* +0.93%  model-best +1.84%
+    1.75:   3 candidates  measured-best +0.99%  post w=0.5 +0.66%  post w* +0.60%  model-best +1.02%
+     1.8:  23 candidates  measured-best +1.75%  post w=0.5 +1.63%  post w* +1.66%  model-best +3.71%
+     2.0:  25 candidates  measured-best +1.65%  post w=0.5 +1.08%  post w* +1.05%  model-best +2.24%
+    2.25:  23 candidates  measured-best +2.14%  post w=0.5 +1.83%  post w* +1.77%  model-best +3.12%
+     2.5:  46 candidates  measured-best +2.51%  post w=0.5 +2.09%  post w* +2.10%  model-best +4.02%
+    2.75:  34 candidates  measured-best +2.37%  post w=0.5 +2.00%  post w* +1.95%  model-best +4.38%
+    2.99:   3 candidates  measured-best +0.23%  post w=0.5 +0.00%  post w* +0.00%  model-best +0.00%
+     3.0:  26 candidates  measured-best +2.10%  post w=0.5 +1.97%  post w* +1.99%  model-best +4.60%
+    3.25:  28 candidates  measured-best +2.10%  post w=0.5 +1.75%  post w* +1.74%  model-best +3.65%
+     3.5:  50 candidates  measured-best +2.54%  post w=0.5 +2.38%  post w* +2.36%  model-best +5.70%
+    3.75:  38 candidates  measured-best +2.39%  post w=0.5 +2.17%  post w* +2.18%  model-best +4.82%
+    3.99:   3 candidates  measured-best +0.44%  post w=0.5 +0.02%  post w* +0.01%  model-best +0.01%
+     4.0:  30 candidates  measured-best +2.30%  post w=0.5 +1.78%  post w* +1.79%  model-best +3.51%
+    4.25:  23 candidates  measured-best +2.13%  post w=0.5 +1.65%  post w* +1.62%  model-best +3.02%
+     4.5:  25 candidates  measured-best +2.00%  post w=0.5 +1.61%  post w* +1.60%  model-best +3.49%
+    4.75:  30 candidates  measured-best +2.34%  post w=0.5 +2.06%  post w* +2.03%  model-best +4.18%
+     5.0:  30 candidates  measured-best +2.13%  post w=0.5 +1.72%  post w* +1.65%  model-best +3.56%
+    5.25:  28 candidates  measured-best +2.10%  post w=0.5 +1.71%  post w* +1.75%  model-best +3.98%
+    5.49:   3 candidates  measured-best +0.73%  post w=0.5 +0.61%  post w* +0.62%  model-best +1.07%
+     5.5:  28 candidates  measured-best +2.22%  post w=0.5 +1.78%  post w* +1.77%  model-best +3.40%
+    5.75:  35 candidates  measured-best +2.55%  post w=0.5 +2.15%  post w* +2.09%  model-best +4.14%
+     6.0:  24 candidates  measured-best +1.98%  post w=0.5 +1.48%  post w* +1.42%  model-best +3.25%
+   mean over targets: measured-best +1.80%  post w=0.5 +1.44%  post w* +1.42%  model-best +2.95%
+   measured-best : gain vs measured-best +0.00% KLD
+   post w=0.5    : gain vs measured-best -0.35% KLD
+   post w*       : gain vs measured-best -0.37% KLD
+   model-best    : gain vs measured-best +1.13% KLD

@@ -1,0 +1,60 @@
+PASS gdn_in: 36 symlinks
+PASS attn_in: 18 symlinks
+PASS mlp_in: 48 symlinks
+PASS writers: 48 symlinks
+PASS d0: 50 symlinks
+PASS d1: 50 symlinks
+PASS d2: 50 symlinks
+PASS family sizes [36, 18, 48, 48] == [36, 18, 48, 48]
+PASS families partition the 150 linears
+PASS depth thirds partition: [50, 50, 50]
+PASS gdn_in: no Hessian group split
+PASS attn_in: no Hessian group split
+PASS mlp_in: no Hessian group split
+PASS writers: no Hessian group split
+PASS d0: no Hessian group split
+PASS d1: no Hessian group split
+PASS d2: no Hessian group split
+PASS empty subset refused
+PASS idcheck pass case: {'arm': '/tmp/tmpv9wr1hy2/wqa', 'outside_identical': 102, 'outside_changed': 0, 'outside_worst_rel': 0.0, 'first_changed': [], 'subset_changed': 48, 'subset_unchanged': [], 'pass': True}
+PASS idcheck catches one changed outside weight
+arm         K  n     gain      se  share     ±
+full edy    3  3   0.0900  0.0023   1.00
+gdn_in      3  2   0.0270  0.0020   0.30  0.02
+attn_in     3  2   0.0045  0.0020   0.05  0.02
+mlp_in      3  2   0.0405  0.0020   0.45  0.03
+writers     3  2   0.0140  0.0020   0.16  0.02
+d0          3  2   0.0090  0.0020   0.10  0.02
+d1          3  2   0.0270  0.0020   0.30  0.02
+d2          3  2   0.0540  0.0020   0.60  0.03
+full edy    2  3   0.0650  0.0023   1.00
+gdn_in      2  2   0.0195  0.0020   0.30  0.03
+attn_in     2  2   0.0033  0.0020   0.05  0.03
+mlp_in      2  2   0.0292  0.0020   0.45  0.03
+writers     2  2   0.0101  0.0020   0.16  0.03
+d0          2  2   0.0065  0.0020   0.10  0.03
+d1          2  2   0.0195  0.0020   0.30  0.03
+d2          2  2   0.0390  0.0020   0.60  0.04
+full edy    4  2   0.0500  0.0040
+full edy    5  2   0.0200  0.0040
+additivity K3 families: sum of subset gains / full gain = 0.96
+additivity K3 depth: sum of subset gains / full gain = 1.00
+additivity K2 families: sum of subset gains / full gain = 0.96
+additivity K2 depth: sum of subset gains / full gain = 1.00
+VERDICT gdn_in: two-sided
+VERDICT attn_in: one-sided (minor: share < 0.15 at K3 and K2)
+VERDICT mlp_in: two-sided
+VERDICT writers: two-sided
+VERDICT d0: one-sided (minor: share < 0.15 at K3 and K2)
+VERDICT d1: two-sided
+VERDICT d2: two-sided
+VERDICT K4: keep two-sided
+VERDICT K5: skip two-sided at this K (gain < 3%)
+pending (need seeds / not run): [(3, 'h-writers', 2), (2, 'h-writers', 2)]
+{"subsets": {"gdn_in": {"3": {"n": 2, "seeds": [0, 1], "g": 0.027000041573068685, "se": 0.002000022941516409, "logs": [-0.025, -0.029], "share": 0.30000042279128625, "share_se": 0.02351801683990499}, "2": {"n": 2, "seeds": [0, 1], "g": 0.01950000883758756, "se": 0.00199999025844424, "logs": [-0.0175, -0.0215], "share": 0.3000001939296295, "share_se": 0.032562964056126624}}, "attn_in": {"3": {"n": 2, "seeds": [0, 1], "g": 0.004500047808906193, "se": 0.00200001228450518, "logs": [-0.0025, -0.0065], "share": 0.05000052468805971, "share_se": 0.02225936217742777}, "2": {"n": 2, "seeds": [0, 1], "g": 0.0032500298840041596, "se": 0.002000010104643234, "logs": [-0.00125, -0.00525], "share": 0.0500004694151186, "share_se": 0.030820632389945958}}, "mlp_in": {"3": {"n": 2, "seeds": [0, 1], "g": 0.040500040124082745, "se": 0.0020000002923661296, "logs": [-0.0385, -0.0425], "share": 0.4500003871256251, "share_se": 0.02504314734338807}, "2": {"n": 2, "seeds": [0, 1], "g": 0.029249999387299996, "se": 0.002
+PASS full gains recovered
+PASS planted K3 shares recovered
+PASS verdicts {'gdn_in': 'two-sided', 'attn_in': 'one-sided (minor: share < 0.15 at K3 and K2)', 'mlp_in': 'two-sided', 'writers': 'two-sided', 'd0': 'one-sided (minor: share < 0.15 at K3 and K2)', 'd1': 'two-sided', 'd2': 'two-sided', 'K4': 'keep two-sided', 'K5': 'skip two-sided at this K (gain < 3%)'}
+PASS additivity = sum of shares
+PASS adaptive seeds listed: ['3 h-writers 2', '2 h-writers 2']
+ALL PASS

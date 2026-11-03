@@ -1,0 +1,52 @@
+--- a/v3/nf/knap4.py
++++ b/v3/nf/knap4.py
+@@ -32,2 +32,11 @@
+               .rad import); fractional levels sit at their measured ladder positions (KN_LEVELS).
++  KN_HRATIO=FILE  H_out quants (ourq --hout, diagonal output Hessian; ranked F1, w08): options oursH-K<k> next to
++              ours-K<k>, priced at the one-sided option's error x r x KN_HF, r = the tensor's two-sided (h-weighted) error
++              ratio H quant / one-sided quant at that K (FILE: jsonl {"key": checkpoint key, "K": k, "r": ratio}, from
++              proxy2b/exp/w08-hprice/hratio.py; gate / up: geometric mean; K without a ratio: log-linear between the
++              tensor's measured K, else the nearest within KN_HRATIO_NEAR = 0.5). Why: the one-sided proxy_err KN_LEVELS
++              reads RISES for H_out quants where KL falls (0.8B: x1.065 one-sided, x0.86 two-sided, KL x0.92). KN_HF is
++              the H family's factor on top of its one-sided family's (fit it from uniform-trunk swaps; 0.8B: 1.07 K3,
++              1.09 K2). KN_HONLY=1 drops the one-sided ours-K<k> where an oursH-K<k> exists (one ladder, not both).
++              Containers RXM_V3 (KN_V3) or RXM_OURS /oursH-K<k>.rad.
+ The rest is knap3 (below).
+@@ -170,2 +179,28 @@
+ if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positions: {NLEV[0]} tensor-levels", file=sys.stderr)
++# ---- H_out quants (KN_HRATIO): oursH-K<k> priced by the two-sided error ratio
++if os.environ.get("KN_HRATIO"):
++    HR = collections.defaultdict(dict)          # knap name -> K -> ratio
++    _acc = collections.defaultdict(list)
++    for l in open(os.environ["KN_HRATIO"]):
++        d = json.loads(l); k = d["key"].split(".")
++        n = HF2KN.get(".".join(k[4:6])) if len(k) > 5 and k[2] == "layers" else None
++        if n and d.get("r", 0) > 0: _acc[(f"blk.{k[3]}.{n}.weight", float(d["K"]))].append(d["r"])
++    for (n, K), v in _acc.items(): HR[n][K] = math.exp(sum(map(math.log, v)) / len(v))
++    HF, HONLY, NH = float(os.environ.get("KN_HF", 1.0)), os.environ.get("KN_HONLY") == "1", 0
++    def hratio(w, K):
++        m = HR.get(w)
++        if not m: return None
++        if K in m: return m[K]
++        lo, hi = [k for k in m if k < K], [k for k in m if k > K]
++        if lo and hi:
++            a_, b_ = max(lo), min(hi); return math.exp(math.log(m[a_]) + (K - a_) / (b_ - a_) * (math.log(m[b_]) - math.log(m[a_])))
++        k = min(m, key=lambda k: abs(k - K)); return m[k] if abs(k - K) <= float(os.environ.get("KN_HRATIO_NEAR", 0.5)) else None
++    for t in md["tensors"]:
++        o = t["opts"]
++        for c in [c for c in o if re.fullmatch(r"ours-K[\d.]+", c)]:
++            K = float(c[6:]); r = hratio(t["w"], K)
++            if r is None or (V3 and K not in LADDER): continue
++            o[f"oursH-K{K:g}"] = [o[c][0], o[c][1] * r * HF, o[c][2]]; t["family_of"][f"oursH-K{K:g}"] = t["family_of"][c]; NH += 1
++            if HONLY: del o[c]
++    print(f"H_out options: {NH} tensor-levels, KN_HF {HF}{', one-sided twins dropped' if HONLY else ''}", file=sys.stderr)
+ SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
+@@ -285,3 +320,3 @@
+     for c, (b, e, bits) in t["opts"].items():
+-        m = re.fullmatch(r"ours-K([\d.]+)", c)
++        m = re.fullmatch(r"oursH?-K([\d.]+)", c)
+         if not m or os.environ.get("KN_MODES") == "f16": continue
+@@ -406,2 +441,3 @@
+ def rad(c, w):
++    if re.fullmatch(r"oursH-K[\d.]+", c): return f"{RXM_V3 if V3 else RXM_OURS}/{c}.rad"
+     if V3 and c.startswith("trellis-K"): return f"{RXM_V3}/emb-{c}.rad"

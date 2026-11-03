@@ -200,3 +200,13 @@ Under the two-question rule a consistent small effect gets a tighter confirmatio
   criterion (mean log ratio below zero by ≥ 2 SE, or every seed better), K2 and K3 each.
 - **#78-03 (stacking):** i8c + the Σdy² diagonal (#33-18's `edy` H_out, 1,024 qad windows) vs `edy`, K3 / K2, seeds
   0–2. Stacks if the 3-seed mean ratio is < 1 with z ≤ −2 at K3 and not worse (z < 2) at K2; otherwise report.
+
+## Amendment 16 (2026-11-02 ~20:20 CST, written before any data): dose past 1,024 and repeated windows, #33-22
+
+#33-21 showed the long-window count still matters (640 vs 1,024: +1.5% at K3). The 27B night collects to 2,048,
+repeating the 1,350 qad windows with fresh labels after the first pass. 0.8B check: one collection (seed 0, the
+c18 order, long windows only, Σdy² and Sketch B) to 2,700 sequences (two passes), snapshots 1,350 / 2,048 / 2,700;
+Σdy² quants K3 / K2 × seeds 0–2 at each, vs #33-18's `edy` (1,024, the same first 1,024 windows and labels).
+- **More windows help** if dy1350 / edy has a 3-seed mean ratio < 1 with z ≤ −2 at K3.
+- **Repeats help** if dy2700 / dy1350 has mean ratio < 1 with z ≤ −2 at K3 (and not worse at K2): then the 27B run
+  should go past 1,350; otherwise it can stop at 1,350 (the 27B decision also uses its own snapshots).

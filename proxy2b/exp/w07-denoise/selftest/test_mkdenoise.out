@@ -1,0 +1,14 @@
+PASS  1. [0.025] lam = rho = 0: G = H, no wpre 
+PASS  2. [0.025] lam = rho = 0.5: G = H + lam^2 N + lam (C + C^T), no wpre 
+PASS  3. [0.025] alpha = sig x mean diag G (alpha 6.5926e-01)
+PASS  3. [0.025] objective differences = trace-form differences (dJ -6.985122e+04, dQ -6.985122e+04)
+PASS  3. [0.025] W F minimises the objective (J(WF + small) - J(WF) min 2.57e-01)
+PASS  1. [0.005] lam = rho = 0: G = H, no wpre 
+PASS  2. [0.005] lam = rho = 0.5: G = H + lam^2 N + lam (C + C^T), no wpre 
+PASS  3. [0.005] alpha = sig x mean diag G (alpha 1.3185e-01)
+PASS  3. [0.005] objective differences = trace-form differences (dJ -5.640031e+04, dQ -5.640030e+04)
+PASS  3. [0.005] W F minimises the objective (J(WF + small) - J(WF) min 2.83e-01)
+PASS  4. independent noise: ||W F|| < ||W|| (ratio 0.9941)
+PASS  5. F = the subset's own filter (calib H not in it) 
+PASS  5. G = H_calib + lam^2 N + lam (C + C^T), not clipped (hsub_vs_calib 0.044)
+ALL PASS

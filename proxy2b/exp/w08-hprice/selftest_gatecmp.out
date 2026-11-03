@@ -1,0 +1,16 @@
+1. shards bit-identical REF / OFF / ON: 1/1
+2. ON proxy.jsonl: 1 linears, proxy_err1 missing on 0, max |err1/proxy_err - 1| 1.00e-05, proxy_err2 on 1
+3. fixed rowerr.npz vs proxy_err1: max rel diff 0.0e+00; REF rowerr err/ref min 1.001 (the in-place bug: REF is unfixed ourq)
+GATE PASS
+
+1. shards bit-identical REF / OFF / ON: 0/1
+2. ON proxy.jsonl: 1 linears, proxy_err1 missing on 0, max |err1/proxy_err - 1| 1.00e-05, proxy_err2 on 1
+3. fixed rowerr.npz vs proxy_err1: max rel diff 0.0e+00; REF rowerr err/ref min 1.001 (the in-place bug: REF is unfixed ourq)
+GATE FAIL
+
+1. shards bit-identical REF / OFF / ON: 1/1
+2. ON proxy.jsonl: 1 linears, proxy_err1 missing on 0, max |err1/proxy_err - 1| 1.00e-05, proxy_err2 on 1
+3. fixed rowerr.npz vs proxy_err1: max rel diff 1.0e+00; REF rowerr err/ref min 1.001 (the in-place bug: REF is unfixed ourq)
+GATE FAIL
+
+SELFTEST gatecmp PASS

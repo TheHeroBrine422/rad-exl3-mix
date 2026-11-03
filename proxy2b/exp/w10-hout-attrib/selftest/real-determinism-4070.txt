@@ -1,0 +1,5 @@
+# idcheck.py on real 4070 quants (CPU, niced). (1) k3bdiag vs k3bdv8192: two separate ourq runs of the same setting (same H_out in two file layouts), empty subset: all 150 bit-identical -> ourq is deterministic run to run. (2) k3base vs k3edy (H_out everywhere), empty subset: all 150 differ -> the check sees changes.
+{"arm": "/data/yb/q-k3bdv8192/wq", "outside_identical": 150, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 0, "subset_unchanged": [], "pass": true}
+rc 0
+{"arm": "/data/yb/q-k3edy/wq", "outside_identical": 0, "outside_changed": 150, "outside_worst_rel": 0.2205808460712433, "first_changed": ["model.language_model.layers.0.linear_attn.in_proj_qkv", "model.language_model.layers.0.linear_attn.in_proj_z", "model.language_model.layers.0.linear_attn.out_proj"], "subset_changed": 0, "subset_unchanged": [], "pass": false}
+rc 1
