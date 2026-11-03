@@ -173,7 +173,7 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 
 ## NVIDIA Model Optimizer overlap (2026-11-03, `docs/research/modelopt.md`)
 
-- [ ] **Saturation check of the knapsack** (CPU ~1 h): does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
+- [x] **Saturation check of the knapsack** (done 11-03: null, errors compound instead; LOG) (CPU ~1 h): does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
   KL better than ΣΔKL (ladder levels, V2 mixes, kfit2 swaps), esp. at 1.75–2.5 bpw? If yes, re-price the low V3 sizes.
 - [ ] **Reference KLD of `nvidia/Qwen3.8-27B-NVFP4`** (iceman, weight-only dequant first) on the verify slice: place it
   on our frontier next to V2 5.0 / 5.5.

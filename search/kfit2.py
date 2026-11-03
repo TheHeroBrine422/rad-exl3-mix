@@ -36,6 +36,7 @@ F = os.environ.get("KFIT_F", RXM_MODELS)
 BASE = os.environ.get("KFIT_BASE", "sc4.00-e4")
 SIGMA = float(os.environ.get("KFIT_SIGMA", 0.02)); SMOOTH = float(os.environ.get("KFIT_SMOOTH", 0.5))
 NKAP = int(os.environ.get("KFIT_KAPPA", 3)); FITQ = int(os.environ.get("KFIT_Q", 1))
+SAT = os.environ.get("KFIT_SAT") == "1"   # saturation (coverage model, ModelOpt / arXiv 2607.12266): KLD = C (1 - exp(-P / C))
 EXCL = set(filter(None, os.environ.get("KFIT_EXCLUDE", "").split(",")))
 OURS_ONLY = os.environ.get("KFIT_OURS_ONLY") == "1"
 # with OURS_ONLY: still allow turboderp options with >= TD_MIN bits on that tensor (2026-10-31: ours-only lost at >= 6 bpw)
@@ -186,7 +187,8 @@ def unpack(x):
     kap = np.exp(x[i:i + len(KK)]) if NKAP else np.zeros(len(KK)); i += len(KK) if NKAP else 0
     phi = np.zeros(len(FAMS) + 1)
     for f in FAMS_FIT: phi[FAMS.index(f) + 1] = x[i]; i += 1
-    global SOFF
+    global SOFF, CSAT
+    if SAT: CSAT = np.exp(x[i]); i += 1
     SOFF = np.r_[0.0, x[i:i + NS - 1]]
     return th, c0, emb, q, kap, phi
 def wcost(th, q, phi, ev, fv):
@@ -196,11 +198,12 @@ def wcost(th, q, phi, ev, fv):
 def run(P, Xl, kl):                                 # P: [N], Xl: [N, NL+1], kl: [NL+1]
     for l in range(Xl.shape[1]): P = P * (1 + kl[l] * Xl[:, l]) + Xl[:, l]
     return P
-SOFF = np.zeros(1)
+SOFF = np.zeros(1); CSAT = np.inf
 def predict(x, ev, lv, fv, sv=None):
     th, c0, emb, q, kap, phi = unpack(x)
     Xl = wcost(th, q, phi, ev, fv) @ LM
     p = np.maximum(run(c0 + emb[lv], Xl, KA @ kap), 1e-9)
+    if SAT: p = CSAT * -np.expm1(-p / CSAT)
     return p if sv is None else p * np.exp(SOFF[sv])
 def prior(x):
     th = x[:NTH]; out = []
@@ -216,6 +219,7 @@ def x0():
     if FITQ: x.append([np.log(1.1)])
     if NKAP: x.append(np.full(len(KK), np.log(3.0)))
     x.append(np.zeros(len(FAMS_FIT)))
+    if SAT: x.append([np.log(float(os.environ.get("KFIT_SAT_C0", 5.0)))])
     x.append(np.zeros(NS - 1))
     return np.concatenate(x)
 def fit(idx, xi=None):
@@ -244,7 +248,11 @@ th, c0, emb, q, kap, phi = unpack(X)
 print(f"model kappa={'0' if not NKAP else '3 knots' if NKAP == 3 else '2 knots'} q={'fit' if FITQ else 1}: in-sample log-RMSE {inr:.3f}  CV log-RMSE {cvr:.3f}  "
       f"pair ranking (CV) {ok}/{len(pairs)}  q {q:.3f}  kappa@{list(KK)} " + " ".join(f"{k:.3g}" for k in KA[KK] @ kap if True)
       + "  fam " + " ".join(f"{f} {np.exp(phi[FAMS.index(f) + 1]):.2f}" for f in FAMS_FIT)
-      + ("  slice offsets " + " ".join(f"{SLICES[j]} {np.exp(SOFF[j]):.3f}" for j in range(1, NS)) if NS > 1 else ""), file=sys.stderr)
+      + ("  slice offsets " + " ".join(f"{SLICES[j]} {np.exp(SOFF[j]):.3f}" for j in range(1, NS)) if NS > 1 else "")
+      + (f"  sat C {CSAT:.4g}" if SAT else ""), file=sys.stderr)
+for lo, hi in ((0, 1.6), (1.6, 2.6), (2.6, 3.6), (3.6, 5.1), (5.1, 20)):   # CV bias of whole mixes by size band
+    b = [i for i in whole if lo <= BPW[i] < hi and not np.isnan(oos[i])]
+    if b: print(f"  whole mixes {lo}-{hi} bpw: n {len(b)}  CV log(pred/meas) mean {np.mean(np.log(oos[b] / KM[b])):+.3f}  rms {np.sqrt(np.mean(np.log(oos[b] / KM[b]) ** 2)):.3f}", file=sys.stderr)
 if os.environ.get("KFIT_VERBOSE", "1") != "0":
     print(f"{'measurement':40} {'bpw':>6} {'KLD':>9} {'fit':>9} {'CV pred':>9}", file=sys.stderr)
     for i in np.argsort(KM):

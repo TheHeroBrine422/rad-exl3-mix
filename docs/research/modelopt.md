@@ -29,7 +29,7 @@ embeddings). It is a direct reference point next to our V2 5.0 / 5.5 (board 0.00
 
 ## Ideas for us (each a BACKLOG row)
 
-1. **Saturation check of the knapsack (CPU, ~1 h, no GPU).** On existing measurements (ladder uniform levels, V2
+1. **Saturation check of the knapsack (CPU, ~1 h, no GPU). Done 2026-11-03: null** (our errors compound; kfit2's amplification model already fits; LOG). On existing measurements (ladder uniform levels, V2
    mixes with predicted vs measured KL, the kfit2 swaps), test whether predicted = c(1 − exp(−Σb)) with
    b = −log(1 − ΔKL_i / c) fits measured mixed-model KL better than ΣΔKL, at 1.75–2.5 bpw especially. If the additive
    prediction overshoots at low bpw by more than the seed noise, re-run the knapsack on b for the low V3 sizes.

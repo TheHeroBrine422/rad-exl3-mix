@@ -1,0 +1,14 @@
+671 fit measurements (626 skipped: a-knap-r9-sc4.00-e4-1.20, a-knap-r9-sc4.00-e4-1.30, a-knap-r9-sc4.00-e4-1.40, a-knap-r9-sc4.00-e4-1.50, a-knap-r9-sc4.00-e4-1.60, a-knap-r9-sc4.00-e4-1.80); families fitted ['plain', 'plain_head', 'ours_lo', 'ours_mid', 'ours_hi', 'ours_head']; embedding levels ['bf16', 'e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8']
+/data/work/sat/kfit2.py:191: RuntimeWarning: overflow encountered in exp
+  if SAT: CSAT = np.exp(x[i]); i += 1
+/data/work/sat/kfit2.py:206: RuntimeWarning: invalid value encountered in multiply
+  if SAT: p = CSAT * -np.expm1(-p / CSAT)
+/data/work/sat/kfit2.py:206: RuntimeWarning: divide by zero encountered in divide
+  if SAT: p = CSAT * -np.expm1(-p / CSAT)
+--
+model kappa=0 q=fit: in-sample log-RMSE 0.114  CV log-RMSE 0.170  pair ranking (CV) 612/778  q 1.098  kappa@[np.int64(0), np.int64(64)] 0 0  fam plain 0.96 plain_head 4.18 ours_lo 1.08 ours_mid 1.35 ours_hi 2.61 ours_head 1.41  slice offsets f2 0.868 f3 0.963  sat C 2.454e+119
+  whole mixes 0-1.6 bpw: n 13  CV log(pred/meas) mean -0.276  rms 0.312
+  whole mixes 1.6-2.6 bpw: n 80  CV log(pred/meas) mean -0.025  rms 0.131
+  whole mixes 2.6-3.6 bpw: n 66  CV log(pred/meas) mean +0.059  rms 0.090
+  whole mixes 3.6-5.1 bpw: n 82  CV log(pred/meas) mean -0.002  rms 0.089
+  whole mixes 5.1-20 bpw: n 116  CV log(pred/meas) mean -0.015  rms 0.332

@@ -2,6 +2,25 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 11:40 CST · — · Saturation-aware allocation check (ModelOpt / arXiv 2607.12266) on the V2 knapsack data
+- **Status:** done · **Machine:** Thor (`search/kfit2.py` `KFIT_SAT=1`: KLD = C (1 − exp(−P/C)), C fitted)
+- **Pass rule (written with the BACKLOG row):** saturation matters if it fits measured mix KLD better than the
+  additive sum, esp. at 1.75–2.5 bpw.
+- **Data:** the V2 fit measurements whose mixes are still on disk (671 of 1,297; the r9 / other mix files live on
+  iceman only), same set for every variant; CV = 10-fold.
+- **Result** (whole mixes, CV log(pred / measured) mean / rms):
+  | model | < 1.6 bpw (13) | 1.6–2.6 (80) | 2.6–3.6 (66) | 3.6–5.1 (82) | pair ranking |
+  |---|---|---|---|---|---|
+  | additive (κ 0) | −0.28 / 0.32 | −0.025 / 0.136 | +0.060 / 0.092 | −0.003 / 0.094 | 607 / 778 |
+  | additive + saturation | −0.28 / 0.31 | −0.025 / 0.131 | +0.059 / 0.090 | −0.002 / 0.089 | 612 / 778 (C → ∞) |
+  | kfit2 (κ 3 knots, amplification) | +0.07 / 0.20 | +0.003 / 0.098 | +0.026 / 0.079 | −0.005 / 0.079 | 627 / 778 |
+  | kfit2 + saturation | +0.07 / 0.20 | +0.011 / 0.100 | +0.021 / 0.079 | −0.008 / 0.080 | 628 / 778 (C 1.8) |
+- **Reading:** **null, and the opposite sign.** On this dense 27B our errors compound (the additive sum *under*-predicts
+  the low sizes by ~25%; kfit2's downstream amplification, κ ≈ 38 at layer 0, fixes that); a fitted saturation
+  ceiling goes to infinity (additive) or to C ≈ 1.8, far above every operating point (no effect). Their gain was on
+  MoE models at their whole-model damage ceiling. Not for V2 or V3; knap4 keeps kfit2's model.
+- **Files:** `data/knap/sat/*.txt`
+
 ### 2026-11-03 10:30 CST · — · Literature: NVIDIA Model Optimizer (user pointer)
 - **Status:** done (reading) · **Notes:** `docs/research/modelopt.md`
 - **Reading:** their AutoQuantize sensitivity is our Σdy² estimator (used for allocation only); saturation-aware
