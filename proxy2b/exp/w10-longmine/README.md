@@ -79,3 +79,6 @@ bash /root/w10-longmine/run-iceman.sh      # CPU only (CUDA_VISIBLE_DEVICES=, ni
   odd row count are listed UNRESOLVED.
 
 No patches.
+
+## Runtime cost (user rule, 2026-11-03)
+n/a (analysis).

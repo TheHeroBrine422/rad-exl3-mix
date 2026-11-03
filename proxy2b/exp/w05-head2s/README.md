@@ -118,3 +118,6 @@ Files:
   the tensor it overwrites.
 - `src/headpred.py`: the predictor and emulation.
 - `src/headarms.py`, `src/judge.py`.
+
+## Runtime cost (user rule, 2026-11-03)
+none (head quantizer objective).

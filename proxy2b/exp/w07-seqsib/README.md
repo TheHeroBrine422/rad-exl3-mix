@@ -82,3 +82,6 @@ proxy2b/exp/w07-seqsib/run.sh     # 4070. sym + controls need no patch; asym nee
 - `run.sh`. It uses `../w07-denoise/moments.py`, `mkdenoise.py` and `summ.py`; their self-tests cover the sib mode
   (bit-exact no-op with own weights, independent recomputation of the down input) and the ctrl verdict rule.
 - `../w07-denoise/selftest/dryrun.out`: this run.sh end to end with stubs (gate, pick, ctrl verdict, idempotence).
+
+## Runtime cost (user rule, 2026-11-03)
+none (quantizer target / metric; at 27B it needs a layer-streamed calibration pass, a quant-time cost only).

@@ -76,3 +76,6 @@ The regression check passes: the patched knap4 without `KN_HEADCURVE` equals the
 `knap4-headcurve.patch`: `KN_HEADCURVE=FILE` adds head options `ours-hcK<B>` = `ours-K<lo>` bytes + (B − lo)·V·H/8 + 1 MiB,
 with error × (KL_B / KL_u<lo>)^(1/q). Containers are `hdslab-hcK<B>.rad`. It is a no-op when unset (`results/knap-prelim.txt`:
 "REGRESSION OK").
+
+## Runtime cost (user rule, 2026-11-03)
+D (row-slab head: several head GEMMs + gather; the head runs on every decoded token, in prefill only on the last position, so `gemm_us` is unaffected).

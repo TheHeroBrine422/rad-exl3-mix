@@ -88,3 +88,6 @@ proxy2b/exp/w01-genmask/run.sh       # on the 4070; after genmask.patch is merge
 - `selftest/masked_ce.py` → `masked_ce.out` (**ALL PASS**). The masked, chunked, checkpointed CE has exactly the
   gradient of the CE over the scored positions alone, including an empty mask.
 - `selftest/summ_synth.py` → `summ_synth.out`: a dry run of `summ.py` on synthetic scores.
+
+## Runtime cost (user rule, 2026-11-03)
+none (changes the H_out collection only).

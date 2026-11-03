@@ -37,3 +37,6 @@ Pass rules (written 2026-11-02 ~16:30 CST, before data):
   tensors ≤ 1; #78 holds if cubic ≤ 0.99 at K3 (both means). Output `cd-colo-rs1.jsonl` (the JSON has no row-seed
   field: never mix it with the seed-0 files).
 - Both stay in-sample (same H searches and scores).
+
+## Runtime cost (user rule, 2026-11-03)
+CD (#77): none (codes only; 2–3x quant time). Cubic codebook (#78, i8c): P+D? (2 FMAs per weight in the decode; may hide in memory-bound decode, maybe not in the int8 prefill tile).

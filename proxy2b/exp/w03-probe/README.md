@@ -82,3 +82,6 @@ them. **≈ 1 h 20 min.**
   depend on depth. It would fail only if a handful of positions dominated a sequence's G_b.
 - **Recommendation:** A10 rejected on CPU evidence. If the lead wants the confirmation on all 150 linears, run
   `run.sh`: it stops after P1 (~30 min of GPU) unless P1 passes.
+
+## Runtime cost (user rule, 2026-11-03)
+none (H_out collector variant).

@@ -146,3 +146,6 @@ per-head norms, so they are a built-in near-null control.
 - Not covered:
   - B1 on the 27B by container edit needs `--save-wq` output, or a trellis decode of the shards (not written).
   - The patch covers fresh quants.
+
+## Runtime cost (user rule, 2026-11-03)
+none: refits the per-row / per-column scales the format already carries (svh / suh); codes unchanged.

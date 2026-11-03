@@ -159,6 +159,9 @@ The 0.8B / 2B proxies and CPU proxy-error tests decide what is worth a 27B run; 
 item below needs a paired 27B test with its own pass rule (and the 27B quant-noise floor, ranked A7, measured once
 first). Keep this list current: add an item when a proxy test passes, strike it when the 27B test is logged.
 
+Runtime cost (INDEX legend): every row here is quantizer-only (none) except i8c (P+D?, timing after the HIP build)
+and A1 (P+D: an extra GEMM per MLP); those two also need a prefill and a decode timing before they ship.
+
 | proxy result | 27B test needed | depends on |
 |---|---|---|
 | Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 512 then 1,024 sequences (no more: #33-22 saw nothing past 1,024; #33-23 checks 512), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |

@@ -149,3 +149,6 @@ bident at seed 0.
 - **E1 (w05-lowhead) / #34:** the slab-head plans need recomputing after the rowerr fix (w04 says the same).
 - **F2** (kfit2 on a two-sided proxy for all options) gets cheaper: `--hprice` on the Phase-B ladder logs e2 for
   every new level.
+
+## Runtime cost (user rule, 2026-11-03)
+none (allocation pricing; picks among priced options).

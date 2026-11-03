@@ -43,6 +43,7 @@ in TODO and the git log. If a chore turns up something worth knowing, log that f
 - **Setup:** model, data slice and pool, arms, seeds
 - **Result:** numbers, paired with SE / z or a bootstrap interval
 - **Decision / next:** ...
+- **Runtime:** none | ~0 | P | D | P+D, and how it was or will be priced (INDEX legend)
 - **Files:** results, logs
 ```
 
@@ -50,6 +51,11 @@ Short entries are fine: drop the lines that do not apply, but keep the header li
 (date, time with zone, number, title). Times in CST (UTC−6). Commits as short hashes.
 
 ## Rules (from `/workspace/AGENTS.md`, repeated because every entry depends on them)
+
+- **Runtime cost on every experiment** (user, 2026-11-03): each INDEX row has a `runtime` column and each LOG entry
+  that starts or concludes an experiment a **Runtime** line: does the result change prefill compute (`gemm_us`,
+  scored), decode (not scored, but the user cares and may run decode tests), both, or neither (quantizer-only).
+  Anything that adds work at inference is judged on quality *and* its measured cost; say how it will be timed.
 
 - **Pass rules are written before the run**, in the entry that starts it; changes are recorded before any data is
   used ("amendment 1, written ...").

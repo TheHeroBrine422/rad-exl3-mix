@@ -99,3 +99,6 @@ iceman is otherwise idle.
 - **V3 stream design (v3.md §5):** the measured-vs-model noise split (σ ≈ 0.039, τ ≈ 0.034 per fit-slice eval vs
   held-out) is the number to set the shrinkage by. The streaming "new best" rule should use the posterior, not
   the raw measurement.
+
+## Runtime cost (user rule, 2026-11-03)
+none (search procedure).

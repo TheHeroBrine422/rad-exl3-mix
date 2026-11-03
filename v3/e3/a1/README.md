@@ -26,3 +26,6 @@ the coded error still drops 3–9%). So part of the drop may come from coding *a
   at K2.5 (mean over layers); else A1 is mostly an artifact of the residual coding and goes no further.
 - **#81-03 (only if #81-02 clears):** the other 48 layers at K2.5 (D / ug / u) → the whole-model parameter-weighted
   ratio, the number a GPU test would be priced on.
+
+## Runtime cost (user rule, 2026-11-03)
+**P+D**: online prediction adds a transposed GEMM over the up weights (+ one over gate for `ug`) in every MLP: roughly +1/3 of MLP work in prefill (`gemm_us`) and, in decode, re-reading up_proj's bytes (~+1/3 of MLP bandwidth). The VRAM target rules out expanding at load time. A pass here buys a kernel timing, then a comparison against spending the same bytes / FLOPs on higher K.

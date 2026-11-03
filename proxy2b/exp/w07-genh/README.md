@@ -84,3 +84,6 @@ proxy2b/exp/w07-genh/run.sh     # 4070, no patch needed. Results /data/yb/w07-ge
   - `--exclude` drops a golden's documents.
   - mkgenh: w0 = 1 gives calib, w0 = 0 gives calib − H_ng; a non-positive diagonal is refused.
 - `../w07-denoise/selftest/dryrun.out`: this run.sh end to end with stubs.
+
+## Runtime cost (user rule, 2026-11-03)
+none (input-Hessian weighting).

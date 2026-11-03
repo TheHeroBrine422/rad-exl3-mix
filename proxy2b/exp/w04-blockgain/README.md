@@ -146,3 +146,6 @@ To compare tensors on the Fisher's scale, it is divided by `tr(H_in)`: `h_c` alr
 | `selftest*.py` / `.txt` | CPU self-tests (PASS) |
 
 `data/*.npz` are regenerable (~118 MB; only `perms08.npz`, 0.5 MB, is needed by `run.sh`).
+
+## Runtime cost (user rule, 2026-11-03)
+A6: none (predictor). D6 row-slab: P+D (per-slab K inside a tensor needs kernel support). B6 MLP permutations: none if folded into the weights at quant time.

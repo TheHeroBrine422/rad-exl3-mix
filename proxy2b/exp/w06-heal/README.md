@@ -211,3 +211,6 @@ Not testable on the CPU: fla / causal_conv1d kernels (colo uses the torch refere
   pick.
 - **Single training seed.** H1b compares two trained arms with one training-data seed each. With fixed codes the noise
   is the optimisation's, which is smaller than rounding noise but not zero. A diff near 0 is reported as such.
+
+## Runtime cost (user rule, 2026-11-03)
+none if folded: per-row c and per-column r fold into svh / suh, norm gains into the checkpoint norms (the fake-quant `wq` files here are for evaluation; verify the fold in a real pack).

@@ -26,3 +26,6 @@ search. Nothing here touches verify or public.
 - **full:** edy + asym + swj + α\* vs edy + asym: the scale refits stack on top if the 3-seed mean ≤ 0.98 and every
   seed < 1 (K3 and K2); also reported vs base (the whole fixed-code stack).
 - **heal1:** healing on edy + asym at seed 1: replicate of run.sh's heal step (same rule).
+
+## Runtime cost (user rule, 2026-11-03)
+none for every step (quantizer targets, Hessians, scale refits, healing folded into existing scales). Exception: `cub` (i8c) = P+D? (2 FMAs per weight in the codebook decode; time it after the HIP build).

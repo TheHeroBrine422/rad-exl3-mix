@@ -63,3 +63,6 @@ prompt segments. Expected head-KL change: a few % at most, ≤ 0.2% total.
   K3, and the gate says stop, as it must.
 
 No shared code is changed: headx.py is standalone; `headarms.py`, `judge.py` and `cpuq.py` live in `../w05-head2s/src`.
+
+## Runtime cost (user rule, 2026-11-03)
+none (head statistics).

@@ -2,6 +2,17 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 09:35 CST · #— · Rule: every experiment states its runtime cost (prefill / decode)
+- **Rule (user):** INDEX has a `runtime` column (legend in its header), LOG entries a **Runtime** line (template in
+  `README.md`), each experiment README a "Runtime cost" section; `/workspace/AGENTS.md` carries the rule. The user
+  cares about decode even though the board scores only prefill `gemm_us`, and may run decode tests himself.
+- **Current experiments:** quantizer-side, no runtime cost: H_out (#33 line, #82–#84), #85 scale refits, #86–#88,
+  #87 asym, #89 healing (if folded into svh / suh / norms: verify in a real pack), CD (#77), the knapsack work.
+  With a cost: **A1 (#81, P+D:** +1 transposed GEMM over up per MLP, ~+1/3 MLP work in prefill and ~+1/3 MLP bytes in
+  decode), **i8c (#78, P+D?:** 2 FMAs per weight in the codebook decode), **slab head (#34, D:** head GEMMs + gather on
+  every decoded token; prefill only at the last position), fractional K / qtf2 and A8 (priced in knap4's speed table).
+- **Caveat:** 0.8B KL runs use the f16 path; at 5–6 bpw A8's ~+0.00016 constant makes 27B relative gains smaller.
+
 ### 2026-11-03 09:10 CST · #81-02 #81-03 · A1 control passes; whole-model A1 run under a memory-aware scheduler
 - **Status:** #81-02 done (partial, 7 layers so far), #81-03 running · **Machine:** Thor + colo (`v3/e3/a1/a1sched.py`)
 - **#81-02 result:** permuted predictors give D's error exactly (ugperm / uperm ÷ D 0.999–1.001 on L2 / L10 / L30 / L50,

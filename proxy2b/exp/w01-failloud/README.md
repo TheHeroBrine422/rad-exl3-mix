@@ -50,3 +50,6 @@ Each of these turns a whole 27B night into a mixed or failed result that looks n
 
 **GPU time:** none. **Changes:** no KL effect. It protects the 27B diagonal night (#33-13) and every later `--hout`
 quant. ranked.md A8.
+
+## Runtime cost (user rule, 2026-11-03)
+n/a (tooling checks).

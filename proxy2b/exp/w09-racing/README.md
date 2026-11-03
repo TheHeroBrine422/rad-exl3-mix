@@ -155,3 +155,6 @@ reporting rule. Both are inside 0.80–0.95 on the 0.8B; the 27B slices (8k cap,
 - `aggsim-v2.txt`, `proxy08-race.txt`, `proxy08.jsonl`: results so far.
 - `run.sh`: the V2 replay (VM → iceman tar → colo). Needs iceman up.
 - No shared-code patches.
+
+## Runtime cost (user rule, 2026-11-03)
+n/a (eval / search statistics).

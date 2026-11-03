@@ -105,3 +105,6 @@ Not tested without a GPU: whether the 65k-token documents fit the 7.2 GB cap (th
 with the 32k fallback).
 
 No patches.
+
+## Runtime cost (user rule, 2026-11-03)
+none (evaluation of H_out quants at long positions).

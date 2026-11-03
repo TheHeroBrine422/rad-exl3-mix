@@ -98,3 +98,6 @@ carry (ranked.md B3 scope for the 27B requant). If G0 fires (gate/up worth < 1 s
 gate/up hooks, which is the saving A9 was after, without any approximation.
 `oracle40.txt` is from the first version of `a9oracle.py` (before the fullC column); the file as committed produces
 both tables.
+
+## Runtime cost (user rule, 2026-11-03)
+none (H_out estimator variant).

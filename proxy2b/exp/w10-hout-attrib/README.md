@@ -113,3 +113,6 @@ proxy2b/exp/w10-hout-attrib/run.sh        # 4070; waits for any running ourq / e
     0.0646 ± 0.0061 (K2).
 
 No patches.
+
+## Runtime cost (user rule, 2026-11-03)
+none (attribution of the H_out gain).

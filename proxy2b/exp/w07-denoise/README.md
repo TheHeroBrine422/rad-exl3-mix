@@ -139,3 +139,6 @@ proxy2b/exp/w07-denoise/run.sh     # 4070; after wpre.patch is merged. Results /
   - `selftest/dryrun.sh` → `dryrun.out`: all three w07 run.sh scripts end to end, twice, with the GPU programs stubbed
     (`selftest/stubs/`). Gates, picks, verdicts, and idempotence (the second pass re-runs nothing) all check out.
   - Measurements: `selftest/depth-profile.txt`, `selftest/fsub-vs-cv.txt`, `selftest/mkdenoise-real.txt`.
+
+## Runtime cost (user rule, 2026-11-03)
+none (quantizer target / metric).

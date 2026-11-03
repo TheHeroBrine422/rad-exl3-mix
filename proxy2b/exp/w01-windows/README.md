@@ -81,3 +81,6 @@ Drawn gen share relative to the corpus gen share, by category (≥ 1% of corpus 
 - The ranking of A4 rises from "0 to −1.5%, P 0.3" to a likely real but small effect: the composition is measurably
   off, and it also caps the dose.
 - Cite: ranked.md A4, A5 (dose), INDEX #33-13 / #33-17 / #33-18.
+
+## Runtime cost (user rule, 2026-11-03)
+n/a (analysis of collection windows).
