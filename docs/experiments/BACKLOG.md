@@ -181,3 +181,16 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 - [ ] **F2 · boundary diagonal affine repair** (closed form, 0.8B ~2 h). **F4 · exact last-layer output Hessian.**
 - Faraway's headroom audit: gate/up within ~0.1 bit of an ideal LDLQ + Gaussian coder; weights near-Gaussian; no
   cross-layer redundancy (kills cross-layer sharing / global-basis ideas). The rest of its list: the report.
+
+## Proxy negatives to reconsider at 27B (scale-dependent mechanisms)
+
+A 0.8B / 2B negative is final only if nothing about the idea depends on scale. Reconsider at 27B (or 9B) when the
+mechanism is one of: activation outliers / massive activations (grow with model size: A8 / int8-activation and
+rotation choices), depth (64 vs 24 layers: error propagation, sequential / output-aware quantization, healing),
+matrix size (5120 × 17408: estimation noise, dead units, VQ / lattice gains), the untied 27B head (0.8B is tied), or
+the near-lossless regime (0.8B at K3 has KL ~0.09, like the 27B near 2.0–2.25 bpw: high-bpw-only effects are
+under-tested). Add a row when a proxy test fails for a reason on this list.
+
+| proxy negative | scale mechanism | 27B check |
+|---|---|---|
+| (none yet) | | |
