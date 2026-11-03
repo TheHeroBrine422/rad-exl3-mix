@@ -136,15 +136,16 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 81-03 | A1 on the other 48 layers (K2.5, K2, K3), then all 64 at K4 / K1.5 | weight codes | P+D | running | 11-03 | 11-03 | running: A1 gain on every layer at K2.5 / K2 / K3, then K4 / K1.5 (scheduler `v3/e3/a1/a1sched.py`) |
 | 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | none | done | 11-02 | 11-03 | gdn_in 39%, mlp_in 44%, attn_in 13%, writers 3%; additive; holds at K4/K5 |
 | 83 | H_out collection loss on scored positions only (gen mask), 0.8B (w01) | quantizer | none | done | 11-02 | 11-03 | K3 0.971, K2 0.950, every seed; use for 27B |
-| 83-02 | Gen-masked loss for the Σdy² diagonal | quantizer | none | running | 11-03 | 11-03 | d1103 |
+| 83-02 | Gen-masked loss for the Σdy² diagonal | quantizer | none | done | 11-03 | 11-03 | K3 0.979 (every seed), K2 0.96: use for the 27B collection |
 | 84 | Gate/up share of the H_out gain (noGU; A9 failed its CPU gate), 0.8B (w03) | quantizer | none | done | 11-02 | 11-03 | A9 cos gate fail; gate/up share K3 small |
 | 85 | Fixed-code scale refits (B1 H_out-weighted, C9 per-family α, C10), 0.8B (w02) | quantizer | none | done | 11-02 | 11-03 | C9 K3 0.973 K2 0.911; C10 K3 0.969 K2 0.914; overlap untested |
 | 85-02 | Scale refits: B1 full, C9 on C10, both on edy | quantizer | none | running | 11-03 | 11-03 | d1103 |
 | 86 | Gen-weighted input Hessians (C13), 0.8B (w07) | quantizer | none | inconclusive | 11-02 | 11-03 | K3 0.998 (no effect); K2 0.976, every seed z −4…−5 but under its 0.97 bar: more K2 seeds would settle it |
 | 87 | Sibling-sequential Hessians for down / out_proj / o_proj (C6), 0.8B (w07) | quantizer | none | done | 11-02 | 11-03 | asym K3 0.857, K2 0.824, every seed; stacking with H_out next (large) |
-| 87-02 | #87 asym stacked on edy H_out, 0.8B | quantizer | none | running | 11-03 | 11-03 | running (d1103): K3 0.876 / 0.880, K2 0.840 vs edy so far |
-| 87-03 | ρ screen for #87 asym (fit slice) | quantizer | none | running | 11-03 | 11-03 | d1103 |
+| 87-02 | #87 asym stacked on edy H_out, 0.8B | quantizer | none | done | 11-03 | 11-03 | K3 0.880, K2 0.845 vs edy (3 seeds, every seed): stacks on H_out |
+| 87-03 | ρ screen for #87 asym (fit slice) | quantizer | none | done | 11-03 | 11-03 | fit screen: ρ 0 best (K3 0.947, K2 0.911 vs ρ 0.5); → #87-05 |
 | 87-04 | #87 asym at K4 / K5 | quantizer | none | running | 11-03 | 11-03 | d1103 |
+| 87-05 | ρ 0 (full clean-output target) on search, plain and on edy; ρ −0.25 screen | quantizer | none | planned | 11-03 | 11-03 | d1103 run3 |
 | 88 | Activation-denoising LDLQ target (C1, level-matched noise), 0.8B (w07) | quantizer | none | negative | 11-02 | 11-03 | K3 1.031, K2 1.10 |
 | 88-02 | Asym target for all 150 tensors, own-seed quantized upstream (one-shot GPTAQ-like) | quantizer | none | running | 11-03 | 11-03 | d1103 |
 | 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | none | done | 11-02 | 11-03 | K2 all-layer 0.62, K3 0.83; S27 needs the user |

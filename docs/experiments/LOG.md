@@ -3,6 +3,20 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-03 10:15 CST · #87-02 #87-03 #83-02 #87-05 · Sibling asym stacks on H_out; ρ 0 leads the screen; gen-mask holds for Σdy²
+- **Status:** #87-02 done, #87-03 done (screen), #83-02 done (K2 seed 2 pending), #87-05 planned · **Machine:** 4070 (d1103)
+- **#87-02** (edy + asym vs edy, search, seeds 0–2): K3 0.876 / 0.880 / 0.886 (mean log −0.127 ± 0.003), K2 0.850 /
+  0.840 / 0.843; vs asym alone K3 0.937, K2 0.961, every seed. **Pass**: the two stack (H_out adds ~6% / 4% on top).
+- **#87-03** (ρ screen, fit, seed 0, vs ρ 0.5): ρ 0 K3 0.947 / K2 0.911; ρ 0.25 0.954 / 0.949; ρ 0.75 1.062 / 1.073.
+  Monotone: the full clean-output target is best. → #87-05 (run3.sh): ρ 0 on search × 3 seeds, plain and on edy;
+  ρ −0.25 screen. Rule in `proxy2b/exp/d1103/README.md` "run3".
+- **#83-02** (gen-masked Σdy² vs edy): K3 0.987 / 0.970 / 0.981 (mean 0.979, every seed), K2 0.964 / 0.955.
+  **Pass** (K3 ≤ 0.985 every seed; K2 ≤ 1.00) → the 27B collection runs with `YAQA_GENMASK=1` (night27.sh, db8a3f1).
+- **27B prep:** night27.sh now gen-masked, stops at 1,024; swap-test rule `v3/yaqa/H27.md` (written before data).
+  Workers started 15:58 UTC: w11 reviews the #87 / #89 / #85 code for leakage and bugs; w12 builds the 27B #87
+  pipeline (`v3/sib27/`).
+- **Runtime:** none (all quantizer-side).
+
 ### 2026-11-03 09:35 CST · #— · Rule: every experiment states its runtime cost (prefill / decode)
 - **Rule (user):** INDEX has a `runtime` column (legend in its header), LOG entries a **Runtime** line (template in
   `README.md`), each experiment README a "Runtime cost" section; `/workspace/AGENTS.md` carries the rule. The user
