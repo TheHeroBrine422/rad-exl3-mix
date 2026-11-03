@@ -5,7 +5,7 @@ Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in
 ### 2026-11-03 09:35 CST · #— · Rule: every experiment states its runtime cost (prefill / decode)
 - **Rule (user):** INDEX has a `runtime` column (legend in its header), LOG entries a **Runtime** line (template in
   `README.md`), each experiment README a "Runtime cost" section; `/workspace/AGENTS.md` carries the rule. The user
-  cares about decode even though the board scores only prefill `gemm_us`, and may run decode tests himself.
+  cares about decode even though the board scores only prefill `gemm_us`, and may run decode tests themselves.
 - **Current experiments:** quantizer-side, no runtime cost: H_out (#33 line, #82–#84), #85 scale refits, #86–#88,
   #87 asym, #89 healing (if folded into svh / suh / norms: verify in a real pack), CD (#77), the knapsack work.
   With a cost: **A1 (#81, P+D:** +1 transposed GEMM over up per MLP, ~+1/3 MLP work in prefill and ~+1/3 MLP bytes in
