@@ -93,6 +93,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-19 | H_out on own agentic traces (pisess) vs qad windows, 0.8B | quantizer | done | 11-02 | pisess worse (K3 +3.5%), mix no better → collection stays on qad |
 | 33-20 | Sketch A refined weights Σ(xᵀH_in x)dy², 0.8B, 3 seeds | quantizer | done | 11-02 | as good as Sketch B, worse than Σdy² (K3 +2.0%) → Σdy² stays primary |
 | 33-21 | Short qad documents in the collection (YAQA_SHORT), 0.8B, 3 seeds | quantizer | done | 11-02 | neutral; 640 vs 1,024 long windows +1.5% → 27B collects long windows only, to 2,048 |
+| 33-22 | Σdy² dose past 1,024 and repeated windows (fresh labels), 0.8B | quantizer | running | 11-02 | amendment 16; decides how far the 27B collection should run |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
@@ -141,5 +142,14 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | running | 11-02 | amendment 15 |
 | 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | running | 11-02 | `v3/e3/cd/README.md` |
 | 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | running | 11-02 | `v3/e3/cd/README.md` |
+| 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | running | 11-02 | `v3/e3/a1/README.md`; Thor + colo |
+| 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | running | 11-02 | `proxy2b/exp/w10-hout-attrib/` |
+| 83 | H_out collection loss on scored positions only (gen mask), 0.8B (w01) | quantizer | running | 11-02 | `proxy2b/exp/w01-genmask/` |
+| 84 | Gate/up share of the H_out gain (noGU; A9 failed its CPU gate), 0.8B (w03) | quantizer | running | 11-02 | `proxy2b/exp/w03-swiglu-diag/` |
+| 85 | Fixed-code scale refits (B1 H_out-weighted, C9 per-family α, C10), 0.8B (w02) | quantizer | running | 11-02 | `proxy2b/exp/w02-fixedscale/` |
+| 86 | Gen-weighted input Hessians (C13), 0.8B (w07) | quantizer | running | 11-02 | `proxy2b/exp/w07-genh/` |
+| 87 | Sibling-sequential Hessians for down / out_proj / o_proj (C6), 0.8B (w07) | quantizer | running | 11-02 | `proxy2b/exp/w07-seqsib/` |
+| 88 | Activation-denoising LDLQ target (C1, level-matched noise), 0.8B (w07) | quantizer | running | 11-02 | `proxy2b/exp/w07-denoise/` |
+| 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | running | 11-02 | `proxy2b/exp/w06-heal/` |
 
 Next free number: **79**.

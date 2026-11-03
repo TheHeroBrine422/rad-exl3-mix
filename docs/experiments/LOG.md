@@ -2,6 +2,21 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 20:35 CST · #33-22 #81–#89 · Night queue (no iceman): worker experiments on the 4070, A1 on the CPUs
+- **Status:** planned → running · **Machine:** 4070 (`proxy2b/night4070.sh`, one after another), Thor + colo (`v3/e3/a1/a1run.sh`)
+- **Pass rules:** each folder's README (the workers' draft rules, committed unchanged before any data, f443a64 /
+  146a4f3); #33-22 `proxy2b/YAQA08.md` amendment 16; #81 `v3/e3/a1/README.md`.
+- **4070 order:** #82 w10-hout-attrib (where the H_out gain comes from: family / depth third, K4 / K5), #83
+  w01-genmask (H_out loss on scored positions only; patch merged into collect.py by hand: the SHORT edits had moved
+  it), #33-22 (dose past 1,024, repeated windows), #84 w03 (gate/up share of the gain, noGU), #85 w02 (fixed-code
+  scale refits B1 / C9 / C10), #86 w07-genh (gen-weighted H_in, C13), #87 w07-seqsib (sibling-sequential Hessians,
+  C6), #88 w07-denoise (activation-denoising target, C1; `ourq --wpre` merged), #89 w06-heal (frozen-code scale
+  healing H1 / H4). Estimated ~14–17 h in all.
+- **CPUs:** #81 faraway A1 (down_proj as a residual after predicting from decoded up / gate), 16 layers × K 2 / 2.5 /
+  3, after #79 / #80 finish; ~8–10 h.
+- **Files:** results land in `/data/yb/<exp>/result.txt` (4070) and `/data/work/a1/a1.jsonl` (CPUs); copied into
+  `data/` with each experiment's result entry.
+
 ### 2026-11-02 19:55 CST · #78 · Cubic int8 codebook (i8c) adopted (user: a win)
 - **Status:** running → done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` #78 section, amendment 15
 - **Result:** with seeds 4–5 (#78-02, which had already started): K3 0.983× (6 seeds, z −3.7), K2 0.973× (5 seeds,
