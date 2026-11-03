@@ -1,7 +1,7 @@
 # NVIDIA Model Optimizer: overlap with our work (read 2026-11-03)
 
 Source: the ModelOpt docs site (<https://nvidia.github.io/Model-Optimizer/>), its eight 2026 announcement posts, and
-the repo at `472ecb3` (2026-11-03; cloned to `/tmp/ext/mo`, not vendored). ModelOpt targets NVFP4 / FP8 / GGML-IQ
+the repo at `472ecb3` (2026-11-03; clone in `/workspace/references/model-optimizer`, outside the repo). ModelOpt targets NVFP4 / FP8 / GGML-IQ
 formats on NVIDIA hardware, not trellis codes, but its quantizer-side and allocation methods are ours in another
 format. They also publish **`nvidia/Qwen3.8-27B-NVFP4`, our exact model**.
 
