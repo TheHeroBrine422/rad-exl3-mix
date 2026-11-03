@@ -172,7 +172,7 @@ prefill.
 
 | proxy result | 27B test needed | depends on |
 |---|---|---|
-| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 512 then 1,024 sequences (no more: #33-22 saw nothing past 1,024; #33-23 checks 512), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
+| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 2,048 sequences (user, 11-03: the 27B may converge differently; #33-22 saw nothing past 1,024 on the 0.8B, so the 27B's own snapshots decide), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
 | Estimator choice (dy vs Sketch B vs xw), 512 seqs (#33-18) | collect all three in one 27B pass, compare in the swap test | same run |
 | Cubic int8 codebook i8c (#78: 0.8B KL K3 −1.7%, K2 −2.7%, K4 −2.3%; adopted). **But on top of H_out: no gain at K3 (#78-03, 1.000 / 1.015 / 1.005); #78-04 adds seeds 3–5** | requant 2–3 trunk levels with i8c **with and without H_out**, swap test | iceman; HIP build of the i8c decode; #78-04 |
 | Tile coordinate descent (#77: CPU proxy −0.8%, every tensor; replicates on other rows #80, stacks on cubic #79) | only if judged worth its 2–3× quant time | a GPU version + a seed-paired KL test |
