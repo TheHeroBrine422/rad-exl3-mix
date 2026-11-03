@@ -2,6 +2,12 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 09:25 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (iceman still down)
+- **Status:** planned → running · **Machine:** 4070 (`proxy2b/exp/d1103/run.sh`, ~10–12 h), Thor + colo (`v3/e3/a1/a1ctl.sh`, ~5 h), colo (E10 census, minutes)
+- **Pass rules:** `proxy2b/exp/d1103/README.md`, `v3/e3/a1/README.md` (#81-02 / #81-03), all written before data.
+- **4070 order:** #87 sibling asym stacked on edy H_out; ρ screen; gen-masked Σdy² (the 27B estimator); scale refits (B1 full, C9 on C10, both on edy); asym for all 150 tensors with own-seed quantized upstream; asym at K4 / K5; healing on the edy + asym stack; i8c + edy seeds 3–5; Σdy² 512 vs 1,024.
+- **CPUs:** #81-02 permuted-predictor control for A1 (the 4.5% energy vs 17% error gap); #81-03 the other 48 layers at K2.5 only if the control clears.
+
 ### 2026-11-03 08:40 CST · #33-22 #78-03 #80–#89 · Night queue results (0.8B proxy, 4070; A1 and #80 on CPUs)
 - **Status:** running → done (all steps rc 0) · **Pass rules:** each folder's README, YAQA08.md amendments 15/16, `v3/e3/a1/README.md`, `v3/e3/cd/README.md`
 - **#78-03 (i8c on top of edy H_out), K3:** ratio 1.000 / 1.015 / 1.005 (seeds 0–2); K2 1.003 / 0.973 / 0.996. **Does not stack at K3**: the codebook's −1.7% (on plain H_in) vanishes under H_out. i8c adoption needs the 27B check to include an H_out arm.

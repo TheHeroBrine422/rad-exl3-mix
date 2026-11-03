@@ -17,3 +17,12 @@ Pass rules (2026-11-02 ~20:25 CST, written before data):
   +1–2 GEMMs in the MLP); the gain must then be weighed against that speed cost.
 - In-sample caveat as #77 (the same H fits a, b only through D itself, so not much); a, b side info not counted
   (0.006 bpw).
+
+## #81-02 / #81-03 (2026-11-03 ~9:20 AM CST, written before data)
+Result of #81: ug/D 0.83, but the predicted share of D's H-weighted energy is only ~4.5% (negative on L54/58/62, where
+the coded error still drops 3–9%). So part of the drop may come from coding *any* residual, not from the prediction.
+- **#81-02 control:** arms `ugperm` / `uperm` = the same fit with each neuron's predictors taken from a random other
+  neuron (fixed permutation), K2.5 / K3, the 16 layers. **The reduction is real** if (1 − ugperm/D) ≤ 0.5 × (1 − ug/D)
+  at K2.5 (mean over layers); else A1 is mostly an artifact of the residual coding and goes no further.
+- **#81-03 (only if #81-02 clears):** the other 48 layers at K2.5 (D / ug / u) → the whole-model parameter-weighted
+  ratio, the number a GPU test would be priced on.

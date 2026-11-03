@@ -13,6 +13,9 @@ neuron's down column from its decoded up and gate rows (docs/ideas/2026-11-02-fa
                                               over all 5120 outputs, from the decoded predictors at the same K)
                                           u   R = D - U_hat^T diag(a)   (up only: the cheaper kernel variant, A2)
                                           ugtrue  as ug with the unquantized up / gate (oracle; checks the faraway numbers)
+                                          ugperm / uperm  as ug / u with the predictor rows of a random other neuron
+                                              (control, #81-02: a real prediction must beat it; an artifact of coding a
+                                              residual at all would not)
                                         quantized like trellis2 (LDLQ, i8c, H = down's calib input Hessian). Reported
                                         rel_D = tr(dR H dR^T) / tr(D H D^T) on the sampled rows (error relative to D's
                                         energy for every arm, so arms compare directly), plus the predictable share.
@@ -92,7 +95,9 @@ def down(layer, K, arm, outdir, out_path):
             GU = torch.from_numpy(np.concatenate([np.load(p) for p in parts], 0)).double()
         assert GU.shape == (2 * I, N), GU.shape
         G, U = GU[:I], GU[I:]                                       # decoded gate / up rows [I, N]
-        P = [U] if arm == "u" else [U, G]
+        if arm.endswith("perm"):
+            pm = torch.randperm(I, generator=torch.Generator().manual_seed(12345)); G, U = G[pm], U[pm]
+        P = [U] if arm in ("u", "uperm") else [U, G]
         # per neuron j: D[:, j] ~ sum_p c_pj P_p[j, :]  (least squares over the N outputs)
         X = torch.stack(P, 2)                                       # [I, N, np]
         A = torch.einsum("jnp,jnq->jpq", X, X) + 1e-12 * torch.eye(len(P), dtype=X.dtype)
