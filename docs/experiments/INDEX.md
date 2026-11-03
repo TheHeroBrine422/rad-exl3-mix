@@ -145,7 +145,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 77 | Tile coordinate descent after LDLQ (ranked C2), CPU proxy | quantizer | none | done | 11-02 | 16/16: −0.7% at K2.5, every tensor better (real, small); replicate #80, stacking #79, then GPU version + KL test? |
 | 78 | Gaussianized mul1 codebooks (ranked D3): CPU proxy, then 0.8B KL (`i8c`) | weight codes | P+D? | done | 11-02 | **adopted** (user): K3 −1.7%, K2 −2.7%, K4 −2.3%; 27B check at the trunk requant |
 | 78-02 | i8c confirmation: seeds 4–5 at K2 / K3 | weight codes | P+D? | done | 11-02 | K3 z −3.7 (6 seeds), K2 z −2.5 (5); user called the win before it |
-| 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | P+D? | null | 11-03 | K3 1.000/1.015/1.005: no gain on top of H_out; K2 mixed |
+| 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | P+D? | inconclusive | 11-03 | K3 1.000/1.015/1.005: no gain on top of H_out; K2 mixed; seeds 3–5 in #78-04 |
 | 78-04 | i8c + edy vs edy, seeds 3–5 | weight codes | P+D? | running | 11-03 | d1103 |
 | 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | none (CD) · P+D? (i8c) | done | 11-02 | stacks: cd3/ldlq 0.992 at K2.5 and K3 (16/16); combined vs mul1 −2.1% / −2.6% |
 | 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | none (CD) · P+D? (i8c) | done | 11-03 | cd3 0.993, cubic 0.989/0.985, 16/16; `v3/e3/cd/README.md` |
@@ -158,7 +158,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 84 | Gate/up share of the H_out gain (noGU; A9 failed its CPU gate), 0.8B (w03) | quantizer | none | done | 11-03 | A9 cos gate fail; gate/up share K3 small |
 | 85 | Fixed-code scale refits (B1 H_out-weighted, C9 per-family α, C10), 0.8B (w02) | quantizer | none | done | 11-03 | C9 K3 0.973 K2 0.911; C10 K3 0.969 K2 0.914; overlap untested |
 | 85-02 | Scale refits: B1 full, C9 on C10, both on edy | quantizer | none | running | 11-03 | d1103 |
-| 86 | Gen-weighted input Hessians (C13), 0.8B (w07) | quantizer | none | null | 11-03 | K3 0.998, K2 0.976 (inconclusive: K2 small but below its bar) |
+| 86 | Gen-weighted input Hessians (C13), 0.8B (w07) | quantizer | none | inconclusive | 11-03 | K3 0.998 (no effect); K2 0.976, every seed z −4…−5 but under its 0.97 bar: more K2 seeds would settle it |
 | 87 | Sibling-sequential Hessians for down / out_proj / o_proj (C6), 0.8B (w07) | quantizer | none | done | 11-03 | asym K3 0.857, K2 0.824, every seed; stacking with H_out next (large) |
 | 87-02 | #87 asym stacked on edy H_out, 0.8B | quantizer | none | running | 11-03 | `proxy2b/exp/d1103/` |
 | 87-03 | ρ screen for #87 asym (fit slice) | quantizer | none | running | 11-03 | d1103 |

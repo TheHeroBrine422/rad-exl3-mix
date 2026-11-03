@@ -31,7 +31,10 @@ in TODO and the git log. If a chore turns up something worth knowing, log that f
 
 `idea` (in BACKLOG only) · `planned` (pass rule written, not started) · `running` · `blocked` (say on what) ·
 `done` (answered, positive or as expected) · `null` (no measurable effect) · `negative` (measured worse) ·
+`inconclusive` (measured, but not settled: under-powered, mixed across seeds or sizes, or a consistent effect below
+the worth-it bar; the verdict says what would settle it, and that follow-up is a queued part or a BACKLOG row) ·
 `dropped` (stopped without an answer: say why) · `superseded` (by #n).
+`null` claims no effect at the measured power; use `inconclusive` when a small effect could still be there (user, 2026-11-03).
 
 ## Log entry template
 
