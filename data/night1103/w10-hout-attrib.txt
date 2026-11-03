@@ -1,0 +1,115 @@
+depth:8-15: 50 of 150 linears -> /data/yb/w10-hout-attrib/sub/d1
+depth:0-7: 50 of 150 linears -> /data/yb/w10-hout-attrib/sub/d0
+depth:16-23: 50 of 150 linears -> /data/yb/w10-hout-attrib/sub/d2
+fam:writers: 48 of 150 linears -> /data/yb/w10-hout-attrib/sub/writers
+fam:mlp_in: 48 of 150 linears -> /data/yb/w10-hout-attrib/sub/mlp_in
+fam:gdn_in: 36 of 150 linears -> /data/yb/w10-hout-attrib/sub/gdn_in
+fam:attn_in: 18 of 150 linears -> /data/yb/w10-hout-attrib/sub/attn_in
+02:01:57 k3h-gdn_in: "kld": 0.09599103894567557, "top1": 0.8572357136408775
+02:02:01 idcheck k3h-gdn_in: {"arm": "/data/yb/w10-hout-attrib/q-k3h-gdn_in/wq", "outside_identical": 114, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 36, "subset_unchanged": [], "pass": true}
+02:03:31 k3h-attn_in: "kld": 0.09758830527973697, "top1": 0.8560922030634046
+02:03:32 idcheck k3h-attn_in: {"arm": "/data/yb/w10-hout-attrib/q-k3h-attn_in/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+02:05:09 k3h-mlp_in: "kld": 0.09533516597934742, "top1": 0.8584273720321387
+02:05:10 idcheck k3h-mlp_in: {"arm": "/data/yb/w10-hout-attrib/q-k3h-mlp_in/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:06:42 k3h-writers: "kld": 0.09856497915184174, "top1": 0.8552014685083206
+02:06:45 idcheck k3h-writers: {"arm": "/data/yb/w10-hout-attrib/q-k3h-writers/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:08:22 k3h-d0: "kld": 0.09671629529588, "top1": 0.8572296951641539
+02:08:25 idcheck k3h-d0: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d0/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:10:04 k3h-d1: "kld": 0.096257916796853, "top1": 0.8563931268995817
+02:10:05 idcheck k3h-d1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:11:42 k3h-d2: "kld": 0.09525025521318824, "top1": 0.8584394089855858
+02:11:43 idcheck k3h-d2: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d2/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:13:23 k2h-gdn_in: "kld": 0.5278505682243607, "top1": 0.6894526195419939
+02:13:27 idcheck k2h-gdn_in: {"arm": "/data/yb/w10-hout-attrib/q-k2h-gdn_in/wq", "outside_identical": 114, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 36, "subset_unchanged": [], "pass": true}
+02:14:58 k2h-attn_in: "kld": 0.5292164399769613, "top1": 0.6875387439439078
+02:15:01 idcheck k2h-attn_in: {"arm": "/data/yb/w10-hout-attrib/q-k2h-attn_in/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+02:16:40 k2h-mlp_in: "kld": 0.521966178124513, "top1": 0.6910715897806265
+02:16:42 idcheck k2h-mlp_in: {"arm": "/data/yb/w10-hout-attrib/q-k2h-mlp_in/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:18:19 k2h-writers: "kld": 0.5381481904432001, "top1": 0.6863771779362643
+02:18:22 idcheck k2h-writers: {"arm": "/data/yb/w10-hout-attrib/q-k2h-writers/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:20:00 k2h-d0: "kld": 0.5198514780379235, "top1": 0.6914206614305919
+02:20:01 idcheck k2h-d0: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d0/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:21:39 k2h-d1: "kld": 0.5276932659413835, "top1": 0.6880142036050676
+02:21:40 idcheck k2h-d1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:23:19 k2h-d2: "kld": 0.522591104099805, "top1": 0.6904336312479311
+02:23:22 idcheck k2h-d2: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d2/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:25:16 k4edy: "kld": 0.02184448238609731, "top1": 0.9299810417983209
+02:26:42 k5base: "kld": 0.006847332678020496, "top1": 0.9591405615238783
+02:28:39 k5edy: "kld": 0.006306131614655223, "top1": 0.9611808251331588
+02:30:18 k3h-gdn_in_s1: "kld": 0.09541361910434253, "top1": 0.8571454364900244
+02:30:21 idcheck k3h-gdn_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-gdn_in_s1/wq", "outside_identical": 114, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 36, "subset_unchanged": [], "pass": true}
+02:31:50 k3h-attn_in_s1: "kld": 0.0978656297249506, "top1": 0.8553158195660678
+02:31:51 idcheck k3h-attn_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-attn_in_s1/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+02:33:27 k3h-mlp_in_s1: "kld": 0.09508628208743651, "top1": 0.8586079263338449
+02:33:28 idcheck k3h-mlp_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-mlp_in_s1/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:35:03 k3h-writers_s1: "kld": 0.099165889035433, "top1": 0.8552977641358972
+02:35:06 idcheck k3h-writers_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-writers_s1/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:36:42 k3h-d0_s1: "kld": 0.0959467298976103, "top1": 0.8573199723150071
+02:36:45 idcheck k3h-d0_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d0_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:38:22 k3h-d1_s1: "kld": 0.09582841775116015, "top1": 0.8560560922030634
+02:38:25 idcheck k3h-d1_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d1_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:40:02 k3h-d2_s1: "kld": 0.09628232177525016, "top1": 0.8571935843038127
+02:40:03 idcheck k3h-d2_s1: {"arm": "/data/yb/w10-hout-attrib/q-k3h-d2_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:41:44 k2h-gdn_in_s1: "kld": 0.5334075763991695, "top1": 0.6847521892209082
+02:41:47 idcheck k2h-gdn_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-gdn_in_s1/wq", "outside_identical": 114, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 36, "subset_unchanged": [], "pass": true}
+02:43:18 k2h-attn_in_s1: "kld": 0.5365583013869588, "top1": 0.6849929282898498
+02:43:19 idcheck k2h-attn_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-attn_in_s1/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+02:44:58 k2h-mlp_in_s1: "kld": 0.5258621255062412, "top1": 0.6886100328006981
+02:45:00 idcheck k2h-mlp_in_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-mlp_in_s1/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:46:34 k2h-writers_s1: "kld": 0.5335171776265448, "top1": 0.6838193253287593
+02:46:37 idcheck k2h-writers_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-writers_s1/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+02:48:16 k2h-d0_s1: "kld": 0.5305865155976722, "top1": 0.6850410761036382
+02:48:19 idcheck k2h-d0_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d0_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:49:57 k2h-d1_s1: "kld": 0.5270280896170905, "top1": 0.6874845776533959
+02:50:00 idcheck k2h-d1_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d1_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:51:38 k2h-d2_s1: "kld": 0.5302297001160802, "top1": 0.6876591134783786
+02:51:40 idcheck k2h-d2_s1: {"arm": "/data/yb/w10-hout-attrib/q-k2h-d2_s1/wq", "outside_identical": 100, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 50, "subset_unchanged": [], "pass": true}
+02:53:35 k4edy_s1: "kld": 0.021879530840443518, "top1": 0.9285787367217357
+02:55:01 k5base_s1: "kld": 0.0068505005542356555, "top1": 0.9597965754867444
+02:56:59 k5edy_s1: "kld": 0.006401877555377664, "top1": 0.9605789774608047
+02:57:00 round 1, more seeds: 3 h-attn_in 2;2 h-attn_in 2;2 h-writers 2;
+02:58:29 k3h-attn_in_s2: "kld": 0.09671454558477598, "top1": 0.856519514910776
+02:58:33 idcheck k3h-attn_in_s2: {"arm": "/data/yb/w10-hout-attrib/q-k3h-attn_in_s2/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+03:00:04 k2h-attn_in_s2: "kld": 0.509451707173317, "top1": 0.6913123288495682
+03:00:07 idcheck k2h-attn_in_s2: {"arm": "/data/yb/w10-hout-attrib/q-k2h-attn_in_s2/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+03:01:41 k2h-writers_s2: "kld": 0.5173467554953837, "top1": 0.6875748548042491
+03:01:42 idcheck k2h-writers_s2: {"arm": "/data/yb/w10-hout-attrib/q-k2h-writers_s2/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+03:01:43 round 2, more seeds: 3 h-attn_in 3;2 h-writers 3;
+03:03:13 k3h-attn_in_s3: "kld": 0.0995693768116146, "top1": 0.8550931359272969
+03:03:16 idcheck k3h-attn_in_s3: {"arm": "/data/yb/w10-hout-attrib/q-k3h-attn_in_s3/wq", "outside_identical": 132, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 18, "subset_unchanged": [], "pass": true}
+03:04:50 k2h-writers_s3: "kld": 0.5323529022605399, "top1": 0.6869429147482772
+03:04:53 idcheck k2h-writers_s3: {"arm": "/data/yb/w10-hout-attrib/q-k2h-writers_s3/wq", "outside_identical": 102, "outside_changed": 0, "outside_worst_rel": 0.0, "first_changed": [], "subset_changed": 48, "subset_unchanged": [], "pass": true}
+arm         K  n     gain      se  share     ±
+full edy    3  3   0.0919  0.0060   1.00
+gdn_in      3  2   0.0355  0.0058   0.39  0.07
+attn_in     3  4   0.0123  0.0018   0.13  0.02
+mlp_in      3  2   0.0407  0.0041   0.44  0.05
+writers     3  2   0.0030  0.0002   0.03  0.00
+d0          3  2   0.0290  0.0068   0.32  0.08
+d1          3  2   0.0320  0.0050   0.35  0.06
+d2          3  2   0.0349  0.0026   0.38  0.04
+full edy    2  3   0.0646  0.0061   1.00
+gdn_in      2  2   0.0143  0.0000   0.22  0.02
+attn_in     2  3   0.0151  0.0052   0.23  0.08
+mlp_in      2  2   0.0270  0.0015   0.42  0.05
+writers     2  4   0.0096  0.0053   0.15  0.08
+d0          2  2   0.0246  0.0050   0.38  0.09
+d1          2  2   0.0204  0.0059   0.32  0.10
+d2          2  2   0.0223  0.0020   0.34  0.05
+full edy    4  2   0.0870  0.0060
+full edy    5  2   0.0750  0.0073
+additivity K3 families: sum of subset gains / full gain = 1.00
+additivity K3 depth: sum of subset gains / full gain = 1.04
+additivity K2 families: sum of subset gains / full gain = 1.02
+additivity K2 depth: sum of subset gains / full gain = 1.04
+VERDICT gdn_in: two-sided
+VERDICT attn_in: two-sided
+VERDICT mlp_in: two-sided
+VERDICT writers: one-sided (minor: share < 0.15 at K3 and K2)
+VERDICT d0: two-sided
+VERDICT d1: two-sided
+VERDICT d2: two-sided
+VERDICT K4: keep two-sided
+VERDICT K5: keep two-sided
+{"subsets": {"gdn_in": {"3": {"n": 2, "seeds": [0, 1], "g": 0.03553306069044335, "se": 0.005823769032873591, "logs": [-0.02971, -0.04136], "share": 0.38676663742675577, "share_se": 0.06824965978275001}, "2": {"n": 2, "seeds": [0, 1], "g": 0.014276873325691629, "se": 1.6865624408342328e-05, "logs": [-0.01429, -0.01426], "share": 0.22084845198624764, "share_se": 0.021000030640130347}}, "attn_in": {"3": {"n": 4, "seeds": [0, 1, 2, 3], "g": 0.012323774828833785, "se": 0.0017918079248815733, "logs": [-0.01321, -0.01598, -0.0074, -0.0127], "share": 0.13414056820144601, "share_se": 0.02138527199029657}, "2": {"n": 3, "seeds": [0, 1, 2], "g": 0.01510913481925196, "se": 0.005159921598254169, "logs": [-0.01171, -0.00837, -0.02525], "share": 0.23372267579614878, "share_se": 0.08285442484675995}}, "mlp_in": {"3": {"n": 2, "seeds": [0, 1], "g": 0.04067941666758319, "se": 0.004114027683128175, "logs": [-0.03657, -0.04479], "share": 0.44278316844331395, "share_se": 0.053326340132792735}, "2": {"n": 2, "seeds": [0, 1], "g": 0.027005469457512442, "se": 0.0015012944315072206, "logs": [-0.0255, -0.02851], "share": 0.41774665844522985, "share_se": 0.04601062326565378}}, "writers": {"3": {"n": 2, "seeds": [0, 1], "g": 0.0030160891595741005, "se": 0.00023202746983974837, "logs": [-0.00325, -0.00278], "share": 0.03282921988033252, "share_se": 0.003314743262962855}, "2": {"n": 4, "seeds": [0, 1, 2, 3], "g": 0.009628376452523499, "se": 0.005277308726418828, "logs": [0.00503, -0.01405, -0.00987, -0.01962], "share": 0.14894101713812338, "share_se": 0.08285371171572485}}, "d0": {"3": {"n": 2, "seeds": [0, 1], "g": 0.02898362388776901, "se": 0.00680139169565778, "logs": [-0.02218, -0.03579], "share": 0.31547799524427483, "share_se": 0.07685204153984021}, "2": {"n": 2, "seeds": [0, 1], "g": 0.02456330578676212, "se": 0.005000510240980656, "logs": [-0.02956, -0.01956], "share": 0.37996891440573566, "share_se": 0.0853736048544048}}, "d1": {"3": {"n": 2, "seeds": [0, 1], "g": 0.0319758957624392, "se": 0.005042983348116152, "logs": [-0.02693, -0.03702], "share": 0.3480479711693744, "share_se": 0.059423186733776535}, "2": {"n": 2, "seeds": [0, 1], "g": 0.02044188198044913, "se": 0.005850093298531782, "logs": [-0.01459, -0.02629], "share": 0.3162147543148463, "share_se": 0.09535870665941053}}, "d2": {"3": {"n": 2, "seeds": [0, 1], "g": 0.03487493493793853, "se": 0.0025815061259580985, "logs": [-0.03746, -0.03229], "share": 0.3796031373129392, "share_se": 0.03749398728248391}, "2": {"n": 2, "seeds": [0, 1], "g": 0.0222715758623974, "se": 0.0020360615188757397, "logs": [-0.02431, -0.02024], "share": 0.3445182247049506, "share_se": 0.04544232447825471}}}, "khi": {"4": {"n": 2, "seeds": [0, 1], "g": 0.08698871653701493, "se": 0.006020801743042785, "logs": [-0.09301, -0.08097]}, "5": {"n": 2, "seeds": [0, 1], "g": 0.07503358091979011, "se": 0.007303173185454564, "logs": [-0.08234, -0.06773]}}, "full": {"3": {"n": 3, "seeds": [0, 1, 2], "g": 0.091872093536435, "se": 0.006008033023017761, "logs": [-0.0932, -0.10155, -0.08087]}, "2": {"n": 3, "seeds": [0, 1, 2], "g": 0.0646455666647854, "se": 0.006146541211709667, "logs": [-0.07167, -0.06987, -0.0524]}}, "verdicts": {"gdn_in": "two-sided", "attn_in": "two-sided", "mlp_in": "two-sided", "writers": "one-sided (minor: share < 0.15 at K3 and K2)", "d0": "two-sided", "d1": "two-sided", "d2": "two-sided", "K4": "keep two-sided", "K5": "keep two-sided"}, "additivity": {"K3 families": 0.9965195939518483, "K3 depth": 1.0431291037265884, "K2 families": 1.0212588033657495, "K2 depth": 1.0407018934255325}, "pending": []}
+03:04:54 ATTRIB DONE

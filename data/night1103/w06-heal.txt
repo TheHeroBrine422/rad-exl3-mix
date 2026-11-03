@@ -1,0 +1,63 @@
+08:08:17 gate identity: wrapped vs plain max |dlogit| 0.000e+00 GATE OK 3.36 s/window (1292 scored rows), peak 3.65 GiB, grad norm 7.250e-01 
+08:08:37 k3jit: "kld": 0.09932230958155332, "top1": 0.8550810989738498
+08:08:38 pair k3base -> k3jit: "ratio": 1.0044158958938396, "diff": 0.00043666869790255636, "se": 5.872797839047727e-05, "z": 7.435445759756683
+08:09:50 gradcos K3: GRADCOS PASS (every layer: cos >= 0.95 or >= its fp32 split-half cos)
+08:11:05 gradcos K2: GRADCOS PASS (every layer: cos >= 0.95 or >= its fp32 split-half cos)
+08:26:35 k3all: HEAL DONE steps 512 held-out KL 0.112867 -> 0.093574 (-17.09%)
+08:26:56 k3all: "kld": 0.08126299540114305, "top1": 0.8698444223766965
+08:40:11 k3last: HEAL DONE steps 512 held-out KL 0.112867 -> 0.104309 (-7.58%)
+08:40:32 k3last: "kld": 0.09087393298361138, "top1": 0.862622250308447
+08:51:36 k3orc: HEAL DONE steps 256 held-out KL 0.101670 -> 0.044780 (-55.96%)
+08:51:56 k3orc: "kld": 0.042714465744208695, "top1": 0.9117450573259908
+08:51:57 pair k3base -> k3all: "ratio": 0.8217876104806086, "diff": -0.017622646446465648, "se": 0.0007376174037889909, "z": -23.891310530285335
+08:51:58 pair k3base -> k3last: "ratio": 0.9189800550049355, "diff": -0.008011709228581756, "se": 0.00036006495357691806, "z": -22.25073323297007
+08:51:59 pair k3all -> k3last: "ratio": 1.1182695422573792, "diff": 0.009610937217883891, "se": 0.00045394613320447105, "z": 21.171977278535017
+08:52:00 pair k3base -> k3orc: "ratio": 0.4319582277740689, "diff": -0.056171174999435775, "se": 0.0027347654426033282, "z": -20.53966827442586
+09:07:28 k2all: HEAL DONE steps 512 held-out KL 0.579915 -> 0.364340 (-37.17%)
+09:07:49 k2all: "kld": 0.3315356195144915, "top1": 0.7485540609671693
+09:21:06 k2last: HEAL DONE steps 512 held-out KL 0.579915 -> 0.492733 (-15.03%)
+09:21:26 k2last: "kld": 0.45227233091451163, "top1": 0.7075802714333003
+09:32:30 k2orc: HEAL DONE steps 256 held-out KL 0.547291 -> 0.209125 (-61.79%)
+09:32:50 k2orc: "kld": 0.201886310110057, "top1": 0.8124823207246246
+09:32:51 pair k2base -> k2all: "ratio": 0.6191722588791925, "diff": -0.2039141257410249, "se": 0.01006863233161132, "z": -20.252415524283208
+09:32:52 pair k2base -> k2last: "ratio": 0.844658697946761, "diff": -0.08317746419006344, "se": 0.00476344965907949, "z": -17.46160244005539
+09:32:53 pair k2all -> k2last: "ratio": 1.3641740013929846, "diff": 0.12073666155096147, "se": 0.00578040138011621, "z": 20.88724529861872
+09:32:54 pair k2base -> k2orc: "ratio": 0.377040638012761, "diff": -0.33356344602930993, "se": 0.016284004530041116, "z": -20.484116509175873
+09:48:31 k3dall: HEAL DONE steps 512 held-out KL 0.104129 -> 0.086005 (-17.41%)
+09:48:52 k3dall: "kld": 0.07566575031775562, "top1": 0.8745147603141645
+09:48:53 pair k3bdiag -> k3dall: "ratio": 0.8316030095889663, "diff": -0.015322077841473325, "se": 0.0007240761086909121, "z": -21.160866458050602
+mix family: 150 linears, trunk 2.468 bits/weight
+xfer.pt: 150 linears, 13 norms
+09:49:13 mixF: "kld": 0.33036116248548414, "top1": 0.7460985224639644
+09:49:33 mixFx: "kld": 0.24554237796151274, "top1": 0.7806144864734735
+10:05:04 mixFh: HEAL DONE steps 512 held-out KL 0.355787 -> 0.244832 (-31.19%)
+10:05:25 mixFh: "kld": 0.22257583047821028, "top1": 0.7900273840690921
+10:09:24 mixFw: HEAL DONE steps 128 held-out KL 0.268914 -> 0.249382 (-7.26%)
+10:09:45 mixFw: "kld": 0.22689499512981806, "top1": 0.7877403629141464
+10:09:46 pair mixF -> mixFx: "ratio": 0.7432544063052051, "diff": -0.08481876861966237, "se": 0.0038167080671435215, "z": -22.223017094189743
+10:09:46 pair mixF -> mixFh: "ratio": 0.6737348684925907, "diff": -0.10778532281604528, "se": 0.004594405455507112, "z": -23.460124244552194
+10:09:47 pair mixF -> mixFw: "ratio": 0.6868090374303237, "diff": -0.10346612537991637, "se": 0.004473560365982678, "z": -23.128362403843106
+10:09:48 pair mixFh -> mixFx: "ratio": 1.1031853048783966, "diff": 0.02296655419638291, "se": 0.0010411535450252983, "z": 22.05875810164471
+mix depth: 150 linears, trunk 2.481 bits/weight
+xfer.pt: 150 linears, 13 norms
+10:10:08 mixD: "kld": 0.319979331842481, "top1": 0.7534230086365141
+10:10:29 mixDx: "kld": 0.22567166857389268, "top1": 0.7922361650266317
+10:25:59 mixDh: HEAL DONE steps 512 held-out KL 0.346688 -> 0.237067 (-31.62%)
+10:26:20 mixDh: "kld": 0.20897490854413903, "top1": 0.7997833348379525
+10:30:19 mixDw: HEAL DONE steps 128 held-out KL 0.252192 -> 0.239248 (-5.13%)
+10:30:40 mixDw: "kld": 0.21276628197013614, "top1": 0.7982907526105143
+10:30:40 pair mixD -> mixDx: "ratio": 0.7052695492272237, "diff": -0.09430764948391562, "se": 0.005089288643377411, "z": -18.530615198380676
+10:30:41 pair mixD -> mixDh: "ratio": 0.6530888051596491, "diff": -0.11100440853419999, "se": 0.005623690725194623, "z": -19.73871145454187
+10:30:42 pair mixD -> mixDw: "ratio": 0.6649377122344466, "diff": -0.10721300329511599, "se": 0.005538911101543997, "z": -19.356332197718405
+10:30:43 pair mixDh -> mixDx: "ratio": 1.0798983900127013, "diff": 0.016696759050284365, "se": 0.0009749416965797189, "z": 17.125905178596604
+jitter: ratio 1.0044 z +7.4 -> ok
+H1a: K3 oracle 0.4320, heal-all 0.8218 (z -23.9); K2 oracle 0.3770, heal-all 0.6192 -> BUILD S27 now
+H2 0.8B pilot bar (heal-all >= 5%, z <= -3): met at K3,2; generalised share of the ceiling K3 0.31
+H1b: last vs all K3 1.1183 (z +21.2), K2 1.3642 (z +20.9); last's share of all's gain K3 0.45 K2 0.41 -> ALL LAYERS (last quarter worse at both K); backward truncation to the last quarter not allowed (share >= 0.70 at both K)
+H1c K3: GRADCOS PASS (every layer: cos >= 0.95 or >= its fp32 split-half cos)
+H1c K2: GRADCOS PASS (every layer: cos >= 0.95 or >= its fp32 split-half cos)
+stack: heal on bdiag K3 0.8316 (z -21.2) vs heal on base 0.8218; gain kept 0.87
+H4 mixF: transfer 0.7433 (z -22.2), mix-specific 0.6737, polish 0.6868; transfer share 0.79, polish share 0.96 -> LIBRARY
+H4 mixD: transfer 0.7053 (z -18.5), mix-specific 0.6531, polish 0.6649; transfer share 0.85, polish share 0.97 -> LIBRARY
+H4 overall: LIBRARY
+10:31:00 W06 DONE

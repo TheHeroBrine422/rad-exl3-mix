@@ -1,0 +1,137 @@
+05:38:18 k3bdiag_h6: "kld": 0.09033760488842095, "top1": 0.8619722548223044
+05:38:18 pair k3bdiag -> k3bdiag_h6: "ratio": 0.992853653769111, "diff": -0.0006502305828894744, "se": 5.4892114884436744e-05, "z": -11.845609961620019
+05:38:47 k3base_h6: "kld": 0.09863093185567419, "top1": 0.8554121151936445
+05:38:48 pair k3base -> k3base_h6: "ratio": 0.997424258850336, "diff": -0.00025470381571424117, "se": 4.9758440406811606e-05, "z": -5.118806249389076
+05:39:17 k2bdiag_h6: "kld": 0.4804391916823691, "top1": 0.7012548523968584
+05:39:18 pair k2bdiag -> k2bdiag_h6: "ratio": 0.974879584352778, "diff": -0.012379818542926802, "se": 0.0007422677071678983, "z": -16.678374154470028
+05:39:47 k2base_h6: "kld": 0.5306371451470914, "top1": 0.6865216213776293
+05:39:47 pair k2base -> k2base_h6: "ratio": 0.9910120075238017, "diff": -0.004812618488760467, "se": 0.0004807462417617027, "z": -10.010725140823869
+K3
+  k3bdiag -> h6                      ratio 0.9929  diff -6.50e-04  se 5.5e-05  z -11.85
+  bdiag/h6 seed-0 screen: run B1_FULL=1 (3-seed rule)
+  bdiag/h6: 1/3 seeds, no 3-seed verdict
+  k3base -> h6                       ratio 0.9974  diff -2.55e-04  se 5.0e-05  z  -5.12
+  base/h6 seed-0 screen: B1 closed here (ratio > 0.995 or z > -2)
+  base/h6: 1/3 seeds, no 3-seed verdict
+  bdiag/u6: 0/3 seeds, no 3-seed verdict
+K2
+  k2bdiag -> h6                      ratio 0.9749  diff -1.24e-02  se 7.4e-04  z -16.68
+  bdiag/h6 seed-0 screen: run B1_FULL=1 (3-seed rule)
+  bdiag/h6: 1/3 seeds, no 3-seed verdict
+  k2base -> h6                       ratio 0.9910  diff -4.81e-03  se 4.8e-04  z -10.01
+  base/h6 seed-0 screen: run B1_FULL=1 (3-seed rule)
+  base/h6: 1/3 seeds, no 3-seed verdict
+  bdiag/u6: 0/3 seeds, no 3-seed verdict
+05:40:00 k3base.fit: "kld": 0.1022222851764804, "top1": 0.853278565922244
+05:40:15 k3base_aall-1.fit: "kld": 0.10457497481874792, "top1": 0.8517137827482655
+05:40:15 pair k3base.fit -> k3base_aall-1.fit: "ratio": 1.0230153358996306, "diff": 0.0023526804462508516, "se": 0.00023853142539524225, "z": 9.863188644232109
+05:40:30 k3base_aall1.fit: "kld": 0.10044070912636066, "top1": 0.8541990266128198
+05:40:31 pair k3base.fit -> k3base_aall1.fit: "ratio": 0.982571477343712, "diff": -0.0017815835771115979, "se": 0.0002269034472513127, "z": -7.8517254748375835
+05:40:45 k3base_aall2.fit: "kld": 0.0995701019643921, "top1": 0.85456721088905
+05:40:46 pair k3base.fit -> k3base_aall2.fit: "ratio": 0.9740547940116114, "diff": -0.0026521784895527784, "se": 0.0003770238162054132, "z": -7.034511814786249
+05:40:59 k3base_aattn_in-1.fit: "kld": 0.10211462277244582, "top1": 0.8539458999229114
+05:41:12 k3base_aattn_in1.fit: "kld": 0.10235060385995182, "top1": 0.8532440486463475
+05:41:25 k3base_aattn_in2.fit: "kld": 0.10257772856245269, "top1": 0.8530599565082324
+05:41:38 k3base_aattn_o-1.fit: "kld": 0.10202972760806568, "top1": 0.8534166350258304
+05:41:51 k3base_aattn_o1.fit: "kld": 0.10230901117989118, "top1": 0.8534396465430948
+05:42:05 k3base_aattn_o2.fit: "kld": 0.10249754238193788, "top1": 0.8531865198531865
+05:42:18 k3base_agdn_in-1.fit: "kld": 0.10344719167732004, "top1": 0.8521855188521855
+05:42:31 k3base_agdn_in1.fit: "kld": 0.10125215118259387, "top1": 0.8537387962675319
+05:42:45 k3base_agdn_in2.fit: "kld": 0.10044912556120188, "top1": 0.8544176360268314
+05:42:58 k3base_agdn_out-1.fit: "kld": 0.10286386023506836, "top1": 0.8526572549561056
+05:43:11 k3base_agdn_out1.fit: "kld": 0.10166040276884794, "top1": 0.8537042789916354
+05:43:24 k3base_agdn_out2.fit: "kld": 0.10129403211968513, "top1": 0.8540724632678656
+05:43:38 k3base_agate_up-1.fit: "kld": 0.10284787886787299, "top1": 0.8528298413355885
+05:43:51 k3base_agate_up1.fit: "kld": 0.1017700313152702, "top1": 0.853278565922244
+05:44:04 k3base_agate_up2.fit: "kld": 0.10166055981888023, "top1": 0.8536812674743709
+05:44:18 k3base_adown-1.fit: "kld": 0.10239302319011284, "top1": 0.8530484507496002
+05:44:31 k3base_adown1.fit: "kld": 0.10216389422131748, "top1": 0.8533706119913016
+05:44:45 k3base_adown2.fit: "kld": 0.10225766485255919, "top1": 0.8530599565082324
+05:44:46 k3base alpha* = attn_in=-1,attn_o=-1,gdn_in=2,gdn_out=2,gate_up=2,down=0
+05:44:59 k3base_astar.fit: "kld": 0.09911191210652212, "top1": 0.8549584066825446
+05:45:00 pair k3base.fit -> k3base_astar.fit: "ratio": 0.9695723290999797, "diff": -0.0031103863382060254, "se": 0.00040394246080982554, "z": -7.700072757813848
+05:45:19 k3base_astar: "kld": 0.09619895116027741, "top1": 0.85730793536156
+05:45:20 pair k3base -> k3base_astar: "ratio": 0.9728302578499004, "diff": -0.0026866973797056992, "se": 0.00016985535684514182, "z": -15.817560479739111
+05:45:44 k3base_s1_astar: "kld": 0.09672839030216934, "top1": 0.8555986879720743
+05:45:45 pair k3base_s1 -> k3base_s1_astar: "ratio": 0.9727081209537554, "diff": -0.002713968602359243, "se": 0.00019644495367009075, "z": -13.81541521762415
+05:45:59 k2base.fit: "kld": 0.5324597372287208, "top1": 0.6862609736172954
+05:46:13 k2base_aall-1.fit: "kld": 0.5750687624356082, "top1": 0.6765271018144582
+05:46:14 pair k2base.fit -> k2base_aall-1.fit: "ratio": 1.0800230740343424, "diff": 0.04260906020963484, "se": 0.0023198206725600834, "z": 18.367393960073983
+05:46:28 k2base_aall1.fit: "kld": 0.5062172478726673, "top1": 0.6924970947959453
+05:46:29 pair k2base.fit -> k2base_aall1.fit: "ratio": 0.9507147877667439, "diff": -0.02624238822155489, "se": 0.0018330122990823984, "z": -14.31653690195738
+05:46:43 k2base_aall2.fit: "kld": 0.4969218364430226, "top1": 0.6941424182803493
+05:46:44 pair k2base.fit -> k2base_aall2.fit: "ratio": 0.9332573258750698, "diff": -0.03553778275401842, "se": 0.003042824259731626, "z": -11.679209747444572
+05:46:57 k2base_aattn_in-1.fit: "kld": 0.5322134373161818, "top1": 0.6856281568925247
+05:47:10 k2base_aattn_in1.fit: "kld": 0.5340222551670558, "top1": 0.6862494678586633
+05:47:23 k2base_aattn_in2.fit: "kld": 0.5377233408693711, "top1": 0.6850183516850183
+05:47:37 k2base_aattn_o-1.fit: "kld": 0.5305703612263771, "top1": 0.6868132500316408
+05:47:50 k2base_aattn_o1.fit: "kld": 0.5345446408523011, "top1": 0.6862954908931921
+05:48:03 k2base_aattn_o2.fit: "kld": 0.5373361688445402, "top1": 0.6854900877889384
+05:48:16 k2base_agdn_in-1.fit: "kld": 0.554307478077787, "top1": 0.6814285549917733
+05:48:29 k2base_agdn_in1.fit: "kld": 0.5152061441248939, "top1": 0.6903455179317248
+05:48:43 k2base_agdn_in2.fit: "kld": 0.5027896960324107, "top1": 0.6937282109695903
+05:48:56 k2base_agdn_out-1.fit: "kld": 0.5426048642684381, "top1": 0.6832694763729247
+05:49:09 k2base_agdn_out1.fit: "kld": 0.5239743636822317, "top1": 0.6882859871365619
+05:49:22 k2base_agdn_out2.fit: "kld": 0.5175717647958933, "top1": 0.6906216561388975
+05:49:36 k2base_agate_up-1.fit: "kld": 0.5433017842799583, "top1": 0.6841669255462359
+05:49:49 k2base_agate_up1.fit: "kld": 0.5264589926562839, "top1": 0.6866061463762613
+05:50:02 k2base_agate_up2.fit: "kld": 0.526411936471914, "top1": 0.6866291578935257
+05:50:16 k2base_adown-1.fit: "kld": 0.5333995341312402, "top1": 0.6863645254449852
+05:50:29 k2base_adown1.fit: "kld": 0.5332526614213563, "top1": 0.6846501674087881
+05:50:43 k2base_adown2.fit: "kld": 0.536201223228457, "top1": 0.6844430637534086
+05:50:44 k2base alpha* = attn_in=0,attn_o=-1,gdn_in=2,gdn_out=2,gate_up=1.55,down=0
+05:50:57 k2base_astar.fit: "kld": 0.48660396705805803, "top1": 0.6967542254898577
+05:50:58 pair k2base.fit -> k2base_astar.fit: "ratio": 0.9138795600571042, "diff": -0.045855661696178995, "se": 0.0031277500680909863, "z": -14.660909822685056
+05:51:18 k2base_astar: "kld": 0.48804833449134155, "top1": 0.6957720201017122
+05:51:18 pair k2base -> k2base_astar: "ratio": 0.9114736219096478, "diff": -0.04740142863591218, "se": 0.002851361779606656, "z": -16.62413692114902
+05:51:42 k2base_s1_astar: "kld": 0.4946186439259147, "top1": 0.6922512112184406
+05:51:42 pair k2base_s1 -> k2base_s1_astar: "ratio": 0.9141516236828644, "diff": -0.04644985104270111, "se": 0.003065893891314981, "z": -15.15050836373808
+K3
+  alpha* attn_in=-1,attn_o=-1,gdn_in=2,gdn_out=2,gate_up=2,down=0
+  fit: all=-1                        ratio 1.0230  diff +2.35e-03  se 2.4e-04  z  +9.86
+  fit: all=1                         ratio 0.9826  diff -1.78e-03  se 2.3e-04  z  -7.85
+  fit: all=2                         ratio 0.9741  diff -2.65e-03  se 3.8e-04  z  -7.03
+  fit: alpha*                        ratio 0.9696  diff -3.11e-03  se 4.0e-04  z  -7.70
+  search: base -> alpha*             ratio 0.9728  diff -2.69e-03  se 1.7e-04  z -15.82
+  search: base_s1 -> alpha* (transfer) ratio 0.9727  diff -2.71e-03  se 2.0e-04  z -13.82
+  -> PASS (draft rule C9)
+K2
+  alpha* attn_in=0,attn_o=-1,gdn_in=2,gdn_out=2,gate_up=1.55,down=0
+  fit: all=-1                        ratio 1.0800  diff +4.26e-02  se 2.3e-03  z +18.37
+  fit: all=1                         ratio 0.9507  diff -2.62e-02  se 1.8e-03  z -14.32
+  fit: all=2                         ratio 0.9333  diff -3.55e-02  se 3.0e-03  z -11.68
+  fit: alpha*                        ratio 0.9139  diff -4.59e-02  se 3.1e-03  z -14.66
+  search: base -> alpha*             ratio 0.9115  diff -4.74e-02  se 2.9e-03  z -16.62
+  search: base_s1 -> alpha* (transfer) ratio 0.9142  diff -4.64e-02  se 3.1e-03  z -15.15
+  -> PASS (draft rule C9)
+05:53:21 k3base_swj: "kld": 0.09584858287561836, "top1": 0.8570491408624478
+05:53:22 pair k3base -> k3base_swj: "ratio": 0.9692871278560438, "diff": -0.0030370620617796718, "se": 0.00013542779813230417, "z": -22.425691797873426
+05:53:41 k3base_swu: "kld": 0.09810730480239102, "top1": 0.8557792422737805
+05:53:41 pair k3base -> k3base_swu: "ratio": 0.9921289401659658, "diff": -0.0007783348003370383, "se": 5.751964191879858e-05, "z": -13.531635009755906
+05:53:42 pair k3base_swu -> k3base_swj: "ratio": 0.9769769720595984, "diff": -0.0022587272614426335, "se": 0.00010616518149944678, "z": -21.275593650771498
+05:55:20 k3bdiag_swj: "kld": 0.08821348746611238, "top1": 0.8636694652583431
+05:55:21 pair k3bdiag -> k3bdiag_swj: "ratio": 0.9695085265615384, "diff": -0.0027743532018296296, "se": 0.0001350793507589493, "z": -20.53869215569814
+05:56:58 k2base_swj: "kld": 0.48941726844487815, "top1": 0.6968673828653967
+05:56:59 pair k2base -> k2base_swj: "ratio": 0.9140302040945358, "diff": -0.04603250729740299, "se": 0.002049249915405328, "z": -22.463100743033614
+05:57:18 k2base_swu: "kld": 0.5229049017786679, "top1": 0.6875808732809726
+05:57:19 pair k2base -> k2base_swu: "ratio": 0.9765713663497796, "diff": -0.012544856459330123, "se": 0.0006514906555585665, "z": -19.255619942199445
+05:57:20 pair k2base_swu -> k2base_swj: "ratio": 0.9359584312931378, "diff": -0.03348765083807287, "se": 0.0015499003434862458, "z": -21.606325192978478
+05:58:59 k2bdiag_swj: "kld": 0.44963184397688555, "top1": 0.7100117360296109
+05:59:00 pair k2bdiag -> k2bdiag_swj: "ratio": 0.9123671573358613, "diff": -0.04318713136830071, "se": 0.002007132467676675, "z": -21.516831631093737
+K3
+  k3base -> swj                      ratio 0.9693  diff -3.04e-03  se 1.4e-04  z -22.43
+  k3base -> swu                      ratio 0.9921  diff -7.78e-04  se 5.8e-05  z -13.53
+  k3base_swu -> swj                  ratio 0.9770  diff -2.26e-03  se 1.1e-04  z -21.28
+  joint beyond up-only: yes
+  k3base: swj PASS at K3 (draft rule C10 needs both K on base)
+  k3bdiag -> swj                     ratio 0.9695  diff -2.77e-03  se 1.4e-04  z -20.54
+  k3bdiag: swj PASS at K3 (draft rule C10 needs both K on base)
+K2
+  k2base -> swj                      ratio 0.9140  diff -4.60e-02  se 2.0e-03  z -22.46
+  k2base -> swu                      ratio 0.9766  diff -1.25e-02  se 6.5e-04  z -19.26
+  k2base_swu -> swj                  ratio 0.9360  diff -3.35e-02  se 1.5e-03  z -21.61
+  joint beyond up-only: yes
+  k2base: swj PASS at K2 (draft rule C10 needs both K on base)
+  k2bdiag -> swj                     ratio 0.9124  diff -4.32e-02  se 2.0e-03  z -21.52
+  k2bdiag: swj PASS at K2 (draft rule C10 needs both K on base)
+05:59:01 W02 all DONE

@@ -1,0 +1,40 @@
+06:22:30 moments mom-k3base: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+06:28:26 moments mom-k3base_s1: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+06:34:11 moments mom-k3base_s2: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+06:39:37 moments mom-k2base: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+06:45:45 moments mom-k2base_s1: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+06:51:50 moments mom-k2base_s2: MOMENTS DONE 24 groups, 1002035 tokens, 2.3 min
+noop gate: 48 requantized tensors, 0 differ from k3base [] -> PASS
+06:54:16 k3base.fit: "kld": 0.1022222851764804, "top1": 0.853278565922244
+06:54:55 k3sym.fit: "kld": 0.10206346230152993, "top1": 0.8549353951652803
+06:55:38 k3asym.fit: "kld": 0.08767584103685343, "top1": 0.8626212419315867
+06:56:25 k3rs7: "kld": 0.09763162417342668, "top1": 0.8556408173091391
+06:57:33 k3rs8: "kld": 0.09927255937425342, "top1": 0.8548042490445669
+06:58:27 k3rs9: "kld": 0.09833563650187976, "top1": 0.8555023923444977
+  K3 fit asym   0.08768  ratio to base 0.8577
+  K3 fit sym    0.10206  ratio to base 0.9984
+06:58:28 K3: fit-slice pick asym
+06:58:48 k3asym: "kld": 0.08489796525195542, "top1": 0.8659444494598417
+06:59:39 k3asym_s1: "kld": 0.08432270960790844, "top1": 0.8653064909271463
+07:00:33 k3asym_s2: "kld": 0.08434748804131018, "top1": 0.8656074147633234
+K3 asym seed 0: 0.08490 vs base 0.09889  ratio 0.8585  z -20.3
+K3 asym seed 1: 0.08432 vs base 0.09944  ratio 0.8480  z -24.3
+K3 asym seed 2: 0.08435 vs base 0.09743  ratio 0.8657  z -20.0
+K3 asym: mean-KL ratio 0.8573, per-seed ratios mean 0.8574 max 0.8657, every-beats-every True, control ratios ['0.9873', '1.0039', '0.9944'] sd 0.0083 -> bar 0.9800  =>  PASS (rule ctrl, bar 0.98)
+07:00:48 k2base.fit: "kld": 0.5324597372287208, "top1": 0.6862609736172954
+07:01:28 k2sym.fit: "kld": 0.5393117741613392, "top1": 0.6853290071680876
+07:02:11 k2asym.fit: "kld": 0.44600258746190174, "top1": 0.7113320216768493
+07:03:16 k2rs7: "kld": 0.5311775280573199, "top1": 0.687496614606843
+07:04:09 k2rs8: "kld": 0.5327990371274544, "top1": 0.6858656074147633
+07:05:10 k2rs9: "kld": 0.5296379551263648, "top1": 0.6866480093888236
+  K2 fit asym   0.44600  ratio to base 0.8376
+  K2 fit sym    0.53931  ratio to base 1.0129
+07:05:11 K2: fit-slice pick asym
+07:05:39 k2asym: "kld": 0.44326504146189816, "top1": 0.7108543227709067
+07:06:44 k2asym_s1: "kld": 0.44074085157637405, "top1": 0.7098251632511812
+07:07:40 k2asym_s2: "kld": 0.4330999351962027, "top1": 0.7113237639553429
+K2 asym seed 0: 0.44327 vs base 0.53545  ratio 0.8278  z -22.7
+K2 asym seed 1: 0.44074 vs base 0.54107  ratio 0.8146  z -19.8
+K2 asym seed 2: 0.43310 vs base 0.52248  ratio 0.8289  z -19.6
+K2 asym: mean-KL ratio 0.8237, per-seed ratios mean 0.8238 max 0.8289, every-beats-every True, control ratios ['0.9920', '0.9950', '0.9891'] sd 0.0030 -> bar 0.9800  =>  PASS (rule ctrl, bar 0.98)
+07:07:40 SEQSIB DONE

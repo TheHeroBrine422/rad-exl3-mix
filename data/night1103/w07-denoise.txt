@@ -1,0 +1,63 @@
+07:14:05 moments mom-quant3: MOMENTS DONE 48 groups, 1002035 tokens, 3.5 min
+07:20:00 moments mom-quant2: MOMENTS DONE 48 groups, 1002035 tokens, 2.9 min
+07:22:21 moments mom-pilot: MOMENTS DONE 48 groups, 201768 tokens, 0.8 min
+07:28:17 moments mom-gauss3: MOMENTS DONE 48 groups, 1002035 tokens, 3.0 min
+07:28:21 K3: layer-input tr N / tr H: quant 0.06338556110858917, pilot (gamma 0.01) 0.3118125796318054, gauss (gamma 0.00451) 0.06020089611411095
+07:34:06 moments mom-gauss2: MOMENTS DONE 48 groups, 1002035 tokens, 3.0 min
+07:34:11 K2: layer-input tr N / tr H: quant 0.23365318775177002, pilot (gamma 0.01) 0.3118125796318054, gauss (gamma 0.00866) 0.2318960428237915
+noop gate: 150 wq tensors, 0 differ from k3base [] -> PASS
+07:36:07 k3base.fit: "kld": 0.1022222851764804, "top1": 0.853278565922244
+07:36:40 dn-g1k3: clip median 0.0e+00 max 2.0e-05; hsub median 0.136; |WF|/|W| median 0.9922 range 0.9808-0.9999
+07:38:00 k3g1.fit: "kld": 0.10508551957962602, "top1": 0.8518863691277484
+07:38:22 dn-g2k3: clip median 0.0e+00 max 2.0e-05; hsub median 0.136; |WF|/|W| median 0.9613 range 0.9063-0.9994
+07:39:41 k3g2.fit: "kld": 0.16971664237043976, "top1": 0.8181860020940481
+07:40:07 dn-g3k3: clip median 0.0e+00 max 2.0e-04; hsub median 0.136; |WF|/|W| median 0.9696 range 0.9477-0.9995
+07:41:27 k3g3.fit: "kld": 0.1402173649316471, "top1": 0.8312105208656932
+07:41:56 dn-q1k3: clip median 4.6e-06 max 5.3e-04; hsub median 0.136; F = I
+07:43:17 k3q1.fit: "kld": 0.10318363057087832, "top1": 0.8537157847502675
+07:44:02 dn-q2k3: clip median 4.6e-06 max 5.3e-04; hsub median 0.136; |WF|/|W| median 0.9908 range 0.9779-1.0016
+07:45:22 k3q2.fit: "kld": 0.11554681727776969, "top1": 0.8472265368817093
+07:46:06 dn-q3k3: clip median 4.6e-06 max 5.3e-04; hsub median 0.136; |WF|/|W| median 0.9824 range 0.9564-1.0035
+07:47:26 k3q3.fit: "kld": 0.15888379800408722, "top1": 0.8225927076501789
+07:47:40 k2base.fit: "kld": 0.5324597372287208, "top1": 0.6862609736172954
+07:48:37 dn-g1k2: clip median 1.7e-04 max 3.0e-03; hsub median 0.136; |WF|/|W| median 0.9762 range 0.9545-0.9996
+07:49:59 k2g1.fit: "kld": 0.5905896116032062, "top1": 0.6740073406740074
+07:50:44 dn-g2k2: clip median 1.7e-04 max 3.0e-03; hsub median 0.136; |WF|/|W| median 0.8853 range 0.7802-0.9978
+07:52:06 k2g2.fit: "kld": 1.110281191382088, "top1": 0.5767031399215308
+07:52:50 dn-g3k2: clip median 3.3e-04 max 6.8e-03; hsub median 0.136; |WF|/|W| median 0.9354 range 0.9135-0.9983
+07:54:12 k2g3.fit: "kld": 0.8090112366987459, "top1": 0.6255796025910968
+07:55:03 dn-q1k2: clip median 1.6e-03 max 1.6e-02; hsub median 0.136; F = I
+07:56:28 k2q1.fit: "kld": 0.6184362770718057, "top1": 0.6664250457353905
+07:57:17 dn-q2k2: clip median 1.6e-03 max 1.6e-02; hsub median 0.136; |WF|/|W| median 0.9703 range 0.9299-1.0053
+07:58:40 k2q2.fit: "kld": 0.6919251690033267, "top1": 0.6541829185507346
+07:59:30 dn-q3k2: clip median 1.6e-03 max 1.6e-02; hsub median 0.136; |WF|/|W| median 0.9446 range 0.8646-1.0190
+08:00:54 k2q3.fit: "kld": 1.2304708767847663, "top1": 0.5660142901522212
+  K3 fit q1     0.10318  ratio to base 1.0094
+  K3 fit g1     0.10509  ratio to base 1.0280
+  K3 fit q2     0.11555  ratio to base 1.1303
+  K3 fit g3     0.14022  ratio to base 1.3717
+  K3 fit q3     0.15888  ratio to base 1.5543
+  K3 fit g2     0.16972  ratio to base 1.6603
+08:00:55 K3: fit-slice pick q1 (quant 1 1)
+08:01:16 k3q1: "kld": 0.1019332050943133, "top1": 0.8515241792302368
+08:02:44 k3q1_s1: "kld": 0.10219354661832604, "top1": 0.8531190755619753
+08:04:11 k3q1_s2: "kld": 0.10068502474693879, "top1": 0.8524028768318739
+  K2 fit g1     0.59059  ratio to base 1.1092
+  K2 fit q1     0.61844  ratio to base 1.1615
+  K2 fit q2     0.69193  ratio to base 1.2995
+  K2 fit g3     0.80901  ratio to base 1.5194
+  K2 fit g2     1.11028  ratio to base 2.0852
+  K2 fit q3     1.23047  ratio to base 2.3109
+08:04:12 K2: fit-slice pick g1 (gauss 1 0.9)
+08:04:34 k2g1: "kld": 0.5847358099792389, "top1": 0.6739791158857693
+08:06:10 k2g1_s1: "kld": 0.588798690470069, "top1": 0.6704883993861154
+08:07:40 k2g1_s2: "kld": 0.5881747261928953, "top1": 0.6725587553790136
+K3 q1 seed 0: 0.10193 vs base 0.09889  ratio 1.0308  z +4.7
+K3 q1 seed 1: 0.10219 vs base 0.09944  ratio 1.0277  z +3.9
+K3 q1 seed 2: 0.10069 vs base 0.09743  ratio 1.0334  z +5.3
+K3 q1: mean-KL ratio 1.0306, per-seed ratios mean 1.0306 max 1.0334, every-beats-every False  =>  FAIL (rule seed, bar 0.985)
+K2 g1 seed 0: 0.58474 vs base 0.53545  ratio 1.0920  z +12.6
+K2 g1 seed 1: 0.58880 vs base 0.54107  ratio 1.0882  z +15.4
+K2 g1 seed 2: 0.58817 vs base 0.52248  ratio 1.1257  z +17.2
+K2 g1: mean-KL ratio 1.1018, per-seed ratios mean 1.1020 max 1.1257, every-beats-every False  =>  FAIL (rule seed, bar 0.97)
+08:07:43 DENOISE DONE

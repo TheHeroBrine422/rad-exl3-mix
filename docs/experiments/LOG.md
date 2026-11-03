@@ -2,6 +2,22 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 08:40 CST · #33-22 #78-03 #80–#89 · Night queue results (0.8B proxy, 4070; A1 and #80 on CPUs)
+- **Status:** running → done (all steps rc 0) · **Pass rules:** each folder's README, YAQA08.md amendments 15/16, `v3/e3/a1/README.md`, `v3/e3/cd/README.md`
+- **#78-03 (i8c on top of edy H_out), K3:** ratio 1.000 / 1.015 / 1.005 (seeds 0–2); K2 1.003 / 0.973 / 0.996. **Does not stack at K3**: the codebook's −1.7% (on plain H_in) vanishes under H_out. i8c adoption needs the 27B check to include an H_out arm.
+- **#33-22 (dose):** dy1350 / edy K3 1.013 / 1.016 / 1.008 (every seed worse), K2 1.040 / 0.997 / 0.994; dy2700 / dy1350 K3 1.004 / 0.996 / 1.000, K2 0.96 / 1.03 / 1.03. **Fails both:** past 1,024 windows nothing improves (the +326 windows even cost ~1% at K3). Contradicts #33-21's 640 → 1,024 gain; reading: saturation by ~1K, the last 326 windows may be atypical. 27B: 512 → 1,024 is the useful range, no need to cycle to 2,048.
+- **#82 (w10, attribution):** K3 gain shares gdn_in 0.39, mlp_in 0.44, attn_in 0.13, writers 0.03; depth thirds 0.32 / 0.35 / 0.38; additive (Σ/full 1.00–1.04). edy gains hold at K4 (−8.7%) and K5 (−7.5%). Verdict: two-sided everywhere except writers (one-sided is enough there).
+- **#83 (w01, gen-masked loss):** masked / unmasked K3 0.971 (every seed better, z −2.4…−4.5), K2 0.950 (every seed). **PASS** → the 27B collection should use `YAQA_GENMASK=1`.
+- **#84 (w03):** A9 analytic SwiGLU diagonal fails its cosine gate (median 0.86); gate/up's share of the B gain at K3 is 0.0030 (2.9 base SDs).
+- **#85 (w02, fixed-code scale refits):** C9 per-family exponent α\* (fit slice) K3 0.973, K2 0.911 on search, transfers to seed 1 (0.973 / 0.914) **PASS**; C10 swj (joint scale on SwiGLU pair) K3 0.969, K2 0.914, also on top of bdiag (0.970 / 0.912) **PASS**; B1 h6 on bdiag K3 0.993 / K2 0.975 (seed 0 screen, 3-seed run pending). Single seed each (codes fixed, paired z −14…−22). Overlap of C9 and C10 untested.
+- **#86 (w07-genh, C13):** K3 0.998 (inconclusive), K2 0.976 (every seed, z −4…−5; bar 0.97 missed) → inconclusive.
+- **#87 (w07-seqsib, C6 asym):** K3 0.857, K2 0.824 (every seed, control SD 0.8% / 0.3%) **PASS, very large**: 48 writer tensors quantized with sibling-quantized inputs (λ 1, ρ 0.5). Beats edy H_out (K3 0.0845 vs 0.0899). Needs a stacking test with H_out and a sanity review before belief.
+- **#88 (w07-denoise, C1):** K3 1.031, K2 1.10 → **FAIL**.
+- **#89 (w06-heal):** jitter 1.0044 ok; frozen-code healing all-layer K2 0.619, last-only 0.845, oracle 0.377; K3 on bdiag 0.832; mixed-K (F/D) 0.65–0.74; gradcos gates pass. H1(a) ceiling 62% → by the README rule **build S27 (27B healing)**; that is a QAD-class stream and needs the user.
+- **#80 (colo, CD replicate, row-seed 1):** cd3 / ldlq 0.993 (K2.5), 0.993 (K3), 16 / 16; cubic / mul1 0.989 / 0.985, 16 / 16. **PASS**: #77 and #78 replicate on other rows.
+- **#81 (A1, Thor + colo):** ug / D mean K2 0.838, K2.5 0.832, K3 0.829 (L30 0.73 / 0.71); up only 0.871 / 0.866 / 0.863 (keeps 80% of the reduction); oracle 0.825. **PASS** (L30 ≤ 0.85, mean ≤ 0.90), up-only preferred. Caveat to check first: the predicted share of H-weighted energy is only 4.5%, yet the coded error drops 17%; that needs explaining (shape effect or a bug) before any GPU work.
+- **Files:** `data/night1103/*.txt`, `data/yaqa08/result-fact1{2,3}.txt`, `data/a1/a1-{thor,colo}.jsonl`, `data/e3/cd-colo-rs1.jsonl`
+
 ### 2026-11-02 20:05 CST · #79 · Coordinate descent stacks on the cubic codebook (CPU proxy)
 - **Status:** running → done · **Machine:** Thor · **Pass rule:** `v3/e3/cd/README.md` (#79)
 - **Result** (cd3 / ldlq, both on cubic0.02_i8; mean / param-weighted / tensors ≤ 1): K2.5 0.992 / 0.993 / 16 of 16;

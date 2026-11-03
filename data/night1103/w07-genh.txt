@@ -1,0 +1,35 @@
+hgen gate: model.language_model.layers.0.input: rows 10259331 vs 10259331, rel diff 0.0e+00 (limit 1e-06)
+hgen gate: model.language_model.layers.0.linear_attn.out_proj.input: rows 10259331 vs 10259331, rel diff 0.0e+00 (limit 1e-03)
+hgen gate: model.language_model.layers.0.mlp.down_proj.input: rows 10259331 vs 10259331, rel diff 0.0e+00 (limit 1e-03)
+hgen gate: model.language_model.layers.0.post_attention.input: rows 10259331 vs 10259331, rel diff 0.0e+00 (limit 1e-03)
+hgen gate -> PASS
+w0 0: 96 groups, trace removed median 0.103 (max 0.118), rows 9205149 of 10259331
+w0 0.3: 96 groups, trace removed median 0.072 (max 0.082), rows 9521404 of 10259331
+MKGENH DONE
+06:05:29 k3base.fit: "kld": 0.1022222851764804, "top1": 0.853278565922244
+06:06:49 k3g0.fit: "kld": 0.10151686756667147, "top1": 0.8548203375789583
+06:08:09 k3g3.fit: "kld": 0.10218983385201715, "top1": 0.8542220381300841
+  K3 fit g0     0.10152  ratio to base 0.9931
+  K3 fit g3     0.10219  ratio to base 0.9997
+06:08:10 K3: fit-slice pick g0 (w0 0)
+06:08:29 k3g0: "kld": 0.09884695464217302, "top1": 0.854683879510096
+06:09:56 k3g0_s1: "kld": 0.09916965278695408, "top1": 0.8548704522885258
+06:11:23 k3g0_s2: "kld": 0.09700071190395093, "top1": 0.8562125725978755
+K3 g0 seed 0: 0.09885 vs base 0.09889  ratio 0.9996  z -0.1
+K3 g0 seed 1: 0.09917 vs base 0.09944  ratio 0.9973  z -0.5
+K3 g0 seed 2: 0.09700 vs base 0.09743  ratio 0.9956  z -0.7
+K3 g0: mean-KL ratio 0.9975, per-seed ratios mean 0.9975 max 0.9996, every-beats-every False  =>  INCONCLUSIVE (rule mean, bar 0.97)
+06:11:36 k2base.fit: "kld": 0.5324597372287208, "top1": 0.6862609736172954
+06:12:58 k2g0.fit: "kld": 0.5222651923262203, "top1": 0.6905871388630009
+06:14:19 k2g3.fit: "kld": 0.5252836729081776, "top1": 0.6869973421697559
+  K2 fit g0     0.52227  ratio to base 0.9809
+  K2 fit g3     0.52528  ratio to base 0.9865
+06:14:20 K2: fit-slice pick g0 (w0 0)
+06:14:39 k2g0: "kld": 0.522079577169274, "top1": 0.6884475339291626
+06:16:09 k2g0_s1: "kld": 0.5301880582755485, "top1": 0.6868706930275947
+06:17:39 k2g0_s2: "kld": 0.5089979797539561, "top1": 0.6907586289910024
+K2 g0 seed 0: 0.52208 vs base 0.53545  ratio 0.9750  z -5.0
+K2 g0 seed 1: 0.53019 vs base 0.54107  ratio 0.9799  z -4.0
+K2 g0 seed 2: 0.50900 vs base 0.52248  ratio 0.9742  z -4.7
+K2 g0: mean-KL ratio 0.9764, per-seed ratios mean 0.9764 max 0.9799, every-beats-every False  =>  INCONCLUSIVE (rule mean, bar 0.97)
+06:17:39 GENH DONE
