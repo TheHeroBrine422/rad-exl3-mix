@@ -161,8 +161,10 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 
 Runtime cost (INDEX legend): every row here is quantizer-only (none) except i8c (P+D?, timing after the HIP build)
 and A1 (P+D: an extra GEMM per MLP); those two also need a prefill and a decode timing before they ship.
-They ship as **per-tensor knapsack options**, not global switches (user, 2026-11-03): i8 / i8c per tensor (both quants
-at each K; both decode variants compiled), and per layer down_proj plain / up-predicted / up+gate-predicted (A1:
+First try to decide each globally (adopt if clearly better at its cost or the cost is negligible, drop if clearly
+worse). Only if a variant is likely on the Pareto frontier for some tensors / sizes, or tests cannot tell, does it
+become a **per-tensor knapsack option** (user, 2026-11-03): e.g. i8 / i8c per tensor (both quants at each K; both
+decode variants compiled), and per layer down_proj plain / up-predicted / up+gate-predicted (A1 is the likely case:
 `ugtrue` ≈ `ug` on the CPU proxy, so the gain barely depends on up's K and the option is close to separable from the
 gate_up choice). Each option needs its sensitivity in kfit2 and its time in knap4's speed table; **knap4 also needs a
 decode table** (bytes and ALU per token) so decode can be a constraint or a reported axis, since the board scores only
