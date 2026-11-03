@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""a1sched.py "CTRL_LAYERS" "MORE_LAYERS" NCPU [MARGIN_GB] -- #81 job scheduler for one machine (replaces a1ctl.sh's
+"""a1sched.py "CTRL_LAYERS" "MORE_LAYERS" NCPU [MARGIN_GB [MAXDOWN]] -- #81 job scheduler for one machine (replaces a1ctl.sh's
 fixed-width xargs stages, which left most CPUs idle while the memory-heavy down jobs ran).
 
 Jobs (each `a1test.py` single-threaded, skipped when its output exists or it is already running):
@@ -12,6 +12,7 @@ rest. Restart-safe; stop: touch /data/work/a1/STOP (running jobs finish). Log: /
 import glob, json, os, subprocess, sys, time
 CTRL = [int(x) for x in sys.argv[1].split()]; MORE = [int(x) for x in sys.argv[2].split()]
 NCPU = int(sys.argv[3]); MARGIN = float(sys.argv[4]) * 2**30 if len(sys.argv) > 4 else 10 * 2**30
+MAXDOWN = int(sys.argv[5]) if len(sys.argv) > 5 else 99   # down jobs at once (~15 GB per CPU): leaves memory for uq parts
 A = "/data/work/a1"; W = "/data/work/e3t"; MEM = {"uq": 3.0 * 2**30, "down": 17 * 2**30}
 ENV = dict(os.environ, E3_CKPT="/data/models/qwen38-27b-bf16", E3_HESS="/data/challenge/hessians/calib",
            OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
@@ -62,10 +63,11 @@ while not os.path.exists(f"{A}/STOP"):
     todo = [j for j in jobs() if not any(f"a1test.py {j[1]} " in r for r in run)]
     if not todo and not run: log("A1SCHED DONE"); break
     todo.sort(key=lambda j: j[0] != "down")          # down first when it fits
-    started = 0
+    started = 0; ndown = sum("a1test.py down" in r for r in run)
     for kind, spec in todo:
         if len(run) + started >= NCPU: break
+        if kind == "down" and ndown >= MAXDOWN: continue
         if MEM[kind] > free: continue
-        launch(kind, spec); started += 1; free -= MEM[kind]; pending_mem.append((now, MEM[kind]))
+        launch(kind, spec); started += 1; free -= MEM[kind]; pending_mem.append((now, MEM[kind])); ndown += kind == "down"
         log(f"launch {spec} (running {len(run) + started}, free {free / 2**30:.0f} GB)")
     time.sleep(20 if started else 30)
