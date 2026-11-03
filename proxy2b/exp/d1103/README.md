@@ -29,3 +29,11 @@ search. Nothing here touches verify or public.
 
 ## Runtime cost (user rule, 2026-11-03)
 none for every step (quantizer targets, Hessians, scale refits, healing folded into existing scales). Exception: `cub` (i8c) = P+D? (2 FMAs per weight in the codebook decode; time it after the HIP build).
+
+## run3 (#87-05, queued behind run2, 2026-11-03 ~10:10 AM CST, written before data)
+The ρ screen (fit, seed 0) picked **ρ 0** (the full clean-output target): K3 0.947, K2 0.911 vs ρ 0.5; ρ 0.25 0.954 /
+0.949; ρ 0.75 1.062 / 1.073.
+- **ρ 0 replaces ρ 0.5** if, on search over seeds 0–2, asym_r0 / asym (ρ 0.5) has mean ratio ≤ 0.98 and every seed < 1
+  at K3 and K2, both plain and stacked on edy.
+- **ρ −0.25** (screen, fit): if it beats ρ 0 by ≥ 1% at both K, a further step goes to search.
+- Runtime cost: none.
