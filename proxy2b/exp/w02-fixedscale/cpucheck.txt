@@ -1,0 +1,45 @@
+cpucheck.sh results, 2026-11-02 (4070 box CPU, read only; summarised from the runs' stdout, aggregation as in
+cpucheck.sh: sum over tensors of the after / before errors).
+
+== B1 (refitq.py --dry, all 150 trunk linears; e = one-sided error in the raw calib H, eh = the dv8192-diagonal-weighted
+   error; "src" check: e_before equals SRC/proxy.jsonl's proxy_err for every tensor of layer 3, to 5 digits)
+
+k3bdiag  h6 (--rounds 6 --undamped --hout dv8192)          113 s
+  family   n    e after/before   eh after/before   best single eh   max rms(log r)
+  ALL      150  1.0006           0.9992            0.9784           0.0169
+  attn_in  18   1.0020           0.9969            0.9784           0.0169
+  attn_o   6    0.9999           0.9997            0.9995           0.0047
+  gdn_in   36   1.0018           0.9975            0.9925           0.0087
+  gdn_out  18   1.0000           0.9999            0.9995           0.0038
+  gate_up  48   1.0005           0.9993            0.9904           0.0068
+  down     24   1.0002           0.9998            0.9961           0.0068
+
+k3bdiag  u6 (--rounds 6 --undamped, no h)                  106 s
+  ALL      150  1.0000           1.0000            0.9995           0.0047   (every family 0.9998-1.0000)
+
+k2bdiag  h6                                                108 s
+  ALL      150  1.0011           0.9985            0.9598           0.0470
+  attn_in  18   1.0032           0.9948            0.9598           0.0470
+  attn_o   6    0.9997           0.9994            0.9987           0.0144
+  gdn_in   36   1.0036           0.9952            0.9859           0.0246
+  gdn_out  18   1.0000           0.9997            0.9987           0.0123
+  gate_up  48   1.0010           0.9986            0.9760           0.0196
+  down     24   1.0003           0.9997            0.9924           0.0189
+
+Reading: the stored 2-round damped refit is already converged (u6 moves nothing); h-weighting moves the h-weighted
+error by -0.08% (K3) / -0.15% (K2). With a diagonal H_out the output-side step is per column, so h cancels there; only
+the k-vector of input scales can react, and it cannot single out output rows. Predicted KL effect << the 1% bar.
+
+== C10 (swiglufit.py --dry, 56 fit-pool docs (g08-fit1) capped at 1024 tokens = 44,231 tokens; fit on the even docs
+   (~22k tokens), scored on the odd; residual = sum (silu(g) u - c_u silu(c_g ĝ) û)² / sum (silu(g) u)², grid
+   0.8:1.2 (run.sh uses 0.6:1.4: at K2 many channels hit the 0.8:1.2 edges))
+
+            in-sample up-only   in-sample joint   held-out up-only   held-out joint   c_g mean (all layers)
+  k3base    0.9840              0.9737            0.9930             0.9871           1.007-1.020 (layer means)
+  k2base    0.9753              0.9571            0.9879             0.9745           1.024-1.073 (layer means; up to 458 of 3584 channels at the grid edge)
+  (per-layer ratios vs the stored quant; MEAN = sum over layers. Layer 14 is an outlier: up-only alone -10% at both K)
+
+Reading: the gate output is systematically too small through the SwiGLU (c_g > 1 in every layer, ~+1.4% at K3,
+~+5% at K2: the least-squares refit's shrink, which the nonlinearity does not let up_proj undo). Held-out MLP-output
+residual -1.3% (K3) / -2.5% (K2) from 22k tokens; run.sh fits on the whole fit slice (~100k tokens). As a share of the
+whole trunk error this is small: expect KL -0.2 to -1%.

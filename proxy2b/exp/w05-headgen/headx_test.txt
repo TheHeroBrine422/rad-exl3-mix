@@ -1,0 +1,11 @@
+loaded in 0s on 0 GPU(s)
+{'h_docs': 17, 'h_tok': 11252, 'h_gen': 9849, 'd_docs': 8, 'd_rows': 1587} 1s
+{'h_docs': 38, 'h_tok': 26415, 'h_gen': 22583, 'd_docs': 12, 'd_rows': 2335} 2s
+HEADX DONE {"h_docs": 44, "h_tok": 30924, "h_gen": 25211, "d_docs": 16, "d_rows": 3000, "gen_vs_all": {"cos": 0.9962653138806818, "diag_ratio_q": [0.9520236849784851, 1.000348448753357, 1.0299489498138428]}, "sec": 2}
+ 
+1 run completes: True
+2 next tokens agree with the golden rows (3000 rows, 16 docs), all gen: True
+3 dumped vectors vs independent forward (doc 1640, 200 rows): rel err 0.0e+00 at the mapped positions, 1.40 one position off: True
+4 gen rows 25211 <= all 30924; min eig of Hg and of Ha - Hg 1.84e+03: True
+{'h_docs': 44, 'h_tok': 30924, 'h_gen': 25211, 'd_docs': 16, 'd_rows': 3000, 'gen_vs_all': {'cos': 0.9962653138806818, 'diag_ratio_q': [0.9520236849784851, 1.000348448753357, 1.0299489498138428]}, 'sec': 2}
+HEADX SELFTEST PASS

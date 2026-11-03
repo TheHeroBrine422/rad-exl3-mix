@@ -1,0 +1,4 @@
+150 files: file err/ref over proxy_err: median 171, min 70.6, max 1e+03 (WRONG)
+  model.language_model.layers.0.linear_attn.in_proj_qkv: per-row Spearman file vs recomputed 0.021, sum ratio 2.14e+05
+  model.language_model.layers.0.linear_attn.in_proj_z: per-row Spearman file vs recomputed -0.019, sum ratio 2.89e+05
+  model.language_model.layers.0.linear_attn.out_proj: per-row Spearman file vs recomputed 0.060, sum ratio 2.33e+06

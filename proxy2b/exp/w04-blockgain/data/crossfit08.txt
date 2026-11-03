@@ -1,0 +1,3 @@
+asymptote proxy: design and evaluate on the 1024 mean: 12.5%
+halves of 128 seqs: cross-fit (design A, eval B) 9.5%, (B on A) 9.4%; self A 13.9%; design A scored in the 1024 metric 10.2%; pooled 2n design, self 13.3%
+A = seqs 257-512, B = 513-1024 (unequal): cross-fit (design A, eval B) 11.1%, (B on A) 11.0%; self A 12.7%; design A scored in the 1024 metric 11.4%; pooled 2n design, self 12.4%

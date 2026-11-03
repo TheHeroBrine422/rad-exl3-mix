@@ -1,0 +1,5 @@
+train: 1024 windows from 912 qad docs, 1108564 tokens, 1009389 scored rows (91.1%); pools {'qad'}; windows starting mid-doc 246
+  top sources: [('fineweb-edu', 164), ('stackv2-edu', 140), ('fineweb2-hq', 106), ('stackexchange', 72), ('the-stack-smol-xl', 62), ('finemath-4plus', 54), ('wikimedia', 53), ('smoltalk2', 49)]
+held-out: 48 search docs, 39845 tokens, 31105 scored rows; pools {'search'}; overlap with the golden 0
+oracle: 171 golden docs, 192619 tokens, 166155 scored rows (golden gen rows 166155)
+qad docs 2799; available windows at per_doc 8: 3664

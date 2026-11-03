@@ -1,0 +1,12 @@
+150 synthetic quantized linears
+[PASS] identity: max |dlogit| 0.0e+00; 283 parameter vectors (553984 values), norm form 1+w, 13 norms; gauge-fixed: no down_proj r True, no v_proj c True
+[PASS] fold: 150 linears + 13 norms folded; |student - folded| / |effect of the multipliers| = 5.82e-03 (f16 storage of the product); links 4
+[PASS] gauge: up c vs down r 6.8e-05, v c vs o r tiled 5.1e-05 (relative to the effect)
+[PASS] gradient: autograd -1.5607696e+01 vs central differences eps 0.001: -1.5592407e+01, eps 0.0003: -1.5602208e+01, eps 0.0001: -1.5604472e+01 (best rel 2.1e-04)
+[PASS] data: window rows = evalq rows on 12 docs (19902 rows), 5 qad windows (<= 2 a doc), held-out [5, 9] (search, golden doc 1 excluded)
+[PASS] resume: 6 steps straight == 2 + resumed 4 (bit-exact); held-out KL 0.02295 -> [0.022030230363210043, 0.01918145351939731, 0.0159246563911438] best 0.01592
+mix family: 150 linears, trunk 2.468 bits/weight
+xfer.pt: 150 linears, 13 norms
+folded 150 linears, 0 norms -> /data/work/w06/st/jit
+[PASS] mkmix+jitter: family mix 2.468 bits/weight, links and transferred tensors right; jitter log-ratio SD 0.0043 (want ~0.0042)
+SELFTEST PASS (7/7)

@@ -1,0 +1,14 @@
+PASS  no side options: runs; stamp arguments equal
+PASS  --hout complete: runs; stamp arguments equal
+PASS  --hout one missing: refuses: --hout: 1 of 25 linears have no file (e.g. model.language_model.layers.2.mlp.down_proj) -- refusing to start (--side-partial: quantize those without it)
+PASS  --hout one missing + --side-partial: runs; stamp arguments equal; prints: warning: --hout: 1 of 25 linears have no file (e.g. model.language_model.layers.2.mlp.down_proj) (--side-partial)
+PASS  --hout-diag one missing: refuses: --hout-diag: 1 of 25 linears have no file (e.g. model.language_model.layers.2.mlp.down_proj) -- refusing to start (--side-partial: quantize those without it)
+PASS  --hout-diag complete: runs; stamp arguments equal
+PASS  --hin group files (collect.py): runs; stamp arguments equal
+PASS  --hin per-key files (yaqaB.py): runs; stamp arguments equal
+PASS  --hin one group missing: refuses: --hin: 2 of 25 linears have no file (e.g. model.language_model.layers.1.mlp.gate_proj) -- refusing to start (--side-partial: quantize those without it)
+PASS  --hout one missing, --only without it: runs; stamp arguments equal
+PASS  --hout empty dir: refuses: --hout: 25 of 25 linears have no file (e.g. model.language_model.layers.0.linear_attn.in_proj_qkv) -- refusing to start (--side-partial: quantize those without it)
+PASS  --only-head, --hout empty (head not checked): runs; stamp arguments equal
+PASS  --hout one missing, --layers 0-1 (outside): runs; stamp arguments equal
+ALL PASS

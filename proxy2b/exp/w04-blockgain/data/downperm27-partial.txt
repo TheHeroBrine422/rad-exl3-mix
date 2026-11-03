@@ -1,0 +1,10 @@
+# downperm.py on the 27B (colo, float32, one sign draw; 2026-11-02): down_proj input-side LDLQ cost of a permuted MLP
+# neuron order / natural order. Layers 0/15/31/62/63: a random permutation; layer 40: balanced / sorted / random from
+# a FAKE h (smoke test; the down side does not depend on h much: random ~ balanced on the 0.8B).
+layer 0: random0 0.9303  natural_vs_onesided_noLDL 0.4156
+layer 15: random0 0.9919  natural_vs_onesided_noLDL 0.7945
+layer 31: random0 0.9979  natural_vs_onesided_noLDL 0.7876
+layer 40: balanced 0.9972  sorted 0.9980  random0 0.9972  natural_vs_onesided_noLDL 0.7537
+layer 62: random0 0.9888  natural_vs_onesided_noLDL 0.4035
+layer 63: random0 0.9829  natural_vs_onesided_noLDL 0.1981
+# 0.8B for comparison (data/downperm08.json, balanced): median 0.88, layer 14 0.66, layer 23 0.52

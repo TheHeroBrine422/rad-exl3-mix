@@ -1,0 +1,59 @@
+predictor vocab  sigma_out 0.001 : two-sided / one-sided damped-metric cost 0.241
+predictor vocab  sigma_out 0.01  : two-sided / one-sided damped-metric cost 0.275
+predictor vocab  sigma_out 0.1   : two-sided / one-sided damped-metric cost 0.381
+predictor vocab  sigma_out 1     : two-sided / one-sided damped-metric cost 0.701
+predictor sorted sigma_out 0.001 : two-sided / one-sided damped-metric cost 0.757
+predictor sorted sigma_out 0.01  : two-sided / one-sided damped-metric cost 0.759
+predictor sorted sigma_out 0.1   : two-sided / one-sided damped-metric cost 0.779
+predictor sorted sigma_out 1     : two-sided / one-sided damped-metric cost 0.880
+predictor strided sigma_out 0.001 : two-sided / one-sided damped-metric cost 0.016
+predictor strided sigma_out 0.01  : two-sided / one-sided damped-metric cost 0.046
+predictor strided sigma_out 0.1   : two-sided / one-sided damped-metric cost 0.175
+predictor strided sigma_out 1     : two-sided / one-sided damped-metric cost 0.604
+F: PROXY: qad gen next-token counts + 0.01; top block 43.3% of F; 50% of F in 272 rows; 5s
+emulate vocab  K2 sigma_out 0.01 : sum F err two-sided / one-sided 0.400 (37s)
+emulate vocab  K2 sigma_out 0.1  : sum F err two-sided / one-sided 0.406 (52s)
+emulate vocab  K3 sigma_out 0.01 : sum F err two-sided / one-sided 0.375 (77s)
+emulate vocab  K3 sigma_out 0.1  : sum F err two-sided / one-sided 0.372 (92s)
+emulate sorted K2 sigma_out 0.01 : sum F err two-sided / one-sided 0.764 (120s)
+emulate sorted K2 sigma_out 0.1  : sum F err two-sided / one-sided 0.775 (131s)
+emulate sorted K3 sigma_out 0.01 : sum F err two-sided / one-sided 0.750 (151s)
+emulate sorted K3 sigma_out 0.1  : sum F err two-sided / one-sided 0.748 (160s)
+emulate strided K2 sigma_out 0.01 : sum F err two-sided / one-sided 0.160 (178s)
+emulate strided K2 sigma_out 0.1  : sum F err two-sided / one-sided 0.152 (188s)
+emulate strided K3 sigma_out 0.01 : sum F err two-sided / one-sided 0.141 (320s)
+emulate strided K3 sigma_out 0.1  : sum F err two-sided / one-sided 0.139 (391s)
+{
+ "fisher": "PROXY: qad gen next-token counts + 0.01",
+ "V": 248320,
+ "top_block_share": 0.4330519139766693,
+ "rows_50pct": 272,
+ "pred": {
+  "vocab/sigma_out=0.001": 0.24116123095334663,
+  "vocab/sigma_out=0.01": 0.275220814381761,
+  "vocab/sigma_out=0.1": 0.38062411768545995,
+  "vocab/sigma_out=1": 0.7006556728728587,
+  "sorted/sigma_out=0.001": 0.7567834854121606,
+  "sorted/sigma_out=0.01": 0.7590715609435706,
+  "sorted/sigma_out=0.1": 0.7794920685040753,
+  "sorted/sigma_out=1": 0.8801432688605477,
+  "strided/sigma_out=0.001": 0.01567436893694241,
+  "strided/sigma_out=0.01": 0.04572166840098866,
+  "strided/sigma_out=0.1": 0.1754339033724647,
+  "strided/sigma_out=1": 0.603967585822879
+ },
+ "emulate": {
+  "vocab/K2/sigma_out=0.01": 0.39987957913411953,
+  "vocab/K2/sigma_out=0.1": 0.40646182270604164,
+  "vocab/K3/sigma_out=0.01": 0.37520900142863073,
+  "vocab/K3/sigma_out=0.1": 0.3721251005000559,
+  "sorted/K2/sigma_out=0.01": 0.7640034183385876,
+  "sorted/K2/sigma_out=0.1": 0.7754436282967616,
+  "sorted/K3/sigma_out=0.01": 0.749641552482404,
+  "sorted/K3/sigma_out=0.1": 0.7477226171379145,
+  "strided/K2/sigma_out=0.01": 0.1600910361920498,
+  "strided/K2/sigma_out=0.1": 0.15159222828615052,
+  "strided/K3/sigma_out=0.01": 0.14088176903233007,
+  "strided/K3/sigma_out=0.1": 0.1391203594547439
+ }
+}

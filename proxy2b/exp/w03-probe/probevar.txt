@@ -1,0 +1,10 @@
+window 1/8: mean entropy 1.33 nats, 138s
+window 2/8: mean entropy 2.92 nats, 287s
+window 3/8: mean entropy 0.87 nats, 481s
+window 4/8: mean entropy 1.55 nats, 719s
+window 5/8: mean entropy 1.03 nats, 854s
+window 6/8: mean entropy 1.01 nats, 1032s
+window 7/8: mean entropy 2.38 nats, 1301s
+window 8/8: mean entropy 2.98 nats, 1608s
+sketchB: nu sample 0.586, gauss 0.599, rad 0.563; omega 0.335; dose factor vs sampled sample 1.00, gauss 0.99, rad 1.03; means cos vs sampled sample 1.0000, gauss 0.9916, rad 0.9912
+pertoken: nu sample 0.005, gauss 0.005, rad 0.004; omega 0.319; dose factor vs sampled sample 1.00, gauss 1.00, rad 1.00; means cos vs sampled sample 1.0000, gauss 0.9999, rad 0.9999

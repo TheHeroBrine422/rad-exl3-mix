@@ -1,0 +1,5 @@
+PASS  blocks loss 703.9587 vs 703.9587, max |grad diff| 0.0e+00, unscored rows' own gradient zero: True
+PASS  random loss 438.3860 vs 438.3860, max |grad diff| 0.0e+00, unscored rows' own gradient zero: True
+PASS  all    loss 1411.8804 vs 1411.8805, max |grad diff| 0.0e+00, unscored rows' own gradient zero: True
+PASS  none   loss 0.0000 vs 0.0000, max |grad diff| 0.0e+00, unscored rows' own gradient zero: True
+ALL PASS

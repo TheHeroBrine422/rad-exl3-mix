@@ -1,0 +1,10 @@
+INFO built /tmp/tmpyfftvbog/p: 2 layers permuted (balanced)
+PASS function: permuted MLP = original, rel L2 3.0e-07 (fp32 summation order)
+PASS hessian: permuted H = H of the permuted inputs
+PASS h vectors: gate/up h permuted, down's linked
+INFO unpermuted 6 MLP tensors into /tmp/tmpyfftvbog/uwq
+PASS unperm: MLP back in natural order, others = donor
+PASS splice sorted: high-K blocks [2, 3]
+PASS splice random: high-K blocks [0, 2]
+PASS splice uniform: linked to the uniform donor
+SELFTEST2 PASS

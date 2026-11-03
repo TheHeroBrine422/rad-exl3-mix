@@ -1,0 +1,52 @@
+--- a/quantize/ourq.py	2026-11-02 21:16:11.009145808 +0000
++++ b/quantize/ourq.py	2026-11-02 21:16:34.335980699 +0000
+@@ -110,6 +110,12 @@
+                 "per tensor (the metric of the row-scaled weight it actually quantizes) instead of the shared rotated H")
+ ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
+                 "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
++ap.add_argument("--refit-rounds", type=int, default=None, help="rounds of the post-LDLQ scale refit (default exllamav3's 2)")
++ap.add_argument("--refit-undamped", action="store_true", help="scale refit in the raw input Hessian instead of the "
++                "damped one (w02 B1)")
++ap.add_argument("--refit-hout", default=None, metavar="DIR", help="weight the scale refit's input-side solve by the "
++                "output-side diagonal: DIR/<key>.safetensors, \"hout_diag\" vector or the diagonal of \"hout\" (collect.py "
++                "YAQA_DIAG layout; normalised to mean 1). A trunk linear without a file is an error (w02 B1)")
+ a = ap.parse_args()
+ _kp = lambda v: int(v) if float(v).is_integer() else float(v)
+ KS = [_kp(v) for v in a.K.split(",")]
+@@ -229,6 +235,17 @@
+             qa["sigma_reg"] = a.sigma_reg_in
+         GAIN[0] = next((float(m) for suf, m in GAINS.items() if key.endswith(suf)), 1.0)
+         if a.sigma_reg_out is not None: qa["sigma_reg_out"] = a.sigma_reg_out
++        if a.refit_rounds is not None: qa["refit_rounds"] = a.refit_rounds
++        if a.refit_undamped: qa["refit_undamped"] = True
++        rh = f"{a.refit_hout}/{key}.safetensors" if a.refit_hout else None
++        if rh and (os.path.exists(rh) or ".layers." in key):
++            with safe_open(rh, "pt", device="cpu") as f:
++                hv = (f.get_tensor("hout_diag") if "hout_diag" in f.keys() else f.get_tensor("hout").diagonal()).float()
++            if a.head_perm and key == "lm_head":
++                import numpy as np
++                hv = hv[torch.from_numpy(np.load(a.head_perm))]
++            assert hv.shape[0] == w.shape[1] and torch.isfinite(hv).all() and (hv >= 0).all(), (key, hv.shape)
++            qa["refit_out_weight"] = (hv / hv.mean()).to(dev)
+         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
+         if hp and os.path.exists(hp):
+             with safe_open(hp, "pt", device="cpu") as f:     # "hout_diag": a diagonal-only factor (collect.py YAQA_DIAG)
+@@ -277,6 +294,8 @@
+                               "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "sweep_all": qa.get("sweep_all"),
+                               "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook,
+                               "out_scales": qa.get("apply_out_scales"), "head_mean_row": bool(a.head_mean_row and key == "lm_head"),
++                              **({"refit": {"rounds": a.refit_rounds, "undamped": a.refit_undamped, "hout": bool(qa.get("refit_out_weight") is not None)}}
++                                 if (a.refit_rounds is not None or a.refit_undamped or a.refit_hout) else {}),
+                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
+         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
+     del Hd; torch.cuda.empty_cache()
+@@ -316,7 +335,8 @@
+     if a.only: files.append(os.path.abspath(a.only))
+     for f in files:
+         if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+-    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
++    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")
++            and not (k.startswith("refit_") and v in (None, False))}     # unset refit options: settings hash as before
+     h.update(json.dumps(keep, sort_keys=True).encode())
+     return h.hexdigest()[:16], src, keep
+ _LOGS, _STAMPS = {}, {}

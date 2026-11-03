@@ -1,0 +1,33 @@
+--- a/v3/yaqa/collect.py	2026-11-02 21:10:44.061530880 +0000
++++ b/v3/yaqa/collect.py	2026-11-02 21:11:29.751078970 +0000
+@@ -187,6 +187,8 @@
+ 
+ # ---- hooks on every trunk linear
+ lin = {name: m for name, m in model.model.layers.named_modules() if isinstance(m, torch.nn.Linear)}
++if not GATE and START + NSEQ > len(wins):        # fail loudly (w01 / ranked.md A8): wins[s] past the end is an IndexError hours in
++    sys.exit(f"windows {START}..{START + NSEQ - 1} requested, the pool has {len(wins)} of {L} tokens")
+ state = {"pos": None, "rows": {}, "full_done": set()}
+ FULL = {int(x) for x in os.environ.get("YAQA_FULL", "").split(",") if x}
+ UNW = os.environ.get("YAQA_UNWEIGHTED") == "1"
+@@ -265,7 +267,13 @@
+             save_file({"hessian_upper": H[iu[0], iu[1]].contiguous()}, f"{OUT}/{hd}/{gname}.safetensors.part",
+                       metadata={"k": str(k), "rows": str(HINN.get(gname, 0)), "weight": "sum ||dy||^2 over the group"})
+             os.replace(f"{OUT}/{hd}/{gname}.safetensors.part", f"{OUT}/{hd}/{gname}.safetensors")
++def expect_saved(ACC, want, sub):
++    """fail loudly (w01 / ranked.md A8): every linear that should have sums has them, before anything is written. A
++    missing one would leave its file out, and ourq.py --hout then quantizes that linear one-sided without a word"""
++    miss = sorted(want - set(ACC))
++    if miss: sys.exit(f"{sub}: {len(miss)} of {len(want)} linears have no sums (no gradient reached them?): {miss[:8]}")
+ def _save_hout(sub, ACC):
++    expect_saved(ACC, {n for n in lin if int(n.split(".")[0]) in FULL}, sub)
+     os.makedirs(f"{OUT}/{sub}", exist_ok=True)
+     from safetensors.torch import save_file
+     for name, H in ACC.items():
+@@ -314,6 +322,7 @@
+     return h
+ def save_diag(sub="hdiag"):
+     from safetensors.torch import save_file
++    expect_saved(DACC, {n for n in lin if not n.endswith(("in_proj_a", "in_proj_b"))}, sub)
+     os.makedirs(f"{OUT}/{sub}", exist_ok=True)
+     for name, v in DACC.items():
+         key = "model.language_model.layers." + name

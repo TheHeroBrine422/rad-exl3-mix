@@ -1,0 +1,48 @@
+--- a/quantize/ourq.py	2026-11-02 21:10:44.062209965 +0000
++++ b/quantize/ourq.py	2026-11-02 21:12:03.774504325 +0000
+@@ -108,6 +108,9 @@
+                 "head must agree on this, or mixed rows stop sharing the shift")
+ ap.add_argument("--scaled-hessian", action="store_true", help="exllamav3's scaled_hessian: LDLQ factors P diag(su) H diag(su) P "
+                 "per tensor (the metric of the row-scaled weight it actually quantizes) instead of the shared rotated H")
++ap.add_argument("--side-partial", action="store_true", help="allow trunk linears without a file in --hout / "
++                "--hout-diag / --hin (they quantize as without the option: one-sided, calib H_in). Default: refuse to start "
++                "and list them (a collector that missed a linear used to pass silently; w01 / ranked.md A8). Not in the stamp")
+ ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
+                 "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
+ a = ap.parse_args()
+@@ -302,6 +305,26 @@
+     def _gss(*x, **k):
+         g_, m_ = _orig_gss(*x, **k); return g_ * GAIN[0], m_
+     _Q.g_scale_gss = _gss
++# ---- side-Hessian files (w01 / ranked.md A8): every trunk linear to quantize has its --hout / --hout-diag / --hin file
++def missing_side_files(todo, hout, hout_diag, hin):
++    """todo: [(input-Hessian group name, checkpoint key)] -> {option: [keys without a file]}. --hin counts a per-key
++    file or the group's (hessian() / quantize_group read either). lm_head is not checked (its own path)"""
++    miss = {}
++    for hn, key in todo:
++        if hout and not os.path.exists(f"{hout}/{key}.safetensors"): miss.setdefault("--hout", []).append(key)
++        if hout_diag and not os.path.exists(f"{hout_diag}/{key}.safetensors"): miss.setdefault("--hout-diag", []).append(key)
++        if hin and not (os.path.exists(f"{hin}/{key}.safetensors") or os.path.exists(f"{hin}/{hn}.safetensors")):
++            miss.setdefault("--hin", []).append(key)
++    return miss
++if a.hout or a.hout_diag or a.hin:
++    _lo, _hi = map(int, a.layers.split("-"))
++    _todo = [(hn, k) for l in (() if a.only_head else range(_lo, _hi + 1)) for hn, ks in layer_plan(l) for k in ks
++             if ONLY is None or k in ONLY]
++    _miss = missing_side_files(_todo, a.hout, a.hout_diag, a.hin)
++    if _miss:
++        _msg = "; ".join(f"{o}: {len(v)} of {len(_todo)} linears have no file (e.g. {v[0]})" for o, v in _miss.items())
++        if not a.side_partial: sys.exit(f"{_msg} -- refusing to start (--side-partial: quantize those without it)")
++        print(f"warning: {_msg} (--side-partial)", flush=True)
+ # ---- code stamp (mining merge B13): never resume a run with different code or settings
+ import hashlib, glob
+ def _stamp():
+@@ -316,7 +339,7 @@
+     if a.only: files.append(os.path.abspath(a.only))
+     for f in files:
+         if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+-    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
++    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq", "side_partial")}
+     h.update(json.dumps(keep, sort_keys=True).encode())
+     return h.hexdigest()[:16], src, keep
+ _LOGS, _STAMPS = {}, {}

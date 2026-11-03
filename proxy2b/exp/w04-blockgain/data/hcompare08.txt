@@ -1,0 +1,7 @@
+stats08-k3.npz: own predicted gain 12.4%
+c18-snap128.npz          gain in REF's metric   9.3% (74.8% of REF's), self-predicted  13.9%, median cos(h, h_ref) 0.9674
+c18-snap256.npz          gain in REF's metric  11.4% (92.3% of REF's), self-predicted  13.3%, median cos(h, h_ref) 0.9923
+c18-snap512.npz          gain in REF's metric  11.6% (93.9% of REF's), self-predicted  12.7%, median cos(h, h_ref) 0.9944
+c18-snap1024.npz         gain in REF's metric  11.8% (95.3% of REF's), self-predicted  12.5%, median cos(h, h_ref) 0.9956
+c18-snap1024-xw.npz      gain in REF's metric  11.9% (95.6% of REF's), self-predicted  12.0%, median cos(h, h_ref) 0.9942
+c18-snap1024-dy.npz      gain in REF's metric  11.9% (95.6% of REF's), self-predicted  12.0%, median cos(h, h_ref) 0.9940

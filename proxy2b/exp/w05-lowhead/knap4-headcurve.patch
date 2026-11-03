@@ -1,0 +1,39 @@
+--- a/v3/nf/knap4.py	2026-11-02 21:21:09.352696499 +0000
++++ b/v3/nf/knap4.py	2026-11-02 21:21:09.369835501 +0000
+@@ -20,6 +20,10 @@
+               both neighbouring integers -> a tensor's fractional error sits where the measurement puts it between
+               the integers (log scale), instead of the midpoint interpolation. Tensors without all three: interpolated.
+   F8 now uses the measured K7 x1.25 / K8 x4.5 (E3b full set), fractional K interpolated.
++  KN_HEADCURVE=FILE  measured slab-head curve (proxy2b/exp/w05-lowhead pickcurve.py): per head budget B (bits / row) the
++              exact head-only KL of the chosen slab plan (headsim), and the uniform heads' KL at integer K (anchors, same
++              run). Head option ours-hcK<B> = the integer option ours-K<lo> (lo = largest anchor <= B) with error x
++              (KL_B / KL_u<lo>)^(1/q) and bytes + (B - lo) V H / 8 + 1 MiB (row permutation). Containers hdslab-hcK<B>.rad.
+   KN_V3=1     the V3 option table (critique 2026-11-02 C3.2): only options with a container (built or queued):
+               ours fractional / integer K = the ladder's levels (KN_LADDER, default 2..6 in quarter steps to 4.75, then
+               5, 5.5, 6), i8 codebook, the only ones offered int8 modes; V2's mul1 ours-K1 / K7 / K8 stay f16-only;
+@@ -182,6 +186,17 @@
+         for K, fK in SLABF.items():
+             c = f"ours-K{K:g}"
+             if c in o: o[f"ours-slabK{K:g}"] = [o[c][0] + (1 << 20), o[c][1] * fK, o[c][2]]; t["family_of"][f"ours-slabK{K:g}"] = t["family_of"][c]
++if os.environ.get("KN_HEADCURVE"):
++    HC = json.load(open(os.environ["KN_HEADCURVE"]))
++    for t in md["tensors"]:
++        if t["w"] != "output.weight": continue
++        o = t["opts"]; VH = t["bf16_bytes"] / 2
++        for Bs, r in HC["budgets"].items():
++            B = float(Bs); lo = max((int(k) for k in HC["anchor"] if int(k) <= B and f"ours-K{k}" in o), default=None)
++            if lo is None or B == lo: continue
++            ba, ea, _ = o[f"ours-K{lo}"]; c = f"ours-hcK{B:g}"
++            o[c] = [ba + (B - lo) * VH / 8 + (1 << 20), ea * (r["kl"] / HC["anchor"][str(lo)]) ** (1 / md["q"]), B]
++            t["family_of"][c] = t["family_of"][f"ours-K{lo}"]
+ if os.environ.get("KN_EMBT") == "1":
+     E = md["emb"]; cb = E["bf16"]["cost"]
+     lr = {}
+@@ -406,6 +421,7 @@
+ def rad(c, w):
+     if V3 and c.startswith("trellis-K"): return f"{RXM_V3}/emb-{c}.rad"
+     if V3 and re.fullmatch(r"ours-K[\d.]+", c) and float(c[6:]) in LADDER and w != "output.weight": return f"{RXM_V3}/{c}.rad"
++    if c.startswith("ours-hc"): return f"{RXM_OURS}/hdslab-{c[5:]}.rad"
+     if not c.startswith("ours-"): return f"{RADF}/q38-27b-{c}.rad"
+     if c.startswith("ours-slab"): return f"{RXM_OURS}/hdslab-{c[9:]}.rad"
+     return f"{RXM_OURS}/hd-{c[5:]}.rad" if w == "output.weight" else f"{RXM_OURS}/{c}.rad"

@@ -1,0 +1,76 @@
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-02 21:16:11.007939584 +0000
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-02 21:16:20.227676684 +0000
+@@ -1581,7 +1581,8 @@
+ 
+ 
+ def refit_scales(weight: torch.Tensor, weight_q: torch.Tensor, H: torch.Tensor, su: torch.Tensor, sv: torch.Tensor,
+-                 rounds: int = 2, chunk: int = 16384, damping: float = 0.0):
++                 rounds: int = 2, chunk: int = 16384, damping: float = 0.0,
++                 out_weight: torch.Tensor | None = None, fit_undamped: bool = False):
+     """
+     Free post-quantization polish: refit the stored per-channel fp16 scales (suh on the input side, svh on
+     the output side) to the quantized weight in the Hessian metric, holding the trellis fixed. With
+@@ -1589,7 +1590,10 @@
+     per input row r solves ((Q Q^T) o H) r = rowsum(Q o (H W)); alternated. Returns the rescaled weight_q
+     and the output error before / after, trace(E H E^T) / trace(W H W^T) = |X E|^2 / |X W|^2 over the
+     calibration rows. The fits use H as given (damped); `damping` is the share of H's mean diagonal that
+-    finalize_capture_H added, taken back out of the diagonal for the reported error only
++    finalize_capture_H added, taken back out of the diagonal for the reported error only (`fit_undamped`: for the
++    fits too). `out_weight` (n,): per output column weight h (e.g. the diagonal of an output-side Hessian) in the
++    input-side solve, ((Q diag(h) Q^T) o H) r = rowsum(Q o (H W) o h); the output-side step is per column and does
++    not depend on it. Defaults leave the arithmetic unchanged
+     """
+     dev = weight_q.device
+     H = H.to(dev)
+@@ -1599,6 +1603,7 @@
+         H_err.diagonal().sub_(d_off)
+     else:
+         H_err = H
++    Hf = H_err if fit_undamped else H
+     W = weight if weight.device == dev else None      # large originals may sit on the CPU; stream columns
+     def cols(x, a, b):
+         return (x[:, a:b] if x.device == dev else x[:, a:b].to(dev)).float()
+@@ -1612,7 +1617,7 @@
+     for a in range(0, n, chunk):
+         b = min(a + chunk, n)
+         wc = cols(weight, a, b)
+-        HW[:, a:b] = H @ wc
++        HW[:, a:b] = Hf @ wc
+         den += (wc * HW[:, a:b]).sum().item()
+     den_err = den
+     if H_err is not H:
+@@ -1634,17 +1639,19 @@
+         num = torch.zeros(n, device = dev); dn = torch.zeros(n, device = dev)
+         for a in range(0, n, chunk):
+             b = min(a + chunk, n)
+-            HQ = H @ Q[:, a:b]
++            HQ = Hf @ Q[:, a:b]
+             num[a:b] = (Q[:, a:b] * HW[:, a:b]).sum(0)
+             dn[a:b] = (Q[:, a:b] * HQ).sum(0)
+         c = torch.where(dn > 1e-30, num / dn.clamp(min = 1e-30), torch.ones_like(num))
+         Q = Q.mul_(c.view(1, n))   # in place: Q and HW are each (k, n), a full temporary copy does not fit for a large head
+         sv = sv * c.view(1, n)
+         # input-side scales
+-        A = (Q @ Q.T) * H
++        Qh = Q if out_weight is None else Q * out_weight.to(dev).float().view(1, n)
++        A = (Qh @ Q.T) * Hf
+         b_ = torch.zeros(k, device = dev)
+         for a in range(0, n, chunk):
+-            b_ += (Q[:, a:a + chunk] * HW[:, a:a + chunk]).sum(1)
++            b_ += (Qh[:, a:a + chunk] * HW[:, a:a + chunk]).sum(1)
++        del Qh
+         A.diagonal().add_(1e-6 * A.diagonal().mean())
+         r = torch.linalg.solve(A, b_)
+         r = torch.where(torch.isfinite(r) & (r > 0), r, torch.ones_like(r))
+@@ -1838,7 +1845,10 @@
+         if not q_fallback and H is not None and not quant_args.get("no_refit"):
+             H_orig = unrotate_H(H, H_data["su"])
+             weight_q, su_f, sv_f, e_before, e_after = refit_scales(weight_orig, weight_q, H_orig, su, sv,
+-                                                                   damping = damping_share(quant_args))
++                                                                   rounds = quant_args.get("refit_rounds", 2),
++                                                                   damping = damping_share(quant_args),
++                                                                   out_weight = quant_args.get("refit_out_weight"),
++                                                                   fit_undamped = bool(quant_args.get("refit_undamped")))
+             del H_orig
+             su = su_f.view(-1, 1).to(su.dtype)
+             sv = sv_f.view(1, -1).to(sv.dtype)

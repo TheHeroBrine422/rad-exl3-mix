@@ -1,0 +1,17 @@
+PASS  1 patch no-op (defaults, explicit defaults)  
+PASS  2 refitq.refit = refit_scales  max rel diff 0.0e+00
+PASS  3 patched out_weight + fit_undamped = refitq.refit(h, raw H)  max rel diff 4.2e-07
+PASS  4a h-weighted error falls every round  0.04543 0.02183 0.02166 0.02166 0.02166 0.02166 0.02166
+PASS  4b h-weighted refit beats unweighted in the h metric  0.02166 vs 0.02174 (one-sided 0.02161 vs 0.02153)
+PASS  4c constant h = unweighted  
+PASS  5 refit = new (suh, svh) on the same codes  1.3e-07
+PASS  6a --rounds 0: every tensor linked, unchanged  refitq done: 2 tensors, 0s
+PASS  6b refit run: proxy reconstructed, h-weighted error falls  refitq done: 2 tensors, 0s .mlp.down_proj e 0.0398->0.0379 eh 0.0398->0.0378; .mlp.gate_proj e 0.0406->0.0386 eh 0.0407->0.0387
+PASS  6c edited shard (suh*r, svh*c) reproduces the new wq  max rel diff 8.7e-04 (f16 scales)
+PASS  6d --alpha all=1: c *= (1 - e)^(-1/2)  max diff 1.4e-05
+PASS  6e alpha = 1 restores the H-norm of an LS-fitted row  
+PASS  7a joint fit = brute-force grid argmin (within one step)  0/64 channels off
+PASS  7b residual sums = direct  rel resid base 0.0924 joint 0.0615
+PASS  8 ourq patch, refit options off: stamp settings unchanged  []
+PASS  8b ourq patch: every new quant_args entry is conditional on its option  
+SELFTEST PASS

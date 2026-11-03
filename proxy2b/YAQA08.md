@@ -191,3 +191,12 @@ windows hold ~62% of the qad scored rows and over-weight long-text categories). 
   rotation). **Worth it:** free (same collection cost per token) → adopt if real at both K, or real at one and not
   worse at the other. If dymix is worse by the same criterion, the 27B quants are redone from the long-only sums
   (the 27B run keeps both).
+
+## Amendment 15 (2026-11-02 ~19:15 CST, written after #78's first 4 seeds, before these): #78 confirmation + stacking, #78-02 / #78-03
+
+#78's first read (seeds 0–3): K3 0.983× (z −2.9, real), K2 0.980× (z −1.9, 3 of 4 seeds; not yet real), K4 0.977×.
+Under the two-question rule a consistent small effect gets a tighter confirmation:
+- **#78-02:** seeds 4 and 5 at K2 and K3 for both arms (i8, i8c). Decision on all 6 seed pairs with the same
+  criterion (mean log ratio below zero by ≥ 2 SE, or every seed better), K2 and K3 each.
+- **#78-03 (stacking):** i8c + the Σdy² diagonal (#33-18's `edy` H_out, 1,024 qad windows) vs `edy`, K3 / K2, seeds
+  0–2. Stacks if the 3-seed mean ratio is < 1 with z ≤ −2 at K3 and not worse (z < 2) at K2; otherwise report.

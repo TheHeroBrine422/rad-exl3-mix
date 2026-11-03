@@ -17,3 +17,23 @@ Pass rules (written 2026-11-02 ~16:30 CST, before data):
   K3 in both means and ≤ 1.0 at K4. Codebooks: gmul1_i8 (exact Gaussianization, 1,021-entry table), cubic0.02_i8,
   cubic0.05_i8 (v + C v^3, 2 FMAs). If more than one passes, the cheaper decode wins unless the better one leads by
   ≥ 0.5%.
+
+## Final read (2026-11-02 ~19:10 CST, all 16 tensors; `data/e3/cd-thor.jsonl` + `cd-colo.jsonl`)
+
+- **#77 cd3 / ldlq** (mean, param-weighted, tensors ≤ 1): K2 0.990 / 0.991 / 15 of 15; **K2.5 0.992 / 0.993 / 16 of
+  16**; K3 0.993 / 0.995 / 16; K4 0.991 / 0.993 / 16. Fails the written 0.98 bar; under the two-question rule
+  (2026-11-02) it is real (every tensor, every K) but small (−0.7%) → replicate + stacking below, then decide on a
+  GPU version (2–3× quant time).
+- **#78 vs ldlq mul1_i8:** cubic0.02 K2.5 0.987 / 0.989 (16 of 16), K3 0.982 / 0.986, K4 0.979 / 0.985 → **passes**;
+  gmul1 equal within 0.1% (no reason for the table); cubic0.05 worse at K2–K2.5. 0.8B KL: YAQA08.md #78 / amendment 15.
+
+## #79 / #80 (2026-11-02 ~19:15 CST, rules written before data)
+
+- **#79 stacking (Thor, `run5.sh`):** `CD=1` with codebook cubic0.02_i8, K2.5 / K3, rows seed 0 (paired with the
+  ldlq_cubic0.02 rows above). CD **stacks** on the cubic codebook if cd3_cubic / ldlq_cubic ≤ 0.995 at K2.5 and K3
+  (both means) with ≥ 13 of 16 tensors ≤ 1.
+- **#80 row-sample replicate (colo, `run4.sh`, `E3_ROWSEED=1`, other 256 rows):** cd3 / ldlq (mul1_i8) and
+  cubic0.02 / mul1_i8 at K2.5 / K3. #77 **holds** if cd3 / ldlq ≤ 0.995 at both K (both means) with ≥ 13 of 16
+  tensors ≤ 1; #78 holds if cubic ≤ 0.99 at K3 (both means). Output `cd-colo-rs1.jsonl` (the JSON has no row-seed
+  field: never mix it with the seed-0 files).
+- Both stay in-sample (same H searches and scores).

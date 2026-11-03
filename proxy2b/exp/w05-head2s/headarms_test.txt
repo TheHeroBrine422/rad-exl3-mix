@@ -1,0 +1,29 @@
+same: KL 0.000000 top1 1.0000
+small: KL 0.021171 top1 0.9280
+large: KL 0.335050 top1 0.7433
+smallp: KL 0.021171 top1 0.9280
+plan: KL 0.181365 top1 0.8123
+hand: KL 0.181365 top1 0.8123
+sel same             KL 0.000000 top1 1.0000 guard 0.000000
+sel small            KL 0.021079 top1 0.9260 guard 0.020842  x0.000 z +51.4
+sel large            KL 0.333766 top1 0.7440 guard 0.334117  x0.000 z +36.4
+sel smallp           KL 0.021079 top1 0.9260 guard 0.020842  x0.000 z +51.4
+sel plan             KL 0.180207 top1 0.8100 guard 0.239103  x0.000 z +37.3
+sel hand             KL 0.180207 top1 0.8100 guard 0.239103  x0.000 z +37.3
+rep same             KL 0.000000 top1 1.0000 guard 0.000000
+rep small            KL 0.021263 top1 0.9300 guard 0.022747  x0.000 z +46.8
+rep large            KL 0.336334 top1 0.7427 guard 0.350769  x0.000 z +44.8
+rep smallp           KL 0.021263 top1 0.9300 guard 0.022747  x0.000 z +46.8
+rep plan             KL 0.182523 top1 0.8147 guard 0.248086  x0.000 z +30.9
+rep hand             KL 0.182523 top1 0.8147 guard 0.248086  x0.000 z +30.9
+ 
+ref arm KL ~ 0: True
+small < large: True
+permuted storage == vocab order: True
+plan == hand-built head: True
+small vs same: z large: True
+guard positions found: True
+HEADARMS SELFTEST PASS
+K3 rep fam          ratio 0.804 (CI 0.804-0.804) seeds 3 every-seed-below True guard x0.80 -> PASS
+K3 rep bad          ratio 1.300 (CI 1.300-1.300) seeds 3 every-seed-below False guard x1.30 -> no
+K3 winner: fam

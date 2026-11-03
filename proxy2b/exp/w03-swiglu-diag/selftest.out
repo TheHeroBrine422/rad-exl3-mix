@@ -1,0 +1,5 @@
+1. SiLU' vs autograd: max abs diff 2.22e-16
+2. dy_gate / dy_up vs closed form: max abs diff 1.91e-06
+3. Sketch B Monte Carlo (4000 draws) vs a9x: gate cos 0.99996 max rel 0.029; up cos 0.99996 max rel 0.031 (MC error ~0.045)
+4. diagonal C: Sketch B MC vs a9g cos 0.99996, vs a9x (isotropic) cos 0.96288
+SELFTEST PASS

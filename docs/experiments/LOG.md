@@ -2,6 +2,50 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 19:10 CST · #77 / #78 · CPU proxy sweep, final read (16 of 16 tensors)
+- **Status:** #77 running (replicate + stacking), #78 passes · **Machine:** Thor + colo · **Pass rule:** `v3/e3/cd/README.md`
+- **Result** (ratio to LDLQ mul1_i8; mean / parameter-weighted / tensors ≤ 1):
+
+  | | K2 | K2.5 | K3 | K4 |
+  |---|---|---|---|---|
+  | cd3 (#77) | 0.990 / 0.991 / 15 of 15 | 0.992 / 0.993 / 16 | 0.993 / 0.995 / 16 | 0.991 / 0.993 / 16 |
+  | cubic0.02 (#78) | 0.991 / 0.994 / 14 | 0.987 / 0.989 / 16 | 0.982 / 0.986 / 16 | 0.979 / 0.985 / 16 |
+  | gmul1 (exact) | 0.991 / 0.993 / 14 | 0.986 / 0.988 / 16 | 0.982 / 0.986 / 16 | 0.977 / 0.984 / 16 |
+  | cubic0.05 | 0.996 / 1.001 / 8 | 0.992 / 0.996 / 10 | 0.985 / 0.991 / 16 | 0.977 / 0.987 / 15 |
+
+- **Reading:** #78: cubic0.02 passes and equals the exact Gaussianization (no table needed). #77: fails the written
+  0.98 bar but is real (every tensor, every K) and small (−0.7%); under the two-question rule it gets a replicate
+  (#80, other rows) and a stacking test (#79, CD on the cubic codebook) before a GPU version is weighed against its
+  2–3× quant time.
+- **Files:** `data/e3/cd-thor.jsonl`, `data/e3/cd-colo.jsonl`
+
+### 2026-11-02 19:10 CST · #78 · 0.8B KL test of the cubic int8 codebook (i8c): real at K3 and K4, K2 not yet
+- **Status:** running (confirmation #78-02) · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` #78 section
+- **Result** (seed-paired ratio i8c / i8, base settings): K3 **0.983** (4 seeds, SE 0.60%, z −2.9; per seed 0.971,
+  0.986, 0.998, 0.978); K2 **0.980** (SE 1.06%, z −1.9; 0.979, 0.962, 1.010, 0.971); K4 **0.977** (2 seeds, 0.971,
+  0.983). Matches the CPU proxy (−1.4% K2.5, −2.0% K3).
+- **Reading:** real at K3 by the rule; K2 misses (z −1.9, one seed worse). Consistent → confirmation with seeds 4–5
+  (#78-02) and the stacking test with diagonal H_out (#78-03), amendment 15.
+- **Files:** `data/yaqa08/result-fact10.txt`
+
+### 2026-11-02 19:10 CST · #33-20 · Sketch A refined weights (Σ(xᵀH_in x)dy²): as good as Sketch B, worse than Σdy²
+- **Status:** done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 13
+- **Result** (seed-paired, 3 seeds): xh / eB K3 1.008 (z 2.2), K2 0.991 (z −1.2) → "as good as" (within one seed
+  SD); xh / edy K3 1.020 (z 10.3), K2 1.015 (z 4.7); also edy / eB K3 0.988 (z −7.5), K2 0.976 (z −2.3).
+- **Reading:** the refined weights buy nothing; plain per-token Σdy² is the best and cheapest estimator.
+- **Decision / next:** the 27B collector keeps Σdy² as primary (Sketch B and xw ride along); no XH loading.
+- **Files:** `data/yaqa08/result-fact9.txt`
+
+### 2026-11-02 19:10 CST · #33-19 · H_out from our own agentic traces (pisess): worse; 50/50 mix no better
+- **Status:** done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 12
+- **Result** (Sketch B diagonal, 1,024 windows, seed-paired vs #33-18 `eB` on qad windows): pisess K3 **1.035×**
+  (z 5.7), K2 1.019× (z 1.0); 50/50 mix K3 0.999×, K2 0.977× (z −1.6). Cosine qad vs pisess per linear: median
+  0.946, min 0.703 (layer 20 in_proj_z).
+- **Reading:** neither arm passes; pisess is different and worse on g08-search1 (no re-check: the caveat applies
+  only if pisess is not worse).
+- **Decision / next:** the 27B collection stays on calib qad data.
+- **Files:** `data/yaqa08/result-fact8.txt`
+
 ### 2026-11-02 17:05 CST · #— · Challenge author: the target is VRAM size; load-time expansion only as a stopgap
 - **Decision (deadcode, asked by the user):** the challenge optimises VRAM size. Expanding weights at load time is
   acceptable only as a temporary workaround while a kernel is missing; the goal is minimal VRAM.

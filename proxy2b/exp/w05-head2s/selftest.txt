@@ -1,0 +1,12 @@
+T1 no-op one-sided             : identical
+T1 no-op dense H_out           : identical
+T1 no-op scaled Hessian        : identical
+T1 no-op dense H_out + scaled  : identical
+T2 block_ldl_batched vs block_ldl: max |diff| 0.00e+00 OK
+T3 vector vs dense diag (scaled=False): rel |dWq| 0.00e+00, two-sided error 0.01029 vs 0.01029 OK
+T3 vector vs dense diag (scaled=True): rel |dWq| 0.00e+00, two-sided error 0.01024 vs 0.01024 OK
+T4 K2: two-sided / one-sided weighted error 0.351; unweighted 1.470
+T4 K3: two-sided / one-sided weighted error 0.328; unweighted 1.597
+T4 K4: two-sided / one-sided weighted error 0.300; unweighted 1.616
+T4 predictor sum GM / sum AM over 128-blocks: 0.154
+SELFTEST PASS

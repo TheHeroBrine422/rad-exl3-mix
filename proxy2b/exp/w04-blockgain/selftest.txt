@@ -1,0 +1,19 @@
+PASS blockdiag: off-block max 0.0e+00, vs per-block P D P 8.9e-16
+PASS monte-carlo lognormal 1.5: closed form 242.257 vs simulated 242.157 (one-sided 512.0, ratio 0.4732)
+PASS monte-carlo flat: closed form 512.000 vs simulated 511.983 (one-sided 512.0, ratio 1.0000)
+PASS monte-carlo two-level x100: closed form 175.177 vs simulated 175.131 (one-sided 512.0, ratio 0.3421)
+INFO lognormal sd 0.5: two/one 0.9064, GM/AM 0.8902 (block-16 LDL keeps no feedback inside a 16-block: two/one >= GM/AM)
+PASS bound sd 0.5: two-sided ratio above the GM/AM bound
+INFO lognormal sd 1.0: two/one 0.6798, GM/AM 0.6065 (block-16 LDL keeps no feedback inside a 16-block: two/one >= GM/AM)
+PASS bound sd 1.0: two-sided ratio above the GM/AM bound
+INFO lognormal sd 2.0: two/one 0.3338, GM/AM 0.1499 (block-16 LDL keeps no feedback inside a 16-block: two/one >= GM/AM)
+PASS bound sd 2.0: two-sided ratio above the GM/AM bound
+PASS flat no gain: flat d: ratio 1.000000
+PASS mismatch: true-metric design 0.6847 <= wrong design 1.0297
+INFO perm natural  : two/one 0.5768  (global GM/AM 0.2833); across-block spread of two-sided costs 0.386 bit
+INFO perm random   : two/one 0.4058  (global GM/AM 0.2833); across-block spread of two-sided costs 0.011 bit
+INFO perm balanced : two/one 0.3737  (global GM/AM 0.2833); across-block spread of two-sided costs 0.003 bit
+INFO perm sorted   : two/one 0.7953  (global GM/AM 0.2833); across-block spread of two-sided costs 0.743 bit
+PASS balanced best: balanced 1339.2 <= natural 2067.2, sorted 2850.3
+PASS spread: equal costs 0; [1, 4] = 1/2 log2(2.5 / 2)
+SELFTEST PASS

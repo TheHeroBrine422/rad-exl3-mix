@@ -1,0 +1,32 @@
+--- a/quantize/ourq.py	2026-11-02 22:01:54.292571091 +0000
++++ b/quantize/ourq.py	2026-11-02 22:01:54.300974940 +0000
+@@ -211,15 +211,18 @@
+ def quantize_group(hname, keys, seed0, log):
+     out = {}
+     Hd = hessian(hname)
+-    for j, key in enumerate(keys):
+-        if ONLY is not None and key not in ONLY: continue
+-        t0 = time.time()
++    def load_w(key):
+         w = ck(key + ".weight").to(dev).float().T.contiguous()     # (in_features, out_features)
+         if a.head_perm and key == "lm_head":
+             import numpy as np
+             w = w[:, torch.from_numpy(np.load(a.head_perm)).to(dev)].contiguous()
+         if a.head_mean_row and key == "lm_head":
+             w -= w.mean(dim=1, keepdim=True)              # columns are vocabulary rows: drop their mean
++        return w
++    for j, key in enumerate(keys):
++        if ONLY is not None and key not in ONLY: continue
++        t0 = time.time()
++        w = load_w(key)
+         qa = {"seed": seed0 + j + 100000 * a.seed_offset, "K": a.K, "devices": [a.device], "device_ratios": None,
+               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
+         if key in OFF: qa["apply_out_scales"] = False
+@@ -260,6 +263,7 @@
+             import numpy as np
+             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
+             H = hessian(hname)["H"]                     # fresh: quantize_exl3 may have regularised Hd in place
++            del w; w = load_w(key)                      # fresh too: quantize_exl3 regularizes the weight in place
+             err, ref = [], []
+             for c in range(0, w.shape[1], 8192):        # per output row, in column chunks
+                 E = w[:, c:c + 8192] - wq[:, c:c + 8192]

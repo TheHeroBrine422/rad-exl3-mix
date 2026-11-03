@@ -1,0 +1,13 @@
+ok       --hout /data/yb/dv8192/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/dv1024/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/ident/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/prec1k/x2/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/snap1024/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/snap8192/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/snap8192diag/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/snap8192mix/hout (150 files): every quantized linear has a file
+ok       --hout /data/yb/c18/hdiag-snap512 (150 files): every quantized linear has a file
+ok       --hout /data/yb/c18/hdiag-snap512-xw (150 files): every quantized linear has a file
+ok       --hout /data/yb/c18/hdiag-snap512-dy (150 files): every quantized linear has a file
+ok       --hin /data/yb/snap8192/hin (150 files): every quantized linear has a file
+ok       --hout-diag /data/yb/dv8192/hout (150 files): every quantized linear has a file

@@ -1,0 +1,3 @@
+K3: masked 0.08800 (seeds 0.08800, 0.08900, 0.08700, SD 1.14%) | unmasked 0.09057 (SD 0.45%) | ratio 0.9717 | masked better on seeds [True, True, True] | vs base: masked -10.72%, unmasked -8.12%
+K2: masked 0.50500 (seeds 0.50000, 0.51000, 0.50500, SD 0.99%) | unmasked 0.50667 (SD 0.63%) | ratio 0.9967 | masked better on seeds [True, False, True] | vs base: masked -5.22%, unmasked -4.91%
+PASS: masked loss for the 27B diagonal collection (YAQA_GENMASK=1)

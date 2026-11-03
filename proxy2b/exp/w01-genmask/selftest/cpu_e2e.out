@@ -1,0 +1,21 @@
+tiny model: 25 quantized trunk linears; 13 windows of 64; 8 sequences, snapshot at 4
+PASS  original collector runs  ch slower; install `causal_conv1d` for the optimized kernel.
+PASS  patched, GENMASK off: runs  ch slower; install `causal_conv1d` for the optimized kernel.
+PASS  no-op: hdiag bit-exact  26 files
+PASS  no-op: hdiag-snap4 bit-exact  26 files
+PASS  no-op: hdiag-xw bit-exact  25 files
+PASS  no-op: hdiag-dy bit-exact  25 files
+PASS  no-op: hdiag-snap4-xw bit-exact  25 files
+PASS  no-op: one file per quantized trunk linear  
+PASS  all-ones mask == unmasked  max rel L2 0.00e+00
+PASS  mixed mask: runs  ch slower; install `causal_conv1d` for the optimized kernel.
+PASS  mixed mask: zero-gen windows skipped  4 skipped, expected 4
+PASS  mixed mask: scored positions per window match the golden  [63, 37, 63, 63] vs [63, 37, 63, 63]
+PASS  mixed mask: differs from unmasked on every linear  min rel L2 5.36e-01
+PASS  mixed mask: metadata seqs = NSEQ (skips counted), genmask flag  {'ctx': '64', 'sketch': 'B-diag', 'genmask': '1', 'seqs': '8', 'fp32_act': 'True', 'seed': '0', 'prec': 'fp32'}
+PASS  mixed mask: snapshot + halves written  
+PASS  unmasked metadata has no genmask key  
+PASS  A8: a linear without sums -> exit at the first save, named  hdiag-snap4: 1 of 25 linears have no sums (no gradient reached them?): ['0.mlp.down_proj']
+PASS  A8: NSEQ past the window list -> exit before work  windows 0..13 requested, the pool has 13 of 64 tokens
+PASS  (control) original with NSEQ past the list: IndexError after the in-range windows  
+ALL PASS

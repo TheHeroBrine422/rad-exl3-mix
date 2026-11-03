@@ -1,0 +1,162 @@
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-02 21:14:09.581007342 +0000
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-02 21:15:49.017760899 +0000
+@@ -796,6 +796,144 @@
+     return L_out.to(device), Ho.to(device)
+ 
+ 
++def block_ldl_batched(H: torch.Tensor, b: int, quant_args: dict):
++    """
++    block_ldl() over a stack of SPD matrices (B, n, n), e.g. the 128x128 blocks of a block-diagonal output factor.
++    Returns L (B, n, n) with each b x b diagonal block zero (what ldlq() expects). A failing Cholesky gets the same
++    retry damping as block_ldl, per failing matrix
++    """
++    B, n, _ = H.shape
++    assert n % b == 0
++    m = n // b
++    for attempt in range(11):
++        L, info = torch.linalg.cholesky_ex(H)
++        bad = info != 0
++        if not bad.any():
++            break
++        if attempt == 10:
++            raise torch._C._LinAlgError(f"block_ldl_batched: {int(bad.sum())} of {B} matrices not positive definite")
++        print(f" !! Cholesky decomp. failed for {int(bad.sum())} of {B} blocks, increasing diagonal damping")
++        Hd = H.diagonal(dim1 = 1, dim2 = 2)
++        Hd[bad] += 2.0 * quant_args.get("sigma_reg", 0.025) * Hd[bad].mean(dim = 1, keepdim = True)
++    DL = torch.diagonal(L.view(B, m, b, m, b), dim1 = 1, dim2 = 3).permute(0, 3, 1, 2)     # (B, m, b, b)
++    DL = torch.linalg.inv(DL)
++    L = torch.einsum("bnij,bijk->bnik", L.view(B, n, m, b), DL).reshape(B, n, n).contiguous()
++    Lv = L.view(B, m, b, m, b)
++    dr = torch.arange(m, device = L.device)
++    Lv[:, dr, :, dr, :] = 0.0
++    return L
++
++
++def prepare_H_out_bd(h: torch.Tensor, sv: torch.Tensor, quant_args: dict, device):
++    """
++    A diagonal output-side factor diag(h) (one value per output channel, e.g. the LM head's softmax Fisher per
++    vocabulary row) in the quantizer's rotated basis. P_n S_v diag(h) S_v P_n is block-diagonal, one 128 x 128 block
++    per output Hadamard block, and is kept as blocks: as prepare_H_out() on diag(h), whose dense n x n form is out of
++    reach for a 248k-row head. Same normalisation (mean diagonal) and damping. Returns the blocks' LDL factors
++    (n / 128, 128, 128), zero diagonal 16-blocks
++    """
++    s = sv.flatten().to(device, torch.float)
++    d = h.flatten().to(device, torch.float) * s.square()
++    assert d.shape[0] % had_n == 0
++    had = get_hadamard_dt(had_n, device, torch.float, 1 / math.sqrt(had_n))
++    Hb = had @ (d.view(-1, had_n, 1) * had)                    # had diag(d_b) had, as the two blockwise passes
++    Hb /= Hb.diagonal(dim1 = 1, dim2 = 2).mean().clamp_min(1e-30)
++    Hb.diagonal(dim1 = 1, dim2 = 2).add_(quant_args.get("sigma_reg_out", quant_args.get("sigma_reg", 0.025)))
++    return block_ldl_batched(Hb, 16, quant_args)
++
++
++def ldlq_2hess_bd(
++    weight: torch.Tensor,
++    L: torch.Tensor,
++    L_out_b: torch.Tensor,
++    quant_args: dict,
++    pb: ProgressBar | None = None
++):
++    """
++    ldlq() with error feedback along the output axis too, for a block-diagonal output factor (prepare_H_out_bd):
++    with L_out' = I + L_out block-diagonal in 128-column blocks, tile (a, c) waits only for the tiles below it (the
++    input side, as in ldlq) and those to its right inside its own 128-column block. Each 16-row step quantizes the 8
++    tile columns of every block right to left, one tile per block a sub-step, with input
++
++        W[a, c] + C[a, c] + sum over c' > c in c's block of (C[a, c'] + E[a, c']) L_out[c', c]
++
++    C being ldlq()'s input-side compensation (from the rows below). Same dependencies as ldlq_2hess() on the dense
++    block-diagonal factor, so the same result up to rounding; same buffering as ldlq() (the weight may stay on the
++    CPU). Returns as ldlq()
++    """
++    devices = quant_args["devices"]
++    for device in devices:
++        torch.cuda.synchronize(device)
++    main_stream = get_quant_stream(devices[0])
++    with torch.cuda.stream(main_stream):
++
++        device = L.device
++        assert device == torch.device(devices[0])
++        buffer_device = weight.device
++        size_k, size_n = weight.shape
++        assert size_k % 16 == 0 and size_n % had_n == 0
++        tiles_k, tiles_n = size_k // 16, size_n // 16
++        nb, tb = size_n // had_n, had_n // 16
++        assert L_out_b.shape == (nb, had_n, had_n)
++        L_out_b = L_out_b.to(device)
++
++        buf_size_k = max(quant_args.get("buf_size_k", 128), 16)
++        assert buf_size_k % 16 == 0 and size_k % buf_size_k == 0
++        perm, perm_i = tensor_core_perm(device), tensor_core_perm_i(device)
++        p_row = 0
++
++        prod_cache = torch.zeros((size_k, size_n), dtype = torch.float, device = device)
++        weight_q = torch.zeros((size_k, size_n), dtype = torch.float, device = buffer_device)
++        encoded = torch.zeros((tiles_k, tiles_n, 256), dtype = torch.short, device = buffer_device)
++
++        for j in range(size_k, 0, -buf_size_k):
++            i = j - buf_size_k
++            b_weight = weight[i:j].to(device)
++            b_weight_q = weight_q[i:j] if device == buffer_device else \
++                torch.zeros_like(weight_q[i:j], device = device)
++            b_encoded = encoded[i // 16 : j // 16] if device == buffer_device else \
++                torch.zeros_like(encoded[i // 16 : j // 16], device = device)
++            b_prod_cache = prod_cache[i:j]
++            b_L = L[i:j]
++
++            for bj in range(buf_size_k, 0, -16):
++                bi = bj - 16
++                bb_err = b_weight[bj:] - b_weight_q[bj:]
++                bb_L = b_L[bj:, i + bi:i + bj]
++                comp = b_prod_cache[bi:bj]
++                comp.addmm_(bb_L.T, bb_err, alpha = 1.0, beta = 1.0)
++                Wr = b_weight[bi:bj].view(16, nb, had_n)
++                Cr = comp.view(16, nb, had_n)
++                Qr = b_weight_q[bi:bj].view(16, nb, had_n)
++                Er = b_encoded[bi // 16].view(nb, tb, 256)
++                acc = torch.zeros((nb, 16, had_n), dtype = torch.float, device = device)
++                for t in range(tb - 1, -1, -1):
++                    cs = slice(16 * t, 16 * t + 16)
++                    rows = (Wr[:, :, cs] + Cr[:, :, cs]).permute(1, 0, 2) + acc[:, :, cs]    # (nb, 16, 16)
++                    tiles = rows.reshape(nb, 256)[:, perm]
++                    quant_w, quant_i = quantize_tiles_multigpu(tiles, quant_args)
++                    quant_w = quant_w[:, perm_i].view(nb, 16, 16)
++                    Qr[:, :, cs] = quant_w.permute(1, 0, 2)
++                    Er[:, t] = quant_i
++                    if t > 0:
++                        G = (Cr[:, :, cs] + Wr[:, :, cs]).permute(1, 0, 2) - quant_w           # C + E, (nb, 16, 16)
++                        acc.baddbmm_(G, L_out_b[:, cs, :])
++                if pb:
++                    p_row += 1
++                    pb.update(p_row)
++
++            if device != buffer_device:
++                weight_q[i:j] = b_weight_q.to(buffer_device)
++                encoded[i // 16 : j // 16] = b_encoded.to(buffer_device)
++            b_err = b_weight - b_weight_q
++            prod_cache.addmm_(b_L.T, b_err, alpha = 1.0, beta = 1.0)
++
++        for device in devices:
++            torch.cuda.synchronize(device)
++
++    return weight_q, encoded
++
++
+ def fallback_quant(
+     weight: torch.Tensor,
+     q_device: torch.Tensor,
+@@ -1780,7 +1918,13 @@
+         # Quantize. An external output-side Hessian factor (YAQA-style Kronecker approximation, see ldlq_2hess)
+         # switches to error feedback along both axes
+         H_out_r = None
+-        if not q_fallback and quant_args.get("H_out") is not None:
++        if not q_fallback and quant_args.get("H_out") is not None and quant_args["H_out"].dim() == 1:
++            # a diagonal output factor given as a vector (one value per output channel): block-diagonal in the
++            # rotated basis, quantized per 128-column block (ldlq_2hess_bd); the proxy below stays one-sided
++            L_out_b = prepare_H_out_bd(quant_args["H_out"], sv, quant_args, device)
++            weight_q, encoded_q = ldlq_2hess_bd(weight_r, L, L_out_b, quant_args, pb)
++            del L, L_out_b
++        elif not q_fallback and quant_args.get("H_out") is not None:
+             L_out, H_out_r = prepare_H_out(quant_args["H_out"], sv, quant_args, verbose, device)
+             weight_q, encoded_q = ldlq_2hess(weight_r.to(device), L, L_out, quant_args, pb)
+             del L, L_out

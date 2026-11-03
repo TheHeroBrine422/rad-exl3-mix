@@ -1,0 +1,56 @@
+== A6: predicted vs measured two-sided gain per tensor (h-weighted proxy) ==
+A6 (no measurements): L_est-weighted predicted gain 12.5% (self: design and score on the full h, an upper bound at small n); split-half cross-fit 11.7% (a lower bound: a half-size design), halves median cos 0.9927
+     linear_attn.in_proj_qkv     18 R_pred median 0.797  GM/AM 0.757  CV(h sv2) 1.55
+     linear_attn.in_proj_z       18 R_pred median 0.781  GM/AM 0.735  CV(h sv2) 1.51
+     linear_attn.out_proj        18 R_pred median 0.940  GM/AM 0.929  CV(h sv2) 0.33
+     mlp.down_proj               24 R_pred median 0.954  GM/AM 0.946  CV(h sv2) 0.28
+     mlp.gate_proj               24 R_pred median 0.887  GM/AM 0.868  CV(h sv2) 0.80
+     mlp.up_proj                 24 R_pred median 0.881  GM/AM 0.861  CV(h sv2) 0.94
+     self_attn.k_proj             6 R_pred median 0.807  GM/AM 0.776  CV(h sv2) 1.17
+     self_attn.o_proj             6 R_pred median 0.952  GM/AM 0.945  CV(h sv2) 0.30
+     self_attn.q_proj             6 R_pred median 0.740  GM/AM 0.695  CV(h sv2) 1.85
+     self_attn.v_proj             6 R_pred median 0.925  GM/AM 0.912  CV(h sv2) 0.57
+
+== D6: across-block spread (bits a K per 128-row output slab could save) ==
+     family                     two(pred) one(pred) 
+     linear_attn.in_proj_qkv        0.186     0.182 
+     linear_attn.in_proj_z          0.056     0.072 
+     linear_attn.out_proj           0.007     0.005 
+     mlp.down_proj                  0.008     0.005 
+     mlp.gate_proj                  0.006     0.013 
+     mlp.up_proj                    0.018     0.041 
+     self_attn.k_proj               0.024     0.025 
+     self_attn.o_proj               0.006     0.005 
+     self_attn.q_proj               0.128     0.125 
+     self_attn.v_proj               0.017     0.017 
+     L-weighted mean (two-sided, predicted): 0.068 bit; gate/up median 0.014 bit
+     linear_attn.in_proj_qkv: a K per section (qkv: q|k|v; q_proj: query|gate) saves median 0.059 bit (range 0.008..0.176)
+     self_attn.q_proj: a K per section (qkv: q|k|v; q_proj: query|gate) saves median 0.044 bit (range 0.005..0.081)
+
+== B6: MLP intermediate permutations (gate+up two-sided cost vs natural order) ==
+     layer  natural   random balanced   sorted  GM/AM  bits bal  bits slab(sorted)  bits slab(nat)
+         0    0.936    0.925    0.921    0.966  0.914    +0.012            +0.013         +0.010
+         1    0.939    0.926    0.923    0.967  0.916    +0.012            +0.014         +0.011
+         2    0.919    0.915    0.912    0.958  0.902    +0.006            +0.007         +0.002
+         3    0.913    0.909    0.904    0.959  0.894    +0.007            +0.008         +0.003
+         4    0.911    0.907    0.903    0.953  0.891    +0.007            +0.009         +0.003
+         5    0.900    0.893    0.889    0.941  0.876    +0.008            +0.011         +0.004
+         6    0.837    0.830    0.822    0.909  0.803    +0.013            +0.020         +0.007
+         7    0.888    0.863    0.855    0.945  0.842    +0.028            +0.024         +0.015
+         8    0.892    0.869    0.862    0.949  0.849    +0.025            +0.020         +0.015
+         9    0.888    0.877    0.870    0.947  0.858    +0.015            +0.014         +0.009
+        10    0.846    0.831    0.824    0.929  0.807    +0.019            +0.022         +0.011
+        11    0.864    0.843    0.834    0.951  0.819    +0.026            +0.021         +0.014
+        12    0.889    0.883    0.876    0.959  0.865    +0.011            +0.010         +0.007
+        13    0.887    0.873    0.867    0.953  0.855    +0.017            +0.016         +0.012
+        14    0.811    0.765    0.754    0.913  0.730    +0.053            +0.056         +0.049
+        15    0.816    0.744    0.731    0.913  0.705    +0.079            +0.079         +0.075
+        16    0.897    0.884    0.879    0.953  0.867    +0.015            +0.020         +0.011
+        17    0.909    0.901    0.895    0.962  0.885    +0.011            +0.015         +0.006
+        18    0.877    0.861    0.855    0.932  0.842    +0.018            +0.024         +0.015
+        19    0.881    0.855    0.848    0.934  0.834    +0.028            +0.034         +0.026
+        20    0.898    0.875    0.869    0.954  0.858    +0.024            +0.029         +0.022
+        21    0.878    0.854    0.846    0.949  0.833    +0.027            +0.032         +0.023
+        22    0.786    0.748    0.735    0.889  0.708    +0.049            +0.068         +0.047
+        23    0.605    0.510    0.486    0.809  0.421    +0.157            +0.243         +0.188
+     L-weighted: balanced +0.020 bit, random +0.014, sorted + slab K +0.023, natural + slab K +0.016 (positive = saves rate vs natural two-sided)

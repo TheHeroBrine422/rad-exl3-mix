@@ -1,0 +1,15 @@
+1. covariance and quadratic-form spread (R = 200000 draws, V = 64)
+   peaky sample: |E[dd^T] - F| / |F| 0.0104   v^T d d^T v: mean/v^T F v 0.9816, CV 6.17
+   peaky gauss : |E[dd^T] - F| / |F| 0.0030   v^T d d^T v: mean/v^T F v 1.0025, CV 1.41
+   peaky rad   : |E[dd^T] - F| / |F| 0.0041   v^T d d^T v: mean/v^T F v 0.9950, CV 1.21
+   flat  sample: |E[dd^T] - F| / |F| 0.0151   v^T d d^T v: mean/v^T F v 1.0038, CV 1.41
+   flat  gauss : |E[dd^T] - F| / |F| 0.0160   v^T d d^T v: mean/v^T F v 1.0002, CV 1.41
+   flat  rad   : |E[dd^T] - F| / |F| 0.0160   v^T d d^T v: mean/v^T F v 1.0048, CV 1.38
+2. the patched chunk_probe
+   gauss: grad wrt logits vs closed form max abs 7.45e-09; checkpoint == plain bit for bit: True; another seed differs: True
+   rad: grad wrt logits vs closed form max abs 7.45e-09; checkpoint == plain bit for bit: True; another seed differs: True
+3. no-op with YAQA_PROBE unset
+   diff: 1 line(s) removed, 23 added
+   metadata with PROBE=None identical: True
+   guard assert holds with PROBE=None: True
+PROBETEST PASS
