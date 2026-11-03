@@ -15,7 +15,7 @@
 : ${RXM_WORK:=/root}; export RXM_WORK
 N=${1:?NSEQ}; Y=/data/yaqa O=/data/yaqa/hdiag PY=/data/venv-exl3/bin/python
 mkdir -p $O; log() { echo "$(date -u +%H:%M) $*" | tee -a $O/hdiag27.log; }
-export YAQA_SHORT=${YAQA_SHORT:-0} YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=${YAQA_PREC:-fp32} TRITON_CACHE_AUTOTUNING=1   # YAQA_PREC=x2 after prectest.py passes
+export YAQA_GENMASK=${YAQA_GENMASK:-0} YAQA_SHORT=${YAQA_SHORT:-0} YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=${YAQA_PREC:-fp32} TRITON_CACHE_AUTOTUNING=1   # YAQA_PREC=x2 after prectest.py passes
 COL="exec 8>${RXM_WORK}/card0.lock 9>${RXM_WORK}/card1.lock 7>${RXM_WORK}/ram.lock; flock 8; flock 9; flock -s 7"
 # collect.py and bf16x.py are copied to $Y by the operator before the run (iceman has its own /workspace)
 cd ${RXM_WORK}

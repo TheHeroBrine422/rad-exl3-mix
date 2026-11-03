@@ -7,13 +7,18 @@
 #        a) + diagonal H_out from sum dy^2 (512 long windows), output damping 0.01    -> /data/v3night/K3-dy/K3
 #        b) no H_out, rotation seed offset 1 (the 27B quant-noise floor, ranked A7) -> /data/v3night/K3-s1/K3
 #      against the ladder's K3 (seed 0, /data/v3ladder2/K3). Evals and the swap test: morning, with a pass rule.
-#   3. resume the collection (bit-exact) to 2,048 sequences (all 1,350 windows, then repeats with fresh labels; the
-#      user stops it when wanted: touch /data/yaqa/hdiag/STOP). ~17 h of collection in all.
+#   3. resume the collection (bit-exact) to 1,024 sequences (2026-11-03: #33-22 saw nothing past 1,024 on the 0.8B;
+#      #33-23 checks 512 vs 1,024). ~8.5 h of collection in all.
+# 2026-11-03: loss on the scored positions only (YAQA_GENMASK=1, #83 / #83-02), passed through to hdiag27.sh; it needs
+# the calib golden's gen.u8 ($RXM_WORK/challenge/golden/calib/gen.u8): checked first. Pass rule for the swap test:
+# H27.md (written before data).
 # Stops on any failure (log /data/v3night/night.log); nothing here deletes data. Stop: touch /data/yaqa/hdiag/STOP.
 : ${RXM_WORK:=/root}; export RXM_WORK
 N=/data/v3night; mkdir -p $N; L=$N/night.log; log() { echo "$(date -u +%H:%M) $*" | tee -a $L; }
 PY=/data/venv-exl3/bin/python SRC=/data/exl3frac/src
-log "start: collection"
+export YAQA_GENMASK=${YAQA_GENMASK:-1}
+[ "$YAQA_GENMASK" != 1 ] || [ -s $RXM_WORK/challenge/golden/calib/gen.u8 ] || { log "YAQA_GENMASK=1 but no gen.u8 in $RXM_WORK/challenge/golden/calib: stop"; exit 1; }
+log "start: collection (YAQA_GENMASK=$YAQA_GENMASK)"
 bash /root/ourq/hdiag27.sh 512 >> $L 2>&1
 [ -f /data/yaqa/hdiag/hdiag-snap512-dy/model.language_model.layers.63.mlp.down_proj.safetensors ] || { log "no 512 dy snapshot: stop"; exit 1; }
 log "collection done: halves $($PY -c "import json; h=json.load(open('/data/yaqa/hdiag/hdiag-snap512/halves.json')); print(h['median'], h['p5'], h['min'])")"
@@ -30,7 +35,7 @@ quant() { tag=$1; shift
 }
 quant K3-dy --hout /data/yaqa/hdiag/hdiag-snap512-dy --sigma-reg-out 0.01 || exit 1
 quant K3-s1 --seed-offset 1 || exit 1
-log "resume collection to 2048 (1,350 windows, then repeats with fresh labels)"
-bash /root/ourq/hdiag27.sh 2048 >> $L 2>&1
-log "collection to 2048: $(ls -d /data/yaqa/hdiag/hdiag-snap* 2>/dev/null | tr '\n' ' ')"
+log "resume collection to 1024"
+bash /root/ourq/hdiag27.sh 1024 >> $L 2>&1
+log "collection to 1024: $(ls -d /data/yaqa/hdiag/hdiag-snap* 2>/dev/null | tr '\n' ' ')"
 log "NIGHT DONE"
