@@ -20,3 +20,9 @@ Pass rules (2026-11-03 ~8:45 AM CST, written before data):
 
 Data discipline: moments / collections on the qad pool (as #83 / #87); α\* and swj fits on the fit golden; judged on
 search. Nothing here touches verify or public.
+
+## run2 (queued behind run.sh, 2026-11-03 ~9:15 AM CST, written before data)
+- **s35:** #87-02 at seeds 3–5 (6 seeds with run.sh's): same rule as #87-02, over 6 seeds.
+- **full:** edy + asym + swj + α\* vs edy + asym: the scale refits stack on top if the 3-seed mean ≤ 0.98 and every
+  seed < 1 (K3 and K2); also reported vs base (the whole fixed-code stack).
+- **heal1:** healing on edy + asym at seed 1: replicate of run.sh's heal step (same rule).
