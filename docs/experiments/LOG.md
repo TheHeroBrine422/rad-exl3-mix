@@ -2,6 +2,14 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-03 10:30 CST · — · Literature: NVIDIA Model Optimizer (user pointer)
+- **Status:** done (reading) · **Notes:** `docs/research/modelopt.md`
+- **Reading:** their AutoQuantize sensitivity is our Σdy² estimator (used for allocation only); saturation-aware
+  allocation (coverage model, Aumann–Shapley) is new to us and targets our low sizes; Local-Hessian / scale learning
+  match our scale results (#85, #89); their layerwise PTQ is the sym form of #87 (null for us) without the asym target;
+  they publish `nvidia/Qwen3.8-27B-NVFP4` (MLP NVFP4 W4A4, attention + GDN FP8; GPTQ hurt on this model).
+- **Decision / next:** five BACKLOG rows ("NVIDIA Model Optimizer overlap"); the saturation check is the cheap first one.
+
 ### 2026-11-03 09:35 CST · E10 · Dead-unit census of the writer inputs (27B calib Hessians)
 - **Status:** done · **Machine:** colo (`v3/e3/e10/census.py`)
 - **Result:** down_proj (64 × 17,408 units): none below 1e-2 × median (min 0.019); out_proj (48): 5 units below 1e-4,

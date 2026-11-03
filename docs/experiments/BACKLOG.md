@@ -171,6 +171,17 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
+## NVIDIA Model Optimizer overlap (2026-11-03, `docs/research/modelopt.md`)
+
+- [ ] **Saturation check of the knapsack** (CPU ~1 h): does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
+  KL better than ΣΔKL (ladder levels, V2 mixes, kfit2 swaps), esp. at 1.75–2.5 bpw? If yes, re-price the low V3 sizes.
+- [ ] **Reference KLD of `nvidia/Qwen3.8-27B-NVFP4`** (iceman, weight-only dequant first) on the verify slice: place it
+  on our frontier next to V2 5.0 / 5.5.
+- [ ] **Σdy² as the knapsack price** = their AutoQuantize gradient score: merge w08-hprice once the 27B diagonal exists.
+- [ ] **#87 at 27B via a layerwise loop** (their single-GPU PTQ design: boundary activations on disk, one layer live).
+- Healing (#89 → S27): their scale-only learning results (more consistent than QAD; lr 1e-4, ≤ 100 steps) are the
+  starting settings, when the user approves.
+
 ## Faraway lens (2026-11-02, `local/papers/runs/2026-11-02-faraway/ideas/faraway.md`): ideas to test later
 
 - [ ] **A1 · down_proj predicted from its neuron's decoded up + gate rows, residual coded** ("chroma from luma"):
