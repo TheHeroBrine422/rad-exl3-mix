@@ -2,6 +2,25 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 19:55 CST · #78 · Cubic int8 codebook (i8c) adopted (user: a win)
+- **Status:** running → done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` #78 section, amendment 15
+- **Result:** with seeds 4–5 (#78-02, which had already started): K3 0.983× (6 seeds, z −3.7), K2 0.973× (5 seeds,
+  z −2.5; one seed worse); K4 0.977× (2 seeds). Real at K2, K3 and K4.
+- **Decision (user):** a win; no further confirmation. i8c (`EXL3_I8_CUBIC 0.02`) becomes the V3 trunk codebook,
+  with the 27B confirmation queue's check when the trunk is requantized. #78-03 (stacking with H_out) runs to the end.
+- **Files:** `data/yaqa08/result-fact10.txt`, `result-fact12.txt`
+
+### 2026-11-02 19:55 CST · #33-21 · Short qad documents in the H_out collection: neutral; more long windows help
+- **Status:** done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 14
+- **Result** (Σdy², seed-paired, 3 seeds; 1,600 sequences = ~640 long windows + ~960 short docs): mixed / long-only
+  from the same run K3 1.000×, K2 0.997× (SE 1.6%); both vs #33-18's `edy` (1,024 long windows) K3 1.015× (z 7.9 /
+  8.3), K2 1.007× / 1.010×.
+- **Reading:** short documents add nothing (not real → not adopted by the rule), and the long-window count still
+  matters at 640 vs 1,024 (−1.5% at K3).
+- **Decision / next:** the 27B night collects long windows only (`hdiag27.sh` YAQA_SHORT=0): 512, the K3 quants, then
+  on through all 1,350 windows to 2,048 (repeats with fresh labels), a snapshot every 128 for the dose curve.
+- **Files:** `data/yaqa08/result-fact11.txt`
+
 ### 2026-11-02 19:10 CST · #77 / #78 · CPU proxy sweep, final read (16 of 16 tensors)
 - **Status:** #77 running (replicate + stacking), #78 passes · **Machine:** Thor + colo · **Pass rule:** `v3/e3/cd/README.md`
 - **Result** (ratio to LDLQ mul1_i8; mean / parameter-weighted / tensors ≤ 1):

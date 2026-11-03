@@ -92,7 +92,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 33-18 | Estimators (Sketch B / xw / dy) + dose 128–1024, 0.8B, 3 seeds | quantizer | done | 11-02 | xw and Σdy² work as well as Sketch B (dy K3 −8.8%); 512 seqs suffice |
 | 33-19 | H_out on own agentic traces (pisess) vs qad windows, 0.8B | quantizer | done | 11-02 | pisess worse (K3 +3.5%), mix no better → collection stays on qad |
 | 33-20 | Sketch A refined weights Σ(xᵀH_in x)dy², 0.8B, 3 seeds | quantizer | done | 11-02 | as good as Sketch B, worse than Σdy² (K3 +2.0%) → Σdy² stays primary |
-| 33-21 | Short qad documents in the collection (YAQA_SHORT), 0.8B, 3 seeds | quantizer | running | 11-02 | amendment 14 |
+| 33-21 | Short qad documents in the collection (YAQA_SHORT), 0.8B, 3 seeds | quantizer | done | 11-02 | neutral; 640 vs 1,024 long windows +1.5% → 27B collects long windows only, to 2,048 |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | running | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | done | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | done | 11-01 | on the curve; → qtf2 (#37) |
@@ -136,8 +136,8 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 
 | 76 | pisess v1: own pi sessions as an agentic-trace corpus | data | done | 11-02 | 539 docs, 18.5M tokens, redacted; training / statistics only |
 | 77 | Tile coordinate descent after LDLQ (ranked C2), CPU proxy | quantizer | running | 11-02 | 16/16: −0.7% at K2.5, every tensor better (real, small); replicate #80, stacking #79, then GPU version + KL test? |
-| 78 | Gaussianized mul1 codebooks (ranked D3): CPU proxy, then 0.8B KL (`i8c`) | weight codes | running | 11-02 | CPU passes (cubic0.02 −1.3% K2.5, −1.8% K3); KL K3 −1.7% (z −2.9), K2 −2.0% (z −1.9), K4 −2.3% |
-| 78-02 | i8c confirmation: seeds 4–5 at K2 / K3 | weight codes | running | 11-02 | amendment 15 |
+| 78 | Gaussianized mul1 codebooks (ranked D3): CPU proxy, then 0.8B KL (`i8c`) | weight codes | done | 11-02 | **adopted** (user): K3 −1.7%, K2 −2.7%, K4 −2.3%; 27B check at the trunk requant |
+| 78-02 | i8c confirmation: seeds 4–5 at K2 / K3 | weight codes | done | 11-02 | K3 z −3.7 (6 seeds), K2 z −2.5 (5); user called the win before it |
 | 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | running | 11-02 | amendment 15 |
 | 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | running | 11-02 | `v3/e3/cd/README.md` |
 | 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | running | 11-02 | `v3/e3/cd/README.md` |

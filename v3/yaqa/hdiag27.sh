@@ -3,10 +3,11 @@
 # fp32), on the qad pool's 2048-token windows (pools-v3). Needs BOTH cards (TP2: the bf16 model is 54 GB): run only
 # when the user has given card 1. Steps:
 #   0. gate: 2 sequences, no files: time per sequence, peak memory, the chunked-vs-whole G check
-#   1. collection, resumable (hdiag-state.pt every 25 sequences): snapshots at 128 / 256 / 512 / NSEQ; three
+#   1. collection, resumable (hdiag-state.pt every 25 sequences): a snapshot every 128 sequences (SNAPS); three
 #      estimators per save (YAQA_DIAG_EXTRA): hdiag* (Sketch B), hdiag*-dy (sum dy^2), hdiag*-xw (sum ||x||^2 dy^2)
-#      plus -long / -dy-long (the long windows only). YAQA_SHORT=256 (default): the 1,350 qad windows of 2048 tokens
-#      and the 2,041 qad docs of 256-2047 tokens, 3,391 sequences / 4.38M tokens in all (one shuffle)
+#      long qad windows only (#33-21: short docs neither help nor hurt, and more long windows do; YAQA_SHORT=256 adds
+#      them and the -long / -dy-long sums). Past the 1,350 windows they repeat with fresh labels
+#      (with YAQA_SHORT=256: + 2,041 qad docs of 256-2047 tokens, 3,391 sequences, one shuffle)
 #      -> /data/yaqa/hdiag/hdiag-snapN, final /data/yaqa/hdiag/hdiag (ourq.py --hout reads "hout_diag")
 # Stop early: touch /data/yaqa/hdiag/STOP (collect.py checks it before every sequence; rerun this script to resume). Costs: fp32 ~30 s / sequence (gate 2b) -> 1K ~8.5 h.
 # Then (separate, pass rule first): requant K3 / K2.5 trunks with --hout <snapshot> on card 0 and swap-test them
@@ -14,7 +15,7 @@
 : ${RXM_WORK:=/root}; export RXM_WORK
 N=${1:?NSEQ}; Y=/data/yaqa O=/data/yaqa/hdiag PY=/data/venv-exl3/bin/python
 mkdir -p $O; log() { echo "$(date -u +%H:%M) $*" | tee -a $O/hdiag27.log; }
-export YAQA_SHORT=${YAQA_SHORT:-256} YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=${YAQA_PREC:-fp32} TRITON_CACHE_AUTOTUNING=1   # YAQA_PREC=x2 after prectest.py passes
+export YAQA_SHORT=${YAQA_SHORT:-0} YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=${YAQA_PREC:-fp32} TRITON_CACHE_AUTOTUNING=1   # YAQA_PREC=x2 after prectest.py passes
 COL="exec 8>${RXM_WORK}/card0.lock 9>${RXM_WORK}/card1.lock 7>${RXM_WORK}/ram.lock; flock 8; flock 9; flock -s 7"
 # collect.py and bf16x.py are copied to $Y by the operator before the run (iceman has its own /workspace)
 cd ${RXM_WORK}
