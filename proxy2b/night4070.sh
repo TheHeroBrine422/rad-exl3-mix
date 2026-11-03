@@ -14,5 +14,8 @@ step w01-genmask     bash $X/w01-genmask/run.sh
 step fact13          bash $P/yaqaFact13.sh
 step w03-noGU        bash $X/w03-swiglu-diag/run.sh
 step w02-fixedscale  bash $X/w02-fixedscale/run.sh all
+step w07-genh       bash $X/w07-genh/run.sh
+step w07-seqsib     bash $X/w07-seqsib/run.sh
+step w07-denoise    bash $X/w07-denoise/run.sh
 step w06-heal        bash $X/w06-heal/run.sh
 log "NIGHT4070 DONE"
