@@ -140,7 +140,7 @@ Numbered after the rest (they were added on 2026-11-02 after #1–#62 were assig
 | 78 | Gaussianized mul1 codebooks (ranked D3): CPU proxy, then 0.8B KL (`i8c`) | weight codes | done | 11-02 | **adopted** (user): K3 −1.7%, K2 −2.7%, K4 −2.3%; 27B check at the trunk requant |
 | 78-02 | i8c confirmation: seeds 4–5 at K2 / K3 | weight codes | done | 11-02 | K3 z −3.7 (6 seeds), K2 z −2.5 (5); user called the win before it |
 | 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | running | 11-02 | amendment 15 |
-| 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | running | 11-02 | `v3/e3/cd/README.md` |
+| 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | done | 11-02 | stacks: cd3/ldlq 0.992 at K2.5 and K3 (16/16); combined vs mul1 −2.1% / −2.6% |
 | 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | running | 11-02 | `v3/e3/cd/README.md` |
 | 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | running | 11-02 | `v3/e3/a1/README.md`; Thor + colo |
 | 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | running | 11-02 | `proxy2b/exp/w10-hout-attrib/` |

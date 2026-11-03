@@ -2,6 +2,14 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
+### 2026-11-02 20:05 CST · #79 · Coordinate descent stacks on the cubic codebook (CPU proxy)
+- **Status:** running → done · **Machine:** Thor · **Pass rule:** `v3/e3/cd/README.md` (#79)
+- **Result** (cd3 / ldlq, both on cubic0.02_i8; mean / param-weighted / tensors ≤ 1): K2.5 0.992 / 0.993 / 16 of 16;
+  K3 0.992 / 0.993 / 16. Combined (cubic + cd3) vs ldlq mul1_i8: K2.5 0.979, K3 0.974 (means).
+- **Reading:** passes: CD's −0.8% is unchanged on top of the codebook (the two gains add).
+- **Decision / next:** #77 stays "real, small"; with #80 (other rows) it decides whether CD gets a GPU version.
+- **Files:** `data/e3/cd-thor-stack.jsonl`
+
 ### 2026-11-02 20:35 CST · #33-22 #81–#89 · Night queue (no iceman): worker experiments on the 4070, A1 on the CPUs
 - **Status:** planned → running · **Machine:** 4070 (`proxy2b/night4070.sh`, one after another), Thor + colo (`v3/e3/a1/a1run.sh`)
 - **Pass rules:** each folder's README (the workers' draft rules, committed unchanged before any data, f443a64 /
