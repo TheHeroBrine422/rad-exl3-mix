@@ -2,7 +2,17 @@
 
 Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in `archive/`.
 
-### 2026-11-03 11:40 CST · — · Saturation-aware allocation check (ModelOpt / arXiv 2607.12266) on the V2 knapsack data
+### 2026-11-03 09:10 CST · #81-02 #81-03 · A1 control passes; whole-model A1 run under a memory-aware scheduler
+- **Status:** #81-02 done (partial, 7 layers so far), #81-03 running · **Machine:** Thor + colo (`v3/e3/a1/a1sched.py`)
+- **#81-02 result:** permuted predictors give D's error exactly (ugperm / uperm ÷ D 0.999–1.001 on L2 / L10 / L30 / L50,
+  K2.5 and K3) while the real predictors give 0.72–0.94. **The A1 reduction is real prediction, not an artifact of
+  coding a residual.** (The 4.5% energy share vs 17% error gap stays unexplained; noted for the GPU step.)
+- **Scheduler:** a1ctl's fixed-width stages left most CPUs idle (down jobs ~15 GB each). a1sched admits jobs by
+  cgroup anon memory and CPU count; the down arms were trimmed (no normalized-H copy). Queue: remaining control arms;
+  the other 48 layers at K2.5, K2, K3 (D / ug / u); then all 64 layers at K4 and K1.5 (K-dependence). Memory-bound:
+  ~12–20 CPUs busy on Thor, ~20–34 on colo; est. 12–16 h in all. Stop: `touch /data/work/a1/STOP`.
+
+### 2026-11-03 08:57 CST · — · Saturation-aware allocation check (ModelOpt / arXiv 2607.12266) on the V2 knapsack data
 - **Status:** done · **Machine:** Thor (`search/kfit2.py` `KFIT_SAT=1`: KLD = C (1 − exp(−P/C)), C fitted)
 - **Pass rule (written with the BACKLOG row):** saturation matters if it fits measured mix KLD better than the
   additive sum, esp. at 1.75–2.5 bpw.
@@ -21,7 +31,7 @@ Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in
   MoE models at their whole-model damage ceiling. Not for V2 or V3; knap4 keeps kfit2's model.
 - **Files:** `data/knap/sat/*.txt`
 
-### 2026-11-03 10:30 CST · — · Literature: NVIDIA Model Optimizer (user pointer)
+### 2026-11-03 08:52 CST · — · Literature: NVIDIA Model Optimizer (user pointer)
 - **Status:** done (reading) · **Notes:** `docs/research/modelopt.md`
 - **Reading:** their AutoQuantize sensitivity is our Σdy² estimator (used for allocation only); saturation-aware
   allocation (coverage model, Aumann–Shapley) is new to us and targets our low sizes; Local-Hessian / scale learning
@@ -29,20 +39,20 @@ Append-only; template and rules in `README.md`. Entries before 2026-11-02 are in
   they publish `nvidia/Qwen3.8-27B-NVFP4` (MLP NVFP4 W4A4, attention + GDN FP8; GPTQ hurt on this model).
 - **Decision / next:** five BACKLOG rows ("NVIDIA Model Optimizer overlap"); the saturation check is the cheap first one.
 
-### 2026-11-03 09:35 CST · E10 · Dead-unit census of the writer inputs (27B calib Hessians)
+### 2026-11-03 08:48 CST · E10 · Dead-unit census of the writer inputs (27B calib Hessians)
 - **Status:** done · **Machine:** colo (`v3/e3/e10/census.py`)
 - **Result:** down_proj (64 × 17,408 units): none below 1e-2 × median (min 0.019); out_proj (48): 5 units below 1e-4,
   131 below 1e-2; o_proj (16): 22 below 1e-4, 160 below 1e-2. Bottom 10% of units hold ≤ 6.7% of input energy.
 - **Reading:** null: no dead units worth a format feature (~0.03% of the writer columns near-dead). Faraway E10 closed.
 - **Files:** `data/e10/census.jsonl`
 
-### 2026-11-03 09:25 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (iceman still down)
+### 2026-11-03 08:45 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (iceman still down)
 - **Status:** planned → running · **Machine:** 4070 (`proxy2b/exp/d1103/run.sh`, ~10–12 h), Thor + colo (`v3/e3/a1/a1ctl.sh`, ~5 h), colo (E10 census, minutes)
 - **Pass rules:** `proxy2b/exp/d1103/README.md`, `v3/e3/a1/README.md` (#81-02 / #81-03), all written before data.
 - **4070 order:** #87 sibling asym stacked on edy H_out; ρ screen; gen-masked Σdy² (the 27B estimator); scale refits (B1 full, C9 on C10, both on edy); asym for all 150 tensors with own-seed quantized upstream; asym at K4 / K5; healing on the edy + asym stack; i8c + edy seeds 3–5; Σdy² 512 vs 1,024.
 - **CPUs:** #81-02 permuted-predictor control for A1 (the 4.5% energy vs 17% error gap); #81-03 the other 48 layers at K2.5 only if the control clears.
 
-### 2026-11-03 08:40 CST · #33-22 #78-03 #80–#89 · Night queue results (0.8B proxy, 4070; A1 and #80 on CPUs)
+### 2026-11-03 08:35 CST · #33-22 #78-03 #80–#89 · Night queue results (0.8B proxy, 4070; A1 and #80 on CPUs)
 - **Status:** running → done (all steps rc 0) · **Pass rules:** each folder's README, YAQA08.md amendments 15/16, `v3/e3/a1/README.md`, `v3/e3/cd/README.md`
 - **#78-03 (i8c on top of edy H_out), K3:** ratio 1.000 / 1.015 / 1.005 (seeds 0–2); K2 1.003 / 0.973 / 0.996. **Does not stack at K3**: the codebook's −1.7% (on plain H_in) vanishes under H_out. i8c adoption needs the 27B check to include an H_out arm.
 - **#33-22 (dose):** dy1350 / edy K3 1.013 / 1.016 / 1.008 (every seed worse), K2 1.040 / 0.997 / 0.994; dy2700 / dy1350 K3 1.004 / 0.996 / 1.000, K2 0.96 / 1.03 / 1.03. **Fails both:** past 1,024 windows nothing improves (the +326 windows even cost ~1% at K3). Contradicts #33-21's 640 → 1,024 gain; reading: saturation by ~1K, the last 326 windows may be atypical. 27B: 512 → 1,024 is the useful range, no need to cycle to 2,048.

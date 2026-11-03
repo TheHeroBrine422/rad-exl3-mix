@@ -104,13 +104,11 @@ def down(layer, K, arm, outdir, out_path):
         b = torch.einsum("jnp,nj->jp", X, D)
         c = torch.linalg.solve(A, b.unsqueeze(-1)).squeeze(-1)      # [I, np]
         pred = torch.einsum("jnp,jp->nj", X, c)                     # [N, I]
-        R = D - pred
-        Hn = H / H.diagonal().mean()
-        e = lambda M: float(torch.einsum("ij,jk,ik->", M, Hn, M))
-        extra = {"pred_share": 1 - e(R[idx]) / e(D[idx]), "pred_share_all_rows":
-                 1 - float(torch.einsum("ij,jk,ik->", R, Hn, R)) / float(torch.einsum("ij,jk,ik->", D, Hn, D))}
+        del X; R = D - pred; del pred                               # (memory: these jobs are the long pole)
+        e = lambda M: float(torch.einsum("ij,jk,ik->", M, H, M))     # ratios only: H's scale cancels
+        extra = {"pred_share": 1 - e(R[idx]) / e(D[idx]), "pred_share_all_rows": 1 - e(R) / e(D)}
         T = R[idx]
-        del GU, G, U, X, pred, R
+        del GU, G, U, R
     t0 = time.time()
     Q, f, Hr, Tr = quant_rows(T, H, K, 1000 + layer)
     Dr = D[idx]

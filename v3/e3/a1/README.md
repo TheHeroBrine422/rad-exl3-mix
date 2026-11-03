@@ -18,7 +18,7 @@ Pass rules (2026-11-02 ~20:25 CST, written before data):
 - In-sample caveat as #77 (the same H fits a, b only through D itself, so not much); a, b side info not counted
   (0.006 bpw).
 
-## #81-02 / #81-03 (2026-11-03 ~9:20 AM CST, written before data)
+## #81-02 / #81-03 (2026-11-03 ~8:45 AM CST, written before data)
 Result of #81: ug/D 0.83, but the predicted share of D's H-weighted energy is only ~4.5% (negative on L54/58/62, where
 the coded error still drops 3–9%). So part of the drop may come from coding *any* residual, not from the prediction.
 - **#81-02 control:** arms `ugperm` / `uperm` = the same fit with each neuron's predictors taken from a random other

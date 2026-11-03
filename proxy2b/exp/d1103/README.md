@@ -4,7 +4,7 @@ Driver `run.sh` (one GPU job at a time, idempotent, steps in this order; `STEPS=
 `/data/yb/d1103/result.txt`. Ratios are arm / control KL on g08-search1 unless marked `.fit` (g08-fit1), paired z
 from `pcmp.py`. Seeds = `--seed-offset` 0 / 1 / 2 (base quants of the same seed).
 
-Pass rules (2026-11-03 ~9:10 AM CST, written before data):
+Pass rules (2026-11-03 ~8:45 AM CST, written before data):
 
 | step | # | what | pass | fail |
 |---|---|---|---|---|

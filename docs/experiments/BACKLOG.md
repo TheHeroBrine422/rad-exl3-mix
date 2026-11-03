@@ -173,7 +173,10 @@ first). Keep this list current: add an item when a proxy test passes, strike it 
 
 ## NVIDIA Model Optimizer overlap (2026-11-03, `docs/research/modelopt.md`)
 
-- [x] **Saturation check of the knapsack** (done 11-03: null, errors compound instead; LOG) (CPU ~1 h): does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
+- [x] **Saturation check of the knapsack** (done 11-03: null, errors compound instead; LOG) (CPU ~1 h)
+- [ ] **Saturation at 0.5–2 bpw** (user, 11-03): the check above had only 13 mixes below 1.6 bpw (the r9 low-bpw mix
+  files live on iceman), and kfit2 + saturation fitted C ≈ 1.8, i.e. it would bite once whole-model KLD nears ~0.5
+  (≲ 1.75 bpw, and V3.5's sub-1 K). Redo with the iceman mix files, plus 6–10 new measurements at 0.5–1.5 bpw (V3.5 menu).: does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
   KL better than ΣΔKL (ladder levels, V2 mixes, kfit2 swaps), esp. at 1.75–2.5 bpw? If yes, re-price the low V3 sizes.
 - [ ] **Reference KLD of `nvidia/Qwen3.8-27B-NVFP4`** (iceman, weight-only dequant first) on the verify slice: place it
   on our frontier next to V2 5.0 / 5.5.
