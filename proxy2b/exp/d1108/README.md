@@ -5,7 +5,7 @@ quantizer statistics (Σdy² H_out, input Hessians) or healing data than calib (
 blend weight with calib? Decided globally (adopt / blend / drop), not as knapsack options.
 
 Data (`sgprep.py`, `sggen.py`, `sgbuild.py`): the user's sessions (pisess v2, private; 4070 = our machine), split by
-session 7:1 train / eval. Prompts = system block + the latest context, exactly 3,072 tokens, ending at an assistant
+session 4:1 train / eval. Prompts = system block + the latest context, exactly 3,072 tokens, ending at an assistant
 turn; the 0.8B bf16 generates its own turn (generation_config sampling, ≤ 768 tokens; filtered: < 32 tokens or a
 16-gram repeated > 6 times). Train docs = the last 2,048 tokens of prompt + continuation, scored on the generated
 tokens only. Raw arm = 2,048-token windows of the train sessions scored on the other model's assistant turns.
@@ -19,6 +19,11 @@ Arms. Every quant: our tuned settings, K3 and K2, seeds 0 and 1, scored on calib
   (`blend.py hin`), H_out = c23 in all three.
 - **Healing (scale-only, one pass, 2,048 windows, as d1105 `sp`):** on the edy → swj → asym stack, data qad (`sp`,
   existing) vs raw `B` vs self-generated `C`.
+- **Arm T (added 2026-11-04 ~6:40 PM CST, before data):** turboderp's SC calibration trace for this model
+  (`cal_trace.json`, Qwen3.8-27B 6.00 bpw sampling ~140 seeded conversations, thinking on, 217 rows, 509k generated
+  tokens; public, HF `turboderp/Qwen3.8-27B-exl3`): last 2,048 tokens a row, scored on the response. Same H_out
+  weights (0.5, 1; windows reused with fresh labels: 217 rows < 1,024) and a healing arm. Reported, no rule of its own
+  (off-policy for the 0.8B, like D); it says whether general 27B-generated text helps the statistics.
 - Arm D (the 27B's continuations of the same boundaries) waits for iceman time.
 
 Pass rules (written 2026-11-04 ~6:00 PM CST, before data). Ratios = mean over the 2 seeds of the paired KL ratio vs

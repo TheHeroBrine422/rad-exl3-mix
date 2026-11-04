@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """sggen.py MODEL PROMPTS.npy OUTDIR [--batch 16] [--max-new 768] [--seed 0] -- d1108 step 2 (GPU): the model's own
 continuations of equal-length prompts (sgprep.py), batched without padding: sampling with the model's
-generation_config (do_sample, its temperature / top_p / top_k), stopping at <|im_end|>. One file per batch,
+generation_config (do_sample, its temperature / top_p / top_k;
+the Qwen family's T 1.0 / top_p 0.95 / top_k 20 if the checkpoint has none), stopping at <|im_end|>. One file per batch,
 OUTDIR/b<i>.npz (gen [B, max_new] int32 padded with -1, len [B], finished [B]); finished batches are skipped
 on a rerun. VRAM_CAP_GB caps the allocator (shared 4070)."""
 import argparse, os, sys, time
@@ -19,7 +20,8 @@ P = np.load(a.prompts); os.makedirs(a.out, exist_ok=True)
 tok = AutoTokenizer.from_pretrained(a.model)
 END = tok.convert_tokens_to_ids("<|im_end|>")
 m = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16).cuda().eval()
-gc = GenerationConfig.from_pretrained(a.model)
+try: gc = GenerationConfig.from_pretrained(a.model)
+except OSError: gc = GenerationConfig(temperature=1.0, top_p=0.95, top_k=20)   # the family's (27B) sampling settings
 gc.do_sample = True; gc.max_new_tokens = a.max_new; gc.eos_token_id = END; gc.pad_token_id = END
 print(f"sggen: {len(P)} prompts of {P.shape[1]}, batch {a.batch}, T {gc.temperature} top_p {gc.top_p} top_k {gc.top_k}", flush=True)
 t0, ntok = time.time(), 0

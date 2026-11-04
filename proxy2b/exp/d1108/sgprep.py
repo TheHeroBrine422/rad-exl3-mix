@@ -2,7 +2,7 @@
 """sgprep.py TRACES.jsonl OUTDIR [--plen 3072] [--ntrain 2304] [--neval 256] [--seed 0] -- d1108 step 1 (CPU): prompts
 for self-generation and raw-trace windows, from the user's agent sessions (pisess.py output; private, our machines).
 
-Sessions are split by a hash of their id: 1 in 8 sessions -> eval, the rest -> train (no session in both).
+Sessions are split by a hash of their id: 1 in 5 sessions -> eval, the rest -> train (no session in both).
 Prompts (self-generation, arm C): at assistant-turn starts, the session's system block + the most recent context, cut to
 exactly PLEN tokens and ending in "<|im_start|>assistant\\n" (every prompt the same length: batched generation with no
 padding). Spread evenly over each session's assistant turns, shuffled, NTRAIN train + NEVAL eval.
@@ -27,14 +27,14 @@ rng = random.Random(a.seed)
 pr = {"train": [], "eval": []}; raw = []
 for line in open(a.traces):
     d = json.loads(line); sess = str(d.get("session", ""))
-    split = "eval" if int(hashlib.sha1(sess.encode()).hexdigest(), 16) % 8 == 0 else "train"
+    split = "eval" if int(hashlib.sha1(sess.encode()).hexdigest(), 16) % 5 == 0 else "train"
     ids = tok(d["prompt"], add_special_tokens=False)["input_ids"]
     st = [k for k, x in enumerate(ids) if x == IM]
     sys_end = next((s for s in st if ids[s + 1] != SYS), None)
     if sys_end is None or sys_end > a.plen // 3: continue
     asst = [s for s in st if s > sys_end and ids[s + 1:s + 1 + len(ASSIST)] == ASSIST]
     tail = a.plen - sys_end - 1 - len(ASSIST)
-    for s in asst[:: max(1, len(asst) // 12)]:                      # ~12 boundaries a session piece, evenly spread
+    for s in asst[:: max(1, len(asst) // 48)]:                      # ~48 boundaries a session piece, evenly spread
         if s - sys_end < tail: continue                              # not enough context yet: skip (equal lengths)
         p = ids[:sys_end] + ids[s - tail:s] + [IM] + ASSIST
         assert len(p) == a.plen

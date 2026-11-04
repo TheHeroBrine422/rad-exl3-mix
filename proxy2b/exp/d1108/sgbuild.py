@@ -6,6 +6,8 @@ tokens / score_from 0 / row0, tokens.i32, gen.u8 row mask; plus pools.json with 
                       collect window a document); gen = the rows predicting a generated token.
   KIND selfgen-eval:  prompts-eval + continuation, whole; gen = generated tokens (the agentic eval golden).
   KIND raw-train:     sgprep's raw 2048-token windows; gen = the other model's assistant-turn tokens.
+  KIND td-trace:      GENDIR = turboderp's cal_trace.json (Qwen3.8-27B 6.00 bpw sampling ~140 conversations; his SC
+                      calibration data): input_ids + response_ids per row, the last 2048 tokens; gen = response tokens.
 Self-generated items are filtered: fewer than 32 generated tokens, or degenerate (a 16-gram repeated > 6 times)."""
 import json, os, sys, glob
 import numpy as np
@@ -39,6 +41,13 @@ if kind.startswith("selfgen"):
             seq = np.concatenate([p, g]); m = np.zeros(len(seq), np.uint8); m[len(p):] = 1
             if kind == "selfgen-train": seq, m = seq[-2048:], m[-2048:]
             add(seq, m)
+elif kind == "td-trace":
+    for r in json.load(open(gdir))["rows"]:
+        p, g = np.asarray(r["input_ids"], np.int32), np.asarray(r["response_ids"], np.int32)
+        if len(g) < 32: stats["short"] += 1; continue
+        stats["kept"] += 1; stats["unfinished_kept"] += int(r.get("eos_reason") != "stop_token")
+        seq = np.concatenate([p, g]); m = np.zeros(len(seq), np.uint8); m[len(p):] = 1
+        add(seq[-2048:], m[-2048:])
 else:
     R, M = np.load(f"{prep}/raw-train.npy"), np.load(f"{prep}/raw-train-mask.npy")
     for s, m in zip(R, M): add(s, m); stats["kept"] += 1
