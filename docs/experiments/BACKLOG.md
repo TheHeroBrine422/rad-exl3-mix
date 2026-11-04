@@ -182,6 +182,13 @@ prefill.
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
+## Fuller output Hessians for the 27B (2026-11-04, user question)
+
+- [ ] **"Mixed" H_out** (full output factors except gate / up, which stay diagonal): 0.8B at 8K seqs K3 −9.9% vs
+  diagonal −8.0% (≈ +2%), K2 equal (#33-12); full gate / up hurts at K2 (noisy). Cost at 27B: ≥ 4K seqs (2× #33-24 or
+  more) and ~25–51 GB of fp32 accumulators (disk-backed, or layer subsets per run / per volunteer worker). Only if the
+  27B diagonal swap test (H27.md) shows H_out clearly helps; a good volunteer-compute job (additive sums).
+
 ## Collector speed (2026-11-04, user question)
 
 - [ ] **Two-sequence pipeline for the 27B collector** (collect.py): layers split 32 / 32, one sequence at a time leaves
