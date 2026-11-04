@@ -14,7 +14,7 @@ python3 -c "import json; c=json.load(open('$M/config.json')); c['quantization_co
 SRC=/data/src/exllamav3/exllamav3/exllamav3_ext
 q() { arm=$1; shift; for L in $LAYERS; do
   [ -f $O/q-$arm/q-L$(printf %02d $L).safetensors ] && continue
-  ( mkdir -p /tmp/hconv-run && cd /tmp/hconv-run && PYTHONPATH=/data/src/exllamav3 RXM_WORK=$W RXM_CKPT=$M RXM_TEMPLATE=$W/template.json \
+  ( mkdir -p /tmp/hconv-run && cd /tmp/hconv-run && OURQ_REFIT_CPU_FALLBACK=1 PYTHONPATH=/data/src/exllamav3 RXM_WORK=$W RXM_CKPT=$M RXM_TEMPLATE=$W/template.json \
     TORCH_EXTENSIONS_DIR=/data/torch_ext python3 $R/quantize/ourq.py -K $K -o $O/q-$arm --device 0 --layers $L-$L --codebook i8 --qtf2 \
     --frac-ext $SRC --scaled-hessian --sigma-reg 0.025 --sigma-reg-in 0.005 --save-wq "$@" ) >> $O/q-$arm.log 2>&1 || log "QUANT FAIL $arm L$L"
 done; }

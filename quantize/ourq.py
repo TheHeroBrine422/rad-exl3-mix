@@ -37,7 +37,15 @@ def _warm_refit(dev_):
     torch.cuda.synchronize(dev_)
 def _refit(*args, **kw):
     torch.cuda.empty_cache(); _warm_refit(dev); torch.cuda.empty_cache()
-    return _orig_refit(*args, **kw)
+    try:
+        return _orig_refit(*args, **kw)
+    except torch.OutOfMemoryError:
+        # small cards (the 4070's ~8 GB beside a desktop: 27B gate_up's Q Q^T): the same refit on the CPU, fp32
+        if not os.environ.get("OURQ_REFIT_CPU_FALLBACK"): raise
+        torch.cuda.empty_cache(); print("refit_scales: OOM on the card, refit on the CPU", flush=True)
+        mv = lambda x, d: x.to(d) if torch.is_tensor(x) else x
+        r = _orig_refit(*[mv(x, "cpu") for x in args], **{k: mv(v, "cpu") for k, v in kw.items()})
+        return tuple(mv(x, dev) for x in r) if isinstance(r, tuple) else mv(r, dev)
 _Q.refit_scales = _refit
 # LDLQ drift (the expected inflation of the tiles LDLQ feeds the search; the global scale search pre-inflates its samples
 # by it): exllamav3 looks it up by exact K in {1, 1.5, 2, 2.5, 3} and gives every other K 1.0, so the 1/8 and quarter
