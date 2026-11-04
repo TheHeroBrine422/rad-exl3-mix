@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 17:50 CST · #— · Evaluation data for V3: xcorp + own traces for search, calib for finals
+- **Decision (user):** `docs/design/eval-data.md`. Search accept/reject draws fresh slices from xcorp (8k chunks) and
+  the user's traces (32k chunks, bootstrap by session; our machines only, never donors); calib fit / qad / verify keep
+  their roles; final picks and published numbers on calib verify; long-context guards from calib's long traces, 2–3
+  whole own sessions before release. AGENTS.md and `docs/CORPORA.md` updated.
+- **Goldens:** stock radiance 1.17 `--kld-record --kld-corpus --kld-top 512` (no custom recorder needed; gen masks
+  added by our tools). `xcorp/kldcorpus.py` builds the corpora (tested on colo: 200k tokens, 141 pieces, 0 round-trip
+  failures; xcorp's tokenized meta contains no private traces). First batch ~5M xcorp + 2–3M traces on the first free
+  cards after the swap test.
+- **Publishing (pending the user's go per repo):** xcorp + goldens (`Hero422/xcorp-v1`, the challenge's licensing
+  model) and the 27B H_out diagonals (`Hero422/qwen3.8-27b-hout-diag`, after the swap test).
+
 ### 2026-11-04 16:45 CST · #33-28 · 27B swap test prepared (K2.5, plain vs block-normalized H_out)
 - **Pass rule:** `v3/yaqa/H27.md` amendment, written before data (K2.5: the K3 level was lost; arms base / bn / dy / s1).
 - **Setup:** golden `golden-search27` (103 search-pool docs, 123,460 scored positions, 8k cap, seed 27) cut from the
