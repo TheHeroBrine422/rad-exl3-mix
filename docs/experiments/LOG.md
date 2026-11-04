@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 14:50 CST · #— · Decision: V3 release sizes
+- **User:** V3 ladder = 2.0, 2.5–4.5 (the focus of all quality work), 5.0 and one 6.0 to show the top; nothing above 6
+  (V2 covers it). Rationale: above ~5 bpw KLD differences are below fp8-KV and serving noise; real-use thresholds
+  ~0.01–0.04 KLD fall at ~2.6–3.6 bpw; VRAM tiers 12 / 16 / 24 / 32 GB.
+
 ### 2026-11-04 14:35 CST · #81-03 · A1 on all 64 layers: done
 - **Result** (CPU trellis proxy, ffn_down, 256 sampled rows, i8c; coded error vs D): ug/D mean over 64 layers K1.5
   0.849, K2 0.838, K2.5 0.833, K3 0.830, K4 0.828; up-only u/D 0.879 / 0.870 / 0.865 / 0.863 / 0.862. Up-only keeps
