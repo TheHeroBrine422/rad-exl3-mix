@@ -136,7 +136,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | none (CD) · P+D? (i8c) | done | 11-03 | 11-03 | cd3 0.993, cubic 0.989 / 0.985, every tensor (16 / 16) |
 | 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | P+D | done | 11-02 | 11-03 | ug/D 0.83, up-only 0.87; control #81-02 confirms it is real |
 | 81-02 | A1 control: permuted predictors | weight codes | P+D | done | 11-03 | 11-03 | ugperm / uperm ÷ D 0.999–1.001 vs ug 0.72–0.94: the reduction is real prediction |
-| 81-03 | A1 on the other 48 layers (K2.5, K2, K3), then all 64 at K4 / K1.5 | weight codes | P+D | running | 11-03 | 11-03 | running: A1 gain on every layer at K2.5 / K2 / K3, then K4 / K1.5 (scheduler `v3/e3/a1/a1sched.py`) |
+| 81-03 | A1 on all 64 layers, K1.5–K4 | weight codes | P+D | done | 11-03 | 11-04 | ug/D 0.833 (K2.5), flat over K (0.849 K1.5 → 0.828 K4); up-only 0.865 keeps 81% (preferred); layers 24–35 ~0.70, ends ~0.95; ≈0.13 bit on down ≈ 0.03 bpw whole-model |
 | 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | none | done | 11-02 | 11-03 | gdn_in 39%, mlp_in 44%, attn_in 13%, writers 3%; additive; holds at K4/K5 |
 | 83 | H_out collection loss on scored positions only (gen mask), 0.8B (w01) | quantizer | none | done | 11-02 | 11-03 | K3 0.971, K2 0.950, every seed; use for 27B |
 | 83-02 | Gen-masked loss for the Σdy² diagonal | quantizer | none | done | 11-03 | 11-03 | K3 0.979 (every seed), K2 0.96: use for the 27B collection |

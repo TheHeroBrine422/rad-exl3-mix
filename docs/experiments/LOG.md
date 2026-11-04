@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 14:35 CST · #81-03 · A1 on all 64 layers: done
+- **Result** (CPU trellis proxy, ffn_down, 256 sampled rows, i8c; coded error vs D): ug/D mean over 64 layers K1.5
+  0.849, K2 0.838, K2.5 0.833, K3 0.830, K4 0.828; up-only u/D 0.879 / 0.870 / 0.865 / 0.863 / 0.862. Up-only keeps
+  81% of ug's reduction at K2.5 (rule ≥ 75%): **up-only preferred** (one extra GEMM). By layer (ug, K2.5): 0.94–0.96
+  in layers 0–4, ~0.88 in 6–16, **0.68–0.75 in 23–36**, ~0.80 in 37–50, 0.91–0.98 in 53–62.
+- **Size of the prize:** 0.833 ≈ 0.13 bit on down at equal error (≈ 2^(−2ΔK)); down is ~23% of trunk parameters, so
+  ≈ 0.03 bpw whole-model if applied everywhere; as a per-layer knapsack option on layers 23–36 ≈ 0.25 bit on those
+  down tensors. Runtime P+D (+1/3 MLP work, up-only). Proxy error only: KL unmeasured.
+- **Decision / next:** modest; a per-layer option for the middle layers if the V3 kernels make the extra GEMM cheap.
+  Price it with the two-pass kernel timings; no GPU test before then.
+- **Files:** `data/a1/a1-colo.jsonl`, `data/a1/a1-thor.jsonl`
+
 ### 2026-11-04 13:55 CST · #89-04, #89-05, #89-06, #33-25, #33-27 · d1105 results; heavy tail in the 27B Σdy²
 - **#89-04 PASS:** one pass over 2,048 fresh qad windows vs heal0 (2 × 1,024), equal compute: K3 0.9954 / 0.9950,
   K2 0.9970 / 0.9947 (every seed < 1). Adopt single pass; not data-limited (rule 0.98 not met).
