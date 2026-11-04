@@ -28,3 +28,8 @@ the dense 27B; GLM-5.3 / Flash are far worse. No KLD tables found for MiMo-V2.6,
 only), Muse Spark Open (chart only). Eval floors differ (Q6/Q8 KLD: dense board 0.0007, Mistral 0.003, DeepSeek
 0.003–0.005, Ling 0.005, GLM 0.013–0.019), which matters at ≥ 4 bpw but not at 2–3. "MoE quantizes better" is
 model-dependent; QFN has to be measured.
+
+Note (user): engrams are normally kept at ~8 bpw on SSD (streaming fast enough that their latency is mostly hidden),
+so the whole KLD budget goes to the VRAM part. Unsloth's low-bit DeepSeek rows used IQ4_NL–Q6_K engrams, so their
+KLDs include engram error and the DeepSeek curve above is somewhat pessimistic for an 8-bit-engram setup (by an
+amount the page doesn't let us separate).
