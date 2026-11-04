@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 16:45 CST · #33-28 · 27B swap test prepared (K2.5, plain vs block-normalized H_out)
+- **Pass rule:** `v3/yaqa/H27.md` amendment, written before data (K2.5: the K3 level was lost; arms base / bn / dy / s1).
+- **Setup:** golden `golden-search27` (103 search-pool docs, 123,460 scored positions, 8k cap, seed 27) cut from the
+  published calib golden; radiance 1.16.0 + our plugins; each arm's trunk imported as exl3i (mul1i8, rate 2.5) and
+  mixed into V2 3.00; block-normalized diagonal from `v3/yaqa/mkbn.py` (checked on the 1,664 snapshot: totals equal,
+  layer-0 gate max/mean 490 vs plain 3,739). Driver `v3/yaqa/swap27.sh`: card 0 base + bn, card 1 (user: tonight)
+  dy then s1. First end-to-end use of the exl3i import path on a full model.
+- **Runtime:** none.
+
 ### 2026-11-04 17:05 CST · #33-25, #33-27, #89-06 · Block-normalized Σdy² wins; healing at K4 with lr 3e-4
 - **#33-27:** hconv (layers 10/39/50, K2.5, 19 tensors) with block-normalized training means (every 128-seq block the
   same per-tensor total): train 128…768 seqs 0.932 / 0.925 / 0.921 / 0.924 / 0.923 / 0.921 vs plain 0.932 / 0.925 /
