@@ -165,3 +165,4 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 Next free number: **90**.
 
 | 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo (GDN layers) + Thor (attention layers) |
+| 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo |

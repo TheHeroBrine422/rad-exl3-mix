@@ -16,3 +16,10 @@ Pass rules (written 2026-11-04 ~3:05 PM CST, before data):
   ratios from here) gives ≥ 3% lower predicted KLD than the same menu without sub-1 at that size. Expected: yes at
   1.25–1.75, unclear at 2.0–2.5. (Decision already made by the user; this sizes the gain per bpw.)
 - Runtime cost: decode of a 0-bit step = one salted codebook read (P+D, small); measured with the kernel pass.
+
+## #90-02 · int4-grid codebook cost by K (2026-11-04 ~4:00 PM CST, rule before data)
+Question (user): does V3 need an i4 ladder K0.125–3.5 next to the i8 one? `i4run.sh`: 10 tensors, int4grid vs mul1_i8
+at K0.125 … 3.5, paired. Rule: below the highest K where i4 / i8 ≤ 1.01 on the parameter-weighted mean (and no tensor
+> 1.03), the i4 ladder **replaces** the i8 one (one quant serves f16, A8 and A4); between that K and K3 both are
+built (only if d1106 passes); above K3 i8 only. (mul1-based grids: the adopted cubic i8c codebook has no int4 twin yet;
+the ratio is what transfers.)
