@@ -1,8 +1,8 @@
 #!/bin/bash
 # swap27.sh STAGE -- the 27B H_out swap test at K2.5 (rule: v3/yaqa/H27.md, amendment 2026-11-04), on iceman.
 #   prep   no card: plugin home (radiance 1.16.0 + our plugins), V2 3.00 base, the base arm's pack + mix + census
-#   run    waits for the Σdy² collection to end, builds the block-normalized diagonal, then per arm (bn, dy, s1):
-#          quantize the K2.5 trunk on card 0, pack (exl3i, mul1i8, rate 2.5), mix into V2 3.00, census, score; then the
+#   run    waits for the Σdy² collection to end, builds the block-normalized diagonal, then per arm (bn on card 0;
+#          dy then s1 on card 1): quantize the K2.5 trunk, pack (exl3i, mul1i8, rate 2.5), mix into V2 3.00, census, score; then the
 #          base arm is scored and the paired comparisons are written. Idempotent: rerun after any failure.
 # Everything under /data/swap27; log result.txt. Stop: kill the driver; a rerun resumes per arm and per layer.
 : ${RXM_WORK:=/root}; export RXM_WORK
@@ -74,10 +74,11 @@ run)
   while pgrep -f "[c]ollect.py /data/yaqa/hdiag" > /dev/null || pgrep -f "^bash /root/ourq/[h]diag27.sh" > /dev/null || pgrep -f "^/bin/bash /data/ourq/[i]ceman-day27.sh" > /dev/null || pgrep -f "swap27.sh [p]rep" > /dev/null; do sleep 120; done
   [ -d $HD/hdiag-snap$NSEQ-dy ] || { log "no $NSEQ snapshot"; exit 1; }
   [ -f $S/hout-bn/mkbn.json ] || { nice $PY -I $T/mkbn.py $HD $NSEQ $S/hout-bn >> $S/result.txt 2>&1 || { log "mkbn FAIL"; exit 1; }; }
-  score base || exit 1
-  quant bn --hout $S/hout-bn --sigma-reg-out 0.01 && packmix bn $S/q-bn/K2.5 && score bn
-  quant dy --hout $HD/hdiag-snap$NSEQ-dy --sigma-reg-out 0.01 && packmix dy $S/q-dy/K2.5 && score dy
-  quant s1 --seed-offset 1 && packmix s1 $S/q-s1/K2.5 && score s1
+  # two lanes (user, 2026-11-04: card 1 is ours tonight): card 0 scores the base then runs bn; card 1 runs dy then s1
+  ( C=0; score base; quant bn --hout $S/hout-bn --sigma-reg-out 0.01 && packmix bn $S/q-bn/K2.5 && score bn ) &
+  ( C=1; quant dy --hout $HD/hdiag-snap$NSEQ-dy --sigma-reg-out 0.01 && packmix dy $S/q-dy/K2.5 && score dy
+    quant s1 --seed-offset 1 && packmix s1 $S/q-s1/K2.5 && score s1 ) &
+  wait
   for a in bn dy s1; do [ -f $S/$a.json.rows ] && log "pair base -> $a: $($PY -I $T/cmp115.py $G $S/base.json.rows $S/$a.json.rows 2>&1 | tail -1)"; done
   [ -f $S/dy.json.rows ] && [ -f $S/bn.json.rows ] && log "pair dy -> bn: $($PY -I $T/cmp115.py $G $S/dy.json.rows $S/bn.json.rows 2>&1 | tail -1)"
   log "RUN DONE" ;;
