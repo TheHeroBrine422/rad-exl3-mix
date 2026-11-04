@@ -1,0 +1,2379 @@
+{
+ "model": "Qwen/Qwen3.8-27B",
+ "params": 26895998464,
+ "updated": "2026-11-03",
+ "categories": [
+  {
+   "id": "nano",
+   "name": "Nano",
+   "min": 0,
+   "max": 3.0
+  },
+  {
+   "id": "tiny",
+   "name": "Tiny",
+   "min": 3.0,
+   "max": 4.0
+  },
+  {
+   "id": "small",
+   "name": "Small",
+   "min": 4.0,
+   "max": 5.5
+  },
+  {
+   "id": "medium",
+   "name": "Medium",
+   "min": 5.5,
+   "max": 7.5
+  },
+  {
+   "id": "large",
+   "name": "Large",
+   "min": 7.5,
+   "max": 9.5
+  }
+ ],
+ "entries": [
+  {
+   "name": "Qwen3.8-27B-FP8",
+   "author": "Qwen",
+   "group": "official",
+   "engine": "radiance",
+   "format": ".rad (official FP8)",
+   "url": "https://huggingface.co/Qwen/Qwen3.8-27B-FP8",
+   "bytes": 29471660596,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.00388878703819455,
+    "kld_p99": 0.03671182692050931,
+    "kld_p99_9": 0.19285172486304475,
+    "top1": 0.9776361584663391,
+    "gemm_us": 3712.3
+   },
+   "tier": "T2",
+   "gemm_us": 3712.3
+  },
+  {
+   "name": "UD-IQ1_S",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 6181226496,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.43328487680228533,
+    "kld_p99": 3.5875212287902833,
+    "kld_p99_9": 7.581667320251355,
+    "top1": 0.758330225944519
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ1_M",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 6718171136,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.3021597271142324,
+    "kld_p99": 2.737792110443115,
+    "kld_p99_9": 6.326140731810991,
+    "top1": 0.7959303855895996
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ2_XXS",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 7255074816,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.22445599734187346,
+    "kld_p99": 2.2139324665069573,
+    "kld_p99_9": 6.364953777313114,
+    "top1": 0.8247488737106323
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ2_S",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 8360974336,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.1297557810870255,
+    "kld_p99": 1.3827625513076778,
+    "kld_p99_9": 4.6869071769711175,
+    "top1": 0.869366466999054
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q2_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 9466976256,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.07919693468140397,
+    "kld_p99": 0.8639140486717216,
+    "kld_p99_9": 3.312482238769406,
+    "top1": 0.8964385986328125
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ3_XXS",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 10572855296,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.05051511340121036,
+    "kld_p99": 0.5509172010421747,
+    "kld_p99_9": 2.2666752319335526,
+    "top1": 0.91617351770401
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ3_S",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 11678877696,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.03473423018224822,
+    "kld_p99": 0.38862077951431273,
+    "kld_p99_9": 1.7089025173187036,
+    "top1": 0.9326939582824707
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q3_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 12784388096,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.02403086448397392,
+    "kld_p99": 0.2736412918567655,
+    "kld_p99_9": 1.237025799751064,
+    "top1": 0.943504810333252
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-IQ4_XS",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 13890840576,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.014991654454635734,
+    "kld_p99": 0.16587353169918057,
+    "kld_p99_9": 0.7828308753966755,
+    "top1": 0.9547057151794434
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q4_K_S",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 14996207616,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.01056693181110475,
+    "kld_p99": 0.11782366812229142,
+    "kld_p99_9": 0.5557967481612959,
+    "top1": 0.9631125926971436
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "Q4_0",
+   "author": "unsloth",
+   "group": "legacy",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 15780284416,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.020681268618780328,
+    "kld_p99": 0.2116323411464689,
+    "kld_p99_9": 1.0007067470550444,
+    "top1": 0.9479843974113464
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q4_K_M",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 16102434816,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.008201270791086577,
+    "kld_p99": 0.09191328465938545,
+    "kld_p99_9": 0.4425953652858682,
+    "top1": 0.9673444628715515
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q4_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 17197172736,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.006080744292270703,
+    "kld_p99": 0.06501062214374542,
+    "kld_p99_9": 0.3565719602107888,
+    "top1": 0.9717424511909485
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "Q4_1",
+   "author": "unsloth",
+   "group": "legacy",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 17241245696,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.01114254157887921,
+    "kld_p99": 0.1165808007121086,
+    "kld_p99_9": 0.5458334703444944,
+    "top1": 0.9603963494300842
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q5_K_S",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 18303748096,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.004280423196250059,
+    "kld_p99": 0.04379028469324104,
+    "kld_p99_9": 0.2168287413119713,
+    "top1": 0.9760103821754456
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q5_K_M",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 19409504256,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.003282995848813517,
+    "kld_p99": 0.03345546007156369,
+    "kld_p99_9": 0.1581305379867041,
+    "top1": 0.9786564111709595
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q5_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 20514932736,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.002682830557839606,
+    "kld_p99": 0.02685199581086635,
+    "kld_p99_9": 0.12172600948807855,
+    "top1": 0.9817304611206055
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q6_K",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 21621671936,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.0019388786305176086,
+    "kld_p99": 0.01874749220907687,
+    "kld_p99_9": 0.08335294640063308,
+    "top1": 0.9845302104949951
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q6_K_M",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 22726404096,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.0015791639468303673,
+    "kld_p99": 0.015235337279736996,
+    "kld_p99_9": 0.0708747679591163,
+    "top1": 0.9861151576042175
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q6_K_L",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 23831914496,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.0012866036440148474,
+    "kld_p99": 0.012643738910555808,
+    "kld_p99_9": 0.06104551619290609,
+    "top1": 0.9873508214950562
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q6_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 24937056256,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.0011373113884184714,
+    "kld_p99": 0.010813089683651925,
+    "kld_p99_9": 0.05377710035442736,
+    "top1": 0.988197386264801
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q8_K_L",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 27683690496,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.0008449169559928068,
+    "kld_p99": 0.007431894280016416,
+    "kld_p99_9": 0.03599338883161484,
+    "top1": 0.9896883964538574
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "Q8_0",
+   "author": "unsloth",
+   "group": "legacy",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 28584769536,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.000714919504512539,
+    "kld_p99": 0.006333915237337332,
+    "kld_p99_9": 0.02823980855941685,
+    "top1": 0.990074634552002
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "UD-Q8_K_XL",
+   "author": "unsloth",
+   "group": "ud",
+   "engine": "llama.cpp",
+   "format": "GGUF",
+   "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF",
+   "bytes": 30877710336,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.000761067317658851,
+    "kld_p99": 0.0058322104997932875,
+    "kld_p99_9": 0.024475226908921843,
+    "top1": 0.9848291277885437
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "Quark-AWQ-MXFP4",
+   "author": "AMD",
+   "group": "quark",
+   "engine": "radiance",
+   "format": ".rad (Quark AWQ MXFP4)",
+   "url": "https://huggingface.co/StillDeadcode/qwen3.8-27b-mxfp4",
+   "bytes": 16788420882,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.038240765832636824,
+    "kld_p99": 0.3997583365440364,
+    "kld_p99_9": 1.6482704896926088,
+    "top1": 0.9274086356163025
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "PARO-int4",
+   "author": "z-lab",
+   "group": "paro",
+   "engine": "radiance",
+   "format": ".rad (ParoQuant int4)",
+   "url": "https://huggingface.co/malicz/qwen3.8-27b-PARO-int4",
+   "bytes": 17491218418,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.018630708214819578,
+    "kld_p99": 0.2027159190177917,
+    "kld_p99_9": 0.9571494841574278,
+    "top1": 0.9498246312141418
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "PARO-int5",
+   "author": "Launch80",
+   "group": "paro",
+   "engine": "radiance",
+   "format": ".rad (ParoQuant int5)",
+   "url": "https://huggingface.co/malicz/qwen3.8-27b-PARO-int5",
+   "bytes": 20531921042,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.00597783686956699,
+    "kld_p99": 0.05990820363163948,
+    "kld_p99_9": 0.28953351616859274,
+    "top1": 0.9699003100395203
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "PARO-MXFP4",
+   "author": "MisterSnrub",
+   "group": "paro",
+   "engine": "radiance",
+   "format": ".rad (ParoQuant MXFP4)",
+   "url": "https://huggingface.co/malicz/qwen3.8-27b-PARO-mxfp4",
+   "bytes": 17681136514,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.02900767173048607,
+    "kld_p99": 0.3235437023639677,
+    "kld_p99_9": 1.4965667047500433,
+    "top1": 0.9363678097724915
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ8R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (int8 GPTQ, FWHT128)",
+   "bytes": 28593373470,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.00046007371309752257,
+    "kld_p99": 0.00401570104062557,
+    "kld_p99_9": 0.018800861373542335,
+    "top1": 0.9918323159217834,
+    "gemm_us": 4419.0
+   },
+   "tier": "T2",
+   "gemm_us": 4419.0
+  },
+  {
+   "name": "IQ6R-L",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: int8 + u6)",
+   "bytes": 23317085737,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.0009233611646160862,
+    "kld_p99": 0.009105053544044481,
+    "kld_p99_9": 0.04375116509198822,
+    "top1": 0.9891341328620911,
+    "gemm_us": 4516.2
+   },
+   "tier": "T2",
+   "gemm_us": 4516.2
+  },
+  {
+   "name": "IQ6R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: int8 + u6 + 5-bit)",
+   "bytes": 21434220721,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.0012309314324930995,
+    "kld_p99": 0.013340048901736724,
+    "kld_p99_9": 0.062319652020930226,
+    "top1": 0.9873337149620056,
+    "gemm_us": 4552.2
+   },
+   "tier": "T2",
+   "gemm_us": 4552.2
+  },
+  {
+   "name": "IQ6R-S",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: u6 + 5-bit)",
+   "bytes": 20376668905,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.0015146779901468134,
+    "kld_p99": 0.01563402757048605,
+    "kld_p99_9": 0.07211253821849278,
+    "top1": 0.9848063588142395,
+    "gemm_us": 4571.6
+   },
+   "tier": "T2",
+   "gemm_us": 4571.6
+  },
+  {
+   "name": "IQ5R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: u6 + 5-bit)",
+   "bytes": 18220733757,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.0030041727850462453,
+    "kld_p99": 0.033496203869581194,
+    "kld_p99_9": 0.18264992630478927,
+    "top1": 0.9800059795379639,
+    "gemm_us": 4557.5
+   },
+   "tier": "T2",
+   "gemm_us": 4557.5
+  },
+  {
+   "name": "IQ5R-S",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: u6 + 5-bit + 4-bit)",
+   "bytes": 17062728373,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.004262856691845344,
+    "kld_p99": 0.04567397773265835,
+    "kld_p99_9": 0.22712174916267064,
+    "top1": 0.9765504002571106,
+    "gemm_us": 4550.7
+   },
+   "tier": "T2",
+   "gemm_us": 4550.7
+  },
+  {
+   "name": "IQ4R-L",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 5-bit + 4-bit)",
+   "bytes": 16071090057,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.00608641423284318,
+    "kld_p99": 0.06674017578363413,
+    "kld_p99_9": 0.33374177789687026,
+    "top1": 0.9719256162643433,
+    "gemm_us": 4543.9
+   },
+   "tier": "T2",
+   "gemm_us": 4543.9
+  },
+  {
+   "name": "IQ4R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 5-bit + 4-bit)",
+   "bytes": 14985709042,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.009043073080580433,
+    "kld_p99": 0.10204020559787742,
+    "kld_p99_9": 0.5062252912520918,
+    "top1": 0.9656370878219604,
+    "gemm_us": 4539.9
+   },
+   "tier": "T2",
+   "gemm_us": 4539.9
+  },
+  {
+   "name": "IQ4R-S",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 5-bit + 4-bit + 3-bit VQ)",
+   "bytes": 13908213304,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.013268829782733107,
+    "kld_p99": 0.13909892141818947,
+    "kld_p99_9": 0.6673376555442438,
+    "top1": 0.954994261264801,
+    "gemm_us": 4537.9
+   },
+   "tier": "T2",
+   "gemm_us": 4537.9
+  },
+  {
+   "name": "IQ3R-L",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 4-bit + 3-bit VQ)",
+   "bytes": 12768956424,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.01887228949133626,
+    "kld_p99": 0.20964458405971512,
+    "kld_p99_9": 0.9827082219123822,
+    "top1": 0.9477879405021667,
+    "gemm_us": 4535.9
+   },
+   "tier": "T2",
+   "gemm_us": 4535.9
+  },
+  {
+   "name": "IQ3R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 4-bit + 3-bit VQ)",
+   "bytes": 11630139930,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.030431721231234162,
+    "kld_p99": 0.3548200333118421,
+    "kld_p99_9": 1.5772855415343314,
+    "top1": 0.9358581900596619,
+    "gemm_us": 4535.9
+   },
+   "tier": "T2",
+   "gemm_us": 4535.9
+  },
+  {
+   "name": "IQ3R-S",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 4-bit + 3-bit VQ + 2.5-bit VQ + 2.25-bit VQ)",
+   "bytes": 10583975672,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.04468502178195866,
+    "kld_p99": 0.5150693869590752,
+    "kld_p99_9": 2.233976980209285,
+    "top1": 0.9228834509849548,
+    "gemm_us": 4527.6
+   },
+   "tier": "T2",
+   "gemm_us": 4527.6
+  },
+  {
+   "name": "IQ2R-L",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 3-bit VQ + 2.5-bit VQ + 2.25-bit VQ)",
+   "bytes": 9378878749,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.06937076017742715,
+    "kld_p99": 0.8085985803604113,
+    "kld_p99_9": 3.1096975936887303,
+    "top1": 0.9031674861907959,
+    "gemm_us": 4519.3
+   },
+   "tier": "T2",
+   "gemm_us": 4519.3
+  },
+  {
+   "name": "IQ2R",
+   "author": "Deadcode",
+   "group": "i8a8",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128: 3-bit VQ + 2.5-bit VQ + 2.25-bit VQ + 2-bit VQ)",
+   "bytes": 8300219128,
+   "reference": false,
+   "scores": {
+    "kld_mean": 0.12234244092692784,
+    "kld_p99": 1.3519204473495476,
+    "kld_p99_9": 4.49858734512327,
+    "top1": 0.8702016472816467,
+    "gemm_us": 4498.9
+   },
+   "tier": "T2",
+   "gemm_us": 4498.9
+  },
+  {
+   "name": "IQ4R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 4-bit + 5-bit)",
+   "bytes": 14983947396,
+   "reference": false,
+   "gemm_us": 5863.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.00562050673675567,
+    "kld_p99": 0.06375657916069015,
+    "kld_p99_9": 0.3182292511463073,
+    "top1": 0.9729439616203308,
+    "gemm_us": 5863.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 3-bit + 4-bit)",
+   "bytes": 11625316510,
+   "reference": false,
+   "gemm_us": 5849.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.01880357564624826,
+    "kld_p99": 0.21794126391410826,
+    "kld_p99_9": 1.0360055551528276,
+    "top1": 0.9505658745765686,
+    "gemm_us": 5849.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 2-bit + 3-bit)",
+   "bytes": 8294493868,
+   "reference": false,
+   "gemm_us": 5855.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.07302841127437361,
+    "kld_p99": 0.8515798068046566,
+    "kld_p99_9": 3.2318286190029033,
+    "top1": 0.9014905095100403,
+    "gemm_us": 5855.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-S-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 4-bit + 5-bit + 3-bit)",
+   "bytes": 13886633569,
+   "reference": false,
+   "gemm_us": 5859.8,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.008319328975995185,
+    "kld_p99": 0.09161346703767759,
+    "kld_p99_9": 0.4588604691028535,
+    "top1": 0.9666516184806824,
+    "gemm_us": 5859.8
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-S-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 3-bit + 4-bit + 2-bit)",
+   "bytes": 10575020860,
+   "reference": false,
+   "gemm_us": 5849.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.02798308878468327,
+    "kld_p99": 0.3171752679347991,
+    "kld_p99_9": 1.415481044769259,
+    "top1": 0.937498152256012,
+    "gemm_us": 5849.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-L-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 4-bit + 3-bit)",
+   "bytes": 12769900129,
+   "reference": false,
+   "gemm_us": 5856.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.011982968236973288,
+    "kld_p99": 0.13338566601276391,
+    "kld_p99_9": 0.6638201575279042,
+    "top1": 0.9603944420814514,
+    "gemm_us": 5856.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-L-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 5-bit + 4-bit + 6-bit)",
+   "bytes": 16082309788,
+   "reference": false,
+   "gemm_us": 5868.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.003766478851469798,
+    "kld_p99": 0.04050623893737788,
+    "kld_p99_9": 0.20843384003637627,
+    "top1": 0.9777851700782776,
+    "gemm_us": 5868.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-L-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 3-bit + 2-bit)",
+   "bytes": 9387529508,
+   "reference": false,
+   "gemm_us": 5849.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.04698490502478783,
+    "kld_p99": 0.5403503823280317,
+    "kld_p99_9": 2.3707348136900954,
+    "top1": 0.9202763438224792,
+    "gemm_us": 5849.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-S-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 5-bit + 4-bit + 6-bit)",
+   "bytes": 17067017020,
+   "reference": false,
+   "gemm_us": 5875.3,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0027305237312665273,
+    "kld_p99": 0.028107411339879027,
+    "kld_p99_9": 0.13820539605615795,
+    "top1": 0.9807339310646057,
+    "gemm_us": 5875.3
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 5-bit + 6-bit)",
+   "bytes": 18230894444,
+   "reference": false,
+   "gemm_us": 5886.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0020391959981651457,
+    "kld_p99": 0.020224509909749028,
+    "kld_p99_9": 0.10329829972981276,
+    "top1": 0.9834064841270447,
+    "gemm_us": 5886.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-S-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 6-bit + 5-bit + 7-bit)",
+   "bytes": 20380097739,
+   "reference": false,
+   "gemm_us": 5908.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.001150773936448404,
+    "kld_p99": 0.011672377958893776,
+    "kld_p99_9": 0.0563307485282407,
+    "top1": 0.9878158569335938,
+    "gemm_us": 5908.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 6-bit + 7-bit)",
+   "bytes": 21431274211,
+   "reference": false,
+   "gemm_us": 5921.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.000935788875215283,
+    "kld_p99": 0.009102256931364506,
+    "kld_p99_9": 0.044227759450671075,
+    "top1": 0.9891625642776489,
+    "gemm_us": 5921.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-L-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: 7-bit + 6-bit + int8)",
+   "bytes": 23322957749,
+   "reference": false,
+   "gemm_us": 5915.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0007290825145378515,
+    "kld_p99": 0.006552668809890747,
+    "kld_p99_9": 0.03310090130567434,
+    "top1": 0.9904846549034119,
+    "gemm_us": 5915.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ7R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: int8 + 7-bit + 6-bit)",
+   "bytes": 24939442533,
+   "reference": false,
+   "gemm_us": 5823.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0006079138024850018,
+    "kld_p99": 0.005254066940397018,
+    "kld_p99_9": 0.026052202180025994,
+    "top1": 0.9911290407180786,
+    "gemm_us": 5823.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ8R-V2",
+   "author": "Deadcode",
+   "group": "iqr2",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, trellis: int8)",
+   "bytes": 27029464237,
+   "reference": false,
+   "gemm_us": 5699.3,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0004712148514508416,
+    "kld_p99": 0.004320019856095313,
+    "kld_p99_9": 0.020796159788965443,
+    "top1": 0.9917773008346558,
+    "gemm_us": 5699.3
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 4-bit)",
+   "bytes": 11629091386,
+   "reference": false,
+   "gemm_us": 3884.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.01698049193569937,
+    "kld_p99": 0.1999500149488448,
+    "kld_p99_9": 0.9752422680854667,
+    "top1": 0.9535051584243774,
+    "gemm_us": 3884.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 2-bit + 3-bit)",
+   "bytes": 8286461760,
+   "reference": false,
+   "gemm_us": 3829.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.06806891957505753,
+    "kld_p99": 0.7981811976432788,
+    "kld_p99_9": 3.098815250396698,
+    "top1": 0.905437707901001,
+    "gemm_us": 3829.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-S-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 4-bit)",
+   "bytes": 10573594776,
+   "reference": false,
+   "gemm_us": 3878.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.025840925678618853,
+    "kld_p99": 0.2867275977134702,
+    "kld_p99_9": 1.4252269725798246,
+    "top1": 0.9401536583900452,
+    "gemm_us": 3878.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 5-bit)",
+   "bytes": 14987596456,
+   "reference": false,
+   "gemm_us": 3913.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.005115288706204022,
+    "kld_p99": 0.05713694468140598,
+    "kld_p99_9": 0.2862330439090311,
+    "top1": 0.9745460152626038,
+    "gemm_us": 3913.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-S-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 5-bit + 3-bit)",
+   "bytes": 13889276012,
+   "reference": false,
+   "gemm_us": 3899.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.007618348777261376,
+    "kld_p99": 0.08899249583482739,
+    "kld_p99_9": 0.4318089630602546,
+    "top1": 0.9690119624137878,
+    "gemm_us": 3899.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-L-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 4-bit)",
+   "bytes": 16080925644,
+   "reference": false,
+   "gemm_us": 3924.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0034177086704422818,
+    "kld_p99": 0.03678018897771827,
+    "kld_p99_9": 0.18642654085157598,
+    "top1": 0.9785738587379456,
+    "gemm_us": 3924.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-S-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 6-bit + 4-bit)",
+   "bytes": 17023605960,
+   "reference": false,
+   "gemm_us": 3929.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.002493224781408502,
+    "kld_p99": 0.026134270057082156,
+    "kld_p99_9": 0.12588292884826302,
+    "top1": 0.9814798831939697,
+    "gemm_us": 3929.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 6-bit)",
+   "bytes": 18229468368,
+   "reference": false,
+   "gemm_us": 3930.3,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0018206123414700268,
+    "kld_p99": 0.0186218029260635,
+    "kld_p99_9": 0.09016613072156317,
+    "top1": 0.9837585687637329,
+    "gemm_us": 3930.3
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-S-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 6-bit + 5-bit + 7-bit)",
+   "bytes": 20336602827,
+   "reference": false,
+   "gemm_us": 3930.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0010639598119672983,
+    "kld_p99": 0.01041287634521721,
+    "kld_p99_9": 0.0526795931458452,
+    "top1": 0.9883406758308411,
+    "gemm_us": 3930.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 6-bit + 7-bit + int8)",
+   "bytes": 21423451859,
+   "reference": false,
+   "gemm_us": 3952.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0008780749031268832,
+    "kld_p99": 0.008729869201779362,
+    "kld_p99_9": 0.04338505268096873,
+    "top1": 0.9892717599868774,
+    "gemm_us": 3952.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ7R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: int8 + 7-bit + 6-bit)",
+   "bytes": 24945692025,
+   "reference": false,
+   "gemm_us": 4170.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0005957379934136924,
+    "kld_p99": 0.0054635638371109945,
+    "kld_p99_9": 0.026859288424249013,
+    "top1": 0.9912126064300537,
+    "gemm_us": 4170.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-L-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 2-bit)",
+   "bytes": 9365488416,
+   "reference": false,
+   "gemm_us": 3856.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.04240943656594447,
+    "kld_p99": 0.4838769555091856,
+    "kld_p99_9": 2.4761453285209285,
+    "top1": 0.9261729121208191,
+    "gemm_us": 3856.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-L-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 3-bit + 5-bit)",
+   "bytes": 12768306317,
+   "reference": false,
+   "gemm_us": 3892.3,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.011293664348779556,
+    "kld_p99": 0.126260396838188,
+    "kld_p99_9": 0.6394811577796647,
+    "top1": 0.9615845680236816,
+    "gemm_us": 3892.3
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-L-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 7-bit + 6-bit + int8)",
+   "bytes": 23329563781,
+   "reference": false,
+   "gemm_us": 4006.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0007150727528407469,
+    "kld_p99": 0.006405829712748519,
+    "kld_p99_9": 0.03467028456925515,
+    "top1": 0.9903755187988281,
+    "gemm_us": 4006.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ8R-V3",
+   "author": "Deadcode",
+   "group": "iqr3",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: int8)",
+   "bytes": 27029464237,
+   "reference": false,
+   "gemm_us": 4419.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0004712148514508416,
+    "kld_p99": 0.004320019856095313,
+    "kld_p99_9": 0.020796159788965443,
+    "top1": 0.9917773008346558,
+    "gemm_us": 4419.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 2-bit + 3-bit)",
+   "bytes": 8305802269,
+   "reference": false,
+   "gemm_us": 3828.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.061131761479913276,
+    "kld_p99": 0.7394509816169728,
+    "kld_p99_9": 3.021984121322552,
+    "top1": 0.9122861623764038,
+    "gemm_us": 3828.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ2R-L-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 2-bit)",
+   "bytes": 9402843449,
+   "reference": false,
+   "gemm_us": 3857.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.03601855744211082,
+    "kld_p99": 0.4326218891143798,
+    "kld_p99_9": 1.9557082920072981,
+    "top1": 0.9328705072402954,
+    "gemm_us": 3857.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-S-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 4-bit + 2-bit)",
+   "bytes": 10615563545,
+   "reference": false,
+   "gemm_us": 3878.8,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.022411095748475506,
+    "kld_p99": 0.26349307537078853,
+    "kld_p99_9": 1.2762971515654908,
+    "top1": 0.9474871158599854,
+    "gemm_us": 3878.8
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 3-bit + 4-bit)",
+   "bytes": 11673912296,
+   "reference": false,
+   "gemm_us": 3886.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.014954885725039195,
+    "kld_p99": 0.17260928869247422,
+    "kld_p99_9": 0.8680533571242479,
+    "top1": 0.9573887586593628,
+    "gemm_us": 3886.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ3R-L-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 3-bit + 5-bit)",
+   "bytes": 12790603808,
+   "reference": false,
+   "gemm_us": 3893.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.009173100917175207,
+    "kld_p99": 0.1057853707671165,
+    "kld_p99_9": 0.5143323760032321,
+    "top1": 0.966095507144928,
+    "gemm_us": 3893.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-S-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 5-bit + 3-bit)",
+   "bytes": 13925121080,
+   "reference": false,
+   "gemm_us": 3941.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.006434401615657442,
+    "kld_p99": 0.07173761814832676,
+    "kld_p99_9": 0.34920344400403447,
+    "top1": 0.9711939096450806,
+    "gemm_us": 3941.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 4-bit + 5-bit + 6-bit)",
+   "bytes": 15039495200,
+   "reference": false,
+   "gemm_us": 3963.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.004442596154527692,
+    "kld_p99": 0.05167740300297728,
+    "kld_p99_9": 0.2557482569217336,
+    "top1": 0.9768863916397095,
+    "gemm_us": 3963.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ4R-L-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 4-bit + 6-bit)",
+   "bytes": 16113331388,
+   "reference": false,
+   "gemm_us": 3971.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.00296935639898599,
+    "kld_p99": 0.032071326971054075,
+    "kld_p99_9": 0.15714601075649207,
+    "top1": 0.9806608557701111,
+    "gemm_us": 3971.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-S-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 6-bit + 4-bit)",
+   "bytes": 17050296958,
+   "reference": false,
+   "gemm_us": 3985.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0022334753184596093,
+    "kld_p99": 0.02315415002405642,
+    "kld_p99_9": 0.11066466194390098,
+    "top1": 0.9832574725151062,
+    "gemm_us": 3985.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ5R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 5-bit + 6-bit)",
+   "bytes": 18267567879,
+   "reference": false,
+   "gemm_us": 3991.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0015440158342391133,
+    "kld_p99": 0.015987379774451256,
+    "kld_p99_9": 0.07986006397008658,
+    "top1": 0.9860344529151917,
+    "gemm_us": 3991.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-S-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 6-bit + 5-bit + int8)",
+   "bytes": 20384789650,
+   "reference": false,
+   "gemm_us": 4043.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0009990707781059036,
+    "kld_p99": 0.009723535105586049,
+    "kld_p99_9": 0.04614334625005581,
+    "top1": 0.9886367917060852,
+    "gemm_us": 4043.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 6-bit + 7-bit)",
+   "bytes": 21646929104,
+   "reference": false,
+   "gemm_us": 3971.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0008118457846054483,
+    "kld_p99": 0.007893898598849765,
+    "kld_p99_9": 0.03746713864802645,
+    "top1": 0.989608645439148,
+    "gemm_us": 3971.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ6R-L-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: 7-bit + 6-bit + int8)",
+   "bytes": 23329563781,
+   "reference": false,
+   "gemm_us": 4006.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0006767387003846056,
+    "kld_p99": 0.0065302295051515025,
+    "kld_p99_9": 0.034791216939684635,
+    "top1": 0.9908310770988464,
+    "gemm_us": 4006.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ7R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: int8 + 7-bit + 6-bit)",
+   "bytes": 24945692025,
+   "reference": false,
+   "gemm_us": 4170.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0005909198846782107,
+    "kld_p99": 0.00541382709518075,
+    "kld_p99_9": 0.027908448234200054,
+    "top1": 0.991531491279602,
+    "gemm_us": 4170.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "IQ8R-V4",
+   "author": "Deadcode",
+   "group": "iqr4",
+   "engine": "radiance",
+   "format": ".rad (GPTQ, FWHT128, computed trellis: int8)",
+   "bytes": 27029464237,
+   "reference": false,
+   "gemm_us": 4419.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.00045531292507542,
+    "kld_p99": 0.004265684261918053,
+    "kld_p99_9": 0.02055530646443344,
+    "top1": 0.9922223687171936,
+    "gemm_us": 4419.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "M2XFP4",
+   "author": "hugypufy",
+   "group": "m2x",
+   "engine": "radiance",
+   "format": ".rad (M2XFP4, MTP head)",
+   "url": "https://huggingface.co/hugypufy/Qwen3.8-27B-M2XFP4",
+   "bytes": 17549252530,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.02213098468955143,
+    "kld_p99": 0.2263676273822783,
+    "kld_p99_9": 1.019316900253282,
+    "top1": 0.9444785714149475
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "PARO-M2XFP4",
+   "author": "hugypufy",
+   "group": "m2x",
+   "engine": "radiance",
+   "format": ".rad (ParoQuant M2XFP4, MTP head)",
+   "url": "https://huggingface.co/hugypufy/Qwen3.8-27B-PARO-M2XFP4",
+   "bytes": 18442974754,
+   "reference": true,
+   "scores": {
+    "kld_mean": 0.014480950850960905,
+    "kld_p99": 0.15441482484340657,
+    "kld_p99_9": 0.7050790605544632,
+    "top1": 0.954946756362915
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-1.40bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 5296688435,
+   "reference": false,
+   "gemm_us": 8052.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.5833180473715008,
+    "kld_p99": 4.423377990722655,
+    "kld_p99_9": 8.582561607360772,
+    "top1": 0.7197895050048828,
+    "gemm_us": 8052.0
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-1.60bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 5904873005,
+   "reference": false,
+   "gemm_us": 8039.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.3905435257706868,
+    "kld_p99": 3.244341421127319,
+    "kld_p99_9": 7.684549350738019,
+    "top1": 0.7682052850723267,
+    "gemm_us": 8039.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-1.80bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 6512984177,
+   "reference": false,
+   "gemm_us": 8023.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.2584368225883997,
+    "kld_p99": 2.361549730300903,
+    "kld_p99_9": 6.135762653350034,
+    "top1": 0.8098930716514587,
+    "gemm_us": 8023.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-2.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 7121672073,
+   "reference": false,
+   "gemm_us": 7996.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.15402236309140782,
+    "kld_p99": 1.758941750526428,
+    "kld_p99_9": 5.312268787384019,
+    "top1": 0.857776403427124,
+    "gemm_us": 7996.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-2.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 7598333753,
+   "reference": false,
+   "gemm_us": 7987.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.14763343268307233,
+    "kld_p99": 1.5764757204055773,
+    "kld_p99_9": 5.1182551078796275,
+    "top1": 0.8595255613327026,
+    "gemm_us": 7987.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-2.20bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 7729909057,
+   "reference": false,
+   "gemm_us": 8000.8,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.10247221795009212,
+    "kld_p99": 1.088599543571469,
+    "kld_p99_9": 3.901300773620111,
+    "top1": 0.880528450012207,
+    "gemm_us": 8000.8
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-2.50bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 3-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 9117070247,
+   "reference": false,
+   "gemm_us": 8011.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.07784097770024262,
+    "kld_p99": 0.8500994849205012,
+    "kld_p99_9": 3.356953460693217,
+    "top1": 0.8995800614356995,
+    "gemm_us": 8011.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-3.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 4-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 10479925413,
+   "reference": false,
+   "gemm_us": 8038.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.03487773283241052,
+    "kld_p99": 0.38398836851119966,
+    "kld_p99_9": 1.6397071151732738,
+    "top1": 0.9305528998374939,
+    "gemm_us": 8038.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-3.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 4-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 10798640082,
+   "reference": false,
+   "gemm_us": 8048.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.034813286680135454,
+    "kld_p99": 0.3995005416870107,
+    "kld_p99_9": 1.913554712295521,
+    "top1": 0.9337369799613953,
+    "gemm_us": 8048.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-3.50bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 4-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 12316841828,
+   "reference": false,
+   "gemm_us": 8037.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.020052477307713677,
+    "kld_p99": 0.22194735407829244,
+    "kld_p99_9": 1.0900737104414926,
+    "top1": 0.9504206776618958,
+    "gemm_us": 8037.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-4.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 4-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 13679634145,
+   "reference": false,
+   "gemm_us": 8035.4,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.009522082131760706,
+    "kld_p99": 0.10264789670705794,
+    "kld_p99_9": 0.5105682969093206,
+    "top1": 0.9635652899742126,
+    "gemm_us": 8035.4
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-4.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 4-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 13839007218,
+   "reference": false,
+   "gemm_us": 8027.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.009009747995875278,
+    "kld_p99": 0.10040323704481094,
+    "kld_p99_9": 0.4935825600623245,
+    "top1": 0.9655260443687439,
+    "gemm_us": 8027.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-5.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 5-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 17038485188,
+   "reference": false,
+   "gemm_us": 8075.6,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0025983040723199786,
+    "kld_p99": 0.027731402516365043,
+    "kld_p99_9": 0.133469245672217,
+    "top1": 0.981581449508667,
+    "gemm_us": 8075.6
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-5.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 5-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 17039303060,
+   "reference": false,
+   "gemm_us": 8087.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.002808595686111112,
+    "kld_p99": 0.029525156840681997,
+    "kld_p99_9": 0.14236324739455258,
+    "top1": 0.9803200960159302,
+    "gemm_us": 8087.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-SC-6.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's self-calibrated (SC) branch; 6-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 20238099527,
+   "reference": false,
+   "gemm_us": 8087.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0010646411661334575,
+    "kld_p99": 0.010111288540065285,
+    "kld_p99_9": 0.05205636346340056,
+    "top1": 0.9874533414840698,
+    "gemm_us": 8087.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-6.00bpw",
+   "author": "Hero422",
+   "group": "exl3",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, turboderp's plain branch; 6-bit Lloyd embedding)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-turboderp-ladder",
+   "bytes": 20238592375,
+   "reference": false,
+   "gemm_us": 8090.8,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0010351382323622231,
+    "kld_p99": 0.00968646440654993,
+    "kld_p99_9": 0.04599129858612932,
+    "top1": 0.9877674579620361,
+    "gemm_us": 8090.8
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-1.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 2-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 5008560714,
+   "reference": false,
+   "gemm_us": 8049.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.5123298922133492,
+    "kld_p99": 3.9636929130554157,
+    "kld_p99_9": 8.810280456542957,
+    "top1": 0.733962893486023,
+    "gemm_us": 8049.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-1.75bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 2-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 5829627196,
+   "reference": false,
+   "gemm_us": 8026.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.2968767505718696,
+    "kld_p99": 2.612798929214476,
+    "kld_p99_9": 6.405799324035597,
+    "top1": 0.7936374545097351,
+    "gemm_us": 8026.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-2.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 3-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 6668729183,
+   "reference": false,
+   "gemm_us": 8010.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.16439255403958924,
+    "kld_p99": 1.6973201322555538,
+    "kld_p99_9": 4.961903816223129,
+    "top1": 0.8491180539131165,
+    "gemm_us": 8010.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-2.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 3-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 8372182820,
+   "reference": false,
+   "gemm_us": 8010.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.06659805127055328,
+    "kld_p99": 0.7091481137275675,
+    "kld_p99_9": 2.7453278064724076,
+    "top1": 0.9024443030357361,
+    "gemm_us": 8010.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-3.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 4-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 10069376461,
+   "reference": false,
+   "gemm_us": 8033.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0306255684461217,
+    "kld_p99": 0.34748208642005896,
+    "kld_p99_9": 1.5355114707945252,
+    "top1": 0.9357651472091675,
+    "gemm_us": 8033.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-3.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 3-bit Lloyd embedding, 5-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 11747454578,
+   "reference": false,
+   "gemm_us": 8037.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.01711950051577205,
+    "kld_p99": 0.19899551987647973,
+    "kld_p99_9": 0.9691909952163625,
+    "top1": 0.9535478353500366,
+    "gemm_us": 8037.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-4.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 4-bit Lloyd embedding, 5-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 13426077973,
+   "reference": false,
+   "gemm_us": 8038.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.008281364352035412,
+    "kld_p99": 0.0898047283291815,
+    "kld_p99_9": 0.46987313008306075,
+    "top1": 0.9673112630844116,
+    "gemm_us": 8038.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-4.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 4-bit Lloyd embedding, 6-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 15115344384,
+   "reference": false,
+   "gemm_us": 8063.1,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.004799027256805904,
+    "kld_p99": 0.04987611427903171,
+    "kld_p99_9": 0.26784406471242894,
+    "top1": 0.9762904047966003,
+    "gemm_us": 8063.1
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-5.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 4-bit Lloyd embedding, 6-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 16795058273,
+   "reference": false,
+   "gemm_us": 8077.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0025642703779221007,
+    "kld_p99": 0.02754325933754444,
+    "kld_p99_9": 0.14098002982139154,
+    "top1": 0.9823141098022461,
+    "gemm_us": 8077.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-5.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 5-bit Lloyd embedding, 7-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 18455488859,
+   "reference": false,
+   "gemm_us": 8079.3,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0015349627507373616,
+    "kld_p99": 0.01614939279854295,
+    "kld_p99_9": 0.0797253693342121,
+    "top1": 0.9864805340766907,
+    "gemm_us": 8079.3
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-6.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 5-bit Lloyd embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 20088803281,
+   "reference": false,
+   "gemm_us": 8089.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0009137933403470196,
+    "kld_p99": 0.009474132545292372,
+    "kld_p99_9": 0.04692957818507925,
+    "top1": 0.9895526766777039,
+    "gemm_us": 8089.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-6.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 6-bit Lloyd embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 21817349354,
+   "reference": false,
+   "gemm_us": 8097.7,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0006023967442961755,
+    "kld_p99": 0.005857129357755184,
+    "kld_p99_9": 0.028950986653564634,
+    "top1": 0.9915447235107422,
+    "gemm_us": 8097.7
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-7.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 6-bit Lloyd embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 23517541905,
+   "reference": false,
+   "gemm_us": 8104.9,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0004504393544257143,
+    "kld_p99": 0.004241796340793371,
+    "kld_p99_9": 0.023816630795595067,
+    "top1": 0.992552638053894,
+    "gemm_us": 8104.9
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-7.50bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; 6-bit Lloyd embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 24576456880,
+   "reference": false,
+   "gemm_us": 8116.5,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0003931928809182409,
+    "kld_p99": 0.0036608657054603097,
+    "kld_p99_9": 0.019717495426535503,
+    "top1": 0.9929702281951904,
+    "gemm_us": 8116.5
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-8.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; bf16 embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 26883009521,
+   "reference": false,
+   "gemm_us": 8124.2,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.00034087272785842597,
+    "kld_p99": 0.0029803405888378584,
+    "kld_p99_9": 0.01387977862358084,
+    "top1": 0.993527352809906,
+    "gemm_us": 8124.2
+   },
+   "tier": "T2"
+  },
+  {
+   "name": "EXL3-V2-9.00bpw",
+   "author": "Hero422",
+   "group": "exl3v2",
+   "engine": "radiance",
+   "format": ".rad (EXL3 trellis, per-tensor widths from measured KL; bf16 embedding, 8-bit head)",
+   "url": "https://huggingface.co/Hero422/qwen3.8-27b-exl3-v2-rad",
+   "bytes": 30242961637,
+   "reference": false,
+   "gemm_us": 7331.0,
+   "published": true,
+   "scores": {
+    "kld_mean": 0.0002829484245555772,
+    "kld_p99": 0.0024142796173691745,
+    "kld_p99_9": 0.012197534732520426,
+    "top1": 0.9940094947814941,
+    "gemm_us": 7331.0
+   },
+   "tier": "T2"
+  }
+ ],
+ "positions": 1053665,
+ "of_positions": 7938504,
+ "groups": [
+  {
+   "id": "official",
+   "name": "Qwen official"
+  },
+  {
+   "id": "ud",
+   "name": "unsloth UD"
+  },
+  {
+   "id": "legacy",
+   "name": "Legacy quants"
+  },
+  {
+   "id": "quark",
+   "name": "AMD Quark"
+  },
+  {
+   "id": "paro",
+   "name": "ParoQuant"
+  },
+  {
+   "id": "i8a8",
+   "name": "IQR-V1",
+   "series": "iqr",
+   "version": 1
+  },
+  {
+   "id": "iqr2",
+   "name": "IQR-V2",
+   "series": "iqr",
+   "version": 2
+  },
+  {
+   "id": "iqr3",
+   "name": "IQR-V3",
+   "series": "iqr",
+   "version": 3
+  },
+  {
+   "id": "iqr4",
+   "name": "IQR-V4",
+   "series": "iqr",
+   "version": 4
+  },
+  {
+   "id": "m2x",
+   "name": "M2XFP4"
+  },
+  {
+   "id": "exl3",
+   "name": "EXL3",
+   "series": "exl3",
+   "version": 1
+  },
+  {
+   "id": "exl3v2",
+   "name": "EXL3-V2",
+   "series": "exl3",
+   "version": 2
+  }
+ ]
+}
