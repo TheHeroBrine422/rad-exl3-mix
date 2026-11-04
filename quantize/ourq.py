@@ -257,7 +257,9 @@ def quantize_group(hname, keys, seed0, log):
         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
         if hp and os.path.exists(hp):
             with safe_open(hp, "pt", device="cpu") as f:     # "hout_diag": a diagonal-only factor (collect.py YAQA_DIAG)
-                qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float())).to(dev)
+                # kept on the CPU: prepare_H_out copies it to the card itself (a dense 17408^2 fp32 here is 1.2 GB of VRAM
+                # that nothing else reads; the 4070's hconv MLP arms ran out by 170 MB). Same values, same result.
+                qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
         hd = f"{a.hout_diag}/{key}.safetensors" if a.hout_diag else None
         if hd and os.path.exists(hd):
             with safe_open(hd, "pt", device="cpu") as f:
