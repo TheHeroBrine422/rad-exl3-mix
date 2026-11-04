@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 15:10 CST · #90 · Sub-1 K moves into V3; error-curve sweep started
+- **Decision (user):** sub-1 K (K0.125–0.875 at 1/8 steps) is in V3 (was V3.5): quantizer + decoders in the kernel
+  pass, offered by knap4 at every size. Research sizes 1.25 / 1.5 / 1.75 added to the V3 ladder.
+- **Run:** `v3/e3/sub1/run.sh` (rule in its README, written before data): 49 tensors × K 0.125…0.875 + 1 / 1.25 /
+  1.5 / 2 anchors, i8c, 128 rows, scale factors 0.5–1.15. colo part a (GDN layers 2/10/30/50/62), Thor part b
+  (attention layers 3/19/43/63). Question the user raised: does knap4 pick K0.875-ish levels for some tensors even
+  at 2 bpw?
+- **Runtime:** P+D (one salted codebook read a 0-bit step; measured with the kernel pass).
+
 ### 2026-11-04 14:50 CST · #— · Decision: V3 release sizes
 - **User:** V3 ladder = 2.0, 2.5–4.5 (the focus of all quality work), 5.0 and one 6.0 to show the top; nothing above 6
   (V2 covers it). Rationale: above ~5 bpw KLD differences are below fp8-KV and serving noise; real-use thresholds

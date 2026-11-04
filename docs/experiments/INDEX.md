@@ -163,3 +163,5 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 89-06 | Healing at K4 / K5 on edy → swj → asym stacks | healing | none | running | 11-04 | 11-04 | lr 1e-3 never beat step 0 (inconclusive: lr); lower-lr screen k45lr running. Stacks vs base: K4 0.779, K5 0.806 |
 
 Next free number: **90**.
+
+| 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo (GDN layers) + Thor (attention layers) |
