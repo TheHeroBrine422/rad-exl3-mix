@@ -1,0 +1,125 @@
+snapshots [128, 256]: train (even blocks) up to 128 seqs, test (odd blocks) 128 seqs
+08:48:21 QUANT FAIL none L10
+08:49:08 QUANT FAIL none L39
+08:49:56 QUANT FAIL none L50
+08:50:34 QUANT FAIL dy128 L10
+08:51:11 QUANT FAIL dy128 L39
+08:51:49 QUANT FAIL dy128 L50
+08:52:26 QUANT FAIL dy256 L10
+snapshots [128, 256]: train (even blocks) up to 128 seqs, test (odd blocks) 128 seqs
+08:55:27 QUANT FAIL none L10
+08:57:02 QUANT FAIL none L39
+08:58:32 QUANT FAIL none L50
+08:59:12 QUANT FAIL dy128 L10
+08:59:52 QUANT FAIL dy128 L39
+09:00:31 QUANT FAIL dy128 L50
+09:01:10 QUANT FAIL dy256 L10
+09:01:49 QUANT FAIL dy256 L39
+09:02:29 QUANT FAIL dy256 L50
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      16                    1.0000       1.0000
+  dy128      10                    0.8810       1.1198
+  dy256      10                    0.8810       1.1198
+09:02:38 HCONV DONE
+snapshots [128, 256, 384]: train (even blocks) up to 256 seqs, test (odd blocks) 128 seqs
+09:13:34 QUANT FAIL none L10
+09:15:03 QUANT FAIL none L39
+09:16:32 QUANT FAIL none L50
+09:17:12 QUANT FAIL dy128 L10
+09:17:53 QUANT FAIL dy128 L39
+09:18:32 QUANT FAIL dy128 L50
+09:19:12 QUANT FAIL dy256 L10
+09:19:51 QUANT FAIL dy256 L39
+09:20:31 QUANT FAIL dy256 L50
+09:21:10 QUANT FAIL dy384 L10
+09:21:49 QUANT FAIL dy384 L39
+09:22:28 QUANT FAIL dy384 L50
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      16                    1.0000       1.0000
+  dy128      10                    0.8810       1.1198
+  dy256      10                    0.8810       1.1198
+  dy384      10                    0.8725       1.1177
+09:22:39 HCONV DONE
+snapshots [128, 256, 384]: train (even blocks) up to 256 seqs, test (odd blocks) 128 seqs
+09:33:57 QUANT FAIL none L10
+snapshots [128, 256, 384]: train (even blocks) up to 256 seqs, test (odd blocks) 128 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9383       1.0687
+  dy256      19                    0.9383       1.0687
+  dy384      19                    0.9287       1.0640
+10:12:40 HCONV DONE
+snapshots [128, 256, 384, 512]: train (even blocks) up to 256 seqs, test (odd blocks) 256 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9376       1.0687
+  dy256      19                    0.9376       1.0687
+  dy384      19                    0.9296       1.0640
+10:45:10 HCONV DONE
+snapshots [128, 256, 384, 512, 640]: train (even blocks) up to 384 seqs, test (odd blocks) 256 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9376       1.0687
+  dy256      19                    0.9376       1.0687
+  dy384      19                    0.9296       1.0640
+  dy640      19                    0.9280       1.0603
+12:03:31 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768]: train (even blocks) up to 384 seqs, test (odd blocks) 384 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9385       1.0687
+  dy256      19                    0.9385       1.0687
+  dy384      19                    0.9311       1.0640
+  dy640      19                    0.9290       1.0603
+12:51:36 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896]: train (even blocks) up to 512 seqs, test (odd blocks) 384 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9385       1.0687
+  dy256      19                    0.9385       1.0687
+  dy384      19                    0.9311       1.0640
+  dy640      19                    0.9290       1.0603
+  dy896      19                    0.9544       1.0853
+14:18:31 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024]: train (even blocks) up to 512 seqs, test (odd blocks) 512 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9387       1.0687
+  dy256      19                    0.9387       1.0687
+  dy384      19                    0.9315       1.0640
+  dy640      19                    0.9294       1.0603
+  dy896      19                    0.9548       1.0853
+15:19:08 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024, 1152]: train (even blocks) up to 640 seqs, test (odd blocks) 512 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9387       1.0687
+  dy256      19                    0.9387       1.0687
+  dy384      19                    0.9315       1.0640
+  dy640      19                    0.9294       1.0603
+  dy896      19                    0.9548       1.0853
+ dy1152      19                    0.9487       1.0798
+16:45:57 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024, 1152, 1280]: train (even blocks) up to 640 seqs, test (odd blocks) 640 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9323       1.0687
+  dy256      19                    0.9323       1.0687
+  dy384      19                    0.9248       1.0640
+  dy640      19                    0.9217       1.0603
+  dy896      19                    0.9453       1.0853
+ dy1152      19                    0.9399       1.0798
+17:46:40 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024, 1152, 1280, 1408]: train (even blocks) up to 768 seqs, test (odd blocks) 640 seqs
+    arm tensors  E_out / none (param-wtd)  E_in / none
+   none      19                    1.0000       1.0000
+  dy128      19                    0.9323       1.0687
+  dy256      19                    0.9323       1.0687
+  dy384      19                    0.9248       1.0640
+  dy640      19                    0.9217       1.0603
+  dy896      19                    0.9453       1.0853
+ dy1152      19                    0.9399       1.0798
+ dy1408      19                    0.9364       1.0759
+19:13:42 HCONV DONE
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024, 1152, 1280, 1408]: train (even blocks) up to 768 seqs, test (odd blocks) 640 seqs
+snapshots [128, 256, 384, 512, 640, 768, 896, 1024, 1152, 1280, 1408]: train (even blocks) up to 768 seqs, test (odd blocks) 640 seqs

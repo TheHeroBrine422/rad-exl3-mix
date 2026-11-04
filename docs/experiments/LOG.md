@@ -3,6 +3,27 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 13:55 CST · #89-04, #89-05, #89-06, #33-25, #33-27 · d1105 results; heavy tail in the 27B Σdy²
+- **#89-04 PASS:** one pass over 2,048 fresh qad windows vs heal0 (2 × 1,024), equal compute: K3 0.9954 / 0.9950,
+  K2 0.9970 / 0.9947 (every seed < 1). Adopt single pass; not data-limited (rule 0.98 not met).
+- **#89-05 inconclusive:** xcorp 80% + own traces 20% vs qad single pass, on the search golden: K3 1.0126 / 1.0156,
+  K2 1.0110 / 1.0163 (mean 1.014 both): gray zone of the rule. Expected direction (qad matches the calib-drawn
+  golden); whether the mix helps real use is not measured by a calib golden.
+- **#89-06 inconclusive:** K4 / K5 stacks built (vs base K4 0.775 / 0.782, K5 0.803 / 0.809), but healing at lr 1e-3
+  never improved held-out (early stop at step 128, identity): the lr is too large for errors this small. Amendment
+  in the README; k45lr screen running.
+- **#33-25 hconv** (3 layers, 19 tensors, K2.5, E_out vs no H_out, plain reference): train 128 0.932, 192 0.925,
+  320 0.922, 448 0.945, 576 0.940, 704 0.936: non-monotonic.
+- **#33-27 heavy tail:** per-128-sequence block energy of the Σdy² diagonal vs the median block: layers 0 and 10
+  carry 4–8× in block 6 (seqs 768–896) and 5.5–27× in block 9 (1152–1280), concentrated in few rows (layer-0 gate
+  max/mean 6,366 vs ~100); layers 39 / 50 / 63 flat (0.8–1.5×). A few sequences dominate the early-layer mean,
+  as IQR-V4 reports for per-token gradient energy. Block 6 is a training block (the jump at 448 train seqs), block 9 in
+  the reference. Next: block-normalized arms (each block the same per-tensor total) scored against plain and
+  normalized references (hconv.sh, running); identify the outlier sequences (collector does not log per-sequence
+  energy yet). The fixed 0.5% stop rule is not meaningful under this tail (user).
+- **Runtime:** none.
+- **Files:** `data/d1105/result-2026-11-04.txt`, `data/hconv/result-2026-11-04.txt`
+
 ### 2026-11-04 03:55 CST · #89-04…06 · d1105 queued (healing recipe for the 27B, 0.8B, 4070)
 - **Pass rules:** `proxy2b/exp/d1105/README.md` (written before data). Arms at equal compute (512 steps): one pass on
   fresh qad windows; one pass on xcorp 80% + own traces (pisess-main) 20%, assistant turns scored

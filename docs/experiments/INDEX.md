@@ -79,6 +79,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-23 | Σdy² 512 vs 1,024 windows | quantizer | none | done | 11-03 | 11-03 | 512 is +2.2% worse at K3 (≈2 SE): go ≥ 1,024 on the 27B |
 | 33-24 | 27B diagonal H_out collection (Σdy², gen-masked, 2,048 seqs, fp32, both cards) | quantizer | none | running | 11-03 | 11-03 | gate PASS 36.6 s/seq, peak 28.4 GiB; ~21 h; swap test rule `v3/yaqa/H27.md` |
 | 33-26 | Chunked-prefill noise floor, 0.8B bf16 vs own golden (chunk 0 / 2048 / 512 / 64) | eval | n/a | done | 11-04 | 11-04 | 2048 = whole (0); 512 → 0.00071 KLD, 64 → 0.00069, top-1 98.8%: chunking alone is ~0.0007, far below Code's 0.025 |
+| 33-27 | Heavy tail in the 27B Σdy² diagonal (from #33-25 snapshots) | quantizer | none | running | 11-04 | 11-04 | early layers: two 128-seq blocks hold 5–27× the median energy; hconv curve non-monotonic; block-normalized arms queued |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | D | running | 10-31 | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | ~0 | done | 10-29 | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
@@ -157,8 +158,8 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | none | done | 11-02 | 11-03 | K2 all-layer 0.62, K3 0.83; S27 needs the user |
 | 89-02 | Healing on the edy + asym stack | healing | none | done | 11-03 | 11-03 | with norms: vs edy + asym K3 0.873 / 0.858, K2 0.665 / 0.662; norms ≤ 0.2% of it |
 | 89-03 | Healing on edy → swj → asym ρ 0 | healing | none | done | 11-04 | 11-04 | PASS: K3 0.886 / 0.891, K2 0.721 / 0.708 vs its stack; vs base K3 0.674 / 0.668, K2 0.507 / 0.500 |
-| 89-04 | Healing: one pass over 2,048 fresh qad windows vs 2 × 1,024 | healing | none | planned | 11-04 | 11-04 | rule `proxy2b/exp/d1105/README.md` |
-| 89-05 | Healing data: xcorp 80% + own agentic traces 20% vs qad, one pass | healing | none | planned | 11-04 | 11-04 | rule `proxy2b/exp/d1105/README.md` |
-| 89-06 | Healing at K4 / K5 on edy → swj → asym stacks | healing | none | planned | 11-04 | 11-04 | heal a size if ≤ 0.95 on both seeds |
+| 89-04 | Healing: one pass over 2,048 fresh qad windows vs 2 × 1,024 | healing | none | done | 11-04 | 11-04 | PASS (adopt): K3 0.995, K2 0.996 vs 2 epochs, every seed < 1; not data-limited (> 0.98) |
+| 89-05 | Healing data: xcorp 80% + own agentic traces 20% vs qad, one pass | healing | none | inconclusive | 11-04 | 11-04 | K3 1.014, K2 1.014 vs qad on the search golden: gray zone (1.01–1.03); real-use benefit unmeasured |
+| 89-06 | Healing at K4 / K5 on edy → swj → asym stacks | healing | none | running | 11-04 | 11-04 | lr 1e-3 never beat step 0 (inconclusive: lr); lower-lr screen k45lr running. Stacks vs base: K4 0.779, K5 0.806 |
 
 Next free number: **90**.
