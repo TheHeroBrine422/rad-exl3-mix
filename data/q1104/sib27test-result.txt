@@ -1,0 +1,9 @@
+04:30:45 ref2: MOMENTS DONE 24 groups, 1002035 tokens, 2.4 min
+04:38:20 wq: MOMENTS DONE 48 groups, 1002035 tokens, 7.5 min (24 layers this run); peak GPU 1.3 GiB
+04:45:43 lv: MOMENTS DONE 48 groups, 1002035 tokens, 7.3 min (24 layers this run); peak GPU 1.3 GiB
+04:46:08 MOMENT EQUIVALENCE PASS (floor 0: ours must be <= 1e-6 (max rel); n equal: True): H ours 0.0e+00 floor 0.0e+00  C ours 0.0e+00 floor 0.0e+00  N ours 0.0e+00 floor 0.0e+00
+04:46:13 --level vs --wq: worst: H 0.0e+00 / 0.0e+00  C 4.7e-02 / 1.2e-01  N 2.6e-02 / 1.3e-02
+04:47:23 dn (lean, GPU) from ours --wq vs w07's dn-asym-k3base: 96 of 96 files bit-identical; worst ||d hin|| / ||hin|| 0.0e+00, ||d (F - I)|| / ||F - I|| 0.0e+00
+04:48:10 lvasym: "kld": 0.08421230484311773
+E2E PASS: ours (level-decoded siblings, sibmom27) / w07 k3asym 0.9919 (z -1.7); / k3base 0.8516 (w07: 0.8585)
+04:48:13 TEST_GPU DONE

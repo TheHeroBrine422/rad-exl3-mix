@@ -146,11 +146,11 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 87-03 | ρ screen for #87 asym (fit slice) | quantizer | none | done | 11-03 | 11-03 | fit screen: ρ 0 best (K3 0.947, K2 0.911 vs ρ 0.5); → #87-05 |
 | 87-04 | #87 asym at K4 / K5 | quantizer | none | done | 11-03 | 11-03 | K4 0.868, K5 0.888 vs base (2 seeds, every seed): holds at high K |
 | 87-05 | ρ 0 (full clean-output target) on search, plain and on edy; ρ −0.25 screen | quantizer | none | done | 11-03 | 11-03 | ρ 0 beats ρ 0.5: plain K3 0.945 / K2 0.916, on edy 0.964 / 0.924, every seed; ρ −0.25 worse |
-| 87-06 | #87 for the 27B: layer-streamed sibling moments + writer requant (w12, `v3/sib27/`) | quantizer | none | planned | 11-03 | 11-03 | 0.8B GPU equivalence test queued; needs iceman |
-| 87-07 | #87 code review and sibling-transfer test (w11, `proxy2b/exp/w11-review/`) | quantizer | none | running | 11-03 | 11-03 | review clean (no leakage, math checked); xseed queued |
+| 87-06 | #87 for the 27B: layer-streamed sibling moments + writer requant (w12, `v3/sib27/`) | quantizer | none | done | 11-03 | 11-03 | 0.8B GPU test PASS (moments bit-exact, e2e 0.992 vs w07); 27B run needs iceman + ρ 0 |
+| 87-07 | #87 code review and sibling-transfer test (w11, `proxy2b/exp/w11-review/`) | quantizer | none | done | 11-03 | 11-03 | review clean; correction does not transfer across sibling seeds (K3 1.049, K2 1.026): writers last |
 | 88 | Activation-denoising LDLQ target (C1, level-matched noise), 0.8B (w07) | quantizer | none | negative | 11-02 | 11-03 | K3 1.031, K2 1.10 |
 | 88-02 | Asym target for all 150 tensors, own-seed quantized upstream (one-shot GPTAQ-like) | quantizer | none | negative | 11-03 | 11-03 | K3 1.53×, K2 2.31× worse: only the writers with sibling inputs benefit |
 | 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | none | done | 11-02 | 11-03 | K2 all-layer 0.62, K3 0.83; S27 needs the user |
-| 89-02 | Healing on the edy + asym stack | healing | none | running | 11-03 | 11-03 | training held-out −13% / −32%; search scores lacked the norm gains: re-score (w11 healfix) |
+| 89-02 | Healing on the edy + asym stack | healing | none | done | 11-03 | 11-03 | with norms: vs edy + asym K3 0.873 / 0.858, K2 0.665 / 0.662; norms ≤ 0.2% of it |
 
 Next free number: **90**.

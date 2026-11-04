@@ -3,6 +3,20 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-03 23:20 CST · #89-02 #87-07 #87-06 · Healing on the stack, sibling transfer, 27B collector GPU test
+- **Status:** done · **Machine:** 4070 (`proxy2b/q1104.sh`) · **Files:** `data/q1104/`
+- **#89-02 healing on edy + asym, re-scored with the trained norms** (w11 healfix): vs edy + asym K3 0.873 / 0.858,
+  K2 0.665 / 0.662 (seeds 0 / 1, z −16…−22). The norm gains themselves are worth ≤ 0.2% (healn vs heal 0.998–1.000):
+  the gain is the folded per-row / per-column scales. **Done: healing stacks on H_out + asym** (needs the user for 27B).
+- **#87-07 sibling transfer** (w11 xseed: seed-0 asym writers on seed-1 siblings vs seed-0 plain writers there):
+  K3 1.049, K2 1.026 (worse than no correction) while the matched pair gives 0.848 / 0.815. **The correction does not
+  transfer**: on the 27B the writer requant runs last, on the exact shipped siblings (any later change to a sibling,
+  incl. healing / scale refits, needs the writers redone or the order fixed: siblings → writers → healing of writers'
+  scales only).
+- **#87-06 sibmom27 GPU equivalence:** moments bit-identical to moments.py (H, C, N max rel 0); lean mkdenoise 96 / 96
+  files bit-identical; end to end with level-decoded siblings: KL / w07 k3asym 0.992 (z −1.7), / k3base 0.852. **PASS.**
+- **Runtime:** none.
+
 ### 2026-11-03 22:25 CST · #87 #89 #85 · w11 code review; w12 builds #87 for the 27B
 - **w11** (`proxy2b/exp/w11-review/`): no leakage (goldens, moment windows, heal early-stop set and fit slices are
   disjoint, checked by document); mkdenoise's G / F recomputed independently (3e-8); `--wpre` in the right basis;
