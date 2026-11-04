@@ -3,6 +3,30 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 18:45 CST · #91, #33-28, #46-02 · Self-calibration test started (0.8B); swap test on 1,920 sequences; calib is partly SC already
+- **#91 (d1108) started** (rule `proxy2b/exp/d1108/README.md`, written before data): do the model's own continuations of
+  the user's agent sessions make better Σdy² H_out, input Hessians or healing data than calib qad or the raw sessions,
+  and at what blend weight with calib. Arms: C (0.8B's own turns, 2,304 prompts of 3,072 tokens), B (raw sessions,
+  scored on the other model's turns), T (turboderp's SC calibration trace, 27B-generated general chat / reasoning,
+  217 rows), D (27B continuations) later on iceman. Agentic eval golden from 256 held-out-session prompts. Tools
+  `sgprep.py`, `sggen.py` (batched, no padding, 64 tok/s at batch 4 smoke), `sgbuild.py`, `blend.py`; heal.py
+  `--data meta`. Prep: 3,578 train / 888 eval boundaries available (4:1 session split).
+- **#33-28:** collection stops at the 1,920 snapshot (H27.md amendment 2, before data) to free cards earlier; the swap
+  test starts on it automatically (`/data/swap27/stop1920.sh`).
+- **Calib already contains 27B self-generated text** (dataset card: the 8 agent traces were "generated for this challenge
+  by Qwen3.8-27B itself (the official FP8 checkpoint, its default sampling settings)"). Share: 19.3% of calib tokens;
+  qad pool 18% of 2,048-token windows but 6% of scored rows; search 25%, verify 24% of scored rows. The private set is
+  drawn the same way, so ~1/4 of what is scored is on-policy 27B text.
+- **Earlier evidence that self-generated statistics help:** in the V2 fit, turboderp's plain tensors cost **1.23x his SC
+  tensors' real KLD per unit proxy error** (same quantizer, same tensors; SC = LDLQ Hessians, measurement and recipe
+  on a self-sampled trace, exllamav3 `doc/optimize.md`). Our tensors (calib Hessians) cost 1.25x his at K4–K6 and 1.58x
+  at K7–K8 per proxy unit, though part of that is our proxy being in-sample for ours (#33, ~9%). Suggestive, not a test.
+- **turboderp's main branch saved** to `/workspace/references/turboderp-qwen38-exl3-main/` (cal_trace with token ids,
+  eval trace, kld_table, measurement, noise_attrib, recipes).
+- **#46-02 (d1106, A4 on the MLP at low K) interim:** K2 A4 on MLP 1.139 unhealed / 1.161 healed (2 seeds, z > 24) vs the ≤ 1.10 rule:
+  **fails at K2** whatever K1.5 shows; A8 reference arm failed to run (to diagnose). Full entry when the run ends.
+- **Runtime cost:** none (statistics / data choices).
+
 ### 2026-11-04 17:50 CST · #— · Evaluation data for V3: xcorp + own traces for search, calib for finals
 - **Decision (user):** `docs/design/eval-data.md`. Search accept/reject draws fresh slices from xcorp (8k chunks) and
   the user's traces (32k chunks, bootstrap by session; our machines only, never donors); calib fit / qad / verify keep

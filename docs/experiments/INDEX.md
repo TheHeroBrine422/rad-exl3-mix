@@ -95,6 +95,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 44 | Sub-2-bit pricing on turboderp's tensors | allocation | none | done | 10-31 | 10-31 | proxy error per bit ~2.0 (K1→K2 2.11); V2's model under-predicts K1-heavy swaps by 20–36%: K1 and each sub-2 level need their own factor |
 | 45 | knap4 on real options and the measured speed table | allocation | none | done | 11-01 | 11-01 | V3 option table |
 | 46 | A4 worth building at any size? | activations | P | negative | 11-01 | 11-01 | no, at any size (knap4, matmul-core table); the A4 timing slot was never run |
+| 46-02 | A4 on the MLP for the fast variant at ≤ 2.25 bpw, on the full stack (healed / unhealed), K2 and K1.5 | activations | P | running | 11-04 | 11-04 | rule `proxy2b/exp/d1106/README.md`; K2 fails (1.14 / 1.16 vs ≤ 1.10); K1.5 still running |
 | 47 | R1 residual-stream rotation for int8/int4 activations | activations | P | negative | 10-31 | 10-31 | A8-g128 error 6.6× worse |
 | 48 | Output scales by upstream's auto rule | quantizer | none | negative | 11-01 | 11-01 | +2.5% (z 2.1) |
 | 49 | radiance PR #362 (prefill softmax per row) on our eval | eval | n/a | done | 10-31 | 10-31 | KLD −0.12% (z ≈ −2.2): real but ~10× below decision noise; taken with the 1.15.x port |
@@ -169,3 +170,4 @@ Next free number: **90**.
 
 | 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo (GDN layers) + Thor (attention layers) |
 | 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo |
+| 91 | Self-calibration on own agent sessions (0.8B): self-generated vs raw vs calib vs turboderp SC trace, for H_out / H_in / healing, blend weight | statistics | none | running | 11-04 | 11-04 | rule `proxy2b/exp/d1108/README.md`; 4070; arm D (27B gens) later |
