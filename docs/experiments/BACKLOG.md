@@ -193,6 +193,15 @@ prefill.
   decode once per step into an f16 plane + radiance's 16-bit GEMM, same values: KLD unchanged, no requant; speeds up V2 6.0–9.0 and V3's f16 tensors). Board hint: EXL3-V2-9.00 (33 bf16 tensors) 7,331
   vs 8.00's 8,124 µs. Est. ~6,000–7,000 µs a layer vs ~8,100. First measure on iceman (~1 card-h): bf16 GEMM a layer at
   the board's shapes, our decode-to-f16 and decode-to-int8 passes. Runtime: P (and D for the decode kernels).
+- [ ] **Self-calibration on own agentic sessions (0.8B first)** (user, 2026-11-04): self-generated continuations of the
+  user's sessions (`xcorp/selfgen.py`, a running server at low priority; teacher logits by a bf16 record pass or the
+  `qc-kld-serve` recording build, subagent w14). 0.8B test on the 4070 (0.8B generates its own continuations,
+  transformers): (a) healing on raw traces vs self-generated vs calib qad; (b) input Hessians (Σxxᵀ) and Σdy² from
+  self-generated text vs calib vs blends, same token counts. Scored on calib search **and** an agentic self-generated
+  golden. Decide globally (adopt, blend or drop): not a second ladder in the knapsack. Context: turboderp's SC
+  ("self-calibrated") EXL3 tensors needed ~3% fewer bits than his plain ones at equal KL (board, 3–4 bpw; #13: plain
+  cost 1.15–1.23× the KL per unit of proxy error); own raw traces as H_out data were +3.5% worse on calib (#33-19).
+  Note: stock radiance `--calib-corpus` records input Grams, so 27B H_in on any corpus needs no new tool.
 - [ ] **V3 decode kernels after radiance 1.17** (`docs/research/radiance-1.17.md`): block-per-tile GEMV with K-split
   waves + biased-int fold; barrier-free 16-token tile for 2–16 tokens; gated activation quant in gate_up's epilogue.
   Needs a gfx1201 card (the dad's RDNA4 boxes or iceman after the collection). Runtime: D (this is the speed work).
