@@ -5,7 +5,7 @@ source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
 O=/data/yb/d1104; D3=/data/yb/d1103; mkdir -p $O
 f32() { for d in $O $D3 $Y $Y/w10-hout-attrib $Y/w07-seqsib $Y/w02-fixedscale; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in $O $D3 $Y $Y/w10-hout-attrib $Y/w02-fixedscale; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
-STEPS=${STEPS:-swj order heal0}
+STEPS=${D1104_STEPS:-swj order heal0}   # (the sourced block sets d1103's STEPS)
 want() { [[ " $STEPS " == *" $1 "* ]] && [ ! -f /data/yb/night.stop ]; }
 while pgrep -f "quantize/[o]urq.py|proxy2b/[e]valq.py|yaqa/[c]ollect.py" > /dev/null; do sleep 60; done
 if want swj; then step swj
