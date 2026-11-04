@@ -60,6 +60,9 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     the forward to the backward. Non-reentrant checkpointing runs the first forward with grad on, so
                     otherwise every layer's inputs stay resident (~0.27 GB per 27B layer in fp32, ~8 GB per card:
                     OOM beside half the 27B). Same values (fp32 copy); costs ~18 GB of pinned host RAM at the 27B.
+                    YAQA_XOFF=bf16: the parked copy in bf16 (~9 GB pinned: the fp32 copy does not fit iceman's 30 GB
+                    host); each token's ||x||^2 is kept exactly (fp32, on the card) for the xw sums, so dy and xw are
+                    unchanged and only Sketch B sees bf16-rounded inputs (xofftest.sh measures it).
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
@@ -329,7 +332,7 @@ if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {})); DACC_H.update(_st.get("acc_xh", {}))
     DACC_BL.update(_st.get("acc_bl", {})); DACC_DL.update(_st.get("acc_dl", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
-XOFF = os.environ.get("YAQA_XOFF") == "1"
+XOFF = os.environ.get("YAQA_XOFF", "0") in ("1", "bf16"); XDT = torch.bfloat16 if os.environ.get("YAQA_XOFF") == "bf16" else torch.float32
 XBUF = {}                                            # YAQA_XOFF: input group -> (pinned fp32 host buffer, copy event)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
@@ -341,8 +344,9 @@ def fwd_hook_diag(name):
             if state["xoff"].get(key) != state["seq"]:
                 b = XBUF.get(key)
                 if b is None or b[0].shape != x.shape:
-                    b = XBUF[key] = (torch.empty(x.shape, dtype=torch.float32, pin_memory=True), torch.cuda.Event())
-                b[0].copy_(x, non_blocking=True); b[1].record(); state["xoff"][key] = state["seq"]
+                    b = XBUF[key] = [torch.empty(x.shape, dtype=XDT, pin_memory=True), torch.cuda.Event(), None]
+                b[2] = x.float().pow(2).sum(1, keepdim=True)          # exact ||x_t||^2 (xw), on the card
+                b[0].copy_(x.to(XDT), non_blocking=True); b[1].record(); state["xoff"][key] = state["seq"]
             x = None
         def bh(g):
             if name in state["full_done"]: return        # checkpoint recompute guard
@@ -350,8 +354,8 @@ def fwd_hook_diag(name):
             with torch.no_grad():
                 if XOFF:
                     hb = XBUF[hin_group(name) or name]; hb[1].synchronize()
-                    xx = hb[0].to(g.device)
-                else: xx = x.float()
+                    xx = hb[0].to(g.device).float(); xn2 = hb[2]
+                else: xx = x.float(); xn2 = None
                 gg = g[0].float()                         # [T, m], [T, n]
                 d = bf16x.diag_gg(gg, xx, PREC, DCH)      # G_b in DCH-row blocks
                 if GATE and name == DCHECK:               # vs one whole fp32 G: chunking and (x2) precision
@@ -369,7 +373,7 @@ def fwd_hook_diag(name):
                     DACC_BL[name] += d
                 if EXTRA:
                     g2 = gg.pow(2)
-                    xw = (g2 * xx.pow(2).sum(1, keepdim=True)).sum(0); dyy = g2.sum(0)
+                    xw = (g2 * (xn2 if xn2 is not None else xx.pow(2).sum(1, keepdim=True))).sum(0); dyy = g2.sum(0)
                     if name not in DACC_X: DACC_X[name] = torch.zeros_like(xw); DACC_D[name] = torch.zeros_like(dyy)
                     elif DACC_X[name].device != xw.device: DACC_X[name] = DACC_X[name].to(xw.device); DACC_D[name] = DACC_D[name].to(xw.device)
                     DACC_X[name] += xw; DACC_D[name] += dyy
