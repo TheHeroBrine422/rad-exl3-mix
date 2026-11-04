@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 03:55 CST · #89-04…06 · d1105 queued (healing recipe for the 27B, 0.8B, 4070)
+- **Pass rules:** `proxy2b/exp/d1105/README.md` (written before data). Arms at equal compute (512 steps): one pass on
+  fresh qad windows; one pass on xcorp 80% + own traces (pisess-main) 20%, assistant turns scored
+  (`heal.py --data mix`, mask checked by decoding: `<think>` … `<|im_end|>`); healing at K4 / K5.
+- **Why:** d1104 held-out curves were still falling at the end of epoch 1; the user allows xcorp and own traces for
+  healing (real-world use is the goal). The GPU is shared with hconv through `/data/yb/gpu.lock`.
+- **Runtime:** none.
+
 ### 2026-11-04 03:15 CST · #89-03 · K2 seed 0 rerun: PASS
 - **Result:** k2edyswjasym_r0_heal vs its stack 0.721 (z −16.4), vs base 0.507; with seed 1 (0.708) both ≤ 0.90:
   healing stacks on edy → swj → asym at K2 and K3. Held-out curves: still falling ~0.6% / 32 steps at the end of

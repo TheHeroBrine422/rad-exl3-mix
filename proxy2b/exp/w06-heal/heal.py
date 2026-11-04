@@ -63,6 +63,54 @@ def qad_items(meta, pools, n, L, seed, per_doc):
         if len(keep) == n: break
     return keep
 
+IM_START, IM_END, ASSIST, NL = 248045, 248046, 74455, 198      # Qwen3.8 tokenizer: <|im_start|>assistant\n ... <|im_end|>
+
+class XMeta:
+    """an xcorp-format token directory (xcorp/tokenize.py: kld.json docs + tokens.i32, no golden, no gen mask). Scored
+    rows: a chat document's rows whose next token is inside an assistant turn (after '<|im_start|>assistant\n', through
+    its <|im_end|>), the challenge's gen weighting; a document without turns (text) scores every row."""
+    def __init__(self, d, keep=None):
+        m = json.load(open(f"{d}/kld.json")); self.docs = m["docs"]
+        self.tok = np.memmap(f"{d}/tokens.i32", np.int32, "r")
+        self.off = np.concatenate([[0], np.cumsum([x["tokens"] for x in self.docs])])
+        self.ok = [i for i, x in enumerate(self.docs) if keep is None or keep(x)]
+    def window(self, i, a, n):
+        t = np.asarray(self.tok[self.off[i]:self.off[i] + self.docs[i]["tokens"]], np.int64)
+        st = np.nonzero(t == IM_START)[0]
+        if len(st):
+            m = np.zeros(len(t), bool)
+            for s in st:
+                if s + 2 < len(t) and t[s + 1] == ASSIST and t[s + 2] == NL:
+                    e = np.nonzero(t[s + 3:] == IM_END)[0]; e = s + 3 + (e[0] if len(e) else len(t) - s - 4)
+                    m[s + 3:e + 1] = True
+        else: m = np.ones(len(t), bool)
+        ids = t[a:a + n]; nxt = np.zeros(len(ids), bool); k = a + np.arange(len(ids)) + 1
+        v = k < len(t); nxt[v] = m[k[v]]
+        return ids, np.nonzero(nxt)[0]
+
+class Mix:
+    """several token sources; an item is (source j, doc, start, len)"""
+    def __init__(self, metas): self.m = metas
+    def window(self, j, i, a, n): return self.m[j].window(i, a, n)
+
+def mix_items(spec, n, L, seed, per_doc):
+    """spec 'DIR[@filter]:frac,...' (filter = a kld.json 'file' value, e.g. pisess-main.jsonl); n windows split by frac,
+    each source's windows from every document's start in L steps (<= per_doc a doc), fixed shuffle"""
+    metas, items = [], []
+    for j, part in enumerate(spec.split(",")):
+        src, frac = part.rsplit(":", 1); d, _, f = src.partition("@")
+        xm = XMeta(d, (lambda x, f=f: x.get("file") == f) if f else None); metas.append(xm)
+        cand = [(j, i, a, min(L, xm.docs[i]["tokens"] - a)) for i in xm.ok
+                for w, a in enumerate(range(0, xm.docs[i]["tokens"] - 1, L)) if w < per_doc and xm.docs[i]["tokens"] - a >= 64]
+        rng = np.random.default_rng(seed + 100 * j); rng.shuffle(cand)
+        want, got = round(n * float(frac)), []
+        for it in cand:
+            if len(xm.window(*it[1:])[1]): got.append(it)
+            if len(got) == want: break
+        items += got
+    rng = np.random.default_rng(seed); rng.shuffle(items)
+    return Mix(metas), [tuple(x) for x in items]
+
 def heldout_items(meta, pools, gold, n, cap, seed):
     """search-pool docs not in the scoring golden (its kld.json 'orig'), first cap tokens, fixed shuffle, first n"""
     used = {d["orig"] for d in json.load(open(f"{gold}/kld.json"))["docs"]}
@@ -274,7 +322,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=("train", "gradcos")); ap.add_argument("out")
     ap.add_argument("--wq", required=True); ap.add_argument("--layers", default="0-23")
-    ap.add_argument("--data", choices=("qad", "oracle"), default="qad")
+    ap.add_argument("--data", choices=("qad", "oracle", "mix"), default="qad")
+    ap.add_argument("--mix", default=None, help="--data mix: DIR[@file]:frac,... (xcorp-format dirs)")
     ap.add_argument("--ntrain", type=int, default=1024); ap.add_argument("--len", type=int, default=2048)
     ap.add_argument("--per-doc", type=int, default=8); ap.add_argument("--epochs", type=int, default=2)
     ap.add_argument("--accum", type=int, default=4); ap.add_argument("--lr", type=float, default=1e-3)
@@ -293,6 +342,7 @@ def main():
     meta = Meta(CAL); pools = json.load(open(POOLS))["pool"]; assert len(pools) == len(meta.docs)
     held = heldout_items(meta, pools, GOLD, a.nheld, a.len, 1)
     if a.data == "oracle": gm = Meta(GOLD); items = golden_items(gm); hmeta, held = gm, items   # in-sample by design
+    elif a.data == "mix": gm, items = mix_items(a.mix, a.ntrain, a.len, a.seed, a.per_doc); hmeta = meta
     else: gm = meta; items = qad_items(meta, pools, a.ntrain, a.len, a.seed, a.per_doc); hmeta = meta
     assert all(pools[i] == "qad" for i, _, _ in items) if a.data == "qad" else True
     print(f"{len(items)} training windows ({a.data}), {len(held)} held-out docs", flush=True)
