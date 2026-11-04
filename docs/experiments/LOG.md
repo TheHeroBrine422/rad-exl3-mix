@@ -3,7 +3,7 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
-### 2026-11-03 22:30 CST · #87-04 #87-05 #88-02 #78-04 #33-23 #85-02 #89-02 · d1103 results (logged 11-04 ~10:25 PM CST)
+### 2026-11-03 22:20 CST · #87-04 #87-05 #88-02 #78-04 #33-23 #85-02 #89-02 · d1103 results
 - **Status:** done · **Machine:** 4070 · **Files:** `data/d1103/result.txt`
 - **#87-05 ρ 0 (full clean-output target):** vs ρ 0.5, plain K3 0.945 / K2 0.916, on edy K3 0.964 / K2 0.924, every
   seed (3). **Pass: ρ 0 replaces ρ 0.5.** ρ −0.25 (fit screen) is worse than ρ 0 (K2 1.019): ρ 0 is the optimum.
@@ -25,7 +25,7 @@ versions of anything: git history.
   without the trained norm gains (w11 A1: `ev()` used the stock checkpoint); re-scored by w11's healfix.sh (queued).
 - **Runtime:** none for all.
 
-### 2026-11-04 10:25 CST · #87 #89 #85 · w11 code review; w12 builds #87 for the 27B
+### 2026-11-03 22:25 CST · #87 #89 #85 · w11 code review; w12 builds #87 for the 27B
 - **w11** (`proxy2b/exp/w11-review/`): no leakage (goldens, moment windows, heal early-stop set and fit slices are
   disjoint, checked by document); mkdenoise's G / F recomputed independently (3e-8); `--wpre` in the right basis;
   every saved weight lands on the pack's i8 grid (eval = pack); wqall assembly and seed pairing correct; healing's
