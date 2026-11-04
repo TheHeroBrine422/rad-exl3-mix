@@ -182,6 +182,15 @@ prefill.
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
+## Collector speed (2026-11-04, user question)
+
+- [ ] **Two-sequence pipeline for the 27B collector** (collect.py): layers split 32 / 32, one sequence at a time leaves
+  each card idle ~half of every 37 s sequence. Two sequences in flight (1F1B) ≈ 1.5–1.7×, not 2× (bubbles). Blockers:
+  pinned host buffers per in-flight sequence (YAQA_XOFF=bf16 ~9 GB each; 30 GB host), per-sequence hook state, test
+  needs two devices (0.8B on iceman). Worth it only for another collection; not during #33-24.
+- [ ] **Less recompute in the backward** (26 s bwd vs 10 s fwd): keep activations of a few layers per card in the
+  ~3.5 GB headroom instead of checkpointing them; est. −10–20% per sequence.
+
 ## NVIDIA Model Optimizer overlap (2026-11-03, `docs/research/modelopt.md`)
 
 - [x] **Saturation check of the knapsack** (done 11-03: null, errors compound instead; LOG) (CPU ~1 h)
