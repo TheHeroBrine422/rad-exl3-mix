@@ -55,6 +55,11 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     labels are still drawn (same RNG: the scored positions get the labels of an unmasked run), only the
                     unscored positions' CE terms are dropped. A window without a scored position is skipped but counted,
                     so snapshot n covers the same windows as an unmasked run's (w01 / ranked.md A1). Not with YAQA_SHORT.
+     YAQA_XOFF=1 -> (with YAQA_DIAG) each linear's input is parked in a pinned fp32 host buffer (one per input group,
+                    reused every sequence) and fetched back in its backward hook, instead of staying on the card from
+                    the forward to the backward. Non-reentrant checkpointing runs the first forward with grad on, so
+                    otherwise every layer's inputs stay resident (~0.27 GB per 27B layer in fp32, ~8 GB per card:
+                    OOM beside half the 27B). Same values (fp32 copy); costs ~18 GB of pinned host RAM at the 27B.
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
@@ -210,7 +215,7 @@ if HSPLIT:
 
 # ---- hooks on every trunk linear
 lin = {name: m for name, m in model.model.layers.named_modules() if isinstance(m, torch.nn.Linear)}
-state = {"pos": None, "rows": {}, "full_done": set()}
+state = {"pos": None, "rows": {}, "full_done": set(), "xoff": {}, "seq": -1}
 FULL = {int(x) for x in os.environ.get("YAQA_FULL", "").split(",") if x}
 UNW = os.environ.get("YAQA_UNWEIGHTED") == "1"
 HACC, HN = {}, {}          # full-mode accumulators (CPU fp32) and token counts, by linear name
@@ -324,16 +329,30 @@ if DIAG and os.path.exists(f"{OUT}/hdiag-state.pt") and not GATE:
     DACC_X.update(_st.get("acc_xw", {})); DACC_D.update(_st.get("acc_dy", {})); DACC_H.update(_st.get("acc_xh", {}))
     DACC_BL.update(_st.get("acc_bl", {})); DACC_DL.update(_st.get("acc_dl", {}))
     print(f"hdiag: resuming after {DSTATE['n']} sequences at window {DSTATE['next']}", flush=True)
+XOFF = os.environ.get("YAQA_XOFF") == "1"
+XBUF = {}                                            # YAQA_XOFF: input group -> (pinned fp32 host buffer, copy event)
 def fwd_hook_diag(name):
     if name.endswith(("in_proj_a", "in_proj_b")): return lambda *a_: None     # not quantized
     def h(mod, inp, out):
         if not out.requires_grad: return                 # the no-grad first pass of checkpointing
         x = inp[0][0].detach()
+        if XOFF:                                         # park the input on the host (once per group and sequence)
+            key = hin_group(name) or name
+            if state["xoff"].get(key) != state["seq"]:
+                b = XBUF.get(key)
+                if b is None or b[0].shape != x.shape:
+                    b = XBUF[key] = (torch.empty(x.shape, dtype=torch.float32, pin_memory=True), torch.cuda.Event())
+                b[0].copy_(x, non_blocking=True); b[1].record(); state["xoff"][key] = state["seq"]
+            x = None
         def bh(g):
             if name in state["full_done"]: return        # checkpoint recompute guard
             state["full_done"].add(name)
             with torch.no_grad():
-                gg, xx = g[0].float(), x.float()          # [T, m], [T, n]
+                if XOFF:
+                    hb = XBUF[hin_group(name) or name]; hb[1].synchronize()
+                    xx = hb[0].to(g.device)
+                else: xx = x.float()
+                gg = g[0].float()                         # [T, m], [T, n]
                 d = bf16x.diag_gg(gg, xx, PREC, DCH)      # G_b in DCH-row blocks
                 if GATE and name == DCHECK:               # vs one whole fp32 G: chunking and (x2) precision
                     ref = (gg.T @ xx).pow(2).sum(1)
@@ -447,7 +466,7 @@ for s in range(START, START + (NSEQ if not GATE else 2)):
     wl = WLEN.get(w0, L); state["long"] = wl == L
     ids = torch.from_numpy(toks[w0:w0 + wl].astype(np.int64))[None].to(dev0)
     state["pos"] = torch.from_numpy(np.sort(srng.choice(np.arange(16, wl - 1), min(NPOS, wl - 17), replace=False))).to(dev0)
-    state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s
+    state["rows"] = {}; state["full_done"] = set(); state["xin"] = {}; state["seq"] = s; state["xoff"] = {}
     PROF = int(os.environ.get("YAQA_PROFILE", 0)) == done + 1
     if PROF:
         os.makedirs(OUT, exist_ok=True)
