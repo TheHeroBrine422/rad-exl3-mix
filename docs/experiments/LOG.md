@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 01:20 CST · #— · Tail metrics (KL99, KL99.9) and top-1 on every paired comparison; the wins rechecked
+- **Rule (user):** `proxy2b/pcmp.py` now reports KL99 / KL99.9 ratios (document bootstrap 95% CI) and top-1
+  agreement (diff ± SE) beside mean KLD; mean decides, tails are a guard (`README.md` Rules).
+- **Retroactive check** (0.8B, search golden, seed 0, from the stored per-position rows; no new evals), mean / KL99 /
+  KL99.9 / top-1: H_out K3 0.911 / 0.959 / 0.924 / +0.7 pt; #87 on edy K3 0.876 / 0.892 / 0.966 / +0.8 pt, K2 0.850 /
+  0.904 / 0.969 / +2.0 pt; healing on edy + asym K3 0.873 / 0.864 / 0.910 / +0.9 pt, K2 0.665 / 0.705 / 0.891 /
+  +5.1 pt; swj K2 0.914 / 0.941 / 0.977. **No tail regression anywhere** (no interval above 1); tails improve less than
+  the mean for most methods (the gain sits in the bulk), healing improves them about as much.
+- **Files:** `data/tails/wins-2026-11-04.txt`, `data/tails/tails.sh`
+
 ### 2026-11-03 23:40 CST · #33-24 · 27B diagonal H_out collection started on the rebuilt iceman
 - **Status:** running · **Machine:** iceman (rebuilt 11-03: OS drive lost in a linear LVM; new 4 TB data drive),
   both R9700s (`ROCR_VISIBLE_DEVICES=0,1`: the container also exposes the iGPU)

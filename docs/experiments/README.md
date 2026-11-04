@@ -53,6 +53,11 @@ Short entries are fine: drop the lines that do not apply, but keep the header li
 
 ## Rules (from `/workspace/AGENTS.md`, repeated because every entry depends on them)
 
+- **Report the tails and top-1, decide on the mean** (user, 2026-11-04): every paired comparison reports mean KLD,
+  KL99, KL99.9 (ratios with per-document bootstrap 95% intervals) and top-1 agreement (difference ± SE); `pcmp.py`
+  prints all of them. Pass rules stay on mean KLD (the score). **Guard:** if a tail ratio's interval lies above 1.00
+  while the mean improves, the result is flagged in its LOG entry and needs a look before adoption. KL99.9 on
+  ~10^5 positions rests on ~10^2 of them: read its interval, not its point value.
 - **Runtime cost on every experiment** (user, 2026-11-03): each INDEX row has a `runtime` column and each LOG entry
   that starts or concludes an experiment a **Runtime** line: does the result change prefill compute (`gemm_us`,
   scored), decode (not scored, but the user cares and may run decode tests), both, or neither (quantizer-only).
