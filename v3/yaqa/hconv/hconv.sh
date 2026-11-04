@@ -19,7 +19,9 @@ q() { arm=$1; shift; for L in $LAYERS; do
     --frac-ext $SRC --scaled-hessian --sigma-reg 0.025 --sigma-reg-in 0.005 --save-wq "$@" ) >> $O/q-$arm.log 2>&1 || log "QUANT FAIL $arm L$L"
 done; }
 q none
-for d in $(ls -d $O/half/train-* | sort -V); do n=${d##*-}; q dy$n --hout $d --sigma-reg-out 0.01; done
+# train-N for an even block count (N = 256, 512, ...) holds the same even blocks as train-(N-128): skip the duplicate
+for d in $(ls -d $O/half/train-* | sort -V); do n=${d##*-}; [ $n -gt 128 ] && [ $(( n / 128 % 2 )) = 0 ] && [ ! -d $O/q-dy$n ] && continue
+  q dy$n --hout $d --sigma-reg-out 0.01; done
 ARMS="none=$O/q-none/wq"; for d in $(ls -d $O/q-dy* | sort -V); do ARMS="$ARMS ${d##*/q-}=$d/wq"; done
 python3 -I $V/hscore.py $M $HS $O/half/test $ARMS > $O/score.jsonl 2> $O/score.err
 python3 - $O/score.jsonl <<'PY' | tee -a $O/result.txt
