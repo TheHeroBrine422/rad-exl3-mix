@@ -3,6 +3,17 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 17:05 CST · #33-25, #33-27, #89-06 · Block-normalized Σdy² wins; healing at K4 with lr 3e-4
+- **#33-27:** hconv (layers 10/39/50, K2.5, 19 tensors) with block-normalized training means (every 128-seq block the
+  same per-tensor total): train 64…704 seqs 0.932 / 0.925 / 0.921 / 0.924 / 0.923 / 0.921 vs plain 0.932 / 0.925 /
+  0.922 / 0.945 / 0.940 / 0.936 (plain reference); against the block-normalized reference the same ordering
+  (bn1408 0.927 vs dy1408 0.942). The robust estimator removes the outlier blocks' damage and is ~1.6% better at
+  the full sample; its curve plateaus from ~320 training seqs. **Decision:** the 27B swap test uses the
+  block-normalized diagonal (plain as a second arm).
+- **#89-06 (k45lr):** K4 seed 0 at lr 3e-4: held-out −5.4%, search golden 0.949 vs its stack (z −14.4) — at the
+  ≤ 0.95 rule; seed 1 and K5 pending.
+- **Files:** `data/hconv/result-2026-11-04.txt`
+
 ### 2026-11-04 15:10 CST · #90 · Sub-1 K moves into V3; error-curve sweep started
 - **Decision (user):** sub-1 K (K0.125–0.875 at 1/8 steps) is in V3 (was V3.5): quantizer + decoders in the kernel
   pass, offered by knap4 at every size. Research sizes 1.25 / 1.5 / 1.75 added to the V3 ladder.
