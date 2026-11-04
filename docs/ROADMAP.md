@@ -5,8 +5,8 @@ Names: EXL3-V1 = the turboderp-ladder port (released); EXL3-V2 = mixed-K EXL3 on
 EXL3-V3 = integer compute.
 
 ## Scope decisions (user, 2026-11-04; supersede the version sections below where they differ)
-- **Into V3 now:** sub-1 K (K0.125–0.875); the low-bpw research ladder (2.0 → 1.0 in 0.1 steps, then down until
-  KLD blows up); research sizes 1.25 / 1.5 / 1.75; A4 built and measured end to end (fast variant at ≤ 2.25 bpw if
+- **Into V3 now:** sub-1 K (K0.125–0.875); the low-bpw research ladder (from 1.5 down in 0.1 steps until KLD blows
+  up; 2.0 / 1.75 / 1.5 / 1.25 are sizes already); research sizes 1.25 / 1.5 / 1.75; A4 built and measured end to end (fast variant at ≤ 2.25 bpw if
   d1106 passes); saturation-aware allocation for the research sizes; sub-1 trellis embedding and t6.25–t8 embedding
   levels (menu work; releasing 7+ bpw is optional); all three IQR-V4 ideas (act order in the trellis, bf16
   (row, 128) scales on attn_output / ssm_out from K5, vocabulary-weighted head vs our slab head); fast + accurate
@@ -17,6 +17,9 @@ EXL3-V3 = integer compute.
   (optional extra, V3.5 at most); disaggregated quantization; KV-cache work (V-mean, Hadamard KV, per-layer KV
   recipe, KV-QAT); LSA; MoE models (QFN / GLM-5.3-Flash / Mistral).
 - **QAD:** after V3, starting from the published V3 checkpoints.
+- **Names (user, 2026-11-04):** V3 = the release; "V3 extras" = optional add-ons on V3's tooling (7–8 rebuilds,
+  decode-optimized variants, disaggregated quantization); **V4** = the next release line (QAD on V3 checkpoints,
+  then KV / LSA / MoE work as it lands). The old V3.5 / V4 / V5 labels in older notes map onto these.
 
 ## EXL3-V2 (current)
 - Released 2026-10-31 (16 sizes, 1.5–9.0 bpw). Streaming mix search on calib fit slices; final pick of measured
@@ -44,7 +47,7 @@ EXL3-V3 = integer compute.
 - Backlog: 2-tier head (~2%), residual re-ranker with more data.
 - Vision tower and DFlash2 drafter in the containers (V2 is text-only).
 
-## EXL3-V3.5 (between V3 and QAD)
+## V3 extras (formerly "EXL3-V3.5"; most items moved into V3 on 2026-11-04, see Scope decisions)
 - **Finer sizes below 2.5 bpw.** The released steps 2.5 → 2.0 → 1.75 are wide where KLD changes fastest (0.067 →
   0.164 → 0.297 on the board). Add release sizes in between (2.25 at least; 1.875 if it earns its place), and the
   trunk levels they need: K1.25 / 1.5 / 1.75 in the ladder (each ~3 card-hours; today they are interpolated from
@@ -68,7 +71,7 @@ EXL3-V3 = integer compute.
   from the already-quantized prefix, as upstream exllamav3 does; most relevant at K2-3. Caveat: our own collections
   have far fewer tokens than the published 10M-token Hessians, so the test must beat that noise.
 
-## EXL3-V4: variety pack
+## V3 extras, continued (formerly "EXL3-V4: variety pack")
 Variants that matter to some users but not to the main frontier, built on V3 / V3.5's tooling:
 - 7.0 / 7.5 / 8.0 rebuilt with V3's embedding and head (t6.25–t8 embedding levels).
 - **Decode speed as its own axis.** Decode time is not proportional to size: trellis dequant and other per-token
@@ -136,7 +139,7 @@ Variants that matter to some users but not to the main frontier, built on V3 / V
   (`eval/pools/ledger.jsonl`; measure the bias of reused search-pool docs first), new agentic traces generated in the
   corpus's style, openly licensed text matched per category, or asking the challenge author for more held-out text.
 
-## EXL3-V5
+## EXL3-V4 (formerly "V5"): QAD and after
 - QAD / scale-only healing: not before V3 is done.
 - **0.8B proxy results of 2026-11-03 (each needs a 27B check: BACKLOG "27B confirmation queue"):** sibling-sequential
   asym target for the writers (K3 −14%, K2 −18%, #87); fixed-code scale refits (K2 −9%, #85); frozen-code healing
