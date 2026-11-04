@@ -1,0 +1,14 @@
+# 27B CPU smoke (4070 box, CPU only, 2026-11-03 ~10:30 AM CST): sibmom27.py on the real Qwen3.8-27B checkpoint, one
+# 256-token qad window, layers 0-2 forward only (GDN torch path), moments of layer 3 (attention + MLP) with the layer's
+# own bf16 weights (as f16 wq files) as "siblings": C, N ~ 0 expected (f16 round trip of tiny weights only)
+1 windows, 256 tokens from pools ['qad'] (moments)
+model /workspace/models/qwen38-27b-bf16: 64 layers, hidden 5120, attention sdpa, kernels {'causal_conv1d': None, 'fla': None, 'torch': '2.11.0+cu128'}
+disk: boundaries 2 x 0.0 GiB, moments 3.8 GiB; free 588 GiB
+layer 0 (forward only): 1s, 450 tok/s, anon rss 454 MiB, eta 0 min
+layer 1 (forward only): 0s, 621 tok/s, anon rss 454 MiB, eta 0 min
+layer 2 (forward only): 1s, 504 tok/s, anon rss 457 MiB, eta 0 min
+layer 3: 5s, 48 tok/s, anon rss 455 MiB, eta 0 min
+MOMENTS DONE 2 groups, 256 tokens, 0.1 min (4 layers this run)
+rc 0 maxrss 16.5 GiB 11 s      (DEV=cpu: the f64 / f32 accumulators of the 17408-wide group on the host; on iceman they are on the card)
+self_attn.o_proj (6144, 6144) n 256 trN/trH 3.91e-09 |C|/|H| 8.64e-06 H asym 0.0
+mlp.down_proj (17408, 17408) n 256 trN/trH 7.07e-11 |C|/|H| 5.01e-06 H asym 0.0

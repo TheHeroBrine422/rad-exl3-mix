@@ -1,0 +1,4 @@
+k3xs: writers from q-k3asym 48/48, others from q-k3base_s1 102/102
+k3xc: writers from q-k3base 48/48, others from q-k3base_s1 102/102
+k2xs: writers from q-k2asym 48/48, others from q-k2base_s1 102/102
+k2xc: writers from q-k2base 48/48, others from q-k2base_s1 102/102

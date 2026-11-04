@@ -1,0 +1,9 @@
+PASS  runs 
+PASS  1. patched default path = repo (files) 20 files, 0 differ []
+PASS  1. patched default path = repo (stats) max rel 0.0e+00
+PASS  2. lean path = repo (hin, wpre: tensors and metadata) 20 files, 0 differ []
+PASS  2. lean path = repo (stats within 1e-9) max rel 2.9e-14
+   clip shares (lean): {'10.linear_attn.out_proj.input': 5.018795201939836e-05, '11.self_attn.o_proj.input': 0.00011907638167922327, '14.linear_attn.out_proj.input': 6.12816968211364e-05, '14.mlp.down_proj.input': 2.3897379933465418e-05, '3.self_attn.o_proj.input': 2.3727698617664937e-05}
+PASS  3. lam = rho = 0 (lean): hin = calib H bit-exact 0 differ
+   4. peak RSS: lean run 1213 MiB; default run <= 2265 MiB (max over both; > lean means the default's)
+ALL PASS

@@ -33,7 +33,7 @@ if want heal1; then step heal1
   for k in 3 2; do t=k${k}edyasym_s1; d=$O/h-$t; [ -f $O/${t}_heal.f32 ] && continue; [ -d $O/q-$t/wqall ] || continue
     mkdir -p $d; [ -f $d/params.pt ] || python3 $E6/heal.py train $d --wq $O/q-$t/wqall >> $d.log 2>&1 || { log "heal FAIL $t"; continue; }
     [ -f $d/wq/.done ] || python3 $E6/fold.py $d/params.pt $O/q-$t/wqall $d $M >> $d.log 2>&1 || { log "fold FAIL $t"; continue; }
-    ev ${t}_heal $d/wq; pair $t ${t}_heal
+    ev ${t}_heal $d/wq $S "" $(hm $d); pair $t ${t}_heal
   done
 fi
 log "D1103 RUN2 DONE"

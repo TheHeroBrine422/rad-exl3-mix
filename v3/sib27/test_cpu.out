@@ -1,0 +1,20 @@
+PASS  A. both run 
+PASS  A. same groups (o/out + down of layers 0-3) 8 / 8
+PASS  A. H, C, N = moments.py's (tolerance 1e-6) max rel 0.0e+00
+PASS  A. n equal 2923
+PASS  A. moments.py's metadata keys and values 
+   attention: ["model /data/models/qwen35-08b: 24 layers, hidden 1024, attention sdpa, kernels {'causal_conv1d': None, 'fla': None, 'torch': '2.11.0+cu128'}"]
+PASS  B. --level runs 
+PASS  B1. --level = --wq on deq.py's files max rel 0.0e+00
+PASS  B2. H bit-exact vs the --save-wq siblings' max rel 0.0e+00
+   B2. decode vs --save-wq: 0.linear_attn.out_proj.input C 4.9e-02 N 1.2e-02 G 5.8e-04; 0.mlp.down_proj.input C 1.5e-02 N 1.9e-02 G 2.1e-03; 1.linear_attn.out_proj.input C 3.4e-02 N 1.4e-02 G 6.3e-04; 1.mlp.down_proj.input C 1.7e-02 N 1.8e-02 G 1.5e-03; 2.linear_attn.out_proj.input C 1.5e-02 N 1.2e-02 G 6.4e-04; 2.mlp.down_proj.input C 1.6e-02 N 1.9e-02 G 1.7e-03; 3.mlp.down_proj.input C 1.6e-02 N 1.9e-02 G 2.4e-03; 3.self_attn.o_proj.input C 2.3e-02 N 2.6e-02 G 1.0e-03
+   B2. control (wq x (1 + 3.6e-4 noise)): 0.linear_attn.out_proj.input C 3.5e-02 N 1.1e-02 G 4.1e-04; 0.mlp.down_proj.input C 1.4e-02 N 1.8e-02 G 1.9e-03; 1.linear_attn.out_proj.input C 2.5e-02 N 1.3e-02 G 5.4e-04; 1.mlp.down_proj.input C 1.5e-02 N 1.8e-02 G 1.3e-03; 2.linear_attn.out_proj.input C 1.4e-02 N 1.1e-02 G 5.8e-04; 2.mlp.down_proj.input C 1.7e-02 N 1.9e-02 G 1.8e-03; 3.mlp.down_proj.input C 1.4e-02 N 1.8e-02 G 2.1e-03; 3.self_attn.o_proj.input C 3.2e-02 N 3.3e-02 G 1.5e-03
+PASS  B2. decode's C / N / G deviations within 2x the measured floor max C 4.9e-02 / 3.5e-02, N 2.6e-02 / 3.3e-02, G 2.4e-03 / 2.1e-03
+PASS  C. resume runs, only layers 2-3 computed ['layer 2', 'layer 3']
+PASS  C. resumed moments = A's max rel 0.0e+00
+PASS  C. consumed boundaries deleted 
+PASS  D. --wins long = collect.py's order 10 windows
+PASS  E. snapshot runs 
+PASS  E. full sums unchanged by the snapshot max rel 0.0e+00
+PASS  E. half n = tokens of the first snap windows 47 windows, snapshot after 32, n 4096
+ALL PASS

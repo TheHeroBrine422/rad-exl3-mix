@@ -1,0 +1,105 @@
+--- a/proxy2b/exp/w07-denoise/mkdenoise.py
++++ b/proxy2b/exp/w07-denoise/mkdenoise.py
+@@ -17,7 +17,12 @@
+ G x rows with rows = the calib count, so ourq's damping and proxy see the usual scale.
+ OUT/stats.jsonl per group: trace shares of the correction, ||H_sub / n - H / rows|| / ||H / rows|| (the moment pass's
+ own clean covariance against calib's: a check that the hooks saw the right tensors), the share of G's spectrum clipped to make it PSD (0 unless the subset's
+-H and calib's disagree enough: then reported, and G' must still factor), and with --ckpt per linear ||W F||_F / ||W||_F. fp64 on the GPU if there is one."""
++H and calib's disagree enough: then reported, and G' must still factor), and with --ckpt per linear ||W F||_F / ||W||_F. fp64 on the GPU if there is one.
++Lean path (groups wider than MKD_LEAN_K = 8192, e.g. the 27B's 17408-wide down inputs; MKD_LEAN=1 forces it for
++every group): the same arithmetic in the same order, but in place and blockwise (no k^2/2 index pairs, at most
++~5 k x k fp64 matrices at once, the clip case's eigh included (C, N, H_sub are reloaded for F): ~12 GB at 17408
++instead of ~30), so its files are bit-identical to the default path's
++(v3/sib27/test_lean.py); only the stats' norms are summed by blocks."""
+ import argparse, glob, json, os, re, struct
+ import torch
+ from safetensors import safe_open
+@@ -61,8 +66,88 @@
+ st = open(f"{a.out}/stats.jsonl", "w")
+ files = sorted(glob.glob(f"{a.mom}/*.input.safetensors"))
+ assert files, f"no moment files in {a.mom}"
++LEAN_K, LEAN, BL = int(os.environ.get("MKD_LEAN_K", 8192)), os.environ.get("MKD_LEAN") == "1", 2048
++def _sym_(M):                                         # M = (M + M^T) / 2 in place, by blocks (both triangles from the old M)
++    k = M.shape[0]
++    for i in range(0, k, BL):
++        for j in range(i, k, BL):
++            s = (M[i:i + BL, j:j + BL] + M[j:j + BL, i:i + BL].T) / 2
++            M[i:i + BL, j:j + BL] = s; M[j:j + BL, i:i + BL] = s.T
++def _bnorm(f, k):                                     # ||.||_F of a matrix given by row blocks f(i0, i1)
++    return sum(float(f(i, min(i + BL, k)).pow(2).sum()) for i in range(0, k, BL)) ** 0.5
++def _load_up_lean(p):
++    with open(p, "rb") as fh:
++        n_ = struct.unpack("<Q", fh.read(8))[0]; meta = json.loads(fh.read(n_))["__metadata__"]
++    k, rows = int(meta["k"]), int(meta["rows"])
++    with safe_open(p, "pt", device="cpu") as f: up = f.get_tensor("hessian_upper").to(dev)
++    H = torch.zeros(k, k, dtype=torch.float64, device=dev); o = 0
++    for i in range(k): H[i, i:] = up[o:o + k - i]; o += k - i
++    del up
++    for i in range(0, k, BL):                         # lower triangle = upper (0 + x: the default path's H + H.triu(1).T)
++        d = H[i:i + BL, i:i + BL]; d += d.triu(1).T.clone()
++        for j in range(i + BL, k, BL): H[j:j + BL, i:i + BL] = H[i:i + BL, j:j + BL].T
++    return H, rows, meta
++def _save_up_lean(p, G, scale, meta):                 # packed upper of G * scale, f32
++    k = G.shape[0]; out = torch.empty(k * (k + 1) // 2, dtype=torch.float32); o = 0
++    for i in range(0, k, BL):
++        seg = torch.cat([G[r, r:] for r in range(i, min(i + BL, k))]); m_ = seg.numel()
++        out[o:o + m_] = (seg * scale).float().cpu(); o += m_; del seg
++    save_file({"hessian_upper": out}, p + ".part", metadata=meta); os.replace(p + ".part", p)
++def _combine(dst, base, X, Y, lam):                   # dst = base + lam^2 Y + lam (X + X^T), rows by blocks (dst may be base)
++    k = X.shape[0]
++    for i in range(0, k, BL):
++        dst[i:i + BL] = base[i:i + BL] + a.lam ** 2 * Y[i:i + BL] + lam * (X[i:i + BL] + X[:, i:i + BL].T)
++def lean_group(mf, g):
++    H, rows, meta = _load_up_lean(f"{a.calib}/{g}.safetensors")
++    def mom(s):                                       # one moment / n, fp64 on dev (N symmetrised, as the default path)
++        with safe_open(mf, "pt", device="cpu") as f: t = f.get_tensor(s).to(dev, torch.float64).div_(n)
++        if s == "N": _sym_(t)
++        return t
++    with safe_open(mf, "pt", device="cpu") as f: n = int(f.metadata()["n"])
++    Hm = H.div_(rows); k = Hm.shape[0]; trH = Hm.trace()
++    Hs = mom("H"); hsub = _bnorm(lambda i, j: Hs[i:j] - Hm[i:j], k) / _bnorm(lambda i, j: Hm[i:j], k); del Hs
++    C, N = mom("C"), mom("N"); trN, trC = float(a.lam ** 2 * N.trace() / trH), float(2 * a.lam * C.trace() / trH)
++    G = Hm; _combine(G, Hm, C, N, a.lam); del Hm, H, C, N; _sym_(G)     # C, N reloaded for F: eigh below has room
++    clip = 0.0
++    if a.lam and int(torch.linalg.cholesky_ex(G)[1]) != 0:
++        ev, V = torch.linalg.eigh(G); del G
++        clip = float(-ev.clamp(max=0).sum() / ev.clamp(min=0).sum()); G = (V * ev.clamp(min=0)) @ V.T; del V; _sym_(G)
++    sg = a.sig_in if re.search(r"layers\.\d+\.input$", g) else a.sig
++    al = sg * float(G.diagonal().mean())
++    _save_up_lean(f"{a.out}/hin/{g}.safetensors", G, rows, dict(meta, source=f"mkdenoise lam {a.lam} rho {a.rho} from {a.mom}"))
++    G.diagonal().add_(al); chol = int(torch.linalg.cholesky_ex(G)[1]) == 0; del G
++    r = {"group": g, "lam": a.lam, "rho": a.rho, "sig": sg, "n": n, "rows": rows,
++         "tr_N": trN, "tr_C": trC, "hsub_vs_calib": hsub, "clip": clip, "chol_Gp": chol}
++    if a.lam != a.rho:
++        C, N, Hs = mom("C"), mom("N"), mom("H")
++        Gs = torch.empty_like(Hs); _combine(Gs, Hs, C, N, a.lam); _sym_(Gs)
++        als = sg * float(Gs.diagonal().mean()); Gs.diagonal().add_(als)
++        for i in range(0, k, BL):                     # A = Hs + lam C + rho C^T + rho lam N, into Hs's storage
++            Hs[i:i + BL] = Hs[i:i + BL] + a.lam * C[i:i + BL] + a.rho * C[:, i:i + BL].T + a.rho * a.lam * N[i:i + BL]
++        A = Hs; del C, N; A.diagonal().add_(als)
++        Ft = torch.linalg.solve(Gs, A.T); del Gs, A
++        save_file({"Ft": Ft.float().cpu().contiguous()}, f"{a.out}/wpre/{g}.safetensors.part",
++                  metadata={"lam": str(a.lam), "rho": str(a.rho), "alpha": str(als), "sig": str(sg), "mom": a.mom})
++        os.replace(f"{a.out}/wpre/{g}.safetensors.part", f"{a.out}/wpre/{g}.safetensors")
++        def fmi(i, j):                                # rows i..j of F^T - I
++            d = Ft[i:j].clone(); d[torch.arange(j - i, device=dev), torch.arange(i, j, device=dev)] -= 1; return d
++        r["F_dev"] = _bnorm(fmi, k) / k ** 0.5
++        if W:
++            for key in linears(g):
++                w = W(key).to(dev, torch.float64).T
++                r[f"wf_{key.split('.', 4)[4]}"] = float((Ft @ w).norm() / w.norm())
++    return r
+ for mf in files:
+     g = os.path.basename(mf)[:-len(".safetensors")]
++    with safe_open(mf, "pt", device="cpu") as f: kk = f.get_slice("H").get_shape()[0]
++    if LEAN or kk > LEAN_K:
++        r = lean_group(mf, g)
++        assert r["chol_Gp"], f"{g}: the damped metric is not positive definite"
++        st.write(json.dumps(r) + "\n"); st.flush()
++        print(f"{g:60s} trN {r['tr_N']:+.3e} trC {r['tr_C']:+.3e} hsub {r['hsub_vs_calib']:.3f} clip {r['clip']:.1e}"
++              + (f" Fdev {r['F_dev']:.3e}" if "F_dev" in r else "") + " (lean)", flush=True)
++        if dev.type == "cuda": torch.cuda.empty_cache()
++        continue
+     H, rows, meta = load_up(f"{a.calib}/{g}.safetensors")
+     with safe_open(mf, "pt", device="cpu") as f:
+         n = int(f.metadata()["n"]); C, N, Hs = (f.get_tensor(s).to(dev, torch.float64) / n for s in "CNH")

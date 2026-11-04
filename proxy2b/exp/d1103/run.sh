@@ -14,8 +14,11 @@ sfx() { [ $1 = 0 ] && echo "" || echo "_s$1"; }
 # f32 TAG: the score file wherever an earlier experiment left it
 f32() { for d in $O $Y $Y/w10-hout-attrib $Y/w07-seqsib $Y/w02-fixedscale; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in $O $Y $Y/w10-hout-attrib $Y/w02-fixedscale; do [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
-ev() { tag=$1 wq=$2 g=${3:-$S} x=${4:-}; [ -f $O/$tag$x.f32 ] && return
-  log "$tag$x: $(python3 $P/evalq.py $M $g --wq $wq --out $O/$tag$x.f32 2>/dev/null | tail -1 | grep -o '"kld": [0-9.e-]*, "top1": [0-9.]*')"; }
+# ev TAG WQ [GOLDEN] [SUFFIX] [MODEL]: MODEL (default M) = a healed arm's folded checkpoint (fold.py OUT/model: norms)
+ev() { tag=$1 wq=$2 g=${3:-$S} x=${4:-} em=${5:-$M}; [ -f $O/$tag$x.f32 ] && return
+  log "$tag$x: $(python3 $P/evalq.py $em $g --wq $wq --out $O/$tag$x.f32 2>/dev/null | tail -1 | grep -o '"kld": [0-9.e-]*, "top1": [0-9.]*')"; }
+# hm DIR: the checkpoint a healed arm is scored with (its folded norms when it trained any), as w06-heal/run.sh
+hm() { [ -f $1/model/.done ] && echo $1/model || echo $M; }
 pair() { g=${3:-$S}; a=$1 b=$2; [ "$g" = $F ] && { a=$O/$1.fit.f32; b=$O/$2.fit.f32; } || { a=$(f32 $1); b=$(f32 $2); }
   log "pair $1 -> $2$([ "$g" = $F ] && echo " (fit)"): $(python3 $P/pcmp.py $g $a $b | grep -o '"ratio": [0-9.]*, "diff": [0-9.e-]*, "se": [0-9.e-]*, "z": [0-9.e-]*')"; }
 # q TAG K CB args..: full quant (150 tensors) + search eval
@@ -115,7 +118,7 @@ if want heal; then step heal   # 89-02: heal the edy + asym stack (seed 0)
     mkdir -p $d; [ -f $d/params.pt ] || python3 $E6/heal.py train $d --wq $O/q-$t/wqall >> $d.log 2>&1 || { log "heal FAIL $t"; continue; }
     log "${t}_heal: $(grep '^HEAL DONE' $d.log | tail -1)"
     [ -f $d/wq/.done ] || python3 $E6/fold.py $d/params.pt $O/q-$t/wqall $d $M >> $d.log 2>&1 || { log "fold FAIL $t"; continue; }
-    ev ${t}_heal $d/wq $S "" ; pair $t ${t}_heal; pair k${k}base ${t}_heal
+    ev ${t}_heal $d/wq $S "" $(hm $d); pair $t ${t}_heal; pair k${k}base ${t}_heal
   done
 fi
 
