@@ -182,6 +182,16 @@ prefill.
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
+## From IQR-V4 (2026-11-04, `docs/research/iqr-v4.md`)
+
+- [ ] **Act order inside the trellis** (+ longer tail-biting runs on FFN): IQR −0–2.3% on uniform bases. CPU proxy
+  first (trellis2 with columns permuted by descending H diagonal after the Hadamard), then 0.8B KL. Runtime: none.
+- [ ] **bf16 (row, 128) scales on attn_output / ssm_out from K5** (0.010 bpw): IQR −1–6% at 4–6 bpw. CPU proxy at
+  K5 / K6, then kernel cost. Runtime: P+D (a scale per 128 in the K loop).
+- [ ] **Concentration of the 27B Σdy² diagonal** (IQR: per-token gradient energy is heavy-tailed, their Hessian
+  reweightings all lost): top-row share per linear from the #33-24 snapshots; read beside the swap test.
+- [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
+
 ## Fuller output Hessians for the 27B (2026-11-04, user question)
 
 - [ ] **"Mixed" H_out** (full output factors except gate / up, which stay diagonal): 0.8B at 8K seqs K3 −9.9% vs

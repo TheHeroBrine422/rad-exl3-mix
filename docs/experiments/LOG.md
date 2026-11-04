@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 02:00 CST · #— · IQR-V4 published (main competitor)
+- **Notes:** `docs/research/iqr-v4.md`. Board: V4 leads our V2 by 7–13% at 2.5–5 bpw, level at 5.5, behind at 6+
+  (35–50% at 7–8); prefill 1.02–1.08× FP8 vs our V3 target 1.4×.
+- **Matters for us:** their YAQA-style / Fisher reweightings and post-GPTQ scale refits all failed, against our 0.8B
+  H_out and #85 wins: the 27B swap test is the deciding check. Candidates: act order in the trellis, bf16 (row, 128)
+  scales on attn_output / ssm_out at ≥ K5, their vocabulary-weighted head (= our slab head's direction). BACKLOG rows.
+
 ### 2026-11-04 01:20 CST · #— · Tail metrics (KL99, KL99.9) and top-1 on every paired comparison; the wins rechecked
 - **Rule (user):** `proxy2b/pcmp.py` now reports KL99 / KL99.9 ratios (document bootstrap 95% CI) and top-1
   agreement (diff ± SE) beside mean KLD; mean decides, tails are a guard (`README.md` Rules).
