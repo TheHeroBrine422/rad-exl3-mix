@@ -1,0 +1,34 @@
+From eb5a213979634d1eeddb8a8c5d36f89d8ff46c6b Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Mon, 2 Nov 2026 22:58:27 +0000
+Subject: [PATCH] codebook: EXL3_I8_CUBIC compile option (Gaussianized int8
+ mul1, #78)
+
+---
+ exllamav3/exllamav3_ext/quant/codebook.cuh | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/exllamav3/exllamav3_ext/quant/codebook.cuh b/exllamav3/exllamav3_ext/quant/codebook.cuh
+index d61562c7..a7a24e47 100644
+--- a/exllamav3/exllamav3_ext/quant/codebook.cuh
++++ b/exllamav3/exllamav3_ext/quant/codebook.cuh
+@@ -42,7 +42,16 @@ __device__ inline half mul1_i8_round(half v)
+ #ifdef EXL3_MUL1_I8
+     const float s4 = 4.0f * __half2float(__ushort_as_half(0x1eee));
+     const float inv = 1.0f / s4;                    // multiply by inv, as nfq_wdec_i8 does (same rounding at ties)
++#ifdef EXL3_I8_CUBIC
++    // "Gaussianized" int8 codebook (#78): the bytesum value x (in sd units, sd = 36.950135 int8 steps) stretched to
++    // x + C x^3, renormalised to the same sd (EXL3_I8_CUBIC_SD = sd of x + C x^3 under the exact bytesum
++    // distribution: C = 0.02 -> 1.0546900), then the same int8 grid. Two FMAs more than plain i8.
++    const float x = __half2float(v) * inv * (1.0f / 36.950135f);
++    const float y = fmaf((float) EXL3_I8_CUBIC * x * x, x, x) * (36.950135f / (float) EXL3_I8_CUBIC_SD);
++    return __float2half_rn(fminf(fmaxf(rintf(y), -127.f), 127.f) * s4);
++#else
+     return __float2half_rn(fminf(fmaxf(rintf(__half2float(v) * inv), -127.f), 127.f) * s4);
++#endif
+ #elif defined(EXL3_MUL1_I4)
+     // int4 grid (E3 "int4grid", for an iu4 W4A4 path at K <= 3): 16 half-integer levels +-0.5 .. +-7.5 in steps of
+     // 2.6 / 7.5 (mul1 values have sd ~1.0; the global rescale E3 applied is absorbed by the g_scale search). An iu4
+-- 
+2.56.0
+
