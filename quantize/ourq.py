@@ -204,7 +204,7 @@ if getattr(a, "wpre", None):                       # --wpre: a trunk linear's we
 
 # ------------------------------------------------------------------ a Hessian (packed upper triangle, sum over rows)
 _HUP = {}
-def hessian(name, path=None):
+def hessian(name, path=None, on=None):
     p = path or f"{HESS}/{name}.safetensors"
     if not path and a.hin and os.path.exists(f"{a.hin}/{name}.safetensors"): p = f"{a.hin}/{name}.safetensors"
     with open(p, "rb") as fh:
@@ -213,9 +213,10 @@ def hessian(name, path=None):
     if p not in _HUP:                              # the damping sweep reloads one Hessian up to 4x a tensor: keep the last
         _HUP.clear()
         with safe_open(p, "pt", device="cpu") as f: _HUP[p] = f.get_tensor("hessian_upper")
-    up = _HUP[p].to(dev)
-    H = torch.zeros(k, k, dtype=torch.float32, device=dev)
-    iu = torch.triu_indices(k, k, device=dev)
+    d_ = on or dev
+    up = _HUP[p].to(d_)
+    H = torch.zeros(k, k, dtype=torch.float32, device=d_)
+    iu = torch.triu_indices(k, k, device=d_)
     H[iu[0], iu[1]] = up; del up
     H = H + H.triu(1).T
     return {"H": H, "first_key": name if not path else os.path.basename(path), "count": rows, "finalized": False, "num_total": rows,
@@ -286,7 +287,10 @@ def quantize_group(hname, keys, seed0, log):
         if a.save_wq:
             import numpy as np
             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
-            H = hessian(hname)["H"]                     # fresh: quantize_exl3 may have regularised Hd in place
+            try: H = hessian(hname)["H"]                # fresh: quantize_exl3 may have regularised Hd in place
+            except torch.OutOfMemoryError:              # small cards (ffn_down's 17408^2 beside the layer): rows on the CPU
+                if not os.environ.get("OURQ_REFIT_CPU_FALLBACK"): raise
+                torch.cuda.empty_cache(); H = hessian(hname, on="cpu")["H"]; w, wq = w.cpu().float(), wq.cpu().float()
             err, ref = [], []
             for c in range(0, w.shape[1], 8192):        # per output row, in column chunks
                 E = w[:, c:c + 8192] - wq[:, c:c + 8192]
