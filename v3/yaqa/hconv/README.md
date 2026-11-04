@@ -17,3 +17,9 @@ Reading rule (written 2026-11-04 ~1:05 AM CST, before data):
 - Caveats: three layers only; the reference (odd blocks) is itself noisy at small N (it tightens as the collection
   grows; earlier arms are rescored each run); proxy error is not KL (the swap test still decides whether H_out helps).
 - Runtime cost: none (measurement only).
+
+## #33-29 · Estimator comparison on the 27B (written 2026-11-04 ~5:00 PM CST, before data)
+`hest.sh`: Σdy² vs Sketch B's diagonal vs xw (Σ‖x‖²dy²), plain means of the even blocks up to the 1,664 snapshot,
+same 3 layers, K2.5; E_out scored under each estimator's odd-block mean. **An estimator earns a 27B arm** if its
+E_out ratio is ≤ 0.98 × dy's under all three references (on the 0.8B all three tied in KL, #33-18, so a smaller proxy
+difference is not worth ~3 card-hours). Caveat: plain means, so the heavy tail affects all three alike.
