@@ -1,0 +1,73 @@
+05:23:51 == step swj
+05:25:42 k3edy_swj: "kld": 0.08729544714565493, "top1": 0.8654268604616172
+05:25:42 pair k3edy -> k3edy_swj: "ratio": 0.9690241667490352, "diff": -0.0027904867160934016, "se": 0.00013645366160957355, "z": -20.45006842013261
+05:27:29 k3edy_s1_swj: "kld": 0.0873079931314559, "top1": 0.864090758628991
+05:27:30 pair k3edy_s1 -> k3edy_s1_swj: "ratio": 0.9718191281051076, "diff": -0.0025317627460052367, "se": 0.00014089471845599164, "z": -17.969181341570522
+05:29:18 k3edy_s2_swj: "kld": 0.08716785229516066, "top1": 0.8641389064427794
+05:29:19 pair k3edy_s2 -> k3edy_s2_swj: "ratio": 0.969993971782816, "diff": -0.002696471526962771, "se": 0.0001466141580474631, "z": -18.391617582320038
+05:31:06 k2edy_swj: "kld": 0.45359295253563875, "top1": 0.7117089464656495
+05:31:07 pair k2edy -> k2edy_swj: "ratio": 0.9100662021247773, "diff": -0.04482458021124852, "se": 0.0024386456153923366, "z": -18.380932402938345
+05:32:54 k2edy_s1_swj: "kld": 0.46116352359355217, "top1": 0.7046191808853179
+05:32:55 pair k2edy_s1 -> k2edy_s1_swj: "ratio": 0.9140029705241917, "diff": -0.04339011389967207, "se": 0.0020148039665689767, "z": -21.535650425366885
+05:34:42 k2edy_s2_swj: "kld": 0.452034376212668, "top1": 0.7116186693147964
+05:34:43 pair k2edy_s2 -> k2edy_s2_swj: "ratio": 0.9117150016842527, "diff": -0.04377228717161685, "se": 0.002505253873962281, "z": -17.472196182012926
+k3edy_swj vs k3edy: n 1 | s0 0.9690 (z -20.5) | mean ratio 0.9690, geo 0.9690, mean log -0.0315 ± nan SE | every seed < 1: True
+k2edy_swj vs k2edy: n 1 | s0 0.9101 (z -18.4) | mean ratio 0.9101, geo 0.9101, mean log -0.0942 ± nan SE | every seed < 1: True
+05:34:44 == step order
+05:40:08 moments mom-k3edy_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.7 min
+05:41:51 k3edyswjasym_r0: "kld": 0.07527722095427664, "top1": 0.8755138274502723
+05:41:52 pair k3edyasym_r0 -> k3edyswjasym_r0: "ratio": 0.9928913898511951, "diff": -0.0005389475376907094, "se": 0.0003416318343752733, "z": -1.5775682575842451
+05:41:53 pair k3edy -> k3edyswjasym_r0: "ratio": 0.8356156742161864, "diff": -0.014808714707276335, "se": 0.0006434339225420248, "z": -23.0151289642475
+05:47:48 moments mom-k3edy_s1_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.8 min
+05:49:28 k3edyswjasym_r0_s1: "kld": 0.07453065584334646, "top1": 0.8744846679305468
+05:49:29 pair k3edyasym_r0_s1 -> k3edyswjasym_r0_s1: "ratio": 0.98018656000559, "diff": -0.001506558729048188, "se": 0.00040288318132925623, "z": -3.7394430913633823
+05:49:30 pair k3edy_s1 -> k3edyswjasym_r0_s1: "ratio": 0.829595420677827, "diff": -0.015309106378456866, "se": 0.0007245541786663517, "z": -21.129001569814314
+05:54:56 moments mom-k3edy_s2_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.7 min
+05:56:35 k3edyswjasym_r0_s2: "kld": 0.07565667548293911, "top1": 0.8747615178598297
+05:56:36 pair k3edyasym_r0_s2 -> k3edyswjasym_r0_s2: "ratio": 0.9814603841687639, "diff": -0.0014291413702566952, "se": 0.00032944258319047594, "z": -4.338059022049372
+05:56:37 pair k3edy_s2 -> k3edyswjasym_r0_s2: "ratio": 0.8418988367444069, "diff": -0.014207654609024706, "se": 0.0007460208850012928, "z": -19.04458024523011
+06:01:59 moments mom-k2edy_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.6 min
+06:03:56 k2edyswjasym_r0: "kld": 0.376390297609795, "top1": 0.7335981463091692
+06:03:57 pair k2edyasym_r0 -> k2edyswjasym_r0: "ratio": 0.9691195634330111, "diff": -0.01199346054888506, "se": 0.0012904117055010146, "z": -9.294289952390416
+06:03:58 pair k2edy -> k2edyswjasym_r0: "ratio": 0.7551707202764006, "diff": -0.12202720163401642, "se": 0.006983366634925683, "z": -17.47397895790345
+06:09:21 moments mom-k2edy_s1_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.7 min
+06:11:17 k2edyswjasym_r0_s1: "kld": 0.3815552828898709, "top1": 0.7315759381300593
+06:11:18 pair k2edyasym_r0_s1 -> k2edyswjasym_r0_s1: "ratio": 0.976716602261208, "diff": -0.009095681554873503, "se": 0.0015194357155778036, "z": -5.986223347010532
+06:11:19 pair k2edy_s1 -> k2edyswjasym_r0_s1: "ratio": 0.7562234140600959, "diff": -0.12299836278625387, "se": 0.005693685791114849, "z": -21.602590536027847
+06:16:36 moments mom-k2edy_s2_swj: MOMENTS DONE 24 groups, 1002035 tokens, 2.6 min
+06:18:31 k2edyswjasym_r0_s2: "kld": 0.3777521167517257, "top1": 0.7320814901748367
+06:18:32 pair k2edyasym_r0_s2 -> k2edyswjasym_r0_s2: "ratio": 0.9667514051278202, "diff": -0.012991681336703642, "se": 0.0014217010459483194, "z": -9.138124624532285
+06:18:33 pair k2edy_s2 -> k2edyswjasym_r0_s2: "ratio": 0.7618939914664531, "diff": -0.11805453680298511, "se": 0.006404683537364879, "z": -18.432532398245094
+k3edyswjasym_r0 vs k3edyasym_r0: n 3 | s0 0.9929 (z -1.6) s1 0.9802 (z -3.7) s2 0.9815 (z -4.3) | mean ratio 0.9848, geo 0.9848, mean log -0.0153 ± 0.0041 SE | every seed < 1: True
+k2edyswjasym_r0 vs k2edyasym_r0: n 3 | s0 0.9691 (z -9.3) s1 0.9767 (z -6.0) s2 0.9668 (z -9.1) | mean ratio 0.9709, geo 0.9709, mean log -0.0296 ± 0.0031 SE | every seed < 1: True
+k3edyswjasym_r0 vs k3edy: n 3 | s0 0.8356 (z -23.0) s1 0.8296 (z -21.1) s2 0.8419 (z -19.0) | mean ratio 0.8357, geo 0.8357, mean log -0.1795 ± 0.0043 SE | every seed < 1: True
+k2edyswjasym_r0 vs k2edy: n 3 | s0 0.7552 (z -17.5) s1 0.7562 (z -21.6) s2 0.7619 (z -18.4) | mean ratio 0.7578, geo 0.7578, mean log -0.2774 ± 0.0028 SE | every seed < 1: True
+06:18:34 == step heal0
+06:18:34 heal0 K3 on k3edyswjasym_r0
+06:34:52 k3edyswjasym_r0_heal: HEAL DONE steps 512 held-out KL 0.087072 -> 0.076793 (-11.80%)
+06:35:15 k3edyswjasym_r0_heal: "kld": 0.06666225237230228, "top1": 0.8829526646805693
+06:35:16 pair k3edyswjasym_r0 -> k3edyswjasym_r0_heal: "ratio": 0.8855569271080983, "diff": -0.008614955726580609, "se": 0.0004224892435689912, "z": -20.39094688850655
+06:35:17 pair k3edy -> k3edyswjasym_r0_heal: "ratio": 0.7399852487022478, "diff": -0.023423670433856944, "se": 0.0009056299837177026, "z": -25.86450410762728
+06:35:18 pair k3base -> k3edyswjasym_r0_heal: "ratio": 0.6741348657495373, "diff": -0.03222338281649666, "se": 0.0011003577681192303, "z": -29.28445979126769
+06:52:25 k3edyswjasym_r0_s1_heal: HEAL DONE steps 512 held-out KL 0.085194 -> 0.076666 (-10.01%)
+06:52:46 k3edyswjasym_r0_s1_heal: "kld": 0.06640446698910431, "top1": 0.8826457223676687
+06:52:47 pair k3edyswjasym_r0_s1 -> k3edyswjasym_r0_s1_heal: "ratio": 0.8909685692944195, "diff": -0.008126183712121204, "se": 0.0004930463691916467, "z": -16.481581084237867
+06:52:48 pair k3edy_s1 -> k3edyswjasym_r0_s1_heal: "ratio": 0.7391434450545256, "diff": -0.02343529009057807, "se": 0.001040651546791594, "z": -22.519824395428813
+06:52:49 pair k3base_s1 -> k3edyswjasym_r0_s1_heal: "ratio": 0.6677684990098935, "diff": -0.03303788137394301, "se": 0.0012750945462530459, "z": -25.91014248396491
+k3edyswjasym_r0_heal vs k3edyswjasym_r0: n 1 | s0 0.8856 (z -20.4) | mean ratio 0.8856, geo 0.8856, mean log -0.1215 ± nan SE | every seed < 1: True
+k3edyswjasym_r0_heal vs k3base: n 1 | s0 0.6741 (z -29.3) | mean ratio 0.6741, geo 0.6741, mean log -0.3943 ± nan SE | every seed < 1: True
+06:52:50 heal0 K2 on k2edyswjasym_r0
+07:09:21 heal FAIL k2edyswjasym_r0
+07:26:12 k2edyswjasym_r0_s1_heal: HEAL DONE steps 512 held-out KL 0.421622 -> 0.304512 (-27.78%)
+07:26:46 k2edyswjasym_r0_s1_heal: "kld": 0.27030503867768413, "top1": 0.7721886190605158
+07:26:48 pair k2edyswjasym_r0_s1 -> k2edyswjasym_r0_s1_heal: "ratio": 0.7084295329190355, "diff": -0.11125024920255183, "se": 0.0062770462912889865, "z": -17.72334375754726
+07:26:49 pair k2edy_s1 -> k2edyswjasym_r0_s1_heal: "ratio": 0.5357310000050322, "diff": -0.2342486119888057, "se": 0.01129239824212017, "z": -20.74392055312646
+07:26:51 pair k2base_s1 -> k2edyswjasym_r0_s1_heal: "ratio": 0.499576358013716, "diff": -0.270763462580121, "se": 0.012714529899652039, "z": -21.29559368038696
+k2edyswjasym_r0_heal vs k2edyswjasym_r0: no pairs
+k2edyswjasym_r0_heal vs k2base: no pairs
+07:26:52 D1104 DONE
+08:31:05 == step heal0
+08:31:05 heal0 K3 on k3edyswjasym_r0
+k3edyswjasym_r0_heal vs k3edyswjasym_r0: n 1 | s0 0.8856 (z -20.4) | mean ratio 0.8856, geo 0.8856, mean log -0.1215 ± nan SE | every seed < 1: True
+k3edyswjasym_r0_heal vs k3base: n 1 | s0 0.6741 (z -29.3) | mean ratio 0.6741, geo 0.6741, mean log -0.3943 ± nan SE | every seed < 1: True
+08:31:07 heal0 K2 on k2edyswjasym_r0

@@ -78,6 +78,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-22 | Σdy² dose past 1,024 and repeated windows (fresh labels), 0.8B | quantizer | none | null | 11-02 | 11-03 | no gain past 1,024 (dy1350 +1.3% K3); 27B: 512–1,024 |
 | 33-23 | Σdy² 512 vs 1,024 windows | quantizer | none | done | 11-03 | 11-03 | 512 is +2.2% worse at K3 (≈2 SE): go ≥ 1,024 on the 27B |
 | 33-24 | 27B diagonal H_out collection (Σdy², gen-masked, 2,048 seqs, fp32, both cards) | quantizer | none | running | 11-03 | 11-03 | gate PASS 36.6 s/seq, peak 28.4 GiB; ~21 h; swap test rule `v3/yaqa/H27.md` |
+| 33-26 | Chunked-prefill noise floor, 0.8B bf16 vs own golden (chunk 0 / 2048 / 512 / 64) | eval | n/a | done | 11-04 | 11-04 | 2048 = whole (0); 512 → 0.00071 KLD, 64 → 0.00069, top-1 98.8%: chunking alone is ~0.0007, far below Code's 0.025 |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | D | running | 10-31 | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | ~0 | done | 10-29 | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
@@ -141,6 +142,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 84 | Gate/up share of the H_out gain (noGU; A9 failed its CPU gate), 0.8B (w03) | quantizer | none | done | 11-02 | 11-03 | A9 cos gate fail; gate/up share K3 small |
 | 85 | Fixed-code scale refits (B1 H_out-weighted, C9 per-family α, C10), 0.8B (w02) | quantizer | none | done | 11-02 | 11-03 | C9 K3 0.973 K2 0.911; C10 K3 0.969 K2 0.914; overlap untested |
 | 85-02 | Scale refits: B1 full, C9 on C10, both on edy | quantizer | none | inconclusive | 11-03 | 11-03 | α* on top of swj broken (K3 0.122 vs 0.099); `full` stack in the wrong order (w11 B2): redo |
+| 85-03 | swj (C10 joint gate/up scale refit) alone on edy H_out, 3 seeds | quantizer | none | done | 11-04 | 11-04 | PASS: K3 0.969 / 0.972 / 0.970, K2 0.910 / 0.914 / 0.912 vs edy |
 | 86 | Gen-weighted input Hessians (C13), 0.8B (w07) | quantizer | none | inconclusive | 11-02 | 11-03 | K3 0.998 (no effect); K2 0.976, every seed z −4…−5 but under its 0.97 bar: more K2 seeds would settle it |
 | 87 | Sibling-sequential Hessians for down / out_proj / o_proj (C6), 0.8B (w07) | quantizer | none | done | 11-02 | 11-03 | asym K3 0.857, K2 0.824, every seed; stacking with H_out next (large) |
 | 87-02 | #87 asym stacked on edy H_out, 0.8B | quantizer | none | done | 11-03 | 11-03 | K3 0.880, K2 0.845 vs edy (3 seeds, every seed): stacks on H_out |
@@ -149,9 +151,11 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 87-05 | ρ 0 (full clean-output target) on search, plain and on edy; ρ −0.25 screen | quantizer | none | done | 11-03 | 11-03 | ρ 0 beats ρ 0.5: plain K3 0.945 / K2 0.916, on edy 0.964 / 0.924, every seed; ρ −0.25 worse |
 | 87-06 | #87 for the 27B: layer-streamed sibling moments + writer requant (w12, `v3/sib27/`) | quantizer | none | done | 11-03 | 11-03 | 0.8B GPU test PASS (moments bit-exact, e2e 0.992 vs w07); 27B run needs iceman + ρ 0 |
 | 87-07 | #87 code review and sibling-transfer test (w11, `proxy2b/exp/w11-review/`) | quantizer | none | done | 11-03 | 11-03 | review clean; correction does not transfer across sibling seeds (K3 1.049, K2 1.026): writers last |
+| 87-08 | Order edy → swj → sibling moments → writers asym ρ 0, vs edy → writers ρ 0 | quantizer | none | done | 11-04 | 11-04 | PASS: swj pays on top, K3 0.985 (0.993 / 0.980 / 0.981), K2 0.971; whole stack vs edy K3 0.836, K2 0.758 |
 | 88 | Activation-denoising LDLQ target (C1, level-matched noise), 0.8B (w07) | quantizer | none | negative | 11-02 | 11-03 | K3 1.031, K2 1.10 |
 | 88-02 | Asym target for all 150 tensors, own-seed quantized upstream (one-shot GPTAQ-like) | quantizer | none | negative | 11-03 | 11-03 | K3 1.53×, K2 2.31× worse: only the writers with sibling inputs benefit |
 | 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | none | done | 11-02 | 11-03 | K2 all-layer 0.62, K3 0.83; S27 needs the user |
 | 89-02 | Healing on the edy + asym stack | healing | none | done | 11-03 | 11-03 | with norms: vs edy + asym K3 0.873 / 0.858, K2 0.665 / 0.662; norms ≤ 0.2% of it |
+| 89-03 | Healing on edy → swj → asym ρ 0 | healing | none | running | 11-04 | 11-04 | K3 0.886 / 0.891 vs its stack (PASS ≤ 0.95), 0.674 vs base; K2 s1 0.708, s0 rerun (disk-full crash) |
 
 Next free number: **90**.

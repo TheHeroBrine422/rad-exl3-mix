@@ -3,6 +3,20 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 03:00 CST · #85-03, #87-08, #89-03, #33-26 · d1104 results (0.8B, 4070); chunk floor
+- **#85-03 PASS:** swj alone on edy, 3 seeds: K3 0.969 / 0.972 / 0.970, K2 0.910 / 0.914 / 0.912 (every z < −17).
+- **#87-08 PASS:** edy → swj → moments on refitted siblings → writers asym ρ 0 beats edy → writers ρ 0: K3 0.993 /
+  0.980 / 0.981 (mean 0.985), K2 0.969 / 0.977 / 0.967 (0.971). The whole stack vs edy: K3 0.836, K2 0.758. Ship
+  order H_out → swj → writers confirmed.
+- **#89-03:** healing on that stack, K3 seeds 0/1: 0.886 / 0.891 vs the stack (PASS ≤ 0.95), 0.674 / 0.668 vs base.
+  K2 s1 0.708 vs stack (0.500 vs base); s0 crashed on the full disk, rerun queued (q1104b.sh), rule needs both seeds.
+- **#33-26 chunk floor (pass rule: none, a measurement):** bf16 0.8B vs its own whole-document golden, search slice
+  166k positions: chunk 2048 identical to whole; 512 → 0.00071 mean KLD (KL99.9 0.0075, top-1 98.79%); 64 → 0.00069.
+  Chunked prefill alone moves KLD ~0.0007, ~35× below the 0.025 reported on Discord: that floor is mostly elsewhere
+  (QSA / sparse attention, batching).
+- **Runtime:** none (quantizer-side); healing none (scales only).
+- **Files:** `data/d1104/result-2026-11-04.txt`, `data/d1104/chunkfloor.jsonl`
+
 ### 2026-11-04 02:30 CST · #— · Decisions: fast + accurate variant per size; two-pass prefill kernels, built now
 - **User:** publish a fast and an accurate variant at each size (knap4 with per-tensor compute modes, a speed budget for
   the fast one). Build the kernels now: the two-pass design (decode once into an int8 / f16 plane + radiance's tuned
