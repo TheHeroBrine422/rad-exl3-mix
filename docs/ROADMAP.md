@@ -16,6 +16,8 @@ EXL3-V3 = integer compute.
 - **Later:** decode speed as its own axis (profile per K, decode-optimized variants; maybe not V3); 7.0–8.0 rebuilds
   (optional extra, V3.5 at most); disaggregated quantization; KV-cache work (V-mean, Hadamard KV, per-layer KV
   recipe, KV-QAT); LSA; MoE models (QFN / GLM-5.3-Flash / Mistral).
+  KV work may come from Code000's KV memory system (radiance) on our published V3 checkpoints and kernels instead of
+  us (user, 2026-11-04): our part is keeping qwen35_exl3's attention on radiance's standard KV groups.
 - **QAD:** after V3, starting from the published V3 checkpoints.
 - **Names (user, 2026-11-04):** V3 = the release; "V3 extras" = optional add-ons on V3's tooling (7–8 rebuilds,
   decode-optimized variants, disaggregated quantization); **V4** = the next release line (QAD on V3 checkpoints,
