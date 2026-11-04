@@ -188,8 +188,9 @@ prefill.
   `docs/research/iqr-v4.md` "Speed"): est. ~4,000–4,300 µs a layer vs V2's ~8,050 and our 5,200 target. Steps: plugin
   API vs `r4d_gemm_8a8_prefill.h`, EXL3 decode-to-int8 pass, timing at the board's shapes on iceman. Replaces the
   fused-A8 kernel route (#31, blocked by the NFQ crash) if it holds. Runtime: this *is* the speed work (P).
-- [ ] **f16 two-pass for 6+ bpw** (decode once per step into an f16 plane + radiance's 16-bit GEMM, same values: KLD
-  unchanged, no requant; speeds up V2 6.0–9.0 and V3's f16 tensors). Board hint: EXL3-V2-9.00 (33 bf16 tensors) 7,331
+- [ ] **f16 two-pass for 6+ bpw** — correction 11-04: exl3r4d's T2 (fork ae6539f) already decodes once to f16
+  fragments from 512 rows (gate_up 8.08 -> 6.74 ms); what is left is a better 16-bit tile than T2's own. (Original:
+  decode once per step into an f16 plane + radiance's 16-bit GEMM, same values: KLD unchanged, no requant; speeds up V2 6.0–9.0 and V3's f16 tensors). Board hint: EXL3-V2-9.00 (33 bf16 tensors) 7,331
   vs 8.00's 8,124 µs. Est. ~6,000–7,000 µs a layer vs ~8,100. First measure on iceman (~1 card-h): bf16 GEMM a layer at
   the board's shapes, our decode-to-f16 and decode-to-int8 passes. Runtime: P (and D for the decode kernels).
 - [ ] **Act order inside the trellis** (+ longer tail-biting runs on FFN): IQR −0–2.3% on uniform bases. CPU proxy
