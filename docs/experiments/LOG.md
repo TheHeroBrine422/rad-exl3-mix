@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 03:15 CST · #89-03 · K2 seed 0 rerun: PASS
+- **Result:** k2edyswjasym_r0_heal vs its stack 0.721 (z −16.4), vs base 0.507; with seed 1 (0.708) both ≤ 0.90:
+  healing stacks on edy → swj → asym at K2 and K3. Held-out curves: still falling ~0.6% / 32 steps at the end of
+  epoch 1, epoch 2 adds < 1% (LR already halved by the cosine); next arms test one pass on fresh data (xcorp + own
+  traces allowed for healing, user 2026-11-04).
+- **Files:** `data/d1104/result-2026-11-04.txt` (seed 0 lines in the 4070 log `/data/yb/q1104b.log`)
+
 ### 2026-11-04 03:00 CST · #85-03, #87-08, #89-03, #33-26 · d1104 results (0.8B, 4070); chunk floor
 - **#85-03 PASS:** swj alone on edy, 3 seeds: K3 0.969 / 0.972 / 0.970, K2 0.910 / 0.914 / 0.912 (every z < −17).
 - **#87-08 PASS:** edy → swj → moments on refitted siblings → writers asym ρ 0 beats edy → writers ρ 0: K3 0.993 /

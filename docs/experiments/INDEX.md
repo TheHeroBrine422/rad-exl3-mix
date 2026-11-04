@@ -156,6 +156,6 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 88-02 | Asym target for all 150 tensors, own-seed quantized upstream (one-shot GPTAQ-like) | quantizer | none | negative | 11-03 | 11-03 | K3 1.53×, K2 2.31× worse: only the writers with sibling inputs benefit |
 | 89 | Frozen-code scale healing (H1, H4), 0.8B (w06) | healing | none | done | 11-02 | 11-03 | K2 all-layer 0.62, K3 0.83; S27 needs the user |
 | 89-02 | Healing on the edy + asym stack | healing | none | done | 11-03 | 11-03 | with norms: vs edy + asym K3 0.873 / 0.858, K2 0.665 / 0.662; norms ≤ 0.2% of it |
-| 89-03 | Healing on edy → swj → asym ρ 0 | healing | none | running | 11-04 | 11-04 | K3 0.886 / 0.891 vs its stack (PASS ≤ 0.95), 0.674 vs base; K2 s1 0.708, s0 rerun (disk-full crash) |
+| 89-03 | Healing on edy → swj → asym ρ 0 | healing | none | done | 11-04 | 11-04 | PASS: K3 0.886 / 0.891, K2 0.721 / 0.708 vs its stack; vs base K3 0.674 / 0.668, K2 0.507 / 0.500 |
 
 Next free number: **90**.
