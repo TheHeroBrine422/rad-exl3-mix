@@ -193,7 +193,11 @@ prefill.
   decode once per step into an f16 plane + radiance's 16-bit GEMM, same values: KLD unchanged, no requant; speeds up V2 6.0–9.0 and V3's f16 tensors). Board hint: EXL3-V2-9.00 (33 bf16 tensors) 7,331
   vs 8.00's 8,124 µs. Est. ~6,000–7,000 µs a layer vs ~8,100. First measure on iceman (~1 card-h): bf16 GEMM a layer at
   the board's shapes, our decode-to-f16 and decode-to-int8 passes. Runtime: P (and D for the decode kernels).
-- [ ] **Act order inside the trellis** (+ longer tail-biting runs on FFN): IQR −0–2.3% on uniform bases. CPU proxy
+- [ ] **V3 decode kernels after radiance 1.17** (`docs/research/radiance-1.17.md`): block-per-tile GEMV with K-split
+  waves + biased-int fold; barrier-free 16-token tile for 2–16 tokens; gated activation quant in gate_up's epilogue.
+  Needs a gfx1201 card (the dad's RDNA4 boxes or iceman after the collection). Runtime: D (this is the speed work).
+- [ ] **Act order inside the trellis** (+ longer tail-biting runs on FFN): IQR −0–2.3% on uniform bases. For EXL3: permute at 16-column block
+  granularity (free at runtime; libquant sorts by descending H diagonal, `tcq_order=1`). CPU proxy
   first (trellis2 with columns permuted by descending H diagonal after the Hadamard), then 0.8B KL. Runtime: none.
 - [ ] **bf16 (row, 128) scales on attn_output / ssm_out from K5** (0.010 bpw): IQR −1–6% at 4–6 bpw. CPU proxy at
   K5 / K6, then kernel cost. Runtime: P+D (a scale per 128 in the K loop).
