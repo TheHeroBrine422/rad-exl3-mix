@@ -71,7 +71,7 @@ prep)
   packmix base $L/K2.5 || exit 1
   log "PREP DONE" ;;
 run)
-  while pgrep -f "yaqa/[c]ollect.py" > /dev/null; do sleep 120; done
+  while pgrep -f "[c]ollect.py /data/yaqa/hdiag" > /dev/null || pgrep -f "^bash /root/ourq/[h]diag27.sh" > /dev/null || pgrep -f "^/bin/bash /data/ourq/[i]ceman-day27.sh" > /dev/null || pgrep -f "swap27.sh [p]rep" > /dev/null; do sleep 120; done
   [ -d $HD/hdiag-snap$NSEQ-dy ] || { log "no $NSEQ snapshot"; exit 1; }
   [ -f $S/hout-bn/mkbn.json ] || { nice $PY -I $T/mkbn.py $HD $NSEQ $S/hout-bn >> $S/result.txt 2>&1 || { log "mkbn FAIL"; exit 1; }; }
   score base || exit 1
