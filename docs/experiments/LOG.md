@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-03 23:40 CST · #33-24 · 27B diagonal H_out collection started on the rebuilt iceman
+- **Status:** running · **Machine:** iceman (rebuilt 11-03: OS drive lost in a linear LVM; new 4 TB data drive),
+  both R9700s (`ROCR_VISIBLE_DEVICES=0,1`: the container also exposes the iGPU)
+- **Setup:** `hdiag27.sh 2048` via `local/bin/iceman-day27.sh`: fp32, gen-masked loss (`YAQA_GENMASK=1`, #83-02), long
+  qad windows (pools-v3: 1,350 windows of 2,048), Σdy² + Sketch B + xw, snapshots every 128 sequences, resumable.
+  Fresh venv: torch 2.15.0+rocm7.14, transformers 5.22.1, accelerate 1.15.0, fla 0.6.0 (no causal_conv1d: reference
+  conv, correct). Model Qwen/Qwen3.8-27B @ 1d4bf0f2ff60; challenge data @ 2dcf0061.
+- **Gate fixes:** (1) card 0 OOM in the forward: the diag hooks kept every linear's fp32 input from the forward to the
+  backward (non-reentrant checkpointing runs the first pass with grad on; ~0.27 GB per 27B layer) → `YAQA_XOFF` parks
+  them in pinned host memory; (2) the fp32 copy (18 GB pinned) failed to allocate on the 30 GB host → `YAQA_XOFF=bf16`:
+  Σdy² and xw bit-identical, Sketch B within 9e-4 rel L2 (0.8B, `proxy2b/xofftest.sh`; 73cafe7).
+- **Gate:** chunked vs whole fp32 G exact; seq 36.6 s (fwd 10.2, bwd 26.4); peak 28.4 / 28.4 GiB; 400 linears.
+  → 2,048 sequences ≈ 21 h (512 ≈ 4:40 AM CST, 1,024 ≈ 10 AM CST, 2,048 ≈ 9 PM CST 11-04).
+- **Pass rule for the swap test:** `v3/yaqa/H27.md`. Runtime cost: none.
+
 ### 2026-11-03 23:20 CST · #89-02 #87-07 #87-06 · Healing on the stack, sibling transfer, 27B collector GPU test
 - **Status:** done · **Machine:** 4070 (`proxy2b/q1104.sh`) · **Files:** `data/q1104/`
 - **#89-02 healing on edy + asym, re-scored with the trained norms** (w11 healfix): vs edy + asym K3 0.873 / 0.858,

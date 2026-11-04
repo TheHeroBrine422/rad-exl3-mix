@@ -77,6 +77,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-21 | Short qad documents in the collection (YAQA_SHORT), 0.8B, 3 seeds | quantizer | none | done | 11-02 | 11-02 | neutral; 640 vs 1,024 long windows +1.5% → 27B collects long windows only, to 2,048 |
 | 33-22 | Σdy² dose past 1,024 and repeated windows (fresh labels), 0.8B | quantizer | none | null | 11-02 | 11-03 | no gain past 1,024 (dy1350 +1.3% K3); 27B: 512–1,024 |
 | 33-23 | Σdy² 512 vs 1,024 windows | quantizer | none | done | 11-03 | 11-03 | 512 is +2.2% worse at K3 (≈2 SE): go ≥ 1,024 on the 27B |
+| 33-24 | 27B diagonal H_out collection (Σdy², gen-masked, 2,048 seqs, fp32, both cards) | quantizer | none | running | 11-03 | 11-03 | gate PASS 36.6 s/seq, peak 28.4 GiB; ~21 h; swap test rule `v3/yaqa/H27.md` |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | D | running | 10-31 | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | ~0 | done | 10-29 | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
