@@ -22,14 +22,17 @@ q none
 # train-N for an even block count (N = 256, 512, ...) holds the same even blocks as train-(N-128): skip the duplicate
 for d in $(ls -d $O/half/train-* | sort -V); do n=${d##*-}; [ $n -gt 128 ] && [ $(( n / 128 % 2 )) = 0 ] && [ ! -d $O/q-dy$n ] && continue
   q dy$n --hout $d --sigma-reg-out 0.01; done
-ARMS="none=$O/q-none/wq"; for d in $(ls -d $O/q-dy* | sort -V); do ARMS="$ARMS ${d##*/q-}=$d/wq"; done
-python3 -I $V/hscore.py $M $HS $O/half/test $ARMS > $O/score.jsonl 2> $O/score.err
-python3 - $O/score.jsonl <<'PY' | tee -a $O/result.txt
+# block-normalized arms (MKHALF_NORM=1: every 128-sequence block the same per-tensor total; heavy-tail check, 2026-11-04)
+MKHALF_NORM=1 python3 -I $V/mkhalf.py $O/snaps $O/half-bn dy | tee -a $O/result.txt
+for d in $(ls -d $O/half-bn/train-* | sort -V); do n=${d##*-}; [ $n -gt 128 ] && [ $(( n / 128 % 2 )) = 0 ] && [ ! -d $O/q-bn$n ] && continue
+  q bn$n --hout $d --sigma-reg-out 0.01; done
+ARMS="none=$O/q-none/wq"; for d in $(ls -d $O/q-dy* $O/q-bn* | sort -V); do ARMS="$ARMS ${d##*/q-}=$d/wq"; done
+summ() { python3 - $1 <<'PY'
 import json, sys, collections
 R = [json.loads(l) for l in open(sys.argv[1])]; base = {r["key"]: r for r in R if r["arm"] == "none"}
 by = collections.defaultdict(list)
 for r in R: by[r["arm"]].append(r)
-def n(a): return -1 if a == "none" else int(a[2:])
+def n(a): return (-1, 0) if a == "none" else (a[:2] == "bn", int(a[2:]))
 print(f"{'arm':>7} {'tensors':>7} {'E_out / none (param-wtd)':>25} {'E_in / none':>12}")
 for a in sorted(by, key=n):
     rs = [r for r in by[a] if r["key"] in base]; w = sum(r["params"] for r in rs)
@@ -37,4 +40,9 @@ for a in sorted(by, key=n):
     ei = sum(r["params"] * r["E_in"] / base[r["key"]]["E_in"] for r in rs) / w
     print(f"{a:>7} {len(rs):7d} {eo:25.4f} {ei:12.4f}")
 PY
+}
+python3 -I $V/hscore.py $M $HS $O/half/test $ARMS > $O/score.jsonl 2> $O/score.err
+log "reference: plain mean of the odd blocks"; summ $O/score.jsonl | tee -a $O/result.txt
+python3 -I $V/hscore.py $M $HS $O/half-bn/test $ARMS > $O/score-bn.jsonl 2>> $O/score.err
+log "reference: block-normalized mean of the odd blocks"; summ $O/score-bn.jsonl | tee -a $O/result.txt
 log "HCONV DONE"

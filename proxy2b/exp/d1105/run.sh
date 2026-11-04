@@ -6,13 +6,13 @@ source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
 O=/data/yb/d1105 D3=/data/yb/d1103 D4=/data/yb/d1104; mkdir -p $O
 f32() { for d in $O $D4 $D3 $Y $Y/w10-hout-attrib $Y/w07-seqsib $Y/w02-fixedscale; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in $O $D4 $D3 $Y $Y/w10-hout-attrib $Y/w02-fixedscale; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
-STEPS=${D1105_STEPS:-sp mix k45}
+STEPS=${D1105_STEPS:-sp mix k45 k45lr}
 want() { [[ " $STEPS " == *" $1 "* ]] && [ ! -f /data/yb/night.stop ]; }
 lock() { exec 9>/data/yb/gpu.lock; flock 9; while pgrep -f "^bash /workspace/rad-exl3-mix/v3/yaqa/hconv/[h]conv.sh" > /dev/null; do sleep 60; done; }
 unlock() { flock -u 9; }
 MIX="/data/xcorp/v1/meta:0.8,/data/pisess/v1/meta@pisess-main.jsonl:0.2"
 # heal1 TAG STACK ARGS..: one healing arm on STACK's weights -> TAG (h-TAG dir), scored and paired
-heal1() { t=$1 st=$2; shift 2; d=$O/h-$t; [ -f $O/$t.f32 ] && return; w=$(wqd $st); [ -n "$w" ] || { log "no stack $st"; return 1; }
+heal1() { local t=$1 st=$2; shift 2; d=$O/h-$t; [ -f $O/$t.f32 ] && return; w=$(wqd $st); [ -n "$w" ] || { log "no stack $st"; return 1; }
   lock; mkdir -p $d
   [ -f $d/params.pt ] || python3 $E6/heal.py train $d --wq $w "$@" >> $d.log 2>&1 || { log "heal FAIL $t"; unlock; return 1; }
   log "$t: $(grep '^HEAL DONE' $d.log | tail -1)"
@@ -42,5 +42,9 @@ if want k45; then step k45
     unlock; pair k${k}base$(sfx $s) $t
     h=k${k}edyswjasym_r0_heal$(sfx $s); heal1 $h $t && { pair $t $h; pair k${k}base$(sfx $s) $h; }
   done; python3 $X3/summ.py $O k${k}edyswjasym_r0 k${k}edyswjasym_r0_heal k${k}base k${k}edyswjasym_r0_heal | tee -a $O/result.txt; done
+fi
+if want k45lr; then step k45lr   # 89-06b: lr 1e-3 never beat step 0 at K4 / K5; screen lower lr on seed 0
+  for a in "4 3e-4" "4 1e-4" "5 1e-4" "5 3e-5"; do set -- $a; k=$1 lr=$2; t=k${k}edyswjasym_r0
+    h=k${k}edyswjasym_r0_lr$lr; heal1 $h $t --lr $lr && pair $t $h; done
 fi
 log "D1105 DONE"

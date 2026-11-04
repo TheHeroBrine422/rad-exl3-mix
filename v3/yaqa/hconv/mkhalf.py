@@ -3,12 +3,13 @@
 running means over N sequences) into independent 128-sequence blocks; then
   OUT/train-N/  the mean over the EVEN-numbered blocks up to snapshot N (≈ N/2 sequences): what a quant would use
   OUT/test/     the mean over ALL odd-numbered blocks available (independent of every train-N): the reference
-as ourq --hout dirs ("hout_diag"). EST: dy (default, Σdy²), xw, or "" (Sketch B)."""
+as ourq --hout dirs ("hout_diag"). EST: dy (default, Σdy²), xw, or "" (Sketch B). MKHALF_NORM=1: each block scaled to the
+same per-tensor total before averaging (robust to the heavy-tailed outlier sequences, 2026-11-04)."""
 import glob, os, re, sys, json
 import torch
 from safetensors import safe_open
 from safetensors.torch import save_file
-R, O = sys.argv[1], sys.argv[2]; est = sys.argv[3] if len(sys.argv) > 3 else "dy"; suf = f"-{est}" if est else ""
+R, O = sys.argv[1], sys.argv[2]; NORM = os.environ.get("MKHALF_NORM") == "1"; est = sys.argv[3] if len(sys.argv) > 3 else "dy"; suf = f"-{est}" if est else ""
 ns = sorted(int(m.group(1)) for p in glob.glob(f"{R}/hdiag-snap*{suf}") if (m := re.search(rf"hdiag-snap(\d+){re.escape(suf)}$", p)))
 def load(n):
     out = {}
@@ -21,6 +22,7 @@ def save(d, acc, cnt, meta):
 prev, pn, ev, od, ne, no = {}, 0, {}, {}, 0, 0
 for i, n in enumerate(ns):
     cur = load(n); blk = {k: v * n - prev.get(k, 0) * pn for k, v in cur.items()}; m = n - pn
+    if NORM: blk = {k: v / v.sum().clamp_min(1e-300) * m for k, v in blk.items()}   # every block the same total per tensor
     tgt = ev if i % 2 == 0 else od
     for k, b in blk.items(): tgt[k] = tgt.get(k, 0) + b
     if i % 2 == 0: ne += m

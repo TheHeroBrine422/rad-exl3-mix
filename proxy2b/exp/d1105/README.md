@@ -13,3 +13,8 @@ Pass rules (written 2026-11-04 ~3:50 AM CST, before data):
 
 Held-out early stopping stays on search-pool calib documents (not in the golden) for every arm. Runtime cost: none
 (scale multipliers fold into the stored suh / svh).
+
+Amendment (2026-11-04 ~1:50 PM CST, after k45): at lr 1e-3 the K4 / K5 arms never beat step 0 on held-out (early stop
+at step 128, ratio 1.000): inconclusive, the step size is too large for errors this small. Step k45lr screens lr 3e-4 /
+1e-4 (K4) and 1e-4 / 3e-5 (K5) on seed 0; the best by held-out KL then gets seed 1, and the original rule applies
+(heal a size if ≤ 0.95 vs its stack on both seeds).
