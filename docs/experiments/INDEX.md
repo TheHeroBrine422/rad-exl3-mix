@@ -81,6 +81,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-26 | Chunked-prefill noise floor, 0.8B bf16 vs own golden (chunk 0 / 2048 / 512 / 64) | eval | n/a | done | 11-04 | 11-04 | 2048 = whole (0); 512 → 0.00071 KLD, 64 → 0.00069, top-1 98.8%: chunking alone is ~0.0007, far below Code's 0.025 |
 | 33-27 | Heavy tail in the 27B Σdy² diagonal; block-normalized estimator | quantizer | none | done | 11-04 | 11-04 | early layers: two 128-seq blocks hold 4–27× the median energy; block-normalized arms smooth and better: 768 train seqs 0.921 vs plain 0.936 (both refs); plateau from ~384 seqs → use block-normalized for the 27B |
 | 33-28 | 27B swap test at K2.5: plain vs block-normalized Σdy² H_out (2,048 seqs), seed floor | quantizer | none | planned | 11-04 | 11-04 | rule `v3/yaqa/H27.md` amendment; `v3/yaqa/swap27.sh`; starts when #33-24 ends (~7 PM CST), both cards |
+| 33-29 | 27B H_out estimators (Σdy² / Sketch B diag / xw) on the 3-layer proxy, 3 references | quantizer | none | running | 11-04 | 11-04 | rule `v3/yaqa/hconv/README.md`; 4070 |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | D | running | 10-31 | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | ~0 | done | 10-29 | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
@@ -138,6 +139,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | P+D | done | 11-02 | 11-03 | ug/D 0.83, up-only 0.87; control #81-02 confirms it is real |
 | 81-02 | A1 control: permuted predictors | weight codes | P+D | done | 11-03 | 11-03 | ugperm / uperm ÷ D 0.999–1.001 vs ug 0.72–0.94: the reduction is real prediction |
 | 81-03 | A1 on all 64 layers, K1.5–K4 | weight codes | P+D | done | 11-03 | 11-04 | ug/D 0.833 (K2.5), flat over K (0.849 K1.5 → 0.828 K4); up-only 0.865 keeps 81% (preferred); layers 24–35 ~0.70, ends ~0.95; ≈0.13 bit on down ≈ 0.03 bpw whole-model |
+| 81-04 | A1 in KL on the 0.8B (load-time expansion), K2–K5, up-only and up+gate | weight codes | P+D | running | 11-04 | 11-04 | rule `proxy2b/exp/d1107/README.md`; 0.8B predicted share 13% (unweighted, K3) |
 | 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | none | done | 11-02 | 11-03 | gdn_in 39%, mlp_in 44%, attn_in 13%, writers 3%; additive; holds at K4/K5 |
 | 83 | H_out collection loss on scored positions only (gen mask), 0.8B (w01) | quantizer | none | done | 11-02 | 11-03 | K3 0.971, K2 0.950, every seed; use for 27B |
 | 83-02 | Gen-masked loss for the Σdy² diagonal | quantizer | none | done | 11-03 | 11-03 | K3 0.979 (every seed), K2 0.96: use for the 27B collection |
