@@ -3,6 +3,42 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-03 22:30 CST · #87-04 #87-05 #88-02 #78-04 #33-23 #85-02 #89-02 · d1103 results (logged 11-04 ~10:25 PM CST)
+- **Status:** done · **Machine:** 4070 · **Files:** `data/d1103/result.txt`
+- **#87-05 ρ 0 (full clean-output target):** vs ρ 0.5, plain K3 0.945 / K2 0.916, on edy K3 0.964 / K2 0.924, every
+  seed (3). **Pass: ρ 0 replaces ρ 0.5.** ρ −0.25 (fit screen) is worse than ρ 0 (K2 1.019): ρ 0 is the optimum.
+  Net vs edy alone: about 0.845 (K3) and 0.78 (K2).
+- **#87-02 seeds 3–5:** edy + asym vs edy over 6 seeds K3 0.877 (mean log −0.132 ± 0.003), K2 0.848, every seed.
+- **#87-04 K4 / K5:** asym vs base K4 0.868, K5 0.888 (2 seeds, every seed): **holds at high K.**
+- **#88-02 asym on all 150 tensors** (moments through the whole quantized model): K3 1.53×, K2 2.31× worse.
+  **Negative**: the target only works on the writers with sibling inputs.
+- **#78-04 i8c on top of H_out**, 6 seeds: K3 mean log −0.007 ± 0.007, K2 −0.002 ± 0.008. **Null**: i8c adds
+  nothing to H_out quants (its −1.7% on plain quants stands); the trunk check needs no i8c arm if H_out ships.
+- **#33-23 Σdy² 512 vs 1,024:** K3 512 is +2.2% worse (≈ 2.2 SE), K2 −0.7%: 512 is not enough; supports the 27B going
+  to ≥ 1,024 (the user's 2,048 stands).
+- **#85-02 scale combos:** C9 α\* applied on top of C10 swj is broken (k3base_swj_astar 0.122 vs base 0.099;
+  k3edy_swj_astar 0.111 vs 0.090), and the pairs of that step failed (a tag bug). The `full` stack (edy + asym + swj +
+  α\*) is a mismatched order (w11 B2: the writers' F is stale once siblings are refitted; refitq measures α\*'s
+  error against W, not W·F): K3 1.29× worse, K2 0.90. **Inconclusive**; redo as swj alone on edy, and any stack in
+  the order "sibling refits first, then moments and writers".
+- **#89-02 healing on edy + asym:** held-out KL −13% (K3) / −32% (K2) in training, but the search scores were taken
+  without the trained norm gains (w11 A1: `ev()` used the stock checkpoint); re-scored by w11's healfix.sh (queued).
+- **Runtime:** none for all.
+
+### 2026-11-04 10:25 CST · #87 #89 #85 · w11 code review; w12 builds #87 for the 27B
+- **w11** (`proxy2b/exp/w11-review/`): no leakage (goldens, moment windows, heal early-stop set and fit slices are
+  disjoint, checked by document); mkdenoise's G / F recomputed independently (3e-8); `--wpre` in the right basis;
+  every saved weight lands on the pack's i8 grid (eval = pack); wqall assembly and seed pairing correct; healing's
+  parameters all store in a real pack (suh / svh / checkpoint norms). Findings: **A1** d1103's heal arms scored
+  without their norm gains (fixed: `d1103-heal-norms.patch` merged; `healfix.sh` re-scores); **B1** #87's correction
+  is specific to the exact sibling rounding (F − I cosine 0.02–0.10 across sibling seeds): on the 27B the writer
+  requant must run **last**, on the final shipped siblings (`xseed.sh` tests transfer); **B2** run2's `full` order is
+  wrong (above).
+- **w12** (`v3/sib27/`): layer-streamed 27B sibling-moment collector (bit-exact vs moments.py on the 0.8B, CPU),
+  pure-torch decoder of ladder shards (no `--save-wq` needed), lean mkdenoise for 17408² groups (merged; bit-
+  identical on the 0.8B), driver `sib27.sh` (128 writers; ~5–7 card-hours per level at 1M tokens; ~450 GB disk).
+  GPU equivalence test `test_gpu.sh` queued on the 4070. To set before the 27B run: ρ 0 (#87-05).
+
 ### 2026-11-03 10:15 CST · #87-02 #87-03 #83-02 #87-05 · Sibling asym stacks on H_out; ρ 0 leads the screen; gen-mask holds for Σdy²
 - **Status:** #87-02 done, #87-03 done (screen), #83-02 done (K2 seed 2 pending), #87-05 planned · **Machine:** 4070 (d1103)
 - **#87-02** (edy + asym vs edy, search, seeds 0–2): K3 0.876 / 0.880 / 0.886 (mean log −0.127 ± 0.003), K2 0.850 /
