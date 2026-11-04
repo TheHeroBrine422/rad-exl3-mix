@@ -44,3 +44,22 @@ the 0.8B gains transfer; speed stays behind unless A8 lands near their numbers.
 - "A scale refit after GPTQ … 0–2% or not at all." Our #85 refits gave 0.8B K3 −3%, K2 −9%: the same transfer question.
 - "Random-sign incoherence: rotated weights are already Gaussian (excess kurtosis −0.05)": consistent with faraway's
   headroom audit.
+
+## Speed: board numbers and how IQR gets them (2026-11-04)
+
+Board `gemm_us` (trunk GEMM a decoder layer at 2048 tokens; `search/lb/results-2026-11-04.json`): IQR-V3 3,829–3,931
+(2.5–6 bpw), IQR-V4 3,829–4,043 (prefill unchanged; V4's kernel work was decode), IQR-V2 ~5,850, IQR-V1 ~4,520,
+FP8 4,901, **EXL3-V1 / V2 ~8,010–8,090**. IQR runs ~20% faster than FP8 and ~2.1× faster than us.
+
+How (radiance source, Apache-2.0, `libr4d/r4d_gemm_iqr.hip`, `docs/IQR.md`): `gemm_iqr_tiled` (prefill, any M)
+decodes the whole weight **once** into an int8 fragment plane in the caller's scratch and runs radiance's plain i8a8
+prefill tile over it (`r4d_gemm_8a8_prefill.h`, shared with the int8 / FP8 family); one f32 scale a row after the K
+loop, int8 activations rotated by the 128-point WHT, per (token, 128) scales folded in the tile. Decode (M ≤ 64) has
+its own GEMV and narrow tile. This is our design's option C ("two-pass everywhere", `docs/design/v3.md` §B/C).
+
+For EXL3 the same maps one to one: `suh` (per input column) and the 128-block Hadamard go into the activation
+quantiser (IQR's rotated int8 activations), the i8-rounded mul1 trellis decodes to int8 values once per weight per
+step, `svh` is their row scale. **Expected V3 prefill:** their tile time plus our decode pass, roughly 4,000–4,300 µs
+(our T2 pre-pass measured ~10% at f16, about half at 8-bit), i.e. ~1.9× faster than V2 and below FP8, instead of the
+5,200 target. To check: whether a plugin can call radiance's i8a8 prefill tile (or must carry a copy), the scratch
+size per GEMM (gate_up 17408 × 5120 = 89 MB int8), and our decode pass's time on the card.
