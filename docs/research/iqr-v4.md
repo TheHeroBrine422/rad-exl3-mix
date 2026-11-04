@@ -63,3 +63,12 @@ step, `svh` is their row scale. **Expected V3 prefill:** their tile time plus ou
 (our T2 pre-pass measured ~10% at f16, about half at 8-bit), i.e. ~1.9× faster than V2 and below FP8, instead of the
 5,200 target. To check: whether a plugin can call radiance's i8a8 prefill tile (or must carry a copy), the scratch
 size per GEMM (gate_up 17408 × 5120 = 89 MB int8), and our decode pass's time on the card.
+
+**Plugin route (read 2026-11-04, radiance 1.16.0):** the tile is not reachable as an op for our codes: `gemm_nt_q`
+(`docs/OPS.md`) takes radiance's own weight forms (plain i8 at `i8a8` / `i8a8h`, IQR's computed trellis via
+`gemm_iqr_*`), and plugins link only the ABI headers. IQR reuses the tile by including
+`libr4d/r4d_gemm_8a8_prefill.h` (body `gemm_8a8_prefill_body`, 128 weight × 128 activation rows a block, weight read as a
+fragment-order plane straight into registers, activation staged in LDS) with a `begin` hook that decodes its weight.
+Our route: carry a copy of that header (+ `r4d_fp8_wmma.h`; Apache-2.0, attributed) in the exl3i plugin with an EXL3
+decode hook; activations from the stock `had_quant_act_i8g` op (rotated int8, a scale per (row, 128)), whose
+normalisation convention (`i8a8h`: the weight scale carries 1/128) our `svh` has to absorb.
