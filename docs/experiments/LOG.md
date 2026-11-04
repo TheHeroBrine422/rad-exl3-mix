@@ -5,10 +5,10 @@ before 2026-11-02 ~05:00 CST were rewritten into this template from the old trac
 versions of anything: git history.
 ### 2026-11-04 17:05 CST · #33-25, #33-27, #89-06 · Block-normalized Σdy² wins; healing at K4 with lr 3e-4
 - **#33-27:** hconv (layers 10/39/50, K2.5, 19 tensors) with block-normalized training means (every 128-seq block the
-  same per-tensor total): train 64…704 seqs 0.932 / 0.925 / 0.921 / 0.924 / 0.923 / 0.921 vs plain 0.932 / 0.925 /
+  same per-tensor total): train 128…768 seqs 0.932 / 0.925 / 0.921 / 0.924 / 0.923 / 0.921 vs plain 0.932 / 0.925 /
   0.922 / 0.945 / 0.940 / 0.936 (plain reference); against the block-normalized reference the same ordering
   (bn1408 0.927 vs dy1408 0.942). The robust estimator removes the outlier blocks' damage and is ~1.6% better at
-  the full sample; its curve plateaus from ~320 training seqs. **Decision:** the 27B swap test uses the
+  the full sample; its curve plateaus from ~384 training seqs. **Decision:** the 27B swap test uses the
   block-normalized diagonal (plain as a second arm).
 - **#89-06 (k45lr):** K4 seed 0 at lr 3e-4: held-out −5.4%, search golden 0.949 vs its stack (z −14.4) — at the
   ≤ 0.95 rule; seed 1 and K5 pending.
@@ -50,8 +50,9 @@ versions of anything: git history.
 - **#89-06 inconclusive:** K4 / K5 stacks built (vs base K4 0.775 / 0.782, K5 0.803 / 0.809), but healing at lr 1e-3
   never improved held-out (early stop at step 128, identity): the lr is too large for errors this small. Amendment
   in the README; k45lr screen running.
-- **#33-25 hconv** (3 layers, 19 tensors, K2.5, E_out vs no H_out, plain reference): train 128 0.932, 192 0.925,
-  320 0.922, 448 0.945, 576 0.940, 704 0.936: non-monotonic.
+- **#33-25 hconv** (3 layers, 19 tensors, K2.5, E_out vs no H_out, plain reference): train 128 0.932, 256 0.925,
+  384 0.922, 512 0.945, 640 0.940, 768 0.936: non-monotonic. (Corrected 11-04 17:20: training sequences = 128 × the
+  number of even blocks; an earlier draft of this entry halved them.)
 - **#33-27 heavy tail:** per-128-sequence block energy of the Σdy² diagonal vs the median block: layers 0 and 10
   carry 4–8× in block 6 (seqs 768–896) and 5.5–27× in block 9 (1152–1280), concentrated in few rows (layer-0 gate
   max/mean 6,366 vs ~100); layers 39 / 50 / 63 flat (0.8–1.5×). A few sequences dominate the early-layer mean,
