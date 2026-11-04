@@ -322,8 +322,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mode", choices=("train", "gradcos")); ap.add_argument("out")
     ap.add_argument("--wq", required=True); ap.add_argument("--layers", default="0-23")
-    ap.add_argument("--data", choices=("qad", "oracle", "mix"), default="qad")
+    ap.add_argument("--data", choices=("qad", "oracle", "mix", "meta"), default="qad")
     ap.add_argument("--mix", default=None, help="--data mix: DIR[@file]:frac,... (xcorp-format dirs)")
+    ap.add_argument("--train-meta", default=None, help="--data meta: a golden-format dir (kld.json docs / tokens.i32 / gen.u8,\n                    d1108 sgbuild.py) whose windows of every document train; held-out stays the calib search docs")
     ap.add_argument("--ntrain", type=int, default=1024); ap.add_argument("--len", type=int, default=2048)
     ap.add_argument("--per-doc", type=int, default=8); ap.add_argument("--epochs", type=int, default=2)
     ap.add_argument("--accum", type=int, default=4); ap.add_argument("--lr", type=float, default=1e-3)
@@ -343,6 +344,8 @@ def main():
     held = heldout_items(meta, pools, GOLD, a.nheld, a.len, 1)
     if a.data == "oracle": gm = Meta(GOLD); items = golden_items(gm); hmeta, held = gm, items   # in-sample by design
     elif a.data == "mix": gm, items = mix_items(a.mix, a.ntrain, a.len, a.seed, a.per_doc); hmeta = meta
+    elif a.data == "meta":
+        gm = Meta(a.train_meta); items = qad_items(gm, ["qad"] * len(gm.docs), a.ntrain, a.len, a.seed, a.per_doc); hmeta = meta
     else: gm = meta; items = qad_items(meta, pools, a.ntrain, a.len, a.seed, a.per_doc); hmeta = meta
     assert all(pools[i] == "qad" for i, _, _ in items) if a.data == "qad" else True
     print(f"{len(items)} training windows ({a.data}), {len(held)} held-out docs", flush=True)
