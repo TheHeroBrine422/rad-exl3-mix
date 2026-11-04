@@ -6,7 +6,8 @@ versions of anything: git history.
 ### 2026-11-04 14:50 CST · #— · Decision: V3 release sizes
 - **User:** V3 ladder = 2.0, 2.5–4.5 (the focus of all quality work), 5.0 and one 6.0 to show the top; nothing above 6
   (V2 covers it). Rationale: above ~5 bpw KLD differences are below fp8-KV and serving noise; real-use thresholds
-  ~0.01–0.04 KLD fall at ~2.6–3.6 bpw; VRAM tiers 12 / 16 / 24 / 32 GB.
+  ~0.01–0.04 KLD fall at ~2.6–3.6 bpw; VRAM tiers 12 / 16 / 24 / 32 GB. Added (user): 1.25 / 1.5 / 1.75 as
+  research points (1.25 needs K1 / K1.25 menu options).
 
 ### 2026-11-04 14:35 CST · #81-03 · A1 on all 64 layers: done
 - **Result** (CPU trellis proxy, ffn_down, 256 sampled rows, i8c; coded error vs D): ug/D mean over 64 layers K1.5
