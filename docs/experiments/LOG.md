@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-04 02:30 CST · #— · Decisions: fast + accurate variant per size; two-pass prefill kernels, built now
+- **User:** publish a fast and an accurate variant at each size (knap4 with per-tensor compute modes, a speed budget for
+  the fast one). Build the kernels now: the two-pass design (decode once into an int8 / f16 plane + radiance's tuned
+  tile) does not depend on the quantizer experiments still running.
+- **Order:** (1) radiance 1.16.0 rebase of our plugins (the kernels call radiance's tile; API per version); (2) decode-
+  to-int8 and decode-to-f16 passes for EXL3 tiles + routing to radiance's i8a8 / 16-bit tiles; (3) timing at the
+  board's shapes (needs an iceman card: after #33-24, or a pause); (4) knap4's speed table from those timings.
+
 ### 2026-11-04 02:00 CST · #— · IQR-V4 published (main competitor)
 - **Notes:** `docs/research/iqr-v4.md`. Board: V4 leads our V2 by 7–13% at 2.5–5 bpw, level at 5.5, behind at 6+
   (35–50% at 7–8); prefill 1.02–1.08× FP8 vs our V3 target 1.4×.
