@@ -4,6 +4,20 @@ Names: EXL3-V1 = the turboderp-ladder port (released); EXL3-V2 = mixed-K EXL3 on
 (our K1–8 quants, the per-tensor mix chosen by a fitted sensitivity model and an exact knapsack DP);
 EXL3-V3 = integer compute.
 
+## Scope decisions (user, 2026-11-04; supersede the version sections below where they differ)
+- **Into V3 now:** sub-1 K (K0.125–0.875); the low-bpw research ladder (2.0 → 1.0 in 0.1 steps, then down until
+  KLD blows up); research sizes 1.25 / 1.5 / 1.75; A4 built and measured end to end (fast variant at ≤ 2.25 bpw if
+  d1106 passes); saturation-aware allocation for the research sizes; sub-1 trellis embedding and t6.25–t8 embedding
+  levels (menu work; releasing 7+ bpw is optional); all three IQR-V4 ideas (act order in the trellis, bf16
+  (row, 128) scales on attn_output / ssm_out from K5, vocabulary-weighted head vs our slab head); fast + accurate
+  variants per size; vision tower + DFlash2 in the containers.
+- **0.8B tests now:** robust (heavy-tail) Σdy² estimator; sequential (quantized-prefix) Hessians; REAL-Q.
+- **Search-algorithm improvements** for the tensor search: after / in parallel with the quantization runs.
+- **Later:** decode speed as its own axis (profile per K, decode-optimized variants; maybe not V3); 7.0–8.0 rebuilds
+  (optional extra, V3.5 at most); disaggregated quantization; KV-cache work (V-mean, Hadamard KV, per-layer KV
+  recipe, KV-QAT); LSA; MoE models (QFN / GLM-5.3-Flash / Mistral).
+- **QAD:** after V3, starting from the published V3 checkpoints.
+
 ## EXL3-V2 (current)
 - Released 2026-10-31 (16 sizes, 1.5–9.0 bpw). Streaming mix search on calib fit slices; final pick of measured
   mixes on a held-out verify slice. The public corpus was not used.
