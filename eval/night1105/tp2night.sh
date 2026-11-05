@@ -38,7 +38,7 @@ stop2() { [ -f $N/STOP2 ]; }
 rec() { name=$1 corpus=$2 len=$3; [ -f $N/gold/$name/.done ] && return 0; stop2 && return 1
   rm -rf $N/gold/$name
   ( eval "$LOCKS"; s=$(date +%s); RADIANCE_HOME=$H $R/bin/radiance --model ${MODEL:-$CK} --tp 2 --kv-cache-dtype bf16 \
-      --max-model-len $len --host-headroom-mib 6144 --kld-record $N/gold/$name --kld-corpus $corpus --kld-top 512 \
+      --max-model-len $len --max-num-seqs 4 --host-headroom-mib 6144 --kld-record $N/gold/$name --kld-corpus $corpus --kld-top 512 \
       > $N/rec-$name.log 2>&1 & echo $! > $N/tp2.pid; wait $!; rc=$?
     [ $rc = 0 ] && touch $N/gold/$name/.done; cp ${corpus}.meta.jsonl $N/gold/$name/corpus.meta.jsonl 2>/dev/null
     echo "rec $name rc=$rc $(( ($(date +%s) - s) / 60 )) min" ) | tee -a $L
