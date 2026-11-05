@@ -223,7 +223,10 @@ prefill.
   accept / reject stays on our cards; needs local mix assembly from cached levels, not per-candidate downloads; 16 GB
   cards only for the lower sizes). Open:
   Docker Hub namespace; build the worker image and run one real job on an R9700 before publishing; where the
-  server's volumes live on the queue host; admin = one read-only status endpoint.
+  server's volumes live on the queue host; admin = one read-only status endpoint. Donors (user, 2026-11-05): many R9700s (= our card:
+  every search size fits, results bit-identical on recompute, cheap spot checks), hosts mostly ≥ 32 GB RAM: add a
+  declared-RAM field at registration and a minimum per job type (trunk layer ~24 GB, LM head ~48 GB: its ~22 GB
+  peak is tight on a 32 GB desktop). With a handful of R9700 donors ladder + search ≈ 2 days: start during the freeze.
 - [ ] **Quantized DFlash2 drafter and vision tower.** V3 bundles both in bf16 (`docs/design/v3.md` §8; outside the
   bpw count). Quantizing them shrinks the container / VRAM: the drafter's quality shows as acceptance rate (decode
   tok/s), not KLD, so it needs its own metric (acceptance length on held-out text); the vision tower needs an image
