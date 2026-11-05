@@ -217,6 +217,13 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Long-context eval for our quants: RULER probes** (user 2026-11-05; same probes as the D-LSA gate,
+  `docs/design/lsa.md`). Our KLD goldens cap documents at 8k (32k for the 27B trace golden), so nothing checks the
+  quants at the contexts people run (256k–750k, fp8 KV, YaRN). One shared harness: RULER-style tasks (multi-key /
+  multi-value needles with distractors, variable tracking, aggregation), exact-match scoring, no LLM judge; synthetic
+  text, so no pool rules apply. Use: release check for V3 finals (and a V2 baseline at 3.0 / 4.0), bf16 vs fp8 KV,
+  quant vs bf16 where bf16 fits (≤ ~128k on TP2, else quant vs the next-larger quant), and the LSA gate. Card cost is
+  prefill-bound (a 512k sample is minutes): a few samples per task and length, reported with binomial intervals.
 - [ ] **Kernel autoresearch on other radiance kernels** (user 2026-11-05, side note): once the autoresearch-v3 kernel
   task (w35) works on our A8 path, point it at upstream radiance kernels too (e.g. `libr4d` attention, GDN chunk
   scan, i8a8 / fp8 GEMM tiles, norms, sampler); each problem needs radiance's own tests as the byte-exact gate plus a
