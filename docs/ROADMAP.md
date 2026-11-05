@@ -19,6 +19,10 @@ most V3.5 items moved into V3 on 2026-11-04.
 
 ## EXL3-V3 (in progress)
 
+**Name (tentative, 2026-11-05): KTQ (Knapsack Trellis Quantisation).** V3 is no longer loadable by exllamav3
+(int8 / int4-rounded codebooks, own encoding), so it ships under its own name, as a QTIP-family trellis format derived
+from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
+
 **Sizes and variants (user, 2026-11-04 / 11-05):**
 - Release sizes 2.0, **2.5–4.5 (the focus of the quality work)**, 5.0, 6.0 and **7.0** (11-05: cheap, since the
   ladder holds its levels, and a prefill speed gain for TP2 / 32 GB users; V2 7.00 runs 8,105 µs vs IQR-V4's 4,006).
