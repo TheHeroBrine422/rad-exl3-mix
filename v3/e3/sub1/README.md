@@ -43,3 +43,19 @@ at K7.25 / 7.5 / 7.75 worth adding to the ladder (the fast 7.0 / 8.0 keep K > 7 
   K6 (+ K4 reported), cost 0.125 bit per weight on those tensors (16 bits / 128). **Rule:** worth a 0.8B KL test if
   the median proxy error ratio, net of its bits (compare at equal total bits against the next quarter step), is
   ≤ 0.97 on attn_output and ssm_out at K5 or K6.
+
+## #96 · Trunk row-slab K with output-side row importance (2026-11-05 ~9:20 PM CST, before data)
+E3c (#29-02) put the row-slab ceiling at ~0.05 bit from input-side row norms alone; output-side importance (the 27B
+Σdy² diagonal, block-normalized 1,920-sequence collection) was missing. Slabs of 128 rows (= EXL3's output Hadamard
+blocks, so a slab's Σdy² mass is rotation-invariant), also 256 / 1024 reported.
+- **Stage 1 (analytic, `rowslab2.py`, every trunk tensor):** per slab weight w_s = Σ_{r∈s} h_r · ref_r (ref_r = W_r H_in
+  W_rᵀ), continuous-bit ceiling gain = ½ log₂(AM(w)/GM(w)) bits, vs E3c's input-only number, per family.
+  **Rule:** stage 2 if the parameter-weighted median ceiling at S = 128 is **≥ 0.10 bit**.
+- **Stage 2 (real trellis, quarter-step K per slab, K2–4):** the gain at equal bits under Σdy²-weighted proxy error.
+  **Rule:** a format / kernel design note (K per slab) if ≥ 0.06 bit (≈ ≥ 4% KLD at 2–4 bpw) on the big families.
+
+## #97 · Embedding menu at both ends (2026-11-05, before data)
+7.0 is a V3 size and the solver already sits on t6 (the menu top) at 7.0; sub-1 sizes may sit on the menu floor.
+CPU sweep as `v3/e3/emb/` (trellis-coded embedding, one scale per row, H = I): t6.25 … t8 in quarter steps and t0.25 /
+0.5 / 0.75; reconstruction error per level and the error-per-bit slope. **Rule:** a level joins the menu if it lies on
+the error-vs-bits convex hull with the existing levels and Lloyd e1–e8 (else it is dominated and skipped).

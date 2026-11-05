@@ -176,3 +176,5 @@ Next free number: **90**.
 | 93 | Overfitting check: the adopted 0.8B stack re-scored on a fresh calib-verify golden (g08-verify1) | method | none | planned | 11-05 | 11-05 | rule `proxy2b/exp/d1110/README.md`; 4070, ~1 h |
 | 94 | int8-rounded codebook above K7: i8 K7.25 / 7.5 / 7.75 for the fast high sizes (CPU proxy) | weight codes | P | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#94"; cpu1 |
 | 95 | IQR-V4 ideas on the CPU proxy: act order (16-col sub-blocks), bf16 (row,128) scales from K5 | weight codes | none / P+D | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#95"; worker w19, cpu1 |
+| 96 | Trunk row-slab K with Σdy² row importance: analytic ceiling, then real trellis | weight codes | P+D (format) | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#96"; worker w20, cpu2 |
+| 97 | Embedding menu at both ends (t6.25–t8, t0.25–0.75) | embedding | none | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#97"; worker w20, cpu2 |
