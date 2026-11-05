@@ -56,12 +56,16 @@ if want fam; then step fam   # amendment 2: per-family blends at w* (mixers = at
       for k in 3 2; do python3 $X3/summ.py $O k${k}hoC$w k${k}hoC$w$n ag-k${k}hoC$w ag-k${k}hoC$w$n | tee -a $O/result.txt; done; done
   fi; fi
 if want hin; then step hin
+  GT=/data/g08-agent-calib   # amendment 4: calib's own agentic text (search pool)
+  if [ ! -f $GT/rows.f32 ]; then lock; python3 $P/mkgold.py $M $META $GT $(python3 -I $X/tracegold.py $META /workspace/rad-exl3-mix/eval/pools/pools-v3.json $S) > $O/gold-gt.log 2>&1; unlock
+    log "g08-agent-calib: $(python3 -c "import json,numpy as np; m=json.load(open('$GT/kld.json')); print(len(m['docs']), 'docs', int(np.fromfile('$GT/gen.u8',np.uint8).sum()), 'scored')")"; fi
+  for s in 0 1; do for k in 3 2; do lock; ev tr-k${k}dygm$(sfx $s) $(wqd k${k}dygm$(sfx $s)) $GT; unlock; done; done
   for w in 0.5 1; do d=$O/hi-C$w; [ -f $d/.done ] || python3 -I $X/blend.py hin /data/h08/calib $O/hinC $w $d >> $O/blend.log 2>&1; done
   for s in 0 1; do for k in 3 2; do base=k${k}dygm$(sfx $s)
     for w in 0.5 1; do t=k${k}hiC$w$(sfx $s)
-      lock; q $t $k i8 --hin $O/hi-C$w --hout $C23 --sigma-reg-out 0.01 --seed-offset $s; ev ag-$t $O/q-$t/wq $GA; unlock
-      pairboth $base $t; done; done; done
-  for w in 0.5 1; do for k in 3 2; do python3 $X3/summ.py $O k${k}dygm k${k}hiC$w ag-k${k}dygm ag-k${k}hiC$w | tee -a $O/result.txt; done; done; fi
+      lock; q $t $k i8 --hin $O/hi-C$w --hout $C23 --sigma-reg-out 0.01 --seed-offset $s; ev ag-$t $O/q-$t/wq $GA; ev tr-$t $O/q-$t/wq $GT; unlock
+      pairboth $base $t; pair tr-$base tr-$t $GT; done; done; done
+  for w in 0.5 1; do for k in 3 2; do python3 $X3/summ.py $O k${k}dygm k${k}hiC$w ag-k${k}dygm ag-k${k}hiC$w tr-k${k}dygm tr-k${k}hiC$w | tee -a $O/result.txt; done; done; fi
 if want heal; then step heal
   for k in 3 2; do for s in 0 1; do B0=k${k}edyswjasym_r0; st=$B0$(sfx $s); w=$(wqd $st); [ -n "$w" ] || { log "no $st"; continue; }
     sp=$D5/h-${B0}_sp$(sfx $s); [ -d $sp/wq ] && { lock; ev ag-${B0}_sp$(sfx $s) $sp/wq $GA "" $(hm $sp); unlock; }

@@ -58,3 +58,16 @@ Why (user): know quickly whether a 27B self-gen collection is worth its card tim
   goldens. The H_out rule for C is decided on these.
 - **Phase 2:** the rest of the generation (C rebuilt from all of it for healing: mC/build.json removed first),
   collections B and T, H_in, the B / T arms, per-family, healing: as written above.
+
+## Amendment 4 (2026-11-05 ~1:00 AM CST, before data): H_in moved up; scored on calib's own agentic text too
+User: test whether self-generated H_in helps specifically on calib's agentic traces vs other data.
+- New golden **`g08-agent-calib`** (`tracegold.py`): the search pool's 2 long traces (cobra, ripgrep; 27B-generated)
+  in 2,048-token windows at offsets 0–30k with their full prefix, plus the pool's other agentic-source documents not
+  in g08-search1 (cap 4,096). The H_in arms (C0.5, C1 vs dygm, K3 / K2, seeds 0 / 1) are scored on calib search,
+  g-agent and this golden.
+- **Order:** the H_in step runs right after phase 1 (before d1110, REAL-Q and phase 2).
+- **Reading (the main rule is unchanged):** report the H_in ratio on g08-agent-calib beside calib-overall. Caveat
+  for the 0.8B: calib's traces are the **27B's** text, off-policy for the 0.8B, so they test "agentic text" not
+  "own text"; g-agent tests own text. If H_in from self-gen beats calib H_in by ≥ 2% on g08-agent-calib at both K
+  while calib-overall stays ≤ 1.01, an agentic-text H_in blend gets a 27B test (scored on golden-search27's agentic
+  documents separately) even if the main rule fails.
