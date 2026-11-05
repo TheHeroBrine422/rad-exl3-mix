@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 07:20 CST · #— · 4070 queue deadlock (lost ~2 h 40 min)
+- `hconv.sh` had been launched under an outer `flock gpu.lock`; its first step waits until no `quantize/ourq.py`
+  process exists, while hest.sh's `flock gpu.lock python3 ourq.py` (matching that pattern) waited for the lock hconv
+  held. Deadlocked ~4:34–7:15 PM CST 11-04 (UTC on the box: 22:34–01:15); d1106 / d1108 / d1110 and an orphaned w13
+  volunteer GPU test (`quant_e2e.sh`, its server still up) queued behind. Fix: killed the outer hconv and the w13 test;
+  hest now runs. **Rule:** never wrap a script that takes `gpu.lock` itself (or waits on GPU processes) in an outer
+  flock; workers must stop their GPU tests and servers before reporting. hconv's remaining fill (bn1664 layer 39)
+  reruns later without the outer lock. Every 4070 ETA moves ~3 h later.
+
 ### 2026-11-05 03:00 CST · #89 · 27B healing deferred to the ladder phase; volunteers for search as well as quants
 - **Decision (user), clarified 03:30 CST:** 27B frozen-code scale healing is **deferred, not dropped**: no 27B test
   before the settings freeze; work on it once the ladder generation starts (beside it), at the latest after V3; it can
