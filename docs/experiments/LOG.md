@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 02:10 CST · #— · ROADMAP and design doc brought in sync; research points 1.5 / 1.75
+- **ROADMAP rewritten** (user: out of sync with `docs/design/v3.md`, and "small-model proxies after V3" was wrong):
+  sections by release (V1/V2 released, V3 in progress, V3 extras, V4 = QAD / KV / LSA / MoE, later), "Research
+  method and infrastructure (in use now)". Removed contradictions: 7.0–8.0 rebuilds, A4, sub-1 and the half-step menu
+  listed as extras; QAD named V5.
+- **Design doc:** "Goal and scope" rewritten as the current plan (speed targets vs IQR-V4, sizes incl. 7.0, variants,
+  W/A, ladder, quantizer stack, two-pass kernels, radiance 1.17, eval data, hardware, not-in-V3); body statements
+  that conflict are marked **[superseded date]** with the current text (YAQA dropped → diagonal H_out candidate;
+  knap3 → knap4; Phase A/B → §6's current order; half-step menu → ladder; trunk row-slab reason; i8c; engine 1.17;
+  turboderp's SC trace answered; QAD V5 → V4).
+- **Privacy pass before commit (user):** no machine names, people, private-trace wording or local paths in the
+  public docs; hardware described generically (the user's own line in the ROADMAP).
+- **Research points (user):** 1.5 / 1.75, then 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD blows up; 1.25 is no
+  longer a separate point.
+
 ### 2026-11-05 01:40 CST · #33-28, #91, #46-03 · Swap-test restart; discussion record (self-calibration, variants, 7.0 / 8.0)
 - **#33-28 swap test failed at its first quant (5:34 PM CST 11-04):** `ModuleNotFoundError: exllamav3`. Since the
   iceman rebuild the patched exllamav3 (a3bfbfd0 + 0001–0007, editable install) had never finished building (the 1 AM
