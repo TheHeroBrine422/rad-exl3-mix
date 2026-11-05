@@ -18,6 +18,10 @@ stack must keep **≥ 80%** of its search gain. A step that fails is re-labelled
 search-pool slice (`g08-search2`, drawn when needed), rotated every ~10 experiments.
 Runtime cost: none.
 
+**Spare goldens (user, 2026-11-05; `more.sh`):** g08-search2 / -search3 (170 search-pool docs each), g08-verify2 (180
+verify docs), g08-xcorp2–4 (180 xcorp docs each); disjoint from each other and from g08-search1 / -verify1 / -xcorp1.
+Built up front, not scored against until a decision needs one; each first use gets a LOG line.
+
 **Addition (user, before data): `g08-xcorp1`**, 180 xcorp v1 documents (outside calib's documents, same upstream
 sources; stratified by category, seed 1110, cut at 2,048 tokens, every position scored; `xgold.py`). The same
 re-scoring runs on it (tags `xc-…`). Same thresholds, reported separately: a step that passes on verify but loses

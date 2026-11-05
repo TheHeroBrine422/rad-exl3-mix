@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""xgold.py XMETA OUT N SEED [CAP] -- d1110: a golden-format document set (kld.json / tokens.i32 / gen.u8, every
+"""xgold.py XMETA OUT N SEED [CAP] [EXCLUDE_GOLDEN_DIR...] -- d1110: a golden-format document set (kld.json / tokens.i32 / gen.u8, every
 position scored) from N xcorp documents, stratified by category in proportion to xcorp's mix, each cut to CAP tokens
 (default 2048). mkgold.py OUT OUT2 0..N-1 then adds the bf16 reference. Out of calib's documents entirely."""
 import json, os, random, sys
 import numpy as np
 src, out, n, seed = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4]); cap = int(sys.argv[5]) if len(sys.argv) > 5 else 2048
+EXC = {d['orig'] for g in sys.argv[6:] if os.path.exists(f'{g}/kld.json') for d in json.load(open(f'{g}/kld.json'))['docs']}
 m = json.load(open(f"{src}/kld.json")); toks = np.memmap(f"{src}/tokens.i32", np.int32, "r")
 off = np.concatenate([[0], np.cumsum([d["tokens"] for d in m["docs"]])])
 by = {}
 for i, d in enumerate(m["docs"]):
-    if d["tokens"] >= 64: by.setdefault(d.get("category", "?"), []).append(i)
+    if d["tokens"] >= 64 and i not in EXC: by.setdefault(d.get("category", "?"), []).append(i)
 tot = sum(len(v) for v in by.values()); rng = random.Random(seed); pick = []
 for c, v in sorted(by.items()):
     rng.shuffle(v); pick += v[:max(1, round(n * len(v) / tot))]
