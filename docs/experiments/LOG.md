@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 10:40 CST · #33-28 · Swap test K2.5: block-normalized Σdy² −2.8% (provisional); diagonals published
+- K2.5 trunk swapped into V2 3.00, all arms the same size (2.6244 bpw), golden-search27 (103 docs, 123k positions),
+  paired bootstrap: **bn 0.05737 vs base 0.05903 = −2.8%** (z −2.2, 95% upper bound −0.4%); dy −1.7% (z −1.6, n.s.);
+  bn vs dy −1.1% (z −1.4, upper bound +0.5% < the +1% margin). H27 rule: bn provisionally chosen; "real" still needs
+  the seed arm (noise ≤ 1.4%). **≈ a third of the 0.8B's −8…−9%**: proxy effect sizes shrink at 27B.
+- **Published** (user go): HF dataset `Hero422/qwen3.8-27b-hout-diag` (merged layout: 63 files, 0.67 GiB; one
+  safetensors per snapshot × estimator + block-normalized; `v3/yaqa/hf/unpack.py` restores ourq's per-tensor layout,
+  round trip bit-exact). A first attempt created an empty *model* repo of the same name (to delete, user).
+- Night chain: the TP2 recorder failed at startup (GDN state for 256 sequences did not fit); fixed with
+  `--max-num-seqs 4`; arm D generating at ~100 tok/s; everything ~1.5 h later. speedcal at 250 W is not a power
+  test (mean draw ~165 W, the cap never binds); card 0 reports sclk max 2,350 MHz vs card 1's 3,139 (check).
+
 ### 2026-11-05 10:15 CST · #33-28 · Night chain extended to ~6 PM CST without needing TP2 after 9 AM
 - **User:** both cards until morning, card 1 may be taken back any time after ~9 AM; run until noon–6 PM.
 - TP2 goldens (batches 2 / 3, 1M-token chunks) run to completion (~9:30 AM CST; user: no hard cutoff). Then a queue of 4-layer

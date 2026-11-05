@@ -1,6 +1,6 @@
 ---
 license: apache-2.0
-base_model: Qwen/Qwen3.8-27B
+pretty_name: Qwen3.8-27B diagonal output Hessians
 tags:
   - quantization
   - hessian
@@ -17,17 +17,17 @@ quantization with the published input Hessians on one side and this diagonal on 
 
 ## What is in here
 
-| path | content |
+| file | content |
 |---|---|
-| `block-normalized/` | **the recommended estimator**: Σdy² with each 128-sequence block normalized before averaging (tames a heavy tail of a few huge blocks in early layers), from 1,920 sequences; `mkbn.json` = per-tensor block statistics |
-| `snapshots/nNNNN/dy/` | Σ_t dy_t² (plain output Fisher diagonal), mean over the first NNNN sequences |
-| `snapshots/nNNNN/xw/` | Σ_t ‖x_t‖² dy_t² (YAQA Sketch A's first-step weighting with H_in ≈ I) |
-| `snapshots/nNNNN/sketchb/` | diag(Σ_b G_b G_bᵀ), G_b = Σ_t dy_t x_tᵀ per sequence (YAQA Sketch B's output factor, diagonal); `halves.json` = per-tensor cosine between the even- and odd-sequence means |
+| `block-normalized.safetensors` | **the recommended estimator**: Σdy² with each 128-sequence block normalized before averaging (tames a heavy tail of a few huge blocks in early layers), from 1,920 sequences; `block-normalized-mkbn.json` = per-tensor block statistics |
+| `snapshots/nNNNN-dy.safetensors` | Σ_t dy_t² (plain output Fisher diagonal), mean over the first NNNN sequences |
+| `snapshots/nNNNN-xw.safetensors` | Σ_t ‖x_t‖² dy_t² (YAQA Sketch A's first-step weighting with H_in ≈ I) |
+| `snapshots/nNNNN-sketchb.safetensors` | diag(Σ_b G_b G_bᵀ), G_b = Σ_t dy_t x_tᵀ per sequence (YAQA Sketch B's output factor, diagonal); `nNNNN-sketchb-halves.json` = per-tensor cosine between the even- and odd-sequence means |
 
-Snapshots every 128 sequences, 128 … 1,920. One file per linear, named by its checkpoint key
-(`model.language_model.layers.L.<module>.safetensors`), one fp32 tensor `"hout_diag"` of length out_features (the mean
-over sequences). gate_proj / up_proj are separate files. Only relative values matter for quantization (our quantizer
-rescales each diagonal by its mean).
+Snapshots every 128 sequences, 128 … 1,920. Each file holds 400 fp32 vectors, one per trunk linear, named by its
+checkpoint key (`model.language_model.layers.L.<module>`), of length out_features (the mean over sequences). gate_proj
+and up_proj are separate entries. Only relative values matter for quantization (our quantizer rescales each diagonal
+by its mean).
 
 ## How it was collected
 
@@ -66,8 +66,9 @@ the same method gave on Qwen3.5-0.8B (−8 to −9% at K2–K3), so treat 0.8B-s
 **Reading the files** (no dependency on our code):
 
 ```python
-from safetensors.torch import load_file
-h = load_file("block-normalized/model.language_model.layers.10.mlp.down_proj.safetensors")["hout_diag"]  # [5120] fp32
+from safetensors import safe_open
+with safe_open("block-normalized.safetensors", "pt") as f:
+    h = f.get_tensor("model.language_model.layers.10.mlp.down_proj")   # [5120] fp32
 h = h / h.mean()   # only relative values matter
 ```
 
@@ -76,7 +77,9 @@ approximation of the end-to-end KL Hessian, H ≈ H_out ⊗ H_in, YAQA arXiv 250
 Hessian. In exllamav3 / EXL3 the output channels are rotated (sign flips, channel scales and a 128-point Hadamard), so
 in the quantizer's basis the diagonal becomes a dense 128-block coupling between rows, and LDLQ runs with error
 feedback on both sides (`ldlq_2hess`, `prepare_H_out`: H_out normalized to mean 1, + 0.01 on the diagonal). With
-our quantizer: `ourq.py ... --hout <dir> --sigma-reg-out 0.01`.
+our quantizer: split a file into its per-tensor layout with
+[`v3/yaqa/hf/unpack.py`](https://github.com/TheHeroBrine422/rad-exl3-mix/blob/main/v3/yaqa/hf/unpack.py), then
+`ourq.py ... --hout <dir> --sigma-reg-out 0.01`.
 
 **In a row-independent quantizer** (plain GPTQ / LDLQ with no output-side rotation), scaling one output row's
 objective by h_i does **not** change that row's rounding. The diagonal then acts only where rows interact: scale or
