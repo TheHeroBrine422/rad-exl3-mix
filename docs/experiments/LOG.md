@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 11:50 CST · #95 · IQR-V4's act order and bf16 (row,128) scales: both negative on the CPU proxy
+- **95-01 act order** (16-col sub-blocks by H mass inside each 128-block): median ratio 0.9998 / 0.9994 / 0.9987 /
+  0.9981 / 0.9996 at K2 / 2.5 / 3 / 4 / 5 (rule ≤ 0.99 at ≥ 2 K): **fail**. The 128-Hadamard flattens the sub-block
+  mass (CV 0.17–0.58 → 0.01–0.02); across 128-blocks it still differs 10–150× (a block-level reorder would need its
+  own rule and a runtime input permutation).
+- **95-02 bf16 (row,128) scales refit after the trellis:** at equal bits ×1.27–1.29 attn_output, ×1.18 ssm_out /
+  ffn_down (rule ≤ 0.97): **fail by far**; the per-block refit even hurts (LDLQ pushes error into later blocks), the
+  joint solve gains only −0.5…−1.5%. Pre-trellis group scales (IQR's likely route) untested; #40 found them dead at low K.
+- Files `v3/e3/trellis3.py`, `v3/e3/sub1/r95{.sh,report.py}`, `data/e3/r95/r95.jsonl` (worker w19). Runtime cost: none.
+
 ### 2026-11-05 11:20 CST · #96, #97, #— · Row-slab K fails; embedding menu extended; 4070 deadlock again
 - **#96 (w20, cpu2):** row-slab K ceiling with Σdy² row weights, parameter-weighted median at S = 128: **0.036 bit**
   (input-only 0.044; FFN 0.031) vs the 0.10 rule: **negative**, no stage 2. Exception: ssm_qkv 0.33 / attn_qg 0.27,
