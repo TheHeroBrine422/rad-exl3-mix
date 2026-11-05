@@ -9,3 +9,12 @@ over the user's **raw sessions** (#91's `mB`, 4.7M tokens) at w 0.25 (`blend.py 
 **Rule (written 2026-11-05 ~11:15 AM CST, before data):** a blend is adopted (27B arm next) if calib ≤ 1.005 at both
 K **and** g08-xcorp2 ≤ 0.98 at both K (or g-agent ≤ 0.97 for the sessions blend). Otherwise H_in stays calib-only.
 Runtime cost: none.
+
+## Amendment 1 (2026-11-05 ~12:20 PM CST, before data): public Qwen3.8-27B agent traces (ukisai)
+HF `ukisai/Qwen3.8-27B-multi-turn-agent-sft` (Apache-2.0; Qwen3.8-27B FP16, Terminus-2 harness, nl2bash +
+InferredBugs; no overlap with calib / public: 0 hits for its prompt / task names), rendered with the chat template
+(`xcorp/ukisai.py`): H_in over 339 sessions / 2.3M tokens, blended into calib H_in at w 0.25 (arm `U0.25`); a fresh
+golden `g08-ukisai` from 54 other sessions (0.4M tokens, scored on the assistant turns). All arms (incl. X / B) also
+scored on `g08-agent-calib` (calib's own 27B agentic text, search pool).
+**Rule:** U0.25 is adopted (27B arm next) if calib ≤ 1.005 at both K and g08-agent-calib or g08-ukisai ≤ 0.97 at both K.
+(Caveat: the text is the 27B's, off-policy for the 0.8B.)
