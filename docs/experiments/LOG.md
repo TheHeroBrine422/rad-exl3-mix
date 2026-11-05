@@ -13,6 +13,8 @@ versions of anything: git history.
   −6.7% at 2.0, −1.3% at 2.25; and knap4's 1 MiB buckets cost ~2% at 1.5 (256 KiB fixes it). Patch
   `v3/e3/sub1/knap4-sub1.patch` (KN_SUB1, KN_BK); data `data/e3/sub1/`.
 - **#90-02:** i4 replaces i8 at K ≤ 1.5 (1.0029 at K1.5); K2 1.0107 (just over 1.01); K3 1.067. Both ladders K1.625–3.
+  **Decision (user):** i4 alone only at K ≤ 1; i8 from K1.125 (any measurable i4 cost is not taken); i4 K1.125–3 only as
+  A4 twins if #46-03 passes.
 - **#94 invalid:** the CPU proxy's sanity check fails (K7 ×1.18 vs the GPU smoke's 1.02, K8 ×3.0 vs 1.35): every line on
   the top scale factor (grid capped at 1.15). Rerun with the grid to 1.5 before any decision.
 - **#91 phase 1 (0.8B), H_out from self-gen blended into calib, calib golden:** w 0.25 0.998 (K3) / 1.024 (K2), w 0.5
