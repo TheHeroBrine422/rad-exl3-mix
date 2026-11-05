@@ -51,5 +51,24 @@ search-pool slice).
 
 ## Use
 
-With our quantizer: `ourq.py ... --hout <dir> --sigma-reg-out 0.01` (any of the directories above).
+**Reading the files** (no dependency on our code):
+
+```python
+from safetensors.torch import load_file
+h = load_file("block-normalized/model.language_model.layers.10.mlp.down_proj.safetensors")["hout_diag"]  # [5120] fp32
+h = h / h.mean()   # only relative values matter
+```
+
+**How we use it.** The quantization objective becomes tr(Eᵀ H_in E H_out) with H_out = diag(h) (the Kronecker
+approximation of the end-to-end KL Hessian, H ≈ H_out ⊗ H_in, YAQA arXiv 2505.22988), H_in the published input
+Hessian. In exllamav3 / EXL3 the output channels are rotated (sign flips, channel scales and a 128-point Hadamard), so
+in the quantizer's basis the diagonal becomes a dense 128-block coupling between rows, and LDLQ runs with error
+feedback on both sides (`ldlq_2hess`, `prepare_H_out`: H_out normalized to mean 1, + 0.01 on the diagonal). With
+our quantizer: `ourq.py ... --hout <dir> --sigma-reg-out 0.01`.
+
+**In a row-independent quantizer** (plain GPTQ / LDLQ with no output-side rotation), scaling one output row's
+objective by h_i does **not** change that row's rounding. The diagonal then acts only where rows interact: scale or
+codebook search shared across rows, per-row / per-slab bit allocation (row importance), mixed precision between
+tensors, or an output-side rotation added on purpose. Per-tensor sums of h (with the input-side error) are also a
+usable sensitivity for knapsack-style allocation.
 License: Apache-2.0 (statistics derived from the model's outputs on Apache-2.0 / permissively licensed text).
