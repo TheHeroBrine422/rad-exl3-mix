@@ -59,3 +59,9 @@ blocks, so a slab's Σdy² mass is rotation-invariant), also 256 / 1024 reported
 CPU sweep as `v3/e3/emb/` (trellis-coded embedding, one scale per row, H = I): t6.25 … t8 in quarter steps and t0.25 /
 0.5 / 0.75; reconstruction error per level and the error-per-bit slope. **Rule:** a level joins the menu if it lies on
 the error-vs-bits convex hull with the existing levels and Lloyd e1–e8 (else it is dominated and skipped).
+
+## #90-03 · Firmer sub-1 / i4 curves: second seed and new depths (2026-11-05 ~12:00 AM CST, before data)
+Replication for pricing (no new decision): (a) the 49 #90 tensors at rotation seed 1 + row seed 1, K0.125–2 as #90;
+(b) i4 vs i8 at K0.125–3.5 on 10 new tensors (layers 6 / 26 / 46 / 58 / 39, GDN and attention families). Output
+`sub1-s1.jsonl`, `i4b.jsonl`. Reported: per family, the seed-to-seed spread of rel(K)/rel(K1) and whether #90 /
+#90-02's verdicts change when the data are pooled (if a verdict flips, the pooled one is used and the flip is logged).
