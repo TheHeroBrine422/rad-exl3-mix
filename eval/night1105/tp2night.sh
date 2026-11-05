@@ -2,6 +2,7 @@
 # tp2night.sh -- gpubox, night of 2026-11-05 (user: both cards tonight, card 1 back tomorrow). Stages, each logged to
 # $N/night.log, each skipped when done (rerun to continue):
 #   0. the swap test's seed arm (s1) is moved to card 0 later: killed if it starts; wait for swap27 RUN DONE
+#   0b. speedcal on both cards at once (each labelled with its live power1_cap; user: card 0 at 250 W, card 1 300 W)
 #   1. 27B bf16 reference goldens, stock radiance 1.17 TP2 --kld-record: xcorp 8k (5.0M tok), own traces 32k (2.5M)
 #   2. d1108 arm D: serve the bf16 27B (TP2), generate its own continuations of sgprep's first 640 train prompts
 #   3. Σdy² collection over them (collect.py, as #33-24: fp32, diag + extras, gen-masked, 512 sequences)
@@ -19,6 +20,17 @@ until grep -q "RUN DONE" <(tail -n 2 $S/result.txt); do
   p=$(pgrep -f "[o]urq.py -K 2.5 -o $S/q-s1/"); [ -n "$p" ] && { kill $p; log "s1 quant stopped (moved to stage 4)"; }
   sleep 30; done
 log "swap test lanes done: $(grep -c "pair base" $S/result.txt) pairs logged"
+# ---- 0b
+if [ ! -f $N/speedcal.done ]; then
+  ( eval "$LOCKS"
+    for c in 0 1; do cap=$(( $(cat /sys/class/drm/card$c/device/hwmon/hwmon*/power1_cap) / 1000000 ))
+      ( while true; do echo "$(date +%s) $(cat /sys/class/drm/card$c/device/hwmon/hwmon*/power1_average)" >> $N/power-c$c.log; sleep 1; done ) & PW[$c]=$!
+      ROCR_VISIBLE_DEVICES=$c WATTS=${cap}W BIN=/data/bench bash /data/benchsrc/v3/bench/speedcal.sh $N/speedcal-c$c.jsonl > $N/speedcal-c$c.log 2>&1 &
+      SC[$c]=$!; done
+    wait ${SC[0]} ${SC[1]}; kill ${PW[0]} ${PW[1]}
+    touch $N/speedcal.done )
+  log "speedcal: c0 $(head -c 120 $N/speedcal-c0.jsonl | grep -o 'watts_cap[^,}]*') c1 $(head -c 120 $N/speedcal-c1.jsonl | grep -o 'watts_cap[^,}]*'), $(wc -l < $N/speedcal-c0.jsonl) rows each"
+fi
 # ---- 1
 stop2() { [ -f $N/STOP2 ]; }
 rec() { name=$1 corpus=$2 len=$3; [ -f $N/gold/$name/.done ] && return 0; stop2 && return 1
