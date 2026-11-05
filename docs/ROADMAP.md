@@ -88,6 +88,15 @@ sizes and 6.0.
 - **REAL-Q (arXiv 2609.00049)** as a final pass on 2–3 shipped sizes, if the 0.8B test (below) pays: it is per-mix
   (sequential), so it cannot enter the per-level library (~40–50 GPU-hours each at 27B; its gains shrink with model
   size: −49% at 1.7B, −5…−9% at 8–70B).
+- **D-LSA runtime option (user 2026-11-05):** latent sparse attention (Prefrontal-AI/latent-sparse-attention,
+  arXiv 2610.42147, Apache-2.0) on the 16 full-attention layers, off by default (`--lsa MAP`). It doesn't change the
+  weights: a released 6.3 MB fp32 map (`qwen38_27b__long-16k-1M-heavy-key-and-query-d2048.pt`, release
+  `d-lsa-weights-v1`) picks which keys each query reads (bucket centroids + sink + window). Kept fp32, not quantized.
+  It's model-specific, not quant-specific, so it works with V1/V2/V3 alike once radiance has it. Shipped as one sidecar
+  file per HF repo (`lsa/`), not as a variant. Work: a ROCm/radiance port of the key clustering, centroid scoring and
+  sparse selection (the reference is SGLang/CUDA). Gate: long-context (64k–256k) KLD of quant+LSA vs quant alone (both
+  vs bf16) on whole traces, at 2.0 / 4.0 / 7.0, and prefill/decode speed; a low-bpw failure means re-fitting the map
+  on the quantized q/k (their `lsa distill`). Not in board entries: it approximates full attention.
 - **Speed gap to IQR, for the record:** decode (~30 vs ~100 tok/s at TP1) is mostly speculative decoding (DFlash2,
   bundled in V3); prefill (~1,500 vs ~2,500 tok/s) is the GEMM time V3's int8 path targets.
 
@@ -100,7 +109,7 @@ sizes and 6.0.
 - **KV-cache work** (V-mean, Hadamard KV, per-layer KV recipe, KV-QAT); may come from other radiance work on our published checkpoints
   instead (2026-11-04): our part is keeping qwen35_exl3's attention on
   radiance's standard KV groups.
-- **LSA**, then **MoE models** (QFN / GLM-5.3-Flash / Mistral Large 4; `docs/research/moe-kld.md`): measured on our
+- **N-LSA / LSA beyond D-LSA's released map**, then **MoE models** (QFN / GLM-5.3-Flash / Mistral Large 4; `docs/research/moe-kld.md`): measured on our
   own corpus first; need bf16 reference logits and input Hessians of the full model (SSD-streamed bf16 weights or
   cloud hardware); MoE needs per-expert handling.
 
