@@ -119,7 +119,9 @@ sizes and 6.0.
   `eval_mix` jobs for the search (public slices only; mixes assembled locally from cached levels), a central queue,
   points by verified work; DDP / DiLoCo-style training only later.
 - **YAQA:** full Sketch A / B lost on the 0.8B (#33-08); its diagonal H_out alone wins (#33-10…#33-16), which is the
-  V3 candidate above. Fuller (mixed) H_out only if the diagonal clearly helps on the 27B (BACKLOG).
+  V3 candidate above. **27B: only −2.8% at K2.5 (#33-28), a third of the 0.8B's gain; not part of the pipeline for
+  future / larger models** (user, 2026-11-05) unless a cheap estimator (≤ 384 sequences, bf16 hi/lo backward instead
+  of fp32, a proper multi-GPU backward) brings it to a few GPU-hours and a pilot on that model shows it pays. Fuller (mixed) H_out only if the diagonal clearly helps on the 27B (BACKLOG).
 
 ## Data (after QAD)
 - Clean held-out text runs out once QAD trains on the qad pool. Options: reuse documents by their ledger record
