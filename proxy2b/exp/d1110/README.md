@@ -17,3 +17,9 @@ stack must keep **≥ 80%** of its search gain. A step that fails is re-labelled
 27B before it ships. Afterwards g08-verify1 is read once and frozen for finals; new 0.8B decisions use a fresh
 search-pool slice (`g08-search2`, drawn when needed), rotated every ~10 experiments.
 Runtime cost: none.
+
+**Addition (user, before data): `g08-xcorp1`**, 180 xcorp v1 documents (outside calib's documents, same upstream
+sources; stratified by category, seed 1110, cut at 2,048 tokens, every position scored; `xgold.py`). The same
+re-scoring runs on it (tags `xc-…`). Same thresholds, reported separately: a step that passes on verify but loses
+most of its gain on xcorp is calib-specific and is flagged for the 27B check. (xcorp served as healing data in
+#89-05's mix arm only; a few of these documents may overlap it.) xcorp's 96M tokens allow more such goldens later.

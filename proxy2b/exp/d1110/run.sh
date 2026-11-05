@@ -18,13 +18,21 @@ PY
   lock; python3 $P/mkgold.py $M /data/challenge/calib-meta $V $idx > $O/gold.log 2>&1; unlock
   log "g08-verify1: $(tail -1 $O/gold.log)"
 fi
+XG=/data/g08-xcorp1
+if [ ! -f $XG/rows.f32 ]; then
+  [ -f $O/xmeta/kld.json ] || CUDA_VISIBLE_DEVICES= python3 -I $P/exp/d1110/xgold.py /data/xcorp/v1/meta $O/xmeta 180 1110 >> $O/gold.log 2>&1
+  n=$(python3 -c "import json; print(len(json.load(open('$O/xmeta/kld.json'))['docs']))")
+  lock; python3 $P/mkgold.py $M $O/xmeta $XG $(seq 0 $((n - 1))) >> $O/gold.log 2>&1; unlock
+  log "g08-xcorp1: $(tail -1 $O/gold.log)"
+fi
+for G in $V $XG; do gx=$([ $G = $XG ] && echo xc- || echo "")
 for s in 0 1; do for k in 3 2; do x=$(sfx $s)
   prev=""
   for t in k${k}base k${k}edy k${k}edy_swj k${k}edyswjasym_r0 HEAL; do
     if [ $t = HEAL ]; then h=$D4/h-k${k}edyswjasym_r0$x; [ -d $h/wq ] || continue; t=k${k}edyswjasym_r0_heal; w=$h/wq; em=$(hm $h)
     else t=$t$x; w=$(wqd $t); em=$M; [ -n "$w" ] || { log "no $t"; continue; }; fi
-    lock; ev $t $w $V "" $em; unlock
-    [ -n "$prev" ] && pair $prev $t $V; [ "$t" != "k${k}base$x" ] && pair k${k}base$x $t $V; prev=$t
+    lock; ev $gx$t $w $G "" $em; unlock
+    [ -n "$prev" ] && pair $gx$prev $gx$t $G; [ "$t" != "k${k}base$x" ] && pair $gx""k${k}base$x $gx$t $G; prev=$t
   done
-done; done
+done; done; done
 log "D1110 DONE"
