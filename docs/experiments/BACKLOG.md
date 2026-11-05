@@ -215,6 +215,8 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Per-head K on ssm_qkv / attn_qg** (#96 side result: the Σdy²-weighted spread sits between GDN heads; ceiling
+  ≈ 0.04 bpw overall). Needs a K per 128-row slab in the format and kernels: only with other per-slab work.
 - [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (`volunteer/`, w13 + w13b; tentative name **rad-quant@home**
   for display, **`radquant`** in identifiers: images, packages, CLI, hosts; points maybe "lumens"): queue server (stdlib Python,
   container, 61/61 noop e2e tests, restart / crash / partial-upload safe), worker image spec (ROCm, gfx1201), job

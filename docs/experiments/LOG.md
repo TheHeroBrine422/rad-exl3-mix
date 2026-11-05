@@ -3,6 +3,19 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 11:20 CST · #96, #97, #— · Row-slab K fails; embedding menu extended; 4070 deadlock again
+- **#96 (w20, cpu2):** row-slab K ceiling with Σdy² row weights, parameter-weighted median at S = 128: **0.036 bit**
+  (input-only 0.044; FFN 0.031) vs the 0.10 rule: **negative**, no stage 2. Exception: ssm_qkv 0.33 / attn_qg 0.27,
+  spread between GDN heads (one 128-row slab = one head); per-head K on those ≈ 0.04 bpw overall → BACKLOG.
+  Files `v3/e3/rowslab2.py`, `v3/e3/sub1/r96*.py`, `v3/e3/data/rowslab2*.jsonl`.
+- **#97 (w20, cpu2):** t0.25 / 0.5 / 0.75 and t6.25 … t8: error ×1.38–1.41 lower per quarter step, no knee; **all 11
+  levels join the menu**; Lloyd dominated everywhere (e8 4.5e-5 vs t8 2.0e-5). Files `v3/e3/embtrellis2.py`,
+  `v3/e3/emb/{run7.sh, r97hull.py}`, `v3/e3/data/embmenu2.jsonl`.
+- **4070 lost ~3 h 45 min again (7:30–11:15 PM CST):** the VM's `autosync.sh` relaunched `hconv.sh` under an outer
+  gpu.lock when the 1,920 snapshot synced (the same deadlock as 4:34 PM). Killed autosync for good (its job is
+  done) and removed the outer flock from it. Also d1108 phase 1 had died at once: d1103's sourced block resets `X`
+  (sggen.py looked in d1103/); fixed, restarted 11:17 PM CST. Every 4070 ETA moves ~4 h later.
+
 ### 2026-11-05 11:00 CST · #98 · Revised: 256 self-gen sequences in bf16 hi/lo (x2), to blend with the 1,920
 - User: a small collection to *combine* with the existing one, and a test of the cheap recipe. tp2night stage 3 is now
   gate (x2) + 256 sequences on arm D's text (rule H27.md "#98"); ~2–3 h after the batch-1 goldens; TP2 goldens b2/b3

@@ -1,0 +1,21 @@
+{"method": "lloyd", "bits": 1, "bpv": 1.125, "rel": 0.3605955881740373, "rows": 4096, "sec": 108.2}
+{"method": "lloyd", "bits": 2, "bpv": 2.125, "rel": 0.11425770613920488, "rows": 4096, "sec": 74.9}
+{"method": "lloyd", "bits": 3, "bpv": 3.125, "rel": 0.031582044094296824, "rows": 4096, "sec": 32.8}
+{"method": "lloyd", "bits": 4, "bpv": 4.125, "rel": 0.007790398199807837, "rows": 4096, "sec": 20.8}
+{"method": "lloyd", "bits": 5, "bpv": 5.125, "rel": 0.0020686966904524084, "rows": 4096, "sec": 23.6}
+{"method": "lloyd", "bits": 6, "bpv": 6.125, "rel": 0.0005868072955253898, "rows": 4096, "sec": 28.8}
+{"method": "lloyd", "bits": 7, "bpv": 7.125, "rel": 0.0001610702732068453, "rows": 4096, "sec": 30.9}
+{"method": "lloyd", "bits": 8, "bpv": 8.125, "rel": 4.464692686953743e-05, "rows": 4096, "sec": 34.1}
+{"method": "trellis", "bits": 0.25, "group": 5120, "bpv": 0.253125, "rel": 0.680670948274903, "edge_factor_frac": 0.0, "rows": 4096, "sec": 2323.6}
+{"method": "trellis", "bits": 0.5, "group": 5120, "bpv": 0.503125, "rel": 0.49164779768847455, "edge_factor_frac": 0.0, "rows": 4096, "sec": 2486.3}
+{"method": "trellis", "bits": 0.75, "group": 5120, "bpv": 0.753125, "rel": 0.35526467594534733, "edge_factor_frac": 0.0, "rows": 4096, "sec": 2553.5}
+{"method": "trellis", "bits": 1.0, "group": 5120, "bpv": 1.003125, "rel": 0.25642961314427604, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2588.6}
+{"method": "trellis", "bits": 6.0, "group": 5120, "bpv": 6.003125, "rel": 0.00028622988309237927, "edge_factor_frac": 0.0005, "rows": 4096, "sec": 2530.9}
+{"method": "trellis", "bits": 6.25, "group": 5120, "bpv": 6.253125, "rel": 0.00020512137931592565, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2465.8}
+{"method": "trellis", "bits": 6.5, "group": 5120, "bpv": 6.503125, "rel": 0.00014667838519541197, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2355.6}
+{"method": "trellis", "bits": 6.75, "group": 5120, "bpv": 6.753125, "rel": 0.00010543598066211516, "edge_factor_frac": 0.0, "rows": 4096, "sec": 2469.5}
+{"method": "trellis", "bits": 7.0, "group": 5120, "bpv": 7.003125, "rel": 7.585771679729792e-05, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2627.7}
+{"method": "trellis", "bits": 7.25, "group": 5120, "bpv": 7.253125, "rel": 5.4548246632340575e-05, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2428.7}
+{"method": "trellis", "bits": 7.5, "group": 5120, "bpv": 7.503125, "rel": 3.897463471254287e-05, "edge_factor_frac": 0.0002, "rows": 4096, "sec": 2430.7}
+{"method": "trellis", "bits": 7.75, "group": 5120, "bpv": 7.753125, "rel": 2.765543479610006e-05, "edge_factor_frac": 0.0005, "rows": 4096, "sec": 2525.4}
+{"method": "trellis", "bits": 8.0, "group": 5120, "bpv": 8.003125, "rel": 1.9573711405357743e-05, "edge_factor_frac": 0.0005, "rows": 4096, "sec": 2434.7}
