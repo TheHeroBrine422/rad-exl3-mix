@@ -3,6 +3,33 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 01:40 CST · #33-28, #91, #46-03 · Swap-test restart; discussion record (self-calibration, variants, 7.0 / 8.0)
+- **#33-28 swap test failed at its first quant (5:34 PM CST 11-04):** `ModuleNotFoundError: exllamav3`. Since the
+  iceman rebuild the patched exllamav3 (a3bfbfd0 + 0001–0007, editable install) had never finished building (the 1 AM
+  CST `exl3build.sh` log stops mid-compile) and the kernel sources next to ourq.py (`exl3frac`, `exl3cb`,
+  `exl3frac2`) were missing. Copied the sources from the repo, restarted `exl3build.sh` (5:52 PM CST);
+  `/data/swap27/afterbuild.sh` reruns `swap27.sh run` (NSEQ=1920) when it reports done. Base score and `hout-bn`
+  (mkbn: 400 tensors, 15 blocks) kept.
+- **Base score check:** radiance's "all" mean (1.27, p95 10.5) includes unscored positions, where the golden's rows are
+  not a real reference (unscored mean 4.37). Scored positions: **0.059** (V2 2.5: 0.0666). `cmp115.py` pairs on gen.u8
+  only, so the arms compare correctly; quote scored-position means only.
+- **Self-calibration plan, 27B side (user):** if #91 adopts self-generated statistics at weight w*, collect ~500
+  self-generated sequences on the 27B (~4–5 h of both cards; the collection converges by ~384–512, #33-27) and blend
+  with the existing 1,920-sequence calib collection at w* (`blend.py hout`, sums simply add). Arm D (27B continuations
+  of the same boundaries, served at low priority) after the swap test; also gives the agentic eval golden. Extra
+  knob: upweight calib's own 27B traces (6% of qad scored rows vs ~25% of search / verify). turboderp's cal_trace
+  is ready-made 27B self-generated general text for an input-Hessian / H_out blend (~20 min forward on iceman).
+- **Subagents:** several `pi-capped` agents may run at once (about three, by free RAM); queue only sequential work
+  (user; AGENTS.md). w13b, w14 and w15 (paper accuracy check, read-only, `local/paper/review-w15.md`) run in
+  parallel. The paper was reviewed by the user ("generally looks good").
+- **W/A spectrum** written up as one table (`docs/design/v3.md` §1). Decode stays on the f16 path because it is
+  memory-bound; the M ≥ 512 threshold is unmeasured (M = 16–511 sweep with the kernel timing). Decode kernels later.
+- **Variants:** accurate + fast everywhere; a third (A4) at ≤ 3 bpw only if ≥ 15% lower `gemm_us` than the fast one.
+- **7.0** adopted (user): expected accurate ~0.00040–0.00043, fast ~0.00045–0.00050 at ~2x V2's prefill speed; not
+  ~0.0003, because V2's 8–9 bpw (0.00034 / 0.00028) sit near a non-weight floor (8-bit head, bf16 output stores,
+  attention numerics). **8.0:** decided after the 7.0 and a floor split on V2 8.0 (bf16 head, f32 output stores,
+  bf16 (row,128) scales; ~3–4 evals); built only if predicted ≥ 10% below 0.00034; small speed gain (K > 7 stays mul1).
+
 ### 2026-11-05 01:00 CST · #46-02, #46-03 · A4 returns as a per-tensor option on i4 weights; 7.0 proposed as a V3 size
 - **#46-02 closed as fail** for A4 as a global setting (all MLP tensors, K2 ×1.14 / ×1.16, ≈ 0.07 bpw for an est.
   +25–30% prefill).
