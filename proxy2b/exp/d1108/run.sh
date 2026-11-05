@@ -2,6 +2,7 @@
 # run.sh -- d1108 (README.md), 0.8B, 4070; GPU units hold /data/yb/gpu.lock. Idempotent. Stop: touch /data/yb/night.stop.
 P=/workspace/rad-exl3-mix/proxy2b X3=$P/exp/d1103 X=$P/exp/d1108 E6=$P/exp/w06-heal
 source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
+X=$P/exp/d1108   # d1103's block sets X to its own dir
 O=/data/yb/d1108 D3=/data/yb/d1103 D4=/data/yb/d1104 D5=/data/yb/d1105; mkdir -p $O
 f32() { for d in $O $D5 $D4 $D3 $Y; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in $O $D5 $D4 $D3 $Y; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
