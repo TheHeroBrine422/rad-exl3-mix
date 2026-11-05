@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 07:50 CST · #33-28, #91 · TP2 tonight: goldens, arm D, 27B self-gen collection (`eval/night1105/tp2night.sh`)
+- **User:** both cards tonight, card 1 back tomorrow. d1108 split into phases (amendment 3) so #91's H_out answer
+  comes ~1–2 AM CST.
+- **gpubox chain (armed 7:45 PM CST):** (0) the swap test's seed arm is moved off card 1 (bn / dy answers unchanged,
+  ~10 PM CST); (1) bf16 27B goldens by stock radiance 1.17 TP2 `--kld-record` (HF checkpoint served as is, else
+  `rad-convert`): xcorp 8k 5.0M tokens, own traces 32k 2.5M; (2) arm D: the bf16 27B serves its own continuations
+  of sgprep's first 640 train prompts (`sgserve.py`, sggen's output format); (3) Σdy² over them, 512 sequences,
+  as #33-24 (fp32, gen-masked, snapshots 128–512), **unconditional** (the cards are free; used only if #91 passes,
+  publishable either way); (4) the seed arm on card 0. Card 1 free ~5 AM CST, card 0 ~9 AM.
+
 ### 2026-11-05 07:40 CST · #— · No TP2 assumed: single-card goldens and collections; first golden corpora built
 - **Constraint (user):** TP2 on R9700s is unreliable (the second card is often in other use), so nothing on the V3
   critical path may need two cards. 27B bf16 reference goldens: staged layer passes on one card (boundary hidden
