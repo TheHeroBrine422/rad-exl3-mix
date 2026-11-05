@@ -3,6 +3,23 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 11:00 CST · #91, #93 · Self-calibration readout; d1110: no overfitting, xcorp not a calib substitute
+- **#93 (d1110), g08-verify1 (180 untouched verify docs), seed 0:** the adopted 0.8B stack keeps **91% (K3) / 96% (K2)**
+  of its search-slice log gain (cumulative 0.698 / 0.521 vs 0.674 / 0.507); every step holds (H_out 0.921 / 0.930,
+  swj 0.971 / 0.906, writers 0.866 / 0.839, healing 0.901 / 0.737). Seed floor base vs base_s1 1.0005 / 1.003. **Pass:
+  no overfitting**; the 27B's smaller H_out gain (−2.8%) is a model-size effect.
+- **#93 amendment 1, g08-xcorp1:** same sign everywhere, but kept gain H_out 52% / 71%, swj 63% / 70%, writers 91% / 91%,
+  healing 75% / 77%, stack 75% / 79% (K3 / K2): outside ±30% for H_out and swj: **xcorp does not replace calib** for
+  0.8B screening (calib-fitted statistics help most on calib-like text; real-world text keeps ~75–80% of the gain).
+- **#91 (d1108), 0.8B, calib / own agentic text (g-agent) / calib's 27B traces, K3 / K2:**
+  H_out self-gen blend w 0.25: 0.998 / 1.024 · 0.960 / 0.976; w 1: 1.085 / 1.122 · 0.956 / 0.965.
+  H_in self-gen w 0.1: 1.010 / 1.011 · 0.947 / 0.942 · 1.11 / 0.956 (noisy); w 0.2: 1.022 / 1.015 · 0.958 / 0.939;
+  w 0.5: 1.061 / 1.058 · 0.859 / 0.847 · 0.997 / 0.942; w 1: 1.45 / 1.43 · 0.854 / 0.821.
+  Healing on self-gen / raw / turboderp text vs qad: calib +10% / +10% / +7%, agentic −1.4 / −2.2 / −1.8%.
+  Per-family blends: no difference. **Verdict:** main rule and amendments 4 and 5 fail (w 0.1 H_in misses calib ≤ 1.01
+  at K2 by 0.0008); on-policy text is a real but calib-costly effect (own text −5…−15%, off-policy agentic traces ~0).
+  No 27B self-cal arm; statistics and healing stay on calib. The 27B self-gen x2 Σdy² (256 seqs) is kept, unused.
+
 ### 2026-11-05 01:55 CST · #— · Two-pass prefill (A8) drafted: host tests pass, gfx1201 build on gpubox; device run queued
 - Worker w22, fork branch `qc-exl3-v3-twopass` (6488c96, 70fb1fa; `plugin/exl3i/TWOPASS.md`): new row
   `exl3i_gemm_nt_a8` (act a8t / a8g128–1024, codebook mul1i8): activation quant (rotated, int8, scale per row × 128),
