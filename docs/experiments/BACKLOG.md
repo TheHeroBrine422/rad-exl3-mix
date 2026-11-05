@@ -217,6 +217,10 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **A calib-like tools / agentic corpus** (d1110 per-category, 2026-11-05): our methods gain most on calib's agentic text
+  (H_out −19%, stack −35% at K3) but least on xcorp's tools / agentic text (H_out ~0, stack −18…+4%). Find or make agentic
+  data that behaves like calib's (the 27B's own agent sessions, calib's function-calling sources) for screening and
+  real-use checks. Not now (user).
 - [ ] **Per-head K on ssm_qkv / attn_qg** (#96 side result: the Σdy²-weighted spread sits between GDN heads; ceiling
   ≈ 0.04 bpw overall). Needs a K per 128-row slab in the format and kernels: only with other per-slab work.
 - [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (`volunteer/`, w13 + w13b; tentative name **rad-quant@home**
