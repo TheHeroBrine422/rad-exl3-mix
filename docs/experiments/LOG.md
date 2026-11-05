@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 12:00 CST · #34-02, #99 · Slab-head whole-model check and 8.0 floor split armed; two-pass kernels started
+- `v3/yaqa/headwm.sh` (rules `v3/yaqa/HEADWM.md`): head Fisher + permutation rebuilt now (CPU, gpubox), head quants
+  K3–K7 and the arms after the night chain: heads at equal bytes (bf16-dequantized) swapped into V2 4.00 (u5 / s5-3 /
+  u6 / s6-3, + the true bf16 head as the plugin-path check), V2 8.00 ± bf16 head, the bf16 model on TP2 if card 1 is free.
+- **Two-pass prefill kernels:** worker w22 (fork worktree `radiance-twopass`, branch `qc-exl3-v3-twopass`): decode
+  pass to int8 / f16 planes for radiance's tuned tiles, A8 activation side, host tests + gfx1201 compile; GPU tests
+  and timing driver ready for a card.
+- TP2 recorder works with the HF checkpoint as is (`--max-num-seqs 4`): ~740 positions/s, so the 7.5M-position
+  batch 1 takes ~3 h (not 1.5); batches 2+3 (15M) ~5.6 h.
+
 ### 2026-11-05 11:50 CST · #95 · IQR-V4's act order and bf16 (row,128) scales: both negative on the CPU proxy
 - **95-01 act order** (16-col sub-blocks by H mass inside each 128-block): median ratio 0.9998 / 0.9994 / 0.9987 /
   0.9981 / 0.9996 at K2 / 2.5 / 3 / 4 / 5 (rule ≤ 0.99 at ≥ 2 K): **fail**. The 128-Hadamard flattens the sub-block

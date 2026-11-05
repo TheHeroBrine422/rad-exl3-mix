@@ -179,3 +179,4 @@ Next free number: **90**.
 | 96 | Trunk row-slab K with Σdy² row importance: analytic ceiling, then real trellis | weight codes | P+D (format) | negative | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#96"; worker w20, cpu2; ceiling 0.036 bit (rule 0.10): no stage 2; per-head K on ssm_qkv / attn_qg ≈ 0.04 bpw → BACKLOG |
 | 97 | Embedding menu at both ends (t6.25–t8, t0.25–0.75) | embedding | none | done | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#97"; worker w20, cpu2; all 11 levels (t0.25–0.75, t6.25–t8) on the hull, 1.38–1.41× error per quarter step |
 | 98 | 27B: 256 self-gen Σdy² sequences, bf16 hi/lo GEMMs, to blend with the 1,920 calib diagonal | statistics | none | running | 11-05 | 11-05 | rule `v3/yaqa/H27.md` "#98"; used only if #91 passes |
+| 99 | 8.0 floor split: V2 8.00 vs + bf16 head vs the bf16 model (engine floor) | head / engine | none | planned | 11-05 | 11-05 | rule `v3/yaqa/HEADWM.md`; with #34-02 (slab head whole-model) in `headwm.sh` |
