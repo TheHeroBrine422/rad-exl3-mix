@@ -3,6 +3,17 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 07:40 CST · #— · No TP2 assumed: single-card goldens and collections; first golden corpora built
+- **Constraint (user):** TP2 on R9700s is unreliable (the second card is often in other use), so nothing on the V3
+  critical path may need two cards. 27B bf16 reference goldens: staged layer passes on one card (boundary hidden
+  states to disk, ~10 KB a position; est. ~3–4 h for 7.5M positions on one R9700): `eval/gold27/mkgold27.py`, being
+  written by worker w18 (correctness test vs `proxy2b/mkgold.py` on the 0.8B at 1–3 stages). Backward collections
+  (the 27B self-gen Σdy² if #91 passes; REAL-Q's Fisher if #92 passes) can use the same boundary checkpointing
+  (~2x the two-card wall time); none is needed unless those pass.
+- **First golden corpora (cpu1, `kldcorpus.py`):** xcorp 8k pieces 5.00M tokens / 3,389 pieces (seed 2701);
+  own-trace 32k chunks 2.53M tokens / 142 chunks (private, our machines only).
+- **4070:** d1106's K1.5 arms dropped (moot after the K2 fail and #46-03); queue hest → d1108 → d1110.
+
 ### 2026-11-05 07:20 CST · #— · 4070 queue deadlock (lost ~2 h 40 min)
 - `hconv.sh` had been launched under an outer `flock gpu.lock`; its first step waits until no `quantize/ourq.py`
   process exists, while hest.sh's `flock gpu.lock python3 ourq.py` (matching that pattern) waited for the lock hconv

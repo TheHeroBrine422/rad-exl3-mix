@@ -95,7 +95,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 44 | Sub-2-bit pricing on turboderp's tensors | allocation | none | done | 10-31 | 10-31 | proxy error per bit ~2.0 (K1→K2 2.11); V2's model under-predicts K1-heavy swaps by 20–36%: K1 and each sub-2 level need their own factor |
 | 45 | knap4 on real options and the measured speed table | allocation | none | done | 11-01 | 11-01 | V3 option table |
 | 46 | A4 worth building at any size? | activations | P | negative | 11-01 | 11-01 | no, at any size (knap4, matmul-core table); the A4 timing slot was never run |
-| 46-02 | A4 on the MLP for the fast variant at ≤ 2.25 bpw, on the full stack (healed / unhealed), K2 and K1.5 | activations | P | fail | 11-04 | 11-05 | rule `proxy2b/exp/d1106/README.md`; fails at K2 (1.14 / 1.16 vs ≤ 1.10) as a global setting; replaced by #46-03 |
+| 46-02 | A4 on the MLP for the fast variant at ≤ 2.25 bpw, on the full stack (healed / unhealed), K2 and K1.5 | activations | P | fail | 11-04 | 11-05 | rule `proxy2b/exp/d1106/README.md`; fails at K2 (1.14 / 1.16 vs ≤ 1.10) as a global setting; K1.5 arms not run (moot); replaced by #46-03 |
 | 46-03 | A4 on i4 weights as a per-tensor knapsack option (fast variant ≤ 3 bpw): 27B per-family costs, time table, knap4; kernel only if it pays | activations | P | planned | 11-05 | 11-05 | rule `v3/e3/a4/README.md`; needs gpubox card 0 |
 | 47 | R1 residual-stream rotation for int8/int4 activations | activations | P | negative | 10-31 | 10-31 | A8-g128 error 6.6× worse |
 | 48 | Output scales by upstream's auto rule | quantizer | none | negative | 11-01 | 11-01 | +2.5% (z 2.1) |
