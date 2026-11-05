@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 09:45 CST · #92, #94–#97 · Overnight CPU / 4070 plan; paper review applied; pool trace split corrected
+- **cpu1:** #94 (i8 codebook above K7) running; #95 (act order, bf16 (row,128) scales) by worker w19.
+  **cpu2:** #96 (row-slab K with Σdy² row importance) and #97 (embedding menu ends) by worker w20 (user approved #96).
+- **4070:** hest → #91 phase 1 → d1110 (+ spare goldens) → **d1109 REAL-Q** (w17's implementation; Fisher, identity
+  gate, GD smoke; arm set only if the gate passes; paper lr, stack writers) → #91 phase 2.
+- **Paper:** w16 applied all 51 review items (49 fixed, item 16/51 dropped per the user, 50 n/a); 9 pages, builds clean.
+- **Long traces per pool (checked on the corpus):** verify = express, lua, requests, rich; search = cobra, ripgrep;
+  qad = attrs, click. AGENTS.md had the pre-11-01 split (corrected); pools-v3.json's `traces` field is stale too (the
+  per-document `pool` list is right and authoritative; the file stays read-only).
+
 ### 2026-11-05 07:50 CST · #33-28, #91 · TP2 tonight: goldens, arm D, 27B self-gen collection (`eval/night1105/tp2night.sh`)
 - **User:** both cards tonight, card 1 back tomorrow. d1108 split into phases (amendment 3) so #91's H_out answer
   comes ~1–2 AM CST.
