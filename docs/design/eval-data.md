@@ -37,3 +37,11 @@ search needs fresh documents every round, and the user wants real-use coverage (
   document keeps its source dataset's licence (README source table), goldens CC BY 4.0. Own traces are never published.
 - The 27B H_out diagonals (plain, block-normalized, Sketch B, xw; a few snapshots) as `Hero422/qwen3.8-27b-hout-diag`,
   after the swap test. Both uploads need the user's go per repo.
+
+## Self-generated text (decided 2026-11-05)
+- **Generation:** a near-lossless quant served on one card (IQR-V4's IQ5R-S-V4, fp8 KV: ~0.0015 KL, ~98% top-1 vs
+  bf16), at low priority beside normal use (`xcorp/selfgen.py`). Its text stands in for the bf16 model's own: the
+  difference is far below the on- vs off-policy gap #91 measures.
+- **Scoring stays bf16:** Σdy² collections sample their labels from the bf16 model itself (only the context comes from
+  the quant); teacher logits for healing / goldens come from a bf16 record pass afterwards (stock `--kld-record` on
+  TP2, or the single-card staged recorder). The `qc-kld-serve` patch (record while serving) is not needed for this.
