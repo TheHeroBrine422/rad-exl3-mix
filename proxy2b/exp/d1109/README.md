@@ -14,3 +14,11 @@ is ≤ 0.95 at both K3 and K2** (every seed < 1). The paper's gain shrinks with 
 so a 0.8B pass is necessary, not sufficient. REAL-Q is per mix (quantized prefix), so it cannot ride on ladder levels:
 if it passes, its place (final pass on shipped sizes vs V4 with healing) is the user's call.
 Runtime cost: none (quantizer only); quant time recorded.
+
+## Amendment 1 (2026-11-05 ~3:45 AM CST, before code or data): does REAL-Q survive healing?
+Cost context (user): REAL-Q on the 27B is ~40–50 card-hours per mix (sequential, per mix), scale healing ~2–3.
+- **Arms added:** `stack+heal` and `rq+heal`: d1105's single-pass scale healing (`heal.py`, qad data, 2,048 windows,
+  1 epoch, the d1105 settings) on top of `stack` and of `rq`. K3 and K2, seeds 0 and 1.
+- **Rule:** REAL-Q earns a 27B test only if **both** the base rule above passes **and** `rq+heal` vs `stack+heal` is
+  ≤ 0.95 at K3 and K2 (every seed < 1). If the base rule passes but healing absorbs the gain (ratio > 0.95 after
+  healing), REAL-Q is recorded as not worth its 27B cost, since healing is far cheaper per mix.
