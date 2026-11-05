@@ -35,7 +35,11 @@ the CPU proxy (rule: `v3/e3/sub1/README.md` "#100" + amendment: a quality cost i
 / prefill speedup — the user's call from a trade-off table — unless it is ≥ ×1.05). If adopted: exllamav3 codebook option, encoding tag
 `cb=iqrh`, plugin decode paths, D4.
 
-**Results:** (pending: w27)
+**Results (w27, CPU proxy, 20 tensors × 12 K):** iqrh / mul1i8 proxy error 1.011 (K0.25), ≈1.00 (K1–1.5), 1.012–1.014
+(K2–3.5), 1.027 (K4), 1.035 (K5), 1.054 (K6), 1.065 (K7); equal-quality cost +0.008–0.010 bpw at K2–3.5, +0.02–0.06
+above. A searched global A (0xd0474b) is ~1.01 at K2–4, 1.02 at K5–6. Proxy → KL has been ~1:1 to ~1.5–2× for codebook
+changes. Decode ops a value (source count): mul1i8 today 14–17 (int8) / 9–11 (f16); **mul1i8 closed form 4.5 / 5.0
+(no requant)**; iqrh 3.75 / 3.5. Card microbench of all three: w29. Decision: the user's, from both.
 
 ## Measurements (to fill in)
 - First card run of the two-pass A8 path (`/data/tp/cardrun.sh`): device tests, per-shape timing at M 2048, per-pass
