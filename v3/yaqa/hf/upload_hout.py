@@ -11,7 +11,11 @@ stage:  build STAGE (default /data/hfstage/hout-diag) from the collector's outpu
         and lists file counts and sizes. Nothing leaves the machine.
 upload: stage first, then (only with --yes) upload STAGE with upload_large_folder (~18k files: several commits,
         resumable; rerun after a failure). Token from HF_TOKEN (env only; never written to disk by this script).
-Env: HOUT_SRC (default /data/yaqa/hdiag), HOUT_BN (default /data/swap27/hout-bn), STAGE, HF_REPO, README_SRC."""
+Env: HOUT_SRC (default /data/yaqa/hdiag), HOUT_BN (default /data/swap27/hout-bn), STAGE, HF_REPO, README_SRC.
+Later collections in the same repo (e.g. self-calibration, #91): HOUT_PARTS = "PREFIX=DIR;..." adds collector outputs
+(hdiag-snapN[-dy|-xw] dirs) as PREFIX/nNNNN/{sketchb,dy,xw}/, HOUT_DIRS = "NAME=DIR;..." adds plain directories of
+.safetensors (+ .json) as NAME/ (e.g. "selfgen/block-normalized=...;blend-w0.25=..."). Files already on the Hub are
+not re-sent, so re-uploading the whole stage with new parts costs only the new files."""
 import glob, os, re, shutil, subprocess, sys, time
 
 SRC = os.environ.get("HOUT_SRC", "/data/yaqa/hdiag"); BN = os.environ.get("HOUT_BN", "/data/swap27/hout-bn")
@@ -26,22 +30,28 @@ def link(a, b):
 
 def stage():
     if os.path.exists(STAGE): shutil.rmtree(STAGE)
-    snaps = sorted(int(m.group(1)) for d in glob.glob(f"{SRC}/hdiag-snap*") if (m := re.fullmatch(r".*/hdiag-snap(\d+)", d)))
-    assert snaps, f"no snapshots in {SRC}"
-    for n in snaps:
-        for k, sfx in KINDS.items():
-            fs = sorted(glob.glob(f"{SRC}/hdiag-snap{n}{sfx}/*.safetensors"))
-            assert len(fs) == 400, (n, k, len(fs))
-            for f in fs: link(f, f"{STAGE}/snapshots/n{n:04d}/{k}/{os.path.basename(f)}")
-        h = f"{SRC}/hdiag-snap{n}/halves.json"
-        if os.path.exists(h): link(h, f"{STAGE}/snapshots/n{n:04d}/sketchb/halves.json")
-    fs = sorted(glob.glob(f"{BN}/*.safetensors")); assert len(fs) == 400, ("block-normalized", len(fs))
-    for f in fs + [f"{BN}/mkbn.json"]: link(f, f"{STAGE}/block-normalized/{os.path.basename(f)}")
+    parts = [("snapshots", SRC)] + [tuple(x.split("=", 1)) for x in os.environ.get("HOUT_PARTS", "").split(";") if x]
+    dirs = [("block-normalized", BN)] + [tuple(x.split("=", 1)) for x in os.environ.get("HOUT_DIRS", "").split(";") if x]
+    for pre, src in parts:
+        snaps = sorted(int(m.group(1)) for d in glob.glob(f"{src}/hdiag-snap*") if (m := re.fullmatch(r".*/hdiag-snap(\d+)", d)))
+        assert snaps, f"no snapshots in {src}"
+        for n in snaps:
+            for k, sfx in KINDS.items():
+                fs = sorted(glob.glob(f"{src}/hdiag-snap{n}{sfx}/*.safetensors"))
+                assert len(fs) == 400, (src, n, k, len(fs))
+                for f in fs: link(f, f"{STAGE}/{pre}/n{n:04d}/{k}/{os.path.basename(f)}")
+            h = f"{src}/hdiag-snap{n}/halves.json"
+            if os.path.exists(h): link(h, f"{STAGE}/{pre}/n{n:04d}/sketchb/halves.json")
+        print(f"  {pre}: {len(snaps)} snapshots ({snaps[0]}..{snaps[-1]}) from {src}")
+    for name, src in dirs:
+        fs = sorted(glob.glob(f"{src}/*.safetensors")); assert len(fs) == 400, (name, len(fs))
+        for f in fs + sorted(glob.glob(f"{src}/*.json")): link(f, f"{STAGE}/{name}/{os.path.basename(f)}")
+        print(f"  {name}: {len(fs)} tensors from {src}")
     r = open(README).read(); assert "TODO" not in r, f"{README} still has TODO markers"
     open(f"{STAGE}/README.md", "w").write(r)
     n_files = sum(len(f) for _, _, f in os.walk(STAGE))
     size = sum(os.path.getsize(os.path.join(d, x)) for d, _, f in os.walk(STAGE) for x in f)
-    print(f"STAGED {STAGE}: {len(snaps)} snapshots ({snaps[0]}..{snaps[-1]}), {n_files} files, {size / 2**30:.2f} GiB")
+    print(f"STAGED {STAGE}: {n_files} files, {size / 2**30:.2f} GiB")
 
 def upload():
     from huggingface_hub import HfApi
