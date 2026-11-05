@@ -7,7 +7,7 @@
 #   2. d1108 arm D: serve the bf16 27B (TP2), generate its own continuations of sgprep's first 640 train prompts
 #   3. Σdy² collection over them (collect.py, as #33-24: fp32, diag + extras, gen-masked, 512 sequences)
 #   3b. more goldens on TP2, ~1M-token chunks (corpora/chunks: xcorp 8k b2/b3, traces 32k b2/b3), until $N/STOP2
-#   (3b stops at 9:00 AM CST whatever is left: nothing after that needs TP2; user)
+#   (3b runs all 16 chunks, ~4 h, unless STOP2; nothing after it needs TP2; user)
 #   4. single-card-capable, card 1 helping while it is ours (4-layer chunk queue, swap27k.sh): the swap test's seed arm
 #      s1 (K2.5) -> base4 -> bn4 (K4 on V2 4.00, H27.md amendment 3) -> paired comparisons
 # Stop the two-card part at any time: tools/stop2.sh (touches STOP2, ends the collector after its current sequence or
@@ -75,7 +75,7 @@ fi
 # ---- 3b
 for c in xc8k-b2-c0 tr32k-b2-c0 xc8k-b2-c1 xc8k-b2-c2 tr32k-b2-c1 xc8k-b2-c3 xc8k-b2-c4 tr32k-b2-c2 \
          xc8k-b3-c0 tr32k-b3-c0 xc8k-b3-c1 xc8k-b3-c2 tr32k-b3-c1 xc8k-b3-c3 xc8k-b3-c4 tr32k-b3-c2; do
-  stop2 && break; [ $(date -u +%s) -ge $(date -u -d "2026-11-05 15:00" +%s) ] && { log "9:00 AM CST: TP2 goldens end here"; break; }
+  stop2 && break
   len=$([[ $c == tr32k* ]] && echo 33024 || echo 8448)
   rec $c $N/corpora/chunks/$c.jsonl $len || { stop2 || log "GOLDEN $c FAIL"; }
 done
