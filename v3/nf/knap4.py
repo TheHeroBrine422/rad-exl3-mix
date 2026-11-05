@@ -80,7 +80,7 @@ LAMBDAS = [float(x) for x in sys.argv[7].split(",")]
 V3 = os.environ.get("KN_V3") == "1"
 M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
 RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
-LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.125,2.25,2.375,2.5,2.625,2.75,2.875,3,3.125,3.25,3.375,3.5,3.625,3.75,3.875,4,4.125,4.25,4.375,4.5,4.625,4.75,4.875,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7")   # = the V3 i8 ladder (11-05): 1/8 K1.125-5, 1/4 K5.25-7.split(",")]
+LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.125,2.25,2.375,2.5,2.625,2.75,2.875,3,3.125,3.25,3.375,3.5,3.625,3.75,3.875,4,4.125,4.25,4.375,4.5,4.625,4.75,4.875,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7").split(",")]   # = the V3 i8 ladder (11-05): 1/8 K1.125-5, 1/4 K5.25-7
 if os.environ.get("KN_FRACS_EXTRA"):      # interpolated extra levels (pricing what-ifs; no containers)
     _x = [float(x) for x in os.environ["KN_FRACS_EXTRA"].split(",")]; LADDER = sorted(set(LADDER) | set(_x))
 BK = int(os.environ.get("KN_BK", 1 << 18))   # DP byte bucket, 256 KiB (11-05, w21: 1 MiB cost ~2% at 1.5 bpw; KN_BK=1048576 = old)
