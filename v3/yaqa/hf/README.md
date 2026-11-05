@@ -44,10 +44,22 @@ rescales each diagonal by its mean).
   positions the challenge scores (gen mask); every position still runs.
 - **Stop:** 1,923 sequences (the 1,920 snapshot is the last); the block-normalized estimate is flat from ~384.
 
-## Result
+## Result (provisional, 2026-11-05)
 
-TODO: swap-test result (#33-28: K2.5 V2-3.00-based mix, base vs plain Σdy² vs block-normalized, paired KL on a
-search-pool slice).
+Swap test at K2.5 (rule written before the data: [`v3/yaqa/H27.md`](https://github.com/TheHeroBrine422/rad-exl3-mix/blob/main/v3/yaqa/H27.md)): the
+whole trunk quantized at K2.5 with each estimator (our tuned EXL3 settings, int8-rounded codebook), swapped into our
+EXL3-V2 3.00 bpw model, scored on 103 search-pool documents of the calib corpus (123k scored positions, bf16 KV),
+paired per document with a bootstrap over documents:
+
+| H_out | mean KL | vs none | z |
+|---|---|---|---|
+| none (input Hessian only) | 0.05903 | — | |
+| **block-normalized Σdy²** | **0.05737** | **−2.8%** (95% upper bound −0.4%) | −2.2 |
+| plain Σdy² mean | 0.05803 | −1.7% | −1.6 |
+
+Block-normalized vs plain: −1.1% (z −1.4). **Provisional:** one level (K2.5) and one rotation seed; the quantization
+seed-noise arm and a K4 level are still running and this section will be updated. The gain is about a third of what
+the same method gave on Qwen3.5-0.8B (−8 to −9% at K2–K3), so treat 0.8B-sized effects as upper bounds.
 
 ## Use
 
