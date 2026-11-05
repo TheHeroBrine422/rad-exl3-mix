@@ -31,3 +31,11 @@ Cost context (user): REAL-Q on the 27B is ~40–50 card-hours per mix (sequentia
   ≥ 75% of rq's gain vs stack in mean log ratio, both unhealed and healed, at K3 and K2. If `rq` fails but `rqp`
   alone meets the base rule and amendment 1's rule, `rqp` earns the 27B test instead. Otherwise sequential REAL-Q
   stays per mix (one mix per donor or our cards) and only if it passed.
+
+## Amendment 3 (2026-11-05 ~9:40 PM CST, before data): settings and order
+- Implementation by w17 (`fisher.py`, `realq.py`, `rq.sh`, `run.sh`, `NOTES.md`): REAL-Q's GD around our LDLQ /
+  trellis (deviations listed in NOTES.md). **Learning rates: the paper's Qwen3-0.6B W4 values (3e-4, last block 1e-5),
+  no tuning screen** (a screen on the decision data would bias it). **Writers:** the stack's own asym ρ0 requant
+  (`D1109_WRITERS=plain`), as the arm definition above says.
+- 4070 order: d1110 → d1109 (smoke: Fisher, identity gate `realq --gd-off` == plain ourq bit for bit — **the arm set
+  runs only if the gate passes** — GD smoke, then `run.sh`) → d1108 phase 2.
