@@ -74,6 +74,9 @@ Block-sparse prefill (per query block a key list) from `sattn_prefill.h`'s list 
 
 ## Gate (write the experiment row before running)
 
-KLD of quant+LSA vs **the same quant with full attention** (no bf16 reference needed), fp8 KV, whole traces at
+(1) RULER-style retrieval probes (multi-key / multi-value needles with distractors, variable tracking, exact-match
+scoring; the LSA repo's `configs/data/targets/qwen38_27b/ruler_probes_{128k,512k,1m}.yaml`) at 256k / 512k / 750k:
+LSA's accuracy within noise of full attention on the same quant; also run on the quants without LSA as a long-context
+sanity check of the quants themselves (user 2026-11-05). (2) KLD of quant+LSA vs **the same quant with full attention** (no bf16 reference needed), fp8 KV, whole traces at
 256k / 512k / 750k with YaRN, at 4.0 (V2 weights as the stand-in) then V3 2.0 / 4.0 / 7.0; decode tok/s at the
 same lengths. Open: their Qwen runs use YaRN factor 40 (`lsa_flat_tp1.yaml`); match it.
