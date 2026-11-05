@@ -22,3 +22,12 @@ Cost context (user): REAL-Q on the 27B is ~40–50 card-hours per mix (sequentia
 - **Rule:** REAL-Q earns a 27B test only if **both** the base rule above passes **and** `rq+heal` vs `stack+heal` is
   ≤ 0.95 at K3 and K2 (every seed < 1). If the base rule passes but healing absorbs the gain (ratio > 0.95 after
   healing), REAL-Q is recorded as not worth its 27B cost, since healing is far cheaper per mix.
+
+## Amendment 2 (2026-11-05 ~4:00 AM CST, before code or data): parallel REAL-Q
+- **Arm `rqp` (+ `rqp+heal`):** REAL-Q's block-output Fisher and the per-128-column Adam step kept, but every layer
+  quantized on **bf16** (unquantized-prefix) inputs, so layers are independent (per-layer jobs, ladder-compatible,
+  volunteer-friendly). Same K, seeds, H_out and healing settings as `rq`.
+- **Rule:** with `rq` passing the rules above, `rqp` **replaces** `rq` (as a per-level ladder method) if it keeps
+  ≥ 75% of rq's gain vs stack in mean log ratio, both unhealed and healed, at K3 and K2. If `rq` fails but `rqp`
+  alone meets the base rule and amendment 1's rule, `rqp` earns the 27B test instead. Otherwise sequential REAL-Q
+  stays per mix (one mix per donor or our cards) and only if it passed.
