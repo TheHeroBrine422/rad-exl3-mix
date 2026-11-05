@@ -31,3 +31,15 @@ at K7.25 / 7.5 / 7.75 worth adding to the ladder (the fast 7.0 / 8.0 keep K > 7 
   same seed / factors; ratio = proxy error mul1_i8 / mul1 per tensor, median over tensors.
 - Rule: an i8 level K7.25 / 7.5 / 7.75 joins the ladder if its median ratio is **≤ 1.10** and its 90th percentile
   ≤ 1.20. Sanity: K7 and K8 must reproduce the GPU smoke within ±0.05 (else the CPU proxy is not trusted here).
+
+## #95 · IQR-V4 ideas on the CPU proxy: act order; bf16 (row, 128) scales from K5 (2026-11-05 ~9:10 PM CST, before data)
+- **95-01 act order:** inside each 128-column Hadamard block the 8 16-column sub-blocks quantized in descending
+  order of their H_in diagonal mass (EXL3-compatible: a permutation at 16-column granularity, applied to the stored
+  codes' column order and undone at load, no runtime cost) vs natural order. Same tensors as #90-02 at K2, 2.5, 3, 4,
+  5; proxy error ratio per tensor. **Rule:** a 0.8B KL test (then 27B) if the median ratio ≤ 0.99 at ≥ 2 of the 5 K
+  and > 1.005 at none.
+- **95-02 bf16 (row, 128) scales** on attn_output / ssm_out (and, reported only, down_proj): one bf16 scale per row
+  and 128-column block on top of EXL3's row × column scales, refit after the trellis (closed form per block), at K5,
+  K6 (+ K4 reported), cost 0.125 bit per weight on those tensors (16 bits / 128). **Rule:** worth a 0.8B KL test if
+  the median proxy error ratio, net of its bits (compare at equal total bits against the next quarter step), is
+  ≤ 0.97 on attn_output and ssm_out at K5 or K6.
