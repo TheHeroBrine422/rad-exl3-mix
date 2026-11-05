@@ -217,6 +217,10 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Kernel autoresearch on other radiance kernels** (user 2026-11-05, side note): once the autoresearch-v3 kernel
+  task (w35) works on our A8 path, point it at upstream radiance kernels too (e.g. `libr4d` attention, GDN chunk
+  scan, i8a8 / fp8 GEMM tiles, norms, sampler); each problem needs radiance's own tests as the byte-exact gate plus a
+  bench. Wins go upstream as PRs. Bench card: the 9070 XT when it arrives. GEPA considered and not used (user).
 - [ ] **saber-engine read for V3's own kernels** (`/workspace/references/saber-engine`, Apache-2.0, gfx1201; user
   2026-11-05): one short worker read, like the IQR-V4 kernel read, results into `docs/design/kernel-opts.md`. Ideas,
   not code (weight decode differs: their NVFP4 lookup vs our trellis):
