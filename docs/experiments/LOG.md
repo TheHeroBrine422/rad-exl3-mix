@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 11:00 CST · #98 · Revised: 256 self-gen sequences in bf16 hi/lo (x2), to blend with the 1,920
+- User: a small collection to *combine* with the existing one, and a test of the cheap recipe. tp2night stage 3 is now
+  gate (x2) + 256 sequences on arm D's text (rule H27.md "#98"); ~2–3 h after the batch-1 goldens; TP2 goldens b2/b3
+  after it, finishing ~9 AM CST.
+
 ### 2026-11-05 10:45 CST · #33-28, #91 · No more Σdy² collections; tonight's 27B self-gen collection skipped
 - **User:** at ~−3% KLD (≈ 0.03 bpw) H_out does not justify another ~40-card-hour collection. The existing 1,920-sequence
   diagonal stays (paid, free at runtime). Stage 3 of tp2night (512 self-gen sequences) is skipped (`hdiag-D/SKIPPED`):

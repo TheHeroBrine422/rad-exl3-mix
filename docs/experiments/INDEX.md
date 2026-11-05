@@ -178,3 +178,4 @@ Next free number: **90**.
 | 95 | IQR-V4 ideas on the CPU proxy: act order (16-col sub-blocks), bf16 (row,128) scales from K5 | weight codes | none / P+D | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#95"; worker w19, cpu1 |
 | 96 | Trunk row-slab K with Σdy² row importance: analytic ceiling, then real trellis | weight codes | P+D (format) | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#96"; worker w20, cpu2 |
 | 97 | Embedding menu at both ends (t6.25–t8, t0.25–0.75) | embedding | none | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#97"; worker w20, cpu2 |
+| 98 | 27B: 256 self-gen Σdy² sequences, bf16 hi/lo GEMMs, to blend with the 1,920 calib diagonal | statistics | none | running | 11-05 | 11-05 | rule `v3/yaqa/H27.md` "#98"; used only if #91 passes |

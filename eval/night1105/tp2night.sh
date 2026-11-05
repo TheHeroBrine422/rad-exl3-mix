@@ -62,15 +62,21 @@ if [ ! -f $G/.done ] && ! stop2; then
     kill $SV; wait $SV 2>/dev/null )
   log "gen D: $(tail -n 2 $N/sgserve.log | head -1)"
 fi
-# ---- 3
-W=$N/w; MD=$N/mD
-if [ -f $G/.done ] && [ ! -f $N/hdiag-D/.done ] && ! stop2; then
+# ---- 3   (#98: 256 self-gen sequences, linear GEMMs in bf16 hi/lo (YAQA_PREC=x2), to blend with the fp32 1,920 calib diagonal)
+W=$N/w; MD=$N/mD; HD=$N/hdiag-D
+if [ -f $G/.done ] && [ ! -f $HD/.done ] && ! stop2; then
   [ -f $MD/build.json ] || $PY -I $N/tools/sgbuild.py $N/prep $G $MD selfgen-train >> $L 2>&1
-  mkdir -p $W/challenge/golden; ln -sfn $MD $W/challenge/golden/calib
-  ( eval "$LOCKS"; cd /data/yaqa && RXM_WORK=$W RXM_CKPT=$CK YAQA_POOLS=$MD/pools.json YAQA_GENMASK=1 YAQA_XOFF=bf16 \
-      YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=fp32 TRITON_CACHE_AUTOTUNING=1 \
-      YAQA_SNAP=128,256,384,512 YAQA_SAVE_EVERY=25 $PY -I collect.py $N/hdiag-D 512 2048 ) >> $N/collect-D.log 2>&1
-  grep -q "^DONE" <(tail -n 3 $N/collect-D.log) && { touch $N/hdiag-D/.done; log "collect D: $(grep '^DONE' $N/collect-D.log | tail -1)"; } || log "COLLECT D FAIL (rerun to resume)"
+  mkdir -p $W/challenge/golden $HD; ln -sfn $MD $W/challenge/golden/calib
+  CENV="RXM_WORK=$W RXM_CKPT=$CK YAQA_POOLS=$MD/pools.json YAQA_GENMASK=1 YAQA_XOFF=bf16 YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_SEED=0 YAQA_PREC=x2 TRITON_CACHE_AUTOTUNING=1"
+  if [ ! -f $HD/gate.done ]; then
+    ( eval "$LOCKS"; cd /data/yaqa && env $CENV YAQA_GATE=1 $PY -I collect.py $HD/gate 2 2048 ) > $N/gate-D.log 2>&1
+    grep -q "gate check" $N/gate-D.log && grep -q "^DONE" $N/gate-D.log && touch $HD/gate.done
+    log "gate D (x2): $(grep 'gate check' $N/gate-D.log | tail -n 1 | cut -c1-160)"
+  fi
+  if [ -f $HD/gate.done ]; then
+    ( eval "$LOCKS"; cd /data/yaqa && env $CENV YAQA_SNAP=128,256 YAQA_SAVE_EVERY=25 $PY -I collect.py $HD 256 2048 ) >> $N/collect-D.log 2>&1
+    grep -q "^DONE" <(tail -n 3 $N/collect-D.log) && { touch $HD/.done; log "collect D: $(grep '^DONE' $N/collect-D.log | tail -n 1)"; } || log "COLLECT D FAIL (rerun to resume)"
+  else log "GATE D FAIL: collection not run"; fi
 fi
 # ---- 3b
 for c in xc8k-b2-c0 tr32k-b2-c0 xc8k-b2-c1 xc8k-b2-c2 tr32k-b2-c1 xc8k-b2-c3 xc8k-b2-c4 tr32k-b2-c2 \
