@@ -217,7 +217,10 @@ prefill.
 ## Later, low priority (user, 2026-11-05)
 - [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (`volunteer/`, w13 + w13b): queue server (stdlib Python,
   container, 61/61 noop e2e tests, restart / crash / partial-upload safe), worker image spec (ROCm, gfx1201), job
-  types quant_layer / quant_head / eval_mix. Resumes when the V3 settings are frozen and the ladder starts. Open:
+  types quant_layer / quant_head / eval_mix. Resumes when the V3 settings are frozen and the ladder starts. Two uses: ladder quant jobs
+  and search evals (`eval_mix`, ~50–100 card-hours a stream pass; public slices only, the private-text share of
+  accept / reject stays on our cards; needs local mix assembly from cached levels, not per-candidate downloads; 16 GB
+  cards only for the lower sizes). Open:
   Docker Hub namespace; build the worker image and run one real job on an R9700 before publishing; where the
   server's volumes live on the queue host; admin = one read-only status endpoint.
 - [ ] **Quantized DFlash2 drafter and vision tower.** V3 bundles both in bf16 (`docs/design/v3.md` §8; outside the

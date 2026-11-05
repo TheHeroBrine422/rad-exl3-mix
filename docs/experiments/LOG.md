@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 03:00 CST · #89 · Healing moves to V4; volunteers for search as well as quants
+- **Decision (user):** frozen-code scale healing is not tested on the 27B now and is not in V3; it runs after V3 ships,
+  per finished mix (V4, with QAD). V3's estimates vs V2 were made before healing, so they stand; the knapsack
+  allocates without healing (a healing-aware reallocation is a V4 question).
+- **Volunteers:** besides the ladder's per-layer quants, the search's candidate evals (`eval_mix`, ~1,500–3,000 evals
+  ≈ 50–100 card-hours a pass) can run on donors in batches: public slices only; mixes assembled on the worker from
+  cached ladder levels (not built yet). Parked until research is done (user: "a good long while").
+
 ### 2026-11-05 02:40 CST · #— · Machine names neutralized in the public repo
 - Tracked files (not `local/`): iceman → `gpubox`, colo / R640 → `cpu1`, Thor → `cpu2`, the extra RDNA4 boxes
   unnamed; ssh helpers referenced as `ssh-gpubox.sh` / `ssh-cpu1.sh` / `ssh-cpu2.sh` (local symlinks to the old ones);
