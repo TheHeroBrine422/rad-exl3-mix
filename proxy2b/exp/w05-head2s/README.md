@@ -15,9 +15,9 @@ plus `ourq-hout-bd.patch` (`--hout-bd`). A `hout_diag` vector stays a vector, an
 with 8 sub-steps per 16-row step: tile column t of every block, feedback inside the block. It has the same dependencies as the
 dense `ldlq_2hess`.
 
-## CPU evidence already in hand (`headpred-proxy.txt`; colo, real head and real calib `lm_head.input`)
+## CPU evidence already in hand (`headpred-proxy.txt`; cpu1, real head and real calib `lm_head.input`)
 
-The Fisher here is a **proxy**: next-token counts on gen rows of the qad pool. The exact F is only on iceman. The quantizer is
+The Fisher here is a **proxy**: next-token counts on gen rows of the qad pool. The exact F is only on gpubox. The quantizer is
 exllamav3's own code with a **scalar** stand-in for the trellis (`src/cpuq.py`). K2/K3, 8,192 head rows. The error measure is
 Σ_v F_v (w−q)ᵀH(w−q), in-sample for F.
 
@@ -35,7 +35,7 @@ change. **Caveats:**
 - F·err drops the −ppᵀ cross terms.
 - Error moves onto rows the qad pool barely saw. Hence the rare-token guard and the held-out dump.
 
-## Arms (iceman, one card; settings = the head donor recipe: mean-row, σ_reg 0.005, mul1, qtf2, K3 unless noted)
+## Arms (gpubox, one card; settings = the head donor recipe: mean-row, σ_reg 0.005, mul1, qtf2, K3 unless noted)
 
 | arm | quant |
 |---|---|
@@ -81,14 +81,14 @@ is scored too (documents as units; secondary).
     extra is ×0.75).
 - **Nothing passes:** E2 closes. hd-v is reported alone (it is the existing #33-06 / #48 path and was negative on the trunk).
 
-**GPU time (iceman, one card + exclusive host RAM per quant):**
+**GPU time (gpubox, one card + exclusive host RAM per quant):**
 - Stage 1: 7 quants.
 - Stage 2: about 11 more.
 - Stage 3: 6.
 - Scoring: about 2 × 20 min.
 
 Expect **~5–8 h**. A two-sided quant is slower than one-sided (8 sub-steps of 1,940 tiles instead of one of 15,520): measure on
-stage 1. **Run:** `CARD=0 ./run.sh` on iceman. It needs both patches merged, `/data/yaqa/hs/headsens.npz` and
+stage 1. **Run:** `CARD=0 ./run.sh` on gpubox. It needs both patches merged, `/data/yaqa/hs/headsens.npz` and
 `/data/yaqa/headslab2/perm.npy`. It is idempotent (finished donors and scored arms are skipped). Results go to
 `/data/yaqa/w05-head2s/result.txt`.
 

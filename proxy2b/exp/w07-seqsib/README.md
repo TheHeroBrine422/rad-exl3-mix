@@ -73,7 +73,7 @@ proxy2b/exp/w07-seqsib/run.sh     # 4070. sym + controls need no patch; asym nee
 - **PASS:** sequential inputs pay even within a layer. Two consequences:
   - Rank C5 (quantized-prefix targets, all upstream layers) and the `quant` source of C1 above it.
   - Bake sym / asym into the per-level requant (#58). For the 27B this needs a layer-streamed forward with the
-    level's quantized siblings (the siblings' dequantized bf16 copies do not fit beside the model): an iceman script,
+    level's quantized siblings (the siblings' dequantized bf16 copies do not fit beside the model): an gpubox script,
     not written until this passes.
 - **FAIL / inconclusive:** C6 closed. A C1 `quant` result decides whether full-upstream sequential targets are worth it
   anyway.

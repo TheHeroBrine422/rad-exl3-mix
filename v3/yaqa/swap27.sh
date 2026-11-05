@@ -1,5 +1,5 @@
 #!/bin/bash
-# swap27.sh STAGE -- the 27B H_out swap test at K2.5 (rule: v3/yaqa/H27.md, amendment 2026-11-04), on iceman.
+# swap27.sh STAGE -- the 27B H_out swap test at K2.5 (rule: v3/yaqa/H27.md, amendment 2026-11-04), on gpubox.
 #   prep   no card: plugin home (radiance 1.16.0 + our plugins), V2 3.00 base, the base arm's pack + mix + census
 #   run    waits for the Σdy² collection to end, builds the block-normalized diagonal, then per arm (bn on card 0;
 #          dy then s1 on card 1): quantize the K2.5 trunk, pack (exl3i, mul1i8, rate 2.5), mix into V2 3.00, census, score; then the

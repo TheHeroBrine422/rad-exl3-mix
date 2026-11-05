@@ -24,7 +24,7 @@ Arms. Every quant: our tuned settings, K3 and K2, seeds 0 and 1, scored on calib
   tokens; public, HF `turboderp/Qwen3.8-27B-exl3`): last 2,048 tokens a row, scored on the response. Same H_out
   weights (0.5, 1; windows reused with fresh labels: 217 rows < 1,024) and a healing arm. Reported, no rule of its own
   (off-policy for the 0.8B, like D); it says whether general 27B-generated text helps the statistics.
-- Arm D (the 27B's continuations of the same boundaries) waits for iceman time.
+- Arm D (the 27B's continuations of the same boundaries) waits for gpubox time.
 
 Pass rules (written 2026-11-04 ~6:00 PM CST, before data). Ratios = mean over the 2 seeds of the paired KL ratio vs
 the arm's base, at K3 and K2:

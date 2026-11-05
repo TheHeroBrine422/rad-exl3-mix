@@ -172,13 +172,13 @@ prefill.
 
 | proxy result | 27B test needed | depends on |
 |---|---|---|
-| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 2,048 sequences (user, 11-03: the 27B may converge differently; #33-22 saw nothing past 1,024 on the 0.8B, so the 27B's own snapshots decide), pilot swap at K3 / K2.5 vs ladder levels | iceman back, card 1 |
+| Diagonal H_out (Σdy² / Sketch B), 0.8B 3 seeds: K3 −8…−9%, K2 −5…−6% (#33-16, #33-18); holds at K4 −8.7%, K5 −7.5% (#82); all families but the writers carry it (#82) | 27B collection to 2,048 sequences (user, 11-03: the 27B may converge differently; #33-22 saw nothing past 1,024 on the 0.8B, so the 27B's own snapshots decide), pilot swap at K3 / K2.5 vs ladder levels | gpubox back, card 1 |
 | Estimator choice (dy vs Sketch B vs xw), 512 seqs (#33-18) | collect all three in one 27B pass, compare in the swap test | same run |
-| Cubic int8 codebook i8c (#78: 0.8B KL K3 −1.7%, K2 −2.7%, K4 −2.3%; adopted). **But on top of H_out: no gain at K3 (#78-03, 1.000 / 1.015 / 1.005); #78-04 adds seeds 3–5** | requant 2–3 trunk levels with i8c **with and without H_out**, swap test | iceman; HIP build of the i8c decode; #78-04 |
+| Cubic int8 codebook i8c (#78: 0.8B KL K3 −1.7%, K2 −2.7%, K4 −2.3%; adopted). **But on top of H_out: no gain at K3 (#78-03, 1.000 / 1.015 / 1.005); #78-04 adds seeds 3–5** | requant 2–3 trunk levels with i8c **with and without H_out**, swap test | gpubox; HIP build of the i8c decode; #78-04 |
 | Tile coordinate descent (#77: CPU proxy −0.8%, every tensor; replicates on other rows #80, stacks on cubic #79) | only if judged worth its 2–3× quant time | a GPU version + a seed-paired KL test |
-| (#33-19 / #33-20 / #33-21 / #33-22 failed or neutral: none ride along.) Gen-masked loss (#83: Sketch B K3 0.971, K2 0.950, every seed) | `YAQA_GENMASK=1` on the 27B collection (needs gen.u8 beside the calib golden on iceman) | #83-02 (the same on Σdy², the 27B estimator) |
-| Sibling-sequential asym target for the 48 writers (#87: K3 −14%, K2 −18%, every seed) | layer-streamed 27B forward with the quantized siblings (moments over ~1M qad tokens), requant the writers of 2 levels, swap test | #87-02 (stacks on H_out?), #87-04 (K4 / K5); iceman |
-| Fixed-code scale refits C9 α\* (#85: K3 −2.7%, K2 −8.9%) and C10 swj (K3 −3.1%, K2 −8.6%) | refit on existing 27B levels (no requant), fit-slice α\*, swap test | #85-02 (do they stack, on edy?); iceman |
+| (#33-19 / #33-20 / #33-21 / #33-22 failed or neutral: none ride along.) Gen-masked loss (#83: Sketch B K3 0.971, K2 0.950, every seed) | `YAQA_GENMASK=1` on the 27B collection (needs gen.u8 beside the calib golden on gpubox) | #83-02 (the same on Σdy², the 27B estimator) |
+| Sibling-sequential asym target for the 48 writers (#87: K3 −14%, K2 −18%, every seed) | layer-streamed 27B forward with the quantized siblings (moments over ~1M qad tokens), requant the writers of 2 levels, swap test | #87-02 (stacks on H_out?), #87-04 (K4 / K5); gpubox |
+| Fixed-code scale refits C9 α\* (#85: K3 −2.7%, K2 −8.9%) and C10 swj (K3 −3.1%, K2 −8.6%) | refit on existing 27B levels (no requant), fit-slice α\*, swap test | #85-02 (do they stack, on edy?); gpubox |
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
 
@@ -186,12 +186,12 @@ prefill.
 
 - [ ] **V3 prefill as IQR does it** (decode once into an int8 fragment plane + radiance's i8a8 prefill tile;
   `docs/research/iqr-v4.md` "Speed"): est. ~4,000–4,300 µs a layer vs V2's ~8,050 and our 5,200 target. Steps: plugin
-  API vs `r4d_gemm_8a8_prefill.h`, EXL3 decode-to-int8 pass, timing at the board's shapes on iceman. Replaces the
+  API vs `r4d_gemm_8a8_prefill.h`, EXL3 decode-to-int8 pass, timing at the board's shapes on gpubox. Replaces the
   fused-A8 kernel route (#31, blocked by the NFQ crash) if it holds. Runtime: this *is* the speed work (P).
 - [ ] **f16 two-pass for 6+ bpw** — correction 11-04: exl3r4d's T2 (fork ae6539f) already decodes once to f16
   fragments from 512 rows (gate_up 8.08 -> 6.74 ms); what is left is a better 16-bit tile than T2's own. (Original:
   decode once per step into an f16 plane + radiance's 16-bit GEMM, same values: KLD unchanged, no requant; speeds up V2 6.0–9.0 and V3's f16 tensors). Board hint: EXL3-V2-9.00 (33 bf16 tensors) 7,331
-  vs 8.00's 8,124 µs. Est. ~6,000–7,000 µs a layer vs ~8,100. First measure on iceman (~1 card-h): bf16 GEMM a layer at
+  vs 8.00's 8,124 µs. Est. ~6,000–7,000 µs a layer vs ~8,100. First measure on gpubox (~1 card-h): bf16 GEMM a layer at
   the board's shapes, our decode-to-f16 and decode-to-int8 passes. Runtime: P (and D for the decode kernels).
 - [ ] **Self-calibration on own agentic sessions (0.8B first)** (user, 2026-11-04): self-generated continuations of the
   user's sessions (`xcorp/selfgen.py`, a running server at low priority; teacher logits by a bf16 record pass or the
@@ -204,7 +204,7 @@ prefill.
   Note: stock radiance `--calib-corpus` records input Grams, so 27B H_in on any corpus needs no new tool.
 - [ ] **V3 decode kernels after radiance 1.17** (`docs/research/radiance-1.17.md`): block-per-tile GEMV with K-split
   waves + biased-int fold; barrier-free 16-token tile for 2–16 tokens; gated activation quant in gate_up's epilogue.
-  Needs a gfx1201 card (the dad's RDNA4 boxes or iceman after the collection). Runtime: D (this is the speed work).
+  Needs a gfx1201 card (extra RDNA4 boxes or gpubox after the collection). Runtime: D (this is the speed work).
 - [ ] **Act order inside the trellis** (+ longer tail-biting runs on FFN): IQR −0–2.3% on uniform bases. For EXL3: permute at 16-column block
   granularity (free at runtime; libquant sorts by descending H diagonal, `tcq_order=1`). CPU proxy
   first (trellis2 with columns permuted by descending H diagonal after the Hadamard), then 0.8B KL. Runtime: none.
@@ -232,7 +232,7 @@ prefill.
 - [ ] **Two-sequence pipeline for the 27B collector** (collect.py): layers split 32 / 32, one sequence at a time leaves
   each card idle ~half of every 37 s sequence. Two sequences in flight (1F1B) ≈ 1.5–1.7×, not 2× (bubbles). Blockers:
   pinned host buffers per in-flight sequence (YAQA_XOFF=bf16 ~9 GB each; 30 GB host), per-sequence hook state, test
-  needs two devices (0.8B on iceman). Worth it only for another collection; not during #33-24.
+  needs two devices (0.8B on gpubox). Worth it only for another collection; not during #33-24.
 - [ ] **Less recompute in the backward** (26 s bwd vs 10 s fwd): keep activations of a few layers per card in the
   ~3.5 GB headroom instead of checkpointing them; est. −10–20% per sequence.
 
@@ -240,10 +240,10 @@ prefill.
 
 - [x] **Saturation check of the knapsack** (done 11-03: null, errors compound instead; LOG) (CPU ~1 h)
 - [ ] **Saturation at 0.5–2 bpw** (user, 11-03): the check above had only 13 mixes below 1.6 bpw (the r9 low-bpw mix
-  files live on iceman), and kfit2 + saturation fitted C ≈ 1.8, i.e. it would bite once whole-model KLD nears ~0.5
-  (≲ 1.75 bpw, and V3.5's sub-1 K). Redo with the iceman mix files, plus 6–10 new measurements at 0.5–1.5 bpw (V3.5 menu).: does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
+  files live on gpubox), and kfit2 + saturation fitted C ≈ 1.8, i.e. it would bite once whole-model KLD nears ~0.5
+  (≲ 1.75 bpw, and V3.5's sub-1 K). Redo with the gpubox mix files, plus 6–10 new measurements at 0.5–1.5 bpw (V3.5 menu).: does c(1 − exp(−Σb)), b = −log(1 − ΔKL/c), predict measured mix
   KL better than ΣΔKL (ladder levels, V2 mixes, kfit2 swaps), esp. at 1.75–2.5 bpw? If yes, re-price the low V3 sizes.
-- [ ] **Reference KLD of `nvidia/Qwen3.8-27B-NVFP4`** (iceman, weight-only dequant first) on the verify slice: place it
+- [ ] **Reference KLD of `nvidia/Qwen3.8-27B-NVFP4`** (gpubox, weight-only dequant first) on the verify slice: place it
   on our frontier next to V2 5.0 / 5.5.
 - [ ] **Σdy² as the knapsack price** = their AutoQuantize gradient score: merge w08-hprice once the 27B diagonal exists.
 - [ ] **#87 at 27B via a layerwise loop** (their single-GPU PTQ design: boundary activations on disk, one layer live).
@@ -257,10 +257,10 @@ prefill.
   **Constraint (challenge author, 2026-11-02): the target is VRAM, load-time expansion only as a stopgap** → it
   needs the online-prediction kernel (faraway A2: transposed GEMMs re-reading the up / gate tiles, +1 GEMM with up
   only keeps ~75% of the gain; +1–2 GEMMs in the MLP). Weigh the gain against that speed cost. Steps: (1) real-trellis
-  proxy test on iceman's GPU (quantize D vs R = D − αÛ − βĜ at K2 / K3 from the ladder levels; pass ≤ 0.85× at K2 on
+  proxy test on gpubox's GPU (quantize D vs R = D − αÛ − βĜ at K2 / K3 from the ladder levels; pass ≤ 0.85× at K2 on
   layer 30); (2) 0.8B KL with load-time expansion (allowed for measuring); (3) kernel cost (ntbench); then decide.
-  Riders: A3 (GDN out_proj ← v), A4 (o_proj ← v / q-gate), A6 / A7 census (minutes on colo).
-- [x] **E10 · dead-unit census** (done 11-03: null, LOG) (E[h²] at down / out_proj / o_proj inputs from the calib Hessians; colo minutes).
+  Riders: A3 (GDN out_proj ← v), A4 (o_proj ← v / q-gate), A6 / A7 census (minutes on cpu1).
+- [x] **E10 · dead-unit census** (done 11-03: null, LOG) (E[h²] at down / out_proj / o_proj inputs from the calib Hessians; cpu1 minutes).
 - [ ] **F2 · boundary diagonal affine repair** (closed form, 0.8B ~2 h). **F4 · exact last-layer output Hessian.**
 - Faraway's headroom audit: gate/up within ~0.1 bit of an ideal LDLQ + Gaussian coder; weights near-Gaussian; no
   cross-layer redundancy (kills cross-layer sharing / global-basis ideas). The rest of its list: the report.

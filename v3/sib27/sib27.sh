@@ -1,7 +1,7 @@
 #!/bin/bash
 # sib27.sh -- #87 at 27B (README.md): the 128 writer tensors (64 down_proj, 48 GDN out_proj, 16 o_proj) of one trunk
 # level requantized against inputs from that level's own quantized siblings, asymmetric target W F (lam 1, rho 0.5),
-# everything else the level's own. iceman, card 0, idempotent (rerun after any failure; each step skips what is done).
+# everything else the level's own. gpubox, card 0, idempotent (rerun after any failure; each step skips what is done).
 #   pre    checks: base level (64 shards, stamp.json, codebook i8 / mul1), ourq --wpre, the lean mkdenoise, disk;
 #          the trellis decode vs the C oracle on 4 base tensors (if the plugin sources are on the box)
 #   gate   sibmom27 on layers 2-3 (one GDN, one attention) at GATE_TOK tokens: tok/s -> the estimate for TOK;

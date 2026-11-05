@@ -1,5 +1,5 @@
 #!/bin/bash
-# knaptest.sh -- CPU tests of knap4-hratio.patch (colo, ~20-40 min, background). Run from a tree with v3/nf/knap4_old.py
+# knaptest.sh -- CPU tests of knap4-hratio.patch (cpu1, ~20-40 min, background). Run from a tree with v3/nf/knap4_old.py
 # (the attached knap4) and v3/nf/knap4.py (patched), data/v3, v3/e1b, v3/e3/data, v3/bench/data, ident.jsonl,
 # demo08.jsonl (mkratio.py). Out: ./kt/.
 #  1. regression: switch off == old knap4, byte for byte (V2-like menu, and the V3 table)

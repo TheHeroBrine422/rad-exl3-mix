@@ -7,8 +7,8 @@ Method: split the cumulative snapshots into independent 128-sequence blocks (`mk
 0.005), once without H_out and once per snapshot N with the **even-block** Σdy² mean up to N (≈ N/2 sequences), output
 damping 0.01. Score every arm's dequantized linears by the output-weighted proxy error under the **odd-block** mean
 (independent data): E_out = Σ_i h_i δ_i H_in δ_iᵀ / Σ_i h_i w_i H_in w_iᵀ (`hscore.py`), reported as the param-weighted
-ratio to the no-H_out arm. Same rotation seed for every arm. 4070 (`hconv.sh`), snapshots synced from iceman by
-`sync.sh` (VM). Statistical curve beside it: `v3/yaqa/hdmon.py` on iceman.
+ratio to the no-H_out arm. Same rotation seed for every arm. 4070 (`hconv.sh`), snapshots synced from gpubox by
+`sync.sh` (VM). Statistical curve beside it: `v3/yaqa/hdmon.py` on gpubox.
 
 Reading rule (written 2026-11-04 ~1:05 AM CST, before data):
 - The curve E_out(train-N) / none vs N should fall and flatten. **Collection converged** at the first N where

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """headx.py CKPT GOLDEN POOLS OUT [--hpools qad] [--dpools fit] [--tok 2e6] [--cap 8192] [--dump 65536] [--per-doc 1024]
 -- the LM head's input (the final norm's output) from a bf16 forward of the checkpoint over calib documents, aligned
-to the golden's rows (E4 of ranked.md: head statistics from scored rows only). ICEMAN (27B: both cards, ~30-60 min).
+to the golden's rows (E4 of ranked.md: head statistics from scored rows only). gpubox (27B: both cards, ~30-60 min).
 
 GOLDEN: the calib golden's kld.json / tokens.i32 / gen.u8 (only these are read). Documents in a fixed shuffled order
 (--seed), each forwarded whole up to --cap tokens; position p predicts token p + 1 = golden row row0 + p - score_from
@@ -15,7 +15,7 @@ GOLDEN: the calib golden's kld.json / tokens.i32 / gen.u8 (only these are read).
   OUT/headx.json: counts, and how far the gen-row Hessian is from the all-position one (and from --calib-hess).
 Without a GPU everything runs on the CPU (self-test on a tiny checkpoint)."""
 import argparse, json, os, sys, time
-sys.path.insert(0, os.environ.get("HX_PYLIB", "/data/yaqa/pylib"))       # iceman's transformers / accelerate (collect.py)
+sys.path.insert(0, os.environ.get("HX_PYLIB", "/data/yaqa/pylib"))       # gpubox's transformers / accelerate (collect.py)
 import numpy as np, torch
 from safetensors import safe_open
 from safetensors.torch import save_file

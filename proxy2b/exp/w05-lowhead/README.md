@@ -31,12 +31,12 @@ The regression check passes: the patched knap4 without `KN_HEADCURVE` equals the
   0.063 vs u3 0.016). pickcurve's guard compares with u2 and so lets it through. The golden-ml check below is the binding
   guard.
 
-## Steps (`run.sh`, iceman; each skipped when done)
+## Steps (`run.sh`, gpubox; each skipped when done)
 
 1. **Donors** K2, 2.25, …, 4 in sensitivity order, mean-row, σ_reg 0.005 (head-settings: K3's winner). They are taken from
    headremake.sh's `/data/yaqa/headfinal` when that exists.
 2. **Plans** at every 1/8 budget 2.25–3.75 × every floor ≥ K2, plus uniform plans; headsim on the calib-A head dump.
-3. **`pickcurve.py`** → `headcurve.json`, then `knap.sh` (CPU; also runnable on the VM or colo) at 2.0/2.5/3.0.
+3. **`pickcurve.py`** → `headcurve.json`, then `knap.sh` (CPU; also runnable on the VM or cpu1) at 2.0/2.5/3.0.
 4. **Whole-model transfer check.** bf16 heads are spliced into the V2 2.50 (and 2.00) release, all through the same bf16 path:
    `u3` (uniform K3 donor), `slab3` (the budget-3.0 plan, equal bytes to u3), the knap4 2.5 pick, and the 2.0 pick. They are
    scored on golden-s2k (search pool, 583 docs) and golden-ml (multilingual guard), each paired against u3.
@@ -69,7 +69,7 @@ The regression check passes: the patched knap4 without `KN_HEADCURVE` equals the
 - 10 whole-model evals: ~1–1.5 h.
 - Card 0 total ~4–5 h.
 
-**Run:** `CARD=0 ./run.sh` on iceman. Results go to `/data/yaqa/w05-lowhead/result.txt`.
+**Run:** `CARD=0 ./run.sh` on gpubox. Results go to `/data/yaqa/w05-lowhead/result.txt`.
 
 ## Patch
 

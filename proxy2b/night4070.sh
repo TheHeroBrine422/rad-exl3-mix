@@ -1,5 +1,5 @@
 #!/bin/bash
-# night4070.sh -- the 4070 queue for the night of 2026-11-02/03 (no iceman), one job after another (VRAM cap 7.2 GB).
+# night4070.sh -- the 4070 queue for the night of 2026-11-02/03 (no gpubox), one job after another (VRAM cap 7.2 GB).
 # Each step is idempotent; a failed step is logged and the queue moves on. Stop: touch /data/yb/night.stop (after the
 # current step). Order: what feeds the 27B run first.
 P=/workspace/rad-exl3-mix/proxy2b X=$P/exp L=/data/yb/night4070.log

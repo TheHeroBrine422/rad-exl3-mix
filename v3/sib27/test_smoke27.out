@@ -9,6 +9,6 @@ layer 1 (forward only): 0s, 621 tok/s, anon rss 454 MiB, eta 0 min
 layer 2 (forward only): 1s, 504 tok/s, anon rss 457 MiB, eta 0 min
 layer 3: 5s, 48 tok/s, anon rss 455 MiB, eta 0 min
 MOMENTS DONE 2 groups, 256 tokens, 0.1 min (4 layers this run)
-rc 0 maxrss 16.5 GiB 11 s      (DEV=cpu: the f64 / f32 accumulators of the 17408-wide group on the host; on iceman they are on the card)
+rc 0 maxrss 16.5 GiB 11 s      (DEV=cpu: the f64 / f32 accumulators of the 17408-wide group on the host; on gpubox they are on the card)
 self_attn.o_proj (6144, 6144) n 256 trN/trH 3.91e-09 |C|/|H| 8.64e-06 H asym 0.0
 mlp.down_proj (17408, 17408) n 256 trN/trH 7.07e-11 |C|/|H| 5.01e-06 H asym 0.0

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """f7replay.py WORK [--out OUT.json] -- F7 (ranked.md): does the stream's accuracy and win rate fall with the number of
-tensors a candidate changes? Replay over V2's stream on the GPU box (iceman; CPU only, read-only, ~1 min):
+tensors a candidate changes? Replay over V2's stream on the GPU box (gpubox; CPU only, read-only, ~1 min):
   WORK/evq/results.jsonl    every eval (tag, kld)
   WORK/knap/mixes/*.mix     every candidate's mix (tensor -> container; only differences from the base are listed)
   WORK/auto/fit-s<N>.txt    fit N's slice offsets ("slice offsets f2 0.845 f3 0.958")

@@ -1,5 +1,5 @@
 #!/bin/bash
-# run.sh -- w05-headgen (ranked.md E4): LM-head statistics from scored (gen) rows only. ICEMAN ONLY.
+# run.sh -- w05-headgen (ranked.md E4): LM-head statistics from scored (gen) rows only. gpubox ONLY.
 #  0. CPU: is the slab ranking gen-only already? (headslab.py ranks by fisher_qad_gen: report the overlap with _all)
 #  1. headx.py, BOTH CARDS (~30-60 min): bf16 forward of qad docs (2M tokens, 8k cap) -> gen-row and all-position head
 #     input Hessians of the same documents; gen-row dump of fit-pool docs (65,536 rows, doc ids) -- also w05-head2s's

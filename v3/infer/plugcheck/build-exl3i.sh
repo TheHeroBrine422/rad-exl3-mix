@@ -1,5 +1,5 @@
 #!/bin/bash
-# build-exl3i.sh ID -- build the exl3i kernel plugin and its tests in /root/rhv3 against radiance 1.15.1 (iceman).
+# build-exl3i.sh ID -- build the exl3i kernel plugin and its tests in /root/rhv3 against radiance 1.15.1 (gpubox).
 # ID: the source tree's commit (the build reports it). Log /root/rhv3/build-exl3i.log; last line BUILD OK / FAIL.
 ID=${1:-unknown}
 exec 7>/root/ram.lock; flock -s 7

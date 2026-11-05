@@ -1,5 +1,5 @@
 #!/bin/bash
-# price27.sh ONE H K1[,K2..] [SWAPS] -- 27B oursH pricing (ranked F1), CPU only (colo / VM; no GPU, no locks). Needs the
+# price27.sh ONE H K1[,K2..] [SWAPS] -- 27B oursH pricing (ranked F1), CPU only (cpu1 / VM; no GPU, no locks). Needs the
 # merged ourq-hprice.patch and ladder levels quantized WITH --hprice <the 27B diagonal> (add it to ladder2.sh's X for
 # the Phase-B requant, both ladders; and to both arms of the 27B swap test):
 #   ONE/K<k>/proxy.jsonl   one-sided ladder level k (proxy_err2 = its h-weighted error)

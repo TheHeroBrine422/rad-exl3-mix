@@ -1,5 +1,5 @@
 #!/bin/bash
-# gscale-run.sh -- gscale.py on 16 tensors (every family; layers 0/10 GDN, 11/43/63 attention + MLP), colo,
+# gscale-run.sh -- gscale.py on 16 tensors (every family; layers 0/10 GDN, 11/43/63 attention + MLP), cpu1,
 # 9 jobs x 4 threads, one output per tensor in data/gs/. Merge: cat data/gs/*.jsonl.
 cd "$(dirname "$0")"; mkdir -p data/gs
 export E3_CKPT=${E3_CKPT:-/data/models/qwen38-27b-bf16} E3_HESS=${E3_HESS:-/data/challenge/hessians/calib} OMP_NUM_THREADS=4

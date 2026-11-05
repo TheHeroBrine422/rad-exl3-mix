@@ -66,7 +66,7 @@ proxy2b/exp/w07-genh/run.sh     # 4070, no patch needed. Results /data/yb/w07-ge
 
 ## What the result changes
 - **PASS:** a 27B H_ng collection.
-  - It is forward-only, over the non-verify calib documents minus the 27B eval slices, on both iceman cards, in layer
+  - It is forward-only, over the non-verify calib documents minus the 27B eval slices, on both gpubox cards, in layer
     passes (the sums are the size of the published Hessians).
   - H(w0) then joins the per-level requant (#58).
   - The same difference form keeps the published H for everything else, so the 27B run needs no H_calib
@@ -77,7 +77,7 @@ proxy2b/exp/w07-genh/run.sh     # 4070, no patch needed. Results /data/yb/w07-ge
 
 ## Files
 - `hgen.py`, `mkgenh.py`, `run.sh` (pick / verdict via `../w07-denoise/summ.py`).
-- `selftest/test_hgen.py` → `test_hgen.out`: **ALL PASS**. Real 0.8B, colo CPU, layers 0–1, 6 qad documents with mixed
+- `selftest/test_hgen.py` → `test_hgen.out`: **ALL PASS**. Real 0.8B, cpu1 CPU, layers 0–1, 6 qad documents with mixed
   masks.
   - H_ng + H_gen = H_all (rel 2e-7), and the rows add up.
   - The scored count equals gen.u8's row by row.

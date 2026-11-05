@@ -14,9 +14,9 @@
     ("CV pred") and the slice offsets.
   - 123 of the stream's mixes were also evaluated on a held-out slice (ver1 `w-`, ver2 `v2-`).
 - **Not on the VM:** the stream's 800-odd `.mix` files, and the per-fit `frontier-s*.txt` predictions made before
-  each measurement. Both live only on iceman (`/root/knap/mixes`, `/root/auto`). Nothing on colo, the 4070 or in
-  the repo has them, and I did not touch iceman.
-- So F8 is replayed here. F7 is a ready script for iceman (`f7replay.py`, read-only, CPU, about a minute).
+  each measurement. Both live only on gpubox (`/root/knap/mixes`, `/root/auto`). Nothing on cpu1, the 4070 or in
+  the repo has them, and I did not touch gpubox.
+- So F8 is replayed here. F7 is a ready script for gpubox (`f7replay.py`, read-only, CPU, about a minute).
 
 ## F8 result (`f8replay.out`; replayed here; this pass rule was ranked.md's, not pre-registered by the lead)
 
@@ -47,7 +47,7 @@ posterior with w ≈ 0.45 in three places:
 
 Thresholdout for ver3 reads (F8's second half) is a process rule. Replay cannot measure it.
 
-## F7 (to run on iceman: `run.sh`)
+## F7 (to run on gpubox: `run.sh`)
 
 `f7replay.py` takes every measured stream candidate. For each one it computes:
 - **anchor:** the best mix measured at its target before it;
@@ -82,12 +82,12 @@ used up, and later wins start from a better best. Treat it as an upper bound.
 | file | what |
 |---|---|
 | `f8replay.py`, `f8replay.out` | F8 replay (VM, 0.2 s) |
-| `f7replay.py` | F7 replay (iceman, read-only) |
+| `f7replay.py` | F7 replay (gpubox, read-only) |
 | `selftest_f7.py`, `selftest_f7.out` | synthetic stream with a planted composition error: f7replay finds the RMS rising and the win rate falling with n, and positive cap gains |
-| `run.sh` | F8 locally (if not done), then F7 over ssh on iceman |
+| `run.sh` | F8 locally (if not done), then F7 over ssh on gpubox |
 
-**GPU time:** none. **Iceman:** a ~1 min niced CPU read-only job. It takes no card or RAM lock, but run it when
-iceman is otherwise idle.
+**GPU time:** none. **gpubox:** a ~1 min niced CPU read-only job. It takes no card or RAM lock, but run it when
+gpubox is otherwise idle.
 
 ## What changes what
 - **F8 (ranked #14 with F7):** E drops from −0.5…−1.5% to ~−0.4%. Adopt it anyway, as a free default (the three

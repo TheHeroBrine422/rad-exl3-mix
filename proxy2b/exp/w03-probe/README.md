@@ -20,7 +20,7 @@ sampled sequences one probe sequence is worth. The GPU run then measures the sam
   transient memory (as the sampled path). The logged loss/tok becomes Σ z·d (not a CE). Off by default; no-op when off.
 - `probetest.py` / `probetest.out` — CPU self-test (covariance, the patched function's gradient, checkpoint
   bit-identity, no-op diff analysis). `run.sh` step 0 adds the GPU no-op check (bit-identical hdiag, 8 windows).
-- `probevar.py` / `probevar.json` / `probevar.txt` — the real-data CPU variance study (colo).
+- `probevar.py` / `probevar.json` / `probevar.txt` — the real-data CPU variance study (cpu1).
 - `probecmp.py` — precision of the probe collection vs c18 (halves, cross-cosines, effective dose).
 - `seedsumm.py` — 3-seed summaries (same as w03-swiglu-diag's).
 - `run.sh` — the 4070 entry point.

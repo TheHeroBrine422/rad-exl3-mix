@@ -78,7 +78,7 @@ proxy2b/exp/w01-genmask/run.sh       # on the 4070; after genmask.patch is merge
 - `genmask.patch`: against the attached `v3/yaqa/collect.py` (39e3cd3). Applies with or without
   `../w01-failloud/collect-check.patch`, in either order, with the same result.
 - `run.sh`, `summ.py`.
-- `selftest/cpu_e2e.py` → `cpu_e2e.out` (**ALL PASS**). CPU end-to-end on colo with a tiny random Qwen3.5 (4 layers)
+- `selftest/cpu_e2e.py` → `cpu_e2e.out` (**ALL PASS**). CPU end-to-end on cpu1 with a tiny random Qwen3.5 (4 layers)
   and a synthetic golden, using the same CUDA→CPU text shim on both copies:
   - mask off: every tensor bit-exact with the original collector (hdiag, snapshots, -xw / -dy, halves.json).
   - all-ones mask = unmasked (rel L2 0).

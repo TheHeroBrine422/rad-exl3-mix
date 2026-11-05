@@ -43,7 +43,7 @@ Parameter shares of the 26.9e9: gate+up 42%, down 21%, GDN qkv 9.4%, GDN z 5.6%,
 - **Why:** M7b gives 0.09–0.23 bit on down_proj, mean ≈0.16 with the predictors at K2 noise. That is 0.16 × 21% ≈ 0.034 effective bpw; with A3/A4 about 0.04 bpw.
 - **Fit:** two-dimensional library. Down options become (K_down × K_gate_up), because R depends on which up/gate level the decoder holds. Restricting to K_down ∈ {K_gu−1, K_gu, K_gu+1} keeps it at about 3× the down quant time.
 - **Cheapest test:**
-  - Colo CPU: on L10/30/50, quantize D and R with the real trellis (`trellis.py` or qtf2 emulation), using Û and Ĝ from the existing ours-K2/K3 levels. Compare H-weighted proxy error at equal K. **Pass:** ratio ≤0.85 at K2 and K3 on L30.
+  - cpu1 CPU: on L10/30/50, quantize D and R with the real trellis (`trellis.py` or qtf2 emulation), using Û and Ĝ from the existing ours-K2/K3 levels. Compare H-weighted proxy error at equal K. **Pass:** ratio ≤0.85 at K2 and K3 on L30.
   - Then 0.8B fake-quant end to end on the 4070, 3 seeds, D̂ formed in torch. **Pass:** ≤0.97× KL at K2.5-equivalent with every seed better.
   - About 1 CPU day plus 3 h of 4070 time.
 - **Gain:** −3 to −8% KL at 2.5; P 0.4. **Risk:** KL may not follow residual energy; the runtime format (D2) and the rules question; library complexity.
@@ -377,17 +377,17 @@ Parameter shares of the 26.9e9: gate+up 42%, down 21%, GDN qkv 9.4%, GDN z 5.6%,
 
 | Rank | Idea | E @2.5 | P | Cost to first decision |
 |---|---|---|---|---|
-| 1 | E10 dead-unit census + exact removal | 0 to −3% | 0.25 | Colo minutes |
-| 2 | A1 down←up+gate prediction | −3 to −8% | 0.40 | Colo 1 day + 4070 3 h; build 1–2 weeks + D1 |
+| 1 | E10 dead-unit census + exact removal | 0 to −3% | 0.25 | cpu1 minutes |
+| 2 | A1 down←up+gate prediction | −3 to −8% | 0.40 | cpu1 1 day + 4070 3 h; build 1–2 weeks + D1 |
 | 3 | D1 rules question (container vs runtime) | enabler | — | An email |
 | 4 | F2 boundary diagonal affine (closed form) | −0.5 to −2% | 0.30 | 4070 2 h |
 | 5 | A3 GDN out_proj←v (rides A1) | −0.5 to −1.5% | 0.35 | With A1 |
-| 6 | A6/A7/A4 remaining read/write pair census | 0 to −2% | 0.30 | Colo 10 min |
+| 6 | A6/A7/A4 remaining read/write pair census | 0 to −2% | 0.30 | cpu1 10 min |
 | 7 | F4 exact last-layer output Hessian | −0.5 to −2% | 0.30 | 4070 3 h |
-| 8 | C2 early attention/GDN-input repair | −0.5 to −2% | 0.30 | Colo ½ day |
+| 8 | C2 early attention/GDN-input repair | −0.5 to −2% | 0.30 | cpu1 ½ day |
 | 9 | F1 low-rank residual drift correction | −1 to −4% | 0.20 | 4070 4 h |
 | 10 | A2 online prediction (fallback if D1 is "no") | as A1, restricted | 0.35 | Kernel days |
-| 11 | B1 global residual KLT + per-block K | −2 to −5% | 0.20 | Colo 1 day; build weeks |
+| 11 | B1 global residual KLT + per-block K | −2 to −5% | 0.20 | cpu1 1 day; build weeks |
 | 12 | H1 soft BCJR + VAMP | −1 to −4% | 0.15 | 0.8B days |
 | 13 | E5 width pruning + higher K | 0 to −3% | 0.10 | 2B 1 day |
 | 14 | D3 KLT / entropy-coded embedding rows | −0.3 to −1% | 0.25 | CPU 1 day |
@@ -395,15 +395,15 @@ Parameter shares of the 26.9e9: gate+up 42%, down 21%, GDN qkv 9.4%, GDN z 5.6%,
 | 16 | E4 layer drop + adapter | 0 to −2% | 0.08 | 2B ½ day |
 | 17 | F3 multi-layer readout corrector | −0.5 to −2% | 0.15 | Dumps + days |
 | 18 | B3 learned butterfly per-tensor KLT | −1 to −3% | 0.10 | CPU 2 days |
-| 19 | K3 spectral shrinkage (crazy, cheap) | 0 to −1% | 0.05 | Colo 1 h |
+| 19 | K3 spectral shrinkage (crazy, cheap) | 0 to −1% | 0.05 | cpu1 1 h |
 | 20 | G4 pre-quantization conditioning | −5 to −15% | 0.05 | 0.8B week; rented for the 27B |
 
 ## The 5 cheapest diagnostics that would most change this ranking
 
-1. **Dead-unit census (E10).** Colo, minutes: the distribution of $E[h_j^2]$ at down_proj, out_proj and o_proj inputs from the existing Hessians, and the byte share below 1e-4 × median, with the multilingual slice as a guard. It moves E10 from rank 1 to dead or to "ship".
-2. **Real-trellis proxy test of A1.** Colo, ~1 day: quantize D and R = D − αÛ − βĜ at K2/K3 on L10/30/50 with the actual quantizer and the existing Û/Ĝ levels. A proxy ratio ≤0.85 at K2 on L30 confirms the top new direction; ≥0.95 kills the A cluster.
-3. **Read/write pair census (A4/A6/A7).** Colo, 10 minutes: q-gate↔o, z↔out, GDN q↔k, attention q↔k. It decides whether A1's infrastructure covers ~25% of the bytes or ~35%.
-4. **496-tensor gap-to-ideal audit (C1).** Colo, ~4 CPU-h. It decides whether C2 is local to a few early tensors or wider, and caps H1/C5 for all the other tensors.
+1. **Dead-unit census (E10).** cpu1, minutes: the distribution of $E[h_j^2]$ at down_proj, out_proj and o_proj inputs from the existing Hessians, and the byte share below 1e-4 × median, with the multilingual slice as a guard. It moves E10 from rank 1 to dead or to "ship".
+2. **Real-trellis proxy test of A1.** cpu1, ~1 day: quantize D and R = D − αÛ − βĜ at K2/K3 on L10/30/50 with the actual quantizer and the existing Û/Ĝ levels. A proxy ratio ≤0.85 at K2 on L30 confirms the top new direction; ≥0.95 kills the A cluster.
+3. **Read/write pair census (A4/A6/A7).** cpu1, 10 minutes: q-gate↔o, z↔out, GDN q↔k, attention q↔k. It decides whether A1's infrastructure covers ~25% of the bytes or ~35%.
+4. **496-tensor gap-to-ideal audit (C1).** cpu1, ~4 CPU-h. It decides whether C2 is local to a few early tensors or wider, and caps H1/C5 for all the other tensors.
 5. **0.8B error-shape test.** 4070, ~1 h, 3 seeds: inject noise with equal tr(EHEᵀ) but different shapes (prediction residuals, global-KLT tail vs head directions). If KL does not follow the proxy for these shapes, A1/B1 lose most of their value before any format work.
 
 Question 0 is free: ask the challenge author about load-time expansion (D1). A "yes" removes A1's only speed cost.

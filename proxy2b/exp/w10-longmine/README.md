@@ -1,7 +1,7 @@
 # w10-longmine: mine the existing 27B long-trace evals for family × position effects (ranked.md I1, measure L3)
 
 **Question.** V1/V2 scored about 17 containers and mixes on the two 250k verify traces: `golden-long2` (calib 905
-and 2675) and its capped copies `golden-long2-cCAP`, per-row scores in iceman's `/root/longscores/`. Does a mix's
+and 2675) and its capped copies `golden-long2-cCAP`, per-row scores in gpubox's `/root/longscores/`. Does a mix's
 KL grow with context position faster when its attention or its GDN tensors get fewer bits than the rest of the
 trunk? If so, a long-position family probe on the 27B (I2 / measure L1, ~1 card-h) and a position term in kfit2 are
 worth building.
@@ -51,17 +51,17 @@ whole-mix ratios flat by position, but its quants did not separate families.
   family × position test: designed single-family arms at fixed codes, 22 documents, 2–64k positions
   (`../w10-longpos` + `../w10-hout-attrib`, ~45 min of 4070 evals).
 
-## Run (iceman, CPU only, marked)
+## Run (gpubox, CPU only, marked)
 
 ```
-# iceman is down at writing (ssh refused, 2026-11-03); when it is back, copy this folder to /root/w10-longmine, then
-bash /root/w10-longmine/run-iceman.sh      # CPU only (CUDA_VISIBLE_DEVICES=, nice 19, 4 threads), takes /root/ram.lock
+# gpubox is down at writing (ssh refused, 2026-11-03); when it is back, copy this folder to /root/w10-longmine, then
+bash /root/w10-longmine/run-gpubox.sh      # CPU only (CUDA_VISIBLE_DEVICES=, nice 19, 4 threads), takes /root/ram.lock
 ```
 - **First run:** writes `/root/w10-longmine/manifest.tsv` and stops if any score file is unresolved. V2 release
   containers (`v2-<size>`) need their mix path written by hand: longverify.sh does not record the mix.
 - **Second run:** writes `result.txt` and `longmine.json`.
 - Env overrides: `LM_SCORES`, `LM_GOLDENS`, `LM_MIXDIRS`, `LM_RADLS`, `LM_REF`.
-- **GPU time: none.** The score files are not reachable from here, so their existence after the iceman crash
+- **GPU time: none.** The score files are not reachable from here, so their existence after the gpubox crash
   (#58) is unverified.
 
 ## What the result changes

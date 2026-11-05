@@ -1,6 +1,6 @@
 #!/bin/bash
 # run.sh -- w05-lowhead (ranked.md E1): row-slab LM heads at low budgets (2.25-3.75 bits / row) for the 2.0 / 2.5 mixes.
-# ICEMAN ONLY (27B head). Steps, each skipped when its output exists:
+# gpubox ONLY (27B head). Steps, each skipped when its output exists:
 #  1. donors K2..K4 by quarters in sensitivity order (headslab2/perm.npy), mean-row, sigma_reg 0.005 (head-settings:
 #     K3's winner): linked from headremake.sh's /data/yaqa/headfinal/K<k> when that exists (its own damping sweep),
 #     else quantized here (card $CARD + host RAM exclusive, as headremake.sh)
@@ -42,7 +42,7 @@ if [ ! -s $O/curve.json ]; then
 fi
 # ---- 3. curve -> knap4
 [ -s $O/headcurve.json ] || python3 $H/src/pickcurve.py $O/curve.json $O/headcurve.json 1.3 | tee -a $O/result.txt
-REPO=${REPO:-$RXM_WORK/rad-exl3-mix}     # a checkout with data/v3 (knap4 inputs); else run knap.sh on the VM / colo
+REPO=${REPO:-$RXM_WORK/rad-exl3-mix}     # a checkout with data/v3 (knap4 inputs); else run knap.sh on the VM / cpu1
 [ -s $O/knap/hc.jsonl ] || { [ -d $REPO/data/v3 ] && bash $H/knap.sh $O/headcurve.json $O/knap $REPO | tee -a $O/result.txt; }
 [ -s $O/knap/hc.jsonl ] || { log "no knap4 result ($O/knap/hc.jsonl): run knap.sh elsewhere, copy it back, rerun"; exit 0; }
 # ---- 4. whole-model transfer check

@@ -60,7 +60,7 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     the forward to the backward. Non-reentrant checkpointing runs the first forward with grad on, so
                     otherwise every layer's inputs stay resident (~0.27 GB per 27B layer in fp32, ~8 GB per card:
                     OOM beside half the 27B). Same values (fp32 copy); costs ~18 GB of pinned host RAM at the 27B.
-                    YAQA_XOFF=bf16: the parked copy in bf16 (~9 GB pinned: the fp32 copy does not fit iceman's 30 GB
+                    YAQA_XOFF=bf16: the parked copy in bf16 (~9 GB pinned: the fp32 copy does not fit gpubox's 30 GB
                     host); each token's ||x||^2 is kept exactly (fp32, on the card) for the xw sums, so dy and xw are
                     unchanged and only Sketch B sees bf16-rounded inputs (xofftest.sh measures it).
      YAQA_PROFILE=n -> torch.profiler over the n-th sequence of the run (CPU + GPU activity, both cards), table of the

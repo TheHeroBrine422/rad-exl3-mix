@@ -1,6 +1,6 @@
 #!/bin/bash
 # Embedding trellis menu sweep (sampled rows): quarter steps K1.5-6 x {row scale, G1024}, + G512 for K>=4.
-# 4096 rows, 6 scale factors, per-row npz in rows3/. 16 jobs x 3 threads (Thor quota 48).
+# 4096 rows, 6 scale factors, per-row npz in rows3/. 16 jobs x 3 threads (cpu2 quota 48).
 cd /data/work/embt
 jobs() { for k in 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 3.75 4 4.25 4.5 4.75 5 5.25 5.5 5.75 6; do
   echo "$k 5120"; echo "$k 1024"; case $k in 4*|5*|6) echo "$k 512";; esac; done; }

@@ -1,4 +1,4 @@
-# downperm.py on the 27B (colo, float32, one sign draw; 2026-11-02): down_proj input-side LDLQ cost of a permuted MLP
+# downperm.py on the 27B (cpu1, float32, one sign draw; 2026-11-02): down_proj input-side LDLQ cost of a permuted MLP
 # neuron order / natural order. Layers 0/15/31/62/63: a random permutation; layer 40: balanced / sorted / random from
 # a FAKE h (smoke test; the down side does not depend on h much: random ~ balanced on the 0.8B).
 layer 0: random0 0.9303  natural_vs_onesided_noLDL 0.4156

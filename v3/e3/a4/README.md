@@ -5,7 +5,7 @@ WMMA) becomes a per-tensor compute mode next to A16 and A8 for the fast variant 
 only as a global setting (A4 on every MLP tensor, K2: ×1.14 unhealed / ×1.16 healed, 0.8B); the knapsack places it
 per tensor. Shared-input groups (q/k/v, gate/up, GDN qkv/z) share one mode. Only i4-codebook tensors can take A4.
 
-Steps (iceman card 0 when free; written 2026-11-05 ~1:00 AM CST, before data):
+Steps (gpubox card 0 when free; written 2026-11-05 ~1:00 AM CST, before data):
 1. **Per-tensor costs (27B):** E1b fake-quant hook (`v3/e1b/aqproxy.py`, `EVALQ_AQ`-style), A4-g64 on one
    (family × 16-layer depth band) at a time, on the K2 and K3 i4 ladder levels, paired KLD on `golden-search27`
    (search pool). Families: gate_up, down, attn qkv, attn_out, gdn_in, ssm_out. Plus one combined arm (the knapsack's

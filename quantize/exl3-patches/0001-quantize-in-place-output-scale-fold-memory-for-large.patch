@@ -2,7 +2,7 @@ From 249f0adbf2da057eb9e2ded5ede6401d969c10be Mon Sep 17 00:00:00 2001
 From: Hero <caleb@calebgj.io>
 Date: Sat, 31 Oct 2026 23:57:49 +0000
 Subject: [PATCH 1/6] quantize: in-place output-scale fold (memory for large
- heads), as deployed on iceman
+ heads), as deployed on gpubox
 
 ---
  exllamav3/modules/quant/exl3_lib/quantize.py | 8 +++++---

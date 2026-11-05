@@ -187,7 +187,7 @@ proxy2b/exp/w06-heal/run.sh                 # 4070; STAGES="gate h1 h4" (default
 - `datacheck.py` / `datacheck.txt`: data counts.
 - `selftest.py` / `selftest.txt`: the CPU self-test.
 
-## Self-test (`selftest.txt`, CPU on colo, real 0.8B checkpoint, synthetic quantized weights)
+## Self-test (`selftest.txt`, CPU on cpu1, real 0.8B checkpoint, synthetic quantized weights)
 
 1. **Identity.** The wrapped student at zero equals the plain substituted bf16 model bit for bit.
 2. **Fold.** The student with random multipliers (SD 0.05) equals the `fold.py` output loaded as evalq loads it (fp32).
@@ -198,7 +198,7 @@ proxy2b/exp/w06-heal/run.sh                 # 4070; STAGES="gate h1 h4" (default
 6. **Resume.** 6 steps run straight are identical to 2 steps, a kill, and 4 more after resume. The trust clamp holds.
 7. **mkmix / jitter.** Levels, bits per weight, transferred tensors and the jitter SD are right.
 
-Not testable on the CPU: fla / causal_conv1d kernels (colo uses the torch reference path), speed, and memory. The
+Not testable on the CPU: fla / causal_conv1d kernels (cpu1 uses the torch reference path), speed, and memory. The
 `gate` stage covers those on the 4070.
 
 ## Caveats

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """mutate.py RHV3_DIR -- mutation check of exl3i's selftest: build the plugin with one deliberate bug at a time and
 confirm exl3i_gpu_test FAILS, and in the sections that should see it. A mutant the test passes is a hole in the test.
-Each mutant: (name, file, old, new, sections expected to fail). Run on iceman, HOLDING THE CARD'S LOCK (mutants are
+Each mutant: (name, file, old, new, sections expected to fail). Run on gpubox, HOLDING THE CARD'S LOCK (mutants are
 broken kernels: never beside another job on the card -- 2026-11-02 the host went down during an unlocked run):
   exec 5>/root/card1.lock; flock 5; exec 7>/root/ram.lock; flock -s 7; ROCR_VISIBLE_DEVICES=1 python -I mutate.py /root/rhv3
 Results of the first run (6 of 10, cut by the crash): all caught."""
 import os, re, shutil, subprocess, sys
-R = sys.argv[1]; SRC = f"{R}/plugin"; MUT = "/data/plugcheck-mut"   # not on iceman's overlay root: copies there read EIO
+R = sys.argv[1]; SRC = f"{R}/plugin"; MUT = "/data/plugcheck-mut"   # not on gpubox's overlay root: copies there read EIO
 MUTANTS = [
     ("relayout-no-transpose", "nt.c",
      "memcpy(out + (tk * nt + tn) * W, rec + (tn * kt + tk) * W, (size_t)W * 4);",

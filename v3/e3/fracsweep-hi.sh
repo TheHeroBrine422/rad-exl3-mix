@@ -1,7 +1,7 @@
 #!/bin/bash
 # fracsweep-hi.sh -- fractional-K trellis at the top (K5-8 half steps) and bottom (K0.25) of the V3 menu, with
 # K4.5/5 overlapping fracsweep.sh's points. The 14 tensors of fracsweep.sh plus layers 0 (GDN) and 63 (full attention).
-# colo: 9 tensors at once x 4 threads, one output file per tensor. Merge: cat data/fhi/*.jsonl.
+# cpu1: 9 tensors at once x 4 threads, one output file per tensor. Merge: cat data/fhi/*.jsonl.
 cd "$(dirname "$0")"; mkdir -p data/fhi
 export E3_CKPT=${E3_CKPT:-/data/models/qwen38-27b-bf16} E3_HESS=${E3_HESS:-/data/challenge/hessians/calib} OMP_NUM_THREADS=4 E3_FACTORS=0.85,1.0,1.15,1.3,1.5,1.75
 KS=0.25,4.5,5,5.5,6,6.5,7,7.5,8

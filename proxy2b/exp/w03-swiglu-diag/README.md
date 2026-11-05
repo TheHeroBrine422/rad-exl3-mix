@@ -26,7 +26,7 @@ alone, and `a9g` (isotropy replaced by down_proj's measured Σdy² diagonal) sho
   token weight, the full residual-gradient covariance, and the measured per-token form, all vs Sketch B.
 - `seedsumm.py` — 3-seed means, per-seed SD, gains vs base, "every seed beats every seed".
 - `run.sh` — the 4070 entry point; `selftest.py` / `selftest.out` — the algebra check; `cpu-gate.txt` — the CPU
-  gate on real 0.8B data (colo CPU, see below).
+  gate on real 0.8B data (cpu1 CPU, see below).
 
 ## Arms (K3 and K2, rotation seed offsets 0 / 1 / 2, base settings, output damping 0.01, i8, g08-search1)
 | arm | gate / up | other linears | source |
@@ -68,7 +68,7 @@ finished arms are skipped; results in `/data/yb/w03-swiglu-diag/result.txt`. Set
 ≈ 25 min (12 quants ≈ 50 min with `FORCE_A9=1`); plus up to 6 eB control quants (≈25 min) if yaqaFact7 has not made
 them. **≈ 30 min** (≈ 1 h forced).
 
-## CPU gate result (2026-11-02, colo CPU): A9 FAILS C1, and no forward-only fix found
+## CPU gate result (2026-11-02, cpu1 CPU): A9 FAILS C1, and no forward-only fix found
 All against c18's 1K Sketch B diagonal (#33-18; its own halves median 0.990 gate / 0.988 up).
 
 | estimator (gate / up, median cos over 24 layers; min) | gate | up | file |

@@ -20,7 +20,7 @@ per-level library and the Phase-B requant (#58).
 
 ## What the CPU self-tests found (these change the design)
 
-All runs on the real 0.8B, colo CPU.
+All runs on the real 0.8B, cpu1 CPU.
 
 1. **The paper's noise is far too strong for our levels** (`selftest/depth-profile.txt`, every layer):
    - Paper's Gaussian, γ = 0.05 × channel max, propagated: tr N / tr H ≈ 0.25–0.75 at the layer inputs from layer 1
@@ -95,7 +95,7 @@ proxy2b/exp/w07-denoise/run.sh     # 4070; after wpre.patch is merged. Results /
 - **PASS at a K:**
   - The per-level requant (Phase B, #58) gets the denoised target at and around that level.
   - **Quant source:** the 27B needs a uniform-K quant of the level (ladder) and a layer-streamed two-model forward for
-    the moments (bf16 + quantized do not fit the two R9700s together). That is a new iceman script, ~1–2 h per level
+    the moments (bf16 + quantized do not fit the two R9700s together). That is a new gpubox script, ~1–2 h per level
     for ~1M tokens.
   - **Gauss source:** one batch-2 forward per level, but C and N for all 496 linears ≈ 2× the Hessian storage. Layer
     passes, host RAM / disk.
@@ -125,7 +125,7 @@ proxy2b/exp/w07-denoise/run.sh     # 4070; after wpre.patch is merged. Results /
     - Identity transforms: identical.
     - Random transforms: saved wq = W·F exactly.
     - Missing file: exits naming the group.
-  - `selftest/test_moments.out`: **ALL PASS**. Real 0.8B, colo CPU.
+  - `selftest/test_moments.out`: **ALL PASS**. Real 0.8B, cpu1 CPU.
     - γ = 0: C = N = 0 exactly.
     - Layer-0 noise has diag N = σ² (ratio 1.0006).
     - Split layer ranges are bit-exact with one run.

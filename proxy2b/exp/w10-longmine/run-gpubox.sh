@@ -1,7 +1,7 @@
 #!/bin/bash
-# run-iceman.sh -- w10-longmine (ranked.md I1): mine the existing 27B long-trace evals for family x position effects.
-# ICEMAN, CPU ONLY (no card, no GPU: numpy over per-row score files; < 2 GB RAM, ~1 min). Takes /root/ram.lock only
-# while it runs. Copy this folder to iceman first (e.g. cat each file | ssh-iceman.sh "cat > /root/w10-longmine/...").
+# run-gpubox.sh -- w10-longmine (ranked.md I1): mine the existing 27B long-trace evals for family x position effects.
+# gpubox, CPU ONLY (no card, no GPU: numpy over per-row score files; < 2 GB RAM, ~1 min). Takes /root/ram.lock only
+# while it runs. Copy this folder to gpubox first (e.g. cat each file | ssh-gpubox.sh "cat > /root/w10-longmine/...").
 # Step 1 writes manifest.tsv and STOPS if any score file is unresolved: complete it by hand (tag, score file, golden,
 # mix or container), or delete those lines; rerun. Step 2 runs longmine.py. Public goldens are excluded on purpose
 # (public reports only, never informs a decision): calib-pool long goldens only (golden-long2*, ver3/ver4-long).

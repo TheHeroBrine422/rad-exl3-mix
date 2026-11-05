@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """designcheck.py RADLS.jsonl MIX|CONTAINER ... -- can the long-trace arms carry longmine.py's regression at all? Per
-arm the family bits (longmine.fambits, with the repo's copies standing in for iceman's /root/models paths), then the
+arm the family bits (longmine.fambits, with the repo's copies standing in for gpubox's /root/models paths), then the
 spread of the two contrasts (attention - trunk, GDN - trunk bits) and the design's condition number."""
 import json, os, sys
 import numpy as np

@@ -44,14 +44,14 @@ tensor is the level's own.
 
 3. **Metric and target (`mkdenoise.py`, patched).**
    - **Why the patch:** at 17408² the current file needs about 25–30 GB of f64 plus a 2.4 GB `triu_indices`. That fits
-     neither on a 32 GB card beside anything nor in iceman's 30 GB of host RAM.
+     neither on a 32 GB card beside anything nor in gpubox's 30 GB of host RAM.
    - **`mkdenoise-lean.patch`:** adds a lean path for groups wider than `MKD_LEAN_K` = 8192 (`MKD_LEAN=1` forces it). It
      is the same arithmetic in the same order, in place and blockwise, with C/N/H_sub reloaded for F. That gives at
      most ~5 k×k f64 matrices at once (~12 GB at 17408), the `eigh` clip case included.
    - **Bit-identical:** its files equal the default path's (`test_lean.py`).
    - **Small groups:** groups up to 8192 wide run the unchanged code.
 
-4. **Driver (`sib27.sh`, iceman card 0).** It follows `night27.sh` / `ladder2.sh`: card0 lock then a shared ram lock,
+4. **Driver (`sib27.sh`, gpubox card 0).** It follows `night27.sh` / `ladder2.sh`: card0 lock then a shared ram lock,
    a log under `/data`, per-step markers, and a STOP file. Steps:
    - **pre:** checks and the C-oracle decode check.
    - **gate:** speed on layers 2–3, giving an estimate for N; stops over `MAXH`.
@@ -69,7 +69,7 @@ tensor is the level's own.
 **Windows.**
 - **Default:** `WINS=moments`, the 0.8B arm's own list: qad docs cut into 2048-token windows, shorter docs ≥ 64 tokens
   as one window, shuffle seed 0. With the same calib token stream and pools that is the same 843 windows /
-  1,002,035 tokens the 0.8B used (iceman's golden meta should match the 4070's `calib-meta`; check `windows.json`).
+  1,002,035 tokens the 0.8B used (gpubox's golden meta should match the 4070's `calib-meta`; check `windows.json`).
 - **`WINS=long`:** collect.py's list (whole 2048-token windows only, same shuffle; checked equal in `test_cpu.py` D).
 - **Recommendation:** keep `moments`. It is the validated recipe, and short documents keep the subset H closer to
   calib's H, which mkdenoise's control-variate G = H_calib + (G_sub − H_sub) assumes.
@@ -82,7 +82,7 @@ tensor is the level's own.
   collection is the follow-up. A longer list keeps 1M as its prefix, so this could be a second collection over the
   suffix windows plus a summing script; that script is not written yet.
 
-## Budget on iceman (K3, N = 1M, card 0)
+## Budget on gpubox (K3, N = 1M, card 0)
 
 | resource | need | note |
 |---|---|---|
@@ -104,18 +104,18 @@ change to prefill or decode. The cost is at quant time: ~4–5 card-hours per (l
 - **0.8B caveat:** proxy KL runs use the f16 path. At the A8-shipped sizes, a relative gain shrinks by A8's constant
   KLD.
 
-## Run (iceman, once it is back)
+## Run (gpubox, once it is back)
 
 From the VM:
 
 ```
-cd /workspace/rad-exl3-mix; I=local/bin/ssh-iceman.sh
+cd /workspace/rad-exl3-mix; I=local/bin/ssh-gpubox.sh
 tar -C v3/sib27 -cf - sibmom27.py deq.py assemble.py levelargs.py cmpmom.py sib27.sh lean/mkdenoise.py \
   | $I 'mkdir -p /root/sib27 && tar -C /root/sib27 -xf - && cp /root/sib27/lean/mkdenoise.py /root/sib27/mkdenoise.py'
 $I 'grep -c -- "\"--wpre\"" /root/ourq/ourq.py'   # 0: copy quantize/ourq.py over (diff first; the noop step proves it unchanged otherwise)
 ```
 
-On iceman:
+On gpubox:
 
 ```
 nohup bash /root/sib27/sib27.sh < /dev/null > /data/sib27/K3.out 2>&1 &   # BASE=/data/v3ladder2/K3 TAG=K3 by default
@@ -212,5 +212,5 @@ nohup bash /root/sib27/sib27.sh < /dev/null > /data/sib27/K3.out 2>&1 &   # BASE
 | `levelargs.py` | a level's ourq args from its `stamp.json` |
 | `assemble.py` | `build` / `same` (no-op gate) |
 | `cmpmom.py` | `diff` / `verdict` / `fdose` |
-| `sib27.sh` | iceman driver |
+| `sib27.sh` | gpubox driver |
 | `test_cpu.py`, `test_lean.py`, `test_gpu.sh` (+ `.out`) | tests |

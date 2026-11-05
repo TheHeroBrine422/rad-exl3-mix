@@ -1,4 +1,4 @@
-# mkdenoise.py on colo CPU: calib H (layers 0 and 3) + the 1,024-token real moments of selftest/depth-profile.txt (quant = K3 base upstream error, gauss = gamma 0.05); G is the control-variate form (clip = share clipped, large at 1k tokens), F the subset's own filter
+# mkdenoise.py on cpu1 CPU: calib H (layers 0 and 3) + the 1,024-token real moments of selftest/depth-profile.txt (quant = K3 base upstream error, gauss = gamma 0.05); G is the control-variate form (clip = share clipped, large at 1k tokens), F the subset's own filter
 quant3 1.0 0.75 0.input clip 0.0e+00 Fdev 0.000 {'linear_attn.in_proj_qkv': 1.0, 'linear_attn.in_proj_z': 1.0}
 quant3 1.0 0.75 0.linear_attn.out_proj.input clip 5.8e-03 Fdev 0.023 {'linear_attn.out_proj': 1.0002}
 quant3 1.0 0.75 0.mlp.down_proj.input clip 8.3e-02 Fdev 0.033 {'mlp.down_proj': 1.0}

@@ -101,7 +101,7 @@ sizes and 6.0.
   tracks size, for MoE models it can differ a lot.
 - **Search-algorithm improvements** for the tensor search: in parallel with the quantization runs.
 
-## Research method and infrastructure (in use now)
+## Research method and infrastructure
 - **Small-model proxies:** Qwen3.5-0.8B on a 12 GB consumer GPU for most screening (anything with gradients or
   output-side statistics; `proxy2b/`, goldens, fake-quant evals through our quantizer), the 2B where width matters
   (its calibration study `proxy2b/CALIBRATION.md` is paused), the 9B (untied embedding / head, closest shapes) when a

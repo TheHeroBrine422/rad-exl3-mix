@@ -1,5 +1,5 @@
 #!/bin/bash
-# night27.sh -- the unattended 27B night (2026-11-02/03), on iceman, both cards (user's arrangement):
+# night27.sh -- the unattended 27B night (2026-11-02/03), on gpubox, both cards (user's arrangement):
 #   1. hdiag27.sh 512: diagonal H_out collection (Sketch B, sum dy^2, sum ||x||^2 dy^2) on long qad windows (#33-21:
 #      short docs don't help, more long windows do); fp32; 2-seq gate first; a snapshot every 128 sequences
 #   2. card 0, after 512 sequences: two K3 trunk quants with the ladder's settings (ladder2.sh: i8, qtf2, scaled

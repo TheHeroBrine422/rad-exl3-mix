@@ -1,7 +1,7 @@
 #!/bin/bash
 # dampsweep.sh -- LDLQ damping vs K on CPU (trellis.py E3_DAMP): is exllamav3's 0.025 over-damped, more so at high K
 # (the hypothesis for turboderp's K6-8 wins)? 16 tensors (every family; layers 0/10 GDN, 11/43/63 attention), damping
-# 0.05/0.025/0.01/0.005/0.0025/0.001, K2/4/6/8, 128 rows, error vs the UNDAMPED Hessian. colo, 9 jobs x 4 threads.
+# 0.05/0.025/0.01/0.005/0.0025/0.001, K2/4/6/8, 128 rows, error vs the UNDAMPED Hessian. cpu1, 9 jobs x 4 threads.
 cd "$(dirname "$0")"; mkdir -p data/damp; D=${OUTD:-data/damp}; mkdir -p $D
 export E3_CKPT=${E3_CKPT:-/data/models/qwen38-27b-bf16} E3_HESS=${E3_HESS:-/data/challenge/hessians/calib} OMP_NUM_THREADS=4 E3_FACTORS=1.0,1.15,1.3,1.5
 one() { [ -s $D/$1-$2-d$3.jsonl ] && return

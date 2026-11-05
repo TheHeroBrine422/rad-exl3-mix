@@ -126,7 +126,7 @@ per-head norms, so they are a built-in near-null control.
 - The bdiag arm is reported as stacking evidence and does not gate.
 
 **Decision it drives.**
-- PASS: a 27B version, i.e. a layer-streamed fit-pool forward on iceman writing gate/up svh. Not written yet; ~half a day of work. It becomes a free per-level step (fit pool only). It also hints that a gate-specific shrink fix (α for gate alone) might capture most of it.
+- PASS: a 27B version, i.e. a layer-streamed fit-pool forward on gpubox writing gate/up svh. Not written yet; ~half a day of work. It becomes a free per-level step (fit pool only). It also hints that a gate-specific shrink fix (α for gate alone) might capture most of it.
 - FAIL: closed.
 
 **GPU time.** 4 fits (~3 min each, mostly the forward) + 6 evals ≈ 20 min.

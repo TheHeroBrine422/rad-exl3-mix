@@ -1,5 +1,5 @@
 #!/bin/bash
-# knap.sh HEADCURVE.json OUTDIR [TREE] -- CPU (colo / VM, ~20-40 min): knap4 (V3 table, quality only) at 2.0 / 2.5 / 3.0
+# knap.sh HEADCURVE.json OUTDIR [TREE] -- CPU (cpu1 / VM, ~20-40 min): knap4 (V3 table, quality only) at 2.0 / 2.5 / 3.0
 # with and without the low-budget slab-head curve (knap4-headcurve.patch, KN_HEADCURVE), plus the no-op regression:
 # patched knap4 without KN_HEADCURVE must equal the unpatched one byte for byte. TREE = a repo checkout (default the
 # script's), whose v3/nf/knap4.py is the UNPATCHED one; the patched copy is made in OUTDIR.

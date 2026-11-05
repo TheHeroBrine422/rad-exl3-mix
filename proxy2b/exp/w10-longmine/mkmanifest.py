@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """mkmanifest.py RADLS.jsonl SCOREDIR GOLDEN_DIR[,..] MIXDIR[,..] > MANIFEST.tsv -- longmine.py's manifest from the
-long-trace score files (iceman: /root/longscores/<tag>.f32). Per file:
+long-trace score files (gpubox: /root/longscores/<tag>.f32). Per file:
   golden: the GOLDEN_DIR whose row count equals the file's (golden-long2 and its capped copies golden-long2-cCAP
           differ in rows); none or several -> unresolved;
   bits:   <tag>.mix or <tag minus a long- / longcap- prefix>.mix in a MIXDIR; else a uniform container whose name ends

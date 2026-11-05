@@ -108,9 +108,9 @@ To compare tensors on the Fisher's scale, it is divided by `tr(H_in)`: `h_c` alr
 - **Fail:** D6 is closed. gate/up are closed already by the CPU ceiling.
 
 **A6 on the 27B (`run27.sh`):**
-- `pilot` on ICEMAN, both cards: `hdiag27.sh 256`, ~2.4 h. **256 sequences, not ranked.md's 64**: at 64 the cross-fit/self bracket is too wide (see the table). The pilot is not lost, because the full run resumes from its state.
-- `timing` on ICEMAN card 0, ~20 min, needs `LADDER_ARGS`: `ldlq_2hess` vs one-sided on layer 40's gate/up.
-- `predict` on COLO CPU, ~30–40 min. Copy the pilot's `hdiag-snap256/`, `hdiag-state.pt` and the ladder K3 `proxy.jsonl` to `/data/work/w04/27b/` first.
+- `pilot` on gpubox, both cards: `hdiag27.sh 256`, ~2.4 h. **256 sequences, not ranked.md's 64**: at 64 the cross-fit/self bracket is too wide (see the table). The pilot is not lost, because the full run resumes from its state.
+- `timing` on gpubox card 0, ~20 min, needs `LADDER_ARGS`: `ldlq_2hess` vs one-sided on layer 40's gate/up.
+- `predict` on cpu1 CPU, ~30–40 min. Copy the pilot's `hdiag-snap256/`, `hdiag-state.pt` and the ladder K3 `proxy.jsonl` to `/data/work/w04/27b/` first.
 
 - **Go rule for the full collection (draft):** the 27B L_est-weighted split-half cross-fit gain (halves of 128) is ≥ 4.75%, i.e. ≥ ½ of the 0.8B's 9.5% at the same n; AND halves median cos ≥ 0.98.
 - **Then:** the expected 27B KL gain ≈ 0.5–0.66 × the self/cross bracket.
@@ -141,7 +141,7 @@ To compare tensors on the Fisher's scale, it is divided by `tr(H_in)`: `h_c` alr
 | `rowerrcheck.py` | checks `rowerr.npz` |
 | `run.sh` | 4070 GPU arms |
 | `run-cpu.sh` | regenerates `data/` from the VM |
-| `run27.sh` | iceman pilot / timing, colo predict |
+| `run27.sh` | gpubox pilot / timing, cpu1 predict |
 | `rowerr.patch`, `rowerr-test.sh` | the ourq fix and its test |
 | `selftest*.py` / `.txt` | CPU self-tests (PASS) |
 

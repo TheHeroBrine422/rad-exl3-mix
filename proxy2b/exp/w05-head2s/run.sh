@@ -1,7 +1,7 @@
 #!/bin/bash
 # run.sh -- w05-head2s (ranked.md E2): two-sided LDLQ on the 27B LM head with its exact softmax-Fisher diagonal
 # (headsens.npz fisher_qad_gen), block-diagonal path (quantize-hout-bd.patch + ourq-hout-bd.patch, MERGED first).
-# ICEMAN ONLY (the 0.8B head is tied). One card, host RAM exclusive per head quant (~22-26 GB), as headremake.sh.
+# gpubox ONLY (the 0.8B head is tied). One card, host RAM exclusive per head quant (~22-26 GB), as headremake.sh.
 #   stage 1  K3 seed 0: two-sided in vocabulary order (two-v) and strided order (two-s) at sigma_out 0.01 / 0.1 / 1;
 #            sigma_out per family picked on the SELECTION half of the calib-A dump (rule in README)
 #   stage 2  K3 seeds 0-2: one (control, one-sided, vocabulary order), two-v*, two-s*, hd-v (one-sided + Fisher output

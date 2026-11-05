@@ -1,8 +1,8 @@
 #!/bin/bash
-# run5.sh -- #79 on Thor: CD (3 sweeps) on the cubic0.02_i8 codebook, K2.5 / K3, 16 tensors, rows seed 0.
+# run5.sh -- #79 on cpu2: CD (3 sweeps) on the cubic0.02_i8 codebook, K2.5 / K3, 16 tensors, rows seed 0.
 # One thread per job; memory-aware as run3.sh; skips jobs whose log says done.
 cd /data/work/e3t; export E3_CKPT=/data/models/qwen38-27b-bf16 E3_HESS=/data/challenge/hessians/calib E3_ROWSEED=0 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2
-O=/data/work/e3t/cd-thor-stack.jsonl; MEMGB=${MEMGB:-110}; MAX=${MAX:-16}; mkdir -p logs
+O=/data/work/e3t/cd-cpu2-stack.jsonl; MEMGB=${MEMGB:-110}; MAX=${MAX:-16}; mkdir -p logs
 mem() { echo $(( $(cat /sys/fs/cgroup/memory.current) / 1073741824 )); }
 T="10:ffn_down 30:ffn_down 50:ffn_down 10:ffn_gate_up 30:ffn_gate_up 50:ffn_gate_up 10:ssm_qkv 10:ssm_out 30:ssm_qkv 30:ssm_out 50:ssm_qkv 50:ssm_out 19:attn_qg 19:attn_output 43:attn_qg 43:attn_output"
 for t in $T; do l=${t%%:*}; w=${t#*:}; for job in cd; do

@@ -40,9 +40,9 @@ Each of these turns a whole 27B night into a mixed or failed result that looks n
   - dv8192, dv1024, ident, prec1k/x2, snap1024, snap8192, snap8192diag, snap8192mix, c18 snapshot 512 (B / xw / dy),
     snap8192/hin;
   - **all 150 / 150**, none refused.
-  - 27B dirs on iceman were not checked. Old 27B gate scripts that pass a partial `--hout` dir with `--layers 0-63`
+  - 27B dirs on gpubox were not checked. Old 27B gate scripts that pass a partial `--hout` dir with `--layers 0-63`
     now need `--layers` narrowed or `--side-partial`.
-- `../w01-genmask/selftest/cpu_e2e.out` (colo CPU, tiny Qwen3.5): **ALL PASS**.
+- `../w01-genmask/selftest/cpu_e2e.out` (cpu1 CPU, tiny Qwen3.5): **ALL PASS**.
   - The collector exits naming `0.mlp.down_proj` when that linear's hook is removed, and writes nothing.
   - NSEQ past the window list exits before the first sequence. Control: the original dies with IndexError after the
     in-range windows.

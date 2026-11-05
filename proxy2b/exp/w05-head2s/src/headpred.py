@@ -9,7 +9,7 @@ shapes it (cost ~ GM). Predictor R(order, sigma_out) = sum_b GM_b(d~) / sum_b AM
 (the damped factor prepare_H_out builds), for the vocabulary order, the sensitivity (slab) order and the strided order (block b holds
 sensitivity ranks b, b + nb, ...: every block spans the whole range; an --head-perm ourq can take as is).
 
-F: --sens: headsens.py's exact softmax Fisher (fisher_qad_gen, iceman); else a PROXY: next-token counts on gen rows of
+F: --sens: headsens.py's exact softmax Fisher (fisher_qad_gen, gpubox); else a PROXY: next-token counts on gen rows of
 the qad pool (META = the calib golden's kld.json / tokens.i32 / gen.u8), + 0.01 (counts track sum p, a rough stand-in).
 --emulate N: also quantize N rows (64 evenly spaced runs of N/64 rows; and the N most sensitive rows sorted; the first N of the strided order) with
 exllamav3's own code on the CPU and a scalar stand-in for the trellis (cpuq.py), one- vs two-sided, K2 / K3,

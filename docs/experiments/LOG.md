@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 02:40 CST · #— · Machine names neutralized in the public repo
+- Tracked files (not `local/`): iceman → `gpubox`, colo / R640 → `cpu1`, Thor → `cpu2`, the extra RDNA4 boxes
+  unnamed; ssh helpers referenced as `ssh-gpubox.sh` / `ssh-cpu1.sh` / `ssh-cpu2.sh` (local symlinks to the old ones);
+  9 files renamed (`data/a1/a1-cpu{1,2}.jsonl`, `data/e3/cd-cpu*.jsonl`, `v3/e3/cpu{1,2}chain.sh`,
+  `proxy2b/exp/w10-longmine/run-gpubox.sh`). Git history keeps the old names (user: fine). Older entries in this log
+  were rewritten the same way. The RTX 4070 and R9700 are named as hardware models.
+- Private traces: the repo holds only the tools that render / redact / sample them and aggregate statistics, no
+  trace content. cpu1's public IP prefix stays in the redactor (it will be public with the volunteer queue; user).
+
 ### 2026-11-05 02:10 CST · #— · ROADMAP and design doc brought in sync; research points 1.5 / 1.75
 - **ROADMAP rewritten** (user: out of sync with `docs/design/v3.md`, and "small-model proxies after V3" was wrong):
   sections by release (V1/V2 released, V3 in progress, V3 extras, V4 = QAD / KV / LSA / MoE, later), "Research
@@ -20,7 +29,7 @@ versions of anything: git history.
 
 ### 2026-11-05 01:40 CST · #33-28, #91, #46-03 · Swap-test restart; discussion record (self-calibration, variants, 7.0 / 8.0)
 - **#33-28 swap test failed at its first quant (5:34 PM CST 11-04):** `ModuleNotFoundError: exllamav3`. Since the
-  iceman rebuild the patched exllamav3 (a3bfbfd0 + 0001–0007, editable install) had never finished building (the 1 AM
+  gpubox rebuild the patched exllamav3 (a3bfbfd0 + 0001–0007, editable install) had never finished building (the 1 AM
   CST `exl3build.sh` log stops mid-compile) and the kernel sources next to ourq.py (`exl3frac`, `exl3cb`,
   `exl3frac2`) were missing. Copied the sources from the repo, restarted `exl3build.sh` (5:52 PM CST);
   `/data/swap27/afterbuild.sh` reruns `swap27.sh run` (NSEQ=1920) when it reports done. Base score and `hout-bn`
@@ -35,7 +44,7 @@ versions of anything: git history.
   with the existing 1,920-sequence calib collection at w* (`blend.py hout`, sums simply add). Arm D (27B continuations
   of the same boundaries, served at low priority) after the swap test; also gives the agentic eval golden. Extra
   knob: upweight calib's own 27B traces (6% of qad scored rows vs ~25% of search / verify). turboderp's cal_trace
-  is ready-made 27B self-generated general text for an input-Hessian / H_out blend (~20 min forward on iceman).
+  is ready-made 27B self-generated general text for an input-Hessian / H_out blend (~20 min forward on gpubox).
 - **Subagents:** several `pi-capped` agents may run at once (about three, by free RAM); queue only sequential work
   (user; AGENTS.md). w13b, w14 and w15 (paper accuracy check, read-only, `local/paper/review-w15.md`) run in
   parallel. The paper was reviewed by the user ("generally looks good").
@@ -64,7 +73,7 @@ versions of anything: git history.
   the user's agent sessions make better Σdy² H_out, input Hessians or healing data than calib qad or the raw sessions,
   and at what blend weight with calib. Arms: C (0.8B's own turns, 2,304 prompts of 3,072 tokens), B (raw sessions,
   scored on the other model's turns), T (turboderp's SC calibration trace, 27B-generated general chat / reasoning,
-  217 rows), D (27B continuations) later on iceman. Agentic eval golden from 256 held-out-session prompts. Tools
+  217 rows), D (27B continuations) later on gpubox. Agentic eval golden from 256 held-out-session prompts. Tools
   `sgprep.py`, `sggen.py` (batched, no padding, 64 tok/s at batch 4 smoke), `sgbuild.py`, `blend.py`; heal.py
   `--data meta`. Prep: 3,578 train / 888 eval boundaries available (4:1 session split).
 - **#33-28:** collection stops at the 1,920 snapshot (H27.md amendment 2, before data) to free cards earlier; the swap
@@ -89,7 +98,7 @@ versions of anything: git history.
   their roles; final picks and published numbers on calib verify; long-context guards from calib's long traces, 2–3
   whole own sessions before release. AGENTS.md and `docs/CORPORA.md` updated.
 - **Goldens:** stock radiance 1.17 `--kld-record --kld-corpus --kld-top 512` (no custom recorder needed; gen masks
-  added by our tools). `xcorp/kldcorpus.py` builds the corpora (tested on colo: 200k tokens, 141 pieces, 0 round-trip
+  added by our tools). `xcorp/kldcorpus.py` builds the corpora (tested on cpu1: 200k tokens, 141 pieces, 0 round-trip
   failures; xcorp's tokenized meta contains no private traces). First batch ~5M xcorp + 2–3M traces on the first free
   cards after the swap test.
 - **Publishing (pending the user's go per repo):** xcorp + goldens (`Hero422/xcorp-v1`, the challenge's licensing
@@ -119,7 +128,7 @@ versions of anything: git history.
 - **Decision (user):** sub-1 K (K0.125–0.875 at 1/8 steps) is in V3 (was V3.5): quantizer + decoders in the kernel
   pass, offered by knap4 at every size. Research sizes 1.25 / 1.5 / 1.75 added to the V3 ladder.
 - **Run:** `v3/e3/sub1/run.sh` (rule in its README, written before data): 49 tensors × K 0.125…0.875 + 1 / 1.25 /
-  1.5 / 2 anchors, i8c, 128 rows, scale factors 0.5–1.15. colo part a (GDN layers 2/10/30/50/62), Thor part b
+  1.5 / 2 anchors, i8c, 128 rows, scale factors 0.5–1.15. cpu1 part a (GDN layers 2/10/30/50/62), cpu2 part b
   (attention layers 3/19/43/63). Question the user raised: does knap4 pick K0.875-ish levels for some tensors even
   at 2 bpw?
 - **Runtime:** P+D (one salted codebook read a 0-bit step; measured with the kernel pass).
@@ -140,7 +149,7 @@ versions of anything: git history.
   down tensors. Runtime P+D (+1/3 MLP work, up-only). Proxy error only: KL unmeasured.
 - **Decision / next:** modest; a per-layer option for the middle layers if the V3 kernels make the extra GEMM cheap.
   Price it with the two-pass kernel timings; no GPU test before then.
-- **Files:** `data/a1/a1-colo.jsonl`, `data/a1/a1-thor.jsonl`
+- **Files:** `data/a1/a1-cpu1.jsonl`, `data/a1/a1-cpu2.jsonl`
 
 ### 2026-11-04 13:55 CST · #89-04, #89-05, #89-06, #33-25, #33-27 · d1105 results; heavy tail in the 27B Σdy²
 - **#89-04 PASS:** one pass over 2,048 fresh qad windows vs heal0 (2 × 1,024), equal compute: K3 0.9954 / 0.9950,
@@ -199,7 +208,7 @@ versions of anything: git history.
   tile) does not depend on the quantizer experiments still running.
 - **Order:** (1) radiance 1.16.0 rebase of our plugins (the kernels call radiance's tile; API per version); (2) decode-
   to-int8 and decode-to-f16 passes for EXL3 tiles + routing to radiance's i8a8 / 16-bit tiles; (3) timing at the
-  board's shapes (needs an iceman card: after #33-24, or a pause); (4) knap4's speed table from those timings.
+  board's shapes (needs an gpubox card: after #33-24, or a pause); (4) knap4's speed table from those timings.
 
 ### 2026-11-04 02:00 CST · #— · IQR-V4 published (main competitor)
 - **Notes:** `docs/research/iqr-v4.md`. Board: V4 leads our V2 by 7–13% at 2.5–5 bpw, level at 5.5, behind at 6+
@@ -218,10 +227,10 @@ versions of anything: git history.
   the mean for most methods (the gain sits in the bulk), healing improves them about as much.
 - **Files:** `data/tails/wins-2026-11-04.txt`, `data/tails/tails.sh`
 
-### 2026-11-03 23:40 CST · #33-24 · 27B diagonal H_out collection started on the rebuilt iceman
-- **Status:** running · **Machine:** iceman (rebuilt 11-03: OS drive lost in a linear LVM; new 4 TB data drive),
+### 2026-11-03 23:40 CST · #33-24 · 27B diagonal H_out collection started on the rebuilt gpubox
+- **Status:** running · **Machine:** gpubox (rebuilt 11-03: OS drive lost in a linear LVM; new 4 TB data drive),
   both R9700s (`ROCR_VISIBLE_DEVICES=0,1`: the container also exposes the iGPU)
-- **Setup:** `hdiag27.sh 2048` via `local/bin/iceman-day27.sh`: fp32, gen-masked loss (`YAQA_GENMASK=1`, #83-02), long
+- **Setup:** `hdiag27.sh 2048` via `local/bin/gpubox-day27.sh`: fp32, gen-masked loss (`YAQA_GENMASK=1`, #83-02), long
   qad windows (pools-v3: 1,350 windows of 2,048), Σdy² + Sketch B + xw, snapshots every 128 sequences, resumable.
   Fresh venv: torch 2.15.0+rocm7.14, transformers 5.22.1, accelerate 1.15.0, fla 0.6.0 (no causal_conv1d: reference
   conv, correct). Model Qwen/Qwen3.8-27B @ 1d4bf0f2ff60; challenge data @ 2dcf0061.
@@ -309,21 +318,21 @@ versions of anything: git history.
 - **Caveat:** 0.8B KL runs use the f16 path; at 5–6 bpw A8's ~+0.00016 constant makes 27B relative gains smaller.
 
 ### 2026-11-03 09:10 CST · #81-02 #81-03 · A1 control passes; whole-model A1 run under a memory-aware scheduler
-- **Status:** #81-02 done (partial, 7 layers so far), #81-03 running · **Machine:** Thor + colo (`v3/e3/a1/a1sched.py`)
+- **Status:** #81-02 done (partial, 7 layers so far), #81-03 running · **Machine:** cpu2 + cpu1 (`v3/e3/a1/a1sched.py`)
 - **#81-02 result:** permuted predictors give D's error exactly (ugperm / uperm ÷ D 0.999–1.001 on L2 / L10 / L30 / L50,
   K2.5 and K3) while the real predictors give 0.72–0.94. **The A1 reduction is real prediction, not an artifact of
   coding a residual.** (The 4.5% energy share vs 17% error gap stays unexplained; noted for the GPU step.)
 - **Scheduler:** a1ctl's fixed-width stages left most CPUs idle (down jobs ~15 GB each). a1sched admits jobs by
   cgroup anon memory and CPU count; the down arms were trimmed (no normalized-H copy). Queue: remaining control arms;
   the other 48 layers at K2.5, K2, K3 (D / ug / u); then all 64 layers at K4 and K1.5 (K-dependence). Memory-bound:
-  ~12–20 CPUs busy on Thor, ~20–34 on colo; est. 12–16 h in all. Stop: `touch /data/work/a1/STOP`.
+  ~12–20 CPUs busy on cpu2, ~20–34 on cpu1; est. 12–16 h in all. Stop: `touch /data/work/a1/STOP`.
 
 ### 2026-11-03 08:57 CST · — · Saturation-aware allocation check (ModelOpt / arXiv 2607.12266) on the V2 knapsack data
-- **Status:** done · **Machine:** Thor (`search/kfit2.py` `KFIT_SAT=1`: KLD = C (1 − exp(−P/C)), C fitted)
+- **Status:** done · **Machine:** cpu2 (`search/kfit2.py` `KFIT_SAT=1`: KLD = C (1 − exp(−P/C)), C fitted)
 - **Pass rule (written with the BACKLOG row):** saturation matters if it fits measured mix KLD better than the
   additive sum, esp. at 1.75–2.5 bpw.
 - **Data:** the V2 fit measurements whose mixes are still on disk (671 of 1,297; the r9 / other mix files live on
-  iceman only), same set for every variant; CV = 10-fold.
+  gpubox only), same set for every variant; CV = 10-fold.
 - **Result** (whole mixes, CV log(pred / measured) mean / rms):
   | model | < 1.6 bpw (13) | 1.6–2.6 (80) | 2.6–3.6 (66) | 3.6–5.1 (82) | pair ranking |
   |---|---|---|---|---|---|
@@ -346,14 +355,14 @@ versions of anything: git history.
 - **Decision / next:** five BACKLOG rows ("NVIDIA Model Optimizer overlap"); the saturation check is the cheap first one.
 
 ### 2026-11-03 08:48 CST · E10 · Dead-unit census of the writer inputs (27B calib Hessians)
-- **Status:** done · **Machine:** colo (`v3/e3/e10/census.py`)
+- **Status:** done · **Machine:** cpu1 (`v3/e3/e10/census.py`)
 - **Result:** down_proj (64 × 17,408 units): none below 1e-2 × median (min 0.019); out_proj (48): 5 units below 1e-4,
   131 below 1e-2; o_proj (16): 22 below 1e-4, 160 below 1e-2. Bottom 10% of units hold ≤ 6.7% of input energy.
 - **Reading:** null: no dead units worth a format feature (~0.03% of the writer columns near-dead). Faraway E10 closed.
 - **Files:** `data/e10/census.jsonl`
 
-### 2026-11-03 08:45 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (iceman still down)
-- **Status:** planned → running · **Machine:** 4070 (`proxy2b/exp/d1103/run.sh`, ~10–12 h), Thor + colo (`v3/e3/a1/a1ctl.sh`, ~5 h), colo (E10 census, minutes)
+### 2026-11-03 08:45 CST · #87-02 #87-03 #87-04 #83-02 #85-02 #88-02 #89-02 #78-04 #33-23 #81-02 #81-03 E10 · Day queue (gpubox still down)
+- **Status:** planned → running · **Machine:** 4070 (`proxy2b/exp/d1103/run.sh`, ~10–12 h), cpu2 + cpu1 (`v3/e3/a1/a1ctl.sh`, ~5 h), cpu1 (E10 census, minutes)
 - **Pass rules:** `proxy2b/exp/d1103/README.md`, `v3/e3/a1/README.md` (#81-02 / #81-03), all written before data.
 - **4070 order:** #87 sibling asym stacked on edy H_out; ρ screen; gen-masked Σdy² (the 27B estimator); scale refits (B1 full, C9 on C10, both on edy); asym for all 150 tensors with own-seed quantized upstream; asym at K4 / K5; healing on the edy + asym stack; i8c + edy seeds 3–5; Σdy² 512 vs 1,024.
 - **CPUs:** #81-02 permuted-predictor control for A1 (the 4.5% energy vs 17% error gap); #81-03 the other 48 layers at K2.5 only if the control clears.
@@ -370,20 +379,20 @@ versions of anything: git history.
 - **#87 (w07-seqsib, C6 asym):** K3 0.857, K2 0.824 (every seed, control SD 0.8% / 0.3%) **PASS, very large**: 48 writer tensors quantized with sibling-quantized inputs (λ 1, ρ 0.5). Beats edy H_out (K3 0.0845 vs 0.0899). Needs a stacking test with H_out and a sanity review before belief.
 - **#88 (w07-denoise, C1):** K3 1.031, K2 1.10 → **FAIL**.
 - **#89 (w06-heal):** jitter 1.0044 ok; frozen-code healing all-layer K2 0.619, last-only 0.845, oracle 0.377; K3 on bdiag 0.832; mixed-K (F/D) 0.65–0.74; gradcos gates pass. H1(a) ceiling 62% → by the README rule **build S27 (27B healing)**; that is a QAD-class stream and needs the user.
-- **#80 (colo, CD replicate, row-seed 1):** cd3 / ldlq 0.993 (K2.5), 0.993 (K3), 16 / 16; cubic / mul1 0.989 / 0.985, 16 / 16. **PASS**: #77 and #78 replicate on other rows.
-- **#81 (A1, Thor + colo):** ug / D mean K2 0.838, K2.5 0.832, K3 0.829 (L30 0.73 / 0.71); up only 0.871 / 0.866 / 0.863 (keeps 80% of the reduction); oracle 0.825. **PASS** (L30 ≤ 0.85, mean ≤ 0.90), up-only preferred. Caveat to check first: the predicted share of H-weighted energy is only 4.5%, yet the coded error drops 17%; that needs explaining (shape effect or a bug) before any GPU work.
-- **Files:** `data/night1103/*.txt`, `data/yaqa08/result-fact1{2,3}.txt`, `data/a1/a1-{thor,colo}.jsonl`, `data/e3/cd-colo-rs1.jsonl`
+- **#80 (cpu1, CD replicate, row-seed 1):** cd3 / ldlq 0.993 (K2.5), 0.993 (K3), 16 / 16; cubic / mul1 0.989 / 0.985, 16 / 16. **PASS**: #77 and #78 replicate on other rows.
+- **#81 (A1, cpu2 + cpu1):** ug / D mean K2 0.838, K2.5 0.832, K3 0.829 (L30 0.73 / 0.71); up only 0.871 / 0.866 / 0.863 (keeps 80% of the reduction); oracle 0.825. **PASS** (L30 ≤ 0.85, mean ≤ 0.90), up-only preferred. Caveat to check first: the predicted share of H-weighted energy is only 4.5%, yet the coded error drops 17%; that needs explaining (shape effect or a bug) before any GPU work.
+- **Files:** `data/night1103/*.txt`, `data/yaqa08/result-fact1{2,3}.txt`, `data/a1/a1-{cpu2,cpu1}.jsonl`, `data/e3/cd-cpu1-rs1.jsonl`
 
 ### 2026-11-02 20:05 CST · #79 · Coordinate descent stacks on the cubic codebook (CPU proxy)
-- **Status:** running → done · **Machine:** Thor · **Pass rule:** `v3/e3/cd/README.md` (#79)
+- **Status:** running → done · **Machine:** cpu2 · **Pass rule:** `v3/e3/cd/README.md` (#79)
 - **Result** (cd3 / ldlq, both on cubic0.02_i8; mean / param-weighted / tensors ≤ 1): K2.5 0.992 / 0.993 / 16 of 16;
   K3 0.992 / 0.993 / 16. Combined (cubic + cd3) vs ldlq mul1_i8: K2.5 0.979, K3 0.974 (means).
 - **Reading:** passes: CD's −0.8% is unchanged on top of the codebook (the two gains add).
 - **Decision / next:** #77 stays "real, small"; with #80 (other rows) it decides whether CD gets a GPU version.
-- **Files:** `data/e3/cd-thor-stack.jsonl`
+- **Files:** `data/e3/cd-cpu2-stack.jsonl`
 
-### 2026-11-02 20:35 CST · #33-22 #81–#89 · Night queue (no iceman): worker experiments on the 4070, A1 on the CPUs
-- **Status:** planned → running · **Machine:** 4070 (`proxy2b/night4070.sh`, one after another), Thor + colo (`v3/e3/a1/a1run.sh`)
+### 2026-11-02 20:35 CST · #33-22 #81–#89 · Night queue (no gpubox): worker experiments on the 4070, A1 on the CPUs
+- **Status:** planned → running · **Machine:** 4070 (`proxy2b/night4070.sh`, one after another), cpu2 + cpu1 (`v3/e3/a1/a1run.sh`)
 - **Pass rules:** each folder's README (the workers' draft rules, committed unchanged before any data, f443a64 /
   146a4f3); #33-22 `proxy2b/YAQA08.md` amendment 16; #81 `v3/e3/a1/README.md`.
 - **4070 order:** #82 w10-hout-attrib (where the H_out gain comes from: family / depth third, K4 / K5), #83
@@ -417,7 +426,7 @@ versions of anything: git history.
 - **Files:** `data/yaqa08/result-fact11.txt`
 
 ### 2026-11-02 19:10 CST · #77 / #78 · CPU proxy sweep, final read (16 of 16 tensors)
-- **Status:** #77 running (replicate + stacking), #78 passes · **Machine:** Thor + colo · **Pass rule:** `v3/e3/cd/README.md`
+- **Status:** #77 running (replicate + stacking), #78 passes · **Machine:** cpu2 + cpu1 · **Pass rule:** `v3/e3/cd/README.md`
 - **Result** (ratio to LDLQ mul1_i8; mean / parameter-weighted / tensors ≤ 1):
 
   | | K2 | K2.5 | K3 | K4 |
@@ -431,7 +440,7 @@ versions of anything: git history.
   0.98 bar but is real (every tensor, every K) and small (−0.7%); under the two-question rule it gets a replicate
   (#80, other rows) and a stacking test (#79, CD on the cubic codebook) before a GPU version is weighed against its
   2–3× quant time.
-- **Files:** `data/e3/cd-thor.jsonl`, `data/e3/cd-colo.jsonl`
+- **Files:** `data/e3/cd-cpu2.jsonl`, `data/e3/cd-cpu1.jsonl`
 
 ### 2026-11-02 19:10 CST · #78 · 0.8B KL test of the cubic int8 codebook (i8c): real at K3 and K4, K2 not yet
 - **Status:** running (confirmation #78-02) · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` #78 section
@@ -467,7 +476,7 @@ versions of anything: git history.
   C5 entropy-coded storage, any load-time transcoding) only count once they run from the stored form: A1 needs the
   online-prediction kernel (faraway A2: transposed GEMMs re-reading the up / gate tiles, +1–2 GEMMs in the MLP), so
   its gain must be weighed against that speed cost from the start. A proxy test of A1 is still worth it (it decides
-  whether the kernel is), but on the GPU (iceman), not a CPU day.
+  whether the kernel is), but on the GPU (gpubox), not a CPU day.
 
 ### 2026-11-02 16:50 CST · #33-18 · Estimators and dose on 0.8B: Sketch A step 1 and Σdy² work too; 512 sequences suffice
 - **Status:** running → done · **Machine:** 4070 · **Pass rule:** `proxy2b/YAQA08.md` amendment 11
@@ -493,7 +502,7 @@ versions of anything: git history.
   sequences, then the pilot swap; YAQA08 amendment 10's stopping rule is replaced (see the next amendment).
 - **Files:** `data/yaqa08/result-fact7.txt`
 
-### 2026-11-02 16:52 CST · #77 / #78 · CPU proxy sweep, first read (13 of 16 tensors; ffn_down pending on colo)
+### 2026-11-02 16:52 CST · #77 / #78 · CPU proxy sweep, first read (13 of 16 tensors; ffn_down pending on cpu1)
 - **Result** (ratio to LDLQ with mul1_i8, mean over tensors / parameter-weighted):
 
   | K | CD 3 sweeps | gmul1_i8 | cubic0.02_i8 | cubic0.05_i8 |
@@ -508,10 +517,10 @@ versions of anything: git history.
   K2.5 and K3, ≤ 1 at K4) and are within 0.1% of each other → cubic0.02 (2 FMAs) by the rule; cubic0.05 fails at
   K2.5. Final after ffn_down. Consistent with the faraway lens's M6 (the weights are near-Gaussian, mul1's bytesum is
   not: matching the codebook to the weights helps).
-- **Files:** `data/e3/cd-thor.jsonl`
+- **Files:** `data/e3/cd-cpu2.jsonl`
 
 ### 2026-11-02 16:35 CST · #77 / #78 · Tile coordinate descent (C2) and Gaussianized mul1 codebooks (D3): CPU sweep started
-- **Status:** running · **Machine:** Thor (20 jobs × 2 threads) · **Code:** `v3/e3/trellis2.py`, `v3/e3/cd/run.sh` @ 48e7b99
+- **Status:** running · **Machine:** cpu2 (20 jobs × 2 threads) · **Code:** `v3/e3/trellis2.py`, `v3/e3/cd/run.sh` @ 48e7b99
 - **Pass rules:** `v3/e3/cd/README.md` (written before data).
 - **Setup:** 16 real 27B tensors (GDN layers 10/30/50 × qkv, out, gate_up, down; attention layers 19/43 × q, o),
   256 rows, K 2 / 2.5 / 3 / 4, paired proxy error. Smoke test (one small tensor, 64 rows, K2.5): CD 2 sweeps
@@ -519,7 +528,7 @@ versions of anything: git history.
 - **Files:** (when done) `data/e3/cd.jsonl`
 
 ### 2026-11-02 15:55 CST · #76 · pisess v1: our own pi sessions as an agentic-trace corpus
-- **Status:** done · **Machine:** colo (CPU) · **Code:** `xcorp/pisess.py`, `xcorp/pisess_redact.py`,
+- **Status:** done · **Machine:** cpu1 (CPU) · **Code:** `xcorp/pisess.py`, `xcorp/pisess_redact.py`,
   `xcorp/tokenize.py` @ 2cf7666
 - **Setup:** active branch of every session, rendered with Qwen3.8's chat template (tools block from the tools each
   session used, thinking → reasoning_content, structured tool calls, tool results clipped to 16k chars head + tail);
@@ -530,7 +539,7 @@ versions of anything: git history.
   6.65M; **539 documents, 18.54M tokens**. Redaction hits: secrets 22, infra 2,162, email 774, entropy 532; integrity
   flags on 24 documents (unpaired tool call 17, unbalanced think 8), kept. Much of the Claude reasoning is absent from
   the logs (empty think blocks).
-- **Decision / next:** training / statistics only (AGENTS.md); first use #33-19. Lives on colo
+- **Decision / next:** training / statistics only (AGENTS.md); first use #33-19. Lives on cpu1
   `/data/work/pisess/v1` and the 4070 `/data/pisess/v1` (not in the repo: private content).
 
 ### 2026-11-02 15:58 CST · #33-19 · H_out on our agentic traces vs calib qad windows (0.8B): queued
@@ -574,7 +583,7 @@ versions of anything: git history.
   (40 seqs: median cos 0.94). 0.8B reference halves of 1,024 seqs: median 0.995, p5 0.964, min 0.916; at 2,048:
   0.998 / 0.978; at 4,096: 0.999 / 0.990.
 - **Decision / next:** stopping rule for the 27B run in `proxy2b/YAQA08.md` amendment 10. The collector is ready for
-  `hdiag27.sh` once both iceman cards are free.
+  `hdiag27.sh` once both gpubox cards are free.
 - **Files:** `data/yaqa08/diag-halves-and-collector-test.txt`
 
 ### 2026-11-02 14:06 CST · #33-16 · Seed replicates: the diagonal H_out gain holds over 3 seeds; 0.8B quant noise measured
@@ -661,7 +670,7 @@ versions of anything: git history.
 
 - **Decision / next:** 1K passes the 80% bar at both K, so **the 27B diagonal collection is planned at 1K
   sequences** (fp32, ~8.5 h on both cards; the split-precision speed-up failed, #33-14). Run `hdiag27.sh 1024`
-  when iceman is back and card 1 is given; snapshots at 256 / 512 / 1024.
+  when gpubox is back and card 1 is given; snapshots at 256 / 512 / 1024.
 - **Files:** 4070 `/data/yb/result-fact4.txt`
 
 ### 2026-11-02 12:40 CST · #33-14 · Split-precision GEMMs on 0.8B: fails the pass rule (10× better than bf16)
@@ -689,19 +698,19 @@ versions of anything: git history.
 - **Files:** `data/yaqa08/prectest.jsonl`
 
 ### 2026-11-02 12:20 CST · #33-14 · Split-precision (bf16 hi/lo) GEMMs for the fp32 collector: prepared
-- **Status:** planned · **Machine:** 4070 (check), iceman (use) · **Code:** `v3/yaqa/bf16x.py`, `proxy2b/prectest.py`,
+- **Status:** planned · **Machine:** 4070 (check), gpubox (use) · **Code:** `v3/yaqa/bf16x.py`, `proxy2b/prectest.py`,
   `collect.py` YAQA_PREC=x2 @ 0ef4e99
 - **Question:** can the 27B collector's fp32 GEMMs (~30 s / sequence) run as bf16 hi/lo splits on the matrix cores
   (2 GEMMs per product, 3 for the weight gradient; weights exact in bf16) without losing the fp32 gradient quality?
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 7.
 - **Setup:** CPU self-test on random data (emulated): x2 vs fp32 relative error 2.5e-6 (products), 6e-7 (diagonal);
   bf16 1.7e-3 / 3.8e-4. The model-level test (`prectest.py`, ~10 min on the 4070) is not run yet.
-- **Decision / next:** run prectest + `yaqaFact4.sh` when the 4070 is free; on iceman, the gate run of `hdiag27.sh`
+- **Decision / next:** run prectest + `yaqaFact4.sh` when the 4070 is free; on gpubox, the gate run of `hdiag27.sh`
   with YAQA_PREC=x2 also reports one linear's precision against a whole fp32 G and the time per sequence. Then the
   two-stage pipeline (#33-13) if the GEMMs still dominate the profile.
 
 ### 2026-11-02 11:50 CST · #33-13 · 27B diagonal H_out: collector and 0.8B dose check prepared
-- **Status:** planned · **Machine:** iceman (both cards) + 4070 · **Code:** `v3/yaqa/collect.py` YAQA_DIAG,
+- **Status:** planned · **Machine:** gpubox (both cards) + 4070 · **Code:** `v3/yaqa/collect.py` YAQA_DIAG,
   `v3/yaqa/hdiag27.sh`, `quantize/ourq.py` (`--hout` reads `hout_diag` vectors), `proxy2b/yaqaFact4.sh` @ f0fb687
 - **Question:** how many sequences the diagonal needs (0.8B), then the 27B collection and a 27B swap test.
 - **Pass rule:** `proxy2b/YAQA08.md` amendment 6 (0.8B dose); the 27B swap test's rule is written before it runs.
@@ -876,7 +885,7 @@ versions of anything: git history.
 ### 2026-11-02 ~04:25 CST · #60-03 · Our quantizer on CUDA (qtf2 builds, qtf2check PASS)
 - **Status:** done · **Machine:** 4070 (CUDA sm_89) · **Code:** exllamav3 fork (built in place), qtf2, `qtf2check.py`
 - **Result:** qtf2 builds after two CUDA-only fixes (include order; half2 bit casts via memcpy; HIP code unchanged). `qtf2check.py` PASS on CUDA: 30 rate × codebook rows bit-identical to the fork's kernel, 1/8-step round trips. 2B input Hessians over all calib (34.7 min, long docs as 8k windows); 0.8B (14.9 min). First 2B quant, uniform K3 i8 trunk: KLD 0.0685, top-1 88.9% on g2b-search1 (173 search-pool docs, 166k gen rows; about 2x the 27B's uniform K3). Whole-trunk 2B quant ~2.5 min, its eval 23 s.
-- **Decision / next:** rerun the HIP identity gate before syncing to iceman.
+- **Decision / next:** rerun the HIP identity gate before syncing to gpubox.
 
 ### 2026-11-02 ~04:20 CST · #60-02 · 2B: prefix run vs whole document
 - **Status:** done · **Machine:** 4070 · **Code:** `proxy2b/lencheck.py`
@@ -885,7 +894,7 @@ versions of anything: git history.
 - **Decision / next:** golden and evals run each document whole, same cap, unbatched (mkgold / evalq; self-KL -2.8e-7). Never chunk or batch differently between them.
 
 ### 2026-11-02 ~04:05 CST · #61 · xcorp v1: 96.1M-token proxy corpus from the upstream sources
-- **Status:** done · **Machine:** colo (`/data/xcorp/v1`) · **Code:** `xcorp/`
+- **Status:** done · **Machine:** cpu1 (`/data/xcorp/v1`) · **Code:** `xcorp/`
 - **Result:** the manifest's 58 sources at pinned revisions, with categories, kinds and caps, 12x the per-split budgets, rendered as the challenge (Qwen3.8 chat template: xhigh preamble, tools block, reasoning kept on every turn, structured tool calls). Not the 8 long agentic traces (unpublished). Head of each stream skipped (multi-file: second half of the files; single-file: 1.1x the records it read); a line-level check against calib + public rejected 2,205 documents. Shortfall: hermes-fc 0.8M of 1.9M (source exhausted). Build ~8 min.
 - **Decision / next:** proxy research only. The private split is unpublished, so overlap with it cannot be checked; check the challenge's rules before anything trained on xcorp ships.
 
@@ -896,19 +905,19 @@ versions of anything: git history.
 - **Decision / next:** goldens stay bf16 (the challenge's reference is bf16; quants run on the same path, so the rounding is shared, not noise). Matters only at high bpw, where 2B KLDs approach ~1e-3: there, check a screening result with an fp32 halves run.
 
 ### 2026-11-02 ~02:05 CST · #35 · Embedding run6 (scale search 0.5..1.0): null
-- **Status:** null · **Machine:** colo (run6 per the dead-end entry)
+- **Status:** null · **Machine:** cpu1 (run6 per the dead-end entry)
 - **Result:** K1 rel 0.25700 -> 0.25642 (-0.2%, edge rows 0%); K1.25 0.18289 -> 0.18287. The scale search was never what limits the K1 / K1.25 embedding.
 - **Decision / next:** menu unchanged.
 
 ### 2026-11-02 ~02:00 CST · #59 · exl3i serving path works on the GPU, up to the full model
-- **Status:** running (GPU selftests pass; `d0.sh` not run) · **Machine:** iceman GPU · **Code:** radiance-hero `qc-exl3-v3` 4edad1f..340165b
-- **Result:** encoding `exl3i` (scheme exl3i, transform `<cb>/h128/k<rate>`, a u32 record TABLE plane of 16-row groups); C oracle `common/exl3i_decode.c` (= the reference decoder); importer `exl3quant`'s `exl3i` quantiser (real K2.5 / K3 tensors: H-weighted error = ourq's logged proxy_err, ratio 1.000, stacked gate_up included); kernel library `exl3i` (op `exl3i_dense`, exl3r4d's kernel with the decode as a rate policy). Selftest `exl3i_gpu_test`: decode bit-exact at all 64 rates x 2 codebooks; 256 GEMMs over every rate; 48 shape / dtype cases; integer K = exl3r4d bytes; 19 refusals. Mutation check: 6 of 10 mutants run (all caught) before iceman went down. `qwen35_exl3` routes exl3i weights to `exl3i_dense` (host test).
+- **Status:** running (GPU selftests pass; `d0.sh` not run) · **Machine:** gpubox GPU · **Code:** radiance-hero `qc-exl3-v3` 4edad1f..340165b
+- **Result:** encoding `exl3i` (scheme exl3i, transform `<cb>/h128/k<rate>`, a u32 record TABLE plane of 16-row groups); C oracle `common/exl3i_decode.c` (= the reference decoder); importer `exl3quant`'s `exl3i` quantiser (real K2.5 / K3 tensors: H-weighted error = ourq's logged proxy_err, ratio 1.000, stacked gate_up included); kernel library `exl3i` (op `exl3i_dense`, exl3r4d's kernel with the decode as a rate policy). Selftest `exl3i_gpu_test`: decode bit-exact at all 64 rates x 2 codebooks; 256 GEMMs over every rate; 48 shape / dtype cases; integer K = exl3r4d bytes; 19 refusals. Mutation check: 6 of 10 mutants run (all caught) before gpubox went down. `qwen35_exl3` routes exl3i weights to `exl3i_dense` (host test).
 - **Decision / next:** `d0.sh` (a level's trunk in V2 3.00, real KLD) not run yet.
 
 ### 2026-11-02 ~01:40 CST · #35 · Embedding run5 was a no-op
 - **Status:** null (no-op)
 - **Result:** run5 identical to run4 (K1 rel 0.25700, edge 0.2017). The edge rows sit at the LOW end: K1 826 / 4096 rows at factor 0.85 (the smallest), none above 0.95; K1.25 all at 0.95. run5 widened the top (to 1.75).
-- **Decision / next:** run6 searches 0.5..1.0 (colo).
+- **Decision / next:** run6 searches 0.5..1.0 (cpu1).
 
 ### 2026-11-02 — · #37 · Speed pass 2: profile and output-identical speedups (gated)
 - **Status:** running · **Machine:** card (K2.5 layers 3-4, ladder settings) · **Code:** qtf2 (`v3/e3/exl3frac2`), `ourq.py`
@@ -953,7 +962,7 @@ versions of anything: git history.
 - **Files:** `v3/yaqa/data/head-settings.json`
 
 ### 2026-11-02 — · #35 · Embedding K1 / K1.25: wider per-group scale search (run5, run6) — null
-- **Status:** null · **Machine:** colo (`/data/work/embt/rows5`, `rows6`)
+- **Status:** null · **Machine:** cpu1 (`/data/work/embt/rows5`, `rows6`)
 - **Setup:** run5 (factors to 1.75) and run6 (0.5..1.0) on 4096 rows, trellis, group 5120.
 - **Result:** K1 rel 0.25700 -> 0.25642 (-0.2%); K1.25 unchanged. At K1 a fifth of the rows sat on the low edge of the old search, but moving the edge bought nothing: the error at K1 is the trellis's, not the scale's.
 - **Decision / next:** menu unchanged.
@@ -974,7 +983,7 @@ versions of anything: git history.
 ### 2026-11-01 ~21:20 CST · #36 · Quarter-step quantizer works on the GPU (`fracsmoke.py`)
 - **Status:** running (smoke-test verdict fixed; levels unblocked) · **Machine:** card 0 · **Code:** `fracsmoke.py`
 - **Result:** 8192 Gaussian tiles on card 0: pack/unpack round trips and decode exact at every menu K; quarter / half steps on the curve (0.993–1.003 to K4.75). The first verdict said FAIL only because the CPU-vs-GPU check expected agreement within 3%: the GPU search is 4–6% worse than the exact CPU Viterbi at every K, integer K (exllamav3's own kernel) included, and fractional K sits within 0.4% of its integer neighbours' offset. Check fixed.
-- **Decision / next:** the levels (chain0) are unblocked. Overnight CPU chains queued: fine gain sweep on Thor after the seed test; damping at 6 more depths (K3/5/7) on colo after the damping sweep. The 4–6% gap itself is open.
+- **Decision / next:** the levels (chain0) are unblocked. Overnight CPU chains queued: fine gain sweep on cpu2 after the seed test; damping at 6 more depths (K3/5/7) on cpu1 after the damping sweep. The 4–6% gap itself is open.
 
 ### 2026-11-01 ~17:45 CST · #37 · qtf2 v1 (`v3/e3/exl3frac2`): bit-identical to the fork's fractional kernel
 - **Status:** running (v2 gate) · **Machine:** card · **Code:** `v3/e3/exl3frac2`, gate `qtf2check.py`
@@ -1123,8 +1132,8 @@ versions of anything: git history.
 - **Status:** done · **Result:** 337 tensors each, 0 problems. Each download has 8 MTP trellis tensors that exist only in the downloads.
 - **Decision / next:** keep them (or pack them) before deleting.
 
-### 2026-11-01 — · #38 · damp2 (CPU, colo): best lower damping vs 0.025, away from layers 11 / 43 / 63
-- **Status:** done · **Machine:** colo · **Setup:** layers 1 / 5 / 19 / 30 / 47 / 58, K3 / 5 / 7 · **Files:** `v3/e3/data/damp2.jsonl`
+### 2026-11-01 — · #38 · damp2 (CPU, cpu1): best lower damping vs 0.025, away from layers 11 / 43 / 63
+- **Status:** done · **Machine:** cpu1 · **Setup:** layers 1 / 5 / 19 / 30 / 47 / 58, K3 / 5 / 7 · **Files:** `v3/e3/data/damp2.jsonl`
 - **Result:** the win is much smaller away from layers 11 / 43 / 63: attention inputs 0.989–0.996 (first sweep: 0.94–0.97); GDN inputs median 0.992–0.998 but one tensor 0.94; everything else >= 0.993.
 - **Decision / next:** the gain is tensor-specific, which is what the per-tensor sweep in the level ladder (`--sigma-in-sweep`) is for. Expect well under 1% total.
 
@@ -1172,17 +1181,17 @@ versions of anything: git history.
 - **Decision / next:** two-sided YAQA dropped. Remaining backward arms: gradient-weighted H_in (gate 2e: crashed on a profiler-path bug before collecting, fixed, not rerun) and diagonal output scales (gate 2d, evals running).
 
 ### 2026-10-31 ~22:20 CST · #41 · Best-of-N rotation seeds: dead
-- **Status:** null · **Code:** `seedtest.sh` (Thor) · **Setup:** 9 tensors x 4 seeds x 2 row samples, K2–4
+- **Status:** null · **Code:** `seedtest.sh` (cpu2) · **Setup:** 9 tensors x 4 seeds x 2 row samples, K2–4
 - **Result:** seed spread 0.5%; A-vs-B correlation +0.22; best-of-4 picked on A, measured on B: −0.2% / +0.2% / +0.0%.
 - **Decision / next:** dead. No seed pick.
 
 ### 2026-10-31 ~22:20 CST · #38 · Damping vs K (`dampsweep.sh`)
-- **Status:** done · **Machine:** colo · **Setup:** 16 tensors; error vs undamped H; ratio to 0.025
+- **Status:** done · **Machine:** cpu1 · **Setup:** 16 tensors; error vs undamped H; ratio to 0.025
 - **Result:** attention inputs (q/k/v) gain with less damping, more at high K: K4 0.970 (0.0025) / 0.961 (0.001), K8 0.938–0.955. GDN inputs, out-projections, FFN: 0.994–1.000 at every K. 0.05 is worse everywhere. Damping does not explain turboderp's K6–8 wins (attention inputs are a small share).
-- **Decision / next:** settings 0.005 (or 0.0025) for attention inputs; 0.01 elsewhere is harmless. Depth extension running (colo).
+- **Decision / next:** settings 0.005 (or 0.0025) for attention inputs; 0.01 elsewhere is harmless. Depth extension running (cpu1).
 
 ### 2026-10-31 ~22:20 CST · #39 · Gain (global scale) vs K (`gainsweep.sh`)
-- **Status:** running (GPU gaintest) · **Machine:** Thor · **Setup:** 16 tensors, RMS x f, f = 0.8–1.8
+- **Status:** running (GPU gaintest) · **Machine:** cpu2 · **Setup:** 16 tensors, RMS x f, f = 0.8–1.8
 - **Result:** the best factor rises with K in every family: ~1.1 to K5, 1.2 at K6, 1.3 at K7–8. Out-projections (attn_output, ssm_out) more: 1.2 (K5), 1.3 (K6), 1.4 (K7), 1.5 (K8; range to 1.8). A fixed 1.1 costs x1.05 (K6), x1.2 (K7), x2 (K8) error; for out-projections x1.2 (K6), x1.7 (K7), x4 (K8).
 - **Decision / next:** this is the CPU tool's RMS scale, not exllamav3's own g_scale search. The GPU gaintest (running) shows whether exllamav3's choice already tracks this. If it doesn't, it is a strong candidate for the high-K gap.
 
@@ -1213,16 +1222,16 @@ versions of anything: git history.
 - **Decision / next:** per-row only (a 1% embedding-error difference at K ≥ 5 is far below anything measurable in KLD).
 
 ### 2026-10-31 ~20:40 CST · #35 · Embedding menu sweep done (`v3/e3/emb/run3.sh`, 4096 rows)
-- **Status:** done · **Machine:** Thor · **Files:** `v3/e3/data/embmenu.jsonl`
+- **Status:** done · **Machine:** cpu2 · **Files:** `v3/e3/data/embmenu.jsonl`
 - **Result:** one scale per row wins at equal bits at every K: G1024 is x1.015 worse at K1.5–2.5, x1.008 at K4, x1.003 at K5, even only at K5.75; G512 x1.01–1.02 worse throughout. The quarter-step curve is smooth (x1.40 error per quarter step at every K, i.e. ~3.9x per bit). The best scale factor reaches the search edge (1.35) for 0.6–3% of rows at K5–6 only.
 - **Decision / next:** embedding menu = quarter steps, one bf16 scale per row, no group options.
 
 ### 2026-10-31 ~20:40 CST · #40 · Per-group weight scales stay dead at low K, Hessian-weighted (`v3/e3/gscale.py`)
-- **Status:** negative · **Machine:** colo (12 of 16 tensors so far)
+- **Status:** negative · **Machine:** cpu1 (12 of 16 tensors so far)
 - **Result:** the raw gain at equal K is only 1.3–1.8% (ratio 0.982–0.987 at K1–2; at K0.5 groups are even slightly worse, 1.008–1.035). After the 8/G-bit scale overhead groups lose: x1.08 (G128) / x1.17–1.20 (G64) worse at equal bits, K1–2. Confirms the Oct-30 amgm null result where it was untested (Hessian-weighted, K ≤ 2).
 - **Decision / next:** dead at low K.
 
-### 2026-10-31 ~20:20 CST · #— · Overnight queue (TP2 to ~13:00 CT Nov 1), all on iceman, ordered by locks
+### 2026-10-31 ~20:20 CST · #— · Overnight queue (TP2 to ~13:00 CT Nov 1), all on gpubox, ordered by locks
 - **Decision / queue:**
   1. gate 2c (running) -> `gate2e.sh`: blocks 22/23 again with gradient-weighted H_in (`collect.py YAQA_HIN`); if 2c passed, also 400 sequences with snapshots at 100/200/400 and split halves (`hhalf.py`) = the sample-count test.
   2. quarter-step smoke test, gate 2d, head rerun (card 0 / both).
@@ -1231,7 +1240,7 @@ versions of anything: git history.
 - **Also:** store index done: 53 packs; his plain6.00 / 5.00 packs are uniform K6 / K5; 3–6 of his tensors per pack in some sizes are byte-identical to another of his packs (counted once).
 
 ### 2026-10-31 ~20:00 CST · #36 · High-K half steps land on the curve (`fracsweep-hi.sh`)
-- **Status:** done · **Machine:** colo · **Setup:** 18 tensors of layers 0 / 10 (GDN), 11 / 63 (attention), 43 (MLP); scale search 0.85–1.75; `v3/e3/data/fracsweep-hi.jsonl`
+- **Status:** done · **Machine:** cpu1 · **Setup:** 18 tensors of layers 0 / 10 (GDN), 11 / 63 (attention), 43 (MLP); scale search 0.85–1.75; `v3/e3/data/fracsweep-hi.jsonl`
 - **Result:** error / log-linear interpolation of the integer neighbours, median [range]: K5.5 0.997 [0.993, 1.042], K6.5 1.003 [0.980, 1.010], K7.5 1.006 [0.994, 1.021]. Integer steps stay steep: ×3.77 / ×3.67 / ×3.81 error per bit at K5→6 / 6→7 / 7→8. Best factor rises with K (1.15 to K6, 1.3 from K6.5–7, some 1.5 at K7.5–8). K0.25: proxy rel err median 0.36 [0.05, 0.59] (1.0 = dropped): judge only by real swaps. 3 jobs failed on a wrong tensor list (layer 43 is full attention, has no GDN tensors); not rerun, every family is covered.
 - **Decision / next:** the K5–8 half steps of the menu are sound.
 
@@ -1246,7 +1255,7 @@ versions of anything: git history.
 - **Decision / next:** rerun in fp32 with sigma_reg_out 0.025 and 0.3 (`gate2b.sh`).
 
 ### 2026-10-31 ~19:45 CST · #— · Mining merge acted on (`local/mine/merged-2026-10-31.md`, via `mergep.sh`)
-- **Decision:** DESIGN-v3 corrected (YAQA status and costs: 3.7M qad tokens, ~0.2 TB full H_out; head K priced by KLD + bytes; his S not a prior) and the merge's checks added to §6. Queued on iceman behind gate 2c:
+- **Decision:** DESIGN-v3 corrected (YAQA status and costs: 3.7M qad tokens, ~0.2 TB full H_out; head K priced by KLD + bytes; his S not a prior) and the merge's checks added to §6. Queued on gpubox behind gate 2c:
   - `gate2d.sh` (merge D1): diagonal-only output weighting, one-sided LDLQ with exllamav3's sensitivity output scales from diag(H_out) (`ourq.py --hout-diag`), blocks 22/23 K2 / K3, paired vs one-sided.
   - `headrun2.sh` (merge A2, replaces the invalid headrun): Fisher ranking from the qad pool only (top-set overlap 0.93–0.98; fit-pool Fisher captured in the top 1,280 rows 0.610 vs 0.613), floor K3, budgets K4 / K5 / K6, judged by `headsim.py` (exact head-only KL on the 32,768 calib-A head inputs; paired vs uniform, 512-position block bootstrap). Whole-model check for the finalist only, with the fixed plugin.
 
@@ -1262,7 +1271,7 @@ versions of anything: git history.
 ### 2026-10-31 ~19:00 CST · #36 · Quarter-step quantizer instances written (exllamav3 branch `rxm-frac-quarter`)
 - **Status:** running (not yet built) · **Code:** worktree `/workspace/forks/exllamav3-frac`; `v3/e3/exl3frac`; `ourq.py --frac-ext SRC`; `v3/e3/fracrun.sh`; `fracsmoke.py`
 - **Result:** 15 instances for the V3 menu (KA 1–4 x 0x8888 / 0xAAAA / 0xEEEE, KA 5–7 x 0xAAAA), one compile unit per KA; `frac_k` derives the canonical even mask for any K = KA + n/16 (n even); exllamav3's own decode refuses non-0xAAAA rates instead of misdecoding. The live exllamav3 is a prebuilt 159 MB .so (no build tree), so the fractional kernel is built as a side extension and swapped in (prebuilt pack / unpack already take any mask).
-- **Decision / next:** `fracrun.sh` (iceman, queued behind the head test) builds it and runs `fracsmoke.py`: every menu K on 8192 Gaussian tiles: on-curve vs integer neighbours, GPU vs CPU Viterbi error, pack/unpack round trip, decode check.
+- **Decision / next:** `fracrun.sh` (gpubox, queued behind the head test) builds it and runs `fracsmoke.py`: every menu K on 8192 Gaussian tiles: on-curve vs integer neighbours, GPU vs CPU Viterbi error, pack/unpack round trip, decode check.
 
 ### 2026-10-31 ~19:00 CST · #33-01 · YAQA gate 1 passed (`v3/yaqa/collect.py`)
 - **Status:** done · **Code:** `collect.py`, `fold.py`, `ourq.py --hout DIR`, `gate2.sh`
@@ -1270,16 +1279,16 @@ versions of anything: git history.
 - **Decision / next:** gate 2 (`gate2.sh`): 200-sequence pilot H_out (6,400 rows: rank-deficient for the 17,408-wide gate / up, which leans on sigma_reg_out), blocks 22+23 at K2 / K3, one- vs two-sided, swapped into V2 6.00, golden-ver1.
 
 ### 2026-10-31 ~18:55 CST · #36 · Fractional-K at the menu's ends (`fracsweep-hi.sh`, 21 tensors)
-- **Status:** running (~1.5 h) · **Machine:** colo
+- **Status:** running (~1.5 h) · **Machine:** cpu1
 - **Setup:** 21 tensors = the 14 of fracsweep + layers 0 and 63: K5–8 half steps and K0.25, K4.5 / 5 overlapping.
 - **Result (while setting up):** `trellis.py`'s scale search {1, 1.15, 1.3} hit its top edge at K7.5 and its bottom edge (1.0) for most tensors at K ≤ 2 in the earlier sweep, so those low-K proxy numbers may be slightly pessimistic (relative K steps less affected; real quants search their own scale). Now `E3_FACTORS`, here 0.85–1.75.
 
 ### 2026-10-31 ~18:45 CST · #35 · Embedding menu sweep (`v3/e3/emb/run3.sh`, 4096 sampled rows, 47 runs)
-- **Status:** running (~1 h) · **Machine:** Thor
+- **Status:** running (~1 h) · **Machine:** cpu2
 - **Result:** quarter steps K1.5–6 x {one scale per row, G1024}, + G512 from K4; per-row error / energy / chosen factor saved (tail rows, later token-frequency reweighting). Smoke test: at K5.75 9% of groups took the top factor 1.25, so the scale search is now 0.85–1.35.
 
-### 2026-10-31 ~18:35 CST · #35 · Embedding scale group size (Thor, 1024 rows, K2 / 3 / 4)
-- **Status:** running (menu sweep pending) · **Machine:** Thor
+### 2026-10-31 ~18:35 CST · #35 · Embedding scale group size (cpu2, 1024 rows, K2 / 3 / 4)
+- **Status:** running (menu sweep pending) · **Machine:** cpu2
 - **Result:** error vs G128 = 1.016–1.018 at G256, 1.02–1.025 at G512, 1.022–1.031 at G1024, 1.023–1.040 at one scale per row (G5120). Scale overhead 0.125 -> 0.003 bit/value; on the trellis curve (~4x error per bit) 0.12 bit is worth ~18% error, so per-row wins by ~15% at equal bits. Per-row vs G1024: 0.013 bit (~1.8%) saved against +0.1 / +0.2 / +0.9% error at K2 / 3 / 4.
 - **Decision / next:** menu: per-row scale, G1024 where it is on the hull; G1024 likely wins only around K5–6 (the menu sweep settles it).
 
@@ -1289,7 +1298,7 @@ versions of anything: git history.
 - **Decision / next:** remaining suspect: 32 sampled positions a sequence (1.6%) miss the few high-gradient tokens that dominate H_out (upstream's note). Last test before dropping YAQA: full-token sums for blocks 22/23 (`collect.py YAQA_FULL=22,23`, fp32, CPU accumulators), ~1.5 h with quant + eval. Not run tonight (head test has the cards).
 
 ### 2026-10-31 ~18:05 CST · #35 · Trellis embedding vs V2's Lloyd tables (`v3/e3/embtrellis.py`)
-- **Status:** running (menu sweep to follow) · **Machine:** Thor · **Setup:** 1024 random rows, H = I, same fwht128 + per-(row,128) scale · **Files:** `v3/e3/data/embtrellis.jsonl`
+- **Status:** running (menu sweep to follow) · **Machine:** cpu2 · **Setup:** 1024 random rows, H = I, same fwht128 + per-(row,128) scale · **Files:** `v3/e3/data/embtrellis.jsonl`
 - **Result:** relative error at equal bits, trellis / Lloyd: 0.70 (1 bit), 0.56 (2), 0.51 (3), 0.53 (4), 0.51 (5). Trellis K matches Lloyd at K + 0.46–0.49 bits for K ≥ 2 (DESIGN's "trellis-3 ≈ Lloyd-4" was too optimistic: trellis-3 ≈ Lloyd-3.5). ~0.023 bpw saved at equal error, ~1% KLD at ~3 bpw by V2's fitted embedding costs.
 - **Decision / next:** quarter steps adopted.
 
@@ -1799,7 +1808,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 
 ## Notes on the rewritten entries (before 2026-11-02 ~05:00 CST)
 
-*Applied 2026-11-02 (main session): (a) both radiance-port entries → #74, tdverify → #75 (new INDEX rows); (b) corrections 1, 3, 4, 5, 6, 7, 8 applied to INDEX (#39 set blocked, not running: its GPU test is on iceman); 2 (#38) and 9 (#37) left as they are: damp3's result set the V3 damping and finalgate closed the speed pass.*
+*Applied 2026-11-02 (main session): (a) both radiance-port entries → #74, tdverify → #75 (new INDEX rows); (b) corrections 1, 3, 4, 5, 6, 7, 8 applied to INDEX (#39 set blocked, not running: its GPU test is on gpubox); 2 (#38) and 9 (#37) left as they are: damp3's result set the V3 damping and finalgate closed the speed pass.*
 
 **Conventions applied.** Times: CT and zone-less times are kept as given and labelled CST. Five entries the source gives in CDT were converted (−1 h): 01:55, 01:50, 01:47 and 01:40 CDT on 2026-11-01, and 01:17 CDT (Gate 2e). `~` is kept where the source is approximate, or where the time is inferred from a neighbouring entry. `—` marks entries with no clock time in the source, including every dead-end bullet. Undated V2-era dead ends, and the six process pitfalls, carry the header date 2026-10-30 (INDEX bounds the dead ends at ≤10-30). Two undated 2026-11-01 log bullets (tdverify, damp2) take the date of the entry above them, with `—`. Within a bullet list, a bullet with its own bold label is one entry, and its plain sub-bullets are folded into it; a sub-bullet with its own date takes that date. A dead end whose bullet spans several dates uses the latest one (per-group gain scales 2026-10-31; YAQA sampled positions 2026-11-01). Where a source entry gives no status word, the status was taken from its text (for example, `running` while a gate is still open). Entries are sorted by date, then time, newest first; entries without a clock time follow that day's timed entries. Numbers: every number in the entry bodies appears verbatim in the two archive files, except INDEX cross-references (`#46`, `#33-08`).
 

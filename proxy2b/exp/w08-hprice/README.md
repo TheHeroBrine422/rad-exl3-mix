@@ -84,21 +84,21 @@ bident at seed 0.
 | `hratio.py` | proxy.jsonl / rowerr2 pairs → KN_HRATIO lines (geomean over seed pairs) |
 | `hfit.py` | KN_HF from a measured uniform-trunk swap, using knap4's weight costs |
 | `mkratio.py` | test ratio files: identity, and the 0.8B per-type ratios mapped onto the 27B tensors |
-| `knaptest.sh`, `knaptest/` | knap4 patch tests (colo CPU, ~2 min) |
+| `knaptest.sh`, `knaptest/` | knap4 patch tests (cpu1 CPU, ~2 min) |
 | `f1fam.py` | per-family check against w10-hout-attrib's subset arms |
 | `gatecmp.py` | ourq-hprice gate |
 | `run.sh` | the 4070 run |
-| `price27.sh` | the 27B pricing pipeline (CPU; inputs from iceman's ladders) |
+| `price27.sh` | the 27B pricing pipeline (CPU; inputs from gpubox's ladders) |
 
 - **4070:** `proxy2b/exp/w08-hprice/run.sh`. Results go to `/data/yb/w08-hprice/result.txt`.
   - Step 0, the patch gate: three two-layer K3 quants, ~3 min GPU.
   - Step 1, per family: CPU only, ~4 min. It waits for w10-hout-attrib's `ATTRIB DONE`. Rerun run.sh afterwards;
     it is idempotent.
-- **27B (CPU, once the iceman ladders carry `--hprice`):**
+- **27B (CPU, once the gpubox ladders carry `--hprice`):**
   `price27.sh <one-sided ladder root> <H ladder root> 2.5,3,... [swaps.txt]`. `swaps.txt` has one line per swap:
   "K KL_one KL_H".
 
-**GPU time:** ~3 min on the 4070. Nothing new on iceman: the 27B part piggybacks on the Phase-B requant and the
+**GPU time:** ~3 min on the 4070. Nothing new on gpubox: the 27B part piggybacks on the Phase-B requant and the
 27B swap test.
 
 ## Draft pass rules (for the lead to commit before data)

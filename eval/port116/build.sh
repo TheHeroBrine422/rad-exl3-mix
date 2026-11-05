@@ -1,7 +1,7 @@
 #!/bin/bash
 # build.sh SRC PREFIX MODE JOBS -- radiance (from the fork tree SRC) installed to PREFIX, then our five plugins built
 # standalone against it, then their tests. MODE host: host backend only (no ROCm; checks the port compiles and the
-# host tests pass). MODE hip: device build for gfx1201 (iceman). Logs one line a step; the build output goes to
+# host tests pass). MODE hip: device build for gfx1201 (gpubox). Logs one line a step; the build output goes to
 # PREFIX.build/*.log. Idempotent: reruns reuse the build directories.
 set -u
 SRC=$1; PREFIX=$2; MODE=$3; J=${4:-2}

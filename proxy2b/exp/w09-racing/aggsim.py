@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """aggsim.py RESULTS.jsonl [--se 0.016,0.020] [--stages ...] -- racing estimate from the V2 stream's slice-level KLDs
-alone (no per-row data: those are on iceman, race.py replays them). Pairs as race.py --results: every stream candidate
+alone (no per-row data: those are on gpubox, race.py replays them). Pairs as race.py --results: every stream candidate
 on calA / fit2 / fit3 against the best mix measured before it at the same target on the same slice. The true full-slice
 log ratio L of each pair is known; the stage estimate after a token fraction f is simulated as L + N(0, se^2 (1-f)/f)
 (the deviation of a random prefix from the full slice, documents iid), and its predictive P(win) is

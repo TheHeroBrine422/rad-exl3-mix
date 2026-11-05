@@ -1,4 +1,4 @@
-# colo CPU, real 0.8B, 2 qad windows x 512 tokens (seed 5), every layer: moments.py --mode noise --gamma 0.05 (the paper's noise) and --mode quant --wq q-k3base/wq (the K3 base quant's upstream error)
+# cpu1 CPU, real 0.8B, 2 qad windows x 512 tokens (seed 5), every layer: moments.py --mode noise --gamma 0.05 (the paper's noise) and --mode quant --wq q-k3base/wq (the K3 base quant's upstream error)
 prof/noise tr(N)/tr(H) | tr(C+C^T)/tr(H) by layer (in / o / post / down)
   L 0 in     0.0234  -0.0002  o      0.0556  -0.0067  post   0.1536  -0.0911  down   0.5877  -0.1772
   L 1 in     0.2373  -0.1971  o      0.2209  -0.1279  post   0.2744  -0.2010  down   0.7598  -0.4251

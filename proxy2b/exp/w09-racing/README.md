@@ -36,11 +36,11 @@ from `docs/ideas/ranked.md`. These affect search throughput only, not KL directl
 
 ## Data
 - **Where the data is.** The V2 per-row scores (`evq/scores/<tag>.f32`, about 770 stream candidates on
-  calA / fit2 / fit3) exist **only on iceman** (`/root/evq`). Iceman was unreachable on 2026-11-03 (port 2223 refused).
-  Nothing is mirrored on colo, the 4070 or thor.
+  calA / fit2 / fit3) exist **only on gpubox** (`/root/evq`). gpubox was unreachable on 2026-11-03 (port 2223 refused).
+  Nothing is mirrored on cpu1, the 4070 or cpu2.
 - **What ran today:**
   - `aggsim.py` on the V2 slice-level KLDs in `data/v2/results.jsonl` (no per-row data needed);
-  - `race.py` on the 0.8B proxy's 113 per-row score files (`/data/yb/*.f32` on g08-search1, copied to colo
+  - `race.py` on the 0.8B proxy's 113 per-row score files (`/data/yb/*.f32` on g08-search1, copied to cpu1
     `/data/work/w09/`) as the real-data self-test.
 
 ## Results so far (no V2 per-row data yet)
@@ -93,7 +93,7 @@ changes the actual noise per GPU-second. It also needs weighted means: per-docum
   - 20 document orders;
   - T0 ∈ {80, 15} s, RATE 2,500 tok/s;
   - the G6 table.
-- `aggsim.py` is re-run on iceman's full results.
+- `aggsim.py` is re-run on gpubox's full results.
 
 ## Draft pass rules (for the lead to commit before the V2 replay is run)
 **G3.** Variant `ratio`, `--vw A`, stages 0.1/0.2/0.35/0.5/0.7.
@@ -126,8 +126,8 @@ reporting rule. Both are inside 0.80–0.95 on the 0.8B; the 27B slices (8k cap,
 
 ## Cost
 - **GPU time: 0.**
-- Copy: ~770 score files plus metadata from iceman to colo (~2–4 GB, one niced tar).
-- CPU: ~1–3 min per slice on colo.
+- Copy: ~770 score files plus metadata from gpubox to cpu1 (~2–4 GB, one niced tar).
+- CPU: ~1–3 min per slice on cpu1.
 
 ## What changes what
 - **G3 passes (T0 80):** add a racing watcher to `search/auto/evalq2.sh`, as a patch written after the replay.
@@ -153,7 +153,7 @@ reporting rule. Both are inside 0.80–0.95 on the 0.8B; the 27B slices (8k cap,
   - delta-method SE vs document bootstrap on 8 real 0.8B pairs (ratios 0.97–1.01);
   - aggsim's bridge variance.
 - `aggsim-v2.txt`, `proxy08-race.txt`, `proxy08.jsonl`: results so far.
-- `run.sh`: the V2 replay (VM → iceman tar → colo). Needs iceman up.
+- `run.sh`: the V2 replay (VM → gpubox tar → cpu1). Needs gpubox up.
 - No shared-code patches.
 
 ## Runtime cost (user rule, 2026-11-03)

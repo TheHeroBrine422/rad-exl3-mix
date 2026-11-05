@@ -1,11 +1,11 @@
 #!/bin/bash
 # run27.sh pilot | timing | predict -- A6 (and B6's down side) on the 27B. README "27B".
-#   pilot    ICEMAN, BOTH cards (hdiag27.sh takes /root/card0.lock, card1.lock and ram.lock itself): the diagonal
+#   pilot    gpubox, BOTH cards (hdiag27.sh takes /root/card0.lock, card1.lock and ram.lock itself): the diagonal
 #            collection's first NSEQ (default 256) sequences, ~15 min warm-up + ~2.1 h. Not wasted: `hdiag27.sh 1024`
 #            later resumes from its hdiag-state.pt (same seed, same windows). Gives hdiag-snap256 + halves.json.
-#   timing   ICEMAN, card 0 (card0 + shared ram lock): ldlq_2hess vs one-sided on layer 40's gate/up group at K3, from
+#   timing   gpubox, card 0 (card0 + shared ram lock): ldlq_2hess vs one-sided on layer 40's gate/up group at K3, from
 #            the pilot's diagonal; LADDER_ARGS = ladder2.sh's ourq flags (required: the timing must be the ladder's).
-#   predict  COLO, CPU (~30 min, 36 threads): copy hdiag-snap256/, hdiag-state.pt and the ladder K3 proxy.jsonl to
+#   predict  cpu1, CPU (~30 min, 36 threads): copy hdiag-snap256/, hdiag-state.pt and the ladder K3 proxy.jsonl to
 #            $D first; stats.py (27B bf16 + calib Hessians) -> predict.py (A6 self + split-half cross-fit, D6, B6) ->
 #            downperm.py on 6 layers (float32).
 F=$(cd "$(dirname "$0")" && pwd)

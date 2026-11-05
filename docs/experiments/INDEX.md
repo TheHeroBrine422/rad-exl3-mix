@@ -87,7 +87,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
 | 37 | qtf2 fractional quantizer and its speed pass (v1–v10) | quantizer | P+D | done | 11-01 | 11-02 | finalgate PASS, 51 instances |
 | 38 | Damping vs K (dampsweep, damp2, damp3) | quantizer | none | done | 10-31 | 11-01 | input 0.005 (0.05 below K1), rest 0.025 |
-| 39 | Global gain scale vs K | quantizer | none | blocked | 10-31 | 10-31 | best factor rises with K; GPU gaintest result never logged; on iceman |
+| 39 | Global gain scale vs K | quantizer | none | blocked | 10-31 | 10-31 | best factor rises with K; GPU gaintest result never logged; on gpubox |
 | 40 | Per-group weight scales at low K (Hessian-weighted) | quantizer | P+D | negative | 10-31 | 10-31 | raw gain 1.3–1.8% at equal K; after the scale overhead groups lose 8–20% at equal bits, K1–2 |
 | 41 | Best-of-N rotation seeds | quantizer | none | null | 10-31 | 10-31 | seed spread 0.5% |
 | 42 | Shared-input siblings sharing `suh` | quantizer | P | done | 10-31 | 10-31 | they do not share it |
@@ -96,19 +96,19 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 45 | knap4 on real options and the measured speed table | allocation | none | done | 11-01 | 11-01 | V3 option table |
 | 46 | A4 worth building at any size? | activations | P | negative | 11-01 | 11-01 | no, at any size (knap4, matmul-core table); the A4 timing slot was never run |
 | 46-02 | A4 on the MLP for the fast variant at ≤ 2.25 bpw, on the full stack (healed / unhealed), K2 and K1.5 | activations | P | fail | 11-04 | 11-05 | rule `proxy2b/exp/d1106/README.md`; fails at K2 (1.14 / 1.16 vs ≤ 1.10) as a global setting; replaced by #46-03 |
-| 46-03 | A4 on i4 weights as a per-tensor knapsack option (fast variant ≤ 3 bpw): 27B per-family costs, time table, knap4; kernel only if it pays | activations | P | planned | 11-05 | 11-05 | rule `v3/e3/a4/README.md`; needs iceman card 0 |
+| 46-03 | A4 on i4 weights as a per-tensor knapsack option (fast variant ≤ 3 bpw): 27B per-family costs, time table, knap4; kernel only if it pays | activations | P | planned | 11-05 | 11-05 | rule `v3/e3/a4/README.md`; needs gpubox card 0 |
 | 47 | R1 residual-stream rotation for int8/int4 activations | activations | P | negative | 10-31 | 10-31 | A8-g128 error 6.6× worse |
 | 48 | Output scales by upstream's auto rule | quantizer | none | negative | 11-01 | 11-01 | +2.5% (z 2.1) |
 | 49 | radiance PR #362 (prefill softmax per row) on our eval | eval | n/a | done | 10-31 | 10-31 | KLD −0.12% (z ≈ −2.2): real but ~10× below decision noise; taken with the 1.15.x port |
 | 50 | Proxy edge over turboderp, in-sample share (alias **D2**) | allocation | none | done | 11-01 | 11-01 | ~9% in-sample, rest real |
-| 51 | Re-run the 12 V0 mixes with the current fit (alias **D3**) | allocation | none | blocked | 11-01 | 11-01 | on iceman and the ladder |
+| 51 | Re-run the 12 V0 mixes with the current fit (alias **D3**) | allocation | none | blocked | 11-01 | 11-01 | on gpubox and the ladder |
 | 52 | KLD vs position for every quant (alias **B4**) | eval | n/a | done | 11-01 | 11-01 | rises alike for all |
 | 53 | Board `bytes` = tensor payload (alias **B10**) | eval | n/a | done | 11-01 | 11-01 | board bytes = tensor payload (file minus ~10 MB header / alignment): real bpw = payload × 8 / 26,895,998,464 |
 | 54 | Our K1 decode bit-exact with exllamav3 (alias **B19**) | weight codes | n/a | done | 11-01 | 11-01 | bit-exact |
 | 55 | Document-reuse bias from fit-slice reuse | eval | n/a | null | 11-01 | 11-01 | no measurable flattering |
 | 56 | Held-out provenance of every golden | eval | n/a | done | 11-01 | 11-01 | 317 verify docs never used, but none > 16k tokens or agentic: a clean ver3 would be unrepresentative |
 | 57 | GPU search's 4–6% gap = tail-biting constraint | weight codes | n/a | done | 11-01 | 11-01 | not a flaw |
-| 58 | Full uniform requant ladder (ladder2, K2.5 … ) | quantizer | none | blocked | 11-01 | 11-02 | K2.5, K3 done; K3.5/K4 lost in the iceman crash |
+| 58 | Full uniform requant ladder (ladder2, K2.5 … ) | quantizer | none | blocked | 11-01 | 11-02 | K2.5, K3 done; K3.5/K4 lost in the gpubox crash |
 | 59 | exl3i encoding, importer, kernel plugin, serving path | kernels | speed | running | 11-01 | 11-02 | GPU selftests pass; mutation check 6/10; d0.sh not run |
 | 60 | 2B / 0.8B proxy pipeline on the 4070 | proxy | n/a | done | 11-02 | 11-02 | goldens, evalq, score check PASS |
 | 60-01 | bf16 vs fp32 inference on the 2B | proxy | n/a | done | 11-02 | 11-02 | KL 3.75e-4, flat by position; goldens stay bf16 |
@@ -136,8 +136,8 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 78-02 | i8c confirmation: seeds 4–5 at K2 / K3 | weight codes | P+D? | done | 11-02 | 11-02 | K3 z −3.7 (6 seeds), K2 z −2.5 (5); user called the win before it |
 | 78-03 | i8c + diagonal H_out vs diagonal H_out (stacking), 0.8B | weight codes | P+D? | inconclusive | 11-03 | 11-03 | K3 1.000/1.015/1.005: no gain on top of H_out; K2 mixed; seeds 3–5 in #78-04 |
 | 78-04 | i8c + edy vs edy, seeds 3–5 | weight codes | P+D? | null | 11-03 | 11-03 | 6 seeds: K3 mean log −0.007 ± 0.007, K2 −0.002: i8c adds nothing on top of H_out |
-| 79 | CD on the cubic codebook (stacking), CPU proxy, Thor | quantizer | none (CD) · P+D? (i8c) | done | 11-02 | 11-02 | stacks: cd3/ldlq 0.992 at K2.5 and K3 (16/16); combined vs mul1 −2.1% / −2.6% |
-| 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, colo | quantizer | none (CD) · P+D? (i8c) | done | 11-03 | 11-03 | cd3 0.993, cubic 0.989 / 0.985, every tensor (16 / 16) |
+| 79 | CD on the cubic codebook (stacking), CPU proxy, cpu2 | quantizer | none (CD) · P+D? (i8c) | done | 11-02 | 11-02 | stacks: cd3/ldlq 0.992 at K2.5 and K3 (16/16); combined vs mul1 −2.1% / −2.6% |
+| 80 | Row-sample replicate of #77 / #78 (E3_ROWSEED=1), CPU proxy, cpu1 | quantizer | none (CD) · P+D? (i8c) | done | 11-03 | 11-03 | cd3 0.993, cubic 0.989 / 0.985, every tensor (16 / 16) |
 | 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | P+D | done | 11-02 | 11-03 | ug/D 0.83, up-only 0.87; control #81-02 confirms it is real |
 | 81-02 | A1 control: permuted predictors | weight codes | P+D | done | 11-03 | 11-03 | ugperm / uperm ÷ D 0.999–1.001 vs ug 0.72–0.94: the reduction is real prediction |
 | 81-03 | A1 on all 64 layers, K1.5–K4 | weight codes | P+D | done | 11-03 | 11-04 | ug/D 0.833 (K2.5), flat over K (0.849 K1.5 → 0.828 K4); up-only 0.865 keeps 81% (preferred); layers 24–35 ~0.70, ends ~0.95; ≈0.13 bit on down ≈ 0.03 bpw whole-model |
@@ -155,7 +155,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 87-03 | ρ screen for #87 asym (fit slice) | quantizer | none | done | 11-03 | 11-03 | fit screen: ρ 0 best (K3 0.947, K2 0.911 vs ρ 0.5); → #87-05 |
 | 87-04 | #87 asym at K4 / K5 | quantizer | none | done | 11-03 | 11-03 | K4 0.868, K5 0.888 vs base (2 seeds, every seed): holds at high K |
 | 87-05 | ρ 0 (full clean-output target) on search, plain and on edy; ρ −0.25 screen | quantizer | none | done | 11-03 | 11-03 | ρ 0 beats ρ 0.5: plain K3 0.945 / K2 0.916, on edy 0.964 / 0.924, every seed; ρ −0.25 worse |
-| 87-06 | #87 for the 27B: layer-streamed sibling moments + writer requant (w12, `v3/sib27/`) | quantizer | none | done | 11-03 | 11-03 | 0.8B GPU test PASS (moments bit-exact, e2e 0.992 vs w07); 27B run needs iceman + ρ 0 |
+| 87-06 | #87 for the 27B: layer-streamed sibling moments + writer requant (w12, `v3/sib27/`) | quantizer | none | done | 11-03 | 11-03 | 0.8B GPU test PASS (moments bit-exact, e2e 0.992 vs w07); 27B run needs gpubox + ρ 0 |
 | 87-07 | #87 code review and sibling-transfer test (w11, `proxy2b/exp/w11-review/`) | quantizer | none | done | 11-03 | 11-03 | review clean; correction does not transfer across sibling seeds (K3 1.049, K2 1.026): writers last |
 | 87-08 | Order edy → swj → sibling moments → writers asym ρ 0, vs edy → writers ρ 0 | quantizer | none | done | 11-04 | 11-04 | PASS: swj pays on top, K3 0.985 (0.993 / 0.980 / 0.981), K2 0.971; whole stack vs edy K3 0.836, K2 0.758 |
 | 88 | Activation-denoising LDLQ target (C1, level-matched noise), 0.8B (w07) | quantizer | none | negative | 11-02 | 11-03 | K3 1.031, K2 1.10 |
@@ -169,6 +169,6 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 
 Next free number: **90**.
 
-| 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo (GDN layers) + Thor (attention layers) |
-| 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; colo |
+| 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; cpu1 (GDN layers) + cpu2 (attention layers) |
+| 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; cpu1 |
 | 91 | Self-calibration on own agent sessions (0.8B): self-generated vs raw vs calib vs turboderp SC trace, for H_out / H_in / healing, blend weight | statistics | none | running | 11-04 | 11-04 | rule `proxy2b/exp/d1108/README.md`; 4070; arm D (27B gens) later |

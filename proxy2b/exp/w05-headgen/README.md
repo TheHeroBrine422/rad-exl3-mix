@@ -14,7 +14,7 @@ headsim evaluation set.
 agent traces are partial (wildchat 42%, agent-trace 46–50%, swe-rebench 26%). A gen-only Hessian can differ only through those
 prompt segments. Expected head-KL change: a few % at most, ≤ 0.2% total.
 
-## Steps (`run.sh`, iceman)
+## Steps (`run.sh`, gpubox)
 
 0. CPU: overlap of the gen vs all Fisher rankings (seconds).
 1. **`src/headx.py`, both cards, ~30–60 min:** a bf16 forward of qad documents (2M context tokens, 8k cap), using collect.py's
@@ -47,11 +47,11 @@ prompt segments. Expected head-KL change: a few % at most, ≤ 0.2% total.
 
 **GPU time:** headx ~1 h on both cards; 6 quants ~1–1.5 h on one card; scoring ~30 min. The quants only run if the gate says go.
 
-**Run:** `CARD=0 ./run.sh` on iceman, when both cards are free for step 1. Results go to `/data/yaqa/w05-headgen/result.txt`.
+**Run:** `CARD=0 ./run.sh` on gpubox, when both cards are free for step 1. Results go to `/data/yaqa/w05-headgen/result.txt`.
 
 ## Self-tests
 
-- **`headx_test.txt`** (colo CPU; tiny random Qwen3.5 with the 27B's vocabulary and layer pattern, real calib golden meta):
+- **`headx_test.txt`** (cpu1 CPU; tiny random Qwen3.5 with the 27B's vocabulary and layer pattern, real calib golden meta):
   - the run completes;
   - all 3,000 dumped rows' next tokens match the golden's row bookkeeping, and all are gen;
   - dumped vectors equal an independent forward exactly at the mapped positions (relative error 1.4 one position off);
@@ -59,7 +59,7 @@ prompt segments. Expected head-KL change: a few % at most, ≤ 0.2% total.
 
   **PASS.** Run: `python3 src/headx_test.py <27B config.json> <golden meta> <pools-v3.json> <workdir>` (needs transformers +
   accelerate).
-- **`hgate_nulltest.txt`** (colo CPU; the real 27B head and the calib H passed as both arms): ratio exactly 1.0000 at K2 and
+- **`hgate_nulltest.txt`** (cpu1 CPU; the real 27B head and the calib H passed as both arms): ratio exactly 1.0000 at K2 and
   K3, and the gate says stop, as it must.
 
 No shared code is changed: headx.py is standalone; `headarms.py`, `judge.py` and `cpuq.py` live in `../w05-head2s/src`.
