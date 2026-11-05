@@ -6,8 +6,8 @@ EXL3-V3 = integer compute.
 
 ## Scope decisions (user, 2026-11-04; supersede the version sections below where they differ)
 - **Into V3 now:** sub-1 K (K0.125–0.875); the low-bpw research ladder (from 1.5 down in 0.1 steps until KLD blows
-  up; 2.0 / 1.75 / 1.5 / 1.25 are sizes already); research sizes 1.25 / 1.5 / 1.75; A4 built and measured end to end (fast variant at ≤ 2.25 bpw if
-  d1106 passes); saturation-aware allocation for the research sizes; sub-1 trellis embedding and t6.25–t8 embedding
+  up; 2.0 / 1.75 / 1.5 / 1.25 are sizes already); research sizes 1.25 / 1.5 / 1.75; A4 on i4 weights as a per-tensor knapsack option for the fast
+  variant at ≤ 3 bpw (user, 2026-11-05, #46-03; d1106's all-MLP A4 failed its rule, the per-tensor option replaces it); saturation-aware allocation for the research sizes; sub-1 trellis embedding and t6.25–t8 embedding
   levels (menu work; releasing 7+ bpw is optional); all three IQR-V4 ideas (act order in the trellis, bf16
   (row, 128) scales on attn_output / ssm_out from K5, vocabulary-weighted head vs our slab head); fast + accurate
   variants per size; vision tower + DFlash2 in the containers.

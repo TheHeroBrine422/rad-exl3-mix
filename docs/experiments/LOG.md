@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 01:00 CST · #46-02, #46-03 · A4 returns as a per-tensor option on i4 weights; 7.0 proposed as a V3 size
+- **#46-02 closed as fail** for A4 as a global setting (all MLP tensors, K2 ×1.14 / ×1.16, ≈ 0.07 bpw for an est.
+  +25–30% prefill).
+- **Decision (user):** W4A4 (i4-grid weights, K ≤ 3 × A4-g64) is a per-tensor knapsack mode for the fast variant at
+  ≤ 3 bpw (#46-03, rule `v3/e3/a4/README.md`: 27B per-family costs, time table, knap4; the int4-plane kernel only if
+  ≥ 10% lower predicted `gemm_us` at equal KLD, or ≥ 0.03 bpw smaller). Decode-side work (GEMV, trellis decode of the
+  weights) stays for later (BACKLOG "V3 decode kernels after radiance 1.17").
+- **7.0 bpw:** IQR-V4's IQ6R-L-V4 is 6.939 bpw / 0.000677 KL / 4,006 µs vs V2 7.00 (6.995 bpw) 0.00045 / 8,105 µs; the
+  ladder already holds every level a 7.0 needs (i8 to K7, mul1 K6–K8), so a V3 7.0 costs ~3 h a variant (knapsack,
+  pack, eval). Proposed to the user as a V3 size after the focus sizes and 6.0 (TP2 R9700 users); open.
+- **Runtime cost:** A4 is a speed option; 7.0 fast variant targets the 2× prefill gap.
+
 ### 2026-11-04 18:45 CST · #91, #33-28, #46-02 · Self-calibration test started (0.8B); swap test on 1,920 sequences; calib is partly SC already
 - **#91 (d1108) started** (rule `proxy2b/exp/d1108/README.md`, written before data): do the model's own continuations of
   the user's agent sessions make better Σdy² H_out, input Hessians or healing data than calib qad or the raw sessions,
