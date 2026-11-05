@@ -1,0 +1,34 @@
+# #94 report from data/e3/sub1/i8hi.jsonl (120 lines)
+
+| K | median i8/mul1 | p90 | min | max | n | rule |
+|---|---|---|---|---|---|---|
+| 6.5 | 1.0106 | 1.0128 | 0.9818 | 1.0135 | 10 |  |
+| 7 | 1.1809 | 1.1893 | 1.0384 | 1.1920 | 10 | GPU smoke x1.024: OFF |
+| 7.25 | 1.4734 | 1.5071 | 1.0570 | 1.5239 | 10 | no |
+| 7.5 | 1.8992 | 1.9751 | 1.0934 | 2.0114 | 10 | no |
+| 7.75 | 2.4229 | 2.5667 | 1.1225 | 2.6544 | 10 | no |
+| 8 | 3.0093 | 3.2880 | 1.1330 | 3.4538 | 10 | GPU smoke x1.347: OFF |
+
+per tensor (i8 / mul1):
+tensor               6.5      7   7.25    7.5   7.75      8
+L10 ssm_qkv        1.004  1.192  1.524  2.011  2.654  3.454
+L10 ssm_out        1.010  1.141  1.349  1.605  1.900  2.202
+L10 ffn_gate_up    1.013  1.188  1.505  1.964  2.553  3.270
+L10 ffn_down       1.012  1.181  1.475  1.899  2.418  3.017
+L30 ffn_down       1.013  1.187  1.489  1.923  2.470  3.094
+L50 ssm_qkv        1.006  1.189  1.480  1.971  2.557  3.268
+L50 ffn_gate_up    1.012  1.157  1.381  1.740  2.100  2.664
+L19 attn_qg        1.013  1.181  1.472  1.899  2.428  3.001
+L19 attn_output    0.982  1.038  1.057  1.093  1.122  1.133
+L43 attn_v         1.010  1.181  1.451  1.855  2.328  2.863
+
+scale search on its top factor (1.15): 120/120 lines
+  mul1 K6.5: this run / fracsweep-hi (wider scale grid) median 1.011 n=4; fracsweep-hi's scale factors [1.15, 1.3]
+  mul1 K7: this run / fracsweep-hi (wider scale grid) median 1.072 n=4; fracsweep-hi's scale factors [1.3]
+  mul1 K7.5: this run / fracsweep-hi (wider scale grid) median 1.196 n=4; fracsweep-hi's scale factors [1.3]
+  mul1 K8: this run / fracsweep-hi (wider scale grid) median 1.425 n=4; fracsweep-hi's scale factors [1.3, 1.5]
+
+Sanity (K7 / K8 within +-0.05 of the GPU smoke): K7 1.181 vs 1.024, K8 3.009 vs 1.347 -> FAIL (proxy not trusted)
+Rule #94 K7.25: median 1.473 (<= 1.10), p90 1.507 (<= 1.20) -> does not join
+Rule #94 K7.5: median 1.899 (<= 1.10), p90 1.975 (<= 1.20) -> does not join
+Rule #94 K7.75: median 2.423 (<= 1.10), p90 2.567 (<= 1.20) -> does not join

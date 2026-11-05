@@ -3,6 +3,24 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 01:20 CST · #33-29, #90, #90-02, #94, #91 · Overnight readouts (part 1)
+- **#33-29 hest** (3 27B layers, K2.5, quantizer proxy, 3 references): E_out/none under dy / B / xw refs —
+  Σdy² ~0.936–0.942, Sketch B 0.930–0.937, xw 0.928–0.934. No estimator ≥ 2% better under all three: **no new arm**;
+  the block-normalized Σdy² stays (xw ≤ 1% better under two refs, within noise).
+- **#90 (w21):** rule 1 PASS (343 steps monotone, ×0.79 a 1/8 step; K1 anchor within 0.6%). Rule 2 **FAIL** at every
+  size: knap4 with sub-1 options −0.07% at 1.5, −0.02% at 1.75, 0 at 2.0–2.5 (−1.8% at 1.25, reported only). Sub-1
+  pays only ≲ 1.3 bpw. **Bigger:** K1.125–1.875 (1/8) in knap4's V3 ladder lowers predicted KLD −12% at 1.5–1.75,
+  −6.7% at 2.0, −1.3% at 2.25; and knap4's 1 MiB buckets cost ~2% at 1.5 (256 KiB fixes it). Patch
+  `v3/e3/sub1/knap4-sub1.patch` (KN_SUB1, KN_BK); data `data/e3/sub1/`.
+- **#90-02:** i4 replaces i8 at K ≤ 1.5 (1.0029 at K1.5); K2 1.0107 (just over 1.01); K3 1.067. Both ladders K1.625–3.
+- **#94 invalid:** the CPU proxy's sanity check fails (K7 ×1.18 vs the GPU smoke's 1.02, K8 ×3.0 vs 1.35): every line on
+  the top scale factor (grid capped at 1.15). Rerun with the grid to 1.5 before any decision.
+- **#91 phase 1 (0.8B), H_out from self-gen blended into calib, calib golden:** w 0.25 0.998 (K3) / 1.024 (K2), w 0.5
+  1.024 / 1.017, w 1 1.085 / 1.122 — **no gain, worse at higher weight**. The g-agent scores were lost (its kld.json
+  lacked the radiance format tag: evalq refused it; fixed, re-scored after the H_in step).
+- **#91 H_in (first arm):** hiC1 (self-gen input Hessians alone) K2: calib **1.37** (z +8.5), calib's agentic text
+  0.99 (n.s.). Remaining arms running.
+
 ### 2026-11-05 12:00 CST · #34-02, #99 · Slab-head whole-model check and 8.0 floor split armed; two-pass kernels started
 - `v3/yaqa/headwm.sh` (rules `v3/yaqa/HEADWM.md`): head Fisher + permutation rebuilt now (CPU, gpubox), head quants
   K3–K7 and the arms after the night chain: heads at equal bytes (bf16-dequantized) swapped into V2 4.00 (u5 / s5-3 /
