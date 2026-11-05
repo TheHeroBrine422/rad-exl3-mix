@@ -224,14 +224,17 @@ prefill.
   cards only for the lower sizes). Open:
   Docker Hub namespace; build the worker image and run one real job on an R9700 before publishing; where the
   server's volumes live on the queue host; admin = one read-only status endpoint. Donors (user, 2026-11-05): many R9700s (= our card:
-  every search size fits, results bit-identical on recompute, cheap spot checks), hosts mostly ≥ 32 GB RAM: add a
-  declared-RAM field at registration and a minimum per job type (trunk layer ~24 GB, LM head ~48 GB: its ~22 GB
+  every search size fits; results not bit-identical across GPUs, so w13's tolerance check applies; cheap spot checks),
+  hosts mostly ≥ 32 GB RAM: workers already declare RAM (`--ram-gb`); add a minimum per job type (trunk layer ~24 GB, LM head ~48 GB: its ~22 GB
   peak is tight on a 32 GB desktop). With a handful of R9700 donors ladder + search ≈ 2 days: start during the freeze.
   **Big-box tier** (4x R9700, 128 GB VRAM / 192 GB RAM builds in the community): 27B bf16 reference goldens (public data;
   first candidate, on the critical path), full-model backward passes (Σdy² collections on public data, REAL-Q's Fisher),
   fuller H_out accumulators, long-context checks, later healing / QAD and MoE. Trusted donors only (long jobs are not
   cheaply spot-checked: split-half and per-layer comparisons against our snapshots); never the user's traces; a box
   registers as one multi-GPU worker for these and as single-card workers otherwise.
+  **Multi-card worker (v1):** one worker with N GPU slots (per-card processes, one shared cache and RAM budget), gang
+  jobs claim all cards after a drain, with a server-side reservation so they do not starve; servers get a
+  "cards needed" field per job type. Until then: one container per card.
 - [ ] **Quantized DFlash2 drafter and vision tower.** V3 bundles both in bf16 (`docs/design/v3.md` §8; outside the
   bpw count). Quantizing them shrinks the container / VRAM: the drafter's quality shows as acceptance rate (decode
   tok/s), not KLD, so it needs its own metric (acceptance length on held-out text); the vision tower needs an image
