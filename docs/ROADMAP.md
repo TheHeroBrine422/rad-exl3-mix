@@ -65,7 +65,8 @@ for finals and published numbers). Public only for reporting at the end.
 
 **Order:** freeze the quantizer settings (swap test, confirmation queue) and build the kernels in parallel → ladder
 → knap4 / stream per size and variant → finals on calib verify, long-context check, **decode timing** (end-to-end engine step time on the finals: batch 1 and a few
-concurrencies, short and long context; how Deadcode measures it) → release. 7.0 after the focus
+concurrencies, short and long context; how Deadcode measures it; reported, not solved for: decode tracks size and
+prefill, user 2026-11-05) → release. 7.0 after the focus
 sizes and 6.0.
 
 **Hardware:** 2xR9700, plus various 12-16GB consumer cards. 
