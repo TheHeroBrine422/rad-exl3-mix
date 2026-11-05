@@ -9,7 +9,9 @@ versions of anything: git history.
   CST `exl3build.sh` log stops mid-compile) and the kernel sources next to ourq.py (`exl3frac`, `exl3cb`,
   `exl3frac2`) were missing. Copied the sources from the repo, restarted `exl3build.sh` (5:52 PM CST);
   `/data/swap27/afterbuild.sh` reruns `swap27.sh run` (NSEQ=1920) when it reports done. Base score and `hout-bn`
-  (mkbn: 400 tensors, 15 blocks) kept.
+  (mkbn: 400 tensors, 15 blocks) kept. Second failure after the build (6:09 PM CST): ourq's `write_index` template
+  (`RXM_TEMPLATE`, turboderp's `SC_4.00bpw_H5/config.json`) was gone too; refetched from HF (identical to the ladder's
+  config apart from the bit fields ourq writes). Restarted 6:17 PM CST; ~4 min a layer.
 - **Base score check:** radiance's "all" mean (1.27, p95 10.5) includes unscored positions, where the golden's rows are
   not a real reference (unscored mean 4.37). Scored positions: **0.059** (V2 2.5: 0.0666). `cmp115.py` pairs on gen.u8
   only, so the arms compare correctly; quote scored-position means only.
