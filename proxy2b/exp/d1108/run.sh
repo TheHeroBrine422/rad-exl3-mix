@@ -6,7 +6,7 @@ O=/data/yb/d1108 D3=/data/yb/d1103 D4=/data/yb/d1104 D5=/data/yb/d1105; mkdir -p
 f32() { for d in $O $D5 $D4 $D3 $Y; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in $O $D5 $D4 $D3 $Y; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
 lock() { exec 9>/data/yb/gpu.lock; flock 9; }; unlock() { flock -u 9; }
-want() { [[ " ${D1108_STEPS:-prep gen build gold coll hout hin heal} " == *" $1 "* ]] && [ ! -f /data/yb/night.stop ]; }
+want() { [[ " ${D1108_STEPS:-prep gen build gold coll hout fam hin heal} " == *" $1 "* ]] && [ ! -f /data/yb/night.stop ]; }
 T=/data/pisess/v2/pisess-redacted.jsonl TD=/data/refs/td-qwen38/cal_trace.json GA=$O/g-agent C23=$Y/c23/hdiag-snap1024-dy
 evboth() { t=$1 w=$2 em=${3:-$M}; ev $t $w $S "" $em; ev ag-$t $w $GA "" $em; }   # calib search + agentic
 pairboth() { pair $1 $2; pair ag-$1 ag-$2 $GA; }
@@ -43,6 +43,16 @@ if want hout; then step hout
       pairboth $base $t; done; done; done
   for b in C0.25 C0.5 C1 B0.5 B1 T0.5 T1; do for k in 3 2; do
     python3 $X3/summ.py $O k${k}dygm k${k}ho$b ag-k${k}dygm ag-k${k}ho$b | tee -a $O/result.txt; done; done; fi
+if want fam; then step fam   # amendment 2: per-family blends at w* (mixers = attention + GDN, mlp), vs the uniform blend
+  w=$(python3 -I $X/wstar.py $O hoC 0.25 0.5 1); log "w* (C, uniform): $w"
+  if [ "$w" != none ]; then
+    for f in "mix:(self_attn|linear_attn)" "mlp:mlp\\."; do n=${f%%:*} re=${f#*:}; d=$O/ho-C$w-$n
+      [ -f $d/.done ] || python3 -I $X/blend.py hout $C23 $O/cC/hdiag-snap1024-dy $w $d "$re" >> $O/blend.log 2>&1
+      for s in 0 1; do for k in 3 2; do t=k${k}hoC$w$n$(sfx $s)
+        lock; q $t $k i8 --hout $d --sigma-reg-out 0.01 --seed-offset $s; ev ag-$t $O/q-$t/wq $GA; unlock
+        pairboth k${k}hoC$w$(sfx $s) $t; pairboth k${k}dygm$(sfx $s) $t; done; done
+      for k in 3 2; do python3 $X3/summ.py $O k${k}hoC$w k${k}hoC$w$n ag-k${k}hoC$w ag-k${k}hoC$w$n | tee -a $O/result.txt; done; done
+  fi; fi
 if want hin; then step hin
   for w in 0.5 1; do d=$O/hi-C$w; [ -f $d/.done ] || python3 -I $X/blend.py hin /data/h08/calib $O/hinC $w $d >> $O/blend.log 2>&1; done
   for s in 0 1; do for k in 3 2; do base=k${k}dygm$(sfx $s)
