@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 10:15 CST · #33-28 · Night chain extended to ~6 PM CST without needing TP2 after 9 AM
+- **User:** both cards until morning, card 1 may be taken back any time after ~9 AM; run until noon–6 PM.
+- TP2 goldens (batches 2 / 3, 1M-token chunks) end at **9:00 AM CST** whatever is left. Then a queue of 4-layer
+  quant chunks (`v3/yaqa/swap27k.sh`): card 0 always, card 1 while it is ours (`stop2.sh` kills card 1's chunk, card 0
+  redoes it): the seed arm s1 (K2.5) → **base4 → bn4** (K4 on V2 4.00, H27.md amendment 3) → paired comparisons.
+  Est. done ~5–6 PM CST with card 1 helping until midday, ~midnight on card 0 alone. V2 4.00 downloaded beforehand.
+
 ### 2026-11-05 09:45 CST · #92, #94–#97 · Overnight CPU / 4070 plan; paper review applied; pool trace split corrected
 - **cpu1:** #94 (i8 codebook above K7) running; #95 (act order, bf16 (row,128) scales) by worker w19.
   **cpu2:** #96 (row-slab K with Σdy² row importance) and #97 (embedding menu ends) by worker w20 (user approved #96).
