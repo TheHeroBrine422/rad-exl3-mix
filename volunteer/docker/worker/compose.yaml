@@ -1,0 +1,48 @@
+# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
+# Example compose file for a donor worker on an AMD GPU (ROCm). Optional: the image runs just as well with the
+# `docker run` line in volunteer/README.md ("Donor worker"); this file holds the same settings.
+#
+#   cp .env.example .env     then set RXMW_SERVER, RXMW_INVITE (first start only), RENDER_GID, VIDEO_GID, caps
+#   docker compose up -d     registers with the invite on the first start; the token is kept in the state volume
+#   docker compose logs -f   docker compose stop   (stop = finish the current job, up to stop_grace_period)
+name: rxm-worker
+
+services:
+  worker:
+    image: ${RXMW_IMAGE_REF:-rxm-worker:0.1.0-rocm7.14-gfx1201}
+    restart: unless-stopped
+    devices: [/dev/kfd, /dev/dri]
+    group_add:                                  # the host's numeric ids: getent group video render
+      - "${VIDEO_GID:?set VIDEO_GID to the host's video group id (getent group video)}"
+      - "${RENDER_GID:?set RENDER_GID to the host's render group id (getent group render)}"
+    # ROCm's runtime makes NUMA memory-policy calls the default seccomp profile only allows with CAP_SYS_NICE; AMD's
+    # documented container setup turns seccomp off for the container. Everything else stays locked down.
+    security_opt: ["seccomp=unconfined", "no-new-privileges:true"]
+    cap_drop: [ALL]
+    environment:
+      RXMW_SERVER: ${RXMW_SERVER:?set RXMW_SERVER to the queue URL you were given}
+      RXMW_INVITE: ${RXMW_INVITE:-}             # one-time invite; ignored once the token file exists
+      RXMW_NAME: ${RXMW_NAME:-donor}
+      # RXMW_TOKEN_FILE: /run/secrets/rxm_token  # instead of an invite: a token you already have (secret below)
+      RXMW_GPU_NAME: ${RXMW_GPU_NAME:-r9700}
+      RXMW_VRAM_GB: ${RXMW_VRAM_GB:-32}
+      RXMW_RAM_GB: ${RXMW_RAM_GB:-30}           # host RAM the jobs may use (a 27B head job peaks at ~22 GB)
+      RXMW_CACHE_GB: ${RXMW_CACHE_GB:-200}      # disk cap of the input cache in the state volume
+      RXMW_WINDOWS: ${RXMW_WINDOWS:-}           # e.g. 22:00-08:00,12:00-13:00 (local time, TZ below); empty: always
+      RXMW_ON_STOP: ${RXMW_ON_STOP:-finish}     # finish | abandon the current job on stop
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${RXMW_STATE_DIR:-rxm-state}:/var/lib/rxm   # token, current job, input cache (up to RXMW_CACHE_GB + one job)
+    # secrets: [rxm_token]
+    mem_limit: ${RXMW_MEM_LIMIT:-32g}
+    stop_grace_period: ${RXMW_STOP_GRACE:-15m}  # time to finish the current job on `docker compose stop`
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "3"}
+
+volumes:
+  rxm-state:
+
+# secrets:
+#   rxm_token:
+#     file: ./rxm-token                         # one line; readable by uid 10001 (chmod 0444, or chown 10001)

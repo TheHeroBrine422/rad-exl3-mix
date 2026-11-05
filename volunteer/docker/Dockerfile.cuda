@@ -1,0 +1,51 @@
+# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
+# CUDA variant of the worker image (quantization jobs only: our kernels / evals have no CUDA path). Same layout and
+# runtime config as Dockerfile.rocm; the stack is the one our RTX 4070 test box runs outside docker (torch
+# 2.11.0+cu128, TESTS.md). NOT BUILT YET. TORCH_CUDA_ARCH: 8.9 = Ada, 12.0 = Blackwell; add the donors' archs.
+ARG CUDA_IMAGE=nvidia/cuda:12.8.1-devel-ubuntu24.04
+FROM ${CUDA_IMAGE}
+ARG CUDA_IMAGE
+ARG TORCH_SPEC="torch==2.11.0"
+ARG TORCH_INDEX=https://download.pytorch.org/whl/cu128
+ARG EXL3_REPO=https://github.com/turboderp-org/exllamav3
+ARG EXL3_COMMIT=a3bfbfd0
+ARG TORCH_CUDA_ARCH="8.9;12.0"
+ARG VERSION=0.0.0-dev
+ARG REPO_COMMIT=unknown
+ARG IMAGE_TAG=rxm-worker:dev
+ARG SOURCE=https://github.com/TheHeroBrine422/rad-exl3-mix
+ARG CREATED=unknown
+
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv git ninja-build \
+ && rm -rf /var/lib/apt/lists/* && python3 -m venv /opt/venv
+ENV PATH=/opt/venv/bin:$PATH
+RUN pip install --no-cache-dir --index-url ${TORCH_INDEX} "${TORCH_SPEC}" \
+ && pip install --no-cache-dir numpy==2.5.4 safetensors==0.8.0 ninja==1.13.2
+COPY . /opt/rxm/repo
+RUN git clone ${EXL3_REPO} /opt/rxm/exllamav3 && cd /opt/rxm/exllamav3 && git checkout ${EXL3_COMMIT} \
+ && git -c user.name=build -c user.email=build@localhost am /opt/rxm/repo/quantize/exl3-patches/000*.patch \
+ && TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH}" MAX_JOBS=8 python setup.py build_ext --inplace
+ENV PYTHONPATH=/opt/rxm/exllamav3 TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH}" \
+    PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+RUN python /opt/rxm/repo/volunteer/docker/warm.py /opt/rxm/exllamav3/exllamav3/exllamav3_ext
+RUN echo "rxm-worker ${VERSION} cuda repo ${REPO_COMMIT} exllamav3 ${EXL3_COMMIT}" > /opt/rxm/IMAGE \
+ && useradd -u 10001 -m rxm && mkdir -p /var/lib/rxm && chown rxm /var/lib/rxm \
+ && chmod -R a-w /opt/rxm && chmod -R u+w /opt/rxm/torch_ext && chown -R rxm /opt/rxm/torch_ext
+ENV RXMW_STATE=/var/lib/rxm RXMW_TOKEN_FILE=/var/lib/rxm/token RXMW_IMAGE="${IMAGE_TAG}+${REPO_COMMIT}"
+LABEL org.opencontainers.image.title="rxm-worker" \
+      org.opencontainers.image.description="Donated-compute worker for EXL3 quantization jobs (CUDA)" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.url="${SOURCE}/tree/main/volunteer" \
+      org.opencontainers.image.documentation="${SOURCE}/blob/main/volunteer/README.md" \
+      org.opencontainers.image.revision="${REPO_COMMIT}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.created="${CREATED}" \
+      org.opencontainers.image.licenses="Apache-2.0 AND MIT" \
+      org.opencontainers.image.base.name="${CUDA_IMAGE}" \
+      io.github.rxm.exllamav3_commit="${EXL3_COMMIT}" io.github.rxm.torch="${TORCH_SPEC}"
+USER rxm
+VOLUME /var/lib/rxm
+ENTRYPOINT ["python", "-I", "/opt/rxm/repo/volunteer/worker/worker.py", "--state", "/var/lib/rxm", \
+            "--ourq", "/opt/rxm/repo/quantize/ourq.py", "--exl3-src", "/opt/rxm/exllamav3/exllamav3/exllamav3_ext", \
+            "--env", "PYTHONPATH=/opt/rxm/exllamav3", "--env", "TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext", \
+            "--python", "/opt/venv/bin/python", "--job-types", "noop,quant_layer,quant_head"]

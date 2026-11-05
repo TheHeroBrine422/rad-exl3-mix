@@ -1,0 +1,73 @@
+# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
+# The donor worker image, ROCm (gfx1201 = Radeon AI PRO R9700). Build with docker/build.sh: it feeds this file a
+# `git archive` of one rad-exl3-mix commit (only the paths the worker needs: no local/, no data, no dev scripts), so the
+# image is exactly that commit. Nothing secret is in the image: the queue URL and the worker token are given at run
+# time (RXMW_SERVER, RXMW_TOKEN_FILE / RXMW_TOKEN / RXMW_INVITE; README "Donor worker").
+#
+#   ROCm and torch come as pip wheels (TheRock, as on our GPU box: rocm 7.14.1 + torch 2.15.0+rocm7.14; see
+#   quantize/exllamav3-environment.txt), so the base is a plain Python image and the host needs only the amdgpu
+#   kernel driver (/dev/kfd, /dev/dri). Pin every version below; record the digests in the release notes.
+#
+#   NOT BUILT YET (too heavy for our build hosts: several GB of wheels + the exllamav3 compile). The same steps run
+#   outside docker on the GPU box.
+ARG PY_IMAGE=python:3.14-slim-bookworm
+FROM ${PY_IMAGE}
+ARG PY_IMAGE
+
+ARG ROCM_INDEX=https://rocm.nightlies.amd.com/v2/gfx120X-all/
+ARG TORCH_SPEC="torch==2.15.0+rocm7.14"
+ARG ROCM_SPEC="rocm[libraries,devel]==7.14.1"
+ARG EXL3_REPO=https://github.com/turboderp-org/exllamav3
+ARG EXL3_COMMIT=a3bfbfd0
+ARG GPU_ARCH=gfx1201
+ARG VERSION=0.0.0-dev
+ARG REPO_COMMIT=unknown
+ARG IMAGE_TAG=rxm-worker:dev
+ARG SOURCE=https://github.com/TheHeroBrine422/rad-exl3-mix
+ARG CREATED=unknown
+
+RUN apt-get update && apt-get install -y --no-install-recommends git build-essential ninja-build ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir --root-user-action=ignore --index-url ${ROCM_INDEX} --extra-index-url https://pypi.org/simple \
+      "${TORCH_SPEC}" "${ROCM_SPEC}" \
+ && pip install --no-cache-dir --root-user-action=ignore numpy==2.5.4 safetensors==0.8.0 ninja==1.13.2
+
+# our repo at REPO_COMMIT (build context = git archive of the needed paths)
+COPY . /opt/rxm/repo
+# exllamav3 at the pinned upstream commit + our patch series (quantize/exl3-patches/README.md)
+RUN git clone ${EXL3_REPO} /opt/rxm/exllamav3 && cd /opt/rxm/exllamav3 && git checkout ${EXL3_COMMIT} \
+ && git -c user.name=build -c user.email=build@localhost am /opt/rxm/repo/quantize/exl3-patches/000*.patch \
+ && PYTORCH_ROCM_ARCH=${GPU_ARCH} MAX_JOBS=8 python setup.py build_ext --inplace
+# the run-time side extensions ourq.py --qtf2 / --codebook build (v3/e3/exl3frac2, exl3cb, exl3frac): compiled now
+# into the image (no GPU needed to compile), so donors do not wait for hipcc on their first job. A failure fails the
+# build: a published image must not compile at run time.
+ENV PYTHONPATH=/opt/rxm/exllamav3 TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext PYTORCH_ROCM_ARCH=${GPU_ARCH} \
+    PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+RUN python /opt/rxm/repo/volunteer/docker/warm.py /opt/rxm/exllamav3/exllamav3/exllamav3_ext
+
+# code read-only; torch's extension loader still takes a lock file in TORCH_EXTENSIONS_DIR on every load, so that
+# directory stays writable by the worker user (which is also why the run line does not use --read-only)
+RUN echo "rxm-worker ${VERSION} rocm ${GPU_ARCH} repo ${REPO_COMMIT} exllamav3 ${EXL3_COMMIT}" > /opt/rxm/IMAGE \
+ && useradd -u 10001 -m rxm && mkdir -p /var/lib/rxm && chown rxm /var/lib/rxm \
+ && chmod -R a-w /opt/rxm && chmod -R u+w /opt/rxm/torch_ext && chown -R rxm /opt/rxm/torch_ext
+ENV RXMW_STATE=/var/lib/rxm RXMW_TOKEN_FILE=/var/lib/rxm/token RXMW_IMAGE="${IMAGE_TAG}+${REPO_COMMIT}"
+LABEL org.opencontainers.image.title="rxm-worker" \
+      org.opencontainers.image.description="Donated-compute worker for EXL3 quantization jobs (ROCm ${GPU_ARCH})" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.url="${SOURCE}/tree/main/volunteer" \
+      org.opencontainers.image.documentation="${SOURCE}/blob/main/volunteer/README.md" \
+      org.opencontainers.image.revision="${REPO_COMMIT}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.created="${CREATED}" \
+      org.opencontainers.image.licenses="Apache-2.0 AND MIT" \
+      org.opencontainers.image.base.name="${PY_IMAGE}" \
+      io.github.rxm.exllamav3_commit="${EXL3_COMMIT}" io.github.rxm.torch="${TORCH_SPEC}" \
+      io.github.rxm.rocm="${ROCM_SPEC}" io.github.rxm.gpu_arch="${GPU_ARCH}"
+USER rxm
+VOLUME /var/lib/rxm
+# every path a job uses is fixed here (they enter ourq.py's code stamp); the donor adds the queue URL and the token
+# (env or flags) and the caps: --gpu-name, --vram-gb, --ram-gb, --cache-gb, --window
+ENTRYPOINT ["python", "-I", "/opt/rxm/repo/volunteer/worker/worker.py", "--state", "/var/lib/rxm", \
+            "--ourq", "/opt/rxm/repo/quantize/ourq.py", "--exl3-src", "/opt/rxm/exllamav3/exllamav3/exllamav3_ext", \
+            "--env", "PYTHONPATH=/opt/rxm/exllamav3", "--env", "TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext", \
+            "--python", "/usr/local/bin/python"]
