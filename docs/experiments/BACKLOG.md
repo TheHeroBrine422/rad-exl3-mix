@@ -214,6 +214,12 @@ prefill.
   reweightings all lost): top-row share per linear from the #33-24 snapshots; read beside the swap test.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
+## Later, low priority (user, 2026-11-05)
+- [ ] **Quantized DFlash2 drafter and vision tower.** V3 bundles both in bf16 (`docs/design/v3.md` §8; outside the
+  bpw count). Quantizing them shrinks the container / VRAM: the drafter's quality shows as acceptance rate (decode
+  tok/s), not KLD, so it needs its own metric (acceptance length on held-out text); the vision tower needs an image
+  eval (none in our corpora). Runtime: D (drafter acceptance) / VRAM.
+
 ## Fuller output Hessians for the 27B (2026-11-04, user question)
 
 - [ ] **"Mixed" H_out** (full output factors except gate / up, which stay diagonal): 0.8B at 8K seqs K3 −9.9% vs
