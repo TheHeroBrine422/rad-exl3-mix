@@ -45,7 +45,9 @@ most V3.5 items moved into V3 on 2026-11-04.
 
 **Quantizer stack** (each item proven on the 0.8B proxy needs its 27B confirmation, BACKLOG "27B confirmation
 queue"): diagonal output Hessian H_out (Σdy², block-normalized; 27B swap test #33-28) → joint SwiGLU scale refit
-(swj) → sibling-sequential asym writers (ρ0, last) . **Frozen-code scale healing moves to V4** (user, 2026-11-05: after V3 ships, per finished mix). Plus: per-tensor damping, scale gain per K and family (larger for attn_output / ssm_out at ≥ 5 bits), turboderp's tensors as options, and to test:
+(swj) → sibling-sequential asym writers (ρ0, last) → frozen-code scale healing (#89): **deferred, not dropped** (user, 2026-11-05): no 27B test before the settings
+freeze; 27B work starts with the ladder generation, at the latest after V3; may still reach V3's releases if ready.
+0.8B healing tests continue. Plus: per-tensor damping, scale gain per K and family (larger for attn_output / ssm_out at ≥ 5 bits), turboderp's tensors as options, and to test:
 IQR-V4's act order in the trellis, bf16 (row, 128) scales on attn_output / ssm_out from K5, a vocabulary-weighted
 head vs our row-slab head; A1 (down_proj predicted from up) as a per-layer option if it is on the frontier;
 self-calibrated statistics (#91). The cubic i8c codebook is likely dropped (no gain on top of H_out).
@@ -80,8 +82,8 @@ sizes and 6.0.
   bundled in V3); prefill (~1,500 vs ~2,500 tok/s) is the GEMM time V3's int8 path targets.
 
 ## V4: QAD and after
-- **Scale healing, then QAD,** on the published V3 checkpoints (healing per finished mix; moved out of V3 by the
-  user, 2026-11-05). 0.8B results to start from (each needs a 27B check): frozen-code healing
+- **QAD** on the published V3 checkpoints, after scale healing (if healing did not already ship in V3: see the V3
+  quantizer stack). 0.8B results to start from (each needs a 27B check): frozen-code healing
   K2 −38% (#89); field report: QAD on an EXL3 quant gained ~6–13% KLD at a 1,024 window, ~22% training only layers
   48–63 (trellis codes interfere earlier in the stack). Ideas to test on a small model first: QAD before the trellis
   step, other rotations than the 128-point Hadamard (e.g. ParoQuant's), QAD on a separate corpus.

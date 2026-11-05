@@ -3,9 +3,10 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
-### 2026-11-05 03:00 CST · #89 · Healing moves to V4; volunteers for search as well as quants
-- **Decision (user):** frozen-code scale healing is not tested on the 27B now and is not in V3; it runs after V3 ships,
-  per finished mix (V4, with QAD). V3's estimates vs V2 were made before healing, so they stand; the knapsack
+### 2026-11-05 03:00 CST · #89 · 27B healing deferred to the ladder phase; volunteers for search as well as quants
+- **Decision (user), clarified 03:30 CST:** 27B frozen-code scale healing is **deferred, not dropped**: no 27B test
+  before the settings freeze; work on it once the ladder generation starts (beside it), at the latest after V3; it can
+  still go into V3's releases if ready. 0.8B healing tests continue now. V3's estimates vs V2 were made before healing, so they stand; the knapsack
   allocates without healing (a healing-aware reallocation is a V4 question).
 - **Volunteers:** besides the ladder's per-layer quants, the search's candidate evals (`eval_mix`, ~1,500–3,000 evals
   ≈ 50–100 card-hours a pass) can run on donors in batches: public slices only; mixes assembled on the worker from
