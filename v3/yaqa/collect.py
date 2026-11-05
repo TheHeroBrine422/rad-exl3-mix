@@ -67,7 +67,7 @@ Env: YAQA_GATE=1 -> 2 sequences, no files, print time / memory (gate 1).
                     top ops by GPU time and by CPU time -> OUTDIR/profile.txt, trace -> OUTDIR/profile.json. Every
                     sequence's log line also splits its time into forward / backward / waiting for the CPU sums."""
 import json, math, os, sys, time
-sys.path.insert(0, "/data/yaqa/pylib"); sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.environ.get("YAQA_PYLIB", "/data/yaqa/pylib")); sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # YAQA_PYLIB: extra local packages, if any
 import numpy as np, torch
 import bf16x                                       # near-fp32 GEMMs on bf16 cores (YAQA_PREC=x2)
 
