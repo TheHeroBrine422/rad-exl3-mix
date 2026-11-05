@@ -31,8 +31,12 @@ default, fp32 sidecar map). Target use: Qwen3.8-27B at 256k–750k context with 
 
 ## Where it lives
 
-Core radiance (new op + KV group + scheduler hook), written as a clean **upstream PR**; our `qwen35_exl3` plugin is
-the first user (the bf16 `qwen35` arch gets the same few lines). V3's HF repos ship the map in `lsa/`.
+Core radiance (new op + KV group + scheduler hook), written as a clean **upstream PR**. Arch hooks: the bf16 block
+(`arch/common/rad_block_attn_gated.h`, `qwen35_bf16`), **the fp8/IQR block** (`rad_block_attn_gated_fp8.h`, used by
+`qwen35_fp8`, which serves IQR-V4 checkpoints; its attention is fused with the gate quant, `op_attn_gq` = `attn_paged`
++ `gate_quant_fp8`, so LSA needs the list form of that fused op or unfuses it when on), and our `qwen35_exl3` plugin
+(V3). V3's HF repos ship the map in `lsa/`. Added 2026-11-05 (user): the fp8/IQR hook is part of the PR, not left out;
+worker A was briefed on the bf16 block only, so the lead adds the fp8 hook at integration if A did not.
 
 ## Interface contract (both workers code to this)
 
