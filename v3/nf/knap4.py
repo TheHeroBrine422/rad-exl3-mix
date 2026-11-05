@@ -21,7 +21,7 @@ Switches (env, all default off = knap3's V2-like menu):
               the integers (log scale), instead of the midpoint interpolation. Tensors without all three: interpolated.
   F8 now uses the measured K7 x1.25 / K8 x4.5 (E3b full set), fractional K interpolated.
   KN_V3=1     the V3 option table (critique 2026-11-02 C3.2): only options with a container (built or queued):
-              ours fractional / integer K = the ladder's levels (KN_LADDER, default 2..6 in quarter steps to 4.75, then
+              ours fractional / integer K = the ladder's levels (KN_LADDER, default since 11-05 the V3 i8 ladder: K1.125-5 in 1/8, K5.25-7 in 1/4; was 2..6 in quarter steps to 4.75, then
               5, 5.5, 6), i8 codebook, the only ones offered int8 modes; V2's mul1 ours-K1 / K7 / K8 stay f16-only;
               head = integer K1..8 plus slab K5 / K6 (KN_HEADSLAB=1; no half-step or fractional heads); KN_M
               default 2048 (speedcal's M rows, other shapes scaled by the kernel's measured 2048 / 4096 ratio);
@@ -80,7 +80,7 @@ LAMBDAS = [float(x) for x in sys.argv[7].split(",")]
 V3 = os.environ.get("KN_V3") == "1"
 M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
 RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
-LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.5,6").split(",")]
+LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.125,2.25,2.375,2.5,2.625,2.75,2.875,3,3.125,3.25,3.375,3.5,3.625,3.75,3.875,4,4.125,4.25,4.375,4.5,4.625,4.75,4.875,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7")   # = the V3 i8 ladder (11-05): 1/8 K1.125-5, 1/4 K5.25-7.split(",")]
 if os.environ.get("KN_FRACS_EXTRA"):      # interpolated extra levels (pricing what-ifs; no containers)
     _x = [float(x) for x in os.environ["KN_FRACS_EXTRA"].split(",")]; LADDER = sorted(set(LADDER) | set(_x))
 BK = int(os.environ.get("KN_BK", 1 << 18))   # DP byte bucket, 256 KiB (11-05, w21: 1 MiB cost ~2% at 1.5 bpw; KN_BK=1048576 = old)
