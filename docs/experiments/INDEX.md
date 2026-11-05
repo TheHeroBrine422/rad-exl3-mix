@@ -174,3 +174,4 @@ Next free number: **90**.
 | 91 | Self-calibration on own agent sessions (0.8B): self-generated vs raw vs calib vs turboderp SC trace, for H_out / H_in / healing, blend weight | statistics | none | running | 11-04 | 11-04 | rule `proxy2b/exp/d1108/README.md`; 4070; arm D (27B gens) later |
 | 92 | REAL-Q (block-output Fisher + Adam step on unquantized columns, sequential) on top of our stack, before and after healing; sequential vs parallel (bf16-prefix) variant, 0.8B | quantizer | none | planned | 11-05 | 11-05 | rule `proxy2b/exp/d1109/README.md`; implementation by worker w17 |
 | 93 | Overfitting check: the adopted 0.8B stack re-scored on a fresh calib-verify golden (g08-verify1) | method | none | planned | 11-05 | 11-05 | rule `proxy2b/exp/d1110/README.md`; 4070, ~1 h |
+| 94 | int8-rounded codebook above K7: i8 K7.25 / 7.5 / 7.75 for the fast high sizes (CPU proxy) | weight codes | P | running | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#94"; cpu1 |

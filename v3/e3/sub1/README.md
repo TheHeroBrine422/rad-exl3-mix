@@ -23,3 +23,11 @@ at K0.125 … 3.5, paired. Rule: below the highest K where i4 / i8 ≤ 1.01 on t
 > 1.03), the i4 ladder **replaces** the i8 one (one quant serves f16, A8 and A4); between that K and K3 both are
 built (only if d1106 passes); above K3 i8 only. (mul1-based grids: the adopted cubic i8c codebook has no int4 twin yet;
 the ratio is what transfers.)
+
+## #94 · int8-rounded codebook above K7 (i8 K7.25 / K7.5 / K7.75?) (2026-11-05 ~9:00 PM CST, before data)
+Question (user): the int8-rounded codebook costs ×1.02 at K7 and ×1.35 at K8 (GPU smoke, whole K only). Are i8 levels
+at K7.25 / 7.5 / 7.75 worth adding to the ladder (the fast 7.0 / 8.0 keep K > 7 tensors on the int8 path)?
+- Setup: `i8hi.sh`, `trellis2.py` mul1 vs mul1_i8, K 6.5, 7, 7.25, 7.5, 7.75, 8, the 10 tensors of #90-02, 128 rows,
+  same seed / factors; ratio = proxy error mul1_i8 / mul1 per tensor, median over tensors.
+- Rule: an i8 level K7.25 / 7.5 / 7.75 joins the ladder if its median ratio is **≤ 1.10** and its 90th percentile
+  ≤ 1.20. Sanity: K7 and K8 must reproduce the GPU smoke within ±0.05 (else the CPU proxy is not trusted here).
