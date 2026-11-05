@@ -53,7 +53,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 31 | Real int8 prefill kernels (alias **E4**); NFQ int8 crash | kernels | speed | blocked | 10-30 | 11-01 | crash blocks A8 timing |
 | 31-01 | End-to-end prototype at ~4 bpw (alias **E4b**) | kernels | speed | planned | 10-30 | 10-30 | after #31 |
 | 32 | Vocab-tiered embedding and head | embedding | D | negative | 10-31 | 10-31 | tiered embedding KLD 0.0140 vs uniform e4 0.0081; rare-token rows matter more than frequency predicts: dropped |
-| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | none | running | 10-31 | 11-02 | full YAQA worse; calib H_in + Sketch B H_out on our settings: 0.8B K3 −9.7%, K2 −5.6% vs base (#33-11); diagonal H_out enough, ~4K seqs (#33-12); 27B collection next |
+| 33 | YAQA output-side Hessians (two-sided LDLQ) | quantizer | none | done | 10-31 | 11-05 | full YAQA dead (0.8B); diagonal H_out (Σdy²) is the V3 candidate: 0.8B K3 −8…−9%, 27B K2.5 −2.8% (#33-28, provisional); no further collections (user 11-05) |
 | 33-01 | Gate 1: TP2 collection throughput | quantizer | none | done | 10-31 | 10-31 | 5 s per 2048-token sequence |
 | 33-02 | Gate 2: bf16 backward, sampled rows, 200 seqs | quantizer | none | negative | 10-31 | 10-31 | +23% (K2) / +28% (K3) |
 | 33-03 | bf16 vs fp32 backward noise | quantizer | none | done | 10-31 | 10-31 | bf16 gradients unusable in early layers |
@@ -77,11 +77,11 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-21 | Short qad documents in the collection (YAQA_SHORT), 0.8B, 3 seeds | quantizer | none | done | 11-02 | 11-02 | neutral; 640 vs 1,024 long windows +1.5% → 27B collects long windows only, to 2,048 |
 | 33-22 | Σdy² dose past 1,024 and repeated windows (fresh labels), 0.8B | quantizer | none | null | 11-02 | 11-03 | no gain past 1,024 (dy1350 +1.3% K3); 27B: 512–1,024 |
 | 33-23 | Σdy² 512 vs 1,024 windows | quantizer | none | done | 11-03 | 11-03 | 512 is +2.2% worse at K3 (≈2 SE): go ≥ 1,024 on the 27B |
-| 33-24 | 27B diagonal H_out collection (Σdy², gen-masked, 2,048 seqs, fp32, both cards) | quantizer | none | running | 11-03 | 11-03 | gate PASS 36.6 s/seq, peak 28.4 GiB; ~21 h; swap test rule `v3/yaqa/H27.md` |
+| 33-24 | 27B diagonal H_out collection (Σdy², gen-masked, fp32, both cards) | quantizer | none | done | 11-03 | 11-05 | stopped at 1,923 seqs (1,920 snapshot; H27 amendment 2), 1,077 min; published as HF dataset `Hero422/qwen3.8-27b-hout-diag` |
 | 33-26 | Chunked-prefill noise floor, 0.8B bf16 vs own golden (chunk 0 / 2048 / 512 / 64) | eval | n/a | done | 11-04 | 11-04 | 2048 = whole (0); 512 → 0.00071 KLD, 64 → 0.00069, top-1 98.8%: chunking alone is ~0.0007, far below Code's 0.025 |
 | 33-27 | Heavy tail in the 27B Σdy² diagonal; block-normalized estimator | quantizer | none | done | 11-04 | 11-04 | early layers: two 128-seq blocks hold 4–27× the median energy; block-normalized arms smooth and better: 768 train seqs 0.921 vs plain 0.936 (both refs); plateau from ~384 seqs → use block-normalized for the 27B |
-| 33-28 | 27B swap test at K2.5: plain vs block-normalized Σdy² H_out (2,048 seqs), seed floor | quantizer | none | planned | 11-04 | 11-04 | rule `v3/yaqa/H27.md` amendment; `v3/yaqa/swap27.sh`; starts when #33-24 ends (~7 PM CST), both cards |
-| 33-29 | 27B H_out estimators (Σdy² / Sketch B diag / xw) on the 3-layer proxy, 3 references | quantizer | none | running | 11-04 | 11-04 | rule `v3/yaqa/hconv/README.md`; 4070 |
+| 33-28 | 27B swap test at K2.5: plain vs block-normalized Σdy² H_out (1,920 seqs), seed floor; K4 arms (amendment 3) | quantizer | none | running | 11-04 | 11-05 | bn −2.8% (z −2.2, UB −0.4%), dy −1.7% (n.s.), bn vs dy −1.1%: bn provisionally chosen; seed arm + K4 base/bn queued on card 0 |
+| 33-29 | 27B H_out estimators (Σdy² / Sketch B diag / xw) on the 3-layer proxy, 3 references | quantizer | none | negative | 11-04 | 11-05 | all within ~1% under every reference: no estimator ≥ 2% better, no new arm; Σdy² (bn) stays |
 | 34 | LM head: Fisher sensitivity, slab head, mean-row, head curve | head | D | running | 10-31 | 11-01 | mean-row −30% done; slab head's whole-model check not run |
 | 35 | Trellis embedding: vs Lloyd, menu sweeps, scale groups, frequency weighting, run5/run6 | embedding | ~0 | done | 10-29 | 11-02 | menu unchanged; run6 null (K1 −0.2%) |
 | 36 | Fractional K: CPU sweeps, menu ends, high-K half steps, quarter-step GPU quantizer | weight codes | P+D | done | 10-31 | 11-01 | on the curve; → qtf2 (#37) |
