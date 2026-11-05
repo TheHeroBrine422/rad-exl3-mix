@@ -202,6 +202,8 @@ prefill.
   ("self-calibrated") EXL3 tensors needed ~3% fewer bits than his plain ones at equal KL (board, 3–4 bpw; #13: plain
   cost 1.15–1.23× the KL per unit of proxy error); own raw traces as H_out data were +3.5% worse on calib (#33-19).
   Note: stock radiance `--calib-corpus` records input Grams, so 27B H_in on any corpus needs no new tool.
+- [ ] **Kernel optimizations from IQR-V4** (prefill P1–P6, decode D1–D4, hash codebook #100): list, status and results
+  in `docs/design/kernel-opts.md`.
 - [ ] **V3 decode kernels after radiance 1.17** (`docs/research/radiance-1.17.md`): block-per-tile GEMV with K-split
   waves + biased-int fold; barrier-free 16-token tile for 2–16 tokens; gated activation quant in gate_up's epilogue.
   Needs a gfx1201 card (extra RDNA4 boxes or gpubox after the collection). Runtime: D (this is the speed work).
