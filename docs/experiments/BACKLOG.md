@@ -217,6 +217,19 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **saber-engine read for V3's own kernels** (`/workspace/references/saber-engine`, Apache-2.0, gfx1201; user
+  2026-11-05): one short worker read, like the IQR-V4 kernel read, results into `docs/design/kernel-opts.md`. Ideas,
+  not code (weight decode differs: their NVFP4 lookup vs our trellis):
+  - **FP4 prefill GEMM** (`crates/saber-kernels/hip/mxfp4_gemm_*`, `mxfp4_atiled_*.h`): decode inside the tile, fp8
+    WMMA, since RDNA4 has no native FP4 = the same problem as our P1 (fused decode). Read before writing P1.
+  - **Decode GEMV variants** (`mxfp4_gemm_decode_{pf,arw,arnq,silu,smq}.hip`, `saber_device_row_{split,ilp}.hip`):
+    row split, prefetch, fused SiLU epilogue: patterns for D1 (split-K GEMV).
+  - **Fused norm + quantize:** check whether radiance's `rmsnorm_quant_fp8` fold already covers our A8 activation
+    quant (~8% of prefill); the all-reduce part is TP2-only.
+  Everything else in saber is engine-level and left to upstream radiance work (user: someone else may do it): tree
+  speculative decoding with linear-attention state replay (`p27_tree_*`, `p27w2_gdn_replay*`; likely its biggest
+  decode win), attention kernels (beyond the slot-list piece used for D-LSA, `docs/design/lsa.md`), linear-attention
+  chunk scan, sampler / head kernels, TP2 all-reduce, prefix caching. We take those when they land upstream.
 - [ ] **A calib-like tools / agentic corpus** (d1110 per-category, 2026-11-05): our methods gain most on calib's agentic text
   (H_out −19%, stack −35% at K3) but least on xcorp's tools / agentic text (H_out ~0, stack −18…+4%). Find or make agentic
   data that behaves like calib's (the 27B's own agent sessions, calib's function-calling sources) for screening and
