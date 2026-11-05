@@ -31,7 +31,8 @@ and barriers. Not applicable: IQR's LDS transposes, tables and scale-form tricks
 IQR's computed value is `sudot4((umul24(state, A) + B) & 0x3F3F3F3F, 0x01010101) − 126` (~3 ops a value incl. the
 hash, int8-native, A / B stored per tensor) vs EXL3 mul1i8 (32-bit multiply, 4-byte sum, scale, int8 round). A
 different codebook means a requant of every level (~200 GPU-hours if done after the ladder), so it is tested now on
-the CPU proxy (rule: `v3/e3/sub1/README.md` "#100"). If adopted: exllamav3 codebook option, encoding tag
+the CPU proxy (rule: `v3/e3/sub1/README.md` "#100" + amendment: a quality cost is traded against the measured decode
+/ prefill speedup — the user's call from a trade-off table — unless it is ≥ ×1.05). If adopted: exllamav3 codebook option, encoding tag
 `cb=iqrh`, plugin decode paths, D4.
 
 **Results:** (pending: w27)

@@ -78,3 +78,8 @@ int8 round; ~13 VALU today, ~4–5 with the closed form).
 - **Speed (before adopting):** ops a value in our decode pass / GEMV, and a microbench on the first free card.
 - Also needed if adopted: the quantizer side (exllamav3 codebook compile option as for i8 / i4, exl3cb), a new
   encoding tag (`cb=iqrh`), the plugin decode paths. Runtime cost: decode and prefill (faster); quality per the rule.
+- **#100 amendment (2026-11-05 ~2:30 AM CST, before data; user):** a quality cost above +1% may still be worth a large
+  decode gain (e.g. +30%). So: ≤ 1.005 everywhere in K1–6 → adopt; otherwise **no automatic reject** below ×1.05: the
+  decision waits for the measured speed (GEMV at M = 1 / 4 / 16 and the prefill decode pass, on a card) and is the
+  user's, from a trade-off table: KL cost per K as an equal-quality bpw cost (V2's KL-vs-size slope) next to the
+  measured decode and prefill speedups. Above ×1.05 at any K in 2–5: rejected.
