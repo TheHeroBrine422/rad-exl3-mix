@@ -34,6 +34,10 @@ most V3.5 items moved into V3 on 2026-11-04.
   i8 K2–7 (A8 / A16), mul1 K6–8 (A16), bf16. Sub-1 K (K0.125–0.875, salted 0-bit read) is in V3 (#90 prices it).
 - **A4 on i4 weights** as a per-tensor knapsack option for the fast variant at ≤ 3 bpw (#46-03; d1106's all-MLP A4
   failed as a global setting). The int4-plane kernel is built only if its rule passes.
+- **Decode stays on 16-bit activations.** Low-bit activations only run in prefill steps of ≥ 512 rows: at decode
+  (1–16 rows a step) the GEMV is bound by reading the weights, not by arithmetic, so int8 / int4 activations would
+  save nothing and only add error. The fast and accurate variants therefore decode identically; they differ in
+  prefill. (The 512 threshold is checked by the kernel timing's M = 16–4096 sweep.)
 - **Prefill: two-pass kernels** (decode each weight once per step into an int8 / f16 (/ int4) plane, then radiance's
   tuned tile; IQR's route). Est. ~4,000–4,300 µs a layer for the fast path vs V2's ~8,050.
 - Engine: radiance 1.17 (fork branch `qc-exl3-v3`, rebased on each release; plugins `qwen35_exl3`, `exl3i`, ...).
@@ -60,7 +64,8 @@ mul1 K6–8 quarters (9). Quantized in order of use (2.5–4.5 first), once the 
 for finals and published numbers). Public only for reporting at the end.
 
 **Order:** freeze the quantizer settings (swap test, confirmation queue) and build the kernels in parallel → ladder
-→ knap4 / stream per size and variant → finals on calib verify, long-context check → release. 7.0 after the focus
+→ knap4 / stream per size and variant → finals on calib verify, long-context check, **decode timing** (end-to-end engine step time on the finals: batch 1 and a few
+concurrencies, short and long context; how Deadcode measures it) → release. 7.0 after the focus
 sizes and 6.0.
 
 **Hardware:** 2xR9700, plus various 12-16GB consumer cards. 
