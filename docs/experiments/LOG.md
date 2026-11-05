@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 10:45 CST · #33-28, #91 · No more Σdy² collections; tonight's 27B self-gen collection skipped
+- **User:** at ~−3% KLD (≈ 0.03 bpw) H_out does not justify another ~40-card-hour collection. The existing 1,920-sequence
+  diagonal stays (paid, free at runtime). Stage 3 of tp2night (512 self-gen sequences) is skipped (`hdiag-D/SKIPPED`):
+  the TP2 goldens follow arm D directly, card 1 is free ~5 h earlier. #91's H_out arms still run on the 0.8B (cheap)
+  but cannot lead to a 27B collection; its **H_in** arm (forward-only statistics) is the 27B-relevant part.
+
 ### 2026-11-05 10:40 CST · #33-28 · Swap test K2.5: block-normalized Σdy² −2.8% (provisional); diagonals published
 - K2.5 trunk swapped into V2 3.00, all arms the same size (2.6244 bpw), golden-search27 (103 docs, 123k positions),
   paired bootstrap: **bn 0.05737 vs base 0.05903 = −2.8%** (z −2.2, 95% upper bound −0.4%); dy −1.7% (z −1.6, n.s.);
