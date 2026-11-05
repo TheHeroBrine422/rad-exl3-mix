@@ -180,3 +180,4 @@ Next free number: **90**.
 | 97 | Embedding menu at both ends (t6.25–t8, t0.25–0.75) | embedding | none | done | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#97"; worker w20, cpu2; all 11 levels (t0.25–0.75, t6.25–t8) on the hull, 1.38–1.41× error per quarter step |
 | 98 | 27B: 256 self-gen Σdy² sequences, bf16 hi/lo GEMMs, to blend with the 1,920 calib diagonal | statistics | none | running | 11-05 | 11-05 | rule `v3/yaqa/H27.md` "#98"; used only if #91 passes |
 | 99 | 8.0 floor split: V2 8.00 vs + bf16 head vs the bf16 model (engine floor) | head / engine | none | planned | 11-05 | 11-05 | rule `v3/yaqa/HEADWM.md`; with #34-02 (slab head whole-model) in `headwm.sh` |
+| 100 | IQR-style hash codebook (umul24 + 6-bit mask + sudot4) for EXL3 trellis codes: quality on the CPU proxy, then speed; decide before the ladder | weight codes | P+D | planned | 11-05 | 11-05 | rule `v3/e3/sub1/README.md` "#100"; worker w27, cpu1 |

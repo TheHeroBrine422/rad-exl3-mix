@@ -65,3 +65,16 @@ Replication for pricing (no new decision): (a) the 49 #90 tensors at rotation se
 (b) i4 vs i8 at K0.125–3.5 on 10 new tensors (layers 6 / 26 / 46 / 58 / 39, GDN and attention families). Output
 `sub1-s1.jsonl`, `i4b.jsonl`. Reported: per family, the seed-to-seed spread of rel(K)/rel(K1) and whether #90 /
 #90-02's verdicts change when the data are pooled (if a verdict flips, the pooled one is used and the flip is logged).
+
+## #100 · IQR-style hash codebook for EXL3 trellis codes (2026-11-05 ~2:15 AM CST, before data; decide before the ladder)
+Why (user): switching codebooks after the ladder costs a ~200 GPU-hour requant, and decode speed matters. IQR-V4's
+computed value: `__umul24(state, A) + B`, mask to 6 bits a byte, one `sudot4` = byte sum + bias (`libr4d/r4d_iqr_dec.h`,
+~3 VALU a value incl. the hash, int8-native), vs EXL3 mul1i8 (QTIP 1MAD: full 32-bit multiply, 4-byte sum, scale,
+int8 round; ~13 VALU today, ~4–5 with the closed form).
+- **Quality (CPU proxy, `trellis2.py` + a new codebook option, colo):** the 10 #90-02 tensors + 10 #90-03 ones, K1–7
+  (1/2 steps) and K0.25 / 0.5, the same rows / seeds / scale grid (to 1.5), ratio = proxy error hash / mul1i8.
+  **Rule:** adopt for V3 if the parameter-weighted ratio is ≤ 1.005 at every K in 1–6 and no tensor > 1.02; reject if
+  > 1.01 at any K in 2–5; in between: a 0.8B KL check (K2 / K3 / K4, 2 seeds) decides at ≤ 1.01.
+- **Speed (before adopting):** ops a value in our decode pass / GEMV, and a microbench on the first free card.
+- Also needed if adopted: the quantizer side (exllamav3 codebook compile option as for i8 / i4, exl3cb), a new
+  encoding tag (`cb=iqrh`), the plugin decode paths. Runtime cost: decode and prefill (faster); quality per the rule.
