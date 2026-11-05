@@ -12,7 +12,7 @@ versions of anything: git history.
   weights) stays for later (BACKLOG "V3 decode kernels after radiance 1.17").
 - **7.0 bpw:** IQR-V4's IQ6R-L-V4 is 6.939 bpw / 0.000677 KL / 4,006 µs vs V2 7.00 (6.995 bpw) 0.00045 / 8,105 µs; the
   ladder already holds every level a 7.0 needs (i8 to K7, mul1 K6–K8), so a V3 7.0 costs ~3 h a variant (knapsack,
-  pack, eval). Proposed to the user as a V3 size after the focus sizes and 6.0 (TP2 R9700 users); open.
+  pack, eval). Proposed to the user as a V3 size after the focus sizes and 6.0 (TP2 R9700 users). **Adopted (user, 01:20 CST).**
 - **Runtime cost:** A4 is a speed option; 7.0 fast variant targets the 2× prefill gap.
 
 ### 2026-11-04 18:45 CST · #91, #33-28, #46-02 · Self-calibration test started (0.8B); swap test on 1,920 sequences; calib is partly SC already
