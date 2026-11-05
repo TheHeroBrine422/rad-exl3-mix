@@ -27,3 +27,12 @@ sources; stratified by category, seed 1110, cut at 2,048 tokens, every position 
 re-scoring runs on it (tags `xc-…`). Same thresholds, reported separately: a step that passes on verify but loses
 most of its gain on xcorp is calib-specific and is flagged for the 27B check. (xcorp served as healing data in
 #89-05's mix arm only; a few of these documents may overlap it.) xcorp's 96M tokens allow more such goldens later.
+
+## Amendment 1 (2026-11-05 ~5:10 AM CST, before data): can xcorp replace calib for 0.8B screening?
+Question (user): use xcorp (+ an agentic share) as the main 0.8B decision data, if it behaves like calib.
+- **Test (same runs):** per adopted step, its log gain on g08-xcorp1 vs on g08-verify1.
+- **Rule:** xcorp **becomes the 0.8B screening data** if, for every adopted step with a verify gain beyond its paired
+  SE, the xcorp gain has the same sign and lies within **±30%** of the verify gain (both K, seeds averaged).
+  Then: rotating xcorp goldens (fresh every ~5 experiments) mixed with an agentic share matching calib's scored
+  agentic fraction (~25%, from #91's held-out self-generated set), calib search goldens as an occasional cross-check,
+  calib verify for anything final. Otherwise calib search slices stay primary and xcorp only adds fresh checks.
