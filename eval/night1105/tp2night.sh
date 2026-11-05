@@ -7,7 +7,9 @@
 #   2. d1108 arm D: serve the bf16 27B (TP2), generate its own continuations of sgprep's first 640 train prompts
 #   3. Σdy² collection over them (collect.py, as #33-24: fp32, diag + extras, gen-masked, 512 sequences)
 #   3b. more goldens on TP2, ~1M-token chunks (corpora/chunks: xcorp 8k b2/b3, traces 32k b2/b3), until $N/STOP2
-#   4. the swap test's seed arm on card 0 (card 1 is then free)
+#   (3b stops at 9:00 AM CST whatever is left: nothing after that needs TP2; user)
+#   4. single-card-capable, card 1 helping while it is ours (4-layer chunk queue, swap27k.sh): the swap test's seed arm
+#      s1 (K2.5) -> base4 -> bn4 (K4 on V2 4.00, H27.md amendment 3) -> paired comparisons
 # Stop the two-card part at any time: tools/stop2.sh (touches STOP2, ends the collector after its current sequence or
 # the current record chunk); the chain then goes straight to stage 4 on card 0. Rerun this script to resume.
 set -u
@@ -73,11 +75,19 @@ fi
 # ---- 3b
 for c in xc8k-b2-c0 tr32k-b2-c0 xc8k-b2-c1 xc8k-b2-c2 tr32k-b2-c1 xc8k-b2-c3 xc8k-b2-c4 tr32k-b2-c2 \
          xc8k-b3-c0 tr32k-b3-c0 xc8k-b3-c1 xc8k-b3-c2 tr32k-b3-c1 xc8k-b3-c3 xc8k-b3-c4 tr32k-b3-c2; do
-  stop2 && break; len=$([[ $c == tr32k* ]] && echo 33024 || echo 8448)
+  stop2 && break; [ $(date -u +%s) -ge $(date -u -d "2026-11-05 15:00" +%s) ] && { log "9:00 AM CST: TP2 goldens end here"; break; }
+  len=$([[ $c == tr32k* ]] && echo 33024 || echo 8448)
   rec $c $N/corpora/chunks/$c.jsonl $len || { stop2 || log "GOLDEN $c FAIL"; }
 done
 stop2 && log "STOP2: two-card part ended by the user"
 # ---- 4
-log "stage 4: swap test seed arm on card 0"
-cd $S && sed 's/C=1; quant dy/C=0; quant dy/' tools/swap27.sh > tools/swap27-c0.sh && NSEQ=1920 bash tools/swap27-c0.sh run >> $S/run4.out 2>&1
+log "stage 4: single-card-capable queue (card 1 helps unless STOP2)"
+K4=/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad SK=/data/swap27/tools/swap27k.sh
+cd $S
+bash $SK s1 2.5 /data/release/qwen3.8-27b-exl3-v2-3.00bpw.rad --seed-offset 1 >> $S/run4.out 2>&1
+[ -f $K4 ] || log "no V2 4.00 container: K4 arms skipped"
+[ -f $K4 ] && bash $SK base4 4 $K4 >> $S/run4.out 2>&1
+[ -f $K4 ] && bash $SK bn4 4 $K4 --hout $S/hout-bn --sigma-reg-out 0.01 >> $S/run4.out 2>&1
+for p in "base s1" "base4 bn4"; do set -- $p; [ -f $S/$1.json.rows ] && [ -f $S/$2.json.rows ] && \
+  log "pair $1 -> $2: $($PY -I $S/tools/cmp115.py $S/golden-search27 $S/$1.json.rows $S/$2.json.rows 2>&1 | tail -n 1)"; done
 log "NIGHT DONE"
