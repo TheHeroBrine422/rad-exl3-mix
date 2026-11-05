@@ -215,7 +215,8 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
-- [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (`volunteer/`, w13 + w13b): queue server (stdlib Python,
+- [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (`volunteer/`, w13 + w13b; tentative name **rad-quant@home**
+  for display, **`radquant`** in identifiers: images, packages, CLI, hosts; points maybe "lumens"): queue server (stdlib Python,
   container, 61/61 noop e2e tests, restart / crash / partial-upload safe), worker image spec (ROCm, gfx1201), job
   types quant_layer / quant_head / eval_mix. Resumes when the V3 settings are frozen and the ladder starts. Two uses: ladder quant jobs
   and search evals (`eval_mix`, ~50–100 card-hours a stream pass; public slices only, the private-text share of
