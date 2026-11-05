@@ -186,6 +186,20 @@ versions of anything: git history.
 - **Research points (user):** 1.5 / 1.75, then 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD blows up; 1.25 is no
   longer a separate point.
 
+### 2026-11-05 4:15 PM CST · #101 · H_in blends: xcorp w0.5 passes, sessions fail, xcorp w0.25 misses
+- d1111 (0.8B, dygm stack, K3 / K2 × seeds 0 / 1, paired; ratios = mean over seeds vs calib-only H_in):
+
+  | blend | calib K3 / K2 | fresh xcorp K3 / K2 | own agentic K3 / K2 |
+  |---|---|---|---|
+  | xcorp w0.25 | 0.987 / 0.996 | 0.986 / 0.962 | 1.016 / 0.985 |
+  | **xcorp w0.5** | **0.981 / 0.984** | **0.967 / 0.936** | 1.016 / 1.035 |
+  | sessions w0.25 | 1.022 / 1.019 | 1.010 / 1.001 | 0.931 / 0.916 |
+- **Rule** (calib ≤ 1.005 and xcorp ≤ 0.98 at both K): **xcorp w0.5 passes** (better on calib too); w0.25 misses on
+  xcorp K3 (0.986); sessions fail on calib (+2%), the same trade as self-generated text (#91): own text −7…−8%.
+- Seed spread is large (single-seed ratios differ by up to 4–6% on xcorp / agentic), so n = 2 is thin.
+- Next: the ukisai arm (amendment 1) is running; then a 27B arm for xcorp w0.5 (forward-only H_in over ~2–3M xcorp
+  tokens, blended into the published calib Hessians; one K2.5 swap arm) — needs the user's go and a card window.
+
 ### 2026-11-05 01:40 CST · #33-28, #91, #46-03 · Swap-test restart; discussion record (self-calibration, variants, 7.0 / 8.0)
 - **#33-28 swap test failed at its first quant (5:34 PM CST 11-04):** `ModuleNotFoundError: exllamav3`. Since the
   gpubox rebuild the patched exllamav3 (a3bfbfd0 + 0001–0007, editable install) had never finished building (the 1 AM
