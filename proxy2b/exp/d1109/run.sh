@@ -11,6 +11,7 @@
 # Stop: touch /data/yb/night.stop (checked between units).
 P=/workspace/rad-exl3-mix/proxy2b X3=$P/exp/d1103 X=$P/exp/d1109 X2=$P/exp/w02-fixedscale
 source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
+X=$P/exp/d1109   # d1103's sourced block resets X
 O=/data/yb/d1109 D3=/data/yb/d1103 D4=/data/yb/d1104; mkdir -p $O
 FISH=$O/fisher RQ_HOLD=${RQ_HOLD:-780} WR=${D1109_WRITERS:-rq}
 f32() { for d in $O $D4 $D3 $Y; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }

@@ -71,3 +71,8 @@ User: test whether self-generated H_in helps specifically on calib's agentic tra
   "own text"; g-agent tests own text. If H_in from self-gen beats calib H_in by ≥ 2% on g08-agent-calib at both K
   while calib-overall stays ≤ 1.01, an agentic-text H_in blend gets a 27B test (scored on golden-search27's agentic
   documents separately) even if the main rule fails.
+
+## Amendment 5 (2026-11-05 ~7:35 AM CST, after phase-1/2 data; user): small self-gen H_in doses
+Phase 2: self-gen H_in at w 0.5 gives −15% on own agentic text but +6% on calib. New arms **w 0.1, 0.2** (same setup).
+**Rule:** a small self-gen share is adopted for the 27B H_in if at some w ≤ 0.2 calib is ≤ 1.01 at both K and g-agent
+≤ 0.97 at both K (then a 27B swap arm decides, scored on golden-search27 and the 27B agentic golden).
