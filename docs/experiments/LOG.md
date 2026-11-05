@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-05 01:55 CST · #— · Two-pass prefill (A8) drafted: host tests pass, gfx1201 build on gpubox; device run queued
+- Worker w22, fork branch `qc-exl3-v3-twopass` (6488c96, 70fb1fa; `plugin/exl3i/TWOPASS.md`): new row
+  `exl3i_gemm_nt_a8` (act a8t / a8g128–1024, codebook mul1i8): activation quant (rotated, int8, scale per row × 128),
+  decode pass into radiance's i8a8 fragment plane, radiance 1.17's i8a8 prefill tile (copied, attributed) with EXL3's
+  output-Hadamard + svh store; M < 512 stays on today's path (byte-identical). The f16 accurate path keeps T2 (already
+  two-pass). Host test 55 checks PASS (plane byte-exact vs our C reference and radiance's own fragment order at all 64
+  rates; A8 g128 vs exact 0.63% rel rms). Built on gpubox with ROCm (host ctest 2/2); `test_twopass` + timing queued on
+  card 0 at the next night-chain gap (`/data/tp/cardrun.sh`, ~15 min). Open: separate vs fused decode, RB 32 spill.
+
 ### 2026-11-05 01:20 CST · #33-29, #90, #90-02, #94, #91 · Overnight readouts (part 1)
 - **#33-29 hest** (3 27B layers, K2.5, quantizer proxy, 3 references): E_out/none under dy / B / xw refs —
   Σdy² ~0.936–0.942, Sketch B 0.930–0.937, xw 0.928–0.934. No estimator ≥ 2% better under all three: **no new arm**;
