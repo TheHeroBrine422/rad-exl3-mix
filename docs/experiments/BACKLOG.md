@@ -222,7 +222,9 @@ prefill.
   scan, i8a8 / fp8 GEMM tiles, norms, sampler); each problem needs radiance's own tests as the byte-exact gate plus a
   bench. Also the D-LSA kernels once w31 / w32 pass their tests (user 2026-11-05): `attn_paged_list` (decode, then the
   phase-2 sparse prefill) and `lsa_select` (centroid scan + top-k expansion), gated by their tests vs the dense op and
-  the LSA CPU oracle, benched at 128k / 512k with fp8 KV. Wins go upstream as PRs. Bench card: the 9070 XT when it arrives. GEPA considered and not used (user).
+  the LSA CPU oracle, benched at 128k / 512k with fp8 KV. Code 000 also has a working LSA (2026-11-05, unreviewed):
+  once public, seed the problem with both implementations (ours and theirs) as starting candidates, same judge, and
+  hold our phase-2 prefill until theirs is out. Wins go upstream as PRs. Bench card: the 9070 XT when it arrives. GEPA considered and not used (user).
 - [ ] **saber-engine read for V3's own kernels** (`/workspace/references/saber-engine`, Apache-2.0, gfx1201; user
   2026-11-05): one short worker read, like the IQR-V4 kernel read, results into `docs/design/kernel-opts.md`. Ideas,
   not code (weight decode differs: their NVFP4 lookup vs our trellis):
