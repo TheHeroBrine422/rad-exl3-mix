@@ -15,10 +15,11 @@ if want prep; then step prep
   log "prep: $(cat $O/prep/prep.json)"; fi
 if want gen; then step gen
   for s in train eval; do [ -f $O/gen-$s/.done ] && continue
-    lock; python3 $X/sggen.py $M $O/prep/prompts-$s.npy $O/gen-$s >> $O/gen-$s.log 2>&1 && touch $O/gen-$s/.done; unlock
+    lim=$([ $s = train ] && echo ${D1108_GEN_LIMIT:-0} || echo 0)
+    lock; python3 $X/sggen.py $M $O/prep/prompts-$s.npy $O/gen-$s --limit $lim >> $O/gen-$s.log 2>&1 && [ $lim = 0 ] && touch $O/gen-$s/.done; unlock
     log "gen $s: $(tail -2 $O/gen-$s.log | head -1)"; done; fi
 if want build; then step build
-  for k in selfgen-train:C selfgen-eval:E raw-train:B td-trace:T; do kind=${k%:*} d=$O/m${k#*:}; g=$O/gen-${kind#selfgen-}; [ $kind = td-trace ] && g=$TD
+  for k in ${D1108_BUILD:-selfgen-train:C selfgen-eval:E raw-train:B td-trace:T}; do kind=${k%:*} d=$O/m${k#*:}; g=$O/gen-${kind#selfgen-}; [ $kind = td-trace ] && g=$TD
     [ -f $d/build.json ] || CUDA_VISIBLE_DEVICES= python3 -I $X/sgbuild.py $O/prep $g $d $kind >> $O/build.log 2>&1
     log "build $kind: $(cat $d/build.json)"; done; fi
 if want gold; then step gold
@@ -26,22 +27,22 @@ if want gold; then step gold
     lock; python3 $P/mkgold.py $M $O/mE $GA $(seq 0 $((n - 1))) > $O/gold.log 2>&1; unlock; fi
   log "g-agent: $(python3 -c "import json,numpy as np; m=json.load(open('$GA/kld.json')); print(len(m['docs']), 'docs', int(np.fromfile('$GA/gen.u8',np.uint8).sum()), 'scored')")"; fi
 if want coll; then step coll   # Σdy² on C and B, as c23 (gen-masked, 1,024 windows of 2,048), and input Hessians on C
-  for c in C B T; do CD=$O/c$c; [ -d $CD/hdiag-snap1024-dy ] && continue
+  for c in ${D1108_COLL:-C B T}; do CD=$O/c$c; [ -d $CD/hdiag-snap1024-dy ] && continue
     W=/data/d1108work-$c; mkdir -p $W/challenge/golden; ln -sfn $O/m$c $W/challenge/golden/calib
     lock; RXM_WORK=$W RXM_CKPT=$M YAQA_POOLS=$O/m$c/pools.json YAQA_FP32=1 YAQA_DIAG=1 YAQA_DIAG_EXTRA=1 YAQA_GENMASK=1 YAQA_SEED=0 \
       YAQA_SNAP=1024 YAQA_SAVE_EVERY=64 python3 /workspace/rad-exl3-mix/v3/yaqa/collect.py $CD 1024 2048 > $O/c$c.log 2>&1; unlock
     grep -q "^DONE" $O/c$c.log && log "collected $c: $(grep -h '^DONE' $O/c$c.log)" || log "COLLECT $c FAIL"; done
-  [ -f $O/hinC/.done ] || { lock; python3 $P/hcollect.py $M $O/mC $O/hinC > $O/hinC.log 2>&1 && touch $O/hinC/.done; unlock; log "hin C: $(tail -1 $O/hinC.log)"; }
+  [ -n "${D1108_NOHIN:-}" ] || [ -f $O/hinC/.done ] || { lock; python3 $P/hcollect.py $M $O/mC $O/hinC > $O/hinC.log 2>&1 && touch $O/hinC/.done; unlock; log "hin C: $(tail -1 $O/hinC.log)"; }
 fi
 if want hout; then step hout
-  for b in C:0.25 C:0.5 C:1 B:0.5 B:1 T:0.5 T:1; do c=${b%:*} w=${b#*:}; d=$O/ho-$c$w
+  for b in ${D1108_HOB:-C:0.25 C:0.5 C:1 B:0.5 B:1 T:0.5 T:1}; do c=${b%:*} w=${b#*:}; d=$O/ho-$c$w
     [ -f $d/.done ] || python3 -I $X/blend.py hout $C23 $O/c$c/hdiag-snap1024-dy $w $d >> $O/blend.log 2>&1; done
   for s in 0 1; do for k in 3 2; do base=k${k}dygm$(sfx $s); bw=$(wqd $base)
     lock; [ -n "$bw" ] && evboth $base $bw; unlock
-    for b in C0.25 C0.5 C1 B0.5 B1 T0.5 T1; do t=k${k}ho$b$(sfx $s)
+    for b in $(echo ${D1108_HOB:-C:0.25 C:0.5 C:1 B:0.5 B:1 T:0.5 T:1} | tr -d :); do t=k${k}ho$b$(sfx $s)
       lock; q $t $k i8 --hout $O/ho-$b --sigma-reg-out 0.01 --seed-offset $s; ev ag-$t $O/q-$t/wq $GA; unlock
       pairboth $base $t; done; done; done
-  for b in C0.25 C0.5 C1 B0.5 B1 T0.5 T1; do for k in 3 2; do
+  for b in $(echo ${D1108_HOB:-C:0.25 C:0.5 C:1 B:0.5 B:1 T:0.5 T:1} | tr -d :); do for k in 3 2; do
     python3 $X3/summ.py $O k${k}dygm k${k}ho$b ag-k${k}dygm ag-k${k}ho$b | tee -a $O/result.txt; done; done; fi
 if want fam; then step fam   # amendment 2: per-family blends at w* (mixers = attention + GDN, mlp), vs the uniform blend
   w=$(python3 -I $X/wstar.py $O hoC 0.25 0.5 1); log "w* (C, uniform): $w"

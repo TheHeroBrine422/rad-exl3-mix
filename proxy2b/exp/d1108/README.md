@@ -50,3 +50,11 @@ Question (user): does the best blend weight differ by tensor family or by qualit
 - **Per K** (no new arms, from the H_out step): if K3's and K2's best C weights differ and each beats the other K's
   best by ≤ 0.98 on `g-agent`, the 27B follow-up tests weights per K band; otherwise one weight for all sizes.
 - Runtime cost: none.
+
+## Amendment 3 (2026-11-05 ~7:55 AM CST, before data): two phases, the decisive arms first
+Why (user): know quickly whether a 27B self-gen collection is worth its card time. Nothing in the rules changes.
+- **Phase 1:** generate the first 1,152 train prompts (+ all 256 eval), build C and E, the g-agent golden, the C
+  collection (Σdy², 1,024 windows), then the H_out arms C0.25 / C0.5 / C1 vs `dygm`, K3 / K2, seeds 0 / 1, both
+  goldens. The H_out rule for C is decided on these.
+- **Phase 2:** the rest of the generation (C rebuilt from all of it for healing: mC/build.json removed first),
+  collections B and T, H_in, the B / T arms, per-family, healing: as written above.
