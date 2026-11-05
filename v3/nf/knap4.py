@@ -30,6 +30,11 @@ Switches (env, all default off = knap3's V2-like menu):
               restricts the int8 activation groups (0 = per token: what the real kernel runs today).
               Pricing caveat: ladder integers still carry V2's hproxy error x DAMPF (V3 ladder hproxy needs the ladder's
               .rad import); fractional levels sit at their measured ladder positions (KN_LEVELS).
+  KN_SUB1=FILE  sub-1 options (#90, v3/e3/sub1/r90knap.py): ours-K<k> for k < 1 on every trunk tensor with an ours-K1
+              option, error = its K1 error x its family's rel(k) / rel(K1) (FILE: {"ratios": {family: {"k": ratio}}},
+              CPU trellis proxy), bytes linear in K (the K1 bytes less (1 - k) x the K1 -> K2 step), family of K1.
+              f16 path only (no int8 sub-1 container in the option table yet); not for the head (not measured).
+  KN_BK=BYTES  DP bucket size (default 256 KiB since 2026-11-05; 1 MiB before). At 1 MiB a 1024 x 5120 tensor's K0.75 (0.47 MiB) rounds to 0 buckets.
 The rest is knap3 (below).
 
 Per tensor, the options are (compute mode, activation group, weight code):
@@ -75,10 +80,10 @@ LAMBDAS = [float(x) for x in sys.argv[7].split(",")]
 V3 = os.environ.get("KN_V3") == "1"
 M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
 RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
-LADDER = [float(x) for x in os.environ.get("KN_LADDER", "2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.5,6").split(",")]
+LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.25,2.5,2.75,3,3.25,3.5,3.75,4,4.25,4.5,4.75,5,5.5,6").split(",")]
 if os.environ.get("KN_FRACS_EXTRA"):      # interpolated extra levels (pricing what-ifs; no containers)
     _x = [float(x) for x in os.environ["KN_FRACS_EXTRA"].split(",")]; LADDER = sorted(set(LADDER) | set(_x))
-BK = 1 << 20
+BK = int(os.environ.get("KN_BK", 1 << 18))   # DP byte bucket, 256 KiB (11-05, w21: 1 MiB cost ~2% at 1.5 bpw; KN_BK=1048576 = old)
 G = [int(g) for g in os.environ.get("KN_GROUPS", "0,1024,512,256,128,64").split(",")]   # activation groups (0 = per token)
 F8 = {1: 1.0, 2: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 7: 1.25, 8: 4.5}    # E3b full set (K7, K8 measured)
 F4 = {1: 1.0, 2: 1.01, 3: 1.065, 4: 2.72}               # E3b int4grid; K >= 5 not offered (x10 and up)
@@ -168,6 +173,18 @@ for t in md["tensors"]:
         for c in list(o):
             if c.startswith("ours-K"): o[c] = [o[c][0], o[c][1] * dampf(float(c[6:])), o[c][2]]
 if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positions: {NLEV[0]} tensor-levels", file=sys.stderr)
+if os.environ.get("KN_SUB1"):
+    S1 = json.load(open(os.environ["KN_SUB1"]))["ratios"]; NS1 = 0
+    for t in md["tensors"]:
+        o = t["opts"]; fam = t["w"].split(".")[-2]
+        if t["w"] == "output.weight" or fam not in S1 or "ours-K1" not in o or "ours-K2" not in o: continue
+        (b1, e1, _), (b2, _, _) = o["ours-K1"], o["ours-K2"]
+        for ks, r in S1[fam].items():
+            k = float(ks)
+            if not 0 < k < 1: continue
+            o[f"ours-K{k:g}"] = [b1 - (1 - k) * (b2 - b1), e1 * r, k]; t["family_of"][f"ours-K{k:g}"] = t["family_of"]["ours-K1"]
+            NS1 += 1
+    print(f"sub-1 options: {NS1} tensor-levels", file=sys.stderr)
 SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
 if V3:
     SLABF = {5: 0.69, 6: 0.71}       # measured budgets only: between them the slab is a staircase (critique C3.5)
