@@ -13,7 +13,11 @@ versions of anything: git history.
   finds only this one (30 residual-stream `.input` files have the usual 1e4–1e5 diagonal spread and pass C–S).
 - **Fix (08:00 UTC):** hi-X0.5 uses the calib Hessian for this one tensor (xcorp weight 0 on 1/257 files); originals in
   `/data/hin27/corrupt/`, noted in `blend.log`. The running retry picked it up. The arm's other 63 layers are unchanged.
-- **Open:** root cause in mkhin27 (a bad flush / packing write for one tensor?) before any reuse of the collector;
+- **Pattern:** the bad values are one contiguous run of ~500 packed entries (row 3540–3541, columns 3541–4040), random
+  magnitudes 1e18–1e29 with mixed signs: a damaged ~2 KB span (memory / transfer / read), not an arithmetic bug. The fp64
+  checkpoints were already deleted, so where it happened can't be localized. Retry at 08:01 UTC: o_proj proxy 1.45e-2, normal.
+- **Open:** before any reuse of mkhin27, add a write-time check (finite, Cauchy–Schwarz |H_ij|² ≤ H_ii H_jj, fail
+  loudly) and, for the blend, the same check; consider recollecting this one tensor if xcorp H_in is adopted;
   the xbn pairs carry this caveat (one o_proj at calib H_in) — too small to move a whole-model ratio.
 ### 2026-11-05 11:00 CST · #91, #93 · Self-calibration readout; d1110: no overfitting, xcorp not a calib substitute
 - **#93 (d1110), g08-verify1 (180 untouched verify docs), seed 0:** the adopted 0.8B stack keeps **91% (K3) / 96% (K2)**
