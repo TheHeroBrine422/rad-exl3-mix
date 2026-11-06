@@ -233,8 +233,11 @@ prefill.
   much a per-mix pass adds on top. First candidate: the embedding menu (idea above).
   Scope (user 2026-11-06): ship-side mostly embedding / head; test trunk block-wise too on the 0.8B (cheap).
   Post-quantization (codes frozen), so it doesn't block the freeze, but it goes before the knapsack / search.
-  Caveat: the 0.8B ties embedding and head (`tie_word_embeddings: true`), the 27B doesn't: the 0.8B can test head
-  and trunk, but embedding-alone results need the 2B (check its config) or the 27B. Prior guesses (to check, not
+  Caveat: 0.8B, 2B and 4B tie embedding and head (`tie_word_embeddings: true`); Qwen3.5-9B (4096 × 32 layers) and the
+  27B don't. Plan: trunk block-wise on the 0.8B; embedding and head on the **9B**, on the 4070 via staging (embedding:
+  forward/backward through the first group only, hidden-state target at its end; head: train on precomputed pre-head
+  states from a mkgold27-style staged pass; both ~2 GB tables). Needs: 9B bf16 download (~18 GB), its calib golden +
+  lm_head H_in (mkgold27 / mkhin27, staged), embedding / head levels from our quantizers. Prior guesses (to check, not
   to plan on): trunk block-wise ½–⅔ of mix healing on the 0.8B (EfficientQAT-style: block-wise stage takes most),
   less on the 27B (block-output methods shrank to ~⅓ there); head a few % of total KLD at ≤ 2.5 bpw; embedding
   smaller, mostly at ≤ 2 bpw.
