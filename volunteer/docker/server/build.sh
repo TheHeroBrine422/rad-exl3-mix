@@ -1,13 +1,13 @@
 #!/bin/bash
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-# build.sh [COMMIT | --worktree] -- build the queue server image from a minimal context (LICENSE, NOTICE and the
+# build.sh [COMMIT | --worktree] -- build the rad-quant@home queue server image (radquant-server) from a minimal context (LICENSE, NOTICE and the
 # volunteer/ code it runs; never local/, data or untracked files except with --worktree, which copies the same paths
 # from the working tree for testing uncommitted code).
 # Tags: $IMAGE_REPO:$VERSION, $IMAGE_REPO:$VERSION-<commit> (or -dirty), $IMAGE_REPO:latest.
-#   IMAGE_REPO (default rxm-queue), VERSION (default volunteer/VERSION), DOCKER (default docker; podman works)
+#   IMAGE_REPO (default radquant-server), VERSION (default volunteer/VERSION), DOCKER (default docker; podman works)
 set -euo pipefail
 R=$(cd "$(dirname "$0")/../../.." && pwd)
-DOCKER=${DOCKER:-docker}; REPO=${IMAGE_REPO:-rxm-queue}; VERSION=${VERSION:-$(cat "$R/volunteer/VERSION")}
+DOCKER=${DOCKER:-docker}; REPO=${IMAGE_REPO:-radquant-server}; VERSION=${VERSION:-$(cat "$R/volunteer/VERSION")}
 PATHS="LICENSE NOTICE volunteer/common volunteer/jobs volunteer/server volunteer/checker volunteer/docker/server"
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 if [ "${1:-}" = "--worktree" ]; then

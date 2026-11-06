@@ -13,9 +13,14 @@ SCHEMA = Q.schema(with_layer=True)
 check_extra = Q.check_extra
 # a 27B layer: ~0.4 G parameters; 32 GB cards for the 27B (notes); the 0.8B runs in far less
 LAYER_PARAMS_MAX = 420_000_000
+TOL, compare = Q.TOL, Q.compare
 
 
-def requires(p): return {"gpu": True, "ram_gb": 12, "vram_gb": 7}
+def requires(p, info=None):
+    return {"gpu": True, "cards": 1, "ram_gb": 24, "vram_gb": 32} if Q.big(info) else {"gpu": True, "cards": 1, "ram_gb": 8, "vram_gb": 8}
+
+
+def lumens(p): return 3.0                               # ~2.5 min of an R9700 per 27B layer (proxies count the same)
 def wfile(p): return f"L{p['layer']:02d}.safetensors"
 def shard(p): return f"q-L{p['layer']:02d}.safetensors"
 def plan(p): return qwen.layer_plan(p["arch"], p["layer"])

@@ -1,15 +1,20 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-# Example compose file for a donor worker on an AMD GPU (ROCm). Optional: the image runs just as well with the
-# `docker run` line in volunteer/README.md ("Donor worker"); this file holds the same settings.
+# rad-quant@home donor worker on AMD GPUs (ROCm), as a compose file. Optional: the image runs just as well with the
+# `docker run` line in volunteer/README.md ("For donors"); this file holds the same settings. Every RADQUANT_* setting
+# also takes its v0 name RXMW_* (read in 0.2 only).
 #
-#   cp .env.example .env     then set RXMW_SERVER, RXMW_INVITE (first start only), RENDER_GID, VIDEO_GID, caps
+#   cp .env.example .env     then set RADQUANT_SERVER, RADQUANT_INVITE (first start only), RENDER_GID, VIDEO_GID, caps
 #   docker compose up -d     registers with the invite on the first start; the token is kept in the state volume
-#   docker compose logs -f   docker compose stop   (stop = finish the current job, up to stop_grace_period)
-name: rxm-worker
+#   docker compose logs -f   docker compose stop   (stop = finish the current jobs, up to stop_grace_period)
+#   docker compose exec worker radquant status      your workers, jobs, lumens (radquant jobs | points | logs | config)
+#
+# Several cards: RADQUANT_GPUS=0,1,2,3 (one job per card at once, one cache and one RAM budget for all; jobs that need
+# several cards get them together). RADQUANT_RAM_GB is the host RAM all jobs together may use.
+name: radquant-worker
 
 services:
   worker:
-    image: ${RXMW_IMAGE_REF:-rxm-worker:0.1.0-rocm7.14-gfx1201}
+    image: ${RADQUANT_IMAGE:-${RXMW_IMAGE_REF:-radquant-worker:0.2.0-rocm7.14-gfx1201}}
     restart: unless-stopped
     devices: [/dev/kfd, /dev/dri]
     group_add:                                  # the host's numeric ids: getent group video render
@@ -20,29 +25,32 @@ services:
     security_opt: ["seccomp=unconfined", "no-new-privileges:true"]
     cap_drop: [ALL]
     environment:
-      RXMW_SERVER: ${RXMW_SERVER:?set RXMW_SERVER to the queue URL you were given}
-      RXMW_INVITE: ${RXMW_INVITE:-}             # one-time invite; ignored once the token file exists
-      RXMW_NAME: ${RXMW_NAME:-donor}
-      # RXMW_TOKEN_FILE: /run/secrets/rxm_token  # instead of an invite: a token you already have (secret below)
-      RXMW_GPU_NAME: ${RXMW_GPU_NAME:-r9700}
-      RXMW_VRAM_GB: ${RXMW_VRAM_GB:-32}
-      RXMW_RAM_GB: ${RXMW_RAM_GB:-30}           # host RAM the jobs may use (a 27B head job peaks at ~22 GB)
-      RXMW_CACHE_GB: ${RXMW_CACHE_GB:-200}      # disk cap of the input cache in the state volume
-      RXMW_WINDOWS: ${RXMW_WINDOWS:-}           # e.g. 22:00-08:00,12:00-13:00 (local time, TZ below); empty: always
-      RXMW_ON_STOP: ${RXMW_ON_STOP:-finish}     # finish | abandon the current job on stop
+      RADQUANT_SERVER: ${RADQUANT_SERVER:-${RXMW_SERVER:?set RADQUANT_SERVER to the queue URL you were given}}
+      RADQUANT_INVITE: ${RADQUANT_INVITE:-${RXMW_INVITE:-}}     # one-time invite; ignored once the token file exists
+      RADQUANT_NAME: ${RADQUANT_NAME:-${RXMW_NAME:-donor}}      # your display name on the leaderboard, if you opt in:
+      RADQUANT_LEADERBOARD: ${RADQUANT_LEADERBOARD:-0}          # 1 = listed on the public status page (first start;
+                                                                # later: docker compose exec worker radquant config set ...)
+      # RADQUANT_TOKEN_FILE: /run/secrets/radquant_token        # instead of an invite: a token you already have
+      RADQUANT_GPU_NAME: ${RADQUANT_GPU_NAME:-${RXMW_GPU_NAME:-r9700}}
+      RADQUANT_GPUS: ${RADQUANT_GPUS:-0}                        # device indices; 0,1 for two cards
+      RADQUANT_VRAM_GB: ${RADQUANT_VRAM_GB:-${RXMW_VRAM_GB:-32}} # per card
+      RADQUANT_RAM_GB: ${RADQUANT_RAM_GB:-${RXMW_RAM_GB:-30}}   # host RAM for all jobs (27B: layer ~24 GB, head ~48 GB)
+      RADQUANT_CACHE_GB: ${RADQUANT_CACHE_GB:-${RXMW_CACHE_GB:-200}} # disk cap of the input cache in the state volume
+      RADQUANT_WINDOWS: ${RADQUANT_WINDOWS:-${RXMW_WINDOWS:-}}  # e.g. 22:00-08:00,12:00-13:00 (local time, TZ); empty: always
+      RADQUANT_ON_STOP: ${RADQUANT_ON_STOP:-${RXMW_ON_STOP:-finish}} # finish | abandon the current jobs on stop
       TZ: ${TZ:-UTC}
     volumes:
-      - ${RXMW_STATE_DIR:-rxm-state}:/var/lib/rxm   # token, current job, input cache (up to RXMW_CACHE_GB + one job)
-    # secrets: [rxm_token]
-    mem_limit: ${RXMW_MEM_LIMIT:-32g}
-    stop_grace_period: ${RXMW_STOP_GRACE:-15m}  # time to finish the current job on `docker compose stop`
+      - ${RADQUANT_STATE_DIR:-${RXMW_STATE_DIR:-radquant-state}}:/var/lib/radquant   # token, current jobs, input cache
+    # secrets: [radquant_token]
+    mem_limit: ${RADQUANT_MEM_LIMIT:-${RXMW_MEM_LIMIT:-32g}}
+    stop_grace_period: ${RADQUANT_STOP_GRACE:-${RXMW_STOP_GRACE:-15m}}  # time to finish the current jobs on stop
     logging:
       driver: json-file
       options: {max-size: "20m", max-file: "3"}
 
 volumes:
-  rxm-state:
+  radquant-state:
 
 # secrets:
-#   rxm_token:
-#     file: ./rxm-token                         # one line; readable by uid 10001 (chmod 0444, or chown 10001)
+#   radquant_token:
+#     file: ./radquant-token                    # one line; readable by uid 10001 (chmod 0444, or chown 10001)

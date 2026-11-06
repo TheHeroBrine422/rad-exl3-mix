@@ -5,20 +5,26 @@ the type's schema exactly, and input files outside what the type allows for thos
 
 Every job module defines
     NAME, VERSION, SCHEMA       the type, its version (bumped on any change of meaning), its parameter schema
-    IMPLEMENTED                 False: the interface exists, the worker refuses to run it (eval_mix in v0)
-    requires(p)                 {"gpu": bool, "ram_gb": float, "vram_gb": float}: the server leases only to workers
-                                that declared at least that much
+    IMPLEMENTED                 False: the interface exists, the worker refuses to run it
+    TRUSTED_ONLY                True: leased only to workers the operator flagged trusted (big-box jobs)
+    requires(p, info)           what one job needs: {"gpu", "cards", "vram_gb" (per card), "ram_gb" (host)}; info is
+                                the model's datapack record (models/<m>@<rev>/model.json: n_params, ...) or None. The
+                                server leases a job only to a worker whose declared and currently free cards / RAM
+                                cover it; cards > 1 is a gang job (all its cards on one worker)
+    lumens(p)                   points for one verified job: its reference cost in R9700 card-minutes
     inputs(p)                   (required relpaths, [regex for optional relpaths]) under the server's data root
     outputs(p)                  {file name: max bytes}: the only files a worker uploads and the server accepts
     required_outputs(p)         the subset that must be present at completion
     run(p, ctx) -> dict         the work; ctx is worker.worker.JobContext; returns a small JSON result
-    accept(p, files, result)    cheap structural check on the server at completion (files: name -> staged path);
-                                raises ValueError to reject. The real verification is checker/."""
+    accept(p, files, result, data_path)   cheap structural check on the server at completion (files: name -> path);
+                                raises ValueError to reject
+    compare(p, a, b, tol)       spot check: a donor's accepted result dir a against a trusted re-run's b ->
+                                (ok, detail dict); tol: {name: value} overrides of the type's TOL"""
 import re
 from common.schema import validate, SchemaError
-from . import noop, quant_layer, quant_head, eval_mix
+from . import noop, quant_layer, quant_head, eval_mix, golden_record
 
-REGISTRY = {m.NAME: m for m in (noop, quant_layer, quant_head, eval_mix)}
+REGISTRY = {m.NAME: m for m in (noop, quant_layer, quant_head, eval_mix, golden_record)}
 
 
 class Rejected(ValueError):
@@ -29,6 +35,15 @@ def get(jtype):
     m = REGISTRY.get(jtype) if isinstance(jtype, str) else None
     if m is None: raise Rejected(f"unknown job type {jtype!r}")
     return m
+
+
+def requirements(m, p, info=None):
+    """a type's requires(), normalised: gpu, cards (1 for a GPU job unless it says more), vram_gb, ram_gb"""
+    r = dict(m.requires(p, info))
+    r["gpu"] = bool(r.get("gpu")); r["cards"] = int(r.get("cards", 1 if r["gpu"] else 0))
+    r["vram_gb"] = float(r.get("vram_gb", 0)); r["ram_gb"] = float(r.get("ram_gb", 0))
+    if getattr(m, "TRUSTED_ONLY", False): r["trusted"] = True
+    return r
 
 
 def check_params(jtype, params):
@@ -49,7 +64,9 @@ def check_inputs(jtype, params, names):
     if len(set(names)) != len(names): raise Rejected("duplicate input")
     missing = [r for r in req if r not in names]
     if missing: raise Rejected(f"inputs missing {missing[:3]}")
+    rx = [re.compile(x) for x in opt]
+    rs = set(req)
     for n in names:
-        if n in req: continue
-        if not any(re.fullmatch(rx, n) for rx in opt): raise Rejected(f"input {n!r} not allowed for {jtype}")
+        if n in rs: continue
+        if not any(x.fullmatch(n) for x in rx): raise Rejected(f"input {n!r} not allowed for {jtype}")
     return m

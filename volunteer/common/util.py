@@ -1,8 +1,25 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """Small helpers shared by the server, the worker and the checker (stdlib only)."""
-import hashlib, json, os, re, struct, tempfile, time
+import hashlib, json, os, re, struct, sys, tempfile, time
 
 API = "v0"
+NAME = "rad-quant@home"                                                # display name; identifiers say radquant
+ENV_PREFIX = "RADQUANT_"
+# v0 names, still read for one version (0.2.x): the server's RXMQ_*, the worker's RXMW_* (RXMW_IMAGE is now
+# RADQUANT_IMAGE_ID: RADQUANT_IMAGE is the image a compose file runs)
+LEGACY = {"server": ("RXMQ_", {}), "worker": ("RXMW_", {"IMAGE_ID": "IMAGE"})}
+_warned = set()
+
+
+def env(name, default=None, conv=str, side="server"):
+    """$RADQUANT_<name>, else the v0 name of `side` (with a one-time deprecation note on stderr), else default"""
+    v = os.environ.get(ENV_PREFIX + name)
+    if v in (None, "") and side in LEGACY:
+        pre, ren = LEGACY[side]; old = pre + ren.get(name, name)
+        v = os.environ.get(old)
+        if v not in (None, "") and old not in _warned:
+            _warned.add(old); print(f"note: {old} is deprecated, use {ENV_PREFIX + name}", file=sys.stderr, flush=True)
+    return default if v in (None, "") else conv(v)
 NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")          # one path component
 RELPATH_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._@-]{0,127}(/[A-Za-z0-9][A-Za-z0-9._@-]{0,159}){0,7}$")
 

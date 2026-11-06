@@ -2,10 +2,18 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """server.py --db QUEUE.sqlite --data DATAROOT --spool DIR --results DIR [--bind 127.0.0.1] [--port 8740]
 
-The job queue (stdlib only). Workers authenticate with a bearer token (from /register with an invite code, or
-admin.py add-worker). Plain HTTP: put it behind a TLS terminator or a tunnel before anything leaves localhost / LAN.
-Every flag can also come from the environment as RXMQ_<FLAG> (e.g. RXMQ_DB, RXMQ_PORT, RXMQ_ADMIN_TOKEN_FILE); a flag
-on the command line wins. The container image (docker/server/) configures it that way.
+The rad-quant@home job queue (stdlib only). Workers authenticate with a bearer token (from /register with an invite
+code, or admin.py add-worker). Plain HTTP: put it behind a TLS terminator or a tunnel before anything leaves localhost
+/ LAN. Every flag can also come from the environment as RADQUANT_<FLAG> (e.g. RADQUANT_DB, RADQUANT_PORT,
+RADQUANT_ADMIN_TOKEN_FILE; the v0 names RXMQ_<FLAG> are still read in 0.2); a flag on the command line wins. The
+container image (docker/server/) configures it that way.
+
+Scheduling (0.2): a worker declares its cards, VRAM per card, host RAM and disk; every job type declares what one job
+needs (jobs/*.requires). The server leases a job only if the worker's declaration covers it and enough cards / RAM are
+free now (it counts the worker's active leases). A gang job (cards > 1) that a busy multi-card worker could run gets a
+reservation on that worker: it is leased nothing else until enough of its cards drain, then the gang job; another
+worker that can run it at once still may. Trusted-only types go to workers flagged trusted; spot-check re-runs to
+verifiers only (server/verify.py); quarantined workers get nothing.
 
   POST /api/v0/register   {invite, name}                              -> {worker_id, token}
   POST /api/v0/lease      {caps}                                      -> {job: {...}} | {job: null, retry_s}
@@ -16,28 +24,43 @@ on the command line wins. The container image (docker/server/) configures it tha
   POST /api/v0/fail       {job_id, lease_id, error, abandon, reject}
   GET  /data/RELPATH      (Range: bytes=a-[b])  only files in the manifest that a job leased by this worker lists
   GET  /api/v0/status
+  GET  /api/v0/me[/jobs|/points|/events]  POST /api/v0/me/profile|link   the donor's own view (server/donor.py;
+                          the donor CLI client/radquant.py)
+  GET  /  (/index.html)   no auth: the public status page (server/statuspage.py), rebuilt every --status-interval s;
+                          with --status-dir also written there for a static host
   GET  /healthz           no auth: 200 if the database answers (container healthcheck)
   GET  /api/v0/admin/summary  read-only queue overview, only with --admin-token-file, bearer = that token
+  POST /api/v0/search/batch           an eval_mix batch (server/batch.py)      } only with --search-token-file,
+  GET  /api/v0/search/batch/ID        its status and per-candidate results    } bearer = that token; enqueues
+  GET  /api/v0/search/batch/ID/rows/C candidate C's rows ([rows, 4] f32)       } eval_mix jobs on public goldens only
 
-There are no admin endpoints that change anything: admin.py works on the database and the data root directly, on
-this host (or in the server container: `rxmq admin ...`)."""
+Nothing else that changes the queue goes over HTTP: admin.py works on the database and the data root directly, on
+this host (or in the server container: `radquant admin ...`)."""
 import argparse, errno, hashlib, hmac, json, os, re, secrets, shutil, signal, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs, unquote
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from common.util import API, NAME_RE, safe_relpath, sha256_file, read_json
+from common.util import API, NAME_RE, safe_relpath, sha256_file, read_json, env
 from common.schema import validate, SchemaError
 import jobs
+from jobs import golden_common as G
 from server.store import Store
+from server import verify as V, batch as B, donor as D, statuspage as SP
+from server.sched import norm_req, job_filter
 
 CHUNK_MAX = 64 << 20
 JSON_MAX = 1 << 20
+BATCH_MAX = 32 << 20
 CAPS = {"type": "object", "required": ["job_types"], "properties": {
     "job_types": {"type": "array", "maxItems": 32, "items": {"type": "string", "pattern": "[a-z0-9_]{1,32}"}},
     "gpu": {"type": "boolean"}, "gpu_name": {"type": "string", "maxLength": 128},
-    "vram_gb": {"type": "number", "minimum": 0, "maximum": 4096}, "ram_gb": {"type": "number", "minimum": 0, "maximum": 65536},
+    "cards": {"type": "integer", "minimum": 0, "maximum": 64, "description": "GPUs this worker runs jobs on"},
+    "slots": {"type": "integer", "minimum": 1, "maximum": 64, "description": "jobs at once (default: cards, at least 1)"},
+    "vram_gb": {"type": "number", "minimum": 0, "maximum": 4096, "description": "per card"},
+    "ram_gb": {"type": "number", "minimum": 0, "maximum": 65536, "description": "host RAM for all its jobs together"},
     "disk_gb": {"type": "number", "minimum": 0, "maximum": 1e6}, "image": {"type": "string", "maxLength": 128},
+    "running": {"type": "array", "maxItems": 64, "items": {"type": "integer"}},
     "versions": {"type": "object", "additionalProperties": {"type": "integer"}}}}
 
 
@@ -56,18 +79,34 @@ class Queue:
         self.chunk_max = int(a.chunk_max_mb * (1 << 20))
         self.upload_max = int(a.upload_max_mb * (1 << 20)) if a.upload_max_mb else None
         self.spool_max = int(a.spool_max_gb * 1e9) if a.spool_max_gb else None
-        self.admin_hash = None
-        if a.admin_token_file:
-            tok = open(a.admin_token_file).read().strip()
-            if len(tok) < 32: sys.exit(f"{a.admin_token_file}: admin token shorter than 32 characters")
-            self.admin_hash = hashlib.sha256(tok.encode()).digest()
+        self.admin_hash = self._token_hash(a.admin_token_file, "admin")
+        self.search_hash = self._token_hash(a.search_token_file, "search")
+        self.policy = V.Policy(a.spot_rate, a.spot_first)
+        self.store.reserve_max_s = a.reserve_max_s; self.store.reserve_idle_s = max(4 * a.lease_s, 60)
+        self.piece_cache = {}
+        self.page, self.page_t = None, 0.0
+        self.campaign = a.campaign or os.path.join(os.path.dirname(os.path.abspath(a.db)), "campaign.json")
+
+    def build_page(self):
+        """the status page from the database (kept in memory; / serves the last good one)"""
+        page = SP.build(self.store, SP.load_campaign(self.campaign))
+        self.page, self.page_t = page, time.time()
+        if self.a.status_dir: SP.write(os.path.join(self.a.status_dir, "index.html"), page)
+        return page
+
+    @staticmethod
+    def _token_hash(path, what):
+        if not path: return None
+        tok = open(path).read().strip()
+        if len(tok) < 32: sys.exit(f"{path}: {what} token shorter than 32 characters")
+        return hashlib.sha256(tok.encode()).digest()
 
     def manifest(self):
         p = os.path.join(self.data, "manifest.json")
         m = os.path.getmtime(p) if os.path.exists(p) else None
         if m != self._man_mtime:
             try:
-                self._man = (read_json(p, {}) or {}).get("files", {}); self._man_mtime = m
+                self._man = (read_json(p, {}) or {}).get("files", {}); self._man_mtime = m; self.piece_cache = {}
             except (OSError, ValueError) as e:              # e.g. written 0600 by another uid: keep the last good one
                 print(f"manifest.json unreadable, keeping the previous one ({len(self._man)} files): {e!r}", flush=True)
         return self._man
@@ -76,36 +115,71 @@ class Queue:
         if not safe_relpath(rel) or rel not in self.manifest(): raise HTTPError(404, "not in manifest")
         return os.path.join(self.data, rel)
 
+    def private(self, rel):
+        """goldens/<g>/... and corpora/<c>/... are served only while their marker says public (golden_common)"""
+        parts = rel.split("/")
+        if parts[0] in ("goldens", "corpora") and len(parts) >= 3:
+            mk = read_json(os.path.join(self.data, parts[0], parts[1], "golden.json" if parts[0] == "goldens" else "corpus.json"))
+            ok, why = G.marker_ok(mk)
+            return None if ok else why
+        return None
+
     # ------------------------------------------------------------ lease
     def lease(self, w, caps):
         try: validate(caps, CAPS, "caps")
         except SchemaError as e: raise HTTPError(400, str(e))
         self.store.expire()
-        types = set(caps["job_types"]) & {n for n, m in jobs.REGISTRY.items() if m.IMPLEMENTED}
-        vers = caps.get("versions", {})
-        disk = caps.get("disk_gb", 0) * 1e9
+        cards = caps.get("cards", 1 if caps.get("gpu") else 0)
+        slots = min(caps.get("slots", max(cards, 1)), self.a.max_leases)
         now = time.time()
         with self.store.tx() as db:
             db.execute("UPDATE workers SET last_seen=?, caps=? WHERE id=?", (now, json.dumps(caps), w["id"]))
-            if db.execute("SELECT COUNT(*) FROM leases WHERE worker_id=? AND state='active'", (w["id"],)).fetchone()[0] >= self.a.max_leases:
-                return {"job": None, "retry_s": 30, "why": "worker has its maximum of active leases"}
-            for j in db.execute("SELECT * FROM jobs WHERE state='queued' ORDER BY priority DESC, id LIMIT 500"):
-                if j["type"] not in types or vers.get(j["type"], j["version"]) != j["version"]: continue
-                r = json.loads(j["requires"])
-                if r.get("gpu") and not caps.get("gpu"): continue
-                if r.get("ram_gb", 0) > caps.get("ram_gb", 0) or r.get("vram_gb", 0) > caps.get("vram_gb", 0): continue
-                if j["input_bytes"] > disk: continue
-                lid = secrets.token_hex(16); exp = now + self.lease_s
-                db.execute("INSERT INTO leases VALUES(?,?,?,?,?, 'active', NULL, NULL)", (lid, j["id"], w["id"], now, exp))
-                db.execute("UPDATE jobs SET state='leased', attempts=attempts+1, lease_id=?, lease_owner=?, lease_expires=?, "
-                           "updated=? WHERE id=?", (lid, w["id"], exp, now, j["id"]))
-                self.store.event(db, "lease", j["id"], w["id"], lid)
-                man = self.manifest()
-                return {"job": {"id": j["id"], "type": j["type"], "version": j["version"], "params": json.loads(j["params"]),
-                                "inputs": [{"name": n, "sha256": man[n]["sha256"], "size": man[n]["size"]} for n in json.loads(j["inputs"])],
-                                "outputs": jobs.get(j["type"]).outputs(json.loads(j["params"])),
-                                "lease_id": lid, "lease_expires": exp, "heartbeat_s": self.hb_s}}
+            wr = db.execute("SELECT * FROM workers WHERE id=?", (w["id"],)).fetchone()
+            if wr["quarantined"]:
+                return {"job": None, "retry_s": 3600, "quarantined": True, "why": "this worker is quarantined (a result failed "
+                        "verification); ask the operator"}
+            act = db.execute("SELECT j.requires FROM leases l JOIN jobs j ON j.id=l.job_id WHERE l.worker_id=? AND l.state='active'",
+                             (w["id"],)).fetchall()
+            if len(act) >= slots: return {"job": None, "retry_s": 30, "why": "all slots busy"}
+            used = [norm_req(json.loads(r["requires"])) for r in act]
+            free_cards = cards - sum(r["cards"] for r in used); free_ram = caps.get("ram_gb", 0) - sum(r["ram_gb"] for r in used)
+
+            eligible = job_filter(wr, caps)
+
+            def fits_now(r): return r["cards"] <= free_cards and r["ram_gb"] <= free_ram
+
+            res = db.execute("SELECT * FROM reservations WHERE worker_id=?", (w["id"],)).fetchone()
+            if res:
+                j = db.execute("SELECT * FROM jobs WHERE id=? AND state='queued'", (res["job_id"],)).fetchone()
+                r = eligible(j) if j else None
+                if r is None: db.execute("DELETE FROM reservations WHERE job_id=?", (res["job_id"],))
+                elif fits_now(r): return self._grant(db, w, j, r, now)
+                else: return {"job": None, "retry_s": min(self.a.retry_s, 10), "draining": j["id"],
+                              "why": f"draining for gang job {j['id']} ({r['cards']} cards)"}
+            for j in db.execute("SELECT * FROM jobs WHERE state='queued' ORDER BY priority DESC, id LIMIT 2000").fetchall():
+                r = eligible(j)
+                if r is None: continue
+                if fits_now(r): return self._grant(db, w, j, r, now)
+                if r["cards"] > 1 and now - j["created"] >= self.a.gang_wait_s and \
+                        not db.execute("SELECT 1 FROM reservations WHERE job_id=?", (j["id"],)).fetchone():
+                    db.execute("INSERT INTO reservations VALUES(?,?,?)", (j["id"], w["id"], now))
+                    self.store.event(db, "reserve", j["id"], w["id"], detail={"cards": r["cards"], "free_cards": free_cards})
+                    return {"job": None, "retry_s": min(self.a.retry_s, 10), "draining": j["id"],
+                            "why": f"draining for gang job {j['id']} ({r['cards']} cards)"}
         return {"job": None, "retry_s": self.a.retry_s}
+
+    def _grant(self, db, w, j, r, now):
+        lid = secrets.token_hex(16); exp = now + self.lease_s
+        db.execute("DELETE FROM reservations WHERE job_id=?", (j["id"],))
+        db.execute("INSERT INTO leases VALUES(?,?,?,?,?, 'active', NULL, NULL)", (lid, j["id"], w["id"], now, exp))
+        db.execute("UPDATE jobs SET state='leased', attempts=attempts+1, lease_id=?, lease_owner=?, lease_expires=?, "
+                   "updated=? WHERE id=?", (lid, w["id"], exp, now, j["id"]))
+        self.store.event(db, "lease", j["id"], w["id"], lid)
+        man = self.manifest(); params = json.loads(j["params"])
+        return {"job": {"id": j["id"], "type": j["type"], "version": j["version"], "params": params,
+                        "inputs": [{"name": n, "sha256": man[n]["sha256"], "size": man[n]["size"]} for n in json.loads(j["inputs"])],
+                        "outputs": jobs.get(j["type"]).outputs(params), "requires": r,
+                        "lease_id": lid, "lease_expires": exp, "heartbeat_s": self.hb_s}}
 
     def _lease(self, db, w, job_id, lease_id):
         l = db.execute("SELECT * FROM leases WHERE id=? AND job_id=?", (str(lease_id), job_id)).fetchone()
@@ -189,6 +263,8 @@ class Queue:
             raise HTTPError(400, "bad body")
         with self.store.tx() as db:
             l, j = self._lease(db, w, job_id, lease_id)
+            if db.execute("SELECT quarantined FROM workers WHERE id=?", (w["id"],)).fetchone()[0]:
+                raise HTTPError(403, "this worker is quarantined")
             if j["state"] == "accepted":
                 self.store.event(db, "duplicate", job_id, w["id"], lease_id)
                 return {"ok": True, "duplicate": True, "yours": j["accepted_lease"] == lease_id}
@@ -240,6 +316,8 @@ class Queue:
                        (lease_id, w["id"], now, json.dumps(result), json.dumps(files), now, job_id))
             self.store.event(db, "accept_late" if late else "accept", job_id, w["id"], lease_id)
         shutil.rmtree(os.path.join(self.spool, str(job_id)), ignore_errors=True)
+        try: V.after_accept(self.store, self.results, job_id, self.policy)        # spot-check draw / comparison, points
+        except Exception: traceback.print_exc()
         return {"ok": True, "duplicate": False}
 
     def may_read(self, w, rel):
@@ -248,9 +326,14 @@ class Queue:
             if rel in json.loads(r["inputs"]): return True
         return False
 
-    def status(self):
+    def status(self, w=None):
         rows = self.store.q("SELECT type, state, COUNT(*) n FROM jobs GROUP BY type, state")
-        return {"jobs": [dict(r) for r in rows], "workers": self.store.q("SELECT COUNT(*) FROM workers")[0][0]}
+        out = {"jobs": [dict(r) for r in rows], "workers": self.store.q("SELECT COUNT(*) FROM workers")[0][0]}
+        if w is not None:                                   # the asking worker's own standing (its points, flags)
+            me = self.store.q("SELECT COALESCE(SUM(lumens), 0) FROM points WHERE worker_id=?", (w["id"],))[0][0]
+            out["me"] = {"id": w["id"], "name": w["name"], "lumens": me, "trusted": bool(w["trusted"]),
+                         "quarantined": bool(w["quarantined"])}
+        return out
 
     def health(self):
         self.store.q("SELECT 1")
@@ -269,7 +352,12 @@ class Queue:
                 "levels": [dict(r) for r in q("SELECT level, type, state, COUNT(*) n, SUM(check_state='pass') checked "
                                               "FROM jobs GROUP BY level, type, state ORDER BY level")],
                 "workers": [{"id": r["id"], "name": r["name"], "last_seen": r["last_seen"], "disabled": r["disabled"],
-                             "gpu": (json.loads(r["caps"] or "{}")).get("gpu_name", "")} for r in q("SELECT * FROM workers ORDER BY id")],
+                             "trusted": r["trusted"], "verifier": r["verifier"], "quarantined": r["quarantined"],
+                             "gpu": (json.loads(r["caps"] or "{}")).get("gpu_name", ""),
+                             "cards": (json.loads(r["caps"] or "{}")).get("cards")} for r in q("SELECT * FROM workers ORDER BY id")],
+                "lumens": V.standings(self.store),
+                "spot": [dict(r) for r in q("SELECT verify_state, COUNT(*) n FROM jobs WHERE verify_state IS NOT NULL GROUP BY verify_state")],
+                "reservations": [dict(r) for r in q("SELECT * FROM reservations")],
                 "active_leases": q("SELECT COUNT(*) FROM leases WHERE state='active'")[0][0],
                 "spool_bytes": self.spool_bytes(),
                 "events": [dict(r) for r in q("SELECT t, job_id, worker_id, kind FROM events ORDER BY id DESC LIMIT 50")]}
@@ -277,7 +365,7 @@ class Queue:
 
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
-    server_version = "rxm-queue/0"
+    server_version = "radquant-server/0"
     Q: Queue = None
 
     def log_message(self, fmt, *args):
@@ -291,9 +379,9 @@ class Handler(BaseHTTPRequestHandler):
         for k, v in headers: self.send_header(k, v)
         self.end_headers(); self.wfile.write(b)
 
-    def _json(self):
+    def _json(self, limit=JSON_MAX):
         n = int(self.headers.get("Content-Length") or 0)
-        if n > JSON_MAX: raise HTTPError(413, "body too large")
+        if n > limit: raise HTTPError(413, "body too large")
         try:
             b = json.loads(self.rfile.read(n) or b"{}")
         except ValueError: raise HTTPError(400, "bad json")
@@ -311,11 +399,14 @@ class Handler(BaseHTTPRequestHandler):
             u = urlsplit(self.path); parts = [unquote(x) for x in u.path.strip("/").split("/")]
             Q = self.Q
             if method == "GET" and parts == ["healthz"]: return self._send(200, Q.health())
+            if method == "GET" and parts in ([""], ["index.html"]): return self._page()
             if method == "GET" and parts[:4] == ["api", API, "admin", "summary"] and len(parts) == 4:
                 a = self.headers.get("Authorization", "")
                 if Q.admin_hash is None: raise HTTPError(404, "no such endpoint")
                 if not Q.admin_ok(a[7:] if a.startswith("Bearer ") else None): raise HTTPError(401, "bad admin token")
                 return self._send(200, Q.admin_summary())
+            if parts[:3] == ["api", API, "search"]:
+                return self._search(method, parts[3:])
             if method == "GET" and parts[:1] == ["data"]:
                 return self._data(self._worker(), "/".join(parts[1:]))
             if parts[:2] != ["api", API]: raise HTTPError(404, "no such endpoint")
@@ -323,7 +414,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "POST" and ep == ["register"]:
                 b = self._json(); name = str(b.get("name", ""))[:64]
                 if not NAME_RE.match(name): raise HTTPError(400, "bad name")
-                r = Q.store.register(str(b.get("invite", "")), name)
+                r = Q.store.register(str(b.get("invite", "")), name, leaderboard=b.get("leaderboard") is True)
                 if r is None: raise HTTPError(403, "bad invite")
                 return self._send(200, {"worker_id": r[0], "token": r[1]})
             w = self._worker()
@@ -331,7 +422,8 @@ class Handler(BaseHTTPRequestHandler):
             if method == "POST" and ep == ["heartbeat"]: return self._send(200, Q.heartbeat(w, self._json()))
             if method == "POST" and ep == ["complete"]: return self._send(200, Q.complete(w, self._json()))
             if method == "POST" and ep == ["fail"]: return self._send(200, Q.fail(w, self._json()))
-            if method == "GET" and ep == ["status"]: return self._send(200, Q.status())
+            if method == "GET" and ep == ["status"]: return self._send(200, Q.status(w))
+            if ep[:1] == ["me"]: return self._me(w, method, ep[1:], parse_qs(u.query))
             if ep[:1] == ["upload"] and len(ep) == 4:
                 job_id, lease_id, name = int(ep[1]), ep[2], ep[3]
                 if not re.fullmatch("[0-9a-f]{32}", lease_id): raise HTTPError(400, "bad lease id")
@@ -350,9 +442,66 @@ class Handler(BaseHTTPRequestHandler):
             traceback.print_exc(); self.close_connection = True
             self._send(500, {"error": "internal"})
 
+    def _page(self, head=False):
+        b = self.Q.page
+        if b is None: raise HTTPError(404, "no status page (--status-interval 0)")
+        self.send_response(200)
+        for k, v in (("Content-Type", "text/html; charset=utf-8"), ("Content-Length", str(len(b))),
+                     ("Cache-Control", "public, max-age=30"),
+                     ("Last-Modified", time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(self.Q.page_t))),
+                     ("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; "
+                                                 "frame-ancestors 'none'"),
+                     ("X-Content-Type-Options", "nosniff"), ("Referrer-Policy", "no-referrer"), ("X-Frame-Options", "DENY")):
+            self.send_header(k, v)
+        self.end_headers()
+        if not head: self.wfile.write(b)
+
+    def _me(self, w, method, ep, qs):
+        """the donor's own view (server/donor.py); any of their worker tokens"""
+        S = self.Q.store
+        arg = lambda k, d: int(qs.get(k, [d])[0])
+        try:
+            if method == "GET" and ep == []: return self._send(200, D.me(S, w))
+            if method == "GET" and ep == ["jobs"]:
+                wk = qs.get("worker", [None])[0]
+                return self._send(200, D.my_jobs(S, w, arg("limit", 50), int(wk) if wk else None, qs.get("active", ["0"])[0] == "1"))
+            if method == "GET" and ep == ["points"]: return self._send(200, D.my_points(S, w, arg("limit", 50)))
+            if method == "GET" and ep == ["events"]: return self._send(200, D.my_events(S, w, arg("after", 0), arg("limit", 100)))
+            if method == "POST" and ep == ["profile"]: return self._send(200, D.set_profile(S, w, self._json()))
+            if method == "POST" and ep == ["link"]: return self._send(200, D.link(S, w, self._json().get("token")))
+        except PermissionError as e: raise HTTPError(403, str(e))
+        except ValueError as e: raise HTTPError(400, str(e)[:300])
+        raise HTTPError(404, "no such endpoint")
+
+    def _search(self, method, ep):
+        """the search's batch API: its own token, eval_mix only (server/batch.py validates everything)"""
+        Q = self.Q
+        if Q.search_hash is None: raise HTTPError(404, "no such endpoint")
+        a = self.headers.get("Authorization", "")
+        tok = a[7:] if a.startswith("Bearer ") else None
+        if tok is None or not hmac.compare_digest(hashlib.sha256(tok.encode()).digest(), Q.search_hash):
+            raise HTTPError(401, "bad search token")
+        try:
+            if method == "POST" and ep == ["batch"]:
+                return self._send(200, B.submit(Q.store, Q.data, Q.manifest(), self._json(BATCH_MAX), Q.piece_cache))
+            if method == "GET" and len(ep) == 2 and ep[0] == "batch":
+                return self._send(200, B.status(Q.store, Q.results, int(ep[1])))
+            if method == "GET" and len(ep) == 4 and ep[0] == "batch" and ep[2] == "rows":
+                it = [x for x in B.status(Q.store, Q.results, int(ep[1]))["items"] if x["id"] == ep[3]]
+                if not it or it[0]["state"] != "accepted": raise HTTPError(404, "no finished candidate of that id")
+                p = B.rows_path(Q.results, it[0]["job"]); n = os.path.getsize(p)
+                self.send_response(200); self.send_header("Content-Type", "application/octet-stream")
+                self.send_header("Content-Length", str(n)); self.end_headers(); self.wfile.flush()
+                with open(p, "rb") as f: self.connection.sendfile(f, 0, n)
+                return
+        except B.BatchError as e: raise HTTPError(400, str(e))
+        raise HTTPError(404, "no such endpoint")
+
     def _data(self, w, rel):
         p = self.Q.data_path(rel)
         if not self.Q.may_read(w, rel): raise HTTPError(403, "no active lease lists this file")
+        why = self.Q.private(rel)
+        if why: raise HTTPError(403, f"not public: {why}")
         size = os.path.getsize(p); a, b = 0, size - 1; code = 200
         rng = self.headers.get("Range")
         if rng:
@@ -374,11 +523,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self): self._dispatch("GET")
     def do_POST(self): self._dispatch("POST")
     def do_PUT(self): self._dispatch("PUT")
-
-
-def env(name, default=None, conv=str):
-    v = os.environ.get("RXMQ_" + name)
-    return default if v in (None, "") else conv(v)
+    def do_HEAD(self):
+        if urlsplit(self.path).path in ("/", "/index.html") and self.Q.page is not None: return self._page(head=True)
+        self.send_response(405); self.send_header("Content-Length", "0"); self.end_headers()
 
 
 def main():
@@ -389,7 +536,18 @@ def main():
     ap.add_argument("--lease-s", type=float, default=env("LEASE_S", 120, float), help="lease length; every heartbeat renews it")
     ap.add_argument("--heartbeat-s", type=float, default=env("HEARTBEAT_S", 30, float))
     ap.add_argument("--retry-s", type=float, default=env("RETRY_S", 30, float), help="what an idle worker is told to wait")
-    ap.add_argument("--max-leases", type=int, default=env("MAX_LEASES", 1, int), help="active leases per worker")
+    ap.add_argument("--max-leases", type=int, default=env("MAX_LEASES", 16, int),
+                    help="most active leases per worker (a worker gets min(this, its slots); slots default to its cards)")
+    ap.add_argument("--gang-wait-s", type=float, default=env("GANG_WAIT_S", 0, float),
+                    help="how long a gang job waits before a busy multi-card worker starts draining for it")
+    ap.add_argument("--reserve-max-s", type=float, default=env("RESERVE_MAX_S", 6 * 3600, float),
+                    help="a drain that has not freed the cards by then is given up (the job may be reserved again)")
+    ap.add_argument("--spot-rate", type=float, default=env("SPOT_RATE", 0.04, float),
+                    help="fraction of each donor's accepted jobs re-run on a verifier (spot checks)")
+    ap.add_argument("--spot-first", type=int, default=env("SPOT_FIRST", 1, int),
+                    help="always re-run a donor's first N accepted jobs of each type")
+    ap.add_argument("--search-token-file", default=env("SEARCH_TOKEN_FILE"),
+                    help="enables /api/v0/search/... (eval_mix batches of the search) for this bearer token")
     ap.add_argument("--chunk-max-mb", type=float, default=env("CHUNK_MAX_MB", CHUNK_MAX >> 20, float), help="largest upload PUT")
     ap.add_argument("--upload-max-mb", type=float, default=env("UPLOAD_MAX_MB", 0, float),
                     help="ceiling per uploaded file on top of each job type's own caps (0: the type caps only)")
@@ -397,9 +555,14 @@ def main():
                     help="refuse upload chunks (507, the worker retries) while the spool holds this much (0: no cap)")
     ap.add_argument("--admin-token-file", default=env("ADMIN_TOKEN_FILE"),
                     help="enables the read-only GET /api/v0/admin/summary for this bearer token")
+    ap.add_argument("--status-interval", type=float, default=env("STATUS_INTERVAL", 60, float),
+                    help="rebuild the public status page (served at /) every this many seconds (0: no page)")
+    ap.add_argument("--status-dir", default=env("STATUS_DIR"), help="also write the page to DIR/index.html (any static host)")
+    ap.add_argument("--campaign", default=env("CAMPAIGN"),
+                    help="campaign.json for the page (totals, title; default: next to the database; re-read at every build)")
     ap.add_argument("--verbose", action="store_true", default=env("VERBOSE", False, lambda v: v not in ("0", "false", "no")))
     a = ap.parse_args()
-    miss = [f"--{k} (RXMQ_{k.upper()})" for k in ("db", "data", "spool", "results") if not getattr(a, k)]
+    miss = [f"--{k} (RADQUANT_{k.upper()})" for k in ("db", "data", "spool", "results") if not getattr(a, k)]
     if miss: ap.error("missing " + ", ".join(miss))
     Handler.Q = Queue(a)
     def reaper():
@@ -408,6 +571,15 @@ def main():
             try: Handler.Q.store.expire()
             except Exception: traceback.print_exc()
     threading.Thread(target=reaper, daemon=True).start()
+    if a.status_interval > 0:
+        def pager():
+            while True:
+                try: Handler.Q.build_page()
+                except Exception: traceback.print_exc()
+                time.sleep(a.status_interval)
+        try: Handler.Q.build_page()                         # the first page before the port opens
+        except Exception: traceback.print_exc()
+        threading.Thread(target=pager, daemon=True).start()
     srv = ThreadingHTTPServer((a.bind, a.port), Handler); srv.daemon_threads = True
     # SIGTERM (docker stop, systemd): stop accepting, let serve_forever return. Every state change is its own SQLite
     # transaction and uploads resume from the spool, so even a SIGKILL loses nothing but in-flight requests.
@@ -415,8 +587,10 @@ def main():
         print(f"signal {signum}: shutting down", flush=True)
         threading.Thread(target=srv.shutdown, daemon=True).start()
     signal.signal(signal.SIGTERM, on_term); signal.signal(signal.SIGINT, on_term)
-    print(f"queue on http://{a.bind}:{srv.server_address[1]}  db={a.db}  data={a.data}  results={a.results}  "
-          f"admin summary {'on' if a.admin_token_file else 'off'}", flush=True)
+    print(f"rad-quant@home queue on http://{a.bind}:{srv.server_address[1]}  db={a.db}  data={a.data}  results={a.results}  "
+          f"admin summary {'on' if a.admin_token_file else 'off'}, search API {'on' if a.search_token_file else 'off'}, "
+          f"spot checks {a.spot_rate:.0%} + first {a.spot_first}, status page "
+          f"{f'every {a.status_interval:g}s' + (' -> ' + a.status_dir if a.status_dir else '') if a.status_interval > 0 else 'off'}", flush=True)
     srv.serve_forever()
     srv.server_close()
     with Handler.Q.store.lock: Handler.Q.store.db.close()

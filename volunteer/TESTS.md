@@ -1,8 +1,9 @@
-# volunteer/ v0: tests (2026-11-04)
+# rad-quant@home (`volunteer/`): tests
 
-Times are US Central (CST). Machines: the VM (noop end-to-end, the server container), the RTX 4070 sandbox (the real
-`quant_layer`, CPU checks), the queue host (cpu1) (server throughput, checker timing on the 27B). Nothing was exposed beyond localhost.
-Section 7 (the server container, w13b) was added the same evening.
+Times are US Central (CST). Sections 1-7: v0 (w13 / w13b, 2026-11-04; they use the v0 names `rxm-queue`, `RXMQ_*`,
+`RXMW_*`, `rxmq`). Section 8: v0.2 (w24, 2026-11-05). Section 9: the donor CLI and the public status page (w25, 2026-11-05). Machines: the VM (noop end-to-end, the server container), the
+RTX 4070 sandbox (the real `quant_layer`, CPU checks), the queue host (cpu1) (server throughput, checker timing
+on the 27B, the v0.2 suite). Nothing was exposed beyond localhost.
 
 ## 1. End-to-end with noop jobs (`tests/e2e_noop.py`, VM, localhost)
 
@@ -184,3 +185,132 @@ re-declaring the base-image ARG after `FROM`). The donor `docker run` flags pars
 devices: `seccomp=unconfined`, `no-new-privileges`, numeric `--group-add`, `--memory`, `--stop-timeout`).
 `docker/worker/compose.yaml` renders with `docker compose config` and refuses to start without `RXMW_SERVER`,
 `VIDEO_GID` or `RENDER_GID`.
+
+## 8. v0.2 (w24, 2026-11-05): rename, requirements, multi-card, eval_mix, verification, golden_record
+
+No GPU (none was free): every GPU step is faked on the CPU. `tests/fakes.py` writes valid RAD2 containers and
+radiance-layout goldens; `tests/fake_radiance.py` takes radiance's command line (`--kld-ref` / `--kld-out` rows that
+are a function of the container's sha256, `nll_p` copied from the golden as radiance does; `--kld-record`), and
+`tests/fake_mkgold27.py` takes mkgold27's. `FAKE_RAD_BIAS` makes a cheating donor, `FAKE_RAD_NOISE` a verifier on
+"another GPU" (1e-4 relative jitter per row). Workers declare fake cards (`--gpus 0,1,2,3 --gpu-env
+CUDA_VISIBLE_DEVICES`); job processes report the device variable they were given.
+
+**Results** (final code):
+
+| suite | where | result |
+|---|---|---|
+| `tests/radmix_port.py` | VM (radmix built from radiance-hero `008e8ff` headers), cpu1 (built there) | **17/17** both |
+| `tests/e2e_noop.py`, server as a process | VM, 2:53-2:57 AM CST (~4 min) | **90/90** (earlier code: 89/89 at 2:37 and 2:50) |
+| same | cpu1 (queue host, Python 3.14.4, `nice -n 10`, the lead's sweeps running), 2:54-2:57 AM CST | **90/90** (earlier code: 89/89 at 2:47) |
+| `E2E_SERVER=docker`: the rebuilt `radquant-server:0.2.0` image, `compose.yaml` | VM, 3:01 AM CST | **97/97** (earlier code: 96/96 at 2:47) |
+
+Sections 1 and 7's 61 checks all still pass (same scenarios, now with RADQUANT_* names, one legacy name kept on purpose
+in each mode: the worker's second start uses only `RXMW_*`, the server reads `RXMQ_UPLOAD_MAX_MB`, the container
+answers to `rxmq` too). New checks:
+
+| scenario | what is checked | result |
+|---|---|---|
+| radmix port | `common/radfile.py`'s cut + assemble vs the real `mix/radmix.cpp` on a fake 4-level ladder (multi-plane entries, 3 encodings, metadata with an existing `exl3.act` key, a string that only occurs inside another): empty mix, 4 weights from 3 levels, every linear from another level, act lines (one replacing BASE's key, two new), act only, a weight named from the base itself | byte-identical in all 6 (radmix's copy path; sha256 computed in the same pass matches) |
+| | bf16 weights identical across levels are one blob; skeleton = the level's bytes before data_off; a piece of another weight / a missing piece / `a8g100` refused | pass |
+| requirements | a 16 GB card / 32 GB RAM worker gets only the job that fits; a 32 GB / 64 GB worker gets the 32 GB-VRAM, 40 GB-RAM and head-sized (48 GB RAM) jobs; a 64 GB-VRAM job stays queued, never leased | pass |
+| multi-card | one worker with 4 cards: 8 single-card jobs, at most 4 at once (measured 4), each process sees only its own `CUDA_VISIBLE_DEVICES`, no two concurrent jobs share a card | pass |
+| gang | a 4-card job queued behind 6 singles and before 2 more: the server reserved the worker (+2.7 s), leased it nothing else while its cards drained, then the gang job (+5.2 s) with `CUDA_VISIBLE_DEVICES=0,1,2,3`; the 2 later singles only after it | pass (0 leases during the drain) |
+| RAM budget | 3 jobs of 40 GB RAM on a 64 GB worker with 4 free cards: one at a time | pass |
+| stop file | a 2-card worker with 2 jobs running (both heartbeat threads and the main loop see the file): both finish, none abandoned, the third stays queued, exit 0 | pass |
+| privacy | `golden-add` refuses a golden with an `agent-trace/` document and anything without `--public`; `corpus-add` refuses `pi-session/` documents; `manifest` never lists a golden marked private; the search API refuses a golden whose marker lies (says public, documents from traces) and one marked private; a leased golden file is refused (403) while its marker says private | pass |
+| search API | wrong / worker token -> 401; 6 candidates -> 4 jobs + 2 reused (a duplicate, a mix naming only the base); a missing piece refused; status, rows per candidate, `batch-collect` and `client/searchq.py collect` give the stored bytes | pass |
+| eval_mix sizes | bpw from the exact assembled size: base-like mixes 4.500 bpw -> 16 GB cards, mixes with bigger pieces (4.55) -> 32 GB only (never the 16 GB worker), the ~8 bpw model -> a 2-card gang job (`radiance --tp 2`, cards 0,1) | pass |
+| eval_mix correctness | every container a donor assembled = the one assembled here from the server's pieces (sha256); its rows = the fake radiance's on that container, byte for byte | pass (8 candidates) |
+| cache | the 2nd candidate on a worker downloaded exactly its 2 new pieces (16,384 B of 2.55 MB inputs); a cache capped at one candidate's inputs + 4 KiB evicted 2 LRU pieces and stayed under the cap; results still exact | pass |
+| spot checks | a donor's first job of each type is re-run on a verifier; honest donors' eval rows pass against the verifier's jittered re-run (3 donors), noop / quant-like results pass (8 passes in all); a donor writing salted noop bytes and one with KL rows biased by +0.01 fail | pass |
+| quarantine | both cheaters quarantined; their unconfirmed results (3 noop, 3 eval) invalidated (files moved to `.invalid-*`, lumens revoked, requeued excluding them) and redone right by others; a quarantined worker's lease gets `{"quarantined": true}` | pass |
+| lumens | cheaters back to 0 (4 revoke rows), verifier 0, honest donors > 0, quick-return bonus granted; `admin.py points --json`; the admin summary shows lumens, spot counts, quarantine flags | pass |
+| draw rate | in-process, 5,000 accepted jobs of one donor: 211 drawn (4.22%; 4.28% in another run) incl. its first; 1,000 of a verifier: 0 | pass |
+| eval accept | the server refuses rows with a changed reference NLL, a negative KL, rows that disagree with the report's mean, a short file; takes the real one | pass |
+| golden_record | an untrusted 2-card worker is never leased one; after `trust`: TP2 (gang, cards 0,1) and staged (1 card) recorded and accepted (sizes, documents, sources, radiance's corpus hash, row consistency); the two recorders agree on a chunk; the trusted donor's first golden passed its spot check on a verifier | pass |
+| golden accept | a wrong nll column, an unsorted head, a truncated `top.bin`, the golden of another chunk: all refused | pass |
+| reflinks | cpu1's XFS (`/data`): cut two fake levels, assemble a mix with and without cloning: whole 4 KiB blocks were cloned (`FICLONERANGE`), the rest copied; both outputs byte-identical, the streamed sha256 = the file's | pass (the VM's tmpfs only exercises the copy fallback) |
+
+**Found and fixed on the way:**
+- **Tokens and invite codes could start with `-`** (`secrets.token_urlsafe`), which a command line reads as a flag
+  (`--token -x…`: argparse error, the worker never starts). Hit by chance in one run. Now `rq…` / `ri…` (only the
+  hashes are stored, so existing tokens stay valid).
+- The test's SQLite helper opened a connection per call; under Python 3.14 they are freed only by the cyclic GC and
+  reached cpu1's fd limit (1024): `unable to open database file`. Latent since v0 (the VM's limit is 524,288). One
+  shared connection now.
+- A multi-card worker briefly saw the cards of a job the server had just accepted as busy (its thread was still
+  writing stats) and handed the next job back once; a job now frees its cards the moment the server accepts it, and
+  `start()` waits up to 10 s for ending threads.
+- A malformed job on a worker without a GPU was handed back as "does not fit" instead of rejected: validation now
+  comes before the resource check.
+- With several jobs, two heartbeat threads seeing the stop file at once would have counted as a second stop and
+  abandoned the jobs; only the first sighting counts now.
+
+**Not tested (needs a GPU, an image build or the user):**
+- The worker image with radiance inside (`Dockerfile.rocm` copies the radiance image's rootfs and runs it through
+  `docker/radiance-wrap.sh`: untested), and any real eval_mix / golden_record: radiance's `--kld-ref` / `--kld-record`
+  were faked. Whether radiance accepts a container assembled from pieces is implied by the byte identity with radmix
+  (which gpubox's evals use), not run.
+- The eval spot-check tolerance (per-row 1e-3 + 5%, mean 0.2%, top-1 flips 1%) against real cross-GPU spread: calibrate
+  on the first donor / verifier pairs. The quant tolerance (1.5% per tensor) rests on the 0.8B seed spread (section 4).
+- The quant path through the 0.2 worker on a GPU (the code path is unchanged except the device variable:
+  `ourq.py --device 0` inside `CUDA_VISIBLE_DEVICES` / `ROCR_VISIBLE_DEVICES`); `tests/quant_e2e.sh` on the 4070 again.
+
+## 9. w25 (2026-11-05): donor CLI, donor API, public status page
+
+Runs (2026-11-05, CST):
+
+| suite | where | result |
+|---|---|---|
+| `tests/statuspage_test.py` (fixture database, a few seconds) | VM | **19/19** |
+| same | cpu1 (no xmllint there: that check is skipped) | **18/18** |
+| `tests/e2e_noop.py`, server as a plain process | VM, 3:13–3:20 AM | **108/108** (90 earlier + 18 new) |
+| same | cpu1 (queue host, `nice -n 19`), ~3:23–3:27 AM | **108/108** |
+| same, server as the container (`radquant-server-w25:0.2.0`, built `--worktree`; the page written to `/srv/radquant/out/status` by the read-only uid-10001 container) | VM, 3:24–3:29 AM | **115/115** |
+
+**Status page against a fixture** (`tests/statuspage_test.py`). The fixture database holds what must stay private:
+- worker names of our machines (`gpubox-verifier`, `desk-4070`) and their tokens;
+- an IP in a job error, in a quarantine reason and in a revoke note;
+- paths in job parameters, plus a level named `/root/challenge/secret-level`;
+- donors who must not be listed: one who did not opt in, one quarantined who did, and two who opted in with an IP as
+  display name or with markup written straight into the database;
+- a GPU name with a hostname (`desk.lan`);
+- markup in campaign.json's title and note.
+
+| check | result |
+|---|---|
+| well-formed: `xml.etree` parses the page; `xmllint --noout`; `xmllint --html` has no errors other than HTML5 element names | pass |
+| shape: element allow-list, balanced tags; no script / form / input / iframe / img / link; no `on*`, `href`, `src`, `style` attributes; meta refresh, charset, title | pass |
+| no token, hex-id, IPv4 / IPv6, e-mail, URL, absolute-path or hostname patterns; none of the fixture's secrets (tokens, worker names, the error, the quarantine reason, params, the opted-out and quarantined donors) | pass |
+| escaping: operator title and note with `<b>` / `</p><script>` escaped; `render()` given a hostile name, label and state escapes them all (no element appears); names that are markup or an address are left off (counted as "not listed") | pass |
+| numbers: ladder 1 / 73 (1 checked) with campaign.json; search 5 evals of 5,000, 3 queued; goldens 1 / 2; spot checks 1 passed / 1 failed / 1 pending (from the events: a quarantine resets the job's `verify_state`); levels in progress; per type running / queued / 24 h / all with re-runs apart; 2 cards busy | pass |
+| leaderboard: opted-in donors by lumens (Ada 69.0 / 5 jobs, Zoë 20.0); not the opted-out, the quarantined, the address / markup names or the verifier; "3 donors not listed: 6.5 lumens" | pass |
+| recent work: newest first; labels without paths; "by" is a listed name, "a donor" or "our hardware"; states verified / awaiting check / spot check pending | pass |
+| `statuspage.py --db --out`: builds from a read-only connection with campaign.json found next to the db; file 0644; the database files unchanged | pass |
+| display-name rules: accepts Latin / CJK / emoji names; refuses empty, > 32 chars, IPs, e-mails, URLs, `rq…` tokens, long hex, `<>&`, control / format characters. `scrub()` takes paths, IPs, tokens, e-mails and URLs out of donor-facing text | pass |
+
+**e2e, run_w25** (after the v0 / 0.2 scenarios, on their database; status page every 1 s, `--status-dir` on):
+
+| check | result |
+|---|---|
+| `status --json` (`--json` before or after the command): only the donor's own worker; lumens and verified jobs equal `admin.py points`; queue depth; could-run count; local running jobs; human form | pass |
+| `jobs --json`: only its own leases, states from the documented set, the lumens of `verified` rows sum to its total; `--worker` of another donor's worker returns nothing (isolation); human table | pass |
+| quarantined donor: flagged, reason scrubbed ("spot check of job 84 failed (re-run 87)"), results `voided`, a `revoke` in the ledger, 0 lumens | pass |
+| `points --json`: total, per worker and type, grants in the ledger; human form | pass |
+| `logs --json`: only its own workers' events (lease, accept, points, spot_draw, spot_pass, invalidate), no token / IP / path / URL pattern; `logs --local`: the box's job records | pass |
+| `config --json`: token fingerprint, never the token; env caps; profile; the worker's declared caps | pass |
+| `config set --display-name`: an IP, `<b>x</b>`, an e-mail and an empty name are refused (HTTP 400, exit 1) | pass |
+| opt-in: not on the page before; `config set --display-name "Honest Donor" --leaderboard on` puts it on the page within the rebuild interval; `status` then shows rank 1 of 1 | pass |
+| `/`: `text/html`, CSP `default-src 'none'`, nosniff, no-referrer; HEAD 200 with an empty body; POST / PUT → 404 | pass |
+| `/` content: no token / IPv4 / path / URL pattern, none of the run's tokens (admin, search, every worker), no worker name, port or work directory; well-formed; search evals = the accepted eval_mix jobs | pass |
+| `--status-dir`: the same bytes as served, 0644, no temp files left; `admin.py status-page` and `donors` | pass |
+| `link`: e16 + e32 → `status` from either shows both workers with summed lumens; linking to itself moves nothing; a token not of this server → 403 | pass |
+| personal invite (`--uses 2 --personal`): both registrations are one donor; registering with `"leaderboard": true` opts in under the worker name | pass |
+| exit codes: bad token 3, unreachable server 4, no token 2 (JSON error objects); `/api/v0/me` without a token → 401 | pass |
+
+Refactor checked by the 90 earlier checks: the lease filter moved to `server/sched.py` (shared with the donor API's
+"could run" count), and workers from before donors are each given a donor on database open.
+
+**Not tested:** the CLI inside a built worker image (`/usr/local/bin/radquant` is added to `Dockerfile.rocm` /
+`.cuda`; neither image has been built yet). A static host serving `--status-dir` (it is one plain file). The page
+in a browser: it was read as text and parsed, not rendered visually.

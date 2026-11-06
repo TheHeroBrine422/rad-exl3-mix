@@ -1,0 +1,4 @@
+{"layer": 43, "w": "attn_v", "method": "ldlq_mul1_i8", "bits": 2.0, "rel": 0.022768254578982097, "scale_f": 1.0, "damp": 0.01, "seed": 0, "rows": 128, "N": 1024, "K": 5120, "sec": 240.3}
+{"layer": 10, "w": "ssm_out", "method": "ldlq_mul1_i8", "bits": 2.0, "rel": 0.03211915819910042, "scale_f": 1.0, "damp": 0.01, "seed": 0, "rows": 128, "N": 5120, "K": 6144, "sec": 278.4}
+{"layer": 43, "w": "attn_v", "method": "ldlq_mul1_i8", "bits": 2.5, "rel": 0.011244982886968695, "scale_f": 1.15, "damp": 0.01, "seed": 0, "rows": 128, "N": 1024, "K": 5120, "sec": 187.3}
+{"layer": 10, "w": "ssm_out", "method": "ldlq_mul1_i8", "bits": 2.5, "rel": 0.01599287749237766, "scale_f": 1.15, "damp": 0.01, "seed": 0, "rows": 128, "N": 5120, "K": 6144, "sec": 227.5}

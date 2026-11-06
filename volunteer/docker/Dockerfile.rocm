@@ -1,8 +1,14 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-# The donor worker image, ROCm (gfx1201 = Radeon AI PRO R9700). Build with docker/build.sh: it feeds this file a
-# `git archive` of one rad-exl3-mix commit (only the paths the worker needs: no local/, no data, no dev scripts), so the
-# image is exactly that commit. Nothing secret is in the image: the queue URL and the worker token are given at run
-# time (RXMW_SERVER, RXMW_TOKEN_FILE / RXMW_TOKEN / RXMW_INVITE; README "Donor worker").
+# The rad-quant@home donor worker image (radquant-worker), ROCm (gfx1201 = Radeon AI PRO R9700). Build with
+# docker/build.sh: it feeds this file a `git archive` of one rad-exl3-mix commit (only the paths the worker needs: no
+# local/, no data, no dev scripts), so the image is exactly that commit. Nothing secret is in the image: the queue URL
+# and the worker token are given at run time (RADQUANT_SERVER, RADQUANT_TOKEN_FILE / _TOKEN / _INVITE; README).
+#
+#   radiance (eval_mix, golden_record tp2) comes from a radiance image built from our fork's branch qc-exl3-v3 (its
+#   docker/build.sh; it carries the exl3 plugins): that image is a FROM-scratch rootfs, so it is copied whole under
+#   /opt/radquant/radiance-root and run through its own dynamic loader (docker/radiance-wrap.sh). UNTESTED: check
+#   the paths (RADIANCE_BIN inside that image) at the first build. The staged golden recorder (golden_record staged,
+#   eval/gold27/mkgold27.py) needs transformers + fla: WITH_STAGED=1 adds them.
 #
 #   ROCm and torch come as pip wheels (TheRock, as on our GPU box: rocm 7.14.1 + torch 2.15.0+rocm7.14; see
 #   quantize/exllamav3-environment.txt), so the base is a plain Python image and the host needs only the amdgpu
@@ -11,6 +17,8 @@
 #   NOT BUILT YET (too heavy for our build hosts: several GB of wheels + the exllamav3 compile). The same steps run
 #   outside docker on the GPU box.
 ARG PY_IMAGE=python:3.14-slim-bookworm
+ARG RADIANCE_IMAGE=radiance:qc-exl3-v3
+FROM ${RADIANCE_IMAGE} AS radiance
 FROM ${PY_IMAGE}
 ARG PY_IMAGE
 
@@ -22,7 +30,11 @@ ARG EXL3_COMMIT=a3bfbfd0
 ARG GPU_ARCH=gfx1201
 ARG VERSION=0.0.0-dev
 ARG REPO_COMMIT=unknown
-ARG IMAGE_TAG=rxm-worker:dev
+ARG IMAGE_TAG=radquant-worker:dev
+ARG RADIANCE_IMAGE=radiance:qc-exl3-v3
+ARG RADIANCE_BIN=/opt/radiance/bin/radiance
+ARG WITH_STAGED=1
+ARG TRANSFORMERS_SPEC="transformers==5.22.1 flash-linear-attention==0.6.0"
 ARG SOURCE=https://github.com/TheHeroBrine422/rad-exl3-mix
 ARG CREATED=unknown
 
@@ -30,29 +42,38 @@ RUN apt-get update && apt-get install -y --no-install-recommends git build-essen
  && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir --root-user-action=ignore --index-url ${ROCM_INDEX} --extra-index-url https://pypi.org/simple \
       "${TORCH_SPEC}" "${ROCM_SPEC}" \
- && pip install --no-cache-dir --root-user-action=ignore numpy==2.5.4 safetensors==0.8.0 ninja==1.13.2
+ && pip install --no-cache-dir --root-user-action=ignore numpy==2.5.4 safetensors==0.8.0 ninja==1.13.2 \
+ && if [ "${WITH_STAGED}" = 1 ]; then pip install --no-cache-dir --root-user-action=ignore ${TRANSFORMERS_SPEC}; fi
 
 # our repo at REPO_COMMIT (build context = git archive of the needed paths)
-COPY . /opt/rxm/repo
+COPY . /opt/radquant/repo
 # exllamav3 at the pinned upstream commit + our patch series (quantize/exl3-patches/README.md)
-RUN git clone ${EXL3_REPO} /opt/rxm/exllamav3 && cd /opt/rxm/exllamav3 && git checkout ${EXL3_COMMIT} \
- && git -c user.name=build -c user.email=build@localhost am /opt/rxm/repo/quantize/exl3-patches/000*.patch \
+RUN git clone ${EXL3_REPO} /opt/radquant/exllamav3 && cd /opt/radquant/exllamav3 && git checkout ${EXL3_COMMIT} \
+ && git -c user.name=build -c user.email=build@localhost am /opt/radquant/repo/quantize/exl3-patches/000*.patch \
  && PYTORCH_ROCM_ARCH=${GPU_ARCH} MAX_JOBS=8 python setup.py build_ext --inplace
 # the run-time side extensions ourq.py --qtf2 / --codebook build (v3/e3/exl3frac2, exl3cb, exl3frac): compiled now
 # into the image (no GPU needed to compile), so donors do not wait for hipcc on their first job. A failure fails the
 # build: a published image must not compile at run time.
-ENV PYTHONPATH=/opt/rxm/exllamav3 TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext PYTORCH_ROCM_ARCH=${GPU_ARCH} \
+ENV PYTHONPATH=/opt/radquant/exllamav3 TORCH_EXTENSIONS_DIR=/opt/radquant/torch_ext PYTORCH_ROCM_ARCH=${GPU_ARCH} \
     PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-RUN python /opt/rxm/repo/volunteer/docker/warm.py /opt/rxm/exllamav3/exllamav3/exllamav3_ext
+RUN python /opt/radquant/repo/volunteer/docker/warm.py /opt/radquant/exllamav3/exllamav3/exllamav3_ext
+# radiance: the fork's image, whole, run through its own loader
+COPY --from=radiance / /opt/radquant/radiance-root/
+RUN install -m 0755 /opt/radquant/repo/volunteer/docker/radiance-wrap.sh /usr/local/bin/radiance \
+ && echo "RADIANCE_ROOT=/opt/radquant/radiance-root RADIANCE_BIN=${RADIANCE_BIN}" > /opt/radquant/radiance.env
 
+# the donor CLI: `docker exec radquant radquant status` (client/radquant.py; reads RADQUANT_SERVER / _TOKEN_FILE / _STATE)
+RUN printf '#!/bin/sh\nexec python -I /opt/radquant/repo/volunteer/client/radquant.py "$@"\n' > /usr/local/bin/radquant \
+ && chmod 0755 /usr/local/bin/radquant
 # code read-only; torch's extension loader still takes a lock file in TORCH_EXTENSIONS_DIR on every load, so that
 # directory stays writable by the worker user (which is also why the run line does not use --read-only)
-RUN echo "rxm-worker ${VERSION} rocm ${GPU_ARCH} repo ${REPO_COMMIT} exllamav3 ${EXL3_COMMIT}" > /opt/rxm/IMAGE \
- && useradd -u 10001 -m rxm && mkdir -p /var/lib/rxm && chown rxm /var/lib/rxm \
- && chmod -R a-w /opt/rxm && chmod -R u+w /opt/rxm/torch_ext && chown -R rxm /opt/rxm/torch_ext
-ENV RXMW_STATE=/var/lib/rxm RXMW_TOKEN_FILE=/var/lib/rxm/token RXMW_IMAGE="${IMAGE_TAG}+${REPO_COMMIT}"
-LABEL org.opencontainers.image.title="rxm-worker" \
-      org.opencontainers.image.description="Donated-compute worker for EXL3 quantization jobs (ROCm ${GPU_ARCH})" \
+RUN echo "radquant-worker ${VERSION} rocm ${GPU_ARCH} repo ${REPO_COMMIT} exllamav3 ${EXL3_COMMIT} radiance ${RADIANCE_IMAGE}" > /opt/radquant/IMAGE \
+ && useradd -u 10001 -m radquant && mkdir -p /var/lib/radquant && chown radquant /var/lib/radquant \
+ && chmod -R a-w /opt/radquant && chmod -R u+w /opt/radquant/torch_ext && chown -R radquant /opt/radquant/torch_ext
+ENV RADQUANT_STATE=/var/lib/radquant RADQUANT_TOKEN_FILE=/var/lib/radquant/token RADQUANT_IMAGE_ID="${IMAGE_TAG}+${REPO_COMMIT}" \
+    RADQUANT_GPU_ENV=ROCR_VISIBLE_DEVICES RADQUANT_RADIANCE=/usr/local/bin/radiance
+LABEL org.opencontainers.image.title="radquant-worker" \
+      org.opencontainers.image.description="rad-quant@home donor worker: EXL3 quantization, mix evals, goldens (ROCm ${GPU_ARCH})" \
       org.opencontainers.image.source="${SOURCE}" \
       org.opencontainers.image.url="${SOURCE}/tree/main/volunteer" \
       org.opencontainers.image.documentation="${SOURCE}/blob/main/volunteer/README.md" \
@@ -61,13 +82,14 @@ LABEL org.opencontainers.image.title="rxm-worker" \
       org.opencontainers.image.created="${CREATED}" \
       org.opencontainers.image.licenses="Apache-2.0 AND MIT" \
       org.opencontainers.image.base.name="${PY_IMAGE}" \
-      io.github.rxm.exllamav3_commit="${EXL3_COMMIT}" io.github.rxm.torch="${TORCH_SPEC}" \
-      io.github.rxm.rocm="${ROCM_SPEC}" io.github.rxm.gpu_arch="${GPU_ARCH}"
-USER rxm
-VOLUME /var/lib/rxm
+      io.github.radquant.exllamav3_commit="${EXL3_COMMIT}" io.github.radquant.torch="${TORCH_SPEC}" \
+      io.github.radquant.rocm="${ROCM_SPEC}" io.github.radquant.gpu_arch="${GPU_ARCH}" \
+      io.github.radquant.radiance_image="${RADIANCE_IMAGE}"
+USER radquant
+VOLUME /var/lib/radquant
 # every path a job uses is fixed here (they enter ourq.py's code stamp); the donor adds the queue URL and the token
-# (env or flags) and the caps: --gpu-name, --vram-gb, --ram-gb, --cache-gb, --window
-ENTRYPOINT ["python", "-I", "/opt/rxm/repo/volunteer/worker/worker.py", "--state", "/var/lib/rxm", \
-            "--ourq", "/opt/rxm/repo/quantize/ourq.py", "--exl3-src", "/opt/rxm/exllamav3/exllamav3/exllamav3_ext", \
-            "--env", "PYTHONPATH=/opt/rxm/exllamav3", "--env", "TORCH_EXTENSIONS_DIR=/opt/rxm/torch_ext", \
+# (env or flags) and the caps: --gpu-name, --gpus / --cards, --vram-gb, --ram-gb, --cache-gb, --window
+ENTRYPOINT ["python", "-I", "/opt/radquant/repo/volunteer/worker/worker.py", "--state", "/var/lib/radquant", \
+            "--ourq", "/opt/radquant/repo/quantize/ourq.py", "--exl3-src", "/opt/radquant/exllamav3/exllamav3/exllamav3_ext", \
+            "--env", "PYTHONPATH=/opt/radquant/exllamav3", "--env", "TORCH_EXTENSIONS_DIR=/opt/radquant/torch_ext", \
             "--python", "/usr/local/bin/python"]

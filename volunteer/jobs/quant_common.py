@@ -46,6 +46,37 @@ def check_extra(p):
 def root(p): return f"models/{p['model']}@{p['revision']}"
 
 
+# what a job needs, by model size (models/<m>@<rev>/model.json from admin.py datapack); the 27B class measured on
+# the R9700 / notes: a trunk layer ~24 GB host RAM on a 32 GB card, the LM head ~22 GB peak (48 GB declared: it is
+# tight on a 32 GB desktop next to everything else); the 0.8B / 2B proxies run in a few GB
+BIG_PARAMS = 8e9
+
+
+def big(info): return bool(info) and info.get("n_params", 0) >= BIG_PARAMS
+
+
+TOL = {"proxy_rel": 0.015}      # spot check: |donor proxy_err / trusted re-run's - 1| per tensor (seed spread ~0.5%)
+
+
+def read_proxy(d):
+    out = {}
+    for l in open(os.path.join(d, "proxy.jsonl")):
+        if l.strip(): r = json.loads(l); out[r["key"]] = float(r["proxy_err"])          # the last entry of a key wins
+    return out
+
+
+def compare(p, a, b, tol=None):
+    """a donor's result (a) against a trusted re-run (b): every tensor's logged proxy error within tol. The checker
+    (checker/check.py) has already tied each log to its own codes, so this compares the codes' quality."""
+    t = dict(TOL, **(tol or {}))
+    pa, pb = read_proxy(a), read_proxy(b)
+    if set(pa) != set(pb): return False, {"error": "tensor sets differ"}
+    rat = {k: pa[k] / pb[k] if pb[k] > 0 else float("inf") for k in pa}
+    worst = max(rat, key=lambda k: abs(rat[k] - 1))
+    return abs(rat[worst] - 1) <= t["proxy_rel"], {"worst": worst, "ratio": rat[worst], "tol": t["proxy_rel"],
+                                                   "ratios": {k: round(v, 5) for k, v in rat.items()}}
+
+
 def inputs_for(p, plan, wfile):
     r = root(p)
     req = [f"{r}/config.json", f"{r}/weights/{wfile}"] + [f"{r}/hessians/{h}.safetensors" for h, _ in plan]
@@ -83,12 +114,12 @@ def stage(p, ctx, plan, wfile):
     return {"ckpt": ck, "work": f"{s}/work", "template": f"{s}/template.json", "hout": ho if nh else None, "cwd": f"{s}/cwd"}
 
 
-def ourq_argv(p, cfg, out, st, which):
+def ourq_argv(p, cfg, out, st, which, device=0):
     S = p["settings"]
     K = p["K"]
     pre = [cfg.python] + ([cfg.capwrap, repr(float(cfg.vram_cap_gb))] if cfg.vram_cap_gb else [])
     a = pre + [cfg.ourq, "-K", str(int(K)) if float(K).is_integer() else repr(float(K)),
-         "-o", out, "--device", str(cfg.device), "--codebook", p["codebook"], "--save-wq"] + which
+         "-o", out, "--device", str(device), "--codebook", p["codebook"], "--save-wq"] + which
     if S["qtf2"] or p["codebook"] != "mul1" or p["K"] != int(p["K"]):
         a += ["--frac-ext", cfg.exl3_src]
     if S["qtf2"]: a.append("--qtf2")
@@ -107,7 +138,7 @@ def run_ourq(p, ctx, plan, wfile, which, shard_name):
     st = stage(p, ctx, plan, wfile)
     out = ctx.out_dir
     shard = os.path.join(out, shard_name)
-    argv = ourq_argv(p, ctx.cfg, out, st, which)
+    argv = ourq_argv(p, ctx.cfg, out, st, which, ctx.device)
     if not (os.path.exists(shard) and os.path.exists(os.path.join(out, "rowerr.npz"))):
         for f in os.listdir(out):              # a killed earlier try: start clean (ourq appends to proxy.jsonl)
             q = os.path.join(out, f)
@@ -142,7 +173,7 @@ def pack_rowerr(ctx, plan, st, out):
     tool = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowerr_tool.py")
     pre = [ctx.cfg.python] + ([ctx.cfg.capwrap, repr(float(ctx.cfg.vram_cap_gb))] if ctx.cfg.vram_cap_gb else [])
     argv = pre + [tool, st["ckpt"], f"{st['work']}/challenge/hessians/calib", os.path.join(out, "wq"),
-            os.path.join(out, "rowerr.npz"), str(ctx.cfg.device)] + [f"{k}:{h}" for h, ks in plan for k in ks]
+            os.path.join(out, "rowerr.npz"), str(ctx.device)] + [f"{k}:{h}" for h, ks in plan for k in ks]
     rc = ctx.run_cmd(argv, env=dict(ctx.cfg.env), cwd=st["cwd"], log=os.path.join(out, "ourq.log"))
     if rc != 0: raise RuntimeError(f"rowerr_tool exit {rc} (see ourq.log)")
     shutil.rmtree(os.path.join(out, "wq"))
