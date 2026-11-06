@@ -1,0 +1,18 @@
+PASS blend: 96 blended, 97 files compared, 0 differ []
+PASS hout: 6400 files compared, 0 differ []; mkhalf.json equal True
+PASS swjmath: sums equal True, fit equal True, resid equal True
+SWJAPPLY DONE 48 tensors (48 scale vectors changed) -> /data/yb/w52/cpu/swjapp-rxq
+PASS swjapp: 28 files compared, 0 differ []
+model.language_model.layers.0.linear_attn.out_proj.input     trN +5.351e-03 trC -7.724e-03 hsub 0.024 clip 0.0e+00 Fdev 1.151e-01
+model.language_model.layers.0.mlp.down_proj.input            trN +1.648e-02 trC -4.545e-02 hsub 0.165 clip 0.0e+00 Fdev 8.058e-02
+model.language_model.layers.3.mlp.down_proj.input            trN +1.851e-02 trC -4.610e-02 hsub 0.230 clip 0.0e+00 Fdev 8.052e-02
+model.language_model.layers.3.self_attn.o_proj.input         trN +7.385e-03 trC -2.389e-02 hsub 0.150 clip 2.4e-05 Fdev 6.905e-02
+MKDENOISE DONE 4 groups -> /data/yb/w52/cpu/dn-rxq-0
+PASS denoise: 4 hin + 4 wpre files, 0 differ; stats equal True
+model.language_model.layers.0.linear_attn.out_proj.input     trN +5.351e-03 trC -7.724e-03 hsub 0.024 clip 0.0e+00 Fdev 1.151e-01 (lean)
+model.language_model.layers.0.mlp.down_proj.input            trN +1.648e-02 trC -4.545e-02 hsub 0.165 clip 0.0e+00 Fdev 8.058e-02 (lean)
+model.language_model.layers.3.mlp.down_proj.input            trN +1.851e-02 trC -4.610e-02 hsub 0.230 clip 0.0e+00 Fdev 8.052e-02 (lean)
+model.language_model.layers.3.self_attn.o_proj.input         trN +7.385e-03 trC -2.389e-02 hsub 0.150 clip 2.4e-05 Fdev 6.905e-02 (lean)
+MKDENOISE DONE 4 groups -> /data/yb/w52/cpu/dn-rxq-1
+PASS denoise-lean: 4 hin + 4 wpre files, 0 differ; stats equal True
+CPU CHECKS 6/6 PASS

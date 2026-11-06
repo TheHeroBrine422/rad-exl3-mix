@@ -1,0 +1,4 @@
+SAME model.language_model.layers.10.linear_attn.in_proj_z: tensors 4 differ 0; log fields differ []; proxy 0.004026881926788732 vs 0.004026881926788732
+SAME model.language_model.layers.10.mlp.gate_proj: tensors 4 differ 0; log fields differ []; proxy 0.016526437104846643 vs 0.016526437104846643
+DIFF model.language_model.layers.39.self_attn.o_proj: tensors 4 differ 4; log fields differ []; proxy 0.015386179680734571 vs 0.015386179680734571
+QUANT IDENT FAIL 2/3

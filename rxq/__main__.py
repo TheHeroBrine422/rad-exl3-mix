@@ -4,6 +4,7 @@
    python -m rxq job SPEC.json -o OUT [--device N]
    python -m rxq assemble OUT JOBDIR... [--template config.json] [--layers N] [--head]
    python -m rxq stamp [--config FILE]
+   python -m rxq plan -K K [--codebook CB] [--split tensor|group|layer] [--layers N] [--seed-offset N] [--config FILE]
 VRAM_CAP_GB caps the process's CUDA allocator (shared cards)."""
 import argparse, json, os, sys
 
@@ -32,9 +33,15 @@ def main(argv=None):
     s = sub.add_parser("assemble"); s.add_argument("out"); s.add_argument("jobs", nargs="+"); s.add_argument("--template")
     s.add_argument("--layers", type=int, default=64); s.add_argument("--head", action="store_true")
     t = sub.add_parser("stamp"); t.add_argument("--config")
+    pl = sub.add_parser("plan"); pl.add_argument("-K", required=True, type=float); pl.add_argument("--codebook")
+    pl.add_argument("--split", choices=("tensor", "group", "layer"), default="tensor"); pl.add_argument("--layers", type=int, default=64)
+    pl.add_argument("--seed-offset", type=int, default=0); pl.add_argument("--config")
     a = ap.parse_args(argv)
     if a.cmd == "stamp":
         print(C.settings_stamp(C.load(a.config))); return
+    if a.cmd == "plan":
+        for sp in job.plan_level(C.load(a.config), a.K, a.codebook, a.split, a.layers, a.seed_offset): print(json.dumps(sp))
+        return
     if a.cmd == "assemble":
         print(job.assemble(a.jobs, a.out, a.template, a.layers, a.head)); return
     _cap(a.device)

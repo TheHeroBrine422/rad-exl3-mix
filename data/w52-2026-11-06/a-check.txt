@@ -1,0 +1,11 @@
+SAME model.language_model.layers.10.linear_attn.in_proj_qkv: tensors 4 differ 0; log fields differ []; proxy 0.00667718549242524 vs 0.00667718549242524
+SAME model.language_model.layers.10.linear_attn.in_proj_z: tensors 4 differ 0; log fields differ []; proxy 0.003179920993007656 vs 0.003179920993007656
+SAME model.language_model.layers.10.linear_attn.out_proj: tensors 4 differ 0; log fields differ []; proxy 0.010690310481834242 vs 0.010690310481834242
+DIFF model.language_model.layers.10.mlp.down_proj: tensors 4 differ 2; log fields differ [] first diff model.language_model.layers.10.mlp.down_proj.suh: 0.0010 of entries; proxy 0.019698746136565474 vs 0.019698746136565474
+SAME model.language_model.layers.10.mlp.gate_proj: tensors 4 differ 0; log fields differ []; proxy 0.015629604205785762 vs 0.015629604205785762
+SAME model.language_model.layers.10.mlp.up_proj: tensors 4 differ 0; log fields differ []; proxy 0.019308775486715078 vs 0.019308775486715078
+SAME model.language_model.layers.39.self_attn.k_proj: tensors 4 differ 0; log fields differ []; proxy 0.006746785170604344 vs 0.006746785170604344
+SAME model.language_model.layers.39.self_attn.o_proj: tensors 4 differ 0; log fields differ []; proxy 0.01557497071616765 vs 0.01557497071616765
+SAME model.language_model.layers.39.self_attn.q_proj: tensors 4 differ 0; log fields differ []; proxy 0.0045207601257629 vs 0.0045207601257629
+SAME model.language_model.layers.39.self_attn.v_proj: tensors 4 differ 0; log fields differ []; proxy 0.015194285164089157 vs 0.015194285164089157
+QUANT IDENT FAIL 9/10

@@ -85,6 +85,22 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
     return jr
 
 
+def plan_level(cfg, K, codebook=None, split="tensor", n_layers=64, seed_offset=0, inputs=None, level=None):
+    """the job specs of one level: split = tensor (one job per linear), group (one per Hessian group) or layer"""
+    K = int(K) if float(K).is_integer() else float(K)
+    cb = codebook or C.codebook_for(cfg, K); st = C.settings_stamp(cfg)
+    inputs = inputs or {"ckpt": "weights/", "hessians": "hessians/", "hin": None, "wpre": None, "hout": None}
+    units = []
+    for l in range(n_layers):
+        plan = qwen35.layer_plan(l)
+        if split == "layer": units.append([k for _, ks in plan for k in ks])
+        elif split == "group": units += [list(ks) for _, ks in plan]
+        else: units += [[k] for _, ks in plan for k in ks]
+    lv = level or f"K{K}-{cb}" + (f"-s{seed_offset}" if seed_offset else "")
+    return [{"type": "rxq.quant", "version": 1, "level": lv, "K": K, "codebook": cb, "seed_offset": seed_offset,
+             "keys": ks, "settings_stamp": st, "inputs": dict(inputs)} for ks in units]
+
+
 def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
     """job outputs -> an ourq-layout level dir. Refuses mixed settings / code stamps and missing tensors."""
     files = {}

@@ -5,9 +5,10 @@ primitives (plugin, KLD modes, mix assembly). This repo is the encoder, the post
 driver and (later) QAD, as one Python pipeline whose unit of work is a job that rad-quant-at-home can hand out.
 The research record stays in rad-exl3-mix; every setting here points at its evidence there.
 
-Status of this document: stages 1-4 and the job unit are implemented and checked (PORTING.md); stages 5-8 are
-designed here and run through the existing rad-exl3-mix tools until ported. Settings: `config/v3.toml` (the one file
-the freeze pins). Where the time goes: PROFILE.md.
+Status of this document: the per-tensor and per-group parts of S1-S5 and the job unit are implemented and checked
+bit-identical against the research scripts (PORTING.md); the level passes (swj's bf16 forward, the sibling moments,
+the H_in / H_out collections) and S6-S8 are designed here and run through the existing rad-exl3-mix tools until
+ported. Settings: `config/v3.toml` (the one file the freeze pins). Where the time goes: PROFILE.md.
 
 ## 1. Data flow
 
@@ -121,10 +122,14 @@ diff (`swap27k.sh packmixk`). ~1,600 s per 27B level on gpubox (PROFILE.md), und
   `log.jsonl` (ourq's proxy record + stage times + peak VRAM), `job.json` (spec, stamps, device, seconds). Optional
   `wq/` (dequantized f16 weight, ourq's --save-wq) for verification by score (rad-quant-at-home VERIFY.md).
 - **Why per tensor:** the per-layer job's VRAM peak is ffn_down (17408² H plus the refit), and a layer's tensors are
-  independent given the group's su draw, which the job replays. Per-tensor jobs let 8-12 GB cards take everything
-  but ffn_down (and ffn_down with the CPU refit fallback), and the scheduler can send ffn_down (and lm_head) to big
-  cards only. Overhead: the group's H_in is loaded once per tensor instead of once per group (q/k/v: 3×, gate/up:
-  2×, GDN qkv/z: 2×): +0.3-0.6 s per tensor of Hessian load + finalize on the 4070 (PROFILE.md), ~2-4% of a layer.
+  independent given the group's su draw, which the job replays. Measured peaks (4070, PROFILE.md): every family but
+  ffn_down ≤ 3.8 GiB at K2-K6 without H_out; ffn_down 6.7 GiB at a 7.2 GiB cap with the refit on the CPU (needs ~8+ GiB
+  on the card); with H_out, gate / up reach 7.1 GiB. So per-tensor jobs let 8 GB cards take ~84% of the tensors
+  (everything but ffn_down) without H_out, and the scheduler sends ffn_down (and lm_head, and gate / up with H_out) to
+  ≥ 12-16 GB cards. Overhead: the group's H_in is read and finalized once per tensor instead of once per group (q/k/v:
+  3×, gate/up and GDN qkv/z: 2×): measured 0.01-0.2 s per tensor with the Hessian in page cache (load) and < 0.05 s
+  for the su replay, i.e. < 2% of a layer; on a donor the cost is the download (H_in 50-606 MB per group): lease a
+  group's tensors to one worker, or cache Hessians on the worker.
 - **Idempotent:** each tensor file is written .part → fsync → rename; a rerun skips finished tensors.
 - **Stamps:** `settings_stamp` = sha256 of config sections meta / inputs / quant / post (rxq/config.py); `code_stamp`
   = sha256 of rxq's modules, exllamav3's quantize.py, the kernel sources and tilecd.py. Assembly refuses a level whose
@@ -171,8 +176,10 @@ Interactions the config enforces: tile CD with H_out is refused (tilecd.py does 
 3. **ourq --save-wq rowerr:** ourq computes `rowerr.npz` from `w` after quantize_exl3, which has regularized that
    tensor in place (scaled, rotated, × g_scale): the per-row errors are not in the original basis. Ported as is (parity);
    rad-quant-at-home recomputes its claim from wq with rowerr_tool.py, so it is unaffected. Check headslab.py's use.
-4. **H_out cost:** if H_out is adopted, ldlq_2hess makes a level ~5× slower (PROFILE.md T1); its block structure
-   allows a much faster exact-in-arithmetic schedule (an autoresearch target judged by proxy error ≤ reference).
+4. **H_out cost:** if H_out is adopted, ldlq_2hess makes a level ~5× slower (37 → 190 min on the R9700; 72% of a
+   gate_proj is its dense F-update GEMMs, PROFILE.md T1); the rotated diagonal H_out is block-diagonal (128), which
+   allows a ~40-90× cheaper update that is the same algorithm in exact arithmetic (autoresearch target, judged by the
+   two-sided proxy error ≤ reference). It also raises gate / up's peak VRAM to 7.1 GiB.
 5. **Port the level passes** (swjfit27 forward, sibmom27, mkhin27, collect) into rxq once their settings are final;
    until then rxq calls them in place.
 6. **Vendoring:** rxq imports the kernels from a rad-exl3-mix checkout (RXQ_RXM) and the exllamav3 fork (PYTHONPATH,
