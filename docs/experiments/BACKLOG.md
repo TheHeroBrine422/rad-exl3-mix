@@ -217,6 +217,11 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **QAD / healing research pass** (user 2026-11-06, backlog): (1) literature read (worker): NVIDIA Model Optimizer
+  QAD / Flash-Next recipe, EfficientQAT, PV-tuning, BitDistiller, LLM-QAT, QuIP#/QTIP fine-tuning, trellis /
+  codebook-aware healing; what transfers to frozen codes. (2) 0.8B loss variants on frozen-code healing: hidden-state
+  terms, TV vs KL, boundary losses, norms trained, token budget curve (where does it saturate). (3) a size-transfer
+  point between 0.8B and 27B (9B, staged) to estimate the shrink before the first 27B healing run. Rules before data.
 - [ ] **Embedding-specific QAD / healing** (user question 2026-11-06; 0.8B first, after the hidden-state test):
   (a) **true QAT on the embedding only:** rows are independent lookups with no input Hessian, so after each update
   only the touched rows are re-encoded (trellis per row) — latent-weight training with re-quantization is feasible
