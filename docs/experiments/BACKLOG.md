@@ -225,6 +225,12 @@ prefill.
   floor, ΔNLL, top-1, drafter acceptance as a limit), plus the kernels' byte-exact tests. Easier than weight quant:
   every candidate is a runtime option (no requant), evals are minutes. Needs the 9070 XTs or idle card time, and
   a quick check with Code 000 so it builds on his work rather than around it.
+  Idea corpus first (user 2026-11-06): a digest of recent KV-cache work for the agents to draw on, built with our
+  paper pipeline (`local/papers/`: search → fetch → triage → digest, as the IQR / SOTA reads): KV quantization
+  (KIVI, KVQuant, SKVQ, GEAR, ZipCache, MiKV, rotation-based KV like QuaRot / SpinQuant KV, KVarN-style
+  normalization, TurboQuant-style vector quant), eviction / compression / low-rank / latent KV (MLA-style), sparse
+  attention (D-LSA, QSA), and Code 000's #416 / #412 design notes; one-page entries with method, numbers, and what
+  fits radiance's paged layouts. Shipped with the task as read-only context.
   Not planned: autoresearch on the weight-quant research itself (needs far more hardware; the user stays in the loop
   for decisions that complex).
 - [ ] **User-side mix builder** (2026-11-06, "interesting", low priority): publish the ladder levels per tensor plus the
