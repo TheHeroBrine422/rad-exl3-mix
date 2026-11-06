@@ -7,17 +7,20 @@ source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
 X=$P/exp/d1111 X8=$P/exp/d1108
 O=/data/yb/d1111 D8=/data/yb/d1108 D3=/data/yb/d1103
 f32() { for d in $O $D8 $D3 $Y; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
-wqd() { for d in $O $D8 $D3 $Y; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
+wqd() { for d in $O $D8 $D3 $Y; do [ $(nq $d/q-$1/wqall) -ge 150 ] && { echo $d/q-$1/wqall; return; }; [ $(nq $d/q-$1/wq) -ge 150 ] && { echo $d/q-$1/wq; return; }; done; }   # finished dirs only (d1103 nq)
 lock() { exec 9>/data/yb/gpu.lock; flock 9; }; unlock() { flock -u 9; }
 log() { echo "$(date -u +%T) $*" | tee -a $O/result-v.txt; }
 while pgrep -f "^bash /workspace/rad-exl3-mix/proxy2b/exp/d1109/[r]un2.sh" > /dev/null; do sleep 120; done
 C23=$Y/c23/hdiag-snap1024-dy GX=/data/g08-xcorp2 GA=$D8/g-agent GV=/data/g08-verify1 HO="--hout $C23 --sigma-reg-out 0.01"
 evall() { local t=$1 w=$2; ev xc-$t $w $GX; ev ag-$t $w $GA; ev vf-$t $w $GV; }
 # base arm (dygm = calib H_in + c23 H_out, as d1103) at K / seed; K4/K5 bases are new (same args)
-base() { local k=$1 s=$2 b=k${1}dygm$(sfx $2); [ -n "$(wqd $b)" ] || { lock; q $b $k i8 $HO --seed-offset $s; unlock; }
-  lock; evall $b $(wqd $b); unlock; echo $b; }
+# (stdout of q / evall dropped: only the tag reaches arm's $(base | tail); their log lines still go to result-v.txt)
+base() { local k=$1 s=$2 b=k${1}dygm$(sfx $2); [ -n "$(wqd $b)" ] || { lock; q $b $k i8 $HO --seed-offset $s > /dev/null; unlock; }
+  [ -n "$(wqd $b)" ] || return 1
+  lock; evall $b $(wqd $b) > /dev/null; unlock; echo $b; }
 arm() { local k=$1 s=$2 h=$3 t b; t=k${k}hi$h$(sfx $s); b=$(base $k $s | tail -n 1)
-  lock; q $t $k i8 --hin $O/hi-$h $HO --seed-offset $s; evall $t $O/q-$t/wq; unlock
+  [ -n "$b" ] && [ -f $O/hi-$h/.done ] || { log "SKIP $t: base quant or hi-$h (blend) not finished"; return 1; }
+  lock; q $t $k i8 --hin $O/hi-$h $HO --seed-offset $s && evall $t $O/q-$t/wq; unlock
   pair $b $t; pair xc-$b xc-$t $GX; pair ag-$b ag-$t $GA; pair vf-$b vf-$t $GV; }
 blendx() { [ -f $O/hi-$2/.done ] || python3 -I $X8/blend.py hin /data/h08/calib $O/hin$1 $3 $O/hi-$2 >> $O/blend.log 2>&1 && touch $O/hi-$2/.done; }
 collect() { local c=$1; [ -f $O/hin$1/.done ] || { lock; python3 $P/hcollect.py $M $2 $O/hin$1 > $O/hin$1.log 2>&1 && touch $O/hin$1/.done; unlock; log "hin $1: $(tail -n 1 $O/hin$1.log)"; }; }

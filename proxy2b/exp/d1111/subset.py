@@ -16,5 +16,6 @@ if os.path.exists(f"{src}/gen.u8"):
     for i, d in enumerate(m["docs"]):
         if d.get("category") in cats: s.append(g[d["row0"]:d["row0"] + d["tokens"] - 1 - d["score_from"]])
     np.concatenate(s).tofile(f"{out}/gen.u8")
-json.dump(dict(m, docs=docs, rows=row0), open(f"{out}/kld.json", "w"))
+with open(f"{out}/kld.json.part", "w") as fh: json.dump(dict(m, docs=docs, rows=row0), fh)   # .part + rename: kld.json = done
+os.replace(f"{out}/kld.json.part", f"{out}/kld.json")
 print("SUBSET", len(docs), "docs", sum(d["tokens"] for d in docs), "tokens")

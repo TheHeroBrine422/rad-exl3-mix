@@ -21,5 +21,6 @@ for i in pick:
     docs.append({"source": m["docs"][i].get("source"), "category": m["docs"][i].get("category"), "tokens": int(len(t)),
                  "score_from": 0, "row0": row0, "orig": int(i)}); row0 += len(t) - 1
 np.concatenate(T).tofile(f"{out}/tokens.i32"); np.ones(row0, np.uint8).tofile(f"{out}/gen.u8")
-json.dump({"format": "d1110-xcorp", "rows": row0, "docs": docs}, open(f"{out}/kld.json", "w"))
+with open(f"{out}/kld.json.part", "w") as fh: json.dump({"format": "d1110-xcorp", "rows": row0, "docs": docs}, fh)   # .part + rename: kld.json = done
+os.replace(f"{out}/kld.json.part", f"{out}/kld.json")
 print("XGOLD DONE", len(docs), "docs", row0, "rows")

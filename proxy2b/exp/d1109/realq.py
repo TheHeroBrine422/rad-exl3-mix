@@ -83,7 +83,9 @@ _h = hashlib.sha256()
 for f in (__file__, rqdata.__file__): _h.update(open(f, "rb").read())
 # lines tagged "+prefix" (the --prefix option, added while d1109 run.sh was resuming quants) are left out of the code  # +prefix
 # hash, and --prefix quant out of the stamp, so a run without the option keeps the stamp it had before  # +prefix
-_h = hashlib.sha256(); _h.update(b"".join(x for x in open(__file__, "rb") if not x.rstrip().endswith(b"# +prefix")))  # +prefix
+# (w41: +io lines and #io-was: lines as in ourq.py: kill-safe writes, the hash sees the code as before)  # +prefix
+_h = hashlib.sha256(); _h.update(b"".join(x[8:] if x.startswith(b"#io-was:") else x for x in open(__file__, "rb")  # +prefix
+                                          if not x.rstrip().endswith((b"# +prefix", b"# +io"))))  # +prefix
 _h.update(open(rqdata.__file__, "rb").read())  # +prefix
 FI = torch.load(r.fisher)
 _h.update(json.dumps({"fisher": FI["args"], "n_tok": FI["n_tok"]}, sort_keys=True).encode())
@@ -92,7 +94,9 @@ if r.prefix == "quant": del STAMP["args"]["prefix"]  # +prefix
 _sp = os.path.join(oa.o, "realq-stamp.json")
 if os.path.exists(_sp) and json.load(open(_sp)) != STAMP and not os.environ.get("RQ_MIXED"):
     sys.exit(f"{_sp}: made with other REAL-Q options or code; new OUTDIR, or RQ_MIXED=1")
-json.dump(STAMP, open(_sp, "w"), indent=1)
+#io-was:json.dump(STAMP, open(_sp, "w"), indent=1)
+with open(_sp + ".part", "w") as _fh: json.dump(STAMP, _fh, indent=1)  # +io
+os.replace(_sp + ".part", _sp)  # +io
 RQLOG = open(os.path.join(oa.o, "realq.jsonl"), "a")
 
 # ------------------------------------------------------------------ reference model and calibration streams

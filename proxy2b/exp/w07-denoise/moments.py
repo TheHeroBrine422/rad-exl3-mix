@@ -119,7 +119,7 @@ if a.mode == "noise":
                 dec(input_ids=torch.from_numpy(np.asarray(toks[w0:w0 + n], np.int64))[None].to(DEV), use_cache=False)
         for h in hk: h.remove()
         MX = {k: v.cpu() for k, v in MX.items()}
-        os.makedirs(os.path.dirname(os.path.abspath(sp)), exist_ok=True); torch.save(MX, sp)
+        os.makedirs(os.path.dirname(os.path.abspath(sp)), exist_ok=True); torch.save(MX, sp + ".part"); os.replace(sp + ".part", sp)
         print(f"channel maxima over {sum(n for _, n in swins)} tokens: {len(MX)} groups -> {sp}", file=sys.stderr, flush=True)
     SIG = {k: (a.gamma * v).to(DEV) for k, v in MX.items()}
 

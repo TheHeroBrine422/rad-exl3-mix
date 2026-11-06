@@ -16,7 +16,7 @@ X=$P/exp/d1109   # d1103's sourced block resets X
 O=/data/yb/d1109 D3=/data/yb/d1103 D4=/data/yb/d1104 D5=/data/yb/d1105; mkdir -p $O
 FISH=$O/fisher RQ_HOLD=${RQ_HOLD:-780} WR=${D1109_WRITERS:-plain} HEAL_HOLD=${HEAL_HOLD:-840} RQX=()
 f32() { for d in $O $D4 $D3 $Y $D5; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
-wqd() { for d in $O $D4 $D3 $Y; do [ -d $d/q-$1/wqall ] && { echo $d/q-$1/wqall; return; }; [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
+wqd() { for d in $O $D4 $D3 $Y; do [ $(nq $d/q-$1/wqall) -ge 150 ] && { echo $d/q-$1/wqall; return; }; [ $(nq $d/q-$1/wq) -ge 150 ] && { echo $d/q-$1/wq; return; }; done; }   # finished dirs only (d1103 nq)
 lock() { exec 9>/data/yb/gpu.lock; flock 9; }; unlock() { flock -u 9; }
 want() { [[ " ${D1109_STEPS2:-healrq rqp healrqp summ2} " == *" $1 "* ]] && [ ! -f /data/yb/night.stop ]; }
 # rqq TAG K [realq opts] -- [ourq args]: REAL-Q quant -> O/q-TAG, in GPU holds of RQ_HOLD s (exit 3 = resume next hold)

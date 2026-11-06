@@ -370,7 +370,8 @@ def main():
     if a.mode == "gradcos": return gradcos(stu, tea, gm, items[:a.nseq], a.out)
     st = train(stu, tea, gm, items, hmeta, held, a.out, a, log=lambda s: print(s, flush=True))
     torch.save({**st["best_state"], "meta": {"args": vars(a), "base_val": st["base_val"], "best_val": st["best"],
-                                             "steps": st["step"], "hist": st["hist"]}}, os.path.join(a.out, "params.pt"))
+                                             "steps": st["step"], "hist": st["hist"]}}, os.path.join(a.out, "params.pt.part"))
+    os.replace(os.path.join(a.out, "params.pt.part"), os.path.join(a.out, "params.pt"))   # d1103 run.sh skips on params.pt
     print(f"HEAL DONE steps {st['step']} held-out KL {st['base_val']:.6f} -> {st['best']:.6f} "
           f"({st['best'] / st['base_val'] - 1:+.2%})", flush=True)
 

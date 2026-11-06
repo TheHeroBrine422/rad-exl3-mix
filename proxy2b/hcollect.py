@@ -81,12 +81,18 @@ with torch.no_grad():
         if (i + 1) % 50 == 0 or i + 1 == len(docs):
             print(f"\r{i + 1}/{len(docs)} docs, {rows} tokens, {rows / (time.time() - t0):.0f} tok/s", end="", file=sys.stderr, flush=True)
 flush(); print(file=sys.stderr)
-os.makedirs(a.out, exist_ok=True)
+# a new OUT is filled as OUT.part and renamed when complete (callers skip on [ -d OUT ]); into an existing OUT, each
+# file is written .part + renamed (those callers mark OUT/.done themselves after exit 0)
+dst = a.out if os.path.isdir(a.out) else a.out.rstrip("/") + ".part"
+os.makedirs(dst, exist_ok=True)
 for k, H in host.items():
     n = H.shape[0]; iu = torch.triu_indices(n, n)
-    save_file({"hessian_upper": H[iu[0], iu[1]].float().contiguous()}, f"{a.out}/{k}.safetensors",
+    save_file({"hessian_upper": H[iu[0], iu[1]].float().contiguous()}, f"{dst}/{k}.safetensors.part",
               metadata={"k": str(n), "rows": str(rows), "layout": "upper triangle, row-major, packed",
                         "linears": ",".join(linears[k]), "model": a.model, "kernels": json.dumps(kernel_paths()),
                         "skipped_docs": json.dumps(skipped), "maxtok": str(a.maxtok)})
+    fd = os.open(f"{dst}/{k}.safetensors.part", os.O_RDONLY); os.fsync(fd); os.close(fd)
+    os.replace(f"{dst}/{k}.safetensors.part", f"{dst}/{k}.safetensors")
+if dst != a.out: os.rename(dst, a.out)
 print(f"peak GPU {torch.cuda.max_memory_allocated() / 2**30:.2f} GiB allocated, {torch.cuda.max_memory_reserved() / 2**30:.2f} GiB reserved")
 print(f"HCOLLECT DONE {len(host)} Hessians, {rows} rows, {(time.time() - t0) / 60:.1f} min")

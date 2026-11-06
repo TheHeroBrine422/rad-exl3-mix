@@ -78,6 +78,9 @@ for i, d in enumerate(g.docs):
         KL.append(kl.cpu().numpy()); T1.append(t1.cpu().numpy())
 kl, t1 = np.concatenate(KL), np.concatenate(T1); gen = g.gen[:len(kl)]
 assert len(kl) == g.meta["rows"]
-if out: np.stack([kl, t1, gen, np.zeros_like(kl)], 1).astype(np.float32).tofile(out)
+if out:   # .part, fsync, rename: a kill never leaves a short X.f32 that the queues' "skip if it exists" would trust
+    with open(out + ".part", "wb") as fh:
+        np.stack([kl, t1, gen, np.zeros_like(kl)], 1).astype(np.float32).tofile(fh); fh.flush(); os.fsync(fh.fileno())
+    os.replace(out + ".part", out)
 print(json.dumps({"golden": gd, "wq": wq, "n_swapped": nsw, "n_aq": naq, "positions": int(gen.sum()), "kld": float(kl[gen].mean()),
                   "top1": float(t1[gen].mean()), "sec": round(time.time() - t0, 1)}))

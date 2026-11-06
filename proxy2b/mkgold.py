@@ -17,7 +17,8 @@ gen = np.fromfile(f"{full}/gen.u8", np.uint8)
 toff = np.concatenate([[0], np.cumsum([d["tokens"] for d in m["docs"]])])
 os.makedirs(od, exist_ok=True)
 _, dec, head = load_model(model_path)
-ft, fg = open(f"{od}/top.bin", "wb"), open(f"{od}/rows.f32", "wb")
+# every file is written as .part and renamed at the end, kld.json last: a killed run leaves no file a caller trusts
+ft, fg = open(f"{od}/top.bin.part", "wb"), open(f"{od}/rows.f32.part", "wb")
 T, G, docs, r, t0 = [], [], [], 0, time.time()
 for k, (i, c, f) in enumerate(want):
     d = m["docs"][i]; nt = min(d["tokens"], c) if c else d["tokens"]; sf = max(d["score_from"], f); n = nt - 1 - sf
@@ -33,8 +34,10 @@ for k, (i, c, f) in enumerate(want):
     docs.append({"source": d["source"], "tokens": nt, "score_from": sf, "row0": r, "orig": i}); r += n
     print(f"\r{k + 1}/{len(want)} docs, {r} rows, {r / (time.time() - t0):.0f} rows/s", end="", file=sys.stderr, flush=True)
 print(file=sys.stderr)
-ft.close(); fg.close()
-np.concatenate(T).tofile(f"{od}/tokens.i32"); np.concatenate(G).astype(np.uint8).tofile(f"{od}/gen.u8")
+np.concatenate(T).tofile(f"{od}/tokens.i32.part"); np.concatenate(G).astype(np.uint8).tofile(f"{od}/gen.u8.part")
 mm = {k: v for k, v in m.items() if k != "docs"}
 mm.update(model=model_path, kernels=kernel_paths(), rows=r, docs=docs, created=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
-json.dump(mm, open(f"{od}/kld.json", "w"))
+with open(f"{od}/kld.json.part", "w") as fh: json.dump(mm, fh)
+for fh in (ft, fg): fh.flush(); os.fsync(fh.fileno()); fh.close()
+for f in ("top.bin", "rows.f32", "tokens.i32", "gen.u8", "kld.json"):
+    fd = os.open(f"{od}/{f}.part", os.O_RDONLY); os.fsync(fd); os.close(fd); os.replace(f"{od}/{f}.part", f"{od}/{f}")

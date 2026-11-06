@@ -13,7 +13,10 @@ log() { echo "$(date -u +%T) $*" | tee -a $O/result.txt; }
 sfx() { [ $1 = 0 ] && echo "" || echo "_s$1"; }
 # f32 TAG: the score file wherever an earlier experiment left it
 f32() { for d in $O $Y $Y/w10-hout-attrib $Y/w07-seqsib $Y/w02-fixedscale; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
-wqd() { for d in $O $Y $Y/w10-hout-attrib $Y/w02-fixedscale; do [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }
+# nq DIR: its *.safetensors count; wqd: only a finished wq dir (150 files; a killed quant leaves fewer: ourq renames a
+# layer's wq files after its shard)
+nq() { ls $1/*.safetensors 2>/dev/null | wc -l; }
+wqd() { for d in $O $Y $Y/w10-hout-attrib $Y/w02-fixedscale; do [ $(nq $d/q-$1/wq) -ge 150 ] && { echo $d/q-$1/wq; return; }; done; }
 # ev TAG WQ [GOLDEN] [SUFFIX] [MODEL]: MODEL (default M) = a healed arm's folded checkpoint (fold.py OUT/model: norms)
 ev() { tag=$1 wq=$2 g=${3:-$S} x=${4:-} em=${5:-$M}; [ -f $O/$tag$x.f32 ] && return
   log "$tag$x: $(python3 $P/evalq.py $em $g --wq $wq --out $O/$tag$x.f32 2>/dev/null | tail -1 | grep -o '"kld": [0-9.e-]*, "top1": [0-9.]*')"; }
@@ -25,6 +28,7 @@ pair() { local g=${3:-$S} a=$1 b=$2;   # local: callers keep their own $a / $b (
 # q TAG K CB args..: full quant (150 tensors) + search eval
 q() { t=$1 k=$2 cb=$3; shift 3; [ -f $(f32 $t) ] && return
   [ $(ls $O/q-$t/wq/*.safetensors 2>/dev/null | wc -l) -ge 150 ] || $P/q2b.sh 08 $k $cb $O/q-$t "$@" > $O/q-$t.log 2>&1
+  [ $(nq $O/q-$t/wq) -ge 150 ] || { log "QUANT FAIL $t"; return 1; }   # never score a partial quant
   ev $t $O/q-$t/wq; }
 # qo TAG K BASEWQ args..: requantize the 48 writers (only.txt), the rest from BASEWQ -> O/q-TAG/wqall
 qo() { t=$1 k=$2 bw=$3; shift 3

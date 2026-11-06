@@ -20,6 +20,33 @@ from safetensors import safe_open
 from safetensors.torch import save_file
 from exllamav3.modules.quant.exl3_lib.quantize import quantize_exl3
 import exllamav3.modules.quant.exl3_lib.quantize as _Q
+# kill-safe writes (w41, 2026-11-06; the 4070 and the RDNA4 boxes are preempted at random): every output is written as                     # +io
+# X.part, fsynced and renamed; a layer's wq files are staged and renamed only after its shard and the index, so a                          # +io
+# wq/<key>.safetensors that exists belongs to a finished layer (the callers' "150 wq files" check can trust it). Output                    # +io
+# bytes unchanged. Lines tagged +io are left out of the code stamp and #io-was: lines put back (_io_canon): same stamps.                   # +io
+def _io_fsync(p):                                                                                                                          # +io
+    fd = os.open(p, os.O_RDONLY); os.fsync(fd); os.close(fd)                                                                               # +io
+def _io_put(write, path):          # write(path + ".part"), fsync, rename into place                                                       # +io
+    write(path + ".part"); _io_fsync(path + ".part"); os.replace(path + ".part", path); _io_fsync(os.path.dirname(os.path.abspath(path)))  # +io
+def _io_json(obj, path, **kw):                                                                                                             # +io
+    def w(p):                                                                                                                              # +io
+        with open(p, "w") as fh: json.dump(obj, fh, **kw)                                                                                  # +io
+    _io_put(w, path)                                                                                                                       # +io
+_IO_STAGED = []                    # wq files written as .part, renamed by _io_promote once their layer's shard is in place                # +io
+def _io_stage(write, path):                                                                                                                # +io
+    write(path + ".part"); _io_fsync(path + ".part"); _IO_STAGED.append(path)                                                              # +io
+def _io_promote():                                                                                                                         # +io
+    for p in _IO_STAGED: os.replace(p + ".part", p)                                                                                        # +io
+    if _IO_STAGED: _io_fsync(os.path.dirname(_IO_STAGED[0]))                                                                               # +io
+    _IO_STAGED.clear()                                                                                                                     # +io
+def _io_leftover(prefix):          # a shard already done: rename the wq parts a kill left between it and _io_promote                      # +io
+    d = os.path.join(a.o, "wq")                                                                                                            # +io
+    for f in sorted(os.listdir(d)) if os.path.isdir(d) else []:                                                                            # +io
+        if f.startswith(prefix) and f.endswith(".safetensors.part"): os.replace(os.path.join(d, f), os.path.join(d, f[:-5]))               # +io
+def _io_canon(f):                  # what the code stamp hashes of f: this file without the +io lines, #io-was: lines restored             # +io
+    b = open(f, "rb").read()                                                                                                               # +io
+    if os.path.abspath(f) != os.path.abspath(__file__): return b                                                                           # +io
+    return b"".join(x[8:] if x.startswith(b"#io-was:") else x for x in b.splitlines(True) if not x.rstrip().endswith(b"# +io"))            # +io
 # paths (README: Paths)
 RXM_WORK = os.environ.get("RXM_WORK", "/root")
 RXM_CKPT = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
@@ -299,7 +326,8 @@ def quantize_group(hname, keys, seed0, log):
                 del E, W
             np.savez(os.path.join(a.o, "wq", f"{key}.rowerr.npz"), err=torch.cat(err).numpy(), ref=torch.cat(ref).numpy())
             del H
-            save_file({"weight": wq.T.half().contiguous().cpu()}, os.path.join(a.o, "wq", f"{key}.safetensors"))
+#io-was:            save_file({"weight": wq.T.half().contiguous().cpu()}, os.path.join(a.o, "wq", f"{key}.safetensors"))
+            _io_stage(lambda p: save_file({"weight": wq.T.half().contiguous().cpu()}, p), os.path.join(a.o, "wq", f"{key}.safetensors"))  # +io
         del w, wq
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
@@ -321,10 +349,12 @@ def write_index():
             n = struct.unpack("<Q", fh.read(8))[0]; hdr = json.loads(fh.read(n))
         for k in hdr:
             if k != "__metadata__": wm[k] = f
-    json.dump({"metadata": {}, "weight_map": wm}, open(os.path.join(a.o, "model.safetensors.index.json"), "w"), indent=1)
+#io-was:    json.dump({"metadata": {}, "weight_map": wm}, open(os.path.join(a.o, "model.safetensors.index.json"), "w"), indent=1)
+    _io_json({"metadata": {}, "weight_map": wm}, os.path.join(a.o, "model.safetensors.index.json"), indent=1)  # +io
     c = json.load(open(TEMPLATE))
     c["quantization_config"].update({"bits": float(a.K), "head_bits": a.K, "calibration": {"source": "challenge calib Hessians"}})
-    json.dump(c, open(os.path.join(a.o, "config.json"), "w"), indent=1)
+#io-was:    json.dump(c, open(os.path.join(a.o, "config.json"), "w"), indent=1)
+    _io_json(c, os.path.join(a.o, "config.json"), indent=1)  # +io
 
 GAINS = dict(kv.split("=") for kv in a.gain.split(",")) if a.gain else {}
 GAIN = [1.0]
@@ -346,7 +376,8 @@ def _stamp():
     if a.out_scales_off: files.append(os.path.abspath(a.out_scales_off))      # its contents, not just the path
     if a.only: files.append(os.path.abspath(a.only))
     for f in files:
-        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+#io-was:        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+        if os.path.isfile(f): h.update(f.encode()); h.update(_io_canon(f)); src.append(f)  # +io
     keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
     h.update(json.dumps(keep, sort_keys=True).encode())
     return h.hexdigest()[:16], src, keep
@@ -361,8 +392,10 @@ def set_level(K):
         _sj = os.path.join(a.o, "stamp.json")
         _prev = json.load(open(_sj)) if os.path.exists(_sj) else []
         if not _prev or _prev[-1]["stamp"] != st:
-            json.dump(_prev + [{"stamp": st, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": args,
-                                "sources": src}], open(_sj, "w"), indent=1)
+#io-was:            json.dump(_prev + [{"stamp": st, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": args,
+#io-was:                                "sources": src}], open(_sj, "w"), indent=1)
+            _io_json(_prev + [{"stamp": st, "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "args": args,  # +io
+                               "sources": src}], _sj, indent=1)  # +io
         print(f"code stamp {st} (K{K})", flush=True)
         _LOGS[K] = open(os.path.join(a.o, "proxy.jsonl"), "a")
     STAMP, STAMP_SRC, STAMP_ARGS = _STAMPS[K]; log = _LOGS[K]
@@ -387,27 +420,33 @@ if not a.only_head:
         for K in KS:
             set_level(K)
             shard = os.path.join(a.o, f"q-L{l:02d}.safetensors")
+            if os.path.exists(shard): _io_leftover(f"{L}.{l}.")  # +io
             if resume_ok(shard): continue
             t0 = time.time(); out = {}
             if ONLY is not None and not any(k in ONLY for _, ks in layer_plan(l) for k in ks): continue
             for gi, (hn, keys) in enumerate(layer_plan(l)):
                 if ONLY is not None and not any(k in ONLY for k in keys): continue
                 out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
-            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+#io-was:            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+            _io_put(lambda p: save_file(out, p, metadata={"ourq_stamp": STAMP}), shard)  # +io
             # drop the checkpoint shard handles (their mapped pages piled up to ~23 GB over a run: K8 OOM, 2026-10-30)
             del out; _open.clear(); import gc; gc.collect(); torch.cuda.empty_cache()
             rss = next((l.split()[1] for l in open("/proc/self/status") if l.startswith("RssAnon")), "?")
             print(f"layer {l}{f' K{K}' if len(KS) > 1 else ''}: {time.time() - t0:.0f}s  anon rss {int(rss) >> 10 if rss != chr(63) else rss} MiB", flush=True)
             write_index()
+            _io_promote()  # +io
         _memo_clear()
 if a.head or a.only_head:
     _memo_clear()
     for K in KS:
         set_level(K)
         shard = os.path.join(a.o, "q-head.safetensors")
+        if os.path.exists(shard): _io_leftover("lm_head.")  # +io
         if not resume_ok(shard):
             out = quantize_group("lm_head.input", ["lm_head"], 9999, log)
-            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+#io-was:            save_file(out, shard + ".part", metadata={"ourq_stamp": STAMP}); os.replace(shard + ".part", shard)
+            _io_put(lambda p: save_file(out, p, metadata={"ourq_stamp": STAMP}), shard)  # +io
+            write_index(); _io_promote()  # +io
     _memo_clear()
 for K in KS: set_level(K); write_index()
 print("done", flush=True)
