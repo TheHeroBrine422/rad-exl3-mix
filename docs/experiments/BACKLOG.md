@@ -217,6 +217,15 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Embedding-specific QAD / healing** (user question 2026-11-06; 0.8B first, after the hidden-state test):
+  (a) **true QAT on the embedding only:** rows are independent lookups with no input Hessian, so after each update
+  only the touched rows are re-encoded (trellis per row) — latent-weight training with re-quantization is feasible
+  here, unlike the trunk; (b) per-row importance from the gradient at the embedding output (diagonal Fisher per
+  token row, from a 0.8B backward pass; no new 27B Σdy² collection) for importance-weighted re-encoding; (c) rows
+  of tokens absent from the training data get no signal: keep them at the static quant (#32: rare rows matter, so
+  never let them drift), and make the data broad (#101's xcorp); (d) split each row's error into direction vs scale
+  (layer 0 starts with RMSNorm, but the raw embedding also rides the residual stream) and test scale-only healing vs
+  direction re-encode. Rule written before data.
 - [ ] **Hidden-state matching for healing / V4 QAD, 0.8B first** (user 2026-11-06; NVIDIA's Flash-Next QAD uses it,
   ROADMAP V4): add a per-layer loss between student and bf16 teacher residual streams at block ends, next to the token
   loss. Layers: the ends of the 4-layer groups (27B: 7, 15, …, 63, always incl. the last; 0.8B: its group ends), each
