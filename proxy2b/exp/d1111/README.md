@@ -27,3 +27,14 @@ V2 3.00, `golden-search27`, paired), on the bn H_out stack as on the 0.8B (dygm 
 pairs. **Rule:** adopted if both pair ratios < 1 and their geometric mean ≤ 0.98; if the geo mean is within ±2%:
 inconclusive at this noise (log it; a third seed pair or a lower-noise golden next); worse beyond 2%: no.
 Secondary (not deciding): the same arms on the night1105 xcorp goldens, if their documents are disjoint from `mX`.
+
+## Amendment 3 (2026-11-05 ~10 PM CST, before data): xcorp follow-ups on the 0.8B (`run_v.sh`)
+All on the dygm stack, K3 / K2 (K4 / K5 for transfer), scored on calib search, g08-xcorp2, g-agent and **g08-verify1**
+(the overfitting check: a blend selected on search must keep ≥ 2/3 of its search gain on verify, as #93).
+(1) verify check of X0.25 / X0.5; (2) weight sweep w 0.75 / 1.0; (3) a third seed for w0.5; (4) a ~3M-token xcorp
+sample (X3, w0.5); (5) K4 / K5 transfer of X0.5; (6) category subsets of mX at w0.5: code (code / math / reasoning /
+science), prose (web / chat / qa / encyclopedic / books / legal), mt (multilingual / tools / agentic / long);
+(7) third seeds for all. **Use:** the 27B recipe (weight, sample, subset) is the arm with the best calib-search ratio
+among those that pass amendment 1's rule (calib ≤ 1.005 and xcorp ≤ 0.98 at both K) and the verify check; ties
+(within 1%) go to the simpler recipe (full mX, w0.5). Category arms are exploratory: they only change the recipe if
+one beats full mX on calib search by ≥ 1% at both K with every seed < 1.
