@@ -186,6 +186,14 @@ versions of anything: git history.
 - **Research points (user):** 1.5 / 1.75, then 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD blows up; 1.25 is no
   longer a separate point.
 
+### 2026-11-06 12:40 AM CST · #92 · REAL-Q fails every rule, healed and parallel arms included
+- d1109 run2 (0.8B, seeds 0 / 1, paired vs the matching stack arm): REAL-Q + healing vs stack + healing K3 1.096,
+  K2 1.037; parallel (bf16-prefix) REAL-Q K3 1.129, K2 1.017; parallel + healing K3 1.095, K2 1.031. Base rule
+  (≤ 0.95 at both K) and amendments 1–2: **fail**. Our LDLQ + H_out + swj + writers stack already covers what
+  REAL-Q's block-output Fisher step adds; no 27B test. Closed.
+- Watchdog's first catch (cycle 0): `pair()` in `d1103/run.sh` clobbered its callers' `$b`, so d1111 run_v's
+  xcorp / agentic / verify pair lines were empty; fixed (`local`), `repair_v.sh` recomputes them after run_v.
+
 ### 2026-11-05 9:30 PM CST · #33-28, #101, #92 · 27B seed floor ≈ H_out's effect; ukisai fails; night queue
 - **#33-28 seed arm (K2.5):** base → s1 (seed offset 1, no H_out) = **0.975** (z −2.5); s1 → bn 0.997. The 27B
   quant-noise floor (~2.5% per pair) is as large as bn's −2.8%: **bn is not real by H27's rule** (needs ≥ 2× the floor).
