@@ -3,6 +3,38 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 3:00 PM CST · #101, #107, #77, #100, #—  · d1112 readout; tile CD on the GPU; pipeline, rqah v0.3, kernel merge
+- **d1112 (w44, 4070, 0.8B, 3 seeds): xcorp H_in on top of the full adopted stack** (H_out dy + swj + asym; `k{K}st`
+  vs `k{K}sx`). Search geo K3 0.991 / K2 0.988 (every seed < 1), verify 0.987 / 0.984 (keeps > 100% of the search
+  gain), xcorp 0.962 / 0.976, **agentic 1.012 / 1.036** (flag > 1.02 at K2). K4 0.993, K5 0.991 (harmless). So it
+  stacks on the 0.8B, but smaller than alone (−1% vs −1.6…−2.6%); moot now that the 27B pairs dropped it (2:15 PM).
+  Repro check: `k3st` = d1104's `k3edyswjasym_r0` bit for bit on today's (w41-patched) code. The full stack over its
+  trunk quant: 0.836 K3, 0.758 K2, 0.847 K4, 0.866 K5 (3 seeds each).
+- **#107 fractional-K drift (d1112 item 3): null.** Interpolated (the default) vs exact-K lookup: K2.25 1.006, K2.75
+  0.995, K1.75 0.980 (z noisy), K1.25 0.964 ± 0.028: no measurable effect. w43's worry (exact-K lookup, no correction at
+  quarter K) was wrong: ourq already interpolates (drift 1.013 at K2.25).
+- **#77 tile CD on the real GPU quantizer (w50):** behind `ourq --tile-cd 3 --tile-cd-families attn_qg` (off = today
+  byte for byte, 9/9 shards and stamps). On 27B attn_qg, cd3 ÷ LDLQ = **0.987–0.996**, about a third of settle.py's
+  2–4%. Cause: **settle.py runs LDLQ first-to-last over input blocks; exllamav3 runs last-to-first.** With the proxy's
+  order reversed, all 9 GPU / CPU cases agree within ±0.33%. Family sweep at K2.5 on the GPU: attn_qg 0.989 / 0.995 still
+  the largest; attn_k 0.991 / 0.994 (cheap, ~2 s / tensor); others 0.996–0.998. Time ×3.7 per tensor (q_proj K2.5
+  8.1 → 30.1 s on the 4070), ~+5 min per ladder level. 27B no-harm check (`v3/e3/settle/CD27.md`, ~1.3 h) staged,
+  not scheduled. **Open:** settle.py's order bias also touches w43's #38 / #39 (null verdicts, unlikely to flip) and
+  w46's running re-validation of #90-02 / #100 (check before trusting it).
+- **rad-exl3-quantizer (w52):** new side repo, package `rxq`: stages, a per-tensor job unit (group sign replay, < 2%
+  overhead), `config/v3.toml` with every setting's experiment # and status; per-tensor quant, H_out two-sided LDLQ,
+  asym writers, xcorp blend, H_out bn, swj math / apply, mkdenoise all bit-identical to the research scripts. Profile
+  (4070, no H_out): trellis search 76–84% of quant time, scale search 7%, refit 4–8%; gpubox: 35 s / layer (37 min /
+  level), **with H_out 178 s / layer** (two-sided LDLQ's error feedback = 72% of a gate_proj). Pack ~1,600 s CPU.
+- **rad-quant-at-home 0.3 (w47):** renamed (command `rad-quant-at-home` / `rqah`), verify-by-score (server decodes
+  codes, rel error in a per-tensor band from neighbouring results / anchors; 31/31 synthetic, 14/14 real 0.8B incl.
+  wrong-K, lazy, perturbed, random codes all rejected; honest 27B seed spread ≤ 0.1%; scoring 18–30 s vs ~100 s to
+  quantize a layer on the 4070). Small cards: every family but ffn_down fits ≤ 4.1 GB; ffn_down 6.2–7.0 GB (+~10 GB
+  RAM). CUDA image build unfinished.
+- **Kernels (w54):** two-pass A8 and A4 merged on `qc-exl3-v3-merged` (fast-forwards, no conflicts; tree = A4 tip);
+  checks pass. Next: w53's i4 importer on top, then fast-forward `qc-exl3-v3`.
+- w49: Code000's Infinite KV Cache paper and an AutoQuant integration note added to the KV corpus (KV parked).
+
 ### 2026-11-06 2:15 PM CST · #101 · xcorp H_in at 27B: too small, dropped
 - **27B pairs (K2.5, H_out bn on both sides):** bn → xbn 0.9880 (z −1.2), bns1 → xbns1 0.9971 (z −0.2); pooled ~0.993 vs
   the rule's ≤ 0.98. The 0.8B's −1.6…−2.6% shrinks to ≲ 1% at 27B (as H_out's did). **User: not worth it.** The
