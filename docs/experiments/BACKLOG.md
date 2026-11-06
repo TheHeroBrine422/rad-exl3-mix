@@ -221,6 +221,10 @@ prefill.
   fitted sensitivities / speed table; a small tool runs the knapsack for any target bpw / VRAM and fetches only the
   chosen tensor shards (download ≈ the model's own size; no GPU, no eval). Predicted quality only (no mix healing,
   no search/verify). Cost on our side: hosting the ladder (~1 TB at 73 levels), versioning it with the format.
+  Gets better with a well-trained predictor (user): sensitivities fitted across sizes, compute modes (f16 / A8 / A4)
+  and text types (calib, agentic, long context: per-objective fits the user picks from), speed tables per card
+  (R9700, 9070 XT, …; volunteer runs can supply them), and the search's verify data folded back in so predictions
+  track measured KLD.
 - [ ] **Lessons from radiance PR #416 (Code 000's KV quant, 2026-11-06)** for our own work: (1) **MTP / DFlash2 drafter
   acceptance** as a release metric: their best-KL recipe cut drafter acceptance 0.63 → 0.41 (decode 178 → 132 tok/s)
   because KL mode doesn't run speculation; V3's last-layer / head choices need an acceptance check (and maybe a
