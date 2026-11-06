@@ -217,6 +217,14 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Hidden-state matching for healing / V4 QAD, 0.8B first** (user 2026-11-06; NVIDIA's Flash-Next QAD uses it,
+  ROADMAP V4): add a per-layer loss between student and bf16 teacher residual streams at block ends, next to the token
+  loss. Layers: the ends of the 4-layer groups (27B: 7, 15, …, 63, always incl. the last; 0.8B: its group ends), each
+  term normalized by the teacher's norm at that layer. Storage: full bf16 at healing scale; past ~20M tokens a fixed
+  random projection to ~512 dims per layer (≈ 10× smaller, as Sketch B). 0.8B test: frozen-code healing (#89 recipe)
+  with vs without the hidden-state term, and full vs projected targets, K3 / K2 × 2–3 seeds, paired on calib search,
+  verify on calib verify; also try the TV loss and end-of-thinking / end-of-response boundary terms. Rule written
+  before data. 27B only if the 0.8B gain is clear (healing is deferred to the ladder phase anyway).
 - [ ] **Long-context eval for our quants: RULER probes** (user 2026-11-05; same probes as the D-LSA gate,
   `docs/design/lsa.md`). Our KLD goldens cap documents at 8k (32k for the 27B trace golden), so nothing checks the
   quants at the contexts people run (256k–750k, fp8 KV, YaRN). One shared harness: RULER-style tasks (multi-key /
