@@ -18,3 +18,12 @@ golden `g08-ukisai` from 54 other sessions (0.4M tokens, scored on the assistant
 scored on `g08-agent-calib` (calib's own 27B agentic text, search pool).
 **Rule:** U0.25 is adopted (27B arm next) if calib ≤ 1.005 at both K and g08-agent-calib or g08-ukisai ≤ 0.97 at both K.
 (Caveat: the text is the 27B's, off-policy for the 0.8B.)
+
+## Amendment 2 (2026-11-05 ~9:20 PM CST, before 27B data): the 27B arm
+H_in over the same xcorp META (`mX`, 1,148 docs / 1.14M tokens) on one card (`eval/gold27/mkhin27.py`, w33's gates),
+blended into the published calib Hessians at w 0.5 (`blend.py hin`). K2.5 swap arms (H27 setup: trunk swapped into
+V2 3.00, `golden-search27`, paired), on the bn H_out stack as on the 0.8B (dygm ↔ bn): **xbn** (seed 0) vs **bn**,
+**xbns1** vs **bns1** (seed offset 1). Since the 27B quant-noise floor is ~2.5% per pair (H27 amendment 4), two seed
+pairs. **Rule:** adopted if both pair ratios < 1 and their geometric mean ≤ 0.98; if the geo mean is within ±2%:
+inconclusive at this noise (log it; a third seed pair or a lower-noise golden next); worse beyond 2%: no.
+Secondary (not deciding): the same arms on the night1105 xcorp goldens, if their documents are disjoint from `mX`.
