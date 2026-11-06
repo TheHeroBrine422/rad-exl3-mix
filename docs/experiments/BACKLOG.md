@@ -231,6 +231,14 @@ prefill.
   normalization, TurboQuant-style vector quant), eviction / compression / low-rank / latent KV (MLA-style), sparse
   attention (D-LSA, QSA), and Code 000's #416 / #412 design notes; one-page entries with method, numbers, and what
   fits radiance's paged layouts. Shipped with the task as read-only context.
+  **Judge goal (user 2026-11-06): runtime cost and tails, not just mean KL / NLL.** Tiered, so expensive checks only
+  hit finalists: (1) gate: byte-exact kernel tests; (2) screen (minutes): on a fixed long corpus vs bf16 cache, mean
+  KL above the noise floor, **tails** (p99 / p99.9 per-position KL, worst-document KL, KL by position bin — errors
+  that compound with context), ΔNLL, top-1; plus **runtime**: bytes / token, decode tok/s at 32k / 128k / 512k,
+  prefill tok/s, extra passes (vpred's second attention pass is a cost); (3) finalists (hours): RULER-style probes
+  (multi-key needles, variable tracking) at 128k / 512k as a hard gate, drafter (MTP / DFlash2) acceptance as a limit.
+  Score = Pareto position over (bytes / token, speed, quality incl. tails), not one number; anything that fails a tail
+  or RULER gate is out regardless of mean KL.
   Not planned: autoresearch on the weight-quant research itself (needs far more hardware; the user stays in the loop
   for decisions that complex).
 - [ ] **User-side mix builder** (2026-11-06, "interesting", low priority): publish the ladder levels per tensor plus the
