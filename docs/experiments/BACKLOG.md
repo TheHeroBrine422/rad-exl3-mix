@@ -226,6 +226,11 @@ prefill.
   never let them drift), and make the data broad (#101's xcorp); (d) split each row's error into direction vs scale
   (layer 0 starts with RMSNorm, but the raw embedding also rides the residual stream) and test scale-only healing vs
   direction re-encode. Rule written before data.
+- [ ] **Library QAD vs mix QAD** (user question 2026-11-06): train a piece (embedding level, head level, one trunk
+  layer's levels) with everything else bf16, so it slots into any mix like a ladder level (amortized over every size;
+  knapsack sees healed sensitivities); then optionally a short per-mix pass that compensates neighbours' errors.
+  0.8B checks: additivity (healed pieces combined vs the sum of their single gains, as #46-03's ±25% rule) and how
+  much a per-mix pass adds on top. First candidate: the embedding menu (idea above).
 - [ ] **Hidden-state matching for healing / V4 QAD, 0.8B first** (user 2026-11-06; NVIDIA's Flash-Next QAD uses it,
   ROADMAP V4): add a per-layer loss between student and bf16 teacher residual streams at block ends, next to the token
   loss. Layers: the ends of the 4-layer groups (27B: 7, 15, …, 63, always incl. the last; 0.8B: its group ends), each
