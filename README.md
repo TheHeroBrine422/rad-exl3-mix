@@ -39,6 +39,7 @@ python -m rxq.swj apply LEVEL SCALES OUT                # S4: swj scales into a 
 
 - `tests/check_quant.py REF_LEVEL JOB_OUT` — per-tensor jobs vs an ourq.py level with the same settings (GPU run first).
 - `tests/check_cpu.py OUT` — the CPU ports vs the originals (blend, H_out bn, swj math / apply, mkdenoise both paths).
+- `tests/check_assemble.py LEVEL OUT N` — level assembly round trip from an ourq level, mixed-stamp refusal.
 - `tools/run4070.sh A|B|C` — the GPU checks and the profile on the RTX 4070 box.
 
 Licence: Apache-2.0 (LICENSE, NOTICE); exllamav3 is MIT (LICENSES/).

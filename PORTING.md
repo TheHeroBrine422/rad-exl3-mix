@@ -20,7 +20,7 @@ BCD block).
 | S1 H_out bn | `stats.hout_blocks` | `v3/yaqa/hconv/mkhalf.py` (MKHALF_NORM=1) | `check_cpu.py`: hconv 27B snapshots (15) → train-N / test, vs mkhalf.py run on the same snapshots | PASS (6,400 files, mkhalf.json) |
 | S4 swj math | `swj.acc / fit / resid` | `proxy2b/exp/w02-fixedscale/fsutil.py` swiglu_* | `check_cpu.py`: 4 random blocks, 81-point grid | PASS (sums, fit, residuals equal) |
 | S4 swj container | `swj.apply_level` | `v3/yaqa/swj27/swjapply.py` | `check_cpu.py`: q-k3base + w36 k3lv scales | PASS (28 files) |
-| S3 assembly | `job.assemble` | (new: ourq writes per layer itself) | level layout = ourq's (index, q-LNN, proxy.jsonl); refuses mixed stamps | layout only |
+| S3 assembly | `job.assemble` | (new: ourq writes per layer itself) | `tests/check_assemble.py`: 0.8B q-k3base split into 150 per-tensor job files over 5 job dirs, reassembled | **PASS** (600 tensors equal, same key → shard map; a level with one changed code stamp is refused) |
 
 Not ported (called in place, DESIGN.md "Open items" 5): the level passes swjfit27.py (staged bf16 forward + fused
 grid), sibmom27.py (sibling moments), mkhin27.py (xcorp H_in), collect.py (Σdy²); kfit2 / knap4; rad-convert.

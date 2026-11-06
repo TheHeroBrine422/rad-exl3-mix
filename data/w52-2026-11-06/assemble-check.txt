@@ -1,0 +1,1 @@
+ASSEMBLE PASS: 600 tensors equal, same shard map, mixed stamps refused (tests/check_assemble.py on /data/yb/q-k3base, 24 layers)
