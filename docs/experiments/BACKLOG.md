@@ -231,6 +231,13 @@ prefill.
   knapsack sees healed sensitivities); then optionally a short per-mix pass that compensates neighbours' errors.
   0.8B checks: additivity (healed pieces combined vs the sum of their single gains, as #46-03's ±25% rule) and how
   much a per-mix pass adds on top. First candidate: the embedding menu (idea above).
+  Scope (user 2026-11-06): ship-side mostly embedding / head; test trunk block-wise too on the 0.8B (cheap).
+  Post-quantization (codes frozen), so it doesn't block the freeze, but it goes before the knapsack / search.
+  Caveat: the 0.8B ties embedding and head (`tie_word_embeddings: true`), the 27B doesn't: the 0.8B can test head
+  and trunk, but embedding-alone results need the 2B (check its config) or the 27B. Prior guesses (to check, not
+  to plan on): trunk block-wise ½–⅔ of mix healing on the 0.8B (EfficientQAT-style: block-wise stage takes most),
+  less on the 27B (block-output methods shrank to ~⅓ there); head a few % of total KLD at ≤ 2.5 bpw; embedding
+  smaller, mostly at ≤ 2 bpw.
 - [ ] **Hidden-state matching for healing / V4 QAD, 0.8B first** (user 2026-11-06; NVIDIA's Flash-Next QAD uses it,
   ROADMAP V4): add a per-layer loss between student and bf16 teacher residual streams at block ends, next to the token
   loss. Layers: the ends of the 4-layer groups (27B: 7, 15, …, 63, always incl. the last; 0.8B: its group ends), each
