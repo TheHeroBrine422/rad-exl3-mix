@@ -38,3 +38,8 @@ science), prose (web / chat / qa / encyclopedic / books / legal), mt (multilingu
 among those that pass amendment 1's rule (calib ≤ 1.005 and xcorp ≤ 0.98 at both K) and the verify check; ties
 (within 1%) go to the simpler recipe (full mX, w0.5). Category arms are exploratory: they only change the recipe if
 one beats full mX on calib search by ≥ 1% at both K with every seed < 1.
+
+## Amendment 4 (2026-11-05 ~10 PM CST, before 27B data): more 27B pairs
+Third K2.5 pair (xbns2 vs bns2) and K4 pairs (xbn4 vs bn4, xbn4s1 vs bn4s1) on gpubox (`/data/q1106/q2.sh`). Rule as
+amendment 2 over all K2.5 pairs (every pair < 1, geo mean ≤ 0.98), plus the noise test of H27 amendment 5
+(|log geo| ≥ 2σ/√n). K4 pairs decide K ≥ 4 levels the same way.
