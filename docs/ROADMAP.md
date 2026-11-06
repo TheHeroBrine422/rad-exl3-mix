@@ -106,7 +106,13 @@ sizes and 6.0.
 - **QAD** on the published V3 checkpoints, after scale healing (if healing did not already ship in V3: see the V3
   quantizer stack). 0.8B results to start from (each needs a 27B check): frozen-code healing
   K2 −38% (#89); field report: QAD on an EXL3 quant gained ~6–13% KLD at a 1,024 window, ~22% training only layers
-  48–63 (trellis codes interfere earlier in the stack). Ideas to test on a small model first: QAD before the trellis
+  48–63 (trellis codes interfere earlier in the stack). Reference recipe (2026-11-06): NVIDIA's QAD of Qwen3.8-Flash-Next to
+  NVFP4 (`nvidia/Qwen3.8-Flash-Next-FP4-Local`): bf16 teacher generates the responses (prompts only from Nemotron
+  post-training sets), loss = total variation on token probabilities + hidden-state matching + separate
+  end-of-thinking / end-of-response boundary losses, 500M tokens × 3 epochs (2,500 trunk + 1,500 joint updates,
+  attention frozen); GPQA 92.2 → 91.5, ToolEvalBench 89.4 → 88.7. Its latent-weight STE does not map onto frozen
+  trellis codes; the loss terms and the boundary losses do (healing / V4 QAD), and the data choice is the opposite
+  of the board's metric (#91: on-policy text costs calib KLD), so it fits the real-use variant, not board entries. Ideas to test on a small model first: QAD before the trellis
   step, other rotations than the 128-point Hadamard (e.g. ParoQuant's), QAD on a separate corpus.
 - **KV-cache work** (V-mean, Hadamard KV, per-layer KV recipe, KV-QAT); may come from other radiance work on our published checkpoints
   instead (2026-11-04): our part is keeping qwen35_exl3's attention on
