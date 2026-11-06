@@ -1,0 +1,16 @@
+# test08.sh on the 4070 (one hold of /data/yb/gpu.lock, 04:00:11-04:05:46 UTC 11-06 = 10:00-10:06 PM CST 11-05, 335 s; VRAM_CAP_GB 7.2);
+# G2's verdict lines (CPU) were added after the GPU run by G2_ONLY=1 with the same script. Raw: /data/yb/w37/gate/result.txt (removed after copying).
+04:00:11 gate start (lock held)
+04:00:11 base args: -K 3 --frac-ext /data/src/exllamav3/exllamav3/exllamav3_ext --codebook i8 --sigma-reg 0.025 --sigma-reg-in 0.005 --scaled-hessian --qtf2
+04:01:22 G1 PASS: noop gate: 48 linears, 192 tensors, 0 differ from /data/yb/d1103/q-k3asym_r0 [] -> PASS
+04:01:24 G1 stamps: d1103 b5a6d92578b43b3b, now 59620c639311a775
+04:01:25 G1 wq files: 48 of 48 bit-identical to d1103's
+04:02:56 G1m sibmom27 (low-RAM save) vs ref2, layers 0-3: worst: H 0.0e+00 / 0.0e+00  C 0.0e+00 / 0.0e+00  N 0.0e+00 / 0.0e+00; peak GPU 1.3 GiB
+04:04:24 G2 search: "kld": 0.07960559832326164
+ASSEMBLED /data/yb/w37/gate/level-g2: 24 shards, 48 linears (192 tensors this run) from /data/yb/w37/gate/q-g2 over /data/yb/q-k3base
+04:04:25 gate GPU part done: 254 s
+04:05:46 gate GPU part done: 335 s (incl. G3)
+04:05:47 G3 PASS: K1.5 level (fractional decode on the GPU), 8 groups: H bit-identical to G1m's in 8, trN/trH above K3's in 8
+G2 assembled level vs the scored wq: DEQ CHECK 150 tensors, worst rel 4.06e-04 (i8): PASS
+G2 PASS: ours (27B path: level-decoded siblings, rho 0) / d1103 k3asym_r0 0.9887 (z -2.0, |log| 0.0114 <= 0.025); / k3base 0.8050 (z -23.7; d1103's k3asym_r0 / k3base 0.8142)
+04:07:29 G2 assembled level vs the scored wq: DEQ CHECK 150 tensors, worst rel 4.06e-04 (i8): PASS

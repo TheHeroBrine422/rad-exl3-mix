@@ -22,15 +22,17 @@ moments also at about half the windows (the nearest flush boundary, so the full 
 a dose check of F.
 
 Siblings: --wq DIR (ourq --save-wq files, <key>.safetensors "weight" (out, in) f16 -> bf16, as moments.py) or --level
-DIR (an ourq export, decoded by deq.py: i8 / mul1, integer K; f32 -> f16 -> bf16, so --level = --wq on deq.py wq's files).
+DIR (an ourq export, decoded by deq.py: i8 / mul1, any rate in 1/8 steps; f32 -> f16 -> bf16, so --level = --wq on
+deq.py wq's files).
 Windows: --wins moments = moments.py's list (the --pools docs cut into --win windows, a shorter doc >= 64 tokens is one
 window, shuffled by --seed, until --tokens); --wins long = collect.py's (whole --win windows only, the same shuffle).
-Env DEV (cuda), VRAM_CAP_GB (as moments.py), P2B_BLOCK (as proxy2b/common.py), SIB_ATTN (attention implementation, default sdpa), POOLS."""
+Env DEV (cuda), VRAM_CAP_GB (as moments.py), P2B_BLOCK (as proxy2b/common.py), SIB_ATTN (attention implementation, default sdpa), POOLS.
+v3/yaqa/asym27 copy = v3/sib27/sibmom27.py + sibmom27-lowram.patch (moment files written one tensor at a time:
+~1.2 GB of host RAM at a 27B down group instead of ~7 GB; same tensors and metadata). Merge the patch, then drop the copy."""
 import argparse, functools, hashlib, json, os, resource, shutil, sys, time
 for _b in filter(None, os.environ.get("P2B_BLOCK", "").split(",")): sys.modules[_b] = None
 import numpy as np, torch
 from safetensors import safe_open
-from safetensors.torch import save_file
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 ap = argparse.ArgumentParser()
@@ -181,10 +183,26 @@ def flush():
             if s in h: h[s].add_(v)                      # f32 into f64 in place: = h + v.double(), no temporary
             else: h[s] = v.double()
             v.zero_()
+def save_lean(path, tot, metadata):
+    """safetensors file of tot's "H", "C", "N" as f32, written one tensor at a time: host RAM holds one k x k f32
+    (1.2 GB at 17408), not save_file's three plus their serialized copies (~7 GB). Same tensors and metadata
+    (safe_open reads it as save_file's; header padded with spaces to 8 bytes as the format allows)."""
+    hdr, off = {}, 0
+    for s in "HCN":
+        k = tot[s].shape; nb = 4 * k[0] * k[1]
+        hdr[s] = {"dtype": "F32", "shape": list(k), "data_offsets": [off, off + nb]}; off += nb
+    hdr["__metadata__"] = metadata
+    hb = json.dumps(hdr, separators=(",", ":")).encode(); hb += b" " * (-len(hb) % 8)
+    with open(path, "wb") as fh:
+        fh.write(len(hb).to_bytes(8, "little")); fh.write(hb)
+        for s in "HCN":
+            t = tot[s].float().cpu().contiguous(); t.numpy().tofile(fh); del t
+    assert os.path.getsize(path) == 8 + len(hb) + off, path
+
+
 def save(name, d, ntok):
     os.makedirs(d, exist_ok=True)
-    t = {s: TOT[name][s].float().cpu().contiguous() for s in "HCN"}
-    save_file(t, f"{d}/{name}.safetensors.part", metadata={
+    save_lean(f"{d}/{name}.safetensors.part", TOT[name], metadata={
         "n": str(ntok), "mode": "sib", "gamma": "0.05", "sigma": "None", "seed": str(a.seed), "pools": a.pools,
         "win": str(a.win), "wq": WQDESC, "model": a.model, "kernels": json.dumps(kernel_paths()),
         "collector": "v3/sib27/sibmom27.py", "wins": a.wins, "windows": str(len(wins)), "attn": ATTN,

@@ -1,0 +1,28 @@
+model.language_model.layers.0.linear_attn.in_proj_qkv        K3 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.12.mlp.gate_proj                 K3 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.17.mlp.down_proj                 K3 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.21.linear_attn.out_proj          K3 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.5.linear_attn.in_proj_qkv        K3 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.9.mlp.up_proj                    K3 i8: W_hat differing 0, W max rel 0.0e+00
+EXL3DEQ VSNUMPY: PASS
+model.language_model.layers.0.linear_attn.in_proj_qkv        K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.12.mlp.gate_proj                 K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.17.mlp.down_proj                 K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.21.linear_attn.out_proj          K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.5.linear_attn.in_proj_qkv        K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+model.language_model.layers.9.mlp.up_proj                    K1.5 i8: W_hat differing 0, W max rel 0.0e+00
+EXL3DEQ VSNUMPY: PASS
+model.language_model.layers.0.linear_attn.in_proj_qkv        K3 rel 3.60e-04
+model.language_model.layers.0.linear_attn.in_proj_z          K3 rel 3.64e-04
+model.language_model.layers.0.linear_attn.out_proj           K3 rel 3.63e-04
+model.language_model.layers.0.mlp.down_proj                  K3 rel 3.95e-04
+model.language_model.layers.0.mlp.gate_proj                  K3 rel 3.42e-04
+model.language_model.layers.0.mlp.up_proj                    K3 rel 3.88e-04
+model.language_model.layers.1.linear_attn.in_proj_qkv        K3 rel 3.75e-04
+model.language_model.layers.1.linear_attn.in_proj_z          K3 rel 3.65e-04
+model.language_model.layers.1.linear_attn.out_proj           K3 rel 4.00e-04
+model.language_model.layers.1.mlp.down_proj                  K3 rel 3.99e-04
+model.language_model.layers.1.mlp.gate_proj                  K3 rel 3.37e-04
+model.language_model.layers.1.mlp.up_proj                    K3 rel 3.77e-04
+EXL3DEQ CHECK 12 tensors, worst rel 4.00e-04 (i8): PASS
+EXL3DEQ CHECK 0 tensors, worst rel 0.00e+00 (i8): FAIL

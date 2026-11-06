@@ -1,0 +1,23 @@
+{
+ "tool": "v3/yaqa/swj27/swjfit27.py",
+ "src": "/data/yb/q-k3base",
+ "mode": "level",
+ "meta": "/data/g08-fit1",
+ "grid": "0.6:1.4:0.01",
+ "docs": 87,
+ "tokens": 100625,
+ "cap": 4096,
+ "split": [
+  0,
+  8,
+  16,
+  24
+ ],
+ "kernels": {
+  "causal_conv1d": "1.7.0",
+  "fla": "0.6.0",
+  "torch": "2.11.0+cu128"
+ },
+ "codebook": "i8",
+ "created": "2026-11-06T03:45:33Z"
+}

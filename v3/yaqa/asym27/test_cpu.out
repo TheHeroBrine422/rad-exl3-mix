@@ -1,0 +1,74 @@
+# test_cpu.py on the 4070 box (CPU only, 4 threads), 2026-11-05 ~9:40-9:50 PM CST; SO = /data/yb/w37/oracle/exl3i_oracle.so (plugin exl3i_decode.c, md5 = gpubox /data/rh117's)
+# args: /data/yb/hconv/q-bn128 (27B layers 10/39/50, K2.5 i8, --save-wq) /data/yb/d1106/q-k1.5edy (0.8B K1.5) /data/yb/q-k3base (0.8B K3)
+model.language_model.layers.10.linear_attn.in_proj_z: K2.5 (m 40) 5120x6144 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.10.linear_attn.in_proj_z: K2.5 (m 40) 5120x6144 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.10.linear_attn.out_proj: K2.5 (m 40) 6144x5120 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.10.linear_attn.out_proj: K2.5 (m 40) 6144x5120 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.10.mlp.down_proj: K2.5 (m 40) 17408x5120 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.10.mlp.down_proj: K2.5 (m 40) 17408x5120 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.39.self_attn.k_proj: K2.5 (m 40) 5120x1024 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.39.self_attn.k_proj: K2.5 (m 40) 5120x1024 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.39.self_attn.o_proj: K2.5 (m 40) 6144x5120 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.39.self_attn.o_proj: K2.5 (m 40) 6144x5120 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.50.mlp.up_proj: K2.5 (m 40) 5120x17408 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.50.mlp.up_proj: K2.5 (m 40) 5120x17408 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+DEQ ORACLE: bit-exact: 6 tensors x 2 codebooks, 0 differ; W worst rel 3.0e-07
+model.language_model.layers.0.linear_attn.in_proj_qkv: K1.5 (m 24) 1024x6144 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.in_proj_qkv: K1.5 (m 24) 1024x6144 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.linear_attn.in_proj_z: K1.5 (m 24) 1024x2048 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.in_proj_z: K1.5 (m 24) 1024x2048 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.linear_attn.out_proj: K1.5 (m 24) 2048x1024 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.out_proj: K1.5 (m 24) 2048x1024 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.down_proj: K1.5 (m 24) 3584x1024 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.down_proj: K1.5 (m 24) 3584x1024 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.gate_proj: K1.5 (m 24) 1024x3584 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.gate_proj: K1.5 (m 24) 1024x3584 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.up_proj: K1.5 (m 24) 1024x3584 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.up_proj: K1.5 (m 24) 1024x3584 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+DEQ ORACLE: bit-exact: 6 tensors x 2 codebooks, 0 differ; W worst rel 3.0e-07
+model.language_model.layers.0.linear_attn.in_proj_qkv: K3 (m 48) 1024x6144 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.in_proj_qkv: K3 (m 48) 1024x6144 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.linear_attn.in_proj_z: K3 (m 48) 1024x2048 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.in_proj_z: K3 (m 48) 1024x2048 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.linear_attn.out_proj: K3 (m 48) 2048x1024 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.linear_attn.out_proj: K3 (m 48) 2048x1024 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.down_proj: K3 (m 48) 3584x1024 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.down_proj: K3 (m 48) 3584x1024 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.gate_proj: K3 (m 48) 1024x3584 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.gate_proj: K3 (m 48) 1024x3584 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+model.language_model.layers.0.mlp.up_proj: K3 (m 48) 1024x3584 mul1: rc 0, differing W_hat values 0
+model.language_model.layers.0.mlp.up_proj: K3 (m 48) 1024x3584 i8: rc 0, differing W_hat values 0; W vs exl3i_decode_rows rel 3.0e-07 (f32 order)
+DEQ ORACLE: bit-exact: 6 tensors x 2 codebooks, 0 differ; W worst rel 3.0e-07
+B synthetic rates: 32 cases, differing []
+C integer K: 8 random rates x 2 codebooks + 12 real tensors (W_hat and W), differing []
+model.language_model.layers.10.linear_attn.in_proj_qkv       rel 4.02e-04 (max elem 1.42e-03); with the other codebook 8.22e-03
+model.language_model.layers.10.linear_attn.in_proj_z         rel 4.04e-04 (max elem 1.42e-03); with the other codebook 8.19e-03
+model.language_model.layers.10.linear_attn.out_proj          rel 3.97e-04 (max elem 1.40e-03); with the other codebook 8.27e-03
+model.language_model.layers.10.mlp.down_proj                 rel 2.41e-03 (max elem 1.64e-02); with the other codebook 8.62e-03
+model.language_model.layers.10.mlp.gate_proj                 rel 3.61e-04 (max elem 1.27e-03); with the other codebook 8.26e-03
+model.language_model.layers.10.mlp.up_proj                   rel 3.63e-04 (max elem 1.37e-03); with the other codebook 8.27e-03
+model.language_model.layers.39.mlp.down_proj                 rel 3.13e-03 (max elem 6.33e-02); with the other codebook 8.86e-03
+model.language_model.layers.39.mlp.gate_proj                 rel 3.46e-04 (max elem 1.28e-03); with the other codebook 8.29e-03
+model.language_model.layers.39.mlp.up_proj                   rel 3.53e-04 (max elem 1.32e-03); with the other codebook 8.29e-03
+model.language_model.layers.39.self_attn.k_proj              rel 3.73e-04 (max elem 1.36e-03); with the other codebook 8.28e-03
+model.language_model.layers.39.self_attn.o_proj              rel 4.01e-04 (max elem 1.41e-03); with the other codebook 8.28e-03
+model.language_model.layers.39.self_attn.q_proj              rel 3.84e-04 (max elem 1.43e-03); with the other codebook 8.53e-03
+model.language_model.layers.39.self_attn.v_proj              rel 3.87e-04 (max elem 1.36e-03); with the other codebook 8.26e-03
+model.language_model.layers.50.linear_attn.in_proj_qkv       rel 3.94e-04 (max elem 1.38e-03); with the other codebook 8.32e-03
+model.language_model.layers.50.linear_attn.in_proj_z         rel 3.72e-04 (max elem 1.40e-03); with the other codebook 8.44e-03
+model.language_model.layers.50.linear_attn.out_proj          rel 3.82e-04 (max elem 1.43e-03); with the other codebook 8.27e-03
+model.language_model.layers.50.mlp.down_proj                 rel 1.75e-03 (max elem 7.49e-03); with the other codebook 8.44e-03
+model.language_model.layers.50.mlp.gate_proj                 rel 3.53e-04 (max elem 1.28e-03); with the other codebook 8.27e-03
+model.language_model.layers.50.mlp.up_proj                   rel 3.47e-04 (max elem 1.28e-03); with the other codebook 8.27e-03
+DEQ CHECK 19 tensors, worst rel 3.13e-03 (i8): FAIL
+10.mlp.down_proj                 rel 2.41e-03 -> 2.07e-04 after row / column factors (|log r| max 1.5e-02, |log c| max 3.9e-04); subnormal fp16 scales: suh 0.0% (min 9.4e-03), svh 0.0% (min 5.3e-01)
+39.mlp.down_proj                 rel 3.13e-03 -> 2.07e-04 after row / column factors (|log r| max 6.1e-02, |log c| max 4.6e-04); subnormal fp16 scales: suh 0.0% (min 7.2e-03), svh 0.0% (min 3.7e-01)
+50.mlp.down_proj                 rel 1.75e-03 -> 2.07e-04 after row / column factors (|log r| max 6.7e-03, |log c| max 4.8e-04); subnormal fp16 scales: suh 0.0% (min 5.2e-03), svh 0.0% (min 7.4e-01)
+D: 16 tensors worst rel 4.04e-04 (other codebook >= 8.2e-03); 3 CPU-refit-fallback tensors after row / column factors 2.07e-04
+E save_lean vs save_file: identical tensors and metadata
+PASS  A oracle (27B K2.5, 0.8B K1.5, 0.8B K3)
+PASS  B synthetic rates incl. sub-1
+PASS  C integer path = sib27 deq
+PASS  D frac level vs --save-wq
+PASS  E save_lean = save_file
+ALL PASS

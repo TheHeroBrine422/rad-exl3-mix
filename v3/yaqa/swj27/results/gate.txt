@@ -1,0 +1,36 @@
+03:41:17 == gate08 start
+03:45:35 A: 03:45:34 SWJFIT27 DONE 3 sources, 87 docs, 100625 tokens (251 s)
+{"golden": "/data/g08-search1", "wq": "/data/yb/w36/fit/k3wq/wq", "n_swapped": 150, "n_aq": 0, "positions": 166155, "kld": 0.09584858287561836, "top1": 0.8570491408624478, "sec": 16.5}
+03:46:02 B: evalq 27 s
+03:46:04 A k3wq vs w02 q-k3base_swj: CMPSWJ IDENTICAL
+03:46:04 A k3lv vs k3wq (level decode vs --save-wq):
+gate 86016 channels: 1781 differ (2.07%), max |dc| 0.04, mean |dc| 2.08e-04
+up   86016 channels: 86010 differ (99.99%), max |dc| 0.0388, mean |dc| 3.57e-04
+swiglu.jsonl differs: largest relative difference 3.00e-01 (cg_at_edge, layer 23)
+CMPSWJ DIFFER (scales differ)
+03:46:05 A k15lv vs d1106 q-k1.5edy_swj (level vs its deleted --save-wq):
+gate 86016 channels: 1851 differ (2.15%), max |dc| 0.03, mean |dc| 2.16e-04
+up   86016 channels: 86007 differ (99.99%), max |dc| 0.0335, mean |dc| 3.20e-04
+swiglu.jsonl differs: largest relative difference 2.13e-02 (cg_at_edge, layer 18)
+CMPSWJ DIFFER (scales differ)
+03:46:06 B k3wq.f32 vs w02 k3base_swj.f32: BYTE-IDENTICAL
+SWJAPPLY DONE 48 tensors (48 scale vectors changed) -> /data/yb/w36/lv-k3swj
+EXL3DEQ CHECK 48 tensors, worst rel 3.09e-04 (i8): PASS
+{"golden": "/data/g08-search1", "wq": "/data/yb/w36/deq-k3swj", "n_swapped": 150, "n_aq": 0, "positions": 166155, "kld": 0.09583549932496646, "top1": 0.8572778429779423, "sec": 17.9}
+{"golden": "/data/g08-search1", "wq": "/data/yb/w36/deq-k3", "n_swapped": 150, "n_aq": 0, "positions": 166155, "kld": 0.09888251988317451, "top1": 0.8550690620204027, "sec": 17.2}
+03:47:16 pair k3base -> deq-k3: "ratio": 0.9999683797698998, "diff": -3.126786735280218e-06, "se": 3.873090416726182e-05, "z": -0.08073105450306543
+03:47:18 pair k3base_swj -> deq-k3swj: "ratio": 0.9998635020564832, "diff": -1.3083133971289462e-05, "se": 3.641456602304822e-05, "z": -0.3592829848091181
+03:47:19 pair k3base -> k3base_swj: "ratio": 0.9692871278560438, "diff": -0.0030370620617796718, "se": 0.00013542779813230417, "z": -22.425691797873426
+03:47:21 pair deq-k3 -> deq-k3swj: "ratio": 0.9691854680239227, "diff": -0.003047018409015681, "se": 0.000139210610008605, "z": -21.88783174520488
+03:47:21 == gate08 done
+03:48:48 == gate08f start
+BENCH NVIDIA GeForce RTX 4070: torch 202.82 us, fused 6.40 us per position and layer and source; speedup 31.7x; fused max rel difference 2.25e-07
+03:59:47 fused fit: fused check (layer 0, source k3wq, 1526 positions): max rel difference 3.62e-07; 10795 tok/s 12047 tok/s 24083 tok/s (26 s; exact: 1243 tok/s 1262 tok/s 1270 tok/s 3 sources)
+{"golden": "/data/g08-search1", "wq": "/data/yb/w36/fitF/k3wq/wq", "n_swapped": 150, "n_aq": 0, "positions": 166155, "kld": 0.09582966620438012, "top1": 0.8571333995365773, "sec": 17.3}
+04:00:11 fused vs exact k3wq:
+gate 86016 channels: 413 differ (0.48%), max |dc| 0.03, mean |dc| 4.93e-05
+up   86016 channels: 35185 differ (40.91%), max |dc| 0.0385, mean |dc| 5.09e-05
+swiglu.jsonl differs: largest relative difference 2.00e-01 (cg_at_edge, layer 23)
+CMPSWJ DIFFER (scales differ)
+04:00:14 pair k3wq -> k3wqF: "ratio": 0.99980267278426, "diff": -1.891353329722123e-05, "se": 3.188360124056544e-05, "z": -0.5932056781953973
+04:00:14 == gate08f done

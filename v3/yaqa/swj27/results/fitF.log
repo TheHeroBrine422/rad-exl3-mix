@@ -1,0 +1,39 @@
+03:59:24 87 documents, 100625 tokens (cap 4096); 1 sources ['k3wq']; 3 stages [0, 8, 16, 24], weights + sources + sums 0.60 .. 0.60 GiB a stage (budget 2.20 GiB)
+03:59:24 stage 0: layers 0..7, resident 0.60 GiB, loaded in 0 s; documents 0..86
+03:59:25 fused check (layer 0, source k3wq, 1526 positions): max rel difference 3.62e-07
+
+03:59:34 stage 0: 100625 tokens in 9 s (10795 tok/s), peak 0.79 GiB, max RSS 1.95 GiB
+03:59:34 stage 1: layers 8..15, resident 0.61 GiB, loaded in 0 s; documents 0..86
+03:59:34 fused check (layer 8, source k3wq, 1526 positions): max rel difference 3.56e-07
+
+03:59:42 stage 1: 100625 tokens in 8 s (12047 tok/s), peak 0.79 GiB, max RSS 1.99 GiB
+03:59:42 stage 2: layers 16..23, resident 0.61 GiB, loaded in 0 s; documents 0..86
+03:59:42 fused check (layer 16, source k3wq, 1526 positions): max rel difference 4.33e-07
+
+03:59:47 stage 2: 100625 tokens in 4 s (24083 tok/s), peak 0.79 GiB, max RSS 1.99 GiB
+k3wq L00 rel resid base 1.6981e-02 up 1.6688e-02 joint 1.6487e-02 | held-out 1.6488e-02 1.6313e-02 1.6153e-02 | c_g 1.021±0.040 edge 0
+k3wq L01 rel resid base 1.9582e-02 up 1.9454e-02 joint 1.9327e-02 | held-out 1.9103e-02 1.9042e-02 1.8948e-02 | c_g 1.013±0.028 edge 0
+k3wq L02 rel resid base 1.6932e-02 up 1.6736e-02 joint 1.6533e-02 | held-out 1.6799e-02 1.6687e-02 1.6521e-02 | c_g 1.018±0.024 edge 0
+k3wq L03 rel resid base 1.8840e-02 up 1.8666e-02 joint 1.8466e-02 | held-out 1.8820e-02 1.8776e-02 1.8638e-02 | c_g 1.015±0.025 edge 0
+k3wq L04 rel resid base 1.8312e-02 up 1.8124e-02 joint 1.7864e-02 | held-out 1.8289e-02 1.8220e-02 1.8022e-02 | c_g 1.017±0.032 edge 0
+k3wq L05 rel resid base 1.8679e-02 up 1.8559e-02 joint 1.8369e-02 | held-out 1.8729e-02 1.8701e-02 1.8573e-02 | c_g 1.017±0.030 edge 0
+k3wq L06 rel resid base 1.7520e-02 up 1.7401e-02 joint 1.7235e-02 | held-out 1.7552e-02 1.7508e-02 1.7389e-02 | c_g 1.016±0.040 edge 0
+k3wq L07 rel resid base 1.7664e-02 up 1.7566e-02 joint 1.7412e-02 | held-out 1.7776e-02 1.7724e-02 1.7610e-02 | c_g 1.016±0.037 edge 0
+k3wq L08 rel resid base 1.7352e-02 up 1.7274e-02 joint 1.7146e-02 | held-out 1.7356e-02 1.7321e-02 1.7224e-02 | c_g 1.016±0.038 edge 0
+k3wq L09 rel resid base 1.6851e-02 up 1.6778e-02 joint 1.6681e-02 | held-out 1.7133e-02 1.7089e-02 1.7014e-02 | c_g 1.013±0.040 edge 0
+k3wq L10 rel resid base 1.6155e-02 up 1.6081e-02 joint 1.5978e-02 | held-out 1.6399e-02 1.6360e-02 1.6290e-02 | c_g 1.015±0.048 edge 1
+k3wq L11 rel resid base 1.6583e-02 up 1.6486e-02 joint 1.6361e-02 | held-out 1.6970e-02 1.6912e-02 1.6820e-02 | c_g 1.017±0.045 edge 2
+k3wq L12 rel resid base 1.6286e-02 up 1.6143e-02 joint 1.6007e-02 | held-out 1.6651e-02 1.6556e-02 1.6456e-02 | c_g 1.015±0.039 edge 2
+k3wq L13 rel resid base 1.5438e-02 up 1.5297e-02 joint 1.5182e-02 | held-out 1.5882e-02 1.5789e-02 1.5702e-02 | c_g 1.013±0.040 edge 2
+k3wq L14 rel resid base 1.3572e-02 up 1.2484e-02 joint 1.2231e-02 | held-out 1.3697e-02 1.2680e-02 1.2457e-02 | c_g 1.011±0.062 edge 29
+k3wq L15 rel resid base 1.4599e-02 up 1.4389e-02 joint 1.4256e-02 | held-out 1.4842e-02 1.4729e-02 1.4636e-02 | c_g 1.017±0.054 edge 34
+k3wq L16 rel resid base 1.4528e-02 up 1.4277e-02 joint 1.4111e-02 | held-out 1.4841e-02 1.4762e-02 1.4652e-02 | c_g 1.014±0.034 edge 9
+k3wq L17 rel resid base 1.4863e-02 up 1.4576e-02 joint 1.4370e-02 | held-out 1.5186e-02 1.5049e-02 1.4911e-02 | c_g 1.012±0.028 edge 2
+k3wq L18 rel resid base 1.4105e-02 up 1.3709e-02 joint 1.3504e-02 | held-out 1.4417e-02 1.4189e-02 1.4046e-02 | c_g 1.011±0.028 edge 4
+k3wq L19 rel resid base 1.1562e-02 up 1.1368e-02 joint 1.1241e-02 | held-out 1.1761e-02 1.1712e-02 1.1641e-02 | c_g 1.012±0.027 edge 1
+k3wq L20 rel resid base 1.5496e-02 up 1.5210e-02 joint 1.5056e-02 | held-out 1.5783e-02 1.5674e-02 1.5595e-02 | c_g 1.011±0.024 edge 1
+k3wq L21 rel resid base 1.4116e-02 up 1.3843e-02 joint 1.3692e-02 | held-out 1.3970e-02 1.3914e-02 1.3836e-02 | c_g 1.010±0.024 edge 0
+k3wq L22 rel resid base 1.0442e-02 up 1.0268e-02 joint 1.0180e-02 | held-out 1.0020e-02 1.0000e-02 9.9859e-03 | c_g 1.009±0.029 edge 0
+k3wq L23 rel resid base 8.0615e-03 up 7.9400e-03 joint 7.9023e-03 | held-out 7.4074e-03 7.4048e-03 7.4044e-03 | c_g 1.008±0.035 edge 8
+03:59:47 k3wq: scales -> /data/yb/w36/fitF/k3wq
+03:59:47 SWJFIT27 DONE 1 sources, 87 docs, 100625 tokens
