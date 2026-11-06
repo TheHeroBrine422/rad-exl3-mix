@@ -432,3 +432,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 - [ ] **rad-quant-at-home pulls source data (bf16 shards, published Hessians) from HF, pinned by revision hash
   (user 11-06):** no upload load on our hosts; donors and auditors can check inputs against HF. Our own derived inputs
   (e.g. H_out Hessians if adopted) need an HF dataset of ours (outward-facing: user approves).
+  - DeepSeek V4.1 Flash (user 11-06): ~500 GB, ~700B params of which ~200B "engram", released FP8 trunk / FP4 experts
+    (no bf16): golden logits / Hessians come from the native checkpoint and KLD is vs it; experts go FP4 → ~2–3 bit.
+    Engram, if lookup-table memory: quantize like our embedding (per-row frequency weighting, V2 Lloyd / embtrellis /
+    vocab tiers), lives in host RAM / disk, mostly a footprint win. Expert Hessians are thin per expert on a calib-sized
+    corpus (→ larger corpus). Verify the engram structure from the model card / code before designing.
