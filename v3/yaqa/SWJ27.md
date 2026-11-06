@@ -124,3 +124,12 @@ minutes), the mixes once no further pairing needs them.
 
 None. Only the f16 svh vectors of gate_proj and up_proj change. The format, kernels, bpw, prefill and decode are
 unchanged.
+
+## Amendment 1 (2026-11-06 ~10:15 AM CST, after the K2.5 pass, before these data): stacking with H_out bn, K4 transfer
+One fit pass, `ARMS="bn bns1 base4 bn4"` (gpubox insert `/data/q1106/insert-20-swj-bn-k4.sh`, before the next q2 arm).
+- **Stacks with H_out bn (K2.5):** pairs bn → bnswj, bns1 → bns1swj; the same rule (geo ≤ 0.98, both < 1). A pass means
+  the swj gain survives on top of H_out; a fail with geo in (0.98, 1) means it overlaps H_out's gain (then the stack
+  decision follows whichever of H_out / swj the pooled pairs favor).
+- **K4 transfer:** pairs base4 → base4swj, bn4 → bn4swj (two different bases rather than two seeds; base4s1 isn't made
+  yet). Pass at K4 = geo ≤ 0.98 and both < 1 → swj at every level ≥ K4 too; geo in (0.98, 1) with both < 1 → adopt at
+  ≥ K4 only if the fit cost stays "one pass per level" (it does); any pair ≥ 1 → swj only ≤ K3.5 until a K4 seed pair.
