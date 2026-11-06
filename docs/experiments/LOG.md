@@ -3,6 +3,23 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 10:20 CST · #33-28, #94, #38, #39, #77, #104 · Morning readouts; queues refilled
+- **H_out bn at K2.5, second seed pair:** s1 → bns1 0.9923 (z −0.7). With base → bn 0.972: geo 0.982, every pair < 1
+  but geo > 0.98 → **not yet a pass** under H27 amendment 5; the third pair (s2 / bns2) and K4 pairs are queued.
+- **#94 rerun (w45, settle.py): negative, explained.** The GPU smoke used Gaussian tiles at sd 1, where codebook
+  clipping hides int8 rounding; exllamav3's scale search picks ~0.71–0.83 sd at K6.5–8, where rounding dominates. On
+  real tensors i8/mul1 = 1.018 K6.5, **1.27 K7** (~0.18 bit; 0.26 on attn_qg), 1.69 K7.25 … 4.48 K8; i8 levels top out
+  near mul1 K6.85. No i8 level above K7; **the ladder's i8 K7 level needs re-pricing** (knapsack curves, not ×1.02).
+  4070 real-quant confirmation queued (w46 item 5). `v3/e3/sub1/r94b.md`.
+- **w43 settle (settle.py, 27 tensors × 2 samples; rules before data):** #39 gain per (family, K): **flat, keep 1.0**.
+  #38 damping at K1.5 / 2.5 / 3.5 / 5.5: **keep** input 0.005, rest 0.025 (no alternative ≥ 1%). #77 tile CD per K:
+  cd1 / cd2 / cd3 = −0.5 / −0.7 / −0.8…−1.1% at 1.7 / 2.5 / 3.2× LDLQ time, 54/54 tensors better; attn_qg −2.2…−3.7%
+  (cd3). No adoption rule: user decides (option: cd3 on attn_qg only, a small family). `v3/e3/settle/`.
+- **Queued:** gpubox insert `insert-20-swj-bn-k4.sh` (SWJ27 amendment 1: swj on bn / bns1 = stacking with H_out;
+  base4 / bn4 = K4 transfer). CPU: w46 re-validates #90-02 (i4 vs i8) and #100 (codebook) on settle.py, new #106
+  (o_proj / out_proj head-permutation act order), i8 real-quant check on the 4070.
+- w40 (KV autoresearch task, branch `kv-task`) built; T1 blocked by gpubox host RAM (parked with KV).
+
 ### 2026-11-06 05:40 CST · #104 · 27B swj passes: −6.5% KLD at K2.5
 - **Result (gpubox, golden-search27, 103 docs, 123k positions):** base → baseswj 0.9346 (diff −0.00386, z −12.5);
   s1 → s1swj 0.9346 (z −14.6). Rule (`v3/yaqa/SWJ27.md`, before data): geo ≤ 0.98 and both pairs < 1 → **PASS**.
