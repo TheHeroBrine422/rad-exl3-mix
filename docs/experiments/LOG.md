@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 2:15 PM CST · #101 · xcorp H_in at 27B: too small, dropped
+- **27B pairs (K2.5, H_out bn on both sides):** bn → xbn 0.9880 (z −1.2), bns1 → xbns1 0.9971 (z −0.2); pooled ~0.993 vs
+  the rule's ≤ 0.98. The 0.8B's −1.6…−2.6% shrinks to ≲ 1% at 27B (as H_out's did). **User: not worth it.** The
+  remaining xcorp arms (xbns2, xbn4, xbn4s1, ~11 card-hours) are cancelled by renaming `hi-X0.5/.done`; the bns2 / K4
+  H_out arms keep running. The 0.8B recipe and d1112 stay recorded. Larger / broader corpora: future models (BACKLOG).
+
 ### 2026-11-06 10:20 CST · #33-28, #94, #38, #39, #77, #104 · Morning readouts; queues refilled
 - **H_out bn at K2.5, second seed pair:** s1 → bns1 0.9923 (z −0.7). With base → bn 0.972: geo 0.982, every pair < 1
   but geo > 0.98 → **not yet a pass** under H27 amendment 5; the third pair (s2 / bns2) and K4 pairs are queued.
