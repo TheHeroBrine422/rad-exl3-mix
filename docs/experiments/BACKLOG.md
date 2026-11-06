@@ -217,6 +217,13 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Autoresearch on KV quantization** (user idea 2026-11-06; KV work itself is parked, this is the cheap way to
+  push it): once radiance #416 merges, an autoresearch-v3 task whose candidates change KV layouts / transforms
+  (new packed layouts, rotation variants, V-mean / V-prediction fits, per-layer recipes) and whose judge is
+  `rad-autoquant` / the engine's KL mode on a fixed long corpus vs a bf16-cache reference (KL above the measured noise
+  floor, ΔNLL, top-1, drafter acceptance as a limit), plus the kernels' byte-exact tests. Easier than weight quant:
+  every candidate is a runtime option (no requant), evals are minutes. Needs the 9070 XTs or idle card time, and
+  a quick check with Code 000 so it builds on his work rather than around it.
 - [ ] **User-side mix builder** (2026-11-06, "interesting", low priority): publish the ladder levels per tensor plus the
   fitted sensitivities / speed table; a small tool runs the knapsack for any target bpw / VRAM and fetches only the
   chosen tensor shards (download ≈ the model's own size; no GPU, no eval). Predicted quality only (no mix healing,
