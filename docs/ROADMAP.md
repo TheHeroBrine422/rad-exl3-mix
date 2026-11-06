@@ -118,7 +118,7 @@ sizes and 6.0.
   fp8 / fp8_v4 / k6_v4 / k5_v4 / k4h_v4 / k4h_v2h), Hadamard rotation, V mean, V prediction, and `rad-autoquant` (a
   per-layer KL knapsack with device verify rounds and a measured noise floor). Rows at head 256 / gqa 12 and 6, so
   Qwen3.8-27B at TP1 should fit. Our part: keep qwen35_exl3 on radiance's standard KV groups, run rad-autoquant for
-  the 27B once merged, and teach D-LSA's `attn_paged_list` the new packed layouts. KV-QAT stays ours (V4).
+  the 27B once merged, and teach D-LSA's `attn_paged_list` the new packed layouts. KV-QAT and any further KV work are parked (user 2026-11-06): model quant first; later we may iterate on #416.
 - **N-LSA / LSA beyond D-LSA's released map**, then **MoE models** (QFN / GLM-5.3-Flash / Mistral Large 4; `docs/research/moe-kld.md`): measured on our
   own corpus first; need bf16 reference logits and input Hessians of the full model (SSD-streamed bf16 weights or
   cloud hardware); MoE needs per-expert handling.
