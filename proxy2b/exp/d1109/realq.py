@@ -53,6 +53,10 @@ ap.add_argument("--gd-off", action="store_true")
 ap.add_argument("--max-sec", type=float, default=0, help="exit 3 at a layer boundary when the next layer would end past "
                 "this many seconds (a rerun resumes from the shards: a long quant in several GPU-lock holds)")
 ap.add_argument("--max-steps-per-linear", type=int, default=0, help="debug: cap GD steps per linear (0 = all)")
+ap.add_argument("--prefix", choices=("quant", "bf16"), default="quant",  # +prefix
+                help="quant: every block's inputs come through the quantized prefix (REAL-Q as the paper); bf16 "  # +prefix
+                "(d1109 amendment 2, parallel REAL-Q): quantized weights never enter the prefix, so every layer sees "  # +prefix
+                "bf16 inputs and layers are independent (one --layers L-L run per layer gives the same shards)")  # +prefix
 r = ap.parse_args(own)
 op = argparse.ArgumentParser(allow_abbrev=False, add_help=False)
 op.add_argument("-o"); op.add_argument("-K"); op.add_argument("--only"); op.add_argument("--layers", default="0-63")
@@ -77,9 +81,14 @@ os.makedirs(oa.o, exist_ok=True)
 # ------------------------------------------------------------------ stamp (ourq's own stamp does not see these options)
 _h = hashlib.sha256()
 for f in (__file__, rqdata.__file__): _h.update(open(f, "rb").read())
+# lines tagged "+prefix" (the --prefix option, added while d1109 run.sh was resuming quants) are left out of the code  # +prefix
+# hash, and --prefix quant out of the stamp, so a run without the option keeps the stamp it had before  # +prefix
+_h = hashlib.sha256(); _h.update(b"".join(x for x in open(__file__, "rb") if not x.rstrip().endswith(b"# +prefix")))  # +prefix
+_h.update(open(rqdata.__file__, "rb").read())  # +prefix
 FI = torch.load(r.fisher)
 _h.update(json.dumps({"fisher": FI["args"], "n_tok": FI["n_tok"]}, sort_keys=True).encode())
 STAMP = {"code_fisher": _h.hexdigest()[:16], "args": {k: v for k, v in vars(r).items() if k != "max_sec"}, "fisher_args": FI["args"]}
+if r.prefix == "quant": del STAMP["args"]["prefix"]  # +prefix
 _sp = os.path.join(oa.o, "realq-stamp.json")
 if os.path.exists(_sp) and json.load(open(_sp)) != STAMP and not os.environ.get("RQ_MIXED"):
     sys.exit(f"{_sp}: made with other REAL-Q options or code; new OUTDIR, or RQ_MIXED=1")
@@ -145,6 +154,7 @@ class Streams:
     def init(self, l0):
         t0 = time.time(); ovs = [overrides(j) for j in range(l0)]
         src = {j: sum(1 for k in layer_keys(j) if final_w(k, True) is not None) for j in range(l0)}
+        if r.prefix == "bf16": ovs, src = [{}] * l0, "none (--prefix bf16)"  # +prefix
         for c in range(0, N, r.micro):
             x = dec.embed_tokens(TOK[c:c + r.micro].to(dev)); xs = x
             for j in range(l0): x = fwd(j, x, ovs[j])
@@ -158,6 +168,7 @@ class Streams:
     @torch.no_grad()
     def advance(self):
         l = self.l; ov = overrides(l)
+        if r.prefix == "bf16": ov = {}  # +prefix
         miss = [k for k in layer_keys(l) if (ONLY is None or k in ONLY) and k not in QW]
         if miss: print(f"realq: warning: layer {l} leaves with bf16 {miss}", flush=True)
         for c in range(0, N, r.micro):

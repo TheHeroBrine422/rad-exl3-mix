@@ -73,3 +73,32 @@ Different, by necessity or by our stack:
     # one quant by hand:   FISHER=/data/yb/d1109/fisher/fisher.pt proxy2b/exp/d1109/rq.sh 3 i8 OUT [--lr ..] -- --hout DIR --sigma-reg-out 0.01
 
 Disk: ~2 GB per (arm, K, seed) (1.2 GB full wq + swj + writers); 12 of them ≈ 25 GB in `/data/yb/d1109`.
+
+## Amendments 1 and 2: `--prefix bf16` and `run2.sh` (worker w30, 2026-11-05)
+
+- **`realq.py --prefix quant|bf16`** (default quant = unchanged). bf16: quantized weights never enter the prefix model
+  (`Streams.init` / `advance` run every earlier layer at bf16), so each layer is quantized on bf16 inputs. In-layer
+  behaviour is unchanged (earlier linears of the same block at their quantized values, `--base-wq` as before). Layers
+  are independent, so `--layers L-L` per layer gives the same shards as one run. The 11 added lines carry the tag
+  `# +prefix`. The code hash skips tagged lines, and `--prefix quant` is left out of the stamp's args. Without the
+  option, `realq-stamp.json` is byte-identical to the pre-edit one, so `run.sh`'s quants kept resuming across the
+  edit (k3rqnoh_s1 did, 17:12 UTC).
+- **Gate** (`gate-prefix.sh`, logs `/data/yb/d1109/gate-prefix*.log`):
+  - REAL-Q's GD is not bit-reproducible run to run. Layer l+1's loss term backpropagates through flash attention
+    (layer 3), and the trellis turns any difference into ~20% different codes. So the byte checks run in deterministic
+    torch mode.
+  - Old code (git HEAD) vs new, layer 1 on k3rq's own layer-0 shard: q-L01, the 6 layer-1 wq files and all 70 GD
+    losses are byte-identical; realq-stamp.json old == new == k3rq's. **PASS.**
+  - bf16, `warn_only=False` (deterministic flash backward): layer 2 of a layers 1-2 run == layer 2 alone, byte for
+    byte. **PASS.** Layer-1 wq differ from quant's (the option acts).
+  - Side note: a resumed `--prefix quant` run is not bit-equal to a continuous one either (same nondeterminism), so
+    seeds, not reruns, measure noise.
+- **`run2.sh`** (after `run.sh` exits; writers plain as run.sh; log `/data/yb/d1109/run2.log`, results appended to
+  `result.txt`):
+  - `healrq`: d1105's sp healing on k{K}rqswjasym_r0, seeds 0/1, vs d1105's `k{K}edyswjasym_r0_sp`.
+    heal.py trains in `timeout 840` holds and resumes from `state.pt`: a full sp train is ~15.5 min, over the
+    15-min unit.
+  - `rqp`: run.sh's chain with `--prefix bf16`, K3/K2 x seeds 0/1.
+  - `healrqp`: sp healing on rqp.
+  - `summ2`: summ.py lines plus `rules.py`, which evaluates the base rule, amendment 1 and amendment 2 (75% of
+    rq's mean-log gain, unhealed and healed; or, rq failing, rqp alone against both rules; seeds 0/1).

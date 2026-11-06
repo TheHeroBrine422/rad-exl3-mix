@@ -1,0 +1,45 @@
+corpus /data/yb/w18/t08/t.jsonl: 5 documents, ~11337 tokens (chars/4); 3 stages, scratch bf16 in /data/yb/w18/rs/scr, blocks of 2 documents
+needs ~1 GB in /data/yb/w18/rs (top.bin) and ~1 GB peak scratch
+/dev/sda1       3.7T  3.4T  275G  93% /data
+/dev/sda1       3.7T  3.4T  275G  93% /data
+kernels {'causal_conv1d': '1.7.0', 'fla': '0.6.0', 'torch': '2.11.0+cu128'} device NVIDIA GeForce RTX 4070
+== documents 0:2 (12:33 AM CST)
+06:34:56 corpus /data/yb/w18/t08/t.jsonl: 5 documents, 12671 tokens, 12642 scored rows
+06:34:57 3 stages, layer split [0, 12, 23, 24], scratch bf16
+06:34:58 stage 0: layers 0..11, 0.47 GiB, loaded in 0 s; 2 documents
+
+06:34:58 stage 0: 11000 tokens in 1 s (16218 tok/s), peak 1.05 GiB
+06:34:58 stage 1: layers 12..22, 0.45 GiB, loaded in 0 s; 2 documents
+
+06:34:59 stage 1: 11000 tokens in 0 s (34677 tok/s), peak 1.02 GiB
+06:34:59 stage 2: layers 23..23 + norm + head, 0.52 GiB, loaded in 0 s; 2 documents
+
+06:35:00 stage 2: 11000 tokens in 1 s (9916 tok/s), peak 1.74 GiB
+06:35:00 3 of 5 documents not finished yet (first 2); kld.json not written
+== documents 2:4 (12:35 AM CST)
+06:37:17 corpus /data/yb/w18/t08/t.jsonl: 5 documents, 12671 tokens, 12642 scored rows
+06:37:19 3 stages, layer split [0, 12, 23, 24], scratch bf16
+06:37:19 stage 0: layers 0..11, 0.47 GiB, loaded in 0 s; 2 documents
+
+06:37:20 stage 0: 1570 tokens in 0 s (3406 tok/s), peak 0.58 GiB
+06:37:20 stage 1: layers 12..22, 0.45 GiB, loaded in 0 s; 2 documents
+
+06:37:20 stage 1: 1570 tokens in 0 s (14395 tok/s), peak 0.54 GiB
+06:37:20 stage 2: layers 23..23 + norm + head, 0.52 GiB, loaded in 0 s; 2 documents
+
+06:37:21 stage 2: 1570 tokens in 0 s (4228 tok/s), peak 1.71 GiB
+06:37:21 1 of 5 documents not finished yet (first 4); kld.json not written
+== documents 4:5 (12:37 AM CST)
+06:39:21 corpus /data/yb/w18/t08/t.jsonl: 5 documents, 12671 tokens, 12642 scored rows
+06:39:23 3 stages, layer split [0, 12, 23, 24], scratch bf16
+06:39:24 stage 0: layers 0..11, 0.47 GiB, loaded in 0 s; 1 documents
+
+06:39:24 stage 0: 101 tokens in 0 s (249 tok/s), peak 0.50 GiB
+06:39:24 stage 1: layers 12..22, 0.45 GiB, loaded in 0 s; 1 documents
+
+06:39:24 stage 1: 101 tokens in 0 s (1828 tok/s), peak 0.47 GiB
+06:39:24 stage 2: layers 23..23 + norm + head, 0.52 GiB, loaded in 0 s; 1 documents
+
+06:39:24 stage 2: 101 tokens in 0 s (618 tok/s), peak 0.98 GiB
+06:39:24 DONE /data/yb/w18/rs/g: 12642 rows, mean nll 1.0982 (ppl 2.999), mean entropy 0.9637, mean tail 6.45e-03
+golden done: /data/yb/w18/rs/g

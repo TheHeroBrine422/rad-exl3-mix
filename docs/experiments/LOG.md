@@ -186,6 +186,19 @@ versions of anything: git history.
 - **Research points (user):** 1.5 / 1.75, then 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD blows up; 1.25 is no
   longer a separate point.
 
+### 2026-11-05 9:30 PM CST · #33-28, #101, #92 · 27B seed floor ≈ H_out's effect; ukisai fails; night queue
+- **#33-28 seed arm (K2.5):** base → s1 (seed offset 1, no H_out) = **0.975** (z −2.5); s1 → bn 0.997. The 27B
+  quant-noise floor (~2.5% per pair) is as large as bn's −2.8%: **bn is not real by H27's rule** (needs ≥ 2× the floor).
+  The per-document paired interval does not include quantization noise; single-pair 27B swap tests can't resolve
+  effects under ~5%. **K4:** bn4 / base4 = 0.961 (z −2.5): passes amendment 3's letter, decision held for a K4 seed
+  arm (H27 amendment 4). H_out not adopted for now.
+- **#101 ukisai arm (0.8B, H_in w0.25 of public 27B agent traces):** calib 1.023 / 1.029 (K3 / K2), ukisai golden
+  0.816 / 0.824, calib agent traces 1.026 / 0.995 (noisy): **fail**, the same trade as sessions and self-gen.
+  xcorp w0.5 stays the only passing blend; its 27B arm (2 seed pairs, d1111 amendment 2) runs tonight.
+- **#92 REAL-Q:** base rule failed (K3 ×1.12, K2 0.974); amendment arms (heal, rqp) still running on the 4070.
+- **Queue (gpubox card 0, `/data/q1106/q.sh`, started 9:07 PM CST):** mkhin27 xcorp H_in (1–2 h) → blend w0.5 →
+  K2.5 arms xbn, bns1, xbns1 → K4 seed arm base4s1 → slab-head retry (its K5 head quant died at 6:02 PM CST).
+
 ### 2026-11-05 4:15 PM CST · #101 · H_in blends: xcorp w0.5 passes, sessions fail, xcorp w0.25 misses
 - d1111 (0.8B, dygm stack, K3 / K2 × seeds 0 / 1, paired; ratios = mean over seeds vs calib-only H_in):
 
