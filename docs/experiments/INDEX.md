@@ -184,3 +184,5 @@ Next free number: **90**.
 | 101 | Input Hessians blended with broader text (xcorp; raw agentic sessions; ukisai 27B traces), scored on calib / fresh xcorp / agentic text, 0.8B | statistics | none | xcorp w0.5 **pass** (calib −2%, xcorp −3…−6%); sessions + ukisai fail (own text −8…−18%, calib +2–3%); 27B arm running | 11-05 | 11-05 | rule `proxy2b/exp/d1111/README.md`; 4070; 27B arm next |
 | 102 | Chained tail-biting: tile start windows from the previous row tile, one wrap per n tiles (review 11-05 idea 1), CPU proxy | format | none | running | 11-06 | 11-06 | rule `v3/e3/chain/README.md`; w38, colo; decide before the ladder |
 | 103 | down_proj block act order via gate/up row permutation (review 11-05 idea 8), CPU proxy | quantizer | none | running | 11-06 | 11-06 | rule `v3/e3/actblk/README.md`; w38, colo |
+| 104 | 27B swj (C10) scale refit on K2.5 base / s1, no requant (#85 at 27B) | quantizer | none | running | 11-06 | 11-06 | rule `v3/yaqa/SWJ27.md`; gpubox q2 insert |
+| 105 | 27B writers' asym ρ0 on K2.5 s1 / base (#87 at 27B) | quantizer | none | queued | 11-06 | 11-06 | rule `v3/yaqa/ASYM27.md`; gpubox after q2's trunk arms (~6 PM CST) |
