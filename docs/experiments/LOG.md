@@ -16,6 +16,9 @@ versions of anything: git history.
 - **Pattern:** the bad values are one contiguous run of ~500 packed entries (row 3540–3541, columns 3541–4040), random
   magnitudes 1e18–1e29 with mixed signs: a damaged ~2 KB span (memory / transfer / read), not an arithmetic bug. The fp64
   checkpoints were already deleted, so where it happened can't be localized. Retry at 08:01 UTC: o_proj proxy 1.45e-2, normal.
+- **Second fault, same arm:** chunk 60–63 crashed with HSA MEMORY_APERTURE_VIOLATION in `ldlq_2hess` (L61); the rerun
+  was clean. Check: bn → xbn proxy error per tensor, 400/400 within ±10% (geo 1.022), so no silent damage in the arm.
+  Two GPU memory faults on card 0 in one night: watch for more (watch-notes "Lead actions"); recheck after the upgrade.
 - **Open:** before any reuse of mkhin27, add a write-time check (finite, Cauchy–Schwarz |H_ij|² ≤ H_ii H_jj, fail
   loudly) and, for the blend, the same check; consider recollecting this one tensor if xcorp H_in is adopted;
   the xbn pairs carry this caveat (one o_proj at calib H_in) — too small to move a whole-model ratio.
