@@ -217,6 +217,14 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **From the 11-05 mining review** (`local/mine/review-2026-11-05-ideas.md`, triaged 11-06; ideas 1 and 8 are
+  #102 / #103): idea 2 layer-split replicates (noise floor from half-mixes, no new quants; build the tool, validate
+  against the measured seed pairs before trusting it); idea 4 writers' asym as a fixed-code refit (compare with w37's
+  requant path); idea 10 0.8B 3-layer-proxy transfer coefficient (4070, ~1 h); ideas 5 / 6 narrow decode planes,
+  fused sibling launches without K ties (→ `docs/design/kernel-opts.md`; idea 5 may make i4 K2–3 worth building
+  without A4); idea 7 per-block A8 exceptions for A4 (feed #46-03); idea 9 0.8B stream-policy testbed (before the
+  27B search); ideas 3 / 12 head-only refit and last-quarter 27B healing (healing-class: ladder phase); ideas 11, 13,
+  14 low priority.
 - [ ] **QAD / healing research pass** (user 2026-11-06, backlog): (1) literature read (worker): NVIDIA Model Optimizer
   QAD / Flash-Next recipe, EfficientQAT, PV-tuning, BitDistiller, LLM-QAT, QuIP#/QTIP fine-tuning, trellis /
   codebook-aware healing; what transfers to frozen codes. (2) 0.8B loss variants on frozen-code healing: hidden-state
