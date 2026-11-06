@@ -217,6 +217,13 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **Lessons from radiance PR #416 (Code 000's KV quant, 2026-11-06)** for our own work: (1) **MTP / DFlash2 drafter
+  acceptance** as a release metric: their best-KL recipe cut drafter acceptance 0.63 → 0.41 (decode 178 → 132 tok/s)
+  because KL mode doesn't run speculation; V3's last-layer / head choices need an acceptance check (and maybe a
+  knapsack constraint). (2) **Measured engine noise floor:** they recompute bf16 in another prefill order (chunk 64)
+  and subtract it; do the same for our 27B goldens. (3) **Non-additive per-layer costs** for KV ("one early layer
+  costs as much as all"): their solver verifies on the device and rescales; our knap4 assumes additivity across
+  tensors, so add a verify-and-rescale round on the finals (#46-03's additivity check is the first data point).
 - [ ] **From the 11-05 mining review** (`local/mine/review-2026-11-05-ideas.md`, triaged 11-06; ideas 1 and 8 are
   #102 / #103): idea 2 layer-split replicates (noise floor from half-mixes, no new quants; build the tool, validate
   against the measured seed pairs before trusting it); idea 4 writers' asym as a fixed-code refit (compare with w37's
