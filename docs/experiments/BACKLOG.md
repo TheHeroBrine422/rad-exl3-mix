@@ -217,6 +217,10 @@ prefill.
 - [ ] Check knap4's V3 menu gives L63 ffn_gate_up its extra width (IQR's one exception; our #21 spike).
 
 ## Later, low priority (user, 2026-11-05)
+- [ ] **User-side mix builder** (2026-11-06, "interesting", low priority): publish the ladder levels per tensor plus the
+  fitted sensitivities / speed table; a small tool runs the knapsack for any target bpw / VRAM and fetches only the
+  chosen tensor shards (download ≈ the model's own size; no GPU, no eval). Predicted quality only (no mix healing,
+  no search/verify). Cost on our side: hosting the ladder (~1 TB at 73 levels), versioning it with the format.
 - [ ] **Lessons from radiance PR #416 (Code 000's KV quant, 2026-11-06)** for our own work: (1) **MTP / DFlash2 drafter
   acceptance** as a release metric: their best-KL recipe cut drafter acceptance 0.63 → 0.41 (decode 178 → 132 tok/s)
   because KL mode doesn't run speculation; V3's last-layer / head choices need an acceptance check (and maybe a
