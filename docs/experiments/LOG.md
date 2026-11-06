@@ -3,6 +3,34 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 04:50 CST · #101, #102, #103, #94, ideas 5 / 7 · Overnight readouts
+- **#101 amendment 3 (d1111, 0.8B, 3 seeds, dygm stack):** ratios vs dygm, calib search K3 / K2 (verify; xcorp):
+  X0.5 0.974 / 0.984 (0.975 / 0.981; 0.950 / 0.934); X0.75 0.974 / 0.985 (0.979 / 0.984); X3 (3M-token sample)
+  0.979 / 0.975 (0.982 / 0.977); X1.0 0.981 / 0.972 but verify 0.990 at K3 = 53% of its search gain → **fails** the ⅔
+  rule. Categories: code 1.03 / 1.04 (fail), prose 0.984 / 0.988, mt 1.006 / 0.981 (fail calib ≤ 1.005): none beats full
+  mX. Passing arms are within 1% → tie rule: **full mX, w0.5** (the recipe the 27B arms use). Transfer: K4 0.982 (every
+  seed < 1), K5 0.990. Agentic subset worsens: +4.3% K2, +1.8% K3, +0.7% K4 / K5. Next: does it stack with swj + asym
+  + H_out (d1112, w44, 4070).
+- **27B (#101 / #33-28):** first pair bn → xbn (K2.5, 103 docs) −1.2%, z −1.2 (not significant alone; amendment 4
+  needs all pairs). Caveat: one tensor at calib H_in (see 02:05 entry).
+- **#102 chained tail-biting (w38, colo): negative.** n=4 / n=1 median 0.9961 / 0.9963 / 0.9976 at K2 / 2.5 / 3 (rule
+  ≤ 0.98); the n curve is flat from 2 to 32: chaining only amortizes the wrap guess, the free-start advantage is ~16−K
+  start bits per tile the format can't store. New: tail-biting cost on real LDLQ tensors, free/TB 0.944 / 0.946 /
+  0.951 / 0.959 at K2 / 2.5 / 3 / 4. `v3/e3/chain/`.
+- **#103 down_proj block act order (w38): negative.** 0.9942 / 0.9970 / 0.9976 at K2 / 3 / 4 (rule ≤ 0.98). Never worse
+  on 24 results; −2.4% L0, −4…−4.7% L63; gain follows the block-trace spread (p90/p10); census over 64 layers: −0.8%
+  of down's proxy error, ≈ −0.2% trunk. o_proj (spread 2.83) / GDN out_proj (2.58) head-permutation half: untested,
+  BACKLOG. `v3/e3/actblk/`.
+- **Ideas 7 / 5 (w42, CPU): negative.** Per-block A8 exceptions for A4: k = 2 blocks cut gate_up's A4 error 6–11% (rule
+  ≥ 30%); the error is spread, not concentrated. i4 decode plane on the A8 path at M 2048: +2.8% whole layer if the
+  conversion hides (−4.9% if it serializes); not worth i4 levels for speed alone. `v3/e3/a4/blockx.md`.
+- **#94 (cpu2 rerun, scale grid to 1.5): inconclusive.** Sanity fails (proxy K7 ×1.29 / K8 ×4.5 vs GPU smoke ×1.024 /
+  ×1.347); the wider grid leaves mul1 unchanged. w43 found the old proxy's scale handling distorts results; rerun on
+  its exllamav3-faithful proxy (w45, cpu2).
+- **w43 (settle, CPU, running):** old #39 "best gain rises with K" looks partly a proxy artifact; items 1–3 land
+  ~6–8 AM CST. Possible quantizer gap: `ldlq_drift(K)` is exact-K only, so fractional K gets no drift correction
+  (w43 item 1b on CPU, d1112 item 3 on the 4070).
+
 ### 2026-11-06 02:05 CST · #101 (27B arm), #33-28 · Corrupt xcorp H_in for L43 o_proj stalled arm xbn; patched
 - **What:** arm xbn (K2.5, H_out bn + xcorp H_in w0.5) wrote 63/64 layers; chunk 40–43 failed on L43 `self_attn.o_proj`
   with a Cholesky "not positive-definite" error every try, and swap27k.sh's chunk loop retried it forever (13

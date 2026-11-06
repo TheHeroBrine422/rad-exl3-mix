@@ -1,0 +1,9 @@
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "free", "mse": 0.01671055518090725, "sec": 20.6}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "tiles_tb1", "mse": 0.017508305609226227, "sec": 41.6}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "tiles_tb16", "mse": 0.01747371070086956, "sec": 684.3}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain1", "n": 1, "mse": 0.017508305609226227, "sec": 39.0, "identical_to_tiles_tb1": true}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain2", "n": 2, "mse": 0.017473066225647926, "sec": 44.7}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain4", "n": 4, "mse": 0.017467105761170387, "sec": 39.3}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain8", "n": 8, "mse": 0.01746385358273983, "sec": 38.2}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain16", "n": 16, "mse": 0.017466073855757713, "sec": 37.1}
+{"mode": "gauss", "tiles": 2048, "bits": 3.0, "arm": "chain32", "n": 32, "mse": 0.017465855926275253, "sec": 37.5}

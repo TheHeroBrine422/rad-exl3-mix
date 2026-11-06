@@ -1,0 +1,7 @@
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "free", "mse": 0.03292497247457504, "sec": 24.9}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain1", "n": 1, "mse": 0.03458093851804733, "sec": 39.2}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain2", "n": 2, "mse": 0.0345015823841095, "sec": 43.3}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain4", "n": 4, "mse": 0.03448301553726196, "sec": 39.3}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain8", "n": 8, "mse": 0.03449119254946709, "sec": 40.8}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain16", "n": 16, "mse": 0.03449685871601105, "sec": 39.8}
+{"mode": "gauss", "tiles": 2048, "bits": 2.5, "arm": "chain32", "n": 32, "mse": 0.03449089825153351, "sec": 38.8}

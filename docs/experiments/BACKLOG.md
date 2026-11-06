@@ -419,3 +419,5 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 | #88 activation-denoising target (C1): K3 +3%, K2 +10% with level-matched noise | depth (64 layers: upstream error grows), error propagation | only if #87 / #88-02 show a depth trend |
 | #33-22 more H_out windows past 1,024 do not help (0.8B) | matrix size (5120 × 17408 diagonals are estimated from the same windows: noisier at 27B) | the 27B collection's own 512 / 1,024 snapshots (split-half agreement) |
 | #78-03 i8c gives nothing on top of H_out (0.8B K3) | matrix size / near-lossless regime (codebook-shape gains vs error-weighting overlap may differ) | the i8c 27B check with an H_out arm |
+- [ ] **o_proj / GDN out_proj head-permutation act order (from #103, 11-06):** their 128-block trace spread (p90/p10
+  2.83 / 2.58) is higher than down_proj's, where block act order gave −0.8%; CPU proxy first (`v3/e3/actblk/`).

@@ -1,0 +1,2 @@
+{"layer": 10, "w": "ffn_down", "method": "ldlq_cubic0.02_i8", "bits": 4.0, "rel": 0.0023717516900545826, "scale_f": 1.15, "damp": 0.01, "seed": 0, "rows": 128, "N": 5120, "K": 17408, "sec": 983.8, "order": "natural"}
+{"layer": 10, "w": "ffn_down", "method": "ldlq_cubic0.02_i8", "bits": 4.0, "rel": 0.002365384617410382, "scale_f": 1.15, "damp": 0.01, "seed": 0, "rows": 128, "N": 5120, "K": 17408, "sec": 976.5, "order": "blk128", "moved": 0.9926470588235294, "mass_ratio": 2.0204466673120436}
