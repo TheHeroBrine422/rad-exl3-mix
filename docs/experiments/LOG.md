@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 02:05 CST · #101 (27B arm), #33-28 · Corrupt xcorp H_in for L43 o_proj stalled arm xbn; patched
+- **What:** arm xbn (K2.5, H_out bn + xcorp H_in w0.5) wrote 63/64 layers; chunk 40–43 failed on L43 `self_attn.o_proj`
+  with a Cholesky "not positive-definite" error every try, and swap27k.sh's chunk loop retried it forever (13
+  tracebacks in `quant-xbn-c0.log` before the watchdog flagged it at ~1:56 AM CST).
+- **Cause:** `/data/hin27/hinX/…layers.43.self_attn.o_proj.input` (mkhin27's xcorp collection) is corrupt: 500 entries
+  > 1e10, max |H_ij| = 2.1e18 × max diag, eigenvalues ±3.6e31 (a Gram matrix cannot be indefinite). The published
+  calib Hessian of the same tensor is fine (eig 5.2e3…3.7e8). A Cauchy–Schwarz + diagonal scan of all 257 hinX files
+  finds only this one (30 residual-stream `.input` files have the usual 1e4–1e5 diagonal spread and pass C–S).
+- **Fix (08:00 UTC):** hi-X0.5 uses the calib Hessian for this one tensor (xcorp weight 0 on 1/257 files); originals in
+  `/data/hin27/corrupt/`, noted in `blend.log`. The running retry picked it up. The arm's other 63 layers are unchanged.
+- **Open:** root cause in mkhin27 (a bad flush / packing write for one tensor?) before any reuse of the collector;
+  the xbn pairs carry this caveat (one o_proj at calib H_in) — too small to move a whole-model ratio.
 ### 2026-11-05 11:00 CST · #91, #93 · Self-calibration readout; d1110: no overfitting, xcorp not a calib substitute
 - **#93 (d1110), g08-verify1 (180 untouched verify docs), seed 0:** the adopted 0.8B stack keeps **91% (K3) / 96% (K2)**
   of its search-slice log gain (cumulative 0.698 / 0.521 vs 0.674 / 0.507); every step holds (H_out 0.921 / 0.930,
