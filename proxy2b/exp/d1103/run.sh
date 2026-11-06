@@ -19,7 +19,8 @@ ev() { tag=$1 wq=$2 g=${3:-$S} x=${4:-} em=${5:-$M}; [ -f $O/$tag$x.f32 ] && ret
   log "$tag$x: $(python3 $P/evalq.py $em $g --wq $wq --out $O/$tag$x.f32 2>/dev/null | tail -1 | grep -o '"kld": [0-9.e-]*, "top1": [0-9.]*')"; }
 # hm DIR: the checkpoint a healed arm is scored with (its folded norms when it trained any), as w06-heal/run.sh
 hm() { [ -f $1/model/.done ] && echo $1/model || echo $M; }
-pair() { g=${3:-$S}; a=$1 b=$2; [ "$g" = $F ] && { a=$O/$1.fit.f32; b=$O/$2.fit.f32; } || { a=$(f32 $1); b=$(f32 $2); }
+pair() { local g=${3:-$S} a=$1 b=$2;   # local: callers keep their own $a / $b (bug found 11-06 by the watchdog)
+  [ "$g" = $F ] && { a=$O/$1.fit.f32; b=$O/$2.fit.f32; } || { a=$(f32 $1); b=$(f32 $2); }
   log "pair $1 -> $2$([ "$g" = $F ] && echo " (fit)"): $(python3 $P/pcmp.py $g $a $b | grep -o '"ratio": [0-9.]*, "diff": [0-9.e-]*, "se": [0-9.e-]*, "z": [0-9.e-]*')"; }
 # q TAG K CB args..: full quant (150 tensors) + search eval
 q() { t=$1 k=$2 cb=$3; shift 3; [ -f $(f32 $t) ] && return
