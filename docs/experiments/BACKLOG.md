@@ -421,3 +421,14 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 | #78-03 i8c gives nothing on top of H_out (0.8B K3) | matrix size / near-lossless regime (codebook-shape gains vs error-weighting overlap may differ) | the i8c 27B check with an H_out arm |
 - [ ] **o_proj / GDN out_proj head-permutation act order (from #103, 11-06):** their 128-block trace spread (p90/p10
   2.83 / 2.58) is higher than down_proj's, where block act order gave −0.8%; CPU proxy first (`v3/e3/actblk/`).
+- [ ] **rad-quant-at-home for big MoE models (user 11-06; V4 era, after V3):** donors with TP2 / TP4 + MoE expert
+  streaming generate (1) bf16 golden logits (forward only; verify by KLD vs a verifier's recompute of sampled docs),
+  (2) input Hessians (additive over documents: split by doc shard × layer group; upload size is the limit — per-expert
+  Hessians of a ~100B MoE are ~0.2+ TB per full set; accumulate many docs per donor, bf16 / compressed storage),
+  (3) YAQA output-side Hessians only as diagonals / sketches (full Kronecker factors need backward passes and huge
+  uploads; and H_out's gain shrank from 0.8B to 27B, so price it first). Targets: Qwen Flash-Next, GLM Flash 5.3,
+  DeepSeek V4.1 Flash.
+- [ ] **Larger / broader calibration corpora for larger models (user 11-06):** for future models, not V3.
+- [ ] **rad-quant-at-home pulls source data (bf16 shards, published Hessians) from HF, pinned by revision hash
+  (user 11-06):** no upload load on our hosts; donors and auditors can check inputs against HF. Our own derived inputs
+  (e.g. H_out Hessians if adopted) need an HF dataset of ours (outward-facing: user approves).
