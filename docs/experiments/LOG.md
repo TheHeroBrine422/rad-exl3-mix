@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 05:40 CST · #104 · 27B swj passes: −6.5% KLD at K2.5
+- **Result (gpubox, golden-search27, 103 docs, 123k positions):** base → baseswj 0.9346 (diff −0.00386, z −12.5);
+  s1 → s1swj 0.9346 (z −14.6). Rule (`v3/yaqa/SWJ27.md`, before data): geo ≤ 0.98 and both pairs < 1 → **PASS**.
+- About 2.5× the 0.8B's swj gain at K3 (0.971) and in line with its K2 (0.906). Cost: one fit pass per level, no
+  requant. Adopted for the stack; open: the K4 transfer check (no data yet), and whether it stacks with H_out bn
+  (bns1 arm running) and writers asym (#105, queued after the trunk arms).
+- 4070 d1112: `k3st` reproduces d1104's `k3edyswjasym_r0` bit for bit on today's patched code (w41 patches don't change
+  results).
+
 ### 2026-11-06 04:50 CST · #101, #102, #103, #94, ideas 5 / 7 · Overnight readouts
 - **#101 amendment 3 (d1111, 0.8B, 3 seeds, dygm stack):** ratios vs dygm, calib search K3 / K2 (verify; xcorp):
   X0.5 0.974 / 0.984 (0.975 / 0.981; 0.950 / 0.934); X0.75 0.974 / 0.985 (0.979 / 0.984); X3 (3M-token sample)
