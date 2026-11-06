@@ -335,7 +335,7 @@ prefill.
   real-use checks. Not now (user).
 - [ ] **Per-head K on ssm_qkv / attn_qg** (#96 side result: the Σdy²-weighted spread sits between GDN heads; ceiling
   ≈ 0.04 bpw overall). Needs a K per 128-row slab in the format and kernels: only with other per-slab work.
-- [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (moved to its own repo `/workspace/radquant` on 2026-11-06, history kept; w13 + w13b; tentative name **rad-quant@home**
+- [ ] **Volunteer compute v0 (parked, user 2026-11-05)** (moved to its own repo `/workspace/rad-quant-at-home` on 2026-11-06, history kept; w13 + w13b; tentative name **rad-quant@home**
   for display, **`radquant`** in identifiers: images, packages, CLI, hosts; points maybe "lumens"): queue server (stdlib Python,
   container, 61/61 noop e2e tests, restart / crash / partial-upload safe), worker image spec (ROCm, gfx1201), job
   types quant_layer / quant_head / eval_mix. Resumes when the V3 settings are frozen and the ladder starts. Two uses: ladder quant jobs
