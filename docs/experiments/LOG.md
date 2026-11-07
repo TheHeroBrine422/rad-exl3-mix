@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 2:45 AM CST · #113 · Outside entry PR #364 reviewed; bigger trellis queued
+- Radiance PR #364 (Perire, "KL-guided IQR quants", Small 5.4988 bpw, not yet scored; IQR-V4 base): KL-weighted Gram,
+  quarter-step widths by predicted KL, **2^20-state trellis with beam search**, row slabs, row-weighted search, vocab
+  head, one bf16 (row,128) scale, hi/lo int8 activations. Everything but the 2^20-state beam trellis we have or measured
+  (H_out ~0.98 at 27B; #96 slabs small; #95 bf16 scales mostly negative). At 5.5 the board has IQR-V4 0.00154 vs V2
+  0.00153. → #113 (w71, colo): L = 16 / 18 / 20-bit state windows with beam M 256–4096 on the order-fixed settle.py.
+
 ### 2026-11-07 2:15 AM CST · #— · rqah PRs #17 / #21 / #22 / #23 merged locally; agent32 golden broken input
 - rad-quant-at-home: #19 / #20 merged by the user (GitHub UI); #17, #23, #22, #21 merged locally as merge commits on
   main (doc conflicts: TESTS history lines kept, README count fixed after; #22 × #16 in `Queue.upload`: #22's byte
