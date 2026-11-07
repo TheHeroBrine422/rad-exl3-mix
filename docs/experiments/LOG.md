@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:35 AM CST · #— · rqah PR batch 2 reviewed (w68)
+- #19–#23 all correct; merge order on main: #19 → #20 → #17 → #23 → #22 (needs a rebase: conflict with merged #16 in
+  `Queue.upload`) → #21. Simulated in a throwaway clone with all suites after each step: green (e2e 118/118), except a
+  pre-existing worker bug in main (after a crash mid-upload the worker re-sends at a stale offset; the server's 409
+  arrives as a broken pipe) that #22 makes frequent: w68's patch 0003 (resync the offset after a connection error).
+  #23 excludes a worker from a job it failed until `admin requeue` (stricter than w62's 1 h). w62's patches 0001–0002b
+  are superseded. Still open: #4, #7, #8, #9, #11, #12 (decisions recorded in TODO). The 4070 went down 07:31 UTC
+  (the user took it; preemption handling reported it as preempted).
+
 ### 2026-11-07 1:05 AM CST · #— · rqah setup wizard (w69)
 - `rqah setup` on local branch `setup-wizard` (c095878, on main 2ac3b3a; new files only): read-only hardware / Docker
   detection, curses / plain / scripted modes, writes `~/.config/rad-quant-at-home` (worker.env 0600, compose.yaml,
