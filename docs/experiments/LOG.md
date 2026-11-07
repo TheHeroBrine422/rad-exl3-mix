@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 2:15 AM CST · #— · rqah PRs #17 / #21 / #22 / #23 merged locally; agent32 golden broken input
+- rad-quant-at-home: #19 / #20 merged by the user (GitHub UI); #17, #23, #22, #21 merged locally as merge commits on
+  main (doc conflicts: TESTS history lines kept, README count fixed after; #22 × #16 in `Queue.upload`: #22's byte
+  accounting + #16's truncate, truncated bytes taken back off the spool counter). All suites green: e2e 118/118 ×2,
+  score 31, statuspage 19, checker_nan 12, sched 26, bandwidth 22. 18 commits for the user to push.
+- gpubox insert-60 (w67's agent-search32 golden): killed at 07:56 UTC after stage 2 printed ppl 57,304 on doc 1 — a
+  broken input, not the model; w67 is debugging it and will rerun as a new insert. bn4s1 (H_out K4) unaffected.
+
 ### 2026-11-07 1:50 AM CST · #33-28 · H_out (bn) at K2.5: third pair lands; misses the rule by a hair
 - s2 → bns2 **0.9762** (z −2.2). The three K2.5 pairs: 0.972 / 0.992 / 0.976, every pair < 1, **geo 0.9801** (rule
   ≤ 0.98: misses by 0.0001); |log geo| 0.0201 vs 2σ/√3 = 0.0207 (σ = RMS |log| of the three base seed pairs, 0.0180):
