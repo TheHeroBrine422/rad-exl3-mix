@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 12:00 AM CST · #— · Shortlist items 1–4 queued (w64); LSA on window residency (w65)
+- w64 runs w61's items 1–4 (asym under knapsack mixes, per-rate int8 factor at K6.5–8, C9 writer gain refit after
+  asym, bf16 (row, 128) scales from K5) on the CPU boxes (4070 only where a 0.8B KL is required), after fixing
+  settle.py's LDLQ block order. Rules before data in `v3/e3/settle/w64.md`.
+- LSA: Code000's LSA is not public (none in his radiance fork or RadianceDev). His #412 (window residency for sparse
+  attention, built for QSA) is the natural partner for our D-LSA; w65 maps it onto our LSA and prototypes
+  `lsa-residency` (long context on one card for the dense 27B). `pr3-isa-occupancy` is unrelated (an occupancy-script fix).
+
 ### 2026-11-06 11:55 PM CST · #— · Ladder re-price corrected (w63); ideas shortlist + mining brief (w61)
 - **w63 (corrected swj curve ×0.91 K2, ×0.935 K2.5, ×0.989 K4, 1.0 from K5):** predicted KLD vs w58: −2% at 2.0, +1% at
   2.5, +7% at 3.0, +20% at 4.0, +22% at 5.0, +16% at 6.0, +9% at 7.0. The 11-06 projection holds at 2.0–2.5 (−27% vs V2's
