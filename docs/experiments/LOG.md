@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:40 PM CST · #112 · C9 α on the writers ADOPTED (user) · #114 blocked on Thor
+- **#112 adopted by the user** despite PARTIAL (geo 0.9925 vs ≤ 0.99; verify keeps 0.96 of the gain): attn_o α −1,
+  gdn_out α 3, down 0, plain writers. Runtime none (scales). Quant time in w75's 27B implementation: 859 s a K2.5 level
+  as a separate pass; w76 folds it into the per-tensor job (a per-row quadratic form on the 64 writers).
+- **#114 (damping, w77):** colo q77 at 222 / 405 jobs, the remaining 183 sweeps wait on the second held-out Hessian
+  half (H_B2), which Thor was building; Thor unreachable → w77 resumed with a note to rebuild H_B2 on colo.
+- w76 and w77 resumed after the 16:0x UTC rate-limit kills; w67 held (no card / Thor available for it now).
+
 ### 2026-11-07 1:30 PM CST · #112-02 PARTIAL · #46-03 done · #105 never ran · VPN outage
 - **#112-02 (C9 α on the writers, 27B, 2 seed pairs):** search 0.9939 / 0.9911 (z −2.0 / −4.2), geo **0.9925** vs the
   rule's ≤ 0.99; verify 0.9920 / 0.9936 (keeps 0.96 of the gain); no flags → **PARTIAL** (real, ~−0.75%, just short of
