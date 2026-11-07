@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:30 AM CST · #— · API rate limit killed five workers; resumed
+- The 5-hour API limit (reset 09:10 UTC) killed w64, w67, w70, w71, w72 at ~08:55 UTC and the watchdog's cycle. Their
+  machine queues kept running (they are separate processes). All five relaunched at 09:28 UTC with a resume note; the
+  watchdog relaunched; w73 started a docs + paper consistency pass. Mining + ideas runs stay armed for 13:00 UTC
+  (they wait for the cap themselves).
+
 ### 2026-11-07 2:45 AM CST · #113 · Outside entry PR #364 reviewed; bigger trellis queued
 - Radiance PR #364 (Perire, "KL-guided IQR quants", Small 5.4988 bpw, not yet scored; IQR-V4 base): KL-weighted Gram,
   quarter-step widths by predicted KL, **2^20-state trellis with beam search**, row slabs, row-weighted search, vocab
