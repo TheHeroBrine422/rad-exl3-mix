@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 8:55 PM CST · #77, #108 · Tile CD passes the 27B no-harm check; GDN refits hold at seeds 1–2
+- **#77 (`v3/e3/settle/CD27.md`):** 16 attn_qg tensors re-quantized with cd3 in two K2.5 arms: s1 → s1cd 0.9994,
+  base → basecd 0.9997 (z −0.3), geo 0.9996; both no-op gates pass (the private tree reproduces each level bit for
+  bit). **PASS → cd3 on attn_qg adopted** (as expected, the whole-model effect is within noise; adopted on the per-tensor
+  gain and no harm). Card 0 moved on to arm s2 at 02:40 UTC.
+- **#108 screen, seeds 1–2 (fit golden, vs trunk + swj):** GDN arms reproduce seed 0: K2 gd 0.954, dw 0.945; K3 gz 0.987,
+  gd 0.983, dw 0.983 (z −9…−14). Attention arms stay ≥ 1 (qk 1.006, at 1.006, aw 1.004 at K3). The rule's full-stack
+  stage (search + verify) runs next.
+
 ### 2026-11-06 8:05 PM CST · #108, #— · Joint refits: GDN pays, attention doesn't (interim); rqah review
 - **#108 (w60, d1113, 0.8B, seed 0 screen, ratio vs trunk + swj on the fit golden):** GDN junction refits pay: z gate
   only 0.9905 (K3) / 0.9666 (K2); qkv + z 0.992 / 0.964; with the loss after out_proj 0.991 / 0.960. Attention refits are
