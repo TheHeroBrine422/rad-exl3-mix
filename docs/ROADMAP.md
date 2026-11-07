@@ -29,7 +29,7 @@ from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
   **8.0** decided after the 7.0 results and a floor split on V2 8.0 (built only if predicted ≥ 10% below V2 8.0's
   0.00034). 7.5 stays V2.
 - Each size in an **accurate** (f16 wherever it lowers KL) and a **fast** variant (int8 path where cheap, under a speed
-  budget); a third, **A4** variant at ≤ 3 bpw only if it is ≥ 15% faster than that size's fast variant.
+  budget). (A third, **A4** variant was dropped 11-07: #46-03's knapsack never picks A4.)
 - Research points 1.5 / 1.75, then a **low-bpw research ladder** in 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD
   blows up (user, 2026-11-05) (scored on our own held-out slices; a few points go to the board); saturation-aware allocation for these.
 
@@ -43,7 +43,7 @@ from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
   (#103) negative; the IQR-style hash codebook (#100) **dropped** (user 2026-11-06: real 0.8B run ×1.016–1.040 KL,
   decode GEMV only +13–18% faster; mul1i8 stays); clipped i8 (#109) and bf16 (row, 128) scales (#110) negative. Still
   open: a 2^20-state trellis searched by a beam (#113, from an outside entry, radiance PR #364; CPU proxy running).
-- **A4 on i4 weights** as a per-tensor knapsack option for the fast variant at ≤ 3 bpw (#46-03; d1106's all-MLP A4
+- **[dropped 11-07, #46-03]** **A4 on i4 weights** as a per-tensor knapsack option for the fast variant at ≤ 3 bpw (#46-03; d1106's all-MLP A4
   failed as a global setting). The int4-plane kernel is built only if its rule passes. **[superseded 2026-11-05]**
   The A4 path was built at once (user; ×1.31 faster than A8 on a K2 layer at M 2048); #46-03's rule decides whether
   it ships. Per-block A8 exceptions for A4 and an i4 plane for speed alone: negative (11-06).
