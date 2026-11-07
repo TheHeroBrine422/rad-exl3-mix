@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 11:55 PM CST · #— · Ladder re-price corrected (w63); ideas shortlist + mining brief (w61)
+- **w63 (corrected swj curve ×0.91 K2, ×0.935 K2.5, ×0.989 K4, 1.0 from K5):** predicted KLD vs w58: −2% at 2.0, +1% at
+  2.5, +7% at 3.0, +20% at 4.0, +22% at 5.0, +16% at 6.0, +9% at 7.0. The 11-06 projection holds at 2.0–2.5 (−27% vs V2's
+  menu at 2.0) and 3.0 (−14% vs −16%); w58's "menu + swj alone reaches the freeze expectation from 3.5 up" is withdrawn
+  (3–13% short at 2.5–6.0; the rest must come from H_out, asym, healing, search). Level usage unchanged (17 i4 levels
+  never picked; pass-1 levels all used); turboderp tensors return for 10–18% of params at 5.0–7.0.
+- **w61 shortlist (`local/mine/shortlist-2026-11-07.md`) and mining brief (`brief-2026-11-07.md`):** top pre-freeze
+  items: writers' asym under knapsack mixes (it only works on the exact sibling codes; #105 tests uniform levels);
+  per-rate int8 factor ("clipped i8") at K6.5–8; C9 gain refit for the writers after asym; bf16 (row, 128) scales from
+  K5 (our #95-02 rejection used the biased proxy); massive-channel handling for layers 10–11; conv-aware H_in for GDN.
+  Caveat: its rationale cites swj's withdrawn K4 −21%; the ranking still stands on the K2.5 result.
+
 ### 2026-11-06 10:25 PM CST · #33-28, #108, #— · s2 control; GDN refits shrink in the full stack; ladder re-priced
 - **#33-28 control:** base → s2 0.985 (z −1.3), s1 → s2 1.010 (z +1.1): seed-to-seed spread at K2.5 is ~±1.5%, as
   before. bns2 (the third H_out pair) quantizing, done ~1 AM CST.

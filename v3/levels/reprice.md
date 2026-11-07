@@ -6,6 +6,106 @@ Solver: `reprice/knap5.py` = knap4 + switches (`reprice/README.md`); 834 solves 
 CPU on Thor + colo, 6:29–9:22 PM CST. Data `data/levels/reprice/out/`, all tables `data/levels/reprice/report.out`
 (`python3 v3/levels/reprice/report.py data/levels/reprice/out`).
 
+> **Corrected 2026-11-06 11:20 PM CST (w63): read the Correction section first.** The swj curve below (×0.78 flat from
+> K4) used the withdrawn K4 number. Every "+ swj" / main / `gu` KLD at ≥ 3.0 in the sections after the Correction is
+> too low by 7–33%. The menu-only (`noswj`), level-usage and fast-7.0 conclusions stand.
+
+## Correction 2026-11-06 11:20 PM CST · swj curve re-based on the head-matched pairs (w63)
+
+The swj factor used here (×0.9346 K2.5 → ×0.7786 K4, flat above) came from the 6:10 PM K4 pairs. Those pairs mixed
+different heads and embeddings (LOG 2026-11-06 7:50 PM: withdrawn). Head-matched swj is ×0.935 at K2.5 (verify
+×0.932) and ×0.989 at K4. The 0.8B gives the shape: −8.6% at K2, −3.1% at K3.
+
+**Rerun:**
+- **Arms rerun:** `main` (swj `all`, per level), `gu` (gate_up only) and `noi8k7`. Everything else is identical:
+  knap5.py (same md5 as w58), env, sizes, λ grids and fast-variant rule.
+- **The only change is `KN_SWJ_PTS=2:0.91,2.5:0.935,4:0.989,5:1.0`.**
+  - Interpolation is knap5's `lin()`: linear in K between the points, flat outside. So r = 0.91 at K ≤ 2, 0.953
+    at K3 and 1.0 at K ≥ 5.
+  - The K3 value is above the 0.8B's 0.969 there: the line was not bent to fit it.
+- **`gu` calibration.** The gate_up factors were re-solved to reproduce r(K) at uniform K: K2 ×0.830, K2.5 ×0.861,
+  K4 ×0.973, K5 ×1.0 (w58: ×0.860 K2.5, ×0.462 K4).
+  - K2 uses knap5's default V2 4.00 head and embedding for the calibration (K2 has no 27B pair).
+- **Runs:** 214 solves on Thor + colo (nice 10), 10:23–11:12 PM CST, 0 failures.
+  - Data: `data/levels/reprice/swj2/out/`. The new arms keep their names. w58's are copied in as `w58main` /
+    `w58gu` / `w58noi8k7`, with `v2menu`, `old` and `noswj` as the ratio bases.
+  - Tables: `swj2/report.out` (report.py, same layout as `report.out`) and `swj2/compare.out` (`reprice/compare2.py`:
+    old → new per size, pick changes).
+
+**Predicted KLD, old → new** (all predictions). Anchored = V2 board × (prediction / V2-menu prediction); "–" = no V2
+board point at that size.
+
+| size | accurate: w58 → new (change) | anchored acc. w58 → new | fast: w58 → new (change) | anchored fast w58 → new | vs V2-menu: w58 → new (menu only) | 11-06 "V3 at freeze" exp. | `gu` vs new main |
+|---|---|---|---|---|---|---|---|
+| 2.0 | 0.1233 → 0.1207 (−2.2%) | 0.1221 → 0.1194 | 0.1234 → 0.1207 (−2.2%) | 0.1221 → 0.1195 | −25.7% → −27.3% (−19.3%) | 0.120 | +0.5% |
+| 2.25 | 0.07923 → 0.07871 (−0.7%) | – | 0.0793 → 0.07878 (−0.7%) | – | – | – | +0.0% |
+| 2.5 | 0.05287 → 0.05340 (+1.0%) | 0.0528 → 0.0533 | 0.05294 → 0.05347 (+1.0%) | 0.0528 → 0.0534 | −20.8% → −20.0% (−13.7%) | 0.0487 | −0.2% |
+| 2.75 | 0.03502 → 0.03639 (+3.9%) | – | 0.03509 → 0.03646 (+3.9%) | – | – | – | −0.5% |
+| 3.0 | 0.02360 → 0.02533 (+7.3%) | 0.0246 → 0.0264 | 0.02367 → 0.02540 (+7.3%) | 0.0247 → 0.0265 | −19.6% → −13.7% (−9.4%) | 0.0243 | −0.5% |
+| 3.25 | 0.01633 → 0.01808 (+10.7%) | – | 0.0164 → 0.01815 (+10.6%) | – | – | – | −0.5% |
+| 3.5 | 0.01124 → 0.01286 (+14.4%) | 0.0129 → 0.0147 | 0.01131 → 0.01293 (+14.3%) | 0.0130 → 0.0148 | −24.7% → −13.8% (−11.1%) | 0.0136 | −0.5% |
+| 3.75 | 0.00786 → 0.009246 (+17.6%) | – | 0.00793 → 0.009319 (+17.5%) | – | – | – | −0.5% |
+| 4.0 | 0.005555 → 0.006670 (+20.1%) | 0.00618 → 0.00742 | 0.005625 → 0.006743 (+19.9%) | 0.00625 → 0.00750 | −25.4% → −10.4% (−9.1%) | 0.00656 | −0.4% |
+| 4.25 | 0.003981 → 0.004830 (+21.3%) | – | 0.004051 → 0.004908 (+21.2%) | – | – | – | −0.3% |
+| 4.5 | 0.002917 → 0.003532 (+21.1%) | 0.00352 → 0.00427 | 0.002987 → 0.003609 (+20.8%) | 0.00361 → 0.00436 | −26.6% → −11.1% (−10.6%) | 0.00380 | −0.2% |
+| 5.0 | 0.001562 → 0.001904 (+21.9%) | 0.00192 → 0.00234 | 0.001633 → 0.001980 (+21.3%) | 0.00201 → 0.00243 | −25.0% → −8.6% (−8.4%) | 0.00226 | −0.1% |
+| 5.5 | 0.0009065 → 0.001077 (+18.8%) | – | 0.0009766 → 0.001152 (+18.0%) | – | – | – | 0.0% |
+| 6.0 | 0.0005706 → 0.0006634 (+16.3%) | 0.000716 → 0.000833 | 0.0006474 → 0.0007413 (+14.5%) | 0.000813 → 0.000931 | −21.6% → −8.9% (−8.9%) | 0.000806 | 0.0% |
+| 6.5 | 0.0004003 → 0.0004517 (+12.9%) | – | 0.0004995 → 0.0005615 (+12.4%) | – | – | – | 0.0% |
+| 7.0 | 0.0003106 → 0.0003382 (+8.9%) | 0.000361 → 0.000393 | 0.0004494 → 0.0004940 (+9.9%) | 0.000522 → 0.000574 | −19.8% → −12.7% (−12.7%) | 0.000397 | 0.0% |
+
+**What this changes (predictions):**
+
+- **swj's modelled gain** (main vs `noswj`): −10% at 2.0, −7% at 2.5, −5% at 3.0, −3% at 3.5, −1.5% at 4.0,
+  −0.5% at 4.5, −0.2% at 5.0, 0 from 5.5. In w58 it was −8…−23%.
+  - The 2.0 gain is now larger than before (r = 0.91 at K ≤ 2 instead of 0.935). That point rests on the 0.8B's K2
+    shape, not a 27B pair.
+  - From 5.5 up, main = `noswj` exactly.
+- **Projections.** At ≤ 2.5 the 11-06 projection holds: −27% at 2.0 (projection −26%), −20% at 2.5. At 3.0 it is now
+  −14% (projection −16%).
+  - w58's "from 3.5 up, menu + swj alone already reaches the 11-06 'V3 at freeze' expectation" is **withdrawn**.
+    Menu + swj alone is anchored 3–13% above that expectation at 2.5–6.0: +9% at 2.5 and 3.0, +8% at 3.5, +13% at
+    4.0, +12% at 4.5, +3.5% at 5.0, +3% at 6.0.
+  - The rest has to come from H_out, writers, healing and search, which the model does not price. At 2.0 and 7.0
+    the menu alone meets the expectation (0.1194 vs 0.120; 0.000393 vs 0.000397).
+- **Picks.**
+  - **Tensor picks:** 28–132 of 337 tensor picks change at 2.0–4.5 (most at 3.5–4.5) and 66–73 at 5.0–7.0.
+  - **Level usage barely moves.** Same never-picked set (the 17 i4 levels), and every pass-1 level is still used. i8
+    stays to K5.75 and mul1 from K6 in the accurate variant. The fast variant stays all-A8, i8 at K ≥ 6.
+  - **Embedding:** 0.25–0.5 bit lower at 3.75 / 4.5–6.0: t2.75 / t3.75 / t4.5 / t5 / t5.5 instead of t3.25 / t4.25 /
+    t4.75 / t5.25 / t5.75. **Heads unchanged.**
+  - **New: turboderp's tensors return at ≥ 4.25.** Accurate param share (`sc4.00-e4` / `sc5.00-e5` at 4.25–4.5, mostly
+    `sc5.00-e5` at 5.0, sc5 + sc6 at 5.5, mostly `sc6.00-e6` at 6.0–7.0): 6% at 4.25, 8% at 4.5, 12% at 5.0, 13% at 5.5, 17% at 6.0, 18% at 6.5 and 10% at 7.0 (51–64 tensors at
+    6.0–7.0). w58 had ≤ 0.3%.
+    - Cause: the old ×0.78 discounted only our levels, so it priced turboderp's out. `noswj` already picked them in
+      w58. The fast variant stays ≤ 0.6% turbo (no A8 path).
+    - This lowers the accurate mul1 share at 6.0–7.0 (48 / 67 / 84% instead of 58 / 83 / 94%). It does not touch the
+      i8-vs-mul1 split.
+- **`gu` vs `all` is now moot.** Within −0.5…+0.5% at every size, identical from 5.5 up. w58 had −4.8% at 4.0 and
+  −8.3% at 5.0. At K4 gate_up sits at 3.86 vs 4.12 for the rest (main 3.89 / 4.08).
+- **Fast 7.0: conclusion unchanged, and a little worse.**
+  - The fast 7.0 is all i8 K7 (87% of params), +46% vs the accurate 7.0. Anchored it is **0.00057** (w58: 0.00052),
+    27% worse than V2 7.00's 0.00045.
+  - Mixed-mode 7.0 points: ×1.24 GEMM 0.000379 (+12%, ~0.00044 anchored, ≈ V2 7.00) and ×1.45 0.000438 (+30%,
+    ~0.00051).
+  - The fast 6.0 now anchors at 0.00093, about V2 6.00's 0.000914. w58 had 0.00081.
+  - **Dropping i8 K7 (`noi8k7`):** +0.0% at fast 7.0 under the 2% rule. The solver keeps ~1% GEMM
+    (×1.516 instead of ×1.530) by putting a few tensors back on f16 mul1. At equal all-A8 (λ 1e-5) the cost is +4.2%
+    (w58: +2.9% under the rule, +3.6% at λ 1e-5). The fast 6.5 cost is +0.2% (unchanged). So i8 K7 stays a
+    fast-7.0-only level worth ≤ 4%.
+- **Unchanged:** every menu-only (`noswj`), `old`, `v2menu`, pass-1, drop/add-level and CD result below. Their
+  deltas were taken against the old main. They were not rerun, but they are relative and swj-insensitive at ≤ 2.5;
+  at ≥ 3.0 treat them as approximate.
+
+**For the lead:**
+
+1. Fast 7.0: same options as below (skip it / mixed ×1.24 at ≈ V2 7.00 / point fast users at 6.5). The case for
+   skipping it, or for a mixed fast 7.0, is now stronger.
+2. Whether the V3 mixes should use turboderp's sc5 / sc6 tensors at ≥ 5.0 the way the model now prices them
+   (10–18% of params). If not, the knapsack needs them removed from the accurate menu; that arm was not run.
+3. Drop the per-family (`gu`) vs per-level swj question: it no longer moves any size by more than 0.5%.
+4. Quote 3.0–6.0 predictions from this section, not from the tables below.
+
 ## Summary (predictions)
 
 1. **Picks.** The accurate variant uses i8 up to K5.75, then **mul1 only at K ≥ 6**. mul1 is 0.2% of params at 4.5,
