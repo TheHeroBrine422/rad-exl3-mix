@@ -3,6 +3,17 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 10:00 AM CST · #46-03 interim (w72) · ops: c9w27 pack gate
+- **A4 cost table, i4 K2 (2.17 bpw), real A4 kernel, search slice, baseline all-A8-g128 KLD 0.1277:** A8-g128 vs f16
+  ×1.0001 (free). A4-g64 on **gate_up** by 16-layer band: +0.00056 / +0.00094 / +0.00123 / +0.00323 (z 3.8-9.6);
+  cost rises ~6x from the first band to the last. `A4COST VERDICT: 4 of 24 cells; K2 g64 sum +59.6e-4` (the other
+  families and g128 still running). **Level order changed to K1 -> K3 -> K2 (user 11-07: K1 is the decisive point,
+  where A4 should be cheapest relative to the weight error);** K1 quant started 15:33 UTC.
+- **Ops:** c9w27's pack waited on `MemAvailable >= 8 GB` **before** taking the exclusive ram.lock -- circular (the
+  memory only frees once the lock is held), stuck 40 min and heading for a 3 h FAIL. Relaunched with PACKMEM_GB=3:
+  the exclusive `conv.lock` + `ram.lock` are the real guard, the pre-lock poll only needs to clear memguard's 2.5 GB
+  floor. Rule for every queue: gate packs on the lock, not on a memory poll.
+
 ### 2026-11-07 9:25 AM CST · #38 / ladder · user decisions: sub-1 input damping 0.05 ON; i4 sub-1 qtf2 patch applied
 - **Sub-1 input damping (#38):** inputs (q/k/v, gate/up, GDN in) below K1 use σ 0.05 (others 0.005 / 0.025 unchanged);
   adopted by the user as #38 measured it. Implemented in the pipeline by w76.
