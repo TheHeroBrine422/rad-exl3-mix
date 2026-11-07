@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 9:25 AM CST · #38 / ladder · user decisions: sub-1 input damping 0.05 ON; i4 sub-1 qtf2 patch applied
+- **Sub-1 input damping (#38):** inputs (q/k/v, gate/up, GDN in) below K1 use σ 0.05 (others 0.005 / 0.025 unchanged);
+  adopted by the user as #38 measured it. Implemented in the pipeline by w76.
+- **i4 sub-1 (w53's `qtf2-i4.patch`):** applied to ourq / rxq by w76 (oracle-exact at every rate in w53's checks;
+  `qtf2i4check` re-run on card 0 by the lead). The ladder's i4 K0.125–0.875 levels depend on it.
+- w76 also ports the level passes and S6–S8 into `pipeline/`, H_out at K ≥ 4 (`apply_k_min`), tile CD with diagonal
+  H_out (user: write it), C9 / asym switches (off until verdicts), swap-pair hygiene.
+
 ### 2026-11-07 9:20 AM CST · #112-01 / #112-02 / #106-01 (w75) · #46-03 interim (w72) · RULER harness (w66)
 - **#112-01 (0.8B):** gdn_out α 4–4.75 beats α 3 by only 0.1–0.4% (geo 0.9987 / 0.9961 / 0.9987 / 0.9973, st K3 / K2,
   pl K3 / K2; verify agrees) → misses 0.995: **keep α = 3**, no second 27B arm; multipliers ≤ 1.9, no clamp needed.
