@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 7:50 PM CST · #104, #81-04 · CORRECTION: swj's K4 "−22%" was a head mismatch; A1 real but small
+- **#104 amendment 2 (w59, fresh verify slice `golden-verify27`, ~100 verify-pool docs; rule before data):** the 6:10 PM
+  K4 pairs compared mixes with **different head / embedding**: the swj arms were packed into V2 4.00's container, the
+  base4 / bn4 arms into a head from V2 3.00. Head-matched controls (base4v4, bn4v4: the same trunks re-packed with 4.00's
+  head) show the head swap alone is 0.761 / 0.757 (verify; 0.798 / 0.777 search). **Head-matched swj at K4: 0.9903 /
+  0.9870 (verify), 0.9907 / 0.9869 (search)** → geo 0.989, every pair < 1 but ≥ 0.98: **NOT CONFIRMED** as a large gain;
+  real and small (−1.1%). **K2.5 confirmed on verify: base → baseswj 0.9351 (z −15.3), s1 → s1swj 0.9316** (p99 0.96 /
+  0.95, top-1 +0.4 pt). So swj: −6.5% at K2.5, ~−1% at K4 (the gain shrinks with K, as on the 0.8B). The 6:10 PM entry's
+  "−21…−23% at K4 / adopt at every level" is withdrawn; swj stays adopted (it never hurts; size per K from these pairs).
+  Lesson: every 27B pair must have identical non-trunk parts; the swap tooling now checks it (TODO).
+- **#81-04 A1 (d1107, 0.8B, 2 seeds):** a1u vs base 0.984 / 0.971 / 0.970 at K2 / 3 / 4, every seed < 1: **real**, but the
+  option rule (≤ 0.97 at K2 and K3) **fails** (K2 0.984, K3 0.971). a1ug (gate+up predictors, a second GEMM): 0.963 /
+  0.951 / 0.959. Not runtime-free (one or two extra GEMMs on down_proj's input). User decides whether a1ug merits a
+  kernel-cost check; default: not in V3.
+
 ### 2026-11-06 7:20 PM CST · #33-28 · K4 seed control
 - base4 → base4s1 (K4, rotation seed only) **1.006** (z +0.4): the K4 seed floor is small (K2.5's was 0.975). The pack
   check passed (mix-base4s1 = mix-base4 byte size, 3.9811 bpw). Next: bn4s1 vs base4s1 (H_out at K4, second pair).
