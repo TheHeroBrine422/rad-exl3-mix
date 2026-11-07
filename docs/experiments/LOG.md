@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:45 AM CST · #109–#112, #106 / #103 re-run · w64 (settle proxy order fix + shortlist)
+- **settle.py LDLQ order fixed** (`v3/e3/settle/w64/settle64.py`, `SETTLE_ORDER=rev`, exllamav3's last-block-first):
+  matches w50's GPU tile-CD ratios within 0.5% on 9/9 blocks; the old forward order moved L3 attn_qg error +14…+26%.
+  **Older settle.py results that depend on block order are biased** (#106's −7.3%, #77's proxy 2–4%).
+- **#109 clipped i8: negative** — α never helps at K ≤ 7 (K7 i8/mul1 ×1.239 at α 1, worse for larger α), ≤ 3% above.
+- **#110 bf16 (row,128) scales: fail** — ×1.12–1.18 vs plain K at equal bits; closed for V3.
+- **#111 writers asym under knapsack mixes: fails** (0.8B, 2/3 seeds, z +12…+26, verify agrees): per-level asym writers
+  next to siblings of another K are worse than plain — (3 on 2.5) 1.077, (3 on 3.5) 1.229, (2 on 2.5) 1.239. A per-mix
+  writer pass keeps the gain (0.81 / 0.90 / 0.88). So asym (if #105 passes at 27B) needs a per-mix writer pass
+  (~4–5 card-h a mix at 27B), writer K tied to sibling K in the knapsack, or plain writers — **user decision**.
+- **#106 re-run:** o_proj head act order still passes, −3% (was −7.3%); GDN out_proj marginal pass 0.980/0.978/0.980.
+  Converter must store the heaviest heads **last**. **#103:** still fails (0.990).
+- #112 (C9 α after asym) running on the 4070 (`/data/yb/w64/`, ETA ~6:15 AM CST). Rules / results `v3/e3/settle/w64.md`.
+- **Runtime:** #109 / #110 would have been decode / prefill (not adopted); #111 / #112 / #106 none.
+
 ### 2026-11-07 3:30 AM CST · #— · API rate limit killed five workers; resumed
 - The 5-hour API limit (reset 09:10 UTC) killed w64, w67, w70, w71, w72 at ~08:55 UTC and the watchdog's cycle. Their
   machine queues kept running (they are separate processes). All five relaunched at 09:28 UTC with a resume note; the
