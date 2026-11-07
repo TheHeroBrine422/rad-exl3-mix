@@ -3,6 +3,10 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 6:20 PM CST · #100 · Hash codebook dropped (user)
+- User decision on #100c: the IQR-style hash codebook is dropped; **mul1i8 stays the V3 codebook** (format decision
+  closed before the ladder). Next for swj: confirm the K4 gain (0.79 / 0.77) on a verify-pool slice before quoting it.
+
 ### 2026-11-06 6:10 PM CST · #104, #100, #46-03, #— · swj at K4 and on H_out; hash codebook misses; kernels on qc-exl3-v3; rqah 0.4
 - **#104 amendment 1 (gpubox, golden-search27, 103 docs):** swj on top of H_out bn at K2.5: bn → bnswj **0.9244**
   (z −14.4), bns1 → bns1swj **0.9210** (z −13.9): it stacks with H_out (the bn+swj vs plain+swj gap ≈ 0.978). **K4:**
