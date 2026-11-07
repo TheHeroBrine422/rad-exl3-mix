@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:55 PM CST · ops · Haiku → the user's local Qwen3.8-27B (mining, watchdog)
+- User: the local Qwen (llama-swap, gpubox card 1; radiance, IQR-V4 S) may be used without limit at ~2 requests ×
+  50k tokens. **Mining extractor** now runs 24/7 on it (`local/mine/minq.py`: 20k-token chunks + a 9k-token digest of
+  the plan docs, no tools, extractor role only, shared mining ledger; 336 chunks queued). **Watchdog** cycles run on it
+  too (`watchdog.js`, Haiku fallback on a failed / off-format cycle; user: no prompt-cache misses). `claude-usage.sh`
+  stays on Haiku (it reads the Claude plan's rate-limit header). pi's `local/qwen38-27b` context set to 120k.
+
 ### 2026-11-07 3:35 PM CST · ops · Thor back as a CPU box; A4 speed bound split
 - **User: Thor is fine for CPU work again** (it is still the VPN host, so it can vanish: every Thor job must be
   restartable and colo alone must be able to finish). AGENTS.md and the worker context updated.
