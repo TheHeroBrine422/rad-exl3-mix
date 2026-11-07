@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:20 PM CST · #105 · asym's moments step never ran; GPU fault → w78
+- The 04:59 UTC "ASYM27 s1 DONE" was a **DRY run** (mom.log `DRY:`, 0 min). Real runs (16:04, 20:52, 21:01, 21:02
+  UTC) pass pre (oracle bit-exact) + gate, then `sibmom27.py` dies within ~30 s: HSA illegal instruction / illegal
+  memory access. Ruled out: venv (unchanged since 11-05), shared JIT dir and Triton cache (private dirs: same fault),
+  the card (plain torch OK). → **w78** debugs with serialized kernels, fixes, runs both arms. Also: the queue logged
+  "asym27: done" after a failed run (exit status ignored); w78 fixes that.
+- w76 told to stage + launch its card-0 checks (tile CD + H_out no-harm, i4 sub-1) now, sharing card 0 via the locks.
+
 ### 2026-11-07 3:10 PM CST · #113 · random-table bound: a better 20-bit code is worth ~3–4% with exact search
 - g5 finished on colo + Thor (Thor's half completed 18:58 UTC, before the outage). Error vs today's V16, real tensors:
   **exact Viterbi on an iid random 2^20 table (V20r): K2 0.974 (n 54, 0/27 worse), K3 0.970 (n 49), K4 0.963 (n 15)**;

@@ -40,7 +40,7 @@ STEPS=${STEPS:-pre gate mom mk dose noop arm asm pack score pair}
 DN=$O/dn-l$LAM-r$RHO
 export POOLS=${POOLS:-$RXM_WORK/challenge/pools-v3.json}
 export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
-       TORCH_EXTENSIONS_DIR=/data/exl3frac/build PYTORCH_HIP_ALLOC_CONF=expandable_segments:True \
+       TORCH_EXTENSIONS_DIR=${TORCH_EXTENSIONS_DIR_ASYM:-/data/asym27/build} PYTORCH_HIP_ALLOC_CONF=expandable_segments:True \
        TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1 OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false
 
 # swap27's pack / mix / census / score (sourced as swap27k.sh does), then everything they write redirected to $A
