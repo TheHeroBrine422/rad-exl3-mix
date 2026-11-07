@@ -126,7 +126,9 @@ Code we derive from is listed in [NOTICE](NOTICE). Ideas and work this project b
   diagonal H_out variant).
 - **Deadcode** — radiance, the quantization challenge, and the IQR whitepapers (two-pass prefill, act order and bf16
   row-scale ideas we tested).
-- **Code 000** — window residency (radiance #412), which our D-LSA builds on; per-layer KV quantisation (#416).
+- **Dylan Johnston (Dyluhn)** — radiance-exl3, which our first EXL3 kernels were based on (see NOTICE).
+- **Code 000** — early EXL3 kernels, a lot of the research we read, window residency (radiance #412), which our D-LSA
+  builds on, and per-layer KV quantisation (#416).
 - **phillipxkang** — the security review and fixes of rad-quant-at-home.
 
 License: Apache-2.0.
