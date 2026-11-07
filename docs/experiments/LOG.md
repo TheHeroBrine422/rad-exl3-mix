@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:30 PM CST · #46-03 · A4 dropped (user); kernel-speed bound queued
+- User: kill A4 (kernel stays merged in qc-exl3-v3 for now; may be reverted for the final PR). To answer "could a
+  faster kernel save it": knap5a rerun with the A4 speed ratio forced to ×2 and ×1000 (≈ free) instead of the measured
+  ×1.31 / ×1.51, same 144 jobs, colo (`/data/work/w72/jobs-a4x.txt`, nice 19, ~2 h). If a free A4 kernel still fails
+  step 4, no kernel work can make A4 pay.
+
 ### 2026-11-07 3:25 PM CST · #46-03 · knapsack step 4: A4 stays out of V3
 - knap5a with the measured A4 costs (g64 and the final table incl. K1 / K3) vs the A8-only fast variant, rule from
   `v3/e3/a4/README.md` step 4 (≥ 10% lower predicted gemm_us at equal KLD, or ≥ 0.03 bpw smaller): **fails at 2.0 /
