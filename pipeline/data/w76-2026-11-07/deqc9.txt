@@ -1,0 +1,23 @@
+# colo 2026-11-07, 15:54-15:56 UTC: check_deq_c9.py lut deq (the c9 unit failed on a missing dir in that run), then c9
+PASS lut: 4 codebooks x 65,536 states, differing: []
+  model.language_model.layers.10.linear_attn.in_proj_qkv: K2.5 i8 (10240, 5120) == exl3deq True, == asym27 deq True
+  model.language_model.layers.10.linear_attn.in_proj_z: K2.5 i8 (6144, 5120) == exl3deq True, == asym27 deq True
+  model.language_model.layers.10.linear_attn.out_proj: K2.5 i8 (5120, 6144) == exl3deq True, == asym27 deq True
+  model.language_model.layers.10.mlp.down_proj: K2.5 i8 (5120, 17408) == exl3deq True, == asym27 deq True
+  model.language_model.layers.10.mlp.gate_proj: K2.5 i8 (17408, 5120) == exl3deq True, == asym27 deq True
+  model.language_model.layers.10.mlp.up_proj: K2.5 i8 (17408, 5120) == exl3deq True, == asym27 deq True
+PASS deq: 6 tensors, differing []
+PASS c9: rc 0/0; alpha gdn_out=3; 1 writers (10.linear_attn.out_proj); differing []
+DEQ C9 CHECKS 1/1 PASS
+# ~19:45 UTC: injob unit (rxq.post.c9_tensor + job._assemble_c9 vs the c9 unit's c9e27 output)
+  model.language_model.layers.10.linear_attn.out_proj: (5120, 6144) in-job C9 25.3 s (CPU, 4 threads)
+PASS injob: 1 writers vs c9e27.py (scales + c9.jsonl), differing []; 25.3 s a writer on the CPU
+DEQ C9 CHECKS 1/1 PASS
+# check_c9job.py on a job dir made from the same writer (DEV=cpu)
+SAME model.language_model.layers.10.linear_attn.out_proj: scales equal True (max |dc|/c 0.00e+00), c9.jsonl equal True; in-job C9 28.932 s
+C9JOB PASS 1/1
+# 19:50 UTC: rerun of c9 + injob after the c9_rows refactor (c9_scales and c9_tensor share it)
+PASS c9: rc 0/0; alpha gdn_out=3; 1 writers (10.linear_attn.out_proj); differing []
+  model.language_model.layers.10.linear_attn.out_proj: (5120, 6144) in-job C9 9.9 s (CPU, 4 threads)
+PASS injob: 1 writers vs c9e27.py (scales + c9.jsonl), differing []; 9.9 s a writer on the CPU
+DEQ C9 CHECKS 2/2 PASS

@@ -5,6 +5,7 @@
    python -m rxq assemble OUT JOBDIR... [--template config.json] [--layers N] [--head]
    python -m rxq stamp [--config FILE]
    python -m rxq plan -K K [--codebook CB] [--split tensor|group|layer] [--layers N] [--seed-offset N] [--config FILE]
+   python -m rxq levelargs LEVEL [--config FILE]   an ourq level's settings as rxq quant arguments (exit 1: not expressible)
 VRAM_CAP_GB caps the process's CUDA allocator (shared cards)."""
 import argparse, json, os, sys
 
@@ -36,7 +37,13 @@ def main(argv=None):
     pl = sub.add_parser("plan"); pl.add_argument("-K", required=True, type=float); pl.add_argument("--codebook")
     pl.add_argument("--split", choices=("tensor", "group", "layer"), default="tensor"); pl.add_argument("--layers", type=int, default=64)
     pl.add_argument("--seed-offset", type=int, default=0); pl.add_argument("--config")
+    la = sub.add_parser("levelargs"); la.add_argument("level"); la.add_argument("--config")
     a = ap.parse_args(argv)
+    if a.cmd == "levelargs":
+        import shlex
+        argv_, bad = job.levelargs(a.level, C.load(a.config))
+        for b in bad: print(f"levelargs {a.level}: {b}", file=sys.stderr)
+        print(shlex.join(argv_)); sys.exit(1 if bad else 0)
     if a.cmd == "stamp":
         print(C.settings_stamp(C.load(a.config))); return
     if a.cmd == "plan":
@@ -57,7 +64,9 @@ def main(argv=None):
     for K in Ks:
         spec = {"type": "rxq.quant", "version": 1, "level": f"K{K}", "K": K, "codebook": a.codebook or C.codebook_for(cfg, K),
                 "seed_offset": a.seed_offset, "keys": keys, "settings_stamp": C.settings_stamp(cfg),
-                "inputs": {"ckpt": a.ckpt, "hessians": a.hess, "hin": a.hin, "wpre": a.wpre, "hout": a.hout}}
+                "inputs": {"ckpt": a.ckpt, "hessians": a.hess, "hin": a.hin, "wpre": a.wpre,
+                           "hout": a.hout if C.hout_applies(cfg, K) else None}}
+        if a.hout and not C.hout_applies(cfg, K): print(f"K{K}: H_out does not apply at this level (settings): --hout ignored", flush=True)
         print(json.dumps(job.run_quant(spec, a.o.replace("{K}", str(K)), a.device, cfg=cfg, profile=not a.no_prof,
                                        save_wq=a.save_wq)), flush=True)
 

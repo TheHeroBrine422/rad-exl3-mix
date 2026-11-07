@@ -64,7 +64,7 @@ def quant_args(s, key, seed, device, outdir, hname):
     if s.get("sigma_reg_in") is not None and qwen35.is_input_group(hname): qa["sigma_reg"] = s["sigma_reg_in"]
     if s.get("sigma_reg_out") is not None: qa["sigma_reg_out"] = s["sigma_reg_out"]
     t = engine.tilecd()
-    if t is not None: qa.update(t.args(key, s["K"], outdir))
+    if t is not None and s.get("tile_cd"): qa.update(t.args(key, s["K"], outdir))   # s: the family and the level's K (k_max)
     return qa
 
 
@@ -96,7 +96,8 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
             w = w @ Ft.T; del Ft
         w = w.T.contiguous()                    # (in_features, out_features)
     qa = quant_args(s, key, seed, dev.index if dev.index is not None else 0, outdir, hname)
-    if hout_dir and os.path.exists(f"{hout_dir}/{key}.safetensors"):
+    if hout_dir:                                # ourq skips a key without a file; a job refuses (the bn dirs hold every linear)
+        if not os.path.exists(f"{hout_dir}/{key}.safetensors"): raise SystemExit(f"H_out {hout_dir}: no file for {key}")
         with st("hout_load"), safe_open(f"{hout_dir}/{key}.safetensors", "pt", device="cpu") as f:
             qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
     with st("other"):

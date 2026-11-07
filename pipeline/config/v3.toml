@@ -1,15 +1,18 @@
 # V3 quantizer settings: the one file the freeze pins. Every result-affecting setting of the pipeline is here, with its
-# evidence: the experiment number in rad-exl3-mix docs/experiments/INDEX.md, its status there on 2026-11-06 (comments
-# brought to the 2026-11-07 record; no value changed), and the rule / result file. Settings still open are switches whose default is the CURRENT ladder behaviour (off), so this
-# file, unedited, reproduces the ladder's quantizer (ourq.py with the hconv / swap27 "ladder settings").
+# evidence: the experiment number in rad-exl3-mix docs/experiments/INDEX.md, its status there, and the rule / result
+# file. 2026-11-07 (w76): the adopted settings are ON (H_out at K >= 4, tile CD on attn_qg, sub-1 input damping 0.05,
+# swj at every level, C9 alpha on the writers); the one still open is a switch, off (writers asym, #105). With the
+# quant switches off (tile_cd, hout, apply_sub1_damping) the file reproduces the 11-06 ladder quantizer (ourq.py with
+# the hconv / swap27 "ladder settings"; C9 only adds a scales file per writer); tools/run4070.sh shows the overrides.
 #
 # Changing any value changes the settings stamp (rxq/config.py), so a level can never mix settings.
 # Status words: adopted (in the ladder now) | open (a switch; the experiment decides) | dropped (kept for the record).
 
 [meta]
 name = "v3"
-version = 1
-date = "2026-11-06"
+version = 3                    # 2: 11-07 adopted settings on (H_out K >= 4, tile CD, sub-1 damping); post.c9 added
+                               # 3: C9 alpha on (user 11-07 1:40 PM CST), computed in the writers' quant jobs
+date = "2026-11-07"
 model = "qwen38-27b"           # datapack id; the architecture plan is rxq/qwen35.py
 
 # ---------------------------------------------------------------------------------------------------------- inputs
@@ -25,19 +28,20 @@ blend_weight = 0.5             # the 27B recipe if adopted (amendment 3: full mX
 blend_dir = ""                 # datapack: hessians-xcorp/ (mkhin27.py over mX, 1,148 docs / 1.14M tokens)
 
 [inputs.hout]
-# Diagonal output Hessian H_out = sum dy^2, block-normalized estimator (#33-27 done; #33-28 RUNNING for K >= 4):
-# K2.5 three seed pairs 0.972 / 0.992 / 0.976, geo 0.9801 vs <= 0.98 and |log geo| 0.0201 vs 2 sigma / sqrt 3 = 0.0207
-# (H27 amendment 5): NOT adopted for levels <= K3.5 (2026-11-07). K4: bn4 / base4 0.961, K4 seed control 1.006, the
-# second pair (bn4s1) pending; it decides K >= 4. Two-sided LDLQ (ldlq_2hess).
-# Cost if adopted: ~5x quant time per layer on the R9700 (180 s vs 35 s at K2.5, PROFILE.md) unless ldlq_2hess
-# exploits the block-diagonal rotated H_out (PROFILE.md target T1).
-enable = false
+# Diagonal output Hessian H_out = sum dy^2, block-normalized estimator (#33-27 done; #33-28 done 11-07). H27
+# amendment 5: K2.5 three seed pairs 0.972 / 0.992 / 0.976, geo 0.9801 vs <= 0.98 -> NOT adopted for levels <= K3.5;
+# K4 pairs bn4 / base4 0.9613, bn4s1 / base4s1 0.9672, geo 0.9643, seed floor 0.0062 -> PASS, ADOPTED for levels
+# >= K4 (LOG 2026-11-07 6:55 AM CST). Two-sided LDLQ (ldlq_2hess); tile CD runs on the two-sided objective.
+# Cost: ~5x quant time per layer on the R9700 (~3.2 h a K >= 4 level vs ~37 min) unless ldlq_2hess exploits the
+# block-diagonal rotated H_out (PROFILE.md target T1).
+enable = true
 estimator = "bn"               # "bn" (block-normalized, port of v3/yaqa/hconv/mkhalf.py MKHALF_NORM=1) | "dy" (plain mean)
 snapshot = 1920                # H27 amendment 2
 sigma_reg_out = 0.01           # output damping (H27; #33-16)
-dir = ""                       # datapack: hout/<id>/<key>.safetensors ("hout_diag")
-apply_k_max = 8.0              # H27: K2.5 not adopted (geo 0.9801), K4 PASS (geo 0.9643, 11-07) -> H_out at K >= 4 only.
-                               # TODO(pipeline): needs an apply_k_min = 4.0 the engine reads; until then this is not expressible.
+dir = "hout/bn1920"            # datapack relpath: <key>.safetensors ("hout_diag"), mkbn over the 1,920 snapshot (gpubox:
+                               # /data/swap27/hout-bn, the K4 arms' dir); a job's inputs.hout overrides it
+apply_k_min = 4.0              # H27: K2.5 not adopted (geo 0.9801), K4 PASS (geo 0.9643, 11-07) -> H_out at K >= 4 only
+apply_k_max = 8.0
 
 # ------------------------------------------------------------------------------------------------ per-tensor quant
 [quant]
@@ -48,9 +52,9 @@ scaled_hessian = true          # ladder setting since 11-01 (exllamav3 scaled_he
                                # no INDEX row of its own; part of every adopted-stack comparison (LOG #33-10 "base")
 sigma_reg = 0.025              # #38 done (re-checked at fractional K, i8, w43 11-06: keep)
 sigma_reg_in = 0.005           # #38 done: layer-input group (attn q/k/v, GDN qkv/z)
-sigma_reg_in_sub1 = 0.05       # #38 verdict "input 0.005 (0.05 below K1)": applied to K < 1 levels. NOT in ourq (it
-                               # always passes 0.005): rxq applies it only when apply_sub1_damping = true
-apply_sub1_damping = false     # off = ourq-identical; the lead decides (LOG 2093 flags #38's wording as unreconciled)
+sigma_reg_in_sub1 = 0.05       # #38 verdict "input 0.005 (0.05 below K1)" (the layer-input group: attn q/k/v, GDN qkv/z;
+                               # v3/levels/ladder2.sh's sigin rule); ourq takes it as --sigma-reg-in 0.05 at K < 1
+apply_sub1_damping = true      # ADOPTED by the user 2026-11-07 (LOG 9:25 AM CST); false = ourq's 0.005 at every K
 gain = 1.0                     # #39 done: flat, keep 1.0 (w43 settle.py, no family >= 1% at >= 2 K)
 out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1) -> always on
 drift = "interp"               # LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
@@ -63,6 +67,8 @@ refit = true                   # exllamav3 fork refit_scales (su / sv, 2 rounds)
 # negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
 # (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
 # keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
+# i4 with qtf2 (every sub-1 level and the 1/8 steps): w53's qtf2-i4.patch, applied 11-07 (exl3frac2 "i4" variant;
+# oracle-exact at every rate in w53's checks; tests/qtf2i4check.sh on card 0 re-checks it).
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
 by_level = [
   { k_min = 0.125, k_max = 1.0,  codebook = "i4" },
@@ -74,13 +80,16 @@ hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL
 
 [quant.tile_cd]
 # #77 ADOPTED for attn_qg only (user 11-06; the CPU proxy's cd3 / LDLQ 0.963-0.978 was ~3x too optimistic, its LDLQ
-# order was reversed; real GPU quantizer 0.987-0.996 on attn_qg, x3.7 its quant time). GPU implementation: w50
-# (rad-exl3-mix v3/e3/tilecd/tilecd.py, not yet merged); 27B no-harm check v3/e3/settle/CD27.md PASSED 11-06 (s1 0.9994,
-# base 0.9997, no-op gates bit-exact). rxq calls tilecd.install() / tilecd.args() unchanged; refused with H_out.
-enable = false                 # flip to true once tilecd.py is merged (CD27 passed 11-06; the lead flips it)
+# order was reversed; real GPU quantizer 0.987-0.996 on attn_qg, x3.7 its quant time). w50's GPU module merged as
+# rxq/tilecd.py (11-07, w76; identical without H_out: tests/check_tilecd.py). 27B no-harm check v3/e3/settle/CD27.md
+# PASSED 11-06 at K2.5 without H_out (s1 0.9994, base 0.9997, no-op gates bit-exact). With H_out (K >= 4) CD runs on
+# the two-sided objective tr(E^T H E M) (user 11-07: write it); its 27B K4 no-harm pair is prepared, not run
+# (tools/cdhout27.sh): until it passes, K >= 4 levels with CD + H_out rest on the CPU checks only.
+enable = true                  # attn_qg at every K (user 11-06 / 11-07)
 sweeps = 3
 families = ["attn_qg"]
-module = ""                    # path of tilecd.py (default: <rxm>/v3/e3/tilecd/tilecd.py)
+k_max = 8.0                    # every level; tools/CDHOUT27.md FAIL -> 3.875 (CD off where H_out applies)
+module = ""                    # "" = rxq/tilecd.py; a path loads another copy (comparisons with the research module only)
 
 # -------------------------------------------------------------------------------------- post-quant (frozen codes)
 [post.swj]
@@ -101,17 +110,49 @@ fused = true                   # swjtri.py fused grid sums (KL 0.99980 vs exact,
 [post.asym]
 # Writers' sibling-sequential asymmetric target, rho 0 (#87 done on the 0.8B; #105 QUEUED at 27B, ASYM27.md:
 # PASS = geo <= 0.97 and both pairs < 1). #111 (0.8B, 11-07): per-level asym writers next to siblings of another K
-# fail (x1.08-1.24 vs plain); a per-mix writer pass keeps the gain: the rollout form is a user decision if #105 passes. Order: H_out -> swj -> writers (#87-07 / #87-08); runs last on each level's
-# final siblings (the correction does not transfer across sibling roundings).
-enable = false
+# fail (x1.08-1.24 vs plain); a per-mix writer pass keeps the gain: the rollout form is a user decision if #105 passes.
+# Order: H_out -> swj -> writers (#87-07 / #87-08); runs last on the mix's final siblings (the correction does not
+# transfer across sibling roundings). rxq: S5 stub (rxq/post.py plan_asym: the per-mix pass's steps), off.
+enable = false                 # OPEN: #105 (27B) + the user's rollout pick
+scope = "per-mix"              # #111: per-level writers are refused (config.validate); a per-mix pass after the knapsack
 lam = 1.0
 rho = 0.0
 moment_tokens = 1000000        # qad windows (843 windows, 1,002,035 tokens)
+
+[post.c9]
+# C9 alpha on the writers' rows (#112), ADOPTED by the user 2026-11-07 (LOG 1:40 PM CST) on #112-02's PARTIAL: 27B, swj
+# K2.5 levels, fixed codes, two seed pairs search 0.9939 / 0.9911 (z -2.0 / -4.2), geo 0.9925 vs the rule's <= 0.99;
+# verify 0.9920 / 0.9936 (keeps 0.96 of the gain). 0.8B #112: PASS on both stacks; #112-01: gdn_out alpha 3 (4-4.75 not
+# better by 0.5%). Per output row n of a writer, e_n = (q_n - t_n) M (q_n - t_n)^T / t_n M t_n^T (t = W, M = the calib
+# H_in of its group; with asym writers t = W F and M = G), c_n = (1 - e_n)^(-alpha / 2), folded into svh AFTER
+# everything else (swj, asym), on the codes the mix ships. Plain writers: computed inside each writer's quant job (w76,
+# rxq.post.c9_tensor; the separate level pass took 859 s a 27B level in w75's run). Runtime: none (scales).
+enable = true                  # ADOPTED (user 11-07): attn_o -1, gdn_out 3, down 0, plain writers
+alpha = { attn_o = -1.0, gdn_out = 3.0, down = 0.0 }
+e_clip = 0.5                   # e_n clipped to [0, 0.5] (never reached at K >= 2 on the 0.8B)
 
 [post.healing]
 # Frozen-code scale healing (#89, 0.8B done; 27B deferred by the user, 11-05): post-quantization, never blocks the
 # freeze; re-run the knapsack after it.
 enable = false
+
+# ------------------------------------------------------------------------------- S7 knapsack (pricing, not in the stamp)
+[knap]
+# rxq.knap's knap5 run (rad-exl3-mix v3/levels/reprice/knap5.py, the 11-07 re-pricing solver; paths relative to the tree's
+# v3/nf, the repo checkout by default). These are the w63 "main" arm's switches (v3/levels/reprice/mkjobs2.py; data
+# data/levels/reprice/swj2/out): tests/check_knap.py reproduces its 2.5 bpw solve byte for byte. The V3R menu's level
+# lists come from the library of levels that exist (rxq.knap library), not from here.
+solver = "../levels/reprice/knap5.py"
+model = "../../data/v3/kfit2-model-final.json"
+aq = "../e1b/data/aq.jsonl"
+aqfactors = "../e1b/data/aqfactors.json"
+map = "../e1b/data/e0-ident.map"
+swj_mode = "all"               # KN_SWJ when post.swj is on (every ours trunk option x r(K))
+swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"   # KN_SWJ_PTS: the corrected swj curve (w63; 27B K2.5 verify, K4 head-matched)
+cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
+a4 = false                     # A4 options (#46-03 pending): off -> KN_NOA4=1
+sub1_ratios = ""               # KN_SUB1 (sub-1 i4 levels' error ratios); "" = sub-1 levels are not priced (a warning)
+env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
 
 # ------------------------------------------------------------------------------------------- dropped (for the record)
 [dropped]

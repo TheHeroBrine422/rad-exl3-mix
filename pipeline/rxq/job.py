@@ -9,8 +9,10 @@ keys: one tensor, or several (any subset of one layer, usually a whole Hessian g
 loaded once a tensor anyway; results do not depend on the split, see quant.py).
 Outputs in OUT: t-<key>.safetensors per tensor (its trellis / suh / svh / marker; metadata: settings stamp, code
 stamp, K, codebook, level), log.jsonl (ourq's proxy-log record + stage times per tensor), job.json (spec, stamps,
-device, seconds). Each tensor file is written .part -> fsync -> rename, so a killed job leaves only whole tensors and
-a rerun skips them.
+device, seconds). With post.c9 on, a writer's job also computes its C9 row scales right after the quantization (W, Q
+and the group's H_in at hand: rxq.post.c9_tensor, seconds) into c9-<key>.safetensors (swjapply's "c" / "r"), written
+before the tensor file; log.jsonl's record carries c9.jsonl's line ("c9") and its time (rxq.c9_s). Each file is
+written .part -> fsync -> rename, so a killed job leaves only whole tensors and a rerun skips them.
 
 assemble(): job outputs of one level -> an ourq-layout level dir (q-LNN.safetensors per layer, index, config.json,
 proxy.jsonl, stamp.json), the form rad-convert's exl3i importer (src=DIR) and every swap-test tool read."""
@@ -33,6 +35,9 @@ def _fsync_put(write, path):
 def tensor_file(out, key): return os.path.join(out, f"t-{key}.safetensors")
 
 
+def c9_path(out, key): return os.path.join(out, f"c9-{key}.safetensors")
+
+
 def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
     cfg = cfg or C.load(spec.get("config"))
     st = C.settings_stamp(cfg)
@@ -43,7 +48,14 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
     os.makedirs(out, exist_ok=True)
     keys = list(spec["keys"])
     s0 = C.quant_settings(cfg, K, cb, keys[0], so)
-    tcd = (cfg["quant"]["tile_cd"]["sweeps"], cfg["quant"]["tile_cd"]["families"]) if cfg["quant"]["tile_cd"]["enable"] else None
+    tcd = C.tile_cd(cfg)
+    hout = None
+    if C.hout_applies(cfg, K):
+        hout = inp.get("hout") or s0["hout"]
+        if not hout: raise SystemExit(f"K{K}: H_out applies (inputs.hout) but neither the job nor the settings name its dir")
+    elif inp.get("hout"):
+        raise SystemExit(f"K{K}: the job names an H_out dir but H_out does not apply at this level "
+                         f"(inputs.hout enable / apply_k_min / apply_k_max)")
     dev = torch.device("cuda", device)
     Q = engine.setup(dev, codebook=cb, qtf2=s0["qtf2"], drift=s0["drift"], block_trace=s0["block_trace"], tile_cd=tcd)
     code = engine.code_stamp(Q)
@@ -59,10 +71,26 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
         t0 = time.perf_counter()
         tensors, rec, wq, rowerr = quant.quantize_tensor(Q, ck, key, s, inp["hessians"], dev, out, hin_dir=inp.get("hin"),
                                                          wpre_dir=inp.get("wpre"),
-                                                         hout_dir=(inp.get("hout") or s["hout"]) if "hout" in s else None,
+                                                         hout_dir=hout,
                                                          save_wq=save_wq, prof=prof)
         meta = {"rxq_settings": st, "rxq_code": code, "K": str(K), "codebook": cb, "level": spec.get("level", ""),
                 "key": key}
+        al = C.c9_injob(cfg, key, inp.get("hin"), inp.get("wpre"))
+        c9s = None
+        if al is not None:                      # S5b inside the job: the writer's C9 row scales (rxq.post.c9_tensor)
+            meta["c9"] = str(al)                # this writer's alpha: assembly then requires its c9 file
+            from . import post
+            tc = time.perf_counter()
+            _, _, _, hname, _ = qwen35.locate(key)
+            c, c9rec = post.c9_tensor(tensors, key, cb, ck.get(key + ".weight"), f"{inp['hessians']}/{hname}.safetensors",
+                                      al, cfg["post"]["c9"]["e_clip"], dev)
+            c9rec = {"key": key, "fam": post.c9_family(key), "layer": int(key.split(".")[3]), "alpha": al, **c9rec,
+                     "target": "W/H"}
+            c9meta = dict(meta, c9_alpha=json.dumps(cfg["post"]["c9"]["alpha"], sort_keys=True))
+            _fsync_put(lambda p: save_file(post.c9_file(c, tensors[f"{key}.suh"].numel()), p, metadata=c9meta),
+                       c9_path(out, key))
+            del c; torch.cuda.empty_cache()
+            c9s = round(time.perf_counter() - tc, 3)
         ts = time.perf_counter()
         _fsync_put(lambda p: save_file(tensors, p, metadata=meta), tf)
         if wq is not None:
@@ -70,9 +98,10 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
             import numpy as np
             np.savez(os.path.join(out, "wq", f"{key}.rowerr.npz"), **rowerr)
             _fsync_put(lambda p: save_file({"weight": wq}, p), os.path.join(out, "wq", f"{key}.safetensors"))
+        if al is not None: rec["c9"] = c9rec
         rec["rxq"] = {"settings": st, "code": code, "family": qwen35.family(key), "wall": round(time.perf_counter() - t0, 3),
                       "save": round(time.perf_counter() - ts, 3), "stages": prof.record() if prof else None,
-                      "peak_gib": round(torch.cuda.max_memory_allocated(dev) / 2**30, 3),
+                      "c9_s": c9s, "peak_gib": round(torch.cuda.max_memory_allocated(dev) / 2**30, 3),
                       "maxrss_gib": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 2**20, 3)}
         with open(os.path.join(out, "log.jsonl"), "a") as fh: fh.write(json.dumps(rec) + "\n")
         print(f"  {key:60s} K{K} proxy {rec['proxy_err']:.3e} {rec['rxq']['wall']:.1f}s", flush=True)
@@ -89,7 +118,9 @@ def plan_level(cfg, K, codebook=None, split="tensor", n_layers=64, seed_offset=0
     """the job specs of one level: split = tensor (one job per linear), group (one per Hessian group) or layer"""
     K = int(K) if float(K).is_integer() else float(K)
     cb = codebook or C.codebook_for(cfg, K); st = C.settings_stamp(cfg)
-    inputs = inputs or {"ckpt": "weights/", "hessians": "hessians/", "hin": None, "wpre": None, "hout": None}
+    inputs = dict(inputs or {"ckpt": "weights/", "hessians": "hessians/", "hin": None, "wpre": None, "hout": None})
+    if C.hout_applies(cfg, K): inputs["hout"] = inputs.get("hout") or cfg["inputs"]["hout"]["dir"] or "hout/"
+    else: inputs["hout"] = None
     units = []
     for l in range(n_layers):
         plan = qwen35.layer_plan(l)
@@ -110,9 +141,10 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
     want = qwen35.trunk_keys(n_layers) + (["lm_head"] if head else [])
     miss = [k for k in want if k not in files]
     if miss: raise SystemExit(f"{len(miss)} tensors missing (first {miss[0]})")
-    stamps = set()
+    stamps, c9want = set(), []
     for k in want:
         with safe_open(files[k], "pt") as f: m = f.metadata(); stamps.add((m["rxq_settings"], m["rxq_code"], m["K"], m["codebook"]))
+        if "c9" in m: c9want.append(k)
     if len(stamps) != 1: raise SystemExit(f"mixed stamps in one level: {sorted(stamps)[:3]}")
     (st, code, K, cb), = stamps
     stamp = f"{st[:8]}{code[:8]}"
@@ -136,6 +168,10 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
                                          "calibration": {"source": "challenge calib Hessians"}})
         json.dump(c, open(os.path.join(dst, "config.json"), "w"), indent=1)
     logs = []
+    c9 = {}
+    for d in job_dirs:
+        for f in os.listdir(d):
+            if f.startswith("c9-") and f.endswith(".safetensors"): c9[f[3:-len(".safetensors")]] = os.path.join(d, f)
     for d in job_dirs:
         p = os.path.join(d, "log.jsonl")
         if os.path.exists(p): logs += [json.loads(l) for l in open(p) if l.strip()]
@@ -143,6 +179,65 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
     with open(os.path.join(dst, "proxy.jsonl"), "w") as fh:
         for k in want:
             if k in last: fh.write(json.dumps(last[k]) + "\n")
+    if c9 or c9want: _assemble_c9(c9, last, want, st, os.path.join(dst, "c9"), n_layers, c9want)
     json.dump([{"stamp": stamp, "rxq_settings": st, "rxq_code": code, "K": K, "codebook": cb,
                 "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}], open(os.path.join(dst, "stamp.json"), "w"), indent=1)
     return stamp
+
+
+def _assemble_c9(files, recs, want, st, dst, n_layers, required=()):
+    """the jobs' C9 sidecars -> DST in rxq.post c9's layout (scales/<key>.safetensors, c9.jsonl in its writer order,
+    .done): `rxq.post apply LEVEL[,..] LEVEL/c9 OUT` folds them into svh. Refuses a missing writer or other stamps."""
+    from . import post
+    miss = [k for k in required if k not in files]
+    if miss: raise SystemExit(f"C9 on: {len(miss)} writers' jobs made C9 scales that are missing (first {miss[0]})")
+    alphas = set()
+    for k, p in files.items():
+        with safe_open(p, "pt") as f: m = f.metadata()
+        if m["rxq_settings"] != st: raise SystemExit(f"C9 scales of {k}: settings {m['rxq_settings']} != the level's {st}")
+        alphas.add(m["c9_alpha"])
+    if len(alphas) != 1: raise SystemExit(f"C9 scales with mixed alphas {sorted(alphas)}")
+    keys = [k for k, _, _ in post.writer_keys(json.loads(alphas.pop()), n_layers) if k in want]
+    miss = [k for k in keys if k not in files or "c9" not in recs.get(k, {})]
+    if miss: raise SystemExit(f"C9 on: {len(miss)} writers without their scales / c9 record (first {miss[0]})")
+    os.makedirs(os.path.join(dst, "scales"), exist_ok=True)
+    for k in keys:
+        with safe_open(files[k], "pt") as f: t = {n: f.get_tensor(n) for n in f.keys()}
+        _fsync_put(lambda p: save_file(t, p), os.path.join(dst, "scales", f"{k}.safetensors"))
+    def jl(p):
+        with open(p, "w") as fh: fh.writelines(json.dumps(recs[k]["c9"]) + "\n" for k in keys)
+    _fsync_put(jl, os.path.join(dst, "c9.jsonl"))
+    open(os.path.join(dst, ".done"), "w").close()
+
+
+def levelargs(level, cfg):
+    """an ourq level's settings (stamp.json's last "args", rad-exl3-mix v3/sib27/levelargs.py's source) as rxq quant
+    arguments under cfg: -> (argv list, problems). A level whose settings the config cannot express (another sigma, no
+    qtf2, ...) gives problems: a requant of its tensors with rxq would not reproduce them (the no-op gate would fail)."""
+    st = json.load(open(os.path.join(level, "stamp.json")))
+    A = dict(st[-1]["args"]); q = cfg["quant"]; bad = []
+    known = {"K", "frac_ext", "codebook", "seed_offset", "sigma_reg", "hout", "hout_diag", "sigma_reg_in", "sigma_in_sweep",
+             "gain", "sigma_reg_out", "out_scales_off", "head_perm", "scaled_hessian", "qtf2", "head_mean_row", "hin", "wpre",
+             "only", "tile_cd", "tile_cd_families"}
+    if set(A) - known: bad.append(f"unknown ourq args {sorted(set(A) - known)}")
+    if A.get("tile_cd"): bad.append(f"made with --tile-cd {A['tile_cd']} (tile CD settings are rxq's; compare by hand)")
+    for k in ("hin", "wpre", "only", "hout_diag", "out_scales_off", "sigma_in_sweep", "head_perm"):
+        if A.get(k): bad.append(f"made with --{k.replace('_', '-')} {A[k]}")
+    K = A["K"]; K = int(K) if float(K).is_integer() else float(K)
+    cb = A.get("codebook", "mul1")
+    if bool(A.get("qtf2")) != bool(q["qtf2"]): bad.append(f"qtf2 {A.get('qtf2')} vs settings {q['qtf2']}")
+    if bool(A.get("scaled_hessian")) != bool(q["scaled_hessian"]): bad.append(f"scaled_hessian {A.get('scaled_hessian')}")
+    if A.get("gain", 1.0) not in (None, 1.0): bad.append(f"gain {A['gain']}")
+    s = C.quant_settings(cfg, K, cb, qwen35.trunk_keys(1)[0], A.get("seed_offset", 0) or 0)
+    if A.get("sigma_reg") != q["sigma_reg"]: bad.append(f"sigma_reg {A.get('sigma_reg')} vs {q['sigma_reg']}")
+    if A.get("sigma_reg_in") != s["sigma_reg_in"]: bad.append(f"sigma_reg_in {A.get('sigma_reg_in')} vs {s['sigma_reg_in']} at K{K}")
+    argv = ["-K", str(K), "--codebook", cb, "--seed-offset", str(A.get("seed_offset", 0) or 0)]
+    if A.get("hout"):
+        if not C.hout_applies(cfg, K): argv += ["--set", "inputs.hout.enable=true", "--set", f"inputs.hout.apply_k_min={float(K)}"]
+        so = A.get("sigma_reg_out")
+        if so is not None and so != cfg["inputs"]["hout"]["sigma_reg_out"]: argv += ["--set", f"inputs.hout.sigma_reg_out={so}"]
+        if so is None: bad.append("--hout without --sigma-reg-out (ourq then uses sigma_reg for it)")
+        argv += ["--hout", A["hout"]]
+    elif C.hout_applies(cfg, K):
+        argv += ["--set", "inputs.hout.enable=false"]
+    return argv, bad
