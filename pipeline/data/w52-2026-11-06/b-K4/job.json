@@ -1,0 +1,35 @@
+{
+ "spec": {
+  "type": "rxq.quant",
+  "version": 1,
+  "level": "K4",
+  "K": 4,
+  "codebook": "i8",
+  "seed_offset": 0,
+  "keys": [
+   "model.language_model.layers.10.linear_attn.in_proj_qkv",
+   "model.language_model.layers.10.linear_attn.in_proj_z",
+   "model.language_model.layers.10.linear_attn.out_proj",
+   "model.language_model.layers.10.mlp.gate_proj",
+   "model.language_model.layers.10.mlp.up_proj",
+   "model.language_model.layers.39.self_attn.q_proj",
+   "model.language_model.layers.39.self_attn.k_proj",
+   "model.language_model.layers.39.self_attn.v_proj",
+   "model.language_model.layers.39.self_attn.o_proj"
+  ],
+  "settings_stamp": "a557009cc0bcc7ef",
+  "inputs": {
+   "ckpt": "/workspace/models/qwen38-27b-bf16",
+   "hessians": "/data/challenge/dl/hessians/calib",
+   "hin": null,
+   "wpre": null,
+   "hout": null
+  }
+ },
+ "settings_stamp": "a557009cc0bcc7ef",
+ "code_stamp": "fa3d3b32d8e3d857",
+ "device": "NVIDIA GeForce RTX 4070",
+ "host": null,
+ "tensors": 9,
+ "seconds": 42.7
+}

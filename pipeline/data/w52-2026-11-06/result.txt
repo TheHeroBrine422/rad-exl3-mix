@@ -1,0 +1,19 @@
+18:55:52 unit A: lock after 484s
+18:58:32 A quant rc=0 160s
+18:58:32 A lock released, held 160s
+QUANT IDENT FAIL 9/10
+18:58:34 C quant rc=127 162s
+18:58:34 C lock released, held 162s
+19:27:32 unit BCD: lock after 363s
+19:28:28 B down K2.5 default threads rc=0 56s
+19:30:58 B quant K2 rc=0 206s
+19:33:14 B quant K4,6 rc=0 342s
+19:34:00 C mkdenoise rc=0 388s
+19:34:37 C quant rc=0 425s
+19:35:50 D quant rc=0 498s
+19:35:50 BCD lock released, held 498s
+SAME model.language_model.layers.10.mlp.down_proj: tensors 4 differ 0; log fields differ []; proxy 0.019698746136565474 vs 0.019698746136565474
+QUANT IDENT PASS 1/1
+QUANT IDENT PASS 48/48
+QUANT IDENT FAIL 2/3
+19:35:53 UNIT BCD DONE
