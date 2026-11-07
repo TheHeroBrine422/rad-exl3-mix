@@ -3,6 +3,19 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 8:05 PM CST · #108, #— · Joint refits: GDN pays, attention doesn't (interim); rqah review
+- **#108 (w60, d1113, 0.8B, seed 0 screen, ratio vs trunk + swj on the fit golden):** GDN junction refits pay: z gate
+  only 0.9905 (K3) / 0.9666 (K2); qkv + z 0.992 / 0.964; with the loss after out_proj 0.991 / 0.960. Attention refits are
+  flat or worse (qk 1.004 / 1.012, vg 1.001 / 1.003, q+k+v 1.003 / 1.013, loss after o_proj 1.000 / 1.010) even though
+  they lower attention-output error on held-out text (q_norm / k_norm absorb per-head uniform scales; only within-head
+  relative scales reach the logits). The fitter reproduces swj on the MLP (0.9996 / 1.0035), so the nulls are the
+  junction, not the method. 3-seed screen and the full-stack stage (search + verify) are running; rule decides. Calib
+  use: qad pool (moments.py windows, seed 11, first 600 windows) — ledger entry to add. 27B port if it passes: svh edits
+  on in_proj_qkv / in_proj_z, swjapply-style, zero runtime cost.
+- **rad-quant-at-home review (w62):** all 14 findings from the outside contributor are real on 0.4 (reproduced);
+  PRs #16 / #18 merge as-is, #17 after a one-hunk rebase; w62 patches cover #5 / #6 / #10 / #13 / #14; open decisions
+  #4 (eval_mix trust), #7, #9, #11, #12. `local/workers/w62/REVIEW.md` (draft replies included).
+
 ### 2026-11-06 7:50 PM CST · #104, #81-04 · CORRECTION: swj's K4 "−22%" was a head mismatch; A1 real but small
 - **#104 amendment 2 (w59, fresh verify slice `golden-verify27`, ~100 verify-pool docs; rule before data):** the 6:10 PM
   K4 pairs compared mixes with **different head / embedding**: the swj arms were packed into V2 4.00's container, the
