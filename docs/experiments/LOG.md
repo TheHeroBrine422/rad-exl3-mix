@@ -3,6 +3,20 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:30 PM CST · #112-02 PARTIAL · #46-03 done · #105 never ran · VPN outage
+- **#112-02 (C9 α on the writers, 27B, 2 seed pairs):** search 0.9939 / 0.9911 (z −2.0 / −4.2), geo **0.9925** vs the
+  rule's ≤ 0.99; verify 0.9920 / 0.9936 (keeps 0.96 of the gain); no flags → **PARTIAL** (real, ~−0.75%, just short of
+  the bar). Lead / user decision; no runtime cost.
+- **#46-03 (A4 costs, w72's queue):** `A4COST VERDICT: 28 of 144 cells`. Summed A4-g64 cost over the measured cells:
+  K1 +56.9e-4, K2 +88.1e-4, K3 +72.0e-4 (g128: +91.0 / +72.9 / +83.8e-4). Per-cell ratios dK1/dK3 g64 ×0.39 (DEP:
+  the cost depends on K, cheaper at K1), dK2/dK3 ×0.82 (independent). Knap step-4 verdict pending (w72's knapwait).
+- **#105 asym (27B) never ran:** both arms stopped at 16:04 UTC on asym27.sh's `MemAvailable < 6 GB before oracle`
+  pre-check (the same pre-lock memory gate that stuck c9w27). Relaunch with MINMEM_GB=4 once iceman is reachable:
+  `MINMEM_GB=4 setsid nohup bash /data/asym27/code/asym27.sh >> /data/asym27/run.out 2>&1 < /dev/null &`.
+- **19:25 UTC: iceman and Thor unreachable** (the user's VPN host is down for maintenance). colo is up (#113 g5 /
+  #114 running). Card 0 had gone idle at 19:03 (Q2, A4COST, C9W27 all done). Queue on reconnect: asym27 (#105), then
+  headwm.sh (slab head), cdhout27 (tile CD + H_out no-harm, w76), qtf2i4check (w76).
+
 ### 2026-11-07 10:00 AM CST · #46-03 interim (w72) · ops: c9w27 pack gate
 - **A4 cost table, i4 K2 (2.17 bpw), real A4 kernel, search slice, baseline all-A8-g128 KLD 0.1277:** A8-g128 vs f16
   ×1.0001 (free). A4-g64 on **gate_up** by 16-layer band: +0.00056 / +0.00094 / +0.00123 / +0.00323 (z 3.8-9.6);
