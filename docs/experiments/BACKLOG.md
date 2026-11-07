@@ -455,3 +455,10 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   mul1 code. Estimated decode cost (unmeasured): ~0 to −5% at K5+, −5 to −10% at K4, −10 to −30% at K2–3 (random LDS
   reads with bank conflicts, the per-workgroup table fill, occupancy), for an uncertain gain of a few percent (QTIP's
   HYB). Not worth it at the low bpw where it would cost most. Reopen only with a V4 code redesign (see #113's bound).
+
+- **Session archive as training contexts (user 11-07).** `/workspace/pi-sessions` (~27M tokens of agentic trajectories
+  in main / subagent / worker sessions, growing a few M a day) as *contexts* for (a) a speculative-decoding draft for
+  Qwen3.8-27B and (b) QAD for real-world (non-challenge) releases. Targets always come from the bf16 Qwen itself
+  (regenerated continuations / its logits), never from the logged Claude text. Needs: rendering into Qwen's chat and
+  tool-call template, a secrets / host scrub, dedup of miner prompts. Challenge entries keep QAD on the calib qad pool
+  (AGENTS data discipline); a session-trained variant would be a separate, real-world release, reported on its own.
