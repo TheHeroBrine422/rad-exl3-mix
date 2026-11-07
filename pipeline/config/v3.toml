@@ -62,13 +62,13 @@ refit = true                   # exllamav3 fork refit_scales (su / sv, 2 rounds)
 # Codebook by level (v3.md "Ladder", user 11-04 / 11-05). i8 = int8-rounded mul1 (#43 done, x1.000 K1-6; #94
 # negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
 # (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
-# keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); mul1_levels below not yet edited.
+# keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
 by_level = [
   { k_min = 0.125, k_max = 1.0,  codebook = "i4" },
   { k_min = 1.125, k_max = 7.0,  codebook = "i8" },
 ]
-mul1_levels = [6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
+mul1_levels = [6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
 i4_twins = [2.0, 3.0]          # i4 K1.125-3 twins: K2 / K3 first (#46-03), the other 14 only if A4 pays
 hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
 
@@ -90,7 +90,8 @@ module = ""                    # path of tilecd.py (default: <rxm>/v3/e3/tilecd/
 # was a head mismatch). Amendment 2's rule then falls back to <= K3.5 until a K4 seed pair; LOG 11-06 7:50 PM says swj
 # "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision.
 enable = true
-k_max = 3.5                    # SWJ27.md: "adopted for K <= 3.5"; K >= 4 open (see above)
+k_max = 8.0                    # every level (user 2026-11-07: swj adopted at every level; K4 head-matched seed pair
+                               # 0.990 / 0.987 satisfies SWJ27 amendment 2's K4 condition). Was 3.5.
 grid = "0.6:1.4:0.01"
 clamp = [0.5, 2.0]
 fit_pool = "qad"               # SWJ27.md: 725 qad docs / 927,611 tokens, cap 4096, seed 0

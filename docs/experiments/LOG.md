@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 4:45 AM CST · #104 / ladder · config: swj at every level, mul1 K6 / K6.25 removed (w73 review)
+- w73's consistency pass (docs 86e7871, paper rebuilt, 12 pages) flagged that v3.toml still had swj `k_max = 3.5` and
+  mul1 K6 / K6.25. Both resolved by recorded user decisions: swj adopted at every level (SWJ27 amendment 2's K4 seed
+  pair exists: head-matched 0.990 / 0.987) → `k_max = 8.0`; mul1_levels start at K6.5. Still open (flagged by w73):
+  sub-1 damping 0.05 (#38 verdict vs ourq's 0.005; paper says "under review"), H_out K≥4-only scope (bn4s1 pending),
+  agent32 incident wording (w67 owns it).
+
 ### 2026-11-07 3:45 AM CST · #109–#112, #106 / #103 re-run · w64 (settle proxy order fix + shortlist)
 - **settle.py LDLQ order fixed** (`v3/e3/settle/w64/settle64.py`, `SETTLE_ORDER=rev`, exllamav3's last-block-first):
   matches w50's GPU tile-CD ratios within 0.5% on 9/9 blocks; the old forward order moved L3 attn_qg error +14…+26%.
