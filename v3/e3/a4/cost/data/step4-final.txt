@@ -1,0 +1,26 @@
+0
+# step 4: a4m-final vs noa4 (knap5a predictions)
+
+| size | ref fast KLD | ref t ms | arm t at <= KLD | time -% | best -% on ref curve | -0.03 bpw | -0.06 bpw | -% at KLD +1% / +3% | A4 use |
+|---|---|---|---|---|---|---|---|---|---|
+| 2.0 | 0.12073 | 606.8 | 606.8 | 0.0 | 0.0 | no | no | 0.6 / 0.6 | none |
+| 2.5 | 0.05347 | 607.5 | 607.5 | 0.0 | 0.0 | no | no | 0.8 / 0.8 | none |
+| 3.0 | 0.02540 | 607.9 | 607.9 | 0.0 | 0.0 | no | no | 1.1 / 1.1 | none |
+
+STEP4 2.0: time -0.0% (fail), bytes -0.03 fail
+STEP4 2.5: time -0.0% (fail), bytes -0.03 fail
+STEP4 3.0: time -0.0% (fail), bytes -0.03 fail
+STEP4 VERDICT: A4 stays out (rule not met at 2.0 / 2.5 / 3.0)
+
+# step 4: a4e1c vs noa4 (knap5a predictions)
+
+| size | ref fast KLD | ref t ms | arm t at <= KLD | time -% | best -% on ref curve | -0.03 bpw | -0.06 bpw | -% at KLD +1% / +3% | A4 use |
+|---|---|---|---|---|---|---|---|---|---|
+| 2.0 | 0.12073 | 606.8 | 606.8 | 0.0 | 0.0 | - | - | 0.6 / 0.6 | none |
+| 2.5 | 0.05347 | 607.5 | 607.5 | 0.0 | 0.0 | - | - | 0.8 / 0.8 | none |
+| 3.0 | 0.02540 | 607.9 | 607.9 | 0.0 | 0.0 | - | - | 0.7 / 0.7 | none |
+
+STEP4 2.0: time -0.0% (fail), bytes -0.03 fail
+STEP4 2.5: time -0.0% (fail), bytes -0.03 fail
+STEP4 3.0: time -0.0% (fail), bytes -0.03 fail
+STEP4 VERDICT: A4 stays out (rule not met at 2.0 / 2.5 / 3.0)

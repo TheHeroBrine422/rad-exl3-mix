@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:25 PM CST · #46-03 · knapsack step 4: A4 stays out of V3
+- knap5a with the measured A4 costs (g64 and the final table incl. K1 / K3) vs the A8-only fast variant, rule from
+  `v3/e3/a4/README.md` step 4 (≥ 10% lower predicted gemm_us at equal KLD, or ≥ 0.03 bpw smaller): **fails at 2.0 /
+  2.5 / 3.0** — the knapsack picks A4 on no tensor (time −0.0% at equal KLD). Even allowing +1% / +3% KLD buys only
+  0.6–1.1% time. Same with the older E1c proxy costs. The per-tensor A4 penalty (cheapest at K1, ×0.39 of K3 on
+  matched cells) is real but the speed it buys on these tensors is too small. **A4 out of V3; the int4-plane kernel
+  is not built; the i4 levels stay for the record / very-fast variants as decided.** Tables
+  `v3/e3/a4/cost/data/step4-final.txt`, `analysis-final.txt`.
+- Ops: watch rule a4knapfail dropped (it matched "(fail)" inside the verdict text).
+
 ### 2026-11-07 3:20 PM CST · #105 · asym's moments step never ran; GPU fault → w78
 - The 04:59 UTC "ASYM27 s1 DONE" was a **DRY run** (mom.log `DRY:`, 0 min). Real runs (16:04, 20:52, 21:01, 21:02
   UTC) pass pre (oracle bit-exact) + gate, then `sibmom27.py` dies within ~30 s: HSA illegal instruction / illegal

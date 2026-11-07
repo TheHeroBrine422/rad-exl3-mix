@@ -1,1 +1,12 @@
 09:52:18 knapwait start (pid 826843)
+18:42:53 g64: tables fetched (16 cells)
+mkcost: 256 tensor lines, unit scale 0.9923
+240 jobs
+18:42:55 g64: knap5a queue running on colo
+19:53:05 STEP4 VERDICT (g64):  A4 stays out (rule not met at 2.0 / 2.5 / 3.0) [STEP4 2.0: time -0.0% (fail), bytes -0.03 fail;STEP4 2.5: time -0.0% (fail), bytes -0.03 fail;STEP4 3.0: time -0.0% (fail), bytes -0.03 fail;]
+20:03:13 final: tables fetched (28 cells)
+mkcost: 448 tensor lines, unit scale 0.9923
+240 jobs
+20:03:15 final: knap5a queue running on colo
+21:08:28 STEP4 VERDICT (final):  A4 stays out (rule not met at 2.0 / 2.5 / 3.0) [STEP4 2.0: time -0.0% (fail), bytes -0.03 fail;STEP4 2.5: time -0.0% (fail), bytes -0.03 fail;STEP4 3.0: time -0.0% (fail), bytes -0.03 fail;]
+21:08:28 KNAPWAIT DONE
