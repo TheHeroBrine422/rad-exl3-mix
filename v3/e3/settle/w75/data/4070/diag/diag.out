@@ -1,0 +1,23 @@
+# diag.py (4070, 2026-11-07 ~12:03 UTC, under gpu.lock): original model run-to-run, and each attention layer's o_proj on the
+# same captured input: natural vs permuted summation order (bf16), both vs an f64 reference
+seq 0: A run-to-run bitwise True, max 0.0000, KL 0.00e+00
+  L3 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0021, rel err vs f64: natural 1.95e-03 permuted 1.95e-03
+  L7 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4261, rel err vs f64: natural 2.24e-03 permuted 2.19e-03
+  L11 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4033, rel err vs f64: natural 2.17e-03 permuted 2.13e-03
+  L15 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0010, rel err vs f64: natural 1.92e-03 permuted 1.92e-03
+  L19 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0017, rel err vs f64: natural 2.00e-03 permuted 2.00e-03
+  L23 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.3880, rel err vs f64: natural 2.07e-03 permuted 2.05e-03
+seq 1: A run-to-run bitwise True, max 0.0000, KL 0.00e+00
+  L3 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0020, rel err vs f64: natural 1.96e-03 permuted 1.96e-03
+  L7 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4278, rel err vs f64: natural 2.27e-03 permuted 2.20e-03
+  L11 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4022, rel err vs f64: natural 2.18e-03 permuted 2.11e-03
+  L15 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0009, rel err vs f64: natural 1.97e-03 permuted 1.97e-03
+  L19 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0015, rel err vs f64: natural 2.05e-03 permuted 2.05e-03
+  L23 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.3852, rel err vs f64: natural 2.08e-03 permuted 2.01e-03
+seq 2: A run-to-run bitwise True, max 0.0000, KL 0.00e+00
+  L3 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0020, rel err vs f64: natural 2.03e-03 permuted 2.03e-03
+  L7 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4237, rel err vs f64: natural 2.27e-03 permuted 2.20e-03
+  L11 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.4003, rel err vs f64: natural 2.20e-03 permuted 2.09e-03
+  L15 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0009, rel err vs f64: natural 1.93e-03 permuted 1.93e-03
+  L19 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.0016, rel err vs f64: natural 2.00e-03 permuted 2.00e-03
+  L23 o_proj same input: natural vs permuted-order bitwise False, frac elems differ 0.3806, rel err vs f64: natural 2.06e-03 permuted 2.03e-03

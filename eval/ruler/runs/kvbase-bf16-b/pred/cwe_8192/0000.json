@@ -1,0 +1,27 @@
+{
+ "cell": "cwe_8192",
+ "cell_sha256": "2b0e28db1293fc180eda2320b40b735fd773a1bb9ee29efaca5141005dda7711",
+ "completion_tokens": 48,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "cwe_8192/0000",
+ "length": 8192,
+ "outputs": [
+  "streetcar",
+  "CD",
+  "enchanting",
+  "likeable",
+  "durian",
+  "disparity",
+  "luncheonette",
+  "chief",
+  "examiner",
+  "papa"
+ ],
+ "pred": "\n1. examiner\n2. chief\n3. disparity\n4. streetcar\n5. luncheonette\n6. CD\n7. durian\n8. likeable\n9. papa\n10. enchanting",
+ "prompt_tokens": 8073,
+ "score": 1.0,
+ "seconds": 6.429,
+ "task": "cwe"
+}

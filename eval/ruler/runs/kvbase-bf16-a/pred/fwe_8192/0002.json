@@ -1,0 +1,20 @@
+{
+ "cell": "fwe_8192",
+ "cell_sha256": "387a1c4a824c69d5646252406fe6c24c2f963f14ccf04e002322aa89d18f3d9f",
+ "completion_tokens": 28,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 2,
+ "key": "fwe_8192/0002",
+ "length": 8192,
+ "outputs": [
+  "qahtet",
+  "rykyzi",
+  "isumqe"
+ ],
+ "pred": "\n\n1.  **qahtet**\n2.  **rykyzi**\n3.  **isumqe**",
+ "prompt_tokens": 6963,
+ "score": 1.0,
+ "seconds": 5.099,
+ "task": "fwe"
+}

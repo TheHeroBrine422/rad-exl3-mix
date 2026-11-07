@@ -1,0 +1,7 @@
+mix-s1c9a.rad: 787 weights, 2.6244 bpw (file), 2.6190 bpw (weights)
+  scheme        K codebook act         n       GB
+  exl3i       2.5 mul1i8   f16       336    7.620
+  exl3          4 mul1     f16         1    0.636
+  affine                               1    0.497
+  plain                              449    0.052
+CENSUS PASS [checked: mix base]

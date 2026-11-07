@@ -1,0 +1,2 @@
+{"name": "q35-08b-bf16", "backend": "hf", "model": "/data/models/qwen35-08b", "dtype": "bfloat16", "device": "cuda",
+ "vram_cap_gb": 7.2, "notes": "Qwen3.5-0.8B bf16 on the RTX 4070 through transformers (fla GDN kernels): radiance has no CUDA path"}

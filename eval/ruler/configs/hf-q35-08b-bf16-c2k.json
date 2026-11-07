@@ -1,0 +1,3 @@
+{"name": "q35-08b-bf16-c2k", "backend": "hf", "model": "/data/models/qwen35-08b", "dtype": "bfloat16", "device": "cuda",
+ "vram_cap_gb": 7.2, "prefill_chunk": 2048,
+ "notes": "as q35-08b-bf16 with the prompt prefilled 2k tokens at a time (sdpa materializes a chunk x context mask: 16k chunks OOM at 128k) (one-shot prefill OOMs at 128k under the 7.2 GB cap)"}

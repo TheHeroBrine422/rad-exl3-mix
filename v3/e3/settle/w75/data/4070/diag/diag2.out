@@ -1,0 +1,5 @@
+# diag2.py (4070, 2026-11-07 ~12:05 UTC, under gpu.lock): KL(original || permuted checkpoint) per position, 8 x 1,024 tokens
+# of g08-fit1, with torch's bf16 reduced-precision reduction on (default) and off
+allow_bf16_reduced_precision_reduction True
+reduced_precision_reduction=True: KL(A||B) mean 7.25e-03 median 4.40e-04 p90 2.59e-03 p99 1.68e-01 p99.9 6.30e-01 max 1.22e+00; by position quartile: ['7.9e-03', '8.9e-03', '4.8e-03', '7.3e-03']
+reduced_precision_reduction=False: KL(A||B) mean 7.10e-03 median 3.91e-04 p90 2.33e-03 p99 1.75e-01 p99.9 5.76e-01 max 1.59e+00; by position quartile: ['8.1e-03', '8.9e-03', '4.2e-03', '7.2e-03']

@@ -1,0 +1,20 @@
+{
+ "cell": "fwe_32768",
+ "cell_sha256": "36753199c9c230eb036546d8af150bfbeaec51dd078feb571ade3dc4d5dcfb70",
+ "completion_tokens": 28,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "fwe_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "tuhrpx",
+  "jpneax",
+  "ustkrw"
+ ],
+ "pred": "\n\n1.  **tuhrpx**\n2.  **jpneax**\n3.  **ustkrw**",
+ "prompt_tokens": 29615,
+ "score": 1.0,
+ "seconds": 19.377,
+ "task": "fwe"
+}

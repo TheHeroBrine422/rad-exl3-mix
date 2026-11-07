@@ -15,7 +15,9 @@ TOP = 512
 def kernel_paths():
     """Which GDN kernel packages this process can import (transformers picks the implementation at import: package if
     importable, else torch). A golden and the evals scored against it must match: across paths the 2B's scored rows
-    differ by ~1.5e-4 KL (bf16 rounding in the recurrent state; up to 1e-2 on unscored prompt rows), on one path by 0
+    differ by ~1.5e-4 KL (bf16 rounding in the recurrent state; up to 1e-2 on unscored prompt rows)
+    [11-07, w75: a change of summation order alone (o_proj heads permuted, same weights) moved the 0.8B's bf16 logits
+    by mean KL 7e-3, top-1 98%: cross-path noise can be ~50x larger than 1.5e-4; paired same-path comparisons unaffected], on one path by 0
     (2026-11-02, kernvar.sh). Recorded as package -> version, or None when blocked / absent."""
     import importlib, importlib.metadata as md
     out = {}

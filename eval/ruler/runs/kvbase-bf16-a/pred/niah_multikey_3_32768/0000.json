@@ -1,0 +1,18 @@
+{
+ "cell": "niah_multikey_3_32768",
+ "cell_sha256": "be4da48491a80169a075a7bb77d1e070ee93d3ab905900a17909a6f6335b5218",
+ "completion_tokens": 37,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "niah_multikey_3_32768/0000",
+ "length": 32768,
+ "outputs": [
+  "9a39bc36-93c8-4011-9c22-81fef4e1048a"
+ ],
+ "pred": ": **9a39bc36-93c8-4011-9c22-81fef4e1048a**.",
+ "prompt_tokens": 32609,
+ "score": 1.0,
+ "seconds": 21.677,
+ "task": "niah_multikey_3"
+}

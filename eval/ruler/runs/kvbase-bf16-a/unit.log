@@ -1,0 +1,84 @@
+07:03:51 card0 + conv + ram locks taken; MemAvailable 8.83 GB
+84 selected, 0 done, 84 to run
+engine up in 10 s
+server /tokenize of niah_single_1_8192/0000: identical to our ids (8070 vs 8070)
+niah_single_1_8192/0000 8070 tok 5.0s score 1.00 | ' **5437923**.'
+niah_single_1_8192/0001 8070 tok 5.0s score 1.00 | ' **3094235**.'
+niah_single_1_8192/0002 7448 tok 4.7s score 1.00 | ' **4226067**.'
+niah_single_2_8192/0000 7492 tok 4.7s score 1.00 | ' **5663623**.'
+niah_single_2_8192/0001 8076 tok 5.0s score 1.00 | ' **7210606**.'
+niah_single_2_8192/0002 7489 tok 4.7s score 1.00 | ' **5107245**.'
+niah_single_3_8192/0000 7485 tok 5.6s score 1.00 | ':\n\n**366eb16f-508e-4ad7-b7c9-3acfe059a0ee**'
+niah_single_3_8192/0001 8076 tok 6.0s score 1.00 | ':\n\n**23bed01d-43cf-4fde-a493-3b83757750a9**'
+niah_single_3_8192/0002 7485 tok 5.7s score 1.00 | ':\n\n**c17af08a-1745-46d8-be57-0ddf827050a8**'
+niah_multikey_1_8192/0000 7494 tok 4.8s score 1.00 | ' **5672073**.'
+niah_multikey_1_8192/0001 8072 tok 5.0s score 1.00 | ' **2626229**.'
+niah_multikey_1_8192/0002 7495 tok 4.8s score 1.00 | ' **2642635**.'
+niah_multikey_2_8192/0000 8038 tok 5.1s score 1.00 | ' **3851044**.'
+niah_multikey_2_8192/0001 8031 tok 5.1s score 1.00 | ' **3848423**.'
+niah_multikey_2_8192/0002 8060 tok 5.1s score 1.00 | ' **2446060**.'
+niah_multikey_3_8192/0000 6251 tok 4.9s score 1.00 | ':\n\n**284e4cd4-f9c3-4e05-8012-d399a7af5545**'
+niah_multikey_3_8192/0001 6210 tok 5.0s score 1.00 | ':\n\n**68994c84-0840-4234-b9ed-0800317979f9**'
+niah_multikey_3_8192/0002 6226 tok 5.0s score 1.00 | ':\n\n**7f44cbca-1d3a-4131-9b38-8581d145bd7f**'
+niah_multivalue_8192/0000 8074 tok 6.5s score 1.00 | ':\n\n1. **1971823**\n2. **5017343**\n3. **5041154**\n4. **6159230**'
+niah_multivalue_8192/0001 8068 tok 6.6s score 1.00 | ':\n\n1.  **5446912**\n2.  **3770370**\n3.  **9852897**\n4.  **8973915**'
+niah_multivalue_8192/0002 8068 tok 6.6s score 1.00 | ':\n\n1.  **7264956**\n2.  **7693979**\n3.  **8350099**\n4.  **6229731**'
+niah_multiquery_8192/0000 7502 tok 7.0s score 1.00 | ':\n\n*   **scattered-prize**: 2642635\n*   **capricious-foal**: 4965789\n*'
+niah_multiquery_8192/0001 7508 tok 7.0s score 1.00 | ':\n\n*   **available-pumpkinseed**: 1841248\n*   **purring-watercress**: '
+niah_multiquery_8192/0002 7499 tok 6.9s score 1.00 | ':\n\n*   **orange-mangle**: 6304573\n*   **blue-eyed-drummer**: 4576135\n*'
+vt_8192/0000 8162 tok 5.4s score 1.00 | '  SJKDR XWXUF USMOX DDMNO ITLVX'
+vt_8192/0001 8163 tok 5.3s score 1.00 | '  DFKIM BVKUY AWOMY HKXVN TUXMH'
+vt_8192/0002 8164 tok 5.4s score 1.00 | '  IWHYK VMTBY FBYBA GVQGM CYMGJ'
+cwe_8192/0000 8073 tok 6.4s score 1.00 | '\n1. examiner\n2. chief\n3. disparity\n4. streetcar\n5. luncheonette\n6. CD\n'
+cwe_8192/0001 7767 tok 6.2s score 1.00 | '\n1. fragile\n2. protection\n3. formal\n4. gunpowder\n5. knock\n6. petition\n'
+cwe_8192/0002 8018 tok 6.3s score 1.00 | '\n1. tortellini\n2. rawhide\n3. watchmaker\n4. supporter\n5. inevitable\n6. '
+fwe_8192/0000 7696 tok 5.2s score 1.00 | '\n\n1. nwlwst\n2. rspvov\n3. hmcxdl'
+fwe_8192/0001 7041 tok 5.1s score 1.00 | '\n\n1.  **nquuzu**\n2.  **quiivw**\n3.  **fupeem**'
+fwe_8192/0002 6963 tok 5.1s score 1.00 | '\n\n1.  **qahtet**\n2.  **rykyzi**\n3.  **isumqe**'
+qa_squad_8192/0000 7913 tok 4.7s score 1.00 | ' France'
+qa_squad_8192/0001 8009 tok 5.1s score 1.00 | ' 10th and 11th centuries'
+qa_squad_8192/0002 7841 tok 4.8s score 0.00 | ' Denmark, Iceland, and Norway'
+niah_single_1_32768/0000 32623 tok 20.7s score 1.00 | ' **4226067**.'
+niah_single_1_32768/0001 32617 tok 20.7s score 1.00 | ' **4823498**.'
+niah_single_1_32768/0002 32623 tok 20.7s score 1.00 | ' **2694522**.'
+niah_single_1_32768/0003 32623 tok 20.7s score 1.00 | ' **7120868**.'
+niah_single_2_32768/0000 32649 tok 20.7s score 1.00 | ' **7210606**.'
+niah_single_2_32768/0001 32652 tok 20.7s score 1.00 | ' **5479144**.'
+niah_single_2_32768/0002 32649 tok 20.7s score 1.00 | ' **5107245**.'
+niah_single_2_32768/0003 32646 tok 20.7s score 1.00 | ' **5528972**.'
+niah_single_3_32768/0000 32049 tok 21.4s score 1.00 | ':\n\n**663f1c97-9562-49f0-a5d7-b8756dadd6c7**'
+niah_single_3_32768/0001 32652 tok 21.7s score 1.00 | ':\n\n**c17af08a-1745-46d8-be57-0ddf827050a8**'
+niah_single_3_32768/0002 32045 tok 21.4s score 1.00 | ':\n\n**77d21e02-ff01-4f99-988c-24c961b1cd22**'
+budget: stopping before niah_single_3_32768/0003 (32043 tokens)
+host MemAvailable minimum while the engine ran: 2.63 GB
+47 samples this run, 37 left, 437 s
+07:11:10 rrun rc=3; locks released
+07:37:01 card0 + conv + ram locks taken; MemAvailable 8.87 GB
+48 selected, 30 done, 18 to run
+engine up in 11 s
+server /tokenize of niah_multikey_1_32768/0000: identical to our ids (32650 vs 32650)
+niah_multikey_1_32768/0000 32650 tok 20.4s score 1.00 | ' **2626229**.'
+niah_multikey_1_32768/0001 32036 tok 20.0s score 1.00 | ' **2642635**.'
+niah_multikey_2_32768/0000 32018 tok 20.1s score 1.00 | ' **9665856**.'
+niah_multikey_2_32768/0001 32596 tok 20.6s score 1.00 | ' **8327521**.'
+niah_multikey_3_32768/0000 32609 tok 21.7s score 1.00 | ': **9a39bc36-93c8-4011-9c22-81fef4e1048a**.'
+niah_multikey_3_32768/0001 32571 tok 21.6s score 1.00 | ': **1f324096-1f1d-4b20-be91-dd2abf024c09**.'
+niah_multivalue_32768/0000 32643 tok 22.4s score 1.00 | ':\n\n1.  **7264956**\n2.  **7693979**\n3.  **8350099**\n4.  **6229731**'
+niah_multivalue_32768/0001 32643 tok 22.4s score 1.00 | ':\n\n1.  **4860684**\n2.  **1352896**\n3.  **4694634**\n4.  **6672134**'
+niah_multiquery_32768/0000 32052 tok 22.8s score 1.00 | ':\n\n*   **swift-bronze:** 2375453\n*   **sneaky-balaclava:** 1666754\n*  '
+niah_multiquery_32768/0001 32040 tok 22.7s score 1.00 | ':\n\n*   **different-burn**: 8351517\n*   **subsequent-motorcar**: 987415'
+vt_32768/0000 32745 tok 21.0s score 1.00 | '  JFITJ TVGCA OZJQU QTYFA DDROF'
+vt_32768/0001 32741 tok 21.0s score 1.00 | ' SHRUU OBNRB QAKML JXLDE NQQXU'
+cwe_32768/0000 32521 tok 22.0s score 1.00 | '\n1. communication\n2. cuisine\n3. rap\n4. billboard\n5. canal\n6. inscripti'
+cwe_32768/0001 32501 tok 22.0s score 1.00 | '\n1. giraffe\n2. rabbi\n3. pen\n4. scout\n5. panties\n6. digger\n7. roast\n8. '
+fwe_32768/0000 29925 tok 19.3s score 1.00 | '\n\n1. tsamyl\n2. kjzopg\n3. ultalu'
+fwe_32768/0001 29615 tok 19.4s score 1.00 | '\n\n1.  **tuhrpx**\n2.  **jpneax**\n3.  **ustkrw**'
+qa_squad_32768/0000 30102 tok 18.7s score 1.00 | ' France'
+qa_squad_32768/0001 30917 tok 19.6s score 1.00 | ' 10th and 11th centuries'
+host MemAvailable minimum while the engine ran: 2.94 GB, 8.4 s after its start
+18 samples this run, 0 left, 388 s
+07:43:31 rrun rc=0; locks released
+08:15:38 card0 + conv + ram locks taken; MemAvailable 8.55 GB
+3 selected, 0 done, 3 to run
+memory: MemAvailable 2.33 GB < 2.5 GB: engine killed
+08:15:46 rrun rc=4; locks released

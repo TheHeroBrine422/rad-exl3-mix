@@ -1,0 +1,22 @@
+{
+ "cell": "vt_8192",
+ "cell_sha256": "4a6b234ce4646d6a255f1e9201bfe54219d6ff21bc563b21fdc895c6a1242c52",
+ "completion_tokens": 16,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "vt_8192/0001",
+ "length": 8192,
+ "outputs": [
+  "DFKIM",
+  "BVKUY",
+  "AWOMY",
+  "HKXVN",
+  "TUXMH"
+ ],
+ "pred": "  DFKIM BVKUY AWOMY HKXVN TUXMH",
+ "prompt_tokens": 8163,
+ "score": 1.0,
+ "seconds": 5.322,
+ "task": "vt"
+}

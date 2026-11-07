@@ -1,0 +1,28 @@
+{
+ "name": "v2-400-bf16",
+ "backend": "radiance",
+ "radiance": "/data/install-116/bin/radiance",
+ "home": "/data/swap27/home",
+ "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+ "kv_cache_dtype": "bf16",
+ "flags": [
+  "--mm-max-patches",
+  "0",
+  "--embedding-placement",
+  "vram",
+  "--no-prefix-cache",
+  "--checkpoint-slots",
+  "0",
+  "--num-speculative-tokens",
+  "0",
+  "--host-headroom-mib",
+  "8192"
+ ],
+ "env": {
+  "ROCR_VISIBLE_DEVICES": "0"
+ },
+ "load_timeout_s": 300,
+ "mem_start_gb": 8.5,
+ "mem_kill_gb": 2.0,
+ "notes": "27B EXL3 V2 4.00 bpw, frozen install-116 + the swap27 plugin home (read-only), bf16 KV, card 0"
+}

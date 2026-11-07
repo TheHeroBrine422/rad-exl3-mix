@@ -1,0 +1,41 @@
+ruler_cwe_131072:first100: no match
+ruler_cwe_32768:first100: no match
+ruler_cwe_32768:first4: no match
+ruler_cwe_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_cwe_4096:first4: MATCH (input+" "+gen_prefix)
+ruler_fwe_131072:first100: no match
+ruler_fwe_32768:first100: no match
+ruler_fwe_4096:first100: no match
+ruler_niah_multikey_1_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_1_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_1_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_2_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_2_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_2_32768:first4: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_2_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_2_4096:first4: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_3_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_3_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multikey_3_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multiquery_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multiquery_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multiquery_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multivalue_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multivalue_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_multivalue_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_1_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_1_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_1_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_2_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_2_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_2_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_3_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_3_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_niah_single_3_4096:first100: MATCH (input+" "+gen_prefix)
+ruler_qa_squad_131072:first100: MATCH (input.rstrip()+" "+gen_prefix)
+ruler_qa_squad_32768:first100: MATCH (input.rstrip()+" "+gen_prefix)
+ruler_qa_squad_4096:first100: MATCH (input.rstrip()+" "+gen_prefix)
+ruler_vt_131072:first100: MATCH (input+" "+gen_prefix)
+ruler_vt_32768:first100: MATCH (input+" "+gen_prefix)
+ruler_vt_4096:first100: MATCH (input+" "+gen_prefix)
+34 match, 6 differ

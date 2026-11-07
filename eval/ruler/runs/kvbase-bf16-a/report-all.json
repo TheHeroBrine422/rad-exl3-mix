@@ -1,0 +1,333 @@
+{
+ "by_length": {
+  "32768": 100.0,
+  "8192": 97.22222222222221
+ },
+ "by_task": {
+  "cwe": 100.0,
+  "fwe": 100.0,
+  "niah_multikey_1": 100.0,
+  "niah_multikey_2": 100.0,
+  "niah_multikey_3": 100.0,
+  "niah_multiquery": 100.0,
+  "niah_multivalue": 100.0,
+  "niah_single_1": 100.0,
+  "niah_single_2": 100.0,
+  "niah_single_3": 100.0,
+  "qa_squad": 83.33333333333333,
+  "vt": 100.0
+ },
+ "cells": {
+  "cwe_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "cwe",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "cwe_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "cwe",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "fwe_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "fwe",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "fwe_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "fwe",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_multikey_1_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "niah_multikey_1",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "niah_multikey_1_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_multikey_1",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_multikey_2_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "niah_multikey_2",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "niah_multikey_2_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_multikey_2",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_multikey_3_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "niah_multikey_3",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "niah_multikey_3_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_multikey_3",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_multiquery_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "niah_multiquery",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "niah_multiquery_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_multiquery",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_multivalue_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "niah_multivalue",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "niah_multivalue_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_multivalue",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_single_1_32768": {
+   "all_correct": 4,
+   "length": 32768,
+   "n": 4,
+   "score": 100.0,
+   "task": "niah_single_1",
+   "wilson95_all_correct": [
+    0.5100999795960008,
+    1.0
+   ]
+  },
+  "niah_single_1_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_single_1",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_single_2_32768": {
+   "all_correct": 4,
+   "length": 32768,
+   "n": 4,
+   "score": 100.0,
+   "task": "niah_single_2",
+   "wilson95_all_correct": [
+    0.5100999795960008,
+    1.0
+   ]
+  },
+  "niah_single_2_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_single_2",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_single_3_32768": {
+   "all_correct": 3,
+   "length": 32768,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_single_3",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "niah_single_3_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "niah_single_3",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  },
+  "qa_squad_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "qa_squad",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "qa_squad_8192": {
+   "all_correct": 2,
+   "length": 8192,
+   "n": 3,
+   "score": 66.66666666666666,
+   "task": "qa_squad",
+   "wilson95_all_correct": [
+    0.2076549551264879,
+    0.9385096847238394
+   ]
+  },
+  "vt_32768": {
+   "all_correct": 2,
+   "length": 32768,
+   "n": 2,
+   "score": 100.0,
+   "task": "vt",
+   "wilson95_all_correct": [
+    0.34237195288961925,
+    1.0
+   ]
+  },
+  "vt_8192": {
+   "all_correct": 3,
+   "length": 8192,
+   "n": 3,
+   "score": 100.0,
+   "task": "vt",
+   "wilson95_all_correct": [
+    0.43849391955098227,
+    1.0
+   ]
+  }
+ },
+ "meta": {
+  "identity": {
+   "config": {
+    "backend": "radiance",
+    "env": {
+     "RADIANCE_RELAYOUT_POOL_MIB": "768",
+     "ROCR_VISIBLE_DEVICES": "0"
+    },
+    "flags": [
+     "--mm-max-patches",
+     "0",
+     "--embedding-placement",
+     "vram",
+     "--no-prefix-cache",
+     "--checkpoint-slots",
+     "0",
+     "--num-speculative-tokens",
+     "0",
+     "--host-headroom-mib",
+     "8192"
+    ],
+    "home": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/radiance_home",
+    "kv_cache_dtype": "bf16",
+    "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+    "radiance": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/bin/radiance"
+   },
+   "set": {
+    "format": 1,
+    "name": "ruler-qwen38-v1",
+    "seed": 42,
+    "upstream": "NVIDIA/RULER db43f92ff634bbce1c33d1fb15858aec4bba509a"
+   },
+   "template": "chat",
+   "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+   "version": 1
+  },
+  "name": "kvbase-v2-400-bf16",
+  "run": "/data/work/w66/runs/kvbase-bf16-a"
+ },
+ "n": 65,
+ "overall": 98.61111111111111,
+ "overall_ci95": [
+  95.83333333333333,
+  100.0
+ ],
+ "overall_se": 1.1324258903480886,
+ "schema": "ruler-report/1"
+}

@@ -1,0 +1,13 @@
+{
+ "name": "kvbase-v2-400-fp8",
+ "backend": "radiance",
+ "radiance": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/bin/radiance",
+ "home": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/radiance_home",
+ "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+ "kv_cache_dtype": "fp8",
+ "flags": ["--mm-max-patches", "0", "--embedding-placement", "vram", "--no-prefix-cache", "--checkpoint-slots", "0",
+           "--num-speculative-tokens", "0", "--host-headroom-mib", "8192"],
+ "env": {"ROCR_VISIBLE_DEVICES": "0", "RADIANCE_RELAYOUT_POOL_MIB": "768"},
+ "load_timeout_s": 300, "mem_start_gb": 7.0, "mem_kill_gb": 2.5,
+ "notes": "27B EXL3 V2 4.00 bpw on the KV task's baseline build (upstream main + #416 + our plugins, harness patch 0003: relayout pool by env, 768 MiB) = what kv_judge T2 serves; read-only use of /data/ar/kv. The frozen install-116 needs > 7 GB of host RAM to load (its 4 GiB relayout pool): our guard killed it twice at < 2 GB MemAvailable"
+}

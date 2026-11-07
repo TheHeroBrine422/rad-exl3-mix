@@ -1,0 +1,589 @@
+diff --git a/README.md b/README.md
+index eaef2f0..e1cfcc8 100644
+--- a/README.md
++++ b/README.md
+@@ -319,6 +319,14 @@ sandbox) and its static-gate rules.
+     the harness's ranking key: 1 on the front + half the bytes saved vs
+     fp8. `finish()` writes `kv-pareto.{json,md}` over every judged
+     candidate and the anchors.
++  - *T2* with a RULER set (the profile's `ruler.set`, proposed 2026-11-07): rad-exl3-mix `eval/ruler`'s
++    `ruler-qwen38-v1` (NVIDIA's own generators, seed 42, the Qwen3.8 tokenizer; on the bench host, its
++    selection's cells pinned by `set_sha256`) and its library `rlib.py` (copied here): the candidate and the
++    anchors on the same rows of the profile's `select` (default `fast-v1`: 12 tasks, 48 rows at 8k / 32k,
++    ~11 min a setup on card 0), chat template, greedy, RULER's metrics; rejected when the paired difference
++    to an anchor (rows resampled within cells, 2000 resamples) has its 95% upper bound under -`tol_points`
++    (0) overall or under -`tol_length_points` (10) at a length. `v['t2']` holds `reports` (ruler-report/1)
++    and `paired` (ruler-compare/1). Without `ruler.set` the legacy probes below run.
+   - *T2* (opt-in `--t2`, hours): `ruler.py` (RULER-style, synthetic text:
+     multi-key and multi-value needles with distractors, variable tracking;
+     string match) at the profile's lengths for the candidate and the anchors
+diff --git a/tasks/kv.py b/tasks/kv.py
+index cb7f3c0..56c8921 100644
+--- a/tasks/kv.py
++++ b/tasks/kv.py
+@@ -111,7 +111,7 @@ MAX_PATCH_BYTES = 2_000_000
+ SETUP_KEYS = {'name', 'kv_cache_dtype', 'recipe', 'flags', 'calibrate', 'notes'}
+ DTYPES = {'bf16', 'fp8', 'fp8_v4', 'k6_v4'}
+ CODE_EXT = ('.c', '.cc', '.cpp', '.h', '.hpp', '.hip', '.cu', '.cuh', '.inc')
+-BIN_FILES = ('kjudge.py', 'kvjudge.py', 'kvstats.py', 'kvserve.py', 'ruler.py', 'kvmock.py')
++BIN_FILES = ('kjudge.py', 'kvjudge.py', 'kvstats.py', 'kvserve.py', 'ruler.py', 'rlib.py', 'kvmock.py')
+ NAME_RE = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,80}$')
+ 
+ 
+diff --git a/tasks/kv/kvjudge.py b/tasks/kv/kvjudge.py
+index f308eea..6c53e40 100644
+--- a/tasks/kv/kvjudge.py
++++ b/tasks/kv/kvjudge.py
+@@ -963,6 +963,8 @@ class Runner:
+ 
+     # ---- T2 -----------------------------------------------------------------------------
+     def t2(self, prod: Path, recipe_dir: Path, refs: Json) -> Json:
++        if self.model['ruler'].get('set'):
++            return self.t2_rlib(prod, recipe_dir, refs)
+         import ruler as R
+         m = self.model
+         rs = m['ruler']
+@@ -1069,6 +1071,123 @@ class Runner:
+                 'replies': [d['reply'] for d in done[:6]]}
+ 
+ 
++    # ---- T2 over the RULER harness (rad-exl3-mix eval/ruler: NVIDIA's generators, versioned set) -------------
++    def t2_rlib(self, prod: Path, recipe_dir: Path, refs: Json) -> Json:
++        """The candidate and the anchors on the profile's selection of a RULER set on the bench host (the same rows
++        for every setup); scored with RULER's metrics (rlib.score), compared paired (rlib.paired: per-row bootstrap
++        within cells). Rejected when the candidate is worse than an anchor beyond chance: the paired difference's
++        95% upper bound below -tol_points overall, or below -tol_length_points at any length."""
++        import rlib
++        m = self.model
++        rs = m['ruler']
++        setdir = rs['set']
++        mid = rlib.manifest_id(setdir)
++        sel = rs['select']
++        cells = {c: (list(range(v)) if isinstance(v, int) else sorted(v)) for c, v in sel['cells'].items()}
++        got = rlib.cells_sha256(setdir, cells)
++        if rs.get('set_sha256') and got != rs['set_sha256']:
++            raise Infra(f"RULER set {setdir}: the selection's rows hash {got}, the profile pins {rs['set_sha256']}")
++        mid['cells_sha256'] = got
++        fit = int(m.get('max_depth_fit', 1 << 30))
++        skipped = sorted(c for c in cells if rlib.split_cell(c)[1] > fit)
++        cells = {c: v for c, v in cells.items() if c not in skipped}
++        samples = rlib.select(setdir, cells)
++        template = rs.get('template', 'chat')
++        out: Json = {'set': mid, 'select': sel.get('name'), 'template': template, 'skipped': skipped,
++                     'reports': {}, 'paired': {}, 'ok': True}
++        setups: list[tuple[str, Json, Path | None, Path]] = [('cand', self.setup, recipe_dir, prod)]
++        base_prod = self.root / 'base' / self.pid / self.bid / 'products'
++        for a in rs.get('anchors', ['fp8']):
++            setups.append((a, next(x['setup'] for x in m['anchors'] if x['name'] == a)
++                           if a != 'bf16' else {'kv_cache_dtype': 'bf16'}, None, base_prod))
++        cache = self.root / 'refs' / refs['key'] / 'ruler'
++        cache.mkdir(parents=True, exist_ok=True)
++        tag = f"{sel.get('name', 'sel')}-{mid['cells_sha256'][:12]}-{template}"
++        res: dict[str, list[Json]] = {}
++        for name, st, rdir, pr in setups:
++            cp = cache / f'{name}-{tag}.json'
++            if name != 'cand' and cp.exists():
++                res[name] = json.loads(cp.read_text())
++                continue
++            todo = [s for s in samples
++                    if not (name == 'bf16' and int(s['max_length']) > int(m.get('bf16_depth_fit', 0)))]
++            if not todo:
++                continue
++            res[name] = self.rlib_run(pr, st, rdir, f'{name}-{tag}', todo, template)
++            if name != 'cand':
++                K.write_json(cp, res[name])
++        tol = float(rs.get('tol_points', 0.0))
++        tol_len = float(rs.get('tol_length_points', 10.0))
++        for name, r in res.items():
++            out['reports'][name] = rlib.report(r, boot=1000)
++        for a in rs.get('anchors', ['fp8']):
++            if a not in res:
++                continue
++            p = rlib.paired(res[a], res['cand'], boot=2000)
++            out['paired'][a] = p
++            if p['diff_ci95'][1] < -tol:
++                out['ok'] = False
++                out.setdefault('failed', []).append(
++                    f"overall: cand - {a} = {p['diff']:+.2f} points, 95% CI [{p['diff_ci95'][0]:+.2f}, "
++                    f"{p['diff_ci95'][1]:+.2f}] (< -{tol})")
++            for L, v in p['by_length'].items():
++                if v['ci95'][1] < -tol_len:
++                    out['ok'] = False
++                    out.setdefault('failed', []).append(
++                        f"{L}: cand - {a} = {v['diff']:+.2f}, 95% CI upper {v['ci95'][1]:+.2f} (< -{tol_len})")
++        out['drafter'] = 'acceptance read from /metrics during the probes' if m.get('drafter') \
++            else 'n/a (the model profile has no drafter)'
++        return out
++
++    def rlib_run(self, prod: Path, setup: Json, recipe_dir: Path | None, tag: str,
++                 samples: list[Json], template: str) -> list[Json]:
++        """rlib samples over as many holds as it takes (a server per hold); text prompts (the server tokenizes:
++        eval/ruler's rrun.py checks that radiance's tokenization of the rendered text equals the tokenizer.json's)."""
++        import rlib
++        m = self.model
++        done: list[Json] = []
++        need = max(int(s['max_length']) for s in samples) + 256       # + the chat markup
++        while len(done) < len(samples):
++            port = free_port()
++            extra = ['--max-model-len', str(need), '--max-num-seqs', '1',
++                     '--max-num-batched-tokens', str(m.get('speed_chunk', 2048)),
++                     '--host', '127.0.0.1', '--port', str(port)] + list(m.get('ruler', {}).get('flags', [])) \
++                + list(m.get('speed_flags', []))
++            argv = K.sandboxed(self.engine_argv(prod, setup, extra, recipe_dir), self.host)
++            lg = self.jd / f'server-ruler-{tag}.log'
++
++            def go(deadline: float) -> None:
++                self.mem_ok(f'ruler {tag}', engine=True)
++                srv = kvserve.Server(argv, self.env(prod), lg, self.run, port,
++                                     mem_kill_gb=float(self.host['mem_kill_gb']))
++                try:
++                    srv.start(min(deadline, time.time() + float(m.get('load_timeout_s', 400))))
++                    rate = 0.0          # seconds a token of length, the worst seen in this hold
++                    while len(done) < len(samples):
++                        s = samples[len(done)]
++                        if rate and time.time() + 1.3 * rate * int(s['max_length']) > deadline:
++                            return
++                        t0 = time.time()
++                        text = srv.complete(rlib.render(s, template), int(s['tokens_to_generate']),
++                                            deadline=deadline)
++                        dt = time.time() - t0
++                        rate = max(rate, dt / int(s['max_length']))
++                        done.append({'task': s['task'], 'length': int(s['max_length']), 'index': int(s['index']),
++                                     'cell': s['cell'], 'key': s['key'], 'score': rlib.score(s, text),
++                                     'pred': text[:200], 'seconds': round(dt, 2)})
++                except (kvserve.ServerDied, OSError) as e:
++                    if srv.mem_killed is not None:
++                        raise K.Killed(f'ruler {tag}: MemAvailable {srv.mem_killed:.2f} GB')
++                    raise EngineFailed(f'ruler {tag}', getattr(e, 'rc', -1), K.tail(lg, 2500))
++                finally:
++                    srv.stop()
++            n0 = len(done)
++            self.retry_mem(f't2 ruler {tag}', lambda: self.hold(f't2 ruler {tag}', go))
++            if len(done) == n0:
++                raise Infra(f'ruler {tag}: one sample does not fit a hold')
++        return done
++
++
+ class EngineFailed(Exception):
+     def __init__(self, what: str, rc: int, tail: str) -> None:
+         super().__init__(what)
+diff --git a/tasks/kv/models/qwen38-27b-v2-300.json b/tasks/kv/models/qwen38-27b-v2-300.json
+index dea53ec..f190454 100644
+--- a/tasks/kv/models/qwen38-27b-v2-300.json
++++ b/tasks/kv/models/qwen38-27b-v2-300.json
+@@ -79,6 +79,46 @@
+  "load_timeout_s": 400,
+  "bf16_depth_fit": 131072,
+  "ruler": {
++  "set": "/data/ruler/sets/ruler-qwen38-v1",
++  "set_sha256": "e510a7b208e2694b9b893d9e0b87b295eb982398f1ce4b3fb4c4a76b05d9273b",
++  "select": {
++   "name": "fast-v1",
++   "cells": {
++    "niah_single_1_8192": 2,
++    "niah_single_2_8192": 2,
++    "niah_single_3_8192": 2,
++    "niah_multikey_1_8192": 2,
++    "niah_multikey_2_8192": 2,
++    "niah_multikey_3_8192": 2,
++    "niah_multivalue_8192": 2,
++    "niah_multiquery_8192": 2,
++    "vt_8192": 2,
++    "cwe_8192": 2,
++    "fwe_8192": 2,
++    "qa_squad_8192": 2,
++    "niah_single_1_32768": 2,
++    "niah_single_2_32768": 2,
++    "niah_single_3_32768": 2,
++    "niah_multikey_1_32768": 2,
++    "niah_multikey_2_32768": 2,
++    "niah_multikey_3_32768": 2,
++    "niah_multivalue_32768": 2,
++    "niah_multiquery_32768": 2,
++    "vt_32768": 2,
++    "cwe_32768": 2,
++    "fwe_32768": 2,
++    "qa_squad_32768": 2
++   }
++  },
++  "template": "chat",
++  "anchors": [
++   "fp8",
++   "bf16"
++  ],
++  "tol_points": 0.0,
++  "tol_length_points": 10.0,
++  "flags": [],
++  "about": "rad-exl3-mix eval/ruler: NVIDIA RULER's generators (seed 42, Qwen3.8 tokenizer), the fast-v1 selection (12 tasks x 8k / 32k x 2 rows: ~11 min a setup on card 0, V2 4.00 bf16 KV); kv-long-v1 (7 tasks x 128k x 4, set_sha256 a0d66939fbd058de98515c8eee0e5e1f8f5315a0623b83eb2d750745c8bdc451) for finalists. Without 'set' the legacy ruler.py probes run (lengths / tasks / samples / seed).",
+   "lengths": [
+    131072,
+    524288
+@@ -89,11 +129,7 @@
+    "variable_tracking"
+   ],
+   "samples": 10,
+-  "seed": 7,
+-  "anchors": [
+-   "fp8",
+-   "bf16"
+-  ]
++  "seed": 7
+  },
+  "drafter": null,
+  "baseline_gaps": "- The 27B's arch plugin here is OUR qwen35_exl3 (plugin/qwen35_exl3/), ported to #416's ABI 48 by the harness (pins only). It declares ONE attention KV group at --kv-cache-dtype (bf16 or fp8): no --kv-recipe (RadArchProbe::kv_recipe_ok unset), no fp8_v4 / k6_v4 (kv_quant_ok unset), no rotation, no vmean / vpred, no calibration recording. #416 wired all of that into qwen35_fp8 (fp8_v4, k6_v4, rotation: arch/qwen35_fp8/qwen35_fp8.cpp declare()/probe()) and qwen4exp_fp8 (everything); porting the per-layer groups, the layout probe and rotation into qwen35_exl3 + rad_block_attn_gated_exl3.h is the first step to any recipe on this model.\n- libr4d's paged attention at the 27B geometry (head_dim 256, gqa 6, 16-token pages, r4d_attn_prefill_h256_gqa6.hip / r4d_attn_decode_h256_gqa6.hip) has rows for bf16, fp8, fp8_v4 and k6_v4 only. k4h_v4, k4h_v2h, i8h, k5_v4 and the vpred P K-hat (`_pk`) rows exist only at Flash-Next's QSA geometry: 4-token pages, gqa 12 (one / two ranks) and gqa 6 (r4d_attn_paged_h256_gqa12.hip, r4d_attn_paged_h256_gqa6_bs4.hip). Their kv_store rows, had_rotate (256) and kv_vpred are geometry-free and serve the 27B as they are. Note the four-rank Flash-Next rows are gqa 6 at head_dim 256 -- the 27B's own ratio at TP1 -- but over 4-token pages (cAttn*H256G6Bs4*): a 27B attention group declared at 4-token pages would select them without a new kernel (their speed at the 27B's 16 attention layers and long contexts is unmeasured), while new 16-token-page rows (r4d_attn_prefill/decode_h256_gqa6.hip, or a new r4d_kvx_*.hip unit) are the other way.\n- The calibration mode records kv_vmean / kv_vpred only on qwen4exp_fp8 (arch/common/rad_calib_vmean.h / _vpred.h are the hooks).\n- The container has no MTP / drafter weights: drafter acceptance is n/a on this model.",
+@@ -101,4 +137,4 @@
+   "32GB (gpubox card 0, R9700)": "T0 all; T1 all (bf16 reference over 64k-token documents ~4 GiB of cache beside 9.4 GiB of weights); speed at 32k and 128k (fp8 128k = 4 GiB); T2 RULER at 128k (bf16 8 GiB fits); 512k: the cache fits at fp8 (16 GiB) but one 512k prefill outlasts a 10-minute card-0 hold, so not under the card-0 rules.",
+   "16GB (9070 XT)": "T0 all; T1 with the 32k-document corpus only (host override kl_max_len 33024, the 64k document refused by the max-model-len, use corpus kvlong-v1-32k); speed at 32k (fp8 1 GiB; 128k fp8 = 4 GiB beside 9.4 GiB of weights + ~1.5 GiB of buffers: not reliably); T2 not (its anchors need a 128k bf16 cache = 8 GiB)."
+  }
+-}
+\ No newline at end of file
++}
+diff --git a/tasks/kv/rlib.py b/tasks/kv/rlib.py
+new file mode 100644
+index 0000000..c198c3a
+--- /dev/null
++++ b/tasks/kv/rlib.py
+@@ -0,0 +1,343 @@
++# Copy of rad-exl3-mix eval/ruler/rlib.py (the RULER harness library; the harness is the source: copy, do not edit).
++"""rlib -- the RULER harness's shared pieces (stdlib only; numpy not needed): sample sets and selections, prompt
++rendering, RULER's metrics, per-sample result files, reports and paired comparisons.
++
++Imported by rrun.py and rreport.py, and meant to be imported by other harnesses (kv_judge's T2, the LSA gate):
++    import rlib
++    samples = rlib.select(setdir, rlib.load_selection('select/fast-v1.json'))   # list of row dicts + 'cell' / 'key'
++    prompt  = rlib.render(row, 'chat')                                           # text with Qwen's chat markup
++    s       = rlib.score(row, reply_text)                                        # RULER's string match, 0..1
++    rep     = rlib.report(results)            # results: [{'task','length','index','score'}, ...]
++    cmp     = rlib.paired(results_a, results_b)
++"""
++from __future__ import annotations
++
++import gzip, hashlib, json, math, os, random, re
++from typing import Any, Callable
++
++Json = dict[str, Any]
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++REPORT_SCHEMA = 'ruler-report/1'
++COMPARE_SCHEMA = 'ruler-compare/1'
++
++# which RULER metric a task uses (scripts/eval/synthetic/constants.py): qa = any reference counts, else the fraction
++PART_TASKS = ('qa_squad', 'qa_hotpot')
++TASK_ORDER = ['niah_single_1', 'niah_single_2', 'niah_single_3', 'niah_multikey_1', 'niah_multikey_2',
++              'niah_multikey_3', 'niah_multivalue', 'niah_multiquery', 'vt', 'cwe', 'fwe', 'qa_squad', 'qa_hotpot']
++
++# Qwen3.5 / 3.8 chat markup for one user turn with thinking off (both models' templates render exactly this with
++# enable_thinking=false, add_generation_prompt=true); the answer prefix follows as the assistant's opening words.
++QWEN_USER = '<|im_start|>user\n'
++QWEN_ASSIST = '<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n'
++
++
++# ---------------------------------------------------------------- io
++def write_atomic(path: str, data: str | bytes) -> None:
++    """w41's convention: write PATH.part, fsync, rename; a reader trusts only the final name."""
++    if isinstance(data, str):
++        data = data.encode()
++    tmp = f'{path}.part'
++    with open(tmp, 'wb') as f:
++        f.write(data)
++        f.flush()
++        os.fsync(f.fileno())
++    os.replace(tmp, path)
++
++
++def write_json(path: str, obj: Any) -> None:
++    write_atomic(path, json.dumps(obj, indent=1, sort_keys=True) + '\n')
++
++
++def sha256_bytes(b: bytes) -> str:
++    return hashlib.sha256(b).hexdigest()
++
++
++def sha256_file(p: str) -> str:
++    h = hashlib.sha256()
++    with open(p, 'rb') as f:
++        for b in iter(lambda: f.read(1 << 20), b''):
++            h.update(b)
++    return h.hexdigest()
++
++
++# ---------------------------------------------------------------- sets and selections
++def manifest(setdir: str) -> Json:
++    with open(os.path.join(setdir, 'manifest.json')) as f:
++        out: Json = json.load(f)
++    return out
++
++
++def manifest_id(setdir: str) -> Json:
++    """The set's identity (stable while cells are added to it): name, seed, format, upstream generator."""
++    m = manifest(setdir)
++    return {'name': m['name'], 'seed': m['seed'], 'format': m['format'], 'upstream': m['upstream']}
++
++
++def cell_sha256(setdir: str, cell: str) -> str:
++    """The content hash of one cell's uncompressed rows (the manifest's)."""
++    return str(manifest(setdir)['cells'][cell]['sha256'])
++
++
++def cells_sha256(setdir: str, cells: list[str] | dict[str, Any]) -> str:
++    """One hash over the named cells' content hashes: what a selection's rows are (pin it in a judge's profile)."""
++    m = manifest(setdir)['cells']
++    return sha256_bytes(json.dumps({c: m[c]['sha256'] for c in sorted(cells)}, sort_keys=True).encode())
++
++
++_cells: dict[tuple[str, str], list[Json]] = {}
++
++
++def cell_rows(setdir: str, cell: str) -> list[Json]:
++    key = (os.path.abspath(setdir), cell)
++    if key not in _cells:
++        p = os.path.join(setdir, cell + '.jsonl.gz')
++        raw = gzip.open(p, 'rb').read()
++        want = manifest(setdir)['cells'][cell]['sha256']
++        if sha256_bytes(raw) != want:
++            raise ValueError(f'{p}: content hash differs from the manifest')
++        _cells[key] = [json.loads(l) for l in raw.splitlines()]
++    return _cells[key]
++
++
++def parse_cells(spec: str) -> dict[str, list[int]]:
++    """'task:L:a-b,task:L:n,...' (a-b = row range, n = first n rows; task or L may be '*' with --set) -> dict."""
++    out: dict[str, list[int]] = {}
++    for part in spec.split(','):
++        if not part:
++            continue
++        t, L, r = part.split(':')
++        a, b = (int(x) for x in r.split('-')) if '-' in r else (0, int(r))
++        out.setdefault(f'{t}_{L}', []).extend(range(a, b))
++    return {k: sorted(set(v)) for k, v in out.items()}
++
++
++def load_selection(path: str) -> Json:
++    """A selection file: {"name", "set": set name, "cells": {"task_L": [indices] | N (first N) | "a-b"}}."""
++    with open(path) as f:
++        s: Json = json.load(f)
++    cells: dict[str, list[int]] = {}
++    for k, v in s['cells'].items():
++        if isinstance(v, int):
++            cells[k] = list(range(v))
++        elif isinstance(v, str):
++            a, b = (int(x) for x in v.split('-'))
++            cells[k] = list(range(a, b))
++        else:
++            cells[k] = sorted(v)
++    s['cells'] = cells
++    return s
++
++
++def split_cell(cell: str) -> tuple[str, int]:
++    t, L = cell.rsplit('_', 1)
++    return t, int(L)
++
++
++def select(setdir: str, cells: dict[str, Any]) -> list[Json]:
++    """Rows of the selected cells ({cell: [rows] or N = the first N}): each row dict gains 'task', 'cell', 'key'
++    (cell/row) and 'cell_sha256'."""
++    out: list[Json] = []
++    for cell in sorted(cells, key=lambda c: (split_cell(c)[1], task_rank(split_cell(c)[0]))):
++        rows = cell_rows(setdir, cell)
++        t, L = split_cell(cell)
++        v = cells[cell]
++        for i in (range(v) if isinstance(v, int) else v):
++            if i >= len(rows):
++                raise ValueError(f'{cell}: row {i} not in the set ({len(rows)} rows)')
++            r = dict(rows[i])
++            r.update(task=t, cell=cell, key=f'{cell}/{i:04d}', cell_sha256=cell_sha256(setdir, cell))
++            out.append(r)
++    return out
++
++
++def task_rank(t: str) -> int:
++    return TASK_ORDER.index(t) if t in TASK_ORDER else len(TASK_ORDER)
++
++
++# ---------------------------------------------------------------- prompts
++def render(row: Json, template: str) -> str:
++    """base: RULER's own prompt (input + answer prefix, as for a base model);
++    chat: one Qwen user turn (thinking off) holding the input, the assistant reply opened by the answer prefix
++    without its surrounding spaces (as the LSA repo serves Qwen's RULER)."""
++    if template == 'base':
++        return str(row['input']) + str(row['answer_prefix'])
++    if template == 'chat':
++        return QWEN_USER + str(row['input']) + QWEN_ASSIST + str(row['answer_prefix']).strip()
++    raise ValueError(template)
++
++
++# ---------------------------------------------------------------- RULER's metrics (scripts/eval)
++_np = re.compile(r'[\x00-\x1f]')
++
++
++def postprocess_pred(s: str) -> str:
++    """scripts/eval/evaluate.py: strip, every control character to a newline, strip."""
++    return _np.sub('\n', s.strip()).strip()
++
++
++def score(row: Json, reply: str) -> float:
++    """One sample's RULER score in [0, 1]: string_match_part (qa) or string_match_all (the rest)."""
++    pred = postprocess_pred(reply).lower()
++    refs: list[str] = list(row['outputs'])
++    hits = [1.0 if r.lower() in pred else 0.0 for r in refs]
++    return max(hits) if row['task'] in PART_TASKS else sum(hits) / len(refs)
++
++
++# ---------------------------------------------------------------- reports
++def _mean(x: list[float]) -> float:
++    return sum(x) / len(x) if x else float('nan')
++
++
++def _group(results: list[Json]) -> dict[tuple[str, int], dict[int, float]]:
++    cells: dict[tuple[str, int], dict[int, float]] = {}
++    for r in results:
++        cells.setdefault((r['task'], int(r['length'])), {})[int(r['index'])] = float(r['score'])
++    return cells
++
++
++def _weighted(cells_vals: dict[tuple[str, int], float]) -> tuple[float, dict[int, float], dict[str, float]]:
++    """RULER's aggregation: a cell's score is its mean; a length's the mean of its tasks' cells; overall the mean over
++    lengths. cells_vals: {(task, L): mean}. Returns (overall, by_length, by_task)."""
++    by_len: dict[int, list[float]] = {}
++    by_task: dict[str, list[float]] = {}
++    for (t, L), v in cells_vals.items():
++        by_len.setdefault(L, []).append(v)
++        by_task.setdefault(t, []).append(v)
++    bl = {L: _mean(v) for L, v in sorted(by_len.items())}
++    bt = {t: _mean(v) for t, v in sorted(by_task.items(), key=lambda x: task_rank(x[0]))}
++    return _mean(list(bl.values())), bl, bt
++
++
++def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
++    if n == 0:
++        return (0.0, 1.0)
++    p = k / n
++    d = 1 + z * z / n
++    c = (p + z * z / (2 * n)) / d
++    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
++    return (max(0.0, c - h), min(1.0, c + h))
++
++
++def report(results: list[Json], meta: Json | None = None, boot: int = 2000, seed: int = 0) -> Json:
++    """Per task x length score (x100, RULER's scale), per-length averages, the overall score, with a sample bootstrap
++    (stratified by cell) for the overall's 95% interval; cells carry a Wilson interval on the all-correct rate."""
++    cells = _group(results)
++    cv = {c: _mean(list(v.values())) for c, v in cells.items()}
++    overall, bl, bt = _weighted(cv)
++    grid: dict[int, set[str]] = {}
++    for (t, L) in cells:
++        grid.setdefault(L, set()).add(t)
++    out: Json = {'schema': REPORT_SCHEMA, 'n': sum(len(v) for v in cells.values()), 'overall': 100 * overall,
++           'complete_grid': len({frozenset(v) for v in grid.values()}) <= 1,
++           'by_length': {str(L): 100 * v for L, v in bl.items()}, 'by_task': {t: 100 * v for t, v in bt.items()},
++           'cells': {}}
++    for (t, L), v in sorted(cells.items(), key=lambda x: (x[0][1], task_rank(x[0][0]))):
++        vals = list(v.values())
++        full = sum(1 for x in vals if x >= 1.0)
++        out['cells'][f'{t}_{L}'] = {'task': t, 'length': L, 'n': len(vals), 'score': 100 * _mean(vals),
++                                    'all_correct': full, 'wilson95_all_correct': list(wilson(full, len(vals)))}
++    if boot and cells:
++        rng = random.Random(seed)
++        keys = list(cells)
++        arr = {c: list(cells[c].values()) for c in keys}
++        bs: list[float] = []
++        for _ in range(boot):
++            bv: dict[tuple[str, int], float] = {}
++            for c in keys:
++                a = arr[c]
++                bv[c] = sum(a[rng.randrange(len(a))] for _ in a) / len(a)
++            bs.append(100 * _weighted(bv)[0])
++        bs.sort()
++        out['overall_ci95'] = [bs[int(0.025 * boot)], bs[int(0.975 * boot) - 1]]
++        out['overall_se'] = _sd(bs)
++    if meta:
++        out['meta'] = meta
++    return out
++
++
++def _sd(x: list[float]) -> float:
++    m = _mean(x)
++    return math.sqrt(sum((v - m) ** 2 for v in x) / max(1, len(x) - 1))
++
++
++def paired(results_a: list[Json], results_b: list[Json], boot: int = 2000, seed: int = 0,
++           meta: Json | None = None) -> Json:
++    """B - A on the samples both hold (same task, length, row): the RULER-weighted difference of the overall score,
++    per length, per task and per cell, each with a paired bootstrap 95% interval (resampling rows within each cell,
++    the same rows for A and B), plus flip counts (rows A gets fully right and B not, and the reverse)."""
++    ca, cb = _group(results_a), _group(results_b)
++    common = {c: sorted(set(ca[c]) & set(cb[c])) for c in ca if c in cb}
++    common = {c: v for c, v in common.items() if v}
++    if not common:
++        raise ValueError('no samples in common')
++    A = {c: [ca[c][i] for i in idx] for c, idx in common.items()}
++    B = {c: [cb[c][i] for i in idx] for c, idx in common.items()}
++
++    def stats(sel: dict[tuple[str, int], list[int]]) -> tuple[float, float, dict[int, float], dict[int, float],
++                                                              dict[str, float], dict[str, float]]:
++        va = {c: _mean(A[c]) for c in sel}
++        vb = {c: _mean(B[c]) for c in sel}
++        oa, la, ta = _weighted(va)
++        ob, lb, tb = _weighted(vb)
++        return oa, ob, la, lb, ta, tb
++
++    oa, ob, la, lb, ta, tb = stats(common)
++    rng = random.Random(seed)
++    keys = sorted(common)
++    bo: list[float] = []
++    bl: dict[int, list[float]] = {L: [] for L in la}
++    bt: dict[str, list[float]] = {t: [] for t in ta}
++    bc: dict[tuple[str, int], list[float]] = {c: [] for c in keys}
++    for _ in range(boot):
++        va: dict[tuple[str, int], float] = {}
++        vb: dict[tuple[str, int], float] = {}
++        for c in keys:
++            n = len(A[c])
++            ix = [rng.randrange(n) for _ in range(n)]
++            va[c] = sum(A[c][i] for i in ix) / n
++            vb[c] = sum(B[c][i] for i in ix) / n
++            bc[c].append(100 * (vb[c] - va[c]))
++        xa, ya, za = _weighted(va)
++        xb, yb, zb = _weighted(vb)
++        bo.append(100 * (xb - xa))
++        for L in la:
++            bl[L].append(100 * (yb[L] - ya[L]))
++        for t in ta:
++            bt[t].append(100 * (zb[t] - za[t]))
++
++    def ci(v: list[float]) -> list[float]:
++        v = sorted(v)
++        return [v[int(0.025 * len(v))], v[int(0.975 * len(v)) - 1]]
++
++    flips_ab = sum(1 for c in keys for a, b in zip(A[c], B[c]) if a >= 1.0 and b < 1.0)
++    flips_ba = sum(1 for c in keys for a, b in zip(A[c], B[c]) if b >= 1.0 and a < 1.0)
++    out: Json = {'schema': COMPARE_SCHEMA, 'n_paired': sum(len(v) for v in common.values()),
++           'a_overall': 100 * oa, 'b_overall': 100 * ob, 'diff': 100 * (ob - oa), 'diff_ci95': ci(bo),
++           'diff_se': _sd(bo), 'flips_a_right_b_wrong': flips_ab, 'flips_b_right_a_wrong': flips_ba,
++           'identical_scores': all(a == b for c in keys for a, b in zip(A[c], B[c])),
++           'by_length': {str(L): {'a': 100 * la[L], 'b': 100 * lb[L], 'diff': 100 * (lb[L] - la[L]), 'ci95': ci(bl[L])}
++                         for L in la},
++           'by_task': {t: {'a': 100 * ta[t], 'b': 100 * tb[t], 'diff': 100 * (tb[t] - ta[t]), 'ci95': ci(bt[t])}
++                       for t in ta},
++           'cells': {f'{t}_{L}': {'n': len(A[(t, L)]), 'a': 100 * _mean(A[(t, L)]), 'b': 100 * _mean(B[(t, L)]),
++                                  'diff': 100 * (_mean(B[(t, L)]) - _mean(A[(t, L)])), 'ci95': ci(bc[(t, L)])}
++                     for (t, L) in sorted(keys, key=lambda x: (x[1], task_rank(x[0])))}}
++    if meta:
++        out['meta'] = meta
++    return out
++
++
++# ---------------------------------------------------------------- run directories
++def run_results(rundir: str) -> list[Json]:
++    """Every finished sample of a run directory (pred/<cell>/<index>.json)."""
++    out: list[Json] = []
++    pd = os.path.join(rundir, 'pred')
++    if not os.path.isdir(pd):
++        return out
++    for cell in sorted(os.listdir(pd)):
++        for f in sorted(os.listdir(os.path.join(pd, cell))):
++            if f.endswith('.json'):
++                with open(os.path.join(pd, cell, f)) as fh:
++                    out.append(json.load(fh))
++    return out

@@ -1,0 +1,18 @@
+{
+ "cell": "niah_multikey_1_8192",
+ "cell_sha256": "a3c2fbfac095d27ad8ff6c04d53d4c642237946ca3c47ea152212777ad4507e0",
+ "completion_tokens": 10,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "niah_multikey_1_8192/0000",
+ "length": 8192,
+ "outputs": [
+  "5672073"
+ ],
+ "pred": " **5672073**.",
+ "prompt_tokens": 7494,
+ "score": 1.0,
+ "seconds": 4.743,
+ "task": "niah_multikey_1"
+}

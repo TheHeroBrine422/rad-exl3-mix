@@ -1,0 +1,6 @@
+K3 s0: two-sided rel perm/nat L3 0.988 L7 0.754 L11 0.887 L15 1.002 L19 0.971 L23 0.887 | ourq proxy_err perm/nat 0.988 0.755 0.887 1.001 0.971 0.886
+K3 s1: two-sided rel perm/nat L3 0.986 L7 0.753 L11 0.884 L15 1.001 L19 0.972 L23 0.888 | ourq proxy_err perm/nat 0.986 0.753 0.884 1.000 0.972 0.887
+K3 s2: two-sided rel perm/nat L3 0.987 L7 0.754 L11 0.884 L15 1.001 L19 0.974 L23 0.886 | ourq proxy_err perm/nat 0.987 0.754 0.884 1.001 0.974 0.886
+K2 s0: two-sided rel perm/nat L3 0.991 L7 0.766 L11 0.897 L15 1.002 L19 0.974 L23 0.895 | ourq proxy_err perm/nat 0.991 0.767 0.897 1.002 0.974 0.895
+K2 s1: two-sided rel perm/nat L3 0.989 L7 0.764 L11 0.892 L15 1.000 L19 0.974 L23 0.895 | ourq proxy_err perm/nat 0.989 0.765 0.892 1.000 0.974 0.895
+K2 s2: two-sided rel perm/nat L3 0.991 L7 0.762 L11 0.896 L15 1.001 L19 0.975 L23 0.893 | ourq proxy_err perm/nat 0.991 0.763 0.896 1.001 0.976 0.893

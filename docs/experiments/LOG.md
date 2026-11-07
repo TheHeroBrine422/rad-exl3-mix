@@ -3,6 +3,27 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 9:20 AM CST · #112-01 / #112-02 / #106-01 (w75) · #46-03 interim (w72) · RULER harness (w66)
+- **#112-01 (0.8B):** gdn_out α 4–4.75 beats α 3 by only 0.1–0.4% (geo 0.9987 / 0.9961 / 0.9987 / 0.9973, st K3 / K2,
+  pl K3 / K2; verify agrees) → misses 0.995: **keep α = 3**, no second 27B arm; multipliers ≤ 1.9, no clamp needed.
+- **#112-02 (27B, fixed codes, swj K2.5 levels; identity gate: 723/787 weights byte-identical, only the 64 writers' svh
+  differ):** seed-1 pair **search 0.9911 (z −4.2), verify 0.9936 (z −3.1)**, p99 and top-1 better. Base pair ETA
+  ~11:00–11:30 AM CST; rule: geo ≤ 0.99 over both pairs.
+- **#106-01 (0.8B real quantizer):** heaviest-heads-last cuts o_proj quantization error 9% (every seed) but KLD does
+  not follow: K3 0.9978 (mixed), K2 1.0033 (every seed worse), verify agrees → **#106 dropped.** bf16 gate amended
+  (w75 amendment 1, accepted): permuted checkpoint bit-identical except o_proj summation order. Side finding: that
+  order change alone moves the 0.8B's bf16 logits by mean KL 7e-3 (noted in `proxy2b/common.py`); paired same-path
+  comparisons unaffected.
+- **#46-03 (w72, interim):** measured with the **real A4 kernel** (amendment 1 in `v3/e3/a4/README.md`, accepted: the
+  E1b hook never sees mul1i4 weights). i4 K2 (2.17 bpw) mixed into V2 3.00 (non-trunk byte-identical): baseline A8-g128
+  0.1277; **A8-g128 vs f16 ×1.0001 (free)**; A4-g64 on gate_up per 16-layer band +0.00056 / +0.00094 / +0.00123 /
+  +0.00323 (z 3.8–9.6): **A4 is not free at K2 and gets costlier with depth.** Reference knap5 with the old proxy costs
+  never picks A4. Full table + knap step-4 verdict: ~7–9 PM CST (g64) and ~2–5 AM CST Nov 8.
+- **RULER harness (w66):** `eval/ruler/` committed (sets git-ignored: the essays have no licence). Generators byte-equal
+  to NVIDIA RULER on 27 cells 4k–768k; resumable runner; 27B fast probe (48 rows, ~11 min) passes; 64k / 128k 27B
+  points not run yet.
+- **Runtime:** #112 none (scales); #106 none; #46-03 is a prefill speed option.
+
 ### 2026-11-07 8:25 AM CST · #113 · trimmed to the random-table bound (user)
 - K2 / K3 complete (54 pairs each): no arm passes at any K (B20-4096 1.0096 / 0.999 / K4 0.992 n 21; V18 0.994 /
   0.994 / 0.992; exact V20 K2 0.990 n 5). Every family within ±0.2% (attn_qg K4 0.979 rests on n 2: not followed up,

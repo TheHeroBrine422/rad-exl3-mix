@@ -1,0 +1,14 @@
+{
+ "name": "kv-long-v1",
+ "set": "ruler-qwen38-v1",
+ "about": "KV finalists at long context: the 7 probe tasks at 128k, 4 rows a cell",
+ "cells": {
+  "niah_single_2_131072": 4,
+  "niah_multikey_1_131072": 4,
+  "niah_multikey_2_131072": 4,
+  "niah_multikey_3_131072": 4,
+  "niah_multivalue_131072": 4,
+  "vt_131072": 4,
+  "cwe_131072": 4
+ }
+}

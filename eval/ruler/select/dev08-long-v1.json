@@ -1,0 +1,26 @@
+{
+ "name": "dev08-long-v1",
+ "set": "ruler-qwen38-v1",
+ "about": "0.8B at its trained context: 12 tasks at 128k and the 7 probe tasks at 256k, 2 rows a cell",
+ "cells": {
+  "niah_single_1_131072": 2,
+  "niah_single_2_131072": 2,
+  "niah_single_3_131072": 2,
+  "niah_multikey_1_131072": 2,
+  "niah_multikey_2_131072": 2,
+  "niah_multikey_3_131072": 2,
+  "niah_multivalue_131072": 2,
+  "niah_multiquery_131072": 2,
+  "vt_131072": 2,
+  "cwe_131072": 2,
+  "fwe_131072": 2,
+  "qa_squad_131072": 2,
+  "niah_single_2_262144": 2,
+  "niah_multikey_1_262144": 2,
+  "niah_multikey_2_262144": 2,
+  "niah_multikey_3_262144": 2,
+  "niah_multivalue_262144": 2,
+  "vt_262144": 2,
+  "cwe_262144": 2
+ }
+}

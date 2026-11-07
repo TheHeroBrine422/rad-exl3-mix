@@ -1,0 +1,21 @@
+{
+ "cell": "niah_multiquery_8192",
+ "cell_sha256": "5a7a5499d7a040095a12064c713cac5d62423cf1f84dccdf110321b26ed4b0f0",
+ "completion_tokens": 70,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 2,
+ "key": "niah_multiquery_8192/0002",
+ "length": 8192,
+ "outputs": [
+  "6304573",
+  "4576135",
+  "1156287",
+  "2677407"
+ ],
+ "pred": ":\n\n*   **orange-mangle**: 6304573\n*   **blue-eyed-drummer**: 4576135\n*   **bloody-reciprocity**: 1156287\n*   **ordinary-stem**: 2677407",
+ "prompt_tokens": 7499,
+ "score": 1.0,
+ "seconds": 6.933,
+ "task": "niah_multiquery"
+}

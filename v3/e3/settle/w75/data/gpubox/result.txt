@@ -1,0 +1,20 @@
+12:10:43 start (pid 812978): arms a
+12:23:09 alpha27.txt = none (relayed from the 4070 /data/yb/w75/alpha27.txt: #112-01 kept gdn_out alpha 3 at every stack and K)
+12:25:02 s1c9a: multipliers (attn_o=-1,gdn_out=3) in 859 s: gdn_out 48 e mean 0.0193 max 0.043, c mean 1.0296 max 1.069 min 1.000, rows c>2: 0; attn_o 16 e mean 0.0151 max 0.031, c mean 0.9924 max 1.000 min 0.985, rows c>2: 0; 
+12:25:10 s1c9a: SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/c9w27/s1-a/level
+pack s1c9a rc=99 29s
+12:50:58 pack s1c9a FAIL (/data/c9w27/conv-s1c9a.log)
+12:50:58 s1c9a: pack FAIL
+13:02:49 driver restarted by w75 with pack retry on memguard kills (s1c9a pack was stopped at 12:50:56, MemAvailable 685 MB)
+13:02:55 start (pid 826033): arms a
+13:02:55 waiting for MemAvailable >= 8 GB before pack s1c9a
+pack s1c9a rc=0 1620s
+13:46:36 s1c9a: mix ready, 2.6244 bpw
+13:46:49 s1c9a: identity gate: RADIFF PASS {"weights": 787, "identical": 723, "svh_changed": 64, "expected_changed": 64, "min_exact_share": 1.0, "worst_ulp": 0, "problems": 0}
+13:57:00 score ctl-s1swj on golden-search27 rc=0 159s
+14:12:48 score s1c9a on golden-search27 rc=0 159s
+14:12:48 pair ctl-s1swj -> s1c9a (golden-search27): {"kld_a": 0.05380317022439677, "kld_b": 0.05332568594182081, "diff": -0.00047748428257595593, "rel": -0.008874649590061574, "se": 0.0001136764848154023, "z": -4.200378674194018, "positions": 123460, "docs": 103}
+14:29:18 score ctl-s1swj on golden-verify27 rc=0 152s
+14:52:26 score s1c9a on golden-verify27 rc=0 154s
+14:52:26 pair ctl-s1swj -> s1c9a (golden-verify27): {"kld_a": 0.04482961852395676, "kld_b": 0.044542119060506286, "diff": -0.000287499463450476, "rel": -0.006413158820364208, "se": 9.185786849725836e-05, "z": -3.129829465388225, "positions": 127261, "docs": 71}
+14:52:26 s1c9a done

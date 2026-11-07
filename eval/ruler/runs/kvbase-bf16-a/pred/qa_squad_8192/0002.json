@@ -1,0 +1,21 @@
+{
+ "cell": "qa_squad_8192",
+ "cell_sha256": "b9d7ea5c6e85f6a3ecb39361fe4297b47f2cda37a40baa208eeeb5c0ca81ca12",
+ "completion_tokens": 7,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 2,
+ "key": "qa_squad_8192/0002",
+ "length": 8192,
+ "outputs": [
+  "Denmark, Iceland and Norway",
+  "Denmark, Iceland and Norway",
+  "Denmark, Iceland and Norway",
+  "Denmark, Iceland and Norway"
+ ],
+ "pred": " Denmark, Iceland, and Norway",
+ "prompt_tokens": 7841,
+ "score": 0.0,
+ "seconds": 4.816,
+ "task": "qa_squad"
+}

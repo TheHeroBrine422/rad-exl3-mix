@@ -1,0 +1,31 @@
+{
+ "name": "fast-v1",
+ "set": "ruler-qwen38-v1",
+ "about": "gate probe (~11 min of the 27B V2 4.00 on one R9700, bf16 KV: ~5 s a sample at 8k, ~22 s at 32k): the 12 tasks at 8k and 32k, 2 rows each",
+ "cells": {
+  "niah_single_1_8192": 2,
+  "niah_single_2_8192": 2,
+  "niah_single_3_8192": 2,
+  "niah_multikey_1_8192": 2,
+  "niah_multikey_2_8192": 2,
+  "niah_multikey_3_8192": 2,
+  "niah_multivalue_8192": 2,
+  "niah_multiquery_8192": 2,
+  "vt_8192": 2,
+  "cwe_8192": 2,
+  "fwe_8192": 2,
+  "qa_squad_8192": 2,
+  "niah_single_1_32768": 2,
+  "niah_single_2_32768": 2,
+  "niah_single_3_32768": 2,
+  "niah_multikey_1_32768": 2,
+  "niah_multikey_2_32768": 2,
+  "niah_multikey_3_32768": 2,
+  "niah_multivalue_32768": 2,
+  "niah_multiquery_32768": 2,
+  "vt_32768": 2,
+  "cwe_32768": 2,
+  "fwe_32768": 2,
+  "qa_squad_32768": 2
+ }
+}

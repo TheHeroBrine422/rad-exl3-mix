@@ -1,0 +1,21 @@
+{
+ "cell": "qa_squad_32768",
+ "cell_sha256": "1ceb39a3111de6d4de8f4e2c28dbf6f6aba9e396241d7016b8e9383571635631",
+ "completion_tokens": 2,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "qa_squad_32768/0000",
+ "length": 32768,
+ "outputs": [
+  "France",
+  "France",
+  "France",
+  "France"
+ ],
+ "pred": " France",
+ "prompt_tokens": 30102,
+ "score": 1.0,
+ "seconds": 18.676,
+ "task": "qa_squad"
+}

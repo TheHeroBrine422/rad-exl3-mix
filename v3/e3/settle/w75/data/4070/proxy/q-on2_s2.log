@@ -1,0 +1,14 @@
+code stamp 9a09ff6304b66d9f (K2)
+  model.language_model.layers.3.self_attn.o_proj               K2 proxy 3.123e-02 0.6s
+layer 3: 1s  anon rss 1058 MiB
+  model.language_model.layers.7.self_attn.o_proj               K2 proxy 5.031e-02 0.4s
+layer 7: 0s  anon rss 1090 MiB
+  model.language_model.layers.11.self_attn.o_proj              K2 proxy 4.569e-02 0.4s
+layer 11: 0s  anon rss 1090 MiB
+  model.language_model.layers.15.self_attn.o_proj              K2 proxy 2.779e-02 0.4s
+layer 15: 0s  anon rss 1090 MiB
+  model.language_model.layers.19.self_attn.o_proj              K2 proxy 2.168e-02 0.5s
+layer 19: 1s  anon rss 1090 MiB
+  model.language_model.layers.23.self_attn.o_proj              K2 proxy 1.831e-02 0.4s
+layer 23: 0s  anon rss 1090 MiB
+done

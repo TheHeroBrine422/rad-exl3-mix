@@ -1,0 +1,27 @@
+{
+ "cell": "cwe_32768",
+ "cell_sha256": "af075a822f688720636fb4d9659d063701446a10eef7105aea50265957c3c56e",
+ "completion_tokens": 47,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "cwe_32768/0000",
+ "length": 32768,
+ "outputs": [
+  "chit-chat",
+  "cuisine",
+  "rap",
+  "canal",
+  "communication",
+  "misnomer",
+  "inscription",
+  "billboard",
+  "prey",
+  "counter-force"
+ ],
+ "pred": "\n1. communication\n2. cuisine\n3. rap\n4. billboard\n5. canal\n6. inscription\n7. chit-chat\n8. counter-force\n9. misnomer\n10. prey",
+ "prompt_tokens": 32521,
+ "score": 1.0,
+ "seconds": 22.036,
+ "task": "cwe"
+}

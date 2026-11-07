@@ -1,0 +1,22 @@
+{
+ "cell": "vt_32768",
+ "cell_sha256": "a2c70cfc585028e4265aed326eaaac99215627a18d38da73a98f5903ff3922a5",
+ "completion_tokens": 17,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "vt_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "SHRUU",
+  "OBNRB",
+  "QAKML",
+  "JXLDE",
+  "NQQXU"
+ ],
+ "pred": " SHRUU OBNRB QAKML JXLDE NQQXU",
+ "prompt_tokens": 32741,
+ "score": 1.0,
+ "seconds": 21.004,
+ "task": "vt"
+}

@@ -1,0 +1,9 @@
+blk.*.attn_k.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.attn_output.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.attn_qg.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.attn_v.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.ffn_down.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.ffn_gate_up.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.ssm_out.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.ssm_qkv.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5
+blk.*.ssm_z.weight exl3i src=/data/c9w27/s1-a/level codebook=mul1i8 rate=2.5

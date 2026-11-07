@@ -1,0 +1,21 @@
+{
+ "cell": "niah_multiquery_8192",
+ "cell_sha256": "5a7a5499d7a040095a12064c713cac5d62423cf1f84dccdf110321b26ed4b0f0",
+ "completion_tokens": 73,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "niah_multiquery_8192/0000",
+ "length": 8192,
+ "outputs": [
+  "2642635",
+  "4965789",
+  "8434500",
+  "1247595"
+ ],
+ "pred": ":\n\n*   **scattered-prize**: 2642635\n*   **capricious-foal**: 4965789\n*   **boiling-decadence**: 8434500\n*   **aromatic-molding**: 1247595",
+ "prompt_tokens": 7502,
+ "score": 1.0,
+ "seconds": 7.047,
+ "task": "niah_multiquery"
+}

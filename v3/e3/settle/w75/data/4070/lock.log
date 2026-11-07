@@ -1,0 +1,120 @@
+12:01:21 lock bf16 gate (manual)
+12:01:26 unlock
+12:01:41 lock bf16 gate (manual)
+12:01:47 unlock
+12:02:18 lock diag
+12:02:23 unlock
+12:03:08 lock diag2
+12:03:15 unlock
+12:04:22 lock screen fit-u3-g3
+12:04:36 unlock
+12:04:41 lock screen fit-u3-g4
+12:04:54 unlock
+12:05:00 lock screen fit-u3-g5
+12:05:12 unlock
+12:05:18 lock screen fit-u3-g6
+12:05:31 unlock
+12:05:37 lock screen fit-u3-g8
+12:05:49 unlock
+12:05:57 lock screen fit-u2-g3
+12:06:12 unlock
+12:06:18 lock screen fit-u2-g4
+12:06:30 unlock
+12:06:37 lock screen fit-u2-g5
+12:06:50 unlock
+12:06:56 lock screen fit-u2-g6
+12:07:09 unlock
+12:07:16 lock screen fit-u2-g8
+12:07:28 unlock
+12:07:34 lock screen fit-p3-g3
+12:07:47 unlock
+12:07:52 lock screen fit-p3-g4
+12:08:04 unlock
+12:08:10 lock screen fit-p3-g5
+12:08:23 unlock
+12:08:28 lock screen fit-p3-g6
+12:08:41 unlock
+12:08:50 lock screen fit-p3-g8
+12:09:03 unlock
+12:09:08 lock screen fit-p2-g3
+12:09:21 unlock
+12:09:26 lock screen fit-p2-g4
+12:09:38 unlock
+12:09:44 lock screen fit-p2-g5
+12:09:57 unlock
+12:10:02 lock screen fit-p2-g6
+12:10:15 unlock
+12:10:21 lock screen fit-p2-g8
+12:10:33 unlock
+12:10:42 lock screen fit-u3-g4.75
+12:10:54 unlock
+12:11:03 lock screen fit-u2-g4.25
+12:11:15 unlock
+12:11:23 lock screen fit-u2-g4.25-cm2
+12:11:36 unlock
+12:11:42 lock screen fit-p3-g4.75
+12:11:55 unlock
+12:12:03 lock screen fit-p2-g4-cm2
+12:12:16 unlock
+12:12:24 lock eval u3g4.75
+12:13:01 unlock
+12:13:12 lock eval u3_s1g4.75
+12:13:52 unlock
+12:14:02 lock eval u3_s2g4.75
+12:14:42 unlock
+12:14:53 lock eval u2g4.25
+12:15:31 unlock
+12:15:43 lock eval u2_s1g4.25
+12:16:23 unlock
+12:16:34 lock eval u2_s2g4.25
+12:17:12 unlock
+12:17:22 lock eval p3g4.75
+12:18:00 unlock
+12:18:10 lock eval p3_s1g4.75
+12:18:48 unlock
+12:18:58 lock eval p3_s2g4.75
+12:19:37 unlock
+12:19:47 lock eval p2g4
+12:20:25 unlock
+12:20:34 lock eval p2_s1g4
+12:21:13 unlock
+12:21:22 lock eval p2_s2g4
+12:22:00 unlock
+12:22:08 lock noop k3
+12:22:15 unlock
+12:22:16 lock perm k3
+12:22:23 unlock
+12:22:26 lock eval perm3
+12:23:04 unlock
+12:23:07 lock noop k3_s1
+12:23:11 unlock
+12:23:12 lock perm k3_s1
+12:23:17 unlock
+12:23:20 lock eval perm3_s1
+12:23:58 unlock
+12:24:01 lock noop k3_s2
+12:24:06 unlock
+12:24:07 lock perm k3_s2
+12:24:11 unlock
+12:24:14 lock eval perm3_s2
+12:24:53 unlock
+12:24:56 lock noop k2
+12:25:00 unlock
+12:25:01 lock perm k2
+12:25:06 unlock
+12:25:08 lock eval perm2
+12:25:47 unlock
+12:25:49 lock noop k2_s1
+12:25:54 unlock
+12:25:55 lock perm k2_s1
+12:25:59 unlock
+12:26:02 lock eval perm2_s1
+12:26:41 unlock
+12:26:44 lock noop k2_s2
+12:26:48 unlock
+12:26:49 lock perm k2_s2
+12:26:53 unlock
+12:26:56 lock eval perm2_s2
+12:27:34 unlock
+12:27:38 lock plumbing
+12:28:02 unlock

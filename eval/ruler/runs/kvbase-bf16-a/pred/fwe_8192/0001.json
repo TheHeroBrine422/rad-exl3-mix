@@ -1,0 +1,20 @@
+{
+ "cell": "fwe_8192",
+ "cell_sha256": "387a1c4a824c69d5646252406fe6c24c2f963f14ccf04e002322aa89d18f3d9f",
+ "completion_tokens": 28,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "fwe_8192/0001",
+ "length": 8192,
+ "outputs": [
+  "nquuzu",
+  "quiivw",
+  "fupeem"
+ ],
+ "pred": "\n\n1.  **nquuzu**\n2.  **quiivw**\n3.  **fupeem**",
+ "prompt_tokens": 7041,
+ "score": 1.0,
+ "seconds": 5.144,
+ "task": "fwe"
+}

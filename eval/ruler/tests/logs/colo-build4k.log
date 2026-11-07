@@ -1,0 +1,26 @@
+12 cells to build
+niah_single_1 4096: haystack 155
+niah_single_1 4096: 100 rows, prompt 3952-3967, 14.2 s
+niah_single_2 4096: haystack 3158
+niah_single_3 4096: haystack 3144
+niah_single_2 4096: 100 rows, prompt 3341-3968, 17.2 s
+niah_single_3 4096: 100 rows, prompt 3343-3968, 21.1 s
+niah_multikey_1 4096: haystack 3106
+niah_multikey_1 4096: 100 rows, prompt 3337-3968, 14.1 s
+niah_multikey_2 4096: haystack 170
+niah_multikey_3 4096: haystack 49
+niah_multikey_2 4096: 100 rows, prompt 3371-3967, 15.6 s
+niah_multikey_3 4096: 100 rows, prompt 2012-3968, 11.8 s
+vt 4096: haystack 15
+vt 4096: haystack 137
+vt 4096: 100 rows, prompt 4047-4062, 1.6 s
+cwe 4096: haystack 56
+cwe 4096: 100 rows, prompt 3675-3976, 2.5 s
+fwe 4096: words 2060
+niah_multivalue 4096: haystack 3101
+fwe 4096: 100 rows, prompt 3395-4035, 2.2 s
+qa_squad 4096: haystack 26
+niah_multivalue 4096: 100 rows, prompt 3328-3963, 12.7 s
+qa_squad 4096: 100 rows, prompt 2066-4057, 3.4 s
+niah_multiquery 4096: haystack 3084
+niah_multiquery 4096: 100 rows, prompt 3331-3967, 14.2 s

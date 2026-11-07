@@ -1,0 +1,59 @@
+--- ../../../levels/reprice/knap5.py	2026-11-07 00:31:45.815633495 +0000
++++ knap5a.py	2026-11-07 09:37:15.240477810 +0000
+@@ -1,5 +1,10 @@
+ #!/usr/bin/env python3
+-"""knap5.py = knap4.py (v3/nf, unchanged copy below) + the 2026-11-07 re-pricing switches (w58, v3/levels/reprice.md).
++"""knap5a.py = knap5.py + two #46-03 switches (w72, v3/e3/a4/cost; both default off = knap5 byte for byte):
++  KN_A4COST=FILE  measured A4 activation costs: JSON lines {"w": tensor, "group": 64 | 128, "K": 1 | 2 | 3, "cost": KLD}
++              (mkcost.py from the 27B real-kernel arms). An i4-K option's a4 cost is FILE's, log-linear in K between the
++              measured integers (clamped); a group FILE lacks for a tensor is not offered. a8 costs stay E1c's.
++  KN_A4X128=x  the a4g128 path's speed ratio over a8 (default KN_A4X; w34 measured x1.51 on the K2 layer, g64 x1.31).
++knap5.py = knap4.py (v3/nf, unchanged copy below) + the 2026-11-07 re-pricing switches (w58, v3/levels/reprice.md).
+ All new switches default off: without them knap5 is knap4 byte for byte (checked: reprice/README.md).
+   KN_V3R=1    the 73-level V3 ladder as its own options, replacing the trunk's ours-K* (implies KN_V3; do not set KN_FRAC):
+               i4-K<k> (KN_I4, default K1 and K1.125-3 in 1/8; int4 grid): error = base(k) x R4(k), modes f16 / a8 / a4
+@@ -352,6 +357,19 @@
+     r = json.loads(l)
+     if abs(r["clip"] - 1.0) > 1e-6: continue
+     AQ[idx_name[r["i"]]][(r["bits"], r["group"])] = kf[r["fam"]] * r["rel_out"]
++A4C = collections.defaultdict(dict)       # KN_A4COST: (name, group) -> {K: measured a4 cost}
++if os.environ.get("KN_A4COST"):
++    for l in open(os.environ["KN_A4COST"]):
++        if l.strip(): r = json.loads(l); A4C[(r["w"], r["group"])][float(r["K"])] = r["cost"]
++def a4cost(w, g, K):
++    """measured a4 cost of tensor w at group g, i4 level K (log-linear between measured K, clamped); None: not offered"""
++    tab = A4C.get((w, g))
++    if not tab: return None
++    ks = sorted(tab); K = min(max(K, ks[0]), ks[-1])
++    if K in tab: return tab[K]
++    lo = max(k for k in ks if k < K); hi = min(k for k in ks if k > K); f = (K - lo) / (hi - lo)
++    a, b = max(tab[lo], 1e-12), max(tab[hi], 1e-12)
++    return math.exp(math.log(a) + f * (math.log(b) - math.log(a)))
+ SHARE = {"attn_qg": "attn_in", "attn_k": "attn_in", "attn_v": "attn_in", "ssm_qkv": "gdn_in", "ssm_z": "gdn_in"}
+ 
+ def shape(t):   # (N, K) from the hook map via the name
+@@ -420,13 +438,14 @@
+         d = json.loads(l); TP[(d["shape"], d["path"])] = d["us"] / 1000.0
+     TPSH = dict(FAMSHAPE, attn_k="attn_k", attn_v="attn_v")
+     A4X = float(os.environ.get("KN_A4X", 1.31))
++    A4X128 = float(os.environ.get("KN_A4X128", A4X))
+ 
+ def time_ms(t, mode, g, bits):
+     """prefill time of tensor t in a mode: measured whole path (KN_A4) when there is one, else core + decode estimate"""
+     if t["w"] == "output.weight": return 0.0          # last token only
+     if TP:
+         sh = TPSH[t["w"].split(".")[-2]]
+-        return TP[(sh, "f16")] if mode == "f16" else TP[(sh, "a8")] / (A4X if mode == "a4" else 1.0)
++        return TP[(sh, "f16")] if mode == "f16" else TP[(sh, "a8")] / ((A4X128 if g == 128 else A4X) if mode == "a4" else 1.0)
+     N, K = shape(t); fam = t["w"].split(".")[-2]; sh = FAMSHAPE.get(fam)
+     if PATH and sh:
+         if mode == "f16":
+@@ -452,7 +471,7 @@
+         for c, (b, e, bits) in t["opts"].items():
+             for mode in MODES.get((t["w"], c), ()):
+                 for g in (G8 if mode == "a8" else G4):
+-                    a = AQ[t["w"]].get((8 if mode == "a8" else 4, g))
++                    a = a4cost(t["w"], g, bits) if mode == "a4" and A4C else AQ[t["w"]].get((8 if mode == "a8" else 4, g))
+                     if a is None: continue
+                     o.append((mode, g, c, b, wcost(t, c, e), a, time_ms(t, mode, g, bits)))
+         return o

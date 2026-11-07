@@ -1,0 +1,417 @@
+{
+ "a_overall": 100.0,
+ "b_overall": 100.0,
+ "by_length": {
+  "32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  }
+ },
+ "by_task": {
+  "cwe": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "fwe": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_multikey_1": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_multikey_2": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_multikey_3": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_multiquery": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_multivalue": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_single_1": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_single_2": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "niah_single_3": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "qa_squad": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  },
+  "vt": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0
+  }
+ },
+ "cells": {
+  "cwe_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "fwe_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_1_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_1_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_2_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_2_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_3_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multikey_3_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multiquery_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multivalue_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_multivalue_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_1_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_1_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_2_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_2_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_3_32768": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "niah_single_3_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "qa_squad_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  },
+  "vt_8192": {
+   "a": 100.0,
+   "b": 100.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "diff": 0.0,
+   "n": 2
+  }
+ },
+ "diff": 0.0,
+ "diff_ci95": [
+  0.0,
+  0.0
+ ],
+ "diff_se": 0.0,
+ "flips_a_right_b_wrong": 0,
+ "flips_b_right_a_wrong": 0,
+ "identical_scores": true,
+ "meta": {
+  "a": {
+   "identity": {
+    "config": {
+     "backend": "radiance",
+     "env": {
+      "RADIANCE_RELAYOUT_POOL_MIB": "768",
+      "ROCR_VISIBLE_DEVICES": "0"
+     },
+     "flags": [
+      "--mm-max-patches",
+      "0",
+      "--embedding-placement",
+      "vram",
+      "--no-prefix-cache",
+      "--checkpoint-slots",
+      "0",
+      "--num-speculative-tokens",
+      "0",
+      "--host-headroom-mib",
+      "8192"
+     ],
+     "home": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/radiance_home",
+     "kv_cache_dtype": "bf16",
+     "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+     "radiance": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/bin/radiance"
+    },
+    "set": {
+     "format": 1,
+     "name": "ruler-qwen38-v1",
+     "seed": 42,
+     "upstream": "NVIDIA/RULER db43f92ff634bbce1c33d1fb15858aec4bba509a"
+    },
+    "template": "chat",
+    "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "version": 1
+   },
+   "name": "kvbase-v2-400-bf16",
+   "run": "/data/work/w66/runs/kvbase-bf16-a"
+  },
+  "b": {
+   "identity": {
+    "config": {
+     "backend": "radiance",
+     "env": {
+      "RADIANCE_RELAYOUT_POOL_MIB": "768",
+      "ROCR_VISIBLE_DEVICES": "0"
+     },
+     "flags": [
+      "--mm-max-patches",
+      "0",
+      "--embedding-placement",
+      "vram",
+      "--no-prefix-cache",
+      "--checkpoint-slots",
+      "0",
+      "--num-speculative-tokens",
+      "0",
+      "--host-headroom-mib",
+      "8192"
+     ],
+     "home": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/radiance_home",
+     "kv_cache_dtype": "bf16",
+     "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+     "radiance": "/data/ar/kv/base/kv-27b/kv-27b-30d97f9f7d-adf4599c/products/bin/radiance"
+    },
+    "set": {
+     "format": 1,
+     "name": "ruler-qwen38-v1",
+     "seed": 42,
+     "upstream": "NVIDIA/RULER db43f92ff634bbce1c33d1fb15858aec4bba509a"
+    },
+    "template": "chat",
+    "tokenizer_sha256": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+    "version": 1
+   },
+   "name": "kvbase-v2-400-bf16",
+   "run": "/data/work/w66/runs/kvbase-bf16-b"
+  }
+ },
+ "n_paired": 38,
+ "schema": "ruler-compare/1"
+}

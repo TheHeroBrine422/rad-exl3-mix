@@ -1,0 +1,8 @@
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn3
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn3_s1
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn3_s2
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn2
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn2_s1
+PERM06 UNPERM 6 o_proj -> /data/yb/w75/dec-opn2_s2
+PERM06 PERMWQ 24 attention tensors permuted -> /data/yb/w75/mix-perm3st
+REL06 DONE

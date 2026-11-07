@@ -1,0 +1,30 @@
+{
+ "name": "v2-400-fp8-yarn4",
+ "backend": "radiance",
+ "radiance": "/data/install-116/bin/radiance",
+ "home": "/data/swap27/home",
+ "model": "/data/release/qwen3.8-27b-exl3-v2-4.00bpw.rad",
+ "kv_cache_dtype": "fp8",
+ "flags": [
+  "--rope-scaling",
+  "yarn:4:262144",
+  "--mm-max-patches",
+  "0",
+  "--embedding-placement",
+  "vram",
+  "--no-prefix-cache",
+  "--checkpoint-slots",
+  "0",
+  "--num-speculative-tokens",
+  "0",
+  "--host-headroom-mib",
+  "8192"
+ ],
+ "env": {
+  "ROCR_VISIBLE_DEVICES": "0"
+ },
+ "load_timeout_s": 300,
+ "mem_start_gb": 8.5,
+ "mem_kill_gb": 2.0,
+ "notes": "past the native 262144: static YaRN x4 (the model card's setting; lsa.md asks whether to match the LSA repo's factor 40). A D-LSA candidate = this file with its build in 'radiance'/'home' and its flags appended"
+}

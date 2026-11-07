@@ -1,0 +1,21 @@
+{
+ "cell": "niah_multivalue_32768",
+ "cell_sha256": "68a8b57806f863c3642fdda4a1f74f682f3885a2e839da9af7e106bb8b6c4443",
+ "completion_tokens": 54,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "niah_multivalue_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "6672134",
+  "1352896",
+  "4860684",
+  "4694634"
+ ],
+ "pred": ":\n\n1.  **4860684**\n2.  **1352896**\n3.  **4694634**\n4.  **6672134**",
+ "prompt_tokens": 32643,
+ "score": 1.0,
+ "seconds": 22.397,
+ "task": "niah_multivalue"
+}

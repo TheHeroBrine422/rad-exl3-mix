@@ -1,0 +1,22 @@
+{
+ "cell": "vt_8192",
+ "cell_sha256": "4a6b234ce4646d6a255f1e9201bfe54219d6ff21bc563b21fdc895c6a1242c52",
+ "completion_tokens": 17,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "vt_8192/0000",
+ "length": 8192,
+ "outputs": [
+  "SJKDR",
+  "XWXUF",
+  "USMOX",
+  "DDMNO",
+  "ITLVX"
+ ],
+ "pred": "  SJKDR XWXUF USMOX DDMNO ITLVX",
+ "prompt_tokens": 8162,
+ "score": 1.0,
+ "seconds": 5.356,
+ "task": "vt"
+}

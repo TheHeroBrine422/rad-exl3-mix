@@ -1,0 +1,266 @@
+60 cells to build
+niah_single_1 131072: haystack 5234
+niah_single_2 131072: haystack 106891
+niah_single_3 131072: haystack 106875
+niah_single_1 131072: 100 rows, prompt 130927-130942, 54.0 s
+niah_multikey_1 131072: haystack 106837
+niah_single_2 131072: 100 rows, prompt 130333-130944, 91.3 s
+niah_multikey_2 131072: haystack 5735
+niah_single_3 131072: 100 rows, prompt 130338-130944, 123.7 s
+niah_multikey_3 131072: haystack 1700
+niah_multikey_2 131072: 100 rows, prompt 130172-130940, 51.2 s
+niah_multivalue 131072: haystack 106839
+niah_multikey_1 131072: 100 rows, prompt 130332-130944, 111.3 s
+niah_multikey_3 131072: 100 rows, prompt 128806-130942, 48.3 s
+vt 131072: haystack 15
+vt 131072: haystack 5216
+niah_multiquery 131072: haystack 106812
+vt 131072: 100 rows, prompt 131021-131037, 44.4 s
+cwe 131072: haystack 5498
+niah_multivalue 131072: 100 rows, prompt 130330-130943, 110.2 s
+fwe 131072: words 62777
+niah_multiquery 131072: 100 rows, prompt 130328-130944, 109.1 s
+cwe 131072: 100 rows, prompt 130417-130951, 59.8 s
+qa_squad 131072: haystack 744
+niah_single_1 65536: haystack 2612
+niah_single_1 65536: 100 rows, prompt 65377-65392, 34.0 s
+fwe 131072: 100 rows, prompt 102250-130897, 68.2 s
+niah_single_2 65536: haystack 53539
+niah_single_3 65536: haystack 53521
+qa_squad 131072: 100 rows, prompt 125677-131036, 83.8 s
+niah_single_2 65536: 100 rows, prompt 64776-65408, 52.9 s
+niah_multikey_1 65536: haystack 53494
+niah_multikey_2 65536: haystack 2866
+niah_single_3 65536: 100 rows, prompt 64776-65408, 66.9 s
+niah_multikey_3 65536: haystack 847
+niah_multikey_2 65536: 100 rows, prompt 64709-65408, 40.1 s
+niah_multivalue 65536: haystack 53488
+niah_multikey_1 65536: 100 rows, prompt 64787-65407, 67.7 s
+niah_multikey_3 65536: 100 rows, prompt 63305-65407, 38.6 s
+vt 65536: haystack 15
+vt 65536: haystack 2595
+niah_multiquery 65536: haystack 53469
+vt 65536: 100 rows, prompt 65247-65506, 43.1 s
+niah_multivalue 65536: 100 rows, prompt 64777-65404, 70.0 s
+cwe 65536: haystack 2844
+fwe 65536: words 35466
+niah_multiquery 65536: 100 rows, prompt 64784-65406, 54.3 s
+qa_squad 65536: haystack 377
+cwe 65536: 100 rows, prompt 64814-65416, 35.2 s
+niah_single_1 32768: haystack 1301
+qa_squad 65536: 100 rows, prompt 59913-65423, 51.0 s
+niah_single_1 32768: 100 rows, prompt 32602-32617, 31.9 s
+fwe 65536: 100 rows, prompt 59053-65483, 71.7 s
+niah_single_2 32768: haystack 26760
+niah_single_3 32768: haystack 26742
+niah_multikey_1 32768: haystack 26706
+niah_single_2 32768: 100 rows, prompt 32023-32640, 40.7 s
+niah_multikey_2 32768: haystack 1427
+niah_single_3 32768: 100 rows, prompt 32024-32640, 48.7 s
+niah_multikey_1 32768: 100 rows, prompt 32017-32640, 43.9 s
+niah_multikey_2 32768: 100 rows, prompt 31954-32638, 22.7 s
+niah_multikey_3 32768: haystack 421
+niah_multivalue 32768: haystack 26701
+niah_multiquery 32768: haystack 26686
+niah_multikey_3 32768: 100 rows, prompt 30535-32639, 28.0 s
+vt 32768: haystack 15
+vt 32768: haystack 1284
+niah_multivalue 32768: 100 rows, prompt 32008-32637, 38.9 s
+vt 32768: 100 rows, prompt 32477-32737, 15.8 s
+cwe 32768: haystack 1377
+fwe 32768: words 16695
+niah_multiquery 32768: 100 rows, prompt 32019-32640, 47.1 s
+qa_squad 32768: haystack 192
+cwe 32768: 100 rows, prompt 32161-32647, 24.9 s
+fwe 32768: 100 rows, prompt 27362-32711, 25.3 s
+niah_single_1 16384: haystack 646
+qa_squad 32768: 100 rows, prompt 27925-32731, 27.8 s
+niah_single_2 16384: haystack 13289
+niah_single_1 16384: 100 rows, prompt 16227-16242, 17.3 s
+niah_single_3 16384: haystack 13270
+niah_single_2 16384: 100 rows, prompt 15666-16254, 25.3 s
+niah_multikey_1 16384: haystack 13236
+niah_multikey_2 16384: haystack 710
+niah_single_3 16384: 100 rows, prompt 15668-16256, 23.6 s
+niah_multikey_1 16384: 100 rows, prompt 15669-16256, 25.0 s
+niah_multikey_2 16384: 100 rows, prompt 15621-16256, 18.1 s
+niah_multikey_3 16384: haystack 208
+niah_multivalue 16384: haystack 13230
+niah_multiquery 16384: haystack 13206
+niah_multikey_3 16384: 100 rows, prompt 14269-16254, 15.8 s
+vt 16384: haystack 15
+vt 16384: haystack 629
+niah_multivalue 16384: 100 rows, prompt 15661-16255, 19.5 s
+vt 16384: 100 rows, prompt 16099-16354, 7.2 s
+fwe 16384: words 7822
+cwe 16384: haystack 632
+niah_multiquery 16384: 100 rows, prompt 15663-16256, 19.4 s
+qa_squad 16384: haystack 100
+fwe 16384: 100 rows, prompt 12816-16217, 6.9 s
+cwe 16384: 100 rows, prompt 15826-16257, 9.0 s
+qa_squad 16384: 100 rows, prompt 12724-16347, 12.0 s
+niah_single_1 8192: haystack 319
+niah_single_2 8192: haystack 6513
+niah_single_1 8192: 100 rows, prompt 7430-8064, 10.4 s
+niah_single_2 8192: 100 rows, prompt 7474-8064, 14.7 s
+niah_single_3 8192: haystack 6491
+niah_multikey_1 8192: haystack 6461
+niah_single_3 8192: 100 rows, prompt 7468-8064, 14.3 s
+niah_multikey_1 8192: 100 rows, prompt 7478-8064, 12.7 s
+niah_multikey_2 8192: haystack 349
+niah_multikey_2 8192: 100 rows, prompt 7447-8061, 10.6 s
+niah_multikey_3 8192: haystack 103
+niah_multivalue 8192: haystack 6457
+niah_multikey_3 8192: 100 rows, prompt 6134-8064, 12.2 s
+vt 8192: haystack 15
+vt 8192: haystack 301
+niah_multiquery 8192: haystack 6437
+niah_multivalue 8192: 100 rows, prompt 7468-8062, 13.0 s
+cwe 8192: haystack 264
+vt 8192: 100 rows, prompt 8146-8160, 3.9 s
+fwe 8192: words 3897
+cwe 8192: 100 rows, prompt 7617-8072, 4.1 s
+qa_squad 8192: haystack 51
+fwe 8192: 100 rows, prompt 6737-8138, 3.8 s
+niah_multiquery 8192: 100 rows, prompt 7475-8062, 15.6 s
+qa_squad 8192: 100 rows, prompt 6107-8145, 4.3 s
+21 cells to build
+niah_multikey_2 786432: haystack 34490
+niah_multikey_1 786432: haystack 639182
+niah_single_2 786432: haystack 639237
+niah_multikey_2 786432: 20 rows, prompt 785482-786275, 100.8 s
+niah_multikey_3 786432: haystack 10214
+niah_multikey_3 786432: 20 rows, prompt 785167-786278, 62.7 s
+niah_multikey_1 786432: 20 rows, prompt 785657-786304, 186.4 s
+vt 786432: haystack 15
+niah_single_2 786432: 20 rows, prompt 785660-786302, 208.9 s
+vt 786432: haystack 31431
+niah_multivalue 786432: haystack 639184
+cwe 786432: haystack 27311
+vt 786432: 20 rows, prompt 786149-786402, 159.2 s
+cwe 786432: 20 rows, prompt 785446-786290, 167.3 s
+niah_multivalue 786432: 20 rows, prompt 785652-786302, 256.3 s
+niah_single_2 524288: haystack 426114
+niah_multikey_1 524288: haystack 426065
+niah_multikey_2 524288: haystack 22993
+niah_multikey_2 524288: 20 rows, prompt 523326-524155, 125.0 s
+niah_single_2 524288: 20 rows, prompt 523538-524159, 211.7 s
+niah_multikey_3 524288: haystack 6814
+niah_multikey_1 524288: 20 rows, prompt 523546-524160, 208.4 s
+vt 524288: haystack 15
+vt 524288: haystack 20945
+niah_multikey_3 524288: 20 rows, prompt 521873-524142, 85.0 s
+niah_multivalue 524288: haystack 426067
+cwe 524288: haystack 18279
+vt 524288: 20 rows, prompt 524004-524258, 84.4 s
+niah_single_2 262144: haystack 212693
+cwe 524288: 20 rows, prompt 523290-524149, 81.8 s
+niah_multivalue 524288: 20 rows, prompt 523541-524158, 189.1 s
+niah_single_2 262144: 20 rows, prompt 261379-262014, 81.6 s
+niah_multikey_1 262144: haystack 212642
+niah_multikey_2 262144: haystack 11496
+niah_multikey_3 262144: haystack 3405
+niah_multikey_1 262144: 20 rows, prompt 261375-262016, 75.7 s
+niah_multikey_3 262144: 20 rows, prompt 259909-261992, 42.8 s
+niah_multikey_2 262144: 20 rows, prompt 261335-262004, 47.3 s
+vt 262144: haystack 15
+cwe 262144: haystack 9265
+vt 262144: haystack 10459
+niah_multivalue 262144: haystack 212637
+vt 262144: 20 rows, prompt 262096-262112, 38.1 s
+cwe 262144: 20 rows, prompt 261168-262011, 41.3 s
+niah_multivalue 262144: 20 rows, prompt 261996-262014, 64.0 s
+cwe_131072                    100 rows  prompt 130417-130951  ok
+cwe_16384                     100 rows  prompt 15826-16257  ok
+cwe_262144                     20 rows  prompt 261168-262011  ok
+cwe_32768                     100 rows  prompt 32161-32647  ok
+cwe_4096                      100 rows  prompt 3675-3976  ok
+cwe_524288                     20 rows  prompt 523290-524149  ok
+cwe_65536                     100 rows  prompt 64814-65416  ok
+cwe_786432                     20 rows  prompt 785446-786290  ok
+cwe_8192                      100 rows  prompt 7617-8072  ok
+fwe_131072                    100 rows  prompt 102250-130897  ok
+fwe_16384                     100 rows  prompt 12816-16217  ok
+fwe_32768                     100 rows  prompt 27362-32711  ok
+fwe_4096                      100 rows  prompt 3395-4035  ok
+fwe_65536                     100 rows  prompt 59053-65483  ok
+fwe_8192                      100 rows  prompt 6737-8138  ok
+niah_multikey_1_131072        100 rows  prompt 130332-130944  ok
+niah_multikey_1_16384         100 rows  prompt 15669-16256  ok
+niah_multikey_1_262144         20 rows  prompt 261375-262016  ok
+niah_multikey_1_32768         100 rows  prompt 32017-32640  ok
+niah_multikey_1_4096          100 rows  prompt 3337-3968  ok
+niah_multikey_1_524288         20 rows  prompt 523546-524160  ok
+niah_multikey_1_65536         100 rows  prompt 64787-65407  ok
+niah_multikey_1_786432         20 rows  prompt 785657-786304  ok
+niah_multikey_1_8192          100 rows  prompt 7478-8064  ok
+niah_multikey_2_131072        100 rows  prompt 130172-130940  ok
+niah_multikey_2_16384         100 rows  prompt 15621-16256  ok
+niah_multikey_2_262144         20 rows  prompt 261335-262004  ok
+niah_multikey_2_32768         100 rows  prompt 31954-32638  ok
+niah_multikey_2_4096          100 rows  prompt 3371-3967  ok
+niah_multikey_2_524288         20 rows  prompt 523326-524155  ok
+niah_multikey_2_65536         100 rows  prompt 64709-65408  ok
+niah_multikey_2_786432         20 rows  prompt 785482-786275  ok
+niah_multikey_2_8192          100 rows  prompt 7447-8061  ok
+niah_multikey_3_131072        100 rows  prompt 128806-130942  ok
+niah_multikey_3_16384         100 rows  prompt 14269-16254  ok
+niah_multikey_3_262144         20 rows  prompt 259909-261992  ok
+niah_multikey_3_32768         100 rows  prompt 30535-32639  ok
+niah_multikey_3_4096          100 rows  prompt 2012-3968  ok
+niah_multikey_3_524288         20 rows  prompt 521873-524142  ok
+niah_multikey_3_65536         100 rows  prompt 63305-65407  ok
+niah_multikey_3_786432         20 rows  prompt 785167-786278  ok
+niah_multikey_3_8192          100 rows  prompt 6134-8064  ok
+niah_multiquery_131072        100 rows  prompt 130328-130944  ok
+niah_multiquery_16384         100 rows  prompt 15663-16256  ok
+niah_multiquery_32768         100 rows  prompt 32019-32640  ok
+niah_multiquery_4096          100 rows  prompt 3331-3967  ok
+niah_multiquery_65536         100 rows  prompt 64784-65406  ok
+niah_multiquery_8192          100 rows  prompt 7475-8062  ok
+niah_multivalue_131072        100 rows  prompt 130330-130943  ok
+niah_multivalue_16384         100 rows  prompt 15661-16255  ok
+niah_multivalue_262144         20 rows  prompt 261996-262014  ok
+niah_multivalue_32768         100 rows  prompt 32008-32637  ok
+niah_multivalue_4096          100 rows  prompt 3328-3963  ok
+niah_multivalue_524288         20 rows  prompt 523541-524158  ok
+niah_multivalue_65536         100 rows  prompt 64777-65404  ok
+niah_multivalue_786432         20 rows  prompt 785652-786302  ok
+niah_multivalue_8192          100 rows  prompt 7468-8062  ok
+niah_single_1_131072          100 rows  prompt 130927-130942  ok
+niah_single_1_16384           100 rows  prompt 16227-16242  ok
+niah_single_1_32768           100 rows  prompt 32602-32617  ok
+niah_single_1_4096            100 rows  prompt 3952-3967  ok
+niah_single_1_65536           100 rows  prompt 65377-65392  ok
+niah_single_1_8192            100 rows  prompt 7430-8064  ok
+niah_single_2_131072          100 rows  prompt 130333-130944  ok
+niah_single_2_16384           100 rows  prompt 15666-16254  ok
+niah_single_2_262144           20 rows  prompt 261379-262014  ok
+niah_single_2_32768           100 rows  prompt 32023-32640  ok
+niah_single_2_4096            100 rows  prompt 3341-3968  ok
+niah_single_2_524288           20 rows  prompt 523538-524159  ok
+niah_single_2_65536           100 rows  prompt 64776-65408  ok
+niah_single_2_786432           20 rows  prompt 785660-786302  ok
+niah_single_2_8192            100 rows  prompt 7474-8064  ok
+niah_single_3_131072          100 rows  prompt 130338-130944  ok
+niah_single_3_16384           100 rows  prompt 15668-16256  ok
+niah_single_3_32768           100 rows  prompt 32024-32640  ok
+niah_single_3_4096            100 rows  prompt 3343-3968  ok
+niah_single_3_65536           100 rows  prompt 64776-65408  ok
+niah_single_3_8192            100 rows  prompt 7468-8064  ok
+qa_squad_131072               100 rows  prompt 125677-131036  ok
+qa_squad_16384                100 rows  prompt 12724-16347  ok
+qa_squad_32768                100 rows  prompt 27925-32731  ok
+qa_squad_4096                 100 rows  prompt 2066-4057  ok
+qa_squad_65536                100 rows  prompt 59913-65423  ok
+qa_squad_8192                 100 rows  prompt 6107-8145  ok
+vt_131072                     100 rows  prompt 131021-131037  ok
+vt_16384                      100 rows  prompt 16099-16354  ok
+vt_262144                      20 rows  prompt 262096-262112  ok
+vt_32768                      100 rows  prompt 32477-32737  ok
+vt_4096                       100 rows  prompt 4047-4062  ok
+vt_524288                      20 rows  prompt 524004-524258  ok
+vt_65536                      100 rows  prompt 65247-65506  ok
+vt_786432                      20 rows  prompt 786149-786402  ok
+vt_8192                       100 rows  prompt 8146-8160  ok
+93 cells, 0 bad

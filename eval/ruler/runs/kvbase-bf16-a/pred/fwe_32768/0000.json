@@ -1,0 +1,20 @@
+{
+ "cell": "fwe_32768",
+ "cell_sha256": "36753199c9c230eb036546d8af150bfbeaec51dd078feb571ade3dc4d5dcfb70",
+ "completion_tokens": 19,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "fwe_32768/0000",
+ "length": 32768,
+ "outputs": [
+  "tsamyl",
+  "kjzopg",
+  "ultalu"
+ ],
+ "pred": "\n\n1. tsamyl\n2. kjzopg\n3. ultalu",
+ "prompt_tokens": 29925,
+ "score": 1.0,
+ "seconds": 19.273,
+ "task": "fwe"
+}

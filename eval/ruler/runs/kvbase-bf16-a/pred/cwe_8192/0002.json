@@ -1,0 +1,27 @@
+{
+ "cell": "cwe_8192",
+ "cell_sha256": "2b0e28db1293fc180eda2320b40b735fd773a1bb9ee29efaca5141005dda7711",
+ "completion_tokens": 45,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 2,
+ "key": "cwe_8192/0002",
+ "length": 8192,
+ "outputs": [
+  "tortellini",
+  "watchmaker",
+  "hose",
+  "supporter",
+  "homeland",
+  "hum",
+  "abrasive",
+  "inevitable",
+  "gambling",
+  "rawhide"
+ ],
+ "pred": "\n1. tortellini\n2. rawhide\n3. watchmaker\n4. supporter\n5. inevitable\n6. gambling\n7. abrasive\n8. hose\n9. homeland\n10. hum",
+ "prompt_tokens": 8018,
+ "score": 1.0,
+ "seconds": 6.324,
+ "task": "cwe"
+}

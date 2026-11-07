@@ -1,0 +1,21 @@
+{
+ "cell": "niah_multiquery_32768",
+ "cell_sha256": "39e02329b5b1db0d8f4e0bc2a01f46c7ee56cd606f6c1c74b54168cd80fb14cf",
+ "completion_tokens": 71,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "niah_multiquery_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "8351517",
+  "9874152",
+  "6022741",
+  "6075395"
+ ],
+ "pred": ":\n\n*   **different-burn**: 8351517\n*   **subsequent-motorcar**: 9874152\n*   **ablaze-poll**: 6022741\n*   **ruthless-thirst**: 6075395",
+ "prompt_tokens": 32040,
+ "score": 1.0,
+ "seconds": 22.678,
+ "task": "niah_multiquery"
+}

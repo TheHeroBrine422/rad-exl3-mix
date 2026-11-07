@@ -1,0 +1,20 @@
+{
+ "cell": "fwe_8192",
+ "cell_sha256": "387a1c4a824c69d5646252406fe6c24c2f963f14ccf04e002322aa89d18f3d9f",
+ "completion_tokens": 21,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 0,
+ "key": "fwe_8192/0000",
+ "length": 8192,
+ "outputs": [
+  "nwlwst",
+  "rspvov",
+  "hmcxdl"
+ ],
+ "pred": "\n\n1. nwlwst\n2. rspvov\n3. hmcxdl",
+ "prompt_tokens": 7696,
+ "score": 1.0,
+ "seconds": 5.238,
+ "task": "fwe"
+}

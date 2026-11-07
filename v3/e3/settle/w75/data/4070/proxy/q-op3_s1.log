@@ -1,0 +1,14 @@
+code stamp 803a83bda4f20b2e (K3)
+  model.language_model.layers.3.self_attn.o_proj               K3 proxy 7.696e-03 0.6s
+layer 3: 1s  anon rss 1058 MiB
+  model.language_model.layers.7.self_attn.o_proj               K3 proxy 9.562e-03 0.4s
+layer 7: 1s  anon rss 1090 MiB
+  model.language_model.layers.11.self_attn.o_proj              K3 proxy 1.020e-02 0.4s
+layer 11: 0s  anon rss 1090 MiB
+  model.language_model.layers.15.self_attn.o_proj              K3 proxy 6.891e-03 0.4s
+layer 15: 0s  anon rss 1090 MiB
+  model.language_model.layers.19.self_attn.o_proj              K3 proxy 5.212e-03 0.4s
+layer 19: 0s  anon rss 1090 MiB
+  model.language_model.layers.23.self_attn.o_proj              K3 proxy 3.996e-03 0.4s
+layer 23: 0s  anon rss 1090 MiB
+done

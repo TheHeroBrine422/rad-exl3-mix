@@ -1,0 +1,27 @@
+{
+ "cell": "cwe_32768",
+ "cell_sha256": "af075a822f688720636fb4d9659d063701446a10eef7105aea50265957c3c56e",
+ "completion_tokens": 45,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "cwe_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "digger",
+  "sunlight",
+  "sting",
+  "scout",
+  "pen",
+  "giraffe",
+  "panties",
+  "roast",
+  "rabbi",
+  "scare"
+ ],
+ "pred": "\n1. giraffe\n2. rabbi\n3. pen\n4. scout\n5. panties\n6. digger\n7. roast\n8. scare\n9. sunlight\n10. sting",
+ "prompt_tokens": 32501,
+ "score": 1.0,
+ "seconds": 21.977,
+ "task": "cwe"
+}

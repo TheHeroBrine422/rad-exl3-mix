@@ -1,0 +1,22 @@
+{
+ "cell": "vt_8192",
+ "cell_sha256": "4a6b234ce4646d6a255f1e9201bfe54219d6ff21bc563b21fdc895c6a1242c52",
+ "completion_tokens": 18,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 2,
+ "key": "vt_8192/0002",
+ "length": 8192,
+ "outputs": [
+  "IWHYK",
+  "VMTBY",
+  "FBYBA",
+  "GVQGM",
+  "CYMGJ"
+ ],
+ "pred": "  IWHYK VMTBY FBYBA GVQGM CYMGJ",
+ "prompt_tokens": 8164,
+ "score": 1.0,
+ "seconds": 5.391,
+ "task": "vt"
+}

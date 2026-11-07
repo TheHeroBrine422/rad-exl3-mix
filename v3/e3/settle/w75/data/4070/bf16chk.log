@@ -1,0 +1,5 @@
+/usr/local/lib/python3.12/dist-packages/huggingface_hub/constants.py:302: FutureWarning: The `HF_HUB_ENABLE_HF_TRANSFER` environment variable is deprecated as 'hf_transfer' is not used anymore. Please use `HF_XET_HIGH_PERFORMANCE` instead to enable high performance transfer with Xet. Visit https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables#hfxethighperformance for more details.
+  warnings.warn(
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 14578.90it/s]
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 13295.33it/s]
+BF16 GATE FAIL {"seqs": 8, "len": 1024, "ab_bitwise": false, "bc_bitwise": true, "max_ab": 4.125, "max_ac": 4.125, "max_bc": 0.0, "n": 8192, "kl_mean": 0.007245427761517931, "top1_agree": 0.980224609375}

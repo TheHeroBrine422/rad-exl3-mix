@@ -1,0 +1,13 @@
+niah_single_1:4096:3: IDENTICAL (3 rows, prompt tokens 4086-4095 incl. generation)
+niah_single_2:4096:3: IDENTICAL (3 rows, prompt tokens 4093-4093 incl. generation)
+niah_single_3:4096:3: IDENTICAL (3 rows, prompt tokens 3481-4095 incl. generation)
+niah_multikey_1:4096:3: IDENTICAL (3 rows, prompt tokens 4088-4096 incl. generation)
+niah_multikey_2:4096:3: IDENTICAL (3 rows, prompt tokens 4077-4093 incl. generation)
+niah_multikey_3:4096:3: IDENTICAL (3 rows, prompt tokens 2184-4085 incl. generation)
+niah_multivalue:4096:3: IDENTICAL (3 rows, prompt tokens 4085-4091 incl. generation)
+niah_multiquery:4096:3: IDENTICAL (3 rows, prompt tokens 3471-3480 incl. generation)
+vt:4096:3: IDENTICAL (3 rows, prompt tokens 4081-4086 incl. generation)
+cwe:4096:3: IDENTICAL (3 rows, prompt tokens 3873-4078 incl. generation)
+fwe:4096:3: IDENTICAL (3 rows, prompt tokens 3744-4011 incl. generation)
+qa_squad:4096:3: IDENTICAL (3 rows, prompt tokens 3982-4089 incl. generation)
+12 cells, 0 differ

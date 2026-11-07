@@ -1,0 +1,21 @@
+{
+ "cell": "niah_multiquery_8192",
+ "cell_sha256": "5a7a5499d7a040095a12064c713cac5d62423cf1f84dccdf110321b26ed4b0f0",
+ "completion_tokens": 72,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "niah_multiquery_8192/0001",
+ "length": 8192,
+ "outputs": [
+  "1841248",
+  "9910817",
+  "1954280",
+  "8999183"
+ ],
+ "pred": ":\n\n*   **available-pumpkinseed**: 1841248\n*   **purring-watercress**: 9910817\n*   **didactic-recess**: 1954280\n*   **somber-minister**: 8999183",
+ "prompt_tokens": 7508,
+ "score": 1.0,
+ "seconds": 7.02,
+ "task": "niah_multiquery"
+}

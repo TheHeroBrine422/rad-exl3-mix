@@ -1,0 +1,21 @@
+{
+ "cell": "qa_squad_32768",
+ "cell_sha256": "1ceb39a3111de6d4de8f4e2c28dbf6f6aba9e396241d7016b8e9383571635631",
+ "completion_tokens": 11,
+ "config": "kvbase-v2-400-bf16",
+ "finish_reason": "stop",
+ "index": 1,
+ "key": "qa_squad_32768/0001",
+ "length": 32768,
+ "outputs": [
+  "10th and 11th centuries",
+  "in the 10th and 11th centuries",
+  "10th and 11th centuries",
+  "10th and 11th centuries"
+ ],
+ "pred": " 10th and 11th centuries",
+ "prompt_tokens": 30917,
+ "score": 1.0,
+ "seconds": 19.553,
+ "task": "qa_squad"
+}
