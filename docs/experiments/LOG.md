@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:05 AM CST · #— · rqah setup wizard (w69)
+- `rqah setup` on local branch `setup-wizard` (c095878, on main 2ac3b3a; new files only): read-only hardware / Docker
+  detection, curses / plain / scripted modes, writes `~/.config/rad-quant-at-home` (worker.env 0600, compose.yaml,
+  docker-run.sh), `--check`, re-run edits; card matrix (4 GB refused, 8 GB layers to K6, 12 GB all trunk jobs, 16 /
+  32 GB evals). Tests 125/125 on fake machines (VM), 123/123 on the 4070 box. Not run on a real AMD card or a published
+  image yet. Hook-up patches (CLI registration, README) wait for PRs #17 / #19–#23.
+
 ### 2026-11-07 1:00 AM CST · #106, #108, #103 · o_proj act order passes on a biased proxy; GDN refits fail in the stack
 - **#106 (w46, settle.py; rule in `v3/e3/actblk/README.md`):** o_proj input-block order via a head permutation (free
   at runtime): 0.928 / 0.927 / 0.927 at K2 / 3 / 4 (n 6, no tensor > 1), all 16 layers 0.94, flat K1.5–6 → **PASS by
