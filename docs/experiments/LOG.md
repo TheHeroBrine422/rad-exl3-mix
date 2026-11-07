@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 6:00 AM CST · #112 · C9 α on the writers: PASS on the 0.8B (both stacks)
+- 4070 g64 item 3 (rules `v3/e3/settle/w64.md`, written before data), 3 seeds, search deciding, verify agreeing:
+  **st (asym writers) geo K3 0.9890, K2 0.9592; pl (plain writers) K3 0.9895, K2 0.9637**, every seed < 1, verify ≈
+  search. The gain is almost all **gdn_out at α = 3 (the grid edge)**; attn_o −1 / 0, down 0. Rule → **27B fixed-code
+  pair** (no requant, ~1 card-h). The pl result matters given #111: C9 on plain writers works too. Readout copied to
+  `v3/e3/settle/w64/report-4070.md`. Next (w75): 27B pair on gpubox, α ∈ {3…6} on gdn_out (edge), 0.8B.
+- **Runtime:** none (the factor folds into the stored scales).
+
 ### 2026-11-07 4:45 AM CST · #104 / ladder · config: swj at every level, mul1 K6 / K6.25 removed (w73 review)
 - w73's consistency pass (docs 86e7871, paper rebuilt, 12 pages) flagged that v3.toml still had swj `k_max = 3.5` and
   mul1 K6 / K6.25. Both resolved by recorded user decisions: swj adopted at every level (SWJ27 amendment 2's K4 seed
