@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:10 PM CST · #113 · random-table bound: a better 20-bit code is worth ~3–4% with exact search
+- g5 finished on colo + Thor (Thor's half completed 18:58 UTC, before the outage). Error vs today's V16, real tensors:
+  **exact Viterbi on an iid random 2^20 table (V20r): K2 0.974 (n 54, 0/27 worse), K3 0.970 (n 49), K4 0.963 (n 15)**;
+  beam 4096 on it (B20-4096r): 1.057 / 1.032 / 0.998 — the beam throws the gain away. Our hash at exact V20: K2 0.990.
+- Reading: a good 20-bit code would buy ~2.5–3.7% (matches the iid synthetic 0.975 / 0.962 / 0.944 at K2/3 and
+  under-shoots at K4), but only with search near exact (×13–46 encode time) — a 4096 beam is worse than today.
+  **V3 unchanged (16-bit window). V4 note:** needs a better computed code AND a search far cheaper than exact
+  Viterbi at 2^20 states; plus +10–28% dequant cost. Report `v3/e3/settle/w71/report-final.md`.
+- **Thor sandbox back (~3 PM CST); idle; no CPU work goes there (user).**
+
 ### 2026-11-07 1:40 PM CST · #112 · C9 α on the writers ADOPTED (user) · #114 blocked on Thor
 - **#112 adopted by the user** despite PARTIAL (geo 0.9925 vs ≤ 0.99; verify keeps 0.96 of the gain): attn_o α −1,
   gdn_out α 3, down 0, plain writers. Runtime none (scales). Quant time in w75's 27B implementation: 859 s a K2.5 level
