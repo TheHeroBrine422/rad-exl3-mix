@@ -437,3 +437,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
     Engram, if lookup-table memory: quantize like our embedding (per-row frequency weighting, V2 Lloyd / embtrellis /
     vocab tiers), lives on SSD (user: so extreme quants matter little; mild / none is fine). Expert Hessians are thin per expert on a calib-sized
     corpus (→ larger corpus). Verify the engram structure from the model card / code before designing.
+- [ ] **QAD family as a cost ladder (user + lead 11-07, framing for the QAD research pass):** (1) local closed-form /
+  one-pass fits at nonlinear junctions from bf16 inputs (swj, w60's q/k, v/o, GDN candidates): mix-independent =
+  library, one pass per (layer, K), donor-computable, priced in the knapsack; (2) library healing / QAD per level
+  (block-local training, weakly mix-dependent); (3) mix QAD end to end (cross-layer compensation, per mix). Push as much
+  as possible into (1)–(2); measure what (3) still adds on top of the full library stack.
