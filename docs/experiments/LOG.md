@@ -3,7 +3,7 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
-### 2026-11-07 7:15 AM CST · #33-28 / H27 · H_out at K4: PASS → adopted for levels ≥ K4
+### 2026-11-07 6:55 AM CST · #33-28 / H27 · H_out at K4: PASS → adopted for levels ≥ K4
 - K4 seed pair landed (bn4s1 vs base4s1): **0.9672** (z −2.54), with the first pair **0.9613** → geo **0.9643**;
   seed floor σ = 0.0062 (base4 → base4s1 1.006); amendment 5's rule (every pair < 1, geo ≤ 0.98, |log geo| ≥ 2σ/√n):
   **PASS**. With K2.5 not adopted (0.9801), **H_out applies at K ≥ 4 only.** Search pool slice, 103 docs. Mix
@@ -12,7 +12,7 @@ versions of anything: git history.
   v3.toml needs an `apply_k_min` the pipeline engine reads (flagged in the file).
 - **Runtime:** none (quantizer-side).
 
-### 2026-11-07 7:00 AM CST · #113 · 2^20-state beam trellis: not adopted (provisional) · w71
+### 2026-11-07 6:50 AM CST · #113 · 2^20-state beam trellis: not adopted (provisional) · w71
 - Order-fixed settle proxy (gates pass: L16 Viterbi = viterbi.c exactly; beam M = 2^16 = Viterbi), 27 tensors × 2
   samples. Error ratio vs today's V16: **B20-4096 (PR #364's setting) K2 1.0096, worse on all 27 tensors; K3 0.999**
   (36/54 pairs); B20-256 / 1024 1.07–1.18; exact **V18 0.994**. Rule (≥ 3% at 2 of K2/3/4) cannot pass: K2 is final,
