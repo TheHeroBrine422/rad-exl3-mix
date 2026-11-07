@@ -3,6 +3,43 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 3:35 PM CST · ops · Thor back as a CPU box; A4 speed bound split
+- **User: Thor is fine for CPU work again** (it is still the VPN host, so it can vanish: every Thor job must be
+  restartable and colo alone must be able to finish). AGENTS.md and the worker context updated.
+- The #46-03 A4 speed bound (144 solves at ×2 and 144 at ×1000 ≈ a free A4 kernel) is split: **colo runs the ×2 arm**
+  (`jobs-a4x-colo.txt`, 6 at a time, nice 19, beside w71 / w77), **Thor the ×1000 arm** (`jobs-a4x-thor.txt`, 10 at a
+  time, nice 10); w72's tree copied to Thor `/data/work/w72` (692 KiB). Watch rules a4xc / a4xt.
+
+### 2026-11-07 3:30 PM CST · #105 · asym27 moments fault = expandable_segments allocator; fixed, both arms running (w78)
+- **Cause:** `asym27.sh` exported `PYTORCH_HIP_ALLOC_CONF=expandable_segments:True` for every card step. With it,
+  `sibmom27.py` faults on card 0 in random **stock** kernels 30 s – 2 min into the run. Seven runs faulted (s1 ×3,
+  base ×3, w78's repro A). The faults: HSA illegal instruction in the RMSNorm mean reduce, the CK conv of the
+  reference `causal_conv1d` and hipBLASLt bf16 / f32 GEMMs; one aperture violation; then "illegal memory access" at
+  `y.cpu()`. The level decode, int overflow and fla were not involved.
+  - Without the allocator setting: no fault in 1.2M layer-tokens of tests (C, E, F).
+  - With `AMD_SERIALIZE_KERNEL=3`: no fault either (D), so the serialized run gives no stack.
+  - The gate (layers 2–3, ~1 min) always passed, which is why it never caught this.
+  - Why the mode faults here: not checked (unverified idea: VMM map / unmap racing queued kernels).
+- **Second bug, would have killed it next:** host RAM at the end of layer 0. The memory guard killed two test runs at
+  the moment save.
+  - An open checkpoint shard kept the 2.5 GB embedding host copy through layer 0.
+  - `save_lean` copied each 17408² f32 to the host whole, plus ~3.6 GB of dirty pages.
+  - iceman has ~9 GB available with nothing of ours running.
+- **Fix** (`v3/yaqa/asym27/`, live in `/data/asym27/code/`):
+  - `asym27.sh` drops and unsets the allocator setting;
+  - `sibmom27.py` (`sibmom27-w78.patch`): refuses expandable segments on ROCm, saves in 64 MB row blocks
+    (fdatasync + DONTNEED), drops open shards after each load;
+  - **peak RSS 6.3 → 3.5 GB**, moments bit-identical (E = F, `cmpmom diff` 0), files byte-identical to the old
+    `save_lean` (`test_w78.py`: ALL PASS).
+- **Queue logging fixed:**
+  - `/data/q1106/after-asym27.sh` logs each arm's exit status. It writes "asym27: done" only when both arms have
+    `pair.json` and the verdict printed; otherwise "asym27: FAIL …".
+  - `asym27.sh` no longer logs "DONE" for a DRY run (the 04:59 UTC bogus DONE), a STOP (now exit 3) or a missing pair.
+  - Entry point `/data/asym27/go.sh`, resumable; status `/data/asym27/queue.log`.
+- **Running since 21:24 UTC (3:24 PM CST):** s1 layer 0 done in 165 s (6,059 tok/s, peak RSS 3.5 GB). Moments ETA
+  ~6:20 PM CST, the s1 arm ~9 PM CST, base + verdict ~2–4 AM CST 11-08.
+- **Runtime:** none (quantizer side). Details: `v3/yaqa/asym27/dbg/README.md`, logs `dbg/logs/`.
+
 ### 2026-11-07 3:30 PM CST · #46-03 · A4 dropped (user); kernel-speed bound queued
 - User: kill A4 (kernel stays merged in qc-exl3-v3 for now; may be reverted for the final PR). To answer "could a
   faster kernel save it": knap5a rerun with the A4 speed ratio forced to ×2 and ×1000 (≈ free) instead of the measured
