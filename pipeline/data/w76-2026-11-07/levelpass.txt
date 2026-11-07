@@ -1,0 +1,15 @@
+# colo, tests/check_levelpass.py WORK RXM MODEL08 on the 0.8B (synthetic token ids), nice 19
+# run 1 (15:57-16:22 UTC, OMP_NUM_THREADS=4): swj / swjc / sib
+PASS swj: rc 0/0; 50 files compared, 0 differ []; swjfit.json equal True
+PASS swjc: rc 0/0; 50 files compared, 0 differ []; swjfit.json equal True
+PASS sib: rc 0/0; 73 files compared (moments, half/, windows.json, .done/), 0 differ []
+FAIL hin: rc 0/0; 97 Hessians byte-compared, 84 differ ['lm_head.input.safetensors', 'model.language_model.layers.10.input.safetensors']; collect.json equal False
+LEVELPASS CHECKS 3/4 PASS
+# diagnosis (19:37 UTC): mkhin27.py rerun with the same arguments (stage 0, 4 threads) differs from its own first run on
+# layers.3.self_attn.o_proj.input and layers.4.input (the first full-attention layer's output: CPU SDPA at 4 threads on
+# the loaded host is not reproducible run to run) and equals rxq's files byte for byte there. The check now runs the
+# hin unit at OMP_NUM_THREADS=1 on both sides (and compares collect.json but tool / created / plan.out).
+# run 2 (19:41-19:49 UTC, hin at 1 thread): 97 Hessians byte-compared, 0 differ; collect.json differed only in plan.out
+# (the check's skip key was wrong: "args.out"), fixed; run 3 (19:52-20:00 UTC), unmodified:
+PASS hin: rc 0/0; 97 Hessians byte-compared, 0 differ []; collect.json equal True
+LEVELPASS CHECKS 1/1 PASS
