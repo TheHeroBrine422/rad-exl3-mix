@@ -117,4 +117,16 @@ Scripts also expect the GPU box's flat layout under `$RXM_WORK`: `hproxy/` (= `m
 
 Names: EXL3-V1 = the turboderp port; EXL3-V2 = mixed-K EXL3 on the f16-activation kernel; EXL3-V3 = integer compute.
 
+## Credits
+
+Code we derive from is listed in [NOTICE](NOTICE). Ideas and work this project builds on:
+
+- **turboderp** — EXL3 and exllamav3 (format, trellis codes, quantiser); the EXL3-V1 ladder.
+- **Tseng et al., QTIP** — the computed-codebook trellis EXL3 is based on; **YAQA** — output-side Hessians (our
+  diagonal H_out variant).
+- **Deadcode** — radiance, the quantization challenge, and the IQR whitepapers (two-pass prefill, act order and bf16
+  row-scale ideas we tested).
+- **Code 000** — window residency (radiance #412), which our D-LSA builds on; per-layer KV quantisation (#416).
+- **phillipxkang** — the security review and fixes of rad-quant-at-home.
+
 License: Apache-2.0.
