@@ -1,0 +1,5 @@
+PASS build: builds ['exl3cb_i4', 'exl3frac2_i4', 'exl3frac2_i8', 'exl3frac2_mul1']; exl3frac2_i4 defines ['-DEXL3_MUL1_I4'], exl3cb_i4 ['-DEXL3_MUL1_I4']
+PASS ourq: --qtf2 accepts ('mul1', 'i8', 'i8c', 'i4')
+PASS engine: installs [('exl3frac',), ('exl3cb', 'i4'), ('exl3frac2', 'i4')]
+PASS plan: K0.125-1 x layers 2 / 3: 0 wrong []; switch off -> sigma_in 0.005
+I4 CHECKS 4/4 PASS

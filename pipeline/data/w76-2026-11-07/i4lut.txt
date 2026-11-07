@@ -1,0 +1,4 @@
+mul1: 0 of 65536 states differ; distinct values 913
+i8: 0 of 65536 states differ; distinct values 239
+i4: 0 of 65536 states differ; distinct values 16
+I4LUT CHECK PASS {'mul1': 0, 'i8': 0, 'i4': 0}

@@ -84,8 +84,8 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
         assert frac, "a rounded codebook needs the frac kernels (ourq: --codebook needs --frac-ext)"
         sys.path.insert(0, kd["exl3cb"]); import exl3cb
         exl3cb.install(exl3_src(), codebook)
-    if qtf2:
-        assert frac and codebook in ("mul1", "i8", "i8c"), "qtf2 needs the frac kernels and the mul1, i8 or i8c codebook"
+    if qtf2:                                             # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
+        assert frac and codebook in ("mul1", "i8", "i8c", "i4"), "qtf2 needs the frac kernels and the mul1, i8, i8c or i4 codebook"
         sys.path.insert(0, kd["exl3frac2"]); import exl3frac2
         exl3frac2.install(exl3_src(), codebook)
     tcd = None

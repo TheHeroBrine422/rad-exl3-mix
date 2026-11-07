@@ -167,7 +167,7 @@ if a.codebook != "mul1":
     import exl3cb
     exl3cb.install(a.frac_ext, a.codebook)
 if a.qtf2:
-    assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c"), "--qtf2 needs --frac-ext SRC and the mul1, i8 or i8c codebook"
+    assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c", "i4"), "--qtf2 needs --frac-ext SRC and the mul1, i8, i8c or i4 codebook"
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
     import exl3frac2
     exl3frac2.install(a.frac_ext, a.codebook)

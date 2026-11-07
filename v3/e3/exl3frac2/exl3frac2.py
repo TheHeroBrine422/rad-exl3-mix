@@ -1,7 +1,8 @@
 """exl3frac2 -- the V3 kernel pass's fractional trellis quantizer (qtf2.cuh) as a side extension for the prebuilt
 exllamav3 1.6.3 (with pack / unpack_trellis_frac that accept KA = 0): same call as quantize_tiles_frac, output bit-identical to the fork's kernel for every rate it has
 (check: qtf2check.py), plus 1/8 steps K0.125-2.875 (incl. sub-1, KA = 0: salted 0-bit read) and the menu's
-quarter / half steps. Built in two variants: "mul1" (plain codebook) and "i8" (EXL3_MUL1_I8, the int8-rounded one).
+quarter / half steps. Built in variants: "mul1" (plain codebook), "i8" (EXL3_MUL1_I8, the int8-rounded one), "i8c" (#78)
+and "i4" (EXL3_MUL1_I4, the int4 grid of the i4 ladder: codebook.cuh's decode_3inst<2> rounds, as in exl3cb "i4").
 Use after exl3frac / exl3cb's install:  exl3frac2.install(SRC, "i8")  (SRC = <fork>/exllamav3/exllamav3_ext, for
 codebook.cuh). quantize_tiles_frac and frac_k are swapped, and integer K1-4 tiles go to qtf2 too (MASK 0, identical
 output; QTF2_INT=0: off). Env TORCH_EXTENSIONS_DIR, PYTORCH_ROCM_ARCH, MAX_JOBS."""
@@ -25,14 +26,14 @@ def frac_k(K):
 
 
 def load(src: str, variant: str = "mul1", verbose: bool = False):
-    assert variant in ("mul1", "i8", "i8c"), variant
+    assert variant in ("mul1", "i8", "i8c", "i4"), variant
     import torch
     from torch.utils import cpp_extension as C
     from exllamav3.util import cuda_flags as F
     src = os.path.abspath(src)
     os.environ.setdefault("TORCH_EXTENSIONS_DIR", os.path.join(HERE, "build"))
     hip = bool(torch.version.hip)
-    d = {"i8": ["-DEXL3_MUL1_I8"], "i8c": ["-DEXL3_MUL1_I8", "-DEXL3_I8_CUBIC=0.02f", "-DEXL3_I8_CUBIC_SD=1.0546900f"]}.get(variant, [])   # i8c: #78
+    d = {"i8": ["-DEXL3_MUL1_I8"], "i4": ["-DEXL3_MUL1_I4"], "i8c": ["-DEXL3_MUL1_I8", "-DEXL3_I8_CUBIC=0.02f", "-DEXL3_I8_CUBIC_SD=1.0546900f"]}.get(variant, [])   # i8c: #78
     defs = os.environ.get("QTF2_DEFS", "").split()           # test builds: QTF2_NOBACK / QTF2_NOHIST (timing only), QTF2_BYTEHIST (pre-v5 history)
     d += [f"-D{x}" for x in defs]
     cflags, cuda = ["-O3"] + d, F.cuda_cflags(cuda_home=C.CUDA_HOME, hip=hip) + d
