@@ -450,3 +450,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
     mid budget KLD 0.249 → 0.194); beats UD and GSQ-RCO at matched size. Calib: 1M tokens, stats reused across budgets.
     For us: their allocator ≈ our knapsack with an expert-level prior; the τ "contrast" knob = how hard sensitivities
     are trusted (our kfit2 calibration analogue). Read in full when V4 MoE work starts.
+
+- **Trained 2^15 LDS codebook (user 11-07: not pursued).** A 32 KiB int8 table in shared memory instead of the computed
+  mul1 code. Estimated decode cost (unmeasured): ~0 to −5% at K5+, −5 to −10% at K4, −10 to −30% at K2–3 (random LDS
+  reads with bank conflicts, the per-workgroup table fill, occupancy), for an uncertain gain of a few percent (QTIP's
+  HYB). Not worth it at the low bpw where it would cost most. Reopen only with a V4 code redesign (see #113's bound).
