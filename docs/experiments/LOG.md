@@ -3,6 +3,27 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 6:10 PM CST · #104, #100, #46-03, #— · swj at K4 and on H_out; hash codebook misses; kernels on qc-exl3-v3; rqah 0.4
+- **#104 amendment 1 (gpubox, golden-search27, 103 docs):** swj on top of H_out bn at K2.5: bn → bnswj **0.9244**
+  (z −14.4), bns1 → bns1swj **0.9210** (z −13.9): it stacks with H_out (the bn+swj vs plain+swj gap ≈ 0.978). **K4:**
+  base4 → base4swj **0.7906** (z −5.0), bn4 → bn4swj **0.7667** (z −5.9): every pair < 1, geo 0.778 → **swj adopted at
+  every level.** The K4 gain (−21…−23%) is 3× K2.5's; plausible (the scale error is a larger share of a smaller KL) but
+  surprising, so check it on a verify slice before quoting it.
+- **#100c hash codebook, real run (w48, `v3/e3/sub1/r100c.md`, rules before data):** 0.8B, 2 seeds, fake-quant
+  scoring: KL ×1.026 / ×1.040 / ×1.016 at K2 / 3 / 4 on search (verify ×1.025 / ×1.029 / ×1.000) vs bar ≤ 1.01;
+  ≈ +0.011…+0.025 bpw at equal quality. Speed on gfx1201: decode GEMV +15.6% / +17.6% / +12.6% (bar ≥ 15% at every K),
+  prefill ±1%. Fails both bars, not a hard reject → user's call; recommendation keep mul1i8. Note: the per-tensor
+  proxy says +0.8–0.9%, real KL 3–4× that: this codebook's cost is underpriced by the proxy.
+- **Kernels:** w53's mul1i4 importer (byte-exact vs the quantizer's i4 decode at every rate, real 27B i4 tensors,
+  gfx1201 test_a4 1093 PASS) rebased cleanly onto the A8 + A4 merge (docs-only difference); **`qc-exl3-v3` fast-forwarded
+  to 42960d5 (+12 commits, no rewrite)**; the user's PR picks it up on the next push. #46-03 (A4 quality) unblocked.
+  w53 ran 19 s on the 4070 without its lock (rule break, no harm seen).
+- **rad-quant-at-home:** public commit 7df04f3 + GHCR names (f582e7d) + research kit (`research-kit/`: ROCm / CUDA
+  images, LAN-blocking firewall, Tailscale ACL, selftest, VOLUNTEER / OPERATOR docs; firewall boot unit, R9700 image,
+  real tailnet untested) + **0.4.0** (6ba5b12: per-direction Mbps caps, daily / monthly data budgets on the data volume,
+  budget- and cache-aware scheduling; priority by level granularity 40 / 30 / 20 / 10 / 5, finish a level before the next).
+- Design docs updated to 11-06 (w55); KV corpus: Infinite KV Cache + AutoQuant note (w49).
+
 ### 2026-11-06 3:00 PM CST · #101, #107, #77, #100, #—  · d1112 readout; tile CD on the GPU; pipeline, rqah v0.3, kernel merge
 - **d1112 (w44, 4070, 0.8B, 3 seeds): xcorp H_in on top of the full adopted stack** (H_out dy + swj + asym; `k{K}st`
   vs `k{K}sx`). Search geo K3 0.991 / K2 0.988 (every seed < 1), verify 0.987 / 0.984 (keeps > 100% of the search

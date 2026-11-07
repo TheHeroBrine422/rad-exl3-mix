@@ -1,6 +1,6 @@
 # Roadmap
 
-Current as of 2026-11-05. Design detail for V3: `docs/design/v3.md`; experiments: `docs/experiments/` (INDEX, LOG,
+Current as of 2026-11-06. Design detail for V3: `docs/design/v3.md`; experiments: `docs/experiments/` (INDEX, LOG,
 BACKLOG).
 
 **Names (user, 2026-11-04):** EXL3-V1 = the turboderp-ladder port (released); EXL3-V2 = mixed-K EXL3 on the
@@ -35,15 +35,23 @@ from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
 
 **Format and kernels:**
 - Per-tensor weights × compute modes (the W/A table in `docs/design/v3.md` §1): i4 codebook K0.125–3 (A4 / A8 / A16),
-  i8 K2–7 (A8 / A16), mul1 K6–8 (A16), bf16. Sub-1 K (K0.125–0.875, salted 0-bit read) is in V3 (#90 prices it).
+  i8 K1.125–7 (A8 / A16), mul1 K6–8 (A16), bf16. Sub-1 K (K0.125–0.875, salted 0-bit read) is in V3 (#90 priced it:
+  it pays only below ~1.3 bpw, so it serves the low-bpw research ladder). **i8 at K7 is not free (2026-11-06, #94):**
+  ×1.27 error vs mul1 (~0.18 bit) on real tensors, not the ×1.02 a Gaussian-tile smoke showed; the int8 grid tops
+  out near mul1 K6.85, so there is no i8 level above K7 and the knapsack prices i8 K6.5–7 from measured curves.
+- Format checks that left it unchanged (2026-11-06): chained tail-biting (#102) and down_proj block act order (#103)
+  negative. Still open: the IQR-style hash codebook (#100; a CPU re-check and a small real run on the 0.8B + gfx1201).
 - **A4 on i4 weights** as a per-tensor knapsack option for the fast variant at ≤ 3 bpw (#46-03; d1106's all-MLP A4
-  failed as a global setting). The int4-plane kernel is built only if its rule passes.
+  failed as a global setting). The int4-plane kernel is built only if its rule passes. **[superseded 2026-11-05]**
+  The A4 path was built at once (user; ×1.31 faster than A8 on a K2 layer at M 2048); #46-03's rule decides whether
+  it ships. Per-block A8 exceptions for A4 and an i4 plane for speed alone: negative (11-06).
 - **Decode stays on 16-bit activations.** Low-bit activations only run in prefill steps of ≥ 512 rows: at decode
   (1–16 rows a step) the GEMV is bound by reading the weights, not by arithmetic, so int8 / int4 activations would
   save nothing and only add error. The fast and accurate variants therefore decode identically; they differ in
   prefill. (The 512 threshold is checked by the kernel timing's M = 16–4096 sweep.)
 - **Prefill: two-pass kernels** (decode each weight once per step into an int8 / f16 (/ int4) plane, then radiance's
-  tuned tile; IQR's route). Est. ~4,000–4,300 µs a layer for the fast path vs V2's ~8,050.
+  tuned tile; IQR's route). Est. ~4,000–4,300 µs a layer for the fast path vs V2's ~8,050. Two-pass A8 and A4 are
+  merged (fork branch `qc-exl3-v3-merged`, 2026-11-06); `qc-exl3-v3` is fast-forwarded to it after the i4 importer.
 - Engine: radiance 1.17 (fork branch `qc-exl3-v3`, rebased on each release; plugins `qwen35_exl3`, `exl3i`, ...).
 - Embedding: trellis-coded (one row decodes alone, H = I), quarter steps, with the menu extended at both ends:
   sub-1 (t0.25–0.75) for the smallest sizes and t6.25–t8 for 7.0 (the solver already sits on t6, the old menu top).
@@ -51,17 +59,35 @@ from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
   (vocabulary-tiered) embedding: dropped (2026-10-31).
 - Vision tower and DFlash2 drafter bundled in bf16 (outside the bpw count).
 
-**Quantizer stack** (each item proven on the 0.8B proxy needs its 27B confirmation, BACKLOG "27B confirmation
-queue"): diagonal output Hessian H_out (Σdy², block-normalized; 27B swap test #33-28) → joint SwiGLU scale refit
-(swj) → sibling-sequential asym writers (ρ0, last) → frozen-code scale healing (#89): **deferred, not dropped** (user, 2026-11-05): no 27B test before the settings
-freeze; 27B work starts with the ladder generation, at the latest after V3; may still reach V3's releases if ready.
-0.8B healing tests continue. Plus: per-tensor damping, scale gain per K and family (larger for attn_output / ssm_out at ≥ 5 bits), turboderp's tensors as options, and to test:
-IQR-V4's act order in the trellis, bf16 (row, 128) scales on attn_output / ssm_out from K5, a vocabulary-weighted
-head vs our row-slab head; A1 (down_proj predicted from up) as a per-layer option if it is on the frontier;
-self-calibrated statistics (#91). The cubic i8c codebook is likely dropped (no gain on top of H_out).
+**Quantizer stack (status 2026-11-06;** each item proven on the 0.8B proxy needs its 27B confirmation with two seed
+pairs, BACKLOG "27B confirmation queue"; order H_out → swj → writers, last):
+- Diagonal output Hessian H_out (Σdy², block-normalized; #33-28): K2.5 pooled 0.982 over two seed pairs, **not yet a
+  pass**; a third pair and the K4 pairs are running. If adopted it makes a level ~5× slower to quantize.
+- Joint SwiGLU scale refit (swj): **adopted** (#104: 27B −6.5% KLD at K2.5, no requant); stacking with H_out and
+  the K4 transfer are being tested.
+- Sibling-sequential asym writers (ρ0, last): 27B test #105 queued.
+- Frozen-code scale healing (#89): **deferred, not dropped** (user, 2026-11-05): no 27B test before the settings
+  freeze; 27B work starts with the ladder generation, at the latest after V3; may still reach V3's releases if ready.
+  0.8B healing tests continue.
+- Tile coordinate descent after LDLQ on attn_qg only (#77): −0.5–1.2% on those tensors on the real quantizer (the
+  CPU proxy overstated it ~3×), ~+5 min a level: the user decides.
+- Kept: per-tensor damping (#38), scale gain 1.0 (#39: flat; the old "larger at ≥ 5 bits" was a proxy artifact),
+  fractional-K drift as is (#107 null), turboderp's tensors as options. Open: a vocabulary-weighted head vs our
+  row-slab head; A1 (down_proj predicted from up) as a per-layer option if it is on the frontier.
+- Dropped: input Hessians blended with xcorp (#101: 0.8B −2%, 27B pooled ~0.993; user 11-06), self-calibrated
+  statistics (#91), REAL-Q (#92), IQR-V4's act order and bf16 (row, 128) scales (#95), the cubic i8c codebook (no gain
+  on top of H_out).
 
-**Ladder (66 levels, ~180 card-hours):** i4 K0.125–3 in 1/8 steps (24), i8 K2–5 in 1/8 (25) + K5.25–7 quarters (8),
-mul1 K6–8 quarters (9). Quantized in order of use (2.5–4.5 first), once the settings above are frozen.
+**Ladder (73 levels):** i4 alone K0.125–1 (8), i8 K1.125–5 in 1/8 steps (32) + K5.25–7 quarters (8), i4 twins
+K1.125–3 in 1/8 steps (16; K2 / K3 first, the other 14 only if A4 pays), mul1 K6–8 quarters (9). (Was "66 levels,
+~180 card-hours" before the 11-05 amendments.) Measured: ~37 min a level on one R9700 without H_out, ~3.2 h with it.
+Quantized in order of use (2.5–4.5 first), once the settings above are frozen.
+
+**Production (2026-11-06):** the quantizer pipeline lives in the side repo `rad-exl3-quantizer` (package `rxq`;
+`config/v3.toml` pins the freeze settings, each with its evidence); the ladder run uses donated compute via
+`rad-quant-at-home` (per-tensor jobs, inputs from Hugging Face pinned by revision, results verified by score rather
+than by replication; on small cards every family but ffn_down fits in ≤ 4.1 GB). Where the time goes: the trellis
+search is ~80% of quant time.
 
 **Selection:** knap4 with per-tensor compute modes and a speed table; streaming search with fresh eval draws
 (`docs/design/eval-data.md`: xcorp 8k + a share of private agentic text for search accept / reject; calib verify
@@ -85,9 +111,8 @@ sizes and 6.0.
   the separate-prefill-weights form ("ODP", streamed from SSD) is a serving variant, not a board entry.
 - **Quantized DFlash2 drafter and vision tower** (low priority, user 2026-11-05): needs drafter acceptance and an
   image eval as metrics.
-- **REAL-Q (arXiv 2609.00049)** as a final pass on 2–3 shipped sizes, if the 0.8B test (below) pays: it is per-mix
-  (sequential), so it cannot enter the per-level library (~40–50 GPU-hours each at 27B; its gains shrink with model
-  size: −49% at 1.7B, −5…−9% at 8–70B).
+- ~~**REAL-Q (arXiv 2609.00049)** as a final pass on 2–3 shipped sizes, if the 0.8B test pays~~ **[dropped
+  2026-11-06, #92]**: on the 0.8B on top of our stack it failed every rule (healed K3 ×1.10, K2 ×1.04).
 - **D-LSA runtime option (user 2026-11-05):** latent sparse attention (Prefrontal-AI/latent-sparse-attention,
   arXiv 2610.42147, Apache-2.0) on the 16 full-attention layers, off by default (`--lsa MAP`). It doesn't change the
   weights: a released 6.3 MB fp32 map (`qwen38_27b__long-16k-1M-heavy-key-and-query-d2048.pt`, release
@@ -137,19 +162,25 @@ sizes and 6.0.
   (its calibration study `proxy2b/CALIBRATION.md` is paused), the 9B (untied embedding / head, closest shapes) when a
   test needs it (an R9700 slot). Same family and block design as the 27B; nothing transfers as numbers, method
   rankings should. 27B single-layer tests also run there (`v3/yaqa/hconv/`).
-- **0.8B tests queued now:** robust (heavy-tail) Σdy² estimator, sequential (quantized-prefix) Hessians, REAL-Q,
-  self-calibration (#91, running).
+- **0.8B tests (2026-11-05/06):** REAL-Q (#92) failed; self-calibration (#91) did not help on calib; the xcorp H_in
+  blend passed on the 0.8B (#101) but shrank to ~1% at 27B and was dropped. The 0.8B's effect sizes shrink at 27B
+  (H_out −8% → ~−2%, xcorp −2% → < 1%; swj the exception, −6.5% at 27B): every setting gets its 27B seed pairs.
+  Listed on 11-05, no INDEX row yet: a robust (heavy-tail) Σdy² estimator (BACKLOG; moot unless H_out passes) and
+  sequential (quantized-prefix) Hessians beyond the writers' sibling-sequential form (#87).
 - **Corpora:** calib pools for every decision (`AGENTS.md`); xcorp v1 (96M tokens from the calib's upstream
   sources, #61) for training / statistics and a share of search accept / reject; private agentic sessions
   (never published) the same way; turboderp's self-sampled calibration trace for this model.
   Preference for training / statistics data: generated by the model itself from calib-like prompts, then more of
-  the calib's upstream sources, then generic text.
-- **Donated GPU time** (volunteer v0 built, parked until the ladder): per-layer quantization jobs for the ladder and
-  `eval_mix` jobs for the search (public slices only; mixes assembled locally from cached levels), a central queue,
-  points by verified work; DDP / DiLoCo-style training only later.
+  the calib's upstream sources, then generic text. **[2026-11-06]** For V3's quantizer statistics neither paid on the
+  board's metric (#91 self-generated, #101 xcorp): they stay calib (published H_in, H_out from qad windows).
+- **Donated GPU time** (`rad-quant-at-home` 0.3, built and tested, not deployed; runs the ladder once the settings
+  freeze): per-tensor and per-layer quantization jobs for the ladder and `eval_mix` jobs for the search (public
+  slices only; mixes assembled locally from cached levels), a central queue, points by verified work. Results are
+  verified by score: the server decodes the codes and checks the tensor's Hessian-weighted error against the band
+  expected at that K (no re-runs). DDP / DiLoCo-style training only later.
 - **YAQA:** full Sketch A / B lost on the 0.8B (#33-08); its diagonal H_out alone wins (#33-10…#33-16), which is the
-  V3 candidate above. **27B: only −2.8% at K2.5 (#33-28), a third of the 0.8B's gain; not part of the pipeline for
-  future / larger models** (user, 2026-11-05) unless a cheap estimator (≤ 384 sequences, bf16 hi/lo backward instead
+  V3 candidate above. **27B: only −2.8% at K2.5 (#33-28), a third of the 0.8B's gain (two seed pairs pooled 0.982,
+  2026-11-06: not yet a pass); not part of the pipeline for future / larger models** (user, 2026-11-05) unless a cheap estimator (≤ 384 sequences, bf16 hi/lo backward instead
   of fp32, a proper multi-GPU backward) brings it to a few GPU-hours and a pilot on that model shows it pays. Fuller (mixed) H_out only if the diagonal clearly helps on the 27B (BACKLOG).
 
 ## Data (after QAD)

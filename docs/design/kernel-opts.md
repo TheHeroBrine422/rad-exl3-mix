@@ -4,6 +4,12 @@ Source: a read of radiance 1.17's IQR-V4 kernels (`libr4d/r4d_gemm_iqr.hip`, `r4
 `r4d_gemm_fp8a8.hip`; Apache-2.0) against our two-pass exl3i path (fork branch `qc-exl3-v3-twopass`,
 `plugin/exl3i/TWOPASS.md`). Gains are estimates unless marked measured. Status per item; results get added here.
 
+**Branch status (2026-11-06):** the two-pass A8 path (`qc-exl3-v3-twopass`) and the A4 path (`qc-exl3-v3-a4`:
+codebook `mul1i4`, act `a4g64` / `a4g128`, int4 plane, iu4 tile; `plugin/exl3i/A4.md`) are merged on
+`qc-exl3-v3-merged` (fast-forwards, no conflicts; host and device tests pass, the f16 row byte-identical to
+`qc-exl3-v3`'s). Next: the i4 importer (`qc-exl3-v3-i4imp`, the quantizer's i4 output → `mul1i4` containers) on top,
+then `qc-exl3-v3` is fast-forwarded to the result (no history rewrite; the radiance PR tracks `qc-exl3-v3`).
+
 ## Prefill (A8 path, M ≥ 512): in order
 
 | # | what | IQR reference | est. gain | effort | status |
@@ -28,6 +34,11 @@ and barriers. Not applicable: IQR's LDS transposes, tables and scale-form tricks
 | D4 | Hash dotted with the activation byte broadcast by `v_perm` (sum and product in one `sudot4`), scales through SGPRs | `r4d_gemm_iqr.hip:170-233` | part of IQR's 42 → 30 µs | only with the hash codebook (#100) |
 
 ## Format: the hash codebook (#100) — decide before the ladder
+
+**Status 2026-11-06: still open.** Two checks before the user decides: w27's proxy result is being re-run on the
+exllamav3-faithful CPU proxy (settle.py; the old proxy distorted other results through its scale handling), and a
+small real run (hash codebook behind a quantizer flag, 0.8B at K2 / K3 / K4, two seeds, scored on the calib goldens,
+plus a gfx1201 decode microbench vs mul1i8 today and the closed form). The numbers below are from before both.
 IQR's computed value is `sudot4((umul24(state, A) + B) & 0x3F3F3F3F, 0x01010101) − 126` (~3 ops a value incl. the
 hash, int8-native, A / B stored per tensor) vs EXL3 mul1i8 (32-bit multiply, 4-byte sum, scale, int8 round). A
 different codebook means a requant of every level (~200 GPU-hours if done after the ladder), so it is tested now on
@@ -93,6 +104,17 @@ waits for an idle card; check the K4 GEMV attn_k M 1 row ≈ 60 µs before trust
 - **Cost:** +1.2–1.4% proxy error at K2–3.5, +2.7–5.4% at K4–6 (w27; ≈ +0.01 bpw equal-quality at K2–3.5, +0.02–0.05
   above), plus a requant of every level before the ladder.
 - **Default without iqrh:** the closed form is in, bit-exact, no requant.
+
+## A4 and the int4 plane (2026-11-05 / 11-06)
+- **A4 path built** (w34, 11-05, the user's call before #46-03's prices): the int4 plane stores q of the half-integer
+  i4 grid exactly and adds the ½·Σx term after the output Hadamard; byte-exact against the C emulation in every test.
+  Full path, K2, M 2048: **×1.31 faster than A8** on the layer; the tile alone ×1.25–1.38 under the plugin's own build
+  flags (VOPD off), ×1.40–1.50 with a cheaper fold flush; which compiler serves the card matters for A4. Whether A4
+  ships is #46-03's rule (27B per-family costs need the i4 K2 / K3 levels and the importer).
+- **Not worth building (2026-11-06, `v3/e3/a4/blockx.md`):** per-block A8 exceptions inside an A4 tensor (two A8
+  blocks cut gate_up's A4 error only 6–11% vs the ≥ 30% rule: the error is spread, not concentrated); an i4 decode
+  plane on the A8 path for speed alone (layer at M 2048: 2.8% faster if the int4→int8 conversion hides, 4.9% slower
+  if it serializes; rule ≥ 5%), so i4 levels are not built for speed alone.
 
 ## Measurements (to fill in)
 - First card run of the two-pass A8 path (w28, `plugin/exl3i/TWOPASS.md` "Card results"): K4 at M 2048, layer

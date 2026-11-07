@@ -1,7 +1,16 @@
 # D-LSA in radiance: design and the two-worker split (V3 runtime option)
 
-Status: draft brief, 2026-11-05. Nothing built yet. ROADMAP "V3 extras" has the scope (V3-only release, off by
-default, fp32 sidecar map). Target use: Qwen3.8-27B at 256k–750k context with fp8 KV, one R9700.
+Status: draft brief, 2026-11-05. ~~Nothing built yet.~~ **[2026-11-06]** Both work packages were built on their
+branches on 11-05 (`lsa-index`: the map loader, `lsa_index_store` / `lsa_cluster` / `lsa_select`, bit-exact vs
+`reference.py` on the card; `lsa-attn`: `attn_paged_list` for bf16 / fp8 / fp8_v4 / k6_v4, equal to `attn_paged` on
+full lists, ~32 µs a layer over 4,612 fp8 keys vs ~2 ms dense at 512k; the select adds ~135 µs a layer at 512k).
+Both are merged into `lsa` (11-06; the gated block passes `attn_paged_list` its `sel_max`); by the workers' reports
+nothing has run end to end in an engine yet (no full build with a model load). The contract text below does not yet
+carry the workers' proposals: two extra operands (`sel_max`, `block_size`), the accuracy wording for multi-row verify
+steps (bf16 output resolution), a bucket KV group with a 512-token page, an ABI bump. **Priority (2026-11-06):**
+pre-freeze quantizer research comes first; LSA work only fills idle capacity. ROADMAP "V3 extras" has the scope
+(V3-only release, off by default, fp32 sidecar map). Target use: Qwen3.8-27B at 256k–750k context with fp8 KV, one
+R9700.
 
 ## Facts (checked)
 

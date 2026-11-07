@@ -4,7 +4,9 @@ Read-only context for a future KV autoresearch task (BACKLOG: "Autoresearch on K
 (`<slug>.md`: method, numbers with setting, runtime cost, failure modes, new vs #416, radiance fit); the ten
 directions we think most promising are in [IDEAS.md](IDEAS.md). Every number is quoted from the cited paper (arXiv
 id on each page) or, for radiance, from PR #416 / #412 and Code 000's public paper "Infinite KV Cache" (IKV); see
-[radiance-416.md](radiance-416.md), the baseline every "new vs #416" refers to. Built with our paper
+[radiance-416.md](radiance-416.md), the baseline every "new vs #416" refers to; the IKV paper's own page is
+[infinite-kv-cache.md](infinite-kv-cache.md), and how a new format enters `rad-autoquant` and the kv-task judge is in
+[AUTOQUANT.md](AUTOQUANT.md). Built with our paper
 pipeline (arXiv sweep of 19 KV queries since 2024-01 → 1 006 candidates → triage by title/abstract → 52 fetched
 full texts → digests).
 
@@ -20,6 +22,12 @@ on Qwen3.8-27B or its Qwen3.5 twin). *Overhead* = extra passes, calibration, tra
 fits radiance's per-token rows in 16-token pages? **y** (drop-in row layout or op), **tile** (needs multi-token tiles
 + an fp16 tail group), **tier** (host / store tier, not the live pool), **sel** (needs a selection op over pages,
 QSA-style), **n** (model change or conflicts with page hashing / prefix cache).
+
+## Baseline (radiance, Code 000)
+
+| work | year | idea in a line | bits | quality (setting) | overhead | paged fit |
+|---|---|---|---|---|---|---|
+| [Infinite KV Cache](infinite-kv-cache.md) | 2026 | QSA window residency + per-layer / per-tier layouts chosen by measured search (rad-autoquant) | 3.5–16 per layer; host tier k4h_v4+vm | compact 3.76 KiB/token (−44 % vs fp8), ΔNLL +0.0008; host tier −44 % for +0.0049 above floor; **floor 0.0243 is MoE noise (dense bf16 2B: 0.00018)** | search ~70 s a run, 112–113 recipes a limit; pager 3–15 % decode | y (layouts) / tier (demote) |
 
 ## Quantization: scalar, rotation, mixed precision
 
