@@ -462,3 +462,10 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   (regenerated continuations / its logits), never from the logged Claude text. Needs: rendering into Qwen's chat and
   tool-call template, a secrets / host scrub, dedup of miner prompts. Allowed for challenge entries too (AGENTS: pi-sessions
   are a training corpus since 11-02, xcorp since 11-04); never for selection or verification, public stays held out.
+  **Spec-decode plan (user 11-07): SC-style data.** Split the rendered session documents (`xcorp/sessdocs.py` →
+  `sessdedup.py`, `local/sessdocs/`) at the end of each real user turn (after the user message / tool responses, where
+  the assistant would answer), and have bf16 Qwen3.8-27B generate the assistant response itself (its own reasoning +
+  answer / tool call), possibly in chunks for long contexts (prefix cap, continue from the previous generation). The
+  draft model then trains on real Qwen reasoning over real agentic contexts, never on the logged Claude text. Open:
+  sampling settings (match deployment), how many responses per context, which turns (all vs the deduped ones), tool
+  calls the logged environment never answered (stop at the first tool call, or splice the logged tool result).
