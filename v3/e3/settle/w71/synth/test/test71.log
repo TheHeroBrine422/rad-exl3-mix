@@ -1,0 +1,62 @@
+PASS codebook_L(mul1_i8, 16) == table 
+PASS mul1_i8 K2 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1_i8 K2 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1_i8 K2 beam M=65536 L16 == Viterbi (free, tb) diff 0 / 0
+PASS mul1_i8 K3 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1_i8 K3 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1_i8 K4 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1_i8 K4 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1_i8 K4 beam M=65536 L16 == Viterbi (free, tb) diff 0 / 0
+PASS mul1_i8 K5 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1_i8 K5 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1_i8 K6 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1_i8 K6 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1_i8 K6 beam M=65536 L16 == Viterbi (free, tb) diff 0 / 0
+PASS codebook_L(mul1, 16) == table 
+PASS mul1 K2 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1 K2 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1 K3 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1 K3 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1 K4 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1 K4 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1 K5 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1 K5 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS mul1 K6 Viterbi L16 free == viterbi_tiles_pat diff 0
+PASS mul1 K6 Viterbi L16 tb == viterbi_tiles_tb(1) diff 0
+PASS K2 L16 M0 tail-biting + shift-consistent 
+PASS K2 L16 M256 tail-biting + shift-consistent 
+PASS K2 L16 M1024 tail-biting + shift-consistent 
+PASS K2 L16 M4096 tail-biting + shift-consistent 
+PASS K2 L18 M0 tail-biting + shift-consistent 
+PASS K2 L18 M256 tail-biting + shift-consistent 
+PASS K2 L18 M1024 tail-biting + shift-consistent 
+PASS K2 L18 M4096 tail-biting + shift-consistent 
+PASS K2 L20 M256 tail-biting + shift-consistent 
+PASS K2 L20 M1024 tail-biting + shift-consistent 
+PASS K2 L20 M4096 tail-biting + shift-consistent 
+K2 s=1.00 mse L16/V: 0.06793 (29 ms)  L16/256: 0.07472 (7 ms)  L16/1024: 0.06892 (23 ms)  L16/4096: 0.06813 (80 ms)  L18/V: 0.06716 (161 ms)  L18/256: 0.07692 (11 ms)  L18/1024: 0.07038 (39 ms)  L18/4096: 0.06726 (112 ms)  L20/256: 0.07715 (26 ms)  L20/1024: 0.07193 (54 ms)  L20/4096: 0.06783 (159 ms)
+PASS K3 L16 M0 tail-biting + shift-consistent 
+PASS K3 L16 M256 tail-biting + shift-consistent 
+PASS K3 L16 M1024 tail-biting + shift-consistent 
+PASS K3 L16 M4096 tail-biting + shift-consistent 
+PASS K3 L18 M0 tail-biting + shift-consistent 
+PASS K3 L18 M256 tail-biting + shift-consistent 
+PASS K3 L18 M1024 tail-biting + shift-consistent 
+PASS K3 L18 M4096 tail-biting + shift-consistent 
+PASS K3 L20 M256 tail-biting + shift-consistent 
+PASS K3 L20 M1024 tail-biting + shift-consistent 
+PASS K3 L20 M4096 tail-biting + shift-consistent 
+K3 s=0.90 mse L16/V: 0.01729 (29 ms)  L16/256: 0.01863 (10 ms)  L16/1024: 0.01761 (36 ms)  L16/4096: 0.01729 (127 ms)  L18/V: 0.01731 (161 ms)  L18/256: 0.02019 (16 ms)  L18/1024: 0.01836 (50 ms)  L18/4096: 0.01738 (200 ms)  L20/256: 0.01922 (39 ms)  L20/1024: 0.01819 (108 ms)  L20/4096: 0.01742 (256 ms)
+PASS K4 L16 M0 tail-biting + shift-consistent 
+PASS K4 L16 M256 tail-biting + shift-consistent 
+PASS K4 L16 M1024 tail-biting + shift-consistent 
+PASS K4 L16 M4096 tail-biting + shift-consistent 
+PASS K4 L18 M0 tail-biting + shift-consistent 
+PASS K4 L18 M256 tail-biting + shift-consistent 
+PASS K4 L18 M1024 tail-biting + shift-consistent 
+PASS K4 L18 M4096 tail-biting + shift-consistent 
+PASS K4 L20 M256 tail-biting + shift-consistent 
+PASS K4 L20 M1024 tail-biting + shift-consistent 
+PASS K4 L20 M4096 tail-biting + shift-consistent 
+K4 s=0.90 mse L16/V: 0.00437 (28 ms)  L16/256: 0.00478 (18 ms)  L16/1024: 0.00440 (64 ms)  L16/4096: 0.00437 (188 ms)  L18/V: 0.00442 (121 ms)  L18/256: 0.00503 (22 ms)  L18/1024: 0.00458 (75 ms)  L18/4096: 0.00443 (264 ms)  L20/256: 0.00490 (32 ms)  L20/1024: 0.00450 (93 ms)  L20/4096: 0.00440 (304 ms)
+ALL PASS

@@ -3,6 +3,20 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 7:00 AM CST · #113 · 2^20-state beam trellis: not adopted (provisional) · w71
+- Order-fixed settle proxy (gates pass: L16 Viterbi = viterbi.c exactly; beam M = 2^16 = Viterbi), 27 tensors × 2
+  samples. Error ratio vs today's V16: **B20-4096 (PR #364's setting) K2 1.0096, worse on all 27 tensors; K3 0.999**
+  (36/54 pairs); B20-256 / 1024 1.07–1.18; exact **V18 0.994**. Rule (≥ 3% at 2 of K2/3/4) cannot pass: K2 is final,
+  K3's remaining pairs would need ~0.93. K4 and the bounds (exact V20; a random-table L20 = what a better hash could
+  reach) still run on colo / Thor (until ~8–11 PM CST), reported only.
+- Why: M = 4096 of 2^20 is too narrow (synthetic: M ≈ 16384 needed), and our mul1 hash stretched to 20 bits is a weak
+  code (iid, exact search: L20/L16 0.990 / 0.983 / 0.993 at K2/3/4; an ideal table 0.975 / 0.962 / 0.944, IQR's computed
+  code about the same). Cost: encode ×3.7 / 6 / 9.8 at K2/3/4 (×19–33 at K5/6); decode estimate +10% dequant ALU
+  (+28% at K4: the 16-bit packed-hash and v_perm paths break).
+- **Keep the 16-bit window for V3.** Possible V4 note: a better 20-bit code (not our hash), if the bounds show a real
+  ceiling. Code `v3/e3/settle/w71/`; rules / results `v3/e3/settle/w71.md`.
+- **Runtime:** would have been decode + prefill (not adopted).
+
 ### 2026-11-07 6:00 AM CST · #112 · C9 α on the writers: PASS on the 0.8B (both stacks)
 - 4070 g64 item 3 (rules `v3/e3/settle/w64.md`, written before data), 3 seeds, search deciding, verify agreeing:
   **st (asym writers) geo K3 0.9890, K2 0.9592; pl (plain writers) K3 0.9895, K2 0.9637**, every seed < 1, verify ≈

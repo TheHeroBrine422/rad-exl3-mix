@@ -62,6 +62,14 @@ def codebook_L(name, L, cb16=None):
     return out
 
 
+def rand_table(L, name="mul1_i8", seed=7):
+    """an iid N(0,1) table of 2^L values (seed 7, as hashdiag.py's "rand"), standardised, on mul1_i8's int8 grid
+    (3.5 / 127) for i8 codebooks: the "ideal code" a hash could approach (no cheap decoder)"""
+    v = np.random.default_rng(seed).standard_normal(1 << L); v = (v - v.mean()) / v.std()
+    if name.endswith("i8"): st = 3.5 / 127; v = np.clip(np.round(v / st), -127, 127) * st
+    return np.ascontiguousarray(v, dtype=np.float32)
+
+
 def search(x, cb, L, K, M=0, tb=1, want_cost=False):
     """x [ntiles, 256] -> quantized values [ntiles, 256] float32 (and the per-tile search SSE)"""
     assert float(K).is_integer() and len(cb) == 1 << L
