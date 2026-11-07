@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 10:25 PM CST · #33-28, #108, #— · s2 control; GDN refits shrink in the full stack; ladder re-priced
+- **#33-28 control:** base → s2 0.985 (z −1.3), s1 → s2 1.010 (z +1.1): seed-to-seed spread at K2.5 is ~±1.5%, as
+  before. bns2 (the third H_out pair) quantizing, done ~1 AM CST.
+- **#108 full stack (d1113 stage 2, vs the adopted 0.8B stack; search / verify):** K3 s0 1.002 / 1.002, s1 0.995 /
+  0.996; K2 s0 0.987 / 0.992, s1 0.979 / 0.974. In the full stack (H_out dy + swj + writers asym) the GDN refit's
+  screen gain (0.98–0.99 K3, 0.95–0.96 K2) mostly overlaps what H_out / asym already fix: on track to **fail at K3**,
+  borderline at K2. Seed 2 and the verdict pending (~1:45 AM CST).
+- **Ladder re-pricing (w58, knap5 = knap4 + measured i8 / i4 / mul1 ratios, two-pass A8 times; `v3/levels/reprice.md`):**
+  menu-only predictions move 0 to +3.6% (the i8-K7 re-pricing is small at most sizes); accurate variant uses i8 to
+  K5.75 and mul1 from K6; fast variant is all A8; **fast 7.0 predicts ~0.00052, worse than V2 7.00 (0.00045)**; the
+  17 i4 levels are never picked at 2.0–7.0 (A4 not picked on E1c costs either); mul1 K6 / K6.25 near-duplicates;
+  pass 1's 25 levels come within 0.2–0.8% of all 73. **Its swj factor used the withdrawn K4 ×0.78**, so every
+  "menu + swj" number above K2.5 is overstated → rerun with the head-matched swj (×0.935 K2.5, ×0.989 K4) queued.
+- d1112 DONE 01:58 UTC (all 7 seeds; report on the 4070).
+
 ### 2026-11-06 8:55 PM CST · #77, #108 · Tile CD passes the 27B no-harm check; GDN refits hold at seeds 1–2
 - **#77 (`v3/e3/settle/CD27.md`):** 16 attn_qg tensors re-quantized with cd3 in two K2.5 arms: s1 → s1cd 0.9994,
   base → basecd 0.9997 (z −0.3), geo 0.9996; both no-op gates pass (the private tree reproduces each level bit for

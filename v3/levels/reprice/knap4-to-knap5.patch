@@ -1,0 +1,280 @@
+--- v3/nf/knap4.py	2026-11-05 07:33:58.956560689 +0000
++++ v3/levels/reprice/knap5.py	2026-11-07 00:31:45.815633495 +0000
+@@ -1,5 +1,32 @@
+ #!/usr/bin/env python3
+-"""knap4.py MODEL.json AQ.jsonl AQFACTORS.json MAP OUT.jsonl TARGETS LAMBDAS -- knap3 with the V3 menu (2026-11-01).
++"""knap5.py = knap4.py (v3/nf, unchanged copy below) + the 2026-11-07 re-pricing switches (w58, v3/levels/reprice.md).
++All new switches default off: without them knap5 is knap4 byte for byte (checked: reprice/README.md).
++  KN_V3R=1    the 73-level V3 ladder as its own options, replacing the trunk's ours-K* (implies KN_V3; do not set KN_FRAC):
++              i4-K<k> (KN_I4, default K1 and K1.125-3 in 1/8; int4 grid): error = base(k) x R4(k), modes f16 / a8 / a4
++              i8-K<k> (KN_I8, default K1.125-5 in 1/8, K5.25-7 in 1/4): error = base(k) x R8(k), modes f16 / a8
++              m1-K<k> (KN_M1, default K6-8 in 1/4; unrounded mul1): error = base(k), f16 only
++              base(k) = the model's ours-K integer errors (V2 hproxy x DAMPF with KN_DAMP), fractional k log-linear between
++              them (measured positions with KN_LEVELS), bytes linear; KN_PHI_INTERP=1 (default) moves the family factor
++              phi log-linearly from floor(k)'s family to ceil(k)'s (knap4 used floor(k)'s: a x1.26 step at K7, ours_hi).
++              R4 = int4grid / mul1_i8 pooled (v3/e3/settle/reval.md item 1); R8 = mul1_i8 / mul1 (r94b.md, reval.md items
++              2 / 5): 1.000 to K3, 1.001 K4, 1.002 K5, 1.004 K6, 1.018 K6.5, 1.27 K7; K6.5-7 log-linear in the excess (R8 - 1)
++              (KN_R8_MID=ratio: log-linear in R8, i.e. K6.75 x1.137 instead of x1.070). Int8 / int4 modes carry no extra
++              weight error on their own codebook (the plane is exact); their activation cost is AQ's as before.
++  KN_G8 / KN_G4  activation groups offered to a8 / a4 (default 128 / 64,128: what the two-pass kernels run).
++  KN_NOA4=1   no a4 options.
++  KN_TP=FILE  measured two-pass prefill times (us per tensor at M 2048, K4; TWOPASS.md): f16 / a8 per shape; a4 = a8 /
++              KN_A4X (default 1.31, the K2 layer ratio). Replaces KN_SPEED / KN_A4 / the decode placeholder.
++  KN_SWJ=gu|all  swj as a KL factor on the weight cost (kfit2's X terms only; not activation, embedding or c0 terms):
++              KN_SWJ_PTS (default 2.5:0.9346,4:0.7786 = the 27B pairs' geometric means) are whole-model KL ratios at a
++              uniform trunk K (V2 3.00 / 4.00 head and embedding, as the arms). 'all': every ours trunk option x r(K).
++              'gu': only ffn_gate_up (swj refits gate / up scales), factor f(K) solved so the model reproduces r(K) at
++              those uniform-K points. Linear in K between the points, held flat outside them.
++  KN_CD=x     tile CD on attn_qg: error x x (0.99) at every level.
++  KN_HEAD16=1 head budgets on a 1/16-bit grid K3-8 from the existing donors: error on the lower convex hull of the
++              integer + slab heads in (bytes, error) (a row mix of two heads; conservative), bytes linear in K (+1 MB).
++  KN_PICKS=1  write every tensor's pick (option, mode) into the output line.
++
++knap4.py MODEL.json AQ.jsonl AQFACTORS.json MAP OUT.jsonl TARGETS LAMBDAS -- knap3 with the V3 menu (2026-11-01).
+ Switches (env, all default off = knap3's V2-like menu):
+   KN_FRAC=1   ours at quarter steps K1.25..4.75 and half steps K5.5..7.5: bytes linear in K, error log-linear between
+               the integer neighbours (CPU sweeps: fractional K on that line, 0.98-1.04); family of the lower neighbour.
+@@ -77,7 +104,9 @@
+ MJ, AQJ, AQF, MAP, OUT = sys.argv[1:6]
+ TARGETS = [float(x) for x in sys.argv[6].split(",")]
+ LAMBDAS = [float(x) for x in sys.argv[7].split(",")]
+-V3 = os.environ.get("KN_V3") == "1"
++V3R = os.environ.get("KN_V3R") == "1"
++V3 = os.environ.get("KN_V3") == "1" or V3R
++if V3R: assert os.environ.get("KN_FRAC") != "1", "KN_V3R builds its own fractional levels"
+ M = int(os.environ.get("KN_M", 2048 if V3 else 4096))
+ RXM_V3 = os.environ.get("RXM_V3", "/data/v3levels/rad")
+ LADDER = [float(x) for x in os.environ.get("KN_LADDER", "1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.125,2.25,2.375,2.5,2.625,2.75,2.875,3,3.125,3.25,3.375,3.5,3.625,3.75,3.875,4,4.125,4.25,4.375,4.5,4.625,4.75,4.875,5,5.25,5.5,5.75,6,6.25,6.5,6.75,7").split(",")]   # = the V3 i8 ladder (11-05): 1/8 K1.125-5, 1/4 K5.25-7
+@@ -185,6 +214,53 @@
+             o[f"ours-K{k:g}"] = [b1 - (1 - k) * (b2 - b1), e1 * r, k]; t["family_of"][f"ours-K{k:g}"] = t["family_of"]["ours-K1"]
+             NS1 += 1
+     print(f"sub-1 options: {NS1} tensor-levels", file=sys.stderr)
++MODES = {}                               # V3R: (tensor, option) -> int modes it may take
++KF = {}                                  # V3R: (tensor, option) -> KL factor on its weight cost (swj)
++PHI = md["phi"]
++if V3R:
++    def _ks(env, dflt): return [float(x) for x in os.environ.get(env, dflt).split(",") if x]
++    _e = lambda a, b, s: ",".join(f"{a + i * s:g}" for i in range(int(round((b - a) / s)) + 1))
++    I4 = _ks("KN_I4", "1," + _e(1.125, 3, 0.125))
++    I8 = _ks("KN_I8", _e(1.125, 5, 0.125) + "," + _e(5.25, 7, 0.25))
++    M1 = _ks("KN_M1", _e(6, 8, 0.25))
++    R4 = {1: 1.001, 1.125: 1.0009, 1.25: 1.0016, 1.375: 1.0010, 1.5: 1.002, 1.625: 1.0037, 1.75: 1.0046, 1.875: 1.0070,
++          2: 1.0088, 2.25: 1.0130, 2.5: 1.018, 2.75: 1.029, 3: 1.062}
++    R8 = {1: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 6.5: 1.018, 7: 1.27}
++    R8MID = os.environ.get("KN_R8_MID", "excess")
++    def rtab(tab, K, excess=False):
++        ks = sorted(tab); assert ks[0] <= K <= ks[-1], (K, ks)
++        if K in tab: return tab[K]
++        lo = max(k for k in ks if k < K); hi = min(k for k in ks if k > K); f = (K - lo) / (hi - lo)
++        if excess: return 1 + math.exp(math.log(tab[lo] - 1) + f * (math.log(tab[hi] - 1) - math.log(tab[lo] - 1)))
++        return math.exp(math.log(tab[lo]) + f * (math.log(tab[hi]) - math.log(tab[lo])))
++    def r8(K): return rtab(R8, K, excess=(K > 6 and R8MID == "excess"))
++    CDF = float(os.environ.get("KN_CD", 1.0)); PHII = os.environ.get("KN_PHI_INTERP", "1") == "1"
++    def base(t, K):
++        """(bytes, error, family) of the mul1 level K for trunk tensor t from the model's integer options"""
++        o = t["opts"]; a, b = math.floor(K), math.ceil(K)
++        (ba, ea, _), (bb, eb_, _) = o[f"ours-K{a}"], o[f"ours-K{b}"]
++        fa, fb = t["family_of"][f"ours-K{a}"], t["family_of"][f"ours-K{b}"]
++        if a == b: return ba, ea, fa
++        f = K - a; fm = level_pos(t["w"], K); f_e = f if fm is None else fm
++        e = math.exp(math.log(ea) + f_e * (math.log(eb_) - math.log(ea))) if ea > 0 and eb_ > 0 else ea
++        if PHII and fa != fb and fa in PHI and fb in PHI: e *= math.exp(f * (PHI[fb] - PHI[fa]))
++        return ba + f * (bb - ba), e, fa
++    NV = 0
++    for t in md["tensors"]:
++        if t["w"] == "output.weight": continue
++        o = t["opts"]; fam = t["w"].split(".")[-2]
++        if not all(f"ours-K{k}" in o for k in range(1, 9)): continue
++        ints = {c: o.pop(c) for c in [c for c in o if c.startswith("ours-K")]}
++        keep = dict(o); o.clear(); o.update(ints)          # base() reads the integers; dropped again below
++        new = {}
++        for cb, ks, modes, rf in (("i4", I4, ("a8", "a4"), lambda K: rtab(R4, K)), ("i8", I8, ("a8",), r8),
++                                  ("m1", M1, (), lambda K: 1.0)):
++            for K in ks:
++                b_, e, fa = base(t, K); e *= rf(K) * (CDF if fam == "attn_qg" else 1.0)
++                c = f"{cb}-K{K:g}"; new[c] = [b_, e, K]; t["family_of"][c] = fa; MODES[(t["w"], c)] = modes; NV += 1
++        o.clear(); o.update(keep); o.update(new)
++    print(f"V3R menu: {NV} tensor-levels (i4 {len(I4)}, i8 {len(I8)}, m1 {len(M1)} levels; R8 mid {R8MID}, "
++          f"phi interp {PHII}, CD {CDF})", file=sys.stderr)
+ SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
+ if V3:
+     SLABF = {5: 0.69, 6: 0.71}       # measured budgets only: between them the slab is a staircase (critique C3.5)
+@@ -199,6 +275,25 @@
+         for K, fK in SLABF.items():
+             c = f"ours-K{K:g}"
+             if c in o: o[f"ours-slabK{K:g}"] = [o[c][0] + (1 << 20), o[c][1] * fK, o[c][2]]; t["family_of"][f"ours-slabK{K:g}"] = t["family_of"][c]
++if os.environ.get("KN_HEAD16") == "1":
++    for t in md["tensors"]:
++        if t["w"] != "output.weight": continue
++        o = t["opts"]; hp = sorted((o[c][0], o[c][1], c) for c in o if c.startswith("ours-") and o[c][2] >= 3)
++        hull = []                                       # lower convex hull in (bytes, error)
++        for p in hp:
++            if hull and p[1] >= hull[-1][1]: continue          # dominated: more bytes, no less error
++            while len(hull) >= 2 and (hull[-1][1] - hull[-2][1]) * (p[0] - hull[-2][0]) >= (p[1] - hull[-2][1]) * (hull[-1][0] - hull[-2][0]): hull.pop()
++            hull.append(p)
++        ib = {k: o[f"ours-K{k}"][0] for k in range(3, 9)}; n16 = 0
++        for j in range(1, 80):
++            K = 3 + j / 16
++            if K.is_integer(): continue
++            a = math.floor(K); B = ib[a] + (K - a) * (ib[a + 1] - ib[a]) + (1 << 20)
++            seg = next(((p, q_) for p, q_ in zip(hull, hull[1:]) if p[0] <= B <= q_[0]), None)
++            if seg is None: continue
++            (b0, e0, _), (b1, e1, _) = seg; e = e0 + (B - b0) / (b1 - b0) * (e1 - e0)
++            c = f"ours-h16K{K:g}"; o[c] = [B, e, a]; t["family_of"][c] = "ours_head"; n16 += 1
++        print(f"head 1/16 budgets: {n16} (hull {[h[2] for h in hull]})", file=sys.stderr)
+ if os.environ.get("KN_EMBT") == "1":
+     E = md["emb"]; cb = E["bf16"]["cost"]
+     lr = {}
+@@ -267,7 +362,48 @@
+ def wcost(t, c, e):
+     if t["eb"] <= 0: return 0.0
+     fam = t["family_of"].get(c); ph = math.exp(phi.get(fam, 0.0)) if fam in phi else 1.0
+-    return t["s"] * t["eb"] * (ph * e / t["eb"]) ** q
++    return t["s"] * t["eb"] * (ph * e / t["eb"]) ** q * KF.get((t["w"], c), 1.0)
++
++SWJ = os.environ.get("KN_SWJ", "")
++if SWJ:
++    assert V3R and SWJ in ("gu", "all")
++    SPTS = sorted((float(a), float(b)) for a, b in (p.split(":") for p in os.environ.get("KN_SWJ_PTS", "2.5:0.9346,4:0.7786").split(",")))
++    def lin(pts, K):                     # linear in K between the points, flat outside
++        if K <= pts[0][0]: return pts[0][1]
++        if K >= pts[-1][0]: return pts[-1][1]
++        (k0, v0), (k1, v1) = next((p, q_) for p, q_ in zip(pts, pts[1:]) if p[0] <= K <= q_[0])
++        return v0 + (K - k0) / (k1 - k0) * (v1 - v0)
++    def uni_kld(K, fgu, head, emb):      # weights-only model KLD: trunk all i8-K (i4 at K1), gate_up x fgu
++        X = np.zeros(NL + 1)
++        for t in TS:
++            if t["w"] == "output.weight": c = head
++            else: c = f"i8-K{K:g}" if f"i8-K{K:g}" in t["opts"] else f"i4-K{K:g}"
++            if c not in t["opts"]: continue    # (tensors without ours options: no K1..8 menu; none in this model)
++            w = wcost(t, c, t["opts"][c][1])
++            X[t["layer"]] += w * (fgu if t["w"].split(".")[-2] == "ffn_gate_up" else 1.0)
++        P = md["c0"] + md["emb"][emb]["cost"]
++        for l in range(NL + 1): P = P * (1 + kap[l] * X[l]) + X[l]
++        return P
++    CAL = {2.5: ("ours-K4", "e3"), 4: ("ours-K5", "e4")}   # V2 3.00 / 4.00 head and embedding (the swj arms)
++    if SWJ == "all":
++        FG = SPTS
++    else:
++        FG = []
++        for K, r in SPTS:
++            hd, em = CAL.get(K, ("ours-K5", "e4")); k1 = uni_kld(K, 1.0, hd, em); k0 = uni_kld(K, 0.0, hd, em)
++            if k0 / k1 > r: print(f"swj gu: K{K:g} ratio {r} not reachable (gate_up share too small, floor {k0 / k1:.3f}): f = 0", file=sys.stderr); FG.append((K, 0.0)); continue
++            lo, hi = 0.0, 1.0
++            for _ in range(60):
++                mid = (lo + hi) / 2
++                if uni_kld(K, mid, hd, em) / k1 > r: hi = mid
++                else: lo = mid
++            FG.append((K, (lo + hi) / 2))
++            print(f"swj gu: K{K:g} model KLD {k1:.5f}, gate_up-free floor {k0 / k1:.3f}, target {r} -> gate_up factor {FG[-1][1]:.4f}", file=sys.stderr)
++    for t in TS:
++        if t["w"] == "output.weight" or (SWJ == "gu" and t["w"].split(".")[-2] != "ffn_gate_up"): continue
++        for c, (b, e, bits) in t["opts"].items():
++            if (t["w"], c) in MODES: KF[(t["w"], c)] = lin(FG, bits)
++    print(f"swj {SWJ}: factor points {[(k, round(v, 4)) for k, v in FG]}", file=sys.stderr)
+ 
+ def gemm_ms(N, K, mode, g, fam=None):
+     fl = 2.0 * M * N * K
+@@ -278,9 +414,19 @@
+         return fl / (tops * 1e12) * 1e3
+     return fl / (TF16 * 1e12) * 1e3 if mode == "f16" else fl / (TOPS[mode][g] * 1e12) * 1e3
+ 
++TP = {}
++if os.environ.get("KN_TP"):
++    for l in open(os.environ["KN_TP"]):
++        d = json.loads(l); TP[(d["shape"], d["path"])] = d["us"] / 1000.0
++    TPSH = dict(FAMSHAPE, attn_k="attn_k", attn_v="attn_v")
++    A4X = float(os.environ.get("KN_A4X", 1.31))
++
+ def time_ms(t, mode, g, bits):
+     """prefill time of tensor t in a mode: measured whole path (KN_A4) when there is one, else core + decode estimate"""
+     if t["w"] == "output.weight": return 0.0          # last token only
++    if TP:
++        sh = TPSH[t["w"].split(".")[-2]]
++        return TP[(sh, "f16")] if mode == "f16" else TP[(sh, "a8")] / (A4X if mode == "a4" else 1.0)
+     N, K = shape(t); fam = t["w"].split(".")[-2]; sh = FAMSHAPE.get(fam)
+     if PATH and sh:
+         if mode == "f16":
+@@ -298,13 +444,25 @@
+     for c, (b, e, bits) in t["opts"].items():
+         o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, time_ms(t, "f16", 0, bits)))
+     if t["bf16_bytes"]: o.append(("f16", 0, "bf16", t["bf16_bytes"], 0.0, 0.0,
+-                                   0.0 if t["w"] == "output.weight" else gemm_ms(N, K, "f16", 0, fam)))
++                                   0.0 if t["w"] == "output.weight" else time_ms(t, "f16", 0, 16) if TP else gemm_ms(N, K, "f16", 0, fam)))
++    if V3R:
++        if os.environ.get("KN_MODES") == "f16": return o
++        G8 = [int(x) for x in os.environ.get("KN_G8", "128").split(",")]
++        G4 = [] if os.environ.get("KN_NOA4") == "1" else [int(x) for x in os.environ.get("KN_G4", "64,128").split(",")]
++        for c, (b, e, bits) in t["opts"].items():
++            for mode in MODES.get((t["w"], c), ()):
++                for g in (G8 if mode == "a8" else G4):
++                    a = AQ[t["w"]].get((8 if mode == "a8" else 4, g))
++                    if a is None: continue
++                    o.append((mode, g, c, b, wcost(t, c, e), a, time_ms(t, mode, g, bits)))
++        return o
+     for c, (b, e, bits) in t["opts"].items():
+         m = re.fullmatch(r"ours-K([\d.]+)", c)
+         if not m or os.environ.get("KN_MODES") == "f16": continue
+         Kb = float(m.group(1)); Kb = int(Kb) if Kb.is_integer() else Kb
+         if V3 and (float(Kb) not in LADDER or t["w"] == "output.weight"): continue   # int8 only on the i8-codebook ladder
+         for mode, F, bits_a in (("a8", F8, 8), ("a4", F4, 4)):
++            if mode == "a4" and os.environ.get("KN_NOA4") == "1": continue
+             fK = lerp_log(F, Kb)
+             if fK is None: continue
+             for g in G:
+@@ -324,7 +482,20 @@
+         groups[SHARE.get(n, TS[i]["w"])].append(i)
+     return list(groups.values())
+ 
++def prune(o):
++    """V3R: drop options dominated inside their (mode, group, act cost, time) class (more bytes, no less weight cost)"""
++    cls = collections.defaultdict(list)
++    for x in o: cls[(x[0], x[1], x[5], x[6])].append(x)
++    out = []
++    for v in cls.values():
++        best = math.inf
++        for x in sorted(v, key=lambda x: (x[3], x[4])):
++            if x[4] < best: out.append(x); best = x[4]
++    return out
+ OPT = [options(t) for t in TS]
++if V3R:
++    _n0 = sum(map(len, OPT)); OPT = [prune(o) for o in OPT]
++    print(f"options: {_n0} -> {sum(map(len, OPT))} after dominance pruning", file=sys.stderr)
+ 
+ def pareto(cands):
+     """{bucket: (score, X, A, T, picks)} keeping, per bucket, the min score; then drop dominated buckets"""
+@@ -361,6 +532,7 @@
+         cur = pareto(nxt)
+     return cur
+ 
++FASTDP = os.environ.get("KN_FASTDP", "1") == "1"   # knap5: sliced DP update (identical results, ~3x faster)
+ def solve(cap, gls, lam):
+     E = md["emb"]
+     V = np.full(cap + 1, np.inf); P = np.full(cap + 1, np.inf); A = np.zeros(cap + 1); T = np.zeros(cap + 1)
+@@ -377,6 +549,14 @@
+         ch = np.full(cap + 1, -1, dtype=np.int64)
+         for k, (s, x, a, t, _) in st.items():
+             if k > cap: continue
++            if FASTDP:      # same arithmetic on the slice [k:] only (below k the candidate is inf and never better)
++                n = cap + 1 - k
++                cp = P[:n] * (1 + kap[l] * x) + x; ca = A[:n] + a; ct = T[:n] + t
++                cv = cp + ca + lam * ct
++                better = cv < NV[k:]
++                NV[k:][better] = cv[better]; NP[k:][better] = cp[better]; NA[k:][better] = ca[better]
++                NT[k:][better] = ct[better]; ch[k:][better] = k
++                continue
+             cp = np.full(cap + 1, np.inf); cp[k:] = P[:cap + 1 - k] * (1 + kap[l] * x) + x
+             ca = np.zeros(cap + 1); ca[k:] = A[:cap + 1 - k] + a
+             ct = np.zeros(cap + 1); ct[k:] = T[:cap + 1 - k] + t
+@@ -462,6 +642,11 @@
+             ps = collections.Counter()
+             for i, o in s["picks"]: N, K = shape(TS[i]); ps[o[2]] += N * K
+             pt = sum(ps.values()); r["param_share"] = {k: round(v / pt, 4) for k, v in ps.most_common()}
++            if V3R or TP:
++                ms = collections.Counter()
++                for i, o in s["picks"]: N, K = shape(TS[i]); ms[o[0]] += N * K
++                r["mode_param_share"] = {k: round(v / pt, 4) for k, v in ms.most_common()}
++            if os.environ.get("KN_PICKS") == "1": r["picks"] = {TS[i]["w"]: [o[2], o[0] + ("" if o[0] == "f16" else f"g{o[1]}")] for i, o in s["picks"]}
+             r["name"] = f"nf-{tg:.2f}-l{lam:.0e}"
+             if WDIR: write_set(WDIR, r["name"], s)
+             f.write(json.dumps(r) + "\n"); f.flush()
