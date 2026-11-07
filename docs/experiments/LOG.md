@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 7:20 PM CST · #33-28 · K4 seed control
+- base4 → base4s1 (K4, rotation seed only) **1.006** (z +0.4): the K4 seed floor is small (K2.5's was 0.975). The pack
+  check passed (mix-base4s1 = mix-base4 byte size, 3.9811 bpw). Next: bn4s1 vs base4s1 (H_out at K4, second pair).
+  w59's verify insert (insert-40) is running its scores; 4070 d1107 (A1) first pair k4a1u 0.971 (interim).
+
 ### 2026-11-06 6:40 PM CST · #81-04, #— · A1 rerun (it never ran); joint refits beyond the MLP; ideas sweep
 - **#81-04 (A1, d1107):** the 11-04 run scored nothing: the sourced d1103 block reset `X`, so `a1q.py` was never found
   and every pair printed `no pairs`. Fixed in `run.sh`, registered in the 4070's `/data/queue.d/40-d1107.sh`, rerunning
