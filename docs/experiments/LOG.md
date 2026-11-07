@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 12:40 AM CST · #— · D-LSA on window residency (w65): built, host / emulator tests pass, no card run yet
+- Branch `lsa-residency` (`/workspace/forks/radiance-lsa-res`): #412 cherry-picked (author kept; ABI: #412 keeps 38, our
+  D-LSA moves to 39), bridge ops `lsa_page_gather` / `lsa_page_scatter` (no change to our list-attention kernel),
+  qwen35_bf16 wiring. Host + emulator tests pass (`r4d_emu_lsapage` 1853/1853: selected K / V bytes equal the
+  all-resident run, bf16 and fp8). Design `docs/design/lsa-residency.md` (in that worktree).
+- Findings (computed, not measured): #412's single `residency_window` ties the resident tail to the scratch pages, so
+  D-LSA must declare a 16,384-token tail (+0.5 GiB fp8 / +1 GiB bf16 per sequence); residency does **not** raise the
+  longest single prompt (prefill is dense and pages the middle back: ~530k fp8 / ~275k bf16 at 4.0 bpw stays the
+  limit) but cuts a sequence's resident VRAM after prefill (128k fp8 4.3 → 1.06 GiB; 512k 17.2 → 1.18 GiB): a win for
+  several long sessions per card. To measure on the card: worst-case page-in ~512 MiB / token (10–21 ms vs ~25 ms
+  weights), pinned host store ~16.5 GiB at 512k fp8 (gpubox has 30 GB). Not on gfx1201 yet (w65 stayed off gpubox).
+
 ### 2026-11-07 12:00 AM CST · #— · Shortlist items 1–4 queued (w64); LSA on window residency (w65)
 - w64 runs w61's items 1–4 (asym under knapsack mixes, per-rate int8 factor at K6.5–8, C9 writer gain refit after
   asym, bf16 (row, 128) scales from K5) on the CPU boxes (4070 only where a 0.8B KL is required), after fixing
