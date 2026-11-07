@@ -1,0 +1,18 @@
+--- a/quantize/ourq.py	2026-11-06 16:18:23.375341977 +0000
++++ b/quantize/ourq.py	2026-11-06 16:18:23.384046752 +0000
+@@ -273,6 +273,7 @@
+             w = w[:, torch.from_numpy(np.load(a.head_perm)).to(dev)].contiguous()
+         if a.head_mean_row and key == "lm_head":
+             w -= w.mean(dim=1, keepdim=True)              # columns are vocabulary rows: drop their mean
++        w_orig = w.detach().cpu().clone() if a.save_wq else None   # quantize_exl3 regularizes w in place (fork eb5a2139)
+         qa = {"seed": seed0 + j + 100000 * a.seed_offset, "K": a.K, "devices": [a.device], "device_ratios": None,
+               "apply_out_scales": True, "mul1": True, "debug_dir": os.path.join(a.o, "debug")}
+         if key in OFF: qa["apply_out_scales"] = False
+@@ -314,6 +315,7 @@
+         if a.save_wq:
+             import numpy as np
+             os.makedirs(os.path.join(a.o, "wq"), exist_ok=True)
++            w = w_orig.to(wq.device); del w_orig          # the original weight, not the regularized one
+             try: H = hessian(hname)["H"]                # fresh: quantize_exl3 may have regularised Hd in place
+             except torch.OutOfMemoryError:              # small cards (ffn_down's 17408^2 beside the layer): rows on the CPU
+                 if not os.environ.get("OURQ_REFIT_CPU_FALLBACK"): raise

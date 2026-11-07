@@ -1,0 +1,17 @@
+code stamp 4a0e63e555e5fb1e (K6.5)
+  model.language_model.layers.6.linear_attn.in_proj_qkv        K6.5 proxy 4.171e-05 1.5s
+  model.language_model.layers.6.linear_attn.in_proj_z          K6.5 proxy 2.267e-05 0.4s
+  model.language_model.layers.6.linear_attn.out_proj           K6.5 proxy 9.447e-05 0.5s
+  model.language_model.layers.6.mlp.gate_proj                  K6.5 proxy 3.579e-05 0.8s
+  model.language_model.layers.6.mlp.up_proj                    K6.5 proxy 1.000e-04 0.7s
+  model.language_model.layers.6.mlp.down_proj                  K6.5 proxy 8.835e-05 0.9s
+layer 6: 5s  anon rss 1033 MiB
+  model.language_model.layers.7.self_attn.q_proj               K6.5 proxy 1.691e-05 0.8s
+  model.language_model.layers.7.self_attn.k_proj               K6.5 proxy 6.827e-05 0.2s
+  model.language_model.layers.7.self_attn.v_proj               K6.5 proxy 5.234e-05 0.2s
+  model.language_model.layers.7.self_attn.o_proj               K6.5 proxy 1.352e-04 0.5s
+  model.language_model.layers.7.mlp.gate_proj                  K6.5 proxy 3.113e-05 0.8s
+  model.language_model.layers.7.mlp.up_proj                    K6.5 proxy 1.027e-04 0.7s
+  model.language_model.layers.7.mlp.down_proj                  K6.5 proxy 9.754e-05 0.9s
+layer 7: 4s  anon rss 1072 MiB
+done

@@ -1,0 +1,59 @@
+--- a/quantize/ourq.py
++++ b/quantize/ourq.py
+@@ -46,7 +46,10 @@
+ def _io_canon(f):                  # what the code stamp hashes of f: this file without the +io lines, #io-was: lines restored             # +io
+     b = open(f, "rb").read()                                                                                                               # +io
+     if os.path.abspath(f) != os.path.abspath(__file__): return b                                                                           # +io
+-    return b"".join(x[8:] if x.startswith(b"#io-was:") else x for x in b.splitlines(True) if not x.rstrip().endswith(b"# +io"))            # +io
++    return b"".join(x[8:] if x.startswith((b"#io-was:", b"#cb-was:")) else x for x in b.splitlines(True)                                  # +io
++                    if not x.rstrip().endswith((b"# +io", b"# +cb")))                                                                         # +io
++# --codebook hash (w48, #100c, 2026-11-06): its lines are tagged +cb and left out of the code stamp like +io (#cb-was: lines put back), # +cb
++# so the other codebooks' stamps are unchanged; a hash run's stamp differs by its arguments (codebook, hash_ab) and sources.         # +cb
+ # paths (README: Paths)
+ RXM_WORK = os.environ.get("RXM_WORK", "/root")
+ RXM_CKPT = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
+@@ -98,7 +101,8 @@
+ ap = argparse.ArgumentParser()
+ ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
+                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
+-ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c"), default="mul1", help="search with the int8- or int4-"
++#cb-was:ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c"), default="mul1", help="search with the int8- or int4-"
++ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c", "hash"), default="mul1", help="search with the int8- or int4-"  # +cb
+                 "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
+ ap.add_argument("-K", required=True,
+                 help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8); "
+@@ -161,16 +165,24 @@
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
+     import exl3frac
+     exl3frac.install(a.frac_ext)
+-if a.codebook != "mul1":
++#cb-was:if a.codebook != "mul1":
++if a.codebook not in ("mul1", "hash"):  # +cb
+     assert a.frac_ext, "--codebook needs --frac-ext SRC (the fork's exllamav3_ext sources)"
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3cb"), os.path.join(_h, "../v3/e3/exl3cb")) if os.path.isdir(d)))
+     import exl3cb
+     exl3cb.install(a.frac_ext, a.codebook)
+-if a.qtf2:
++#cb-was:if a.qtf2:
++if a.qtf2 and a.codebook != "hash":  # +cb
+     assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c"), "--qtf2 needs --frac-ext SRC and the mul1, i8 or i8c codebook"
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
+     import exl3frac2
+     exl3frac2.install(a.frac_ext, a.codebook)
++if a.codebook == "hash":   # IQR-V4's hash codebook on our states (v3/e3/exl3hash; A, B: env EXL3HASH_A / _B), quantizer only  # +cb
++    assert a.frac_ext, "--codebook hash needs --frac-ext SRC (the fork's exllamav3_ext sources)"  # +cb
++    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3hash"), os.path.join(_h, "../v3/e3/exl3hash")) if os.path.isdir(d)))  # +cb
++    import exl3hash  # +cb
++    exl3hash.install(a.frac_ext, qtf2=a.qtf2)  # +cb
++    a.hash_ab = "0x%06x:0x%08x" % exl3hash.ab()  # +cb
+ _keys = lambda f: set(l.strip() for l in open(f) if l.strip() and not l.startswith("#"))
+ OFF = _keys(a.out_scales_off) if a.out_scales_off else set()
+ ONLY = _keys(a.only) if a.only else None
+@@ -373,6 +385,7 @@
+         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac", "*.py")))
+         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3cb", "*")))
+         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac2", "*.*")))
++    if a.codebook == "hash": files += sorted(glob.glob(os.path.join(os.path.dirname(sys.modules["exl3hash"].__file__), "*.*")))  # +cb
+     if a.out_scales_off: files.append(os.path.abspath(a.out_scales_off))      # its contents, not just the path
+     if a.only: files.append(os.path.abspath(a.only))
+     for f in files:

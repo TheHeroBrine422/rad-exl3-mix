@@ -5,3 +5,8 @@ __pycache__/
 *.o
 *.npz
 *.f32
+
+# raw per-job result dirs: committed as one <dir>.tar.gz beside them (tar xzf to rerun the reports)
+data/e3/settle/reval/*/out/
+data/levels/reprice/swj2/out/
+v3/e3/sub1/r100c/results/bench/res/

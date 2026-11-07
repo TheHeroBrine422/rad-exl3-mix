@@ -1,0 +1,10 @@
+code stamp 043cc41414715831 (K7)
+  model.language_model.layers.7.self_attn.q_proj               K7 proxy 9.006e-06 1.1s
+  model.language_model.layers.7.self_attn.k_proj               K7 proxy 4.237e-05 0.2s
+  model.language_model.layers.7.self_attn.v_proj               K7 proxy 2.720e-05 0.2s
+  model.language_model.layers.7.self_attn.o_proj               K7 proxy 7.213e-05 0.5s
+  model.language_model.layers.7.mlp.gate_proj                  K7 proxy 1.656e-05 0.7s
+  model.language_model.layers.7.mlp.up_proj                    K7 proxy 5.444e-05 0.7s
+  model.language_model.layers.7.mlp.down_proj                  K7 proxy 5.112e-05 0.9s
+layer 7: 4s  anon rss 1040 MiB
+done

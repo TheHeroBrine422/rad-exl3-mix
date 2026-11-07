@@ -1,0 +1,12 @@
+code stamp 31329951cedd2640 (K2.5)
+  model.language_model.layers.19.self_attn.q_proj              K2.5 proxy 1.485e-03 8.2s
+  model.language_model.layers.19.self_attn.k_proj              K2.5 proxy 5.846e-03 1.2s
+  model.language_model.layers.19.self_attn.v_proj              K2.5 proxy 1.072e-02 1.1s
+  model.language_model.layers.19.self_attn.o_proj              K2.5 proxy 1.375e-02 4.2s
+  model.language_model.layers.19.mlp.gate_proj                 K2.5 proxy 1.136e-02 11.4s
+  model.language_model.layers.19.mlp.up_proj                   K2.5 proxy 1.882e-02 11.5s
+refit_scales: OOM on the card, refit on the CPU
+  model.language_model.layers.19.mlp.down_proj                 K2.5 proxy 1.773e-02 52.3s
+layer 19: 92s  anon rss 1111 MiB
+done
+capq: peak allocated 6.67 GiB (cap 7.2 GiB)

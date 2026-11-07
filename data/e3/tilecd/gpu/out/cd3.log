@@ -1,0 +1,32 @@
+code stamp b7b71f19c002761c (K2)
+code stamp fafdfe71333dbf8f (K3)
+code stamp 7add2c65e3126003 (K4)
+     tile CD 3: rel 1.0267e-03 -> 1.0130e-03 (x0.9867), accepted 0.139 / 0.077 / 0.050, 18.0s
+  model.language_model.layers.3.self_attn.q_proj               K2 proxy 7.282e-04 25.0s
+layer 3 K2: 25s  anon rss 1234 MiB
+     tile CD 3: rel 2.5255e-04 -> 2.4979e-04 (x0.9891), accepted 0.124 / 0.067 / 0.043, 17.1s
+  model.language_model.layers.3.self_attn.q_proj               K3 proxy 1.789e-04 23.6s
+layer 3 K3: 24s  anon rss 1234 MiB
+     tile CD 3: rel 6.4113e-05 -> 6.3405e-05 (x0.9889), accepted 0.134 / 0.074 / 0.047, 16.8s
+  model.language_model.layers.3.self_attn.q_proj               K4 proxy 4.536e-05 23.1s
+layer 3 K4: 23s  anon rss 1234 MiB
+     tile CD 3: rel 3.2753e-03 -> 3.2534e-03 (x0.9933), accepted 0.080 / 0.048 / 0.031, 17.8s
+  model.language_model.layers.19.self_attn.q_proj              K2 proxy 2.982e-03 24.6s
+layer 19 K2: 25s  anon rss 1238 MiB
+     tile CD 3: rel 8.0879e-04 -> 8.0496e-04 (x0.9953), accepted 0.065 / 0.038 / 0.023, 17.1s
+  model.language_model.layers.19.self_attn.q_proj              K3 proxy 7.382e-04 23.6s
+layer 19 K3: 24s  anon rss 1246 MiB
+     tile CD 3: rel 2.0710e-04 -> 2.0611e-04 (x0.9952), accepted 0.070 / 0.041 / 0.025, 16.7s
+  model.language_model.layers.19.self_attn.q_proj              K4 proxy 1.891e-04 23.1s
+layer 19 K4: 23s  anon rss 1253 MiB
+     tile CD 3: rel 9.8680e-03 -> 9.8168e-03 (x0.9948), accepted 0.086 / 0.048 / 0.030, 17.8s
+  model.language_model.layers.43.self_attn.q_proj              K2 proxy 8.574e-03 24.6s
+layer 43 K2: 25s  anon rss 1253 MiB
+     tile CD 3: rel 2.4692e-03 -> 2.4595e-03 (x0.9961), accepted 0.072 / 0.039 / 0.023, 17.1s
+  model.language_model.layers.43.self_attn.q_proj              K3 proxy 2.150e-03 23.7s
+layer 43 K3: 24s  anon rss 1253 MiB
+     tile CD 3: rel 6.3635e-04 -> 6.3362e-04 (x0.9957), accepted 0.080 / 0.044 / 0.026, 16.8s
+  model.language_model.layers.43.self_attn.q_proj              K4 proxy 5.539e-04 23.2s
+layer 43 K4: 23s  anon rss 1253 MiB
+done
+capq: peak allocated 4.65 GiB (cap 7.2 GiB)

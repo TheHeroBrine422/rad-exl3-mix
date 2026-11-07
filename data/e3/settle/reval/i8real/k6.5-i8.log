@@ -1,0 +1,17 @@
+code stamp de2558e3c81eec9a (K6.5)
+  model.language_model.layers.6.linear_attn.in_proj_qkv        K6.5 proxy 4.262e-05 2.0s
+  model.language_model.layers.6.linear_attn.in_proj_z          K6.5 proxy 2.311e-05 0.6s
+  model.language_model.layers.6.linear_attn.out_proj           K6.5 proxy 9.586e-05 0.7s
+  model.language_model.layers.6.mlp.gate_proj                  K6.5 proxy 3.627e-05 1.1s
+  model.language_model.layers.6.mlp.up_proj                    K6.5 proxy 1.017e-04 1.1s
+  model.language_model.layers.6.mlp.down_proj                  K6.5 proxy 8.903e-05 1.3s
+layer 6: 7s  anon rss 1070 MiB
+  model.language_model.layers.7.self_attn.q_proj               K6.5 proxy 1.728e-05 1.2s
+  model.language_model.layers.7.self_attn.k_proj               K6.5 proxy 6.880e-05 0.3s
+  model.language_model.layers.7.self_attn.v_proj               K6.5 proxy 5.293e-05 0.3s
+  model.language_model.layers.7.self_attn.o_proj               K6.5 proxy 1.367e-04 0.7s
+  model.language_model.layers.7.mlp.gate_proj                  K6.5 proxy 3.144e-05 1.1s
+  model.language_model.layers.7.mlp.up_proj                    K6.5 proxy 1.040e-04 1.1s
+  model.language_model.layers.7.mlp.down_proj                  K6.5 proxy 9.963e-05 1.3s
+layer 7: 6s  anon rss 1051 MiB
+done

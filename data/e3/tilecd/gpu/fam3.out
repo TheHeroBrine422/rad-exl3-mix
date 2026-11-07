@@ -1,0 +1,5 @@
+lock 19:35:50 after 827s
+foff3 rc=0 175s
+fcd3 rc=1 164s
+released 19:41:29, held 339s
+GPUCHECK fam DONE

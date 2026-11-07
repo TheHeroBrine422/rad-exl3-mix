@@ -1,0 +1,13 @@
+--- a/v3/yaqa/swap27k.sh	2026-11-07 00:29:24.723462497 +0000
++++ b/v3/yaqa/swap27k.sh	2026-11-07 00:29:24.732687554 +0000
+@@ -3,8 +3,9 @@
+ # trunk layers from a shared queue of 4-layer chunks (card 0 always; card 1 too while $STOPF does not exist: it may be
+ # taken away at any time -- stop2.sh kills its chunk and releases the claim, card 0 redoes it), pack (exl3i, mul1i8,
+ # rate K), mix into the V2 container, census, score on golden-search27 (card 0). Reuses swap27.sh's functions; idempotent.
+-ARM=$1 K=$2 V2=$3; shift 3
++ARM=$1 K=$2 V2=$3 ARGV2=$3; shift 3
+ source <(sed -n '/^: \${RXM_WORK/,/^quant() /p' /data/swap27/tools/swap27.sh | sed '$d')
++V2=$ARGV2   # swap27.sh's settings set V2 to the 3.00 container: restore this arm's (w59, SWJ27.md amendment 2)
+ packmixk() { arm=$1 src=$2 P=$S/pack-$1.rad M=$S/mix-$1.rad
+   [ -f $M ] && [ -f $S/census-$arm.ok ] && return 0
+   [ $(ls $src/q-L*.safetensors 2>/dev/null | wc -l) = 64 ] || { log "$arm: $src has not 64 layers"; return 1; }

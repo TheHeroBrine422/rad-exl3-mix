@@ -1,0 +1,9 @@
+lock 16:14:23 after 339s
+K6.5 mul1 rc=0 39s
+K6.5 i8 rc=0 54s
+K7 mul1 rc=0 64s
+K7 i8 rc=0 78s
+K8 mul1 rc=0 87s
+K8 i8 rc=0 96s
+released 16:15:59, held 96s
+I8REAL DONE

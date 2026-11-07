@@ -28,3 +28,12 @@ arms were trimmed to λ ≥ 3e-7 and h16 to accurate only (mkjobs.py as committe
 already-finished low-λ solves of those arms are in out/ too); phifloor 2.0–4.5 and nolow added at 02:14, dupm1 /
 noi8k7 / noi8hi (`jobs-cpu2b.txt`, Thor `jobs2.txt`) at 03:10. Last solve 03:22 UTC. No failures. Collect:
 `tar` the two `out/*.jsonl` sets into `data/levels/reprice/out/`, then `python3 report.py data/levels/reprice/out`.
+
+## w63 rerun with the corrected swj curve (2026-11-07 04:23–05:12 UTC)
+
+`../reprice.md` "Correction" section. `mkjobs2.py OUTDIR` = mkjobs.py's main / gu / noi8k7 arms with
+`KN_SWJ_PTS=2:0.91,2.5:0.935,4:0.989,5:1.0` (nothing else changed); run with the same run5.py / knap5.py under
+`/data/work/w63/` on Thor (32) and colo (16), the unstarted colo tail moved to Thor (`jobs-b.txt`). Data
+`data/levels/reprice/swj2/out/` (w58's main / gu / noi8k7 copied in as `w58*`, plus v2menu / old / noswj);
+`python3 report.py data/levels/reprice/swj2/out` and `python3 compare2.py data/levels/reprice/swj2/out` (old → new per
+size, tensor picks changed, i8 K7 value, gate_up mean K) give `swj2/report.out` / `swj2/compare.out`.

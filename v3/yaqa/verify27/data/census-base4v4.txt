@@ -1,0 +1,7 @@
+mix-base4v4.rad: 787 weights, 4.0757 bpw (file), 4.0702 bpw (weights)
+  scheme        K codebook act         n       GB
+  exl3i         4 mul1i8   f16       336   12.181
+  exl3          5 mul1     f16         1    0.795
+  affine                               1    0.656
+  plain                              449    0.052
+CENSUS PASS [checked: mix base]

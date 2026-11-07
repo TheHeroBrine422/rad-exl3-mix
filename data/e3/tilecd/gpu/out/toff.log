@@ -1,0 +1,30 @@
+code stamp 8767a965480bd921 (K2)
+code stamp 360880995316f0fb (K2.5)
+code stamp f3e5d1894349202a (K3)
+code stamp 1c94105eeefbd9d7 (K4)
+  model.language_model.layers.3.self_attn.q_proj               K2 proxy 7.379e-04 6.7s
+layer 3 K2: 7s  anon rss 1229 MiB
+  model.language_model.layers.3.self_attn.q_proj               K2.5 proxy 3.632e-04 8.1s
+layer 3 K2.5: 8s  anon rss 1229 MiB
+  model.language_model.layers.3.self_attn.q_proj               K3 proxy 1.810e-04 6.3s
+layer 3 K3: 6s  anon rss 1229 MiB
+  model.language_model.layers.3.self_attn.q_proj               K4 proxy 4.588e-05 6.2s
+layer 3 K4: 6s  anon rss 1229 MiB
+  model.language_model.layers.19.self_attn.q_proj              K2 proxy 2.999e-03 6.7s
+layer 19 K2: 7s  anon rss 1234 MiB
+  model.language_model.layers.19.self_attn.q_proj              K2.5 proxy 1.485e-03 8.1s
+layer 19 K2.5: 8s  anon rss 1237 MiB
+  model.language_model.layers.19.self_attn.q_proj              K3 proxy 7.414e-04 6.3s
+layer 19 K3: 6s  anon rss 1241 MiB
+  model.language_model.layers.19.self_attn.q_proj              K4 proxy 1.899e-04 6.2s
+layer 19 K4: 6s  anon rss 1249 MiB
+  model.language_model.layers.43.self_attn.q_proj              K2 proxy 8.615e-03 6.8s
+layer 43 K2: 7s  anon rss 1249 MiB
+  model.language_model.layers.43.self_attn.q_proj              K2.5 proxy 4.303e-03 8.0s
+layer 43 K2.5: 8s  anon rss 1249 MiB
+  model.language_model.layers.43.self_attn.q_proj              K3 proxy 2.158e-03 6.3s
+layer 43 K3: 6s  anon rss 1249 MiB
+  model.language_model.layers.43.self_attn.q_proj              K4 proxy 5.563e-04 6.2s
+layer 43 K4: 6s  anon rss 1249 MiB
+done
+capq: peak allocated 4.85 GiB (cap 7.2 GiB)

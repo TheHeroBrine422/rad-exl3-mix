@@ -1,0 +1,6 @@
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/yb/w48/torch_ext/exl3hash-d0474b-2545f491
+K2: values == hash(state): True  mse 0.06931  distinct values 238
+K3: values == hash(state): True  mse 0.01792  distinct values 238
+K4: values == hash(state): True  mse 0.00476  distinct values 238
+K5: values == hash(state): True  mse 0.00138  distinct values 238
+K2.5: values == hash(state): True  mse 0.03530  distinct values 238

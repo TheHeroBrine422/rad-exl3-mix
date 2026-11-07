@@ -1,0 +1,4 @@
+00:27:23 golden: 71 documents, 171876 tokens: agentic 24576, books 7296, chat 10289, code 10062, encyclopedic 5662, legal 1620, long 8192, long-agentic 16384, math 7431, multilingual 15272, qa 8590, reasoning 16384, science 19270, tools 5369, web 15479; 71 docs, 171805 rows, 127261 scored
+00:27:45 mix base4v4: ready, 4.0757 bpw
+00:28:06 mix bn4v4: ready, 4.0757 bpw
+00:28:06 V27 golden mix DONE

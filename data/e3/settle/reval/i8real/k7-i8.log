@@ -1,0 +1,17 @@
+code stamp 125f86dad0426402 (K7)
+  model.language_model.layers.6.linear_attn.in_proj_qkv        K7 proxy 3.154e-05 2.0s
+  model.language_model.layers.6.linear_attn.in_proj_z          K7 proxy 1.791e-05 0.6s
+  model.language_model.layers.6.linear_attn.out_proj           K7 proxy 6.596e-05 0.7s
+  model.language_model.layers.6.mlp.gate_proj                  K7 proxy 2.496e-05 1.2s
+  model.language_model.layers.6.mlp.up_proj                    K7 proxy 7.268e-05 1.2s
+  model.language_model.layers.6.mlp.down_proj                  K7 proxy 5.593e-05 1.3s
+layer 6: 7s  anon rss 1071 MiB
+  model.language_model.layers.7.self_attn.q_proj               K7 proxy 1.270e-05 1.2s
+  model.language_model.layers.7.self_attn.k_proj               K7 proxy 4.906e-05 0.3s
+  model.language_model.layers.7.self_attn.v_proj               K7 proxy 3.351e-05 0.3s
+  model.language_model.layers.7.self_attn.o_proj               K7 proxy 9.101e-05 0.8s
+  model.language_model.layers.7.mlp.gate_proj                  K7 proxy 2.095e-05 1.2s
+  model.language_model.layers.7.mlp.up_proj                    K7 proxy 6.972e-05 1.2s
+  model.language_model.layers.7.mlp.down_proj                  K7 proxy 6.345e-05 1.5s
+layer 7: 6s  anon rss 1078 MiB
+done

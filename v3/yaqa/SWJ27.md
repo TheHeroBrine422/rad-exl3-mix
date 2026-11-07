@@ -133,3 +133,46 @@ One fit pass, `ARMS="bn bns1 base4 bn4"` (gpubox insert `/data/q1106/insert-20-s
 - **K4 transfer:** pairs base4 → base4swj, bn4 → bn4swj (two different bases rather than two seeds; base4s1 isn't made
   yet). Pass at K4 = geo ≤ 0.98 and both < 1 → swj at every level ≥ K4 too; geo in (0.98, 1) with both < 1 → adopt at
   ≥ K4 only if the fit cost stays "one pass per level" (it does); any pair ≥ 1 → swj only ≤ K3.5 until a K4 seed pair.
+
+## Amendment 2 (2026-11-06 ~6:30 PM CST, w59, before any verify data): K4 confirmation on a fresh verify slice
+Tools, slice and run: `v3/yaqa/verify27/README.md` (gpubox insert `/data/q1106/insert-40-verify27.sh`, driver `v27.sh`).
+
+- **Confound found in amendment 1's K4 pairs (from the census files, no new data).**
+  - base4 / bn4 were mixed into **V2 3.00's** head (exl3 K4, 0.636 GB) and embedding (0.497 GB). `swap27k.sh` sets
+    `V2=$3`, then the `source` of swap27.sh's settings on its next line resets V2 to the 3.00 container.
+  - base4swj / bn4swj (swapfit.sh's `V2of`) were mixed into **V2 4.00**: head K5 0.795 GB, embedding 0.656 GB.
+  - So 0.7906 / 0.7667 measure swj **plus** a head / embedding upgrade.
+  - The K2.5 pairs are unaffected (every K2.5 arm uses V2 3.00; equal sizes).
+  - The same bug affects the base4s1 / bn4s1 arms in q2 (V2 3.00 head). Pairs among swap27k arms stay internally
+    consistent.
+- **Head-matched controls.** `base4v4` / `bn4v4` = base4's / bn4's 336 trunk weights cloned into V2 4.00 (radmix, no
+  pack). Census: the same head, embedding and plain weights as base4swj, and the same bytes (13,702,406,144).
+- **Slice `golden-verify27`.**
+  - Recipe: calib_slice.py, pools-v3 verify, 250,000 tokens asked, cap 8192, **seed 20261107**; cut from the published
+    calib golden with golden_pick.py, exactly as golden-search27 (search, 200,000 asked, seed 27; recipe reproduced
+    bit for bit). No bf16 card pass is needed.
+  - Result: **71 docs, 171,876 tokens, 127,261 scored positions.** The verify candidates run long, so ~100 docs and
+    ~120k positions can't both be met; 250,000 is the smallest ask on a 25k grid that reaches ≥ 120k positions.
+  - Excluded (`verify27/excl-kld.json`):
+    - ver3 (V3 monitor), ver4 (V3 final) and their long traces;
+    - the V4 reserve (mkver.py: not before V4);
+    - docs trained on (@yaqa, @headsens);
+    - g08-verify1 / g08-verify2 (the 0.8B swj verify checks, #93).
+  - Every one of the 71 was read before, but only by V1 / V2-line checks and picks (calBbig 42, ver2 38, ver1 14,
+    calB 11, long2 2). No V3 setting was judged on them, so a V3 swj contrast isn't biased by them.
+- **Rule (K4, gating), on golden-verify27.** Let r0 = KLD(base4swj) / KLD(base4v4) and r1 = KLD(bn4swj) / KLD(bn4v4),
+  each paired per document. geo = √(r0 · r1).
+  - **Confirmed:** r0 < 1 and r1 < 1 and geo ≤ 0.90. Quote the K4 gain.
+  - **Real, smaller than search said:** both < 1 and 0.90 < geo < 0.98. swj stays adopted at ≥ K4 (amendment 1's
+    rule), but quote the verify number, not 0.79.
+  - **Not confirmed:** a pair ≥ 1, or geo ≥ 0.98. swj at ≥ K4 falls back to amendment 1's "any pair ≥ 1" branch until a
+    K4 seed pair settles it.
+- **Report only.**
+  - Verify: base4 → base4swj and bn4 → bn4swj (amendment 1's pairs as built, head confound included); base4 → base4v4
+    and bn4 → bn4v4 (the head / embedding change alone); K2.5 base → baseswj and s1 → s1swj.
+  - Search (golden-search27): base4v4 → base4swj and bn4v4 → bn4swj, which is amendment 1 corrected for the head.
+  - Every arm: mean KLD, p99 KLD and top-1 agreement on the scored rows (tails rule); every pair: ratio, bootstrap
+    95% CI, z, p99 ratio, top-1 difference.
+- **Cost.** Card 0 ~35 min (12 scores at ~140–160 s each, the measured swap27 / swj27 scores). The golden and mixes
+  took < 2 min of CPU in the dry run; disk ~0.7 GB (both mixes are reflink clones).
+- **Runtime cost:** none (svh only, as above). The head-matched controls change nothing shipped.

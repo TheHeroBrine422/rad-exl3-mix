@@ -1,0 +1,9 @@
+code stamp 09b82afc9d7678c0 (K2)
+     tile CD 3: rel 1.0267e-03 -> 1.0130e-03 (x0.9867), accepted 0.140 / 0.077 / 0.050, 32.0s
+  model.language_model.layers.3.self_attn.q_proj               K2 proxy 7.283e-04 39.1s
+layer 3: 39s  anon rss 1073 MiB
+     tile CD 3: rel 3.2753e-03 -> 3.2534e-03 (x0.9933), accepted 0.080 / 0.048 / 0.031, 31.9s
+  model.language_model.layers.19.self_attn.q_proj              K2 proxy 2.982e-03 38.9s
+layer 19: 39s  anon rss 1073 MiB
+done
+capq: peak allocated 4.80 GiB (cap 7.2 GiB)

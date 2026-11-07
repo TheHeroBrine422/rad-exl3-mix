@@ -1,0 +1,41 @@
+code stamp 046c82f27fcf8bf6 (K2.5)
+     tile CD 3: rel 5.0672e-04 -> 5.0080e-04 (x0.9883), accepted 0.129 / 0.071 / 0.045, 21.6s
+  model.language_model.layers.3.self_attn.q_proj               K2.5 proxy 3.590e-04 29.8s
+     tile CD 3: rel 5.5785e-03 -> 5.5374e-03 (x0.9926), accepted 0.095 / 0.049 / 0.029, 2.1s
+  model.language_model.layers.3.self_attn.k_proj               K2.5 proxy 5.512e-03 3.3s
+     tile CD 3: rel 8.8158e-03 -> 8.7942e-03 (x0.9976), accepted 0.070 / 0.026 / 0.012, 2.1s
+  model.language_model.layers.3.self_attn.v_proj               K2.5 proxy 1.063e-02 3.2s
+     tile CD 3: rel 1.0140e-02 -> 1.0121e-02 (x0.9982), accepted 0.042 / 0.021 / 0.010, 11.0s
+  model.language_model.layers.3.self_attn.o_proj               K2.5 proxy 4.165e-04 15.3s
+     tile CD 3: rel 1.5518e-02 -> 1.5478e-02 (x0.9974), accepted 0.092 / 0.052 / 0.032, 31.2s
+  model.language_model.layers.3.mlp.gate_proj                  K2.5 proxy 1.496e-02 42.6s
+     tile CD 3: rel 1.9766e-02 -> 1.9711e-02 (x0.9973), accepted 0.099 / 0.057 / 0.036, 31.2s
+  model.language_model.layers.3.mlp.up_proj                    K2.5 proxy 1.924e-02 42.7s
+Traceback (most recent call last):
+  File "/workspace/rad-exl3-mix/v3/e3/tilecd/capq.py", line 11, in <module>
+    runpy.run_path(sys.argv[0], run_name="__main__")
+  File "<frozen runpy>", line 286, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/w50/code/quantize/ourq.py", line 446, in <module>
+    out.update(quantize_group(hn, keys, l * 16 + gi * 4, log))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/w50/code/quantize/ourq.py", line 329, in quantize_group
+    _CUR[0] = key; wq, perr, t = quantize_exl3(w, Hk, qa, a.save_wq)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/src/exllamav3/exllamav3/modules/quant/exl3_lib/quantize.py", line 1788, in quantize_exl3
+    weight_q, encoded_q = ldlq(weight_r, L, quant_args, pb)  #zxc
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/w50/code/quantize/../v3/e3/tilecd/tilecd.py", line 63, in ldlq_cd
+    weight_q, encoded = cd(Q, weight, weight_q, encoded, H, quant_args)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/w50/code/quantize/../v3/e3/tilecd/tilecd.py", line 127, in cd
+    rel[f"cd{sw}"] = _trace(H, E) / den; acc[f"cd{sw}"] = na / (m * tn); sec[f"cd{sw}"] = round(time.time() - t1, 2)
+                     ^^^^^^^^^^^^
+  File "/tmp/w50/code/quantize/../v3/e3/tilecd/tilecd.py", line 89, in _trace
+    return sum(float((X[:, c:c + chunk] * (H @ X[:, c:c + chunk])).sum()) for c in range(0, X.shape[1], chunk))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/w50/code/quantize/../v3/e3/tilecd/tilecd.py", line 89, in <genexpr>
+    return sum(float((X[:, c:c + chunk] * (H @ X[:, c:c + chunk])).sum()) for c in range(0, X.shape[1], chunk))
+                      ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 272.00 MiB. GPU 0 has a total capacity of 11.67 GiB of which 1.33 GiB is free. Including non-PyTorch memory, this process has 7.32 GiB memory in use. 7.20 GiB allowed; Of the allocated memory 7.00 GiB is allocated by PyTorch, and 75.91 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

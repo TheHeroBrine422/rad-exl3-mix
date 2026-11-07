@@ -1,0 +1,6 @@
+lock 19:10:47 after 908s
+cd3f64 rc=0 148s
+toff rc=0 84s
+tcd3 rc=0 306s
+released 19:19:45, held 538s
+GPUCHECK time DONE

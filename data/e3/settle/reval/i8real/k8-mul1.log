@@ -1,0 +1,17 @@
+code stamp 472d318cc2950a44 (K8)
+  model.language_model.layers.6.linear_attn.in_proj_qkv        K8 proxy 6.903e-06 1.1s
+  model.language_model.layers.6.linear_attn.in_proj_z          K8 proxy 3.513e-06 0.3s
+  model.language_model.layers.6.linear_attn.out_proj           K8 proxy 1.521e-05 0.4s
+  model.language_model.layers.6.mlp.gate_proj                  K8 proxy 5.286e-06 0.6s
+  model.language_model.layers.6.mlp.up_proj                    K8 proxy 1.490e-05 0.6s
+  model.language_model.layers.6.mlp.down_proj                  K8 proxy 1.307e-05 0.8s
+layer 6: 4s  anon rss 1072 MiB
+  model.language_model.layers.7.self_attn.q_proj               K8 proxy 2.450e-06 0.7s
+  model.language_model.layers.7.self_attn.k_proj               K8 proxy 1.329e-05 0.1s
+  model.language_model.layers.7.self_attn.v_proj               K8 proxy 8.000e-06 0.1s
+  model.language_model.layers.7.self_attn.o_proj               K8 proxy 1.962e-05 0.4s
+  model.language_model.layers.7.mlp.gate_proj                  K8 proxy 4.533e-06 0.6s
+  model.language_model.layers.7.mlp.up_proj                    K8 proxy 1.432e-05 0.6s
+  model.language_model.layers.7.mlp.down_proj                  K8 proxy 1.381e-05 0.8s
+layer 7: 3s  anon rss 1076 MiB
+done

@@ -1,0 +1,37 @@
+23:39:21 == start (deadline 1020 s)
+23:39:26 pass 1: idle sample max GFX 18%
+23:39:26 pass 1 release rc=1
+23:40:17 pass 1: idle sample max GFX 1%
+23:41:04 pass 1 done; idle sample after: max GFX 26%
+23:41:04 pass 1 release rc=2
+23:41:54 pass 1: idle sample max GFX 5%
+23:42:42 pass 1 done; idle sample after: max GFX 3%
+23:42:42 pass 1 release rc=0
+23:42:47 pass 2: idle sample max GFX 0%
+23:43:35 pass 2 done; idle sample after: max GFX 30%
+23:43:35 pass 2 release rc=2
+23:44:25 pass 2: idle sample max GFX 1%
+23:45:12 pass 2 done; idle sample after: max GFX 30%
+23:45:12 pass 2 release rc=2
+23:46:03 pass 2: idle sample max GFX 1%
+23:46:50 pass 2 done; idle sample after: max GFX 4%
+23:46:50 pass 2 release rc=0
+23:46:55 pass 3: idle sample max GFX 0%
+23:47:43 pass 3 done; idle sample after: max GFX 33%
+23:47:43 pass 3 release rc=2
+23:48:34 pass 3: idle sample max GFX 1%
+23:49:22 pass 3 done; idle sample after: max GFX 52%
+23:49:22 pass 3 release rc=2
+23:50:12 pass 3: idle sample max GFX 3%
+23:51:00 pass 3 done; idle sample after: max GFX 50%
+23:51:00 pass 3 release rc=2
+23:51:50 pass 3: idle sample max GFX 4%
+23:52:37 pass 3 done; idle sample after: max GFX 43%
+23:52:37 pass 3 release rc=2
+23:53:28 pass 3: idle sample max GFX 1%
+23:54:15 pass 3 done; idle sample after: max GFX 34%
+23:54:15 pass 3 release rc=2
+23:55:06 pass 3: idle sample max GFX 0%
+23:55:53 pass 3 done; idle sample after: max GFX 28%
+23:55:53 pass 3 release rc=2
+23:56:38 == end: 2 clean passes, 1037 s

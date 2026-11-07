@@ -1,0 +1,14 @@
+code stamp 516ab1efe7af0b67 (K2.5)
+     tile CD 3: rel 4.8608e-03 -> 4.8478e-03 (x0.9973), accepted 0.044 / 0.017 / 0.007, 18.0s
+  model.language_model.layers.2.linear_attn.in_proj_qkv        K2.5 proxy 4.316e-03 25.0s
+     tile CD 3: rel 2.9826e-03 -> 2.9728e-03 (x0.9967), accepted 0.047 / 0.019 / 0.008, 10.6s
+  model.language_model.layers.2.linear_attn.in_proj_z          K2.5 proxy 2.959e-03 14.8s
+     tile CD 3: rel 1.9321e-02 -> 1.9251e-02 (x0.9964), accepted 0.127 / 0.058 / 0.032, 11.1s
+  model.language_model.layers.2.linear_attn.out_proj           K2.5 proxy 7.285e-03 15.4s
+  model.language_model.layers.2.mlp.gate_proj                  K2.5 proxy 1.535e-02 11.4s
+  model.language_model.layers.2.mlp.up_proj                    K2.5 proxy 1.759e-02 11.6s
+refit_scales: OOM on the card, refit on the CPU
+  model.language_model.layers.2.mlp.down_proj                  K2.5 proxy 6.872e-03 67.1s
+layer 2: 148s  anon rss 229 MiB
+done
+capq: peak allocated 6.67 GiB (cap 7.2 GiB)

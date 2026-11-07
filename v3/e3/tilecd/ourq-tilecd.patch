@@ -1,0 +1,57 @@
+--- a/quantize/ourq.py	2026-11-06 18:36:38.356831907 +0000
++++ b/quantize/ourq.py	2026-11-06 18:37:02.680830216 +0000
+@@ -46,7 +46,10 @@
+ def _io_canon(f):                  # what the code stamp hashes of f: this file without the +io lines, #io-was: lines restored             # +io
+     b = open(f, "rb").read()                                                                                                               # +io
+     if os.path.abspath(f) != os.path.abspath(__file__): return b                                                                           # +io
+-    return b"".join(x[8:] if x.startswith(b"#io-was:") else x for x in b.splitlines(True) if not x.rstrip().endswith(b"# +io"))            # +io
++    # lines tagged +cd (--tile-cd, w50) are inert without --tile-cd and hashed only with it (same stamps when off)                         # +io
++    cd = getattr(a, "tile_cd", 0)                                                                                                          # +io
++    return b"".join(x[8:] if x.startswith(b"#io-was:") else x for x in b.splitlines(True)                                                  # +io
++                    if not x.rstrip().endswith(b"# +io") and (cd or not x.rstrip().endswith(b"# +cd")))                                    # +io
+ # paths (README: Paths)
+ RXM_WORK = os.environ.get("RXM_WORK", "/root")
+ RXM_CKPT = os.environ.get("RXM_CKPT", "/data/workspace/models/qwen38-27b-bf16")
+@@ -149,7 +152,13 @@
+                 "per tensor (the metric of the row-scaled weight it actually quantizes) instead of the shared rotated H")
+ ap.add_argument("--qtf2", action="store_true", help="fractional rates on v3/e3/exl3frac2 (qtf2: the V3 kernel pass; "
+                 "bit-identical on the old rates, plus 1/8 steps and sub-1 K); needs --frac-ext SRC")
++ap.add_argument("--tile-cd", type=int, default=argparse.SUPPRESS, metavar="N", help="N tile coordinate-descent sweeps "  # +cd
++                "after LDLQ (#77 cd3: N=3) for the linears of --tile-cd-families (v3/e3/tilecd). Unset: off, not in the "  # +cd
++                "code stamp's arguments")  # +cd
++ap.add_argument("--tile-cd-families", default=argparse.SUPPRESS, metavar="F,F", help="families for --tile-cd (challenge "  # +cd
++                "names: attn_qg, attn_k, attn_v, attn_output, ssm_qkv, ssm_z, ssm_out, ffn_gate_up, ffn_down, head; default attn_qg)")  # +cd
+ a = ap.parse_args()
++if getattr(a, "tile_cd", 0) and not hasattr(a, "tile_cd_families"): a.tile_cd_families = "attn_qg"  # +cd
+ _kp = lambda v: int(v) if float(v).is_integer() else float(v)
+ KS = [_kp(v) for v in a.K.split(",")]
+ assert len(KS) == len(set(KS)), "duplicate level in -K"
+@@ -207,6 +216,12 @@
+         if uk not in _UMEMO: _UMEMO[uk] = (H_rot, su, _orig_unrot(H_rot, su))
+         return _UMEMO[uk][2]
+     _Q.finalize_capture_H, _Q.unrotate_H = _fin, _unrot
++TCD = getattr(a, "tile_cd", 0)  # +cd
++if TCD:  # +cd
++    _hc = os.path.dirname(os.path.abspath(__file__))  # +cd
++    sys.path.insert(0, next(d for d in (os.path.join(_hc, "tilecd"), os.path.join(_hc, "../v3/e3/tilecd")) if os.path.isdir(d)))  # +cd
++    import tilecd  # +cd
++    tilecd.install(_Q, TCD, a.tile_cd_families)  # +cd
+ 
+ # ------------------------------------------------------------------ the bf16 checkpoint
+ idx = json.load(open(f"{CKPT}/model.safetensors.index.json"))["weight_map"]
+@@ -282,6 +297,7 @@
+             qa["sigma_reg"] = a.sigma_reg_in
+         GAIN[0] = next((float(m) for suf, m in GAINS.items() if key.endswith(suf)), 1.0)
+         if a.sigma_reg_out is not None: qa["sigma_reg_out"] = a.sigma_reg_out
++        if TCD: qa.update(tilecd.args(key, a.K, a.o))  # +cd
+         hp = f"{a.hout}/{key}.safetensors" if a.hout else None
+         if hp and os.path.exists(hp):
+             with safe_open(hp, "pt", device="cpu") as f:     # "hout_diag": a diagonal-only factor (collect.py YAQA_DIAG)
+@@ -374,6 +390,7 @@
+         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3cb", "*")))
+         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac2", "*.*")))
+     if a.out_scales_off: files.append(os.path.abspath(a.out_scales_off))      # its contents, not just the path
++    if TCD: files.append(os.path.abspath(tilecd.__file__))  # +cd
+     if a.only: files.append(os.path.abspath(a.only))
+     for f in files:
+ #io-was:        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
