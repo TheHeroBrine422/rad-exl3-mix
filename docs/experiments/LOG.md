@@ -3,6 +3,16 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:00 AM CST · #106, #108, #103 · o_proj act order passes on a biased proxy; GDN refits fail in the stack
+- **#106 (w46, settle.py; rule in `v3/e3/actblk/README.md`):** o_proj input-block order via a head permutation (free
+  at runtime): 0.928 / 0.927 / 0.927 at K2 / 3 / 4 (n 6, no tensor > 1), all 16 layers 0.94, flat K1.5–6 → **PASS by
+  the rule**; GDN out_proj 0.986–0.988 (fail). **Caveat: settle.py runs LDLQ over input blocks first-to-last,
+  exllamav3 last-to-first, and #106's reversed-order arm cost +5%: the result may shrink or flip on the real order.**
+  Re-run on the fixed proxy (w64 item 5, with #103 too) before a 27B pair. Was unlogged since 11-06 6 PM (my miss).
+- **#108 final seeds (d1113, full 0.8B stack, search):** K3 geo 0.999 (5 seeds), K2 0.985 (4 seeds, all < 1); verify
+  ~0.994 / ~0.985. Fails the rule (≤ 0.98 at K3 and K2): GDN refits overlap with H_out / asym in the stack. Not ported
+  to the 27B unless H_out and asym both fail there (user: a barely-winning 0.8B result isn't worth a 27B port).
+
 ### 2026-11-07 12:40 AM CST · #— · D-LSA on window residency (w65): built, host / emulator tests pass, no card run yet
 - Branch `lsa-residency` (`/workspace/forks/radiance-lsa-res`): #412 cherry-picked (author kept; ABI: #412 keeps 38, our
   D-LSA moves to 39), bridge ops `lsa_page_gather` / `lsa_page_scatter` (no change to our list-attention kernel),
