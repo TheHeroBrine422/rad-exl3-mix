@@ -249,3 +249,11 @@ Also used, unchanged: `v3/sib27/{levelargs,assemble,cmpmom}.py`, `proxy2b/exp/w0
   ≤ 4.15e-4 on q-k3edy).
 - **Third pair:** with s2 arms coming in q2.sh, a third pair is cheap to add. The rule above allows it only in the
   pre-registered INCONCLUSIVE case.
+
+## Status (2026-11-07; the rule above is unchanged)
+- #105 is still queued on card 0 (no 27B data yet).
+- **#111 (0.8B, `v3/e3/settle/w64.md` item 1, 11-07):** per-level asym writers placed next to siblings of *another* K,
+  as in a knapsack mix, are 8–24% worse than plain writers (geo 1.077 / 1.229 / 1.239 over three cells); a per-mix
+  writer pass keeps the gain (0.81–0.90). So the "Rollout" above (one run per shipped level) does not carry to mixed-K
+  mixes. If #105 passes, the user chooses: a per-mix writer pass (~4–5 card-h a mix at 27B), the writer's K tied to its
+  siblings' K in the knapsack, or plain writers where the siblings differ.

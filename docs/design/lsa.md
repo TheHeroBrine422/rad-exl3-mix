@@ -9,7 +9,9 @@ nothing has run end to end in an engine yet (no full build with a model load). T
 carry the workers' proposals: two extra operands (`sel_max`, `block_size`), the accuracy wording for multi-row verify
 steps (bf16 output resolution), a bucket KV group with a 512-token page, an ABI bump. **Priority (2026-11-06):**
 pre-freeze quantizer research comes first; LSA work only fills idle capacity. ROADMAP "V3 extras" has the scope
-(V3-only release, off by default, fp32 sidecar map). Target use: Qwen3.8-27B at 256k–750k context with fp8 KV, one
+(V3-only release, off by default, fp32 sidecar map). **[2026-11-07]** D-LSA on Code 000's window residency (radiance
+#412): branch `lsa-residency`, host and emulator tests pass, no card run yet; design and the computed VRAM / page-in
+numbers in `lsa-residency.md`. Long-context gate data: RULER (`eval/ruler/`, the `lsa-v1` selection). Target use: Qwen3.8-27B at 256k–750k context with fp8 KV, one
 R9700.
 
 ## Facts (checked)

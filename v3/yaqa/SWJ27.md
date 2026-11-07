@@ -176,3 +176,15 @@ Tools, slice and run: `v3/yaqa/verify27/README.md` (gpubox insert `/data/q1106/i
 - **Cost.** Card 0 ~35 min (12 scores at ~140–160 s each, the measured swap27 / swj27 scores). The golden and mixes
   took < 2 min of CPU in the dry run; disk ~0.7 GB (both mixes are reflink clones).
 - **Runtime cost:** none (svh only, as above). The head-matched controls change nothing shipped.
+
+## Status (from `docs/experiments/LOG.md`, brought here 2026-11-07; the rules above are unchanged)
+- **K2.5: PASS** (LOG 11-06 5:40 AM CST): base → baseswj 0.9346 (z −12.5), s1 → s1swj 0.9346 (z −14.6). On the fresh
+  verify slice `golden-verify27` (amendment 2's report): 0.9351 (z −15.3) / 0.9316.
+- **Amendment 1, stacking with H_out bn (K2.5): PASS**: bn → bnswj 0.9244 (z −14.4), bns1 → bns1swj 0.9210 (z −13.9).
+- **Amendment 1, K4 transfer: confounded** (base4 0.7906, bn4 0.7667 compared different heads / embeddings; amendment 2).
+- **Amendment 2, K4 on verify, head-matched: NOT CONFIRMED** by its rule: base4v4 → base4swj 0.9903, bn4v4 → bn4swj
+  0.9870 (search: 0.9907 / 0.9869), geo 0.989 ≥ 0.98, every pair < 1 (−1.1%). The head swap alone was 0.761 / 0.757
+  (verify). LOG 11-06 7:50 PM CST.
+- **Open (for the lead / user):** amendment 2's "not confirmed" branch says swj at ≥ K4 falls back to ≤ K3.5 until a K4
+  seed pair; the same LOG entry says "swj stays adopted (it never hurts; size per K from these pairs)".
+  `pipeline/config/v3.toml` keeps `k_max = 3.5`.

@@ -126,7 +126,18 @@ Runtime cost: none (codes only; 2–3× quant time on the card).
 
 ## Results
 
-(none yet.) Interim observation from the superseded v2a run (finer search grid, 136 jobs, seeds incomplete; **not a
+**Read out 2026-11-06 (LOG 10:20 CST; `gain-table.json`, rules above):** #39 gain per (family, K): **flat, keep 1.0**
+(no family ≥ 1% at ≥ 2 K). #38 damping at K1.5 / 2.5 / 3.5 / 5.5: **keep** input 0.005, rest 0.025 (no alternative
+≥ 1%). #77 tile CD per K: cd1 / cd2 / cd3 = −0.5 / −0.7 / −0.8…−1.1% at 1.7 / 2.5 / 3.2× LDLQ time, 54/54 tensors
+better; attn_qg −2.2…−3.7% (cd3).
+
+**[2026-11-07] Order bias.** settle.py runs LDLQ over the 16-column input blocks first to last; exllamav3 runs last to
+first. On the real GPU quantizer cd3 ÷ LDLQ on attn_qg is 0.987–0.996 (w50, `v3/e3/tilecd/README.md`), and the
+order-fixed proxy `w64/settle64.py` (`SETTLE_ORDER=rev`) matches the GPU within 0.5% on 9 / 9 blocks (`w64.md` item 0).
+So #77's proxy numbers above are ~3× too high; #38 / #39 compare settings, not block orders, and were not rerun
+(LOG: unlikely to flip). Any result here that depends on block order should be read from settle64.
+
+(Before the readout:) Interim observation from the superseded v2a run (finer search grid, 136 jobs, seeds incomplete; **not a
 result**, recorded so the final read can be checked against it): most families pick m* = 1.0 within ±0.5%
 (exllamav3's own scale is near the proxy optimum); attn_qg wanted m ≈ 1.15 at K6–7 (−6% to −17% on single tensors)
 and layer-34 ssm_z m ≈ 1.1 at K6–7 (−2% to −7%), i.e. a *larger* input scale than exllamav3 picks — the opposite

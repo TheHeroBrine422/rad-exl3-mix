@@ -53,6 +53,13 @@ permutation); #90 → knapsack pricing only.
    (6 = GDN, 7 = attention), rel from `--save-wq`'s rowerr (tr(dW H dW^T) / tr(W H W^T), undamped calib H_in).
    No rule (a check of w45's ×1.018 K6.5 / ×1.27 K7 / ×4.5 K8).
 
+> **[2026-11-07] Caveat: every item here ran on settle.py's first-to-last LDLQ block order (exllamav3 runs last to
+> first).** Order-independent comparisons (#90-02 codebooks, #100, #90 curves, item 5's real quants) are unlikely to
+> move; #106 depends on the order directly and was re-run on the order-fixed proxy (`w64.md` item 5): o_proj holds
+> at 0.971 / 0.970 / 0.971 (−3%, not −7.3%), GDN out_proj becomes a marginal pass (0.980 / 0.978 / 0.980), and the
+> heaviest heads must be stored **last**. The #106 row below is superseded by that re-run. #100 itself was dropped by
+> the user on 2026-11-06 after its real 0.8B run (#100c).
+
 ## Results
 
 Queues ran 10:07 AM – 6:05 PM CST on colo + Thor (4,703 jobs, 0 failures, ≈ 15.6 box-hours); item 5 on the 4070
@@ -63,7 +70,7 @@ Queues ran 10:07 AM – 6:05 PM CST on colo + Thor (4,703 jobs, 0 failures, ≈ 
 | 1 · #90-02 i4 vs i8 | passing run to K1.5 (K2: 1.0107) | passing run to **K2** (K2: 1.0088) | **flips** K1.5 → K2 (no plan change forced) |
 | 2 · #100 iqrh vs mul1_i8 | no automatic call (+1.2–1.4% K2–3.5, +2.7–5.4% K4–6) | no automatic call (same within ±0.3%) | **holds** |
 | 3 · #90 sub-1 curves | monotone; knap4 rule 2 below 3% (−0.07% at 1.5 bpw) | monotone; K ≥ 0.375 within ±4%, K0.125–0.25 lower; knap4 −0.06% at 1.5 bpw | **holds** (old overstated only K0.125–0.25, which knap4 never picks) |
-| 4 · #106 (new) head-order act order | – | o_proj **0.927** (pass); out_proj 0.986 (fail) | o_proj **adopt** by its rule |
+| 4 · #106 (new) head-order act order | – | o_proj **0.927** (pass); out_proj 0.986 (fail) | o_proj **adopt** by its rule **[superseded 2026-11-07: biased order; order-fixed re-run o_proj 0.971, out_proj 0.980, w64.md item 5]** |
 | 5 · i8 vs mul1, real 0.8B quants | (w45 proxy: ×1.018 / ×1.27 / ×4.5) | ×1.014 / **×1.272** / ×4.48 at K6.5 / 7 / 8 | w45 **holds** |
 
 ### 1 · #90-02 i4 vs i8: **the rule's boundary moves from K1.5 to K2** (complete: 20 tensors × 2 samples)

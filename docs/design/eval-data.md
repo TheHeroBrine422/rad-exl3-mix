@@ -3,7 +3,7 @@
 Why: V2's search reused one calib search pool, and best-of-many picks scored on reused slices were ~3% optimistic on
 held-out data. V3's menu is far larger (66 levels, f16 / A8 / A4 modes, A1, sub-1, fast and accurate variants), so the
 search needs fresh documents every round, and the user wants real-use coverage (agentic, long context).
-(The ladder is now 73 levels, `v3.md` "Goal and scope".)
+(The ladder is now 71 levels, `v3.md` "Goal and scope"; A1 was dropped on 2026-11-07, #81-04.)
 
 ## Roles
 
@@ -11,10 +11,11 @@ search needs fresh documents every round, and the user wants real-use coverage (
 |---|---|
 | calib, all | the published input Hessians: **V3's only input statistics** (2026-11-06: the xcorp and self-generated blends were dropped, below) |
 | calib fit | sensitivity model fits (kfit2 / knap4) |
-| calib search | search accept/reject (with xcorp and own traces); its 2 long traces = long-context guard during the search |
+| calib search | search accept/reject (with xcorp and own traces); its 2 long traces = long-context guard during the search, scored as ≤ 32k turn-aligned chunks (`agent-search32`, `eval/traces/`; 2026-11-07) |
 | calib qad | training: H_out collection, healing |
-| calib verify | **final picks and every published number**; its 2 long traces = the finals' long-context check |
-| public | final reporting only |
+| calib verify | **final picks and every published number**; its long traces: rich and express as ≤ 32k chunks (`agent-verify32`) for finished mixes, and both whole (`agent-verify-whole`) only as a rare full-length sanity check (n = 2, reported together, never a selection or tuning target; user 2026-11-07); lua / requests stay the whole ver3-long / ver4-long goldens |
+| public | final reporting only; at the end also full-length KLD on its 2 long agentic traces (user 2026-11-07) |
+| RULER (`eval/ruler/`, synthetic) | long-context *capability* (user 2026-11-07): retrieval / tracing tasks at 4k–768k; no corpus, no pool rules |
 | xcorp (`docs/CORPORA.md`) | fresh search slices (8k chunks); healing data. Not a quantizer-statistics source (H_in blend dropped at 27B, #101) and not a substitute for calib when screening on the 0.8B (#93); see "xcorp as a statistics source" |
 | own agent traces (private) | fresh agentic search slices (32k chunks, each = the session's system block + consecutive turns from a user-role message, so every chunk looks like a real agent request; all chunks of a session used; bootstrap by session); 2–3 whole long sessions as a real-use guard before release; our machines only |
 

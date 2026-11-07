@@ -1,6 +1,6 @@
 # V3 quantizer settings: the one file the freeze pins. Every result-affecting setting of the pipeline is here, with its
-# evidence: the experiment number in rad-exl3-mix docs/experiments/INDEX.md, its status there on 2026-11-06, and the
-# rule / result file. Settings still open are switches whose default is the CURRENT ladder behaviour (off), so this
+# evidence: the experiment number in rad-exl3-mix docs/experiments/INDEX.md, its status there on 2026-11-06 (comments
+# brought to the 2026-11-07 record; no value changed), and the rule / result file. Settings still open are switches whose default is the CURRENT ladder behaviour (off), so this
 # file, unedited, reproduces the ladder's quantizer (ourq.py with the hconv / swap27 "ladder settings").
 #
 # Changing any value changes the settings stamp (rxq/config.py), so a level can never mix settings.
@@ -16,17 +16,19 @@ model = "qwen38-27b"           # datapack id; the architecture plan is rxq/qwen3
 [inputs.hin]
 # Input Hessians: the challenge's published calib Hessians (sum of x x^T over all 10.26M calib tokens), packed upper.
 source = "calib"               # AGENTS.md data discipline: allowed for every entry
-# xcorp blend (#101, statistics, OPEN): H_in = (1 - w) calib/rows + w xcorp/rows (per-token means), stored at calib's
-# scale (port of proxy2b/exp/d1108/blend.py "hin"). 0.8B: X0.5 PASS incl. verify (calib -2%, xcorp -3..-6%; K4 0.982,
-# K5 0.990); 27B: xbn vs bn -1.2% (z -1.2) on one pair, more pairs queued (d1111 README amendments 2 + 4).
+# xcorp blend (#101, statistics, DROPPED by the user 2026-11-06): H_in = (1 - w) calib/rows + w xcorp/rows (per-token
+# means), stored at calib's scale (port of proxy2b/exp/d1108/blend.py "hin"). 0.8B: X0.5 PASS incl. verify (calib -2%,
+# xcorp -3..-6%; K4 0.982, K5 0.990); 27B pairs bn -> xbn 0.988, bns1 -> xbns1 0.997, pooled ~0.993 vs the rule's
+# <= 0.98: not worth it. Kept as a switch for the record.
 blend = "none"                 # "none" | "xcorp"
 blend_weight = 0.5             # the 27B recipe if adopted (amendment 3: full mX, w 0.5)
 blend_dir = ""                 # datapack: hessians-xcorp/ (mkhin27.py over mX, 1,148 docs / 1.14M tokens)
 
 [inputs.hout]
-# Diagonal output Hessian H_out = sum dy^2, block-normalized estimator (#33-27 done; #33-28 RUNNING, OPEN):
-# K2.5 bn/base 0.972 is inside the seed floor (0.975, H27 amendment 4); K4 0.961 waits for its seed pairs
-# (amendment 5 rule: every bn pair < 1, geo <= 0.98, |log geo| >= 2 sigma / sqrt n). Two-sided LDLQ (ldlq_2hess).
+# Diagonal output Hessian H_out = sum dy^2, block-normalized estimator (#33-27 done; #33-28 RUNNING for K >= 4):
+# K2.5 three seed pairs 0.972 / 0.992 / 0.976, geo 0.9801 vs <= 0.98 and |log geo| 0.0201 vs 2 sigma / sqrt 3 = 0.0207
+# (H27 amendment 5): NOT adopted for levels <= K3.5 (2026-11-07). K4: bn4 / base4 0.961, K4 seed control 1.006, the
+# second pair (bn4s1) pending; it decides K >= 4. Two-sided LDLQ (ldlq_2hess).
 # Cost if adopted: ~5x quant time per layer on the R9700 (180 s vs 35 s at K2.5, PROFILE.md) unless ldlq_2hess
 # exploits the block-diagonal rotated H_out (PROFILE.md target T1).
 enable = false
@@ -34,7 +36,8 @@ estimator = "bn"               # "bn" (block-normalized, port of v3/yaqa/hconv/m
 snapshot = 1920                # H27 amendment 2
 sigma_reg_out = 0.01           # output damping (H27; #33-16)
 dir = ""                       # datapack: hout/<id>/<key>.safetensors ("hout_diag")
-apply_k_max = 8.0              # amendment 3: K2.5 decides <= K3.5, K4 decides >= K4 (set 3.5 if only K2.5 passes)
+apply_k_max = 8.0              # amendment 3: K2.5 decides <= K3.5, K4 decides >= K4 (K2.5 did not pass: if K4 passes,
+                               # H_out applies at K >= 4 only, which this single k_max cannot express; lead / rxq)
 
 # ------------------------------------------------------------------------------------------------ per-tensor quant
 [quant]
@@ -58,7 +61,8 @@ refit = true                   # exllamav3 fork refit_scales (su / sv, 2 rounds)
 [quant.codebook]
 # Codebook by level (v3.md "Ladder", user 11-04 / 11-05). i8 = int8-rounded mul1 (#43 done, x1.000 K1-6; #94
 # negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
-# (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out).
+# (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
+# keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); mul1_levels below not yet edited.
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
 by_level = [
   { k_min = 0.125, k_max = 1.0,  codebook = "i4" },
@@ -66,13 +70,14 @@ by_level = [
 ]
 mul1_levels = [6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
 i4_twins = [2.0, 3.0]          # i4 K1.125-3 twins: K2 / K3 first (#46-03), the other 14 only if A4 pays
-hash_codebook = false          # #100 PLANNED (IQR-style hash codebook): format decision, no implementation here yet
+hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
 
 [quant.tile_cd]
-# #77 done, user adopted 11-06 for attn_qg only (cd3 / LDLQ 0.963-0.978 on attn_qg, 0.99+ elsewhere, 3.2x encode on
-# CPU). GPU implementation: w50 (rad-exl3-mix v3/e3/tilecd/tilecd.py, not yet merged); 27B safety check
-# v3/e3/settle/CD27.md (pending). rxq calls tilecd.install() / tilecd.args() unchanged; refused with H_out.
-enable = false                 # flip to true once CD27 passes and tilecd.py is merged
+# #77 ADOPTED for attn_qg only (user 11-06; the CPU proxy's cd3 / LDLQ 0.963-0.978 was ~3x too optimistic, its LDLQ
+# order was reversed; real GPU quantizer 0.987-0.996 on attn_qg, x3.7 its quant time). GPU implementation: w50
+# (rad-exl3-mix v3/e3/tilecd/tilecd.py, not yet merged); 27B no-harm check v3/e3/settle/CD27.md PASSED 11-06 (s1 0.9994,
+# base 0.9997, no-op gates bit-exact). rxq calls tilecd.install() / tilecd.args() unchanged; refused with H_out.
+enable = false                 # flip to true once tilecd.py is merged (CD27 passed 11-06; the lead flips it)
 sweeps = 3
 families = ["attn_qg"]
 module = ""                    # path of tilecd.py (default: <rxm>/v3/e3/tilecd/tilecd.py)
@@ -80,9 +85,12 @@ module = ""                    # path of tilecd.py (default: <rxm>/v3/e3/tilecd/
 # -------------------------------------------------------------------------------------- post-quant (frozen codes)
 [post.swj]
 # Joint gate / up output-scale refit through the SwiGLU, codes fixed (C10). #85 done (0.8B), #104 PASS at 27B K2.5:
-# base -> baseswj 0.9346, s1 -> s1swj 0.9346 (two seed pairs, z -12.5 / -14.6). K >= 4: SWJ27.md amendment 1 pending.
+# base -> baseswj 0.9346, s1 -> s1swj 0.9346 (two seed pairs, z -12.5 / -14.6), verify 0.935 / 0.932; stacks with H_out
+# (0.924 / 0.921). K4, head-matched (SWJ27 amendment 2, verify): 0.990 / 0.987, geo 0.989 (-1.1%; the 11-06 K4 -22%
+# was a head mismatch). Amendment 2's rule then falls back to <= K3.5 until a K4 seed pair; LOG 11-06 7:50 PM says swj
+# "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision.
 enable = true
-k_max = 3.5                    # SWJ27.md: "adopted for K <= 3.5"; raise to 8 if the K4 pairs pass
+k_max = 3.5                    # SWJ27.md: "adopted for K <= 3.5"; K >= 4 open (see above)
 grid = "0.6:1.4:0.01"
 clamp = [0.5, 2.0]
 fit_pool = "qad"               # SWJ27.md: 725 qad docs / 927,611 tokens, cap 4096, seed 0
@@ -91,7 +99,8 @@ fused = true                   # swjtri.py fused grid sums (KL 0.99980 vs exact,
 
 [post.asym]
 # Writers' sibling-sequential asymmetric target, rho 0 (#87 done on the 0.8B; #105 QUEUED at 27B, ASYM27.md:
-# PASS = geo <= 0.97 and both pairs < 1). Order: H_out -> swj -> writers (#87-07 / #87-08); runs last on each level's
+# PASS = geo <= 0.97 and both pairs < 1). #111 (0.8B, 11-07): per-level asym writers next to siblings of another K
+# fail (x1.08-1.24 vs plain); a per-mix writer pass keeps the gain: the rollout form is a user decision if #105 passes. Order: H_out -> swj -> writers (#87-07 / #87-08); runs last on each level's
 # final siblings (the correction does not transfer across sibling roundings).
 enable = false
 lam = 1.0
@@ -112,3 +121,6 @@ act_order_down = "#103 negative (0.994-0.998)"
 chained_tail_biting = "#102 negative"
 best_of_n_seeds = "#41 null (spread 0.5%)"
 group_scales = "#40 negative"
+# Also closed, with no switch here (comment only, outside the stamp): xcorp H_in blend (#101, above), hash codebook (#100,
+# above), A1 down-from-up (#81-04, user 11-07), joint refits beyond the MLP (#108 fail), clipped i8 (#109 negative),
+# bf16 (row, 128) scales (#110 fail).

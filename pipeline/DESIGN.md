@@ -36,20 +36,21 @@ ported. Settings: `config/v3.toml` (the one file the freeze pins). Where the tim
                           [S8 pack] rad-convert exl3i (mul1i8 / i4 / mul1), radmix mix, census   CPU (conv.lock)
 ```
 
-S1 runs once per model (and when a statistics setting changes). S2 is the bulk (66 levels × 400 trunk tensors =
-26,400 tensor jobs + heads). S3-S5 run once per level, in this order (#87-07 / #87-08: H_out → swj → writers last,
+S1 runs once per model (and when a statistics setting changes). S2 is the bulk (71 levels × 400 trunk tensors =
+28,400 tensor jobs + heads; the ladder was 66 levels when this was written, 71 since 2026-11-07). S3-S5 run once per level, in this order (#87-07 / #87-08: H_out → swj → writers last,
 on the level's final siblings). S7 / S8 run per release size and variant.
 
 ## 2. Stages
 
 ### S1 statistics prep (`rxq/stats.py`, CPU)
 - **H_in:** the published calib Hessians (packed upper triangle, sum over 10.26M tokens). Optional **xcorp blend**
-  (#101, OPEN): per-token means mixed, `(1 - w) calib + w xcorp`, stored at calib's scale (`blend_hin`, port of
-  d1108/blend.py). The xcorp Hessians come from `eval/gold27/mkhin27.py` over the mX meta (a level-independent pass,
+  (#101, **dropped 2026-11-06** at 27B: pooled ~0.993 vs ≤ 0.98; the switch stays off): per-token means mixed,
+  `(1 - w) calib + w xcorp`, stored at calib's scale (`blend_hin`, port of d1108/blend.py). The xcorp Hessians come from `eval/gold27/mkhin27.py` over the mX meta (a level-independent pass,
   ~1 card-hour; not ported).
 - **H_out:** diagonal Σdy² from the 27B collection (`v3/yaqa/collect.py`, YAQA_DIAG; not ported: a backward pass on two
   cards). Estimator **bn** (#33-27): each 128-sequence block scaled to the same per-tensor total, averaged
-  (`hout_blocks`, port of mkhalf.py; `split=False` = every block, the production estimator). OPEN (#33-28).
+  (`hout_blocks`, port of mkhalf.py; `split=False` = every block, the production estimator). #33-28: not adopted
+  for levels ≤ K3.5 (2026-11-07, K2.5 geo 0.9801 vs ≤ 0.98); K ≥ 4 open (K4 pairs).
 - Outputs are input dirs for S2 (`hessians/`, `hout/<id>/`), part of the datapack rad-quant-at-home serves.
 
 ### S2 tensor quant (`rxq/quant.py`, `rxq/engine.py`; GPU)
@@ -79,15 +80,17 @@ ourq's `args`; asym27's levelargs.py cannot derive ourq arguments from an rxq le
 settings file instead).
 
 ### S4 swj (`rxq/swj.py`; level pass)
-Joint gate / up output-scale refit through the SwiGLU on frozen codes (#85; **#104 PASS at 27B K2.5**, −6.5%;
-K ≥ 4 pending, SWJ27 amendment 1). Needs the bf16 27B's MLP inputs over ~0.93M qad tokens: a staged forward on one
+Joint gate / up output-scale refit through the SwiGLU on frozen codes (#85; **#104 PASS at 27B K2.5**, −6.5%,
+confirmed on verify; stacks with H_out; K4 head-matched only −1.1%, so its use at K ≥ 4 is open: SWJ27 amendment 2). Needs the bf16 27B's MLP inputs over ~0.93M qad tokens: a staged forward on one
 card, all sources (levels) in one pass (swjfit27.py, ~1.5 card-h for 2 levels on the R9700). Ported: the grid sums,
 the fit and the container edit (`apply_level`, byte-identical). The level pass itself is called in place
 (`fit_level` → swjfit27.py) until ported. Output: the level with gate / up svh × c. Not a donor job (bf16 model +
 boundaries ~20 GB on disk, a 32 GB card).
 
 ### S5 writers asym ρ0 (`rxq/asym.py`; level pass + per-group CPU/GPU + S2 jobs)
-(#87; **#105 queued at 27B**, OPEN.) Three parts: (a) sibling moments H / C / N of the 128 writers' inputs through the
+(#87; **#105 queued at 27B**, OPEN. **[2026-11-07, #111]** per-level asym writers next to siblings of another K
+fail on the 0.8B (8–24% worse than plain); a per-mix writer pass keeps the gain: if #105 passes, the user picks
+per-mix pass / writer K tied to sibling K / plain writers.) Three parts: (a) sibling moments H / C / N of the 128 writers' inputs through the
 level's own quantized siblings (sibmom27.py, a level pass, ~2.5-3 card-h, 262 GB of moments); (b) per writer group
 the denoised metric G and target transform F (`Denoiser`, port of mkdenoise.py: default and lean paths,
 byte-identical); (c) the 128 writers requantized as S2 jobs with `hin = G`, `wpre = F` (bit-identical to ourq
@@ -145,11 +148,12 @@ in `local/workers/w52/rqah-jobtype.md` (rad-exl3-mix), not edited into that repo
 
 ## 4. The settings file (`config/v3.toml`)
 
-Every result-affecting setting, with its evidence (experiment # and status, 2026-11-06):
+Every result-affecting setting, with its evidence (experiment # and status, 2026-11-06; status column updated
+2026-11-07, values unchanged):
 
 | setting | value | evidence | status |
 |---|---|---|---|
-| codebook by level | i4 K ≤ 1, i8 K1.125-7, mul1 K6-8 | #43, #90-02, #94 | adopted |
+| codebook by level | i4 K ≤ 1, i8 K1.125-7, mul1 K6-8 | #43, #90-02, #94; user 11-07: mul1 K6 / K6.25 dropped from the ladder (config's `mul1_levels` not yet edited) | adopted |
 | qtf2 | on | #37 | adopted |
 | scaled_hessian | on | ladder setting since 11-01 (no own INDEX row) | adopted |
 | damping σ | 0.025; input group 0.005 | #38 (re-checked fractional i8, 11-06) | adopted |
@@ -157,12 +161,12 @@ Every result-affecting setting, with its evidence (experiment # and status, 2026
 | gain | 1.0 | #39 (flat) | adopted |
 | output scales | always | #48 (auto rule +2.5%) | adopted |
 | LDLQ drift | interpolated | ourq trunk review 11-02 | adopted |
-| tile CD cd3 | attn_qg only, switch off | #77 (user adopted 11-06), w50 GPU impl, CD27 check | switch until CD27 passes |
-| H_out (bn, 1,920 seqs, σ_out 0.01) | switch off | #33-27 done, #33-28 running | OPEN |
-| xcorp H_in blend w 0.5 | switch off | #101 (0.8B pass, 27B pairs running) | OPEN |
-| swj | on, K ≤ 3.5 | #85, #104 PASS | adopted (K ≥ 4 open) |
-| writers asym ρ0 | switch off | #87, #105 queued | OPEN |
-| #100 hash codebook | switch off (refused) | #100 planned | OPEN (format) |
+| tile CD cd3 | attn_qg only, switch off | #77 (user adopted 11-06), w50 GPU impl, CD27 check **passed 11-06** (0.9994 / 0.9997) | adopted; the switch flips once tilecd.py is merged (lead) |
+| H_out (bn, 1,920 seqs, σ_out 0.01) | switch off | #33-27 done, #33-28: K2.5 geo 0.9801 → not adopted ≤ K3.5; K4 pending | OPEN (K ≥ 4) |
+| xcorp H_in blend w 0.5 | switch off | #101 (0.8B pass; 27B pooled ~0.993) | dropped (user 11-06) |
+| swj | on, K ≤ 3.5 | #85, #104 PASS (K2.5 −6.5%, verify-confirmed; K4 −1.1% head-matched) | adopted (K ≥ 4 open) |
+| writers asym ρ0 | switch off | #87, #105 queued; #111 fail (per-level asym in mixed-K mixes) | OPEN |
+| #100 hash codebook | switch off (refused) | #100 negative (real 0.8B run) | dropped (user 11-06) |
 | healing | off (refused) | #89, deferred | later |
 | dropped: i8c, YAQA full, trunk row-slab, act order, chained tail-biting, best-of-N seeds, group scales | — | #78-04, #33, #96, #103, #102, #41, #40 | dropped |
 

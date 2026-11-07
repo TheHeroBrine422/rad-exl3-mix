@@ -4,11 +4,13 @@ Source: a read of radiance 1.17's IQR-V4 kernels (`libr4d/r4d_gemm_iqr.hip`, `r4
 `r4d_gemm_fp8a8.hip`; Apache-2.0) against our two-pass exl3i path (fork branch `qc-exl3-v3-twopass`,
 `plugin/exl3i/TWOPASS.md`). Gains are estimates unless marked measured. Status per item; results get added here.
 
-**Branch status (2026-11-06):** the two-pass A8 path (`qc-exl3-v3-twopass`) and the A4 path (`qc-exl3-v3-a4`:
-codebook `mul1i4`, act `a4g64` / `a4g128`, int4 plane, iu4 tile; `plugin/exl3i/A4.md`) are merged on
-`qc-exl3-v3-merged` (fast-forwards, no conflicts; host and device tests pass, the f16 row byte-identical to
-`qc-exl3-v3`'s). Next: the i4 importer (`qc-exl3-v3-i4imp`, the quantizer's i4 output → `mul1i4` containers) on top,
-then `qc-exl3-v3` is fast-forwarded to the result (no history rewrite; the radiance PR tracks `qc-exl3-v3`).
+**Branch status (2026-11-06, 6:10 PM CST):** the two-pass A8 path (`qc-exl3-v3-twopass`) and the A4 path
+(`qc-exl3-v3-a4`: codebook `mul1i4`, act `a4g64` / `a4g128`, int4 plane, iu4 tile; `plugin/exl3i/A4.md`) were merged
+on `qc-exl3-v3-merged` (fast-forwards, no conflicts; host and device tests pass, the f16 row byte-identical to
+`qc-exl3-v3`'s). w53's i4 importer (`qc-exl3-v3-i4imp`, the quantizer's i4 output → `mul1i4` containers; byte-exact
+vs the quantizer's i4 decode at every rate, real 27B i4 tensors, gfx1201 `test_a4` 1093 PASS) rebased cleanly on top,
+and **`qc-exl3-v3` was fast-forwarded to 42960d5** (+12 commits, no history rewrite; the radiance PR tracks
+`qc-exl3-v3`).
 
 ## Prefill (A8 path, M ≥ 512): in order
 
@@ -31,11 +33,18 @@ and barriers. Not applicable: IQR's LDS transposes, tables and scale-form tricks
 | D1 | **Split K across blocks:** at N = 5120 we launch 40 workgroups for 64 CUs. Blocks = (128-column group × K slice), the last-arriving block sums partials in fixed order, then the output Hadamard + store | IQR: 5120×6144 GEMV 42.3 → 30.0 µs (measured, theirs) | −20–30% on those shapes | later |
 | D2 | **Integer byte-sum f16 decode** for mul1i8 (bit-exact; removes the f32 detour every V3 tensor pays at M = 1) | P2's form | — | **done** (w29, `716b811`): GEMV layer −7.0 / −6.4 / −4.8% at M 1 / 4 / 16 (K4) |
 | D3 | **Fused producers:** gate_up's last-arriving block writes silu·up·suh_down already rotated for down | `r4d_gemm_iqr.hip:55-107` | — | later |
-| D4 | Hash dotted with the activation byte broadcast by `v_perm` (sum and product in one `sudot4`), scales through SGPRs | `r4d_gemm_iqr.hip:170-233` | part of IQR's 42 → 30 µs | only with the hash codebook (#100) |
+| D4 | Hash dotted with the activation byte broadcast by `v_perm` (sum and product in one `sudot4`), scales through SGPRs | `r4d_gemm_iqr.hip:170-233` | part of IQR's 42 → 30 µs | moot: the hash codebook (#100) was dropped (2026-11-06) |
 
-## Format: the hash codebook (#100) — decide before the ladder
+## Format: the hash codebook (#100) — dropped (user, 2026-11-06)
 
-**Status 2026-11-06: still open.** Two checks before the user decides: w27's proxy result is being re-run on the
+**Decision (2026-11-06 6:20 PM CST): dropped; `mul1i8` (with the closed-form decode) stays the V3 codebook.** The real
+run (#100c, w48, `v3/e3/sub1/r100c.md`; 0.8B, 2 seeds, fake-quant scoring): KL ×1.026 / ×1.040 / ×1.016 at K2 / 3 / 4
+on search (verify ×1.025 / ×1.029 / ×1.000) vs the bar ≤ 1.01, ≈ +0.011…+0.025 bpw at equal quality; on gfx1201 decode
+GEMV +15.6% / +17.6% / +12.6% (bar ≥ 15% at every K), prefill ±1%. It missed both bars; the per-tensor proxy (+0.8–0.9%)
+underpriced its real KL cost 3–4×. The settle.py re-check (w46, `v3/e3/settle/reval.md` item 2) agreed with w27's proxy
+table within ±0.3%. Kept below for the record.
+
+**[superseded 2026-11-06] Status 2026-11-06 (morning): still open.** Two checks before the user decides: w27's proxy result is being re-run on the
 exllamav3-faithful CPU proxy (settle.py; the old proxy distorted other results through its scale handling), and a
 small real run (hash codebook behind a quantizer flag, 0.8B at K2 / K3 / K4, two seeds, scored on the calib goldens,
 plus a gfx1201 decode microbench vs mul1i8 today and the closed form). The numbers below are from before both.

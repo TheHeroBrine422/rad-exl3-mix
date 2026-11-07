@@ -40,11 +40,12 @@ Data behind it: `data/v2/` (every measurement, proxy tables, the final fit, the 
 |---|---|
 | `quantize/` | our EXL3 quantizer (`ourq.py`, on exllamav3 and the challenge calib Hessians), embedding quant, level fits |
 | `mix/` | `hproxy` (per-tensor Hessian proxy error), `radmix` (reflink container mixer), calib slices, paired bootstrap |
-| `eval/` | KLD scoring helpers, calib pools (`pools/pools.json`), radiance KLD-path patches |
+| `eval/` | KLD scoring helpers, calib pools (`pools/pools-v3.json` current; `pools/pools.json` = V2's, before the 2026-11-01 amendment), radiance KLD-path patches; RULER long-context set (`ruler/`) and the long-trace chunks (`traces/`) |
 | `search/` | `kfit2.py` sensitivity model + DP, the streaming search pipeline (`auto/`), leaderboard tools (`lb/`) |
 | `v2/` | EXL3-V2: the released mix files (`v2/mixes/`), HF upload and model card (`v2/hf/`) |
 | `v1/` | EXL3-V1: the turboderp-ladder port's run scripts, recipes and results, as run (absolute paths kept); HF upload and model card (`v1/hf/`) |
 | `v3/` | EXL3-V3 (integer activations) experiments: activation-quant hook, int8 kernels, trellis sweeps, GEMM benches |
+| `pipeline/` | the V3 production quantizer (package `rxq`; `config/v3.toml` pins the freeze settings with their evidence) |
 | `data/` | small result tables (proxy errors, measured mixes) |
 | `docs/` | experiment logs (incl. what did not work), design notes, research surveys |
 

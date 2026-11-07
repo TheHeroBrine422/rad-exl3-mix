@@ -106,6 +106,11 @@ board point at that size.
 3. Drop the per-family (`gu`) vs per-level swj question: it no longer moves any size by more than 0.5%.
 4. Quote 3.0–6.0 predictions from this section, not from the tables below.
 
+**Decisions since (user, 2026-11-07 ~12:30 AM CST, `local/TODO.md`):** keep the 17 i4 levels (very fast variants
+< 3 bpw); drop mul1 K6 / K6.25 (the ladder is 71 levels); fast 7.0: price a mixed-mode 7.0 and decide on the results.
+Tile CD on attn_qg was adopted on 2026-11-06 (27B no-harm check passed). A per-rate int8 factor at K6.5–8 does not
+help (#109, 11-07: i8 saturates near mul1 K6.9), so i8 stays priced as here.
+
 ## Summary (predictions)
 
 1. **Picks.** The accurate variant uses i8 up to K5.75, then **mul1 only at K ≥ 6**. mul1 is 0.2% of params at 4.5,
