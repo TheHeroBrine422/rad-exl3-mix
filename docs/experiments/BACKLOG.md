@@ -442,3 +442,11 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   library, one pass per (layer, K), donor-computable, priced in the knapsack; (2) library healing / QAD per level
   (block-local training, weakly mix-dependent); (3) mix QAD end to end (cross-layer compensation, per mix). Push as much
   as possible into (1)–(2); measure what (3) still adds on top of the full library stack.
+  - **MoE reference (user 11-07): NatScale, "Beyond Expert Rankings: Contrast Calibration for Mixed-Precision MoE
+    Quantization", arXiv 2610.20353.** Per-expert bit allocation under a byte budget: gradient sensitivity per expert,
+    power-transformed so its contrast (Jeffreys divergence from uniform) hits τ ≈ 1 nat, × joint gate/up/down error on
+    replay inputs × AlphaQ's spectral prior, then LP + rounding. Routed experts only, 2.0 / 2.5 / 3.0 bpw; models include
+    Qwen3.8-Flash-Next and DeepSeek-V4-Flash. Best KLD / top-1 in 9/9 settings vs MxMoE / AlphaQ / MODE / GEMQ (Flash-Next
+    mid budget KLD 0.249 → 0.194); beats UD and GSQ-RCO at matched size. Calib: 1M tokens, stats reused across budgets.
+    For us: their allocator ≈ our knapsack with an expert-level prior; the τ "contrast" knob = how hard sensitivities
+    are trusted (our kfit2 calibration analogue). Read in full when V4 MoE work starts.
