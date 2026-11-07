@@ -460,5 +460,5 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   in main / subagent / worker sessions, growing a few M a day) as *contexts* for (a) a speculative-decoding draft for
   Qwen3.8-27B and (b) QAD for real-world (non-challenge) releases. Targets always come from the bf16 Qwen itself
   (regenerated continuations / its logits), never from the logged Claude text. Needs: rendering into Qwen's chat and
-  tool-call template, a secrets / host scrub, dedup of miner prompts. Challenge entries keep QAD on the calib qad pool
-  (AGENTS data discipline); a session-trained variant would be a separate, real-world release, reported on its own.
+  tool-call template, a secrets / host scrub, dedup of miner prompts. Allowed for challenge entries too (AGENTS: pi-sessions
+  are a training corpus since 11-02, xcorp since 11-04); never for selection or verification, public stays held out.
