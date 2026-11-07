@@ -7,10 +7,11 @@
 3. LDLQ drift interpolated log-linearly between exllamav3's table points (drift = "interp"; "exact" = the lookup)
 4. kernel swaps: exl3frac (fractional rates), exl3cb (rounded codebooks), exl3frac2 (qtf2), all from rad-exl3-mix
    v3/e3/ built at run time against the fork's exllamav3_ext sources
-5. optional: tile coordinate descent (w50's tilecd.install, unchanged), the gain wrapper (gain != 1)
+5. optional: tile coordinate descent (rxq/tilecd.py: w50's module merged, plus the H_out objective), the gain wrapper
 
 Paths (env): RXQ_RXM = rad-exl3-mix checkout (default: the checkout this package lives in), RXQ_EXL3_SRC = the fork's
-exllamav3_ext source dir (ourq's --frac-ext), RXQ_TILECD = tilecd.py's dir (default RXQ_RXM/v3/e3/tilecd).
+exllamav3_ext source dir (ourq's --frac-ext). tile_cd = (sweeps, families[, module path]): the path loads another
+tilecd.py instead of rxq's (settings quant.tile_cd.module; comparisons against the research copy only).
 setup() is idempotent per (codebook, qtf2, drift, block_trace, tile_cd) and refuses a second, different setup in one
 process (the swaps are global to the exllamav3 module)."""
 import glob, hashlib, math, os, sys
@@ -43,8 +44,8 @@ def _kernel_dirs():
 
 
 def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True):
-    """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list)"""
-    key = (codebook, bool(qtf2), drift, bool(block_trace), None if tile_cd is None else (tile_cd[0], tuple(tile_cd[1])), bool(frac))
+    """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path])"""
+    key = (codebook, bool(qtf2), drift, bool(block_trace), None if tile_cd is None else (tile_cd[0], tuple(tile_cd[1]), *tile_cd[2:]), bool(frac))
     if _STATE.get("key") is not None:
         if _STATE["key"] != key: raise RuntimeError(f"engine already set up as {_STATE['key']}, asked for {key}: one setup a process")
         _STATE["dev"][0] = device
@@ -89,9 +90,14 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
         sys.path.insert(0, kd["exl3frac2"]); import exl3frac2
         exl3frac2.install(exl3_src(), codebook)
     tcd = None
-    if tile_cd is not None:
-        sys.path.insert(0, os.environ.get("RXQ_TILECD") or os.path.join(rxm_root(), "v3", "e3", "tilecd"))
-        import tilecd as tcd
+    if tile_cd is not None:                              # rxq's own (merged 11-07, H_out-aware); a module path = another copy
+        mod = tile_cd[2] if len(tile_cd) > 2 else ""     # (comparisons: the research module v3/e3/tilecd/tilecd.py)
+        if mod:
+            import importlib.util
+            sp = importlib.util.spec_from_file_location("tilecd_ext", mod)
+            tcd = importlib.util.module_from_spec(sp); sp.loader.exec_module(tcd)
+        else:
+            from . import tilecd as tcd
         tcd.install(Q, int(tile_cd[0]), ",".join(tile_cd[1]))
     _warm_refit(device)                                  # load the refit kernels while VRAM is empty (ourq does it here)
     _STATE.update(key=key, Q=Q, dev=dev, tilecd=tcd, gain=[1.0])
@@ -123,7 +129,7 @@ def code_stamp(Q):
     if src: files += sorted(f for e in ("cu", "cuh", "cpp", "h", "py") for f in glob.glob(f"{src}/**/*.{e}", recursive=True))
     for d in _kernel_dirs().values(): files += sorted(glob.glob(os.path.join(d, "*.*")))
     t = tilecd()
-    if t is not None: files.append(t.__file__)
+    if t is not None and not t.__file__.startswith(os.path.dirname(os.path.abspath(__file__))): files.append(t.__file__)
     for f in files:
         if os.path.isfile(f) and not f.endswith(".pyc"): h.update(os.path.basename(f).encode()); h.update(open(f, "rb").read())
     return h.hexdigest()[:16]

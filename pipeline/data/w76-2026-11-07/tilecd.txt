@@ -1,0 +1,24 @@
+     tile CD 3: rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+     tile CD 3: rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+PASS same: Wq equal True, indices equal True, record equal True (ratio 0.8368)
+     tile CD 3: rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+     tile CD 3 (H_out): rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+PASS gate: Wq equal True, indices equal True, rel / accepted equal True (M-free ratio 0.836774, M = I ratio 0.836774)
+     tile CD 3: rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+     tile CD 3 (H_out): rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.1s
+PASS gate64: Wq equal True, indices equal True, rel / accepted equal True (M-free ratio 0.836773, M = I ratio 0.836773)
+     tile CD 3 (H_out): rel 4.0732e-02 -> 2.2506e-02 (x0.5525), accepted 0.162 / 0.221 / 0.197, 0.0s
+     tile CD 1 (H_out): rel 4.0732e-02 -> 2.7155e-02 (x0.6667), accepted 0.162, 0.0s
+     tile CD 1 (H_out): rel 2.7155e-02 -> 2.4495e-02 (x0.9020), accepted 0.221, 0.0s
+     tile CD 1 (H_out): rel 2.4495e-02 -> 2.2506e-02 (x0.9188), accepted 0.197, 0.0s
+     tile CD 3: rel 4.0683e-02 -> 3.4042e-02 (x0.8368), accepted 1.000 / 0.975 / 0.846, 0.0s
+PASS hout: two-sided rel 0.04073 -> cd3 0.02251 (x0.5525); M-free CD on the same objective 0.03356 (x0.8240); monotone True, decode True, rel matches True
+     tile CD 1 (H_out): rel 4.0732e-02 -> 2.7155e-02 (x0.6667), accepted 0.162, 0.0s
+PASS hout-accept: 83 of 512 tiles changed in one sweep, objective 0.04073 -> 0.02716
+PASS dense: tile CD with H_out: the output metric is not block diagonal in 128 (a dense H_ou
+     tile CD 2: rel 4.0683e-02 -> 3.4398e-02 (x0.8455), accepted 1.000 / 0.975, 0.0s
+     tile CD 2 (H_out): rel 4.0732e-02 -> 2.4495e-02 (x0.6014), accepted 0.162 / 0.221, 0.0s
+     tile CD 2: rel 4.0683e-02 -> 3.4398e-02 (x0.8455), accepted 1.000 / 0.975, 0.0s
+     tile CD 2 (H_out): rel 4.0732e-02 -> 2.4495e-02 (x0.6014), accepted 0.162 / 0.221, 0.0s
+PASS install: calls ['ldlq', 'ldlq_2hess'], records [False, True], outputs equal the direct calls, other families untouched True
+TILECD CHECKS 7/7 PASS
