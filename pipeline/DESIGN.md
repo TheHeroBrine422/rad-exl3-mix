@@ -1,4 +1,4 @@
-# rad-exl3-quantizer: the V3 quantizer as one pipeline (design, 2026-11-06)
+# rxq (`pipeline/`): the V3 quantizer as one pipeline (design, 2026-11-06; merged into rad-exl3-mix 2026-11-07)
 
 Decided 2026-11-06 (user + Code 000): quantizer tooling lives outside radiance; radiance keeps the runtime and eval
 primitives (plugin, KLD modes, mix assembly). This repo is the encoder, the post-quantization fits, the knapsack

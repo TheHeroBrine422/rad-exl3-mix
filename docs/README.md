@@ -12,6 +12,6 @@
 | [`research/`](research/) | literature briefs: PTQ state of the art, mix allocation, RCO, NVIDIA Model Optimizer overlap (`modelopt.md`, 2026-11-03), IQR-V4 (`iqr-v4.md`, 2026-11-04) | snapshots (2026-10-29/30), each with a status header saying what became of its recommendations |
 | [`ideas/`](ideas/) | LLM-generated research-idea passes (lenses + a ranked merge), one folder per pass, with the paper lists | **untested**; status of anything tried is in `experiments/` |
 
-Related repositories (2026-11-06): `rad-exl3-quantizer` (the production quantizer pipeline, package `rxq`; its
+Related code (2026-11-07): `pipeline/` (the production quantizer pipeline, package `rxq`, merged in from its side repo; its
 `config/v3.toml` pins the V3 freeze settings with their evidence from `experiments/`) and `rad-quant-at-home` (the
 job system for donated compute that runs the ladder's per-tensor jobs). This repository stays the research record.

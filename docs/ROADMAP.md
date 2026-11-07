@@ -83,7 +83,7 @@ K1.125–3 in 1/8 steps (16; K2 / K3 first, the other 14 only if A4 pays), mul1 
 ~180 card-hours" before the 11-05 amendments.) Measured: ~37 min a level on one R9700 without H_out, ~3.2 h with it.
 Quantized in order of use (2.5–4.5 first), once the settings above are frozen.
 
-**Production (2026-11-06):** the quantizer pipeline lives in the side repo `rad-exl3-quantizer` (package `rxq`;
+**Production (2026-11-06):** the quantizer pipeline lives in `pipeline/` (package `rxq`, merged in 2026-11-07;
 `config/v3.toml` pins the freeze settings, each with its evidence); the ladder run uses donated compute via
 `rad-quant-at-home` (per-tensor jobs, inputs from Hugging Face pinned by revision, results verified by score rather
 than by replication; on small cards every family but ffn_down fits in ≤ 4.1 GB). Where the time goes: the trellis

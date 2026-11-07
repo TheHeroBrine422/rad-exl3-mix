@@ -1,6 +1,6 @@
 #!/bin/bash
 # run4070.sh UNIT -- w52's checks on the RTX 4070 box (shared: one hold of /data/yb/gpu.lock per unit, < 15 min in
-# total, VRAM_CAP_GB 7.2). Code is read from /workspace/rad-exl3-quantizer (shared folder); outputs /data/yb/w52/.
+# total, VRAM_CAP_GB 7.2). Code is read from /workspace/rad-exl3-mix/pipeline (shared folder); outputs /data/yb/w52/.
 #   A  27B per-tensor jobs at K2.5 (ladder settings) on layer 10 (GDN + MLP: 6 tensors) and layer 39 attention (q/k/v/o)
 #      -> bit-identity against hconv's ourq level /data/yb/hconv/q-none (same settings, 11-04), stage profile
 #   B  the same 10 tensors at K2, and at K4 / K6 without ffn_down (lock budget), stage profile
@@ -10,7 +10,7 @@
 #   D  H_out (two-sided ldlq_2hess): 27B layer 10 in_proj_z + gate_proj, layer 39 o_proj at K2.5 with hconv's bn H_out
 #      (train-1664, sigma_out 0.01) -> bit-identity against hconv/q-bn1664 (ourq), stage profile
 set -u
-U=${1:?A|B|C|D|BCD}; R=/workspace/rad-exl3-quantizer O=/data/yb/w52; mkdir -p $O
+U=${1:?A|B|C|D|BCD}; R=/workspace/rad-exl3-mix/pipeline O=/data/yb/w52; mkdir -p $O
 export PYTHONPATH=$R:/data/src/exllamav3 TORCH_EXTENSIONS_DIR=/data/torch_ext RXQ_EXL3_SRC=/data/src/exllamav3/exllamav3/exllamav3_ext \
        RXQ_RXM=/workspace/rad-exl3-mix RXQ_REFIT_CPU_FALLBACK=1 VRAM_CAP_GB=${VRAM_CAP_GB:-7.2} \
        PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True OMP_NUM_THREADS=4

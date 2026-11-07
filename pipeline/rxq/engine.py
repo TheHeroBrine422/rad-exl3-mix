@@ -9,7 +9,7 @@
    v3/e3/ built at run time against the fork's exllamav3_ext sources
 5. optional: tile coordinate descent (w50's tilecd.install, unchanged), the gain wrapper (gain != 1)
 
-Paths (env): RXQ_RXM = rad-exl3-mix checkout (default /workspace/rad-exl3-mix), RXQ_EXL3_SRC = the fork's
+Paths (env): RXQ_RXM = rad-exl3-mix checkout (default: the checkout this package lives in), RXQ_EXL3_SRC = the fork's
 exllamav3_ext source dir (ourq's --frac-ext), RXQ_TILECD = tilecd.py's dir (default RXQ_RXM/v3/e3/tilecd).
 setup() is idempotent per (codebook, qtf2, drift, block_trace, tile_cd) and refuses a second, different setup in one
 process (the swaps are global to the exllamav3 module)."""
@@ -21,7 +21,7 @@ _STATE = {}
 
 
 def rxm_root():
-    return os.environ.get("RXQ_RXM", "/workspace/rad-exl3-mix")
+    return os.environ.get("RXQ_RXM", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
 
 
 def exl3_src():

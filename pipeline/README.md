@@ -1,4 +1,4 @@
-# rad-exl3-quantizer
+# rxq — the V3 quantizer pipeline (`pipeline/` of rad-exl3-mix)
 
 The V3 quantizer pipeline for EXL3 trellis codes (Qwen3.8-27B first; model-agnostic in time): input statistics,
 per-tensor trellis quantization with LDLQ, post-quantization scale fits, and the level assembly that the knapsack and
@@ -15,7 +15,7 @@ Needs: python ≥ 3.11, torch with CUDA or ROCm, the exllamav3 fork (rad-exl3-mi
 `PYTHONPATH`, a rad-exl3-mix checkout for the run-time kernels.
 
 ```
-export PYTHONPATH=/path/to/rad-exl3-quantizer:/path/to/exllamav3-fork
+export PYTHONPATH=/path/to/rad-exl3-mix/pipeline:/path/to/exllamav3-fork
 export RXQ_RXM=/path/to/rad-exl3-mix RXQ_EXL3_SRC=/path/to/exllamav3-fork/exllamav3/exllamav3_ext
 export TORCH_EXTENSIONS_DIR=/path/to/torch_ext     # kernel build cache
 # one layer at K2.5, the settings file's defaults (= the ladder's quantizer)
