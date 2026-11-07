@@ -1,4 +1,4 @@
-# What is ported, and how each port was checked (2026-11-06)
+# What is ported, and how each port was checked (2026-11-06; level passes, S5b, S7 / S8, tile CD + H_out: 2026-11-07)
 
 Rule (task w52): no new quantizer behaviour; every port bit-identical to the experiment script it replaces, on small
 cases (0.8B tensors or single 27B tensors). "Bit-identical" for files = the same tensor names, dtypes and values
@@ -22,10 +22,32 @@ BCD block).
 | S4 swj container | `swj.apply_level` | `v3/yaqa/swj27/swjapply.py` | `check_cpu.py`: q-k3base + w36 k3lv scales | PASS (28 files) |
 | S3 assembly | `job.assemble` | (new: ourq writes per layer itself) | `tests/check_assemble.py`: 0.8B q-k3base split into 150 per-tensor job files over 5 job dirs, reassembled | **PASS** (600 tensors equal, same key → shard map; a level with one changed code stamp is refused) |
 
-Not ported (called in place, DESIGN.md "Open items" 5): the level passes swjfit27.py (staged bf16 forward + fused
-grid), sibmom27.py (sibling moments), mkhin27.py (xcorp H_in), collect.py (Σdy²); kfit2 / knap4; rad-convert.
-Not ported because not in the V3 settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-diag,
---out-scales-off, --head-perm / --head-mean-row (the head job comes with the slab-head decision), the multi-level memo.
+### 2026-11-07 (w76): level passes, decoder, C9, S7 / S8, tile CD, i4, hygiene
+
+CPU checks only (w76 had no GPU; the 4070 was off limits): colo (`/data/work/w13/w76`, nice 19, ≤ 8 GB RSS) and the VM.
+Raw outputs: `data/w76-2026-11-07/`. The 0.8B (Qwen3.5-0.8B bf16, downloaded to colo) runs on transformers' torch GDN
+path (P2B_BLOCK=causal_conv1d,fla) with a synthetic corpus (random token ids: no calib document read, no ledger use).
+
+| stage | rxq | original (rad-exl3-mix) | check | result |
+|---|---|---|---|---|
+| S4 swj level pass | `swjfit.py` on `forward.py` | `v3/yaqa/swj27/swjfit27.py` | `tests/check_levelpass.py swj / swjc`: 0.8B, :wq source (gate / up + 3% noise), 3 stages, a checkpoint after every document (resume path), --no-cache and the fresh-cache forward | **PASS** both (50 files each, swjfit.json equal; `data/w76-2026-11-07/levelpass.txt`) |
+| S5 sibling moments | `sibmom.py` | `v3/yaqa/asym27/sibmom27.py` | `check_levelpass.py sib`: 0.8B, every layer, --wq siblings, 256-token windows | **PASS** (73 files: moments, half/, windows.json, done markers) |
+| S1 H_in collection | `hin.py` on `forward.py` | `eval/gold27/mkhin27.py` | `check_levelpass.py hin`: 0.8B, 3 stages, 256-token chunks, a flush every 2 documents; 97 Hessians byte for byte (both sides at 1 thread: at 4 threads on a loaded host the CPU SDPA is not reproducible run to run, mkhin27 against itself included) | **PASS** (97/97, collect.json equal) |
+| level decoder | `deq.py` | `v3/yaqa/swj27/exl3deq.py` (swjfit27's) and `v3/yaqa/asym27/deq.py` (sibmom27's, c9e27's); tables from rad-quant-at-home `checker/exl3dec.py` | `tests/check_deq_c9.py lut / deq`: hconv's 27B K2.5 i8 layer 10 (6 tensors) decoded by all three | **PASS** (6/6 torch.equal; 4 codebooks × 65,536 states equal) |
+| i4 codebook | `deq.lut("i4")` | w53's C oracle (`v3/infer/ref/exl3i_ref.c` + `exl3i_ref-i4.patch`, built in a scratch copy) | `tests/check_i4lut.py` (VM) | **PASS** (mul1 / i8 / i4: 0 of 65,536 states differ; i4 has 16 values) |
+| S5b C9 in the quant job | `post.c9_tensor` (in `job.run_quant`), `job._assemble_c9` | c9e27.py (as above) | `check_deq_c9.py injob`: the writer's tensors as the job holds them + W + its group's H_in → c9-<key> file → assembled LEVEL/c9 | **PASS** (scales and c9.jsonl equal c9e27's); 10-25 s a gdn_out writer on 4 colo threads (f64; load-dependent); on the card: `tools/gpucheck27.sh c9` (prepared; also `tests/check_c9job.py` on a fake job dir: PASS on colo) |
+| S5b C9 scales | `post.py c9` | `v3/e3/settle/w75/c9e27.py` (the 27B implementation; w64's `c9w.py` for the 0.8B) | `check_deq_c9.py c9`: the same level's out_proj, α gdn_out 3, DEV=cpu | **PASS** (scales and c9.jsonl equal). attn_o / down not exercised (no attention layer in the shard; down's f64 17,408² metric exceeds the RSS cap) |
+| S7 knapsack | `knap.py` | knap5.py run by `v3/levels/reprice/run5.py` with mkjobs2.py's main arm | `tests/check_knap.py`: the 11-07 ladder as the library, the settings file's `[knap]` → env + solve, 2.5 bpw accurate | **PASS** (the output line byte-identical to `data/levels/reprice/swj2/out/main-acc-2.5.jsonl`); hand-off mix: 337 weights, TRUNK order |
+| S8 recipe / mix text | `mix.py` | `v3/yaqa/swap27.sh` TRUNK + `swap27k.sh` packmixk | `tests/check_mix.py`: the 13 swap27 arms' `.recipe` / `.mix` (gpubox backup) | **PASS** 13/13 byte for byte |
+| tile CD | `tilecd.py` (merged) | `v3/e3/tilecd/tilecd.py` (w50) | `tests/check_tilecd.py` (stub trellis quantizer, VM): same / gate (M = I, fp32 and fp64) / two-sided descent / dense refusal / wrappers | **PASS** 7/7; on the real quantizer: `tools/gpucheck27.sh cd` (prepared) |
+| i4 + qtf2 | `engine.setup` (i4 allowed), ourq + exl3frac2 patched | w53's `qtf2-i4.patch` | `tests/check_i4.py` (build flags, ourq's assert, engine installs, sub-1 plan) | **PASS** 4/4; on the card: `tools/gpucheck27.sh i4` (prepared) |
+| swap-pair hygiene | `pairs.py` | (new; radiff.py's identity gate generalized) | `tests/check_pairs.py`: synthetic levels and RAD2 containers | **PASS** 22/22 |
+
+Not ported (DESIGN.md "Open items" 5): collect.py (the Σdy² collection: a two-card GPU backward that cannot run on a
+CPU; `rxq/hout.py` runs it in place with its production environment, and its bn estimator is ported); the per-mix
+asym driver; kfit2's refit; rad-convert / radmix / census (radiance tools, called). Not ported because not in the V3
+settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-diag, --out-scales-off, --head-perm /
+--head-mean-row (the head job comes with the slab-head decision), the multi-level memo.
 
 ## Notes from the port
 
@@ -39,3 +61,12 @@ Not ported because not in the V3 settings: ourq's --sigma-in-sweep, per-linear -
   (rad-quant-at-home VERIFY.md) absorbs it, bit-identity checks must pin the thread count.
 - **ourq's --save-wq rowerr** is computed from the weight after quantize_exl3 has regularized it in place (scaled,
   rotated): the per-row error is not in the original basis. Ported unchanged for parity; flagged in DESIGN.md.
+- **Tile CD with H_out is not per-row weights.** H_out is diagonal per output channel in the original basis, but the
+  quantizer works after the output sign / scale vector and the 128-blockwise Hadamard: there M = P S H_out S P is
+  block diagonal with dense 128 × 128 blocks, and the tiles of one 128-column group are coupled. rxq/tilecd.py uses
+  that M (prepare_H_out's own matrix, captured) and decides a group's 8 tile positions in turn with exact cross terms.
+- **Level decode is one function.** swjfit27 (exl3deq.py) and sibmom27 / c9e27 (asym27 deq.py) used two decoders;
+  they agree bit for bit on a real 27B level, so rxq.deq replaces both and adds i4 (sub-1 / i4 levels were not
+  decodable by asym27's deq.py).
+- **knap5 must sit in a v3/nf directory** (it reads data relative to its own file and to the cwd): rxq.knap stages a
+  symlink tree; abspath keeps the link's directory.

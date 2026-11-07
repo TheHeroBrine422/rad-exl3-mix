@@ -5,10 +5,13 @@ primitives (plugin, KLD modes, mix assembly). This repo is the encoder, the post
 driver and (later) QAD, as one Python pipeline whose unit of work is a job that rad-quant-at-home can hand out.
 The research record stays in rad-exl3-mix; every setting here points at its evidence there.
 
-Status of this document: the per-tensor and per-group parts of S1-S5 and the job unit are implemented and checked
-bit-identical against the research scripts (PORTING.md); the level passes (swj's bf16 forward, the sibling moments,
-the H_in / H_out collections) and S6-S8 are designed here and run through the existing rad-exl3-mix tools until
-ported. Settings: `config/v3.toml` (the one file the freeze pins). Where the time goes: PROFILE.md.
+Status of this document (2026-11-07, w76): S1-S5, the job unit, the level passes and S7 / S8 are implemented in rxq and
+checked bit-identical against the research tools (PORTING.md), except the Σdy² collection (collect.py: a two-card GPU
+backward, wrapped in place, `rxq/hout.py`). The adopted settings are on in `config/v3.toml`: H_out at K ≥ 4, tile CD
+on attn_qg (two-sided with H_out), sub-1 input damping 0.05, swj at every level, i4 + qtf2 for the sub-1 levels, C9 α
+on the writers (user 11-07; computed inside the writers' quant jobs). The open one is a switch, off: asym writers
+(#105; per mix only, #111). GPU checks that w76 could not run (no GPU) are prepared for the lead: `tools/gpucheck27.sh`, `tools/cdhout27.sh`
+(CDHOUT27.md). Settings: `config/v3.toml` (the one file the freeze pins). Where the time goes: PROFILE.md.
 
 ## 1. Data flow
 
@@ -26,31 +29,43 @@ ported. Settings: `config/v3.toml` (the one file the freeze pins). Where the tim
                           ▼
                           [S4 swj level pass]  bf16 forward + MLP hooks → gate/up svh        level pass (big card)
                           ▼
-                          [S5 asym writers]    sibling moments (level pass) → mkdenoise
-                                               (per group) → 128 writer requants (S2 jobs)   level pass + jobs
-                          ▼
                           [S6 healing]         deferred (#89): frozen codes, scales only      later
                           ▼
- all levels:              [S7 census + knapsack re-run] kfit2 refit on fit-pool swaps, knap4   CPU + card evals
+ all levels:              [S7 library + knapsack] rxq.knap: levels → knap5 → picks            CPU
+                          ▼        └─ hand-off: knap-<tag>-<base>-<target>.mix + frontier line → search stream
+ per mix:                 [S5 asym writers]    (if #105 passes; #111: per mix only) sibling moments
+                                               of the mix's siblings → denoise → writer requants (S2 jobs)
                           ▼
-                          [S8 pack] rad-convert exl3i (mul1i8 / i4 / mul1), radmix mix, census   CPU (conv.lock)
+                          [S5b C9 α]           writers' row factors into svh, on the shipped codes (plain writers: made
+                                               in S2's writer jobs, folded with S4's apply; asym writers: per mix)
+                          ▼
+                          [S8 pack] rad-convert exl3i (mul1i8 / mul1i4 / mul1), radmix mix, census   CPU (conv.lock)
+                          ▼
+                          swap-pair hygiene    rxq.pairs: two mixes / levels compared refuse to pair if they differ
+                                               outside the declared arm
 ```
 
 S1 runs once per model (and when a statistics setting changes). S2 is the bulk (71 levels × 400 trunk tensors =
-28,400 tensor jobs + heads; the ladder was 66 levels when this was written, 71 since 2026-11-07). S3-S5 run once per level, in this order (#87-07 / #87-08: H_out → swj → writers last,
-on the level's final siblings). S7 / S8 run per release size and variant.
+28,400 tensor jobs + heads). S3-S4 run once per level. The writer passes run last, in this order (#87-07 / #87-08:
+H_out → swj → writers): asym needs the final siblings, so with #111 it runs per mix after the knapsack; C9 folds into
+the shipped writers' svh after everything else. S7 / S8 run per release size and variant. `python -m rxq.post plan -K K`
+prints the post passes a level gets under the settings.
 
 ## 2. Stages
 
-### S1 statistics prep (`rxq/stats.py`, CPU)
+### S1 statistics prep (`rxq/stats.py`, `rxq/hin.py`, `rxq/hout.py`; CPU / level passes)
 - **H_in:** the published calib Hessians (packed upper triangle, sum over 10.26M tokens). Optional **xcorp blend**
   (#101, **dropped 2026-11-06** at 27B: pooled ~0.993 vs ≤ 0.98; the switch stays off): per-token means mixed,
-  `(1 - w) calib + w xcorp`, stored at calib's scale (`blend_hin`, port of d1108/blend.py). The xcorp Hessians come from `eval/gold27/mkhin27.py` over the mX meta (a level-independent pass,
-  ~1 card-hour; not ported).
-- **H_out:** diagonal Σdy² from the 27B collection (`v3/yaqa/collect.py`, YAQA_DIAG; not ported: a backward pass on two
-  cards). Estimator **bn** (#33-27): each 128-sequence block scaled to the same per-tensor total, averaged
-  (`hout_blocks`, port of mkhalf.py; `split=False` = every block, the production estimator). #33-28: not adopted
-  for levels ≤ K3.5 (2026-11-07, K2.5 geo 0.9801 vs ≤ 0.98); K ≥ 4 open (K4 pairs).
+  `(1 - w) calib + w xcorp`, stored at calib's scale (`blend_hin`, port of d1108/blend.py).
+- **H_in collection** (`rxq/hin.py`, port of `eval/gold27/mkhin27.py` on `rxq/forward.py`'s staging): any corpus's
+  input Hessians in the published layout, one card, staged layer passes (~1-2 card-h on the R9700 for 1.14M tokens).
+  V3 itself uses the published calib Hessians; this is for blends and other models.
+- **H_out:** diagonal Σdy² from the 27B collection (`v3/yaqa/collect.py`, YAQA_DIAG + DIAG_EXTRA "dy"), run in place
+  by `rxq/hout.py collect` with hdiag27.sh's production environment (not ported: a two-card GPU backward that cannot
+  run on a CPU, so a port could not be checked under the rules; the 27B collection exists). Estimator **bn**
+  (#33-27): each 128-sequence block scaled to the same per-tensor total, averaged (`hout_blocks`, port of
+  mkhalf.py; `rxq.hout estimate` = every block, the production estimator). #33-28: not adopted for levels ≤ K3.5
+  (K2.5 geo 0.9801), **adopted for levels ≥ K4** (K4 geo 0.9643, 11-07): `inputs.hout.apply_k_min = 4`.
 - Outputs are input dirs for S2 (`hessians/`, `hout/<id>/`), part of the datapack rad-quant-at-home serves.
 
 ### S2 tensor quant (`rxq/quant.py`, `rxq/engine.py`; GPU)
@@ -59,14 +74,19 @@ kernels swapped in at run time from rad-exl3-mix v3/e3 (exl3frac, exl3cb, exl3fr
 it. Per tensor:
 1. **load:** bf16 weight (`(in, out)` fp32), the group's H_in (or the asym G from `hin/`), optional `wpre` target
    transform (asym: W F), optional H_out diagonal;
-2. **finalize** (shared per Hessian group): H / rows, damping σ·mean diag (0.005 input group, 0.025 rest, #38),
+2. **finalize** (shared per Hessian group): H / rows, damping σ·mean diag (0.005 input group, 0.025 rest, #38; the
+   input group takes **0.05 below K1**, user 11-07: `quant.apply_sub1_damping`),
    input sign flips su (drawn under the group's first seed) and the 128-Hadamard;
 3. **regularize:** output-channel RMS scales (always on, #48), output Hadamard, input-channel scales;
    **scale search** (g_scale: coarse + fine grid of trial trellis quants on sampled tiles, × LDLQ drift, interpolated
    between exllamav3's table points);
 4. **scaled LDL:** P diag(su) H diag(su) P per tensor, block-16 LDL (`scaled_hessian`);
-5. **LDLQ** with the **trellis search** (qtf2 Viterbi over 2^16 states per 256-weight tile; codebook i8 / i4 / mul1);
-   two-sided **ldlq_2hess** when H_out is on; **tile CD** (cd3, attn_qg only, #77, w50's tilecd.py) after LDLQ;
+5. **LDLQ** with the **trellis search** (qtf2 Viterbi over 2^16 states per 256-weight tile; codebook i8 / i4 / mul1;
+   i4 with qtf2 since w53's patch, 11-07); two-sided **ldlq_2hess** when H_out applies (K ≥ 4); **tile CD** (cd3,
+   attn_qg, #77; `rxq/tilecd.py`, w50's module merged) after LDLQ, or after ldlq_2hess on the two-sided objective
+   tr(Eᵀ H E M): M = H_out in the quantizer's basis, block diagonal with dense 128 × 128 blocks (the output Hadamard
+   mixes each 128-column group), so the 8 tiles of a group are decided in turn with exact cross terms; with M = I it is
+   the one-sided CD bit for bit (tests/check_tilecd.py);
 6. **refit:** su / sv closed-form refit in the H metric (2 rounds);
 7. **pack** the trellis, write `t-<key>.safetensors` + its proxy-log record.
 Bit-identical to ourq.py per tensor (PORTING.md), including tensors that are not the first of their group (the job
@@ -79,34 +99,68 @@ swap-test tool (swapfit.sh, asym27.sh, deq.py) read this layout. **Note:** stamp
 ourq's `args`; asym27's levelargs.py cannot derive ourq arguments from an rxq level (S5 is driven from the
 settings file instead).
 
-### S4 swj (`rxq/swj.py`; level pass)
+### S4 swj (`rxq/swj.py`, `rxq/swjfit.py`; level pass)
 Joint gate / up output-scale refit through the SwiGLU on frozen codes (#85; **#104 PASS at 27B K2.5**, −6.5%,
-confirmed on verify; stacks with H_out; K4 head-matched only −1.1%, so its use at K ≥ 4 is open: SWJ27 amendment 2). Needs the bf16 27B's MLP inputs over ~0.93M qad tokens: a staged forward on one
-card, all sources (levels) in one pass (swjfit27.py, ~1.5 card-h for 2 levels on the R9700). Ported: the grid sums,
-the fit and the container edit (`apply_level`, byte-identical). The level pass itself is called in place
-(`fit_level` → swjfit27.py) until ported. Output: the level with gate / up svh × c. Not a donor job (bf16 model +
-boundaries ~20 GB on disk, a 32 GB card).
+confirmed on verify; stacks with H_out; K4 head-matched −1.1%; user 11-07: swj at every level). Needs the bf16 27B's
+MLP inputs over ~0.93M qad tokens: a staged forward on one card, all sources (levels) in one pass (~1.5 card-h for 2
+levels on the R9700). **Ported** (11-07): the level pass `rxq/swjfit.py` (port of swjfit27.py on `rxq/forward.py`,
+level sources decoded by `rxq/deq.py`, the fused Triton grid `rxq/swjtri.py` copied), the grid sums / fit and the
+container edit (`swj.apply_level`). Output: the level with gate / up svh × c. Not a donor job (bf16 model + boundaries
+~20 GB on disk, a 32 GB card).
 
-### S5 writers asym ρ0 (`rxq/asym.py`; level pass + per-group CPU/GPU + S2 jobs)
+### S5 writers asym ρ0 (`rxq/asym.py`, `rxq/sibmom.py`, `rxq/post.py`; per mix: moments pass + per-group + S2 jobs)
 (#87; **#105 queued at 27B**, OPEN. **[2026-11-07, #111]** per-level asym writers next to siblings of another K
-fail on the 0.8B (8–24% worse than plain); a per-mix writer pass keeps the gain: if #105 passes, the user picks
-per-mix pass / writer K tied to sibling K / plain writers.) Three parts: (a) sibling moments H / C / N of the 128 writers' inputs through the
-level's own quantized siblings (sibmom27.py, a level pass, ~2.5-3 card-h, 262 GB of moments); (b) per writer group
-the denoised metric G and target transform F (`Denoiser`, port of mkdenoise.py: default and lean paths,
-byte-identical); (c) the 128 writers requantized as S2 jobs with `hin = G`, `wpre = F` (bit-identical to ourq
---hin --wpre). Must run after swj and anything else that changes a sibling.
+fail on the 0.8B (8–24% worse than plain); a per-mix writer pass keeps the gain. The settings allow only
+`post.asym.scope = "per-mix"` (config.validate refuses per-level); off until #105 and the user's rollout pick.)
+Parts: (a) sibling moments H / C / N of the 128 writers' inputs through the mix's own quantized siblings
+(`rxq/sibmom.py`, port of sibmom27.py, ~2.5-3 card-h at 27B, 262 GB of moments); (b) per writer group the denoised
+metric G and target transform F (`Denoiser`, port of mkdenoise.py: default and lean paths, byte-identical); (c) the
+128 writers requantized as S2 jobs with `hin = G`, `wpre = F` (bit-identical to ourq --hin --wpre); (d) spliced
+into the mix's levels (`rxq.pairs splice`). `post.plan_asym` lists the steps; the per-mix driver itself is not
+written (it waits for #105). Must run after swj and anything else that changes a sibling.
+
+### S5b writers C9 α (in the S2 writer jobs; `rxq/post.py c9` per mix; adopted 11-07)
+(#112: 0.8B PASS on both stacks; #112-01 keeps gdn_out α = 3; #112-02 (27B, swj K2.5, fixed codes) geo 0.9925 vs the
+rule's ≤ 0.99, verify keeps 0.96 of the gain: PARTIAL, **adopted by the user 11-07**.) Per writer row n,
+e_n = (q_n − t_n) M (q_n − t_n)ᵀ / t_n M t_nᵀ, c_n = (1 − e_n)^(−α/2), α = gdn_out 3, attn_o −1, down 0 (t = W,
+M = calib H_in; with asym writers t = W F, M = G); port of w75's c9e27.py, scales bit-identical. C9 depends only on
+the writer's own codes, W and the static H_in, so for plain writers the quant job computes it right after the
+quantization (`post.c9_tensor`: decode the job's own trellis / suh / svh with rxq.deq, the f64 quadratic forms;
+`c9-<key>.safetensors` beside the tensor file, its c9.jsonl line in log.jsonl). Assembly writes LEVEL/c9 (c9_scales'
+layout); `rxq.post apply LEVEL SWJ,LEVEL/c9 DST` folds swj's and C9's scales into svh in one pass (disjoint tensors:
+the same as applying them in turn). swj is fitted on the level without C9, as #112-02 measured it. Cost: the
+separate level pass took 859 s a 27B level (w75); in the job it is ~4 · out · in² f64 FLOP a writer (≈ 0.8 TFLOP for a
+5120 × 6144 writer; 10-25 s on 4 colo threads, card time measured by `tools/gpucheck27.sh c9`). With asym writers
+(#105, per mix) C9 runs after the writer requants: `rxq.post c9 --dn`.
 
 ### S6 healing (deferred, #89)
 Frozen-code scale healing per level; after the freeze, beside the ladder. Re-run S7 after it.
 
-### S7 census + knapsack re-run (rad-exl3-mix search/kfit2.py, knap4)
-Not ported. Per level: proxy logs (census of K, codebook, proxy error per tensor) feed kfit2's sensitivity model;
-fit-pool swap measurements calibrate it; knap4 picks per-tensor (level, compute mode) per size and variant. Re-run
-after swj / asym / healing (they move low-K sensitivities).
+### S7 library + knapsack + search hand-off (`rxq/knap.py`; CPU)
+- **library:** the levels that exist, named as the knapsack names its options (i8-K2.375, i4-K1, m1-K6.5): dir, K,
+  codebook, stamps, swj applied, packed donor.
+- **solve:** knap5.py (rad-exl3-mix v3/levels/reprice, the 11-07 re-pricing solver: knap4 + the V3R menu) run in
+  place from a symlink tree, switches from the settings file's `[knap]` (pricing, outside the stamp) and the
+  library (KN_I4 / KN_I8 / KN_M1 = the levels present; KN_SWJ when swj is on; KN_CD only if `[knap].cd_factor` is set).
+  With the 11-07 ladder as the library it reproduces w63's main-arm solve byte for byte (tests/check_knap.py).
+  kfit2's sensitivity refit on fit-pool swaps is not driven from here yet: the model file is `data/v3/kfit2-model-final.json`.
+- **hand-off:** a solve's picks → `knap-<tag>-<base>-<target>.mix` (radmix's format: library packs as donors, act lines
+  for a8 modes; head / embedding / V2 options from a donor map) + the frontier line `<name>  bpw X  pred KLD Y`: the
+  two inputs search/auto/streamq.py reads. The V3 stream itself is not built.
+- Not ported: sub-1 pricing (knap5 KN_SUB1 needs a ratios file: `[knap].sub1_ratios`), A4 options (off, #46-03).
 
-### S8 pack (rad-convert; CPU)
-`rad-convert ... exl3i src=LEVEL codebook=mul1i8|i4|mul1 rate=K`, then radmix into the release mix, then the census
-diff (`swap27k.sh packmixk`). ~1,600 s per 27B level on gpubox (PROFILE.md), under conv.lock.
+### S8 pack (`rxq/mix.py` text, rad-convert / radmix / census called; CPU)
+`rad-convert ... exl3i src=LEVEL codebook=mul1i8|mul1i4|mul1 rate=K`, then radmix into the release mix, then the
+census check. rxq writes the recipe and the mix files byte for byte as swap27's tools do (tests/check_mix.py, 13
+arms) and the pack script with the lead's 11-07 lock rule (conv.lock + ram.lock exclusive). ~1,600 s per 27B level
+on gpubox (PROFILE.md).
+
+### Swap-pair hygiene (`rxq/pairs.py`; CPU)
+A swap test compares two models that differ only in its arm. `rxq.pairs levels A B --arm SPEC` (ourq-layout levels,
+tensor by tensor) and `rxq.pairs mixes A.rad B.rad --arm SPEC` (packed containers, weight by weight: planes,
+encoding, options but the recipe's src=, act mode) refuse a pair that differs outside the arm (families, layers or
+keys; `--planes svh` restricts what may differ inside it) or whose arm is identical too. `same` is the no-op gate
+(job tensors vs a level), `splice` builds BASE + a job's tensors for exactly the arm. tests/check_pairs.py: 22 cases.
 
 ## 3. Job unit
 
@@ -122,8 +176,10 @@ diff (`swap27k.sh packmixk`). ~1,600 s per 27B level on gpubox (PROFILE.md), und
 - **Inputs** (the datapack, by relpath): the tensor's bf16 weight (cut per layer or per tensor), its group's H_in
   file (5120² / 6144² / 17408² packed fp32: 50 / 72 / 606 MB), optional H_out diagonal (KB), optional G / F (asym).
 - **Outputs:** `t-<key>.safetensors` (trellis int16 (k/16, n/16, 16K), suh f16, svh f16, codebook marker),
-  `log.jsonl` (ourq's proxy record + stage times + peak VRAM), `job.json` (spec, stamps, device, seconds). Optional
-  `wq/` (dequantized f16 weight, ourq's --save-wq) for verification by score (rad-quant-at-home VERIFY.md).
+  `log.jsonl` (ourq's proxy record + stage times + peak VRAM), `job.json` (spec, stamps, device, seconds). Writers
+  with C9 on (S5b): `c9-<key>.safetensors` (row scales "c", ones "r"; written before the tensor file) and the c9.jsonl
+  line in log.jsonl. Optional `wq/` (dequantized f16 weight, ourq's --save-wq) for verification by score
+  (rad-quant-at-home VERIFY.md). A donor's C9 file is checkable like its codes: recompute it from the returned tensors.
 - **Why per tensor:** the per-layer job's VRAM peak is ffn_down (17408² H plus the refit), and a layer's tensors are
   independent given the group's su draw, which the job replays. Measured peaks (4070, PROFILE.md): every family but
   ffn_down ≤ 3.8 GiB at K2-K6 without H_out; ffn_down 6.7 GiB at a 7.2 GiB cap with the refit on the CPU (needs ~8+ GiB
@@ -135,7 +191,7 @@ diff (`swap27k.sh packmixk`). ~1,600 s per 27B level on gpubox (PROFILE.md), und
   group's tensors to one worker, or cache Hessians on the worker.
 - **Idempotent:** each tensor file is written .part → fsync → rename; a rerun skips finished tensors.
 - **Stamps:** `settings_stamp` = sha256 of config sections meta / inputs / quant / post (rxq/config.py); `code_stamp`
-  = sha256 of rxq's modules, exllamav3's quantize.py, the kernel sources and tilecd.py. Assembly refuses a level whose
+  = sha256 of rxq's modules (tilecd.py among them since the merge), exllamav3's quantize.py and the kernel sources. Assembly refuses a level whose
   tensors disagree on either. A donor's result is accepted by score (rad-quant-at-home VERIFY.md: decoded codes'
   proxy error inside the band for its (tensor, K)), so the code stamp is recorded, not enforced, across vendors.
 - **Level passes** (S4 swj fit, S5 moments, S1 collections) are not donor jobs: whole-model forwards on a 32 GB card
@@ -148,44 +204,53 @@ in `local/workers/w52/rqah-jobtype.md` (rad-exl3-mix), not edited into that repo
 
 ## 4. The settings file (`config/v3.toml`)
 
-Every result-affecting setting, with its evidence (experiment # and status, 2026-11-06; status column updated
-2026-11-07, values unchanged):
+Every result-affecting setting, with its evidence (experiment # and status; brought to the 2026-11-07 record by w76,
+values changed where the record says so: settings stamp `6ecb3426cdbe356d`, meta.version 2):
 
 | setting | value | evidence | status |
 |---|---|---|---|
-| codebook by level | i4 K ≤ 1, i8 K1.125-7, mul1 K6-8 | #43, #90-02, #94; user 11-07: mul1 K6 / K6.25 dropped from the ladder (config's `mul1_levels` not yet edited) | adopted |
-| qtf2 | on | #37 | adopted |
+| codebook by level | i4 K ≤ 1, i8 K1.125-7, mul1 K6.5-8 | #43, #90-02, #94; user 11-07: mul1 K6 / K6.25 dropped | adopted |
+| qtf2 | on, i4 included | #37; w53's qtf2-i4.patch applied 11-07 (oracle-exact; `tools/gpucheck27.sh i4` re-checks on card 0) | adopted |
 | scaled_hessian | on | ladder setting since 11-01 (no own INDEX row) | adopted |
 | damping σ | 0.025; input group 0.005 | #38 (re-checked fractional i8, 11-06) | adopted |
-| sub-1 input damping 0.05 | switch, off | #38 verdict wording; not in ourq | **lead decides** |
+| sub-1 input damping | input group 0.05 below K1 | #38 verdict; user 11-07 (LOG 9:25 AM CST) | **adopted** (on) |
 | gain | 1.0 | #39 (flat) | adopted |
 | output scales | always | #48 (auto rule +2.5%) | adopted |
 | LDLQ drift | interpolated | ourq trunk review 11-02 | adopted |
-| tile CD cd3 | attn_qg only, switch off | #77 (user adopted 11-06), w50 GPU impl, CD27 check **passed 11-06** (0.9994 / 0.9997) | adopted; the switch flips once tilecd.py is merged (lead) |
-| H_out (bn, 1,920 seqs, σ_out 0.01) | switch off | #33-27 done, #33-28: K2.5 geo 0.9801 → not adopted ≤ K3.5; K4 pending | OPEN (K ≥ 4) |
+| tile CD cd3 | on, attn_qg, every K (two-sided with H_out) | #77 (user 11-06), CD27 **passed** at K2.5 (0.9994 / 0.9997); rxq/tilecd.py merged 11-07; with H_out: CPU checks only, 27B K4 pair prepared (CDHOUT27.md) | adopted; K ≥ 4 + H_out pending its pair |
+| H_out (bn, 1,920 seqs, σ_out 0.01) | on, K ≥ 4 (`apply_k_min`) | #33-28: K2.5 geo 0.9801 → not adopted ≤ K3.5; K4 geo 0.9643 **PASS** (11-07) | adopted (K ≥ 4) |
 | xcorp H_in blend w 0.5 | switch off | #101 (0.8B pass; 27B pooled ~0.993) | dropped (user 11-06) |
-| swj | on, K ≤ 3.5 | #85, #104 PASS (K2.5 −6.5%, verify-confirmed; K4 −1.1% head-matched) | adopted (K ≥ 4 open) |
-| writers asym ρ0 | switch off | #87, #105 queued; #111 fail (per-level asym in mixed-K mixes) | OPEN |
+| swj | on, every level | #85, #104 PASS (K2.5 −6.5%, verify-confirmed; K4 −1.1% head-matched); user 11-07 | adopted |
+| writers asym ρ0 | switch off, per mix only | #87, #105 queued; #111 fail per level (config refuses per-level) | OPEN |
+| C9 α (gdn_out 3, attn_o −1, down 0) | on, plain writers, computed in the writer jobs | #112 0.8B PASS; #112-01 α 3; #112-02 27B PARTIAL (geo 0.9925, verify keeps 0.96); user 11-07 | **adopted** |
 | #100 hash codebook | switch off (refused) | #100 negative (real 0.8B run) | dropped (user 11-06) |
 | healing | off (refused) | #89, deferred | later |
 | dropped: i8c, YAQA full, trunk row-slab, act order, chained tail-biting, best-of-N seeds, group scales | — | #78-04, #33, #96, #103, #102, #41, #40 | dropped |
 
-Interactions the config enforces: tile CD with H_out is refused (tilecd.py does not implement ldlq_2hess); healing and
-#100 are refused until implemented.
+Interactions the config enforces: H_out only between `apply_k_min` and `apply_k_max` (a job naming an H_out dir at a
+level where it does not apply is refused, and a level where it applies needs one; a missing per-tensor file is an
+error, where ourq skipped the tensor); tile CD up to `quant.tile_cd.k_max`; asym only per mix; healing and #100 are
+refused until implemented. `[knap]` (pricing switches for S7) is outside the stamp.
 
 ## 5. Open items for the lead
-1. **i4 sub-1 levels need a qtf2 i4 build** (`exl3frac2` exists for mul1 / i8 / i8c only; sub-1 needs qtf2): w53
-   appears to be building `exl3frac2-i4`; the ladder plan's "i4 at K ≤ 1" depends on it.
-2. **Sub-1 input damping:** #38's verdict says 0.05 below K1; ourq always passes 0.005. Switch in the config, off.
+1. **Run the prepared GPU checks** (w76 had no GPU): `tools/gpucheck27.sh cd` (tile CD on the real quantizer: rxq ==
+   research module, M = I gate, two-sided ratios with H_out at K4; ~15 min card 0), `tools/gpucheck27.sh i4`
+   (qtf2i4check + ourq vs rxq at K0.5 i4 + K2 qtf2 vs exl3cb; ~15 min), `tools/gpucheck27.sh c9` (C9 in the quant
+   job vs c9e27.py on the card, bit identity, and the per-writer card time; ~5 min), and schedule `tools/insert-cdhout27.sh` (the
+   27B K4 pair tile CD + H_out vs H_out on attn_qg, ~2-3.5 h card 0 + ~1.2 h CPU; rule CDHOUT27.md). Until that pair
+   passes, K ≥ 4 levels with tile CD rest on CPU checks; on FAIL set `quant.tile_cd.k_max = 3.875`.
+2. **iceman's live ourq** (`/root/ourq`): the i4 patch changes ourq.py and exl3frac2.py, so their code stamp changes;
+   copy them between a4cost / c9w27 / q2 steps (a resumed level would see a new stamp: OURQ_MIXED=1 or finish it
+   first). Not copied by w76 (iceman unreachable 11-07 afternoon, VPN maintenance).
 3. **ourq --save-wq rowerr:** ourq computes `rowerr.npz` from `w` after quantize_exl3, which has regularized that
-   tensor in place (scaled, rotated, × g_scale): the per-row errors are not in the original basis. Ported as is (parity);
-   rad-quant-at-home recomputes its claim from wq with rowerr_tool.py, so it is unaffected. Check headslab.py's use.
-4. **H_out cost:** if H_out is adopted, ldlq_2hess makes a level ~5× slower (37 → 190 min on the R9700; 72% of a
-   gate_proj is its dense F-update GEMMs, PROFILE.md T1); the rotated diagonal H_out is block-diagonal (128), which
-   allows a ~40-90× cheaper update that is the same algorithm in exact arithmetic (autoresearch target, judged by the
-   two-sided proxy error ≤ reference). It also raises gate / up's peak VRAM to 7.1 GiB.
-5. **Port the level passes** (swjfit27 forward, sibmom27, mkhin27, collect) into rxq once their settings are final;
-   until then rxq calls them in place.
+   tensor in place (scaled, rotated, × g_scale): the per-row errors are not in the original basis. Ported as is
+   (parity); rad-quant-at-home recomputes its claim from wq with rowerr_tool.py, so it is unaffected.
+4. **H_out cost:** ldlq_2hess makes a K ≥ 4 level ~5× slower (~3.2 h vs ~37 min on the R9700; 72% of a gate_proj is
+   its dense F-update GEMMs, PROFILE.md T1); the rotated diagonal H_out is block diagonal (128), which allows a ~40-90×
+   cheaper update that is the same algorithm in exact arithmetic (autoresearch target). It also raises gate / up's
+   peak VRAM to 7.1 GiB. The ladder's K ≥ 4 levels and donor hours need re-pricing.
+5. **Not ported:** collect.py (the Σdy² backward: GPU-only, wrapped by rxq/hout.py); the per-mix asym driver (waits for
+   #105); kfit2's refit driver (S7 uses the existing model file); sub-1 pricing in the knapsack (`[knap].sub1_ratios`).
 6. **Vendoring:** rxq imports the kernels from a rad-exl3-mix checkout (RXQ_RXM) and the exllamav3 fork (PYTHONPATH,
-   RXQ_EXL3_SRC). For the volunteer release: vendor exl3frac2 / exl3cb / exl3frac (+ tilecd once merged) into this repo
-   and pin the fork as a submodule or patch series, so a worker image builds from this repo alone.
+   RXQ_EXL3_SRC); the knapsack solver and the research tools the checks compare against also come from RXQ_RXM. For
+   the volunteer release: vendor exl3frac2 / exl3cb / exl3frac into this repo and pin the fork as a patch series.
