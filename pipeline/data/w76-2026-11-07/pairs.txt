@@ -1,0 +1,23 @@
+PASS levels arm only: OK (expected OK)
+PASS levels arm by key: OK (expected OK)
+PASS levels arm by layer: OK (expected OK)
+PASS levels wrong arm: REFUSED (expected REFUSED) -- model.language_model.layers.3.self_attn.q_proj.svh: differs outside the arm
+PASS levels differ outside: REFUSED (expected REFUSED) -- model.language_model.layers.2.mlp.down_proj.svh: differs outside the arm
+PASS levels no-op arm: REFUSED (expected REFUSED) -- the arm is identical too: a no-op pair (--allow-same to accept)
+PASS levels no-op allowed: OK (expected OK)
+PASS levels planes svh ok: OK (expected OK)
+PASS levels planes svh, trellis changed: REFUSED (expected REFUSED) -- model.language_model.layers.3.self_attn.q_proj.trellis: plane trellis differs (arm planes: ['svh'])
+PASS same: job vs its own level: OK (expected OK)
+PASS same: job vs another level: REFUSED (expected REFUSED) -- model.language_model.layers.3.self_attn.q_proj.trellis: differs
+PASS splice result vs base (arm attn_qg): OK (expected OK)
+PASS splice result == D: OK (expected OK)
+PASS splice with a wrong arm: refused -- splice: the job holds 1 tensors, the arm 2; missing ['model.language_m
+PASS mixes arm only (src= differs): OK (expected OK)
+PASS mixes wrong arm: REFUSED (expected REFUSED) -- blk.3.attn_qg.weight: differs outside the arm (header equal, encoding equal, planes ['svh'])
+PASS mixes differ outside: REFUSED (expected REFUSED) -- blk.2.ffn_down.weight: differs outside the arm (header equal, encoding equal, planes ['suh'])
+PASS mixes act differs outside: REFUSED (expected REFUSED) -- blk.0.ssm_z.weight: differs outside the arm (header differs, encoding equal, planes [])
+PASS mixes no-op arm: REFUSED (expected REFUSED) -- the arm is identical too: a no-op pair (--allow-same to accept)
+PASS mixes planes svh ok: OK (expected OK)
+PASS mixes planes svh, trellis changed: REFUSED (expected REFUSED) -- blk.3.attn_qg.weight: differs beyond the arm's planes ['svh'] (planes ['trellis'], header / encoding equal)
+PASS mixes gate+up family name: OK (expected OK)
+PAIRS CHECKS 22/22 PASS
