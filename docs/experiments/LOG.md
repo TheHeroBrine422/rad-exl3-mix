@@ -17,7 +17,7 @@ versions of anything: git history.
   exllamav3 last-to-first, and #106's reversed-order arm cost +5%: the result may shrink or flip on the real order.**
   Re-run on the fixed proxy (w64 item 5, with #103 too) before a 27B pair. Was unlogged since 11-06 6 PM (my miss).
 - **#108 final seeds (d1113, full 0.8B stack, search):** K3 geo 0.999 (5 seeds), K2 0.985 (4 seeds, all < 1); verify
-  ~0.994 / ~0.985. Fails the rule (≤ 0.98 at K3 and K2): GDN refits overlap with H_out / asym in the stack. Not ported
+  ~0.994 / ~0.985. Final (D1113 DONE 07:14 UTC): K2 seed 4 0.988 / verify 0.986 → K2 geo ≈ 0.986 over 5 seeds. Fails the rule (≤ 0.98 at K3 and K2): GDN refits overlap with H_out / asym in the stack. Not ported
   to the 27B unless H_out and asym both fail there (user: a barely-winning 0.8B result isn't worth a 27B port).
 
 ### 2026-11-07 12:40 AM CST · #— · D-LSA on window residency (w65): built, host / emulator tests pass, no card run yet
