@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 1:50 AM CST · #33-28 · H_out (bn) at K2.5: third pair lands; misses the rule by a hair
+- s2 → bns2 **0.9762** (z −2.2). The three K2.5 pairs: 0.972 / 0.992 / 0.976, every pair < 1, **geo 0.9801** (rule
+  ≤ 0.98: misses by 0.0001); |log geo| 0.0201 vs 2σ/√3 = 0.0207 (σ = RMS |log| of the three base seed pairs, 0.0180):
+  also misses by a hair. **By H27 amendment 5: not adopted for levels ≤ K3.5.** Real-looking (every pair < 1, −2%),
+  but at the noise line, and H_out makes a level ~5× slower to quantize (two-sided LDLQ). K4 pairs (bn4s1, ~4:30 AM
+  after the agentic-golden insert) decide ≥ K4; one K4 pair so far 0.961.
+
 ### 2026-11-07 1:35 AM CST · #— · rqah PR batch 2 reviewed (w68)
 - #19–#23 all correct; merge order on main: #19 → #20 → #17 → #23 → #22 (needs a rebase: conflict with merged #16 in
   `Queue.upload`) → #21. Simulated in a throwaway clone with all suites after each step: green (e2e 118/118), except a
