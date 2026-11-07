@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 6:25 PM CST · #77 · Tile CD on attn_qg: user adopts pending the 27B no-harm check; check scheduled
+- User: adopt cd3 on attn_qg (real per-tensor gain 0.5–1.2%, w50) if the 27B check passes. Code staged as a private
+  tree on gpubox (`/data/cd27/code`, ourq + `ourq-tilecd.patch`; the live ourq untouched), dry run clean, insert
+  `/data/q1106/insert-50-cd27.sh` queued (runs before the next q2 arm, after w59's verify insert if that lands first).
+  Rule (`v3/e3/settle/CD27.md`, before data): pairs s1 → s1cd and base → basecd at K2.5 (16 q_proj re-quantized with
+  cd3), pass = geo ≤ 1.000 and no pair > 1.01; a no-op gate first requires the private tree to reproduce each level
+  bit for bit.
+
 ### 2026-11-06 6:20 PM CST · #100 · Hash codebook dropped (user)
 - User decision on #100c: the IQR-style hash codebook is dropped; **mul1i8 stays the V3 codebook** (format decision
   closed before the ladder). Next for swj: confirm the K4 gain (0.79 / 0.77) on a verify-pool slice before quoting it.
