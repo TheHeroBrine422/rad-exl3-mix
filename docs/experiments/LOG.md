@@ -3,6 +3,13 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 8:25 AM CST · #113 · trimmed to the random-table bound (user)
+- K2 / K3 complete (54 pairs each): no arm passes at any K (B20-4096 1.0096 / 0.999 / K4 0.992 n 21; V18 0.994 /
+  0.994 / 0.992; exact V20 K2 0.990 n 5). Every family within ±0.2% (attn_qg K4 0.979 rests on n 2: not followed up,
+  too small a byte share to matter). **Verdict: not adopted, final for V3.** Remaining completeness jobs (K4 / K5 / K6,
+  V20 on our hash) stopped at 14:24 UTC; only g5 runs (V20r / B20-4096r: an iid random 2^20 table, K2–4, colo sample 1,
+  Thor sample 0) = what a better 20-bit code could reach. Reported only; a V4 format note if it shows ≥ 3%.
+
 ### 2026-11-07 6:55 AM CST · #33-28 / H27 · H_out at K4: PASS → adopted for levels ≥ K4
 - K4 seed pair landed (bn4s1 vs base4s1): **0.9672** (z −2.54), with the first pair **0.9613** → geo **0.9643**;
   seed floor σ = 0.0062 (base4 → base4s1 1.006); amendment 5's rule (every pair < 1, geo ≤ 0.98, |log geo| ≥ 2σ/√n):
