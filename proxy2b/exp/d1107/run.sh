@@ -2,6 +2,7 @@
 # run.sh -- d1107 (README.md), 0.8B, 4070; shares /data/yb/gpu.lock with hconv / d1105 / d1106. Idempotent.
 P=/workspace/rad-exl3-mix/proxy2b X3=$P/exp/d1103 X=$P/exp/d1107
 source <(sed -n '/^P=/,/^step() /p' $X3/run.sh)
+X=$P/exp/d1107   # the sourced d1103 block sets X to d1103 (11-04 runs found no a1q.py)
 O=/data/yb/d1107; mkdir -p $O
 f32() { for d in $O /data/yb /data/yb/d1103 /data/yb/w10-hout-attrib; do [ -f $d/$1.f32 ] && { echo $d/$1.f32; return; }; done; echo $O/$1.f32; }
 wqd() { for d in /data/yb /data/yb/d1103 /data/yb/w10-hout-attrib; do [ -d $d/q-$1/wq ] && { echo $d/q-$1/wq; return; }; done; }

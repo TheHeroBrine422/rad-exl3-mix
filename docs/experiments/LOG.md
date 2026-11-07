@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-06 6:40 PM CST · #81-04, #— · A1 rerun (it never ran); joint refits beyond the MLP; ideas sweep
+- **#81-04 (A1, d1107):** the 11-04 run scored nothing: the sourced d1103 block reset `X`, so `a1q.py` was never found
+  and every pair printed `no pairs`. Fixed in `run.sh`, registered in the 4070's `/data/queue.d/40-d1107.sh`, rerunning
+  K2–K4 (the K5 bases are gone). Stale INDEX rows (#33-13, #58, #90, #90-02) closed.
+- **w60 (4070, d1113):** swj-style joint scale refits at other junctions (q/k through attention, v / o, GDN
+  projections through their gates, all on top of swj), 0.8B, rules before data.
+- **w61:** sweep of every idea doc for untried quantizer-setting ideas + a brief for the next mining / ideas run.
+
 ### 2026-11-06 6:25 PM CST · #77 · Tile CD on attn_qg: user adopts pending the 27B no-harm check; check scheduled
 - User: adopt cd3 on attn_qg (real per-tensor gain 0.5–1.2%, w50) if the 27B check passes. Code staged as a private
   tree on gpubox (`/data/cd27/code`, ourq + `ourq-tilecd.patch`; the live ourq untouched), dry run clean, insert

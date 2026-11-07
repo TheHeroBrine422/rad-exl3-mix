@@ -66,7 +66,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 33-10 | Factorial: Sketch B H_in vs H_out, 0.8B K3 | quantizer | none | done | 11-02 | 11-02 | H_in swap +20%; calib H_in + H_out −9.9% vs ldlq, −4.3% vs base (z −5.4); diag only −1.7% vs base |
 | 33-11 | H_out at K2 and stacked on base's settings, 0.8B | quantizer | none | done | 11-02 | 11-02 | bhout vs base: K3 −9.7% (z −12.4), K2 −5.6% (z −6.3); switch bar met on 0.8B |
 | 33-12 | H_out sizing: mixed / diagonal / dose, 0.8B | quantizer | none | done | 11-02 | 11-02 | diagonal only: K3 −8.0%, K2 −8.0% vs base; full needs ~4K seqs |
-| 33-13 | 27B diagonal H_out collection + 0.8B diagonal dose | quantizer | none | running | 11-02 | 11-02 | 0.8B: 1K seqs keep 85% (K3) / 99% (K2) of the gain; 27B run at 1K pending (both cards, ~8.5 h) |
+| 33-13 | 27B diagonal H_out collection + 0.8B diagonal dose | quantizer | none | superseded | 11-02 | 11-07 | 0.8B: 1K seqs keep 85% (K3) / 99% (K2) of the gain; 27B run at 1K pending (both cards, ~8.5 h); the 1,920-seq collection (#33-28's input) replaced the 1K run |
 | 33-14 | Split-precision bf16 GEMMs for the fp32 collector | quantizer | none | negative | 11-02 | 11-02 | 0.8B: x2 diag error 1.2–5.5e-3 median (rule ≤ 1e-3), 10× better than bf16; collector stays fp32 |
 | 33-15 | Split precision judged by KL, 0.8B | quantizer | none | negative | 11-02 | 11-02 | x2 K2 +2.8%, but bf16 did better: KL test shows ~±2–3% quant-to-quant noise, not precision; collector stays fp32 |
 | 33-16 | Seed replicates + identity H_out, 0.8B | quantizer | none | done | 11-02 | 11-02 | 3 seeds: diag H_out K3 −8.1%, K2 −5.4% vs base; seed SD ~1% / ~2%; identity H_out worse |
@@ -108,7 +108,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 55 | Document-reuse bias from fit-slice reuse | eval | n/a | null | 11-01 | 11-01 | no measurable flattering |
 | 56 | Held-out provenance of every golden | eval | n/a | done | 11-01 | 11-01 | 317 verify docs never used, but none > 16k tokens or agentic: a clean ver3 would be unrepresentative |
 | 57 | GPU search's 4–6% gap = tail-biting constraint | weight codes | n/a | done | 11-01 | 11-01 | not a flaw |
-| 58 | Full uniform requant ladder (ladder2, K2.5 … ) | quantizer | none | blocked | 11-01 | 11-02 | K2.5, K3 done; K3.5/K4 lost in the gpubox crash |
+| 58 | Full uniform requant ladder (ladder2, K2.5 … ) | quantizer | none | superseded | 11-01 | 11-07 | K2.5, K3 done; K3.5/K4 lost in the gpubox crash; ladder2's K2.5 / K3 serve as swap bases; the full uniform ladder is the V3 build |
 | 59 | exl3i encoding, importer, kernel plugin, serving path | kernels | speed | running | 11-01 | 11-02 | GPU selftests pass; mutation check 6/10; d0.sh not run |
 | 60 | 2B / 0.8B proxy pipeline on the 4070 | proxy | n/a | done | 11-02 | 11-02 | goldens, evalq, score check PASS |
 | 60-01 | bf16 vs fp32 inference on the 2B | proxy | n/a | done | 11-02 | 11-02 | KL 3.75e-4, flat by position; goldens stay bf16 |
@@ -141,7 +141,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 81 | Faraway A1: down_proj as residual after decoded up / gate prediction, CPU trellis proxy | weight codes | P+D | done | 11-02 | 11-03 | ug/D 0.83, up-only 0.87; control #81-02 confirms it is real |
 | 81-02 | A1 control: permuted predictors | weight codes | P+D | done | 11-03 | 11-03 | ugperm / uperm ÷ D 0.999–1.001 vs ug 0.72–0.94: the reduction is real prediction |
 | 81-03 | A1 on all 64 layers, K1.5–K4 | weight codes | P+D | done | 11-03 | 11-04 | ug/D 0.833 (K2.5), flat over K (0.849 K1.5 → 0.828 K4); up-only 0.865 keeps 81% (preferred); layers 24–35 ~0.70, ends ~0.95; ≈0.13 bit on down ≈ 0.03 bpw whole-model |
-| 81-04 | A1 in KL on the 0.8B (load-time expansion), K2–K5, up-only and up+gate | weight codes | P+D | running | 11-04 | 11-04 | rule `proxy2b/exp/d1107/README.md`; 0.8B predicted share 13% (unweighted, K3) |
+| 81-04 | A1 in KL on the 0.8B (load-time expansion), K2–K5, up-only and up+gate | weight codes | P+D | running | 11-04 | 11-07 | rule `proxy2b/exp/d1107/README.md`; 0.8B predicted share 13% (unweighted, K3); 11-04 run silently scored nothing (a1q.py path clobbered by the sourced d1103 block); fixed, rerun 11-07 on the 4070 (K2–4; K5 base gone) |
 | 82 | Where the H_out gain comes from (family / depth third; K4 / K5), 0.8B (w10) | quantizer | none | done | 11-02 | 11-03 | gdn_in 39%, mlp_in 44%, attn_in 13%, writers 3%; additive; holds at K4/K5 |
 | 83 | H_out collection loss on scored positions only (gen mask), 0.8B (w01) | quantizer | none | done | 11-02 | 11-03 | K3 0.971, K2 0.950, every seed; use for 27B |
 | 83-02 | Gen-masked loss for the Σdy² diagonal | quantizer | none | done | 11-03 | 11-03 | K3 0.979 (every seed), K2 0.96: use for the 27B collection |
@@ -169,8 +169,8 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 
 Next free number: **90**.
 
-| 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; cpu1 (GDN layers) + cpu2 (attention layers) |
-| 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | running | 11-04 | 11-04 | rule `v3/e3/sub1/README.md`; cpu1 |
+| 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | done | 11-04 | 11-07 | rule `v3/e3/sub1/README.md`; cpu1 (GDN layers) + cpu2 (attention layers); logged 11-05 / #90-03 11-06: sub-1 pays only below ~1.3 bpw |
+| 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | done | 11-04 | 11-07 | rule `v3/e3/sub1/README.md`; cpu1; i4 at K ≤ 1.5 holds; w46 settle.py re-check 11-06 holds except K2 1.0088 vs 1.01 (reval.md) |
 | 91 | Self-calibration on own agent sessions (0.8B): self-generated vs raw vs calib vs turboderp SC trace, for H_out / H_in / healing, blend weight | statistics | none | negative | 11-04 | 11-05 | no gain on calib; own agentic text −5…−15% at +1…+6% calib (w 0.1–0.5 H_in); not adopted; rule `proxy2b/exp/d1108/README.md`; 4070; arm D (27B gens) later |
 | 92 | REAL-Q (block-output Fisher + Adam step on unquantized columns, sequential) on top of our stack, before and after healing; sequential vs parallel (bf16-prefix) variant, 0.8B | quantizer | none | fail | 11-05 | 11-05 | fails base rule and amendments 1–2 (healed K3 1.10 / K2 1.04; parallel K3 1.13 / K2 1.02); closed 11-06 |
 | 93 | Overfitting check: the adopted 0.8B stack re-scored on a fresh calib-verify golden (g08-verify1) | method | none | done | 11-05 | 11-05 | no overfitting (verify keeps 91/96%); xcorp keeps 52–91% per step: not a calib substitute; rule `proxy2b/exp/d1110/README.md`; 4070, ~1 h |
