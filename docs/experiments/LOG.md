@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 7:10 AM CST · cdhout27 · tile CD on top of H_out at K4: first pair no harm; kept (user)
+- bn4ctl → bn4cd (fresh control, hygiene PASS): KLD 0.007465 → 0.007461, **0.9995**. Proxy: CD-domain 0.9955, after the
+  scale refit **0.9989** on the 16 q_proj (~0.1%; w50's 0.5–1.2% was without H_out). Cost **185 s a level** (3 sweeps,
+  16 tensors) ≈ 3.6 card-h over 71 levels, no runtime cost. **User: keep tile CD** (cost ~nothing). bn4s1 pair ~8:30 AM.
+
 ### 2026-11-08 7:05 AM CST · #117 · 27B pairs (w84): converter + gates PASS; the order is a quantizer option, no conversion needed; pairs running
 - **Status:** running · **Machine:** gpubox card 0 (card0.lock + ram.lock, `/data/w84`, `run84.sh`), colo CPU
   (`/data/work/w13/w84`, 8 threads, nice 19) · **Code:** `v3/e3/settle/w84/` · **Rule:** `v3/e3/settle/w84.md` (written
