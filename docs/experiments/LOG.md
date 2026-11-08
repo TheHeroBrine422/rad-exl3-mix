@@ -3,6 +3,88 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 4:58 PM CST · #39-01, #— · Gain stays 1.0 on today's stack (held out); i4 twins dropped (ladder 55 levels, settings stamp unchanged); stamps and checks (w93)
+- **Status:** #39-01 done: **keep 1.0** (null) · **Machine:** colo (16 jobs), Thor (38 incl. ffn_down), ~6 CPU-h ·
+  **Code:** `v3/e3/settle/w93/settle93.py` (w87's held-out two-sided proxy + gain + #117 order), `report93.py` ·
+  **Rule:** `v3/e3/settle/w93.md` item 2, committed e92d317 before data · **Data:** `v3/e3/settle/data/w93/gain/`
+  (`report.md`, 612 rows)
+- **Question:** #39 ("flat, keep 1.0", w43) ran on settle.py's reversed LDLQ order without H_out. Does a gain m on
+  exllamav3's g_scale beat 1.0 on today's objective (two-sided bn1920 H_out, #117 block order on the readers, i8)?
+- **Result:** gate PASS on both boxes (identity order bit-identical; the #117 order changes every tile). Geo r over 27
+  tensors × 2 samples, held-out B2 (K2.5 / K4): m 0.9 1.028 / 1.043, 0.95 1.008 / 1.014, **1.0 1**, 1.05 1.006 / 1.004,
+  1.1 1.024 / 1.025. m* = 1.0 on B1 and on B2; in-sample A and the one-sided error give the same curve, before the
+  refit too. No family qualifies (best: attn_qg K4 m 1.05, +0.63%, one tensor at 1.016; rule ≥ 1% at both K and every
+  tensor ≤ 1). **Verdict: keep 1.0** (v3.toml unchanged). Reported: the #117 order on this proxy, at m 1, gives readers
+  ×0.978 (K2.5) / ×0.978 (K4) in two-sided held-out error, 36 / 36 better (attn_qg 0.957, attn_k 0.966, gate_up 0.993).
+- **Config (review item 4; lead note 4:25 PM CST, user: drop the i4 twins):** the K2 / K3 twins served nothing besides
+  #46-03 (rxq.ladder is their only consumer; without A4 the knapsack never picks an i4 twin; gpucheck27's K2 i4 run is
+  a kernel test). Applied: `[ladder] i4_twin_range = []` (unstamped) + one line in `rxq/ladder.py` (an empty range) +
+  `tests/check_ladder.py` (55 levels); `i4_twins` (stamped) left as an inert value so the **settings stamp stays
+  ed97adb7ed1f9919** and w92's K2.5 / K1 levels stay valid anchors (level names unchanged). **71 → 55 levels; quant
+  115.1 → 95.4 card-h, swj passes 53.2 → 41.2 card-h, packs 31.6 → 24.4 CPU-h, 18,176 → 14,080 jobs.** v3.toml stale
+  comments cleaned (a4 / #46-03, H_out cost, tile CD's K4 pair, swj scope, #105). design/v3.md, pipeline DESIGN /
+  README, TODO updated. Patch: `local/workers/w93/ladder-no-i4-twins.patch`.
+- **Stamps (review item 7):** settings **ed97adb7ed1f9919**. Code stamp (GPU kernels, fork 6242f7ae = eb5a2139 +
+  0008): 908d6198788264f0 at HEAD 26ec0c9 (same at 50902fc; was fd34de5c208b8057 at w86's f15f619, before the rowerr
+  patch) → **7b9503f380e845c4 with the twin drop** (rxq/ladder.py is hashed). `w93/stamp93.py` recomputes it from git
+  objects; it equals `engine.code_stamp` on the tree and check_cpujob's stand-in stamps.
+- **Checks (before / after the twin drop):** `check_ladder` 5/5 / 5/5 (71 / 55 levels); `check_cpujob
+  FORK@eb5a2139 FORK@6242f7ae` 25/25 / 25/25 (dense side from a git worktree at eb5a2139); rqah `tests/rxq_e2e.py`
+  (branch ladder 1741b5c) 9/9 / 9/9.
+- **Runtime:** none.
+
+### 2026-11-08 4:45 PM CST · #123, #39-01 · Published inputs scanned: 1 rule failure, a structural dead channel (L7 MLP input 3994), not corruption; sha256 all agree; #39 gain re-run launched (w93)
+- **Status:** #123 done (rule verdict FAIL on 1 of 657 files, diagnosed benign); #39-01 running · **Machine:** colo
+  (`/data/work/w13/w93`, nice 19, ≤ 8 GB), Thor (`/data/work/w93`, ffn_down + 2/3 of the gain jobs) · **Code:**
+  `v3/e3/settle/w93/` (`scan93.py`, `scan93.sh`, `settle93.py`, `plan93.py`, `report93scan.py`) · **Rule:**
+  `v3/e3/settle/w93.md`, **committed (e92d317) before either launch** · **Data:** `v3/e3/settle/data/w93/` (`verdict.md`)
+- **#123 question (freeze review blocker 3):** are the ladder's published inputs intact: 257 calib H_in, 400 bn1920 H_out?
+- **Result:** selftest PASS (clean Gram passes; 11-06's corrupt span, a NaN, a zero diagonal and an indefinite matrix with
+  every 2×2 minor fine all fail). **H_in, exhaustive** (every packed entry, no sampling): 256 / 257 pass every check;
+  Cauchy–Schwarz max ratio 0.9868 over all 12.3G entries (none above 1 + 1e-5), 0 non-finite, damped fp64 Cholesky
+  (λ = 1e-3 · mean diag) 256 / 256. **The one failure:** `layers.7.post_attention.input`, H[3994, 3994] = 0 and row /
+  column 3994 all exact zeros. Cause, checked: L7 `post_attention_layernorm.weight[3994] = −1.0` exactly (the only −1);
+  the (1 + w) RMSNorm makes MLP input channel 3994 identically zero, so this is a dead channel of the bf16 model, not
+  damaged data. The quantizer adds σ · mean diag to the whole diagonal, so it factors (L7 gate / up have been quantized at
+  every level so far). **H_out:** 400 / 400 present, F32 of out_features, seqs 1920 / blocks 15 / blocknorm 1, finite,
+  > 0. **sha256:** colo H_in = HF LFS oids (dataset 2dcf0061, unchanged since download) = Thor's copy = w86's dry-run
+  pins (8), 0 mismatches; colo H_out = Thor = the VM backup of gpubox `/data/swap27/hout-bn` (the K4 arms' source) =
+  w86 pins (13), 0 mismatches.
+- **Found, not failing:** (1) H_out dynamic range: within-tensor max/min up to 3e23 (L14 GDN in_proj_qkv min 4e-23;
+  L9 / 10 / 16 qkv 1e14–1e19; q_proj L3 / 7 / 11 / 15 1e6–1e9); harmless (prepare_H_out normalizes by the mean and adds
+  σ_out 0.01). (2) Four input Gram matrices are numerically singular: Cholesky pivots equal to λ in L17 GDN out_proj
+  and L3 / 7 / 11 / 15 o_proj inputs (the same attention layers whose q rows get ~0 H_out: likely dead or gated-off
+  heads). Damping covers them; not investigated further.
+- **Decision / next:** nothing for the ladder. By the letter of the rule #123 is FAIL (the rule did not foresee a
+  structural dead channel); the lead decides whether the 0-diagonal is accepted as is (recommended).
+- **#39-01 (running):** w87's held-out two-sided proxy + gain m ∈ {0.9 … 1.1} × s_exl + #117 block order on the readers,
+  i8 K2.5 / K4, 27 tensors × 2 samples; gate PASS on colo and Thor (identity order bit-identical; the #117 order
+  changes 2,560 / 2,560 tiles, 11:attn_k s0 rel_B ×0.955). 54 jobs: colo 16, Thor 38 (ffn_down there).
+- **Runtime:** none (input check; quantizer setting).
+
+### 2026-11-08 4:35 PM CST · #122 · Full-stack pass-1 level on card 0: rule committed, slice cut, jobs running (w92)
+- **Status:** running · **Machine:** gpubox card 0 (`/root/card0.lock` → `/root/ram.lock` shared per layer of jobs;
+  packs conv.lock + ram.lock exclusive) · **Code:** `v3/e3/settle/w92/` (`w92.sh` driver, `mkjobs92.py`, `layer92.sh`,
+  `verdict92.py`, `sub1chk92.py`), staged on gpubox `/data/w92/code` = `git archive 50902fc` + w92/, fork
+  `/data/w92/exl3` = 6242f7ae (eb5a2139 + 0008) · **Rule:** `v3/e3/settle/w92.md`, **committed alone (26ec0c9) before
+  the slice, any quant or score** · **Data:** `v3/e3/settle/data/w92/` (when done)
+- **What:** freeze review 11-08 §1 item 2. Levels `q27v3-ed97adb7-k2.5-i8` (seed offsets 0 and 1) and
+  `q27v3-ed97adb7-k1-i4` from `v3.toml` (settings stamp ed97adb7ed1f9919): `rxq.ladder.level_jobs` (256 group jobs a
+  level) → the spec rqah's `rxq_quant.stage()` writes → `python -m rxq job` one at a time → `rxq assemble` →
+  `rxq.swjfit` (SWJ27's qad meta) → `rxq.post apply LEVEL SWJ,LEVEL/c9` → `rxq.mix recipe` → rad-convert → V2 3.00.
+  Gate: control → full stack ≤ control → bn+swj (geo over the pairs) and nothing > 1.0 per pair / part; controls packed
+  fresh (CTL_FRESH=1), every pair hygiene-checked (only trunk weights differ).
+- **Fresh slice golden-search27c:** calib part 26 search-pool docs / 67,958 tokens (51,773 scored), seed 9222,
+  golden-search27 and golden-search27b-c excluded; xcorp part 65 pieces / 93,824 rows of night1105's never-scored
+  `xc8k-b2-c2` (stratified, mX docs excluded; no doc shared with golden-search27b-x).
+- **Found while setting up:** (1) **K1 is not a sub-1 level in v3.toml**: `sigma_reg_in_sub1` applies at K < 1 and σ 0.2
+  at K ≤ 0.125, so the K1 i4 level does not exercise the sub-1 damping. Added a job-level check at K0.875 / K0.125 on
+  layers 2–3 (settings logged, H_out blocks, block order, tile CD, C9). (2) The swap27 radiance home (install-116) has
+  no mul1i4 importer: K1 i4 is packed / scored with install-117 + `/data/a4cost/home` (#46-03's). (3) gpubox's
+  `/data/exllamav3` (on every earlier PYTHONPATH) lacks fork patch 0008; the blocks path needs a 0008 fork first on
+  the path (w81's gate used `/data/w81/exl3`; w92 stages 6242f7ae).
+- **Runtime:** none (no setting, format or kernel changes).
+
 ### 2026-11-08 1:50 PM CST · #120-03 · 0.8B drift / variance split: 70% (K2) / 32% (K3) of the plain-level KL is seed-coherent; a per-channel bias takes 1.1% at K3 (rule: POSITIVE, narrowly); design note says no exl3i field (w91)
 - **Status:** done (POSITIVE by the rule) · **Machine:** 4070 (`/data/yb/gpu.lock`, three holds between w79's units,
   ~10 min GPU; queue `/data/queue.d/85-w91drift.sh`, done) · **Code:** `v3/e3/settle/w91/drift91.py`, `q91.sh`,

@@ -1,0 +1,6 @@
+{"file": "clean.safetensors", "PASS": true, "cs_max": 0.0042897700949326035, "sec": 0.1}
+{"file": "span.safetensors", "PASS": false, "cs_max": 5.3848732034637985e+48, "sec": 0.0}
+{"file": "nan.safetensors", "PASS": false, "cs_max": 0.0042897700949326035, "sec": 0.0}
+{"file": "zerodiag.safetensors", "PASS": false, "cs_max": Infinity, "sec": 0.0}
+{"file": "indefinite.safetensors", "PASS": false, "cs_max": 0.809999965006205, "sec": 0.0}
+selftest PASS

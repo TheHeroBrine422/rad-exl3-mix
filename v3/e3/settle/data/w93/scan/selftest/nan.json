@@ -1,0 +1,33 @@
+{
+ "file": "nan.safetensors",
+ "kind": "hin",
+ "k": 256,
+ "rows": "4096",
+ "linears": [],
+ "sha256": "fe267ed3de9c5c264fb6e8ca7a20ad324662d639daba27bb785e5f680122f5c9",
+ "size": 131782,
+ "diag_min": 7.785905838012695,
+ "diag_max": 562658.125,
+ "diag_mean": 20092.84701650217,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": 0.0042897700949326035,
+ "cs_arg": [
+  19,
+  107
+ ],
+ "cs_gt_1e-5": 0,
+ "cs_gt_1e-3": 0,
+ "zeros": 1,
+ "zero_run_max": 1,
+ "nonfinite": 1,
+ "cholesky": null,
+ "exhaustive": true,
+ "sec_scan": 0.0,
+ "sec_chol": 0.0,
+ "sec": 0.0,
+ "fails": [
+  "1 non-finite entries"
+ ],
+ "notes": [],
+ "PASS": false
+}

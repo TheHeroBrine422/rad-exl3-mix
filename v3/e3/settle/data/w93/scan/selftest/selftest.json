@@ -1,0 +1,40 @@
+{
+ "cases": {
+  "clean": {
+   "PASS": true,
+   "expected": true,
+   "fails": []
+  },
+  "span": {
+   "PASS": false,
+   "expected": false,
+   "fails": [
+    "diagonal: 4 entries not > 0",
+    "Cauchy-Schwarz: 494 entries above 1 + 0.001 (max 5.38487e+48 at (95, 241))"
+   ]
+  },
+  "nan": {
+   "PASS": false,
+   "expected": false,
+   "fails": [
+    "1 non-finite entries"
+   ]
+  },
+  "zerodiag": {
+   "PASS": false,
+   "expected": false,
+   "fails": [
+    "diagonal: 1 entries not > 0",
+    "Cauchy-Schwarz: 255 entries above 1 + 0.001 (max inf at (0, 5))"
+   ]
+  },
+  "indefinite": {
+   "PASS": false,
+   "expected": false,
+   "fails": [
+    "damped Cholesky failed: Internal potrf return info = [3] for slices [0]."
+   ]
+  }
+ },
+ "PASS": true
+}

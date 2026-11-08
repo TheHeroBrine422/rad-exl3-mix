@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check_ladder.py [RQAH_CHECKOUT] -- rxq/ladder.py, the ladder's job generation (CPU, seconds):
-  levels   71 levels from the settings file: pass 1 24 (i8 quarter steps K1.25-5, half steps K5.5-7, mul1 half steps
-           K6.5-8), pass 2 26, pass 2b 14 (the conditional i4 twins), pass 3 7 (sub-1, i4); every (K, codebook) agrees with
+  levels   55 levels from the settings file: pass 1 24 (i8 quarter steps K1.25-5, half steps K5.5-7, mul1 half steps
+           K6.5-8), pass 2 24, no i4 twins (A4 out, w93 11-08; was pass 2b 14 + 2 in pass 2), pass 3 7 (sub-1, i4); every (K, codebook) agrees with
            [quant.codebook]; pass 1 first, K2.5-4.5 first inside a pass; names unique and carry the settings stamp
   jobs     every level's jobs (group split; also the tensor split) pass rad-quant-at-home's rxq_quant checks (schema,
            stamp, keys, pins = exactly the implied inputs, requirements) with H_out dense and blocks; ukeys unique;
@@ -36,8 +36,8 @@ want1 = sorted([(k / 4, "i8") for k in range(5, 21)] + [(5.5, "i8"), (6.0, "i8")
 order_ok = [v["pass"] for v in L] == sorted([v["pass"] for v in L], key=["1", "2", "2b", "3"].index) and \
     all(2.5 <= float(L[i]["K"]) <= 4.5 for i in range(9))
 names = [v["name"] for v in L]
-report("levels", len(L) == 71 and cnt == {"1": 24, "2": 26, "2b": 14, "3": 7} and p1 == want1 and order_ok and
-       len(set(names)) == 71 and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
+report("levels", len(L) == 55 and cnt == {"1": 24, "2": 24, "2b": 0, "3": 7} and p1 == want1 and order_ok and
+       len(set(names)) == 55 and not any(v["codebook"] == "i4" and float(v["K"]) > 1 for v in L) and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
        f"{len(L)} levels {cnt}; pass 1 = the coarse subset {p1 == want1}; order {order_ok}; first {names[:3]}")
 
 for mode in ("dense", "blocks"):
@@ -76,7 +76,7 @@ report("manifest", pins_ok and refused and len(js) == 16, f"{len(js)} jobs of la
 ed, eb = LD.estimate(C.with_overrides(cfg, **{"inputs.hout.ldlq": "dense"})), LD.estimate(C.with_overrides(cfg, **{"inputs.hout.ldlq": "blocks"}))
 td, tb = sum(r["quant_h"] for r in ed.values()), sum(r["quant_h"] for r in eb.values())
 k = "model.language_model.layers.10.mlp.gate_proj"
-report("estimate", set(ed) == {"1", "2", "2b", "3"} and tb < td and LD.tensor_vram(cfg, k, 0.5) > LD.tensor_vram(cfg, k, 2.5),
+report("estimate", set(ed) == {"1", "2", "3"} and tb < td and LD.tensor_vram(cfg, k, 0.5) > LD.tensor_vram(cfg, k, 2.5),
        f"quant card-h dense {td:.0f} / blocks {tb:.0f}; gate VRAM K0.5 {LD.tensor_vram(cfg, k, 0.5):.2f} > K2.5 {LD.tensor_vram(cfg, k, 2.5):.2f} GiB")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

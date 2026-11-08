@@ -1,0 +1,39 @@
+{
+ "file": "indefinite.safetensors",
+ "kind": "hin",
+ "k": 256,
+ "rows": "4096",
+ "linears": [],
+ "sha256": "8a98f39816e3d699369ef5a74a480991a7980caa51ac93daafe692b8e45cd60a",
+ "size": 131782,
+ "diag_min": 20092.84765625,
+ "diag_max": 20092.84765625,
+ "diag_mean": 20092.84765625,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": 0.809999965006205,
+ "cs_arg": [
+  0,
+  1
+ ],
+ "cs_gt_1e-5": 0,
+ "cs_gt_1e-3": 0,
+ "zeros": 32637,
+ "zero_run_max": 253,
+ "nonfinite": 0,
+ "cholesky": {
+  "ok": false,
+  "lambda": 20.09284765625,
+  "err": "Internal potrf return info = [3] for slices [0]."
+ },
+ "exhaustive": true,
+ "sec_scan": 0.0,
+ "sec_chol": 0.0,
+ "sec": 0.0,
+ "fails": [
+  "damped Cholesky failed: Internal potrf return info = [3] for slices [0]."
+ ],
+ "notes": [
+  "longest exact-zero run 253 entries (review)"
+ ],
+ "PASS": false
+}

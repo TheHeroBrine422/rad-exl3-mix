@@ -1,0 +1,78 @@
+22:35:14 start: 38 jobs, 38 to do; max 24, anoncap 110.0 GiB, mycap 1000000000.0 GiB
+22:36:34 start w93-2-ffn_down-s0 (ours 1, anon 0 GiB)
+22:36:36 start w93-2-ffn_down-s1 (ours 2, anon 1 GiB)
+22:36:38 start w93-30-ffn_down-s0 (ours 3, anon 5 GiB)
+22:36:40 start w93-30-ffn_down-s1 (ours 4, anon 10 GiB)
+22:36:42 start w93-63-ffn_down-s0 (ours 5, anon 17 GiB)
+22:36:44 start w93-63-ffn_down-s1 (ours 6, anon 26 GiB)
+22:40:46 start w93-2-ssm_qkv-s1 (ours 7, anon 42 GiB)
+22:40:48 start w93-30-ssm_qkv-s0 (ours 8, anon 43 GiB)
+22:40:50 start w93-50-ssm_qkv-s0 (ours 9, anon 44 GiB)
+22:40:52 start w93-50-ssm_qkv-s1 (ours 10, anon 46 GiB)
+22:40:54 start w93-10-ssm_z-s1 (ours 11, anon 46 GiB)
+22:40:56 start w93-34-ssm_z-s0 (ours 12, anon 48 GiB)
+22:40:58 start w93-62-ssm_z-s0 (ours 13, anon 48 GiB)
+22:41:00 start w93-62-ssm_z-s1 (ours 14, anon 49 GiB)
+22:41:02 start w93-10-ssm_out-s1 (ours 15, anon 50 GiB)
+22:41:04 start w93-30-ssm_out-s0 (ours 16, anon 51 GiB)
+22:41:06 start w93-50-ssm_out-s0 (ours 17, anon 53 GiB)
+22:41:08 start w93-50-ssm_out-s1 (ours 18, anon 55 GiB)
+22:41:10 start w93-3-attn_qg-s1 (ours 19, anon 55 GiB)
+22:41:12 start w93-19-attn_qg-s0 (ours 20, anon 56 GiB)
+22:41:14 start w93-43-attn_qg-s0 (ours 21, anon 56 GiB)
+22:41:16 start w93-43-attn_qg-s1 (ours 22, anon 57 GiB)
+22:41:18 start w93-11-attn_k-s1 (ours 23, anon 58 GiB)
+22:41:20 start w93-35-attn_k-s0 (ours 24, anon 59 GiB)
+22:45:22 done w93-2-ssm_qkv-s1 276s
+22:45:22 done w93-30-ssm_qkv-s0 274s
+22:45:22 done w93-50-ssm_qkv-s0 272s
+22:45:22 start w93-63-attn_k-s0 (ours 22, anon 57 GiB)
+22:45:24 start w93-63-attn_k-s1 (ours 23, anon 57 GiB)
+22:45:26 start w93-7-attn_v-s1 (ours 24, anon 58 GiB)
+22:45:48 done w93-50-ssm_qkv-s1 296s
+22:45:48 done w93-10-ssm_z-s1 294s
+22:45:48 done w93-34-ssm_z-s0 292s
+22:45:48 done w93-62-ssm_z-s0 290s
+22:45:48 done w93-62-ssm_z-s1 288s
+22:45:48 done w93-10-ssm_out-s1 286s
+22:45:48 done w93-30-ssm_out-s0 284s
+22:45:48 done w93-50-ssm_out-s0 282s
+22:45:48 done w93-19-attn_qg-s0 276s
+22:45:48 start w93-43-attn_v-s0 (ours 16, anon 51 GiB)
+22:45:50 start w93-59-attn_v-s0 (ours 17, anon 50 GiB)
+22:45:52 start w93-59-attn_v-s1 (ours 18, anon 49 GiB)
+22:45:54 start w93-19-attn_output-s1 (ours 19, anon 50 GiB)
+22:45:56 start w93-43-attn_output-s0 (ours 20, anon 51 GiB)
+22:45:58 start w93-63-attn_output-s0 (ours 21, anon 52 GiB)
+22:46:00 start w93-63-attn_output-s1 (ours 22, anon 52 GiB)
+22:46:02 start w93-10-ffn_gate_up-s1 (ours 23, anon 53 GiB)
+22:46:04 start w93-43-ffn_gate_up-s0 (ours 24, anon 54 GiB)
+22:46:26 done w93-50-ssm_out-s1 318s
+22:46:26 done w93-3-attn_qg-s1 316s
+22:46:26 done w93-43-attn_qg-s0 312s
+22:46:26 done w93-43-attn_qg-s1 310s
+22:46:26 done w93-11-attn_k-s1 308s
+22:46:26 done w93-35-attn_k-s0 306s
+22:46:26 start w93-62-ffn_gate_up-s0 (ours 19, anon 55 GiB)
+22:46:28 start w93-62-ffn_gate_up-s1 (ours 20, anon 56 GiB)
+22:50:10 done w93-63-attn_k-s0 288s
+22:50:10 done w93-63-attn_k-s1 286s
+22:50:10 done w93-7-attn_v-s1 284s
+22:50:30 done w93-43-attn_v-s0 282s
+22:50:30 done w93-59-attn_v-s0 280s
+22:50:30 done w93-59-attn_v-s1 278s
+22:50:30 done w93-19-attn_output-s1 276s
+22:50:50 done w93-43-attn_output-s0 294s
+22:50:50 done w93-63-attn_output-s0 292s
+22:50:50 done w93-63-attn_output-s1 290s
+22:50:50 done w93-10-ffn_gate_up-s1 288s
+22:50:50 done w93-43-ffn_gate_up-s0 286s
+22:51:10 done w93-62-ffn_gate_up-s0 284s
+22:51:10 done w93-62-ffn_gate_up-s1 282s
+22:51:50 done w93-2-ffn_down-s0 916s
+22:51:50 done w93-2-ffn_down-s1 914s
+22:52:10 done w93-30-ffn_down-s0 932s
+22:52:10 done w93-30-ffn_down-s1 930s
+22:52:10 done w93-63-ffn_down-s0 928s
+22:52:10 done w93-63-ffn_down-s1 926s
+22:52:10 W87 QUEUE DONE ok=38 fail=0

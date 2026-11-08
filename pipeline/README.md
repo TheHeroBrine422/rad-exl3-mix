@@ -43,7 +43,7 @@ python -m rxq.knap library LEVELS... -o lib.json --packs DIR   # S7: the library
 python -m rxq.knap solve lib.json out.jsonl -t 2.5,3 -l 0,3e-7  # S7: knap5 over the library
 python -m rxq.knap handoff out.jsonl lib.json MIXDIR --tag T --frontier F   # S7 -> search stream (mix files + frontier)
 python -m rxq.mix recipe LEVEL                          # S8: rad-convert recipe of a level (levelmix PACK: radmix mix)
-python -m rxq.ladder levels | estimate [--ldlq blocks] | req   # the 71 levels in build order, R9700 card-hours per pass,
+python -m rxq.ladder levels | estimate [--ldlq blocks] | req   # the 55 levels in build order, R9700 card-hours per pass,
                                                         # the per-tensor VRAM / seconds table (w81's 11-08 measurements)
 python -m rxq.ladder jobs MANIFEST --model q27 --rev R --pass 1 -o jobs.jsonl   # rad-quant-at-home rxq_quant jobs (inputs
                                                         # pinned by the datapack manifest's sha256): admin.py enqueue-jobs
@@ -82,7 +82,7 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
   identity order == plain bit for bit, the consensus order changes readers only, decode == wq (~15 min on 2 CPUs).
 - `tests/check_blkorder84.py FORK [WORK]` — rxq's block order == w84's blkorder84.py (installed as w84q.py did) bit for
   bit under w84's p0 settings, tile CD off and on (~8 min). GPU twin: `tools/blkorder27.sh` (p0perm's 9 readers).
-- `tests/check_ladder.py [RQAH]` — the 71 levels and passes, every job of every level through rqah's rxq_quant checks,
+- `tests/check_ladder.py [RQAH]` — the 55 levels and passes, every job of every level through rqah's rxq_quant checks,
   manifest pins, estimates (seconds).
 
 GPU (prepared scripts, the lead runs them):

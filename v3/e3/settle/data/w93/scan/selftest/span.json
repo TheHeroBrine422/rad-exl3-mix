@@ -1,0 +1,34 @@
+{
+ "file": "span.safetensors",
+ "kind": "hin",
+ "k": 256,
+ "rows": "4096",
+ "linears": [],
+ "sha256": "b5948e7083c9ec55fd28c7c228d5835f037972db02b6fde0e786a6b19b19fad5",
+ "size": 131782,
+ "diag_min": -7.496416679711703e+23,
+ "diag_max": 562658.125,
+ "diag_mean": -2.9353936730662004e+21,
+ "absmax_over_diagmax": 1.730819471812533e+23,
+ "cs_max": 5.3848732034637985e+48,
+ "cs_arg": [
+  95,
+  241
+ ],
+ "cs_gt_1e-5": 494,
+ "cs_gt_1e-3": 494,
+ "zeros": 0,
+ "zero_run_max": 0,
+ "nonfinite": 0,
+ "cholesky": null,
+ "exhaustive": true,
+ "sec_scan": 0.0,
+ "sec_chol": 0.0,
+ "sec": 0.0,
+ "fails": [
+  "diagonal: 4 entries not > 0",
+  "Cauchy-Schwarz: 494 entries above 1 + 0.001 (max 5.38487e+48 at (95, 241))"
+ ],
+ "notes": [],
+ "PASS": false
+}

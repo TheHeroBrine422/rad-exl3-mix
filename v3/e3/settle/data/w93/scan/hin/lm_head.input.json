@@ -1,0 +1,37 @@
+{
+ "file": "lm_head.input.safetensors",
+ "kind": "hin",
+ "k": 5120,
+ "rows": "10259331",
+ "linears": [
+  "lm_head"
+ ],
+ "sha256": "f77c4a9a6d4895b724ac3473be297c4db85d3e102056a0a719dca570ba7a2915",
+ "size": 52439240,
+ "diag_min": 10762627.0,
+ "diag_max": 3043968256.0,
+ "diag_mean": 35057715.61679687,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": 0.7189968827005528,
+ "cs_arg": [
+  201,
+  838
+ ],
+ "cs_gt_1e-5": 0,
+ "cs_gt_1e-3": 0,
+ "zeros": 0,
+ "zero_run_max": 0,
+ "nonfinite": 0,
+ "cholesky": {
+  "ok": true,
+  "lambda": 35057.71561679687,
+  "min_diag_L2_over_lambda": 138.37718099722784
+ },
+ "exhaustive": true,
+ "sec_scan": 0.2,
+ "sec_chol": 0.9,
+ "sec": 1.2,
+ "fails": [],
+ "notes": [],
+ "PASS": true
+}

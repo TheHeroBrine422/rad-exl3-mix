@@ -1,0 +1,35 @@
+{
+ "file": "clean.safetensors",
+ "kind": "hin",
+ "k": 256,
+ "rows": "4096",
+ "linears": [],
+ "sha256": "1dfcf8765754368402aaba177a46b8678c4617df92484da9704472530fe91902",
+ "size": 131782,
+ "diag_min": 7.785905838012695,
+ "diag_max": 562658.125,
+ "diag_mean": 20092.84701650217,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": 0.0042897700949326035,
+ "cs_arg": [
+  19,
+  107
+ ],
+ "cs_gt_1e-5": 0,
+ "cs_gt_1e-3": 0,
+ "zeros": 0,
+ "zero_run_max": 0,
+ "nonfinite": 0,
+ "cholesky": {
+  "ok": true,
+  "lambda": 20.092847016502173,
+  "min_diag_L2_over_lambda": 1.3812488022468221
+ },
+ "exhaustive": true,
+ "sec_scan": 0.0,
+ "sec_chol": 0.1,
+ "sec": 0.1,
+ "fails": [],
+ "notes": [],
+ "PASS": true
+}

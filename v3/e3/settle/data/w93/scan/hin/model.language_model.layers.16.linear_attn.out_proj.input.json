@@ -1,0 +1,37 @@
+{
+ "file": "model.language_model.layers.16.linear_attn.out_proj.input.safetensors",
+ "kind": "hin",
+ "k": 6144,
+ "rows": "10259331",
+ "linears": [
+  "model.language_model.layers.16.linear_attn.out_proj"
+ ],
+ "sha256": "83a2b9d489307f1ce628da804d9982e34d556158477625a81a4c9f280baec1fb",
+ "size": 75510008,
+ "diag_min": 39.47210693359375,
+ "diag_max": 387121.4375,
+ "diag_mean": 19713.834243632853,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": 0.8085576069476992,
+ "cs_arg": [
+  2688,
+  5033
+ ],
+ "cs_gt_1e-5": 0,
+ "cs_gt_1e-3": 0,
+ "zeros": 0,
+ "zero_run_max": 0,
+ "nonfinite": 0,
+ "cholesky": {
+  "ok": true,
+  "lambda": 19.713834243632853,
+  "min_diag_L2_over_lambda": 1.0834049498658023
+ },
+ "exhaustive": true,
+ "sec_scan": 0.3,
+ "sec_chol": 1.3,
+ "sec": 1.8,
+ "fails": [],
+ "notes": [],
+ "PASS": true
+}

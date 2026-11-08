@@ -1,0 +1,34 @@
+{
+ "file": "zerodiag.safetensors",
+ "kind": "hin",
+ "k": 256,
+ "rows": "4096",
+ "linears": [],
+ "sha256": "33f0421ce74688bf1d55b659418a0cd18f22a83322eddfa4d5c7bc48a630e1ce",
+ "size": 131782,
+ "diag_min": 0.0,
+ "diag_max": 562658.125,
+ "diag_mean": 20076.203595329076,
+ "absmax_over_diagmax": 1.0,
+ "cs_max": Infinity,
+ "cs_arg": [
+  0,
+  5
+ ],
+ "cs_gt_1e-5": 255,
+ "cs_gt_1e-3": 255,
+ "zeros": 1,
+ "zero_run_max": 1,
+ "nonfinite": 0,
+ "cholesky": null,
+ "exhaustive": true,
+ "sec_scan": 0.0,
+ "sec_chol": 0.0,
+ "sec": 0.0,
+ "fails": [
+  "diagonal: 1 entries not > 0",
+  "Cauchy-Schwarz: 255 entries above 1 + 0.001 (max inf at (0, 5))"
+ ],
+ "notes": [],
+ "PASS": false
+}

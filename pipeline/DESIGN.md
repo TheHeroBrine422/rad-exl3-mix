@@ -45,8 +45,9 @@ on the writers (user 11-07; computed inside the writers' quant jobs). The open o
                                                outside the declared arm
 ```
 
-S1 runs once per model (and when a statistics setting changes). S2 is the bulk (71 levels × 400 trunk tensors =
-28,400 tensor jobs + heads). S3-S4 run once per level. The writer passes run last, in this order (#87-07 / #87-08:
+S1 runs once per model (and when a statistics setting changes). S2 is the bulk (55 levels × 400 trunk tensors =
+22,000 tensor jobs + heads; 71 levels before the i4 twins were dropped, 11-08). S3-S4 run once per level. The writer
+passes run last, in this order (#87-07 / #87-08:
 H_out → swj → writers): asym needs the final siblings, so with #111 it runs per mix after the knapsack; C9 folds into
 the shipped writers' svh after everything else. S7 / S8 run per release size and variant. `python -m rxq.post plan -K K`
 prints the post passes a level gets under the settings.
@@ -233,8 +234,9 @@ error, where ourq skipped the tensor); tile CD up to `quant.tile_cd.k_max`; asym
 refused until implemented. `[knap]` (pricing switches for S7) is outside the stamp.
 
 ### Ladder rollout (w86, 2026-11-08)
-- **Job generation** (`rxq/ladder.py`): levels and build order from `[ladder]` + `[quant.codebook]` (71 levels: pass 1
-  = 24 coarse levels, pass 2 = 26, pass 2b = the 14 conditional i4 twins, pass 3 = the 7 sub-1 levels, last); one
+- **Job generation** (`rxq/ladder.py`): levels and build order from `[ladder]` + `[quant.codebook]` (55 levels: pass 1
+  = 24 coarse levels, pass 2 = 24, pass 3 = the 7 sub-1 levels, last; the 16 i4 twins (2 in pass 2, 14 in a conditional
+  pass 2b) were dropped 11-08 with A4: `[ladder] i4_twin_range = []`); one
   rad-quant-at-home `rxq_quant` job per Hessian group (or tensor), params = level / K / codebook / keys / the settings
   stamp / the settings file's datapack relpath / H_out snapshot / C9 writers / requirements, every input pinned by its
   sha256 from the datapack manifest. Requirements and card-hours from w81's 11-08 R9700 measurements (`python -m

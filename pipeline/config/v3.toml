@@ -6,7 +6,8 @@
 # the hconv / swap27 "ladder settings"; C9 only adds a scales file per writer); tools/run4070.sh shows the overrides.
 #
 # 2026-11-08 (w86, user / lead): H_out at every level (apply_k_min 0) on w81's block-diagonal path (inputs.hout.ldlq), the
-# #117 residual block order on (quant.block_order), sigma 0.2 at K0.125; [ladder] (unstamped) plans the 71 levels.
+# #117 residual block order on (quant.block_order), sigma 0.2 at K0.125; [ladder] (unstamped) plans the levels (55
+# since 11-08: the 16 i4 twins dropped, user).
 # Changing any value changes the settings stamp (rxq/config.py), so a level can never mix settings.
 # Status words: adopted (in the ladder now) | open (a switch; the experiment decides) | dropped (kept for the record).
 
@@ -36,7 +37,8 @@ blend_dir = ""                 # datapack: hessians-xcorp/ (mkhin27.py over mX, 
 # K4 pairs bn4 / base4 0.9613, bn4s1 / base4s1 0.9672, geo 0.9643, seed floor 0.0062 -> PASS, ADOPTED for levels
 # >= K4 (LOG 2026-11-07 6:55 AM CST). Two-sided LDLQ (ldlq_2hess); tile CD runs on the two-sided objective.
 # Cost: ~5x quant time per layer on the R9700 (~3.2 h a K >= 4 level vs ~37 min) unless ldlq_2hess exploits the
-# block-diagonal rotated H_out (PROFILE.md target T1).
+# block-diagonal rotated H_out (PROFILE.md target T1). [11-08: both superseded: H_out at every level (apply_k_min
+# below, user) on the #115 block-diagonal path (ldlq below, ~1.07x a one-sided level).]
 enable = true
 estimator = "bn"               # "bn" (block-normalized, port of v3/yaqa/hconv/mkhalf.py MKHALF_NORM=1) | "dy" (plain mean)
 snapshot = 1920                # H27 amendment 2
@@ -88,6 +90,8 @@ stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11
 # negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
 # (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
 # keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
+# [11-08: A4 is out of V3 (#46-03 fail, user 11-07), and A4 was the 16 i4 twins' only use (never picked at 2.0-7.0
+# without it, v3/levels/reprice.md); all 16 removed (user 11-08, lead note 4:25 PM CST; w93): ladder 71 -> 55 levels.]
 # i4 with qtf2 (every sub-1 level and the 1/8 steps): w53's qtf2-i4.patch, applied 11-07 (exl3frac2 "i4" variant;
 # oracle-exact at every rate in w53's checks; tests/qtf2i4check.sh on card 0 re-checks it).
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
@@ -97,6 +101,9 @@ by_level = [
 ]
 mul1_levels = [6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
 i4_twins = [2.0, 3.0]          # i4 K1.125-3 twins: K2 / K3 first (#46-03), the other 14 only if A4 pays
+                               # (#46-03 done 11-07: A4 fails and is out). 11-08 (user): no twins are built
+                               # ([ladder] i4_twin_range = []), so this value is inert; it stays because it is stamped
+                               # (editing it would change the settings stamp of every level, w92's anchors included)
 hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
 
 [quant.tile_cd]
@@ -104,8 +111,8 @@ hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL
 # order was reversed; real GPU quantizer 0.987-0.996 on attn_qg, x3.7 its quant time). w50's GPU module merged as
 # rxq/tilecd.py (11-07, w76; identical without H_out: tests/check_tilecd.py). 27B no-harm check v3/e3/settle/CD27.md
 # PASSED 11-06 at K2.5 without H_out (s1 0.9994, base 0.9997, no-op gates bit-exact). With H_out (K >= 4) CD runs on
-# the two-sided objective tr(E^T H E M) (user 11-07: write it); its 27B K4 no-harm pair is prepared, not run
-# (tools/cdhout27.sh): until it passes, K >= 4 levels with CD + H_out rest on the CPU checks only.
+# the two-sided objective tr(E^T H E M) (user 11-07: write it); its 27B K4 no-harm pair (tools/cdhout27.sh) PASSED
+# 11-08 (geo 0.9998; LOG 8:00 AM CST): CD stays on at every level with H_out.
 enable = true                  # attn_qg at every K (user 11-06 / 11-07)
 sweeps = 3
 families = ["attn_qg"]
@@ -118,7 +125,7 @@ module = ""                    # "" = rxq/tilecd.py; a path loads another copy (
 # base -> baseswj 0.9346, s1 -> s1swj 0.9346 (two seed pairs, z -12.5 / -14.6), verify 0.935 / 0.932; stacks with H_out
 # (0.924 / 0.921). K4, head-matched (SWJ27 amendment 2, verify): 0.990 / 0.987, geo 0.989 (-1.1%; the 11-06 K4 -22%
 # was a head mismatch). Amendment 2's rule then falls back to <= K3.5 until a K4 seed pair; LOG 11-06 7:50 PM says swj
-# "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision.
+# "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision (decided: user 11-07, k_max below).
 enable = true
 k_max = 8.0                    # every level (user 2026-11-07: swj adopted at every level; K4 head-matched seed pair
                                # 0.990 / 0.987 satisfies SWJ27 amendment 2's K4 condition). Was 3.5.
@@ -129,6 +136,7 @@ fit_tokens = 1048576
 fused = true                   # swjtri.py fused grid sums (KL 0.99980 vs exact, z -0.59)
 
 [post.asym]
+# [11-08: #105 per-level negative (s1 -> s1a 1.0067); the per-mix form is open, after the freeze.]
 # Writers' sibling-sequential asymmetric target, rho 0 (#87 done on the 0.8B; #105 QUEUED at 27B, ASYM27.md:
 # PASS = geo <= 0.97 and both pairs < 1). #111 (0.8B, 11-07): per-level asym writers next to siblings of another K
 # fail (x1.08-1.24 vs plain); a per-mix writer pass keeps the gain: the rollout form is a user decision if #105 passes.
@@ -159,15 +167,15 @@ enable = false
 
 # --------------------------------------------------------------------------- ladder plan (which levels, not in the stamp)
 [ladder]
-# The 71 levels (v3.md "Ladder", 11-07) and their build order (local/TODO "Ladder build order", user 11-05; sub-1 last,
-# LOG 11-08 5:00 AM). Outside the stamp: it picks which levels exist, not what a tensor's codes are; the codebook of
+# The 55 levels (v3.md "Ladder", 11-07; 71 until the 16 i4 twins were dropped, user 11-08) and their build order
+# (local/TODO "Ladder build order", user 11-05; sub-1 last, LOG 11-08 5:00 AM). Outside the stamp: it picks which levels exist, not what a tensor's codes are; the codebook of
 # each level comes from [quant.codebook]. python -m rxq.ladder levels | jobs | estimate (w86, 11-08).
 prefix = "q27v3"               # level names: <prefix>-<stamp[:8]>-k<K>-<codebook>
 i4_low = [0.125, 1.0, 0.125]   # [first, last, step]: i4 K0.125-1 (8; K < 1 = sub-1)
 i8_fine = [1.125, 5.0, 0.125]  # i8 eighth steps (32)
 i8_top = [5.25, 7.0, 0.25]     # i8 quarter steps (8)
-i4_twin_range = [1.125, 3.0, 0.125]   # i4 twins of the i8 levels (16): quant.codebook.i4_twins first, the rest only if
-                               # #46-03's A4 pays (pass "2b", conditional)
+i4_twin_range = []             # no i4 twins (16 removed, user 11-08: A4 out of V3, #46-03; their only use). Was [1.125, 3.0,
+                               # 0.125] (16 twins: quant.codebook.i4_twins first, the rest only if A4 paid)
                                # mul1: quant.codebook.mul1_levels (7)
 pass1_quarter = [1.25, 5.0]    # pass 1 (~24 levels, e2e test + search calibration): i8 quarter steps,
 pass1_half = [5.5, 7.0]        # i8 half steps,
@@ -190,7 +198,7 @@ map = "../e1b/data/e0-ident.map"
 swj_mode = "all"               # KN_SWJ when post.swj is on (every ours trunk option x r(K))
 swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"   # KN_SWJ_PTS: the corrected swj curve (w63; 27B K2.5 verify, K4 head-matched)
 cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
-a4 = false                     # A4 options (#46-03 pending): off -> KN_NOA4=1
+a4 = false                     # A4 options (#46-03 fail: A4 out of V3, user 11-07): off -> KN_NOA4=1
 sub1_ratios = ""               # KN_SUB1 (sub-1 i4 levels' error ratios); "" = sub-1 levels are not priced (a warning)
 env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
 
