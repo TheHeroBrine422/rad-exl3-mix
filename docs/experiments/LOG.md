@@ -82,6 +82,12 @@ versions of anything: git history.
   path (layer 10, i4 K0.125 / 0.5 / 1 / 2 / 3, blocks vs no H_out; K0.125 also dense): runs, two-sided objective < no H_out.
 - **Runtime:** none (quantizer only; same objective, format and kernels).
 
+### 2026-11-08 5:15 AM CST · #105 · asym at 27B: first pair s1 → s1a 1.0067 (no gain)
+- 27B writers asym ρ0, K2.5, golden-search27: s1 → s1a KLD 0.05757 → 0.05796, ratio **1.0067** (z +0.59, se 0.00066,
+  123k positions). Rule (ASYM27.md): both pairs < 1 and geo ≤ 0.97 → the base arm must land ≤ 0.941 to pass; very
+  unlikely. 0.8B gave ×0.84 (#87): no transfer so far. Base arm running (moments layer 23/64, ~6.5 h to its pair);
+  continue vs stop is with the user. Runtime none.
+
 ### 2026-11-08 5:00 AM CST · #90 · sub-1 levels: kernel kept, levels built (user)
 - User: the sub-1 decode support stays (~25–30 SLOC: the salted 0-bit read in the plan, decoders and CPU reference;
   ~40 test lines), and the 7 sub-1 levels (i4 K0.125–0.875) are built for V3: ~22 card-h with H_out as implemented
