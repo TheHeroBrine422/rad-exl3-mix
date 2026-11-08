@@ -3,6 +3,15 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 9:35 AM CST · #117 · residual-stream permutation at 27B: rule says ADOPT, effect ~−0.3% (not significant)
+- Two seed pairs, K2.5 plain levels, read on the fresh two-part slice golden-search27b (65 xcorp + 36 calib-search
+  docs): pooled r **0.9970 / 0.9967, geo 0.9968, pooled z −0.62**; part geo xcorp 0.9975, calib 0.9926 (same sign).
+  Rule (both pooled r < 1, parts agree in sign) → **ADOPT**. Proxy: 272/272 readers better, geo 0.985.
+- On the retired golden-search27 (report only): p0 0.983 (z −2.06), p1 1.0039, geo 0.9933 — the old slice's −1.7% on
+  p0 was mostly that slice; the fresh slice says ~−0.3%, consistent with zero to ~−1%.
+- Zero runtime and build-time cost; changes every level (pre-freeze). Adoption is the user's call (w86 has the v3.toml
+  switch, off by default). Runtime none.
+
 ### 2026-11-08 8:10 AM CST · #33-28 · K2.5 H_out on golden-verify27: holds — H_out at every level stands
 - One-time routine verify check (pre-registered 6:20 AM: stands if verify geo < 1): bn / bns1 / bns2 vs base / s1 / s2,
   **0.9570 / 0.9803 / 0.9883, geo 0.9751, pooled z −3.38** (search was geo 0.9801). Hygiene passed on all three.
