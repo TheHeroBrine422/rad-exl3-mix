@@ -121,7 +121,9 @@ if want asm; then
 fi
 CTLTAG=$ARM CTLMIX=/data/swap27/mix-$ARM.rad CR=/data/swap27/$ARM.json.rows
 [ -n "$NOOPFAIL" ] && CTLTAG=${ARM}n CTLMIX=$A/mix-${ARM}n.rad CR=$A/${ARM}n.json.rows
-[ -z "$NOOPFAIL" ] && [ ! -f $CTLMIX ] && CTLTAG=${ARM}ctl CTLMIX=$A/mix-${ARM}ctl.rad CR=$A/${ARM}ctl.json.rows
+# CTL_FRESH=1: always pack a fresh control from BASE into the same V2 (11-08: swap27/mix-bn4.rad was built against
+# another head / embedding, so the hygiene gate refused the pair on output.weight + token_embd.weight)
+[ -z "$NOOPFAIL" ] && { [ ! -f $CTLMIX ] || [ "${CTL_FRESH:-0}" = 1 ]; } && CTLTAG=${ARM}ctl CTLMIX=$A/mix-${ARM}ctl.rad CR=$A/${ARM}ctl.json.rows
 if want pack; then
   if [ -n "$DRY" ]; then echo "DRY: packmixk ${ARM}cd $O/level-cd (K$K into $V2); control $CTLTAG ($CTLMIX)"
   else packmixk ${ARM}cd $O/level-cd || die "pack ${ARM}cd FAIL"
