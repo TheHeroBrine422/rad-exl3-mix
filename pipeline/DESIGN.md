@@ -232,6 +232,26 @@ level where it does not apply is refused, and a level where it applies needs one
 error, where ourq skipped the tensor); tile CD up to `quant.tile_cd.k_max`; asym only per mix; healing and #100 are
 refused until implemented. `[knap]` (pricing switches for S7) is outside the stamp.
 
+### Ladder rollout (w86, 2026-11-08)
+- **Job generation** (`rxq/ladder.py`): levels and build order from `[ladder]` + `[quant.codebook]` (71 levels: pass 1
+  = 24 coarse levels, pass 2 = 26, pass 2b = the 14 conditional i4 twins, pass 3 = the 7 sub-1 levels, last); one
+  rad-quant-at-home `rxq_quant` job per Hessian group (or tensor), params = level / K / codebook / keys / the settings
+  stamp / the settings file's datapack relpath / H_out snapshot / C9 writers / requirements, every input pinned by its
+  sha256 from the datapack manifest. Requirements and card-hours from w81's 11-08 R9700 measurements (`python -m
+  rxq.ladder req`, `estimate`).
+- **H_out form** (`inputs.hout.ldlq`, #115): `blocks` by default since 11-08 (fork patch 0008, now
+  quantize/exl3-patches/0008: block-diagonal two-sided LDLQ, same objective, ~37 min an H_out level vs ~190 dense;
+  w81's gate PASS) or `dense` (the 11-07 path). `blocks` needs the fork with 0008 (rxq refuses otherwise); `rxq
+  levelargs` maps ourq levels made before 11-08 to dense (w81's rxm-hout-blocks.patch, applied).
+- **#117 residual block order** (`quant.block_order`, **on**, adopted by the user 11-08): route B (`rxq/blkorder.py`,
+  port of w84's blkorder84.py; bit-identical to it, tests/check_blkorder84.py): the 272 residual readers' LDLQ visits
+  their input 128-blocks in w82's consensus order; installed after tile CD, so CD runs inside the permutation; works with
+  the dense and the block-diagonal two-sided LDLQ. No permuted checkpoint, Hessians or reverse permutation anywhere: the
+  codes are stored in natural order with the natural signs (w84 G2: route A == route B bit for bit). `rxq levelargs`
+  turns it off for ourq levels (ourq never reorders). `tools/blkorder27.sh` re-makes w84's p0perm readers on card 0.
+- **CPU stand-in** (`rxq/cpukern.py`, test only): dry runs of the whole job path without a card (tests above; colo dry run
+  on real 27B tensors: rad-exl3-mix `local/workers/w86/`).
+
 ## 5. Open items for the lead
 1. **Run the prepared GPU checks** (w76 had no GPU): `tools/gpucheck27.sh cd` (tile CD on the real quantizer: rxq ==
    research module, M = I gate, two-sided ratios with H_out at K4; ~15 min card 0), `tools/gpucheck27.sh i4`

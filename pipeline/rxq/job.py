@@ -56,9 +56,11 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
     elif inp.get("hout"):
         raise SystemExit(f"K{K}: the job names an H_out dir but H_out does not apply at this level "
                          f"(inputs.hout enable / apply_k_min / apply_k_max)")
-    dev = torch.device("cuda", device)
-    Q = engine.setup(dev, codebook=cb, qtf2=s0["qtf2"], drift=s0["drift"], block_trace=s0["block_trace"], tile_cd=tcd)
-    code = engine.code_stamp(Q)
+    dev = torch.device("cpu") if device == "cpu" else torch.device("cuda", device)
+    cuda = dev.type == "cuda"
+    Q = engine.setup(dev, codebook=cb, qtf2=s0["qtf2"], drift=s0["drift"], block_trace=s0["block_trace"], tile_cd=tcd,
+                     block_order=C.block_order(cfg))
+    code = engine.code_stamp(Q); kern = engine.kernels(Q)
     prof = Prof(dev).install(Q) if profile else None
     ck = quant.Ckpt(inp["ckpt"])
     t_job = time.time(); done = 0
@@ -67,7 +69,7 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
         if os.path.exists(tf): continue
         s = C.quant_settings(cfg, K, cb, key, so)
         if prof: prof.reset()
-        torch.cuda.reset_peak_memory_stats(dev)
+        if cuda: torch.cuda.reset_peak_memory_stats(dev)
         t0 = time.perf_counter()
         tensors, rec, wq, rowerr = quant.quantize_tensor(Q, ck, key, s, inp["hessians"], dev, out, hin_dir=inp.get("hin"),
                                                          wpre_dir=inp.get("wpre"),
@@ -75,6 +77,7 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
                                                          save_wq=save_wq, prof=prof)
         meta = {"rxq_settings": st, "rxq_code": code, "K": str(K), "codebook": cb, "level": spec.get("level", ""),
                 "key": key}
+        if kern != "gpu": meta["rxq_kernels"] = kern     # cpu-standin: test only, assemble refuses it without allow_standin
         al = C.c9_injob(cfg, key, inp.get("hin"), inp.get("wpre"))
         c9s = None
         if al is not None:                      # S5b inside the job: the writer's C9 row scales (rxq.post.c9_tensor)
@@ -89,7 +92,8 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
             c9meta = dict(meta, c9_alpha=json.dumps(cfg["post"]["c9"]["alpha"], sort_keys=True))
             _fsync_put(lambda p: save_file(post.c9_file(c, tensors[f"{key}.suh"].numel()), p, metadata=c9meta),
                        c9_path(out, key))
-            del c; torch.cuda.empty_cache()
+            del c
+            if cuda: torch.cuda.empty_cache()
             c9s = round(time.perf_counter() - tc, 3)
         ts = time.perf_counter()
         _fsync_put(lambda p: save_file(tensors, p, metadata=meta), tf)
@@ -99,15 +103,16 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
             np.savez(os.path.join(out, "wq", f"{key}.rowerr.npz"), **rowerr)
             _fsync_put(lambda p: save_file({"weight": wq}, p), os.path.join(out, "wq", f"{key}.safetensors"))
         if al is not None: rec["c9"] = c9rec
-        rec["rxq"] = {"settings": st, "code": code, "family": qwen35.family(key), "wall": round(time.perf_counter() - t0, 3),
+        rec["rxq"] = {"settings": st, "code": code, "kernels": kern, "family": qwen35.family(key), "wall": round(time.perf_counter() - t0, 3),
                       "save": round(time.perf_counter() - ts, 3), "stages": prof.record() if prof else None,
-                      "c9_s": c9s, "peak_gib": round(torch.cuda.max_memory_allocated(dev) / 2**30, 3),
+                      "c9_s": c9s, "peak_gib": round(torch.cuda.max_memory_allocated(dev) / 2**30, 3) if cuda else None,
                       "maxrss_gib": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 2**20, 3)}
         with open(os.path.join(out, "log.jsonl"), "a") as fh: fh.write(json.dumps(rec) + "\n")
         print(f"  {key:60s} K{K} proxy {rec['proxy_err']:.3e} {rec['rxq']['wall']:.1f}s", flush=True)
         done += 1
     ck.close()
-    jr = {"spec": spec, "settings_stamp": st, "code_stamp": code, "device": torch.cuda.get_device_name(dev),
+    jr = {"spec": spec, "settings_stamp": st, "code_stamp": code, "kernels": kern,
+          "device": torch.cuda.get_device_name(dev) if cuda else "cpu",
           "host": socket.gethostname() if os.environ.get("RXQ_RECORD_HOST") else None, "tensors": done,
           "seconds": round(time.time() - t_job, 1)}
     with open(os.path.join(out, "job.json"), "w") as fh: json.dump(jr, fh, indent=1)
@@ -132,25 +137,33 @@ def plan_level(cfg, K, codebook=None, split="tensor", n_layers=64, seed_offset=0
              "keys": ks, "settings_stamp": st, "inputs": dict(inputs)} for ks in units]
 
 
-def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
-    """job outputs -> an ourq-layout level dir. Refuses mixed settings / code stamps and missing tensors."""
+def assemble(job_dirs, dst, template=None, n_layers=64, head=False, partial=False, allow_standin=False):
+    """job outputs -> an ourq-layout level dir. Refuses mixed settings / code stamps, missing tensors and CPU stand-in
+    results. partial (dry runs): exactly the tensors the job dirs hold, shards only for their layers; allow_standin:
+    accept rxq/cpukern.py's results (test only)."""
     files = {}
     for d in job_dirs:
         for f in os.listdir(d):
             if f.startswith("t-") and f.endswith(".safetensors"): files[f[2:-len(".safetensors")]] = os.path.join(d, f)
     want = qwen35.trunk_keys(n_layers) + (["lm_head"] if head else [])
+    if partial:
+        want = [k for k in qwen35.trunk_keys(n_layers) + ["lm_head"] if k in files]
+        if not want: raise SystemExit("no tensors in the job dirs")
     miss = [k for k in want if k not in files]
     if miss: raise SystemExit(f"{len(miss)} tensors missing (first {miss[0]})")
     stamps, c9want = set(), []
     for k in want:
         with safe_open(files[k], "pt") as f: m = f.metadata(); stamps.add((m["rxq_settings"], m["rxq_code"], m["K"], m["codebook"]))
+        if m.get("rxq_kernels", "gpu") != "gpu" and not allow_standin:
+            raise SystemExit(f"{k}: made with the {m['rxq_kernels']} kernels (test only), not for a level")
         if "c9" in m: c9want.append(k)
     if len(stamps) != 1: raise SystemExit(f"mixed stamps in one level: {sorted(stamps)[:3]}")
     (st, code, K, cb), = stamps
     stamp = f"{st[:8]}{code[:8]}"
     os.makedirs(dst, exist_ok=True)
-    plan = [(f"q-L{l:02d}.safetensors", [k for _, ks in qwen35.layer_plan(l) for k in ks]) for l in range(n_layers)]
-    if head: plan.append(("q-head.safetensors", ["lm_head"]))
+    plan = [(f"q-L{l:02d}.safetensors", [k for _, ks in qwen35.layer_plan(l) for k in ks if k in want]) for l in range(n_layers)]
+    plan = [(n, ks) for n, ks in plan if ks]
+    if "lm_head" in want: plan.append(("q-head.safetensors", ["lm_head"]))
     wm = {}
     for name, keys in plan:
         t = {}
@@ -180,7 +193,12 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False):
         for k in want:
             if k in last: fh.write(json.dumps(last[k]) + "\n")
     if c9 or c9want: _assemble_c9(c9, last, want, st, os.path.join(dst, "c9"), n_layers, c9want)
+    # "args": what rad-convert's exl3i importer reads (exl3quant stamp_agrees: args.codebook, ourq's default mul1 when
+    # absent, so an i8 / i4 level without it is refused, and a recipe saying mul1 would be accepted). rxq_settings in
+    # args also makes `rxq levelargs` refuse the level (it is not an ourq level; S3 note)
+    Kn = int(float(K)) if float(K).is_integer() else float(K)
     json.dump([{"stamp": stamp, "rxq_settings": st, "rxq_code": code, "K": K, "codebook": cb,
+                "args": {"K": Kn, "codebook": cb, "rxq_settings": st},
                 "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}], open(os.path.join(dst, "stamp.json"), "w"), indent=1)
     return stamp
 
@@ -218,7 +236,7 @@ def levelargs(level, cfg):
     A = dict(st[-1]["args"]); q = cfg["quant"]; bad = []
     known = {"K", "frac_ext", "codebook", "seed_offset", "sigma_reg", "hout", "hout_diag", "sigma_reg_in", "sigma_in_sweep",
              "gain", "sigma_reg_out", "out_scales_off", "head_perm", "scaled_hessian", "qtf2", "head_mean_row", "hin", "wpre",
-             "only", "tile_cd", "tile_cd_families"}
+             "only", "tile_cd", "tile_cd_families", "hout_blocks"}
     if set(A) - known: bad.append(f"unknown ourq args {sorted(set(A) - known)}")
     if A.get("tile_cd"): bad.append(f"made with --tile-cd {A['tile_cd']} (tile CD settings are rxq's; compare by hand)")
     for k in ("hin", "wpre", "only", "hout_diag", "out_scales_off", "sigma_in_sweep", "head_perm"):
@@ -238,6 +256,12 @@ def levelargs(level, cfg):
         if so is not None and so != cfg["inputs"]["hout"]["sigma_reg_out"]: argv += ["--set", f"inputs.hout.sigma_reg_out={so}"]
         if so is None: bad.append("--hout without --sigma-reg-out (ourq then uses sigma_reg for it)")
         argv += ["--hout", A["hout"]]
+        hb = A.get("hout_blocks")                    # ourq --hout-blocks (w81, #115); unset = the dense path (every level before 11-08)
+        if (hb or None) != C.hout_ldlq(cfg):
+            argv += ["--set", "inputs.hout.ldlq=blocks", "--set", f"inputs.hout.schedule={hb}"] if hb else \
+                    ["--set", "inputs.hout.ldlq=dense"]
     elif C.hout_applies(cfg, K):
         argv += ["--set", "inputs.hout.enable=false"]
+    if C.block_order(cfg) is not None:               # #117 (11-08): ourq never reorders the readers' blocks
+        argv += ["--set", "quant.block_order.enable=false"]
     return argv, bad

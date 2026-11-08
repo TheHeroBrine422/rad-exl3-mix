@@ -43,11 +43,17 @@ python -m rxq.knap library LEVELS... -o lib.json --packs DIR   # S7: the library
 python -m rxq.knap solve lib.json out.jsonl -t 2.5,3 -l 0,3e-7  # S7: knap5 over the library
 python -m rxq.knap handoff out.jsonl lib.json MIXDIR --tag T --frontier F   # S7 -> search stream (mix files + frontier)
 python -m rxq.mix recipe LEVEL                          # S8: rad-convert recipe of a level (levelmix PACK: radmix mix)
+python -m rxq.ladder levels | estimate [--ldlq blocks] | req   # the 71 levels in build order, R9700 card-hours per pass,
+                                                        # the per-tensor VRAM / seconds table (w81's 11-08 measurements)
+python -m rxq.ladder jobs MANIFEST --model q27 --rev R --pass 1 -o jobs.jsonl   # rad-quant-at-home rxq_quant jobs (inputs
+                                                        # pinned by the datapack manifest's sha256): admin.py enqueue-jobs
 python -m rxq.pairs mixes A.rad B.rad --arm attn_qg     # swap-pair hygiene (also: levels, same, splice)
 ```
 
 `VRAM_CAP_GB` caps the CUDA allocator (shared cards); `RXQ_REFIT_CPU_FALLBACK=1` lets an out-of-memory scale refit
-(27B ffn_down on ≤ 12 GB cards) run on the CPU.
+(27B ffn_down on ≤ 12 GB cards) run on the CPU. **Test only:** `--device cpu` with `RXQ_CPU_STANDIN=1` runs the fork's real
+quantize.py on the CPU with `rxq/cpukern.py`'s stand-in kernels (a greedy trellis encoder: valid codes, worse than the
+real search; stamped `cpu-standin`, refused by assemble unless `--allow-standin`): dry runs of the job / queue wiring.
 
 ## Tests
 
@@ -66,6 +72,18 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
 - `tests/check_grouphead.py [QUANTIZE_PY]` — group-head su draw (11-08 gpucheck27 i4 FAIL): rxq per-tensor == ourq's
   group run, `ourq --only` without the group head differs, σ does not move su, the sub-1 damping rule per family, the
   check_quant BADREF guard (seconds).
+
+- `tests/check_cpukern.py [RQAH]` — the CPU stand-in kernels: every encoded tile == the decode of its packed trellis
+  (rxq.deq and rqah's exl3dec), sub-1 / fractional / integer rates, i4 / i8 / mul1 (seconds).
+- `tests/check_cpujob.py FORK FORK_0008 [WORK]` — the quant job end to end on the stand-in (tiny two-layer model; K0.125 /
+  0.5 i4, K2.5 i8, K6.5 mul1; H_out dense and blocks): decode == the quantizer's own weight, the logged settings, tile CD
+  and C9 where they belong, assemble's stand-in / mixed-stamp refusals (~2 min).
+- `tests/check_blkorder.py FORK FORK_0008 [WORK]` — #117 route B (quant.block_order) with H_out (dense / blocks) and tile CD:
+  identity order == plain bit for bit, the consensus order changes readers only, decode == wq (~15 min on 2 CPUs).
+- `tests/check_blkorder84.py FORK [WORK]` — rxq's block order == w84's blkorder84.py (installed as w84q.py did) bit for
+  bit under w84's p0 settings, tile CD off and on (~8 min). GPU twin: `tools/blkorder27.sh` (p0perm's 9 readers).
+- `tests/check_ladder.py [RQAH]` — the 71 levels and passes, every job of every level through rqah's rxq_quant checks,
+  manifest pins, estimates (seconds).
 
 GPU (prepared scripts, the lead runs them):
 - `tools/gpucheck27.sh cd|i4|c9` — gpubox card 0: tile CD on the real quantizer (rxq vs research module, M = I gate,

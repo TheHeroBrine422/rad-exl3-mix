@@ -3,6 +3,74 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 11:40 AM CST · #114-03 · Damping with H_out on (two-sided LDLQ), held out: settings stand (w87)
+- **Status:** null (keep) · **Machine:** colo (`/data/work/w13/w87`, nice 19, ≤ 8 GB) + Thor (`/data/work/w87`),
+  9:29–11:28 AM CST, no GPU · **Code:** `v3/e3/settle/w87/` (settle87 / gate87 / plan87 / q87 / report87) ·
+  **Rule:** `v3/e3/settle/w87.md` (written 9:25 AM CST, before data) · **Data:** `v3/e3/settle/data/w87/`
+  (`report.md`, `out/`, `gates/`)
+- **Question:** #114 / #114-02 tuned σ without H_out. Does the best σ move now that every level is two-sided
+  (bn1920 diagonal H_out, σ_out 0.01)?
+- **Setup:** w77's held-out proxy: same 27 tensors × 2 samples, quantizer on H_A, scored on H_B1 / H_B2, w77's scales
+  and row cache. Added: exllamav3's `prepare_H_out` + `ldlq_2hess` (exact on a 128-row block, because the rotated
+  diagonal H_out is block-diagonal by 128), and the H_out-weighted error Σ h_i d_i H d_iᵀ.
+  - σ ∈ {0.001, 0.005, 0.025, 0.05, 0.1, 0.2}.
+  - Levels i4 K0.125 / 0.5 / 1, i8 K2 / 2.5 / 4.
+  - 1,944 rows.
+- **Gates PASS:**
+  - G1: the loop equals the fork's own `ldlq_2hess` + `block_ldl` to 4e-16, random and real blocks.
+  - G2: with H_out = I, bit-identical to w77's one-sided path.
+  - G3: 54 / 54 H_out shapes OK.
+- **Result:** **0 of 66 cells pass** (rule: B2 gain ≥ 2% with ⅔ of tensors agreeing).
+  - Max gain +1.24% (K0.5 attn_k, 0.1 vs 0.05). Every group cell is within ±0.5%. B1 / B2 picks agree 49 / 66.
+  - The curves are w77's, shifted by ≤ 0.5%:
+    - K0.125: minimum at the current 0.2, both groups.
+    - K0.5: inputs minimum 0.1 (−0.27% vs 0.05); rest 0.1 (−0.5%), as without H_out.
+    - K1: flat.
+    - K2–K4: inputs flat 0.001–0.005, rest flat 0.001–0.025, both rising from ~0.05.
+- **Decision / next:** the settings stand with H_out: nothing for v3.toml. Covers w81's block-diagonal path (#115,
+  same objective).
+  - Not measured: the #117 block order (on since 11:15 AM). The proxy uses exllamav3's natural reverse order.
+- **Runtime:** none (quantizer setting).
+
+### 2026-11-08 11:15 AM CST · pipeline / rqah · ladder rollout prep: rxq_quant jobs from v3.toml, CPU dry run, #117 on, blocks H_out on (w86)
+- **Status:** done (no GPU) · **Machine:** VM (tests), colo CPU (`/data/work/w13/w86`, nice 19, ≤ 8 GB RSS) · **Code:**
+  rad-exl3-mix `pipeline/` (uncommitted, for review), `quantize/` (w81's patch applied, `exl3-patches/0008`), rqah branch
+  `ladder` (4 commits, not merged); notes `local/workers/w86/README.md`.
+- **Settings (lead notes 9:55 / 10:00 AM):** #117 block order **on** (`quant.block_order`, route B ported to
+  `rxq/blkorder.py`; == w84's blkorder84.py bit for bit on the CPU stand-in, tile CD off and on); H_out on w81's
+  **block-diagonal path** by default (`inputs.hout.ldlq = blocks`; w81's rxm-hout-blocks.patch applied; fork patch 0008
+  in the series: upstream a3bfbfd0 + 0001–0008 = fork eb5a2139 + 0008, tree 8b6ab82b). New stamp **`ed97adb7ed1f9919`**.
+  `rxq levelargs` maps ourq levels to ldlq dense and block order off.
+- **Jobs:** `python -m rxq.ladder` — 71 levels (pass 1 24, pass 2 26, pass 2b 14 conditional i4 twins, pass 3 7 sub-1),
+  one rqah `rxq_quant` job per Hessian group (18,176), inputs pinned by sha256 (settings file, group weights, group
+  Hessian, H_out per key), requirements from w81's 11-08 R9700 measurements (gate/up H_out 3.17 GiB blocks / 6.40 dense,
+  ffn_down 7.72, sub-1 +3 GiB trellis buffer; w80's i4 sub-1 job 4.6–5.6 GiB, RSS 2.5 GiB). **Estimate (R9700
+  card-h, blocks):** quant 90 (115 with 5 s a job of process overhead; dense would be 296), pass 1 29 / 37; a K4 level
+  41 min (w81's 37 + tile CD + C9); swj level passes 53 card-h on our 32 GB cards; packs 32 CPU-h.
+- **CPU stand-in** (`rxq/cpukern.py`, test only): the fork's real quantize.py on a CPU with a greedy trellis encoder;
+  codes decode exactly (rxq.deq and rqah's exl3dec, 18/18 rates); stamped `cpu-standin`, refused by assembly and queue.
+- **Dry run (colo, real 27B layers 2 GDN + 3 attention, K0.5 i4 / K2.5 i8 / K6.5 mul1, current settings):** datapack →
+  18 jobs → rqah server + worker → all accepted, scored (18 pass after the fix below) → exported (rxq assemble) →
+  **13/13 tensor + C9 files per level bit-identical to direct `rxq quant`**, exported levels == direct assemblies;
+  readers block-ordered, blocks H_out, tile CD, C9 on out_proj / o_proj; job RSS ≤ 3.6 GiB. ffn_down left out: its CPU
+  run peaks at 8.4 GB (two 17408² copies in the refit; rule 8 GB); the tiny-model tests cover its path. **Pack check
+  blocked on CPU:** colo's host radiance build has no exl3i kernel plugin (device only), so rad-convert's declare fails
+  after the importer accepts i8 / mul1 levels; its exl3quant predates mul1i4 (0.3.0). Packing = the first real level on
+  gpubox.
+- **Bugs found and fixed:** rxq assemble's stamp.json had no `args` → rad-convert's exl3i importer read codebook mul1
+  and refused i8 / i4 levels (and would have accepted a wrong `codebook=mul1` recipe); rqah's format rule failed an
+  honest K0.5 q_proj (the refit underflowed 1 of 5120 suh to f16 zero → a donor would be quarantined): ≤ 1% zeros now
+  valid; rqah hard-coded quant type lists (6 places) → `jobs.QUANT`; export with no accepted job crashed; `check_i4.py`
+  still expected the pre-11-08 settings. CPU-only: block_ldl's H.cpu() aliasing, quant_args devices.
+- **Tests (CPU):** check_ladder 5/5 (every job of all 71 levels through rqah's checks), check_cpukern 18/18,
+  check_cpujob 25/25, check_blkorder 17/17, check_blkorder84 3/3, check_i4 4/4, grouphead 5/5, tilecd 7/7, pairs 22/22;
+  w81 check_blockdiag ALL PASS, check_rxq_hout ALL PASS with block order off (with it on, its levelargs case sees the
+  new `--set quant.block_order.enable=false`); rqah rxq_e2e 9/9, validity 9/9, sched 40, score 40, statuspage 26,
+  probation 16, checker_nan 12, e2e_noop 135, upgrade_e2e 23, update 81, bandwidth 22.
+- **For the lead:** GPU checks prepared: `pipeline/tools/blkorder27.sh` (p0perm's 9 readers re-made by rxq on card 0,
+  bit for bit). The worker images still need rad-exl3-mix `pipeline/` (docker/build.sh RXM_PATHS + a pin with it).
+  The fork working copy lacks the 0008 commit (`git am` it). Runtime: none.
+
 ### 2026-11-08 9:55 AM CST · #117 · residual-block LDLQ order ADOPTED (user)
 - Route B only (w84): the 272 residual readers' LDLQ visits 128-blocks in the consensus heavy-last order; stored in
   natural order; no model conversion, no format / kernel / runtime change (~30 lines in rxq). Evidence: geo 0.9968 on

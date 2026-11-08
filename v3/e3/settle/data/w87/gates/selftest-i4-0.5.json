@@ -1,0 +1,1 @@
+{"selftest": "11-attn_k-s0-i4-K0.5-d0.005", "rel_B_cached": 0.13945107699373946, "rel_B_ldlq2": 0.13945107699373946, "rel_ratio": 1.0, "max_abs_dQ": 0.0, "tiles_differ": 0, "tiles": 2560, "sec_cached": 33.0, "sec_ldlq2": 26.3, "PASS": true}

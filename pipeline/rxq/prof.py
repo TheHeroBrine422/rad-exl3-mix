@@ -21,7 +21,7 @@ class Prof:
         self.t = defaultdict(float); self.n = defaultdict(int); self.stack = []
 
     def _sync(self):
-        if self.sync and self.dev is not None and torch.cuda.is_available(): torch.cuda.synchronize(self.dev)
+        if self.sync and self.dev is not None and torch.device(self.dev).type == "cuda": torch.cuda.synchronize(self.dev)
 
     def enter(self, label):
         self._sync()

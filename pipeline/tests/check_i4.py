@@ -4,8 +4,9 @@
            exl3cb.load(SRC, "i4") builds the old i4 kernels with (so both decode the same int4 grid); i8 / mul1 unchanged
   ourq     quantize/ourq.py's --qtf2 check accepts --codebook i4 (and still refuses an unknown codebook)
   engine   rxq.engine.setup(codebook="i4", qtf2=True) installs exl3frac, exl3cb "i4" and exl3frac2 "i4", in ourq's order
-  plan     the ladder's sub-1 levels resolve to i4 + qtf2, sigma_reg_in 0.05 on the layer-input group only (#38, user
-           11-07), 0.005 from K1, tile CD on attn_qg, no H_out
+  plan     the ladder's sub-1 levels resolve to i4 + qtf2 + H_out (every level since 11-08), sigma 0.2 on both groups at
+           K0.125 (#114-02, 11-08), sigma_reg_in 0.05 on the layer-input group only (#38, user
+           11-07), 0.005 from K1, tile CD on attn_qg
 Torch's builder, exllamav3 and the kernel modules are stubs: what is checked is what the code asks for.
 Last line: "I4 CHECKS n/m PASS"."""
 import importlib, os, re, sys, tempfile, types
@@ -85,9 +86,11 @@ for K in [x / 8 for x in range(1, 9)]:
             for key in ks:
                 s = C.quant_settings(cfg, K, cb, key)
                 inp = qwen35.is_input_group(qwen35.locate(key)[3])
-                want = (0.05 if K < 1 else 0.005) if inp else None
-                if cb != "i4" or not s["qtf2"] or "hout" in s: bad.append((K, key, "codebook / qtf2 / hout"))
+                # 11-08 (user): H_out at every level (apply_k_min 0); sigma 0.2 on both groups at K0.125 (#114-02)
+                want = (0.2 if K <= 0.125 else 0.05 if K < 1 else 0.005) if inp else (0.2 if K <= 0.125 else None)
+                if cb != "i4" or not s["qtf2"] or "hout" not in s: bad.append((K, key, "codebook / qtf2 / hout"))
                 if inp and s["sigma_reg_in"] != want: bad.append((K, key, s["sigma_reg_in"]))
+                if not inp and want is not None and s["sigma_reg"] != want: bad.append((K, key, s["sigma_reg"]))
                 if ("tile_cd" in s) != key.endswith("self_attn.q_proj"): bad.append((K, key, "tile_cd"))
 off = C.with_overrides(cfg, **{"quant.apply_sub1_damping": False})
 offv = C.quant_settings(off, 0.5, "i4", "model.language_model.layers.3.self_attn.q_proj")["sigma_reg_in"]

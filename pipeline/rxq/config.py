@@ -5,7 +5,9 @@ settings_stamp(cfg): sha256 of the canonical JSON of every result-affecting sect
 16 hex digits. A level's jobs all carry it; assembly refuses mixed stamps.
 quant_settings(cfg, K, codebook, key): the resolved per-tensor settings (ourq's arguments for that tensor).
 Settings the engine reads per level: H_out between inputs.hout.apply_k_min and apply_k_max (hout_applies), the sub-1
-input damping (quant.apply_sub1_damping: sigma_reg_in_sub1 for the layer-input group below K1), tile CD (tile_cd)."""
+input damping (quant.apply_sub1_damping: sigma_reg_in_sub1 for the layer-input group below K1), tile CD (tile_cd), the
+two-sided LDLQ's form (inputs.hout.ldlq: dense, or w81's block-diagonal path "blocks"; hout_ldlq), the #117 residual
+block order (quant.block_order: block_order)."""
 import copy, hashlib, json, os
 
 try:
@@ -36,6 +38,12 @@ def validate(cfg):
     assert cfg["inputs"]["hin"]["blend"] in ("none", "xcorp")
     assert ho["estimator"] in ("bn", "dy")
     assert ho["apply_k_min"] <= ho["apply_k_max"], "inputs.hout: apply_k_min > apply_k_max"
+    assert ho.get("ldlq", "dense") in ("dense", "blocks"), f"inputs.hout.ldlq: dense | blocks, not {ho.get('ldlq')!r}"
+    assert ho.get("schedule", "group") in ("group", "diag"), f"inputs.hout.schedule: group | diag, not {ho.get('schedule')!r}"
+    bo = q.get("block_order")
+    if bo is not None:
+        from . import blkorder
+        blkorder.check_order(bo["stored_order"])
     if q["codebook"]["hash_codebook"]: raise ValueError("#100 hash codebook: not implemented")
     if cfg["post"]["healing"]["enable"]: raise ValueError("healing: not part of the pipeline yet (deferred, #89)")
     a = cfg["post"]["asym"]
@@ -73,6 +81,18 @@ def tile_cd(cfg):
     return (cd["sweeps"], list(cd["families"]), cd["module"]) if cd["enable"] else None
 
 
+def hout_ldlq(cfg):
+    """the two-sided LDLQ's form: None (dense, the 11-07 path) or w81's block-diagonal schedule "group" / "diag" (#115)"""
+    ho = cfg["inputs"]["hout"]
+    return ho.get("schedule", "group") if ho.get("ldlq", "dense") == "blocks" else None
+
+
+def block_order(cfg):
+    """engine.setup's block_order: None or the stored order of the residual 128-blocks (#117, quant.block_order)"""
+    bo = cfg["quant"].get("block_order")
+    return list(bo["stored_order"]) if bo and bo.get("enable") else None
+
+
 def c9_injob(cfg, key, hin=None, wpre=None):
     """C9's alpha for KEY when its quant job computes the C9 scales (post.c9 on, the key a writer with alpha != 0, plain
     writers: no asym (then C9 runs per mix on the final writers against W F / G: rxq.post c9 --dn), no hin / wpre
@@ -99,9 +119,11 @@ def quant_settings(cfg, K, codebook, key, seed_offset=0):
     if q["gain"] != 1.0: s["gain"] = q["gain"]
     if hout_applies(cfg, K):
         s["hout"] = cfg["inputs"]["hout"]["dir"]; s["sigma_reg_out"] = cfg["inputs"]["hout"]["sigma_reg_out"]
+        if hout_ldlq(cfg): s["hout_blocks"] = hout_ldlq(cfg)
     cd = q["tile_cd"]
     if cd["enable"] and qwen35.family(key) in cd["families"] and float(K) <= cd["k_max"]:
         s["tile_cd"] = cd["sweeps"]
+    if block_order(cfg) is not None and qwen35.family(key) in qwen35.READERS: s["block_order"] = True
     return s
 
 

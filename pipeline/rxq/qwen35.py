@@ -16,6 +16,7 @@ FAMILY = (("self_attn.q_proj", "attn_qg"), ("self_attn.k_proj", "attn_k"), ("sel
           ("mlp.down_proj", "ffn_down"), ("lm_head", "head"))
 FAMILIES = tuple(f for _, f in FAMILY)
 WRITERS = ("attn_output", "ssm_out", "ffn_down")          # residual writers (#87 asym target)
+READERS = ("attn_qg", "attn_k", "attn_v", "ssm_qkv", "ssm_z", "ffn_gate", "ffn_up")   # residual readers (#117 block order)
 
 
 def family(key):

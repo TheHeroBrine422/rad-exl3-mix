@@ -1,0 +1,206 @@
+From aae01529961c4d89e0fe44cc7b7fe02de8779484 Mon Sep 17 00:00:00 2001
+From: w81 <w81@localhost>
+Date: Sun, 8 Nov 2026 09:48:22 +0000
+Subject: [PATCH] quantize: block-diagonal two-sided LDLQ for a diagonal H_out
+ (prepare_H_out_blocks, ldlq_2hess_blocks)
+
+A diagonal H_out is exactly block diagonal (had_n = 128) after the output Hadamard, and so is its
+block-16 LDL factor. prepare_H_out() takes a 1-D H_out (the diagonal) as its (n / 128, 128, 128)
+blocks (batched Hadamard, mean-1 normalization, damping and block LDL, same arithmetic as the dense
+path) and ldlq_2hess() dispatches a 3-D L_out to ldlq_2hess_blocks(): the error feedback of a tile
+is restricted to its own 128-column group (the dense path's other products are by exact zeros).
+Schedules: quant_args hout_schedule = group (default: anti-diagonals inside every group at once,
+tiles_k + 7 steps of up to tiles_n tiles) or diag (the dense path's anti-diagonals). Same objective
+and tile inputs in exact arithmetic; float order differs. quant_args hout_dense = True densifies a
+1-D H_out (the old path); a 2-D H_out runs the old path unchanged. The H_out proxy uses the blocks
+(hout_matmul) and is also kept as quant_args proxy_err_2s (before the scale refit overwrites it).
+---
+ exllamav3/modules/quant/exl3_lib/quantize.py | 152 ++++++++++++++++++-
+ 1 file changed, 150 insertions(+), 2 deletions(-)
+
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index 2597c54d..e92afdfc 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -728,6 +728,8 @@ def ldlq_2hess(
+     :return:
+         tuple, as ldlq(): quantized weight (k, n), indices (k // 16, n // 16, 256)
+     """
++    if L_out.dim() == 3:
++        return ldlq_2hess_blocks(weight, L_in, L_out, quant_args, pb)
+     devices = quant_args["devices"]
+     for device in devices:
+         torch.cuda.synchronize(device)
+@@ -777,12 +779,157 @@ def ldlq_2hess(
+     return weight_q, encoded
+ 
+ 
++def ldlq_2hess_blocks(
++    weight: torch.Tensor,
++    L_in: torch.Tensor,
++    L_out: torch.Tensor,
++    quant_args: dict,
++    pb: ProgressBar | None = None
++):
++    """
++    ldlq_2hess() for a block-diagonal output factor: L_out given as its (n / 128, 128, 128) diagonal blocks (a diagonal
++    H_out after the output Hadamard, prepare_H_out_blocks). The pending input of tile (a, c) then only depends on tiles
++    (a', c') with a' >= a, c' >= c in c's own 128-column group, so the feedback is restricted to that group (the same
++    sums as the dense path without its products by exact zeros; float order differs). quant_args["hout_schedule"]:
++
++    - "group" (default): anti-diagonals within every group at once, tiles (a, c) with a + c % 8 = s: tiles_k + 7 steps
++      of up to tiles_n tiles (one-sided ldlq()'s batch), the F update one GEMM (k_hi x 128) @ (128 x n) per step
++    - "diag": the dense path's schedule (anti-diagonals of the whole tile grid, tiles_k + tiles_n - 1 steps), its
++      update restricted per group (a batched (k_hi x 128) @ (128 x 128) per group touched)
++
++    Both quantize every tile from the same input as the dense path in exact arithmetic (only tiles that the dense
++    path's dependency order also leaves independent are batched together).
++    """
++    schedule = quant_args.get("hout_schedule", "group")
++    assert schedule in ("group", "diag"), f"hout_schedule {schedule}: group or diag"
++    devices = quant_args["devices"]
++    for device in devices:
++        torch.cuda.synchronize(device)
++    main_stream = get_quant_stream(devices[0])
++    with torch.cuda.stream(main_stream):
++        device = L_in.device
++        weight = weight.to(device)
++        size_k, size_n = weight.shape
++        gn, gw = L_out.shape[0], L_out.shape[1]                                     # groups, group width (had_n)
++        assert size_k % 16 == 0 and gw % 16 == 0 and size_n == gn * gw and L_out.shape[2] == gw
++        tiles_k, tiles_n, gt = size_k // 16, size_n // 16, gw // 16                 # gt column tiles per group
++
++        Lk = L_in.clone(); Lk.diagonal().fill_(1.0)      # unit lower triangular
++        Lb = L_out.to(device).clone(); Lb.diagonal(dim1 = 1, dim2 = 2).fill_(1.0)
++        Lb4 = Lb.view(gn, gt, 16, gw)                                              # (group, tile in group, 16, gw)
++        F = torch.zeros((size_k, size_n), dtype = torch.float, device = device)
++        weight_q = torch.zeros_like(weight)
++        encoded = torch.zeros((tiles_k, tiles_n, 256), dtype = torch.short, device = device)
++        W4 = weight.view(tiles_k, 16, tiles_n, 16)
++        Q4 = weight_q.view(tiles_k, 16, tiles_n, 16)
++        F4 = F.view(tiles_k, 16, tiles_n, 16)
++        F3 = F.view(size_k, gn, gw)
++        perm, perm_i = tensor_core_perm(device), tensor_core_perm_i(device)
++        ar16 = torch.arange(16, device = device)
++        g0 = torch.arange(gn, device = device) * gt
++
++        steps = tiles_k + (gt if schedule == "group" else tiles_n) - 1
++        for step, s in enumerate(range(steps - 1, -1, -1)):
++            if schedule == "group":
++                lo, hi = max(0, s - (tiles_k - 1)), min(gt - 1, s)                 # tile columns within a group
++                cl = torch.arange(lo, hi + 1, device = device)
++                a1 = s - cl                                                         # one row tile per column
++                a = a1.unsqueeze(0).expand(gn, -1)                                  # (gn, m)
++                c = g0.unsqueeze(1) + cl.unsqueeze(0)
++                a_max = s - lo
++            else:
++                a_lo, a_hi = max(0, s - (tiles_n - 1)), min(tiles_k - 1, s)
++                a = torch.arange(a_lo, a_hi + 1, device = device)
++                c = s - a
++                a_max = a_hi
++            Wt = W4[a, :, c, :]
++            tiles = (Wt + F4[a, :, c, :]).reshape(-1, 256)
++            quant_w, quant_i = quantize_tiles_multigpu(tiles[:, perm].contiguous(), quant_args)
++            quant_w = quant_w[:, perm_i].view(Wt.shape)
++            Q4[a, :, c, :] = quant_w
++            encoded[a, c] = quant_i.view(*Wt.shape[:-2], 256)
++            if s > 0:
++                dE = Wt - quant_w
++                k_hi = a_max * 16 + 16                     # only rows above the pending tiles still need F
++                if schedule == "group":
++                    # R[(t, r), (g, :)] = dE[g, t] @ Lb[g][rows of tile t]: every group's tiles share the row tiles a1
++                    R = torch.matmul(dE, Lb4[:, cl])                                # (gn, m, 16, gw)
++                    R = R.permute(1, 2, 0, 3).reshape(-1, size_n)
++                    rows = (a1.unsqueeze(1) * 16 + ar16).flatten()
++                    F[:k_hi].addmm_(Lk[rows, :k_hi].T, R)
++                else:
++                    # the groups this diagonal touches, gt slots each (zero error in empty slots)
++                    c_lo, c_hi = s - a_hi, s - a_lo
++                    gl = c_lo // gt; ng = c_hi // gt - gl + 1
++                    gi, ti = torch.div(c, gt, rounding_mode = "floor"), torch.remainder(c, gt)
++                    R = torch.zeros((ng, gt, 16, gw), dtype = torch.float, device = device)
++                    R[gi - gl, ti] = torch.bmm(dE, Lb4[gi, ti])
++                    rows = torch.zeros((ng, gt, 16), dtype = torch.long, device = device)
++                    rows[gi - gl, ti] = a.unsqueeze(1) * 16 + ar16
++                    A = Lk[rows.view(ng, gw), :k_hi]                                # (ng, gw, k_hi)
++                    F3[:k_hi, gl:gl + ng].add_(torch.bmm(A.transpose(1, 2), R.view(ng, gw, gw)).transpose(0, 1))
++            if pb and step % 4 == 0:
++                pb.update(min(tiles_k, step * tiles_k // steps))
++
++        for device in devices:
++            torch.cuda.synchronize(device)
++
++    return weight_q, encoded
++
++
++def prepare_H_out_blocks(h: torch.Tensor, sv: torch.Tensor, quant_args: dict, verbose: bool, device):
++    """
++    prepare_H_out() for a diagonal H_out h (1-D, one entry per output channel). In the rotated basis it is block
++    diagonal: the output Hadamard mixes channels only within had_n groups, so the matrix and its block LDL factor are
++    kept as their (n / had_n, had_n, had_n) diagonal blocks. Same arithmetic as the dense path (signs / channel scales,
++    Hadamard right then left, mean-1 diagonal, + sigma_reg_out, block-16 LDL), per block
++    """
++    n = h.numel()
++    assert n % had_n == 0, f"diagonal H_out: {n} channels, not a multiple of {had_n}"
++    gn = n // had_n
++    s = sv.flatten().to(device, torch.float)
++    d = h.flatten().to(device, torch.float) * s * s
++    had = get_hadamard_dt(had_n, device, torch.float, 1 / math.sqrt(had_n))
++    Hb = had @ (torch.diag_embed(d.view(gn, had_n)) @ had)
++    Hb /= Hb.diagonal(dim1 = 1, dim2 = 2).mean().clamp_min(1e-30)
++    Hb.diagonal(dim1 = 1, dim2 = 2).add_(quant_args.get("sigma_reg_out", quant_args.get("sigma_reg", 0.025)))
++    L, info = torch.linalg.cholesky_ex(Hb)
++    if int(info.max()) != 0:
++        raise RuntimeError(f"diagonal H_out: block Cholesky failed (info {info.tolist()})")
++    b, m = 16, had_n // 16
++    L4 = L.view(gn, had_n, m, b).permute(0, 2, 1, 3)                                 # (gn, m, had_n, b) column blocks
++    DL = torch.linalg.inv(torch.diagonal(L.view(gn, m, b, m, b), dim1 = 1, dim2 = 3).permute(0, 3, 1, 2))
++    L = (L4 @ DL).permute(0, 2, 1, 3).reshape(gn, had_n, had_n)
++    Lv = L.view(gn, m, b, m, b)
++    dr = torch.arange(m, device = device)
++    Lv[:, dr, :, dr, :] = torch.eye(b, device = device, dtype = torch.float)
++    L.diagonal(dim1 = 1, dim2 = 2).fill_(0.0)
++    if verbose:
++        print(f"     - H_out: diagonal, {gn} blocks of {had_n} (block-diagonal LDLQ)")
++    return L.contiguous(), Hb
++
++
++def hout_matmul(X: torch.Tensor, Hb: torch.Tensor) -> torch.Tensor:
++    """X (r, n) @ H_out in the rotated basis: dense (n, n), or block diagonal given as its (n / g, g, g) blocks"""
++    if Hb.dim() == 2:
++        return X @ Hb
++    r, n = X.shape
++    gn, g = Hb.shape[0], Hb.shape[1]
++    return torch.bmm(X.view(r, gn, g).transpose(0, 1), Hb).transpose(0, 1).reshape(r, n)
++
++
+ def prepare_H_out(H_out: torch.Tensor, sv: torch.Tensor, quant_args: dict, verbose: bool, device):
+     """
+     Output-side Hessian factor in the quantizer's rotated basis, with its block LDL factor. The rotated weight relates
+     to the original by E_o = S_u P_k E_r P_n S_v, so tr(E_o^T H_in E_o H_out) = tr(E_r^T [..] E_r [P_n S_v H_out S_v P_n]):
+     the full output scale vector sv (signs and channel scales) goes into the transform.
++    A 1-D H_out is a diagonal: block-diagonal factors (prepare_H_out_blocks, ldlq_2hess_blocks) unless
++    quant_args["hout_dense"] asks for the dense matrix (the reference path).
+     """
++    if H_out.dim() == 1:
++        if not quant_args.get("hout_dense"):
++            return prepare_H_out_blocks(H_out, sv, quant_args, verbose, device)
++        H_out = torch.diag(H_out.float())
+     Ho = H_out.to(device, torch.float).clone()
+     s = sv.flatten().to(device, torch.float)
+     Ho *= s.unsqueeze(0)
+@@ -1803,8 +1950,9 @@ def quantize_exl3(
+                 if H_out_r is not None:
+                     # Two-sided proxy tr(E^T H_in E H_out) / tr(W^T H_in W H_out)
+                     W = W.to(device)
+-                    num = ((Hd @ E) * (E @ H_out_r)).sum().item()
+-                    den = ((Hd @ W) * (W @ H_out_r)).sum().item()
++                    num = ((Hd @ E) * hout_matmul(E, H_out_r)).sum().item()
++                    den = ((Hd @ W) * hout_matmul(W, H_out_r)).sum().item()
++                    quant_args["proxy_err_2s"] = num / max(den, 1e-8)     # before the scale refit overwrites proxy_err
+                     if verbose:
+                         print(f"     - one-sided proxy:  {block_trace(E, Hd) / max(block_trace(W, Hd), 1e-8):.6f}")
+                 else:
+-- 
+2.56.0
+

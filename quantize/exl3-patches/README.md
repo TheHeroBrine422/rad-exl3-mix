@@ -10,9 +10,12 @@ this patch series against upstream **turboderp-org/exllamav3 @ `a3bfbfd0`** (v1.
 | 0003–0005 | int8-rounded mul1 codebook (`EXL3_MUL1_I8`), used by both decode paths |
 | 0006 | int4-grid codebook (`EXL3_MUL1_I4`, measurement only) |
 | 0007 | cubic int8 codebook i8c (`EXL3_I8_CUBIC`, #78) |
+| 0008 | block-diagonal two-sided LDLQ for a diagonal H_out (`prepare_H_out_blocks`, `ldlq_2hess_blocks`; #115, w81, gate PASS 11-08): a 1-D H_out selects it, `hout_dense` keeps the dense path |
 | `pending/` | not applied (dead-proxy-compute skip, an experimental quantize.py) |
 
-Rebuild the tree we run (checked 2026-11-04: identical to our fork's tree at `eb5a2139`):
+Rebuild the tree we run (checked 2026-11-04: identical to our fork's tree at `eb5a2139`; with 0008, checked 2026-11-08
+by w86: upstream `a3bfbfd0` + 0001–0008 = `eb5a2139` + 0008, tree `8b6ab82b`. 0008 is not committed in the fork
+working copy yet: `git am quantize/exl3-patches/0008-*.patch` there brings it level):
 
     git clone https://github.com/turboderp-org/exllamav3 && cd exllamav3 && git checkout a3bfbfd0
     git am /path/to/rad-exl3-mix/quantize/exl3-patches/000*.patch

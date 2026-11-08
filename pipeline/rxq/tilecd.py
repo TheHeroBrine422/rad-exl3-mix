@@ -110,7 +110,11 @@ def _trace(H, X, chunk=4096):
 
 def out_blocks(M, dt):
     """M (n, n) block diagonal in GROUP -> its blocks (n / GROUP, GROUP, GROUP); refuses mass outside the blocks (a
-    dense H_out: tile CD supports the diagonal estimator only)"""
+    dense H_out: tile CD supports the diagonal estimator only). Blocks already (fork patch 0008's prepare_H_out_blocks,
+    inputs.hout.ldlq = blocks) pass through"""
+    if M.dim() == 3:
+        assert M.shape[1] == M.shape[2] == GROUP, tuple(M.shape)
+        return M.to(dt).contiguous()
     n = M.shape[0]; ng = n // GROUP
     assert n % GROUP == 0, n
     Mb = torch.diagonal(M.view(ng, GROUP, ng, GROUP), dim1=0, dim2=2).permute(2, 0, 1).to(dt).contiguous()

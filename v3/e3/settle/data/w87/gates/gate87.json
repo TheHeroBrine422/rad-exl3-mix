@@ -1,0 +1,46 @@
+{
+ "G1": [
+  {
+   "case": "random 128x256",
+   "shape": [
+    128,
+    256
+   ],
+   "max_dL": 0.0,
+   "max_rel_dQ": 3.969329049866293e-16,
+   "obj_two_sided": 749167.7482840244,
+   "obj_one_sided_loop": 1063628.538059704,
+   "PASS": true
+  },
+  {
+   "case": "random 128x512",
+   "shape": [
+    128,
+    512
+   ],
+   "max_dL": 0.0,
+   "max_rel_dQ": 4.629505173651689e-16,
+   "obj_two_sided": 1438221.459426309,
+   "obj_one_sided_loop": 2033849.522892553,
+   "PASS": true
+  },
+  {
+   "case": "real 11:attn_k s0 (H_A d0.005, bn1920 H_out)",
+   "shape": [
+    128,
+    1024
+   ],
+   "max_dL": 0.0,
+   "max_rel_dQ": 3.8722094388735743e-16,
+   "obj_two_sided": 5318692095.061655,
+   "obj_one_sided_loop": 5655946901.198399,
+   "PASS": true
+  }
+ ],
+ "G1_PASS": true,
+ "G3": {
+  "tensors": 54,
+  "bad": [],
+  "PASS": true
+ }
+}

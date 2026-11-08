@@ -8,6 +8,10 @@
 4. kernel swaps: exl3frac (fractional rates), exl3cb (rounded codebooks), exl3frac2 (qtf2), all from rad-exl3-mix
    v3/e3/ built at run time against the fork's exllamav3_ext sources
 5. optional: tile coordinate descent (rxq/tilecd.py: w50's module merged, plus the H_out objective), the gain wrapper
+6. optional (#117, quant.block_order): the residual readers' LDLQ visits their input 128-blocks in a stored order
+   (rxq/blkorder.py, route B of w84), installed last so it wraps tile CD's wrappers too
+CPU (TEST ONLY): device "cpu" with RXQ_CPU_STANDIN=1 (opt-in; without it a CPU device takes the normal path) loads the fork's quantize.py with rxq/cpukern.py's stand-in kernels
+(greedy trellis encoder) instead of the run-time builds; its results carry another code stamp and never enter a level.
 
 Paths (env): RXQ_RXM = rad-exl3-mix checkout (default: the checkout this package lives in), RXQ_EXL3_SRC = the fork's
 exllamav3_ext source dir (ourq's --frac-ext). tile_cd = (sweeps, families[, module path]): the path loads another
@@ -32,6 +36,7 @@ def exl3_src():
 
 
 def _warm_refit(dev_):
+    if torch.device(dev_).type == "cpu": return
     t = torch.rand(4, 4, device=dev_) + torch.eye(4, device=dev_)
     r = torch.linalg.solve(t, torch.ones(4, device=dev_))
     r = torch.where(torch.isfinite(r) & (r > 0), r, torch.ones_like(r)); _ = (t.diagonal().mean(), (t * t).sum(0), t @ t.T)
@@ -43,14 +48,21 @@ def _kernel_dirs():
     return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2")}
 
 
-def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True):
-    """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path])"""
-    key = (codebook, bool(qtf2), drift, bool(block_trace), None if tile_cd is None else (tile_cd[0], tuple(tile_cd[1]), *tile_cd[2:]), bool(frac))
+def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True, block_order=None):
+    """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path]);
+    block_order: None or the stored order of the 40 residual 128-blocks (#117)"""
+    cpu = torch.device(device).type == "cpu" and os.environ.get("RXQ_CPU_STANDIN") == "1"   # the stand-in: opt-in only
+    key = (codebook, bool(qtf2), drift, bool(block_trace), None if tile_cd is None else (tile_cd[0], tuple(tile_cd[1]), *tile_cd[2:]),
+           bool(frac), None if block_order is None else tuple(block_order), cpu)
     if _STATE.get("key") is not None:
         if _STATE["key"] != key: raise RuntimeError(f"engine already set up as {_STATE['key']}, asked for {key}: one setup a process")
         _STATE["dev"][0] = device
         return _STATE["Q"]
-    import exllamav3.modules.quant.exl3_lib.quantize as Q
+    if cpu:                                              # TEST ONLY: the stand-in kernels (rxq/cpukern.py)
+        from . import cpukern
+        Q = cpukern.load(os.path.dirname(os.path.dirname(os.path.abspath(exl3_src()))))
+    else:
+        import exllamav3.modules.quant.exl3_lib.quantize as Q
     dev = [device]
     if not block_trace: Q.block_trace = lambda A, B, block_size=1024: 1.0
     orig_refit = Q.refit_scales
@@ -78,14 +90,19 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
             return math.exp(math.log(d0) + (math.log(d1) - math.log(d0)) * (K - k0) / (k1 - k0))
         Q.ldlq_drift = _drift
     kd = _kernel_dirs()
+    if cpu:
+        from . import cpukern
+        assert codebook in ("mul1", "i8", "i4") and (qtf2 or codebook == "mul1"), f"cpu stand-in: codebook {codebook} qtf2 {qtf2}"
+        cpukern.install(Q, codebook)
+        frac = False                                     # no run-time builds
     if frac:
         sys.path.insert(0, kd["exl3frac"]); import exl3frac
         exl3frac.install(exl3_src())
-    if codebook != "mul1":
+    if codebook != "mul1" and not cpu:
         assert frac, "a rounded codebook needs the frac kernels (ourq: --codebook needs --frac-ext)"
         sys.path.insert(0, kd["exl3cb"]); import exl3cb
         exl3cb.install(exl3_src(), codebook)
-    if qtf2:                                             # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
+    if qtf2 and not cpu:                                 # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
         assert frac and codebook in ("mul1", "i8", "i8c", "i4"), "qtf2 needs the frac kernels and the mul1, i8, i8c or i4 codebook"
         sys.path.insert(0, kd["exl3frac2"]); import exl3frac2
         exl3frac2.install(exl3_src(), codebook)
@@ -99,6 +116,9 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
         else:
             from . import tilecd as tcd
         tcd.install(Q, int(tile_cd[0]), ",".join(tile_cd[1]))
+    if block_order is not None:                          # after tile CD: its wrappers run inside the permutation
+        from . import blkorder
+        blkorder.install(Q, block_order)
     _warm_refit(device)                                  # load the refit kernels while VRAM is empty (ourq does it here)
     _STATE.update(key=key, Q=Q, dev=dev, tilecd=tcd, gain=[1.0])
     return Q
@@ -132,4 +152,10 @@ def code_stamp(Q):
     if t is not None and not t.__file__.startswith(os.path.dirname(os.path.abspath(__file__))): files.append(t.__file__)
     for f in files:
         if os.path.isfile(f) and not f.endswith(".pyc"): h.update(os.path.basename(f).encode()); h.update(open(f, "rb").read())
+    if kernels(Q) != "gpu": h.update(kernels(Q).encode())          # the CPU stand-in never shares a stamp with a real run
     return h.hexdigest()[:16]
+
+
+def kernels(Q):
+    """"gpu" (the real kernels) or "cpu-standin" (rxq/cpukern.py, test only)"""
+    return getattr(Q, "_rxq_kernels", "gpu")

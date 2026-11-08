@@ -55,6 +55,11 @@ def hessian(path, name, dev, on=None):
             "inf_nan": torch.zeros(2, dtype=torch.long, device=dev), "device": dev}
 
 
+def _devid(dev):
+    """quant_args' device entry: the CUDA index (ourq's), or "cpu" (the stand-in kernels, rxq/cpukern.py)"""
+    return "cpu" if dev.type == "cpu" else (dev.index if dev.index is not None else 0)
+
+
 def quant_args(s, key, seed, device, outdir, hname):
     """ourq's qa for one tensor (same keys, same order of updates)"""
     qa = {"seed": seed, "K": s["K"], "devices": [device], "device_ratios": None,
@@ -83,7 +88,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
     engine.set_gain(Q, s.get("gain", 1.0))
     if j > 0:                                   # the group's su draw, as tensor 0 makes it in ourq's group run
         with st("group_finalize"):
-            qa0 = quant_args(s, gkeys[0], seed_first, dev.index if dev.index is not None else 0, outdir, hname)
+            qa0 = quant_args(s, gkeys[0], seed_first, _devid(dev), outdir, hname)
             torch.manual_seed(qa0["seed"])
             Q.finalize_capture_H(Hd, qa0, False)
     with st("weight_load"):
@@ -95,11 +100,16 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
             assert Ft.shape == (w.shape[1], w.shape[1]), (key, tuple(Ft.shape), tuple(w.shape))
             w = w @ Ft.T; del Ft
         w = w.T.contiguous()                    # (in_features, out_features)
-    qa = quant_args(s, key, seed, dev.index if dev.index is not None else 0, outdir, hname)
+    qa = quant_args(s, key, seed, _devid(dev), outdir, hname)
     if hout_dir:                                # ourq skips a key without a file; a job refuses (the bn dirs hold every linear)
         if not os.path.exists(f"{hout_dir}/{key}.safetensors"): raise SystemExit(f"H_out {hout_dir}: no file for {key}")
         with st("hout_load"), safe_open(f"{hout_dir}/{key}.safetensors", "pt", device="cpu") as f:
-            qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
+            if s.get("hout_blocks"):            # #115: the 1-D diagonal selects the fork's block-diagonal path (patch 0008)
+                if "hout_diag" not in f.keys(): raise SystemExit(f"H_out {hout_dir}/{key}: ldlq = blocks needs a diagonal (hout_diag)")
+                if not hasattr(Q, "ldlq_2hess_blocks"): raise SystemExit("inputs.hout.ldlq = blocks: the fork lacks patch 0008")
+                qa["H_out"] = f.get_tensor("hout_diag").float(); qa["hout_schedule"] = s["hout_blocks"]
+            else:
+                qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
     with st("other"):
         wq, perr, t = Q.quantize_exl3(w, Hd, qa, save_wq)
     rowerr = None
@@ -127,6 +137,9 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
            "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": Q.ldlq_drift(s["K"]),
            "scaled_hessian": bool(s["scaled_hessian"]), "gain": s.get("gain", 1.0), "codebook": s["codebook"],
            "out_scales": qa.get("apply_out_scales"), "head_mean_row": False, "s": round(time.time() - t0, 1)}
+    if s.get("hout_blocks"): rec["hout_blocks"] = s["hout_blocks"]
+    if "proxy_err_2s" in qa: rec["proxy_err_2s"] = qa["proxy_err_2s"]   # two-sided, quantization domain, before the refit (fork 0008)
+    if qa.get("block_order"): rec["block_order"] = True
     del Hd, qa
-    torch.cuda.empty_cache()
+    if dev.type == "cuda": torch.cuda.empty_cache()
     return out, rec, wq, rowerr

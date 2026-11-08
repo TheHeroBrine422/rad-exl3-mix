@@ -133,6 +133,10 @@ ap.add_argument("--sigma-in-sweep", default=None, help="for the layer-input grou
 ap.add_argument("--gain", default=None, help="multipliers on exllamav3's chosen g_scale per linear, by key suffix, e.g. "
                 "'o_proj=1.16,out_proj=1.16' (gaintest.py)")
 ap.add_argument("--sigma-reg-out", type=float, default=None, help="regularisation of hout (default: --sigma-reg's)")
+ap.add_argument("--hout-blocks", default=argparse.SUPPRESS, choices=["group", "diag"], help="a diagonal --hout ('hout_diag') "
+                "runs the block-diagonal two-sided LDLQ (exllamav3 fork ldlq_2hess_blocks, w81: the same objective, the "
+                "feedback restricted to each 128-column group; schedule group = per-group anti-diagonals, diag = the dense "
+                "path's). Unset: the dense n x n path (and not in the code stamp's arguments)")
 ap.add_argument("--out-scales-off", default=None, metavar="FILE", help="checkpoint keys (one per line, e.g. "
                 "model.language_model.layers.40.mlp.up_proj) quantized WITHOUT output channel scales (default: always on); "
                 "v3/e3/osr/mkoff.py writes it from upstream's test (osr.jsonl, ratio > 1.05)")
@@ -287,7 +291,11 @@ def quantize_group(hname, keys, seed0, log):
             with safe_open(hp, "pt", device="cpu") as f:     # "hout_diag": a diagonal-only factor (collect.py YAQA_DIAG)
                 # kept on the CPU: prepare_H_out copies it to the card itself (a dense 17408^2 fp32 here is 1.2 GB of VRAM
                 # that nothing else reads; the 4070's hconv MLP arms ran out by 170 MB). Same values, same result.
-                qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
+                if "hout" not in f.keys() and getattr(a, "hout_blocks", None):    # the vector: block-diagonal path
+                    assert hasattr(_Q, "prepare_H_out_blocks"), "--hout-blocks needs the exllamav3 fork with patch 0008"
+                    qa["H_out"] = f.get_tensor("hout_diag").float(); qa["hout_schedule"] = a.hout_blocks
+                else:
+                    qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
         hd = f"{a.hout_diag}/{key}.safetensors" if a.hout_diag else None
         if hd and os.path.exists(hd):
             with safe_open(hd, "pt", device="cpu") as f:
@@ -332,6 +340,8 @@ def quantize_group(hname, keys, seed0, log):
         for k2, v in t.items(): out[f"{key}.{k2}"] = v.contiguous().cpu()
         two = qa.pop("H_out", None) is not None
         log.write(json.dumps({"key": key, "K": a.K, "proxy_err": float(perr), "fallback": bool(qa.get("q_fallback")), "hout": two,
+                              **({"hout_blocks": qa["hout_schedule"]} if qa.get("hout_schedule") else {}),
+                              **({"proxy_err_2s": qa["proxy_err_2s"]} if "proxy_err_2s" in qa else {}),
                               "hin_key": bool(qa.get("hin_key")),
                               "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "sweep_all": qa.get("sweep_all"),
                               "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook,
