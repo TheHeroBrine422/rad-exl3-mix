@@ -1,0 +1,23 @@
+{
+ "a": {
+  "codebook_i4_differ": 0,
+  "levels": 16,
+  "codebook_i8_differ": 0,
+  "salt_differ": 0,
+  "pattern_differ": {
+   "0.125": 0
+  }
+ },
+ "b": {
+  "0.125": {
+   "gpu": null,
+   "tb_f16": 1.0141490697860718,
+   "free_f32": 0.8869948983192444,
+   "free_trellis_vit": 0.8869948983192444
+  }
+ },
+ "tiles": 5648,
+ "PASS_a": true,
+ "PASS_b": "n/a (no GPU number)",
+ "verdict": "PASS"
+}

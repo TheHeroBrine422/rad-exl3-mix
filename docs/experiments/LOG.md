@@ -19,6 +19,17 @@ versions of anything: git history.
 - **Reported, not judged:** layer 0 down hsub 0.585.
 - **Runtime:** none (quantizer side). Details: `v3/yaqa/asym27/dbg/README.md`.
 
+### 2026-11-07 9:50 PM CST · #114 · damping per (level, family): null — keep the current setting
+- w77, colo, 486 sweep jobs (4,374 rows, 0 fail), order-fixed proxy, scored on held-out input Hessians (hB1 / hB2,
+  168 fit-pool docs, ledger `w77-hb1/2`). Rule (≥ 2% held-out gain, ≥ ⅔ of tensors agree): **no ladder cell of 66
+  passes**; the largest gain anywhere is +0.63%. Inputs' best σ falls with K (0.1–0.2 at K0.25 → ≤ 0.005 from K1.5),
+  but the current values (inputs 0.05 below K1, 0.005 from K1; rest 0.025) are within ~1% everywhere; the halves
+  agree on σ* in only 34 / 66 cells (flat curves). 0.001 ≈ 0.005; #38's K1.5 / K2.5 keep holds held out.
+- **K0.125 (bound, not a ladder cell):** wants more damping than the grid — 28 / 54 runs pick 0.2, the top; at 0.2
+  attn_qg +5.1% (mostly one compressible block), attn_k +4.0%, ffn_down +2.7%. But the GPU search there is worse
+  than all-zero (err 1.014; the proxy is ~13% optimistic), so the cell is unreliable either way. Open: extend σ > 0.2
+  at K0.125 only. Report `v3/e3/settle/w77.md`, `data/w77/report.md`.
+
 ### 2026-11-07 8:35 PM CST · #46-03 · A4 speed bound: even a free A4 kernel doesn't pay
 - knap5a with A4's speed over A8 forced to ×2 (colo) and ×1000 (≈ free; Thor), 144 solves each, step 4 vs noa4:
   **A4 is picked on no tensor at equal KLD at 2.0 / 2.5 / 3.0 in either arm** (time −0.0%, bytes fail). Only by

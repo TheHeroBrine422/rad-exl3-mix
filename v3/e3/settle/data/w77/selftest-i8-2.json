@@ -1,0 +1,1 @@
+{"selftest": "11-attn_k-s0-i8-K2-d0.005", "max_abs_diff_Q": 0.0, "rel_settle": 0.009617951587585416, "rel_here": 0.009617945094672807, "ratio": 0.9999993249173122, "rel_norefit_settle": 0.009645575914089429, "rel_norefit_here": 0.009645565908573486, "sec_ldlq_settle": 97.0, "sec_ldlq_cached": 76.8, "s_exl": 0.9621692262583018}
