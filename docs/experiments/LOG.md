@@ -88,6 +88,8 @@ versions of anything: git history.
   (~6 with w81's fast H_out, ~4.5 plain) is acceptable. They stay last in the build order (after pass 2); the knapsack
   picks them only below ~1.3 bpw (#90: −1.8% at 1.25, −0.07% at 1.5, 0 at ≥ 2.0). `v3.toml` unchanged (by_level keeps
   i4 K0.125–1; H_out applies, K0.125 σ 0.2).
+- Sizes (user): offer **1.0 / 1.25 / 1.5 / 1.75 bpw** as high-quality low-bpw sizes (supersedes 11-05's "1.25 dropped");
+  the expensive per-mix post-processing (asym, healing) on them is optional, decided later.
 
 ### 2026-11-08 3:45 AM CST · #114-02 · σ 0.2 at K0.125 adopted (user)
 - User: the lowest level is extreme and needs the regularization. `v3.toml` `quant.lowest_level_damping` (k_max 0.125,
