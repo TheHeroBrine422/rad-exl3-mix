@@ -3,7 +3,7 @@
 # CPU only (CUDA_VISIBLE_DEVICES= nice -n 19, 4 threads, < 10 min each; the scripts go over stdin, nothing is written
 # there). B1: per-family change of the one-sided and h-weighted proxy errors; C10: SwiGLU-output residual, in-sample
 # and fitted on even / scored on odd documents (56 fit-pool docs capped at 1024 tokens; GDN on the torch path).
-H=$(cd $(dirname $0) && pwd) S=/workspace/rad-exl3-mix/local/bin/ssh-4070.sh
+H=$(cd $(dirname $0) && pwd) S=/workspace/rad-local/bin/ssh-4070.sh
 bundle() { python3 - $H/fsutil.py $H/$1 "$2" <<'PY'
 import sys
 fs, sc, pre = open(sys.argv[1]).read(), open(sys.argv[2]).read(), sys.argv[3]

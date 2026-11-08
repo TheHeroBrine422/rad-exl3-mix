@@ -1,6 +1,6 @@
 #!/bin/bash
 # hestsync.sh -- (VM) copy the 27B Sketch B ("") and xw snapshots to the 4070 (/data/yb/hconv/snaps), as sync.sh does dy.
-B=/workspace/rad-exl3-mix/local/bin
+B=/workspace/rad-local/bin
 have=$($B/ssh-4070.sh 'ls /data/yb/hconv/snaps' | tr '\n' ' ')
 for d in $($B/ssh-gpubox.sh 'cd /data/yaqa/hdiag && ls -d hdiag-snap* | grep -E "hdiag-snap[0-9]+(-xw)?$"' < /dev/null); do
   [[ " $have " == *" $d "* ]] && continue

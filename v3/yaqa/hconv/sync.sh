@@ -1,6 +1,6 @@
 #!/bin/bash
 # sync.sh -- (VM) copy new Σdy² snapshots of the 27B collection from gpubox to the 4070 (/data/yb/hconv/snaps); small.
-B=/workspace/rad-exl3-mix/local/bin
+B=/workspace/rad-local/bin
 have=$($B/ssh-4070.sh 'mkdir -p /data/yb/hconv/snaps; ls /data/yb/hconv/snaps' | tr '\n' ' ')
 for d in $($B/ssh-gpubox.sh 'cd /data/yaqa/hdiag && ls -d hdiag-snap*-dy' < /dev/null); do
   [[ " $have " == *" $d "* ]] && continue

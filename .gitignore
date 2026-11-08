@@ -1,5 +1,6 @@
 # machine-specific: ssh helpers, hosts, keys, handoff notes with paths/IPs
 local/
+local
 __pycache__/
 *.so
 *.o
