@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 6:10 AM CST · #117 · residual-stream permutation: 27B KLD pairs (user)
+- w82's proxy miss (0.982 / 0.984 vs ≤ 0.98; ~−1.5% parameter-weighted, every tensor better) is not the decision:
+  the user wants real mixes. **w84**: conversion tool + bit-exact bf16 gate (and the per-position sign trap), then two
+  seed pairs at K2.5 on card 0 after the current queue; rule (user's H_out standard): adopt if both pairs < 1. Zero
+  build-time and runtime cost; must land before the freeze.
+
 ### 2026-11-08 5:45 AM CST · #118 · Knapsack pricing: swj and H_out make the one-sided proxy 12% / 7.6% pessimistic; V2 anchors fine per level, attention overpriced (w82)
 - **Status:** done (report; nothing adopted) · **Machine:** iceman CPU (2(a): 3 single-thread jobs, nice 19, no GPU, no
   locks, 10:15–11:34 UTC), VM · **Code:** `v3/e3/settle/w82/` (`pw82.py`, `pwreport82.py`, `price82.py`); rules
