@@ -501,5 +501,6 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   swj / C9 mostly absorbed by healing (warm start); H_out / damping / tile CD partly kept; asym absorbed by the hybrid.
   0.8B arm to add: per-level block-wise (clean) → mixed-K mix → heal, vs the per-mix variants.
 - **Per-mix stage screen (user 11-08):** before choosing the V3/V4 per-mix post-processing, a 0.8B factorial in a
-  mixed-K mix: heal only / asym → heal / sequential block-wise → heal / asym → block-wise → heal / swj-C9 re-fit → heal
-  (2 seeds, low + mid size); winner vs heal-only on one 27B low-bpw mix.
+  mixed-K mix: full 2³ factorial of {swj/C9 re-fit, per-mix asym, sequential block-wise}, each on/off,
+  fixed order, always ending with heal (8 arms; main effects + interactions); 2 seeds, low + mid size; repeated rounds
+  for the best stack only; winner vs heal-only on one 27B low-bpw mix.
