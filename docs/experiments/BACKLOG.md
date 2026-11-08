@@ -504,3 +504,9 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   mixed-K mix: full 2³ factorial of {swj/C9 re-fit, per-mix asym, sequential block-wise}, each on/off,
   fixed order, always ending with heal (8 arms; main effects + interactions); 2 seeds, low + mid size; repeated rounds
   for the best stack only; winner vs heal-only on one 27B low-bpw mix.
+- **Low-rank (LoRA-style) correction (user 11-08):** (1) *merged*: low-rank delta learned in block-wise / healing,
+  folded into the tensor's target, then requantized with our trellis search (no runtime cost; = the hybrid's target
+  parameterization; part of the gain lost in requant). (2) *runtime adapter* (quantized base + rank-r residual,
+  LQER / QERA-style): bytes ~3% of a 2-bit gate_proj at rank 16, plus a small GEMV a tensor at decode (launch overhead
+  unless fused). Literature: pays mainly ≤ ~3 bits. Order: (1) first; (2) only if a gap remains at 1.0–2.0 bpw, and then
+  as a knapsack option priced in bytes + decode time. V4.
