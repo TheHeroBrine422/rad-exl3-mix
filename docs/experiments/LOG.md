@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 8:00 AM CST · cdhout27 · tile CD + H_out at K4: PASS — tile CD stays at every level
+- bn4s1ctl → bn4s1cd 0.007723 → 0.007723, **r 1.0000** (z +0.01); with bn4 0.9995: **geo 0.9998, PASS** (rule g ≤ 1.000,
+  both r ≤ 1.01). Fresh controls, noop gates and hygiene passed on both. Tile CD stays on (attn_qg, every level, with
+  H_out). Read on golden-search27 (rule written before the audit retired it): a no-harm check, no adoption risk.
+
 ### 2026-11-08 7:10 AM CST · cdhout27 · tile CD on top of H_out at K4: first pair no harm; kept (user)
 - bn4ctl → bn4cd (fresh control, hygiene PASS): KLD 0.007465 → 0.007461, **0.9995**. Proxy: CD-domain 0.9955, after the
   scale refit **0.9989** on the 16 q_proj (~0.1%; w50's 0.5–1.2% was without H_out). Cost **185 s a level** (3 sweeps,
