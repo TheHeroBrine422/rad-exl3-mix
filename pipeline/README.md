@@ -63,6 +63,9 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
   a 27B level; `tests/check_c9job.py JOB_OUT C9E27 MODEL HESS WORK` — a quant job's C9 files vs c9e27.py.
 - `tests/check_cpu.py OUT` — the 11-06 CPU ports (blend, H_out bn, swj math / apply, mkdenoise both paths; 4070 data).
 - `tests/check_assemble.py LEVEL OUT N` — level assembly round trip from an ourq level, mixed-stamp refusal.
+- `tests/check_grouphead.py [QUANTIZE_PY]` — group-head su draw (11-08 gpucheck27 i4 FAIL): rxq per-tensor == ourq's
+  group run, `ourq --only` without the group head differs, σ does not move su, the sub-1 damping rule per family, the
+  check_quant BADREF guard (seconds).
 
 GPU (prepared scripts, the lead runs them):
 - `tools/gpucheck27.sh cd|i4|c9` — gpubox card 0: tile CD on the real quantizer (rxq vs research module, M = I gate,
@@ -71,7 +74,8 @@ GPU (prepared scripts, the lead runs them):
   `tools/CDHOUT27.md` (into `/data/w76chk/code`, plus `quantize/ourq.py` and `v3/e3/tilecd/`).
 - `tools/cdhout27.sh` / `tools/insert-cdhout27.sh` — the 27B K4 no-harm pair of tile CD with H_out (rule
   `tools/CDHOUT27.md`), with the swap-pair hygiene check.
-- `tests/check_quant.py REF_LEVEL JOB_OUT` — per-tensor jobs vs an ourq level (GPU run first); `tools/run4070.sh A|B|C|D`
+- `tests/check_quant.py REF_LEVEL JOB_OUT` — per-tensor jobs vs an ourq level (GPU run first; the ourq reference must
+  hold each key's group head, i.e. q_proj / in_proj_qkv / gate_proj in its `--only`, or the key is BADREF); `tools/run4070.sh A|B|C|D`
   — the 11-06 4070 checks (they turn the 11-07 settings off to match their references).
 
 Licence: Apache-2.0 (LICENSE, NOTICE); exllamav3 is MIT (LICENSES/).

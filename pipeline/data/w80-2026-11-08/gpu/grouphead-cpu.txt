@@ -1,0 +1,6 @@
+PASS rxq: k / v su of rxq per-tensor jobs == ourq group run [True, True]; sigma 0.05 logged
+PASS only: --only {k, v}: su differs from the group run in [0.523, 0.523] of entries (the 11-08 FAIL; o_proj, a group of one, is unaffected)
+PASS damping: su same under sigma 0.05 / 0.005: True; K0.5 {'attn_qg': 0.05, 'attn_k': 0.05, 'attn_v': 0.05, 'attn_output': 0.025, 'ffn_gate': 0.025, 'ffn_up': 0.025, 'ffn_down': 0.025, 'ssm_qkv': 0.05, 'ssm_z': 0.05, 'ssm_out': 0.025}; K1 inputs [0.005]
+PASS guard: {k, v, o} -> 2 flagged; with heads 0; z / up 2
+PASS source: ourq skips --only misses before quantize_exl3; gpucheck27 i4 reference list holds q_proj
+GROUPHEAD CHECKS 5/5 PASS

@@ -1,0 +1,4 @@
+BADREF model.language_model.layers.39.self_attn.k_proj: the reference lacks its group head model.language_model.layers.39.self_attn.q_proj (ourq --only drew the group's su under the first listed member's seed, not the head's; rerun the reference with the head in --only)
+SAME model.language_model.layers.39.self_attn.o_proj: tensors 4 differ 0; log fields differ []; proxy 0.2984006692287233 vs 0.2984006692287233
+BADREF model.language_model.layers.39.self_attn.v_proj: the reference lacks its group head model.language_model.layers.39.self_attn.q_proj (ourq --only drew the group's su under the first listed member's seed, not the head's; rerun the reference with the head in --only)
+QUANT IDENT FAIL 1/3

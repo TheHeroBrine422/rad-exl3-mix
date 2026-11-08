@@ -1,0 +1,7 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+  model.language_model.layers.39.self_attn.k_proj              K0.5 proxy 1.626e-01 4.6s
+  model.language_model.layers.39.self_attn.v_proj              K0.5 proxy 3.043e-01 3.4s
+  model.language_model.layers.39.self_attn.o_proj              K0.5 proxy 2.984e-01 13.2s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K0.5", "K": 0.5, "codebook": "i4", "seed_offset": 0, "keys": ["model.language_model.layers.39.self_attn.k_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.39.self_attn.o_proj"], "settings_stamp": "c951cdc118325609", "inputs": {"ckpt": "/data/workspace/models/qwen38-27b-bf16", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": null}}, "settings_stamp": "c951cdc118325609", "code_stamp": "dbfe3cd2c8d8fc70", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 3, "seconds": 21.2}

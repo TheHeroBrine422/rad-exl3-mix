@@ -3,6 +3,12 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 3:45 AM CST · #114-02 · σ 0.2 at K0.125 adopted (user)
+- User: the lowest level is extreme and needs the regularization. `v3.toml` `quant.lowest_level_damping` (k_max 0.125,
+  σ 0.2 on both groups); `rxq/config.py` resolves it (K0.125: sigma_reg = sigma_reg_in = 0.2; K0.25 unchanged).
+  check_grouphead 5/5 PASS. Caveat: measured without H_out, which now applies at every level. C9 confirmed (user:
+  practically free). Runtime none.
+
 ### 2026-11-08 3:30 AM CST · #33-28 · H_out adopted at every level (user)
 - User: H_out lowers KLD on average (K2.5: every pair < 1, 0.972 / 0.992 / 0.976, geo 0.980; K4 PASS geo 0.964;
   0.8B positive at K2 / K3); noise limits confidence, not the direction, and a gain at high K should hold at low K.

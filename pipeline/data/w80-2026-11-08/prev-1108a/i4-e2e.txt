@@ -1,0 +1,4 @@
+DIFF model.language_model.layers.39.self_attn.k_proj: tensors 4 differ 3; log fields differ ['proxy_err', 'g_scale'] first diff model.language_model.layers.39.self_attn.k_proj.suh: 0.9963 of entries; proxy 0.1625891471229212 vs 0.16251688922847912
+SAME model.language_model.layers.39.self_attn.o_proj: tensors 4 differ 0; log fields differ []; proxy 0.2984006692287233 vs 0.2984006692287233
+DIFF model.language_model.layers.39.self_attn.v_proj: tensors 4 differ 3; log fields differ ['proxy_err', 'g_scale'] first diff model.language_model.layers.39.self_attn.v_proj.suh: 0.9961 of entries; proxy 0.3042623592234224 vs 0.30362916421211195
+QUANT IDENT FAIL 1/3

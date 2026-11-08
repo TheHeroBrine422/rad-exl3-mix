@@ -61,6 +61,19 @@ def seed(key, seed_offset=0):
     return base + j + 100000 * seed_offset, base + 100000 * seed_offset
 
 
+def missing_group_heads(keys):
+    """{key: its group's first tensor} for every key of a reference run (e.g. ourq --only) that is not first in its
+    Hessian group while the group's first tensor is missing from keys: ourq then drew the group's su under that key's
+    own seed, so the reference is not the ladder's (group run's) tensor and rxq cannot match it (gpucheck27 i4, 11-08)"""
+    ks = set(keys)
+    out = {}
+    for k in sorted(ks):
+        try: _, _, j, _, g = locate(k)
+        except (KeyError, ValueError): continue    # not a quantized linear (other names of an index)
+        if j > 0 and g[0] not in ks: out[k] = g[0]
+    return out
+
+
 def is_input_group(hname):
     """the layer-input group (attention q/k/v, GDN qkv/z): takes sigma_reg_in (ourq's test, verbatim)"""
     return hname.endswith(".layers." + hname.split(".layers.")[1].split(".")[0] + ".input") if ".layers." in hname else False

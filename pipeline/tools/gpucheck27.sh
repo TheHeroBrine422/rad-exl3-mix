@@ -12,15 +12,17 @@
 #            and sub-1 on the int4 grid, pack / unpack exact                                                (~5 min + build)
 #        (2) ourq.py (patched) vs rxq at K0.5 i4 + qtf2, sigma_in 0.05: layer 39 k_proj / v_proj (group members j > 0)
 #            and o_proj -> tests/check_quant.py bit-identity                                                 (~3 min)
+#            The ourq reference also quantizes q_proj (i4-ref-keys.txt): without the group head, ourq --only draws the
+#            group's su under k_proj's seed, which is not the ladder's tensor (11-08 FAIL 1/3, w80; check_grouphead.py)
 #        (3) ourq K2 i4 with --qtf2 vs without (exl3cb's integer kernel): identical (qtf2's MASK-0 route)    (~3 min)
-#   c9   C9 inside the quant job (user 11-07: adopted, make it cheap): rxq quant K2.5 i8 of 4 writers (out_proj 10 / 11,
+#   c9   C9 inside the quant job (user 11-07: adopted, make it cheap): rxq quant K2.5 i8 of 4 writers (out_proj 10 / 12,
 #        o_proj 3 / 39) with post.c9 on -> tests/check_c9job.py vs c9e27.py (C9E27, default /data/c9w27/code, read-only)
 #        on the card (bit identity, same device) and on the CPU after the card (report max |dc| / c); prints the
 #        per-writer in-job C9 time (log.jsonl rxq.c9_s)                                                     (~5 min)
 #   all  cd, i4, then c9 (one hold of the card each)
 # Stage (from the VM; a private tree, nothing live is touched):
 #   cd /workspace/rad-exl3-mix; I=local/bin/ssh-gpubox.sh; D=$(mktemp -d); mkdir -p $D/v3/e3 $D/quantize $D/store
-#   cp -r pipeline $D/ && cp -r v3/e3/exl3frac2 v3/e3/exl3frac v3/e3/exl3cb v3/e3/tilecd $D/v3/e3/ && cp quantize/ourq.py $D/quantize/
+#   cp -r pipeline $D/ && cp -r v3/e3/exl3frac2 v3/e3/exl3frac v3/e3/exl3cb v3/e3/tilecd $D/v3/e3/ && cp quantize/ourq.py $D/quantize/ && cp store/*.py $D/store/
 #   find $D -name __pycache__ -prune -exec rm -rf {} +
 #   tar -C $D -cf - . | $I 'mkdir -p /data/w76chk/code && tar -C /data/w76chk/code -xf -' && rm -rf $D
 # Run: $I 'cd /data/w76chk && nohup bash /data/w76chk/code/pipeline/tools/gpucheck27.sh all > run.out 2>&1 < /dev/null &'
@@ -58,8 +60,9 @@ print('two-sided proxy cd / off', {k.split('.')[3]: round(v, 4) for k, v in x.it
 
 i4_unit() {
   printf '%s\n' $P.39.self_attn.k_proj $P.39.self_attn.v_proj $P.39.self_attn.o_proj > $O/i4-keys.txt
+  printf '%s\n' $P.39.self_attn.q_proj $P.39.self_attn.k_proj $P.39.self_attn.v_proj $P.39.self_attn.o_proj > $O/i4-ref-keys.txt
   IK=$(paste -sd, $O/i4-keys.txt)
-  OQ=(nice -n 5 $PY -I $CODE/quantize/ourq.py --device 0 --frac-ext $SRC --scaled-hessian --sigma-reg 0.025 --codebook i4 --only $O/i4-keys.txt)
+  OQ=(nice -n 5 $PY -I $CODE/quantize/ourq.py --device 0 --frac-ext $SRC --scaled-hessian --sigma-reg 0.025 --codebook i4 --only $O/i4-ref-keys.txt)
   card bash -c "
     nice -n 5 $PY -I $CODE/pipeline/tests/qtf2i4check.py $CODE/v3/e3/exl3frac2 $O/i4-dumps > $O/i4-kern.txt 2>&1
     ${OQ[*]} -K 0.5 -o $O/i4-ourq-K0.5 --qtf2 --sigma-reg-in 0.05 > $O/i4-ourq-K0.5.log 2>&1
@@ -75,7 +78,7 @@ i4_unit() {
   log "i4 (3): K2 qtf2 vs exl3cb tensors $r (metadata stamps differ by design: --qtf2 is in the stamp)"; }
 
 c9_unit() {
-  CK=$P.3.self_attn.o_proj,$P.10.linear_attn.out_proj,$P.11.linear_attn.out_proj,$P.39.self_attn.o_proj
+  CK=$P.3.self_attn.o_proj,$P.10.linear_attn.out_proj,$P.12.linear_attn.out_proj,$P.39.self_attn.o_proj
   C9E27=${C9E27:-/data/c9w27/code/c9e27.py}
   card bash -c "
     nice -n 5 $PY -m rxq quant --keys $CK -K 2.5 --codebook i8 --ckpt $MODEL --hess $HESS --no-prof -o $O/c9-job > $O/c9-job.log 2>&1

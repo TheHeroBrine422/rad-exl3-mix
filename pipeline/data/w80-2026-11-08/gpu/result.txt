@@ -1,0 +1,17 @@
+07:35:13 card held 410 s (rc 0)
+07:35:13 cd (1): TILECD GPU GATE PASS 3/3
+07:35:13 cd (2): two-sided proxy cd / off {'3': 0.9994, '19': 0.9992, '43': 0.9994} geo 0.9993; tilecd ratios [0.9886, 0.9968, 0.9973] hout [True, True, True] CD s [12, 11, 12]
+07:52:06 card held 102 s (rc 0)
+07:52:06 i4 (1): {"summary": "qtf2 i4", "fails": 0, "verdict": "PASS"}
+07:52:07 i4 (2): QUANT IDENT FAIL 1/3
+07:52:08 i4 (3): K2 qtf2 vs exl3cb tensors PASS (metadata stamps differ by design: --qtf2 is in the stamp)
+08:07:37 card held 18 s (rc 0)
+08:07:37 c9 (card): C9JOB PASS 2/2; in-job C9 1.057 s,in-job C9 1.084 s
+08:07:47 c9 (CPU ref, report only): C9JOB FAIL 0/2; max |dc|/c 1.17e-07,6.01e-08
+08:07:47 GPUCHECK27 all DONE
+08:26:17 --- w80 rerun of i4 (ref with q_proj; code restaged 11-08)
+08:47:33 card held 150 s (rc 0)
+08:47:33 i4 (1): {"summary": "qtf2 i4", "fails": 0, "verdict": "PASS"}
+08:47:33 i4 (2): QUANT IDENT PASS 3/3
+08:47:34 i4 (3): K2 qtf2 vs exl3cb tensors PASS (metadata stamps differ by design: --qtf2 is in the stamp)
+08:47:34 GPUCHECK27 i4 DONE

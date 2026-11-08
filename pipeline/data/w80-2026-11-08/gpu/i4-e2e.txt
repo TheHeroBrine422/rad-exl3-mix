@@ -1,0 +1,4 @@
+SAME model.language_model.layers.39.self_attn.k_proj: tensors 4 differ 0; log fields differ []; proxy 0.1625891471229212 vs 0.1625891471229212
+SAME model.language_model.layers.39.self_attn.o_proj: tensors 4 differ 0; log fields differ []; proxy 0.2984006692287233 vs 0.2984006692287233
+SAME model.language_model.layers.39.self_attn.v_proj: tensors 4 differ 0; log fields differ []; proxy 0.3042623592234224 vs 0.3042623592234224
+QUANT IDENT PASS 3/3

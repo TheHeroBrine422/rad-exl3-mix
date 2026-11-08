@@ -55,6 +55,7 @@ sigma_reg_in = 0.005           # #38 done: layer-input group (attn q/k/v, GDN qk
 sigma_reg_in_sub1 = 0.05       # #38 verdict "input 0.005 (0.05 below K1)" (the layer-input group: attn q/k/v, GDN qkv/z;
                                # v3/levels/ladder2.sh's sigin rule); ourq takes it as --sigma-reg-in 0.05 at K < 1
 apply_sub1_damping = true      # ADOPTED by the user 2026-11-07 (LOG 9:25 AM CST); false = ourq's 0.005 at every K
+lowest_level_damping = { enable = true, k_max = 0.125, sigma = 0.2 }   # #114-02 (w79, held-out): K0.125 wants sigma 0.2 on both groups (inputs -1.9%, rest -1.2% proxy); adopted by the user 11-08
 gain = 1.0                     # #39 done: flat, keep 1.0 (w43 settle.py, no family >= 1% at >= 2 K)
 out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1) -> always on
 drift = "interp"               # LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);

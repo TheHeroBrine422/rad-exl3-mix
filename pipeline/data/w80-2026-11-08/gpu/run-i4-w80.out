@@ -1,0 +1,4 @@
+08:47:33 i4 (1): {"summary": "qtf2 i4", "fails": 0, "verdict": "PASS"}
+08:47:33 i4 (2): QUANT IDENT PASS 3/3
+08:47:34 i4 (3): K2 qtf2 vs exl3cb tensors PASS (metadata stamps differ by design: --qtf2 is in the stamp)
+08:47:34 GPUCHECK27 i4 DONE

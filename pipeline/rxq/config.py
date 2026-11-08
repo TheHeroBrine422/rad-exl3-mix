@@ -94,6 +94,8 @@ def quant_settings(cfg, K, codebook, key, seed_offset=0):
          "sigma_reg": q["sigma_reg"], "sigma_reg_in": q["sigma_reg_in"], "seed_offset": seed_offset,
          "drift": q["drift"], "block_trace": q["block_trace"], "refit": q["refit"]}
     if q["apply_sub1_damping"] and float(K) < 1 and inp: s["sigma_reg_in"] = q["sigma_reg_in_sub1"]
+    lo = q.get("lowest_level_damping")      # #114-02 (user 11-08): the lowest level wants sigma 0.2 for both groups
+    if lo and lo.get("enable", True) and float(K) <= float(lo["k_max"]): s["sigma_reg"] = s["sigma_reg_in"] = float(lo["sigma"])
     if q["gain"] != 1.0: s["gain"] = q["gain"]
     if hout_applies(cfg, K):
         s["hout"] = cfg["inputs"]["hout"]["dir"]; s["sigma_reg_out"] = cfg["inputs"]["hout"]["sigma_reg_out"]

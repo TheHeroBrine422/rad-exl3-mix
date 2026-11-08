@@ -1,0 +1,18 @@
+metadata equal: False {'ourq_stamp': ('929718262cce5532', '7fecce3b1a5ffc72')}
+names equal: True
+model.language_model.layers.39.self_attn.k_proj.mul1 torch.int32 () equal
+model.language_model.layers.39.self_attn.k_proj.suh torch.float16 (5120,) equal
+model.language_model.layers.39.self_attn.k_proj.svh torch.float16 (1024,) equal
+model.language_model.layers.39.self_attn.k_proj.trellis torch.int16 (320, 64, 32) equal
+model.language_model.layers.39.self_attn.o_proj.mul1 torch.int32 () equal
+model.language_model.layers.39.self_attn.o_proj.suh torch.float16 (6144,) equal
+model.language_model.layers.39.self_attn.o_proj.svh torch.float16 (5120,) equal
+model.language_model.layers.39.self_attn.o_proj.trellis torch.int16 (384, 320, 32) equal
+model.language_model.layers.39.self_attn.q_proj.mul1 torch.int32 () equal
+model.language_model.layers.39.self_attn.q_proj.suh torch.float16 (5120,) equal
+model.language_model.layers.39.self_attn.q_proj.svh torch.float16 (12288,) equal
+model.language_model.layers.39.self_attn.q_proj.trellis torch.int16 (320, 768, 32) equal
+model.language_model.layers.39.self_attn.v_proj.mul1 torch.int32 () equal
+model.language_model.layers.39.self_attn.v_proj.suh torch.float16 (5120,) equal
+model.language_model.layers.39.self_attn.v_proj.svh torch.float16 (1024,) equal
+model.language_model.layers.39.self_attn.v_proj.trellis torch.int16 (320, 64, 32) equal

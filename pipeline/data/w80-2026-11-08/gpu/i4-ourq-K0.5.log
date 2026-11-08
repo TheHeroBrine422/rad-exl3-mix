@@ -1,0 +1,10 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+code stamp 0a50d1622998fc44 (K0.5)
+  model.language_model.layers.39.self_attn.q_proj              K0.5 proxy 9.095e-02 22.5s
+  model.language_model.layers.39.self_attn.k_proj              K0.5 proxy 1.626e-01 3.4s
+  model.language_model.layers.39.self_attn.v_proj              K0.5 proxy 3.043e-01 3.4s
+  model.language_model.layers.39.self_attn.o_proj              K0.5 proxy 2.984e-01 12.0s
+layer 39: 41s  anon rss 1591 MiB
+done

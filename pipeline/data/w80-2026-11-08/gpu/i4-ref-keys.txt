@@ -1,0 +1,4 @@
+model.language_model.layers.39.self_attn.q_proj
+model.language_model.layers.39.self_attn.k_proj
+model.language_model.layers.39.self_attn.v_proj
+model.language_model.layers.39.self_attn.o_proj
