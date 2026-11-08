@@ -1,0 +1,54 @@
+mean-row energy share 0.010490496566064591
+per-128-block energy CV {'median': 0.12647013969536525, 'p90': 0.14672414955096053, 'iid_expect': 0.125}
+emb_uncentered {"am_gm": 1.1376760707763525, "am_gm_bits": 0.09304491959133009, "top_energy": {"1": 0.011360802496345702, "8": 0.027022944194283492, "64": 0.07221222661944, "256": 0.15463852672397532, "1024": 0.3622582467591328, "2560": 0.6770548371056617}, "eff_rank": 2448.3897753760284, "lam_min_rel": 0.2543840983209043}
+   R  0.25  D_wf 0.63006  white 0.70711  ratio 0.891  saves 0.083 bit
+   R  0.50  D_wf 0.43984  white 0.50000  ratio 0.880  saves 0.092 bit
+   R  0.75  D_wf 0.31077  white 0.35355  ratio 0.879  saves 0.093 bit
+   R  1.00  D_wf 0.21975  white 0.25000  ratio 0.879  saves 0.093 bit
+   R  1.25  D_wf 0.15538  white 0.17678  ratio 0.879  saves 0.093 bit
+   R  1.50  D_wf 0.10987  white 0.12500  ratio 0.879  saves 0.093 bit
+   R  1.75  D_wf 0.07769  white 0.08839  ratio 0.879  saves 0.093 bit
+   R  2.00  D_wf 0.05494  white 0.06250  ratio 0.879  saves 0.093 bit
+   R  2.50  D_wf 0.02747  white 0.03125  ratio 0.879  saves 0.093 bit
+   R  3.00  D_wf 0.01373  white 0.01562  ratio 0.879  saves 0.093 bit
+   R  4.00  D_wf 0.00343  white 0.00391  ratio 0.879  saves 0.093 bit
+emb_centered {"am_gm": 1.1267608290434912, "am_gm_bits": 0.08609065776782407, "top_energy": {"1": 0.004563289171804144, "8": 0.017958076613601555, "64": 0.06288542104213694, "256": 0.14592011848781838, "1024": 0.35564038009857357, "2560": 0.6737212639774472}, "eff_rank": 3439.0845440746043, "lam_min_rel": 0.25667759118833}
+   R  0.25  D_wf 0.63614  white 0.70711  ratio 0.900  saves 0.076 bit
+   R  0.50  D_wf 0.44410  white 0.50000  ratio 0.888  saves 0.086 bit
+   R  0.75  D_wf 0.31378  white 0.35355  ratio 0.888  saves 0.086 bit
+   R  1.00  D_wf 0.22187  white 0.25000  ratio 0.887  saves 0.086 bit
+   R  1.25  D_wf 0.15689  white 0.17678  ratio 0.887  saves 0.086 bit
+   R  1.50  D_wf 0.11094  white 0.12500  ratio 0.887  saves 0.086 bit
+   R  1.75  D_wf 0.07844  white 0.08839  ratio 0.887  saves 0.086 bit
+   R  2.00  D_wf 0.05547  white 0.06250  ratio 0.887  saves 0.086 bit
+   R  2.50  D_wf 0.02773  white 0.03125  ratio 0.887  saves 0.086 bit
+   R  3.00  D_wf 0.01387  white 0.01562  ratio 0.887  saves 0.086 bit
+   R  4.00  D_wf 0.00347  white 0.00391  ratio 0.887  saves 0.086 bit
+per-column variance AM/GM (no rotation) 1.0004752159840287
+E from head residual share {'full': 0.8501564522901262, 'r16': 0.9705438512006075, 'r64': 0.9463231538468699, 'r256': 0.9079142594132742, 'r1024': 0.8687091123127788}
+head from E residual share {'full': 0.8276014483741004, 'r16': 0.9325265885620617, 'r64': 0.9175537694288728, 'r256': 0.8871682668723542, 'r1024': 0.8477494265042935}
+head H stats {'pivot_am_gm': 1.022557230036329, 'eigH_am_gm': 2.411138613253194, 'ldlq_white_const': 0.16806355057995792}
+head_Hmetric {"am_gm": 7.0634571017841585, "am_gm_bits": 1.410187230761114, "top_energy": {"1": 0.6056709994632675, "8": 0.6982160346710965, "64": 0.7663175854664873, "256": 0.8328784425553425, "1024": 0.9109904389705027, "2560": 0.9653434725823449}, "eff_rank": 2.7069211433598146, "lam_min_rel": 0.007967278044803012}
+   R  0.25  D_wf 0.11245  white 0.70711  ratio 0.159  saves 1.326 bit
+   R  0.50  D_wf 0.07306  white 0.50000  ratio 0.146  saves 1.387 bit
+   R  0.75  D_wf 0.05048  white 0.35355  ratio 0.143  saves 1.404 bit
+   R  1.00  D_wf 0.03548  white 0.25000  ratio 0.142  saves 1.408 bit
+   R  1.25  D_wf 0.02505  white 0.17678  ratio 0.142  saves 1.410 bit
+   R  1.50  D_wf 0.01770  white 0.12500  ratio 0.142  saves 1.410 bit
+   R  1.75  D_wf 0.01251  white 0.08839  ratio 0.142  saves 1.410 bit
+   R  2.00  D_wf 0.00885  white 0.06250  ratio 0.142  saves 1.410 bit
+   R  2.50  D_wf 0.00442  white 0.03125  ratio 0.142  saves 1.410 bit
+   R  3.00  D_wf 0.00221  white 0.01562  ratio 0.142  saves 1.410 bit
+   R  4.00  D_wf 0.00055  white 0.00391  ratio 0.142  saves 1.410 bit
+   R  0.25  LDLQ model 0.11884  wf/LDLQ 0.946
+   R  0.50  LDLQ model 0.08403  wf/LDLQ 0.869
+   R  0.75  LDLQ model 0.05942  wf/LDLQ 0.850
+   R  1.00  LDLQ model 0.04202  wf/LDLQ 0.845
+   R  1.25  LDLQ model 0.02971  wf/LDLQ 0.843
+   R  1.50  LDLQ model 0.02101  wf/LDLQ 0.843
+   R  1.75  LDLQ model 0.01485  wf/LDLQ 0.842
+   R  2.00  LDLQ model 0.01050  wf/LDLQ 0.842
+   R  2.50  LDLQ model 0.00525  wf/LDLQ 0.842
+   R  3.00  LDLQ model 0.00263  wf/LDLQ 0.842
+   R  4.00  LDLQ model 0.00066  wf/LDLQ 0.842
+M0 weight on KLT directions (1 = average) {'top256_mean': 2.72515643088094, 'mid_mean': 1.0597038277175095, 'bottom2560_mean': 0.7737509119661548, 'bottom1024_mean': 0.6429614031677082, 'corr_log_lambda': 0.391228807452344}

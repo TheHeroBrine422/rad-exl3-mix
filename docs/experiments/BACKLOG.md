@@ -518,3 +518,13 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   slower per tensor** (rank-16 GEMMs also run inefficiently); fused (X·A from the main GEMM's loaded X tile, ·B in the
   epilogue) ~1–3%, needs kernel work in the f16 and A8 paths. Viable only fused; the equal-bytes test must measure
   prefill gemm_us as well as decode.
+- **Embedding Fisher at h0 (#119, w83, 11-08; GPU ~1–2 card-h):** one backward pass on fit-pool sequences with sampled
+  labels (collect.py), recording at the embedding output the full 5120² Σ g gᵀ and Σ‖g‖² + count per input token id.
+  Decides the embedding's quantizer metric (CPU `v3/e3/emb2/embldlq.py` with H = F_full; worth −0.3…−4.4% KLD at
+  1.0–2.0 bpw depending on the metric, free at runtime) and gives measured per-row sensitivities for a floored row
+  allocation (IQR-V4's head rule on the embedding; per-run K table in embed_tq if it passes). KLD swap with the
+  multilingual guard before anything ships.
+- **Low-budget slab heads in knap5 (#119 / #34, 11-08; CPU minutes):** budgets 2.125–3.5 with the floor ~1 bit below
+  (`v3/yaqa/data/lcurve.json`; reject plans whose guard KL exceeds the uniform head's) as options at 1.0–2.0 bpw; today
+  only K5–6 slab heads are offered and the head sits at uniform K3 at 2.0. Est. −2…−3% at 2.0 bpw; gated by #34-02.
+

@@ -1,0 +1,40 @@
+04:59:08 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+04:59:08 s1: decode vs the exl3i C oracle: DRY: env DEV=cpu /data/swap27/tools/memguard.sh 3000 /data/venv-exl3/bin/python -I /data/asym27/code/deq.py oracle /data/swap27/q-s1/K2.5 /data/asym27/exl3i_oracle.so model.language_model.layers.0.linear_attn.in_proj_z,model.language_model.layers.0.linear_attn.out_proj,model.language_model.layers.3.self_attn.k_proj,model.language_model.layers.3.self_attn.o_proj
+04:59:08 s1: base args: -K 2.5 --frac-ext /data/exl3frac/src --codebook i8 --seed-offset 1 --sigma-reg 0.025 --sigma-reg-in 0.005 --scaled-hessian --qtf2; disk 3115 GiB free, ~454 GiB needed
+04:59:09 s1: moments: start
+04:59:09 s1: moments: DRY: /data/venv-exl3/bin/python -I /data/asym27/code/sibmom27.py /data/workspace/models/qwen38-27b-bf16 /root/challenge/golden/calib /data/asym27/s1/mom --level /data/swap27/q-s1/K2.5 --codebook i8 --tokens 1000000 --wins moments --seed 0 --snap-layers 0,3,31,63; ,  RSS
+04:59:09 s1: q-noop: 0 min
+04:59:09 s1: DRY: /data/venv-exl3/bin/python -I /data/asym27/code/assemble.py same /data/swap27/q-s1/K2.5 /data/asym27/s1/q-noop
+04:59:09 s1: q-asym: 0 min
+DRY: /data/venv-exl3/bin/python -I /data/asym27/code/assemble.py build /data/swap27/q-s1/K2.5 /data/asym27/s1/q-asym /data/asym27/s1/level-asym /data/asym27/s1/writers.txt
+04:59:09 s1: ASYM27 s1 DONE (pre gate mom mk dose noop arm asm pack score pair)
+16:04:28 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+16:04:28 s1: MemAvailable 5 GB < 6 GB before oracle (rerun later): stop
+20:52:02 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+20:52:38 s1: decode vs the exl3i C oracle: DEQ ORACLE: bit-exact: 4 tensors x 2 codebooks, 0 differ; W worst rel 3.0e-07
+20:52:38 s1: base args: -K 2.5 --frac-ext /data/exl3frac/src --codebook i8 --seed-offset 1 --sigma-reg 0.025 --sigma-reg-in 0.005 --scaled-hessian --qtf2; disk 2776 GiB free, ~454 GiB needed
+20:53:45 s1: gate: peak GPU 16.2 GiB, peak 5747 MiB RSS; estimate 3.26 h for 1000000 tokens (GDN 5317 tok/s, attention 5944 tok/s; forward-only 16074 tok/s)
+20:53:45 s1: moments: start
+20:54:15 s1: moments FAIL rc=1 (/data/asym27/s1/mom.log; rerun resumes per layer): stop
+21:01:11 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+21:01:11 s1: moments: start
+21:01:29 s1: moments FAIL rc=1 (/data/asym27/s1/mom.log; rerun resumes per layer): stop
+21:02:09 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+21:02:09 s1: moments: start
+21:04:03 s1: moments FAIL rc=1 (/data/asym27/s1/mom.log; rerun resumes per layer): stop
+21:24:39 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+21:24:39 s1: moments: start
+00:15:36 s1: moments: MOMENTS DONE 128 groups, 1002035 tokens, 170.8 min (64 layers this run); peak GPU 15.6 GiB, peak 3893 MiB RSS
+00:50:49 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+05:35:25 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+07:13:14 s1: start: BASE /data/swap27/q-s1/K2.5 (K2.5 i8), CTL s1, V2 qwen3.8-27b-exl3-v2-3.00bpw.rad, TOK 1000000, lam 1 rho 0, steps: pre gate mom mk dose noop arm asm pack score pair
+08:07:19 s1: mkdenoise: 128 groups; clip > 0 in 126 (max 2.9e-03); hsub median 0.399; F_dev 0.033..0.112; |WF|/|W| 1.0012..1.0321
+08:18:25 s1: dose (|F_N/2 - F_N| / |F_N - I|, layers 0 3 31 63): ||F_half - F|| / ||F - I||: 0.linear_attn.out_proj 0.54, 0.mlp.down_proj 0.65, 3.mlp.down_proj 0.81, 3.self_attn.o_proj 0.60, 31.mlp.down_proj 0.58, 31.self_attn.o_proj 0.62, 63.mlp.down_proj 0.53, 63.self_attn.o_proj 0.56
+08:35:17 s1: q-noop: 16 min
+08:35:19 s1: noop gate: 128 linears, 512 tensors, 0 differ from /data/swap27/q-s1/K2.5 [] -> PASS
+09:02:50 s1: q-asym: 27 min
+ASSEMBLED /data/asym27/s1/level-asym: 64 shards, 128 linears (512 tensors this run) from /data/asym27/s1/q-asym over /data/swap27/q-s1/K2.5
+09:25:28 s1: s1a: mix ready, 2.6244 bpw
+09:52:18 s1: s1a: 
+09:52:18 s1: pair s1 -> s1a: {"kld_a": 0.05757044624480463, "kld_b": 0.05795692902834454, "diff": 0.00038648278353990706, "rel": 0.00671321500438751, "se": 0.000658493651403164, "z": 0.5869195287097495, "positions": 123460, "docs": 103}
+09:52:18 s1: ASYM27 s1 DONE (pre gate mom mk dose noop arm asm pack score pair)

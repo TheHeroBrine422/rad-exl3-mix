@@ -1,0 +1,17 @@
+model.language_model.layers.24.linear_attn.out_proj.input    trN +2.584e-02 trC -8.180e-02 hsub 0.277 clip 1.4e-04 Fdev 5.783e-02
+model.language_model.layers.24.mlp.down_proj.input           trN +3.830e-02 trC -1.244e-01 hsub 0.776 clip 2.5e-03 Fdev 8.362e-02 (lean)
+model.language_model.layers.25.linear_attn.out_proj.input    trN +2.429e-02 trC -7.307e-02 hsub 0.353 clip 5.7e-04 Fdev 5.988e-02
+model.language_model.layers.25.mlp.down_proj.input           trN +4.142e-02 trC -1.186e-01 hsub 0.571 clip 1.9e-03 Fdev 8.362e-02 (lean)
+model.language_model.layers.26.linear_attn.out_proj.input    trN +2.328e-02 trC -6.423e-02 hsub 0.542 clip 6.6e-04 Fdev 6.087e-02
+model.language_model.layers.26.mlp.down_proj.input           trN +3.828e-02 trC -1.027e-01 hsub 0.543 clip 1.2e-03 Fdev 8.146e-02 (lean)
+model.language_model.layers.27.mlp.down_proj.input           trN +3.694e-02 trC -9.545e-02 hsub 0.476 clip 6.4e-04 Fdev 7.879e-02 (lean)
+model.language_model.layers.27.self_attn.o_proj.input        trN +1.339e-02 trC -3.045e-02 hsub 0.560 clip 1.0e-03 Fdev 6.887e-02
+model.language_model.layers.28.linear_attn.out_proj.input    trN +2.482e-02 trC -6.355e-02 hsub 0.285 clip 5.8e-04 Fdev 6.268e-02
+model.language_model.layers.28.mlp.down_proj.input           trN +3.477e-02 trC -8.981e-02 hsub 0.449 clip 5.0e-04 Fdev 7.519e-02 (lean)
+model.language_model.layers.29.linear_attn.out_proj.input    trN +2.310e-02 trC -6.136e-02 hsub 0.308 clip 2.0e-04 Fdev 5.216e-02
+model.language_model.layers.29.mlp.down_proj.input           trN +3.408e-02 trC -8.755e-02 hsub 0.409 clip 4.7e-04 Fdev 7.033e-02 (lean)
+model.language_model.layers.30.linear_attn.out_proj.input    trN +2.199e-02 trC -5.482e-02 hsub 0.526 clip 7.0e-04 Fdev 5.966e-02
+model.language_model.layers.30.mlp.down_proj.input           trN +3.279e-02 trC -8.309e-02 hsub 0.418 clip 4.5e-04 Fdev 6.735e-02 (lean)
+model.language_model.layers.31.mlp.down_proj.input           trN +3.241e-02 trC -8.057e-02 hsub 0.420 clip 3.2e-04 Fdev 6.818e-02 (lean)
+model.language_model.layers.31.self_attn.o_proj.input        trN +1.195e-02 trC -2.611e-02 hsub 0.565 clip 8.7e-04 Fdev 6.812e-02
+MKDENOISE DONE 16 groups -> /data/asym27/s1/dn-l1-r0-c24

@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""paired.py GOLDEN A.f32 B.f32 [--cluster KEY [--block K]] -- the KLD difference B - A over the rows GOLDEN's gen.u8
+marks, and its standard error by bootstrap over documents (paired: the same documents in every resample).
+--cluster KEY: resample clusters of documents instead (e.g. the chunks of one trace): KEY is a field of kld.json's docs
+(source, orig, ...) or a JSON file with one label per document. --block K: split each cluster into blocks of K
+consecutive documents (golden order) and resample the blocks (trace x chunk blocks). Without --cluster the output is
+unchanged; with it the line also has "cluster", "block" and "units" (the number of resampled units)."""
+import json, sys
+import numpy as np
+g, a, b = sys.argv[1:4]
+opt = sys.argv[4:]
+m = json.load(open(f"{g}/kld.json"))
+A = np.fromfile(a, np.float32).reshape(-1, 4)[:, 0].astype(np.float64)
+B = np.fromfile(b, np.float32).reshape(-1, 4)[:, 0].astype(np.float64)
+gen = np.fromfile(f"{g}/gen.u8", np.uint8).astype(bool)
+sa, sb, n = [], [], []
+for d in m["docs"]:
+    k = d["tokens"] - 1 - d["score_from"]; s = slice(d["row0"], d["row0"] + k); mk = gen[s]
+    sa.append(A[s][mk].sum()); sb.append(B[s][mk].sum()); n.append(mk.sum())
+sa, sb, n = map(np.array, (sa, sb, n))
+ka, kb = sa.sum() / n.sum(), sb.sum() / n.sum()
+extra = {}
+if opt:
+    key, blk = None, 0
+    while opt:
+        if opt[0] == "--cluster": key = opt[1]; opt = opt[2:]
+        elif opt[0] == "--block": blk = int(opt[1]); opt = opt[2:]
+        else: raise SystemExit(f"paired.py: unknown option {opt[0]}")
+    if key is None: raise SystemExit("paired.py: --block needs --cluster")
+    lab = json.load(open(key)) if key.endswith(".json") else [d[key] for d in m["docs"]]
+    if len(lab) != len(n): raise SystemExit(f"paired.py: {len(lab)} cluster labels for {len(n)} documents")
+    seen, unit = {}, []
+    for x in lab:                      # unit = (cluster, block of K consecutive documents in it)
+        c = seen.setdefault(json.dumps(x), [len(seen), 0]); unit.append((c[0], c[1] // blk if blk else 0)); c[1] += 1
+    ids = {u: j for j, u in enumerate(dict.fromkeys(unit))}
+    u = np.array([ids[x] for x in unit])
+    sa, sb, n = (np.bincount(u, w, len(ids)) for w in (sa, sb, n.astype(np.float64)))
+    extra = {"cluster": key, "block": blk, "units": len(ids)}
+rng = np.random.default_rng(0); bs = []
+for _ in range(2000):
+    i = rng.integers(0, len(n), len(n)); bs.append((sb[i].sum() - sa[i].sum()) / n[i].sum())
+se = np.std(bs)
+print(json.dumps({"kld_a": ka, "kld_b": kb, "diff": kb - ka, "rel": (kb - ka) / ka, "se": se, "z": (kb - ka) / se,
+                  "positions": int(n.sum()), "docs": len(m["docs"]), **extra}))

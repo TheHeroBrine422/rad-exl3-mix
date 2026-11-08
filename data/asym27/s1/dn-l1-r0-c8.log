@@ -1,0 +1,17 @@
+model.language_model.layers.10.linear_attn.out_proj.input    trN +1.657e-02 trC -5.942e-02 hsub 0.667 clip 1.9e-04 Fdev 4.899e-02
+model.language_model.layers.10.mlp.down_proj.input           trN +3.390e-02 trC -9.945e-02 hsub 0.370 clip 1.6e-04 Fdev 7.687e-02 (lean)
+model.language_model.layers.11.mlp.down_proj.input           trN +3.337e-02 trC -9.533e-02 hsub 0.328 clip 9.8e-05 Fdev 7.312e-02 (lean)
+model.language_model.layers.11.self_attn.o_proj.input        trN +1.163e-02 trC -4.118e-02 hsub 0.315 clip 3.2e-04 Fdev 5.810e-02
+model.language_model.layers.12.linear_attn.out_proj.input    trN +1.758e-02 trC -6.241e-02 hsub 0.249 clip 4.4e-04 Fdev 5.212e-02
+model.language_model.layers.12.mlp.down_proj.input           trN +3.122e-02 trC -8.707e-02 hsub 0.362 clip 1.3e-04 Fdev 6.918e-02 (lean)
+model.language_model.layers.13.linear_attn.out_proj.input    trN +1.782e-02 trC -6.075e-02 hsub 0.220 clip 8.1e-05 Fdev 4.638e-02
+model.language_model.layers.13.mlp.down_proj.input           trN +3.121e-02 trC -8.516e-02 hsub 0.296 clip 6.2e-05 Fdev 6.486e-02 (lean)
+model.language_model.layers.14.linear_attn.out_proj.input    trN +1.693e-02 trC -5.538e-02 hsub 0.407 clip 4.0e-04 Fdev 4.983e-02
+model.language_model.layers.14.mlp.down_proj.input           trN +3.125e-02 trC -8.537e-02 hsub 0.316 clip 4.3e-05 Fdev 6.202e-02 (lean)
+model.language_model.layers.15.mlp.down_proj.input           trN +3.235e-02 trC -8.581e-02 hsub 0.310 clip 1.9e-05 Fdev 6.106e-02 (lean)
+model.language_model.layers.15.self_attn.o_proj.input        trN +1.222e-02 trC -3.331e-02 hsub 0.352 clip 2.6e-04 Fdev 5.658e-02
+model.language_model.layers.8.linear_attn.out_proj.input     trN +1.908e-02 trC -7.487e-02 hsub 0.286 clip 1.8e-04 Fdev 5.085e-02
+model.language_model.layers.8.mlp.down_proj.input            trN +3.561e-02 trC -1.165e-01 hsub 0.554 clip 4.7e-04 Fdev 8.541e-02 (lean)
+model.language_model.layers.9.linear_attn.out_proj.input     trN +1.762e-02 trC -7.190e-02 hsub 0.380 clip 3.1e-04 Fdev 4.934e-02
+model.language_model.layers.9.mlp.down_proj.input            trN +3.632e-02 trC -1.116e-01 hsub 0.465 clip 2.5e-04 Fdev 8.193e-02 (lean)
+MKDENOISE DONE 16 groups -> /data/asym27/s1/dn-l1-r0-c8

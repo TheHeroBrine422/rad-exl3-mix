@@ -1,0 +1,124 @@
+{
+ "date": "2026-11-07",
+ "by": "w67 (eval/traces/chunk.py)",
+ "what": "the 8 long agentic calib traces cut into turn-aligned chunks of <= 32,768 tokens (system prompt + tool definitions repeated as an unscored header); no document moved between pools, pools-v3.json untouched",
+ "pools_file": "eval/pools/pools-v3.json",
+ "pools_sha256": "f0706518733d9b80a9d669d7741a1b4d96696846fde39a9c54503a7eddee49aa",
+ "manifest": "eval/traces/manifest-32k.json",
+ "manifest_sha256": "3aec8df0fbf8f7697b1d50543174d6c46a728560b7014c4617a25df6316c5a37",
+ "pool_source_note": "pools from pools-v3.json's per-document pool list. The w67 task text listed lua and requests under qad; the pool file (and AGENTS.md, amendment 2026-11-01) has them in verify, so they stay verify. Their whole traces are the V3 line's ver3-long / ver4-long material, so they are chunked in the manifest only (no corpus, no golden).",
+ "lead_note": "2026-11-07 ~12:10 AM CST: both verify traces (rich, express) chunked into agent-verify32 and also kept whole (agent-verify-whole) as read-only full-length copies for rare 'does anything break at 200k+' checks on finished mixes; never a selection or tuning target; reported together, never one alone",
+ "traces": [
+  {
+   "doc": 905,
+   "source": "agent-trace/rich",
+   "pool": "verify",
+   "tokens": 250158,
+   "chunks": 9,
+   "slice": "agent-verify32",
+   "whole_copy": "agent-verify-whole",
+   "reserved": null
+  },
+  {
+   "doc": 1241,
+   "source": "agent-trace/ripgrep",
+   "pool": "search",
+   "tokens": 245774,
+   "chunks": 9,
+   "slice": "agent-search32",
+   "whole_copy": null,
+   "reserved": null
+  },
+  {
+   "doc": 1772,
+   "source": "agent-trace/attrs",
+   "pool": "qad",
+   "tokens": 246898,
+   "chunks": 9,
+   "slice": "qad32",
+   "whole_copy": null,
+   "reserved": null
+  },
+  {
+   "doc": 2300,
+   "source": "agent-trace/lua",
+   "pool": "verify",
+   "tokens": 248066,
+   "chunks": 8,
+   "slice": null,
+   "whole_copy": null,
+   "reserved": "golden-ver3-long (V3 monitor, from 8192)"
+  },
+  {
+   "doc": 2651,
+   "source": "agent-trace/click",
+   "pool": "qad",
+   "tokens": 245120,
+   "chunks": 8,
+   "slice": "qad32",
+   "whole_copy": null,
+   "reserved": null
+  },
+  {
+   "doc": 2675,
+   "source": "agent-trace/express",
+   "pool": "verify",
+   "tokens": 253163,
+   "chunks": 9,
+   "slice": "agent-verify32",
+   "whole_copy": "agent-verify-whole",
+   "reserved": null
+  },
+  {
+   "doc": 4029,
+   "source": "agent-trace/cobra",
+   "pool": "search",
+   "tokens": 245199,
+   "chunks": 9,
+   "slice": "agent-search32",
+   "whole_copy": null,
+   "reserved": null
+  },
+  {
+   "doc": 4723,
+   "source": "agent-trace/requests",
+   "pool": "verify",
+   "tokens": 245667,
+   "chunks": 9,
+   "slice": null,
+   "whole_copy": null,
+   "reserved": "golden-ver4-long (V3 final, from 16384)"
+  }
+ ],
+ "slices": {
+  "agent-search32": {
+   "docs": 18,
+   "tokens": 505237,
+   "gen_rows": 261437,
+   "pool": "search",
+   "golden": "golden-agent-search32 (mkgold27 bf16, gpubox q2 insert-60)"
+  },
+  "agent-verify-whole": {
+   "docs": 2,
+   "tokens": 503321,
+   "gen_rows": 275375,
+   "pool": "verify",
+   "golden": "golden-agent-verify-whole (cut from the published calib golden, 2026-11-07)"
+  },
+  "agent-verify32": {
+   "docs": 18,
+   "tokens": 517561,
+   "gen_rows": 275375,
+   "pool": "verify",
+   "golden": "golden-agent-verify32 (mkgold27 bf16, gpubox q2 insert-60)"
+  },
+  "qad32": {
+   "docs": 17,
+   "tokens": 505368,
+   "gen_rows": 237168,
+   "pool": "qad",
+   "golden": null
+  }
+ },
+ "ledger": "golden-agent-verify-whole added 2026-11-07 (ledger_add.py); golden-agent-search32 / -verify32 lines in eval/traces/ledger-pending.jsonl, to append once their goldens exist (or ledger_add.py with eval/traces/ledger_add-chunks.patch)"
+}

@@ -1,0 +1,6 @@
+M0 eig AM/GM 1.348 (0.215 bit), diag AM/GM 1.003
+white coder M0-rel const 0.417
+R 1.0 wf 0.06832 white 0.10413 ratio 0.656 saves 0.304 bit
+R 1.5 wf 0.03395 white 0.05207 ratio 0.652 saves 0.308 bit
+R 2.0 wf 0.01698 white 0.02603 ratio 0.652 saves 0.308 bit
+R 3.0 wf 0.00424 white 0.00651 ratio 0.652 saves 0.308 bit

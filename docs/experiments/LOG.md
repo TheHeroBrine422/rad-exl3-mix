@@ -3,6 +3,53 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 6:13 AM CST · #119 · Embedding / head representation for the 1.0–2.0 sizes: the embedding is at its floor; LDLQ in a sensitivity metric FAILS on the CPU proxy (w83)
+- **Status:** done (CPU; nothing adopted) · **Machine:** colo (`/data/work/w13/w83`, ≤ 8 GB, nice 19) + Thor
+  (`/data/work/w83`), 05:05–06:10 AM CST · **Code:** `v3/e3/emb2/` (`IDEAS.md` ranked candidates, `RULES.md` rules +
+  2 amendments before the data they govern, `README.md`) · **Data:** `data/emb2/`
+- **Bounds (all 248,320 rows):** the shipped trellis embedding is at ×1.03–1.09 the iid-Gaussian D(R) = 2^-2R, so any
+  better code (VQ / lattice / LUT / 2^20 trellis) is worth ≤ 0.03–0.06 bit. The table has no structure left: eigenvalue
+  AM/GM of the unit-RMS rows 1.138 (KLT + water-filling ≤ 0.093 bit, < an int8 rotation's 0.165 bit), per-128-block
+  energy CV 0.126 (iid 0.125), mean row 1% of the energy; the head predicts it poorly (least squares leaves 85%); no
+  near-duplicate rows (best other row median cos² 0.05; best-8 least squares leaves 86%). Head in the calib H metric:
+  water-filling beats the LDLQ model by only ×0.84 (0.12 bit) before a rotation. **Closed:** KLT / transform coding,
+  head-predicted embedding, shared rows / row clusters / row-level VQ, head KLT, better codes.
+- **Screen (4,096 rows, EXL3 16×16 tiles):** embedding LDLQ against a sensitivity metric (encode-only, same format):
+  M0 = layer 0's input projections with the norm gains folded in, F = measured diagonal residual Fisher at layer 0
+  (27B `hdiag-dy`, qad), MF = (M0 + F)/2 (hedge, added after the first data); control H = I reproduces #35 (t1 0.2562
+  vs 0.2570, t3 0.0166). H = M0: +0.21–0.30 bit in M0, −0.13–0.16 in I and F. H = F: +0.07–0.08 in F (×0.89–0.91),
+  −0.02–0.05 in M0. H = MF: better than the control in both sensitivity metrics at every K (M0 +0.15–0.26 bit, F
+  +0.02–0.04), −0.05–0.06 in I. **Rule (≥ 10% lower or ≥ 0.25 bit in BOTH M0 and F at ≥ 2 of K1/1.5/2/3): FAIL for all
+  three.** M0 and F disagree about which directions matter; the CPU proxy cannot pick the metric.
+- **Translation:** 1 bit/value on the embedding or head = 0.0473 bpw; by knap4 v3e's size curve 0.1 bit is worth
+  −1.5% KLD at 1.25 bpw, −1.1% at 1.5, −0.9% at 2.0. The metric question is therefore worth −0.3% (MF, if F is right)
+  to −4.4% (M0, if M0 is right) at 1.0–2.0 bpw, free at runtime.
+- **Decision / next (lead):** (1) GPU ~1–2 card-h: the full 5120² residual-gradient Fisher at the embedding output plus
+  Σ‖g‖² per input token id (fit pool, collect.py's sampled labels) — decides the metric (then `embldlq.py` with H =
+  F_full, minutes) and gives measured per-row sensitivities for a floored row allocation (IDEAS #2, the IQR-V4 head
+  rule on the embedding; avoids #32's frequency trap). (2) CPU: low-budget slab heads (budgets 2.125–3.5, floor ~1 bit
+  below, `v3/yaqa/data/lcurve.json`: 3.125/f3 −46% head KL at equal bits with the guard also lower) as knap5 options at
+  1.0–2.0 bpw (today KN_HEADSLAB = K5–6 only; head at uniform K3 at 2.0): est. −2…−3% at 2.0, gated by #34-02.
+  (3) The real-KLD t0.5 / t1 / t1.25 embedding swap (TODO, open) prices more bytes at ≤ 1.5 bpw than any representation
+  change could. No format or embed_tq change is warranted by this study.
+- **Runtime:** none (CPU analysis; the screened candidate is encode-only).
+
+### 2026-11-08 5:59 AM CST · #105 · w78 closed: fixes, raw data, what a per-mix asym can reuse
+- **Raw s1 results:** `data/asym27/` (pair, score summary, mkdenoise stats, logs).
+  - ‖WF‖/‖W‖ medians: down 1.018, GDN out 1.015, o_proj 1.008, all above 1 (0.8B: below 1).
+  - hsub medians: 0.45 / 0.35 / 0.38.
+  - Dose: 0.53–0.81.
+  - Base: stopped by the user at moments layer 24; no pair.
+- **Fixes to merge:** both are in `v3/yaqa/asym27/`, with tests in `test_w78.py` and details in `dbg/README.md`.
+  - `sibmom27-w78.patch` → `v3/sib27/sibmom27.py`: no expandable segments on ROCm, row-block saves, open shards
+    dropped.
+  - `mkdenoise-w78.patch` → `proxy2b/exp/w07-denoise/mkdenoise.py`: blocked Cholesky solve on the lean path.
+- **Same allocator setting elsewhere on gpubox:** `c9w27.sh`, `cd27.sh` and `gpucheck.sh` also export
+  `expandable_segments`. Their quants / scores ran clean, so it is not changed there.
+- **Disk:** `/data/asym27` holds 774 GB (s1 moments 245 GB + dn 135 GB, base partial moments 190 GB, mixes). These
+  moments are not reusable for a per-mix run (they go through K2.5-only siblings): delete once the lead agrees.
+- **Runtime:** none.
+
 ### 2026-11-08 6:35 AM CST · #— · Search slices become two-part, calib-sparing (user)
 - golden-search27 retired for decisions (overused, audit above). New 27B search slices: ~65% fresh xcorp (redrawn each
   round) + ~35% fresh calib search-pool docs (+ optional own-trace chunks, our cards only); pooled decision, same sign

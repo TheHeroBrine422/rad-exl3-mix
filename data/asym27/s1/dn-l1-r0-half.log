@@ -1,0 +1,9 @@
+model.language_model.layers.0.linear_attn.out_proj.input     trN +8.170e-04 trC -3.085e-03 hsub 0.015 clip 7.0e-08 Fdev 3.554e-02
+model.language_model.layers.0.mlp.down_proj.input            trN +5.579e-03 trC -5.232e-02 hsub 0.544 clip 1.1e-03 Fdev 7.491e-02 (lean)
+model.language_model.layers.3.mlp.down_proj.input            trN +2.608e-02 trC -1.105e-01 hsub 0.916 clip 3.7e-03 Fdev 1.176e-01 (lean)
+model.language_model.layers.3.self_attn.o_proj.input         trN +5.414e-03 trC -4.208e-02 hsub 0.098 clip 5.4e-04 Fdev 6.191e-02
+model.language_model.layers.31.mlp.down_proj.input           trN +3.240e-02 trC -8.058e-02 hsub 0.450 clip 4.0e-04 Fdev 7.739e-02 (lean)
+model.language_model.layers.31.self_attn.o_proj.input        trN +1.193e-02 trC -2.605e-02 hsub 0.567 clip 8.5e-04 Fdev 7.584e-02
+model.language_model.layers.63.mlp.down_proj.input           trN +1.131e-02 trC -3.198e-02 hsub 0.384 clip 1.5e-04 Fdev 1.208e-01 (lean)
+model.language_model.layers.63.self_attn.o_proj.input        trN +1.342e-02 trC -3.200e-02 hsub 0.243 clip 5.8e-04 Fdev 9.581e-02
+MKDENOISE DONE 8 groups -> /data/asym27/s1/dn-l1-r0-half

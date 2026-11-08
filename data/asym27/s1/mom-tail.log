@@ -1,0 +1,80 @@
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+843 windows, 1002035 tokens from pools ['qad'] (moments)
+model /data/workspace/models/qwen38-27b-bf16: 64 layers, hidden 5120, attention sdpa, kernels {'causal_conv1d': None, 'fla': '0.6.0', 'torch': '2.15.0+rocm7.14'}
+disk: boundaries 2 x 9.6 GiB, moments 243.8 GiB; free 2764 GiB
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+MIOpen(HIP): Warning [ParseAndLoadDb] File is unreadable: "/data/venv-exl3/lib/python3.14/site-packages/_rocm_sdk_libraries/share/miopen/db/gfx1201_32.HIP.fdb.txt"
+/data/venv-exl3/lib/python3.14/site-packages/triton/knobs.py:504: UserWarning: TRITON_DEFAULT_FP_FUSION is unset: defaulting to FP fusion ENABLED for backward compatibility in Triton 3.9. The default will change to DISABLED in Triton 3.10; set TRITON_DEFAULT_FP_FUSION=1 to keep fusion enabled or =0 to adopt the new default early and silence this warning.
+  warn_once(FP_FUSION_DEFAULT_WARNING)
+layer 0: 165s, 6059 tok/s, peak GPU 15.6 GiB, anon rss 2165 MiB (peak 3541 MiB), eta 174 min
+layer 1: 161s, 6232 tok/s, peak GPU 15.6 GiB, anon rss 2195 MiB (peak 3839 MiB), eta 166 min
+layer 2: 161s, 6209 tok/s, peak GPU 15.6 GiB, anon rss 2196 MiB (peak 3868 MiB), eta 164 min
+layer 3: 158s, 6354 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3868 MiB), eta 158 min
+layer 4: 161s, 6215 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 159 min
+layer 5: 162s, 6183 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 157 min
+layer 6: 161s, 6208 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 153 min
+layer 7: 156s, 6422 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 146 min
+layer 8: 161s, 6211 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 148 min
+layer 9: 161s, 6212 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 145 min
+layer 10: 164s, 6128 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 144 min
+layer 11: 160s, 6263 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 139 min
+layer 12: 162s, 6200 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 137 min
+layer 13: 161s, 6207 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 135 min
+layer 14: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 132 min
+layer 15: 157s, 6399 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 125 min
+layer 16: 161s, 6208 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 126 min
+layer 17: 161s, 6209 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 124 min
+layer 18: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 121 min
+layer 19: 157s, 6396 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 115 min
+layer 20: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 116 min
+layer 21: 161s, 6208 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 113 min
+layer 22: 161s, 6208 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 110 min
+layer 23: 156s, 6404 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 104 min
+layer 24: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 105 min
+layer 25: 161s, 6209 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 102 min
+layer 26: 161s, 6206 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 100 min
+layer 27: 157s, 6400 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 94 min
+layer 28: 161s, 6211 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 94 min
+layer 29: 161s, 6211 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 91 min
+layer 30: 162s, 6204 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 89 min
+layer 31: 158s, 6339 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 84 min
+layer 32: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 83 min
+layer 33: 161s, 6209 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 81 min
+layer 34: 162s, 6205 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 78 min
+layer 35: 156s, 6415 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 73 min
+layer 36: 161s, 6216 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 73 min
+layer 37: 162s, 6200 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 70 min
+layer 38: 161s, 6212 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 67 min
+layer 39: 156s, 6414 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 62 min
+layer 40: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 62 min
+layer 41: 161s, 6213 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 59 min
+layer 42: 161s, 6211 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 56 min
+layer 43: 156s, 6410 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 52 min
+layer 44: 161s, 6217 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 51 min
+layer 45: 161s, 6216 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 48 min
+layer 46: 161s, 6210 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 46 min
+layer 47: 156s, 6417 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 42 min
+layer 48: 161s, 6219 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 40 min
+layer 49: 161s, 6218 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 38 min
+layer 50: 161s, 6211 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 35 min
+layer 51: 156s, 6422 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 31 min
+layer 52: 161s, 6223 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 30 min
+layer 53: 161s, 6223 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 27 min
+layer 54: 162s, 6201 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 24 min
+layer 55: 156s, 6424 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 21 min
+layer 56: 161s, 6221 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 19 min
+layer 57: 161s, 6221 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 16 min
+layer 58: 161s, 6218 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 13 min
+layer 59: 156s, 6421 tok/s, peak GPU 15.5 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 10 min
+layer 60: 161s, 6224 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 8 min
+layer 61: 161s, 6220 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 5 min
+layer 62: 161s, 6219 tok/s, peak GPU 15.6 GiB, anon rss 2234 MiB (peak 3893 MiB), eta 3 min
+layer 63: 149s, 6707 tok/s, peak GPU 15.5 GiB, anon rss 2221 MiB (peak 3893 MiB), eta 0 min
+MOMENTS DONE 128 groups, 1002035 tokens, 170.8 min (64 layers this run)

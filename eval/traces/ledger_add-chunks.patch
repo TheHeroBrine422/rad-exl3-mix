@@ -1,0 +1,32 @@
+--- a/eval/pools/ledger_add.py
++++ b/eval/pools/ledger_add.py
+@@ -5,7 +5,8 @@
+ Goldens: one line per document from kld.json (docs[].orig, score_from, tokens), use = the golden's name (its directory
+ name, or the file name without `-kld.json` / `.json` for a copied kld.json), role from ROLES (exact name or a "prefix*"
+ entry, as mkledger.py). Only goldens cut from the calib corpus (corpus_fnv1a64 must match CALIB_FNV, default the
+-calib corpus's) are accepted. `--all USE DATE`: one line with "doc": "all" (a collection over every calib token).
++calib corpus's) are accepted, and chunked calib goldens made by eval/traces (kld.json "manifest_sha256", docs with orig / from / to: one
++line per original document, from = the first chunk's first scored position, to = the last chunk's last). `--all USE DATE`: one line with "doc": "all" (a collection over every calib token).
+ A (doc, use) already in the ledger is skipped, so re-running is safe. Prints what it added per pool."""
+ import collections, fnmatch, json, os, sys
+ 
+@@ -43,10 +44,15 @@
+     p = f if f.endswith(".json") else os.path.join(f, "kld.json")
+     name = os.path.basename(f.rstrip("/")) if not f.endswith(".json") else os.path.basename(f).removesuffix(".json").removesuffix("-kld")
+     m = json.load(open(p))
+-    if m.get("corpus_fnv1a64") != CALIB_FNV: raise SystemExit(f"{name}: corpus {m.get('corpus')} {m.get('corpus_fnv1a64')} is not calib")
+-    r = role(name); date = m.get("created", "")[:10]; c = collections.Counter()
+-    for d in m["docs"]:
+-        if rec(d["orig"], name, r, d["score_from"], d["tokens"] - 1, date): c[pool[d["orig"]]] += 1
++    chunked = "manifest_sha256" in m and all("from" in d and "to" in d and "orig" in d for d in m["docs"])
++    if m.get("corpus_fnv1a64") != CALIB_FNV and not chunked:
++        raise SystemExit(f"{name}: corpus {m.get('corpus')} {m.get('corpus_fnv1a64')} is not calib")
++    r = role(name); date = m.get("created", "")[:10]; c = collections.Counter(); span = {}
++    for d in m["docs"]:      # chunks of one document merge into one range (positions in the original document)
++        a, b = (d["from"], d["to"] - 1) if chunked else (d["score_from"], d["tokens"] - 1)
++        x = span.setdefault(d["orig"], [a, b]); x[0] = min(x[0], a); x[1] = max(x[1], b)
++    for o, (a, b) in span.items():
++        if rec(o, name, r, a, b, date): c[pool[o]] += 1
+     print(f"{name}: +{sum(c.values())} docs {dict(c)} role {r['role']} line {r['line']}")
+ with open(LED, "a") as fh:
+     for o in out: fh.write(json.dumps(o) + "\n")
