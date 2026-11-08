@@ -471,6 +471,9 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   calls the logged environment never answered (stop at the first tool call, or splice the logged tool result).
 
 ### V4 QAD: alternating block-wise / end-to-end (user discussion 2026-11-08)
+- **This refines the 11-07 "QAD family as a cost ladder" entry below** (its steps (1) library closed-form fits,
+  (2) per-level library healing / block QAD *before the knapsack*, (3) per-mix end-to-end): the notes here are its
+  design detail. Step (2) must use clean bf16 inputs to stay mix-independent (#111).
 - **Idea:** block coordinate descent instead of full end-to-end QAD (full 27B QAD ≈ 350–450 GB VRAM with Adam;
   ~170–200 GB with 8-bit states + offload: rental only). Round = (1) block-wise: train each layer's weights (codes
   re-searched) to match the bf16 layer output, fed the *student's* inputs (asym for every tensor) and weighted by the
