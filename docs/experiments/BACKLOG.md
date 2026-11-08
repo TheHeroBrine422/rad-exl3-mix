@@ -485,3 +485,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   healing; repeat. = asym generalized (learned nonlinear target, every tensor) while keeping our strong discrete
   search instead of STE through trellis codes. Order for V4: asym ⇄ heal (cheap) → hybrid; 0.8B arms vs the full-QAD
   ceiling: heal only · asym ⇄ heal ×1/×2 · hybrid ×1/×2.
+- **Schedule (11-08):** round 0 = asym → heal (cheap; V3 if #105 passes; asym is only a warm start once the hybrid
+  runs, since the hybrid covers the writers); round 1+ = hybrid block-wise → heal, repeated while the 0.8B shows gains.
+  Always end on a heal (code re-search discards healed scales). Variants to test: **sequential** block-wise (one
+  front-to-back sweep on refitted upstream outputs, GPTQ order) and **selective** block-wise (only the most sensitive
+  layers by the knapsack's prices; heal the rest).
