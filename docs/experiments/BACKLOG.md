@@ -469,3 +469,14 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   draft model then trains on real Qwen reasoning over real agentic contexts, never on the logged Claude text. Open:
   sampling settings (match deployment), how many responses per context, which turns (all vs the deduped ones), tool
   calls the logged environment never answered (stop at the first tool call, or splice the logged tool result).
+
+### V4 QAD: alternating block-wise / end-to-end (user discussion 2026-11-08)
+- **Idea:** block coordinate descent instead of full end-to-end QAD (full 27B QAD ≈ 350–450 GB VRAM with Adam;
+  ~170–200 GB with 8-bit states + offload: rental only). Round = (1) block-wise: train each layer's weights (codes
+  re-searched) to match the bf16 layer output, fed the *student's* inputs (asym for every tensor) and weighted by the
+  current model's Σdy² / Fisher (H_out); (2) end-to-end scales / norms on KL (our healing); (3) refresh the weights from
+  the healed model, repeat. Fits one R9700 (one layer ≈ 420M params ≈ 5 GB with Adam); ~hours–1 day + one requant +
+  one heal per round per size. Our V3 pipeline (H_out + asym + healing) is round 1 in miniature.
+- **Test (0.8B, 4070):** full end-to-end QAD fits the 4070 (~10 GB, 8-bit optimizer) = the measured ceiling; compare
+  healing only, block-wise + healing ×1, ×2. Ask: how much of the full-QAD gain do 1–2 rounds capture?
+- Literature anchors: EfficientQAT (Block-AP → E2E-QP), BRECQ, CBQ. After V3.
