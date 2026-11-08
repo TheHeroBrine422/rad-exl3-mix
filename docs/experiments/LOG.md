@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 6:20 AM CST · #— · Overfit audit of the last 48 h (user)
+- **Clean:** public untouched (the 6 mentions are repo publicity). Fitting / tuning stayed on fit or held-out fit
+  halves (#114, K0.125). Drops (A4, #105, #106, #113, #117-proxy) cannot overfit. **swj** K2.5 confirmed on verify
+  (0.935 / 0.932, = search); **C9** keeps 0.96 of its gain on verify; **H_out K4** seed 0 holds on verify (0.965 vs
+  search 0.936–0.961; no verify rows for seed 1).
+- **Risks:** (1) **golden-search27 overused**: the same 103 docs decided every 27B pair since 11-04; its document
+  error (~0.010 SE a pair mean, #116) is as large as the seed noise and does not average over seeds, and seed luck
+  replicated only partly on verify (s1/base 0.975 search vs 0.991 verify): the search slice exaggerates by about its
+  document error. (2) **H_out at every level was adopted after the rule missed** (geo 0.9801 vs ≤ 0.98, a post-hoc
+  standard), and **K2.5 has no verify rows**. (3) #116's lower pooled σ must only be used in rules written from now
+  on, never to re-read old verdicts; future rules include the document error.
+- **Actions:** #117 is read on a **fresh search slice** (golden-search27b, search pool, new seed; w84); one routine
+  verify check of the K2.5 H_out arms on golden-verify27 (stands if verify geo < 1; once). golden-verify27 now has 4
+  routine uses (swj, C9, H_out K4, K2.5): draw a fresh verify-pool slice for the finished V3 mixes.
+
 ### 2026-11-08 6:10 AM CST · #117 · residual-stream permutation: 27B KLD pairs (user)
 - w82's proxy miss (0.982 / 0.984 vs ≤ 0.98; ~−1.5% parameter-weighted, every tensor better) is not the decision:
   the user wants real mixes. **w84**: conversion tool + bit-exact bf16 gate (and the per-position sign trap), then two
