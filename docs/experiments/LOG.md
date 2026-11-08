@@ -3,6 +3,52 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 3:30 AM CST · #33-28 · H_out adopted at every level (user)
+- User: H_out lowers KLD on average (K2.5: every pair < 1, 0.972 / 0.992 / 0.976, geo 0.980; K4 PASS geo 0.964;
+  0.8B positive at K2 / K3); noise limits confidence, not the direction, and a gain at high K should hold at low K.
+  **Adopted at every level** (`v3.toml` apply_k_min 4 → 0). Supersedes "K ≥ 4 only". Cost (H_out levels ~5× slower
+  to quantize) is the open problem: **w81** builds the block-diagonal two-sided LDLQ (same objective, ~4× faster
+  expected) and re-checks the noise floor the rules use (0.018 vs a pooled 0.0086). Runtime none.
+
+### 2026-11-08 2:50 AM CST · #38 / pipeline · gpucheck27 i4 (2) FAIL was the test's reference, not the damping; rerun PASS 3/3 (w80)
+- **Cause:** the i4 unit's reference was `ourq --only {k, v, o}` of layer 39. ourq skips q_proj, so k_proj is the first
+  tensor to finalize the shared input Hessian. exllamav3 then draws the group's sign vector su under k_proj's seed;
+  v_proj reuses that draw. The ladder runs whole layers and draws su under q_proj's seed, and so does rxq: its
+  per-tensor jobs pre-finalize under the group head's seed. That explains suh differing in 99.6% of entries and the
+  different proxy_err / g_scale. o_proj is a group of one, hence identical. The damping is the same on both sides:
+  both logs record σ 0.05 for k / v, and 0.025 for o_proj.
+- **Neither side is wrong against the rule:** rxq matches the ladder. ourq's `--only` without a group's first tensor
+  gives a tensor the ladder never makes. This affects only `--only` lists that hold a j > 0 member (k / v, GDN z, up)
+  without its head. The ladder is unaffected, and so are the repo's `--only` users checked (asym27 / sib27 / g64 /
+  test08 writers, g75 o_proj, cd27 / tilecd q_proj, damp3 / damp4 / shab / cbab full groups, s1oscale gate + up).
+  Live `/root/ourq` needs no change and was not touched.
+- **Fix (pipeline only):** `tools/gpucheck27.sh` i4 reference now quantizes q_proj too (`i4-ref-keys.txt`).
+  `tests/check_quant.py` prints BADREF and counts it a fail when a reference lacks a key's group head
+  (`rxq.qwen35.missing_group_heads`); on the 11-08 outputs it flags k / v.
+  Regression test `tests/check_grouphead.py` (CPU, the fork's real finalize_capture_H): 5/5 PASS on the VM fork and
+  on gpubox's `/data/exllamav3`. It checks:
+  - rxq k / v su == ourq group run;
+  - `--only {k, v}` su differs in 52% of entries;
+  - su does not depend on σ;
+  - the settings rule at K0.5 / K1 per family;
+  - the guard;
+  - the source lines.
+  A mutated rxq (head seed := own seed) fails it.
+- **Rule wording:** sub-1 σ 0.05 is the layer-input group only (attn q / k / v, GDN qkv / z), as ourq's
+  `--sigma-reg-in`, `ladder2.sh`, v3.toml and rxq implement it. The 9:25 AM entry's "gate/up" is wrong: gate / up
+  read the post-attention Hessian and stay at 0.025. #114 (w77) measured that group's sub-1 curve flat (0.01–0.2
+  within 1%), so the implemented rule stands.
+- Also fixed in gpucheck27: the c9 unit listed `layers.11.linear_attn.out_proj`, which does not exist (layer 11 is
+  full attention). Its rxq job stopped after 2 of 4 writers, so c9's PASS 2/2 covered o_proj 3 and out_proj 10 only.
+  Now out_proj 12. The c9 CPU line ("FAIL 0/2, max |dc|/c 1.2e-7 / 6.0e-8") is one f32 ulp of c (f32, values
+  around 1). That is f64 summation order, CPU vs GPU, expected, and harmless: the folded svh is f16, whose ulp is
+  8192× larger. The bit-identity verdict is meant for the same device only.
+- **i4 rerun (card 0, 2:45–2:47 AM CST, card held 150 s; code restaged with `store/`): i4 (1) PASS, i4 (2) QUANT
+  IDENT PASS 3/3** (k / v / o: tensors and log fields equal; rxq's proxy values unchanged from the failed run: the
+  corrected reference now matches rxq), **i4 (3) PASS**. Raw: `pipeline/data/w80-2026-11-08/` (gpu/, prev-1108a/ = the FAIL plus the
+  BADREF re-read).
+- **Runtime:** none (test and docs only; no quantizer output changes).
+
 ### 2026-11-08 1:55 AM CST · #114-02 · K0.125 damping: the optimum is σ ≈ 0.2; above it nothing (w79)
 - colo, 162 / 162 jobs (0 fail), w77's code / Hessians / scales. i4 K0.125 at σ 0.3 / 0.5 / 1.0, joined with w77's
   rows (648 = 54 tensor × samples × 12 σ). Rule (written before data, `v3/e3/settle/w79.md`): w77's pick-on-B1 /

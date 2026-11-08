@@ -40,7 +40,7 @@ snapshot = 1920                # H27 amendment 2
 sigma_reg_out = 0.01           # output damping (H27; #33-16)
 dir = "hout/bn1920"            # datapack relpath: <key>.safetensors ("hout_diag"), mkbn over the 1,920 snapshot (gpubox:
                                # /data/swap27/hout-bn, the K4 arms' dir); a job's inputs.hout overrides it
-apply_k_min = 4.0              # H27: K2.5 not adopted (geo 0.9801), K4 PASS (geo 0.9643, 11-07) -> H_out at K >= 4 only
+apply_k_min = 0.0              # user 11-08: H_out at every level (lower KLD on average at K2.5: 3/3 pairs < 1, geo 0.980; K4 PASS 0.964). Cost: w81 fast block-diagonal H_out
 apply_k_max = 8.0
 
 # ------------------------------------------------------------------------------------------------ per-tensor quant
