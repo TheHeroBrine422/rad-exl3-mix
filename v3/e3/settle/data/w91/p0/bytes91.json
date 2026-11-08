@@ -1,0 +1,82 @@
+[
+ {
+  "weight": "blk.0.ssm_out.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.0.ffn_down.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.1.ssm_out.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.1.ffn_down.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.2.ssm_out.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.2.ffn_down.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.3.ffn_down.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ },
+ {
+  "weight": "blk.3.attn_output.weight",
+  "quant": "",
+  "opts": "",
+  "a_eq_patch": true,
+  "c_eq_patch": true,
+  "rows_differ": [
+   3994
+  ]
+ }
+]

@@ -1,0 +1,66 @@
+layer | reader H diag share of ch 3994: input / post_attn (other ch > 5%) | writer output-energy share of row 3994 (other rows > 5%)
+L 0 | 0.000 / 0.002  (mean/median diag 2.0 / 1.6) | out_proj 0.990, down_proj 0.534
+L 1 | 0.823 / 0.001  (mean/median diag 11.7 / 1.5) | out_proj 0.865, down_proj 0.053
+L 2 | 0.796 / 0.001  (mean/median diag 9.1 / 1.2) | out_proj 0.577, down_proj 0.621
+L 3 | 0.931 / 0.001  (mean/median diag 28.1 / 1.2) | down_proj 0.070, o_proj 0.957
+L 4 | 0.641 / 0.001  (mean/median diag 4.4 / 1.2) | out_proj 0.587, down_proj 0.018
+L 5 | 0.707 / 0.000  (mean/median diag 5.9 / 1.2) | out_proj 0.541, down_proj 0.080
+L 6 | 0.819 / 0.252  (mean/median diag 9.2 / 1.7) | out_proj 0.382, down_proj 0.053
+L 7 | 0.909 / 0.000  (mean/median diag 27.1 / 1.2) | down_proj 0.035, o_proj 0.734
+L 8 | 0.655 / 0.000  (mean/median diag 4.9 / 1.1) | out_proj 0.560, down_proj 0.077
+L 9 | 0.676 / 0.000  (mean/median diag 5.2 / 1.2) | out_proj 0.358, down_proj 0.097
+L10 | 0.669 / 0.000  (mean/median diag 5.2 / 1.2) | out_proj 0.332, down_proj 0.002
+L11 | 0.876 / 0.084  (mean/median diag 18.9 / 1.3) | down_proj 0.081, o_proj 0.714
+L12 | 0.735 / 0.065  (mean/median diag 6.4 / 1.3) | out_proj 0.386, down_proj 0.025
+L13 | 0.735 / 0.054  (mean/median diag 6.0 / 1.2) | out_proj 0.201, down_proj 0.009
+L14 | 0.738 / 0.024  (mean/median diag 6.2 / 1.2) | out_proj 0.188, down_proj 0.004
+L15 | 0.825 / 0.063  (mean/median diag 11.3 / 1.2) | down_proj 0.005, o_proj 0.325
+L16 | 0.695 / 0.075  (mean/median diag 5.0 / 1.3) | out_proj 0.142, down_proj 0.011
+L17 | 0.690 / 0.084  (mean/median diag 5.0 / 1.4) | out_proj 0.064, down_proj 0.039
+L18 | 0.659 / 0.158  (mean/median diag 4.8 / 1.6) | out_proj 0.103, down_proj 0.144
+L19 | 0.678 / 0.150  (mean/median diag 6.6 / 1.5) | down_proj 0.176, o_proj 0.070
+L20 | 0.642 / 0.101  (mean/median diag 4.4 / 1.3) | out_proj 0.080, down_proj 0.166
+L21 | 0.582 / 0.079  (mean/median diag 3.6 / 1.2) | out_proj 0.226, down_proj 0.028 [3456]
+L22 | 0.543 / 0.163  (mean/median diag 3.2 / 1.4) | out_proj 0.147, down_proj 0.043
+L23 | 0.637 / 0.152  (mean/median diag 5.3 / 1.3) | down_proj 0.010, o_proj 0.049
+L24 | 0.540 / 0.214  (mean/median diag 3.6 / 1.4) | out_proj 0.057, down_proj 0.021
+L25 | 0.578 / 0.238  (mean/median diag 3.9 / 1.5) | out_proj 0.033, down_proj 0.086
+L26 | 0.582 / 0.336  (mean/median diag 4.0 / 1.8) | out_proj 0.039, down_proj 0.166
+L27 | 0.636 / 0.349  (mean/median diag 5.2 / 1.7) | down_proj 0.030, o_proj 0.051
+L28 | 0.613 / 0.350  (mean/median diag 4.0 / 1.8) | out_proj 0.072, down_proj 0.008
+L29 | 0.623 / 0.348  (mean/median diag 3.8 / 1.8) | out_proj 0.027, down_proj 0.020
+L30 | 0.627 / 0.386  (mean/median diag 4.1 / 1.9) | out_proj 0.047, down_proj 0.049
+L31 | 0.597 / 0.371  (mean/median diag 4.2 / 1.9) | down_proj 0.027, o_proj 0.055
+L32 | 0.608 / 0.373  (mean/median diag 3.6 / 1.9) | out_proj 0.091, down_proj 0.039
+L33 | 0.612 / 0.364  (mean/median diag 3.7 / 1.9) | out_proj 0.042, down_proj 0.020
+L34 | 0.602 / 0.398  (mean/median diag 3.7 / 2.3) | out_proj 0.051, down_proj 0.102
+L35 | 0.522 / 0.325  (mean/median diag 3.5 / 1.9) | down_proj 0.109, o_proj 0.161
+L36 | 0.527 / 0.248  (mean/median diag 3.4 / 1.6) | out_proj 0.073, down_proj 0.035
+L37 | 0.483 / 0.189  (mean/median diag 3.2 / 1.5) | out_proj 0.093, down_proj 0.011
+L38 | 0.432 / 0.284  (mean/median diag 2.6 / 1.7) | out_proj 0.085, down_proj 0.105
+L39 | 0.485 / 0.229  (mean/median diag 3.4 / 1.6) | down_proj 0.024, o_proj 0.130
+L40 | 0.459 / 0.298  (mean/median diag 3.1 / 1.7) | out_proj 0.084, down_proj 0.035
+L41 | 0.482 / 0.277  (mean/median diag 3.1 / 1.6) | out_proj 0.031, down_proj 0.060
+L42 | 0.501 / 0.318  (mean/median diag 3.3 / 1.9) | out_proj 0.079, down_proj 0.111
+L43 | 0.549 / 0.291  (mean/median diag 4.2 / 1.7) | down_proj 0.033, o_proj 0.097
+L44 | 0.518 / 0.273  (mean/median diag 3.4 / 1.7) | out_proj 0.060, down_proj 0.016
+L45 | 0.510 / 0.268  (mean/median diag 3.0 / 1.7) | out_proj 0.028, down_proj 0.021
+L46 | 0.512 / 0.289  (mean/median diag 3.3 / 1.8) | out_proj 0.035, down_proj 0.080
+L47 | 0.453 / 0.263  (mean/median diag 3.3 / 1.8) | down_proj 0.065, o_proj 0.078
+L48 | 0.459 / 0.233  (mean/median diag 2.9 / 1.8) | out_proj 0.124, down_proj 0.052
+L49 | 0.446 / 0.218  (mean/median diag 2.9 / 1.9) | out_proj 0.049, down_proj 0.055
+L50 | 0.387 / 0.255  (mean/median diag 2.8 / 2.2) | out_proj 0.125, down_proj 0.157
+L51 | 0.230 / 0.126  (mean/median diag 2.6 / 1.8) | down_proj 0.089, o_proj 0.116
+L52 | 0.186 / 0.075  (mean/median diag 2.3 / 1.7) | out_proj 0.088, down_proj 0.034
+L53 | 0.130 / 0.054  (mean/median diag 2.1 / 1.6) | out_proj 0.054, down_proj 0.019
+L54 | 0.079 / 0.071  (mean/median diag 1.9 / 1.6) | out_proj 0.125, down_proj 0.203
+L55 | 0.100 / 0.026  (mean/median diag 2.2 / 1.5) | down_proj 0.107, o_proj 0.137
+L56 | 0.066 / 0.033  (mean/median diag 1.8 / 1.5) | out_proj 0.053, down_proj 0.005
+L57 | 0.068 / 0.044  (mean/median diag 1.8 / 1.5) | out_proj 0.100, down_proj 0.003
+L58 | 0.053 / 0.053  (mean/median diag 1.7 / 1.4) | out_proj 0.130, down_proj 0.319
+L59 | 0.089 / 0.062  (mean/median diag 2.1 / 1.5) | down_proj 0.253, o_proj 0.361
+L60 | 0.095 / 0.078  (mean/median diag 1.7 / 1.5) | out_proj 0.214, down_proj 0.042
+L61 | 0.083 / 0.094  (mean/median diag 1.7 / 1.5) | out_proj 0.011, down_proj 0.075
+L62 | 0.156 / 0.120  (mean/median diag 1.8 / 1.5) | out_proj 0.078, down_proj 0.105
+L63 | 0.108 / 0.144  (mean/median diag 1.8 / 1.5) | down_proj 0.237, o_proj 0.154 [1089]
+lm_head.input: share3994 0.017, top5 [[3994, 0.016958465192043224], [4601, 0.012291317115754806], [1089, 0.011046916297491053], [4834, 0.009283059927728822], [4479, 0.009083230877924918]]

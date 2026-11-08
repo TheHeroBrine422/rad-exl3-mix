@@ -181,6 +181,7 @@ prefill.
 | Fixed-code scale refits C9 α\* (#85: K3 −2.7%, K2 −8.9%) and C10 swj (K3 −3.1%, K2 −8.6%) | refit on existing 27B levels (no requant), fit-slice α\*, swap test | #85-02 (do they stack, on edy?); gpubox |
 | Frozen-code scale healing (#89: K2 −38%, K3 on H_out −17%) | S27 healing on the 27B: QAD-class stream | **the user's go-ahead**; #89-02 |
 | Faraway A1, down_proj from up / gate (#81: proxy error ×0.83, up-only ×0.87) | GPU proxy → 0.8B KL with load expansion → kernel cost | #81-02 control (energy vs error gap) |
+| Per-channel output bias β = (W − Ŵ) μ on every linear, fixed codes (#120-03: plain 0.8B K3 −1.1%, 3/3 seeds z ≈ −10; K2 seed-dependent 1.000 / 0.975 / 0.992). Runtime P+D (an add per linear unless fused; 0.005 bpw) | first the 0.8B check on the **adopted** stack (writers / readers / all, μ bf16 vs quantized; `v3/e3/settle/w91/exl3i-fields.md` check 1), then one 27B fixed-code pair on two seeds with a dev-build bias + prefill / decode timing | engine: optional `blk.N.<w>.bias` weight in qwen35_exl3 (no exl3i change; post-freeze) |
 
 ## From IQR-V4 (2026-11-04, `docs/research/iqr-v4.md`)
 

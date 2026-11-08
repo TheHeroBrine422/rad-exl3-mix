@@ -3,6 +3,173 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 1:50 PM CST · #120-03 · 0.8B drift / variance split: 70% (K2) / 32% (K3) of the plain-level KL is seed-coherent; a per-channel bias takes 1.1% at K3 (rule: POSITIVE, narrowly); design note says no exl3i field (w91)
+- **Status:** done (POSITIVE by the rule) · **Machine:** 4070 (`/data/yb/gpu.lock`, three holds between w79's units,
+  ~10 min GPU; queue `/data/queue.d/85-w91drift.sh`, done) · **Code:** `v3/e3/settle/w91/drift91.py`, `q91.sh`,
+  `readout91.py` · **Rule:** `v3/e3/settle/w91.md` item 2 (12:38 PM CST, before data) · **Data:**
+  `v3/e3/settle/data/w91/drift/`
+- **Setup:** the existing 6-seed plain 0.8B levels (`/data/yb/q-k{2,3}base{,_s1..s5}`, ourq i8), g08-search1 (166,155
+  gen rows), the challenge's 513-cell KL. G3 PASS: every seed's rows equal the stored ones bit for bit.
+- **Split (finite-seed corrected, document bootstrap):** K2 KL 0.537, seed-averaged logits 0.402 (ratio 0.748),
+  **coherent share c 0.697 [0.684, 0.711]**; K3 KL 0.0993 → 0.0427 (0.430), **c 0.316 [0.308, 0.325]**. The same
+  from the variances (0.694 / 0.321). Uniform across categories; on the worst 1% of rows 0.90 / 0.49.
+- **Bias oracle (β = (W − Ŵ) μ on all 150 linears, μ from the quantized model on 32k fit-pool rows):** K3 0.9880 /
+  0.9892 / 0.9904 (each z ≈ −10), geo 0.9892; K2 1.0001 / 0.9754 / 0.9924. **Rule: POSITIVE** (c ≥ 0.10, and the K3
+  geo ≤ 0.99 with all seeds < 1; a hair under the bar).
+- **Reading:** most of the plain-level error is coherent across seeds, but only ~3% of the coherent part is
+  bias-shaped. The rest is most likely gain shrink, which swj / C9 target in the adopted stack (not tested here).
+  Plain levels make both numbers upper estimates for V3.
+- **Item 3 (design note `v3/e3/settle/w91/exl3i-fields.md`):**
+  - **reserve no exl3i field.** A bias comes from fixed codes after quantization, so it never forces a ladder requant.
+    The clean form is an optional per-linear `blk.N.<w>.bias` weight in the qwen35_exl3 plugin: absent = today's
+    container and graph byte for byte. Cost ~1 day, 0.005 bpw, an add per linear (prefill ~10–30 ms per 2048-token
+    chunk unfused; must be timed).
+  - Sparse exact rows: not reserved (#120-02 DROP).
+  - Next check before any build: the same oracle on the **adopted** 0.8B stack (writers / readers, μ from bf16 vs
+    quantized). Then one 27B pair with a dev-build bias. Added to the BACKLOG 27B confirmation queue.
+- **Runtime:** none (diagnostic); a shipped bias: P+D (see the note).
+
+### 2026-11-08 2:55 PM CST · #34-02, #99 · Slab head with corrected rowerr: BUILD (both pairs pass); the head's whole share at 4.0 is small on xcorp, ~5% on calib (w90, read by the lead)
+- **Status:** #34-02 decided (BUILD the slab head into the plugin) · #99 done (report-only) · **Machine:** gpubox card 0
+  (headwm90, done 1:57 PM CST) · **Code / rule:** `v3/yaqa/w90/headwm90.sh`, `v3/yaqa/HEADWM.md` amendment 1 ·
+  **Data:** gpubox `/data/w90/hw.out` (copy `v3/yaqa/w90/data/hw.out`)
+- golden-search27b (101 docs, 143,351 positions; trunk = V2 4.00), pooled r [95% CI] / xcorp part / calib part:
+
+  | pair | pooled | xcorp | calib | p99 | top-1 |
+  |---|---|---|---|---|---|
+  | v4 → h4-bf16 (whole head error at 4.0) | 0.9938 [0.9688, 0.9981] | 0.9966 | **0.9466** | 1.2237 → 1.2234 | 0.9501 → 0.9531 |
+  | h4-u5 → h4-s5-3 (equal bytes, K≈5.0) | **0.9960** [0.9821, 0.9984] | 0.9976 | **0.9682** | 1.2202 → 1.2296 | 0.9506 → 0.9523 |
+  | h4-u6 → h4-s6-3 (equal bytes, K=6.0) | 0.9992 [0.9962, 0.9997] | 0.9996 | 0.9936 | 1.2267 → 1.2283 | 0.9520 → 0.9523 |
+  | h4-bf16 → h4-s6-3 | 1.0006 | 1.0004 | 1.0049 | | |
+  | #99: v8 → h8-bf16 | 0.9972 [0.9859, 0.9989] | 0.9985 | 0.9541 | 0.0348 → 0.0348 | 0.9895 → 0.9901 |
+
+- **Verdict (rule, amendment 1): BUILD** — both pairs pass (pooled upper bound < 1, both parts < 1); validity PASS.
+- **Reading (lead):** the head-only predictions (−86% / −61% of head KL) mostly hold relative to the head's share:
+  s5-3 recovers ~65% of the u5 → bf16 gap, s6-3 sits within 0.06% of a bf16 head. **But the head's whole share is
+  small on xcorp (bf16 head −0.3%) and ~5% on the calib part** (−5.3% at 4.0, −4.6% at 8.0), so the effect depends on
+  the corpus: at equal head bytes s5-3 is −0.2% on xcorp and −3.2% on calib-style documents. The private corpus is
+  drawn like calib, so the calib part is the relevant size (n = ~35 docs, one slice: not yet checked on verify).
+  p99 rises slightly in s5-3 (+0.8%) while top-1 improves. The lead's 11-08 "~0.05 bpw" estimate assumed the calib
+  share everywhere; on a calib-like corpus ~0.02–0.03 bpw at 4.0 is the honest figure, plus any head bytes the knapsack
+  frees (w88's grid, to be repriced with corrected plans).
+- **Follow-ups:** slab-head kernel support (row-slab K per 128-row block) in the plugin; reprice w88's knap5 head grid
+  with corrected plans; one verify-pool check of s5-3 vs u5 with the finished mixes. rxq has the same rowerr bug
+  (`local/workers/w90/rxq-rowerr.patch`): **applied by the lead 2:55 PM CST** (no ladder jobs queued yet); check_ladder 5/5, check_cpujob 25/25 PASS. gpubox `/data/ourq/ourq.py` patched too (original kept as `ourq.py.pre-rowerr`). w90 / w91 ended rc=1
+  at 1:52 PM CST (usage limit) before writing reports; this entry is the lead's reading of their outputs.
+- **Runtime:** decode / prefill: slab head = per-block K in one GEMM (same bytes); cost to measure with the kernel.
+
+### 2026-11-08 1:30 PM CST · #120-01, #120-02, #121 · Massive channel 3994: it dominates the energy, not the error; the bf16-restore oracle is null (DROP); damping normalization: mean stands (w91)
+- **Status:** #120-02 negative (DROP) · #121 negative (mean stands) · #120-03 see the 1:50 PM entry · **Machine:** gpubox card 0
+  (~14 min: census 71 s + 10 scores) + CPU; colo (B6, 14 jobs, ~2 CPU-h) · **Code:** `v3/e3/settle/w91/` · **Rules:**
+  `v3/e3/settle/w91.md` (items 1–3 written 12:38 PM CST, B6 12:52 PM CST, before data) · **Data:** `v3/e3/settle/data/w91/`
+  (rows on gpubox `/data/w91/b27/`)
+- **Step 0 (#120-01, lead / user: verify the claim first):** census of all 128 writers (bf16, calib H_in) + the 129
+  residual-input diagonals (`data/w91/hdiag91.txt`). Channel 3994 IS the massive channel: 0.80–0.93 of the layer-input
+  trace at L1–L3 / L7 / L11, 0.4–0.8 to L50, ≤ 0.16 after L51; mean / median of that diagonal 28 at L3 / L7. Writer
+  output energy of row 3994: 0.99 / 0.87 / 0.58 (L0–L2 out_proj), 0.96 (L3 o_proj), 0.05–0.62 (L0–L3 down). No other
+  channel > 5% of any reader; other writer rows > 5%: 3456 (L21 out_proj), 1089 (L63 o_proj). **But** at K2.5 row 3994
+  holds only 1.4–6.3% of the one-sided weighted error of L0–L3's out_proj / o_proj, 0.2–2.4% of the down_projs,
+  ≤ 0.7% in L4–L63 (the merge's "82%" was a two-sided figure from one session); its relative error equals its tensor's
+  (~4%). Patch set by the rule: S = {3994}; the depth arm was not triggered.
+- **#120-02, 27B fixed-code oracle (item 1):** L0–L3's 8 writers stored dense bf16 = decode of the K2.5 codes (C), and
+  the same with row 3994 = the bf16 checkpoint row (A), spliced into the stored base / s1 mixes (`rad-convert --reuse
+  --changed`, radmix). Gates: slice identical to w84's golden-search27b (rebuilt; `/data/w84` was gone), PAIR OK (only
+  the 8 writers differ), byte check (A vs C differ only in row 3994), decode gate (control mix → C r 1.0016, PASS).
+  **p0 0.9982 [0.9919, 1.0014] (z −1.06), p1 1.0018 [0.9978, 1.0056] (z +1.12); R = geo 1.0000 (x 1.0001, c 0.9996)
+  → DROP** (rule: R ≤ 0.995 to keep the theme). The ceiling of every writer-side 3994 fix at L0–L3 (per-channel bias,
+  sparse exact rows, row extraction) is ~0.
+- **#121, merge B6 (lead note):** damping δ = σ × N(H_A) with N = mean (today) / median / (tr − λmax)/(n−1) of the
+  diagonal, σ as today, on w87's held-out two-sided proxy (5 early layer-input readers L2 / L3 / L7 / L10 / L11 + L50 /
+  L63, 2 samples, i8 K2.5 / K3 deciding). The alternatives cut δ 18–28× at L3 / L7. n* = median (B1 0.9990); **held-out
+  B2 gain +0.17%, 3 / 7 tensors agree → mean normalization stands** (rule: ≥ 2% and ≥ 5 / 7). Best single tensor: L3
+  attn_qg −1.6%. Reported only: at i4 K1 the median is +0.8% worse, at K0.5 +2.4% (early readers +3.2%). No σ re-sweep
+  (it was conditional on a win).
+- **Runtime:** none (oracle; quantizer setting).
+
+### 2026-11-08 1:25 PM CST · #34-02, #99, #89-07, #89-08 · rowerr fix applied (ourq) + CPU test; HEADWM rule amended to golden-search27b; headwm rerunning; A4 4070 arms dropped / deferred (w90)
+- **Status:** #34-02 / #99 running (card 0) · #89-07 dropped · #89-08 planned (deferred) · **Machine:** gpubox card 0
+  (with w91's oracle, by the locks), VM CPU (test) · **Code:** `quantize/ourq.py` (+ `v3/e3/settle/reval/ourq-rowerr.patch`),
+  `quantize/check_rowerr.py`, `v3/yaqa/w90/headwm90.sh`, `verdict90.py` · **Rule:** `v3/yaqa/HEADWM.md` amendment 1
+- **ourq fix (lead note):** w46's `ourq-rowerr.patch` applied to `quantize/ourq.py` (2 lines: CPU copy of w before
+  `quantize_exl3` when `--save-wq`, rowerr from that copy). **`check_rowerr.py` (CPU, the fork's real quantize.py
+  through rxq's stand-in kernels): 5 / 5 PASS:** quantize_exl3 changes its weight argument (premise); pre-patch
+  arithmetic sum err / ref 1.001 vs proxy 0.03157; patched 0.03157 vs 0.03157 (ratio 1.0000); wq / proxy / stored
+  tensors identical with and without the copy; ourq.py holds the patch in order. The gpubox copy
+  `/data/ourq/ourq.py` (older, no +io lines) is not patched: future `--save-wq` head donors need it.
+  **rxq has the same bug** (`pipeline/rxq/quant.py`, ported "unchanged for parity", PORTING.md): patch
+  `local/workers/w90/rxq-rowerr.patch` (same 2 lines, applies), not applied: it changes rxq's code stamp (lead).
+- **HEADWM amendment 1 (written 1:20 PM CST, before any data on the new slice):** plans from the corrected rowerr;
+  every arm scored on golden-search27b's two parts (golden-search27 retired); per pair, pooled r < 1 with 95% upper
+  bound < 1 **and** r_x, r_c < 1; validity: h4-bf16 finite, pooled r(v4 → h4-bf16) < 1; #99 report-only, no TP2 arm.
+- **Run:** headslab3's broken rowerr, `plan.json` and the s5-3 mix are in `/data/headslab3/broken-rowerr-1108/`; the
+  corrected rowerr is installed and the plans are rebuilt (identical to w90's: s5-3 `60928@K7 64512@K5 122880@K4`,
+  s6-3 `102400@K7 43520@K6 102400@K5`). Arms: v4, h4-bf16, h4-u5, h4-s5-3, h4-u6, h4-s6-3, then v8 / h8-bf16.
+  golden-search27b copies `/data/w90/golden-search27b-{x,c}` (reflinks of w91's rebuild; kld.json = w84's).
+- **4070 (user 1:10 PM CST):** the top-512 arm (#89-07) is dropped (our goldens are top-512 already) and the ¼ / ⅛
+  data arms (#89-08) are deferred until the trunk quant starts. Neither had started. The 4070 queue now runs only
+  #89-06c's student-path reading (`/data/queue.d/80-w79s.sh`).
+- **Runtime:** none.
+
+### 2026-11-08 12:55 PM CST · #89-06c, #89-07, #89-08 · 0.8B healing at K4 / K5 running; step 0: the fold path IS the K5 confounder; A4 prerequisites queued (w90)
+- **Status:** running · **Machine:** 4070 (user freed it 12:30 PM CST; `/data/yb/gpu.lock`, VRAM cap 7.2 GB) ·
+  **Code:** `proxy2b/exp/w79-heal45/` (w79, rule 11-08 1:25 AM CST), `proxy2b/exp/w90-a4heal/` (w90) · **Queues:**
+  `/data/queue.d/70-w79heal.sh` (launched 12:39 PM CST), `80-w90a4.sh` (waits for `W79 HEAL DONE`)
+- **#89-06c step 0 (12:39–12:42 PM CST), w79's gate:** student path (heal.py's wrappers, no fold, no f16 → bf16
+  re-rounding) vs fold path, g08-search1, seed 0. Stacks reproduce exactly (0.0054978 / 0.0185906, ratio 1.0000).
+  K5 lr 3e-5 healed / stack: **student 0.9930 (z −4.9) vs fold 1.1441**; K5 lr 1e-4 student 0.9775 (z −9.2) vs fold
+  1.0119; K4 lr 3e-4 student 0.9507 (z −14.1) vs fold 0.9494. Jitter (re-rounding alone, SD 0.002): K4 +0.75%
+  (z +7.5), K5 +1.85% (z +8.2). By the rule (student < fold − 0.01 at K5) **the fold path's re-rounding is the
+  confounder**: every K4 / K5 arm is read on the student path; K4's jitter (0.75%) is its noise band; K5 lr 1e-4 is
+  re-read with the K4 rule. w79's `run.sh` / `readout.py` only implement the fold-path reading, so w90 added that
+  branch (`w90-a4heal/w79s.sh`, `readout79s.py`; w79's rule unchanged), run when w79's queue ends.
+- **For the 27B (not a rule):** at K5 a fold through f16 → bf16 costs more than the healing gains. A 27B healed
+  level must fold into the stored f16 suh / svh in the stored precision, with no bf16 re-rounding of the weights.
+- **A4 items 2–3 (lead note, rules written 12:40 PM CST before data, `w90-a4heal/README.md`):** #89-07 = heal0 with a
+  top-512 + lumped-tail teacher loss (training and held-out); #89-08 = ¼ / ⅛ of heal0's windows at the same 512
+  steps; K3 / K2 × seeds 0 / 1 vs d1104's heal0, plus one heal0 rerun (noise floor). ~3.8 h after #89-06c.
+- **Runtime:** none.
+
+### 2026-11-08 12:50 PM CST · #34-02 · `ourq --save-wq` head rowerr is broken (err ≈ ref): every slab-head plan was chosen on garbage costs; corrected plans built, headwm held for the lead (w90)
+- **Status:** blocked (lead: rebuild the plans before #34-02 is read) · **Machine:** gpubox card 0 (~1 min) + CPU ·
+  **Code:** `local/workers/w90/rowerr90.py`, `rowerr90.sh` · **Data:** gpubox `/data/w90/rowerr/` (`plan.json`,
+  `plan.log`, `rowerr90.log`; `/data/headslab3` untouched)
+- **Check (lead note A2):** the head quants' `wq/lm_head.rowerr.npz` give sum(err) / sum(ref) = 1.0006 / 1.0007 /
+  1.0008 / 1.0010 / 1.0011 at K3–K7, against logged proxies of 2.9e-3 … 2.1e-5. Cause: the fork's (and upstream
+  a3bfbfd0's) `quantize_exl3` regularizes its weight argument in place (`weight /= sv`, Hadamards, `/= su`,
+  `*= g_scale`; `.to(device)` on a tensor already there is no copy), and ourq's save-wq block (since 15f03a7, 10-31)
+  compares that transformed w with wq. wq itself (returned in the original space) is fine. w46 found the same on the
+  0.8B (`v3/e3/settle/reval.md`, side finding) and wrote `v3/e3/settle/reval/ourq-rowerr.patch` (CPU copy of w when
+  `--save-wq`; still applies to `quantize/ourq.py`), never applied.
+- **Recomputed** from the saved wq + bf16 lm_head (permuted) + raw calib H: sum(err) / sum(ref) = 2.887e-3 (K3),
+  7.3948e-4 (K4: logged proxy 7.3945e-4), 1.9562e-4 (K5: 1.9559e-4), 5.5106e-5 (K6: 5.5078e-5), 2.1457e-5 (K7:
+  2.1430e-5): within 0.13% of the proxy. Corrected `headslab.py plan` (predicted head-KL change vs uniform, training
+  Fisher): **s5-3 `60928@K7 64512@K5 122880@K4` −85.6%** (headwm's: `50688@K7 48128@K6 149504@K4` −25.8%);
+  s4-3 −91.7% (was −36.2%); s6-3 `102400@K7 43520@K6 102400@K5` −60.5% (was nearly the same layout, −6.2%).
+- **Consequences:** the built `mix-h4-s5-3.rad` and headslab3's `plan.json` are wrong-plan artifacts. v4, h4-u5 (and
+  u6, bf16 arms) do not read rowerr and stand. The 11-01 slab-head plans (`headslab2`: lcurve, fcurve-A/B; behind
+  w88's knap5 head grid) were very likely chosen on the same broken costs (same code since 10-31; files deleted, not
+  verifiable). Their headsim KL is measured and real, but they are not the plans the planner meant, so the slab-head
+  menu probably understates the slab head.
+- **Cost of the fix:** ~1 min of card 0 per donor set (recompute from the saved wq, no head requant) + seconds of
+  CPU for the plan. To resume headwm: move headslab3's `K*/wq/lm_head.rowerr.npz`, `plan.json` and `mix-h4-s5-3.rad`
+  aside, install `/data/w90/rowerr/K*/wq/lm_head.rowerr.npz`, rerun `headwm.sh` (rebuilds plans and s5-3 / s6-3;
+  ~2–3 h of card 0 for the remaining scores + V2 8.00 download). Apply `ourq-rowerr.patch` for future donors.
+  Also: the HEADWM rule reads golden-search27, which was retired for decisions this morning (the lead may amend it to
+  golden-search27b before resuming).
+- **Runtime:** none (quantizer-side bookkeeping).
+
+### 2026-11-08 12:35 PM CST · #117 · rxq's block order reproduces w84's route B bit for bit on card 0: PASS 9/9 (w90)
+- **Status:** adopted (unchanged; the freeze gate passes) · **Machine:** gpubox card 0, 12:31–12:34 PM CST ·
+  **Code:** `pipeline/tools/blkorder27.sh` (HEAD ee475a3) · **Driver:** `local/workers/w90/blk90.sh`
+- **Reference regenerated** (w84's `/data/w84/p0/q-perm` was deleted): w84's committed route (`w84q.py` +
+  `blkorder84.py` + `order82.json` from cbc4629, staged as w84 did), rxq levelargs of `/data/v3ladder2/K2.5` + tile CD
+  off, the 9 readers of w84's noop gate → `/data/w90/p0/q-perm` (82 s). It differs from the control level (27 / 36
+  tensors), so the gate is not vacuous.
+- **Gate:** `blkorder27.sh` (rxq `quant.block_order` on, HEAD code) vs that reference: trellis / suh / svh / mul1
+  identical on **9 / 9** (`BLKORDER27 PASS 9/9`; rxq log `block_order True` on each).
+- **Caveat:** both runs used today's `/data/exl3frac/src`; the reference is a regeneration, not w84's original bytes.
+- **Runtime:** none.
+
 ### 2026-11-08 11:40 AM CST · #114-03 · Damping with H_out on (two-sided LDLQ), held out: settings stand (w87)
 - **Status:** null (keep) · **Machine:** colo (`/data/work/w13/w87`, nice 19, ≤ 8 GB) + Thor (`/data/work/w87`),
   9:29–11:28 AM CST, no GPU · **Code:** `v3/e3/settle/w87/` (settle87 / gate87 / plan87 / q87 / report87) ·

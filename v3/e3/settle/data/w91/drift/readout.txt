@@ -1,0 +1,3 @@
+K2: c_exact 0.6973 [0.6838, 0.7112] (c_var 0.6936; KL_avg/KL_single 0.7477); bias oracle r [1.0001, 0.9754, 0.9924] geo 0.9892
+K3: c_exact 0.3160 [0.3076, 0.3245] (c_var 0.3213; KL_avg/KL_single 0.4300); bias oracle r [0.988, 0.9892, 0.9904] geo 0.9892
+W91 ITEM 2: POSITIVE

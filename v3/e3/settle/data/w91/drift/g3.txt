@@ -1,0 +1,12 @@
+G3 k2base: max|dKL| 0 kld 0.535450 vs stored 0.535450 -> PASS
+G3 k2base_s1: max|dKL| 0 kld 0.541068 vs stored 0.541068 -> PASS
+G3 k2base_s2: max|dKL| 0 kld 0.522478 vs stored 0.522478 -> PASS
+G3 k2base_s3: max|dKL| 0 kld 0.542899 vs stored 0.542899 -> PASS
+G3 k2base_s4: max|dKL| 0 kld 0.544531 vs stored 0.544531 -> PASS
+G3 k2base_s5: max|dKL| 0 kld 0.537296 vs stored 0.537296 -> PASS
+G3 k3base: max|dKL| 0 kld 0.098886 vs stored 0.098886 -> PASS
+G3 k3base_s1: max|dKL| 0 kld 0.099442 vs stored 0.099442 -> PASS
+G3 k3base_s2: max|dKL| 0 kld 0.097433 vs stored 0.097433 -> PASS
+G3 k3base_s3: max|dKL| 0 kld 0.100842 vs stored 0.100842 -> PASS
+G3 k3base_s4: max|dKL| 0 kld 0.099877 vs stored 0.099877 -> PASS
+G3 k3base_s5: max|dKL| 0 kld 0.099609 vs stored 0.099609 -> PASS

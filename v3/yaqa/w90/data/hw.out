@@ -1,0 +1,18 @@
+19:20:49 fix: broken rowerr / plan / s5-3 mix moved to /data/headslab3/broken-rowerr-1108, corrected rowerr installed
+19:20:55 plans rebuilt (= /data/w90/rowerr/plan.log): s5-3 avg 4.996 b train -85.6% held-out -83.1% 60928@K7 64512@K5 122880@K4;s6-3 avg 6.000 b train -60.5% held-out -58.8% 102400@K7 43520@K6 102400@K5;
+pair v4 -> h4-bf16 pooled: 0.059326 -> 0.058960: r 0.9938 [0.9688, 0.9981] z -7.50; p99 1.2237 -> 1.2234; top-1 0.95008 -> 0.95306 (101 docs, 143351 pos)
+   xcorp: r 0.9966 [0.9764, 0.9993] z -4.25 | calib: r 0.9466 [0.9330, 0.9542] z -13.24
+pair h4-u5 -> h4-s5-3 pooled: 0.059255 -> 0.059019: r 0.9960 [0.9821, 0.9984] z -13.53; p99 1.2202 -> 1.2296; top-1 0.95056 -> 0.95227 (101 docs, 143351 pos)
+   xcorp: r 0.9976 [0.9866, 0.9991] z -8.59 | calib: r 0.9682 [0.9595, 0.9739] z -14.26
+pair h4-u6 -> h4-s6-3 pooled: 0.059043 -> 0.058998: r 0.9992 [0.9962, 0.9997] z -7.51; p99 1.2267 -> 1.2283; top-1 0.95201 -> 0.95228 (101 docs, 143351 pos)
+   xcorp: r 0.9996 [0.9972, 0.9998] z -4.61 | calib: r 0.9936 [0.9911, 0.9957] z -7.46
+pair h4-bf16 -> h4-s6-3 pooled: 0.058960 -> 0.058998: r 1.0006 [1.0002, 1.0032] z +7.31; p99 1.2234 -> 1.2283; top-1 0.95306 -> 0.95228 (101 docs, 143351 pos)
+   xcorp: r 1.0004 [1.0001, 1.0027] z +4.60 | calib: r 1.0049 [1.0039, 1.0063] z +9.71
+HEADWM90 VALIDITY: PASS (h4-bf16 finite on both parts and pooled r(v4 -> h4-bf16) < 1)
+  h4-s5-3 vs h4-u5: pass
+  h4-s6-3 vs h4-u6: pass
+HEADWM90 VERDICT #34-02: BUILD the slab head into the plugin (both pairs pass)
+19:50:55 V2 8.00 downloaded
+pair v8 -> h8-bf16 pooled: 0.003653 -> 0.003643: r 0.9972 [0.9859, 0.9989] z -9.76; p99 0.0348 -> 0.0348; top-1 0.98947 -> 0.99009 (101 docs, 143351 pos)
+   xcorp: r 0.9985 [0.9907, 0.9995] z -5.45 | calib: r 0.9541 [0.9478, 0.9585] z -16.44
+19:57:14 HEADWM90 DONE

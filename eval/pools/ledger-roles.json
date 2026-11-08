@@ -179,5 +179,17 @@
   "line": "v3",
   "decisions": 1,
   "note": "#117 (w84, 2026-11-08): calib part of the two-part 27B search slice golden-search27b (36 search-pool docs, cap 8192, seed 20261108, none from golden-search27); its xcorp part reads no calib"
+ },
+ "golden-search27": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 8,
+  "note": "27B search slice (103 search-pool docs, 8k cap, seed 27, cut from the published calib golden; gpubox /data/swap27/golden-search27, first use 2026-11-04 #33-28). Decided every 27B pair 11-04..11-08: #33-28 H_out (K2.5 / K4; adopted at every level), #104 swj (K2.5, on H_out, K4), C9, #105 writers asym (null), cdhout27 tile CD on H_out (K4, no harm), #34-02 headwm (v4, h4-u5 scored). Retired for decisions 2026-11-08 6:35 AM CST (overfit audit); report-only since (#117 w84). Added by w90 (merge 11-08 A5)"
+ },
+ "golden-verify27": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 4,
+  "note": "27B verify slice (71 verify-pool docs, cut from the published calib golden; gpubox /data/verify27/golden-verify27, w59, first use 2026-11-06 #104 amendment 2). Routine before/after checks of adopted settings: swj K2.5 (0.935 / 0.932), C9 (keeps 0.96 of its gain), H_out K4 seed 0 (0.965), K2.5 H_out arms (#33-28, w84 item 3, 11-08). 5 routine uses by 2026-11-08: spent, no further use (finished V3 mixes get a fresh verify slice). Added by w90 (merge 11-08 A5)"
  }
 }

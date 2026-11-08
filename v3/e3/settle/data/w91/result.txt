@@ -1,0 +1,36 @@
+18:42:42 slice: G0 golden-search27b-c: kld.json identical to w84's
+18:42:42 slice: G0 golden-search27b-x: kld.json identical to w84's
+18:42:42 slice: SLICE DONE
+census rc=0 71s
+{"S": [3994], "candidates": {"3994": 1.0}, "keys8": ["model.language_model.layers.0.linear_attn.out_proj", "model.language_model.layers.0.mlp.down_proj", "model.language_model.layers.1.linear_attn.out_proj", "model.language_model.layers.1.mlp.down_proj", "model.language_model.layers.2.linear_attn.out_proj", "model.language_model.layers.2.mlp.down_proj", "model.language_model.layers.3.mlp.down_proj", "model.language_model.layers.3.self_attn.o_proj"], "deep_tensors": 120, "deep_e3994_ge_0.10": [], "runD": false}
+18:45:17 census: CENSUS DONE
+18:45:39 p0: patch dirs: 8 writers, rows 3994
+18:45:46 pack p0-C rc=0 6s
+18:45:59 p0: mix C ready (9.0G)
+18:46:05 pack p0-A rc=0 6s
+18:46:17 p0: mix A ready (9.0G)
+18:46:30 p0: G1 C vs control mix: PAIR OK {"a": "/data/w91/p0/mix-C.rad", "b": "/data/swap27/mix-base.rad", "weights": 787, "identical": 779, "arm_weights": 8, "arm_weights_changed": 8, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:46:43 p0: G1 A vs C: PAIR OK {"a": "/data/w91/p0/mix-A.rad", "b": "/data/w91/p0/mix-C.rad", "weights": 787, "identical": 779, "arm_weights": 8, "arm_weights_changed": 8, "planes_changed": ["codes"], "problems": 0}
+18:46:45 p0: G1 bytes: BYTES91 PASS (8 weights)
+18:48:04 score p0-C-x on golden-search27b-x rc=0 79s
+18:49:24 score p0-A-x on golden-search27b-x rc=0 80s
+18:50:45 score base-x on golden-search27b-x rc=0 81s
+18:51:45 score p0-C-c on golden-search27b-c rc=0 60s
+18:52:44 score p0-A-c on golden-search27b-c rc=0 59s
+18:53:43 score base-c on golden-search27b-c rc=0 59s
+18:53:43 p0: W91 p0 DONE
+18:53:54 p1: patch dirs: 8 writers, rows 3994
+18:54:01 pack p1-C rc=0 7s
+18:54:13 p1: mix C ready (9.0G)
+18:54:19 pack p1-A rc=0 6s
+18:54:32 p1: mix A ready (9.0G)
+18:54:44 p1: G1 C vs control mix: PAIR OK {"a": "/data/w91/p1/mix-C.rad", "b": "/data/swap27/mix-s1.rad", "weights": 787, "identical": 779, "arm_weights": 8, "arm_weights_changed": 8, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:54:54 p1: G1 A vs C: PAIR OK {"a": "/data/w91/p1/mix-A.rad", "b": "/data/w91/p1/mix-C.rad", "weights": 787, "identical": 779, "arm_weights": 8, "arm_weights_changed": 8, "planes_changed": ["codes"], "problems": 0}
+18:54:55 p1: G1 bytes: BYTES91 PASS (8 weights)
+18:56:15 score p1-C-x on golden-search27b-x rc=0 79s
+18:57:35 score p1-A-x on golden-search27b-x rc=0 80s
+18:58:34 score p1-C-c on golden-search27b-c rc=0 59s
+18:59:33 score p1-A-c on golden-search27b-c rc=0 59s
+18:59:33 p1: W91 p1 DONE
+18:59:33 verdict: verdict91 FAIL (/data/w91/verdict.txt): stop
+18:59:57 verdict: W91 ITEM 1: R 1.0000 (geo x 1.0001, c 0.9996, pooled z +0.00) -> DROP

@@ -1,0 +1,34 @@
+missing cells: 0
+effective sigma ratio N/N_mean (med, trl): 2:ssm_qkv 0.110/0.190, 3:attn_qg 0.035/0.056, 7:attn_v 0.037/0.075, 10:ssm_z 0.192/0.307, 11:attn_k 0.053/0.103, 50:ssm_qkv 0.356/0.575, 63:attn_k 0.570/0.824
+med/all7/dec           B1 0.9990 B2 0.9983 B 0.9987 A 0.9968
+med/all7/i8K2.5        B1 0.9992 B2 0.9985 B 0.9989 A 0.9965
+med/all7/i8K3          B1 0.9988 B2 0.9982 B 0.9985 A 0.9972
+med/all7/i4K1          B1 1.0088 B2 1.0079 B 1.0083 A 1.0062
+med/all7/i4K0.5        B1 1.0231 B2 1.0239 B 1.0235 A 1.0161
+med/early5/dec         B1 0.9977 B2 0.9974 B 0.9975 A 0.9951
+med/early5/i8K2.5      B1 0.9973 B2 0.9975 B 0.9974 A 0.9946
+med/early5/i8K3        B1 0.9980 B2 0.9973 B 0.9977 A 0.9955
+med/early5/i4K1        B1 1.0098 B2 1.0086 B 1.0092 A 1.0069
+med/early5/i4K0.5      B1 1.0308 B2 1.0318 B 1.0313 A 1.0222
+med/late2/dec          B1 1.0025 B2 1.0007 B 1.0016 A 1.0012
+med/late2/i8K2.5       B1 1.0042 B2 1.0011 B 1.0026 A 1.0010
+med/late2/i8K3         B1 1.0009 B2 1.0003 B 1.0006 A 1.0013
+med/late2/i4K1         B1 1.0063 B2 1.0060 B 1.0061 A 1.0045
+med/late2/i4K0.5       B1 1.0040 B2 1.0044 B 1.0042 A 1.0010
+trl/all7/dec           B1 0.9996 B2 0.9989 B 0.9993 A 0.9972
+trl/all7/i8K2.5        B1 1.0002 B2 0.9990 B 0.9996 A 0.9970
+trl/all7/i8K3          B1 0.9990 B2 0.9988 B 0.9989 A 0.9974
+trl/all7/i4K1          B1 1.0101 B2 1.0104 B 1.0103 A 1.0092
+trl/all7/i4K0.5        B1 1.0262 B2 1.0266 B 1.0264 A 1.0182
+trl/early5/dec         B1 0.9986 B2 0.9979 B 0.9982 A 0.9956
+trl/early5/i8K2.5      B1 0.9988 B2 0.9976 B 0.9982 A 0.9949
+trl/early5/i8K3        B1 0.9984 B2 0.9981 B 0.9983 A 0.9964
+trl/early5/i4K1        B1 1.0121 B2 1.0128 B 1.0124 A 1.0106
+trl/early5/i4K0.5      B1 1.0351 B2 1.0360 B 1.0355 A 1.0246
+trl/late2/dec          B1 1.0022 B2 1.0015 B 1.0018 A 1.0010
+trl/late2/i8K2.5       B1 1.0039 B2 1.0026 B 1.0032 A 1.0022
+trl/late2/i8K3         B1 1.0005 B2 1.0004 B 1.0004 A 0.9998
+trl/late2/i4K1         B1 1.0051 B2 1.0045 B 1.0048 A 1.0057
+trl/late2/i4K0.5       B1 1.0044 B2 1.0037 B 1.0041 A 1.0026
+tensor agree (geo r_B2 of n*): 2:ssm_qkv 0.9988, 3:attn_qg 0.9844, 7:attn_v 0.9999, 10:ssm_z 1.0006, 11:attn_k 1.0034, 50:ssm_qkv 1.0014, 63:attn_k 1.0000
+B6: n* = med (B1 geo med 0.9990, trl 0.9996); g_B2 = +0.17%, 3/7 agree -> mean normalization stands

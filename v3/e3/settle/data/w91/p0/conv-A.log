@@ -1,0 +1,17 @@
+I source   /data/w91/p0/ck-A (1199 tensors)
+I arch     qwen35, quant exl3
+I device: AQL backend, 3 device(s) [0:gfx1201 1:gfx1201 2:gfx1036]
+I recipe   328 rule(s)
+I plan     787 weight(s): 328 quantised by the recipe, 459 kept as the checkpoint holds them
+I --changed: 8 tensor(s) read by 8 weight(s), which are converted rather than copied
+I vocab    /data/w91/p0/ck-A/tokenizer.json
+I tokenizer: chat template from /data/w91/p0/ck-A/chat_template.jinja (8952 bytes), overriding the tokenizer_config.json key
+I tokenizer: /data/w91/p0/ck-A/tokenizer.json -> 248077 tokens, 247587 merges, 4 chain steps
+I tokenizer:   NFC
+I tokenizer:   Split((?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?[\p{L}\p{M}]+|\p{N}| ?[^\s\p{L}\p{M}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+ behavior=1 invert=0) [dfa: 20 states, 16 classes]
+I tokenizer:   ByteLevel(add_prefix_space=0 use_regex=0)
+I tokenizer:   decode ByteLevel
+I weights  787 written in 4 s: 787 a thread each, 0 across every thread
+I finish   1 s
+I wrote /data/w91/p0/pack-A.rad.part: 787 weight(s), 12.64 GiB of weights, 248077 vocab token(s)
+I --reuse: 777 weight(s), 7.00 GiB, copied from /data/swap27/mix-base.rad; the other 10 were written

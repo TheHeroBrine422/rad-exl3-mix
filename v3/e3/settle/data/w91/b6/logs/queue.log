@@ -1,0 +1,30 @@
+18:54:10 start: 14 jobs, 14 to do; max 5, anoncap 100 GiB, mycap 7.5 GiB
+18:54:10 start b6-3-attn_qg-s0 (ours 1, anon 2 GiB)
+18:54:12 start b6-3-attn_qg-s1 (ours 2, anon 3 GiB)
+18:54:14 start b6-7-attn_v-s0 (ours 3, anon 4 GiB)
+18:54:16 start b6-7-attn_v-s1 (ours 4, anon 4 GiB)
+18:54:18 start b6-11-attn_k-s0 (ours 5, anon 5 GiB)
+19:02:20 done b6-7-attn_v-s0 486s
+19:02:20 done b6-7-attn_v-s1 484s
+19:02:20 done b6-11-attn_k-s0 482s
+19:02:20 start b6-11-attn_k-s1 (ours 3, anon 5 GiB)
+19:02:22 start b6-2-ssm_qkv-s0 (ours 4, anon 5 GiB)
+19:02:24 start b6-2-ssm_qkv-s1 (ours 5, anon 6 GiB)
+19:03:46 done b6-3-attn_qg-s0 576s
+19:03:46 start b6-10-ssm_z-s0 (ours 5, anon 5 GiB)
+19:04:08 done b6-3-attn_qg-s1 596s
+19:04:08 start b6-10-ssm_z-s1 (ours 5, anon 5 GiB)
+19:10:30 done b6-11-attn_k-s1 490s
+19:10:30 start b6-50-ssm_qkv-s0 (ours 5, anon 7 GiB)
+19:11:32 done b6-2-ssm_qkv-s0 550s
+19:11:32 start b6-50-ssm_qkv-s1 (ours 5, anon 6 GiB)
+19:11:54 done b6-2-ssm_qkv-s1 570s
+19:11:54 done b6-10-ssm_z-s0 488s
+19:11:54 start b6-63-attn_k-s0 (ours 4, anon 5 GiB)
+19:11:56 start b6-63-attn_k-s1 (ours 5, anon 5 GiB)
+19:12:38 done b6-10-ssm_z-s1 510s
+19:19:38 done b6-63-attn_k-s0 464s
+19:19:58 done b6-50-ssm_qkv-s0 568s
+19:20:18 done b6-63-attn_k-s1 502s
+19:20:58 done b6-50-ssm_qkv-s1 566s
+19:20:58 W91 QUEUE DONE ok=14 fail=0

@@ -100,6 +100,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
             assert Ft.shape == (w.shape[1], w.shape[1]), (key, tuple(Ft.shape), tuple(w.shape))
             w = w @ Ft.T; del Ft
         w = w.T.contiguous()                    # (in_features, out_features)
+    w_orig = w.detach().cpu().clone() if save_wq else None   # quantize_exl3 regularizes w in place (ourq-rowerr.patch, w46 / w90)
     qa = quant_args(s, key, seed, _devid(dev), outdir, hname)
     if hout_dir:                                # ourq skips a key without a file; a job refuses (the bn dirs hold every linear)
         if not os.path.exists(f"{hout_dir}/{key}.safetensors"): raise SystemExit(f"H_out {hout_dir}: no file for {key}")
@@ -115,6 +116,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
     rowerr = None
     if save_wq:
         with st("save_wq"):
+            w = w_orig.to(wq.device); del w_orig      # the original weight, not the regularized one
             try: H = hessian(hp, hname, dev)["H"]
             except torch.OutOfMemoryError:
                 if not (os.environ.get("RXQ_REFIT_CPU_FALLBACK") or os.environ.get("OURQ_REFIT_CPU_FALLBACK")): raise

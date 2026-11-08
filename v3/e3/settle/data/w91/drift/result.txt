@@ -1,0 +1,36 @@
+19:02:16 smoke: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base/wq", "n_swapped": 150, "n_bias": 150, "positions": 2907, "kld": 1.1374647915424958, "top1": 0.5153078775369797, "sec": 0.6} {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base/wq", "n_swapped": 150, "n_bias": 0, "positions": 2907, "kld": 1.1104731025847654, "top1": 0.5194358445132439, "sec": 1.2} 
+19:21:38 k2base: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5354497071170228, "top1": 0.6849748728596792, "sec": 22.4}
+19:22:09 k2base_s1: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s1/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5410684649492004, "top1": 0.682326743101321, "sec": 22.5}
+19:22:38 k2base_s2: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s2/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5224777504260333, "top1": 0.6865156029009057, "sec": 22.2}
+19:23:10 k2base_s3: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s3/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5428991242343061, "top1": 0.6834100689115585, "sec": 22.7}
+19:23:39 k2base_s4: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s4/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5445305543881798, "top1": 0.6825133158797508, "sec": 22.5}
+19:24:09 k2base_s5: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s5/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.5372964140967026, "top1": 0.684072101351148, "sec": 22.6}
+19:43:18 k3base: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.09888565025677144, "top1": 0.8551834130781499, "sec": 22.6}
+19:43:47 k3base_s1: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s1/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.0994423576460972, "top1": 0.8539255514429298, "sec": 22.5}
+19:44:16 k3base_s2: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s2/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.0974331621669848, "top1": 0.8559477596220396, "sec": 22.5}
+19:44:45 k3base_s3: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s3/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.10084228123207718, "top1": 0.8545695284523487, "sec": 22.2}
+19:45:14 k3base_s4: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s4/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.09987664249767227, "top1": 0.8536487015136469, "sec": 22.4}
+19:45:44 k3base_s5: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s5/wq", "n_swapped": 150, "n_bias": 0, "positions": 166155, "kld": 0.09960912042589717, "top1": 0.8537931449550119, "sec": 22.3}
+19:46:11 kb2: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.5355296166764467, "top1": 0.6869669886551714, "sec": 18.1}
+19:46:38 kb2_s1: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s1/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.527736671264841, "top1": 0.6858595889380398, "sec": 18.3}
+19:47:05 kb2_s2: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k2base_s2/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.5184920013681571, "top1": 0.6883512383015858, "sec": 18.1}
+19:47:33 kb3: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.09770363969535924, "top1": 0.8562607204116638, "sec": 18.1}
+19:48:00 kb3_s1: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s1/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.0983664831589867, "top1": 0.8549667479161024, "sec": 18.2}
+19:48:28 kb3_s2: {"golden": "/data/g08-search1", "wq": "/data/yb/q-k3base_s2/wq", "n_swapped": 150, "n_bias": 150, "positions": 166155, "kld": 0.0965026237171767, "top1": 0.8571695103969186, "sec": 18.1}
+G3 k2base: max|dKL| 0 kld 0.535450 vs stored 0.535450 -> PASS
+G3 k2base_s1: max|dKL| 0 kld 0.541068 vs stored 0.541068 -> PASS
+G3 k2base_s2: max|dKL| 0 kld 0.522478 vs stored 0.522478 -> PASS
+G3 k2base_s3: max|dKL| 0 kld 0.542899 vs stored 0.542899 -> PASS
+G3 k2base_s4: max|dKL| 0 kld 0.544531 vs stored 0.544531 -> PASS
+G3 k2base_s5: max|dKL| 0 kld 0.537296 vs stored 0.537296 -> PASS
+G3 k3base: max|dKL| 0 kld 0.098886 vs stored 0.098886 -> PASS
+G3 k3base_s1: max|dKL| 0 kld 0.099442 vs stored 0.099442 -> PASS
+G3 k3base_s2: max|dKL| 0 kld 0.097433 vs stored 0.097433 -> PASS
+G3 k3base_s3: max|dKL| 0 kld 0.100842 vs stored 0.100842 -> PASS
+G3 k3base_s4: max|dKL| 0 kld 0.099877 vs stored 0.099877 -> PASS
+G3 k3base_s5: max|dKL| 0 kld 0.099609 vs stored 0.099609 -> PASS
+SPLIT split-k3.json: S 6 KL_single 0.09935 KL_avg 0.04272 ratio 0.4300 c_exact 0.3160 [0.30759040732076987, 0.3245155612063513] c_var 0.3213 (quad/exact 0.933)
+K2: c_exact 0.6973 [0.6838, 0.7112] (c_var 0.6936; KL_avg/KL_single 0.7477); bias oracle r [1.0001, 0.9754, 0.9924] geo 0.9892
+K3: c_exact 0.3160 [0.3076, 0.3245] (c_var 0.3213; KL_avg/KL_single 0.4300); bias oracle r [0.988, 0.9892, 0.9904] geo 0.9892
+W91 ITEM 2: POSITIVE
+19:49:00 Q91 DONE
