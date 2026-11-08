@@ -3,6 +3,46 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 1:55 AM CST · #114-02 · K0.125 damping: the optimum is σ ≈ 0.2; above it nothing (w79)
+- colo, 162 / 162 jobs (0 fail), w77's code / Hessians / scales. i4 K0.125 at σ 0.3 / 0.5 / 1.0, joined with w77's
+  rows (648 = 54 tensor × samples × 12 σ). Rule (written before data, `v3/e3/settle/w79.md`): w77's pick-on-B1 /
+  judge-on-B2.
+- **Both group curves turn up after 0.2.** Held-out geo r_B vs current, inputs: 0.2 0.981, 0.3 0.984, 0.5 0.992,
+  1.0 1.024. Rest: 0.988 / 0.989 / 0.999 / 1.023.
+- Group picks stay at 0.2: inputs +1.97% (14/15), rest +1.28%. No cell gains ≥ 1% over 0.2: ssm_z picks 0.5
+  (+0.3% vs 0.2), attn_k 0.3 (+0.1%), ssm_out 0.3 (−0.3%). 49 of 54 tensor × samples are worse at 1.0 than at 0.2.
+- **Answer:** "σ = 0.2 at K0.125" is the candidate per-level setting for the lowest level (bound / 1.5 bpw research
+  point). Held-out tensor error (proxy): inputs −1.9%, rest −1.2%; attn_qg −5%, attn_k −4%, ffn_down −3%.
+  For the lead / user: adopt into `v3.toml` or not. Not adopted here.
+- **Runtime:** none. **Files:** `v3/e3/settle/data/w79/report.md`, `v3/e3/settle/w79.md`. Ledger: same B1 / B2
+  fit-pool docs as w77 (`w77-hb`), no new documents.
+
+### 2026-11-08 1:35 AM CST · #89-06, #114-02 · k45lr read out: K4 at the line, K5 fails, a K5 fold anomaly; K0.125 grid extension running (w79)
+- **#89-06 readout (d1105 k45lr, seed 0 only; seed 1 never ran):** vs each arm's own stack on g08-search1:
+  K4 lr 3e-4 **0.9494** (z −14.4; held-out −5.4%), K4 lr 1e-4 0.9605 (held-out −4.4%), K5 lr 1e-4 **1.0119** (z +2.9;
+  held-out −2.4%), K5 lr 3e-5 **1.1441** (z +22; held-out −0.8%). Against the #89-06 rule (≤ 0.95 on both seeds):
+  **K5 fails** (its held-out-best lr is worse than its stack). **K4 is inconclusive**: one seed, right at the line.
+- **K5 anomaly, unverified:** at lr 3e-5 (the smallest multipliers, max |log| 0.0046), held-out and golden disagree by
+  15 points. Checks so far: the stack's score reproduces exactly. The arm reproduces at 1.144; with the norms not
+  folded it is 1.130, so the linears carry it. The folded files equal stack × e^c × e^r to f16 rounding on all 150
+  tensors. The loss is spread evenly over documents and sources. Not checked: whether heal.py's in-memory student
+  scores the golden like the fold (every weight is re-rounded f16 → bf16 in evalq, which is larger here than the
+  healing change). Step 0 of the screen below tests this. It ran 1:17–1:19 AM CST; the second half OOM'd beside the
+  user's vLLM at 1:22.
+- **#89-06c rule (written before data, `proxy2b/exp/w79-heal45/README.md`):**
+  - Step 0: student-path vs fold-path check, plus jitter folds at K4 / K5.
+  - K4 seed 1 at lr 3e-4 and 1e-4. The lr is picked by mean held-out gain; the picked lr's two seeds are read on
+    search and checked once on g08-verify1 + verify2 pooled.
+  - **Heal K4** if search ≤ 0.95 on both seeds and verify ≤ 0.97 on both. "Small" if some seed is ≤ 0.97 on search.
+    Otherwise do not heal.
+  - K5 is re-read only if step 0 flags the fold path.
+  - Cost ≈ 2–2.5 h of the 4070.
+  - **On hold:** the 4070 is off limits again (lead, 1:20 AM CST). Driver and queue file are ready, not installed.
+- **#114-02 launched (colo, `v3/e3/settle/w79.md`, rule written before data):** i4 K0.125 at σ ∈ {0.3, 0.5, 1.0} on
+  w77's code snapshot, inputs and Hessians: 162 jobs at 1:19 AM CST, ~1–5 min each, colo only (Thor not needed).
+  Same pick-on-B1 / judge-on-B2 arithmetic as w77, plus the gain over σ 0.2.
+- **Runtime:** none (both).
+
 ### 2026-11-07 6:50 PM CST · #105 · s1 moments done; mkdenoise's f64 solve fixed for ROCm (w78)
 - **s1 moments:** DONE at 6:15 PM CST, 128 groups, 1,002,035 tokens, 170.8 min, peak GPU 15.6 GiB, peak RSS 3.9 GB.
   No GPU fault.
@@ -18,6 +58,14 @@ versions of anything: git history.
 - **Queue restarted 6:50 PM CST** (mk from chunk 0, the moments kept).
 - **Reported, not judged:** layer 0 down hsub 0.585.
 - **Runtime:** none (quantizer side). Details: `v3/yaqa/asym27/dbg/README.md`.
+
+### 2026-11-08 2:25 AM CST · pipeline · w76's GPU checks on card 0; cdhout27 restaged
+- gpucheck27 all (07:35–08:07 UTC): **tile CD GPU gate PASS 3/3**, two-sided proxy CD/off geo 0.9993 (H_out on);
+  **i4 (1) qtf2 i4 == exl3cb PASS**, **i4 (3) K2 qtf2 vs exl3cb PASS**; **c9 in-job PASS 2/2** (~1.07 s / writer on
+  card); c9 CPU reference max |dc|/c 1.2e-7 (report only). **i4 (2) FAIL 1/3:** ourq vs rxq at K0.5 i4 sub-1 damping
+  differ on k_proj / v_proj (group members j > 0), o_proj identical → w80 fixes before the freeze.
+- cdhout27 (tile CD + H_out K4 pair) failed at step 0: the staged code bundle lacked `store/` (lead's staging error);
+  restaged, rerun from 08:18 UTC.
 
 ### 2026-11-08 1:40 AM CST · #9 · iceman upgrade: TP2 prefill ×1.7 (user)
 - iceman upgraded: Ryzen 9 9950X, 64 GB, both R9700s on PCIe 5.0 x8 (x8/x8 CPU split; 32 GT/s under load), ReBAR on;
