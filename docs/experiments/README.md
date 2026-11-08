@@ -65,6 +65,7 @@ Short entries are fine: drop the lines that do not apply, but keep the header li
 
 - **Pass rules are written before the run**, in the entry that starts it; changes are recorded before any data is
   used ("amendment 1, written ...").
+- **Commit the rule before launching** (2026-11-08, freeze review): a rule file is committed on its own before the run starts, so git attests the pre-registration; an in-file time alone is weaker.
 - Tuning only on calib pools (fit / search / qad / verify); public only to report; say which pool a slice came from.
 - Report paired comparisons with uncertainty; differences under ~1.5% on 100k-position slices are noise.
 - **Two questions, two criteria** (user, 2026-11-02): a pass rule says separately (1) **is it real** — judged against

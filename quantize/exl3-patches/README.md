@@ -14,8 +14,8 @@ this patch series against upstream **turboderp-org/exllamav3 @ `a3bfbfd0`** (v1.
 | `pending/` | not applied (dead-proxy-compute skip, an experimental quantize.py) |
 
 Rebuild the tree we run (checked 2026-11-04: identical to our fork's tree at `eb5a2139`; with 0008, checked 2026-11-08
-by w86: upstream `a3bfbfd0` + 0001–0008 = `eb5a2139` + 0008, tree `8b6ab82b`. 0008 is not committed in the fork
-working copy yet: `git am quantize/exl3-patches/0008-*.patch` there brings it level):
+by w86: upstream `a3bfbfd0` + 0001–0008 = `eb5a2139` + 0008, tree `8b6ab82b`. 0008 is in the fork since 11-08
+(HEAD `6242f7ae`, applied by the lead after the freeze review)):
 
     git clone https://github.com/turboderp-org/exllamav3 && cd exllamav3 && git checkout a3bfbfd0
     git am /path/to/rad-exl3-mix/quantize/exl3-patches/000*.patch
