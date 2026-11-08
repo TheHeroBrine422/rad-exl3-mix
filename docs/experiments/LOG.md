@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 9:55 AM CST · #117 · residual-block LDLQ order ADOPTED (user)
+- Route B only (w84): the 272 residual readers' LDLQ visits 128-blocks in the consensus heavy-last order; stored in
+  natural order; no model conversion, no format / kernel / runtime change (~30 lines in rxq). Evidence: geo 0.9968 on
+  golden-search27b (z −0.62, both parts < 1), proxy 272/272 better. w86 wires it ON in v3.toml (settings stamp).
+
 ### 2026-11-08 9:40 AM CST · #115 · Fast H_out: block-diagonal LDLQ passes its gate; an H_out level costs ~1.07× a one-sided one (dense: 5.6×) (w81)
 - **Status:** done · **Machine:** gpubox card 0 (23 rxq units between the queue's steps, 09:54–15:31 UTC; ~45 card-min
   in total), CPU f2 on gpubox · **Code:** `local/workers/w81/` (fork patch 0008, `gate.sh`, `f2calc.py`, `gate_report.py`)
