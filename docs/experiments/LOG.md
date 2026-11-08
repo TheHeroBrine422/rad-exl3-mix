@@ -3,6 +3,36 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 7:05 AM CST · #117 · 27B pairs (w84): converter + gates PASS; the order is a quantizer option, no conversion needed; pairs running
+- **Status:** running · **Machine:** gpubox card 0 (card0.lock + ram.lock, `/data/w84`, `run84.sh`), colo CPU
+  (`/data/work/w13/w84`, 8 threads, nice 19) · **Code:** `v3/e3/settle/w84/` · **Rule:** `v3/e3/settle/w84.md` (written
+  6:25 AM CST before any data; amendment 1 at 6:55 AM CST from the lead's notes: decide on the fresh two-part slice
+  golden-search27b, same sign on xcorp and calib parts; golden-search27 report-only)
+- **Design (stated before data):** the permutation changes only the order in which LDLQ visits the residual readers'
+  128-blocks. Everything else in exllamav3's quantizer is per tile or per channel. So the pairs quantize the natural model
+  with that block order (route B, `blkorder84.py`, wrapping `scaled_ldl` / `ldlq` for the 272 readers under rxq with
+  the control's settings) and need no converted checkpoint. Signs, writers, embedding, head and V2 base stay
+  bit-identical to the control.
+- **Converter** `perm117.py` (ckpt / hess / hout / plan): 642 checkpoint tensors permuted, 557 unchanged, every 5120-dim
+  tensor classified (vision merger fc2, MTP incl. both halves of mtp.fc). CLI checks (`test117.py`, colo): Hessian
+  packed-triangle and shard round trips bit-exact, metadata kept; H_out writers' diagonals round trip (gpubox CPU).
+- **G3 bf16 gate PASS** (`gate84.py`, colo, 2 fit docs × 384 tokens, layer-streamed; converted model vs original):
+  f32 max |Δlogit| 9.5e-4 (KL 6e-11, top-1 1.0); f64 2.4e-12 (relative 6e-14; the difference shrinks ×4e8 → pure
+  float reassociation); MTP head the same (f64 4.2e-12); vision merger fc2 bitwise.
+- **G2 route A ≡ route B PASS (sign trap proved, card 0, 19 min):** converted tensor (perm117's own W / packed-H
+  functions) with the natural sign draws permuted along and exllamav3's `regularize` run in natural channel order, vs
+  the order-patched natural tensor: on L0 qkv / z / out_proj and L3 q / k / v / o_proj the LDLQ inputs (rotated
+  weight, L) are bit-identical and the stored trellis codes are identical tile for tile (7/7); suh / svh differ by
+  ≤ 1–99 f16 ulps on a few entries (the scale refit's reordered sums). **Two traps found:** a plain converted run
+  (signs re-drawn) changes 100% of the tiles (a reseed). A converted run with the signs fixed but `regularize` left
+  as-is still changes 98–99%: exllamav3's g_scale tile sample is a wrapped diagonal over tile rows, not
+  permutation-equivariant. A converter-based pipeline would have to patch both; route B needs neither.
+- **Noop gate p0 PASS:** route B with the identity order reproduces `/data/v3ladder2/K2.5` bit for bit on 9 readers
+  (today's rxq vs the 11-02 ourq level).
+- **Lead's verify check (item 3)** queued beside it: bn / bns1 / bns2 / s2 on golden-verify27.
+- **Runtime:** none (route B: only the quantizer's LDLQ order changes; same format, kernels, and no checkpoint
+  conversion).
+
 ### 2026-11-08 6:13 AM CST · #119 · Embedding / head representation for the 1.0–2.0 sizes: the embedding is at its floor; LDLQ in a sensitivity metric FAILS on the CPU proxy (w83)
 - **Status:** done (CPU; nothing adopted) · **Machine:** colo (`/data/work/w13/w83`, ≤ 8 GB, nice 19) + Thor
   (`/data/work/w83`), 05:05–06:10 AM CST · **Code:** `v3/e3/emb2/` (`IDEAS.md` ranked candidates, `RULES.md` rules +

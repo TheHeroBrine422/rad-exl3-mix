@@ -1,0 +1,3 @@
+65 pieces (1148 xcorp docs excluded): agentic 1, books 1, chat 7, code 11, encyclopedic 5, legal 1, long 1, math 4, multilingual 9, qa 5, reasoning 1, science 1, tools 6, web 12
+golden-search27b-x.part: 65 docs, 86597 rows
+36 documents, 67155 tokens: agentic 8192, books 9073, chat 4622, code 4277, encyclopedic 8192, legal 2592, math 2743, multilingual 3178, qa 1582, reasoning 8623, science 8192, tools 1881, web 4008

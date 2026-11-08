@@ -14,8 +14,10 @@
 #            <ARM>ctl packed from the control level)
 #     score  the arm; the control mix re-scored (<ARM>re): bit-identical rows to the stored ones -> stored rows are the
 #            control, else the fresh rows
-#     pair   tools/paired.py control rows -> arm rows -> <ARM>/pair.json
-#   w84.sh verdict      verdict84.py over p0 / p1
+#     pair   tools/paired.py control rows -> arm rows -> <ARM>/pair.json (golden-search27: report only, amendment 1)
+#     score27b  the arm and its control on golden-search27b's parts (-x xcorp, -c calib; mk27b.sh) -> $A/b27/<tag>-{x,c}
+#   w84.sh verdict      score27b for p0 / p1 where missing, then verdict84.py (amendment 1's two-part rule)
+#   w84.sh vcheck       item 3 (lead): bn / bns1 / bns2 / s2 (swap27 mixes) on golden-verify27 -> $A/vchk, vcheck84.py
 # Env: A (/data/w84), CODE ($A/code), STEPS, GUARD_MB (3000), MINMEM_GB (6). Stop: touch $A/<ARM>/STOP (between steps).
 : ${RXM_WORK:=/root}; export RXM_WORK
 A=${A:-/data/w84}; CODE=${CODE:-$A/code}; W=$CODE/v3/e3/settle/w84
@@ -46,13 +48,22 @@ packmixk() { arm=$1 src=$2 P=$S/pack-$1.rad M=$S/mix-$1.rad
 mkdir -p $A; cd $A
 ARM=$1; O=$A/$ARM; mkdir -p $O
 L=$O/w84.log; log() { echo "$(date -u +%H:%M:%S) $ARM: $*" | tee -a $L >> $A/result.txt; tail -n 1 $L; }
-want() { [[ " ${STEPS:-noop arm asm pack hyg score pair} " == *" $1 "* ]] && [ ! -f $O/STOP ]; }
+want() { [[ " ${STEPS:-noop arm asm pack hyg score pair score27b} " == *" $1 "* ]] && [ ! -f $O/STOP ]; }
 die() { log "$*: stop"; exit 1; }
 memok() { local m=$(awk '/MemAvailable/ {print int($2 / 1048576)}' /proc/meminfo)
   [ $m -ge $MINMEM_GB ] || die "MemAvailable $m GB < $MINMEM_GB GB before $1 (rerun later)"; }
 card() { ( exec 5>$RXM_WORK/card0.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7; cd $RXM_WORK
     $T/memguard.sh $GUARD_MB nice -n 5 "$@" ); }
 host() { nice -n 10 "$@"; }
+score_g() { # score_g GOLDEN OUTBASE MIX: swap27's score (card 0, bf16 KV) on another golden -> OUTBASE.json(.rows)
+  local g=$1 out=$2 mix=$3; [ -f $out.json.rows ] && return 0
+  [ -f $mix ] || { log "score $(basename $out): no mix $mix"; return 1; }
+  ( exec 5>$RXM_WORK/card0.lock; flock 5; exec 7>$RXM_WORK/ram.lock; flock -s 7; s=$(date +%s)
+    ROCR_VISIBLE_DEVICES=0 RADIANCE_HOME=$H $I/bin/radiance --model $mix --tp 1 --kv-cache-dtype bf16 \
+      --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref $g --kld-out $out.json.part > $out.log 2>&1 \
+      && mv $out.json.part $out.json; [ -f $out.json.part.rows ] && mv $out.json.part.rows $out.json.rows
+    echo "$(date -u +%H:%M:%S) score $(basename $out) on $(basename $g) rc=$? $(( $(date +%s) - s ))s" ) >> $A/result.txt
+  [ -f $out.json.rows ] || { log "score $(basename $out) FAIL ($out.log)"; return 1; }; }
 RX=(env PYTHONPATH=$CODE/pipeline RXQ_RXM=$CODE RXQ_EXL3_SRC=${SRC:-/data/exl3frac/src} $PY)
 READERS=ssm_qkv,ssm_z,attn_qg,attn_k,attn_v,ffn_gate,ffn_up
 for f in pipeline/rxq/pairs.py pipeline/config/v3.toml store/census.py v3/e3/exl3frac2/exl3frac2.py \
@@ -69,12 +80,23 @@ if [ "$ARM" = chk ]; then
   touch $O/signchk.fail; exit 1
 fi
 if [ "$ARM" = verdict ]; then
-  $PY -I $W/verdict84.py $A p0 p1 | tee $A/verdict.txt | tail -n 1 | while read -r x; do log "$x"; done; exit 0
+  for a in p0 p1; do STEPS=score27b bash $0 $a || die "score27b $a FAIL"; done
+  $PY -I $W/verdict84.py $A p0 p1 > $A/verdict.txt 2>&1 || die "verdict84.py FAIL ($A/verdict.txt)"
+  log "$(tail -n 1 $A/verdict.txt)"; exit 0
+fi
+if [ "$ARM" = vcheck ]; then
+  mkdir -p $A/vchk; GV=/data/verify27/golden-verify27
+  for t in bn bns1 bns2 s2; do score_g $GV $A/vchk/$t /data/swap27/mix-$t.rad || die "vcheck score $t FAIL"; done
+  ALL=attn_qg,attn_k,attn_v,attn_output,ssm_qkv,ssm_z,ssm_out,ffn_gate,ffn_up,ffn_down
+  for p in "bn base" "bns1 s1" "bns2 s2"; do set -- $p
+    log "vcheck hygiene $2 -> $1: $(host "${RX[@]}" -m rxq.pairs mixes /data/swap27/mix-$1.rad /data/swap27/mix-$2.rad --arm $ALL | tail -n 1)"; done
+  $PY -I $W/vcheck84.py $A > $A/vchk/vcheck.txt 2>&1 || die "vcheck84.py FAIL"
+  log "$(tail -n 1 $A/vchk/vcheck.txt)"; exit 0
 fi
 case $ARM in
   p0) BASE=/data/v3ladder2/K2.5 CTAG=base ;;
   p1) BASE=/data/swap27/q-s1/K2.5 CTAG=s1 ;;
-  *) echo "w84.sh chk|p0|p1|verdict"; exit 2 ;;
+  *) echo "w84.sh chk|p0|p1|verdict|vcheck"; exit 2 ;;
 esac
 [ -f $A/chk/signchk.pass ] || die "gate G2 has not passed ($A/chk): no arm before it"
 [ $(ls $BASE/q-L*.safetensors 2>/dev/null | wc -l) = 64 ] || die "$BASE: not 64 layer shards"
@@ -148,5 +170,14 @@ if want pair && [ -f $A/${ARM}perm.json.rows ]; then
   $PY -I $T/paired.py $G $CR $A/${ARM}perm.json.rows | tail -n 1 > $O/pair.json || die "paired.py FAIL"
   echo "{\"arm\": \"$ARM\", \"control\": \"$CR\", \"perm\": \"$A/${ARM}perm.json.rows\", \"level\": \"$BASE\", \"noop\": \"$([ -n "$NOOPFAIL" ] && echo fail || echo pass)\", \"hygiene\": \"pass\"}" > $O/pair-meta.json
   log "pair $(basename ${CR%.json.rows}) -> ${ARM}perm: $(cat $O/pair.json)"
+fi
+if want score27b; then
+  [ -f $O/hyg.pass ] || die "no hygiene pass: not scored"
+  echo $CTLTAG > $O/ctl.tag; mkdir -p $A/b27
+  for part in x c; do
+    score_g $A/golden-search27b-$part $A/b27/${ARM}perm-$part $A/mix-${ARM}perm.rad || die "score27b ${ARM}perm-$part FAIL"
+    score_g $A/golden-search27b-$part $A/b27/$CTLTAG-$part $CTLMIX || die "score27b $CTLTAG-$part FAIL"
+  done
+  log "score27b: ${ARM}perm and $CTLTAG scored on golden-search27b-x / -c"
 fi
 log "W84 $ARM DONE (${STEPS:-all})"
