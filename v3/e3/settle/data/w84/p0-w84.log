@@ -1,0 +1,17 @@
+12:24:49 p0: start: control /data/v3ladder2/K2.5 (-K 2.5 --codebook i8 --seed-offset 0 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: all
+12:29:38 p0: q-noop: 9 tensors, 289 s
+12:29:41 p0: noop gate (identity order, 9 readers): PAIR OK {"base": "/data/v3ladder2/K2.5", "job": "/data/w84/p0/q-noop", "keys": 9, "tensors": 36, "problems": 0}
+13:18:47 p0: q-perm: 272 tensors, 2946 s
+13:18:47 p0: readers' proxy_err perm / control (one-sided, after the refit): 272 readers: geo 0.9853 (attn_k 0.9671, attn_qg 0.9654, attn_v 0.9814, ffn_gate 0.9905, ffn_up 0.9930, ssm_qkv 0.9854, ssm_z 0.9825), < 1: 272/272
+SPLICE DONE 1088 tensors into 64 shards -> /data/w84/p0/level-perm
+13:18:53 p0: level hygiene: PAIR OK {"a": "/data/v3ladder2/K2.5", "b": "/data/w84/p0/level-perm", "tensors": 1600, "identical": 784, "arm_keys": 272, "arm_keys_changed": 272, "planes_changed": ["suh", "svh", "trellis"], "problems": 0}
+13:43:31 p0: p0perm: mix ready
+13:43:43 p0: mix hygiene vs base: PAIR OK {"a": "/data/w84/mix-p0perm.rad", "b": "/data/swap27/mix-base.rad", "weights": 787, "identical": 579, "arm_weights": 208, "arm_weights_changed": 208, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+13:51:41 p0: p0perm: 
+14:01:48 p0: p0re: 
+14:01:48 p0: control re-score: rows bit-identical to /data/swap27/base.json.rows (stored rows used)
+14:01:49 p0: pair base -> p0perm: {"kld_a": 0.05903123942102531, "kld_b": 0.05801544285725168, "diff": -0.0010157965637736313, "rel": -0.01720777970675358, "se": 0.0004935826100815907, "z": -2.0580071968210487, "positions": 123460, "docs": 103}
+14:01:49 p0: W84 p0 DONE (all)
+15:14:05 p0: start: control /data/v3ladder2/K2.5 (-K 2.5 --codebook i8 --seed-offset 0 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: score27b
+15:27:54 p0: score27b: p0perm and base scored on golden-search27b-x / -c
+15:27:54 p0: W84 p0 DONE (score27b)

@@ -173,5 +173,11 @@
   "line": "v3",
   "decisions": 0,
   "note": "rich + express whole, cut from the published calib golden (eval/traces, w67): rare 200k+ 'does anything break' check on finished mixes; never a selection or tuning target; reported with agent-verify32, never alone"
+ },
+ "golden-search27b-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#117 (w84, 2026-11-08): calib part of the two-part 27B search slice golden-search27b (36 search-pool docs, cap 8192, seed 20261108, none from golden-search27); its xcorp part reads no calib"
  }
 }

@@ -1,0 +1,4 @@
+attn_k 0.9671 attn_qg 0.9654 attn_v 0.9814 ffn_gate 0.9905 ffn_up 0.9930 ssm_qkv 0.9854 ssm_z 0.9825
+272 readers: geo 0.9853 (attn_k 0.9671, attn_qg 0.9654, attn_v 0.9814, ffn_gate 0.9905, ffn_up 0.9930, ssm_qkv 0.9854, ssm_z 0.9825), < 1: 272/272
+attn_k 0.9667 attn_qg 0.9654 attn_v 0.9815 ffn_gate 0.9905 ffn_up 0.9930 ssm_qkv 0.9854 ssm_z 0.9824
+272 readers: geo 0.9853 (attn_k 0.9667, attn_qg 0.9654, attn_v 0.9815, ffn_gate 0.9905, ffn_up 0.9930, ssm_qkv 0.9854, ssm_z 0.9824), < 1: 272/272

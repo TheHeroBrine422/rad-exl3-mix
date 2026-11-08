@@ -3,6 +3,52 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 9:40 AM CST · #115 · Fast H_out: block-diagonal LDLQ passes its gate; an H_out level costs ~1.07× a one-sided one (dense: 5.6×) (w81)
+- **Status:** done · **Machine:** gpubox card 0 (23 rxq units between the queue's steps, 09:54–15:31 UTC; ~45 card-min
+  in total), CPU f2 on gpubox · **Code:** `local/workers/w81/` (fork patch 0008, `gate.sh`, `f2calc.py`, `gate_report.py`)
+- **Setup:** 27B L10 (GDN + MLP) and L39 (attention + MLP), K4 i8, bn H_out (`/data/swap27/hout-bn`, σ_out 0.01), ladder
+  settings, tile CD and in-job C9 off. Arms: D dense, G blocks / group schedule, X blocks / diag schedule, N no H_out,
+  D2 dense again. f2 = the stored (decoded) weight's two-sided objective in the original basis, from `--save-wq`'s wq
+  (`f2calc.py`). Note: rxq's / ourq's `rowerr.npz` is not usable here, because quantize_exl3 regularizes its weight
+  argument in place (PORTING.md).
+- **Time (quant seconds per layer, R9700):**
+
+  | | dense | blocks / group | blocks / diag | no H_out |
+  |---|---|---|---|---|
+  | L10 | 177.7 | **34.4** | 44.4 | 32.1 |
+  | L39 | 178.9 | **34.4** | 41.0 | 31.4 |
+
+  - gate_proj with H_out: 46.7 s dense vs 6.2 s blocks.
+  - Per level (48 GDN + 16 attention layers, quant only): dense ~190 min, **blocks ~37 min**, one-sided ~34 min.
+    H_out at every level then costs ~+2.5 min a level instead of ~+156: ~180 card-h saved over 71 levels.
+  - Peak VRAM, gate / up: 3.2 GiB blocks vs 6.4 GiB dense at K4, 6.9 vs 10.2 GiB at i4 K0.125. down_proj is unchanged
+    at 7.7 GiB (its refit sets the peak).
+- **Same objective:**
+  - Dense is bit-deterministic: D2 = D on 13/13 tensors.
+  - f2, blocks vs dense: L10 max |rel| 9.1e-5, geo −1.6e-5; L39 max 1.8e-4 (k_proj), geo +3.5e-5; i4 K0.125 max 3.5e-4
+    (ssm_z), geo −6.4e-5; tile CD on q_proj +1.2e-5 (2.2× faster).
+  - 96–100% of trellis words are identical. The group and diag schedules mostly give the very same codes, so the
+    float-order source is the batched block Cholesky (factor diff ~1e-6).
+  - **18/20 tensors are within the task's 1e-4.** The two misses are near-tie code divergence, with no consistent sign.
+    The pre-registered reading passes: every tensor is within ±0.5%, |geo| ≤ 0.1%, and the CPU teacher-forced check
+    holds. So **PASS**: the same objective. No KLD pair is needed, because nothing changes the objective.
+  - The only behavioral difference: a failing block Cholesky raises instead of retrying with more damping. With
+    σ_out 0.01 on a mean-1 PSD block that cannot happen.
+- **i4 path (lead's note):** layer 10 with i4 runs at K0.125 (σ 0.2), 0.5, 1, 2 and 3 with blocks H_out: no errors,
+  no fallback.
+  - H_out lowers its own objective vs no H_out (geo f2): −2.6% at K0.125, −6.4% at 0.5, −10% at 1, −13% at 2, −14%
+    at 3. For comparison, i8 K4 is −14% (L10) and −6% (L39).
+  - Time ×1.02–1.08 of no H_out.
+- **Decision / next (lead):**
+  - flip `inputs.hout.ldlq = "blocks"` (w86's flag; schedule group);
+  - apply fork patch 0008 (fork commit + `quantize/exl3-patches/0008`; `git am` on eb5a2139 reproduces the tree);
+  - apply `w81/patches/rxm-hout-blocks.patch`: `rxq levelargs` maps an ourq level made before 11-08 to
+    `inputs.hout.ldlq=dense`, so no-op gates against old H_out levels stay bit-identical (the current repo maps them to
+    blocks once the flag is on: `check_rxq_hout.py` FAIL); the `proxy_err_2s` log field; ourq `--hout-blocks`.
+- **Runtime:** none (quantizer only).
+- **Files:** `local/workers/w81/gate-report.txt`, `data/gate/` (logs, f2, gate.json), `check_blockdiag.py`,
+  `check_rxq_hout.py`.
+
 ### 2026-11-08 9:35 AM CST · #34 · 1/16-bit slab-head grid wired into knap5 (w88): head leaves uniform K3 at 2.0; −2.4…−3.8% predicted at 2.0–3.0
 - **Status:** running (#34; pricing switch ready, not adopted) · **Machine:** colo (CPU, 28 solves, 15:21–15:30 UTC)
   · **Code:** `local/workers/w88/knap5-headgrid.patch` (knap5 `KN_HEADGRID` + new `v3/levels/reprice/headgrid.py`,
@@ -44,6 +90,32 @@ versions of anything: git history.
   output line's `head.plan` names the plan / floor).
 - **Runtime:** none in the format (row-slab head = #34's D cost); pricing only.
 - **Files:** `data/levels/reprice/headgrid/` (`out/*.jsonl`, `report.out`, `jobs.txt`, logs).
+
+### 2026-11-08 9:45 AM CST · #117 · w84 closed: per-part numbers, p99 / top-1, what to merge
+- **Status:** done (rule ADOPT; adoption = user) · **Machine:** gpubox card 0 12:05–15:27 UTC, colo CPU · **Code:**
+  `v3/e3/settle/w84/` (README) · **Results:** `v3/e3/settle/w84.md` "Results", data `v3/e3/settle/data/w84/`
+- **Per pair, per part** (r, z):
+  - base → p0: xcorp 0.9951 (z −0.58), calib 1.0083 (+0.57).
+  - s1 → p1: xcorp 0.9999 (−0.02), calib 0.9772 (−1.58).
+  - So one part in four is above 1 and one sits at 1.000.
+  - Pooled 95% CIs: [0.970, 1.015] and [0.969, 1.007].
+- **p99 KL (pooled):** 3.909 → 3.830 (p0), 3.797 → 3.831 (p1); mixed.
+- **Top-1 (pooled):** +0.0010 and +0.0020.
+- **Proxy:** the readers' real-quantizer proxy is 0.9853 at both seeds, matching w82's settle64 prediction. KLD moves
+  by about a fifth of the proxy gain, inside the noise.
+- **Merge:**
+  - `blkorder84.py` (wraps `quantize_exl3` / `scaled_ldl` / `ldlq` for the residual readers; identity order =
+    bit-identical no-op, checked on both controls) is the whole change. w86's v3.toml switch should call it, or port
+    its 30 lines into rxq.
+  - The converter `perm117.py` is not needed. If ever used, a converted quant must also permute the natural sign
+    draws and run `regularize` in natural channel order: G2 found that otherwise 98–100% of the tiles change (a
+    reseed).
+- **Ledger:** golden-search27b-c added (36 docs, role select, new `ledger-roles.json` entry). golden-search27 /
+  golden-verify27 have no ledger-roles entry (not added by w84).
+- **Disk (gpubox `/data/w84`, ~27 GB):** arm mixes `mix-p{0,1}perm.rad` (8.3 GB each) and `p{0,1}/q-perm` (the 272
+  reader tensors, ~5 GB each) are kept for any K4 / verify follow-up. The spliced levels are deleted (a splice
+  rebuilds them in seconds). Delete the rest once the lead decides.
+- **Runtime:** none.
 
 ### 2026-11-08 9:35 AM CST · #117 · residual-stream permutation at 27B: rule says ADOPT, effect ~−0.3% (not significant)
 - Two seed pairs, K2.5 plain levels, read on the fresh two-part slice golden-search27b (65 xcorp + 36 calib-search

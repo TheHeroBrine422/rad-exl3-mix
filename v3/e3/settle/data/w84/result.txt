@@ -1,0 +1,59 @@
+12:05:45 W84 QUEUE start
+12:24:46 chk: G2 route A == route B (1141 s): SIGNCHK PASS {"tensors": 7, "trellis_equal": 7, "ldlq_inputs_equal": 7, "trap_trellis_equal": 0, "trap_runs": 8}
+12:24:49 p0: start: control /data/v3ladder2/K2.5 (-K 2.5 --codebook i8 --seed-offset 0 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: all
+12:29:38 p0: q-noop: 9 tensors, 289 s
+12:29:41 p0: noop gate (identity order, 9 readers): PAIR OK {"base": "/data/v3ladder2/K2.5", "job": "/data/w84/p0/q-noop", "keys": 9, "tensors": 36, "problems": 0}
+13:18:47 p0: q-perm: 272 tensors, 2946 s
+13:18:47 p0: readers' proxy_err perm / control (one-sided, after the refit): 272 readers: geo 0.9853 (attn_k 0.9671, attn_qg 0.9654, attn_v 0.9814, ffn_gate 0.9905, ffn_up 0.9930, ssm_qkv 0.9854, ssm_z 0.9825), < 1: 272/272
+13:18:53 p0: level hygiene: PAIR OK {"a": "/data/v3ladder2/K2.5", "b": "/data/w84/p0/level-perm", "tensors": 1600, "identical": 784, "arm_keys": 272, "arm_keys_changed": 272, "planes_changed": ["suh", "svh", "trellis"], "problems": 0}
+13:21:13 score bn on golden-verify27 rc=0 146s
+pack p0perm rc=0 1327s
+13:43:31 p0: p0perm: mix ready
+13:43:43 p0: mix hygiene vs base: PAIR OK {"a": "/data/w84/mix-p0perm.rad", "b": "/data/swap27/mix-base.rad", "weights": 787, "identical": 579, "arm_weights": 208, "arm_weights_changed": 208, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+13:49:10 score bns1 on golden-verify27 rc=0 146s
+score p0perm rc=0 151s
+13:51:41 p0: p0perm: 
+13:59:18 score bns2 on golden-verify27 rc=0 145s
+score p0re rc=0 150s
+14:01:48 p0: p0re: 
+14:01:48 p0: control re-score: rows bit-identical to /data/swap27/base.json.rows (stored rows used)
+14:01:49 p0: pair base -> p0perm: {"kld_a": 0.05903123942102531, "kld_b": 0.05801544285725168, "diff": -0.0010157965637736313, "rel": -0.01720777970675358, "se": 0.0004935826100815907, "z": -2.0580071968210487, "positions": 123460, "docs": 103}
+14:01:49 p0: W84 p0 DONE (all)
+14:01:51 p1: start: control /data/swap27/q-s1/K2.5 (-K 2.5 --codebook i8 --seed-offset 1 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: all
+14:04:15 score s2 on golden-verify27 rc=0 147s
+14:04:28 vcheck: vcheck hygiene base -> bn: PAIR OK {"a": "/data/swap27/mix-bn.rad", "b": "/data/swap27/mix-base.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+14:04:40 vcheck: vcheck hygiene s1 -> bns1: PAIR OK {"a": "/data/swap27/mix-bns1.rad", "b": "/data/swap27/mix-s1.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+14:04:52 vcheck: vcheck hygiene s2 -> bns2: PAIR OK {"a": "/data/swap27/mix-bns2.rad", "b": "/data/swap27/mix-s2.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+14:04:52 vcheck: VCHECK H_out K2.5 on golden-verify27: geo 0.9751 (0.9570, 0.9803, 0.9883), pooled z -3.38 -> H_out-everywhere STANDS (rule: geo < 1)
+14:08:47 p1: q-noop: 9 tensors, 416 s
+14:08:48 p1: noop gate (identity order, 9 readers): PAIR OK {"base": "/data/swap27/q-s1/K2.5", "job": "/data/w84/p1/q-noop", "keys": 9, "tensors": 36, "problems": 0}
+14:34:51 p1: q-perm: 272 tensors, 1563 s
+14:34:51 p1: readers' proxy_err perm / control (one-sided, after the refit): 272 readers: geo 0.9853 (attn_k 0.9667, attn_qg 0.9654, attn_v 0.9815, ffn_gate 0.9905, ffn_up 0.9930, ssm_qkv 0.9854, ssm_z 0.9824), < 1: 272/272
+14:34:56 p1: level hygiene: PAIR OK {"a": "/data/swap27/q-s1/K2.5", "b": "/data/w84/p1/level-perm", "tensors": 1600, "identical": 784, "arm_keys": 272, "arm_keys_changed": 272, "planes_changed": ["suh", "svh", "trellis"], "problems": 0}
+pack p1perm rc=0 1329s
+14:58:06 p1: p1perm: mix ready
+14:58:19 p1: mix hygiene vs s1: PAIR OK {"a": "/data/w84/mix-p1perm.rad", "b": "/data/swap27/mix-s1.rad", "weights": 787, "identical": 579, "arm_weights": 208, "arm_weights_changed": 208, "planes_changed": ["record", "suh", "suh.1", "svh"], "problems": 0}
+score p1perm rc=0 152s
+15:01:08 p1: p1perm: 
+score p1re rc=0 151s
+15:04:23 p1: p1re: 
+15:04:23 p1: control re-score: rows bit-identical to /data/swap27/s1.json.rows (stored rows used)
+15:04:23 p1: pair s1 -> p1perm: {"kld_a": 0.05757044624480463, "kld_b": 0.05779564190446379, "diff": 0.0002251956596591581, "rel": 0.003911653884035693, "se": 0.000502285856370417, "z": 0.44834163017539713, "positions": 123460, "docs": 103}
+15:06:25 score p1perm-x on golden-search27b-x rc=0 80s
+15:08:40 score s1-x on golden-search27b-x rc=0 79s
+15:10:32 score p1perm-c on golden-search27b-c rc=0 60s
+15:14:04 score s1-c on golden-search27b-c rc=0 59s
+15:14:04 p1: score27b: p1perm and s1 scored on golden-search27b-x / -c
+15:14:04 p1: W84 p1 DONE (all)
+15:14:05 p0: start: control /data/v3ladder2/K2.5 (-K 2.5 --codebook i8 --seed-offset 0 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: score27b
+15:17:54 score p0perm-x on golden-search27b-x rc=0 80s
+15:19:55 score base-x on golden-search27b-x rc=0 79s
+15:21:34 score p0perm-c on golden-search27b-c rc=0 59s
+15:27:54 score base-c on golden-search27b-c rc=0 60s
+15:27:54 p0: score27b: p0perm and base scored on golden-search27b-x / -c
+15:27:54 p0: W84 p0 DONE (score27b)
+15:27:55 p1: start: control /data/swap27/q-s1/K2.5 (-K 2.5 --codebook i8 --seed-offset 1 --set inputs.hout.enable=false --set quant.tile_cd.enable=false), steps: score27b
+15:27:55 p1: score27b: p1perm and s1 scored on golden-search27b-x / -c
+15:27:55 p1: W84 p1 DONE (score27b)
+15:27:55 verdict: W84 VERDICT ADOPT: pooled r = 0.9970, 0.9967 (geo 0.9968, pooled z -0.62); part geo xcorp 0.9975, calib 0.9926; golden-search27 geo 0.9933 (report)
+15:27:55 W84 QUEUE DONE
