@@ -1,0 +1,2 @@
+n 17408: one f64 GEMM 12.76 s (0.83 TFLOP/s)
+WARNING: Device memory allocation size is too small for TRSM; TRSM performance is degraded

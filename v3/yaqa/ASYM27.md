@@ -252,6 +252,16 @@ Also used, unchanged: `v3/sib27/{levelargs,assemble,cmpmom}.py`, `proxy2b/exp/w0
 
 ## Status (2026-11-07; the rule above is unchanged)
 - #105 is still queued on card 0 (no 27B data yet).
+- **w78 (11-07 3:30 PM CST):**
+  - **Moments fault fixed:** it was the `expandable_segments` allocator setting, which `asym27.sh` exported (see
+    `asym27/dbg/README.md`). Also fixed: the host-RAM peak at the moment save, and the "DONE" logged after a DRY run.
+  - **Run:** both arms run from `/data/asym27/go.sh` → `/data/q1106/after-asym27.sh`. It logs each arm's exit
+    status; status file `/data/asym27/queue.log`.
+  - **mkdenoise:** its lean-path f64 `torch.linalg.solve` (k 17408) took > 20 min a group on ROCm. It now uses
+    `asym27/mkdenoise.py` (+ `mkdenoise-w78.patch`): a blocked Cholesky solve, the same F to f32 rounding.
+  - **Stage:** take `mkdenoise.py` from `asym27/`, not `proxy2b/exp/w07-denoise/`. Also stage
+    `asym27/after-asym27.sh` (to `/data/q1106/`) and `go.sh`.
+  - **Rules:** unchanged.
 - **#111 (0.8B, `v3/e3/settle/w64.md` item 1, 11-07):** per-level asym writers placed next to siblings of *another* K,
   as in a knapsack mix, are 8–24% worse than plain writers (geo 1.077 / 1.229 / 1.239 over three cells); a per-mix
   writer pass keeps the gain (0.81–0.90). So the "Rollout" above (one run per shipped level) does not carry to mixed-K

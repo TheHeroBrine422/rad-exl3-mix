@@ -1,0 +1,50 @@
+## w (LDLQ metric trace, deciding): 272 tensors; median rho_t 0.775 (rule >= 0.70), share rho_t >= 0.5 0.985 (>= 0.80), family medians min 0.734 (>= 0.50) -> AGREE
+family | n | median rho_t | p10 rho_t | median spread p90/p10 | max spread
+ssm_qkv | 48 | 0.778 | 0.693 | 1.94 | 2.51
+ssm_z | 48 | 0.757 | 0.628 | 2.38 | 3.19
+attn_qg | 16 | 0.734 | 0.682 | 2.52 | 3.26
+attn_k | 16 | 0.757 | 0.680 | 3.21 | 3.65
+attn_v | 16 | 0.768 | 0.714 | 2.22 | 2.84
+ffn_gate | 64 | 0.798 | 0.557 | 1.52 | 2.55
+ffn_up | 64 | 0.820 | 0.692 | 1.32 | 1.61
+depth band (layers) | median rho_t | median spread
+0-15 | 0.741 | 1.68
+16-31 | 0.781 | 1.81
+32-47 | 0.835 | 1.83
+48-63 | 0.737 | 2.01
+pairwise median rho (tensor pairs from different layers), rows / cols: ssm_qkv ssm_z attn_qg attn_k attn_v ffn_gate ffn_up
+ssm_qkv | 0.76 | 0.69 | 0.74 | 0.77 | 0.73 | 0.64 | 0.66
+ssm_z | 0.69 | 0.64 | 0.69 | 0.68 | 0.64 | 0.60 | 0.61
+attn_qg | 0.74 | 0.69 | 0.78 | 0.80 | 0.72 | 0.56 | 0.56
+attn_k | 0.77 | 0.68 | 0.80 | 0.85 | 0.78 | 0.55 | 0.58
+attn_v | 0.73 | 0.64 | 0.72 | 0.78 | 0.84 | 0.69 | 0.73
+ffn_gate | 0.64 | 0.60 | 0.56 | 0.55 | 0.69 | 0.69 | 0.74
+ffn_up | 0.66 | 0.61 | 0.56 | 0.58 | 0.73 | 0.74 | 0.81
+lowest rho_t: 0:ssm_z 0.17, 0:ssm_qkv 0.20, 61:ffn_gate 0.42, 60:ffn_gate 0.45, 58:ffn_gate 0.52, 61:ssm_z 0.52, 59:ffn_gate 0.53, 57:ffn_gate 0.53, 56:ffn_gate 0.54, 62:ffn_gate 0.55
+
+## raw H_in trace (reported): 272 tensors; median rho_t 0.808 (rule >= 0.70), share rho_t >= 0.5 0.985 (>= 0.80), family medians min 0.792 (>= 0.50) -> AGREE
+family | n | median rho_t | p10 rho_t | median spread p90/p10 | max spread
+ssm_qkv | 48 | 0.798 | 0.699 | 1.88 | 2.25
+ssm_z | 48 | 0.798 | 0.699 | 1.88 | 2.25
+attn_qg | 16 | 0.792 | 0.733 | 2.07 | 2.33
+attn_k | 16 | 0.792 | 0.733 | 2.07 | 2.33
+attn_v | 16 | 0.792 | 0.733 | 2.07 | 2.33
+ffn_gate | 64 | 0.833 | 0.638 | 1.45 | 1.85
+ffn_up | 64 | 0.833 | 0.638 | 1.45 | 1.85
+depth band (layers) | median rho_t | median spread
+0-15 | 0.786 | 1.63
+16-31 | 0.816 | 1.86
+32-47 | 0.861 | 1.81
+48-63 | 0.760 | 1.72
+pairwise median rho (tensor pairs from different layers), rows / cols: ssm_qkv ssm_z attn_qg attn_k attn_v ffn_gate ffn_up
+ssm_qkv | 0.74 | 0.74 | 0.76 | 0.76 | 0.76 | 0.69 | 0.69
+ssm_z | 0.74 | 0.74 | 0.76 | 0.76 | 0.76 | 0.69 | 0.69
+attn_qg | 0.76 | 0.76 | 0.78 | 0.78 | 0.78 | 0.72 | 0.72
+attn_k | 0.76 | 0.76 | 0.78 | 0.78 | 0.78 | 0.72 | 0.72
+attn_v | 0.76 | 0.76 | 0.78 | 0.78 | 0.78 | 0.72 | 0.72
+ffn_gate | 0.69 | 0.69 | 0.72 | 0.72 | 0.72 | 0.72 | 0.72
+ffn_up | 0.69 | 0.69 | 0.72 | 0.72 | 0.72 | 0.72 | 0.72
+lowest rho_t: 0:ssm_qkv 0.24, 0:ssm_z 0.24, 63:ffn_up 0.48, 63:ffn_gate 0.48, 60:ffn_up 0.58, 60:ffn_gate 0.58, 61:ffn_gate 0.59, 61:ffn_up 0.59, 61:ssm_qkv 0.59, 61:ssm_z 0.59
+
+consensus (all layers), heaviest first: [31, 8, 30, 13, 28, 21, 2, 18, 23, 20, 19, 22, 25, 16, 12, 33, 24, 27, 15, 10, 9, 1, 11, 29, 14, 17, 26, 32, 34, 37, 5, 0, 36, 3, 35, 39, 4, 38, 7, 6]
+consensus block share p90/p10 1.45, max/min 8.59

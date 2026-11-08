@@ -1,0 +1,79 @@
+21:07:22 start A tok 400000 layers 0-0 alloc=[expandable_segments:True] ser=[] 
+340 windows, 400824 tokens from pools ['qad'] (moments)
+model /data/workspace/models/qwen38-27b-bf16: 64 layers, hidden 5120, attention sdpa, kernels {'causal_conv1d': None, 'fla': '0.6.0', 'torch': '2.15.0+rocm7.14'}
+disk: boundaries 2 x 3.8 GiB, moments 3.8 GiB; free 2764 GiB
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+MIOpen(HIP): Warning [ParseAndLoadDb] File is unreadable: "/data/venv-exl3/lib/python3.14/site-packages/_rocm_sdk_libraries/share/miopen/db/gfx1201_32.HIP.fdb.txt"
+/data/venv-exl3/lib/python3.14/site-packages/triton/knobs.py:504: UserWarning: TRITON_DEFAULT_FP_FUSION is unset: defaulting to FP fusion ENABLED for backward compatibility in Triton 3.9. The default will change to DISABLED in Triton 3.10; set TRITON_DEFAULT_FP_FUSION=1 to keep fusion enabled or =0 to adopt the new default early and silence this warning.
+  warn_once(FP_FUSION_DEFAULT_WARNING)
+Queue error: HSA_STATUS_ERROR_ILLEGAL_INSTRUCTION: The agent attempted to execute an illegal shader instruction.
+VGPU=0x3ec9c240 SWq=0x7fcc5cb2c000, HWq=0x7fcbb4d00000, id=1
+	Dispatch Header =0xd02 (type=2, barrier=1, acquire=2, release=1), setup=3
+	grid=[163840, 1, 1], workgroup=[128, 1, 1]
+	private_seg_size=0, group_seg_size=17408
+	kernel_obj=0x7fc96990d4c0, kernarg_address=0x0x7fcbb4804b00
+	completion_signal=0x0, correlation_id=0
+	rptr=12311, wptr=12389
+:0:rocdevice.cpp            :4216: 317717560252 us:  Callback: Queue 0x7fcbb4d00000 aborting with error : HSA_STATUS_ERROR_ILLEGAL_INSTRUCTION: The agent attempted to execute an illegal shader instruction. code: 0x2a [host: d6b481c74ad6, GPU index: 0, kernel: Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x128x32_MI16x16x1_SN_LDSB1_AFC1_AG0_AGGSUA0_AGNTAB0_AFEM1_AFEM1_ASEM1_CD1_1_CLR1_CLS0_CADS0_DTLA0_DTLB0_DTLM0_DTVA0_DTVB0_DTVMXSA0_DTVMXSB0_DTVSM0_DPLB0_EPS1_ELFLR0_EMLLn1_FDSI0_GRPM1_GRVWA8_GRVWB8_GSUAMB_GLS0_HPLR0_ISA1201_ICIW0_IU1_K1_LDSTI0_LBSPPA0_LBSPPB256_LBSPPMXSA0_LBSPPMXSB0_LBSPPM0_LPA0_LPB16_LPMXSA0_LPMXSB0_LPM0_LRVW8_LWPMn1_MIAV1_MIWT4_4_MXLIBL_MXSFNS_MO40_MGRIPM1_NTn1_NTA0_NTB0_NTC0_NTD0_NTE0_NTMXSA0_NTMXSB0_NTM0_NTWS0_NVn1_NVA0_NVB0_NVC0_NVD0_NVE0_NVMXSA0_NVMXSB0_NVM0_NVWS0_NEPBS0_NLCA1_NLCB1_ONLL0_PAP0_PGL0_PGR1_PLR1_PKA0_SGROB0_SIA3_SS1_SPO0_SRVW0_SSO0_SVW4_SK0_SKFTR0_SKFDPO0_SKXCCM0_SNLL0_SIP1_SGRO0_TDMI0_TDMIM0_TDMS0_TIN0_THn1_THA0_THB0_THC0_THD0_THE0_THMXSA0_THMXSB0_THM0_THWS0_TLDS1_TLDSMn1_ULSGRO0_USL1_USLMX0_UIOFGRO0_UPLRP0_USFGROn1_USI0_VSn1_VWA4_VWB4_WSGRA0_WSGRB0_WS32_WG32_4_1]
+/data/asym27/code/sibmom27.py:270: UserWarning: uncheckedSetDevice() ignoring error: CUDA error: unspecified launch failure
+Search for `hipErrorLaunchFailure' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+Exception raised from SetDevice at /__w/pytorch/pytorch/c10/hip/HIPFunctions.cpp:334 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7fcc62f5c13d in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x1402d (0x7fcc7f88702d in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libc10_hip.so)
+frame #2: c10::cuda::SetDevice(signed char, bool) + 0x65 (0x7fcc7f8d4a65 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libc10_hip.so)
+frame #3: <unknown function> + 0xe5e09b (0x7fcc8085e09b in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_hip.so)
+frame #4: <unknown function> + 0x1ce235c (0x7fcc816e235c in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_hip.so)
+frame #5: <unknown function> + 0x1d7e29e (0x7fcc9bf7e29e in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: at::native::copy_(at::Tensor&, at::Tensor const&, bool) + 0x30 (0x7fcc9bf80840 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: at::_ops::copy_::call(at::Tensor&, at::Tensor const&, bool) + 0x142 (0x7fcc9ce0b562 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: at::native::_to_copy(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0x16ca (0x7fcc9c37e21a in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: <unknown function> + 0x30b27ac (0x7fcc9d2b27ac in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #10: at::_ops::_to_copy::redispatch(c10::DispatchKeySet, at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0xe2 (0x7fcc9c8c5362 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #11: <unknown function> + 0x2e1ec0b (0x7fcc9d01ec0b in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #12: at::_ops::_to_copy::redispatch(c10::DispatchKeySet, at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0xe2 (0x7fcc9c8c5362 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #13: <unknown function> + 0x5272f01 (0x7fcc9f472f01 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #14: <unknown function> + 0x527349f (0x7fcc9f47349f in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: at::_ops::_to_copy::call(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0x1e4 (0x7fcc9c973564 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: at::native::to(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, bool, std::optional<c10::MemoryFormat>) + 0xc4 (0x7fcc9c366954 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x31fcbf2 (0x7fcc9d3fcbf2 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: at::_ops::to_dtype_layout::call(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, bool, std::optional<c10::MemoryFormat>) + 0x200 (0x7fcc9cb22200 in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0x45a9ab (0x7fccafa5a9ab in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x4c251c (0x7fccafac251c in /data/venv-exl3/lib/python3.14/site-packages/torch/lib/libtorch_python.so)
+frame #21: /data/venv-exl3/bin/python() [0x583c28]
+frame #22: PyObject_Vectorcall + 0x33 (0x535883 in /data/venv-exl3/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xd98 (0x54db68 in /data/venv-exl3/bin/python)
+frame #24: PyEval_EvalCode + 0x106 (0x547ee6 in /data/venv-exl3/bin/python)
+frame #25: /data/venv-exl3/bin/python() [0x6cab01]
+frame #26: /data/venv-exl3/bin/python() [0x6c76c1]
+frame #27: /data/venv-exl3/bin/python() [0x6c6d6b]
+frame #28: /data/venv-exl3/bin/python() [0x6c6839]
+frame #29: Py_RunMain + 0x349 (0x6c44e9 in /data/venv-exl3/bin/python)
+frame #30: Py_BytesMain + 0x34 (0x673874 in /data/venv-exl3/bin/python)
+frame #31: <unknown function> + 0x2a601 (0x7fccbea9a601 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x88 (0x7fccbea9a718 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x25 (0x672c45 in /data/venv-exl3/bin/python)
+ (Triggered internally at /__w/pytorch/pytorch/c10/hip/impl/HIPGuardImpl.h:70.)
+  if dst: dst.write(y.contiguous().view(torch.int16).cpu().numpy().tobytes())
+Traceback (most recent call last):
+  File "/data/asym27/code/sibmom27.py", line 270, in <module>
+    if dst: dst.write(y.contiguous().view(torch.int16).cpu().numpy().tobytes())
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+torch.AcceleratorError: CUDA error: unspecified launch failure
+Search for `hipErrorLaunchFailure' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+hipModuleUnload failed: 
+ error: unspecified launch failure
+hipModuleUnload failed: 
+ error: unspecified launch failure
+hipModuleUnload failed: 
+ error: unspecified launch failure
+hipModuleUnload failed: 
+ error: unspecified launch failure
+hipModuleUnload failed: 
+ error: unspecified launch failure
+21:07:52 end A rc=0

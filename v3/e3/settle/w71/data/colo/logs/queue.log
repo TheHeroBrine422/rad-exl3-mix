@@ -349,3 +349,262 @@
 12:45:32 start 43-attn_output-K3-s0-g3 B20-4096 (ours 2, anon 72 GiB)
 12:45:34 start 43-attn_output-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 3, anon 73 GiB)
 12:45:36 start 43-attn_output-K3-s1-g3 B20-4096 (ours 4, anon 74 GiB)
+12:46:38 start 63-attn_output-K3-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 5, anon 72 GiB)
+12:47:21 start 63-attn_output-K3-s0-g3 B20-4096 (ours 6, anon 72 GiB)
+12:47:43 start 63-attn_output-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 7, anon 74 GiB)
+12:49:05 start 63-attn_output-K3-s1-g3 B20-4096 (ours 8, anon 78 GiB)
+12:50:47 start 10-ffn_gate_up-K3-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 9, anon 77 GiB)
+12:51:49 start 10-ffn_gate_up-K3-s0-g3 B20-4096 (ours 10, anon 76 GiB)
+12:51:51 start 10-ffn_gate_up-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 11, anon 76 GiB)
+12:52:53 start 63-ffn_down-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 12, anon 69 GiB)
+12:54:15 start 10-ffn_gate_up-K3-s1-g3 B20-4096 (ours 13, anon 74 GiB)
+12:55:37 start 43-ffn_gate_up-K3-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 14, anon 72 GiB)
+12:57:39 start 43-ffn_gate_up-K3-s0-g3 B20-4096 (ours 15, anon 70 GiB)
+12:58:01 start 63-ffn_down-K3-s1-g3 B20-4096 (ours 16, anon 65 GiB)
+12:58:23 start 43-ffn_gate_up-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 17, anon 75 GiB)
+12:59:05 start 43-ffn_gate_up-K3-s1-g3 B20-4096 (ours 18, anon 59 GiB)
+12:59:27 start 62-ffn_gate_up-K3-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 19, anon 59 GiB)
+13:01:29 done 43-attn_output-K3-s0-g3 956s
+13:01:29 done 43-attn_output-K3-s1-g3 952s
+13:01:29 start 62-ffn_gate_up-K3-s0-g3 B20-4096 (ours 18, anon 60 GiB)
+13:01:31 start 62-ffn_gate_up-K3-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 19, anon 61 GiB)
+13:01:53 done 63-attn_output-K3-s0-g3 872s
+13:01:53 start 62-ffn_gate_up-K3-s1-g3 B20-4096 (ours 19, anon 60 GiB)
+13:02:35 done 63-attn_output-K3-s1-g3 810s
+13:02:35 start 2-ffn_down-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 19, anon 57 GiB)
+13:04:57 start 2-ssm_qkv-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 20, anon 72 GiB)
+13:07:39 start 2-ssm_qkv-K4-s0-g3 B20-4096 (ours 21, anon 71 GiB)
+13:09:01 done 43-attn_output-K3-s0-g1 1410s
+13:09:01 done 43-attn_output-K3-s1-g1 1406s
+13:09:01 done 10-ffn_gate_up-K3-s0-g3 1032s
+13:09:01 start 2-ssm_qkv-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 19, anon 59 GiB)
+13:09:03 start 2-ssm_qkv-K4-s1-g3 B20-4096 (ours 20, anon 60 GiB)
+13:09:05 start 30-ssm_qkv-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 60 GiB)
+13:10:27 done 10-ffn_gate_up-K3-s1-g3 972s
+13:10:27 start 30-ssm_qkv-K4-s0-g3 B20-4096 (ours 21, anon 69 GiB)
+13:10:49 done 63-attn_output-K3-s0-g1 1450s
+13:10:49 start 30-ssm_qkv-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 73 GiB)
+13:11:31 start 2-ffn_down-K4-s0-g3 B20-4096 (ours 22, anon 64 GiB)
+13:11:53 done 63-attn_output-K3-s1-g1 1450s
+13:11:53 start 30-ssm_qkv-K4-s1-g3 B20-4096 (ours 22, anon 66 GiB)
+13:13:35 done 43-ffn_gate_up-K3-s0-g3 956s
+13:13:35 start 50-ssm_qkv-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 77 GiB)
+13:16:37 done 10-ffn_gate_up-K3-s0-g1 1550s
+13:16:57 done 43-ffn_gate_up-K3-s1-g3 1072s
+13:17:37 done 62-ffn_gate_up-K3-s0-g3 968s
+13:17:57 done 10-ffn_gate_up-K3-s1-g1 1566s
+13:17:57 start 50-ssm_qkv-K4-s0-g3 B20-4096 (ours 19, anon 71 GiB)
+13:17:59 start 50-ssm_qkv-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 20, anon 72 GiB)
+13:18:01 start 50-ssm_qkv-K4-s1-g3 B20-4096 (ours 21, anon 73 GiB)
+13:18:03 start 10-ssm_z-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 72 GiB)
+13:20:45 done 62-ffn_gate_up-K3-s1-g3 1132s
+13:20:45 start 10-ssm_z-K4-s0-g3 B20-4096 (ours 22, anon 72 GiB)
+13:21:27 done 43-ffn_gate_up-K3-s0-g1 1550s
+13:21:27 start 10-ssm_z-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 78 GiB)
+13:23:49 done 43-ffn_gate_up-K3-s1-g1 1526s
+13:23:49 start 10-ssm_z-K4-s1-g3 B20-4096 (ours 22, anon 75 GiB)
+13:25:11 done 62-ffn_gate_up-K3-s0-g1 1544s
+13:25:11 start 34-ssm_z-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 73 GiB)
+13:27:33 done 62-ffn_gate_up-K3-s1-g1 1562s
+13:27:33 start 34-ssm_z-K4-s0-g3 B20-4096 (ours 22, anon 76 GiB)
+13:28:15 done 2-ssm_qkv-K4-s0-g3 1236s
+13:28:15 start 34-ssm_z-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 77 GiB)
+13:31:37 done 30-ssm_qkv-K4-s0-g3 1270s
+13:31:37 start 34-ssm_z-K4-s1-g3 B20-4096 (ours 22, anon 76 GiB)
+13:31:59 done 2-ssm_qkv-K4-s1-g3 1376s
+13:32:59 start 62-ssm_z-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 77 GiB)
+13:33:21 done 30-ssm_qkv-K4-s1-g3 1288s
+13:33:21 start 62-ssm_z-K4-s0-g3 B20-4096 (ours 22, anon 75 GiB)
+13:34:43 done 2-ssm_qkv-K4-s0-g1 1786s
+13:34:43 start 62-ssm_z-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 75 GiB)
+13:36:25 done 50-ssm_qkv-K4-s0-g3 1108s
+13:36:25 start 62-ssm_z-K4-s1-g3 B20-4096 (ours 22, anon 78 GiB)
+13:37:27 done 63-ffn_down-K3-s1-g3 2366s
+13:37:27 start 2-ffn_down-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 66 GiB)
+13:37:49 done 10-ssm_z-K4-s0-g3 1024s
+13:37:49 start 10-ssm_out-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 74 GiB)
+13:38:11 done 30-ssm_qkv-K4-s0-g1 1746s
+13:38:11 start 10-ssm_out-K4-s0-g3 B20-4096 (ours 22, anon 71 GiB)
+13:39:13 done 2-ssm_qkv-K4-s1-g1 1812s
+13:39:13 start 10-ssm_out-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 63 GiB)
+13:39:35 start 2-ffn_down-K4-s1-g3 B20-4096 (ours 23, anon 60 GiB)
+13:40:17 done 30-ssm_qkv-K4-s1-g1 1768s
+13:40:17 start 10-ssm_out-K4-s1-g3 B20-4096 (ours 23, anon 68 GiB)
+13:40:39 done 10-ssm_z-K4-s1-g3 1010s
+13:40:39 start 30-ssm_out-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 23, anon 67 GiB)
+13:41:21 done 50-ssm_qkv-K4-s1-g3 1400s
+13:41:41 start 30-ssm_out-K4-s0-g3 B20-4096 (ours 23, anon 61 GiB)
+13:42:23 done 50-ssm_qkv-K4-s0-g1 1728s
+13:42:23 start 30-ssm_out-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 23, anon 67 GiB)
+13:44:25 done 34-ssm_z-K4-s0-g3 1012s
+13:44:45 done 10-ssm_z-K4-s0-g1 1602s
+13:46:45 done 10-ssm_z-K4-s1-g1 1518s
+13:47:45 done 50-ssm_qkv-K4-s1-g1 1786s
+13:48:45 done 34-ssm_z-K4-s1-g3 1028s
+13:51:25 done 34-ssm_z-K4-s0-g1 1574s
+13:54:06 done 62-ssm_z-K4-s0-g3 1244s
+13:54:26 done 62-ssm_z-K4-s1-g3 1080s
+13:54:26 start 30-ssm_out-K4-s1-g3 B20-4096 (ours 16, anon 78 GiB)
+13:54:48 done 34-ssm_z-K4-s1-g1 1593s
+13:54:48 start 50-ssm_out-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 16, anon 79 GiB)
+13:55:10 start 50-ssm_out-K4-s0-g3 B20-4096 (ours 17, anon 75 GiB)
+13:55:12 start 50-ssm_out-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 18, anon 76 GiB)
+13:55:34 start 50-ssm_out-K4-s1-g3 B20-4096 (ours 19, anon 72 GiB)
+13:55:36 start 3-attn_qg-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 20, anon 73 GiB)
+13:55:38 start 3-attn_qg-K4-s0-g3 B20-4096 (ours 21, anon 74 GiB)
+13:59:40 done 62-ssm_z-K4-s0-g1 1601s
+13:59:40 start 30-ffn_down-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 67 GiB)
+13:59:42 start 3-attn_qg-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 69 GiB)
+14:00:04 done 2-ffn_down-K4-s0-g3 2913s
+14:00:04 done 10-ssm_out-K4-s0-g3 1312s
+14:00:04 start 30-ffn_down-K4-s0-g3 B20-4096 (ours 21, anon 69 GiB)
+14:01:26 done 62-ssm_z-K4-s1-g1 1603s
+14:01:26 start 3-attn_qg-K4-s1-g3 B20-4096 (ours 21, anon 66 GiB)
+14:02:28 done 10-ssm_out-K4-s1-g3 1330s
+14:02:48 done 30-ssm_out-K4-s0-g3 1266s
+14:02:48 start 19-attn_qg-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 20, anon 64 GiB)
+14:06:10 start 19-attn_qg-K4-s0-g3 B20-4096 (ours 21, anon 69 GiB)
+14:09:12 done 10-ssm_out-K4-s0-g1 1883s
+14:09:12 done 10-ssm_out-K4-s1-g1 1799s
+14:09:12 start 19-attn_qg-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 20, anon 72 GiB)
+14:10:14 done 30-ssm_out-K4-s1-g3 948s
+14:10:14 start 19-attn_qg-K4-s1-g3 B20-4096 (ours 20, anon 77 GiB)
+14:10:16 start 43-attn_qg-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 77 GiB)
+14:10:38 done 30-ssm_out-K4-s0-g1 1799s
+14:10:38 start 43-attn_qg-K4-s0-g3 B20-4096 (ours 21, anon 76 GiB)
+14:12:40 done 30-ssm_out-K4-s1-g1 1817s
+14:14:20 start 43-attn_qg-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 72 GiB)
+14:14:42 start 43-attn_qg-K4-s1-g3 B20-4096 (ours 22, anon 72 GiB)
+14:15:24 done 50-ssm_out-K4-s0-g3 1214s
+14:15:24 start 11-attn_k-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 72 GiB)
+14:16:46 done 63-ffn_down-K3-s1-g1 5033s
+14:16:46 start 30-ffn_down-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 57 GiB)
+14:17:28 done 3-attn_qg-K4-s0-g3 1310s
+14:17:28 start 11-attn_k-K4-s0-g3 B20-4096 (ours 22, anon 68 GiB)
+14:18:10 done 50-ssm_out-K4-s1-g3 1356s
+14:18:30 start 11-attn_k-K4-s1-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 22, anon 74 GiB)
+14:21:32 done 3-attn_qg-K4-s1-g3 1206s
+14:21:32 start 11-attn_k-K4-s1-g3 B20-4096 (ours 22, anon 68 GiB)
+14:23:34 done 50-ssm_out-K4-s0-g1 1726s
+14:23:34 done 3-attn_qg-K4-s0-g1 1678s
+14:23:34 start 35-attn_k-K4-s0-g1 V16,V18,B16-256,B16-1024,B18-1024,B20-256,B20-1024 (ours 21, anon 65 GiB)
+14:24:16 done 19-attn_qg-K4-s0-g3 1086s
+14:24:16 start 35-attn_k-K4-s0-g3 B20-4096 (ours 21, anon 68 GiB)
+14:24:58 FAIL rc=-15 2-ffn_down-K4-s0-g1 (logs/2-ffn_down-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 2-ffn_down-K4-s1-g1 (logs/2-ffn_down-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 2-ffn_down-K4-s1-g3 (logs/2-ffn_down-K4-s1-g3.log)
+14:24:58 FAIL rc=-15 50-ssm_out-K4-s1-g1 (logs/50-ssm_out-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 30-ffn_down-K4-s0-g1 (logs/30-ffn_down-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 3-attn_qg-K4-s1-g1 (logs/3-attn_qg-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 30-ffn_down-K4-s0-g3 (logs/30-ffn_down-K4-s0-g3.log)
+14:24:58 FAIL rc=-15 19-attn_qg-K4-s0-g1 (logs/19-attn_qg-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 19-attn_qg-K4-s1-g1 (logs/19-attn_qg-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 19-attn_qg-K4-s1-g3 (logs/19-attn_qg-K4-s1-g3.log)
+14:24:58 FAIL rc=-15 43-attn_qg-K4-s0-g1 (logs/43-attn_qg-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 43-attn_qg-K4-s0-g3 (logs/43-attn_qg-K4-s0-g3.log)
+14:24:58 FAIL rc=-15 43-attn_qg-K4-s1-g1 (logs/43-attn_qg-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 43-attn_qg-K4-s1-g3 (logs/43-attn_qg-K4-s1-g3.log)
+14:24:58 FAIL rc=-15 11-attn_k-K4-s0-g1 (logs/11-attn_k-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 30-ffn_down-K4-s1-g1 (logs/30-ffn_down-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 11-attn_k-K4-s0-g3 (logs/11-attn_k-K4-s0-g3.log)
+14:24:58 FAIL rc=-15 11-attn_k-K4-s1-g1 (logs/11-attn_k-K4-s1-g1.log)
+14:24:58 FAIL rc=-15 11-attn_k-K4-s1-g3 (logs/11-attn_k-K4-s1-g3.log)
+14:24:58 FAIL rc=-15 35-attn_k-K4-s0-g1 (logs/35-attn_k-K4-s0-g1.log)
+14:24:58 FAIL rc=-15 35-attn_k-K4-s0-g3 (logs/35-attn_k-K4-s0-g3.log)
+14:24:58 W71 QUEUE STOPPED ok=62 fail=21
+14:25:09 start: 81 jobs, 81 to do; max 24, maxdown 5, anoncap 100.0 GiB
+14:25:09 start 2-ffn_down-K2-s1-g5 V20r,B20-4096r (ours 1, anon 2 GiB)
+14:25:11 start 30-ffn_down-K2-s1-g5 V20r,B20-4096r (ours 2, anon 5 GiB)
+14:25:13 start 63-ffn_down-K2-s1-g5 V20r,B20-4096r (ours 3, anon 10 GiB)
+14:25:15 start 2-ssm_qkv-K2-s1-g5 V20r,B20-4096r (ours 4, anon 17 GiB)
+14:25:17 start 30-ssm_qkv-K2-s1-g5 V20r,B20-4096r (ours 5, anon 21 GiB)
+14:25:19 start 50-ssm_qkv-K2-s1-g5 V20r,B20-4096r (ours 6, anon 23 GiB)
+14:25:21 start 10-ssm_z-K2-s1-g5 V20r,B20-4096r (ours 7, anon 24 GiB)
+14:25:23 start 34-ssm_z-K2-s1-g5 V20r,B20-4096r (ours 8, anon 26 GiB)
+14:25:25 start 62-ssm_z-K2-s1-g5 V20r,B20-4096r (ours 9, anon 28 GiB)
+14:25:27 start 10-ssm_out-K2-s1-g5 V20r,B20-4096r (ours 10, anon 30 GiB)
+14:25:29 start 30-ssm_out-K2-s1-g5 V20r,B20-4096r (ours 11, anon 32 GiB)
+14:25:31 start 50-ssm_out-K2-s1-g5 V20r,B20-4096r (ours 12, anon 36 GiB)
+14:25:33 start 3-attn_qg-K2-s1-g5 V20r,B20-4096r (ours 13, anon 39 GiB)
+14:25:35 start 19-attn_qg-K2-s1-g5 V20r,B20-4096r (ours 14, anon 33 GiB)
+14:25:37 start 43-attn_qg-K2-s1-g5 V20r,B20-4096r (ours 15, anon 40 GiB)
+14:25:39 start 11-attn_k-K2-s1-g5 V20r,B20-4096r (ours 16, anon 35 GiB)
+14:25:41 start 35-attn_k-K2-s1-g5 V20r,B20-4096r (ours 17, anon 32 GiB)
+14:25:43 start 63-attn_k-K2-s1-g5 V20r,B20-4096r (ours 18, anon 35 GiB)
+14:25:45 start 7-attn_v-K2-s1-g5 V20r,B20-4096r (ours 19, anon 36 GiB)
+14:25:47 start 43-attn_v-K2-s1-g5 V20r,B20-4096r (ours 20, anon 42 GiB)
+14:25:49 start 59-attn_v-K2-s1-g5 V20r,B20-4096r (ours 21, anon 40 GiB)
+14:25:51 start 19-attn_output-K2-s1-g5 V20r,B20-4096r (ours 22, anon 45 GiB)
+14:25:53 start 43-attn_output-K2-s1-g5 V20r,B20-4096r (ours 23, anon 43 GiB)
+14:25:55 start 63-attn_output-K2-s1-g5 V20r,B20-4096r (ours 24, anon 44 GiB)
+17:01:59 done 2-ssm_qkv-K2-s1-g5 9404s
+17:01:59 done 62-ssm_z-K2-s1-g5 9394s
+17:01:59 done 59-attn_v-K2-s1-g5 9370s
+17:01:59 start 10-ffn_gate_up-K2-s1-g5 V20r,B20-4096r (ours 22, anon 79 GiB)
+17:02:01 start 43-ffn_gate_up-K2-s1-g5 V20r,B20-4096r (ours 23, anon 79 GiB)
+17:02:03 start 62-ffn_gate_up-K2-s1-g5 V20r,B20-4096r (ours 24, anon 80 GiB)
+17:02:25 done 34-ssm_z-K2-s1-g5 9422s
+17:04:05 done 50-ssm_qkv-K2-s1-g5 9526s
+17:06:45 done 43-attn_v-K2-s1-g5 9658s
+17:07:45 done 19-attn_qg-K2-s1-g5 9730s
+17:08:25 done 30-ssm_qkv-K2-s1-g5 9788s
+17:08:25 done 63-attn_k-K2-s1-g5 9762s
+17:08:45 done 3-attn_qg-K2-s1-g5 9792s
+17:13:05 done 43-attn_qg-K2-s1-g5 10048s
+17:13:05 start 2-ffn_down-K3-s1-g5 V20r,B20-4096r (ours 17, anon 73 GiB)
+17:13:47 done 10-ssm_z-K2-s1-g5 10106s
+17:14:27 done 11-attn_k-K2-s1-g5 10128s
+17:16:07 done 35-attn_k-K2-s1-g5 10226s
+17:16:27 done 7-attn_v-K2-s1-g5 10242s
+17:17:27 done 10-ssm_out-K2-s1-g5 10320s
+17:23:07 done 30-ssm_out-K2-s1-g5 10658s
+17:24:07 done 43-attn_output-K2-s1-g5 10694s
+17:24:27 done 50-ssm_out-K2-s1-g5 10736s
+17:24:47 start 30-ffn_down-K3-s1-g5 V20r,B20-4096r (ours 10, anon 71 GiB)
+17:25:49 done 63-attn_output-K2-s1-g5 10794s
+17:27:29 start 2-ssm_qkv-K3-s1-g5 V20r,B20-4096r (ours 10, anon 82 GiB)
+17:27:51 done 19-attn_output-K2-s1-g5 10921s
+17:28:12 start 30-ssm_qkv-K3-s1-g5 V20r,B20-4096r (ours 10, anon 81 GiB)
+17:34:54 start 50-ssm_qkv-K3-s1-g5 V20r,B20-4096r (ours 11, anon 78 GiB)
+17:41:56 start 10-ssm_z-K3-s1-g5 V20r,B20-4096r (ours 12, anon 79 GiB)
+17:47:18 start 34-ssm_z-K3-s1-g5 V20r,B20-4096r (ours 13, anon 78 GiB)
+17:48:20 start 62-ssm_z-K3-s1-g5 V20r,B20-4096r (ours 14, anon 75 GiB)
+17:48:22 start 10-ssm_out-K3-s1-g5 V20r,B20-4096r (ours 15, anon 77 GiB)
+17:48:24 start 30-ssm_out-K3-s1-g5 V20r,B20-4096r (ours 16, anon 78 GiB)
+17:49:26 start 50-ssm_out-K3-s1-g5 V20r,B20-4096r (ours 17, anon 77 GiB)
+17:50:28 start 3-attn_qg-K3-s1-g5 V20r,B20-4096r (ours 18, anon 75 GiB)
+17:50:30 start 19-attn_qg-K3-s1-g5 V20r,B20-4096r (ours 19, anon 76 GiB)
+17:51:12 start 43-attn_qg-K3-s1-g5 V20r,B20-4096r (ours 20, anon 70 GiB)
+17:51:14 start 11-attn_k-K3-s1-g5 V20r,B20-4096r (ours 21, anon 72 GiB)
+17:51:16 start 35-attn_k-K3-s1-g5 V20r,B20-4096r (ours 22, anon 74 GiB)
+17:51:18 start 63-attn_k-K3-s1-g5 V20r,B20-4096r (ours 23, anon 72 GiB)
+17:51:20 start 7-attn_v-K3-s1-g5 V20r,B20-4096r (ours 24, anon 72 GiB)
+18:08:42 done 10-ffn_gate_up-K2-s1-g5 4003s
+18:08:42 start 43-attn_v-K3-s1-g5 V20r,B20-4096r (ours 24, anon 74 GiB)
+18:36:24 done 62-ffn_gate_up-K2-s1-g5 5661s
+18:36:24 start 59-attn_v-K3-s1-g5 V20r,B20-4096r (ours 24, anon 73 GiB)
+18:53:07 done 43-ffn_gate_up-K2-s1-g5 6666s
+18:53:07 start 19-attn_output-K3-s1-g5 V20r,B20-4096r (ours 24, anon 70 GiB)
+18:56:49 done 30-ssm_qkv-K3-s1-g5 5317s
+18:56:49 start 43-attn_output-K3-s1-g5 V20r,B20-4096r (ours 24, anon 70 GiB)
+19:23:31 done 2-ssm_qkv-K3-s1-g5 6962s
+19:23:31 start 63-attn_output-K3-s1-g5 V20r,B20-4096r (ours 24, anon 70 GiB)
+19:30:53 done 10-ssm_z-K3-s1-g5 6537s
+19:30:53 start 10-ffn_gate_up-K3-s1-g5 V20r,B20-4096r (ours 24, anon 70 GiB)
+19:36:35 done 50-ssm_qkv-K3-s1-g5 7302s
+19:36:35 start 43-ffn_gate_up-K3-s1-g5 V20r,B20-4096r (ours 24, anon 70 GiB)
+19:46:57 done 43-attn_qg-K3-s1-g5 6946s
+19:49:17 done 3-attn_qg-K3-s1-g5 7130s
+19:54:58 done 34-ssm_z-K3-s1-g5 7660s
+19:57:18 done 19-attn_qg-K3-s1-g5 7608s
+19:59:38 done 63-attn_k-K3-s1-g5 7700s
+20:01:18 done 7-attn_v-K3-s1-g5 7798s
+20:01:38 done 62-ssm_z-K3-s1-g5 7998s
+20:03:18 done 35-attn_k-K3-s1-g5 7922s
+20:03:58 done 11-attn_k-K3-s1-g5 7964s
+20:07:18 done 43-attn_v-K3-s1-g5 7116s
+20:12:18 done 30-ssm_out-K3-s1-g5 8634s
+20:15:58 done 10-ssm_out-K3-s1-g5 8856s
+20:29:38 done 50-ssm_out-K3-s1-g5 9613s
+20:33:18 done 59-attn_v-K3-s1-g5 7014s
+20:55:19 start 62-ffn_gate_up-K3-s1-g5 V20r,B20-4096r (ours 11, anon 81 GiB)

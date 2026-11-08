@@ -1,0 +1,10 @@
+n 2048: one f64 GEMM 0.03 s (0.67 TFLOP/s)
+  solve              0.71 s, residual 4.7e-14
+  cholesky_solve     0.68 s, residual 5.1e-14, max rel diff to solve 3.4e-14
+  chol+blocked       0.05 s, residual 4.9e-14, max rel diff to solve 3.4e-14
+  chol+inv           0.10 s, residual 8.3e-14, max rel diff to solve 3.4e-14
+n 4096: one f64 GEMM 0.17 s (0.79 TFLOP/s)
+  solve              0.32 s, residual 6.5e-14
+  cholesky_solve     0.26 s, residual 7.1e-14, max rel diff to solve 4.5e-14
+  chol+blocked       0.26 s, residual 6.5e-14, max rel diff to solve 4.5e-14
+  chol+inv           0.50 s, residual 1.1e-13, max rel diff to solve 4.4e-14

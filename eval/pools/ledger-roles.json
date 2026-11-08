@@ -155,5 +155,23 @@
   "line": "proxy-08",
   "decisions": null,
   "note": "0.8B input Hessians, sum x x^T over every calib token, for the 0.8B proxy quants"
+ },
+ "golden-agent-search32": {
+  "role": "select",
+  "line": "v3",
+  "decisions": null,
+  "note": "search-pool traces ripgrep + cobra as 18 turn-aligned chunks of <= 32k tokens (system header unscored; eval/traces, w67): search accept/reject and its long-context guard; first readout 2026-11-07 report-only"
+ },
+ "golden-agent-verify32": {
+  "role": "check",
+  "line": "v3",
+  "decisions": null,
+  "note": "verify-pool traces rich + express as 18 turn-aligned chunks of <= 32k tokens (eval/traces, w67): routine checks of finished mixes only, never iterated against"
+ },
+ "golden-agent-verify-whole": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "rich + express whole, cut from the published calib golden (eval/traces, w67): rare 200k+ 'does anything break' check on finished mixes; never a selection or tuning target; reported with agent-verify32, never alone"
  }
 }

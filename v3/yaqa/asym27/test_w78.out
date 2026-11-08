@@ -1,0 +1,12 @@
+F chunk_bytes 8428: identical
+F chunk_bytes 1204: identical
+F chunk_bytes 1: identical
+F chunk_bytes 67108864: identical
+G expandable_segments guard in sibmom27 before GPU work: True; asym27.sh sets none and unsets the allocator config: True
+H load() clears _open: True
+I blocked Cholesky solve vs torch.linalg.solve: max rel 5.7e-14; lean path uses it with the LU fallback: True
+PASS  F chunked save_lean = save_file
+PASS  G no expandable_segments
+PASS  H load() drops open shards
+PASS  I lean solve = linalg.solve
+ALL PASS

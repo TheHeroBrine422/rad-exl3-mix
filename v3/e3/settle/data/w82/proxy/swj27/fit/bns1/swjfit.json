@@ -1,0 +1,32 @@
+{
+ "tool": "v3/yaqa/swj27/swjfit27.py",
+ "src": "/data/swap27/q-bns1/K2.5",
+ "mode": "level",
+ "meta": "/data/swj27/swj27-qad",
+ "grid": "0.6:1.4:0.01",
+ "docs": 725,
+ "tokens": 927611,
+ "cap": 4096,
+ "split": [
+  0,
+  6,
+  13,
+  19,
+  26,
+  32,
+  38,
+  45,
+  51,
+  58,
+  64
+ ],
+ "fused": true,
+ "no_cache": true,
+ "kernels": {
+  "causal_conv1d": null,
+  "fla": "0.6.0",
+  "torch": "2.15.0+rocm7.14"
+ },
+ "codebook": "i8",
+ "created": "2026-11-06T21:43:14Z"
+}

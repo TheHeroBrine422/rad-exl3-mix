@@ -3,6 +3,49 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 5:45 AM CST · #118 · Knapsack pricing: swj and H_out make the one-sided proxy 12% / 7.6% pessimistic; V2 anchors fine per level, attention overpriced (w82)
+- **Status:** done (report; nothing adopted) · **Machine:** iceman CPU (2(a): 3 single-thread jobs, nice 19, no GPU, no
+  locks, 10:15–11:34 UTC), VM · **Code:** `v3/e3/settle/w82/` (`pw82.py`, `pwreport82.py`, `price82.py`); rules
+  `v3/e3/settle/w82.md` item 2, written before any item-2 number
+- **2(a) swj'd vs plain gate / up, one-sided proxy (decoded levels, calib H_in), 64 layers:** ρ1 = **1.122 at K2.5**
+  (base / s1 / bn / bns1 1.120–1.124; gate 1.20, up 1.05) and **1.056 at K4** (base4 / bn4), while KL is 0.935 / 0.932
+  (K2.5) and 0.990 (K4). The levels' svh sit at the proxy's per-row LS optimum (refit = plain × 0.99999); swj moves gate
+  rows +3.4% (K2.5) and the proxy rises quadratically. The Σdy²-weighted proxy is no better (ρ2 1.13 / 1.08): swj's gain
+  is the SwiGLU product. → Correction if swj'd proxies are ever read: gate / up × **0.891 (K2.5), 0.947 (K4)**; K2 /
+  K3 not measured (no swj'd 27B level; rule values 0.891 / ~0.909). **knap5 needs none today:** it reads plain-level
+  proxies (ourq's proxy.jsonl is pre-swjapply) and prices swj as a KL factor.
+- **Same for H_out (now at every level), from the levels' proxy.jsonl:** H_out level / plain twin = **1.076** (K2.5, 3
+  pairs) and **1.078** (K4, 2 pairs) one-sided, while KL is 0.97–0.99 / 0.94–0.96 (GDN qkv 1.17, z 1.22, attn_qg 1.13,
+  gate / up 1.07, writers 0.99). Same at both K, so the ladder's `KN_LEVELS` positions stay unbiased; absolute values
+  must not replace anchors undivided. H_out is unpriced in knap5 (a KL factor like swj would be consistent).
+- **2(b) V2-based anchors vs measured levels:** knap5's prices equal the 11-05 ladder (`data/v3/levels`: m 1.013 at every
+  K, writers exactly 1.000; gate / up 1.075 = geo(gate, up) vs V2's fused entry, cancels in ratios). Today's plain
+  levels are **4.5% (K2.5) / 4.9% (K4) below** them, uniformly → rule: **no per-level correction**. Per family it is
+  large and K-independent: attn_k 0.74 / 0.72, attn_v 0.83 / 0.80, attn_qg 0.93 / 0.92, ssm_qkv 0.95, rest 0.97–0.99:
+  knap5 overprices attention q / k / v error by 8–28% (lead: per-family factor, or today's ladder as anchors).
+- **2(c) two-sided proxy in kfit2 CV: not done** (needs every V2 container × tensor row-weighted: a card hproxy run or
+  ~30+ CPU-h on iceman; over the 2 CPU-h bar).
+- **Runtime:** none (pricing). **Files:** `v3/e3/settle/data/w82/pwreport82.txt`, `price82.txt`, `pw/`, `proxy/`.
+
+### 2026-11-08 5:40 AM CST · #117 · Residual-stream 128-block permutation (block act order for every reader): FAIL on the CPU proxy (w82)
+- **Status:** fail · **Machine:** colo + Thor CPU (108 settle jobs, 0 failed, 10:06–11:33 UTC, nice 19) · **Code:**
+  `v3/e3/settle/w82/` (`btrace82.py`, `agree82.py`, `settle82.py` = settle64 + mode `rperm`, `q82.py`, `report82.py`);
+  rules `v3/e3/settle/w82.md` item 1 (written before data)
+- **1(a) block-trace agreement (published calib H_in + weights, 272 reader tensors):** median Spearman vs the
+  leave-own-layer-out consensus 0.775, 98.5% ≥ 0.5, family medians ≥ 0.73 → **agree** (gate passed). But the
+  exploitable spread is small: block-trace p90/p10 1.3 (up) – 1.5 (gate) – 1.9–2.4 (GDN) – 2.2–3.2 (attention); o_proj
+  had 2.83.
+- **1(b) settle64 (exllamav3's order), 27 readers × 2 samples, consensus order stored heaviest-last:** median
+  rel / natural **0.9822 (K2.5), 0.9835 (K4)** vs the rule's ≤ 0.98 at both → **FAIL**. Every tensor < 1 (geo 0.982,
+  parameter-weighted 0.985); attn q / k 0.96–0.97, GDN 0.985, gate / up 0.99. The per-tensor oracle order is no better
+  (0.983 / 0.985): the small spread is the limit, not the shared order. Storing heaviest-first costs +6% (attn_qg
+  ×1.6–2.3). With #106-01 (−9% proxy, no KLD) a −1.5% proxy gain is not worth a 27B pair. No ladder change.
+- **Conversion list** (what an exact residual permutation must touch: readers' input columns incl. in_proj_a / b,
+  writers' rows with C9 / asym, norms, embedding / head, vision merger fc2, MTP, DFlash2 taps and residual dim; readers'
+  Σdy² diagonal unchanged; sign vectors must move too or a 27B pair is also a reseed): `v3/e3/settle/w82.md` 1(b).
+- **Runtime:** none (a permutation folded into the stored tensors). **Files:** `v3/e3/settle/data/w82/` (`agree82.txt`,
+  `order82.json`, `report82.txt`, `bt/`, `rperm/`).
+
 ### 2026-11-08 4:10 AM CST · #105 · s1 pair: asym writers +0.7% (z +0.6) at 27B; PASS already impossible (w78)
 - **iceman downtime:** iceman was down 8:28 PM – 11:34 PM CST 11-07 (the upgrade: 9950X, 64 GB), and its container
   again 11:37 PM – 1:11 AM CST. w78 resumed the queue at 1:13 AM (moments kept, mk chunks 0–32 kept).

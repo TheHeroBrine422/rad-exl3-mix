@@ -1,0 +1,48 @@
+--- a/proxy2b/exp/w07-denoise/mkdenoise.py
++++ b/proxy2b/exp/w07-denoise/mkdenoise.py
+@@ -22,7 +22,14 @@
+ every group): the same arithmetic in the same order, but in place and blockwise (no k^2/2 index pairs, at most
+ ~5 k x k fp64 matrices at once, the clip case's eigh included (C, N, H_sub are reloaded for F): ~12 GB at 17408
+ instead of ~30), so its files are bit-identical to the default path's
+-(v3/sib27/test_lean.py); only the stats' norms are summed by blocks."""
++(v3/sib27/test_lean.py); only the stats' norms are summed by blocks.
++v3/yaqa/asym27 copy = proxy2b/exp/w07-denoise/mkdenoise.py + mkdenoise-w78.patch (w78, 11-07): on ROCm (R9700, torch
++2.15+rocm7.14) torch.linalg.solve at k 17408 f64 falls into rocBLAS's degraded TRSM ("Device memory allocation size is
++too small for TRSM") and takes > 20 min a group (> 6 min even alone on the card); the lean path's F^T = G_s'^-1 A^T is
++now a Cholesky factor + blocked triangular solves (1024-row diagonal blocks by solve_triangular, the rest GEMMs):
++16 s at 17408, within ~1e-13 relative of solve (dbg/solvebench*.log), so wpre is no longer bit-identical to the default
++path's (hin is). If G_s' does not factor, torch.linalg.solve as before. stats: "solve_res", the relative residual
++|G_s' F^T - A^T| on 256 sampled columns, and "solve" (the route)."""
+ import argparse, glob, json, os, re, struct
+ import torch
+ from safetensors import safe_open
+@@ -97,6 +104,15 @@
+     k = X.shape[0]
+     for i in range(0, k, BL):
+         dst[i:i + BL] = base[i:i + BL] + a.lam ** 2 * Y[i:i + BL] + lam * (X[i:i + BL] + X[:, i:i + BL].T)
++def _chol_solve_blocked(L, X, bs=1024):              # X <- L^-T L^-1 X in place (L lower), TRSM only on diagonal blocks
++    k = L.shape[0]; st = list(range(0, k, bs))
++    for i in st:
++        j = min(i + bs, k); X[i:j] = torch.linalg.solve_triangular(L[i:j, i:j], X[i:j], upper=False)
++        if j < k: X[j:].sub_(L[j:, i:j] @ X[i:j])
++    for i in reversed(st):
++        j = min(i + bs, k); X[i:j] = torch.linalg.solve_triangular(L[i:j, i:j].T, X[i:j], upper=True)
++        if i > 0: X[:i].sub_(L[i:j, :i].T @ X[i:j])
++    return X
+ def lean_group(mf, g):
+     H, rows, meta = _load_up_lean(f"{a.calib}/{g}.safetensors")
+     def mom(s):                                       # one moment / n, fp64 on dev (N symmetrised, as the default path)
+@@ -125,7 +141,12 @@
+         for i in range(0, k, BL):                     # A = Hs + lam C + rho C^T + rho lam N, into Hs's storage
+             Hs[i:i + BL] = Hs[i:i + BL] + a.lam * C[i:i + BL] + a.rho * C[:, i:i + BL].T + a.rho * a.lam * N[i:i + BL]
+         A = Hs; del C, N; A.diagonal().add_(als)
+-        Ft = torch.linalg.solve(Gs, A.T); del Gs, A
++        L, info = torch.linalg.cholesky_ex(Gs)
++        if int(info) == 0: Ft = _chol_solve_blocked(L, A.T.contiguous()); r["solve"] = "chol-blocked"
++        else: Ft = torch.linalg.solve(Gs, A.T); r["solve"] = "lu"
++        del L
++        cs = torch.randperm(k, generator=torch.Generator().manual_seed(0))[:256].to(dev)
++        r["solve_res"] = float((Gs @ Ft[:, cs] - A.T[:, cs]).norm() / A.T[:, cs].norm()); del Gs, A
+         save_file({"Ft": Ft.float().cpu().contiguous()}, f"{a.out}/wpre/{g}.safetensors.part",
+                   metadata={"lam": str(a.lam), "rho": str(a.rho), "alpha": str(als), "sig": str(sg), "mom": a.mom})
+         os.replace(f"{a.out}/wpre/{g}.safetensors.part", f"{a.out}/wpre/{g}.safetensors")

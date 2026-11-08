@@ -1,0 +1,12 @@
+21:16:24 start E tok 400000 layers 0-1 alloc=[] ser=[] 
+340 windows, 400824 tokens from pools ['qad'] (moments)
+model /data/workspace/models/qwen38-27b-bf16: 64 layers, hidden 5120, attention sdpa, kernels {'causal_conv1d': None, 'fla': '0.6.0', 'torch': '2.15.0+rocm7.14'}
+disk: boundaries 2 x 3.8 GiB, moments 7.6 GiB; free 2760 GiB
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+MIOpen(HIP): Warning [ParseAndLoadDb] File is unreadable: "/data/venv-exl3/lib/python3.14/site-packages/_rocm_sdk_libraries/share/miopen/db/gfx1201_32.HIP.fdb.txt"
+/data/venv-exl3/lib/python3.14/site-packages/triton/knobs.py:504: UserWarning: TRITON_DEFAULT_FP_FUSION is unset: defaulting to FP fusion ENABLED for backward compatibility in Triton 3.9. The default will change to DISABLED in Triton 3.10; set TRITON_DEFAULT_FP_FUSION=1 to keep fusion enabled or =0 to adopt the new default early and silence this warning.
+  warn_once(FP_FUSION_DEFAULT_WARNING)
+layer 0: 72s, 5601 tok/s, peak GPU 15.6 GiB, anon rss 2124 MiB (peak 6280 MiB), eta 1 min
+layer 1: 69s, 5809 tok/s, peak GPU 15.6 GiB, anon rss 2145 MiB (peak 6280 MiB), eta 0 min
+MOMENTS DONE 4 groups, 400824 tokens, 2.3 min (2 layers this run)
+21:18:51 end E rc=0

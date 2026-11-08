@@ -26,7 +26,7 @@
 #      MAXH (5: moment hours allowed by the gate), GUARD_MB (3000: memguard for our own jobs, above the queue's 2500 so
 #      ours die first), MINMEM_GB (6: a card step starts only with this much MemAvailable), STEPS, DRY=1.
 # Code: $A/code (staged from the VM: ASYM27.md "Stage"). Log $A/<ARM>/asym27.log, results $A/result.txt.
-# Stop: touch $A/<ARM>/STOP (between steps; sibmom27 between layers).
+# Stop: touch $A/<ARM>/STOP (between steps; sibmom27 between layers): exit 3. Exit 0 = DONE (or a DRY run), 1 = FAIL.
 : ${RXM_WORK:=/root}; export RXM_WORK
 ARM=${ARM:?ARM} BASE=${BASE:?BASE} CTL=${CTL:?CTL}
 V2IN=${V2:-/data/release/qwen3.8-27b-exl3-v2-3.00bpw.rad}
@@ -39,8 +39,11 @@ ORACLE_SRC=${ORACLE_SRC:-/data/rh117/plugin/exl3import/common}
 STEPS=${STEPS:-pre gate mom mk dose noop arm asm pack score pair}
 DN=$O/dn-l$LAM-r$RHO
 export POOLS=${POOLS:-$RXM_WORK/challenge/pools-v3.json}
+# no expandable_segments allocator (w78, 11-07): on gfx1201 / torch 2.15+rocm7.14 it faulted every 27B moments run in
+# random stock kernels; sibmom27 refuses it
+unset PYTORCH_HIP_ALLOC_CONF PYTORCH_CUDA_ALLOC_CONF PYTORCH_ALLOC_CONF
 export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
-       TORCH_EXTENSIONS_DIR=${TORCH_EXTENSIONS_DIR_ASYM:-/data/asym27/build} PYTORCH_HIP_ALLOC_CONF=expandable_segments:True \
+       TORCH_EXTENSIONS_DIR=${TORCH_EXTENSIONS_DIR_ASYM:-/data/asym27/build} \
        TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL=1 OMP_NUM_THREADS=4 TOKENIZERS_PARALLELISM=false
 
 # swap27's pack / mix / census / score (sourced as swap27k.sh does), then everything they write redirected to $A
@@ -113,7 +116,7 @@ if want mom && [ ! -f $O/mom.done ]; then
   memok mom; log "moments: start"
   card $PY -I $CODE/sibmom27.py $CKPT $META $O/mom --level $BASE --codebook $CB --tokens $TOK --wins $WINS --seed 0 \
     --snap-layers 0,3,31,63 >> $O/mom.log 2>&1
-  rc=$?; [ $rc = 3 ] && { log "moments stopped (STOP); rerun to resume"; exit 0; }
+  rc=$?; [ $rc = 3 ] && { log "moments stopped (STOP); rerun to resume"; exit 3; }
   [ $rc = 99 ] && die "moments killed by the memory guard (MemAvailable < $GUARD_MB MB; rerun resumes per layer)"
   [ -n "$DRY" ] || grep -q "^MOMENTS DONE 128 groups" <(tail -n 2 $O/mom.log) || die "moments FAIL rc=$rc ($O/mom.log; rerun resumes per layer)"
   log "moments: $(tail -n 1 $O/mom.log); $(grep -o 'peak GPU [0-9.]* GiB' $O/mom.log | sort -k3 -n | tail -1), $(grep -o 'peak [0-9]* MiB' $O/mom.log | sort -k2 -n | tail -1) RSS"
@@ -196,4 +199,8 @@ if want pair && [ -z "$DRY" ] && [ -f $A/${ARM}a.json.rows ]; then
   log "pair $(basename ${CR%.json.rows}) -> ${ARM}a: $(cat $O/pair.json)"
   [ -n "$NOOPFAIL" ] && log "pair $CTL -> ${ARM}n (code drift on the writers): $($PY -I $T/paired.py $G /data/swap27/$CTL.json.rows $A/${ARM}n.json.rows | tail -n 1)"
 fi
+# w78: a DRY run, a STOP or a missing pair never reads as DONE (11-07: a DRY run's "DONE" was taken for a real one)
+[ -n "$DRY" ] && { log "ASYM27 $ARM DRY RUN END (nothing ran)"; exit 0; }
+[ -f $O/STOP ] && { log "ASYM27 $ARM STOPPED (STOP file; rerun to resume)"; exit 3; }
+[[ " $STEPS " != *" pair "* ]] || [ -s $O/pair.json ] || die "no $O/pair.json after the pair step"
 log "ASYM27 $ARM DONE ($STEPS)"

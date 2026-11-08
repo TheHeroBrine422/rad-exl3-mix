@@ -1,0 +1,106 @@
+10:08:58 start: 52 jobs, 52 to do; max 6, memcap 7.5 GiB
+10:08:58 start rperm mul1x_i8 30 ssm_qkv 2.5 0 (ours 1, est used 0.0 GiB)
+10:09:01 start rperm mul1x_i8 61 ssm_qkv 2.5 0 (ours 2, est used 1.8 GiB)
+10:09:04 start rperm mul1x_i8 21 ssm_z 2.5 0 (ours 3, est used 3.6 GiB)
+10:09:07 start rperm mul1x_i8 62 ssm_z 2.5 0 (ours 4, est used 5.0 GiB)
+10:12:25 done rperm mul1x_i8 21 ssm_z 2.5 0 201s
+10:12:25 done rperm mul1x_i8 62 ssm_z 2.5 0 198s
+10:12:25 start rperm mul1x_i8 19 attn_qg 2.5 0 (ours 3, est used 3.6 GiB)
+10:12:28 start rperm mul1x_i8 35 attn_k 2.5 0 (ours 4, est used 5.6 GiB)
+10:13:01 start rperm mul1x_i8 7 attn_v 2.5 0 (ours 5, est used 5.8 GiB)
+10:13:19 done rperm mul1x_i8 30 ssm_qkv 2.5 0 261s
+10:13:19 done rperm mul1x_i8 61 ssm_qkv 2.5 0 258s
+10:13:19 start rperm mul1x_i8 59 attn_v 2.5 0 (ours 4, est used 4.4 GiB)
+10:15:37 done rperm mul1x_i8 35 attn_k 2.5 0 189s
+10:15:37 start rperm mul1x_i8 10 ffn_gate 2.5 0 (ours 4, est used 4.7 GiB)
+10:16:10 done rperm mul1x_i8 7 attn_v 2.5 0 189s
+10:16:25 done rperm mul1x_i8 59 attn_v 2.5 0 186s
+10:16:25 start rperm mul1x_i8 43 ffn_gate 2.5 0 (ours 3, est used 3.9 GiB)
+10:16:58 done rperm mul1x_i8 19 attn_qg 2.5 0 273s
+10:19:43 start rperm mul1x_i8 10 ffn_up 2.5 0 (ours 3, est used 3.9 GiB)
+10:20:16 done rperm mul1x_i8 10 ffn_gate 2.5 0 279s
+10:20:31 start rperm mul1x_i8 38 ffn_up 2.5 0 (ours 3, est used 3.9 GiB)
+10:20:49 done rperm mul1x_i8 43 ffn_gate 2.5 0 264s
+10:23:49 start rperm mul1x_i8 62 ffn_up 2.5 0 (ours 3, est used 3.9 GiB)
+10:24:07 start rperm mul1x_i8 30 ssm_qkv 2.5 1 (ours 4, est used 5.5 GiB)
+10:24:25 done rperm mul1x_i8 10 ffn_up 2.5 0 282s
+10:25:10 done rperm mul1x_i8 38 ffn_up 2.5 0 279s
+10:25:10 start rperm mul1x_i8 61 ssm_qkv 2.5 1 (ours 3, est used 4.4 GiB)
+10:27:58 start rperm mul1x_i8 21 ssm_z 2.5 1 (ours 4, est used 4.9 GiB)
+10:28:16 done rperm mul1x_i8 62 ffn_up 2.5 0 267s
+10:28:16 done rperm mul1x_i8 30 ssm_qkv 2.5 1 249s
+10:28:16 start rperm mul1x_i8 62 ssm_z 2.5 1 (ours 3, est used 3.2 GiB)
+10:28:19 start rperm mul1x_i8 19 attn_qg 2.5 1 (ours 4, est used 4.6 GiB)
+10:29:22 done rperm mul1x_i8 61 ssm_qkv 2.5 1 252s
+10:29:22 start rperm mul1x_i8 35 attn_k 2.5 1 (ours 4, est used 4.8 GiB)
+10:29:25 start rperm mul1x_i8 7 attn_v 2.5 1 (ours 5, est used 6.0 GiB)
+10:31:13 done rperm mul1x_i8 21 ssm_z 2.5 1 195s
+10:31:13 start rperm mul1x_i8 59 attn_v 2.5 1 (ours 5, est used 6.0 GiB)
+10:31:31 done rperm mul1x_i8 62 ssm_z 2.5 1 195s
+10:32:31 done rperm mul1x_i8 35 attn_k 2.5 1 189s
+10:32:31 done rperm mul1x_i8 7 attn_v 2.5 1 186s
+10:32:31 start rperm mul1x_i8 10 ffn_gate 2.5 1 (ours 3, est used 2.6 GiB)
+10:32:34 start rperm mul1x_i8 43 ffn_gate 2.5 1 (ours 4, est used 4.6 GiB)
+10:32:52 done rperm mul1x_i8 19 attn_qg 2.5 1 273s
+10:34:22 done rperm mul1x_i8 59 attn_v 2.5 1 189s
+10:36:37 start rperm mul1x_i8 10 ffn_up 2.5 1 (ours 3, est used 2.9 GiB)
+10:37:10 done rperm mul1x_i8 10 ffn_gate 2.5 1 279s
+10:37:10 done rperm mul1x_i8 43 ffn_gate 2.5 1 276s
+10:37:10 start rperm mul1x_i8 38 ffn_up 2.5 1 (ours 2, est used 2.6 GiB)
+10:40:44 start rperm mul1x_i8 62 ffn_up 2.5 1 (ours 3, est used 3.9 GiB)
+10:41:02 done rperm mul1x_i8 10 ffn_up 2.5 1 264s
+10:41:02 start rperm mul1x_i8 30 ssm_qkv 4 0 (ours 3, est used 5.2 GiB)
+10:41:50 done rperm mul1x_i8 38 ffn_up 2.5 1 279s
+10:41:50 start rperm mul1x_i8 61 ssm_qkv 4 0 (ours 3, est used 4.4 GiB)
+10:44:53 start rperm mul1x_i8 21 ssm_z 4 0 (ours 4, est used 4.9 GiB)
+10:45:11 done rperm mul1x_i8 62 ffn_up 2.5 1 267s
+10:45:11 done rperm mul1x_i8 30 ssm_qkv 4 0 249s
+10:45:11 start rperm mul1x_i8 62 ssm_z 4 0 (ours 3, est used 3.2 GiB)
+10:45:14 start rperm mul1x_i8 19 attn_qg 4 0 (ours 4, est used 4.6 GiB)
+10:46:02 done rperm mul1x_i8 61 ssm_qkv 4 0 252s
+10:46:02 start rperm mul1x_i8 35 attn_k 4 0 (ours 4, est used 4.8 GiB)
+10:46:05 start rperm mul1x_i8 7 attn_v 4 0 (ours 5, est used 6.0 GiB)
+10:48:08 done rperm mul1x_i8 21 ssm_z 4 0 195s
+10:48:08 start rperm mul1x_i8 59 attn_v 4 0 (ours 5, est used 6.1 GiB)
+10:48:26 done rperm mul1x_i8 62 ssm_z 4 0 195s
+10:49:11 done rperm mul1x_i8 35 attn_k 4 0 189s
+10:49:11 done rperm mul1x_i8 7 attn_v 4 0 186s
+10:49:11 start rperm mul1x_i8 10 ffn_gate 4 0 (ours 3, est used 3.2 GiB)
+10:49:29 done rperm mul1x_i8 19 attn_qg 4 0 255s
+10:49:29 start rperm mul1x_i8 43 ffn_gate 4 0 (ours 3, est used 3.9 GiB)
+10:51:02 done rperm mul1x_i8 59 attn_v 4 0 174s
+10:53:17 start rperm mul1x_i8 10 ffn_up 4 0 (ours 3, est used 3.9 GiB)
+10:53:35 done rperm mul1x_i8 10 ffn_gate 4 0 264s
+10:53:35 start rperm mul1x_i8 38 ffn_up 4 0 (ours 3, est used 3.9 GiB)
+10:53:53 done rperm mul1x_i8 43 ffn_gate 4 0 264s
+10:57:23 start rperm mul1x_i8 62 ffn_up 4 0 (ours 3, est used 3.9 GiB)
+10:57:41 done rperm mul1x_i8 10 ffn_up 4 0 264s
+10:57:41 start rperm mul1x_i8 30 ssm_qkv 4 1 (ours 3, est used 3.9 GiB)
+10:57:44 start rperm mul1x_i8 61 ssm_qkv 4 1 (ours 4, est used 5.7 GiB)
+10:58:02 done rperm mul1x_i8 38 ffn_up 4 0 267s
+11:01:32 start rperm mul1x_i8 21 ssm_z 4 1 (ours 4, est used 4.9 GiB)
+11:01:35 start rperm mul1x_i8 62 ssm_z 4 1 (ours 5, est used 5.0 GiB)
+11:01:53 done rperm mul1x_i8 62 ffn_up 4 0 270s
+11:01:53 done rperm mul1x_i8 30 ssm_qkv 4 1 252s
+11:01:53 done rperm mul1x_i8 61 ssm_qkv 4 1 249s
+11:01:53 start rperm mul1x_i8 19 attn_qg 4 1 (ours 3, est used 2.8 GiB)
+11:01:56 start rperm mul1x_i8 35 attn_k 4 1 (ours 4, est used 4.8 GiB)
+11:01:59 start rperm mul1x_i8 7 attn_v 4 1 (ours 5, est used 6.0 GiB)
+11:04:47 done rperm mul1x_i8 21 ssm_z 4 1 195s
+11:04:47 done rperm mul1x_i8 62 ssm_z 4 1 192s
+11:04:47 start rperm mul1x_i8 59 attn_v 4 1 (ours 4, est used 4.6 GiB)
+11:05:05 done rperm mul1x_i8 35 attn_k 4 1 189s
+11:05:05 done rperm mul1x_i8 7 attn_v 4 1 186s
+11:05:05 start rperm mul1x_i8 10 ffn_gate 4 1 (ours 3, est used 3.2 GiB)
+11:06:23 done rperm mul1x_i8 19 attn_qg 4 1 270s
+11:06:23 start rperm mul1x_i8 43 ffn_gate 4 1 (ours 3, est used 3.8 GiB)
+11:07:41 done rperm mul1x_i8 59 attn_v 4 1 174s
+11:09:11 start rperm mul1x_i8 10 ffn_up 4 1 (ours 3, est used 3.9 GiB)
+11:09:29 done rperm mul1x_i8 10 ffn_gate 4 1 264s
+11:10:29 start rperm mul1x_i8 38 ffn_up 4 1 (ours 3, est used 3.9 GiB)
+11:10:47 done rperm mul1x_i8 43 ffn_gate 4 1 264s
+11:13:17 start rperm mul1x_i8 62 ffn_up 4 1 (ours 3, est used 3.9 GiB)
+11:13:35 done rperm mul1x_i8 10 ffn_up 4 1 264s
+11:14:50 done rperm mul1x_i8 38 ffn_up 4 1 261s
+11:17:35 done rperm mul1x_i8 62 ffn_up 4 1 258s
+11:17:50 W82 QUEUE DONE ok=52 fail=0

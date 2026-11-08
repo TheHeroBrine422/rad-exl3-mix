@@ -1,0 +1,14 @@
+model.language_model.layers.0.linear_attn.out_proj.input     trN +8.405e-04 trC -3.194e-03 hsub 0.015 clip 0.0e+00 Fdev 3.309e-02 (lean)
+MKDENOISE DONE 1 groups -> /data/asym27/dbg/mk-old-g6
+g6 old 6 s
+model.language_model.layers.0.linear_attn.out_proj.input     trN +8.405e-04 trC -3.194e-03 hsub 0.015 clip 0.0e+00 Fdev 3.309e-02 (lean)
+MKDENOISE DONE 1 groups -> /data/asym27/dbg/mk-new-g6
+g6 new 6 s
+model.language_model.layers.0.mlp.down_proj.input            trN +5.686e-03 trC -5.601e-02 hsub 0.585 clip 3.1e-04 Fdev 6.653e-02 (lean)
+MKDENOISE DONE 1 groups -> /data/asym27/dbg/mk-new-g17
+g17 new 112 s
+hin bit-identical
+wpre differ: 1069 of 37748736 f32 values, max rel 2.2e-10
+old {"group": "model.language_model.layers.0.linear_attn.out_proj.input", "lam": 1.0, "rho": 0.0, "sig": 0.025, "n": 1002035, "rows": 10259331, "tr_N": 0.0008404528816755381, "tr_C": -0.00319412383311
+new {"group": "model.language_model.layers.0.linear_attn.out_proj.input", "lam": 1.0, "rho": 0.0, "sig": 0.025, "n": 1002035, "rows": 10259331, "tr_N": 0.0008404528816755381, "tr_C": -0.00319412383311
+g17 {"group": "model.language_model.layers.0.mlp.down_proj.input", "lam": 1.0, "rho": 0.0, "sig": 0.025, "n": 1002035, "rows": 10259331, "tr_N": 0.005686012749835501, "tr_C": -0.05601161089739052, "hs

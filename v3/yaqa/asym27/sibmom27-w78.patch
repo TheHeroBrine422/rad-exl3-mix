@@ -1,0 +1,61 @@
+--- a/v3/sib27/sibmom27.py
++++ b/v3/sib27/sibmom27.py
+@@ -27,8 +27,9 @@
+ Windows: --wins moments = moments.py's list (the --pools docs cut into --win windows, a shorter doc >= 64 tokens is one
+ window, shuffled by --seed, until --tokens); --wins long = collect.py's (whole --win windows only, the same shuffle).
+ Env DEV (cuda), VRAM_CAP_GB (as moments.py), P2B_BLOCK (as proxy2b/common.py), SIB_ATTN (attention implementation, default sdpa), POOLS.
+-v3/yaqa/asym27 copy = v3/sib27/sibmom27.py + sibmom27-lowram.patch (moment files written one tensor at a time:
+-~1.2 GB of host RAM at a 27B down group instead of ~7 GB; same tensors and metadata). Merge the patch, then drop the copy."""
++v3/yaqa/asym27 copy = v3/sib27/sibmom27.py (sibmom27-lowram.patch already merged there) + sibmom27-w78.patch: no
++expandable_segments on ROCm, row-block moment saves, open checkpoint shards dropped after each load (w78, 11-07; the
++27B run faulted / ran out of host RAM without them; same moments bit for bit). Merge the patch, then drop the copy."""
+ import argparse, functools, hashlib, json, os, resource, shutil, sys, time
+ for _b in filter(None, os.environ.get("P2B_BLOCK", "").split(",")): sys.modules[_b] = None
+ import numpy as np, torch
+@@ -51,6 +52,12 @@
+ assert (a.wq is None) != (a.level is None), "exactly one of --wq / --level"
+ L = "model.language_model.layers"
+ DEV = torch.device(os.environ.get("DEV", "cuda"))
++# w78 (11-07): with the caching allocator's expandable segments, torch 2.15+rocm7.14 on the R9700 (gfx1201) faults in
++# random stock kernels (HSA illegal instruction / aperture violation in GEMM, reduce, CK conv) within 30 s - 2 min
++# of the full run; gone without them, and hidden by AMD_SERIALIZE_KERNEL=3. Refuse rather than die mid-layer.
++if DEV.type == "cuda" and torch.version.hip and any("expandable_segments:true" in os.environ.get(v, "").lower().replace(" ", "")
++        for v in ("PYTORCH_HIP_ALLOC_CONF", "PYTORCH_CUDA_ALLOC_CONF", "PYTORCH_ALLOC_CONF")):
++    sys.exit("sibmom27: expandable_segments is set in the allocator config: it faults on ROCm (w78); unset it")
+ if DEV.type == "cuda" and os.environ.get("VRAM_CAP_GB"):   # as moments.py (the 4070 shares its card with the desktop)
+     torch.cuda.set_per_process_memory_fraction(min(1.0, float(os.environ["VRAM_CAP_GB"]) * 2**30 / torch.cuda.get_device_properties(0).total_memory))
+ WORK = a.work or f"{a.out}/work"
+@@ -113,6 +120,7 @@
+ def load(prefix, mod):       # module prefix in the text model -> checkpoint "model.language_model.<prefix>"
+     for pn, _ in list(mod.named_parameters()):
+         set_module_tensor_to_device(tm, f"{prefix}.{pn}", DEV, value=ck(f"model.language_model.{prefix}.{pn}"), dtype=torch.bfloat16)
++    _open.clear()            # an open shard keeps what it read in host RAM (the 2.5 GB embedding through layer 0: w78)
+ def unload(prefix, mod):
+     for pn, _ in list(mod.named_parameters()): set_module_tensor_to_device(tm, f"{prefix}.{pn}", "meta")
+ load("embed_tokens", tm.embed_tokens); load("norm", tm.norm); tm.rotary_emb.to(DEV)
+@@ -183,9 +191,11 @@
+             if s in h: h[s].add_(v)                      # f32 into f64 in place: = h + v.double(), no temporary
+             else: h[s] = v.double()
+             v.zero_()
+-def save_lean(path, tot, metadata):
+-    """safetensors file of tot's "H", "C", "N" as f32, written one tensor at a time: host RAM holds one k x k f32
+-    (1.2 GB at 17408), not save_file's three plus their serialized copies (~7 GB). Same tensors and metadata
++def save_lean(path, tot, metadata, chunk_bytes=64 << 20):
++    """safetensors file of tot's "H", "C", "N" as f32, written in row blocks of ~chunk_bytes, each tensor synced and
++    dropped from the page cache: host RAM holds one block (64 MB), not a k x k f32 (1.2 GB at 17408) plus ~3.6 GB of
++    dirty pages per down group (w78, 11-07: that pushed iceman's MemAvailable under the 3 GB memory guard at the end
++    of layer 0), nor save_file's three tensors plus their serialized copies (~7 GB). Same bytes, tensors and metadata
+     (safe_open reads it as save_file's; header padded with spaces to 8 bytes as the format allows)."""
+     hdr, off = {}, 0
+     for s in "HCN":
+@@ -196,7 +206,9 @@
+     with open(path, "wb") as fh:
+         fh.write(len(hb).to_bytes(8, "little")); fh.write(hb)
+         for s in "HCN":
+-            t = tot[s].float().cpu().contiguous(); t.numpy().tofile(fh); del t
++            T = tot[s]; step = max(1, chunk_bytes // (4 * T.shape[1]))
++            for r in range(0, T.shape[0], step): T[r:r + step].float().cpu().contiguous().numpy().tofile(fh)
++            fh.flush(); os.fdatasync(fh.fileno()); os.posix_fadvise(fh.fileno(), 0, 0, os.POSIX_FADV_DONTNEED)
+     assert os.path.getsize(path) == 8 + len(hb) + off, path
+ 
+ 

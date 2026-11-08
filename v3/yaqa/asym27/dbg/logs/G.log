@@ -1,0 +1,3 @@
+21:16:11 start G tok 4000 layers 2-2 alloc=[expandable_segments:True] ser=[] PYTORCH_HIP_ALLOC_CONF=expandable_segments:True
+sibmom27: expandable_segments is set in the allocator config: it faults on ROCm (w78); unset it
+21:16:13 end G rc=0
