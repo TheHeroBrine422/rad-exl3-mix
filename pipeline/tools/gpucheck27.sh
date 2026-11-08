@@ -33,7 +33,7 @@ U=${1:?cd|i4|c9|all}; CODE=${CODE:-/data/w76chk/code} O=${O:-/data/w76chk}; mkdi
 PY=/data/venv-exl3/bin/python SRC=${SRC:-/data/exl3frac/src}
 MODEL=${MODEL:-/data/workspace/models/qwen38-27b-bf16} HESS=${HESS:-/root/challenge/hessians/calib} HOUT=${HOUT:-/data/swap27/hout-bn}
 export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
-       TORCH_EXTENSIONS_DIR=/data/exl3frac/build PYTORCH_HIP_ALLOC_CONF=expandable_segments:True OMP_NUM_THREADS=4 \
+       TORCH_EXTENSIONS_DIR=/data/exl3frac/build OMP_NUM_THREADS=4 \
        PYTHONPATH=$CODE/pipeline RXQ_RXM=$CODE RXQ_EXL3_SRC=$SRC RXM_CKPT=$MODEL RXM_WORK=$RXM_WORK
 P=model.language_model.layers
 log() { echo "$(date -u +%T) $*" | tee -a $O/result.txt; }

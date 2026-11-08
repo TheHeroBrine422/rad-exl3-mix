@@ -10,7 +10,7 @@
 W=/data/v3levels PY=/data/venv-exl3/bin/python L=/data/v3levels/chain0.log
 mkdir -p $W; cd $RXM_WORK
 log() { echo "$(date -u +%H:%M) $*" | tee -a $L; }
-export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1
 # after the YAQA work that needs both cards (gate 2c, then the gate-2e collection)
 until grep -q "^DONE" /data/yaqa/full64.log 2>/dev/null || ! pgrep -f "^/bin/bash ./gate2e.sh" > /dev/null; do sleep 60; done
 run() { ( exec 9>$RXM_WORK/card0.lock 7>$RXM_WORK/ram.lock; flock 9; flock -s 7; "$@" ); }

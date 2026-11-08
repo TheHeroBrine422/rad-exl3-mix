@@ -11,7 +11,7 @@ W=/data/v3levels PY=/data/venv-exl3/bin/python L=/data/v3levels/chain1.log F=/ro
 mkdir -p $W/emb; cd $RXM_WORK
 log() { echo "$(date -u +%H:%M) $*" | tee -a $L; }
 until grep -q "^DONE" /data/yaqa/full64.log 2>/dev/null || ! pgrep -f "^/bin/bash ./gate2e.sh" > /dev/null; do sleep 60; done
-export ROCR_VISIBLE_DEVICES=1 EXL3_QT_OPTIMIZED=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export ROCR_VISIBLE_DEVICES=1 EXL3_QT_OPTIMIZED=1
 export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build EXL3FRAC_SRC=/data/exl3frac/src
 # ---- 1. embedding
 ( exec 9>$RXM_WORK/card1.lock 7>$RXM_WORK/ram.lock; flock 9; flock -s 7

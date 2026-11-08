@@ -11,7 +11,7 @@ set -u
 BASE=${BASE:-/data/v3ladder2/K2.5}; PERM=${PERM:-/data/w84/p0/q-perm}
 MODEL=${MODEL:-/data/workspace/models/qwen38-27b-bf16} HESS=${HESS:-/root/challenge/hessians/calib}
 export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
-       TORCH_EXTENSIONS_DIR=/data/exl3frac/build PYTORCH_HIP_ALLOC_CONF=expandable_segments:True OMP_NUM_THREADS=4
+       TORCH_EXTENSIONS_DIR=/data/exl3frac/build OMP_NUM_THREADS=4
 RX=(env PYTHONPATH=$CODE/pipeline RXQ_RXM=$CODE RXQ_EXL3_SRC=${SRC:-/data/exl3frac/src} $PY)
 mkdir -p $OUT; log() { echo "$(date -u +%H:%M:%S) $*" | tee -a $OUT/result.txt; }
 L=model.language_model.layers

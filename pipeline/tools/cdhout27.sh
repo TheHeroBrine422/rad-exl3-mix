@@ -32,7 +32,7 @@ GUARD_MB=${GUARD_MB:-3000} MINMEM_GB=${MINMEM_GB:-6}
 MODEL=${MODEL:-/data/workspace/models/qwen38-27b-bf16} HESS=${HESS:-/root/challenge/hessians/calib}
 STEPS=${STEPS:-pre noop arm asm pack hyg score pair}
 export ROCR_VISIBLE_DEVICES=0 EXL3_QT_OPTIMIZED=1 ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 \
-       TORCH_EXTENSIONS_DIR=/data/exl3frac/build PYTORCH_HIP_ALLOC_CONF=expandable_segments:True OMP_NUM_THREADS=4
+       TORCH_EXTENSIONS_DIR=/data/exl3frac/build OMP_NUM_THREADS=4
 
 # swap27's pack / mix / census / score (sourced as cd27.sh / c9w27.sh do), then everything they write redirected to $A
 source <(sed -n '/^: \${RXM_WORK/,/^quant() /p' /data/swap27/tools/swap27.sh | sed '$d')

@@ -6,7 +6,7 @@ C=$1; LEVELS=$2
 W=/data/v3levels PY=/data/venv-exl3/bin/python L=/data/v3levels/levels-c$C.log
 cd $RXM_WORK
 log() { echo "$(date -u +%H:%M) $*" | tee -a $L; }
-export ROCR_VISIBLE_DEVICES=$C EXL3_QT_OPTIMIZED=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export ROCR_VISIBLE_DEVICES=$C EXL3_QT_OPTIMIZED=1
 export ROCM_HOME=/opt/rocm/core-10.1 PYTORCH_ROCM_ARCH=gfx1201 TORCH_EXTENSIONS_DIR=/data/exl3frac/build
 . $W/settings.env
 log "card $C levels $LEVELS with: $OURQ_ARGS"
