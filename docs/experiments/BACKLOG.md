@@ -528,3 +528,15 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   (`v3/yaqa/data/lcurve.json`; reject plans whose guard KL exceeds the uniform head's) as options at 1.0–2.0 bpw; today
   only K5–6 slab heads are offered and the head sits at uniform K3 at 2.0. Est. −2…−3% at 2.0 bpw; gated by #34-02.
 
+
+### Statistics collection for future models (user discussion 2026-11-08; not needed for the 27B: both exist)
+- Measured on the 27B: input Hessians (forward only, `mkhin27`, staged, one card) ~240 tok/s → ~12 card-h for
+  ~10M tokens; Σdy² diagonal (forward + backward, fp32, gen-masked, #33-24) 1,077 min on both cards ≈ 36 card-h, with
+  the layers split across the cards so each card idled ~50%.
+- Cheaper for the next model: (1) **one combined run**: the backward pass needs the forward anyway, so accumulate H_in
+  = Σxxᵀ from the same forward (extra ≈ the xxᵀ GEMMs; host-RAM accumulators for the 17408² down Hessians, ~1.2 GB each,
+  are the constraint: stage them or keep them on the host, 64 GB now); (2) **pipeline the two cards** (micro-batches:
+  card 0 runs sequence i+1 while card 1 runs sequence i) instead of plain layer-split: ~2× on Σdy²; (3) install the
+  real `causal_conv1d` (both collections fall back to the reference GDN conv); (4) stop Σdy² at the convergence point
+  (#33-25 suggests ~half the sequences). Estimate: both statistics for a dense 27B in ~10–12 h on two cards, vs
+  ~18 h + ~6 h today.
