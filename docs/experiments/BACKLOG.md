@@ -513,3 +513,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   at S − adapter bytes → mix → train adapter (with / after heal) vs the plain full-S mix healed the same way; KLD and
   decode speed; ranks / sensitive-tensors-only as extra arms. Only a per-level (mix-independent) adapter could be a
   knapsack option. V4.
+  **Prefill cost (estimate 11-08):** FLOPs ~0.4% (rank 16 on gate_proj: r(in+out)/(in·out)); unfused it re-reads X
+  (~21 MB at M 2048) and read-modify-writes the output (~140 MB) ≈ 0.25 ms vs ~1.8 ms for the int8 GEMM → **~10–15%
+  slower per tensor** (rank-16 GEMMs also run inefficiently); fused (X·A from the main GEMM's loaded X tile, ·B in the
+  epilogue) ~1–3%, needs kernel work in the f16 and A8 paths. Viable only fused; the equal-bytes test must measure
+  prefill gemm_us as well as decode.
