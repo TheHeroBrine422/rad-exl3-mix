@@ -3,6 +3,14 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 8:10 AM CST · #33-28 · K2.5 H_out on golden-verify27: holds — H_out at every level stands
+- One-time routine verify check (pre-registered 6:20 AM: stands if verify geo < 1): bn / bns1 / bns2 vs base / s1 / s2,
+  **0.9570 / 0.9803 / 0.9883, geo 0.9751, pooled z −3.38** (search was geo 0.9801). Hygiene passed on all three.
+  Closes the audit's concern that the every-level adoption rested on a post-hoc standard with no verify rows.
+  (Not the fast-H_out gate: that is w81's, still running.) golden-verify27 now has 5 routine uses: no more on it.
+- #117: p0 pair on the retired golden-search27, for comparison only: base → p0perm 0.983 (z −2.06); readers' proxy
+  geo 0.985 (272/272 < 1). Decision on golden-search27b after p1.
+
 ### 2026-11-08 8:00 AM CST · cdhout27 · tile CD + H_out at K4: PASS — tile CD stays at every level
 - bn4s1ctl → bn4s1cd 0.007723 → 0.007723, **r 1.0000** (z +0.01); with bn4 0.9995: **geo 0.9998, PASS** (rule g ≤ 1.000,
   both r ≤ 1.01). Fresh controls, noop gates and hygiene passed on both. Tile CD stays on (attn_qg, every level, with
