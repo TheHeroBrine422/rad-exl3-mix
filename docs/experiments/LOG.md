@@ -3,6 +3,11 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 6:35 AM CST · #— · Search slices become two-part, calib-sparing (user)
+- golden-search27 retired for decisions (overused, audit above). New 27B search slices: ~65% fresh xcorp (redrawn each
+  round) + ~35% fresh calib search-pool docs (+ optional own-trace chunks, our cards only); pooled decision, same sign
+  required on the xcorp and calib parts. First use: golden-search27b for #117 (w84). `docs/design/eval-data.md`.
+
 ### 2026-11-08 6:20 AM CST · #— · Overfit audit of the last 48 h (user)
 - **Clean:** public untouched (the 6 mentions are repo publicity). Fitting / tuning stayed on fit or held-out fit
   halves (#114, K0.125). Drops (A4, #105, #106, #113, #117-proxy) cannot overfit. **swj** K2.5 confirmed on verify

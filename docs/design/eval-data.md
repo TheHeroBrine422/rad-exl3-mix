@@ -54,6 +54,13 @@ search needs fresh documents every round, and the user wants real-use coverage (
   256-sequence 27B self-gen Σdy² set exists and stays unused. The generation path above remains for eval text
   (agentic goldens) and for later real-use variants.
 
+## Search slices from 2026-11-08 (user): two-part, calib-sparing
+- Each new 27B search slice = ~65% fresh xcorp (redrawn every round; ~53k documents, never reused) + ~35% fresh calib
+  search-pool documents (rotated slowly; the pool is finite: 583 documents), optionally a few ≤ 32k chunks of the
+  user's traces (our cards only). Parts scored and reported separately; decisions on the pooled ratio, **same sign
+  required on both parts**. First: golden-search27b for #117 (w84). golden-search27 (103 docs, overused 11-04…11-08)
+  is retired for decisions. Verify stays calib (verify pool) for final picks and published numbers.
+
 ## xcorp as a statistics source (2026-11-05 / 11-06; #93, #101)
 - **Screening (#93 amendment 1):** re-scoring the adopted 0.8B stack on fresh xcorp keeps the sign of every step but
   only 52–91% of its calib gain (H_out and swj outside ±30%): xcorp does not replace calib for 0.8B decisions;
