@@ -3,6 +3,92 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 4:10 AM CST · #105 · s1 pair: asym writers +0.7% (z +0.6) at 27B; PASS already impossible (w78)
+- **iceman downtime:** iceman was down 8:28 PM – 11:34 PM CST 11-07 (the upgrade: 9950X, 64 GB), and its container
+  again 11:37 PM – 1:11 AM CST. w78 resumed the queue at 1:13 AM (moments kept, mk chunks 0–32 kept).
+- **mkdenoise:** 128 groups.
+  - clip > 0 in 126 groups (max 2.9e-3);
+  - hsub median 0.399 (0.8B: 0.136);
+  - F_dev 0.033–0.112;
+  - **‖WF‖/‖W‖ 1.0012–1.0321.** All above 1, where the 0.8B's were 0.89–1.00 (`data/night1103/w07-denoise.txt`).
+- **Dose** (reported, not gating): ‖F_N/2 − F_N‖ / ‖F_N − I‖ = 0.53–0.81 on layers 0 / 3 / 31 / 63, over the rule's
+  ≳ 0.5 mark. So F at 1M tokens is still mostly sampling noise; per the rule, a 2M collection is the follow-up.
+- **No-op gate PASS:** 512 / 512 tensors bit-identical to `q-s1/K2.5`, so the control is `s1` itself. q-noop took
+  16 min, q-asym 27 min.
+- **Pair** (golden-search27, 103 docs, 123,460 positions; mixes both 2.6244 bpw): s1 0.057570 → s1a 0.057957,
+  **r 1.0067**, z +0.59 (SE 0.00066).
+  - The proxy predicted −14% (K3) / −18% (K2).
+  - All positions (unscored included): 1.2833 → 1.2673, not the rule's metric.
+- **What the rule allows now:** PASS needs both r < 1, so it is already impossible. The pre-registered third pair
+  needs both r < 1 too, so it will not run. The base arm decides between FAIL (g ≥ 1.00, i.e. r_base ≥ 0.993) and
+  INCONCLUSIVE.
+- **Base arm:** moments running since 3:52 AM CST; verdict ~9:30 AM CST.
+- **Runtime:** none. Raw: `/data/asym27/s1a.json(.rows)`, `/data/asym27/s1/pair.json`; repo copies with the verdict.
+
+### 2026-11-08 3:50 AM CST · #116 · The 27B noise floor: the rule's σ is a cross-seed SD; same-seed pairs are ~half as noisy; document error is in neither (w81)
+- **Status:** done (report; nothing re-decided) · **Machine:** gpubox CPU (rows read-only), VM · **Code:**
+  `local/workers/w81/noise27.py` (per-document sums, one joint document bootstrap for every arm), `noise_report.py`
+- **Rows:** golden-search27 (103 docs, 123,460 positions): base / s1 / s2, bn / bns1 / bns2, dy, xbn / xbns1, base4 /
+  base4s1 / bn4 / bn4s1, base4v4 / bn4v4, the swj and C9 arms; golden-verify27 (71 docs): base, s1, base4 / bn4,
+  base4v4 / bn4v4, swj, C9. #105 (asym) has no 27B score yet (s1a mixed 09:25 UTC).
+- **What each estimate measures:** H27 amendment 5's σ = 0.0178 = RMS |log| of base / s1, base / s2, s1 / s2: the noise
+  of comparing two *independently seeded* quants (√2 × a per-quant seed SD of 0.0126; it also holds the doc-sampling
+  error of those contrasts, SE ~0.010 each). The rule tests the mean of same-seed method pairs log(method_i /
+  control_i); the right noise for that is those pairs' own spread across seeds (a paired t on seeds). Pooled over
+  H_out K2.5 (SD 0.0109, df 2), H_out K4 (0.0043, df 1), xcorp (0.0065, df 1): **0.0086, df 4** (95% interval
+  0.0052–0.0248, so 0.0178 is not excluded). Reading: arms sharing a rotation seed share most of its luck (implied
+  ρ ~ 0.76, anything ~0–0.9 fits df 4); bn's own seed pairs are tighter too (RMS 0.0075 vs 0.0178). The pair SD is the
+  right estimate for same-seed pairs, used with t quantiles at its df (pooling assumes one pair noise across methods);
+  0.0178 is right only for cross-seed comparisons.
+- **Missing from both:** every pair is scored on the same slice, so its document error does not average over seeds:
+  joint-bootstrap SE of the 3-pair K2.5 mean 0.0104 (single pairs 0.011–0.015), K4 2-pair mean 0.0104, C9 0.0018.
+  It is as large as the seed term (0.0086/√3 = 0.005) and matters for transfer to the private corpus.
+- **Verdicts under the pooled SD:** K2.5 H_out (geo 0.9801): noise test |log geo| 0.0201 vs 2·0.0086/√3 = 0.0100 →
+  pass (rule's σ: 0.0206 → miss); with the document error added, SE 0.0116, z −1.74. The geo ≤ 0.98 effect bar
+  does not depend on σ and still misses by 0.0001: "real but below the bar" instead of "missed both by a hair". The
+  user's 11-08 adoption at every level stands. **C9 #112-02:** fixed codes, no seed-noise test in its rule (per-pair
+  z ≤ −2 on the doc bootstrap, g ≤ 0.99): unchanged PARTIAL (geo 0.9925, z −2.2 / −5.5, pair spread 0.0019); adopted 11-07.
+- **Review item 4 (stored verify rows):** (a) K4 H_out head-matched (V2 4.00 head), seed 0: search 0.9360 (z −3.6),
+  **verify 0.9647 (z −2.9)**; with the 3.00 head search 0.9613 / verify 0.9703 (the 3.00 head's larger error dilutes
+  the trunk gain). No verify rows exist for the seed-1 pair. (b) seed luck s1 / base: search 0.9753 (z −2.6),
+  **verify 0.9911 (z −1.1)**: same sign, smaller; the difference 0.016 ± 0.0125 (z 1.3) fits one common value
+  ≈ −1.5% (inverse-variance pool). Luck replicates partly; the search slice exaggerated it, by about its doc error.
+- **Runtime:** n/a (statistics). **Files:** `local/workers/w81/noise-readout.md`, `data/noise27.json`.
+
+### 2026-11-08 3:40 AM CST · #115 · Block-diagonal two-sided LDLQ for a diagonal H_out: built, CPU check PASS, card-0 gate queued (w81)
+- **Status:** running · **Machine:** VM (CPU check), gpubox card 0 (gate, under card0.lock + ram.lock shared, between
+  the queue's steps) · **Code:** fork patch 0008 + rxq / ourq patch, `local/workers/w81/` (not applied in place)
+- **Question:** a diagonal H_out becomes exactly block diagonal (128 × 128) after the output Hadamard, so is its block LDL
+  factor; ldlq_2hess's dense feedback (`bmm(dE, Ln[cols][:, :, :n_hi])`, `F[:k_hi, :n_hi] += ...`) multiplies exact
+  zeros. Restrict it to each tile's 128-column group: same objective, how much faster (review 11-07 item 1, PROFILE T1).
+- **Built:** `prepare_H_out_blocks` (the (n/128, 128, 128) blocks and their batched block-16 LDL, no n × n matrix),
+  `ldlq_2hess_blocks` with two schedules: `diag` = the dense path's anti-diagonals with the update per group;
+  `group` = anti-diagonals inside every group at once (tile (a, c) at step a + c mod 8: tiles_k + 7 steps of up to
+  tiles_n tiles, one (k_hi × 128) @ (128 × n) GEMM a step). Dispatch: a 1-D H_out = the diagonal → blocks;
+  `quant_args["hout_dense"]` densifies (reference); a 2-D H_out is the old path unchanged. rxq: `inputs.hout.ldlq =
+  "blocks" | "dense"`, `inputs.hout.schedule`; tile CD accepts the blocks; ourq `--hout-blocks group|diag` (unset = dense).
+- **CPU check** (`w81/check_blockdiag.py`, stub trellis, 4 shapes): prep blocks = the dense matrix's blocks (max diff
+  1e-7 rel; the dense factor is exactly 0 off the blocks); with a smooth stand-in quantizer Q_blocks = Q_dense to
+  ≤ 4.8e-6 for both schedules (the same tile inputs in the same dependency order); a rounding stand-in agrees except
+  near-ties; L_out = 0 moves Q by 1.3 (the check sees the feedback). PASS 17/17.
+- **Gate (task w81, written before GPU data):** 27B layers 10 (GDN + MLP) and 39 (attention + MLP), K4 i8, bn H_out
+  (`/data/swap27/hout-bn`), ladder settings, tile CD and in-job C9 off: blocks (group, diag) vs dense, per tensor
+  f2 = the stored weight's two-sided objective in the original basis (Σ h_n e_n / Σ h_n r_n from `--save-wq` rowerr; the
+  PROFILE T1 judge) within **1e-4 relative**; time per tensor both ways. **Pre-registered reading if that fails:** a
+  float-order change can flip near-tie trellis decisions and the feedback then spreads the change (codes diverge,
+  not the objective). Then the gate reads "same objective" if the CPU check holds (it does), the dense path's own
+  run-to-run spread (arm D2) is reported beside it, and every tensor is within ±0.5% with |geo − 1| ≤ 0.1% (PROFILE T1's
+  "≤ reference × 1.005" judge). Also run: N (no H_out, one-sided time), tile CD on L39 q_proj blocks vs dense, the i4
+  path (layer 10, i4 K0.125 / 0.5 / 1 / 2 / 3, blocks vs no H_out; K0.125 also dense): runs, two-sided objective < no H_out.
+- **Runtime:** none (quantizer only; same objective, format and kernels).
+
+### 2026-11-08 5:00 AM CST · #90 · sub-1 levels: kernel kept, levels built (user)
+- User: the sub-1 decode support stays (~25–30 SLOC: the salted 0-bit read in the plan, decoders and CPU reference;
+  ~40 test lines), and the 7 sub-1 levels (i4 K0.125–0.875) are built for V3: ~22 card-h with H_out as implemented
+  (~6 with w81's fast H_out, ~4.5 plain) is acceptable. They stay last in the build order (after pass 2); the knapsack
+  picks them only below ~1.3 bpw (#90: −1.8% at 1.25, −0.07% at 1.5, 0 at ≥ 2.0). `v3.toml` unchanged (by_level keeps
+  i4 K0.125–1; H_out applies, K0.125 σ 0.2).
+
 ### 2026-11-08 3:45 AM CST · #114-02 · σ 0.2 at K0.125 adopted (user)
 - User: the lowest level is extreme and needs the regularization. `v3.toml` `quant.lowest_level_damping` (k_max 0.125,
   σ 0.2 on both groups); `rxq/config.py` resolves it (K0.125: sigma_reg = sigma_reg_in = 0.2; K0.25 unchanged).
