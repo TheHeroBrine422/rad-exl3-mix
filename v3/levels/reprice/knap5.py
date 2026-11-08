@@ -25,6 +25,16 @@ All new switches default off: without them knap5 is knap4 byte for byte (checked
   KN_HEAD16=1 head budgets on a 1/16-bit grid K3-8 from the existing donors: error on the lower convex hull of the
               integer + slab heads in (bytes, error) (a row mix of two heads; conservative), bytes linear in K (+1 MB).
   KN_PICKS=1  write every tensor's pick (option, mode) into the output line.
+  KN_HEADGRID=1|SPEC,..  (w88, 11-08) head budgets on a 1/16-bit grid from headsim's measured plans (headgrid.py; '1' =
+              v3/yaqa/data lcurve + fcurve-A/B + headslab2, else SIM.json[:PLAN.json] specs): one option ours-hgK<B> per
+              grid budget B, error = r(B) x the grid's head-only KL, r(K) = the model's ours-K<k> head error / headsim's
+              uniform u<k> KL at the integer k both have (log-linear in K between them, clamped), so uniform integer
+              heads keep today's price exactly. Bytes linear in K between the integer heads + 1 MiB (row permutation).
+              Replaces KN_HEADSLAB's K5 / K6 slab options (same data, now one option per budget, floor per budget);
+              not with KN_HEAD16. KN_HG_STEP (1/16), KN_HG_CI (1: conservative end of the 95% interval, as
+              KN_HEADSLAB; 0: mean), KN_HG_GUARD=x (drop plans with rare-token KL > x times the uniform head's),
+              KN_HG_DONORS=k,.. (only plans built from these donors). Output line gets "head": pick, KL, plan.
+              Containers hdgrid-K<B>.rad (to build: headslab.py plan at budget B with the named floor / donors).
 
 knap4.py MODEL.json AQ.jsonl AQFACTORS.json MAP OUT.jsonl TARGETS LAMBDAS -- knap3 with the V3 menu (2026-11-01).
 Switches (env, all default off = knap3's V2-like menu):
@@ -268,7 +278,8 @@ if V3:
         if t["w"] == "output.weight":  # V2's 1.50 / 1.75 picked the K2 head); fractional heads: not until headsim prices them
             for c in [c for c in t["opts"] if c.startswith("ours-K") and not float(c[6:]).is_integer()]:
                 del t["opts"][c]
-if os.environ.get("KN_HEADSLAB") == "1":
+HG = os.environ.get("KN_HEADGRID", "")
+if os.environ.get("KN_HEADSLAB") == "1" and not HG:
     for t in md["tensors"]:
         if t["w"] != "output.weight": continue
         o = t["opts"]
@@ -294,6 +305,34 @@ if os.environ.get("KN_HEAD16") == "1":
             (b0, e0, _), (b1, e1, _) = seg; e = e0 + (B - b0) / (b1 - b0) * (e1 - e0)
             c = f"ours-h16K{K:g}"; o[c] = [B, e, a]; t["family_of"][c] = "ours_head"; n16 += 1
         print(f"head 1/16 budgets: {n16} (hull {[h[2] for h in hull]})", file=sys.stderr)
+HGPLAN = {}                              # KN_HEADGRID: head option -> (head-only KL, plan)
+if HG:
+    assert os.environ.get("KN_HEAD16") != "1", "KN_HEADGRID replaces KN_HEAD16"
+    sys.path.insert(0, HERE); import headgrid
+    _G = headgrid.grid(None if HG == "1" else HG.split(","), step=float(os.environ.get("KN_HG_STEP", 1 / 16)),
+                       ci=os.environ.get("KN_HG_CI", "1") == "1",
+                       guard=float(os.environ["KN_HG_GUARD"]) if os.environ.get("KN_HG_GUARD") else None,
+                       donors={float(x) for x in os.environ["KN_HG_DONORS"].split(",")} if os.environ.get("KN_HG_DONORS") else None)
+    for t in md["tensors"]:
+        if t["w"] != "output.weight": continue
+        o = t["opts"]; ks = sorted(int(c[6:]) for c in o if re.fullmatch(r"ours-K\d+", c))
+        anc = sorted((k, math.log(o[f"ours-K{k:g}"][1] / kl)) for k, kl in _G["uniform"].items() if float(k).is_integer() and int(k) in ks)
+        assert anc, "KN_HEADGRID: no integer uniform head in both the model and the headsim files"
+        def _lin(pts, x):                # piecewise linear, clamped
+            x = min(max(x, pts[0][0]), pts[-1][0]); (x0, y0), (x1, y1) = next(((p, q_) for p, q_ in zip(pts, pts[1:]) if p[0] <= x <= q_[0]), (pts[0], pts[0]))
+            return y0 if x1 == x0 else y0 + (x - x0) / (x1 - x0) * (y1 - y0)
+        bpts = [(k, o[f"ours-K{k}"][0]) for k in ks]
+        for k, kl in _G["uniform"].items():
+            if f"ours-K{k:g}" in o: HGPLAN[f"ours-K{k:g}"] = (kl, f"u{k:g}")
+        for B, kl, desc in _G["grid"]:
+            uv = desc.endswith(f":u{B:g}")              # the vertex is a uniform plan at exactly B
+            if uv and f"ours-K{B:g}" in o: continue      # = today's integer option (the anchor)
+            c = f"ours-hgK{B:g}"; o[c] = [_lin(bpts, B) + (0 if uv else 1 << 20), math.exp(_lin(anc, B)) * kl, B]
+            t["family_of"][c] = "ours_head"; HGPLAN[c] = (kl, desc)
+        print(f"head grid: {sum(c.startswith('ours-hg') for c in o)} budgets {_G['grid'][0][0]:g}..{_G['grid'][-1][0]:g} "
+              f"(step {os.environ.get('KN_HG_STEP', '1/16')}, ci {os.environ.get('KN_HG_CI', '1')}, {_G['kept']} plans, "
+              f"{len(_G['vertices'])} hull vertices, {len(_G['dropped'])} dropped); anchors r(K) "
+              f"{[(k, round(math.exp(v))) for k, v in anc]}", file=sys.stderr)
 if os.environ.get("KN_EMBT") == "1":
     E = md["emb"]; cb = E["bf16"]["cost"]
     lr = {}
@@ -604,6 +643,7 @@ def rad(c, w):
     if V3 and c.startswith("trellis-K"): return f"{RXM_V3}/emb-{c}.rad"
     if V3 and re.fullmatch(r"ours-K[\d.]+", c) and float(c[6:]) in LADDER and w != "output.weight": return f"{RXM_V3}/{c}.rad"
     if not c.startswith("ours-"): return f"{RADF}/q38-27b-{c}.rad"
+    if c.startswith("ours-hg"): return f"{RXM_OURS}/hdgrid-{c[7:]}.rad"
     if c.startswith("ours-slab"): return f"{RXM_OURS}/hdslab-{c[9:]}.rad"
     return f"{RXM_OURS}/hd-{c[5:]}.rad" if w == "output.weight" else f"{RXM_OURS}/{c}.rad"
 name_idx = {n: i for i, n in idx_name.items()}
@@ -646,6 +686,11 @@ with open(OUT, "a") as f:
                 ms = collections.Counter()
                 for i, o in s["picks"]: N, K = shape(TS[i]); ms[o[0]] += N * K
                 r["mode_param_share"] = {k: round(v / pt, 4) for k, v in ms.most_common()}
+            if HG:
+                (hi_, ho), = [(i, o) for i, o in s["picks"] if TS[i]["w"] == "output.weight"]
+                kl_, pl_ = HGPLAN.get(ho[2], (None, None))
+                r["head"] = {"opt": ho[2], "bits": TS[hi_]["opts"][ho[2]][2], "bytes": ho[3], "head_kl": kl_, "plan": pl_,
+                             "cost": ho[4]}
             if os.environ.get("KN_PICKS") == "1": r["picks"] = {TS[i]["w"]: [o[2], o[0] + ("" if o[0] == "f16" else f"g{o[1]}")] for i, o in s["picks"]}
             r["name"] = f"nf-{tg:.2f}-l{lam:.0e}"
             if WDIR: write_set(WDIR, r["name"], s)

@@ -3,6 +3,48 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 9:35 AM CST · #34 · 1/16-bit slab-head grid wired into knap5 (w88): head leaves uniform K3 at 2.0; −2.4…−3.8% predicted at 2.0–3.0
+- **Status:** running (#34; pricing switch ready, not adopted) · **Machine:** colo (CPU, 28 solves, 15:21–15:30 UTC)
+  · **Code:** `local/workers/w88/knap5-headgrid.patch` (knap5 `KN_HEADGRID` + new `v3/levels/reprice/headgrid.py`,
+  `hgreport.py`; not applied)
+- **Setup:** `headgrid.py` takes any headsim outputs (`SIM.json[:PLAN.json]`; default the 11-01 `lcurve` +
+  `fcurve-A/B` + `headslab2`: 171 plans, budgets 2.0–8.0, donors K2–K8 with half steps). Plan KL = the conservative end
+  of the 95% interval (as KN_HEADSLAB; `KN_HG_CI=0` = mean). Lower hull over every plan and floor (so the floor is
+  chosen per budget), one option per 1/16 bit (97 points; between measured 1/8 budgets a linear block mix of the two
+  neighbours). knap5 prices option B at r(B) × head KL, with r(K) = model head error / headsim uniform KL at K2–K8
+  (0.78–1.04 M, log-linear in K). So uniform heads keep today's price exactly. Bytes linear in K + 1 MiB permutation.
+  The grid replaces KN_HEADSLAB's K5 / K6 slabs. Switches: `KN_HG_GUARD=x` (drop plans with rare-token KL > x × the
+  uniform head's at equal bits; 1.5 changes nothing, 1.0 cuts the hull to 14 vertices), `KN_HG_DONORS` (only plans
+  buildable from listed donors; K3–K7 alone gives back today's menu). Base = w63's `main` env (V3R, swj pts 2:0.91 …
+  5:1.0, accurate f16 λ 0; fast λ 3e-7 alongside).
+- **Check:** with the switch off, the patched knap5 is byte-identical to knap5 (4 sizes).
+- **Result (kfit2-model predictions, accurate):**
+
+  | size | today's menu: head, KLD | grid (CI): head, KLD | grid (mean) | grid, guard 1.0 |
+  |---|---|---|---|---|
+  | 2.0 | uniform K3, 0.12066 | slab 2.5 (K2 floor), 0.11775 (−2.4%) | −3.2% | slab 3.125 (K3 floor), −1.6% |
+  | 2.5 | uniform K4, 0.05340 | slab 3.125 (K3 floor), 0.05136 (−3.8%) | −4.1% | same as grid, −3.8% |
+  | 3.0 | uniform K4, 0.02533 | slab 3.6875 (K3.5 floor), 0.02464 (−2.7%) | −3.1% (3.75) | slab 3.25, −1.2% |
+  | 4.0 | slab K5, 0.006670 | slab 4.5 (K4 floor), 0.006575 (−1.4%) | −1.9% (4.375) | slab 5.125, −0.3% |
+
+  The head gives up 0.3–0.9 bit (47–133 MiB) to the trunk (25–93 trunk picks go up, none down). Embedding is
+  unchanged. Fast λ 3e-7: same heads and the same gains (−2.4 / −3.8 / −2.7 / −1.4%).
+- **Caveats:**
+  - **Old donors.** The curves are the 11-01 pre-crash donors, before mean-row (−30% head KL on every head, assumed
+    to scale out through r). All picked plans need donors in the planned 17-donor set (K2, K3.5, K4.5–6); none
+    can be built from today's K3–K7.
+  - **Rare tokens.** The 2.0 pick (K2 floor) has rare-token KL 0.051 vs uniform K3's 0.016 (×3.2). At equal bits it
+    is −34% mean, and the guard-1.0 arm keeps a K3 floor there. #34-02 checks only K5 / K6 slabs at 4.00, so a
+    low-floor head at 2.0–2.5 needs its own whole-model pair before adoption (report KL99 / top-1).
+  - **In-pool selection.** headsim's inputs and the per-budget floor choice are both calib-A (fit pool). Pricing on
+    fit is allowed; the CI arm is the conservative read.
+- **Decision / next (lead):** apply the patch (`git apply`); add `KN_HEADGRID=1` to the V3 search arms once #34-02
+  passes. After the 17 donors: headsim at 1/16 budgets (`headslab.py` curve mode, `HS_FLOOR_ALL=1`), pass the new
+  files to `KN_HEADGRID=SIM:PLAN,...` with `KN_HG_DONORS` = the built set. Containers: `hdgrid-K<B>.rad` (the
+  output line's `head.plan` names the plan / floor).
+- **Runtime:** none in the format (row-slab head = #34's D cost); pricing only.
+- **Files:** `data/levels/reprice/headgrid/` (`out/*.jsonl`, `report.out`, `jobs.txt`, logs).
+
 ### 2026-11-08 9:35 AM CST · #117 · residual-stream permutation at 27B: rule says ADOPT, effect ~−0.3% (not significant)
 - Two seed pairs, K2.5 plain levels, read on the fresh two-part slice golden-search27b (65 xcorp + 36 calib-search
   docs): pooled r **0.9970 / 0.9967, geo 0.9968, pooled z −0.62**; part geo xcorp 0.9975, calib 0.9926 (same sign).

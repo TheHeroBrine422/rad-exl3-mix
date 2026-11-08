@@ -1,0 +1,44 @@
+== accurate (f16, lambda 0)
+ size arm          bpw       KLD  vs menu      head pick head bits head cost  emb    plan
+    2 menu       2.000  0.120662   +0.00%        ours-K3         3  5.09e-03  t1.5   
+    2 grid       2.000  0.117745   -2.42%    ours-hgK2.5       2.5  6.78e-03  t1.5   mix 1.00 lcurve.json:s2.5-f2 + 0.00 lcurve.json:s3.125-f3
+                head -0.5 bit (-76 MiB); trunk picks changed 54 (54 up, 0 down, 0 other family); emb t1.5 -> t1.5
+    2 gridmean   2.000  0.116762   -3.23%    ours-hgK2.5       2.5  5.98e-03  t1.5   mix 0.99 lcurve.json:s2.5-f2 + 0.01 lcurve.json:s2.625-f2
+                head -0.5 bit (-76 MiB); trunk picks changed 54 (54 up, 0 down, 0 other family); emb t1.5 -> t1.5
+    2 gridg1     2.000  0.118721   -1.61%  ours-hgK3.125     3.125  2.45e-03  t1.5   mix 0.99 lcurve.json:s3.125-f3 + 0.01 lcurve.json:s3.25-f3
+                head +0.125 bit (+19 MiB); trunk picks changed 19 (0 up, 19 down, 0 other family); emb t1.5 -> t1.5
+  2.5 menu       2.500  0.053399   +0.00%        ours-K4         4  1.30e-03  t2     
+  2.5 grid       2.500  0.051360   -3.82%  ours-hgK3.125     3.125  2.45e-03  t2     mix 0.99 lcurve.json:s3.125-f3 + 0.01 lcurve.json:s3.25-f3
+                head -0.875 bit (-133 MiB); trunk picks changed 93 (93 up, 0 down, 0 other family); emb t2 -> t2
+  2.5 gridmean   2.500  0.051205   -4.11%  ours-hgK3.125     3.125  2.31e-03  t2     mix 0.99 lcurve.json:s3.125-f3 + 0.01 lcurve.json:s3.25-f3
+                head -0.875 bit (-133 MiB); trunk picks changed 93 (93 up, 0 down, 0 other family); emb t2 -> t2
+  2.5 gridg1     2.500  0.051360   -3.82%  ours-hgK3.125     3.125  2.45e-03  t2     mix 0.99 lcurve.json:s3.125-f3 + 0.01 lcurve.json:s3.25-f3
+                head -0.875 bit (-133 MiB); trunk picks changed 93 (93 up, 0 down, 0 other family); emb t2 -> t2
+    3 menu       3.000  0.025332   +0.00%        ours-K4         4  1.30e-03  t2.5   
+    3 grid       3.000  0.024636   -2.75% ours-hgK3.6875     3.688  1.11e-03  t2.5   mix 0.48 fcurve-A.json:s3.625-f3.5 + 0.52 fcurve-A.json:s3.75-f3.5
+                head -0.3125 bit (-47 MiB); trunk picks changed 33 (33 up, 0 down, 0 other family); emb t2.5 -> t2.5
+    3 gridmean   3.000  0.024539   -3.13%   ours-hgK3.75      3.75  9.23e-04  t2.5   mix 0.98 fcurve-A.json:s3.75-f3.5 + 0.02 fcurve-A.json:s3.875-f3.5
+                head -0.25 bit (-38 MiB); trunk picks changed 25 (25 up, 0 down, 0 other family); emb t2.5 -> t2.5
+    3 gridg1     3.000  0.025020   -1.23%   ours-hgK3.25      3.25  2.15e-03  t2.5   mix 1.00 lcurve.json:s3.25-f3 + 0.00 lcurve.json:s3.5-f3
+                head -0.75 bit (-114 MiB); trunk picks changed 90 (90 up, 0 down, 0 other family); emb t2.5 -> t2.5
+    4 menu       4.000  0.006670   +0.00%    ours-slabK5         5  2.32e-04  t3.25  
+    4 grid       4.000  0.006575   -1.42%    ours-hgK4.5       4.5  3.37e-04  t3.25  mix 1.00 fcurve-A.json:s4.5-f4 + 0.00 fcurve-A.json:s4.75-f4.5
+                head -0.5 bit (-76 MiB); trunk picks changed 48 (46 up, 0 down, 2 other family); emb t3.25 -> t3.25
+    4 gridmean   4.000  0.006543   -1.90%  ours-hgK4.375     4.375  3.54e-04  t3.25  mix 0.97 fcurve-A.json:s4.375-f4 + 0.03 fcurve-A.json:s4.5-f4
+                head -0.625 bit (-95 MiB); trunk picks changed 64 (61 up, 0 down, 3 other family); emb t3.25 -> t3.25
+    4 gridg1     4.000  0.006651   -0.28%  ours-hgK5.125     5.125  1.63e-04  t3.25  mix 0.99 fcurve-A.json:s5.125-f5 + 0.01 fcurve-A.json:s5.25-f5
+                head +0.125 bit (+19 MiB); trunk picks changed 10 (0 up, 10 down, 0 other family); emb t3.25 -> t3.25
+== fast (a8-g128 allowed, lambda 3e-7)
+ size arm          bpw       KLD  vs menu      head pick head bits head cost  emb    plan
+    2 menu       2.000  0.120716   +0.00%        ours-K3         3  5.09e-03  t1.5   
+    2 grid       2.000  0.117799   -2.42%    ours-hgK2.5       2.5  6.78e-03  t1.5   mix 1.00 lcurve.json:s2.5-f2 + 0.00 lcurve.json:s3.125-f3
+                head -0.5 bit (-76 MiB); trunk picks changed 54 (54 up, 0 down, 0 other family); emb t1.5 -> t1.5
+  2.5 menu       2.500  0.053453   +0.00%        ours-K4         4  1.30e-03  t2     
+  2.5 grid       2.500  0.051414   -3.81%  ours-hgK3.125     3.125  2.45e-03  t2     mix 0.99 lcurve.json:s3.125-f3 + 0.01 lcurve.json:s3.25-f3
+                head -0.875 bit (-133 MiB); trunk picks changed 93 (93 up, 0 down, 0 other family); emb t2 -> t2
+    3 menu       3.000  0.025385   +0.00%        ours-K4         4  1.30e-03  t2.5   
+    3 grid       3.000  0.024689   -2.74% ours-hgK3.6875     3.688  1.11e-03  t2.5   mix 0.48 fcurve-A.json:s3.625-f3.5 + 0.52 fcurve-A.json:s3.75-f3.5
+                head -0.3125 bit (-47 MiB); trunk picks changed 33 (33 up, 0 down, 0 other family); emb t2.5 -> t2.5
+    4 menu       4.000  0.006721   +0.00%    ours-slabK5         5  2.32e-04  t3.25  
+    4 grid       4.000  0.006628   -1.38%    ours-hgK4.5       4.5  3.37e-04  t3.25  mix 1.00 fcurve-A.json:s4.5-f4 + 0.00 fcurve-A.json:s4.75-f4.5
+                head -0.5 bit (-76 MiB); trunk picks changed 56 (53 up, 0 down, 3 other family); emb t3.25 -> t3.25
