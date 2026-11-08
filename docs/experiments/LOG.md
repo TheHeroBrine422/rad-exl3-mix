@@ -3,6 +3,28 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-07 6:50 PM CST · #105 · s1 moments done; mkdenoise's f64 solve fixed for ROCm (w78)
+- **s1 moments:** DONE at 6:15 PM CST, 128 groups, 1,002,035 tokens, 170.8 min, peak GPU 15.6 GiB, peak RSS 3.9 GB.
+  No GPU fault.
+- **Next blocker:** the mk step. `torch.linalg.solve` at k 17408 f64 hits rocBLAS's degraded TRSM on the R9700.
+  - The first down group ran > 20 min; a bench run alone on the card took > 6 min. ~20 h for 64 groups.
+  - The queue was stopped at 6:37 PM CST.
+- **Fix:** `v3/yaqa/asym27/mkdenoise.py` + `mkdenoise-w78.patch`. The lean path (k > 8192) now uses a Cholesky factor +
+  blocked triangular solves (GEMMs + 1024-row TRSMs), with an LU fallback.
+  - **Speed:** 16 s for the solve at 17408 (bench); 112 s for a whole real down group, eigh clip included.
+  - **Real s1 layer 0:** hin bit-identical; wpre within last-bit f32 rounding (1,069 of 37.7M values, max rel
+    2.2e-10); solve residual 4.4e-15.
+  - **Unchanged:** groups ≤ 8192 take the default path as before (0.8B G1 unaffected). `test_w78.py` I: PASS.
+- **Queue restarted 6:50 PM CST** (mk from chunk 0, the moments kept).
+- **Reported, not judged:** layer 0 down hsub 0.585.
+- **Runtime:** none (quantizer side). Details: `v3/yaqa/asym27/dbg/README.md`.
+
+### 2026-11-07 8:35 PM CST · #46-03 · A4 speed bound: even a free A4 kernel doesn't pay
+- knap5a with A4's speed over A8 forced to ×2 (colo) and ×1000 (≈ free; Thor), 144 solves each, step 4 vs noa4:
+  **A4 is picked on no tensor at equal KLD at 2.0 / 2.5 / 3.0 in either arm** (time −0.0%, bytes fail). Only by
+  giving up KLD does it show: ×2 buys 0.6–0.9% at +1% KLD (10.8% at +3% at 2.0 only); free A4 buys 0.9–7.3% at +1%,
+  7–14% at +3%. The accuracy cost, not kernel speed, keeps A4 out: **no kernel work can save it.** Confirms the drop.
+
 ### 2026-11-07 3:55 PM CST · ops · Haiku → the user's local Qwen3.8-27B (mining, watchdog)
 - User: the local Qwen (llama-swap, gpubox card 1; radiance, IQR-V4 S) may be used without limit at ~2 requests ×
   50k tokens. **Mining extractor** now runs 24/7 on it (`local/mine/minq.py`: 20k-token chunks + a 9k-token digest of
