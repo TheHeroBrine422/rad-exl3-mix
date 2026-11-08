@@ -88,7 +88,9 @@ versions of anything: git history.
   unlikely. 0.8B gave ×0.84 (#87): no transfer so far. Base arm running (moments layer 23/64, ~6.5 h to its pair);
   continue vs stop is with the user. Runtime none.
 - **5:25 AM: stopped (user).** ~6.5 h of card 0 for an arm that can hardly pass; per-mix healing will cover much
-  of this ground. **#105 closed: no transfer at 27B (one pair, 1.0067)**; per-level and per-mix asym not in V3.
+  of this ground. **#105: per-level asym not adopted** (one pair 1.0067, 95% CI ~0.985–1.03: at most a small hidden gain, vs the
+  0.8B's ×0.84). **Per-mix asym stays an optional post-processing candidate** (no ladder impact): one arm asym → heal
+  vs heal alone in the 27B healing pilot on a finished mix (~5 card-h) decides it (user 11-08).
 
 ### 2026-11-08 5:00 AM CST · #90 · sub-1 levels: kernel kept, levels built (user)
 - User: the sub-1 decode support stays (~25–30 SLOC: the salted 0-bit read in the plan, decoders and CPU reference;
