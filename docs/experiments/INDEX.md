@@ -24,7 +24,7 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 6 | Bigger prefill steps in the eval | eval speed | n/a | null | ≤10-30 | ≤10-30 | 4,096-token chunks take the same 118 s for the same KLD: the EXL3 GEMMs are the bottleneck (92% of GPU time) |
 | 7 | rocprofv3 on radiance | eval speed | n/a | dropped | ≤10-30 | ≤10-30 | unusable (copy tracing breaks the load, kernel tracing faults the replay); use radiance's `--profile-ops` |
 | 8 | Card 1 evals ~25% slower (x4 link) | eval speed | n/a | done | ≤10-30 | ≤10-30 | cause: the full-vocab f32 logits copy over card 1's x4 link; an async copy would fix it (not done) |
-| 9 | TP2 for whole-corpus runs | eval speed | n/a | negative | ≤10-30 | ≤10-30 | slow over card 1's x4 link: TP2 only for documents that don't fit one card |
+| 9 | TP2 for whole-corpus runs | eval speed | n/a | negative → **revisit** | ≤10-30 | 11-08 | slow over card 1's x4 link: TP2 only for documents that don't fit one card; 11-08: card 1 now x8, user sees TP2 prefill ×1.7 — re-time |
 | 10 | First knapsack: band sensitivities, linear model, Lagrangian | allocation | none | superseded | ≤10-30 | ≤10-30 | by kfit2 / knap4 (#45) |
 | 11 | Symmetric depth-compounding term | allocation | none | negative | ≤10-30 | ≤10-30 | a global link on the total, not a depth effect; replaced by kfit2's directional model (CV log-RMSE 0.28 → 0.11–0.13) |
 | 12 | Lagrangian multiple-choice-knapsack sweep | allocation | none | superseded | ≤10-30 | ≤10-30 | exact only on hull points, lands below targets, can't take the directional term: replaced by the exact DP (#69) |

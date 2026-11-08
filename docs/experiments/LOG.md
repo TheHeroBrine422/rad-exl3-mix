@@ -19,6 +19,12 @@ versions of anything: git history.
 - **Reported, not judged:** layer 0 down hsub 0.585.
 - **Runtime:** none (quantizer side). Details: `v3/yaqa/asym27/dbg/README.md`.
 
+### 2026-11-08 1:40 AM CST · #9 · iceman upgrade: TP2 prefill ×1.7 (user)
+- iceman upgraded: Ryzen 9 9950X, 64 GB, both R9700s on PCIe 5.0 x8 (x8/x8 CPU split; 32 GT/s under load), ReBAR on;
+  card 1 moved from x4 (`06:00.0`) to x8 (`07:00.0`). User measured **×1.7 TP2 prefill** on llama-swap. #9 ("TP2 slow
+  over card 1's x4 link") no longer holds: re-time TP2 for our long-context / whole-corpus evals when both cards are
+  ours. Card 0 itself went x16 → x8 (loads only; not yet measured).
+
 ### 2026-11-07 9:50 PM CST · #114 · damping per (level, family): null — keep the current setting
 - w77, colo, 486 sweep jobs (4,374 rows, 0 fail), order-fixed proxy, scored on held-out input Hessians (hB1 / hB2,
   168 fit-pool docs, ledger `w77-hb1/2`). Rule (≥ 2% held-out gain, ≥ ⅔ of tensors agree): **no ladder cell of 66
