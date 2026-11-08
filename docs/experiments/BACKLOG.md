@@ -490,3 +490,10 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   Always end on a heal (code re-search discards healed scales). Variants to test: **sequential** block-wise (one
   front-to-back sweep on refitted upstream outputs, GPTQ order) and **selective** block-wise (only the most sensitive
   layers by the knapsack's prices; heal the rest).
+- **Per level vs per mix (11-08, the #111 lesson):** split QAD by context dependence. *Per level* (once, in the
+  ladder, reused by every mix): block-wise training of each tensor at each K on **clean bf16 inputs**, Σdy²-weighted =
+  better options for the knapsack (student inputs here would repeat #111's uniform-K mistargeting). *Per mix* (after
+  the knapsack): the context-dependent part = asym or a sequential block-wise sweep on student inputs, then heal.
+  Re-measure sensitivities after per-level QAD before the knapsack. Interaction with V3 gains: format / knapsack kept;
+  swj / C9 mostly absorbed by healing (warm start); H_out / damping / tile CD partly kept; asym absorbed by the hybrid.
+  0.8B arm to add: per-level block-wise (clean) → mixed-K mix → heal, vs the per-mix variants.
