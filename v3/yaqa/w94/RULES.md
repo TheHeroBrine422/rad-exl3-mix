@@ -1,6 +1,6 @@
 # w94 rules: #124 gen-only head inputs (merge 11-08 A2b), #125 head-setting batch (A6)
 
-Written 2026-11-08 ~5:45 PM CST, before any dump, headsim run or proxy arm. Committed alone before launch.
+Written 2026-11-08 ~5:05 PM CST (time corrected 5:12 PM CST; first commit 650436c), before any dump, headsim run or proxy arm. Committed alone before launch.
 Data files fixed with this rule (sha256): `docs94.json` 1afe236b0179a4464b3551862ae1cd98668cb1fd1af69b81d0f04e33b1f9d3b5,
 `blocks94.json` 42f0ab2a00bc03c7b76122eaf4b0b6ccbcbc23cf850f450cf3c53bd571834d25.
 Smoke tests before this rule (no arm compared): headx94 on the CPU, 3 short documents, KL vs golden top-512 1.6e-4 /
