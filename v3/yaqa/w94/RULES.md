@@ -1,0 +1,83 @@
+# w94 rules: #124 gen-only head inputs (merge 11-08 A2b), #125 head-setting batch (A6)
+
+Written 2026-11-08 ~5:45 PM CST, before any dump, headsim run or proxy arm. Committed alone before launch.
+Data files fixed with this rule (sha256): `docs94.json` 1afe236b0179a4464b3551862ae1cd98668cb1fd1af69b81d0f04e33b1f9d3b5,
+`blocks94.json` 42f0ab2a00bc03c7b76122eaf4b0b6ccbcbc23cf850f450cf3c53bd571834d25.
+Smoke tests before this rule (no arm compared): headx94 on the CPU, 3 short documents, KL vs golden top-512 1.6e-4 /
+2.6e-4, top-1 1.00 / 0.99; hq94 prep raw 237 s, K3 scale g 0.7364 (the real K3 donor's: 0.7369), C0 block 0 K3 rel
+4.61e-4 (real donor's rowerr on that block: 4.81e-4), 27 s a block.
+
+## #124 A2b — head inputs at scored positions only
+
+**Why.** `headsim.py` priced every head plan (w88's knap5 grid, #34) on `336.x`: consecutive prefill rows of the calib-A
+slice (fit pool), unscored positions included. The metric only scores gen rows. The old dump is gone (11-05 crash).
+
+**Data (fixed now, `docs94.json` from `mkdocs94.py`):**
+- one window of ≤ 512 consecutive golden rows per document, inside the first 8,192 tokens, seeded start;
+- **search (held out):** the 103 calib documents of the retired golden-search27 (all search pool, so no fresh search
+  document is spent): 46,712 rows, 38,960 gen;
+- **qad (fit / pricing; the pool behind headslab's Fisher ranking):** 85 qad documents (seed 94): 36,828 rows, 33,172 gen;
+- every row is stored with its gen flag. "search-gen" is the held-out set, "search-all" (same documents, consecutive,
+  unscored rows included) stands in for the old prefill dump, "qad-gen" prices.
+
+**Method.** `headx94.py`: bf16 forward of the checkpoint (HF modules, layer-streamed on card 0), final-norm output at
+the window rows. `headsim94.py`: headsim's exact head-only KL, every row kept, document bootstrap in `report94.py`.
+Donors: today's K3–K7 (`/data/headslab3`, corrected rowerr). Plans: `plan.json` (u4/u5/u6, s*-3/-4, b*) and a curve
+(`headslab.py plan`, HS_BUDGETS 3.125–7 by 1/8, HS_FLOOR_ALL=1, HS_FLOOR=3).
+
+**G1 (validity, before anything is read):** `gate94.py` on each dump, gen rows: mean KL vs the golden's top-512
+≤ 0.01 and top-1 agreement ≥ 0.97. Fail → stop, nothing is reported as a result.
+
+**Readout (reported, no pass / fail):**
+1. Uniform u3–u7 and s5-3 / s6-3 / u5 / u6 head-only KL on search-gen, search-all and qad-gen; the move =
+   search-gen / search-all (gen mask) and qad-gen / search-gen (pool).
+2. Predicted gains s5-3 vs u5, s6-3 vs u6 (paired, 95% document-bootstrap CI) on each set.
+3. **Does it change which plans win?** Per budget of the curve, the plan of lowest KL (the floor choice) and the lower
+   hull, on each set. "Changes" = a different winner at any budget where the two winners differ by more than their
+   paired 95% CI on search-gen.
+4. w88's grid: knap5 prices a head option at r(K) × headsim KL with r = model head error / headsim uniform KL, so a
+   uniform rescale cancels; the grid moves only through slab / uniform ratios. Reported: the slab / uniform ratio at
+   each budget, search-gen vs search-all; budgets 2.0 / 2.5 need K2 / K2.5 donors that do not exist (said so).
+- Pricing set from here on: qad-gen (fit / pricing), checked on search-gen (held out).
+
+## #125 A6 — head quantizer settings, CPU proxy on the new rows (colo)
+
+**Proxy (`hq94.py`, fixed now):** the head's rows in sensitivity order (`perm.npy`, as the donors), exllamav3's
+regularize, LDLQ last-to-first under the calib `lm_head.input` H, σ 0.025 (today's donors), the CPU bitshift trellis
+of v3/e3 (mul1x_i8, free start), exllamav3's global scale search with ourq's drift, per-row scale refit. Only 64
+aligned 128-row blocks are quantized (`blocks94.json`: stratum A = blocks 0–15, all; B = 24 of 16–255; C = 24 of
+256–1939; systematic). Head-only KL with only those rows changed is exact per stratum
+(KL = −Σ p dz + log(1 + Σ p (e^dz − 1)), lse of the full bf16 head from headsim94); estimate = KL_A + 10 KL_B +
+70.17 KL_C. K3 and K4, seed 94.
+
+**Arms:**
+- C0: one-sided, no mean-row (today's donor recipe; for the validity check)
+- B: one-sided, mean-row (the baseline: mean-row was adopted for every donor on 11-02)
+- T(σo): two-sided with H_out = the softmax-Fisher diagonal `fisher_qad_gen` (perm order), block-diagonal (patch 0008's
+  objective), mean-row, σo ∈ {0.01, 0.1, 1}
+- R4, R8: mean-row, then the top-4 / top-8 principal components of the rows removed (factors stored bf16), one-sided
+- real: today's GPU donors' rows (headslab3 K3 / K4) on the same blocks (validity)
+
+**G2 (proxy validity, before any arm is read):** (a) estimator: KL_est(real) within ±15% of headsim94's full-head
+u3 / u4 KL on search-gen; (b) quantizer: KL_est(C0) / KL_est(real) in [0.80, 1.10] at K3 and K4 on search-gen (the CPU
+trellis is 4–6% optimistic). Fail → arms are reported as "proxy unverified" and nothing is adopted.
+
+**Selection of σo (one value, before judging):** the σo with the lowest geometric mean of KL_est over K3 / K4 on
+qad-gen rows of the **odd-numbered documents** (selection half).
+
+**Adoption rule per setting (T(σo*), R4, R8), vs B, paired on the same rows:**
+- KL_est ratio ≤ 0.97 at **K3 and K4**, on **search-gen** and on **qad-gen even-numbered documents** (judging half);
+- and the rare-token guard (rows whose bf16 argmax is outside the 20k most sensitive vocab rows) ratio ≤ 1.3 on
+  search-gen at both K.
+- If R4 and R8 both pass: R4 unless R8 is ≥ 3% lower than R4 at both K on search-gen (bytes and an extra tensor).
+- If T and an R arm both pass: a combined arm is run after the verdict and reported; it is recommended only if it is
+  not worse than the better single arm at both K on search-gen.
+- Mean-row (B vs C0) is reported only (already adopted).
+
+**τ (logit temperature) — on headsim94 (exact, GPU, real donors; no 27B eval):** τ ∈ {0.96, 0.98, 0.99, 1.01, 1.02,
+1.04} on u3 / u4. τ* = the lowest KL on qad-gen (odd documents) per K. Adopt (fold into the head's stored output
+scales: no format change) only if KL(τ*) / KL(1) ≤ 0.97 at K3 and K4 on search-gen and on qad-gen even documents.
+
+**Runtime class:** two-sided LDLQ and τ: none (quantizer / folded scale). Rank-r: P+D (an extra bf16 r × 5120 and
+248,320 × r tensor and two skinny GEMMs: a plugin / format addition, post-freeze at the earliest). DPCM / affine bias:
+out of scope (no format field).
