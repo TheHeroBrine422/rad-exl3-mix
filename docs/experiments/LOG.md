@@ -87,6 +87,8 @@ versions of anything: git history.
   123k positions). Rule (ASYM27.md): both pairs < 1 and geo ≤ 0.97 → the base arm must land ≤ 0.941 to pass; very
   unlikely. 0.8B gave ×0.84 (#87): no transfer so far. Base arm running (moments layer 23/64, ~6.5 h to its pair);
   continue vs stop is with the user. Runtime none.
+- **5:25 AM: stopped (user).** ~6.5 h of card 0 for an arm that can hardly pass; per-mix healing will cover much
+  of this ground. **#105 closed: no transfer at 27B (one pair, 1.0067)**; per-level and per-mix asym not in V3.
 
 ### 2026-11-08 5:00 AM CST · #90 · sub-1 levels: kernel kept, levels built (user)
 - User: the sub-1 decode support stays (~25–30 SLOC: the salted 0-bit read in the plan, decoders and CPU reference;
