@@ -21,7 +21,7 @@ versions of anything: git history.
 
 ### 2026-11-08 1:40 AM CST · #9 · iceman upgrade: TP2 prefill ×1.7 (user)
 - iceman upgraded: Ryzen 9 9950X, 64 GB, both R9700s on PCIe 5.0 x8 (x8/x8 CPU split; 32 GT/s under load), ReBAR on;
-  card 1 moved from x4 (`06:00.0`) to x8 (`07:00.0`). User measured **×1.7 TP2 prefill** on llama-swap. #9 ("TP2 slow
+  card 1 moved from x4 (`06:00.0`) to x8 (`07:00.0`). User measured **×1.7 TP2 prefill** on llama-swap (now a bit over 5k tok/s). #9 ("TP2 slow
   over card 1's x4 link") no longer holds: re-time TP2 for our long-context / whole-corpus evals when both cards are
   ours. Card 0 itself went x16 → x8 (loads only; not yet measured).
 
