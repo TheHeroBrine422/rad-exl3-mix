@@ -540,3 +540,5 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   real `causal_conv1d` (both collections fall back to the reference GDN conv); (4) stop Σdy² at the convergence point
   (#33-25 suggests ~half the sequences). Estimate: both statistics for a dense 27B in ~10–12 h on two cards, vs
   ~18 h + ~6 h today.
+- **User 11-08: for future models (V4 MoE etc.) the default is H_in only, no Σdy² / H_out**: ~2× the statistics
+  time for ~−3% KLD is not worth it; revisit only if the collection gets cheap or a model shows a much larger gain.
