@@ -509,4 +509,7 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   parameterization; part of the gain lost in requant). (2) *runtime adapter* (quantized base + rank-r residual,
   LQER / QERA-style): bytes ~3% of a 2-bit gate_proj at rank 16, plus a small GEMV a tensor at decode (launch overhead
   unless fused). Literature: pays mainly ≤ ~3 bits. Order: (1) first; (2) only if a gap remains at 1.0–2.0 bpw, and then
-  as a knapsack option priced in bytes + decode time. V4.
+  as an **equal-bytes test** (it is trained per mix, after the knapsack, so the knapsack cannot price it): knapsack
+  at S − adapter bytes → mix → train adapter (with / after heal) vs the plain full-S mix healed the same way; KLD and
+  decode speed; ranks / sensitive-tensors-only as extra arms. Only a per-level (mix-independent) adapter could be a
+  knapsack option. V4.
