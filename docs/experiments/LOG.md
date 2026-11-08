@@ -56,6 +56,7 @@ versions of anything: git history.
   with corrected plans; one verify-pool check of s5-3 vs u5 with the finished mixes. rxq has the same rowerr bug
   (`local/workers/w90/rxq-rowerr.patch`): **applied by the lead 2:55 PM CST** (no ladder jobs queued yet); check_ladder 5/5, check_cpujob 25/25 PASS. gpubox `/data/ourq/ourq.py` patched too (original kept as `ourq.py.pre-rowerr`). w90 / w91 ended rc=1
   at 1:52 PM CST (usage limit) before writing reports; this entry is the lead's reading of their outputs.
+- **Not investigated (user, 11-08):** why the head's share is ~15× larger on the calib part than on xcorp (dilution by a larger trunk KLD, rarer vocab on calib, or the qad-Fisher plan targeting calib-style usage). Consequence kept: **pooled two-part search slices (~65% xcorp) understate head / embedding effects on the board**; size head-side changes on the calib part.
 - **Runtime:** decode / prefill: slab head = per-block K in one GEMM (same bytes); cost to measure with the kernel.
 
 ### 2026-11-08 1:30 PM CST · #120-01, #120-02, #121 · Massive channel 3994: it dominates the energy, not the error; the bf16-restore oracle is null (DROP); damping normalization: mean stands (w91)
