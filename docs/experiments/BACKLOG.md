@@ -480,3 +480,8 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 - **Test (0.8B, 4070):** full end-to-end QAD fits the 4070 (~10 GB, 8-bit optimizer) = the measured ceiling; compare
   healing only, block-wise + healing ×1, ×2. Ask: how much of the full-QAD gain do 1–2 rounds capture?
 - Literature anchors: EfficientQAT (Block-AP → E2E-QP), BRECQ, CBQ. After V3.
+- **Hybrid form (preferred, 11-08):** block-wise training learns each tensor's *target* (continuous, nonlinear,
+  student inputs, Σdy²-weighted), then our exact trellis search (LDLQ / Viterbi) quantizes against it, then end-to-end
+  healing; repeat. = asym generalized (learned nonlinear target, every tensor) while keeping our strong discrete
+  search instead of STE through trellis codes. Order for V4: asym ⇄ heal (cheap) → hybrid; 0.8B arms vs the full-QAD
+  ceiling: heal only · asym ⇄ heal ×1/×2 · hybrid ×1/×2.
