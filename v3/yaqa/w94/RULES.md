@@ -81,3 +81,30 @@ scales: no format change) only if KL(τ*) / KL(1) ≤ 0.97 at K3 and K4 on searc
 **Runtime class:** two-sided LDLQ and τ: none (quantizer / folded scale). Rank-r: P+D (an extra bf16 r × 5120 and
 248,320 × r tensor and two skinny GEMMs: a plugin / format addition, post-freeze at the earliest). DPCM / affine bias:
 out of scope (no format field).
+
+## Amendment 1 (#125-01, written 6:25 PM CST 2026-11-08, after the CPU proxy's verdict, before any GPU arm)
+
+**What happened:** #125's G2 failed (K3: the additive stratified estimate is 1.32× headsim's full-head u3 for the real
+donor's rows; the quantizer half passed: C0 / real 0.94 at K3, 1.00 at K4), so by the rule nothing is adopted from the
+CPU proxy. The proxy's per-stratum ratios (exact for the rows they change; report-only) show two-sided σo 0.1 and rank-4
+lowering the top 16 blocks' KL by 20–28% at both K, and mean-row *raising* it by ~15%. These are hypotheses now; this
+amendment tests the two that need no format change on the real quantizer.
+
+**Arms (gpubox card 0, repo `quantize/ourq.py` staged as is, fork with patch 0008 first on the path; all with today's
+donor flags `--only-head --save-wq --head-perm perm.npy --qtf2 --frac-ext SRC --scaled-hessian --sigma-reg 0.025
+--codebook i8`, same seed), K3 and K4:**
+- C0': no mean-row (today's donors, re-made with the same code; reported against /data/headslab3 K3 / K4 as a check)
+- B: `--head-mean-row`
+- T: B + `--hout HD --hout-blocks group --sigma-reg-out 0.1`, HD/lm_head.safetensors `hout_diag` = `fisher_qad_gen`
+  in sensitivity order (σo 0.1 = the proxy's selection on qad-odd)
+
+**Score:** headsim94 exact full-head KL (uniform heads) on both dumps; document bootstrap as before.
+
+**Rules:**
+- T adopted for the donors iff T / B ≤ 0.97 at K3 and K4 on search-gen and on qad-even, and guard ratio ≤ 1.3 on
+  search-gen at both K. Reported also: T / C0'.
+- Mean-row: recommended for the donors iff B / C0' < 1.00 at K3 and K4 on search-gen; if B / C0' > 1.00 at both K on
+  search-gen and qad-even, recommend dropping it (lead decides; it was adopted 11-02 on other rows / donors).
+- If T passes, the donors take T's flags on top of the mean-row decision (T is always run with mean-row: if mean-row
+  is dropped, T without it is untested and the recommendation says so).
+- Rank-r: CPU proxy evidence only, reported; it needs an ourq change and a format addition (post-freeze).
