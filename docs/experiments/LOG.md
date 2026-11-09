@@ -3,6 +3,24 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-09 12:20 AM CST · #138-01 · Scale polish in the right metric: no arm passes, `refit = true` stays; C9 at K0.5 raises the two-sided proxy ×2.7 (w98's card-0 screen, read by the lead)
+- **Status:** #138-01 negative · #138-02 (27B pair) not run (conditional) · #139 instrumentation: files measured, not
+  wired · **Machine:** gpubox card 0 · **Rule:** `v3/e3/settle/w98.md` (7f4b421, before data) · **Data:**
+  `v3/e3/settle/data/w98/report138.txt` (gpubox `/data/w98/`). w98 (Opus) was stopped at 04:15 UTC for weekly usage
+  after this step; the lead read its report file.
+- 13 tensors (L10 GDN + MLP, L39 attention + MLP) × K0.5 / 2.5 / 4, fixed codes, four refit arms, w81's two-sided f2.
+  Checks c1–c3 OK (no-op identical to w92 fs0; in-job f2 = CPU fp64 to 5e-5).
+- **Result:** no refit (`none`) is worse everywhere (T-geo 1.017; K0.5 ×1.05): the polish helps. H_out-weighted
+  `hout` T-geo **0.9968** (K0.5 0.992, K2.5 0.9988, K4 0.9996), `undamped` 0.9988, both 0.9964; rule (a) T-geo ≤ 0.990
+  fails for all → **refit = true stays**. Best single cells: K0.5 in_proj_z 0.984, qkv 0.993. Proxy gains shrink in KL
+  (~⅕ for #117), so ≤ 0.1% KL at K2.5.
+- **Side finding (item 4 evidence):** the trajectory shows **C9 multiplies the two-sided f2 at K0.5 by ×2.67 (L10
+  out_proj 0.168 → 0.449) and ×1.07 (L39 o_proj)**, vs ×1.04 / ×1.005 at K2.5 and ×1.005 / ×1.001 at K4. C9 targets
+  KL (gain shrink), not the proxy, so a proxy rise is expected, but ×2.7 at sub-1 supports the critic's R15 (C9 needs
+  an α(K) schedule below K≈1.5). Sub-1 sizes only.
+- **#139 instrumentation:** per-level diag files would be ~143 MB (2.2 MB a layer); not wired into rxq yet.
+- **Runtime:** none.
+
 ### 2026-11-08 11:40 PM CST · #122 · Full adopted stack as one K2.5 level through the donors' job path: gate PASS (0.972 pooled, = bn+swj); pooled number is two xcorp documents; calib part 0.908 (w92)
 - **Status:** done · **Machine:** gpubox card 0 (~3.9 card-h: jobs 2 × 1.1 h, swjfit 1.75 h, scores + e2e ~0.5 h; packs
   4 × 22 min CPU) · **Code:** `v3/e3/settle/w92/` (README) · **Rule:** `v3/e3/settle/w92.md`, committed 26ec0c9 before
