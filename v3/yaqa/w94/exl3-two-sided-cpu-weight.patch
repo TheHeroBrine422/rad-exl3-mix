@@ -1,0 +1,11 @@
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-09 00:40:07.935379695 +0000
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py	2026-11-09 00:40:07.936139123 +0000
+@@ -1942,7 +1942,7 @@
+         # Metrics
+         if not q_fallback:
+             try:
+-                E = weight_r - weight_q  # may run on CPU
++                E = weight_r - weight_q.to(weight_r.device)  # may run on CPU (w94: the two-sided path returns weight_q on the card)
+                 W = weight_r
+                 Hd = H.to(device)
+                 weight_r = None

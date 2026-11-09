@@ -11,11 +11,12 @@ this patch series against upstream **turboderp-org/exllamav3 @ `a3bfbfd0`** (v1.
 | 0006 | int4-grid codebook (`EXL3_MUL1_I4`, measurement only) |
 | 0007 | cubic int8 codebook i8c (`EXL3_I8_CUBIC`, #78) |
 | 0008 | block-diagonal two-sided LDLQ for a diagonal H_out (`prepare_H_out_blocks`, `ldlq_2hess_blocks`; #115, w81, gate PASS 11-08): a 1-D H_out selects it, `hout_dense` keeps the dense path |
+| 0009 | proxy metric moves `weight_q` to `weight_r`'s device: the two-sided path on the LM head (> 5e8 weights, CPU weight) crashed there (w94, #125; trunk tensors unaffected) |
 | `pending/` | not applied (dead-proxy-compute skip, an experimental quantize.py) |
 
 Rebuild the tree we run (checked 2026-11-04: identical to our fork's tree at `eb5a2139`; with 0008, checked 2026-11-08
 by w86: upstream `a3bfbfd0` + 0001–0008 = `eb5a2139` + 0008, tree `8b6ab82b`. 0008 is in the fork since 11-08
-(HEAD `6242f7ae`, applied by the lead after the freeze review)):
+(HEAD `6242f7ae`, applied by the lead after the freeze review); 0009 since 11-09 (HEAD `b0052f7c`; `git am` of 0001–0009 on a3bfbfd0 = the fork's tree, checked)):
 
     git clone https://github.com/turboderp-org/exllamav3 && cd exllamav3 && git checkout a3bfbfd0
     git am /path/to/rad-exl3-mix/quantize/exl3-patches/000*.patch

@@ -1,0 +1,15 @@
+arm / B per stratum (A = blocks 0-15 all, B = 24 of 16-255, C = 24 of 256-1939); real = today's GPU donor (no mean-row) / C0
+K3 real_one    vs C0: search-gen A 1.043 B 1.052 C 1.113 | qad-even A 1.061 B 0.938 C 1.170
+K3 raw_one     vs B : search-gen A 0.869 B 1.001 C 1.314 | qad-even A 0.842 B 1.036 C 0.714
+K3 mr_two0.01  vs B : search-gen A 0.815 B 0.983 C 1.119 | qad-even A 0.757 B 0.904 C 1.121
+K3 mr_two0.1   vs B : search-gen A 0.800 B 0.982 C 1.016 | qad-even A 0.773 B 0.896 C 1.255
+K3 mr_two1     vs B : search-gen A 0.798 B 0.933 C 0.959 | qad-even A 0.748 B 0.975 C 1.451
+K3 mr-r4_one   vs B : search-gen A 0.725 B 0.914 C 1.160 | qad-even A 0.754 B 0.955 C 1.018
+K3 mr-r8_one   vs B : search-gen A 0.732 B 0.992 C 1.060 | qad-even A 0.717 B 0.897 C 0.960
+K4 real_one    vs C0: search-gen A 1.031 B 0.977 C 0.982 | qad-even A 1.041 B 1.141 C 0.852
+K4 raw_one     vs B : search-gen A 0.852 B 1.059 C 1.119 | qad-even A 0.838 B 0.995 C 2.045
+K4 mr_two0.01  vs B : search-gen A 0.767 B 1.029 C 0.932 | qad-even A 0.745 B 0.961 C 1.390
+K4 mr_two0.1   vs B : search-gen A 0.757 B 1.001 C 1.069 | qad-even A 0.747 B 0.949 C 1.622
+K4 mr_two1     vs B : search-gen A 0.775 B 1.125 C 1.173 | qad-even A 0.763 B 0.954 C 1.156
+K4 mr-r4_one   vs B : search-gen A 0.715 B 0.981 C 0.984 | qad-even A 0.694 B 1.088 C 1.033
+K4 mr-r8_one   vs B : search-gen A 0.728 B 0.961 C 1.525 | qad-even A 0.715 B 1.008 C 0.999

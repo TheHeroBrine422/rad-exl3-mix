@@ -1,0 +1,11 @@
+{
+ "dump": "/data/w94/dump/search",
+ "rows_checked": 46712,
+ "gen_checked": 38960,
+ "kl_top_gen": 0.0002024084663748209,
+ "top1_gen": 0.9941991786447638,
+ "kl_top_all": 0.03401383866849126,
+ "top1_all": 0.9855283438945025,
+ "kl_top_p99_gen": 0.002377433331285432,
+ "pass": true
+}

@@ -1,0 +1,26 @@
+From b0052f7ced7a0713e00d55c0b3e13d4b297b07e0 Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Mon, 9 Nov 2026 01:15:08 +0000
+Subject: [PATCH] quantize: proxy metric moves weight_q to weight_r's device
+ (two-sided path on a >5e8-weight head; w94)
+
+---
+ exllamav3/modules/quant/exl3_lib/quantize.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index e92afdfc..40c06f52 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -1942,7 +1942,7 @@ def quantize_exl3(
+         # Metrics
+         if not q_fallback:
+             try:
+-                E = weight_r - weight_q  # may run on CPU
++                E = weight_r - weight_q.to(weight_r.device)  # may run on CPU (w94: the two-sided path returns weight_q on the card)
+                 W = weight_r
+                 Hd = H.to(device)
+                 weight_r = None
+-- 
+2.56.0
+

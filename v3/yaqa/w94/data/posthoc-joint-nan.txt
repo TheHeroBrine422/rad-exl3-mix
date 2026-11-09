@@ -1,0 +1,20 @@
+estimator check (search-gen, real donor rows vs headsim full head):
+  K3 additive: est / headsim = 1.3192
+  K3 joint: est / headsim = nan
+  K3 joint C0 / real: (np.float64(nan), np.float64(nan), np.float64(nan))
+  K4 additive: est / headsim = 1.0498
+  K4 joint: est / headsim = nan
+  K4 joint C0 / real: (np.float64(nan), np.float64(nan), np.float64(nan))
+arm ratios vs B (joint estimate):
+  K3 raw_one     search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K3 mr_two0.01  search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K3 mr_two0.1   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K3 mr_two1     search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K3 mr-r4_one   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K3 mr-r8_one   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 raw_one     search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 mr_two0.01  search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 mr_two0.1   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 mr_two1     search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 mr-r4_one   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan
+  K4 mr-r8_one   search-gen nan [nan, nan]  qad-even nan [nan, nan]  qad-odd nan [nan, nan]  guard nan

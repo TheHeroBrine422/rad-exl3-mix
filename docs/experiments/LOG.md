@@ -3,6 +3,175 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 7:13 PM CST · #125-02 · Head donor recipe: two-sided softmax-Fisher LDLQ without mean-row, −9% / −10% head KL at K3 / K4 vs today's donors (PASS) (w94)
+- **Status:** done (T0 adopted by amendment 2; for the donor remake: lead / user) · **Machine:** gpubox card 0,
+  00:58–01:10 UTC (6:58–7:10 PM CST; 2 quants + 2 headsims) · **Code:** `v3/yaqa/w94/gpu94b.sh`, `report94c.py` (same
+  ourq / fork / patch as #125-01) · **Rule:** `v3/yaqa/w94/RULES.md` amendment 2 (c1ee37a, before the arm) · **Data:**
+  `v3/yaqa/w94/data/report94c.txt`, `report94c.json`
+- **Exact full-head KL, ratio [95% document CI]** (C0' = today's donors, bit-identical KL; T = with mean-row):
+
+  | K | pair | search-gen | qad-even | qad-odd | search-all | guard |
+  |---|---|---|---|---|---|---|
+  | 3 | T0 / C0' | **0.908** [0.884, 0.932] | 0.874 [0.849, 0.901] | 0.896 | 0.906 | 0.96 |
+  | 3 | T0 / T | 0.961 [0.938, 0.985] | 0.941 | 0.986 | 0.964 | 1.00 |
+  | 4 | T0 / C0' | **0.899** [0.873, 0.925] | 0.860 [0.836, 0.889] | 0.885 | 0.900 | 0.98 |
+  | 4 | T0 / T | 0.943 [0.925, 0.962] | 0.951 | 0.975 | 0.937 | 1.00 |
+
+- **Verdict (amendment 2): T0 PASS** → donor recipe = today's flags + `--hout HD --hout-blocks group --sigma-reg-out
+  0.1`, **no** `--head-mean-row`; HD/lm_head.safetensors = `hout_diag` = `fisher_qad_gen[perm]` (f32; `gpu94.sh` writes
+  it). Cost: quant 100 s vs 94.5 s (K3), 95 s vs 91 s (K4): +5–6% a donor; same bytes, format and kernels. Peak VRAM
+  not measured (the two-sided path puts the whole f32 head on the card; it ran on the 32 GB R9700).
+- **Needs:** fork patch 0008 **plus** `v3/yaqa/w94/exl3-two-sided-cpu-weight.patch` (the next exl3-patches number,
+  lead); the head is the only tensor above 5e8 weights, so the trunk is unaffected (one-sided and smaller two-sided
+  tensors: the line is a no-op).
+- **Not tested:** K5–K7 / fractional donors (the gain is the same at K3 and K4); σo other than 0.1 on the real
+  quantizer (0.1 = the CPU proxy's selection on qad-odd); the slab plans built from T0 donors (re-run headslab plan +
+  headsim94 on the same dumps after the donors: ~5 card-min).
+- **Runtime:** none.
+
+### 2026-11-08 7:05 PM CST · #125-01 · Real head quants: two-sided softmax-Fisher LDLQ −12% head KL vs mean-row (PASS); mean-row itself is +7–12% worse than none on gen rows (w94)
+- **Status:** done (T PASS; mean-row: rule says recommend dropping) · **Machine:** gpubox card 0, 00:23–00:54 UTC
+  (6:23–6:54 PM CST; 6 head quants 90–100 s each + 2 headsims, between w92's jobs, ram.lock exclusive per quant) ·
+  **Code:** `v3/yaqa/w94/gpu94.sh`, `report94b.py`; repo `quantize/ourq.py` (HEAD) + fork 6242f7ae (0008) **plus
+  `v3/yaqa/w94/exl3-two-sided-cpu-weight.patch`** (one line: the two-sided path returns weight_q on the card while a
+  > 5e8-weight tensor keeps weight_r on the CPU, so the proxy metric crashed for the head; the fix only touches that
+  subtraction) · **Rule:** `v3/yaqa/w94/RULES.md` amendment 1 (1cc3f12, before data) · **Data:**
+  `v3/yaqa/w94/data/report94b.txt`, `report94b.json`, `q/*.proxy.jsonl`
+- **Check:** C0' (today's donor flags, re-made with this code) gives head KL identical to `/data/headslab3` K3 / K4 on
+  every row (max |dKL| 0), so the arms differ only by their flags.
+- **Exact full-head KL, ratio [95% document CI]:**
+
+  | K | pair | search-gen | qad-even | qad-odd | guard (search-gen) |
+  |---|---|---|---|---|---|
+  | 3 | T / B | 0.880 [0.855, 0.905] | 0.863 [0.838, 0.888] | 0.844 | 0.97 |
+  | 3 | B / C0' (mean-row) | 1.074 [1.054, 1.094] | 1.077 [1.051, 1.104] | 1.077 | 0.99 |
+  | 3 | T / C0' | 0.945 [0.923, 0.967] | 0.929 [0.904, 0.957] | 0.909 | 0.96 |
+  | 4 | T / B | 0.885 [0.854, 0.917] | 0.806 [0.781, 0.833] | 0.807 | 1.02 |
+  | 4 | B / C0' (mean-row) | 1.076 [1.053, 1.100] | 1.123 [1.091, 1.155] | 1.125 | 0.96 |
+  | 4 | T / C0' | 0.953 [0.929, 0.977] | 0.905 [0.882, 0.932] | 0.908 | 0.97 |
+
+- **Verdicts (amendment 1):** T (two-sided, σo 0.1) **PASS** (≤ 0.97 at both K on search-gen and qad-even, guard
+  ≤ 1.3). Mean-row: B / C0' > 1 at both K on search-gen and qad-even → **recommend dropping mean-row** (11-02's −30%
+  was measured on older donors and prefill rows; not re-investigated). The CPU proxy got the direction of both right
+  (stratum A: T −20…−25%, mean-row +15%) while its additive estimate failed G2.
+- **Next:** T without mean-row (T0) is untested: amendment 2 (c1ee37a, before the arm) runs it on card 0 now.
+- **Runtime:** none (quantizer: same format, kernels and bytes).
+
+### 2026-11-08 6:30 PM CST · #125 · Head settings on the CPU proxy: rule verdict "proxy unverified" (G2 fails at K3), nothing adopted; GPU confirmation of two-sided + mean-row launched (#125-01) (w94)
+- **Status:** #125 done (no adoption: proxy invalid by G2) · #125-01 running · **Machine:** colo (`/data/work/w13/w94`,
+  5:11–6:05 PM CST: 4 preps, 8 scale searches, 896 block quants ~27–58 s each, 64 score jobs; ~9 CPU-h), gpubox card 0
+  for #125-01 · **Code:** `v3/yaqa/w94/hq94.py`, `q94.sh`, `s94.sh`, `report94.py`; post hoc `s94b.sh`, `strata94.py`,
+  `posthoc94.py`; `gpu94.sh` · **Rule:** `v3/yaqa/w94/RULES.md` (650436c), amendment 1 (1cc3f12, before any GPU arm)
+  · **Data:** `v3/yaqa/w94/data/report.md`, `strata-posthoc.txt`
+- **G2 (proxy validity):** quantizer half PASS (C0 / real donor rows 0.94 [0.85, 1.04] at K3, 1.00 at K4; K3 g_scale
+  0.7364 vs 0.7369); estimator half **FAIL at K3**: the additive stratified estimate of the real donor's rows is 1.32×
+  headsim's full-head u3 (K4 1.05). By the rule the arms are "proxy unverified": nothing is adopted from the proxy.
+- **Arm ratios vs B (additive estimate, unverified):** T(σo 0.1, chosen on qad-odd from 0.01 / 0.1 / 1) 0.906 / 0.887
+  (K3 / K4 search-gen), 0.863 / 0.869 (qad-even), guard 0.91 / 0.99; R4 0.878 / 0.843, 0.850 / 0.835; R8 0.886 / 0.943,
+  0.804 / 0.822 (guard 1.39 at K4). Every arm would pass the 0.97 bar if the estimate held.
+- **Post hoc, report-only:** per stratum (each exact for the rows it changes) two-sided lowers the top 16 blocks' KL by
+  20–25% at both K, ~0–10% in blocks 16–255, tail noisy; rank-4 −28% in the top blocks; **mean-row raises the top 16
+  blocks' KL by ~15%** (C0 / B 0.85–0.87) and lowers the tail's. Top-4 / -8 principal components hold only 1.5 / 1.9%
+  of the mean-removed head's energy. A replicate-weighted joint estimate is unusable (log of a negative mass on rows
+  where a sampled tail block holds a likely token).
+- **τ (headsim, exact, real donors):** τ* = 1.01 at K3 and K4 (sharpen); KL(τ*) / KL(1) 1.001 / 1.089 on search-gen:
+  **not adopted**. A parabola through 0.99 / 1 / 1.01 puts the optimum at τ ≈ 1.005 with −0.7% (K3) / −0.1% (K4):
+  below any bar; at K ≥ 4 a 1% τ step costs more than the head's whole KL.
+- **#125-01 (amendment 1):** real head quants on card 0 (repo ourq + 0008 fork): C0' (today's donor flags), B
+  (+ `--head-mean-row`), T (B + `--hout HD --hout-blocks group --sigma-reg-out 0.1`, Fisher in perm order) at K3 / K4,
+  exact headsim94 on both dumps. Rule: T adopted iff T / B ≤ 0.97 at both K on search-gen and qad-even, guard ≤ 1.3;
+  mean-row recommended iff B / C0' < 1 at both K on search-gen.
+- **Runtime:** none (two-sided, mean-row, τ). Rank-r: P+D (format addition; not on the GPU, post-freeze at the earliest).
+
+### 2026-11-08 5:55 PM CST · #124 · Head inputs at scored rows: gen masking moves head KL +3–7% and changes no plan; pricing on qad rows (the Fisher's own pool) overstates slab heads ~2× (w94)
+- **Status:** done (readout; no pass / fail by the rule) · **Machine:** gpubox card 0 (23:11–23:27 UTC = 5:11–5:27 PM
+  CST, ~15 card-min: dumps 4.8 min, G1 2 min, headsim 2 × ~3 min), colo (knap5 re-solves, 20 solves) · **Code:**
+  `v3/yaqa/w94/` (`headx94.py`, `gate94.py`, `headsim94.py`, `run94.sh`, `report94.py`, `simjson94.py`, `knaprep94.py`)
+  · **Rule:** `v3/yaqa/w94/RULES.md` (650436c, before data) · **Data:** `v3/yaqa/w94/data/` (report, headsim-format
+  JSON per row set for KN_HEADGRID, plans, gates, knap table); per-row npz in `/workspace/rad-local/workers/w94/data/`
+  and gpubox `/data/w94/`
+- **G1 PASS:** search gen rows KL vs golden top-512 2.0e-4, top-1 0.994 (38,960 rows); qad 2.0e-4 / 0.994 (33,172).
+  The one-card layer-streamed bf16 forward reproduces the golden. (Unscored rows disagree more on search, KL 0.18 a row:
+  not used; the golden's unscored rows are not a reference.)
+- **Gen mask (search-gen vs search-all, same 103 docs):** uniform u3–u7 head KL ×1.03–1.04; slab plans ×1.06–1.07, so
+  the slab / uniform ratio rises ~2–3% relative (s5-3 / u5 0.351 → 0.362, s6-3 / u6 0.493 → 0.499). **The best floor
+  at every budget 3.125–7 and the lower hull are identical on gen and all rows: gen masking changes no plan choice.**
+- **Pool (qad-gen vs search-gen):** uniform heads 0.88–0.90× (corpus). **Slab plans look ~2× better on qad rows**:
+  s5-3 / u5 0.176 [0.156, 0.200] vs 0.362 [0.272, 0.465] held out; s4-3 / u4 0.142 vs 0.398. The plans rank rows by the
+  qad Fisher, so qad rows are in-sample; qad picks a different floor at 16 budgets (4.25–6.0, 6.75) that is significantly
+  worse held out (up to ×1.53 on search-gen). The held-out −64% at K5 matches #34-02's whole-model reading (s5-3 recovers
+  ~65% of the u5 → bf16 gap on the calib part); qad rows would say −82%. **The rule's line "pricing set: qad-gen" is
+  wrong for slab plans: price head plans on rows held out from the Fisher pool (search-gen, or fit-pool gen rows).**
+- **w88's grid (knap5 KN_HEADGRID, accurate f16, donors K3–K7 only, conservative CI end), predicted KLD vs today's
+  menu:** 2.0 −1.9% (search-gen) / −2.0% (search-all) / −2.4% (qad); 2.5 −4.4 / −4.6 / −5.4%; 3.0 −3.2 / −3.5 / −4.8%;
+  4.0 −1.9 / −2.1%. Head picks: 3.125 / 3.125 (2.5: 3.25 on all rows) / 3.375 / 4.375 bits. With w88's 11-01 curves
+  restricted to K3–K7 the grid gives nothing (= menu): the gain comes from the corrected-rowerr plans, not from the
+  rows. Budgets below 3 bits (w88's 2.0 / 2.5 picks used K2 / K2.5 floors) need donors that do not exist.
+- **τ:** see #125 (not adopted: < 1%).
+- **Decision / next (lead):** price the knap5 head grid on held-out gen rows: `KN_HEADGRID=v3/yaqa/w94/data/sim94-search-gen.json:plans94.json`
+  with `KN_HG_DONORS=3,4,5,6,7` until the new donors exist; redo it after the 17 donors (headsim94 on the same dumps,
+  ~5 card-min). Do not price on qad rows.
+- **Runtime:** none (pricing).
+
+### 2026-11-08 6:15 PM CST · #126 · i8 vs i4 at K0.125–1 on the held-out two-sided proxy: PASS, switch to i8 (w95)
+- **Status:** proxy done, **PASS** · card-0 smoke waiting for w92 / w94 · **Machine:** colo 24 + Thor 30 jobs, ~5 CPU-h ·
+  **Code:** `v3/e3/settle/w95/` · **Rule:** `v3/e3/settle/w95.md` (5b7caff, before data) · **Data:**
+  `v3/e3/settle/data/w95/` (`report.md`, 162 pairs)
+- **Gate G0 PASS:** the recomputed i4 rows equal w87's #114-03 rows to 9.5e-8.
+- **Result:** R = geo rel_B(i8) / rel_B(i4), held out, 27 tensors × 2 samples, 95% tensor-bootstrap CI:
+  - **K0.125: 1.0020** (0.998–1.007)
+  - **K0.5: 0.9993** (0.997–1.001)
+  - **K1: 0.9999** (0.999–1.002)
+
+  B1 / B2 / in-sample and one-sided agree within 0.1%. Largest family: attn_qg at K0.125, ×1.014 (one tensor, 3:attn_qg,
+  ×1.053). Every other family is within ±0.4% at every K. No σ moves.
+- **Verdict:** switch to i8 at K0.125–1 (rule: unless > 1% worse at any K). This matches #90-02's one-sided "i4 within
+  0.3%" and extends it to the sub-1 rates with H_out. Patches for the config / ladder / tests / design doc:
+  `local/workers/w95/i8-sub1.patch` (rad-exl3-mix) and `rqah-i8-sub1.patch` (rad-quant-at-home). Settings stamp
+  ed97adb7 → 80b5e6d7.
+- **Runtime:** none.
+
+### 2026-11-08 5:35 PM CST · #126 · One codebook: i8 at K0.125–1 too (i4 retired): audit, rule committed, proxy + card-0 smoke launched (w95)
+- **Status:** running · **Machine:** colo + Thor (CPU proxy, w87's dirs, `w95/out/`), gpubox card 0 (`/data/w95`,
+  waits until w92 / w94 are done) · **Code:** `v3/e3/settle/w95/` (`settle95.py`, `plan95.py`, `report95.py`,
+  `w95.sh`, `smoke95.py`) · **Rule:** `v3/e3/settle/w95.md`, **committed alone (5b7caff) before any data**
+- **Question (user 11-08 5:20 PM CST):** one codebook (i8) at every level to K7, no i4 anywhere (A4 out). Does i8 work
+  at K < 1 everywhere, and is it no worse than i4 there?
+- **Audit (step 1):** codebook-generic already: exl3frac2's KA = 0 instances (every variant builds them), engine /
+  cpukern / deq (i8 at sub-1), radiance's exl3i importer and kernel (salt in `exl3i_plan.h` is codebook-free; the
+  device test covers every rate m 2–128 × mul1 / mul1i8 / mul1i4), knap5 (R8(1) = 1.0; sub-1 options are
+  codebook-free). Needs change: `rxq/ladder.py` (the low series hard-codes "i4"), v3.toml (`by_level`, `i4_twins`,
+  `[ladder] i4_low` → `low`), tests `check_ladder` / `check_cpujob`, rqah `rxq_e2e` (`0.5-i4` → `0.5-i8`).
+  Patches in `local/workers/w95/`. With them: check_ladder 5/5, check_cpujob 25/25 (K0.125 / 0.5 at i8, dense and
+  blocks), rqah rxq_e2e 9/9. **New settings stamp 80b5e6d77ef57fc6** (was ed97adb7). Above K1 the level jobs differ
+  only in the stamped settings-file pin: w92's K2.5 rows stay valid by content (re-import as trusted rows of the new
+  level; the shards' metadata keep ed97adb7).
+- **Proxy (step 2):** i4 vs i8 at K0.125 / 0.5 / 1, today's σ, 27 tensors × 2 samples, paired per job; G0 = i4 rows
+  equal w87's. Rule: switch unless i8's held-out two-sided error is > 1% worse at any K.
+- **Smoke (step 3):** K1 and K0.125 i8 whole levels (256 jobs each, est 1.30 + 3.27 R9700-h) from the patched tree →
+  assemble → C9 apply → pack into V2 3.00 → golden-search27c both parts (score only, no swj).
+- **Runtime:** none (same decode path, another table; i4 code paths become dead).
+
+### 2026-11-08 5:15 PM CST · #124, #125 · Gen-only head inputs (A2b) and the head-setting CPU batch (A6): rule committed, runs launched (w94)
+- **Status:** running · **Machine:** gpubox card 0 (`/data/w94`, waits on card0.lock behind w92, then ram.lock shared
+  per step), colo (`/data/work/w13/w94`, nice 19, 16 single-threaded jobs) · **Code:** `v3/yaqa/w94/` (`headx94.py`,
+  `gate94.py`, `headsim94.py`, `run94.sh`, `hq94.py`, `q94.sh`, `mkdocs94.py`, `mkblocks94.py`) · **Rule:**
+  `v3/yaqa/w94/RULES.md`, **committed alone (650436c; time fix 2ec8d45) before any dump or arm**
+- **#124 (A2b):** the old `336.x` prefill dump is gone (11-05 crash), so the new dumps carry every row of a ≤ 512-row
+  window per document with its gen flag: search = the 103 calib docs of the retired golden-search27 (no fresh search
+  doc spent; 46,712 rows / 38,960 gen), qad = 85 seeded qad docs (36,828 / 33,172 gen). bf16 forward on ONE card,
+  layer-streamed (HF modules); CPU smoke test reproduces the golden (KL vs top-512 2e-4, top-1 0.99–1.00). G1 gate per
+  dump, then headsim94 (every row kept, document bootstrap) over plan.json + a 1/8-bit curve on today's K3–K7 donors,
+  with a τ grid on u3–u7 / s5-3 / s6-3.
+- **#125 (A6):** CPU proxy of the head quant on 64 stratified 128-row blocks (sensitivity order, exllamav3 regularize,
+  CPU trellis mul1x_i8, σ 0.025): C0 (today's recipe), B (mean-row), T(σo 0.01 / 0.1 / 1) two-sided with the
+  softmax-Fisher diagonal, R4 / R8 rank deflation; K3 / K4; exact head-only KL on the new rows from the changed rows
+  only (stratified estimate). Proxy fidelity before the rule: K3 g_scale 0.7364 vs the real donor's 0.7369; block 0
+  rel 4.61e-4 vs the real donor's 4.81e-4.
+- **Found:** today's head donors (`/data/headslab3` K3–K7) were made **without mean-row** (proxy.jsonl
+  `head_mean_row: false`, σ 0.025, i8), although mean-row was adopted for every donor on 11-02 (−30% head KL).
+- **Runtime:** none (statistics; quantizer settings). Rank-r would be P+D (see the rule).
+
 ### 2026-11-08 4:58 PM CST · #39-01, #— · Gain stays 1.0 on today's stack (held out); i4 twins dropped (ladder 55 levels, settings stamp unchanged); stamps and checks (w93)
 - **Status:** #39-01 done: **keep 1.0** (null) · **Machine:** colo (16 jobs), Thor (38 incl. ffn_down), ~6 CPU-h ·
   **Code:** `v3/e3/settle/w93/settle93.py` (w87's held-out two-sided proxy + gain + #117 order), `report93.py` ·

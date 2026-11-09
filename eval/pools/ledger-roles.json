@@ -191,5 +191,17 @@
   "line": "v3",
   "decisions": 4,
   "note": "27B verify slice (71 verify-pool docs, cut from the published calib golden; gpubox /data/verify27/golden-verify27, w59, first use 2026-11-06 #104 amendment 2). Routine before/after checks of adopted settings: swj K2.5 (0.935 / 0.932), C9 (keeps 0.96 of its gain), H_out K4 seed 0 (0.965), K2.5 H_out arms (#33-28, w84 item 3, 11-08). 5 routine uses by 2026-11-08: spent, no further use (finished V3 mixes get a fresh verify slice). Added by w90 (merge 11-08 A5)"
+ },
+ "w94-headx-search": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#124 / #125 (w94, 2026-11-08): bf16 head inputs (final-norm output) at a <= 512-row window per document (gen flag kept) of the 103 search-pool docs of the retired golden-search27 (no fresh search doc); held-out set for head plan pricing checks and A6's head-setting rule (v3/yaqa/w94/RULES.md)"
+ },
+ "w94-headx-qad": {
+  "role": "fit",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#124 / #125 (w94, 2026-11-08): bf16 head inputs at a <= 512-row window per document of 85 seeded qad docs; head plan pricing set (fit) and A6's sigma_out selection / judging halves (v3/yaqa/w94/RULES.md)"
  }
 }

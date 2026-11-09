@@ -1,0 +1,33 @@
+23:10:46 curve plans OK
+23:10:46 dump: waiting for card 0
+23:11:57 dump start
+23:16:44 dump rc 0 {"set": "qad", "docs": 85, "rows": 36828, "gen_rows": 33172, "tokens": 66651, "sec": 80.6}{"set": "search", "docs": 103, "rows": 46712, "gen_rows": 38960, "tokens": 114382, "sec": 201.1}
+23:17:48 G1 search: {
+ "dump": "/data/w94/dump/search",
+ "rows_checked": 46712,
+ "gen_checked": 38960,
+ "kl_top_gen": 0.0002024084663748209,
+ "top1_gen": 0.9941991786447638,
+ "kl_top_all": 0.03401383866849126,
+ "top1_all": 0.9855283438945025,
+ "kl_top_p99_gen": 0.002377433331285432,
+ "pass": true
+}
+23:18:52 G1 qad: {
+ "dump": "/data/w94/dump/qad",
+ "rows_checked": 36828,
+ "gen_checked": 33172,
+ "kl_top_gen": 0.0001952411050374885,
+ "top1_gen": 0.9944230073556011,
+ "kl_top_all": 0.0023669217804116807,
+ "top1_all": 0.9926143151949604,
+ "kl_top_p99_gen": 0.0022500988736051343,
+ "pass": true
+}
+23:18:52 headsim search: waiting for card 0
+23:23:09 headsim search rc 0
+23:23:09 headsim qad: waiting for card 0
+23:26:58 headsim qad rc 0
+23:26:59 real rows K3 -rw-r--r--+ 1 root root 83886208 Nov  8 23:26 /data/w94/real-K3.npy
+23:27:00 real rows K4 -rw-r--r--+ 1 root root 83886208 Nov  8 23:27 /data/w94/real-K4.npy
+23:27:00 RUN94 DONE
