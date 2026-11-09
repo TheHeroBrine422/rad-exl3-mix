@@ -35,6 +35,8 @@ def validate(cfg):
     q = cfg["quant"]; ho = cfg["inputs"]["hout"]
     assert q["out_scales"] == "always", "only out_scales = always is implemented (#48)"
     assert q["drift"] in ("interp", "exact")
+    assert isinstance(q["refit"], bool) or q["refit"] in ("hout", "undamped", "hout+undamped"), \
+        f"quant.refit: true | false | hout | undamped | hout+undamped, not {q['refit']!r} (rxq/refit.py)"
     assert cfg["inputs"]["hin"]["blend"] in ("none", "xcorp")
     assert ho["estimator"] in ("bn", "dy")
     assert ho["apply_k_min"] <= ho["apply_k_max"], "inputs.hout: apply_k_min > apply_k_max"
@@ -66,7 +68,7 @@ def codebook_for(cfg, K):
     if K in cfg["quant"]["codebook"]["mul1_levels"]: return "mul1"
     for r in cfg["quant"]["codebook"]["by_level"]:
         if r["k_min"] <= K <= r["k_max"]: return r["codebook"]
-    return "mul1"
+    raise SystemExit(f"no [quant.codebook] range covers K{K} (mul1 levels retired 11-09: int8-only)")
 
 
 def hout_applies(cfg, K):

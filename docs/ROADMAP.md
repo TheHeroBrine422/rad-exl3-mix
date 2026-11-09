@@ -28,8 +28,10 @@ from EXL3 (credit: turboderp's exllamav3; Cornell RelaxML's QTIP and YAQA).
   ladder holds its levels, and a prefill speed gain for TP2 / 32 GB users; V2 7.00 runs 8,105 µs vs IQR-V4's 4,006).
   **8.0** decided after the 7.0 results and a floor split on V2 8.0 (built only if predicted ≥ 10% below V2 8.0's
   0.00034). 7.5 stays V2.
-- Each size in an **accurate** (f16 wherever it lowers KL) and a **fast** variant (int8 path where cheap, under a speed
-  budget). (A third, **A4** variant was dropped 11-07: #46-03's knapsack never picks A4.)
+- **[2026-11-09: one variant per size — int8-only]** Was: each size in an **accurate** (f16 wherever it lowers KL) and
+  a **fast** variant (int8 path where cheap, under a speed budget); a third **A4** variant was dropped 11-07 (#46-03).
+  User + deadcode 11-09: the accurate variant and the A16 / bf16 serving options are retired (A8's KLD cost ×1.0014 at
+  K2.5, #122; one int8 kernel path; LOG 12:17 PM CST).
 - Research points 1.5 / 1.75, then a **low-bpw research ladder** in 0.1 bpw steps below 1.5 (1.4, 1.3, ...) until KLD
   blows up (user, 2026-11-05) (scored on our own held-out slices; a few points go to the board); saturation-aware allocation for these.
 

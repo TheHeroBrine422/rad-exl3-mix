@@ -3,6 +3,27 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+
+### 2026-11-09 12:17 PM CST · freeze edit · int8 everywhere: the A16 / bf16 options and the mul1 codebook are retired (user + deadcode decision)
+- **Status:** done (decision, applied in the freeze edit; settings stamp → **87a7e4ab32f9d5b9**) · **Machine:** — (config +
+  solver-menu edits; full check set reruns on colo) · **Code:** `pipeline/config/v3.toml`, `pipeline/rxq/{knap,config,ladder}.py`,
+  `v3/levels/reprice/knap5.py`, tests `check_ladder` (5/5) / `check_knap` (3/3, w63 byte-repro intact)
+- **Decision (user, after the conversation with Code 000 / deadcode):** V3 serves **int8 activations only**: the accurate
+  (f16 / A16) variant, the per-tensor f16-prefill and bf16-tensor options in the knapsack menu, and the mul1 codebook are
+  retired — one kernel path, simpler long-term maintenance, and the accuracy edge is invisible at the sizes that matter.
+  Evidence read for it: A8's KLD cost ×1.0014 at K2.5 full stack (#122 w92); fast sizes were already priced all-A8 (w58);
+  the A16-only region was mul1's K6.5–8 byte advantage alone.
+- **Applied:** v3.toml `[quant.codebook]` mul1_levels = [], i8 by_level to K8 (**user 12:10 PM CST: "i8 K7, K7.5, K8"** —
+  the #94 penalties accepted: ×1.27 K7 (~0.18 bit), ×2.33 K7.5, ~×4.5 K8; knap5 R8 table extended with the w45 medians
+  7.25 1.69 / 7.5 2.33 / 7.75 3.23 / 8 4.5); `[ladder]` i8_extra = [7.5, 8.0] → **ladder 55 → 50 levels** (pass 1: 20);
+  `[knap] modes = "a8"` → rxq.knap passes KN_MODES=a8, knap5's menu drops the f16 / bf16 rows except the **head's f16
+  rows** (headdec / slab serve the head, it was never in the trunk tile; the bf16 head option is out too — #99's floor
+  split can run the legacy arm). --accurate in rxq.knap stays only to reproduce w63 byte for byte (check_knap).
+- **Consequences:** one mix per size (no accurate/fast pairs, no per-mix mode mixing — the planned A8/A16 switch-cost
+  test is closed); an a8-only smoke solve fits 2.5 / 4.0 / 7.0 and picks i8 K7.5 / K8 at 7.0 (head ours-K8, no bf16, all
+  trunk flops a8); an 8.0 size (#99) now means i8 K8 + slab head; kernel work stays i8a8-only; decode-side wording keeps
+  the f16 dequant GEMV (memory-bound, not an A16 option).
+
 ### 2026-11-09 5:27 AM CST · #126 · card-0 smoke (step 3): both i8 levels run end-to-end in radiance, SMOKE OK (w95)
 - **Status:** done (**pass**: proxy + smoke) · **Machine:** gpubox card 0 (after w92's `W92 DONE` 11:23 PM 11-08) · **Rule:**
   `v3/e3/settle/w95.md` (5b7caff, before data) · **Code:** `v3/e3/settle/w95/` (`w95.sh`, `smoke95.py`) on the patched

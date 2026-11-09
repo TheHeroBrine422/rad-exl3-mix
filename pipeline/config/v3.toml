@@ -7,7 +7,7 @@
 #
 # 2026-11-08 (w86, user / lead): H_out at every level (apply_k_min 0) on w81's block-diagonal path (inputs.hout.ldlq), the
 # #117 residual block order on (quant.block_order), sigma 0.2 at K0.125; [ladder] (unstamped) plans the levels (55
-# since 11-08: the 16 i4 twins dropped, user).
+# since 11-09: 50, int8-only (mul1 out, user + deadcode 11-09; the 16 i4 twins were dropped 11-08).
 # Changing any value changes the settings stamp (rxq/config.py), so a level can never mix settings.
 # Status words: adopted (in the ladder now) | open (a switch; the experiment decides) | dropped (kept for the record).
 
@@ -74,7 +74,9 @@ out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1
 drift = "interp"               # LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
                                # identical at the table points; "exact" = exllamav3's lookup (OURQ_DRIFT_EXACT=1)
 block_trace = false            # ourq default: the regularized-domain proxy is overwritten by the refit's (output-neutral)
-refit = true                   # exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level
+refit = "hout"                 # #138-03 adopted (user 11-09).                                  exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level. rxq/refit.py (w98, #138):
+                               # true | false (no refit) | "hout" (suh step weighted by the H_out diagonal) | "undamped"
+                               # (fit in the undamped H) | "hout+undamped"; true keeps the stamp, any other value changes it
 
 [quant.block_order]
 # #117 residual-stream 128-block permutation (w82 consensus order, w84 27B pairs): the residual readers' (attn q / k / v,
@@ -88,7 +90,9 @@ stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11
 [quant.codebook]
 # Codebook by level (v3.md "Ladder", user 11-04 / 11-05). i8 = int8-rounded mul1 (#43 done, x1.000 K1-6; #94
 # negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
-# (f16 path) for K6-8. i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
+# (f16 path) for K6-8. [11-09 (user + deadcode, int8-only): mul1 is OUT (A16 serving retired, LOG 12:17 PM CST); i8
+# runs to K8 - the #94 penalties are accepted (K7 ~0.18 bit; at K8 x4.5 error, mul1 parity would need f16) for one
+# kernel path and long-term maintainability.] i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
 # keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
 # [11-08: A4 is out of V3 (#46-03 fail, user 11-07), and A4 was the 16 i4 twins' only use (never picked at 2.0-7.0
 # without it, v3/levels/reprice.md); all 16 removed (user 11-08, lead note 4:25 PM CST; w93): ladder 71 -> 55 levels.]
@@ -97,9 +101,9 @@ stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11
 # changes with this edit (user: fine).]
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
 by_level = [
-  { k_min = 0.125, k_max = 7.0,  codebook = "i8" },
+  { k_min = 0.125, k_max = 8.0,  codebook = "i8" },   # one codebook everywhere (11-09): i8 to K8
 ]
-mul1_levels = [6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
+mul1_levels = []                 # retired 11-09 (int8-only; user + deadcode; the codebook and the f16-path levels are out)
 i4_twins = []                  # none (A4 out, user 11-08; was [2.0, 3.0], inert since w93's twin drop)
 hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
 
@@ -164,19 +168,22 @@ enable = false
 
 # --------------------------------------------------------------------------- ladder plan (which levels, not in the stamp)
 [ladder]
-# The 55 levels (v3.md "Ladder", 11-07; 71 until the 16 i4 twins were dropped, user 11-08; all i8 / mul1 since #126) and their build order
+# The 50 levels (v3.md "Ladder"; 71 -> 55 when the i4 twins dropped 11-08 -> 50 on 11-09: mul1 out, i8 K7.5 / K8
+# added, int8-only decision, user + deadcode; all i8 since #126) and their build order
 # (local/TODO "Ladder build order", user 11-05; sub-1 last, LOG 11-08 5:00 AM). Outside the stamp: it picks which levels exist, not what a tensor's codes are; the codebook of
 # each level comes from [quant.codebook]. python -m rxq.ladder levels | jobs | estimate (w86, 11-08).
 prefix = "q27v3"               # level names: <prefix>-<stamp[:8]>-k<K>-<codebook>
 low = [0.125, 1.0, 0.125]      # [first, last, step]: K0.125-1 (8; K < 1 = sub-1), codebook from [quant.codebook] (i8; i4 until #126)
 i8_fine = [1.125, 5.0, 0.125]  # i8 eighth steps (32)
-i8_top = [5.25, 7.0, 0.25]     # i8 quarter steps (8)
+i8_top = [5.25, 7.0, 0.25]      # i8 quarter steps (8)
+i8_extra = [7.5, 8.0]            # i8 top levels (user 11-09, 12:10 PM CST: "i8 K7, K7.5, K8"; K7 is in i8_top);
+                                 # #94 costs accepted for one int8 kernel path
 i4_twin_range = []             # no i4 twins (16 removed, user 11-08: A4 out of V3, #46-03; their only use). Was [1.125, 3.0,
                                # 0.125] (16 twins: quant.codebook.i4_twins first, the rest only if A4 paid)
                                # mul1: quant.codebook.mul1_levels (7)
 pass1_quarter = [1.25, 5.0]    # pass 1 (~24 levels, e2e test + search calibration): i8 quarter steps,
 pass1_half = [5.5, 7.0]        # i8 half steps,
-pass1_mul1_half = [6.5, 8.0]   # mul1 half steps; no sub-1, no i4 twins
+pass1_mul1_half = []             # mul1 out (11-09); pass 1 = the 20 i8 coarse levels; no sub-1, no i4 twins
 first_use = [2.5, 4.5]         # inside a pass, these K first ("order of use", v3.md)
 split = "group"                # job unit: "group" (one Hessian group of a layer, rqah quant_tensor's unit) | "tensor"
 n_layers = 64
@@ -195,7 +202,9 @@ map = "../e1b/data/e0-ident.map"
 swj_mode = "all"               # KN_SWJ when post.swj is on (every ours trunk option x r(K))
 swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"   # KN_SWJ_PTS: the corrected swj curve (w63; 27B K2.5 verify, K4 head-matched)
 cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
-a4 = false                     # A4 options (#46-03 fail: A4 out of V3, user 11-07): off -> KN_NOA4=1
+modes = "a8"                   # KN_MODES: int8 activations only (user + deadcode 11-09, LOG 12:17 PM CST): knap5's
+                               # menu drops the f16-prefill / bf16-tensor rows; one variant per size ("accurate"
+                               # retired). KN_MODES unset / "f16" keeps the old menus (w63 reproduction only)
 sub1_ratios = ""               # KN_SUB1 (sub-1 levels' error ratios); "" = sub-1 levels are not priced (a warning)
 env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
 
@@ -210,4 +219,5 @@ best_of_n_seeds = "#41 null (spread 0.5%)"
 group_scales = "#40 negative"
 # Also closed, with no switch here (comment only, outside the stamp): xcorp H_in blend (#101, above), hash codebook (#100,
 # above), A1 down-from-up (#81-04, user 11-07), joint refits beyond the MLP (#108 fail), clipped i8 (#109 negative),
-# bf16 (row, 128) scales (#110 fail).
+# bf16 (row, 128) scales (#110 fail), and the A16 / bf16 serving options + mul1 codebook (int8-only decision,
+# user + deadcode 11-09: A8-g128 everywhere; KLD cost of A8 measured x1.0014 at K2.5 full stack, #122).

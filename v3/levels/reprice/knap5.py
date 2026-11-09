@@ -9,7 +9,8 @@ All new switches default off: without them knap5 is knap4 byte for byte (checked
               them (measured positions with KN_LEVELS), bytes linear; KN_PHI_INTERP=1 (default) moves the family factor
               phi log-linearly from floor(k)'s family to ceil(k)'s (knap4 used floor(k)'s: a x1.26 step at K7, ours_hi).
               R4 = int4grid / mul1_i8 pooled (v3/e3/settle/reval.md item 1); R8 = mul1_i8 / mul1 (r94b.md, reval.md items
-              2 / 5): 1.000 to K3, 1.001 K4, 1.002 K5, 1.004 K6, 1.018 K6.5, 1.27 K7; K6.5-7 log-linear in the excess (R8 - 1)
+              2 / 5): 1.000 to K3, 1.001 K4, 1.002 K5, 1.004 K6, 1.018 K6.5, 1.27 K7, 1.69 K7.25, 2.33 K7.5,
+              3.23 K7.75, 4.5 K8 (the > K7 points enter the menu with the i8-only decision, 11-09); K6.5-7 log-linear in the excess (R8 - 1)
               (KN_R8_MID=ratio: log-linear in R8, i.e. K6.75 x1.137 instead of x1.070). Int8 / int4 modes carry no extra
               weight error on their own codebook (the plane is exact); their activation cost is AQ's as before.
   KN_G8 / KN_G4  activation groups offered to a8 / a4 (default 128 / 64,128: what the two-pass kernels run).
@@ -45,7 +46,8 @@ Switches (env, all default off = knap3's V2-like menu):
               the fitted Lloyd embedding costs through the Lloyd error curve (embtrellis.jsonl), log-log interpolation.
   KN_DAMP=1   attention inputs (q/k/v) requantized at sigma_reg 0.005: error x the CPU damping-sweep factor
               (K2 0.994, K4 0.981, K6 0.991, K8 0.955; log-linear in between).
-  KN_MODES=f16  quality-only (no int compute modes).
+  KN_MODES=f16  quality-only, no int compute modes (legacy; the w63 accurate arm). KN_MODES=a8 int8 activations
+              only: the f16 / bf16 menu rows are dropped (V3 default since 11-09, [knap].modes).
   KN_EMBT=2   trellis embedding priced from REAL KLD (chain1, 2026-11-01: swaps into V2 6.00 on golden-ml, t2 / t2.5 / t3
               / t3.5 / t4 vs Lloyd 2-5): the ml increments are scaled to the pooled corpus by the Lloyd points
               (model e3-e5, e4-e5 vs the same on ml: 0.333, both agree to 1%); other K from the nearest measured
@@ -235,7 +237,8 @@ if V3R:
     M1 = _ks("KN_M1", _e(6, 8, 0.25))
     R4 = {1: 1.001, 1.125: 1.0009, 1.25: 1.0016, 1.375: 1.0010, 1.5: 1.002, 1.625: 1.0037, 1.75: 1.0046, 1.875: 1.0070,
           2: 1.0088, 2.25: 1.0130, 2.5: 1.018, 2.75: 1.029, 3: 1.062}
-    R8 = {1: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 6.5: 1.018, 7: 1.27}
+    R8 = {1: 1.0, 3: 1.0, 4: 1.001, 5: 1.002, 6: 1.004, 6.5: 1.018, 7: 1.27,                                  # #94 w45 medians;
+          7.25: 1.69, 7.5: 2.33, 7.75: 3.23, 8: 4.5}                                                          # > K7: added 11-09 for the i8-only top levels
     R8MID = os.environ.get("KN_R8_MID", "excess")
     def rtab(tab, K, excess=False):
         ks = sorted(tab); assert ks[0] <= K <= ks[-1], (K, ks)
@@ -478,12 +481,20 @@ def time_ms(t, mode, g, bits):
     return gemm_ms(N, K, mode, g, fam) + N * K * DEC_NS * 1e-6
 
 def options(t):
-    """[(mode, group, label, bytes, weight cost, act cost, time ms)] for one tensor"""
+    """[(mode, group, label, bytes, weight cost, act cost, time ms)] for one tensor. KN_MODES=a8 (V3 default, from
+    [knap].modes): int8 activations only — the f16-prefill and bf16-tensor rows are retired (int8-only decision,
+    user + deadcode 11-09); they stay in the menu with KN_MODES unset / f16 for the historical w63 reproductions."""
     N, K = shape(t); o = []; fam = t["w"].split(".")[-2]
-    for c, (b, e, bits) in t["opts"].items():
-        o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, time_ms(t, "f16", 0, bits)))
-    if t["bf16_bytes"]: o.append(("f16", 0, "bf16", t["bf16_bytes"], 0.0, 0.0,
-                                   0.0 if t["w"] == "output.weight" else time_ms(t, "f16", 0, 16) if TP else gemm_ms(N, K, "f16", 0, fam)))
+    if os.environ.get("KN_MODES") != "a8":
+        for c, (b, e, bits) in t["opts"].items():
+            o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, time_ms(t, "f16", 0, bits)))
+        if t["bf16_bytes"]: o.append(("f16", 0, "bf16", t["bf16_bytes"], 0.0, 0.0,
+                                       0.0 if t["w"] == "output.weight" else time_ms(t, "f16", 0, 16) if TP else gemm_ms(N, K, "f16", 0, fam)))
+    elif t["w"] == "output.weight":
+        # head: priced as today (headdec / slab serve it, no int8 prefill path and no trunk-GEMM time); the bf16
+        # head option stays out of the a8-only menu (int8-only decision 11-09; #99's floor split can run the legacy arm)
+        for c, (b, e, bits) in t["opts"].items():
+            o.append(("f16", 0, c, b, wcost(t, c, e), 0.0, time_ms(t, "f16", 0, bits)))
     if V3R:
         if os.environ.get("KN_MODES") == "f16": return o
         G8 = [int(x) for x in os.environ.get("KN_G8", "128").split(",")]

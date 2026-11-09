@@ -35,7 +35,8 @@ Goal: start the eval stream soon after the level ladder finishes (late Nov 2 at 
 ## Backlog (rough priority within each group)
 
 ### Activations
-- [ ] A8 per family (batch2): find the tensors that need A16.
+- [x] ~~A8 per family (batch2): find the tensors that need A16.~~ CLOSED 11-09 (int8-only decision, user + deadcode:
+      no A16 anywhere — LOG 12:17 PM CST; outlier work at A8 stays open below).
 - [ ] A4 g128 / clip (batch3). Then Atom-style outlier channels at A8 within a tensor; full-dim / learned
       (SpinQuant) rotations.
 - [x] Activation dump + CPU proxy (E1c): per-tensor costs, ±30% vs KLD with family factors. Next: a depth term.

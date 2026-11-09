@@ -45,16 +45,17 @@ def fmt_k(K):
 # ------------------------------------------------------------------------------------------------------ levels
 def levels(cfg, which=None):
     """[{name, K, codebook, pass, priority, conditional}] in build order. pass: "1" coarse subset, "2" the rest of the
-    i8 / mul1 levels + K1 + the first i4 twins, "2b" the other i4 twins (only if #46-03's A4 pays), "3" sub-1.
-    [ladder] i4_twin_range = [] builds no i4 twins (A4 out of V3, #46-03: w93's proposal, 11-08)"""
+    i8 levels + K1 + the first i4 twins, "2b" the other i4 twins (only if #46-03's A4 pays), "3" sub-1.
+    [ladder] i4_twin_range = [] builds no i4 twins (A4 out of V3, #46-03: w93's proposal, 11-08);
+    mul1_levels = [] builds no mul1 levels (int8-only, user + deadcode 11-09)"""
     L, cb = cfg["ladder"], cfg["quant"]["codebook"]
     st = C.settings_stamp(cfg)
     out = []
 
     def add(K, codebook, p, cond=False):
         out.append({"K": _kn(K), "codebook": codebook, "pass": p, "conditional": cond})
-    q1 = L["pass1_quarter"]; h1 = L["pass1_half"]; m1 = L["pass1_mul1_half"]
-    i8 = _rng(*L["i8_fine"]) + _rng(*L["i8_top"])
+    q1 = L["pass1_quarter"]; h1 = L["pass1_half"]; m1 = L.get("pass1_mul1_half") or [99, 0]
+    i8 = _rng(*L["i8_fine"]) + _rng(*L["i8_top"]) + [float(x) for x in L.get("i8_extra", [])]
     low = _rng(*L["low"])                                # K0.125-1: the codebook from [quant.codebook] (i8 since #126)
     tw = _rng(*L["i4_twin_range"]) if L["i4_twin_range"] else []
     for K in i8:

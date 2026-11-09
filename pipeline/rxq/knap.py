@@ -17,6 +17,7 @@ data/levels/reprice/swj2/out/main-acc-2.5.jsonl byte for byte (the knapsack solv
 python -m rxq.knap library LEVELDIR... -o library.json [--packs DIR]
 python -m rxq.knap env library.json [--config F] [--accurate]
 python -m rxq.knap solve library.json OUT.jsonl [--tree RXM] -t 2.5[,3.0] [-l 0[,3e-7]] [--accurate] [--config F]
+  (--accurate = the retired accurate / f16 arm, kept only to reproduce w63 byte for byte; V3 ships [knap].modes = "a8")
 python -m rxq.knap handoff SOLVE.jsonl library.json MIXDIR --tag TAG [--base NAME] [--donors donors.json] [--frontier F]"""
 import argparse, json, os, subprocess, sys
 
@@ -77,7 +78,8 @@ def env(cfg, lib, accurate=False):
     if cfg["quant"]["tile_cd"]["enable"] and kn.get("cd_factor"):
         e["KN_CD"] = f"{kn['cd_factor']:g}"
     if not kn.get("a4"): e["KN_NOA4"] = "1"
-    if accurate: e["KN_MODES"] = "f16"
+    e["KN_MODES"] = str(kn.get("modes", "a8"))          # "a8" (V3, int8-only 11-09): no f16 / bf16 menu rows
+    if accurate: e["KN_MODES"] = "f16"                  # legacy: pins the retired accurate arm (check_knap's w63 repro)
     return e
 
 
