@@ -108,3 +108,15 @@ donor flags `--only-head --save-wq --head-perm perm.npy --qtf2 --frac-ext SRC --
 - If T passes, the donors take T's flags on top of the mean-row decision (T is always run with mean-row: if mean-row
   is dropped, T without it is untested and the recommendation says so).
 - Rank-r: CPU proxy evidence only, reported; it needs an ourq change and a format addition (post-freeze).
+
+## Amendment 2 (#125-02, written 7:00 PM CST 2026-11-08, after amendment 1's verdict, before this arm)
+
+Amendment 1 read (report94b): T / B 0.880 / 0.885 (K3 / K4, search-gen), 0.863 / 0.806 (qad-even), guard 0.97 / 1.02
+→ T passes; but B / C0' 1.074 / 1.076 (search-gen), 1.077 / 1.123 (qad-even) → by amendment 1, recommend dropping
+mean-row. T was only run with mean-row, so the donor recipe "two-sided without mean-row" is untested.
+
+**Arm T0** (same code, fork, flags and seed): `--hout HD --hout-blocks group --sigma-reg-out 0.1`, no `--head-mean-row`,
+K3 and K4; headsim94 on both dumps.
+
+**Rule:** the donors take T0 iff T0 / C0' ≤ 0.97 at K3 and K4 on search-gen and qad-even, guard ratio ≤ 1.3 on
+search-gen, and T0 / T ≤ 1.00 at both K on search-gen. Otherwise the donors take T (amendment 1).
