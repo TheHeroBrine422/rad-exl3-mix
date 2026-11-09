@@ -3,7 +3,7 @@
 kernels, the fork's real quantize.py), on a tiny two-layer model (layer 2 GDN + MLP, layer 3 attention + MLP; random
 weights and Hessians, small shapes), under the V3 settings (H_out at every level, tile CD on attn_qg, C9 on the
 writers, sub-1 damping, sigma 0.2 at K0.125):
-  levels   K0.125 i4, K0.5 i4 (sub-1), K2.5 i8, K6.5 mul1 (one process each: `rxq job` semantics, run_quant with
+  levels   K0.125 i8, K0.5 i8 (sub-1; i4 until #126), K2.5 i8, K6.5 mul1 (one process each: `rxq job` semantics, run_quant with
            save_wq), H_out dense (FORK_DENSE: the fork as is) and blocks (FORK_BLOCKS: + w81's patch 0008, inputs.hout.ldlq
            = blocks): every tensor of both layers, every job's outputs present
   decode   each t-file decoded by rxq.deq (trellis, suh, svh) == the quantizer's own dequantized weight (wq, f16) to
@@ -65,7 +65,7 @@ base = open(os.path.join(PIPE, "config", "v3.toml")).read()
 cfgs = {m: re.sub(r'^ldlq = "(dense|blocks)"', f'ldlq = "{m}"', base, flags=re.M) for m in ("dense", "blocks")}
 assert cfgs["blocks"] != cfgs["dense"]
 for m, t in cfgs.items(): open(f"{W}/{m}.toml", "w").write(t)
-LEVELS = [(0.125, "i4"), (0.5, "i4"), (2.5, "i8"), (6.5, "mul1")]
+LEVELS = [(0.125, "i8"), (0.5, "i8"), (2.5, "i8"), (6.5, "mul1")]
 runs = {}
 for mode, fork in (("dense", FD), ("blocks", FB)):
     cfg = C.load(f"{W}/{mode}.toml"); st = C.settings_stamp(cfg)

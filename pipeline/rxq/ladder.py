@@ -45,7 +45,7 @@ def fmt_k(K):
 # ------------------------------------------------------------------------------------------------------ levels
 def levels(cfg, which=None):
     """[{name, K, codebook, pass, priority, conditional}] in build order. pass: "1" coarse subset, "2" the rest of the
-    i8 / mul1 levels + i4 K1 + the first i4 twins, "2b" the other i4 twins (only if #46-03's A4 pays), "3" sub-1.
+    i8 / mul1 levels + K1 + the first i4 twins, "2b" the other i4 twins (only if #46-03's A4 pays), "3" sub-1.
     [ladder] i4_twin_range = [] builds no i4 twins (A4 out of V3, #46-03: w93's proposal, 11-08)"""
     L, cb = cfg["ladder"], cfg["quant"]["codebook"]
     st = C.settings_stamp(cfg)
@@ -55,15 +55,15 @@ def levels(cfg, which=None):
         out.append({"K": _kn(K), "codebook": codebook, "pass": p, "conditional": cond})
     q1 = L["pass1_quarter"]; h1 = L["pass1_half"]; m1 = L["pass1_mul1_half"]
     i8 = _rng(*L["i8_fine"]) + _rng(*L["i8_top"])
-    i4 = _rng(*L["i4_low"])
+    low = _rng(*L["low"])                                # K0.125-1: the codebook from [quant.codebook] (i8 since #126)
     tw = _rng(*L["i4_twin_range"]) if L["i4_twin_range"] else []
     for K in i8:
         coarse = (q1[0] <= K <= q1[1] and abs(K * 4 - round(K * 4)) < 1e-9) or (h1[0] <= K <= h1[1] and abs(K * 2 - round(K * 2)) < 1e-9)
         add(K, "i8", "1" if coarse else "2")
     for K in cb["mul1_levels"]:
         add(K, "mul1", "1" if (m1[0] <= K <= m1[1] and abs(K * 2 - round(K * 2)) < 1e-9) else "2")
-    for K in i4:
-        add(K, "i4", "3" if K < 1 else "2")
+    for K in low:
+        add(K, C.codebook_for(cfg, K), "3" if K < 1 else "2")
     for K in tw:
         add(K, "i4", "2" if K in [float(x) for x in cb["i4_twins"]] else "2b", cond=K not in [float(x) for x in cb["i4_twins"]])
     for lv in out:                                       # every (K, codebook) must agree with the codebook table

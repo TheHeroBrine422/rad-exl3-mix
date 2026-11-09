@@ -1,0 +1,23 @@
+23:27:03 w95 start: steps wait k1 k0125 post:k1 post:k0125 pack:k1 pack:k0125 score:k1 score:k0125 report; settings 80b5e6d77ef57fc6
+04:07:06 wait: w92 / w94 drivers gone for 10 min
+04:07:07 q27v3-80b5e6d7-k1-i8 seed 0: 256 jobs -> /data/w95/jobs/k1.part (settings 80b5e6d77ef57fc6, est 1.30 R9700-h, hout bn1920, c9 writers 64)
+04:10:12 w95: stopped by w95 (the wait fired in w92 restart gap; post() local bug fixed before relaunch)
+04:10:36 w95 start: steps wait k1 k0125 post:k1 post:k0125 pack:k1 pack:k0125 score:k1 score:k0125 report; settings 80b5e6d77ef57fc6
+05:32:37 wait: w92 / w94 drivers gone for 10 min (05:23:03 W92 DONE (fs0 fs1 swjA ctl post:fs0 post:fs1 pack:fs0 pack:fs1 refs sco)
+07:05:49 k1: 256 jobs done, 4758 s wall
+07:05:52 k1 assembled: 80b5e6d703ae4dd9 (64 shards, 64 C9 writers)
+07:05:53 q27v3-80b5e6d7-k0.125-i8 seed 0: 256 jobs -> /data/w95/jobs/k0125.part (settings 80b5e6d77ef57fc6, est 3.27 R9700-h, hout bn1920, c9 writers 64)
+10:38:02 k0125: 256 jobs done, 12724 s wall
+10:38:03 k0125 assembled: 80b5e6d703ae4dd9 (64 shards, 64 C9 writers)
+10:38:06 post k1 (C9 only): SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/w95/lv/k1/final
+10:38:07 post k0125 (C9 only): SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/w95/lv/k0125/final
+11:00:17 pack k1 rc=0 1330s
+11:00:22 k1: mix ready, 1.2677 bpw
+11:22:39 pack k0125 rc=0 1337s
+11:22:42 k0125: mix ready, 0.4763 bpw
+11:23:53 score k1-x rc=0 71s
+11:24:42 score k1-c rc=0 49s
+11:26:08 score k0125-x rc=0 86s
+11:27:05 score k0125-c rc=0 57s
+11:27:05 W95 SMOKE OK: k1 pooled 1.86254 (x 2.23959, c 1.17926); k0125 pooled 11.64030 (x 11.68833, c 11.55326)
+11:27:05 W95 DONE (wait k1 k0125 post:k1 post:k0125 pack:k1 pack:k0125 score:k1 score:k0125 report)

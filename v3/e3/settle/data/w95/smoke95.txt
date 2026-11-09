@@ -1,0 +1,5 @@
+k1 x: KLD 2.23959 top-1 0.5741 p99 23.163 finite True (65 docs, 93824 pos)
+k1 c: KLD 1.17926 top-1 0.6305 p99 8.152 finite True (26 docs, 51773 pos)
+k0125 x: KLD 11.68833 top-1 0.0295 p99 22.501 finite True (65 docs, 93824 pos)
+k0125 c: KLD 11.55326 top-1 0.0415 p99 22.751 finite True (26 docs, 51773 pos)
+W95 SMOKE OK: k1 pooled 1.86254 (x 2.23959, c 1.17926); k0125 pooled 11.64030 (x 11.68833, c 11.55326)

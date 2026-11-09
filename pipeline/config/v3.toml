@@ -92,18 +92,15 @@ stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11
 # keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
 # [11-08: A4 is out of V3 (#46-03 fail, user 11-07), and A4 was the 16 i4 twins' only use (never picked at 2.0-7.0
 # without it, v3/levels/reprice.md); all 16 removed (user 11-08, lead note 4:25 PM CST; w93): ladder 71 -> 55 levels.]
-# i4 with qtf2 (every sub-1 level and the 1/8 steps): w53's qtf2-i4.patch, applied 11-07 (exl3frac2 "i4" variant;
-# oracle-exact at every rate in w53's checks; tests/qtf2i4check.sh on card 0 re-checks it).
+# [11-08 (user, 5:20 PM CST; #126 w95): one codebook. i8 also at the sub-1 levels and K1 (K0.125-1 were i4); no i4
+# anywhere (A4, i4's only reason, is out). #126 held-out two-sided proxy: see v3/e3/settle/w95.md. The settings stamp
+# changes with this edit (user: fine).]
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
 by_level = [
-  { k_min = 0.125, k_max = 1.0,  codebook = "i4" },
-  { k_min = 1.125, k_max = 7.0,  codebook = "i8" },
+  { k_min = 0.125, k_max = 7.0,  codebook = "i8" },
 ]
 mul1_levels = [6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0]
-i4_twins = [2.0, 3.0]          # i4 K1.125-3 twins: K2 / K3 first (#46-03), the other 14 only if A4 pays
-                               # (#46-03 done 11-07: A4 fails and is out). 11-08 (user): no twins are built
-                               # ([ladder] i4_twin_range = []), so this value is inert; it stays because it is stamped
-                               # (editing it would change the settings stamp of every level, w92's anchors included)
+i4_twins = []                  # none (A4 out, user 11-08; was [2.0, 3.0], inert since w93's twin drop)
 hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
 
 [quant.tile_cd]
@@ -167,11 +164,11 @@ enable = false
 
 # --------------------------------------------------------------------------- ladder plan (which levels, not in the stamp)
 [ladder]
-# The 55 levels (v3.md "Ladder", 11-07; 71 until the 16 i4 twins were dropped, user 11-08) and their build order
+# The 55 levels (v3.md "Ladder", 11-07; 71 until the 16 i4 twins were dropped, user 11-08; all i8 / mul1 since #126) and their build order
 # (local/TODO "Ladder build order", user 11-05; sub-1 last, LOG 11-08 5:00 AM). Outside the stamp: it picks which levels exist, not what a tensor's codes are; the codebook of
 # each level comes from [quant.codebook]. python -m rxq.ladder levels | jobs | estimate (w86, 11-08).
 prefix = "q27v3"               # level names: <prefix>-<stamp[:8]>-k<K>-<codebook>
-i4_low = [0.125, 1.0, 0.125]   # [first, last, step]: i4 K0.125-1 (8; K < 1 = sub-1)
+low = [0.125, 1.0, 0.125]      # [first, last, step]: K0.125-1 (8; K < 1 = sub-1), codebook from [quant.codebook] (i8; i4 until #126)
 i8_fine = [1.125, 5.0, 0.125]  # i8 eighth steps (32)
 i8_top = [5.25, 7.0, 0.25]     # i8 quarter steps (8)
 i4_twin_range = []             # no i4 twins (16 removed, user 11-08: A4 out of V3, #46-03; their only use). Was [1.125, 3.0,
@@ -199,7 +196,7 @@ swj_mode = "all"               # KN_SWJ when post.swj is on (every ours trunk op
 swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"   # KN_SWJ_PTS: the corrected swj curve (w63; 27B K2.5 verify, K4 head-matched)
 cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
 a4 = false                     # A4 options (#46-03 fail: A4 out of V3, user 11-07): off -> KN_NOA4=1
-sub1_ratios = ""               # KN_SUB1 (sub-1 i4 levels' error ratios); "" = sub-1 levels are not priced (a warning)
+sub1_ratios = ""               # KN_SUB1 (sub-1 levels' error ratios); "" = sub-1 levels are not priced (a warning)
 env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
 
 # ------------------------------------------------------------------------------------------- dropped (for the record)

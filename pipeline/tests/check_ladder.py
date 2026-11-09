@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check_ladder.py [RQAH_CHECKOUT] -- rxq/ladder.py, the ladder's job generation (CPU, seconds):
   levels   55 levels from the settings file: pass 1 24 (i8 quarter steps K1.25-5, half steps K5.5-7, mul1 half steps
-           K6.5-8), pass 2 24, no i4 twins (A4 out, w93 11-08; was pass 2b 14 + 2 in pass 2), pass 3 7 (sub-1, i4); every (K, codebook) agrees with
+           K6.5-8), pass 2 24, no i4 twins (A4 out, w93 11-08; was pass 2b 14 + 2 in pass 2), pass 3 7 (sub-1, i8 since #126; no i4 level at all); every (K, codebook) agrees with
            [quant.codebook]; pass 1 first, K2.5-4.5 first inside a pass; names unique and carry the settings stamp
   jobs     every level's jobs (group split; also the tensor split) pass rad-quant-at-home's rxq_quant checks (schema,
            stamp, keys, pins = exactly the implied inputs, requirements) with H_out dense and blocks; ukeys unique;
@@ -37,7 +37,7 @@ order_ok = [v["pass"] for v in L] == sorted([v["pass"] for v in L], key=["1", "2
     all(2.5 <= float(L[i]["K"]) <= 4.5 for i in range(9))
 names = [v["name"] for v in L]
 report("levels", len(L) == 55 and cnt == {"1": 24, "2": 24, "2b": 0, "3": 7} and p1 == want1 and order_ok and
-       len(set(names)) == 55 and not any(v["codebook"] == "i4" and float(v["K"]) > 1 for v in L) and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
+       len(set(names)) == 55 and not any(v["codebook"] == "i4" for v in L) and all(v["codebook"] == "i8" for v in L if float(v["K"]) <= 1) and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
        f"{len(L)} levels {cnt}; pass 1 = the coarse subset {p1 == want1}; order {order_ok}; first {names[:3]}")
 
 for mode in ("dense", "blocks"):

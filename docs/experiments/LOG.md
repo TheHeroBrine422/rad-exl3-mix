@@ -3,6 +3,31 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-09 5:27 AM CST · #126 · card-0 smoke (step 3): both i8 levels run end-to-end in radiance, SMOKE OK (w95)
+- **Status:** done (**pass**: proxy + smoke) · **Machine:** gpubox card 0 (after w92's `W92 DONE` 11:23 PM 11-08) · **Rule:**
+  `v3/e3/settle/w95.md` (5b7caff, before data) · **Code:** `v3/e3/settle/w95/` (`w95.sh`, `smoke95.py`) on the patched
+  tree, stamp **80b5e6d77ef57fc6** · **Data:** `v3/e3/settle/data/w95/` (`smoke95.txt`, `result.txt`,
+  `smoke95-scores-and-recipes.txt`; full score rows on gpubox `/data/w95/scores/`)
+- Config change (delivered as `local/workers/w95/i8-sub1.patch`, applied in the staged worktree only): `[quant.codebook]`
+  by_level = one i8 row K0.125–7, `i4_twins = []`, `[ladder]` low series from the codebook; rqah `tests/rxq_e2e.py`
+  0.5-i8 (`rqah-i8-sub1.patch`). CPU stand-ins on the patched tree: check_cpujob 25/25, check_ladder 5/5, rxq_e2e 9/9.
+- Run (256 jobs/level, assembled 80b5e6d703ae4dd9, 64 shards, 64 C9 writers; SWJAPPLY post; rad-convert packs rc=0;
+  KLD on golden-search27c, both parts, score only, no gate):
+  - **K1 i8:** 4,758 s; mix 1.2677 bpw; x KLD **2.23959** (top-1 0.5741, p99 23.163), c KLD **1.17926** (top-1 0.6305,
+    p99 8.152); pooled **1.86254**.
+  - **K0.125 i8:** 12,724 s; mix 0.4763 bpw; x KLD **11.68833** (top-1 0.0295, p99 22.501), c KLD **11.55326** (top-1
+    0.0415, p99 22.751); pooled **11.64030**.
+  All rows rc=0, KL finite. Both mixes census PASS: trunk exactly `336 exl3i K mul1i8` at rate 1 / 0.125 (rest of the
+  mix unchanged; no i4 anywhere). **SMOKE OK.**
+- Note: the first launch's card-0 wait fired 10:07 PM in a w92 restart gap (the wait only counted the driver gone ≥ 10
+  min); stopped 10:10, `w95.sh` fixed (also require `W92 DONE`/`VERDICT` in w92's result tail, or 60 min gone) and
+  relaunched 10:10:36 PM — that wait fired correctly at 11:32 PM; no quantized work was lost (jobs skip finished work).
+- **Runtime:** none (mul1i8 decodes through the same exl3i f16-activation path as i4; one codebook removes the i4 code
+  paths — `local/workers/w95/dead-i4.md`).
+- **Not committed (lead's no-commit rule, rule files only):** this entry, the INDEX row, `v3/e3/settle/w95.md` results,
+  `v3/e3/settle/w95/`, `v3/e3/settle/data/w95/` — for the lead's batch commit. Worktrees to remove on merge:
+  `/workspace/wt/w95-rxm`, `/workspace/wt/w95-rqah`.
+
 ### 2026-11-09 12:25 AM CST · #138-03 · H_out-weighted refit held out: the gain holds → rule says PROPOSE ADOPTION (user decides)
 - **Status:** done (positive by the #138-03 rule) · **Machine:** gpubox card 0 (lead-run, ~15 min) · **Rule:**
   `v3/e3/settle/w98.md` #138-03 (5e3aa34, before data) · **Code:** `v3/e3/settle/w98/w98h.sh` · **Data:**
