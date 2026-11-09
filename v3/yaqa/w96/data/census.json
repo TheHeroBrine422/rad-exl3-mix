@@ -1,0 +1,27 @@
+{
+ "qad_gen_positions": 3836849,
+ "heldout_rows": 38960,
+ "F=0": {
+  "rows": 673,
+  "heldout_exact_share": 2.0775471138266823e-06,
+  "search_pool_golden_share": 3.35908670371993e-07,
+  "qad_share": 0.0
+ },
+ "n<10": {
+  "rows": 49606,
+  "heldout_exact_share": 0.002230262168937193,
+  "search_pool_golden_share": 0.0012408752031162571,
+  "qad_share": 0.00025050223035148484
+ },
+ "n<100": {
+  "rows": 129017,
+  "heldout_exact_share": 0.025994782193747897,
+  "search_pool_golden_share": 0.013692582980051375,
+  "qad_share": 0.007464454512845599
+ },
+ "heldout_argmax_in_n<10": 0.0016940451745379877,
+ "heldout_argmax_in_n<100": 0.02594969199178645,
+ "xc8k_b1_positions": 4911959,
+ "xc_n<10_rows": 33964,
+ "qadx_n<10_rows": 23275
+}
