@@ -3,6 +3,49 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 9:05 PM CST · #127 · Head Fisher smoothing / more data on held-out rows: no arm useful (keep today's Fisher); w94's "qad rows in-sample" gap is really Japanese / Thai documents in the search dump (w96)
+- **Status:** done (negative) · **Machine:** gpubox CPU (Fisher pass over the calib golden, 13 s, ram.lock shared),
+  Thor (xc8k-b1 Fisher; CPU scorer 02:19–02:52 UTC), colo (8 knap5 solves, 3 min) · **Code:** `v3/yaqa/w96/`
+  (`score96.py` = headsim94's KL per head block and donor on the CPU; `plans96.py` with `headslab.py` unchanged) ·
+  **Rule:** `v3/yaqa/w96/RULES.md` (72e2191, before data) · **Data:** `v3/yaqa/w96/data/`
+- **Gates:** G0 my qad-gen Fisher = `headsens.npz` (max rel 4e-15; it is pools-v3's qad, 2,799 documents, not
+  pools.json's) PASS; G1 CPU scorer vs w94's GPU sim on all 101 plans: mean ratio within 0.54% (u7 / s7, the smallest
+  KLs), per-row corr ≥ 0.99993, top-1 agreement 1.0 PASS.
+- **Census:** 3,836,849 qad gen positions. Rows with Fisher 0: 673; rows with < 10 / < 100 positions of p > 1e-4: 49,606 /
+  129,017. Those row sets hold 0.0002% / 0.22% / 2.6% of the held-out exact Fisher (1.4% on the search-pool golden).
+  Adding xc8k-b1 cuts the < 10 rows to 23,275.
+- **Tune (qad split, half A → qad-dump rows in B):** prior U (unigram bins) κ 1–30 within ±0.3%, κ ≥ 100 +7%; prior E
+  (head-norm deciles) 2–4× worse (the decile mean is set by a few frequent rows); more-q / more-x ≈ −1%. Chosen: U κ 1,
+  more-q w 1, more-x w 0.5, both = more-x + U κ 1.
+- **Held out (search-gen, 38,960 rows / 94 documents, paired document bootstrap), arm vs base:**
+
+  | arm | s4-3 | s5-3 | s6-3 | useful |
+  |---|---|---|---|---|
+  | smooth | +0.0% | −0.6% [−1.0, −0.3] (+0.004 b) | −0.7% [−1.1, −0.2] | no |
+  | more-q | +0.1% [−0.0, +0.4] | −2.7% [−4.1, −1.3] | −1.0% [−1.8, −0.4] | no |
+  | more-x | +0.0% [−0.3, +0.4] | −3.8% [−5.1, −2.3] (+0.004 b: unequal bytes) | −1.0% [−1.7, −0.4] | no (0 / 3) |
+  | both | = more-x | | | report only |
+
+  Rare-token KL (argmax rank ≥ 20k): −0.5 / −5.0 / −2.8% for more-x, smaller for the others (report only). No result
+  is borderline near the 3% bar (the only CIs touching 0 have point estimates ≥ 0).
+- **knap5 re-solve (best arm more-x, w94's procedure):** −0.00 / −0.02 / −0.01 / −0.02% predicted KLD at 2.0 / 2.5 /
+  3.0 / 4.0 vs the base grid; the base grid on the CPU sums reproduces w94's g-search-gen to 6 digits.
+- **Post hoc (report only): the qad / search gap is not Fisher overfit.** On the qad-dump rows, plans from half A (never
+  saw those documents) = today's full-Fisher plans (+1.1% [−0.1, +2.5] / 0.0 / 0.0%); slab / uniform is 0.14 / 0.18 /
+  0.41 on qad and 0.40 / 0.36 / 0.50 on search with either Fisher. The 5 worst held-out documents for s4-3 are 4 jpn
+  (fineweb2) + 1 Thai Wikipedia: 43% of its KL, and slab is worse than uniform on them (s/u 1.0–2.3). Without the 6
+  jpn / th documents s4-3 / u4 is 0.24. The dump holds 5 of the search pool's 6 jpn documents (the search pool is
+  0.45% jpn / 1.05% Thai tokens vs calib 0.24% / 0.20%). Token weighting leaves it at 0.43 [0.18, 0.80]: the head-plan
+  price on search-gen rests on a handful of rare-script documents.
+- **More data cost (proposal only):** the qad pool has no unused positions (the calib golden covers all of it); more
+  would be xcorp / traces on TP2 at ~2.65M rows/h (xc8k-b1: 5.0M rows in 113 min): 2× (+3.8M) ≈ 1.5 h and 16 GB,
+  4× (+11.5M) ≈ 4.3 h and 47 GB. Not recommended: 2.3× data (xc8k-b1 at w 1) moved the tune set by 1% and knap by 0.02%.
+- **Proposal only (GPU, not run):** two-sided head LDLQ with a smoothed H_out = re-quant K3 / K4 with `hout_diag` =
+  smoothed Fisher (prior U, κ 10–30, as w94's `gpu94.sh` writes it) vs w94's T0 donors, then headsim94 on the same dumps:
+  ~2 × 100 s quant + ~5 min headsim ≈ 10 card-min. Low priority: σo 0.1 already floors the zero / rare rows, and rows with
+  n < 100 hold 2.6% of the held-out Fisher, so expect < 1%.
+- **Runtime:** none.
+
 ### 2026-11-08 8:20 PM CST · ideas round 2 · six pre-freeze lenses + critic done; pre-freeze shortlist of 8 (lead review pending user)
 - **Run:** `local/papers/runs/2026-11-08r2/` (lenses codes, lowbpw, measure, composable, redteam at Opus xhigh;
   faraway xhigh, 83 min, ran its own colo checks; critic Opus high, 7 min). Ranked list `ideas/ranked.md`.
