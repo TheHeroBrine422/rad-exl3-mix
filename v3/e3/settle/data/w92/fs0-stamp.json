@@ -1,0 +1,15 @@
+[
+ {
+  "stamp": "ed97adb792132b43",
+  "rxq_settings": "ed97adb7ed1f9919",
+  "rxq_code": "92132b43df398cb8",
+  "K": "2.5",
+  "codebook": "i8",
+  "args": {
+   "K": 2.5,
+   "codebook": "i8",
+   "rxq_settings": "ed97adb7ed1f9919"
+  },
+  "time": "2026-11-09T00:00:59Z"
+ }
+]

@@ -1,0 +1,4 @@
+a8 rows finite: True
+f16 -> a8 (calib part, install-117): 0.046365 -> 0.046428: r 1.0014 [0.9997, 1.0034] z +1.57; p99 0.5587 -> 0.5659; top-1 0.92664 -> 0.92660 (26 docs, 51773 pos)
+fs0 f16 rows, install-116 vs install-117: max |dKL| 0.0567
+A8 1.0014 z +1.57

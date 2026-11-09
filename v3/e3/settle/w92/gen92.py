@@ -14,7 +14,8 @@ def post(path, body):
     return out, time.perf_counter() - t
 
 
-if tag == "fs0":
+NT = tag.endswith("nt")                                # fs0nt: the same prompts with the template's thinking off
+if tag in ("fs0", "fs0nt"):
     tools = [{"type": "function", "function": {"name": "run_shell", "description": "Run a shell command and return its output",
               "parameters": {"type": "object", "properties": {"cmd": {"type": "string"}}, "required": ["cmd"]}}}]
     convs = [
@@ -30,6 +31,7 @@ if tag == "fs0":
     for i, msgs in enumerate(convs):
         body = {"model": "w92", "messages": msgs, "temperature": 0, "max_tokens": 300}
         if i == 2: body["tools"] = tools
+        if NT: body["chat_template_kwargs"] = {"enable_thinking": False}
         try: out, dt = post("/chat/completions", body)
         except Exception as e:                      # tool calling refused: the same trace as plain text
             if i != 2: raise
@@ -37,10 +39,11 @@ if tag == "fs0":
                                                             {"role": "user", "content": "Output:\n" + msgs[3]["content"]}]
             out, dt = post("/chat/completions", body); out["fallback"] = repr(e)
         out["wall_s"] = dt
-        json.dump(out, open(f"{O}/gen-{i}.json", "w"), indent=1)
+        json.dump(out, open(f"{O}/gen-{i}{'-nt' if NT else ''}.json", "w"), indent=1)
         m = out["choices"][0]["message"]
         print(f"gen {i}: {out['usage']} {dt:.1f}s; reasoning {len(m.get('reasoning_content') or '')} chars; "
               f"content: {(m.get('content') or '')[:200]!r}; tool_calls: {m.get('tool_calls')}", flush=True)
+if NT: json.dump({"tag": tag}, open(f"{O}/speed-{tag}.json", "w")); sys.exit(0)
 docs = [json.loads(l)["prompt"] for l in open(corpus)]
 docs = sorted(docs, key=len, reverse=True)
 runs = []

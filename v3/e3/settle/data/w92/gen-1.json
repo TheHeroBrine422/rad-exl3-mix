@@ -1,0 +1,44 @@
+{
+ "id": "chatcmpl-c0b788d762a93d9e063375cf",
+ "object": "chat.completion",
+ "created": 1794201921,
+ "model": "w92",
+ "system_fingerprint": "radiance-1.17.0",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "",
+    "reasoning_content": "We need to respond to user: \"I'm visiting Kyoto for three days in November. Suggest an itinerary, one sentence per stop.\" Need produce final answer likely itinerary with one sentence per stop. Need maybe concise. User asks one sentence per stop. We can provide stops maybe 3 days, each stop one sentence. Need ensure each stop sentence? Could format Day 1: Stop 1 sentence, etc. But \"one sentence per stop\" means each stop should be one sentence. We can list stops with sentences. Need maybe November considerations: autumn foliage, cold, fewer crowds? Kyoto in November: autumn leaves, temples, maybe Fushimi Inari early morning, Arashiyama, Kinkaku-ji, Nijo Castle, Gion, Philosopher's Path, Nara day trip? Three days. Need one sentence per stop. Could be 3 days with multiple stops. Ensure each line is one sentence. Avoid semicolons? A sentence can have commas. Need maybe no extra intro? If intro sentence not a stop? User asks suggest itinerary, one sentence per stop. We can just list stops. Maybe each bullet is a stop and one sentence. Need maybe include day labels? If day label not sentence? Could be \"Day 1: ...\" but that's not a stop? Better: \"Day 1, Stop 1: ...\" That's one sentence? It includes colon. It's a sentence? It may be fragment? \"Day"
+   },
+   "logprobs": null,
+   "finish_reason": "length"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 72,
+  "completion_tokens": 300,
+  "total_tokens": 372,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 300
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 72,
+  "prompt_ms": 124.759706,
+  "prompt_per_token_ms": 1.7327736944444443,
+  "prompt_per_second": 577.1094074235796,
+  "predicted_n": 300,
+  "predicted_ms": 12872.429354,
+  "predicted_per_token_ms": 43.051603190635454,
+  "predicted_per_second": 23.227938703511956,
+  "ttft_ms": 125.824528,
+  "total_ms": 12998.253881999999
+ },
+ "wall_s": 12.999032280000392
+}

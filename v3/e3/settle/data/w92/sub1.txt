@@ -1,0 +1,29 @@
+sub1-0.875 2.linear_attn.in_proj_qkv    ssm_qkv     sigma 0.05 (want 0.05) proxy 6.2778e-02 c9 False ok wall 18.7s peak 5.985 GiB
+sub1-0.875 2.linear_attn.in_proj_z      ssm_z       sigma 0.05 (want 0.05) proxy 4.2360e-02 c9 False ok wall 10.6s peak 5.321 GiB
+sub1-0.875 2.linear_attn.out_proj       ssm_out     sigma 0.025 (want 0.025) proxy 7.7295e-02 c9 True ok wall 13.6s peak 5.625 GiB
+sub1-0.875 2.mlp.gate_proj              ffn_gate    sigma 0.025 (want 0.025) proxy 1.7697e-01 c9 False ok wall 31.2s peak 6.944 GiB
+sub1-0.875 2.mlp.up_proj                ffn_up      sigma 0.025 (want 0.025) proxy 2.0180e-01 c9 False ok wall 30.1s peak 6.944 GiB
+sub1-0.875 2.mlp.down_proj              ffn_down    sigma 0.025 (want 0.025) proxy 7.3072e-02 c9 False ok wall 37.1s peak 11.503 GiB
+sub1-0.875 3.self_attn.q_proj           attn_qg     sigma 0.05 (want 0.05) proxy 5.8140e-03 c9 False ok wall 80.8s peak 6.923 GiB
+sub1-0.875 3.self_attn.k_proj           attn_k      sigma 0.05 (want 0.05) proxy 6.9733e-02 c9 False ok wall 3.0s peak 4.627 GiB
+sub1-0.875 3.self_attn.v_proj           attn_v      sigma 0.05 (want 0.05) proxy 1.4972e-01 c9 False ok wall 3.0s peak 4.627 GiB
+sub1-0.875 3.self_attn.o_proj           attn_output sigma 0.025 (want 0.025) proxy 4.7041e-03 c9 True ok wall 13.8s peak 5.625 GiB
+sub1-0.875 3.mlp.gate_proj              ffn_gate    sigma 0.025 (want 0.025) proxy 1.6771e-01 c9 False ok wall 31.5s peak 6.944 GiB
+sub1-0.875 3.mlp.up_proj                ffn_up      sigma 0.025 (want 0.025) proxy 2.1445e-01 c9 False ok wall 30.3s peak 6.944 GiB
+sub1-0.875 3.mlp.down_proj              ffn_down    sigma 0.025 (want 0.025) proxy 1.9710e-01 c9 False ok wall 37.0s peak 11.503 GiB
+sub1-0.875: 13 tensors
+sub1-0.125 2.linear_attn.in_proj_qkv    ssm_qkv     sigma 0.2 (want 0.2) proxy 3.9946e-01 c9 False ok wall 21.6s peak 5.985 GiB
+sub1-0.125 2.linear_attn.in_proj_z      ssm_z       sigma 0.2 (want 0.2) proxy 2.9628e-01 c9 False ok wall 12.4s peak 5.321 GiB
+sub1-0.125 2.linear_attn.out_proj       ssm_out     sigma 0.2 (want 0.2) proxy 2.9697e-01 c9 True ok wall 16.1s peak 5.625 GiB
+sub1-0.125 2.mlp.gate_proj              ffn_gate    sigma 0.2 (want 0.2) proxy 7.2666e-01 c9 False ok wall 36.7s peak 6.944 GiB
+sub1-0.125 2.mlp.up_proj                ffn_up      sigma 0.2 (want 0.2) proxy 7.8406e-01 c9 False ok wall 35.4s peak 6.944 GiB
+sub1-0.125 2.mlp.down_proj              ffn_down    sigma 0.2 (want 0.2) proxy 2.7170e-01 c9 False ok wall 43.8s peak 11.503 GiB
+sub1-0.125 3.self_attn.q_proj           attn_qg     sigma 0.2 (want 0.2) proxy 7.7240e-02 c9 False ok wall 92.5s peak 6.923 GiB
+sub1-0.125 3.self_attn.k_proj           attn_k      sigma 0.2 (want 0.2) proxy 4.1138e-01 c9 False ok wall 3.9s peak 4.627 GiB
+sub1-0.125 3.self_attn.v_proj           attn_v      sigma 0.2 (want 0.2) proxy 6.6693e-01 c9 False ok wall 3.8s peak 4.627 GiB
+sub1-0.125 3.self_attn.o_proj           attn_output sigma 0.2 (want 0.2) proxy 2.5398e-02 c9 True ok wall 16.1s peak 5.625 GiB
+sub1-0.125 3.mlp.gate_proj              ffn_gate    sigma 0.2 (want 0.2) proxy 6.9457e-01 c9 False ok wall 36.9s peak 6.944 GiB
+sub1-0.125 3.mlp.up_proj                ffn_up      sigma 0.2 (want 0.2) proxy 7.8834e-01 c9 False ok wall 35.5s peak 6.944 GiB
+sub1-0.125 3.mlp.down_proj              ffn_down    sigma 0.2 (want 0.2) proxy 7.2021e-01 c9 False ok wall 43.9s peak 11.503 GiB
+sub1-0.125: 13 tensors
+SUB1 PASS (0 bad)

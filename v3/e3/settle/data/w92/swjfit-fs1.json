@@ -1,0 +1,28 @@
+{
+ "tool": "rxq.swjfit",
+ "src": "/data/w92/lv/fs1/level",
+ "mode": "level",
+ "meta": "/data/swj27/swj27-qad",
+ "grid": "0.6:1.4:0.01",
+ "docs": 725,
+ "tokens": 927611,
+ "cap": 4096,
+ "split": [
+  0,
+  11,
+  21,
+  32,
+  43,
+  53,
+  64
+ ],
+ "fused": true,
+ "no_cache": true,
+ "kernels": {
+  "causal_conv1d": null,
+  "fla": "0.6.0",
+  "torch": "2.15.0+rocm7.14"
+ },
+ "codebook": "i8",
+ "created": "2026-11-09T03:11:30Z"
+}

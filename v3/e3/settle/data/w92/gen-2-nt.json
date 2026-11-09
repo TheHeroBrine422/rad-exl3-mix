@@ -1,0 +1,53 @@
+{
+ "id": "chatcmpl-0e4c7c9071c42590a102fd9d",
+ "object": "chat.completion",
+ "created": 1794202162,
+ "model": "w92",
+ "system_fingerprint": "radiance-1.17.0",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": null,
+    "tool_calls": [
+     {
+      "id": "call_98e17c358c274488d21de47e",
+      "type": "function",
+      "function": {
+       "name": "run_shell",
+       "arguments": "{\"cmd\":\"find /var/log -type f -printf '%s %p\\\\n' | sort -n -r | head -5\"}"
+      }
+     }
+    ]
+   },
+   "logprobs": null,
+   "finish_reason": "tool_calls"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 399,
+  "completion_tokens": 51,
+  "total_tokens": 450,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 399,
+  "prompt_ms": 424.029792,
+  "prompt_per_token_ms": 1.0627313082706766,
+  "prompt_per_second": 940.9716192771663,
+  "predicted_n": 51,
+  "predicted_ms": 2132.1466849999997,
+  "predicted_per_token_ms": 42.64293369999999,
+  "predicted_per_second": 23.450544163662926,
+  "ttft_ms": 488.562319,
+  "total_ms": 2620.709004
+ },
+ "wall_s": 2.6213810319968616
+}

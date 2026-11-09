@@ -203,5 +203,11 @@
   "line": "v3",
   "decisions": 2,
   "note": "#124 / #125 (w94, 2026-11-08): bf16 head inputs at a <= 512-row window per document of 85 seeded qad docs; head plan pricing set (fit) and A6's sigma_out selection / judging halves (v3/yaqa/w94/RULES.md)"
+ },
+ "golden-search27c-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#122 (w92, 2026-11-08): calib part of the two-part 27B search slice golden-search27c (26 search-pool docs, cap 8192, seed 9222, none from golden-search27 / golden-search27b-c); its xcorp part (65 pieces of night1105 xc8k-b2-c2, mX docs excluded) reads no calib. Decided #122's full-stack gate (2 pairs + 2 reference pairs)"
  }
 }

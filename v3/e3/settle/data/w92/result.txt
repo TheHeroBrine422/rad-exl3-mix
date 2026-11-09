@@ -1,0 +1,55 @@
+22:27:04 w92 start: steps slice sub1 fs0 fs1 swjA ctl post:fs0 post:fs1 pack:fs0 pack:fs1 refs score:A verdict k1 swjB post:k1 pack:k1 score:B report; settings ed97adb7ed1f9919
+22:27:05 slice calib part: 26 documents, 67958 tokens: agentic 8192, books 6531, chat 8590, code 8819, encyclopedic 1400, legal 2470, math 2678, multilingual 3870, qa 2236, reasoning 8192, science 8192, tools 2285, web 4503
+22:27:05 slice xcorp part: 65 pieces (1148 xcorp docs excluded): agentic 1, books 1, chat 7, code 10, encyclopedic 5, legal 1, long 1, math 5, multilingual 9, qa 5, reasoning 1, science 1, tools 7, web 11
+22:27:05 golden-search27c-c 26 docs 67958 tokens 67932 rows 51773 scored
+22:27:05 golden-search27c-x 65 docs 93889 tokens 93824 rows 93824 scored
+22:27:06 q27v3-ed97adb7-k0.875-i4 seed 0: 8 jobs -> /data/w92/jobs/sub1-0.875.part (settings ed97adb7ed1f9919, est 0.09 R9700-h, hout bn1920, c9 writers 2)
+22:34:19 sub1-0.875: 8 jobs done, 216241644 s wall
+22:34:20 sub1-0.875 assembled: ed97adb792132b43 (2 shards, 2 C9 writers)
+22:34:21 q27v3-ed97adb7-k0.125-i4 seed 0: 8 jobs -> /data/w92/jobs/sub1-0.125.part (settings ed97adb7ed1f9919, est 0.10 R9700-h, hout bn1920, c9 writers 2)
+22:41:31 sub1-0.125: 8 jobs done, 430 s wall
+22:41:32 sub1-0.125 assembled: ed97adb792132b43 (2 shards, 2 C9 writers)
+22:41:32 SUB1 PASS (0 bad) (/data/w92/sub1.txt)
+22:41:33 q27v3-ed97adb7-k2.5-i8 seed 0: 256 jobs -> /data/w92/jobs/fs0.part (settings ed97adb7ed1f9919, est 1.18 R9700-h, hout bn1920, c9 writers 64)
+23:23:05 lead note 5:20 PM CST: K1 i4 arm skipped; driver restarted with the K2.5 steps only
+23:23:06 w92 start: steps fs0 fs1 swjA ctl post:fs0 post:fs1 pack:fs0 pack:fs1 refs score:A verdict; settings ed97adb7ed1f9919
+00:00:55 fs0: 256 jobs done, 4111 s wall
+00:00:59 fs0 assembled: ed97adb792132b43 (64 shards, 64 C9 writers)
+00:01:00 q27v3-ed97adb7-k2.5-i8 seed 1: 256 jobs -> /data/w92/jobs/fs1.part (settings ed97adb7ed1f9919, est 1.18 R9700-h, hout bn1920, c9 writers 64)
+01:25:33 fs1: 256 jobs done, 4069 s wall
+01:25:37 fs1 assembled: ed97adb792132b43 (64 shards, 64 C9 writers)
+01:25:37 swj A (fs0 fs1): start
+03:11:31 swj A: done in 105 min (fused check (layer 53, source fs0, 4096 positions): max rel difference 7.08e-07)
+03:33:59 pack basectl rc=0 1348s
+03:34:11 basectl: mix ready, 2.6244 bpw
+03:56:42 pack s1ctl rc=0 1351s
+03:56:52 s1ctl: mix ready, 2.6244 bpw
+03:56:57 post fs0: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w92/lv/fs1/final
+03:56:57 W92 STOP: fs0: /data/w92/lv/fs0/final has not 64 layers
+04:07:16 w92 start: steps fs0 fs1 swjA ctl post:fs0 post:fs1 pack:fs0 pack:fs1 refs score:A verdict; settings ed97adb7ed1f9919
+04:07:19 fs0: 256 jobs done, 4111 s wall
+04:07:21 fs1: 256 jobs done, 4069 s wall
+04:07:30 post fs0: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w92/lv/fs0/final
+04:07:37 post fs1: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w92/lv/fs1/final
+04:30:01 pack fs0 rc=0 1343s
+04:30:14 fs0: mix ready, 2.6244 bpw
+04:53:08 pack fs1 rc=0 1343s
+04:53:19 fs1: mix ready, 2.6244 bpw
+04:53:30 hygiene fs0 vs basectl: PAIR OK {"a": "/data/w92/mix/mix-fs0.rad", "b": "/data/w92/mix/mix-basectl.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh", "
+04:53:42 hygiene fs1 vs s1ctl: PAIR OK {"a": "/data/w92/mix/mix-fs1.rad", "b": "/data/w92/mix/mix-s1ctl.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh", "su
+04:53:54 hygiene bnswj vs basectl: PAIR OK {"a": "/data/w92/mix/mix-bnswj.rad", "b": "/data/w92/mix/mix-basectl.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh",
+04:54:06 hygiene bns1swj vs s1ctl: PAIR OK {"a": "/data/w92/mix/mix-bns1swj.rad", "b": "/data/w92/mix/mix-s1ctl.rad", "weights": 787, "identical": 451, "arm_weights": 336, "arm_weights_changed": 336, "planes_changed": ["record", "suh",
+05:00:17 score basectl-x rc=0 87s
+05:08:28 score basectl-c rc=0 60s
+05:11:41 score fs0-x rc=0 89s
+05:13:25 score fs0-c rc=0 60s
+05:14:53 score bnswj-x rc=0 88s
+05:15:51 score bnswj-c rc=0 58s
+05:17:16 score s1ctl-x rc=0 85s
+05:18:14 score s1ctl-c rc=0 58s
+05:19:40 score fs1-x rc=0 86s
+05:20:38 score fs1-c rc=0 58s
+05:22:04 score bns1swj-x rc=0 86s
+05:23:02 score bns1swj-c rc=0 58s
+05:23:03 W92 VERDICT PASS: ctl -> fs pooled r = 0.9714, 0.9728 (geo 0.9721; xcorp geo 0.9755, calib geo 0.9080) vs bar 0.9658, 0.9806 (geo 0.9732); direct z +0.37, -0.50
+05:23:03 W92 DONE (fs0 fs1 swjA ctl post:fs0 post:fs1 pack:fs0 pack:fs1 refs score:A verdict)

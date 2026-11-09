@@ -1,0 +1,5 @@
+I activation arena: not lent -- the 'qwen35_exl3' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+  activation arena   841.21 MiB   computed from the buffer plan
+  static weights       9.38 GiB   off the top: every rank's own shard, and not a share of anything
+    kv cache           1.14 GiB   5% of it -- backs 1 sequences all at 16384 tokens at once, which is the worst case and
+  vram_weights         9.38 GiB   static + experts

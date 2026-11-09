@@ -1,0 +1,4 @@
+05:27:57 L02-g0: code stamp 27e7b3eb41ee8e05 vs fs0 92132b43...: PAIR OK {"base": "/data/w92/lv/fs0/level", "job": "/data/w92/stampchk/L02-g0", "keys": 2, "tensors": 8, "problems": 0}
+05:27:58 L03-g0: code stamp 27e7b3eb41ee8e05 vs fs0 92132b43...: PAIR OK {"base": "/data/w92/lv/fs0/level", "job": "/data/w92/stampchk/L03-g0", "keys": 3, "tensors": 12, "problems": 0}
+05:27:59 L03-g3: code stamp 27e7b3eb41ee8e05 vs fs0 92132b43...: PAIR OK {"base": "/data/w92/lv/fs0/level", "job": "/data/w92/stampchk/L03-g3", "keys": 1, "tensors": 4, "problems": 0}
+05:27:59 STAMPCHK92 DONE

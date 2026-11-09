@@ -1,0 +1,1 @@
+{"tag": "v2", "runs": [{"prompt_tokens": 5613, "wall_s": 3.196, "tok_s": 1756.5}, {"prompt_tokens": 7048, "wall_s": 4.096, "tok_s": 1720.6}, {"prompt_tokens": 5503, "wall_s": 3.141, "tok_s": 1751.7}], "tok_s_runs23": 1736.2}

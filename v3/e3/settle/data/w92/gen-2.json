@@ -1,0 +1,54 @@
+{
+ "id": "chatcmpl-1ff2591e86ad203243d5b8ac",
+ "object": "chat.completion",
+ "created": 1794201934,
+ "model": "w92",
+ "system_fingerprint": "radiance-1.17.0",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": null,
+    "reasoning_content": "The largest item is the /var/log/journal directory. Let's look for the largest file (not directory) under /var/log.\n",
+    "tool_calls": [
+     {
+      "id": "call_ea77dfd3ec58c80fc1b52d6c",
+      "type": "function",
+      "function": {
+       "name": "run_shell",
+       "arguments": "{\"cmd\":\"find /var/log -type f -printf '%s %p\\\\n' | sort -n -r | head -5\"}"
+      }
+     }
+    ]
+   },
+   "logprobs": null,
+   "finish_reason": "tool_calls"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 435,
+  "completion_tokens": 82,
+  "total_tokens": 517,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 30
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 435,
+  "prompt_ms": 429.291201,
+  "prompt_per_token_ms": 0.986876324137931,
+  "prompt_per_second": 1013.298197090231,
+  "predicted_n": 82,
+  "predicted_ms": 3497.316526,
+  "predicted_per_token_ms": 43.176747234567905,
+  "predicted_per_second": 23.160614544844318,
+  "ttft_ms": 540.898021,
+  "total_ms": 4038.214547
+ },
+ "wall_s": 4.038847995005199
+}

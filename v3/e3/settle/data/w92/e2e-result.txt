@@ -1,0 +1,7 @@
+05:23:26 a8 mix:  exl3i 2.5 mul1i8 a8g128 336 7.620; CENSUS PASS [checked: mix base]
+05:24:24 score fs0f16 (install-117): 
+05:25:03 score fs0a8 (install-117): 
+05:25:03 A8 1.0014 z +1.57 (/data/w92/e2e/a8.txt)
+05:25:51 serve fs0: {"tag": "fs0", "runs": [{"prompt_tokens": 5613, "wall_s": 3.888, "tok_s": 1443.5}, {"prompt_tokens": 7048, "wall_s": 4.976, "tok_s": 1416.3}, {"prompt_tokens": 5503, "wall_s": 3.801, "tok_s": 1447.9}], "tok_s_runs23": 1432.1}
+05:26:07 serve v2: {"tag": "v2", "runs": [{"prompt_tokens": 5613, "wall_s": 3.196, "tok_s": 1756.5}, {"prompt_tokens": 7048, "wall_s": 4.096, "tok_s": 1720.6}, {"prompt_tokens": 5503, "wall_s": 3.141, "tok_s": 1751.7}], "tok_s_runs23": 1736.2}
+05:26:07 E2E92 DONE

@@ -1,0 +1,43 @@
+{
+ "id": "chatcmpl-dcf517a3c2ae36140d1c4283",
+ "object": "chat.completion",
+ "created": 1794202157,
+ "model": "w92",
+ "system_fingerprint": "radiance-1.17.0",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Day 1: Arrive in Kyoto and settle into your accommodation before heading to the iconic Kinkaku-ji (Golden Pavilion) to enjoy its reflection in the pond during the golden hour.\n\nDay 2: Start early at Fushimi Inari Taisha to hike through the thousands of vermilion torii gates before visiting the historic Arashiyama district for bamboo groves and river views.\n\nDay 3: Explore the Nara Deer Park if you have extra time, or spend the day wandering the Gion district and visiting the serene Kiyomizu-dera temple for panoramic city views."
+   },
+   "logprobs": null,
+   "finish_reason": "stop"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 32,
+  "completion_tokens": 125,
+  "total_tokens": 157,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 32,
+  "prompt_ms": 77.898336,
+  "prompt_per_token_ms": 2.434323,
+  "prompt_per_second": 410.79183000776806,
+  "predicted_n": 125,
+  "predicted_ms": 5240.565739,
+  "predicted_per_token_ms": 42.262626927419355,
+  "predicted_per_second": 23.6615675054315,
+  "ttft_ms": 119.16306399999999,
+  "total_ms": 5359.728803
+ },
+ "wall_s": 5.360407740998198
+}

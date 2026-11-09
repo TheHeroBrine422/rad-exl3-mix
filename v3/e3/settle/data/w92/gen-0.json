@@ -1,0 +1,44 @@
+{
+ "id": "chatcmpl-f57cc9e581401adfb964a0e0",
+ "object": "chat.completion",
+ "created": 1794201909,
+ "model": "w92",
+ "system_fingerprint": "radiance-1.17.0",
+ "choices": [
+  {
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "",
+    "reasoning_content": "We need answer user: Write Python function merge_intervals(intervals) that merges overlapping closed intervals. Give short docstring and two doctest examples. Need produce final code likely. Need ensure doctest examples correct. Need think about closed intervals: [1,3] and [3,5] overlap/touch? Closed intervals [1,3] and [3,5] share point 3, so overlapping? Usually merge if start <= current_end. For closed intervals, touching at endpoint should merge. Need maybe sort by start. Return list of tuples? Could accept list of tuples. Docstring short. Doctest examples:\n>>> merge_intervals([(1,3),(2,4),(5,6)])\n[(1, 4), (5, 6)]\n>>> merge_intervals([(1,4),(0,2),(3,5)])\n[(0, 5)]\nNeed maybe handle empty: [] -> []. Could include. Need ensure doctest formatting. Function:\ndef merge_intervals(intervals):\n    \"\"\"Merge overlapping closed intervals into a minimal list.\"\"\"\n    if not intervals:\n        return []\n    sorted_intervals = sorted(intervals)\n    merged = [list(sorted_intervals[0])]\n    for start, end in sorted_intervals[1:]:\n        if start <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], end)\n        else:\n            merged"
+   },
+   "logprobs": null,
+   "finish_reason": "length"
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 79,
+  "completion_tokens": 300,
+  "total_tokens": 379,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 300
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 79,
+  "prompt_ms": 128.553869,
+  "prompt_per_token_ms": 1.6272641645569619,
+  "prompt_per_second": 614.5283733156255,
+  "predicted_n": 300,
+  "predicted_ms": 12829.926970999999,
+  "predicted_per_token_ms": 42.90945475250836,
+  "predicted_per_second": 23.304887134263645,
+  "ttft_ms": 129.922824,
+  "total_ms": 12959.849795
+ },
+ "wall_s": 12.997957029001554
+}

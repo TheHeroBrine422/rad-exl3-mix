@@ -3,6 +3,53 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 11:40 PM CST · #122 · Full adopted stack as one K2.5 level through the donors' job path: gate PASS (0.972 pooled, = bn+swj); pooled number is two xcorp documents; calib part 0.908 (w92)
+- **Status:** done · **Machine:** gpubox card 0 (~3.9 card-h: jobs 2 × 1.1 h, swjfit 1.75 h, scores + e2e ~0.5 h; packs
+  4 × 22 min CPU) · **Code:** `v3/e3/settle/w92/` (README) · **Rule:** `v3/e3/settle/w92.md`, committed 26ec0c9 before
+  any data; result section there · **Data:** `v3/e3/settle/data/w92/` (per-document sums `docsums92.json`, verdict,
+  job logs, timings, e2e); rows and levels on gpubox `/data/w92/`
+- **Path exercised on the GPU, no failure:** 512 group jobs (K2.5 i8, seed offsets 0 / 1) from `rxq.ladder.level_jobs`
+  via `python -m rxq job` (H_out bn1920 blocks + #117 block order + tile CD on attn_qg + C9 in the writers' jobs) →
+  `rxq assemble` (64 shards, 64 C9 writers) → `rxq.swjfit` on the assembled levels (one pass, 105 min) → `rxq.post
+  apply LEVEL SWJ,LEVEL/c9` → `rxq.mix recipe` → rad-convert / radmix / census → hygiene PAIR OK on all 4 pairs.
+  Per level 4,111 / 4,069 s of job wall incl. ~4–5 s process overhead a job (rxq.ladder estimates 1.54 h with
+  overhead; actual 1.13 h); ffn_down peaks 8.5 GiB at K2.5; tile CD two-sided ratio geo 0.9988 (16 q_proj).
+- **Gate (fresh two-part slice golden-search27c: 65 xcorp pieces of the never-scored xc8k-b2-c2 + 26 calib search
+  docs; ledger role select):** ctl → full stack pooled **0.9714** [0.941, 1.035] (seed 0) / **0.9728** [0.908, 0.990]
+  (seed 1); xcorp 0.975 / 0.976; calib **0.899** [0.865, 0.936] / **0.917** [0.884, 0.961]. Bar ctl → bn+swj (#104's
+  mixes) 0.9658 / 0.9806. geo 0.9721 ≤ 0.9732 and nothing > 1 → **PASS**. Direct bn+swj → full stack 1.006 / 0.992
+  (|z| < 0.6); calib part 1.020 / 1.017 (z +1.8 / +1.5, within the seed floor). The full stack equals bn+swj here;
+  C9 / #117 / tile CD are not resolved by this slice. No integration alarm.
+- **Slice caveat (post hoc):** xcorp holds 95% of the pooled KL sum and one xcorp piece (smoltalk2/longalign, PDF text
+  with a non-breaking space between every word, base KL 3.2 / position) 51% of it. Without it the pooled ratios are
+  0.998 / 0.956. Per document (equal weight), **xcorp gains as much as calib**: xcorp per-doc geo 0.909 / 0.900
+  (median 0.880 / 0.898), calib 0.877 / 0.998 (median 0.877 / 0.930); all 91 docs 0.900 / 0.927. So the lead's 11:25
+  reading ("gains concentrated on calib-like text, small on xcorp") does not hold per document: the xcorp part's 0.976
+  is mostly the longalign piece (0.944) and the swe-rebench piece (1.012). **User's bar (< 0.95 vs old base): pooled
+  0.971 / 0.973 ≥ 0.95, calib part 0.899 / 0.917 < 0.95**; the adopted bn+swj arm is also ≥ 0.95 pooled on this
+  slice (0.966 / 0.981). Proposal for later slices: cap a document's weight, or decide on the per-part / per-document
+  statistic, so that one pathological piece cannot carry a decision.
+- **Sub-1 job check** (K0.875 / K0.125 i4, layers 2–3): PASS 26 / 26 (σ per group as v3.toml, H_out blocks, block
+  order, tile CD, C9). The K1 i4 arm was dropped (lead / user: i4 retired).
+- **e2e on the fs0 mix (lead's add-on):** A8 (a8g128, all trunk) 1.0014 [0.9997, 1.0034] on the calib part, rows
+  finite; generation coherent (correct `merge_intervals` + doctests, a sensible itinerary, a sensible tool call; with
+  thinking on, 300 tokens of on-topic reasoning); prefill 1,432 tok/s vs V2 3.00's 1,736 (−17.5%, uniform fractional
+  K2.5 i8 vs V2's mix); static weights 8.20 vs 9.38 GiB.
+- **Found (GPU-only):** (1) **rxq's code stamp is platform-dependent**: `engine.code_stamp` hashes ROCm hipify outputs
+  (~240 in the fork's ext dir, 14 written into rad-exl3-mix's kernel dirs by the first build), so a CUDA and a ROCm
+  donor get different code stamps for the same code and `rxq assemble` would refuse their mixed level. Proposed fix
+  `v3/e3/settle/w92/codestamp-hipify.patch` (skip `*.hip`, `*_hip.*`, `hip_*`; no tracked source has "hip" in
+  its name), not applied. (2) gpubox's `/data/exllamav3` (the default `exllamav3` import) lacks fork 0008: the blocks
+  path needs a 0008 fork first on PYTHONPATH (rxq refuses otherwise; the donor image must carry 0008 / 0009). (3) The
+  swap27 radiance home has no mul1i4 importer (moot now). (4) w92's own driver bug: `post()` declared
+  `local t=$1 F=$A/lv/$t/final` in one statement, so $t expanded to the swj loop's stale global and fs0's post wrote
+  into fs1/final. The driver stopped on its own check (fs0/final had no shards); the lead fixed it (two statements)
+  and relaunched at 10:07 PM CST, bad output in `/data/w92/bad-1109/`. No result was affected (fs1/final was rebuilt).
+- **Anchors:** settings ed97adb7ed1f9919, code 92132b43df398cb8 (50902fc + fork 6242f7ae, gpubox). Re-made with
+  5ce222f + fork b0052f7c (code 27e7b3eb41ee8e05), 3 jobs are bit-identical (PAIR OK 3 / 3). rqah's series key is the
+  settings stamp only, so the job dirs import as trusted rows unchanged.
+- **Runtime:** none (no setting, format or kernel change).
+
 ### 2026-11-08 11:25 PM CST · #122 · Full adopted stack at K2.5 through rxq (w92): PASS; calib part 0.908, xcorp part 0.976 vs old base
 - **Status:** done (PASS by the rule) · **Machine:** gpubox card 0 · **Code:** `v3/e3/settle/w92/` · **Slice:**
   golden-search27c (fresh two-part: xcorp 65 docs + calib search-pool docs)
@@ -12,10 +59,7 @@ versions of anything: git history.
 - **Result:** ctl → full stack pooled **0.9714 / 0.9728 (geo 0.9721)**; **xcorp part geo 0.9755, calib part geo
   0.9080**; bar (bn+swj on the same slice) geo 0.9732 → **PASS**; full stack vs bn+swj direct z +0.37 / −0.50 (equal
   within noise: C9 + #117 + tile CD add ≲ 1%, as expected).
-- **Lead reading:** the gains are concentrated on calib-like text (0.91) and small on xcorp (0.976), the same
-  pattern as the head (#34-02). H_out and swj are fitted on calib-derived statistics; documents are disjoint, so this
-  is distribution-specific, not document overfit. Board corpus is calib-like → user gate (< 0.95) met on the
-  relevant part; real-world (xcorp-like) gains are smaller. The earlier bn+swj 0.924 was read on a calib-only slice.
+- **Lead reading, CORRECTED after w92's report (11-09 12:10 AM CST):** the part split is not a text-type effect. xcorp holds 95% of the pooled KL sum, and two xcorp pieces hold 73% of the xcorp sum (one PDF-text piece with a non-breaking space between every word, 51%; one agentic piece, 22%), so the pooled and xcorp ratios mostly measure those two documents. Per-document (equal weight, post hoc): xcorp geo 0.909 / 0.900, calib 0.877 / 0.998 (medians 0.880 / 0.898 vs 0.877 / 0.930): xcorp gains about as much as calib. The 11:25 PM claim "gains concentrated on calib, small on xcorp" is withdrawn. Full stack vs bn+swj: 1.006 / 0.992 pooled (C9, #117, tile CD not visible here; calib part +1.8%, inside the seed floor). Proposal (w92): cap per-document weight in two-part slices or decide on a per-document statistic. e2e: A8 ×1.0014 on calib, generation coherent, prefill 1,432 vs V2 3.00's 1,736 tok/s (not like for like: uniform fractional K2.5 vs V2's mix), weights 8.20 vs 9.38 GiB.
 - **Bug found and fixed during the run:** w92.sh `post()` used one `local t=$1 F=…$t…` (stale $t): fs0's post wrote
   into fs1/final; caught by the driver's layer check; fixed and rerun (bad output in `/data/w92/bad-1109/`).
 - **Runtime:** none (quantizer settings).
