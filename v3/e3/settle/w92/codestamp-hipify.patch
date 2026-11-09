@@ -1,0 +1,25 @@
+diff --git a/pipeline/rxq/engine.py b/pipeline/rxq/engine.py
+index 75941ae..5611b2a 100644
+--- a/pipeline/rxq/engine.py
++++ b/pipeline/rxq/engine.py
+@@ -140,6 +140,12 @@ def tilecd():
+     return _STATE.get("tilecd")
+ 
+ 
++def _hipify_output(name):
++    """files torch's hipify writes next to the sources on a ROCm build (x.hip, x_hip.cuh / .cpp / .h / .hpp, cuda_* -> hip_*):
++    no tracked source of the fork or of rad-exl3-mix's kernel dirs has "hip" in its name (checked 11-08, w92)"""
++    return name.endswith(".hip") or "_hip." in name or name.startswith("hip_")
++
++
+ def code_stamp(Q):
+     """hash of the code that decides the results: rxq's own modules, exllamav3's quantize.py, the kernel sources
+     (the fork's exllamav3_ext and rad-exl3-mix's run-time builds) and tilecd.py if installed"""
+@@ -151,6 +157,7 @@ def code_stamp(Q):
+     t = tilecd()
+     if t is not None and not t.__file__.startswith(os.path.dirname(os.path.abspath(__file__))): files.append(t.__file__)
+     for f in files:
++        if _hipify_output(os.path.basename(f)): continue    # ROCm build outputs (w92): the same code must stamp alike on CUDA
+         if os.path.isfile(f) and not f.endswith(".pyc"): h.update(os.path.basename(f).encode()); h.update(open(f, "rb").read())
+     if kernels(Q) != "gpu": h.update(kernels(Q).encode())          # the CPU stand-in never shares a stamp with a real run
+     return h.hexdigest()[:16]

@@ -3,6 +3,151 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 11:25 PM CST · #122 · Full adopted stack at K2.5 through rxq (w92): PASS; calib part 0.908, xcorp part 0.976 vs old base
+- **Status:** done (PASS by the rule) · **Machine:** gpubox card 0 · **Code:** `v3/e3/settle/w92/` · **Slice:**
+  golden-search27c (fresh two-part: xcorp 65 docs + calib search-pool docs)
+- **Arms:** fs0 / fs1 = K2.5 i8 levels quantized by `rxq job` from v3.toml (H_out blocks, #117 order, tile CD,
+  C9, swj applied), packed into V2 3.00 (2.6244 bpw) vs fresh-packed old ladder K2.5 controls; reference arms
+  bn+swj. All four hygiene pairs PAIR OK (only the 336 trunk weights differ).
+- **Result:** ctl → full stack pooled **0.9714 / 0.9728 (geo 0.9721)**; **xcorp part geo 0.9755, calib part geo
+  0.9080**; bar (bn+swj on the same slice) geo 0.9732 → **PASS**; full stack vs bn+swj direct z +0.37 / −0.50 (equal
+  within noise: C9 + #117 + tile CD add ≲ 1%, as expected).
+- **Lead reading:** the gains are concentrated on calib-like text (0.91) and small on xcorp (0.976), the same
+  pattern as the head (#34-02). H_out and swj are fitted on calib-derived statistics; documents are disjoint, so this
+  is distribution-specific, not document overfit. Board corpus is calib-like → user gate (< 0.95) met on the
+  relevant part; real-world (xcorp-like) gains are smaller. The earlier bn+swj 0.924 was read on a calib-only slice.
+- **Bug found and fixed during the run:** w92.sh `post()` used one `local t=$1 F=…$t…` (stale $t): fs0's post wrote
+  into fs1/final; caught by the driver's layer check; fixed and rerun (bad output in `/data/w92/bad-1109/`).
+- **Runtime:** none (quantizer settings).
+
+### 2026-11-08 10:10 PM CST · #136-02, -04, -05 · 8-bit log su / sv passes only at K0.5; GDN state is f32 everywhere (no flag); Σdy² heavy blocks 6 / 9 are not agentic (w102)
+- **Status:** -02 done (pass at K0.5 only, fail at K2.5 / K4) · -04 done (no flag) · -05 done (caveat cleared) · **Machine:**
+  colo + Thor (-02, 27 CPU jobs, 03:47–03:58 UTC), gpubox CPU (-05, seconds), code read (-04) · **Code:**
+  `v3/e3/settle/w102/` (`job102.py b8`, `report102.py`, `f1comp102.py`) · **Rule:** `v3/e3/settle/w102.md` (136d89b, time
+  fix dc45f47, both before data) · **Data:** `v3/e3/settle/data/w102/` (`b8/`, `f1comp.json`)
+- **#136-02 (B-8, su / sv as 8-bit log, w87's two-sided held-out proxy, 27 tensors × s0, i8):** G0 PASS (the unrounded arm
+  equals w87 / w95's stored rows to 1.2e-7). L8 = sign + 7-bit log2 grid over each vector's range, rounded after the
+  refit, vs fp16: **K0.5 ×1.0001 [1.0000, 1.0002] PASS; K2.5 ×1.0034 [1.0028, 1.0042] fail; K4 ×1.0228 [1.0186, 1.0272]
+  fail** (bar ≤ 1.001). fp16 itself costs nothing (≤ 1e-4). The output side dominates: sv alone ×1.0027 / ×1.0180 at K2.5
+  / K4, su alone ×1.0007 / ×1.0057. The log2 steps are 0.012 (su) and 0.019 (sv), i.e. ±0.4% / ±0.7% per entry. Report
+  only: L9 (sign + 8 bit) ×1.0008 / ×1.0060 at K2.5 / K4; L8r (re-solving the output refit after rounding su) ≈ L8;
+  E4M3 ×1.20 / ×2.45 (unusable).
+  **Saving:** 8 (N + Kd) / (N Kd) = **0.0022 bpw over the trunk** (0.002 per ffn tensor, 0.009 per attn_k / v).
+  **Reading:** worth it at most at the sub-1 levels, where 0.002 bpw is ~0.4% of K0.5's bits and the proxy cost is nil.
+  It would need a per-level exl3i scale-format field, plus a LUT dequant of the 8-bit scales (128 entries) in the
+  kernels that apply suh / svh, to save VRAM and not only file bytes. **Not proposed for K ≥ 2.5.** At sub-1 it is
+  the lead's call (format field + kernel work for ~0.002 bpw at ≤ 1.3 bpw sizes). Caveat: the proxy does not refit su.
+- **#136-04 (H-4, GDN state dtype parity): no flag.** The recurrent state is f32 in every path that produces or scores
+  our numbers:
+  - **bf16 recorder (the published calib golden and our xcorp goldens, radiance `--kld-record`):** radiance-hero
+    `arch/qwen35_bf16/qwen35_bf16.cpp:235–240` declares `sd.dtype = RAD_F32` with no flag. The same holds in radiance
+    1.9 (`references/radiance`, line 226) and in latest.
+  - **Our evals (qwen35_exl3 plugin):** `plugin/qwen35_exl3/qwen35_exl3.cpp:158–159` declares `RAD_F32`.
+    `core/engine_bringup.cpp:1250–1259` refuses `--state-cache-dtype f16` for any plugin that does not declare an f16
+    state, so it cannot slip in.
+  - **Serving:** f32 by default; f16 only under `--state-cache-dtype f16` and only for qwen35_fp8
+    (`qwen35_fp8.cpp:678–688`).
+  - **Kernels:** both arches use the same ops (`gdn_chunk_scan` / `gdn_kkt_solve` / `gdn_recurrent_update`; libr4d
+    `r4d_gdn_chunk_scan_k128_v128_c64_bf16.hip` keeps the state in fp32 WMMA accumulators across chunks and stages a
+    bf16 copy in LDS as a matmul operand, the same rounding as FLA). That rounding is shared by the reference and every
+    quant, so it is not an engine floor between them.
+  - **Unknowns:** the published golden's `kld.json` records no engine version or step size. Our own 0.8B check found
+    chunk 2048 identical to whole documents (#33-26), and #99 measured the whole non-weight floor at 8.0.
+  - Nothing biases the 6–8 bpw numbers through the state dtype, so no TP2 floor run is needed for this.
+- **#136-05 (F-1 step 1, category composition of bn1920's blocks):** collect.py's window order reconstructed (1,350 qad
+  windows of 2,048, rng 0, sequence s → window s mod 1,350; 15 blocks of 128).
+  - The heavy blocks reproduce #33-27: layer-0 / layer-10 block energy vs the median block is **6.3× / 5.4× (block
+    6)** and **18.7× / 6.9× (block 9)**. All layers: 1.56 / 2.31. Layers 39 / 50 / 63: 0.8–1.25.
+  - **Agentic share** (agentic + tools + long-agentic, by windows): block 6 0.289 (**1.00× the collection mean**),
+    block 9 0.336 (**1.16×**). Every block is 0.73–1.22×, and each block mixes ~88 documents. Their highest-loss
+    sequences are books / web (doab, gutenberg, pg19, fineweb-edu), not agent text.
+  - **Rule outcome:** not agent-heavy → the FB-A3 caveat is cleared. By the rule, the category-matched statistic
+    deserves its 0.8B test (on hold: the 4070 is off limits).
+  - **But:** the 27B collection is not agent-starved. Agentic windows are **28.9%** of the 1,920 sequences (long
+    traces 17.6%), close to calib's 34% token share and the lens' ~25% scored-row target. The lens' "6%" does not hold
+    for this collection (no gen mask; the long qad traces give many windows). At 27B a category-matched reweighting
+    would barely move the weights, so expect ≈ 0 there. The 0.8B test only says something about the 0.8B collection's
+    mix.
+
+### 2026-11-09 9:50 PM CST · #137 · A-15 partial activation denoising (H + ρN) vs equal-trace damping, 0.8B: rule committed, running (w103)
+- **Status:** running · **Machine:** 4070 (queue `/data/queue.d/95-w103.sh`, gpu.lock per unit, VRAM ≤ 7.2 GB, nice 19) ·
+  **Code:** `proxy2b/exp/w103-pad/` (`mkhp.py`, `run.sh`, `report.py`; snapshot `/data/yb/w103/snap/`; moments.py from
+  w07-denoise) · **Rule:** `proxy2b/exp/w103-pad/RULES.md`, **committed alone (dc45f47) before data**
+- **Question:** quantize every trunk linear against H′ = H + ρN (N = E[ηηᵀ] of the input error in a quantized model,
+  metric only, no F / C terms: the partial version #88 did not run); is any gain more than the damping its trace adds?
+- **Setup:** 0.8B i8, today's ladder stack (q2b + H_out dy σo 0.01 + swj; no tile CD (not in the 0.8B ourq), no writers
+  asym (per-mix)). N from the seed-3 stack per K, `moments.py --mode quant` on fit-pool windows. Arms r0, n10 / n25 / n50
+  (ρ 0.1 / 0.25 / 0.5) and d10 / d25 / d50 (H + c·diag H, same added trace per group), K3 / K2, seeds 0 / 1 (28 quants).
+  Decides on **g08-search2** (first use), same-sign confirmation on **g08-search3** (first use).
+- **Pass rule:** per K, ρ* = best on search2; (a) geo r0 → nρ* ≤ 0.98, (b) dρ* → nρ* ≤ 0.99, (c) both < 1 on search3;
+  PASS needs all three at K3 and K2; (a) without (b)/(c) = damping → drop. Gate G0: ρ = 0 reproduces calib H exactly.
+- **Runtime:** none (quantizer metric only).
+
+### 2026-11-08 9:40 PM CST · #128, #129 · H_out in a mixed-K splice mix; swj on / off at K6: rule committed, donors checked, queued behind w92 / w95 / w98 (w99)
+- **Status:** running (queued) · **Machine:** gpubox card 0 (behind w92 / w95 / w98: the driver waits until their
+  drivers are gone 10 min, then `/root/card0.lock` → `/root/ram.lock` per step; radmix / packs conv.lock + ram.lock
+  exclusive) · **Code:** `v3/e3/settle/w99/` (`w99.sh`, `trunk99.py`, `verdict99.py`; w92's `mkjobs92.py` / `layer92.sh`
+  for the K6 jobs), staged on gpubox `/data/w99/code` = w92's tree (`git archive 50902fc` + w92/, fork 6242f7ae) + w99/ ·
+  **Rule:** `v3/e3/settle/w99.md`, **committed alone (addea3e) before any mix, quant or score** · **Data:**
+  `v3/e3/settle/data/w99/` (when done)
+- **#128 (R1, shortlist item 2):** four mixes into V2 3.00 with `radmix` from the stored swap27 mixes, no new quants:
+  even layers' trunk from the K4 level, odd from the K2.5 level, H_out on (bn4 + bn / bn4s1 + bns1) vs off (base4 +
+  ladder2 base / base4s1 + s1). Within each seed and K the levels differ only in `--hout` (dense path, block order off:
+  `rxq levelargs`). Even layers are all GDN, so the 16 attention layers sit at K2.5 (160 K4 + 176 K2.5 trunk weights).
+  Holds: geo ≤ 0.985 and both pairs < 1; fires: geo ≥ 1.00 (then H_out is scoped by K band before the ladder).
+- **Donor provenance (done, 03:34 UTC):** the stored swap27 mixes' trunk weights are byte-identical to later fresh packs
+  of the same levels (`trunk99.py`, 336 / 336 each): bn4 vs cdhout27's bn4ctl, bn4s1 vs bn4s1ctl, base vs w92's basectl;
+  s1 vs w92's s1ctl when that pack lands. So the splice from stored mixes equals fresh packing.
+- **#129 (R17, shortlist item 6):** a new K6 i8 level (`q27v3-ed97adb7-k6-i8`, seed 0) through w92's job path (est 1.67
+  card-h), `rxq.swjfit` on it, then two finals from the same codes: swj + C9 vs C9 only, each packed into V2 8.00 (bf16
+  embedding, K7–8 head: the trunk dominates the KL). Keep swj above K4.5 if r ≤ 0.995, else propose `k_max = 4.5`. K5 not
+  run (not cheap: ~1.3 card-h quant + ~0.75 swj + two packs).
+- **Slice:** golden-search27c (w92's), both parts; its second and third decisions after #122 (R55: retire after this round).
+- **Runtime:** none (#128 changes no setting; #129 swj scales fold into svh).
+### 2026-11-08 10:10 PM CST · #132, #133 · Sub-1 hygiene (C9 / g_scale edge / drift / zero floor / scale underflow) and H_out shape (σ_out × h^p) on the held-out two-sided proxy: rules committed, queues running (w100)
+- **Status:** running · **Machine:** colo (`/data/work/w13/w100`, ≤ 8 GB, no ffn_down), Thor (`/data/work/w100`,
+  ffn_down + the rest; restartable per K file), gpubox read-only (suh / svh scan, niced) · **Code:** `v3/e3/settle/w100/`
+  · **Rule:** `v3/e3/settle/w100.md` (372b555, before data; amendment 1 7028b0c, report-only fixed-g arms at K0.125; amendment 2: renumbered from #128 / #129, which w99 took first)
+- **Task:** pre-freeze shortlist items 4 (sub-1 hygiene) and 8 (H_out shape), ranked.md 11-09; i8 at sub-1 (#126).
+- **Gates:** G1 (ldlq2s = ldlq2 bit for bit; scale search reproduced; L_out identical; w93's K2.5 m 1 row reproduced
+  to 0 on colo, 3.5e-8 on Thor) PASS; G2 (15 block-normalized Σdy² blocks rebuilt from gpubox's snapshots average to
+  bn1920 within 9e-8, 400 keys) PASS; G3 (real w92 writers' C9 recomputed = the jobs' records within 1.2e-10) PASS.
+- **First readouts (complete, not proxy):** suh / svh scan of 71 gpubox level / job dirs: 0 zeros, 0 non-finite;
+  f16 subnormals 46 at K0.125 (w92 L3 q_proj suh 44, o_proj 2) and 1 at K ≥ 1 (a4cost i4 K1, L17 out_proj suh
+  5.5e-5). Real K0.125 codes (13 tensors): max rel 0.788 (L3 up_proj), none near 0.97. Production's scale search
+  sits at the grid's top edge (g 2.05) on every logged K0.125 job (w92, w81), the proxy at ~1.65 (flat MSE curve).
+- **Runtime:** none (quantizer settings / pricing).
+
+### 2026-11-08 9:55 PM CST · #138, #139 · Scale polish in the right metric (four refit arms on fixed codes) and log-once job instrumentation: rule committed, code tested on CPU, card-0 run queued (w98)
+- **Status:** running · **Machine:** colo (CPU tests, `/data/work/w13/w98`), gpubox card 0 (`/data/w98`, queued on
+  card0.lock behind w92's packs / w95) · **Code:** rxq patch `local/workers/w98/rxq-refit-diag.patch` (new
+  `pipeline/rxq/refit.py`, wiring in engine / quant / job / config, `tests/check_diag.py`), rqah patch
+  `local/workers/w98/rqah-diag.patch`; driver `v3/e3/settle/w98/` (`w98.sh`, `mkjobs98.py`, `f2calc98.py`, `report98.py`) ·
+  **Rule:** `v3/e3/settle/w98.md`, **committed alone (7f4b421) before any data** (numbered #130 / #131 there; renumbered to #138 / #139 in an amendment, w101–w103 took #130–#137 concurrently)
+- **#138 (shortlist item 1):** the fork's polish (`refit_scales`) fits su / sv in the damped H with every output column
+  alike, after a two-sided LDLQ. `quant.refit` (stamped, until now unwired) becomes `true | false | "hout" | "undamped" |
+  "hout+undamped"` in rxq (no fork patch). Arms evaluated inside one job per (layer, K) from the same pre-refit state
+  (fixed codes by construction): L10 / L39 at K0.5 / K2.5 / K4 i8, full stack, scored with w81's f2 (fp64). Pass: T-geo
+  (qkv / z / qg × 3 K) ≤ 0.990 and no tensor worse (geo over K ≤ 1.001, no cell > 1.005); then a K2.5 fixed-code reader
+  pair on golden-search27c (g ≤ 0.997, both parts < 1).
+- **#139 (item 5):** every rxq job writes `diag-<key>.safetensors` (per-output-channel e1 / e2, pre-refit e1 / e2, x1 / d1
+  for any later per-channel rescale, r1, the 128 × 128 error map, pre-refit su / sv) and a log `diag` (trajectory pre /
+  post refit / post-C9 + tile CD's rel, the proxy check, overload counters, g_scale). CPU stand-in (`check_diag.py`): Σ e1
+  / Σ r1 = logged proxy to 1.4e-7 / 2.1e-7 (rule 1e-6); t-files and C9 files bit-identical with diagnostics off and with
+  the arms on; `refit = false / hout / undamped` keep the trellis and reproduce the in-job arm's f2 to 3e-8; check_cpujob
+  25/25, check_ladder 5/5. Settings stamp unchanged (ed97adb7) with `refit = true`; the code stamp changes (df95e5e2 on
+  gpubox for the patched tree).
+- **Runtime:** none (fp16 scales / side files).
+
+### 2026-11-08 10:05 PM CST · #130 / #131 · Tile interleave (f2 on card 0, h stability on colo) and per-section K (colo proxy) started (w101)
+- **Status:** running · **Machine:** gpubox card 0 (#130-01, 8 rxq units under card0 + ram shared, interleaved with
+  w98 / w99), colo (#130-02 stability, #131 proxy queue: 8 preps + 152 (tensor, K) jobs, 8 at once, nice 19) ·
+  **Code:** `v3/e3/settle/w101/` · **Rule:** `v3/e3/settle/w101.md` (acf54f2, before data)
+- **Gates:** #131 G1 (prep == settle.P2 bit for bit on P2's own block) and G2 (batched two-sided block LDLQ ==
+  settle87.ldlq2: identical codes, e2 ratio 1.0) PASS on L10 ssm_qkv and L3 attn_qg. #130-02 G-b (15-block bn mean ==
+  hout-bn) 6e-8 on the keys so far. #130-01 prep: P16 checkpoint / H_out un-permute to the source bit for bit.
+- **Next:** f2 ratios (pass R(L10 qkv) ≤ 0.90), kept fraction (≥ 0.75), #131 held-out gain (≥ 0.10 bit).
+
 ### 2026-11-08 9:05 PM CST · #127 · Head Fisher smoothing / more data on held-out rows: no arm useful (keep today's Fisher); w94's "qad rows in-sample" gap is really Japanese / Thai documents in the search dump (w96)
 - **Status:** done (negative) · **Machine:** gpubox CPU (Fisher pass over the calib golden, 13 s, ram.lock shared),
   Thor (xc8k-b1 Fisher; CPU scorer 02:19–02:52 UTC), colo (8 knap5 solves, 3 min) · **Code:** `v3/yaqa/w96/`
