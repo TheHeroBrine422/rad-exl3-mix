@@ -3,6 +3,18 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-08 8:20 PM CST · ideas round 2 · six pre-freeze lenses + critic done; pre-freeze shortlist of 8 (lead review pending user)
+- **Run:** `local/papers/runs/2026-11-08r2/` (lenses codes, lowbpw, measure, composable, redteam at Opus xhigh;
+  faraway xhigh, 83 min, ran its own colo checks; critic Opus high, 7 min). Ranked list `ideas/ranked.md`.
+- **Pre-freeze shortlist (critic):** (1) scale polish ignores H_out and fits in the damped H (code-confirmed; card 0
+  four-way f2, ~2.5 card-h); (2) mixed-K H_out splice pair guarding "H_out at every level" (~2.5 card-h, no quants);
+  (3) output-row tile interleave for in_proj_qkv / q_proj (format; 20-min f2 screen first); (4) C9 α(K) and sub-1
+  hygiene (C9's c reaches 2.83 at sub-1; CPU); (5) log-once job instrumentation before the stamp; (6) swj k_max 4.5
+  (−18 card-h; user decision); (7) q|gate and q|k|v as separate knapsack tensors (CPU first); (8) σ_out / h^p sweep
+  (CPU). Top post-freeze: GDN in_proj_a/b out of bf16 (0.014 bpw; a/b are 23.6M params, codes' 0.026 was wrong).
+  Closed by the critic: swj is mix-independent (fits on bf16 MLP inputs; R19).
+- **Runtime:** none (planning).
+
 ### 2026-11-08 7:13 PM CST · #125-02 · Head donor recipe: two-sided softmax-Fisher LDLQ without mean-row, −9% / −10% head KL at K3 / K4 vs today's donors (PASS) (w94)
 - **Status:** done (T0 adopted by amendment 2; for the donor remake: lead / user) · **Machine:** gpubox card 0,
   00:58–01:10 UTC (6:58–7:10 PM CST; 2 quants + 2 headsims) · **Code:** `v3/yaqa/w94/gpu94b.sh`, `report94c.py` (same
