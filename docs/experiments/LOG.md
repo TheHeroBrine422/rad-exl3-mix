@@ -3,6 +3,21 @@
 Append-only; template and rules in `README.md`. Every experiment's entries are here, from 2026-10-29 on (entries
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
+### 2026-11-09 12:25 AM CST · #138-03 · H_out-weighted refit held out: the gain holds → rule says PROPOSE ADOPTION (user decides)
+- **Status:** done (positive by the #138-03 rule) · **Machine:** gpubox card 0 (lead-run, ~15 min) · **Rule:**
+  `v3/e3/settle/w98.md` #138-03 (5e3aa34, before data) · **Code:** `v3/e3/settle/w98/w98h.sh` · **Data:**
+  `v3/e3/settle/data/w98/report138-03.txt` (gpubox `/data/w98h/`)
+- Every job quantized and refit with the EVEN-block Σdy² factor (1,024 seqs, block-normalized, `mkhalf.py`); f2 scored
+  with the ODD-block factor (896 seqs). c1 / c2 fail as expected (different factor than w92 / than the in-job f2); c3 OK.
+  report98's own line applies #138-01's old bar (T-geo ≤ 0.990); the #138-03 rule is read here.
+- **hout arm, held out, all 39 cells:** geo **0.99907**, 87.2% of cells < 1, max 1.0000 → **PROPOSE** (rule: geo < 1,
+  ≥ 80% < 1, no cell > 1.002). Per K: K0.5 0.99764, K2.5 0.99970, K4 0.99987. Targets (qkv, z, qg): T-geo **0.99722
+  held out vs 0.99678 in sample**: the gain is real, not fitting the statistic. hout+undamped 0.99692 (not the
+  pre-registered arm).
+- **Size:** tiny: ~0.03% proxy at K2.5 overall (0.1% on the targets), 0.24% at K0.5; KL gains are usually smaller
+  than proxy gains. Zero runtime cost; a quantizer change (refit mode = hout) and a settings-stamp change.
+- **Runtime:** none.
+
 ### 2026-11-09 12:20 AM CST · #138-01 · Scale polish in the right metric: no arm passes, `refit = true` stays; C9 at K0.5 raises the two-sided proxy ×2.7 (w98's card-0 screen, read by the lead)
 - **Status:** #138-01 negative · #138-02 (27B pair) not run (conditional) · #139 instrumentation: files measured, not
   wired · **Machine:** gpubox card 0 · **Rule:** `v3/e3/settle/w98.md` (7f4b421, before data) · **Data:**
