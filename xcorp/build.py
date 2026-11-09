@@ -22,6 +22,8 @@ import argparse, hashlib, json, os, random, re, sys, time
 MANIFEST = os.environ.get("XCORP_MANIFEST", "/data/xcorp/ref/corpus/manifest.json")
 TOKENIZER = os.environ.get("XCORP_TOKENIZER", "/data/models/qwen38-27b-bf16")
 INDEX = os.environ.get("XCORP_INDEX", "/data/xcorp/ref/index.json")
+RENDER = os.environ.get("XCORP_RENDER", "qwen")    # qwen | deepseek (DeepSeek-V4.1: encoding.py + tokenizer.json)
+DS_ENCODING = os.environ.get("XCORP_DS_ENCODING", "/data/xcorp/ds41/encoding.py")
 SKIP_FACTOR = 1.1   # the challenge read the first `scanned` records (all three splits); a larger skip ran small
                     # datasets dry (s1k: 1k rows; hermes func_calling's last ~300 are a different, malformed task)
 
@@ -301,6 +303,39 @@ ADAPT = {"text": as_text, "wikimedia": ad_wikimedia, "wikipedia": ad_wikipedia, 
          "glaive": ad_glaive, "when2call": ad_when2call, "swe": ad_swe}
 
 
+# ------------------------------------------------------------------ DeepSeek-V4.1 rendering
+DS_BOS = "<\uff5cbegin\u2581of\u2581sentence\uff5c>"
+
+
+class DSTok:
+    """tokenizers-only stand-in for the two AutoTokenizer calls used here."""
+    def __init__(self, path):
+        from tokenizers import Tokenizer
+        self.t = Tokenizer.from_file(path)
+
+    def __call__(self, text, add_special_tokens=False):
+        return {"input_ids": self.t.encode(text, add_special_tokens=False).ids}
+
+    def decode(self, ids):
+        return self.t.decode(ids, skip_special_tokens=False)
+
+
+def ds_render(enc, msgs, tools):
+    """DeepSeek-V4.1's own prompt format (encoding.encode_messages): tools on the system message (an empty one is
+    added when there is none), thinking mode when any assistant turn has reasoning (default effort; reasoning of
+    earlier user turns dropped as the model's template does, kept across tool calls / whenever tools are declared),
+    chat mode otherwise."""
+    import copy
+    msgs = copy.deepcopy(msgs)
+    for m in msgs:                                     # encoding.py takes JSON-string or dict arguments
+        if m.get("role") == "assistant" and not m.get("reasoning_content"): m.pop("reasoning_content", None)
+    if tools:
+        if msgs[0]["role"] != "system": msgs = [{"role": "system", "content": ""}] + msgs
+        msgs[0]["tools"] = tools
+    think = any(m.get("reasoning_content") for m in msgs if m["role"] == "assistant")
+    return enc.encode_messages(msgs, thinking_mode="thinking" if think else "chat")
+
+
 # ------------------------------------------------------------------ main
 def main():
     ap = argparse.ArgumentParser()
@@ -308,8 +343,16 @@ def main():
     ap.add_argument("--mult", type=float, default=12); ap.add_argument("--budget", type=int, default=0)
     ap.add_argument("--seed", type=int, default=20261102); ap.add_argument("--max-scan", type=int, default=0)
     a = ap.parse_args()
-    from transformers import AutoTokenizer
-    tok = AutoTokenizer.from_pretrained(TOKENIZER)
+    if RENDER == "deepseek":
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("ds_encoding", DS_ENCODING)
+        enc = importlib.util.module_from_spec(spec); spec.loader.exec_module(enc)
+        tok = DSTok(os.path.join(TOKENIZER, "tokenizer.json"))
+        render = lambda msgs, tools: ds_render(enc, msgs, tools)
+    else:
+        from transformers import AutoTokenizer
+        tok = AutoTokenizer.from_pretrained(TOKENIZER)
+        render = lambda msgs, tools: tok.apply_chat_template(msgs, tools=tools, tokenize=False)
     man = json.load(open(MANIFEST))["datasets"]
     S = man["sources"][a.source]
     repo, config, split, adname, part = repo_for(a.source)
@@ -331,6 +374,8 @@ def main():
         st["scanned"] += 1
         res = ADAPT[adname](r)
         if res[0] is None: skip(res[1]); continue
+        if RENDER == "deepseek" and "<\uff5c" in json.dumps(res[1:], ensure_ascii=False):
+            skip("special-token"); continue            # raw text holding the model's own special-token strings
         if res[0] == "text":
             text = res[1]
             if adname == "book" and not prose(text[:20000]): skip("not-prose"); continue
@@ -339,17 +384,17 @@ def main():
             if len(ids) < (2000 if a.source.endswith("-long") else 128): skip("short"); continue
             if len(ids) > cap:
                 s0 = rng.randrange(0, len(ids) - cap + 1); ids = ids[s0:s0 + cap]; text = tok.decode(ids); st["truncated"] += 1
-            prompt = text
+            prompt = (DS_BOS + text) if RENDER == "deepseek" else text
         else:
             _, msgs, tools = res
-            try: prompt = tok.apply_chat_template(msgs, tools=tools, tokenize=False)
+            try: prompt = render(msgs, tools)
             except Exception: skip("render"); continue
             n = len(tok(prompt, add_special_tokens=False)["input_ids"])
             while n > cap and len(msgs) > 2:
                 msgs = msgs[:-1]
                 while msgs and msgs[-1]["role"] != "assistant": msgs = msgs[:-1]
                 if not msgs: break
-                prompt = tok.apply_chat_template(msgs, tools=tools, tokenize=False)
+                prompt = render(msgs, tools)
                 n = len(tok(prompt, add_special_tokens=False)["input_ids"]); st["truncated"] += 1
             if not msgs or n > cap: skip("too-long"); continue
             if n < 64: skip("short"); continue
