@@ -13,6 +13,7 @@ negligible (embedding lookup) · `P` = prefill compute (`gemm_us`, scored by the
 but the user cares and may test it) · `P+D` = both (`?` = expected, not yet timed) · `speed` = the experiment is
 itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 
+Next free number: **114**.
 
 | # | title | area | runtime | status | started | updated | result |
 |---|---|---|---|---|---|---|---|
@@ -169,9 +170,6 @@ itself a speed measurement · `n/a` = no model change (eval, data, tooling).
 | 89-06 | Healing at K4 / K5 on edy → swj → asym stacks | healing | none | running (#89-06c, 4070, w90) | 11-04 | 11-08 | k45lr seed 0: K4 lr 3e-4 0.949 (fold). #89-06c step 0: the fold path's f16 → bf16 re-rounding is the K5 confounder (K5 lr 3e-5 student 0.993 vs fold 1.144; K4 lr 3e-4 student 0.951): K4 / K5 read on the student path (w90 `w79s.sh`); seed 1 + verify running |
 | 89-07 | Healing with a top-512 + tail teacher target vs full vocabulary (merge 11-08 A4) | healing | none | dropped (user 11-08 1:10 PM CST: our goldens are top-512 already; low value) | 11-08 | 11-08 | rule `proxy2b/exp/w90-a4heal/README.md` written, never run (`heal90.py` kept) |
 | 89-08 | Healing data starvation: ¼ / ⅛ of heal0's windows at equal steps (merge 11-08 A4) | healing | none | planned (deferred until the trunk quant starts, user 11-08 1:10 PM CST) | 11-08 | 11-08 | rule `proxy2b/exp/w90-a4heal/README.md`: saturated if ¼ keeps ≥ 95% of the gain at both K, data-limited if < 90%; `run90.sh` ready (drop its t512 loop) |
-
-Next free number: **114**.
-
 | 90 | Sub-1 K (K0.125–0.875, 1/8 steps) error curves on 49 real 27B tensors, CPU proxy; then knap4 pricing | weight codes | P+D | done | 11-04 | 11-06 | rule `v3/e3/sub1/README.md`; cpu1 (GDN layers) + cpu2 (attention layers); logged 11-05 / #90-03 11-06: sub-1 pays only below ~1.3 bpw |
 | 90-02 | int4-grid codebook cost vs int8 across K0.125–3.5 (i4 ladder scope) | weight codes | none | done | 11-04 | 11-06 | rule `v3/e3/sub1/README.md`; cpu1; i4 at K ≤ 1.5 holds; w46 settle.py re-check 11-06: the passing run extends to K2 (1.0088 vs 1.01; reval.md: "flips K1.5 → K2", no plan change forced) |
 | 91 | Self-calibration on own agent sessions (0.8B): self-generated vs raw vs calib vs turboderp SC trace, for H_out / H_in / healing, blend weight | statistics | none | negative | 11-04 | 11-05 | no gain on calib; own agentic text −5…−15% at +1…+6% calib (w 0.1–0.5 H_in); not adopted; rule `proxy2b/exp/d1108/README.md`; 4070; arm D (27B gens) later |
