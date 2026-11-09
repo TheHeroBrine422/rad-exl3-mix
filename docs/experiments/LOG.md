@@ -187,7 +187,8 @@ versions of anything: git history.
 - **Runtime:** none (quantizer metric only).
 
 ### 2026-11-08 9:40 PM CST · #128, #129 · H_out in a mixed-K splice mix; swj on / off at K6: rule committed, donors checked, queued behind w92 / w95 / w98 (w99)
-- **Status:** running (queued) · **Machine:** gpubox card 0 (behind w92 / w95 / w98: the driver waits until their
+- **Status:** #128 **INCONCLUSIVE** (11-10 5:45 AM CST, geo 0.9865) · #129 **PROPOSE k_max = 4.5** (11-10 8:50 AM CST,
+  r 1.0244, z +0.85) · **DONE 14:50 UTC 11-09** · **Machine:** gpubox card 0 (behind w92 / w95 / w98: the driver waited until their
   drivers are gone 10 min, then `/root/card0.lock` → `/root/ram.lock` per step; radmix / packs conv.lock + ram.lock
   exclusive) · **Code:** `v3/e3/settle/w99/` (`w99.sh`, `trunk99.py`, `verdict99.py`; w92's `mkjobs92.py` / `layer92.sh`
   for the K6 jobs), staged on gpubox `/data/w99/code` = w92's tree (`git archive 50902fc` + w92/, fork 6242f7ae) + w99/ ·
@@ -198,6 +199,14 @@ versions of anything: git history.
   ladder2 base / base4s1 + s1). Within each seed and K the levels differ only in `--hout` (dense path, block order off:
   `rxq levelargs`). Even layers are all GDN, so the 16 attention layers sit at K2.5 (160 K4 + 176 K2.5 trunk weights).
   Holds: geo ≤ 0.985 and both pairs < 1; fires: geo ≥ 1.00 (then H_out is scoped by K band before the ladder).
+- **#128 result (11-10 5:45 AM CST): INCONCLUSIVE.** hp → hb pooled r 1.0054 (seed 0, z +0.57) / 0.9680 (seed 1,
+  z −2.72); **geo 0.9865** (xcorp 0.9881, calib 0.9458). SE doc 0.0099, combined (0.0086, #116 same-seed SD) 0.0116:
+  z(geo vs 1) −1.16, z(geo vs 0.985) +0.13 — above the HOLDS bar, below FIRES. Seeds split: seed 0 xcorp r 1.0080
+  (pooled p99 7.695 → 8.024), calib r 0.9388 (z −2.97); seed 1 xcorp r 0.9685 (p99 7.953 → 7.577), calib r 0.9528
+  (z −2.30). top-1 pooled 0.89764 → 0.89904 / 0.89894 → 0.90036 (H_out on is a hair better on top-1 in both seeds).
+  Against the uniform-K adoption record (K2.5 geo 0.980, K4 geo 0.964, #33-28), the H_out advantage shrinks to ~1.4%
+  on the K4 / K2.5 splice and is unresolvable at this precision. Scores `/data/w99/scores/h{p,b}{0,1}-{x,c}.json`
+  (54–79 s each), verdict `/data/w99/verdict-h.txt`.
 - **Donor provenance (done, 03:34 UTC):** the stored swap27 mixes' trunk weights are byte-identical to later fresh packs
   of the same levels (`trunk99.py`, 336 / 336 each): bn4 vs cdhout27's bn4ctl, bn4s1 vs bn4s1ctl, base vs w92's basectl;
   s1 vs w92's s1ctl when that pack lands. So the splice from stored mixes equals fresh packing.
@@ -205,6 +214,13 @@ versions of anything: git history.
   card-h), `rxq.swjfit` on it, then two finals from the same codes: swj + C9 vs C9 only, each packed into V2 8.00 (bf16
   embedding, K7–8 head: the trunk dominates the KL). Keep swj above K4.5 if r ≤ 0.995, else propose `k_max = 4.5`. K5 not
   run (not cheap: ~1.3 card-h quant + ~0.75 swj + two packs).
+- **#129 result (11-10 8:50 AM CST): PROPOSE k_max = 4.5.** k6c9 → k6swj (same K6 codes, refit scales only) pooled
+  r 1.0244 [0.8961, 1.0335], z +0.85 — swj on is 2.4% worse and not significant; xcorp r 1.0246 (z +0.88), calib
+  r 0.9747 (z −1.75); p99 0.3914 → 0.4231; top-1 0.97738 → 0.97698 (91 docs, 145,597 pos). Gate (r ≤ 0.995 → keep
+  swj above K4.5) not met → **proposal only**: cap swj at `k_max = 4.5`; no config change made. Hygiene PAIR OK
+  (64 K6-layer weights differ, svh plane only, 0 problems); both mixes 6.5878 bpw in V2 8.00. Cost: k6 quant 3872 s
+  (est 1.67 h), swjfit 70 min, packs 1347 s + 1332 s (CPU), scores 53–78 s each. Files: `/data/w99/scores/k6{swj,c9}-{x,c}.json`,
+  `/data/w99/verdict-k6.txt`, `/data/w99/mix/mix-k6{swj,c9}.rad`.
 - **Slice:** golden-search27c (w92's), both parts; its second and third decisions after #122 (R55: retire after this round).
 - **Runtime:** none (#128 changes no setting; #129 swj scales fold into svh).
 ### 2026-11-08 10:10 PM CST · #132, #133 · Sub-1 hygiene (C9 / g_scale edge / drift / zero floor / scale underflow) and H_out shape (σ_out × h^p) on the held-out two-sided proxy: rules committed, queues running (w100)
