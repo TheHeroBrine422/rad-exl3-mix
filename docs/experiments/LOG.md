@@ -16,6 +16,7 @@ versions of anything: git history.
   pre-registered arm).
 - **Size:** tiny: ~0.03% proxy at K2.5 overall (0.1% on the targets), 0.24% at K0.5; KL gains are usually smaller
   than proxy gains. Zero runtime cost; a quantizer change (refit mode = hout) and a settings-stamp change.
+- **Decision (user, 12:30 AM CST): ADOPT** `refit = hout`, folded into the freeze re-stamp with i8 sub-1.
 - **Runtime:** none.
 
 ### 2026-11-09 12:20 AM CST · #138-01 · Scale polish in the right metric: no arm passes, `refit = true` stays; C9 at K0.5 raises the two-sided proxy ×2.7 (w98's card-0 screen, read by the lead)
