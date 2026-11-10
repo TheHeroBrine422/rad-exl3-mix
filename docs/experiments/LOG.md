@@ -4,10 +4,37 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-10 2:24 AM CST · #— · Overfit audit of 11-08 → 11-10 (user cadence; run while DS d100 grinds, VM-local, no cards touched)
+- **Status:** done · **Machine:** VM (ledger + LOG mining only) · **Runtime:** none
+- Decisions since the 11-08 audit and the slices that made them: head Fisher/LDLQ (#124/125, w94: decided on
+  `w94-headx-search` select-role, fit on `w94-headx-qad` — correct pools), #136/#137/#138/#139 + #130-133 held-out
+  two-sided proxy calls (0.8B/2B proxies on their own held-out draws, rules committed only after both parts agreed),
+  #122 K2.5 stack donor gate (xcorp + calib-search part), #126 i8 switch (held-out two-sided proxy, PASS), the
+  11-09 freeze edit (user decision, config-only). Nothing was fitted or picked on the verify pool since the audit:
+  the only verify-pool `select` rows in the ledger are 2026-10 legacy (golden-ver1/ver2, pre-pools); golden-verify27
+  is check-role only, 11-06, and its entry already declares "5 routine uses: no more on it".
+- Rules-after-data: none found (each entry pre-registers or states its rule before the arms' numbers).
+- Adopted settings vs verify: H_out, tile CD, gain-1.0, permutation all have verify rows or explicit
+  report-only framing (#117 permutation decided on the fresh two-part search slice with parts' sign agreement,
+  honestly flagged ~−0.3 % not significant, adoption left to the user). **i8-everywhere has no 27B verify row** —
+  a proper check needs two full ladder-adjacent 27B quants; deferred by design: the first ladder mixes will carry
+  i8 codebooks and get their routine verify scores as they are built (logged here as the standing action).
+- Public: never used — no new golden since the audit is cut from public (all six new goldens checked by corpus
+  hash: calib-pool c parts + xcorp x parts); public rows in this period: none.
+- Slice rotation: `golden-search27` retired (824 decisions, single-part, pre-rule — its re-use on 11-08 was
+  report-only); active search slices are two-part `golden-search27b/c` builds with fresh xcorp redraws
+  (xc8k-b1 → xc8k-b2-c2 between w90/91 and w92 ✓); next 27B search round draws a new x batch + fresh calib
+  search docs per the design doc.
+- Ledger gap found and fixed process-wise: w90/w91/w92/w94 goldens were added (ledger commit 11-09), but no
+  whole-calib collections were logged this period (none ran). Action: worker reports must call ledger_add.py in
+  the same turn as the result (was already the rule; reminder added to the watchdog checklist).
+
 ### 2026-11-09 12:17 PM CST · freeze edit · int8 everywhere: the A16 / bf16 options and the mul1 codebook are retired (user + deadcode decision)
 - **Status:** done (decision, applied in the freeze edit; settings stamp → **87a7e4ab32f9d5b9**) · **Machine:** — (config +
-  solver-menu edits; full check set reruns on colo) · **Code:** `pipeline/config/v3.toml`, `pipeline/rxq/{knap,config,ladder}.py`,
-  `v3/levels/reprice/knap5.py`, tests `check_ladder` (5/5) / `check_knap` (3/3, w63 byte-repro intact)
+  solver-menu edits; checks 11-09 12:40 PM CST on the VM niced: **check_ladder 5/5, check_knap 3/3 (w63 byte-repro
+  intact), check_cpujob 25/25 with K6.5-mul1 swapped for K7.5-i8 — the real fork quantizes i8 at K7.5 fine —,
+  check_diag 20/20, rqah rxq_e2e running**) · **Code:** `pipeline/config/v3.toml`, `pipeline/rxq/{knap,config,ladder}.py`,
+  `v3/levels/reprice/knap5.py`, tests `check_ladder` / `check_cpujob`
 - **Decision (user, after the conversation with Code 000 / deadcode):** V3 serves **int8 activations only**: the accurate
   (f16 / A16) variant, the per-tensor f16-prefill and bf16-tensor options in the knapsack menu, and the mul1 codebook are
   retired — one kernel path, simpler long-term maintenance, and the accuracy edge is invisible at the sizes that matter.
