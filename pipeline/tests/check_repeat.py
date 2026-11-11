@@ -16,9 +16,8 @@ device indices in this process's environment or cpu; nothing here masks devices,
 RXQ_EXL3_SRC) is a dry run on the stand-in kernels. PY (default this interpreter) runs the jobs, with this checkout's
 pipeline dir first on PYTHONPATH. Every run gets a fresh dir under WORK; its output goes to WORK/<run>.log.
 Last line: "REPEAT CHECKS n/m PASS"."""
-import json, os, shutil, subprocess, sys, time
+import json, os, shutil, signal, subprocess, sys, time
 
-import torch
 from safetensors import safe_open
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -34,10 +33,8 @@ DEVS = os.environ.get("DEVICES", "0").split(",")
 NREP = int(os.environ.get("REPEAT_N", "2"))
 ENV = dict(os.environ, PYTHONPATH=os.pathsep.join(p for p in (PIPE, os.environ.get("PYTHONPATH", "")) if p))
 spec = json.load(open(SPEC))
-groups = {}                                         # the spec's keys by Hessian group (layer, group index), first seen first
-for k in spec["keys"]: groups.setdefault(qwen35.locate(k)[:2], []).append(k)
-groups = list(groups.values())
 res = []
+signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))   # a kill runs run()'s finally: no rxq job is left on the card
 
 
 def report(name, ok, why):
@@ -48,12 +45,14 @@ def want(u): return not only or u in only
 
 
 def start(name, keys, out, dev, **over):
-    """one `rxq job` process on a sub-spec (keys replaced, fields overridden) -> (name, Popen, log path)"""
+    """one `rxq job` process on a sub-spec (keys replaced, fields overridden) -> (name, Popen, log path, log handle)"""
     tag = name.replace(" ", ""); sp = f"{W}/spec-{tag}.json"; json.dump(dict(spec, keys=keys, **over), open(sp, "w"))
-    log = f"{W}/{tag}.log"
-    p = subprocess.Popen([PY, "-m", "rxq", "job", sp, "-o", out, "--device", dev], env=ENV, stdout=open(log, "w"),
-                         stderr=subprocess.STDOUT)
-    return name, p, log
+    log = f"{W}/{tag}.log"; fh = open(log, "w")
+    p = subprocess.Popen([PY, "-m", "rxq", "job", sp, "-o", out, "--device", dev], env=ENV, stdout=fh, stderr=subprocess.STDOUT)
+    return name, p, log, fh
+
+
+def tail(log): return " | ".join(x.strip() for x in open(log).readlines()[-6:])
 
 
 def fresh(name):
@@ -61,19 +60,28 @@ def fresh(name):
 
 
 def run(name, parts):
-    """parts [(keys, dev, out, overrides)] all at once; -> (wall s, None or the first failure with its last lines)"""
-    t0 = time.time(); ps = [start(f"{name}-{i}" if len(parts) > 1 else name, ks, out, d, **ov) for i, (ks, d, out, ov) in enumerate(parts)]
-    bad = None
-    for n, p, log in ps:
-        if p.wait() and bad is None: bad = f"{n} rc {p.returncode}: " + " | ".join(x.strip() for x in open(log).readlines()[-6:])
-    return time.time() - t0, bad
+    """parts [(keys, dev, out, overrides)] all at once; -> (wall s, None or the first failure with its last lines);
+    leaving by an exception (a kill included) terminates the jobs still running"""
+    t0 = time.time(); ps = []
+    try:
+        for i, (ks, d, out, ov) in enumerate(parts): ps.append(start(f"{name}-{i}" if len(parts) > 1 else name, ks, out, d, **ov))
+        bad = None
+        for n, p, log, _ in ps:
+            if p.wait() and bad is None: bad = f"{n} rc {p.returncode}: {tail(log)}"
+        return time.time() - t0, bad
+    finally:
+        for _, p, _, fh in ps:
+            if p.poll() is None: p.terminate(); p.wait()
+            fh.close()
 
 
-def files(d): return sorted(f for f in os.listdir(d) if f.startswith(("t-", "c9-")) and f.endswith(".safetensors"))
+def files(d, pre=("t-", "c9-")):
+    return sorted(f for f in os.listdir(d) if f.startswith(pre) and f.endswith(".safetensors")) if os.path.isdir(d) else []
 
 
 def diff_file(pa, pb):
-    """None if equal, else what differs: metadata keys, tensor names, dtype / shape, or 'name n/numel' per tensor"""
+    """None if equal, else what differs: metadata keys, tensor names, dtype / shape, or 'name n/numel' per tensor;
+    values as torch.equal sees them (PORTING.md: a NaN is a difference)"""
     with safe_open(pa, "pt") as x, safe_open(pb, "pt") as y:
         ma, mb = x.metadata() or {}, y.metadata() or {}
         if ma != mb: return "metadata " + ",".join(sorted(k for k in set(ma) | set(mb) if ma.get(k) != mb.get(k)))
@@ -83,7 +91,6 @@ def diff_file(pa, pb):
             a, b = x.get_tensor(n), y.get_tensor(n); nm = n.rsplit(".", 1)[-1]
             if a.dtype != b.dtype or a.shape != b.shape: bad.append(f"{nm} {a.dtype}{list(a.shape)} vs {b.dtype}{list(b.shape)}"); continue
             ne = a != b
-            if a.is_floating_point(): ne &= ~(a.isnan() & b.isnan())      # NaN in the same place is the same value
             if ne.any(): bad.append(f"{nm} {int(ne.sum())}/{a.numel()}")
     return ", ".join(bad) or None
 
@@ -113,11 +120,19 @@ def unit(name, parts, ref, seq=False):
     report(name, first is None, f"{eq}/{n} files equal to the reference" + (f"; {first}" if first else "") + f" ({s:.0f} s)")
 
 
+def refuse(why):
+    report("ref", False, why); print(f"REPEAT CHECKS {sum(res)}/{len(res)} PASS"); sys.exit(1)
+
+
+groups = {}                                         # the spec's keys by Hessian group (layer, group index), first seen first
+for k in spec["keys"]:
+    try: groups.setdefault(qwen35.locate(k)[:2], []).append(k)
+    except (KeyError, ValueError, IndexError): refuse(f"the spec's key {k} is not a quantized linear of this architecture")
+groups = list(groups.values())
 D0 = DEVS[0]; ref = fresh("ref")
 s, bad = run("ref", [(spec["keys"], D0, ref, {})])
-if bad or not files(ref):
-    report("ref", False, f"the reference job {bad or 'wrote no t-*.safetensors file'} ({s:.0f} s)")
-    print(f"REPEAT CHECKS {sum(res)}/{len(res)} PASS"); sys.exit(1)
+if bad: refuse(f"the reference job {bad} ({s:.0f} s)")
+if not files(ref, "t-"): refuse(f"the reference job wrote no t-*.safetensors file: {tail(f'{W}/ref.log')} ({s:.0f} s)")
 print(f"ref: {len(files(ref))} files, {len(spec['keys'])} tensors in {len(groups)} Hessian groups on device {D0} ({s:.0f} s)", flush=True)
 
 if want("rep"):
