@@ -1,4 +1,37 @@
-# Where the quantizer's time goes (2026-11-06)
+# Where the quantizer's time goes
+
+## 0. Update 2026-11-11: after T1 (block-diagonal H_out), on the R9700 (card 0), today's stack
+
+Source: rxq job logs of full 400-tensor levels run through the ladder's job path (w92 fs0 / fs1 K2.5, w95 K0.125 / K1,
+w99 K6; settings ed97adb7 / 80b5e6d7: H_out blocks, #117 order, tile CD, C9, i8). `tools/profagg.py`, raw
+`data/profile/post-t1-2026-11-11.txt`. Sections 1-3 below are the 11-06 profile (66 levels, mul1, dense H_out, asym):
+kept for the stage method; their ladder totals are superseded.
+
+| level | Σ tensor wall | job wall (256 jobs, serial) | trellis | prep | refit | ldlq + H_out | load / other |
+|---|---|---|---|---|---|---|---|
+| K0.125 | 3.26 h | 3.53 h | **90%** | 3% | 3% | 2% | 2% |
+| K1 | 1.04 h | 1.32 h | 68% | 10% | 9% | 7% | 5% |
+| K2.5 | 0.84 h | 1.14 h | 61% | 12% | 12% | 9% | 7% |
+| K6 | 0.78 h | — | 57% | 14% | 12% | 9% | 7% |
+
+Per tensor at K2.5 (s): attn_qg 20.1, ffn_down 13.7, ffn_gate 8.8, ffn_up 7.4, ssm_qkv 5.8, ssm_out 5.5, attn_output 5.5,
+ssm_z 2.9, attn_k / attn_v 0.9. At K0.125 every family is ~4.5× that (attn_qg 92 s).
+
+- **T1 delivered:** H_out's per-tensor cost fell from 178 s / layer (dense) to ~8% of the time; a K2.5 level with the
+  full stack is ~1.1 card-h of jobs (was ~3.2 h).
+- **The trellis search is again the quantizer** (57-68% at K ≥ 1, 90% at K0.125). K6 is no longer ~2× K4 (mul1 gone,
+  i8): it costs about what K2.5 does. **Sub-1 levels are the expensive ones** (K0.125 ≈ 3× a K2.5 level).
+- **~25% of job wall is outside the tensors' own timers** (job wall 4,111 s vs Σ tensor 3,030 s at K2.5): process
+  start, extension init, group Hessian load, save. Persistent workers / concurrency (w105) target this and the idle
+  card time inside small tensors (attn_k / v ~1 s).
+- **Ladder estimate (50 levels, swj ≤ K4.5):** ~8 sub-1 levels × ~1.3-3.5 h + ~42 levels × ~1.1-1.3 h ≈ 70-80 card-h of
+  jobs, plus swj passes (~0.75 h × the levels ≤ K4.5), on card 0 alone ≈ 4 days serial before concurrency gains.
+- **Levers now:** (1) concurrency / persistent workers (w105, measuring); (2) T2 qtf2 kernel speed (bit-identical-codes
+  judge, so it can land mid-ladder without a restamp); decide T2 after w105's numbers. Pack (T4) stays off the card's
+  critical path if it overlaps the next level's quant.
+
+## 1-3. The 11-06 profile (4070 stage shares, pre-T1 R9700 totals)
+
 
 Sources: (1) **4070 stage profile** — rxq's per-tensor jobs with stage timers (`rxq/prof.py`: device synchronized at
 every stage boundary, exclusive seconds), 27B layer 10 (GDN + MLP) and layer 39 (attention), ladder settings (i8,

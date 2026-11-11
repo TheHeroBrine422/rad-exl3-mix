@@ -1,0 +1,15 @@
+== /data/w92/out/fs0  K2.5  400 tensors  sum wall 0.84 h
+   per tensor (s): attn_k 0.9  attn_output 5.5  attn_qg 20.1  attn_v 0.9  ffn_down 13.7  ffn_gate 8.8  ffn_up 7.4  ssm_out 5.5  ssm_qkv 5.8  ssm_z 2.9
+   shares: trellis 61%  prep 12%  refit 12%  ldlq+hout 9%  load/other 7%
+== /data/w92/out/fs1  K2.5  400 tensors  sum wall 0.84 h
+   per tensor (s): attn_k 0.9  attn_output 5.5  attn_qg 20.0  attn_v 0.9  ffn_down 13.6  ffn_gate 8.8  ffn_up 7.4  ssm_out 5.5  ssm_qkv 5.8  ssm_z 2.9
+   shares: trellis 61%  prep 12%  refit 11%  ldlq+hout 9%  load/other 7%
+== /data/w95/out/k0125  K0.125  400 tensors  sum wall 3.26 h
+   per tensor (s): attn_k 3.9  attn_output 16.2  attn_qg 92.4  attn_v 3.8  ffn_down 44.0  ffn_gate 36.7  ffn_up 35.6  ssm_out 16.1  ssm_qkv 21.7  ssm_z 12.5
+   shares: trellis 90%  prep 3%  refit 3%  ldlq+hout 2%  load/other 2%
+== /data/w95/out/k1  K1  400 tensors  sum wall 1.04 h
+   per tensor (s): attn_k 1.1  attn_output 6.3  attn_qg 26.6  attn_v 1.1  ffn_down 16.1  ffn_gate 11.0  ffn_up 9.6  ssm_out 6.3  ssm_qkv 7.1  ssm_z 3.6
+   shares: trellis 68%  prep 10%  refit 9%  ldlq+hout 7%  load/other 5%
+== /data/w99/out/k6  K6  400 tensors  sum wall 0.78 h
+   per tensor (s): attn_k 0.9  attn_output 5.2  attn_qg 18.5  attn_v 0.8  ffn_down 12.8  ffn_gate 8.0  ffn_up 6.6  ssm_out 5.2  ssm_qkv 5.4  ssm_z 2.6
+   shares: trellis 57%  prep 14%  refit 12%  ldlq+hout 9%  load/other 7%
