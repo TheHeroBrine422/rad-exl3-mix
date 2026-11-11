@@ -9,7 +9,9 @@
    v3/e3/ built at run time against the fork's exllamav3_ext sources
 5. optional: tile coordinate descent (rxq/tilecd.py: w50's module merged, plus the H_out objective), the gain wrapper
 6. optional (#117, quant.block_order): the residual readers' LDLQ visits their input 128-blocks in a stored order
-   (rxq/blkorder.py, route B of w84), installed last so it wraps tile CD's wrappers too
+   (rxq/blkorder.py, route B of w84), installed after tile CD so it wraps tile CD's wrappers too
+7. rxq/refit.py (#138 / #139), installed last: the refit mode (quant.refit, per tensor) around the wrapped refit_scales
+   and the per-tensor diagnostics (outermost on ldlq / ldlq_2hess); a pass-through outside quant.quantize_tensor
 CPU (TEST ONLY): device "cpu" with RXQ_CPU_STANDIN=1 (opt-in; without it a CPU device takes the normal path) loads the fork's quantize.py with rxq/cpukern.py's stand-in kernels
 (greedy trellis encoder) instead of the run-time builds; its results carry another code stamp and never enter a level.
 
@@ -119,6 +121,8 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
     if block_order is not None:                          # after tile CD: its wrappers run inside the permutation
         from . import blkorder
         blkorder.install(Q, block_order)
+    from . import refit
+    refit.install(Q)                                     # last: outside every other wrapper
     _warm_refit(device)                                  # load the refit kernels while VRAM is empty (ourq does it here)
     _STATE.update(key=key, Q=Q, dev=dev, tilecd=tcd, gain=[1.0])
     return Q

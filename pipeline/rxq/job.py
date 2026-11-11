@@ -13,6 +13,10 @@ device, seconds). With post.c9 on, a writer's job also computes its C9 row scale
 and the group's H_in at hand: rxq.post.c9_tensor, seconds) into c9-<key>.safetensors (swjapply's "c" / "r"), written
 before the tensor file; log.jsonl's record carries c9.jsonl's line ("c9") and its time (rxq.c9_s). Each file is
 written .part -> fsync -> rename, so a killed job leaves only whole tensors and a rerun skips them.
+Diagnostics (#139, rxq.refit; RXQ_DIAG=0 turns them off): diag-<key>.safetensors per tensor (per-output-channel errors,
+the 128 x 128 error map, the pre-refit scales; written before the tensor file, never read by assemble) and the record's
+"diag" (error trajectory incl. post-C9, the proxy check, overload counters, g_scale). Experiments only: with
+RXQ_REFIT_ARMS (+ RXQ_REFIT_ARMS_WQ=DIR) the other refit modes' scores (and decoded weights, DIR/<arm>/wq/<key>) too.
 
 assemble(): job outputs of one level -> an ourq-layout level dir (q-LNN.safetensors per layer, index, config.json,
 proxy.jsonl, stamp.json), the form rad-convert's exl3i importer (src=DIR) and every swap-test tool read."""
@@ -22,7 +26,7 @@ import torch
 from safetensors import safe_open
 from safetensors.torch import save_file
 
-from . import config as C, engine, qwen35, quant
+from . import config as C, engine, qwen35, quant, refit
 from .prof import Prof
 
 
@@ -36,6 +40,9 @@ def tensor_file(out, key): return os.path.join(out, f"t-{key}.safetensors")
 
 
 def c9_path(out, key): return os.path.join(out, f"c9-{key}.safetensors")
+
+
+def diag_path(out, key): return os.path.join(out, f"diag-{key}.safetensors")
 
 
 def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
@@ -71,10 +78,11 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
         if prof: prof.reset()
         if cuda: torch.cuda.reset_peak_memory_stats(dev)
         t0 = time.perf_counter()
+        dg = {}
         tensors, rec, wq, rowerr = quant.quantize_tensor(Q, ck, key, s, inp["hessians"], dev, out, hin_dir=inp.get("hin"),
                                                          wpre_dir=inp.get("wpre"),
                                                          hout_dir=hout,
-                                                         save_wq=save_wq, prof=prof)
+                                                         save_wq=save_wq, prof=prof, diag_out=dg)
         meta = {"rxq_settings": st, "rxq_code": code, "K": str(K), "codebook": cb, "level": spec.get("level", ""),
                 "key": key}
         if kern != "gpu": meta["rxq_kernels"] = kern     # cpu-standin: test only, assemble refuses it without allow_standin
@@ -89,6 +97,10 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
                                       al, cfg["post"]["c9"]["e_clip"], dev)
             c9rec = {"key": key, "fam": post.c9_family(key), "layer": int(key.split(".")[3]), "alpha": al, **c9rec,
                      "target": "W/H"}
+            if "e1" in dg and "diag" in rec:          # the trajectory's post-C9 point: e1 rescaled by c (x1 / d1)
+                ec = refit.rescaled(dg, c); h = dg.get("h")
+                rec["diag"].setdefault("traj", {})["post_c9"] = {
+                    "f1": float(ec.sum() / dg["r1"].sum()), "f2": None if h is None else float((h * ec).sum() / (h * dg["r1"]).sum())}
             c9meta = dict(meta, c9_alpha=json.dumps(cfg["post"]["c9"]["alpha"], sort_keys=True))
             _fsync_put(lambda p: save_file(post.c9_file(c, tensors[f"{key}.suh"].numel()), p, metadata=c9meta),
                        c9_path(out, key))
@@ -96,6 +108,15 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
             if cuda: torch.cuda.empty_cache()
             c9s = round(time.perf_counter() - tc, 3)
         ts = time.perf_counter()
+        if "e1" in dg:                                # #139: before the tensor file (a rerun redoes both)
+            dmeta = dict(meta, rxq_diag="1", refit=json.dumps(s.get("refit", True)), d_off=repr(dg.get("d_off", 0.0)))
+            _fsync_put(lambda p: save_file(refit.tensors(key, dg), p, metadata=dmeta), diag_path(out, key))
+            rec["diag"]["bytes"] = os.path.getsize(diag_path(out, key))
+        aw = os.environ.get("RXQ_REFIT_ARMS_WQ")
+        if aw and dg.get("arm_wq"):                   # experiments (#138): each refit arm's decoded weight, f16 (out, in)
+            for arm, x in dg["arm_wq"].items():
+                os.makedirs(os.path.join(aw, arm, "wq"), exist_ok=True)
+                _fsync_put(lambda p: save_file({"weight": x}, p), os.path.join(aw, arm, "wq", f"{key}.safetensors"))
         _fsync_put(lambda p: save_file(tensors, p, metadata=meta), tf)
         if wq is not None:
             os.makedirs(os.path.join(out, "wq"), exist_ok=True)

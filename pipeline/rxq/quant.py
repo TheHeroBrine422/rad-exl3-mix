@@ -16,7 +16,7 @@ import json, os, struct, time
 import torch
 from safetensors import safe_open
 
-from . import qwen35, engine
+from . import qwen35, engine, refit
 
 
 class Ckpt:
@@ -74,8 +74,9 @@ def quant_args(s, key, seed, device, outdir, hname):
 
 
 def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_dir=None, hout_dir=None,
-                    save_wq=False, prof=None):
-    """-> (tensors {<key>.<name>: cpu tensor}, log record). s = config.quant_settings(...)"""
+                    save_wq=False, prof=None, diag_out=None):
+    """-> (tensors {<key>.<name>: cpu tensor}, log record). s = config.quant_settings(...). The refit runs as
+    s["refit"] says (rxq.refit); its diagnostics' scalars go to the record's "diag", their tensors into diag_out (a dict)"""
     from contextlib import nullcontext
     st = prof.stage if prof else (lambda _: nullcontext())
     t0 = time.time()
@@ -102,6 +103,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
         w = w.T.contiguous()                    # (in_features, out_features)
     w_orig = w.detach().cpu().clone() if save_wq else None   # quantize_exl3 regularizes w in place (ourq-rowerr.patch, w46 / w90)
     qa = quant_args(s, key, seed, _devid(dev), outdir, hname)
+    hraw = None                                 # the raw H_out diagonal (refit "hout" weights, the diagnostics' f2)
     if hout_dir:                                # ourq skips a key without a file; a job refuses (the bn dirs hold every linear)
         if not os.path.exists(f"{hout_dir}/{key}.safetensors"): raise SystemExit(f"H_out {hout_dir}: no file for {key}")
         with st("hout_load"), safe_open(f"{hout_dir}/{key}.safetensors", "pt", device="cpu") as f:
@@ -111,8 +113,13 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
                 qa["H_out"] = f.get_tensor("hout_diag").float(); qa["hout_schedule"] = s["hout_blocks"]
             else:
                 qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
-    with st("other"):
-        wq, perr, t = Q.quantize_exl3(w, Hd, qa, save_wq)
+            hraw = f.get_tensor("hout_diag").float() if "hout_diag" in f.keys() else qa["H_out"].diagonal().float()
+    refit.begin(key, s.get("refit", True), hraw, s.get("sigma_reg_out") or 0.01)
+    try:
+        with st("other"):
+            wq, perr, t = Q.quantize_exl3(w, Hd, qa, save_wq)
+    finally:
+        dg = refit.end()
     rowerr = None
     if save_wq:
         with st("save_wq"):
@@ -142,6 +149,22 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
     if s.get("hout_blocks"): rec["hout_blocks"] = s["hout_blocks"]
     if "proxy_err_2s" in qa: rec["proxy_err_2s"] = qa["proxy_err_2s"]   # two-sided, quantization domain, before the refit (fork 0008)
     if qa.get("block_order"): rec["block_order"] = True
+    if dg: rec["diag"] = _diag_record(dg, s, qa, outdir, key)
+    if diag_out is not None: diag_out.update(dg)
     del Hd, qa
     if dev.type == "cuda": torch.cuda.empty_cache()
     return out, rec, wq, rowerr
+
+
+def _diag_record(dg, s, qa, outdir, key):
+    """the log record's "diag" (#139): trajectory, the proxy check, overload counters, tile CD's quantization-domain rel"""
+    r = {"refit": s.get("refit", True), "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"])}
+    for k in ("traj", "check", "overload", "arms", "d_off", "damping"):
+        if k in dg: r[k] = dg[k]
+    lp = qa.get("tile_cd_log")
+    if lp and os.path.exists(lp):                # tile CD's record of this tensor: rel after LDLQ and each sweep
+        for l in open(lp):
+            try: x = json.loads(l)
+            except ValueError: continue
+            if x.get("key") == key: r.setdefault("traj", {})["tilecd_q"] = x.get("rel")
+    return r
