@@ -45,8 +45,8 @@ python -m rxq.knap handoff out.jsonl lib.json MIXDIR --tag T --frontier F   # S7
 python -m rxq.mix recipe LEVEL                          # S8: rad-convert recipe of a level (levelmix PACK: radmix mix)
 python -m rxq.ladder levels | estimate [--ldlq blocks] | req   # the 55 levels in build order, R9700 card-hours per pass,
                                                         # the per-tensor VRAM / seconds table (w81's 11-08 measurements)
-python -m rxq.ladder post [--swj-batch N]               # per level, the steps after its jobs; up to N consecutive levels
-                                                        # of a pass share one swj pass
+python -m rxq.ladder post [--swj-batch N]               # per level, the steps after its jobs; up to N levels of a pass
+                                                        # that have an swj step, in build order, share one swj pass
 python -m rxq.ladder jobs MANIFEST --model q27 --rev R --pass 1 -o jobs.jsonl   # rad-quant-at-home rxq_quant jobs (inputs
                                                         # pinned by the datapack manifest's sha256): admin.py enqueue-jobs
 python -m rxq.pairs mixes A.rad B.rad --arm attn_qg     # swap-pair hygiene (also: levels, same, splice)
@@ -67,7 +67,7 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
 - `tests/check_mix.py SWAP27` — S8 recipe / mix text vs the swap27 arms' files; `tests/check_knap.py OUT` — S7 driver vs
   w63's knapsack solve (~1 min).
 - `tests/check_levelpass.py WORK RXM MODEL08` — swjfit / sibmom / hin vs the research tools on the 0.8B (colo, ~1 h), and
-  `swjb`: a level fitted in a two-source pass equals the level fitted alone (`swjb` alone: about 4 min on a laptop CPU);
+  `swjb`: a level fitted in a two-source pass equals the level fitted alone (`swjb` alone: ~4 min on 4 CPUs);
   `tests/check_deq_c9.py WORK RXM LEVEL MODEL HESS` — decoder, C9 and the quant job's C9 path vs the research tools on
   a 27B level; `tests/check_c9job.py JOB_OUT C9E27 MODEL HESS WORK` — a quant job's C9 files vs c9e27.py.
 - `tests/check_cpu.py OUT` — the 11-06 CPU ports (blend, H_out bn, swj math / apply, mkdenoise both paths; 4070 data).
@@ -86,8 +86,8 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
 - `tests/check_blkorder84.py FORK [WORK]` — rxq's block order == w84's blkorder84.py (installed as w84q.py did) bit for
   bit under w84's p0 settings, tile CD off and on (~8 min). GPU twin: `tools/blkorder27.sh` (p0perm's 9 readers).
 - `tests/check_ladder.py [RQAH]` — the 55 levels and passes, every job of every level through rqah's rxq_quant checks,
-  manifest pins, estimates, the post scripts at `--swj-batch` 1 and 4 (one swjfit call per level / per up to 4
-  consecutive levels of a pass), the swj pass count (seconds).
+  manifest pins, estimates, the post scripts at `--swj-batch` 1 and 4 (one swjfit call per level / up to 4 levels of a
+  pass that have an swj step, in build order, share one swj pass), the swj pass count and hours (seconds).
 
 GPU (prepared scripts, the lead runs them):
 - `tools/gpucheck27.sh cd|i4|c9` — gpubox card 0: tile CD on the real quantizer (rxq vs research module, M = I gate,

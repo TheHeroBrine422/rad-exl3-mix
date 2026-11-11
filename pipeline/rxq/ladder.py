@@ -13,8 +13,8 @@ sha256 (the datapack manifest), resource requirements per job from the measured 
   python -m rxq.ladder req                                  the per-tensor requirement table at a few K
   python -m rxq.ladder post [--pass P] [--levels a,b] [--export D --model M --meta G --scratch S --out O] [--swj-batch N]
                                                            per level, the steps after its jobs: export + assemble, swj
-                                                           level pass (N consecutive levels of a pass share one), swj + C9
-                                                           apply, pack recipe
+                                                           level pass (up to N levels of a pass that have an swj step,
+                                                           in build order, share one swj pass), swj + C9 apply, pack recipe
 
 Job params (rqah jobs/rxq_quant.py checks them): model, revision, arch, level, K, codebook, layer, group, keys,
 settings {rxq: the settings stamp, seed_offset}, stamp (rqah's settings stamp of the params), config (the settings
@@ -245,8 +245,8 @@ def level_jobs(cfg, lv, model, rev, man=None, split=None, seed_offset=0, n_layer
 def estimate(cfg, n_layers=64, swj_batch=1):
     """per pass: levels, R9700 card-hours of the quant jobs (sum of est_s), the swj level passes (~0.75 card-h a level
     on a 32 GB card, ~1.5 card-h for two levels in one pass, PROFILE / DESIGN S4) and the CPU packs (~1,600 s a level).
-    swj_passes: the rxq.swjfit calls of the pass at swj_batch levels a call (swj_batches, as post_scripts writes them);
-    swj_h stays 0.75 a level (the share of a batched pass is not measured at 27B)"""
+    swj_h: 0.75 card-h a level that has an swj step (the share of a batched pass is not measured at 27B); swj_passes: the
+    rxq.swjfit calls of the pass at swj_batch levels a call (swj_batches, as post_scripts writes them)"""
     rows = {}; lvs = levels(cfg)
     for lv in lvs:
         r = rows.setdefault(lv["pass"], {"levels": 0, "quant_h": 0.0, "jobs": 0, "vram": {}})
@@ -255,8 +255,8 @@ def estimate(cfg, n_layers=64, swj_batch=1):
             q = jb["params"]["req"]; r["quant_h"] += q["est_s"] / 3600; r["jobs"] += 1
             r["vram"][q["vram_gb"]] = r["vram"].get(q["vram_gb"], 0) + 1
     for p, r in rows.items():
-        r["swj_h"] = 0.75 * r["levels"] if cfg["post"]["swj"]["enable"] else 0.0
-        r["swj_passes"] = sum(s for s, _ in swj_batches(cfg, [v for v in lvs if v["pass"] == p], swj_batch))
+        bs = swj_batches(cfg, [v for v in lvs if v["pass"] == p], swj_batch)
+        r["swj_h"] = 0.75 * sum(len(b) for s, b in bs if s); r["swj_passes"] = sum(s for s, _ in bs)
         r["pack_cpu_h"] = 1600 / 3600 * r["levels"]
         r["quant_h"] = round(r["quant_h"], 1)
     return rows
@@ -286,14 +286,15 @@ def _swj_line(model, meta, scratch, out, names, srcs):
 
 
 def swj_batches(cfg, lvs, n=1):
-    """lvs in order as [(swj, [levels])]: up to n consecutive levels of one pass that have an swj step share an entry
-    (one rxq.swjfit call, one bf16 forward); a level without one is an entry of its own (swj False)"""
+    """lvs in order as [(swj, [levels])]: up to n levels of a pass that have an swj step, in build order, share one swj
+    pass (one entry: one rxq.swjfit call, one bf16 forward), at the place of its first level; a level without an swj step
+    is an entry of its own (swj False) and does not end the open batch"""
     from . import post as P
-    out = []
+    out, cur = [], None
     for lv in lvs:
-        swj = any(x[0] == "swj" for x in P.plan_level(cfg, lv["K"]))
-        if swj and out and out[-1][0] and len(out[-1][1]) < n and out[-1][1][-1]["pass"] == lv["pass"]: out[-1][1].append(lv)
-        else: out.append((swj, [lv]))
+        if not any(x[0] == "swj" for x in P.plan_level(cfg, lv["K"])): out.append((False, [lv])); continue
+        if cur and len(cur) < n and cur[-1]["pass"] == lv["pass"]: cur.append(lv)
+        else: cur = [lv]; out.append((True, cur))
     return out
 
 
@@ -307,9 +308,10 @@ def post_script(cfg, lv, export, model, meta, scratch, out):
 
 
 def post_scripts(cfg, lvs, export, model, meta, scratch, out, swj_batch=1):
-    """post_script for the levels lvs in their order; swj_batch N > 1: up to N consecutive levels of one pass share one
-    swj level pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone, tests/check_levelpass.py
-    swjb): their heads, the one swjfit call, then their tails. 1 = post_script per level"""
+    """post_script for the levels lvs in their order; swj_batch N > 1: up to N levels of a pass that have an swj step, in
+    build order, share one swj pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone,
+    tests/check_levelpass.py swjb): their heads, the one swjfit call, then their tails, at the place of the first; a level
+    without an swj step inside that span follows the batch, its lines unchanged. 1 = post_script per level"""
     sh = []
     for swj, b in swj_batches(cfg, lvs, swj_batch):
         parts = [_post_parts(cfg, lv, export, out) for lv in b]

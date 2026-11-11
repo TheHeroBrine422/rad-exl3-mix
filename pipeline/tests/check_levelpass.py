@@ -7,7 +7,7 @@ tools run as subprocesses in the same environment (P2B_BLOCK=causal_conv1d,fla: 
          scales files, swiglu.jsonl and swjfit.json (but tool / created) equal
   swjc   the same with the fresh-DynamicCache forward (no --no-cache)
   swjb   rxq.swjfit alone vs in a batch: sources a (as swj) and b (seed 77) each fitted alone (3 stages) and both in one
-         call (--split 0,12,24), --no-cache; every file of OUT/a and OUT/b (but swjfit.json: split, created) equal
+         call (--split 0,12,24), --no-cache; every file of OUT/a and OUT/b equal, swjfit.json equal but split / created
   sib    rxq.sibmom vs v3/yaqa/asym27/sibmom27.py: --wq siblings (q/k/v or GDN qkv/z, gate / up + noise), every layer,
          256-token windows; every moment file (H, C, N, metadata), windows.json and the per-layer done markers equal
   hin    rxq.hin vs eval/gold27/mkhin27.py: 3 stages, 256-token chunks, a flush (checkpoint) every 2 documents; every
@@ -135,8 +135,10 @@ if want("swjb"):
     ok = not any(rcs.values())
     (na, ba), (nb, bb) = ((same_tree(f"{W}/swjb-{s}/{s}", f"{W}/swjb-ab/{s}", skip=("swjfit.json",)) if ok else (0, ["(a run failed)"]))
                           for s in "ab")
-    report("swjb", ok and na > 0 and nb > 0 and not ba and not bb,
-           f"rc {rcs}; a alone vs a in a + b: {na} files compared, {len(ba)} differ {ba[:2]}; b: {nb} compared, {len(bb)} differ {bb[:2]}")
+    js = ok and all(json_eq(f"{W}/swjb-{s}/{s}/swjfit.json", f"{W}/swjb-ab/{s}/swjfit.json", ("split", "created")) for s in "ab")
+    report("swjb", ok and na > 0 and nb > 0 and not ba and not bb and js,
+           f"rc {rcs}; a alone vs a in a + b: {na} files compared, {len(ba)} differ {ba[:2]}; b: {nb} compared, {len(bb)} differ {bb[:2]}; "
+           f"swjfit.json equal {js}")
 
 # ---------------------------------------------------------------- sib
 if want("sib"):

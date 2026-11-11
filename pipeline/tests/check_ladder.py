@@ -11,10 +11,12 @@
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
   post     post_scripts at batch 1 = post_script per level; one --src a swjfit call
   post-batch
-           batch 4 (default, asym on, swj k_max 4): one swjfit call per <= 4 consecutive swj levels of one pass, every
-           --src once in level order, export before and apply after it, scratches distinct, every other line unchanged
+           batch 4 (default, asym on, swj k_max 4): up to 4 levels of a pass that have an swj step, in build order,
+           share one swj pass: ceil(swj levels / 4) swjfit calls a pass, every --src once in level order, export
+           before and apply after it, scratches distinct, every other line unchanged
   estimate-swj
-           swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls
+           swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls;
+           swj k_max 4: swj card-h = 0.75 x the levels that have an swj step
 Last line: "LADDER CHECKS n/m PASS"."""
 import hashlib, json, math, os, re, sys
 
@@ -109,12 +111,7 @@ def batch_ok(c, why):
     lv = LD.levels(c); ps = {v["name"]: v["pass"] for v in lv}; sw = [v["name"] for v in lv if has_swj(c, v)]
     l4 = LD.post_scripts(c, lv, *args, swj_batch=4).splitlines(); s4 = [x for x in l4 if x.startswith(SW)]
     l1 = LD.post_scripts(c, lv, *args).splitlines()
-    runs, prev = [], None                       # maximal runs of consecutive swj levels of one pass
-    for v in lv:
-        if not has_swj(c, v): prev = None; continue
-        if prev is None or prev["pass"] != v["pass"]: runs.append(0)
-        runs[-1] += 1; prev = v
-    want = sum(math.ceil(n / 4) for n in runs)
+    want = sum(math.ceil(sum(has_swj(c, v) for v in lv if v["pass"] == p) / 4) for p in dict.fromkeys(ps.values()))  # per pass
     one_pass = all(len(srcs(x)) <= 4 and len({ps[n] for n in srcs(x)}) == 1 for x in s4)
     order = [n for x in s4 for n in srcs(x)] == sw
     at = {n: i for i, x in enumerate(l4) if x.startswith(SW) for n in srcs(x)}
@@ -142,8 +139,11 @@ report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
 
 e1, e4 = LD.estimate(cfg), LD.estimate(cfg, swj_batch=4)
 n4p = {p: sum(x.startswith(SW) for x in LD.post_scripts(cfg, [v for v in lva if v["pass"] == p], *args, swj_batch=4).splitlines()) for p in e4}
-report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4),
+ek = LD.estimate(ck, swj_batch=4); nsk = {p: sum(has_swj(ck, v) for v in lva if v["pass"] == p) for p in ek}
+hk = all(ek[p]["swj_h"] == 0.75 * nsk[p] for p in ek)
+report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4) and hk,
        f"swj passes per pass at batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at batch 4 {[e4[p]['swj_passes'] for p in sorted(e4)]} "
-       f"(post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels")
+       f"(post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels; swj k_max 4: swj card-h "
+       f"{[ek[p]['swj_h'] for p in sorted(ek)]} = 0.75 x swj levels {[nsk[p] for p in sorted(nsk)]} {hk}")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)
