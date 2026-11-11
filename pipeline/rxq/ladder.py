@@ -13,8 +13,9 @@ sha256 (the datapack manifest), resource requirements per job from the measured 
   python -m rxq.ladder req                                  the per-tensor requirement table at a few K
   python -m rxq.ladder post [--pass P] [--levels a,b] [--export D --model M --meta G --scratch S --out O] [--swj-batch N]
                                                            per level, the steps after its jobs: export + assemble, swj
-                                                           level pass (up to N levels of a pass that have an swj step,
-                                                           in build order, share one swj pass), swj + C9 apply, pack recipe
+                                                           level pass (up to N levels of a ladder pass that have an swj
+                                                           step, in build order, share one swj level pass), swj + C9
+                                                           apply, pack recipe
 
 Job params (rqah jobs/rxq_quant.py checks them): model, revision, arch, level, K, codebook, layer, group, keys,
 settings {rxq: the settings stamp, seed_offset}, stamp (rqah's settings stamp of the params), config (the settings
@@ -245,8 +246,9 @@ def level_jobs(cfg, lv, model, rev, man=None, split=None, seed_offset=0, n_layer
 def estimate(cfg, n_layers=64, swj_batch=1):
     """per pass: levels, R9700 card-hours of the quant jobs (sum of est_s), the swj level passes (~0.75 card-h a level
     on a 32 GB card, ~1.5 card-h for two levels in one pass, PROFILE / DESIGN S4) and the CPU packs (~1,600 s a level).
-    swj_h: 0.75 card-h a level that has an swj step (the share of a batched pass is not measured at 27B); swj_passes: the
-    rxq.swjfit calls of the pass at swj_batch levels a call (swj_batches, as post_scripts writes them)"""
+    swj_h: 0.75 card-h a level that has an swj step (what a level costs inside a batched swj level pass is not measured
+    at 27B); swj_passes: the rxq.swjfit calls of the ladder pass, up to swj_batch levels a call (swj_batches, as
+    post_scripts writes them)"""
     rows = {}; lvs = levels(cfg)
     for lv in lvs:
         r = rows.setdefault(lv["pass"], {"levels": 0, "quant_h": 0.0, "jobs": 0, "vram": {}})
@@ -279,16 +281,17 @@ def _post_parts(cfg, lv, export, out):
 
 
 def _swj_line(model, meta, scratch, out, names, srcs):
-    """one swj level pass for the levels names (sources srcs); a batch's scratch is unique to its levels"""
+    """the rxq.swjfit call of one swj level pass for the levels names (sources srcs); scratch SCRATCH/<first name>, for
+    more than one level + <further levels>-<sha256 of the names, 8 hex>"""
     sc = f"{scratch}/{names[0]}"
     if len(names) > 1: sc += f"+{len(names) - 1}-{hashlib.sha256(chr(10).join(names).encode()).hexdigest()[:8]}"
     return f"python -m rxq.swjfit {model} {meta} {out}/swj {' '.join(f'--src {s}' for s in srcs)} --scratch {sc} --fused --no-cache"
 
 
 def swj_batches(cfg, lvs, n=1):
-    """lvs in order as [(swj, [levels])]: up to n levels of a pass that have an swj step, in build order, share one swj
-    pass (one entry: one rxq.swjfit call, one bf16 forward), at the place of its first level; a level without an swj step
-    is an entry of its own (swj False) and does not end the open batch"""
+    """lvs in order as [(swj, [levels])]: up to n levels of a ladder pass that have an swj step, in build order, share
+    one swj level pass (a batch: one entry, one rxq.swjfit call, one bf16 forward), at the place of its first level;
+    a level without an swj step is an entry of its own (swj False) and does not end the open batch"""
     from . import post as P
     out, cur = [], None
     for lv in lvs:
@@ -308,10 +311,11 @@ def post_script(cfg, lv, export, model, meta, scratch, out):
 
 
 def post_scripts(cfg, lvs, export, model, meta, scratch, out, swj_batch=1):
-    """post_script for the levels lvs in their order; swj_batch N > 1: up to N levels of a pass that have an swj step, in
-    build order, share one swj pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone,
-    tests/check_levelpass.py swjb): their heads, the one swjfit call, then their tails, at the place of the first; a level
-    without an swj step inside that span follows the batch, its lines unchanged. 1 = post_script per level"""
+    """post_script for the levels lvs in their order; swj_batch N > 1: up to N levels of a ladder pass that have an swj
+    step, in build order, share one swj level pass (swj_batches; a source's scales are the same alone and in a
+    two-source rxq.swjfit call, tests/check_levelpass.py swjb): their heads, the one swjfit call, then their tails, at
+    the place of the first; a level without an swj step inside that span follows the batch, its lines unchanged.
+    1 = post_script per level"""
     sh = []
     for swj, b in swj_batches(cfg, lvs, swj_batch):
         parts = [_post_parts(cfg, lv, export, out) for lv in b]
@@ -338,12 +342,14 @@ def main(argv=None):
     a2.add_argument("-o")
     a3 = sub.add_parser("estimate"); a3.add_argument("--ldlq", choices=("dense", "blocks"))
     a3.add_argument("--job-overhead", type=float, default=JOB_S, help="seconds per job beyond the tensors (default %(default)s)")
-    a3.add_argument("--swj-batch", type=_swj_batch, default=1, help="levels of one pass that share one swj pass (default %(default)s)")
+    a3.add_argument("--swj-batch", type=_swj_batch, default=1,
+                    help="at most this many levels of a ladder pass that have an swj step share one swj level pass (default %(default)s)")
     a4 = sub.add_parser("req"); a4.add_argument("--ldlq", choices=("dense", "blocks"))
     a5 = sub.add_parser("post"); a5.add_argument("--pass", dest="which"); a5.add_argument("--levels")
     a5.add_argument("--export", default="EXPORT"); a5.add_argument("--model", default="MODEL"); a5.add_argument("--meta", default="SWJMETA")
     a5.add_argument("--scratch", default="SCRATCH"); a5.add_argument("--out", default="OUT")
-    a5.add_argument("--swj-batch", type=_swj_batch, default=1, help="levels of one pass that share one swj pass (default %(default)s)")
+    a5.add_argument("--swj-batch", type=_swj_batch, default=1,
+                    help="at most this many levels of a ladder pass that have an swj step share one swj level pass (default %(default)s)")
     for x in (a1, a2, a3, a4, a5): x.add_argument("--config"); x.add_argument("--set", action="append", default=[])
     a = ap.parse_args(argv)
     cfg = C.load(a.config)

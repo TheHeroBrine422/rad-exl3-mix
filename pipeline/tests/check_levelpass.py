@@ -6,8 +6,10 @@ tools run as subprocesses in the same environment (P2B_BLOCK=causal_conv1d,fla: 
          --no-cache (the production forward), --ckpt-min 0 (a checkpoint after every document: the resume path);
          scales files, swiglu.jsonl and swjfit.json (but tool / created) equal
   swjc   the same with the fresh-DynamicCache forward (no --no-cache)
-  swjb   rxq.swjfit alone vs in a batch: sources a (as swj) and b (seed 77) each fitted alone (3 stages) and both in one
-         call (--split 0,12,24), --no-cache; every file of OUT/a and OUT/b equal, swjfit.json equal but split / created
+  swjb   rxq.swjfit, one source alone vs the same source in a two-source call: sources a (as swj) and b (made as a,
+         seed 77) each fitted alone (--split 0,8,16,24: 3 stages) and both in one call (--split 0,12,24: 2 stages),
+         --no-cache; every other file of OUT/a and OUT/b (scales, swiglu.jsonl, .done) equal, swjfit.json equal but
+         split / created
   sib    rxq.sibmom vs v3/yaqa/asym27/sibmom27.py: --wq siblings (q/k/v or GDN qkv/z, gate / up + noise), every layer,
          256-token windows; every moment file (H, C, N, metadata), windows.json and the per-layer done markers equal
   hin    rxq.hin vs eval/gold27/mkhin27.py: 3 stages, 256-token chunks, a flush (checkpoint) every 2 documents; every
@@ -86,7 +88,8 @@ if not os.path.exists(f"{W}/meta/.done"):
 
 
 def stand_in(d, seed):
-    """a :wq source under d (once): every layer's attention siblings + gate / up of the 0.8B, + 3% noise (seed), f16"""
+    """a :wq source under d (once): every layer's attention siblings + gate / up of the 0.8B, + noise of 0.03 x the
+    tensor's std (generator seed), f16"""
     if os.path.exists(f"{d}/.done"): return
     os.makedirs(f"{d}/wq", exist_ok=True)
     ix = json.load(open(f"{M08}/model.safetensors.index.json"))["weight_map"]

@@ -9,14 +9,17 @@
            H_out inputs at every level (apply_k_min 0); C9 on out_proj / o_proj only (alpha down 0)
   manifest pins carry the manifest's sha256; a missing input is refused
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
-  post     post_scripts at batch 1 = post_script per level; one --src a swjfit call
+  post     post_scripts at swj_batch 1 (default config) = post_script per level; one swjfit call per level that has an
+           swj step, one --src each
   post-batch
-           batch 4 (default, asym on, swj k_max 4): up to 4 levels of a pass that have an swj step, in build order,
-           share one swj pass: ceil(swj levels / 4) swjfit calls a pass, every --src once in level order, export
-           before and apply after it, scratches distinct, every other line unchanged
+           swj_batch 4 (default config, asym on, swj k_max 4): ceil(swj levels / 4) swjfit calls a ladder pass, at most
+           4 --src a call, all of one ladder pass; every level that has an swj step named once, in level order, its
+           export line before and its apply line after that call; scratches distinct (also [A, B] against [A, C]);
+           the other lines the same as at swj_batch 1 (the asym line kept)
   estimate-swj
-           swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls;
-           swj k_max 4: swj card-h = 0.75 x the levels that have an swj step
+           swj_passes per ladder pass (default config: every level has an swj step): one a level at swj_batch 1,
+           ceil(levels / 4) at swj_batch 4 = post_scripts' swjfit calls of that ladder pass; at swj k_max 4, swj_h =
+           0.75 x the levels that have an swj step
 Last line: "LADDER CHECKS n/m PASS"."""
 import hashlib, json, math, os, re, sys
 
@@ -107,11 +110,12 @@ report("post", t1 == "".join(LD.post_script(cfg, v, *args) for v in lva) and len
 
 
 def batch_ok(c, why):
-    """the batch-4 text of every level of c against its batch-1 text: every check of post-batch but the scratch pair"""
+    """the swj_batch 4 text of every level of c against its swj_batch 1 text: every check of post-batch but the scratch
+    pair and the asym line"""
     lv = LD.levels(c); ps = {v["name"]: v["pass"] for v in lv}; sw = [v["name"] for v in lv if has_swj(c, v)]
     l4 = LD.post_scripts(c, lv, *args, swj_batch=4).splitlines(); s4 = [x for x in l4 if x.startswith(SW)]
     l1 = LD.post_scripts(c, lv, *args).splitlines()
-    want = sum(math.ceil(sum(has_swj(c, v) for v in lv if v["pass"] == p) / 4) for p in dict.fromkeys(ps.values()))  # per pass
+    want = sum(math.ceil(sum(has_swj(c, v) for v in lv if v["pass"] == p) / 4) for p in dict.fromkeys(ps.values()))  # per ladder pass
     one_pass = all(len(srcs(x)) <= 4 and len({ps[n] for n in srcs(x)}) == 1 for x in s4)
     order = [n for x in s4 for n in srcs(x)] == sw
     at = {n: i for i, x in enumerate(l4) if x.startswith(SW) for n in srcs(x)}
@@ -120,8 +124,8 @@ def batch_ok(c, why):
     scr_u = len({scr(x) for x in s4}) == len(s4)
     rest = sorted(x for x in l4 if not x.startswith(SW)) == sorted(x for x in l1 if not x.startswith(SW))
     why.append(f"{len(s4)} swjfit calls for {len(sw)} of {len(lv)} levels (want {want}), at most "
-               f"{max((len(srcs(x)) for x in s4), default=0)} --src; one pass {one_pass}, order {order}, place {place}, "
-               f"scratch unique {scr_u}, other lines {rest}")
+               f"{max((len(srcs(x)) for x in s4), default=0)} --src; <= 4 --src and one ladder pass a call {one_pass}, level order "
+               f"{order}, export before / apply after {place}, scratch unique {scr_u}, other lines {rest}")
     return len(s4) == want and one_pass and order and place and scr_u and rest
 
 
@@ -134,16 +138,16 @@ ck = C.with_overrides(cfg, **{"post.swj.k_max": 4.0}); wk = []; okk = batch_ok(c
 A, B, D = lva[0], lva[1], lva[2]
 sab, sad = (scr([x for x in LD.post_scripts(cfg, b, *args, swj_batch=2).splitlines() if x.startswith(SW)][0]) for b in ([A, B], [A, D]))
 report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
-       f"default: {wb[0]} (per-pass ceil {n4}); asym on: {wa[0]}, asym line kept {asym_kept}; swj k_max 4: {wk[0]}; "
-       f"scratch [A,B] != [A,C] {sab != sad}")
+       f"default: {wb[0]} (sum over ladder passes of ceil(swj levels / 4) {n4}); asym on: {wa[0]}, asym line kept {asym_kept}; "
+       f"swj k_max 4: {wk[0]}; scratch [A,B] != [A,C] {sab != sad}")
 
 e1, e4 = LD.estimate(cfg), LD.estimate(cfg, swj_batch=4)
 n4p = {p: sum(x.startswith(SW) for x in LD.post_scripts(cfg, [v for v in lva if v["pass"] == p], *args, swj_batch=4).splitlines()) for p in e4}
 ek = LD.estimate(ck, swj_batch=4); nsk = {p: sum(has_swj(ck, v) for v in lva if v["pass"] == p) for p in ek}
 hk = all(ek[p]["swj_h"] == 0.75 * nsk[p] for p in ek)
 report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4) and hk,
-       f"swj passes per pass at batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at batch 4 {[e4[p]['swj_passes'] for p in sorted(e4)]} "
-       f"(post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels; swj k_max 4: swj card-h "
-       f"{[ek[p]['swj_h'] for p in sorted(ek)]} = 0.75 x swj levels {[nsk[p] for p in sorted(nsk)]} {hk}")
+       f"swj level passes per ladder pass at swj_batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at swj_batch 4 "
+       f"{[e4[p]['swj_passes'] for p in sorted(e4)]} (post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} "
+       f"levels; swj k_max 4: swj_h {[ek[p]['swj_h'] for p in sorted(ek)]} = 0.75 x swj levels {[nsk[p] for p in sorted(nsk)]} {hk}")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)
