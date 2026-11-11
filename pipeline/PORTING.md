@@ -61,7 +61,7 @@ settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-dia
   (rad-quant-at-home VERIFY.md) absorbs it, bit-identity checks must pin the thread count.
 - **Repeat runs on the card (GitHub issue 1).** With the pinned torch 2.15.0+rocm7.14 a quant job writes the same
   tensors and metadata when it is run again, split one process per Hessian group, moved to another card, split over the
-  cards at once, or sharing a card with a second job (two R9700 in box A, 0.8B layers 0-3, K2.5 and K0.5;
+  cards at once, or sharing a card with a second job (two R9700, 0.8B layers 0-3, K2.5 and K0.5;
   tests/check_repeat.py). torch 2.14.0+rocm10.1.0 as it comes does not (K2.5: one of three repeats differed in all 29
   files, the one-process-per-group run in 13 of 29). With hipBLASLt switched off there, ROCBLAS_USE_HIPBLASLT=0
   together with TORCH_BLAS_PREFER_HIPBLASLT=0, the job repeats (K2.5, every unit). Compare tensors and metadata, never

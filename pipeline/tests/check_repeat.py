@@ -81,7 +81,7 @@ def files(d, pre=("t-", "c9-")):
 
 def diff_file(pa, pb):
     """None if equal, else what differs: metadata keys, tensor names, dtype / shape, or 'name n/numel' per tensor;
-    values as torch.equal sees them (PORTING.md: a NaN is a difference)"""
+    values element by element, as torch.equal compares them (a NaN is a difference)"""
     with safe_open(pa, "pt") as x, safe_open(pb, "pt") as y:
         ma, mb = x.metadata() or {}, y.metadata() or {}
         if ma != mb: return "metadata " + ",".join(sorted(k for k in set(ma) | set(mb) if ma.get(k) != mb.get(k)))
