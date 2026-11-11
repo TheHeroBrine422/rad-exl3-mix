@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """check_hostmath.py SPEC OUT [--device N] -- the CPU BLAS / LAPACK call sites of a quant job: the spec's job runs
-in-process (as `rxq job`: VRAM_CAP_GB applies) with torch's BLAS / LAPACK entry points wrapped; a call whose tensor
-operands are all on the CPU, one of them floating point with 256+ elements, goes through the host's math library
-(OpenBLAS / MKL), whose rounding differs between hosts with the same card (GitHub issue 2):
-  hostmath  no such call site (FAIL lists each: function, count, largest operand, file:line and its two callers)
+in-process (as `rxq job`: VRAM_CAP_GB applies) with torch's entry points wrapped (the BLAS list below as torch functions
+and Tensor methods, Tensor @ and the in-place add*_ methods, every public torch.linalg function, F.linear); a call whose
+tensor operands are all on the CPU, one of them floating point with 256+ elements, runs in the host's math library
+(OpenBLAS, MKL or another), whose rounding can differ between hosts with the same card (PORTING.md, "The scale refit
+and the host CPU"). Calls that do not pass through those entry points are not seen.
+  hostmath  no such call site (FAIL lists each: function, count, largest operand, file:line, its source line and its
+            two callers; or the traced job's exception)
   untouched the traced job's t-* / c9-* files equal a plain `python -m rxq job` run of the same spec in a fresh
-            process (tensors plus metadata): the wrapping does not change the math
+            process (tensors plus metadata): the wrapping does not change the math (not run if the traced job failed)
 Outputs in OUT/traced and OUT/plain (fresh dirs). --device cpu with RXQ_CPU_STANDIN=1 (the stand-in runs everything on
 the CPU: hostmath must FAIL there). Last line: "HOSTMATH CHECKS n/m PASS"."""
 import argparse, collections, functools, json, os, shutil, subprocess, sys, traceback
@@ -63,13 +66,13 @@ for n in dir(torch.linalg):
     if not n.startswith("_"): wrap(torch.linalg, n, f"linalg.{n}")
 wrap(torch.nn.functional, "linear", "F.linear")
 
-# ---- the traced job, in-process; then the plain one in a fresh process
+# ---- the traced job, in-process; then, if it finished, the plain one in a fresh process
 tr, pl = os.path.join(a.out, "traced"), os.path.join(a.out, "plain")
 for d in (tr, pl): shutil.rmtree(d, ignore_errors=True)
 spec = json.load(open(a.spec))
 _cap(a.device)
 try: job.run_quant(spec, tr, a.device); err = None
-except (Exception, SystemExit) as e: err = e          # a failed job (run_quant / engine exit on bad settings) is a FAIL line and the summary
+except (Exception, SystemExit) as e: err = e          # a failed job (any exception, SystemExit included) is a FAIL line and the summary, not a traceback
 if err is not None: report("hostmath", False, f"the traced job raised {type(err).__name__}: {err}")
 else:
     lines = [f"  {lb:22s} x{n:<5d} largest operand {big[(lb, s)]:>10d} elements | {s}" for (lb, s), n in sorted(seen.items(), key=lambda kv: -big[kv[0]])]
