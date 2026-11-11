@@ -4,6 +4,28 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 11:40 AM CST · #147 · Stored layout vs IQR-V4's kernels before the ladder: no layout change needed; output-Hadamard epilogue measured at 3.0% of the A8 GEMM; fractional-K wdec8 1.35× K4 (w112)
+- **Status:** done (research; proposals for the lead) · **Machine:** dad1 RX 9070 XT card 0 (card0.lock, 17:34–17:35 UTC,
+  ~45 s) · **Code:** scratch worktree of `qc-exl3-v3` 42960d5 + a bench-only epilogue ablation (`EXL3I_W112_NOHAD`, not
+  committed) · **Data / write-up:** `local/research/iqr-v4-kernels.md` (+ `-data/`: raw CSVs, patch, scripts)
+- **Question:** does any layout property behind IQR-V4's kernel speed need to be in our stored bytes before the ladder?
+- **Rule:** none (descriptive measurement; no decision hinges on a threshold).
+- **Result:** IQR stores codes row-major and permutes them at load (size-neutral relayout hook), as exl3i already does
+  (k-major tiles), so tile order, packing, lane layout, scale placement and alignment stay free for the perf pass.
+  Pre-ladder items: **P16** (#130 / #146, format bit, being timed; add: P16 as gperm(R, 16) is not row-splittable for
+  TP ≥ 2, so define it per rank if TP2 could ever be timed) and **suh tying** (recommend: keep per weight; a fused
+  producer writing one int8 plane per distinct suh gets the gain, tying adds only ≈ 0.4% of the A8 layer at M 2048).
+  Codebook (#100) already decided.
+- **Measured (#147, layer mean 48 : 16, median of 4 interleaved rounds):** output-Hadamard epilogue = **3.0% of the
+  A8 GEMM** (K4 M 512 / 2048 / 8192: ratio 0.970 / 0.968 / 0.969; K2.5 M 2048 0.971), 2.3–2.8% of the A8 path; down
+  1.2–1.4%, attn_k / v 5–8%. A8 path at M 2048 K4: actq 7.5%, wdec8 11.2%, GEMM 81.3% (8938 µs). **wdec8 at K2.5 is
+  1.35× K4** per layer (1344 vs 999 µs; 2.85× on gdn_z / attn_o / ssm_out shapes) although it reads fewer bytes: the
+  run-time plan in `RateFrac`, a kernel fix (the even-spread mask makes the offsets depend only on lane bit 3 and the
+  run); knap4's speed table overprices fractional levels at M ≈ 512 until then.
+- **Decision / next (lead):** confirm a size-neutral load-time permutation is outside the AGENTS.md "VRAM size" rule;
+  record "suh stays per weight" as a freeze decision; settle P16's TP form with #146.
+- **Runtime:** none (research); the items it lists are P (prefill) for the perf pass.
+
 ### 2026-11-11 11:10 AM CST · #141 · measured drift table helps at every sub-1 K (held out −2.4 … −0.1%) and takes production g off the 2.05 edge (13/13 tensors better at K0.125 and K0.5); NTRY 4 keeps 59–96% of NTRY 16's gain at ~¼ the cost; swj fails the sub-1 rule at K0.5 on the 0.8B, keeps K1 (w107)
 - **Status:** done (proposals for the lead) · **Machine:** Thor + colo (-01 / -03: 170 + 23 single-threaded jobs, 11-11
   14:10–15:59 UTC), gpubox card 0 (-02 14:42–15:38 UTC, -04 evals 16:55–16:58 UTC, card0.lock → ram.lock shared) ·
