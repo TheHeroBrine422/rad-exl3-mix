@@ -4,6 +4,23 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 7:55 AM CST · #128 / #129 · per-document re-read (diagnostic, post hoc): one xcorp document holds 85% of #129's xcorp KL
+- **Status:** diagnostic (no decision changed by it; #129-02 still decides) · **Machine:** gpubox CPU · **Code:**
+  `eval/docstat/docstat.py` (new: pooled / per-doc geo / median / KL shares / > 20% exclusion / leave-one-out / drop-k
+  curve, document bootstrap) · **Data:** `data/docstat/w99-docstat.txt`
+- **#129 (k6c9 → k6swj):** smoltalk2/longalign (the non-breaking-space PDF text) holds **84.9% of the xcorp KL** (r 1.035).
+  Without it: xcorp r **0.963** [0.824, 1.006]; calib pooled 0.975 [0.942, 1.001] (no calib doc > 20%). Per-doc: xcorp
+  geo 0.973 / median 0.982 (62% of docs better), calib geo **1.047** / median 0.988 (54% better); all 91: geo 0.993,
+  median 0.984. Drop-k curve is non-monotone (k3 0.876, k10 1.060): noise dominates. Reading: once the outlier is out,
+  swj at K6 leans ~3% better pooled but nothing is significant and calib's per-doc geo disagrees → #129-02's extra
+  documents are still needed.
+- **#128 (hp → hb, H_out off → on):** per-doc geo **0.980 / 0.951**, median **0.947 / 0.946**, 65–67% of docs better,
+  calib pooled 0.939 / 0.953 (z −2.6 / −2.3). The inconclusive pooled 1.0054 (seed 0) is longalign (54% share, r 1.000) +
+  swe-rebench (23%, r 1.027). Supports the user's call (H_out everywhere).
+- **Slice note:** golden-search27c's xcorp part is effectively one document in pooled terms; retire it (already due,
+  R55) and cap per-document KL share in the next two-part builds (w92's proposal).
+- **Runtime:** none.
+
 ### 2026-11-11 7:40 AM CST · #128 / #129 · user decisions: H_out stays at every level; #129 gets more documents
 - **#128:** user: keep H_out at all levels (it helped in both uniform-K tests; the splice was inconclusive, not
   negative). No config change (apply_k_min 0, apply_k_max 8).
