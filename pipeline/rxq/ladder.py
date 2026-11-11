@@ -262,7 +262,7 @@ def estimate(cfg, n_layers=64, swj_batch=1):
     return rows
 
 
-def _post_parts(cfg, lv, export, model, meta, scratch, out):
+def _post_parts(cfg, lv, export, out):
     """post_script's pieces of one level: (head lines, its swjfit --src or None, the lines after the swjfit call)"""
     from . import post as P
     steps = P.plan_level(cfg, lv["K"])
@@ -302,17 +302,17 @@ def post_script(cfg, lv, export, model, meta, scratch, out):
     the level + LEVEL/c9 from the writers' in-job C9), the swj level pass (S4, our 32 GB card; post.swj), the one
     rxq.post apply that folds swj's and C9's scales into svh (swj is fitted on the level without C9, as #112-02
     measured it), and the pack recipe (S8; rxq.mix pack_script holds the lock rule)"""
-    head, src, tail = _post_parts(cfg, lv, export, model, meta, scratch, out)
+    head, src, tail = _post_parts(cfg, lv, export, out)
     return "\n".join(head + ([_swj_line(model, meta, scratch, out, [lv["name"]], [src])] if src else []) + tail) + "\n"
 
 
 def post_scripts(cfg, lvs, export, model, meta, scratch, out, swj_batch=1):
     """post_script for the levels lvs in their order; swj_batch N > 1: up to N consecutive levels of one pass share one
-    swj level pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone, GitHub issue 3): their heads,
-    the one swjfit call, then their tails. 1 = post_script per level"""
+    swj level pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone, tests/check_levelpass.py
+    swjb): their heads, the one swjfit call, then their tails. 1 = post_script per level"""
     sh = []
     for swj, b in swj_batches(cfg, lvs, swj_batch):
-        parts = [_post_parts(cfg, lv, export, model, meta, scratch, out) for lv in b]
+        parts = [_post_parts(cfg, lv, export, out) for lv in b]
         if swj: sh += [x for h, _, _ in parts for x in h] + [_swj_line(model, meta, scratch, out, [lv["name"] for lv in b],
                                                                        [s for _, s, _ in parts])] + [x for _, _, t in parts for x in t]
         else: sh += parts[0][0] + parts[0][2]

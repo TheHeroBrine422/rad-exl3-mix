@@ -9,16 +9,18 @@
            H_out inputs at every level (apply_k_min 0); C9 on out_proj / o_proj only (alpha down 0)
   manifest pins carry the manifest's sha256; a missing input is refused
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
-  estimate-swj  swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls
-  post     post_scripts at batch 1 = post_script per level, one --src a swjfit call; post-batch at batch 4 (default,
-           asym on, swj k_max 4): one swjfit call per <= 4 consecutive swj levels of one pass, every --src once in
-           level order, export before and apply after it, scratches distinct, every other line unchanged
+  post     post_scripts at batch 1 = post_script per level; one --src a swjfit call
+  post-batch
+           batch 4 (default, asym on, swj k_max 4): one swjfit call per <= 4 consecutive swj levels of one pass, every
+           --src once in level order, export before and apply after it, scratches distinct, every other line unchanged
+  estimate-swj
+           swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls
 Last line: "LADDER CHECKS n/m PASS"."""
 import hashlib, json, math, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, ".."))
-from rxq import config as C, ladder as LD, qwen35  # noqa: E402
+from rxq import config as C, ladder as LD, post as P, qwen35  # noqa: E402
 
 RQ = sys.argv[1] if len(sys.argv) > 1 else "/workspace/rad-quant-at-home"
 jobs = None
@@ -83,12 +85,19 @@ k = "model.language_model.layers.10.mlp.gate_proj"
 report("estimate", set(ed) == {"1", "2", "3"} and tb < td and LD.tensor_vram(cfg, k, 0.5) > LD.tensor_vram(cfg, k, 2.5),
        f"quant card-h dense {td:.0f} / blocks {tb:.0f}; gate VRAM K0.5 {LD.tensor_vram(cfg, k, 0.5):.2f} > K2.5 {LD.tensor_vram(cfg, k, 2.5):.2f} GiB")
 
-from rxq import post as P  # noqa: E402
 args = ("EXPORT", "MODEL", "SWJMETA", "SCRATCH", "OUT"); SW = "python -m rxq.swjfit "
 lva = LD.levels(cfg)
+
+
 def has_swj(c, v): return any(x[0] == "swj" for x in P.plan_level(c, v["K"]))
+
+
 def srcs(x): return re.findall(r" --src (\S+?)=", x)
+
+
 def scr(x): return re.search(r" --scratch (\S+) ", x).group(1)
+
+
 t1 = LD.post_scripts(cfg, lva, *args); s1 = [x for x in t1.splitlines() if x.startswith(SW)]
 n1 = sum(has_swj(cfg, v) for v in lva)
 report("post", t1 == "".join(LD.post_script(cfg, v, *args) for v in lva) and len(s1) == n1 and all(x.count(" --src ") == 1 for x in s1),
