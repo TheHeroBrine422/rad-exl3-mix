@@ -1,0 +1,6 @@
+11-11 09:47:26 CST rxrun.run start: settings 87a7e4ab32f9d5b9, 1 levels, steps ['jobs', 'assemble', 'post'], devices [('card0', 3)]
+11-11 09:47:26 CST q27v3-87a7e4ab-k2.5-i8: 9 of 9 jobs to run (1 duplicate-seed)
+11-11 09:50:41 CST q27v3-87a7e4ab-k2.5-i8: assembled in 2 s
+11-11 09:50:42 CST q27v3-87a7e4ab-k2.5-i8: post (c9) in 1 s
+11-11 09:50:42 CST q27v3-87a7e4ab-k2.5-i8: DONE
+11-11 09:50:42 CST rxrun.run end: 11-11 09:50 CST | levels 1/1 | - | 390 jobs/h, 1.69 est-s/s | ETA 11-11 09:50 CST (0.0 h: quant 0.0 + swj 0 x 0.75)

@@ -1,0 +1,43 @@
+{
+ "arm": "w2",
+ "level": "2.5-i8",
+ "layers": "8-12",
+ "seed": 0,
+ "mode": "persist",
+ "n": 2,
+ "prefetch": true,
+ "cold": true,
+ "jobs": 20,
+ "lock_wait_s": 783.0,
+ "wall_s": 198.8,
+ "jobs_per_h": 362.2,
+ "sum_job_wall_s": 397.3,
+ "sum_tensor_wall_s": 391.0,
+ "stages_s": {
+  "finalize": 2.9,
+  "group_finalize": 0.0,
+  "hessian_load": 2.1,
+  "hout_load": 0.0,
+  "ldlq": 45.4,
+  "other": 12.0,
+  "pack": 0.2,
+  "prepare_hout": 0.5,
+  "refit": 67.6,
+  "regularize": 2.3,
+  "scale_search": 0.6,
+  "scaled_ldl": 7.5,
+  "trellis[ldlq]": 224.5,
+  "trellis[scale_search]": 17.9,
+  "weight_load": 0.8
+ },
+ "vram_peak_gib": 17.78,
+ "gpu_busy_mean": 97.8,
+ "gpu_idle_frac": 0.01,
+ "t0_utc": "15:17:56",
+ "vs_ref": {
+  "ref": "p1",
+  "files": 67,
+  "differ": 0,
+  "first": []
+ }
+}

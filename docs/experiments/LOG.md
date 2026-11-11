@@ -4,6 +4,49 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 10:25 AM CST · #143 · local ladder runner: persistent workers +58%, N = 3 +11% more; outputs identical; ladder ≈ 3.2–3.7 card-days
+- **Status:** done (measurement); runner built and tested, **not started** (freeze first) · **Machine:** gpubox card 0
+  (5 bench arms + one driver run, ~23 min of card time in the gaps of w103 / w101 / w106), colo CPU (stand-in checks)
+  · **Code:** `pipeline/rxrun/` (worker, pool, run, cmp, seedsd; uncommitted, for the lead to merge),
+  `pipeline/tests/check_rxrun.py`, bench `v3/e3/settle/w105/bench105.{sh,py}`, configs `ladder-card0.json`
+  · **Rule:** `v3/e3/settle/w105.md` (committed 0c6c7a0 as #140 before the first arm; renumbered #143: #140-142 were taken meanwhile) · **Data:** `v3/e3/settle/data/w105/`
+- **Arms** (`q27v3-87a7e4ab-k2.5-i8`, layers 8-12 = 20 group jobs incl. L11 attention with tile CD and 5 down_proj,
+  cold page cache, staged tree = 11-11 morning working tree, stamp 87a7e4ab, fork b0052f7c):
+
+  | arm | wall | jobs/h | Σ tensor walls | GPU busy | VRAM peak | vs p1 |
+  |---|---|---|---|---|---|---|
+  | p1 proc N=1 (w92's way) | 342 s | 211 | 240 s | 60.5% | 11.2 GiB | ref |
+  | w1 persistent N=1 | 216 s | 333 | 214 s | 93.6% | 11.3 GiB | 0 / 67 files differ |
+  | w2 persistent N=2 | 199 s | 362 | 391 s | 97.8% | 17.8 GiB | 0 / 67 |
+  | w3 persistent N=3 | 194 s | 370 | 551 s | 98.0% | 23.0 GiB | 0 / 67 |
+  | p2 proc N=2 | 225 s | 320 | 381 s | 88.2% | 17.7 GiB | 0 / 67 |
+- **Reading:** the overhead was process start + first-call warm-ups (p1: job walls − tensor walls = 102 s / 20 jobs;
+  `scaled_ldl` / `finalize` first-use costs vanish in a warm worker, tensors 11% faster). Once warm the card is ~94%
+  busy, so concurrency adds little: N=2 +8.7%, N=3 +11.1% over N=1; rule 2 (≥ 10%) picks **N = 3** (one run each:
+  a thin margin; N = 2 is the fallback if card 0 must share VRAM). Model calibration: Σ est (rxq.ladder.job_req) 330 s
+  vs p1 342 s (the model is the proc path's).
+- **Identity:** whole-file sha256 can never match between runs: safetensors writes `__metadata__` from a Rust HashMap
+  (random key order on every write, even in one process). rxrun.cmp compares tensor bytes / dtypes / shapes / offsets
+  + the metadata dict. Every arm = p1 on all t- / c9- / diag- files; the full driver (`rxrun.run`, its own specs) on
+  layers 8-9 = p1's files (26 / 26). w92's files: settings ed97adb7 ≠ 87a7e4ab, no spec matches (rule 4, n/a).
+- **Projection** (50 levels, 12,800 jobs, 82.8 modeled R9700-h): N=3 rate 1.70 est-s/s → quant 49.4 h (+1.5% dups);
+  overhead-split model (drop 5 s a job, tensors × 0.89, / 1.11) 52.7 h; + swj 50 × 0.75 h = 37.5 h →
+  **3.6–3.8 card-days**, vs 5.2 the w92 way. swj is now ~42% of the card time: the next target. The K2.5 rate is
+  applied to every K (sub-1 levels are trellis-bound, so the overhead share there is smaller: the split model covers it).
+  **With today's settings** (working tree 11-11 ~10:30 AM CST, stamp 524bc868: swj k_max 4.5 per #129-02 → swj on 36
+  of 50 levels = 27 h): **≈ 3.2–3.3 card-days**; if #142's sub-1 fusion (layer ×2.7) lands, the 7 sub-1 levels (25% of
+  the modeled quant time) drop ~8.5 h more → ≈ 3.0.
+- **Duplicate-seed jobs (user 11-11 item 5):** 1.5% of a level's tensors (min 1; ~6 a level, ~300 pairs), one tensor
+  a job, seed_offset + 1, families in rotation across levels, layer random (seeded by stamp + level), stored in
+  `<level>/dup/`, never assembled; `python -m rxrun.seedsd ROOT` → seed SD of ln proxy per family × K band with a
+  bootstrap interval. First pair (L9 gate_proj, K2.5): codes differ, proxy differs by 6.5e-5 relative (SD 0.0046%).
+- **Checks:** `check_rxrun.py` on colo (CPU stand-in): pool 6/6 (proc vs proc, persistent N=1 / 2, two devices on one
+  queue, worker SIGKILL + resume, hold), run 5/5 (two levels assembled, dups, status + ETA, rerun skips in 1.4 s,
+  seedsd).
+- **Note:** the shared tree's settings stamp moved to 59a104cb during this session (uncommitted `quant.scale_clamp`,
+  R14 #132): the runner takes whatever settings file it is pointed at; a stamp change needs a new ROOT.
+- **Runtime:** ~23 min card 0, ~3 min colo CPU.
+
 ### 2026-11-11 9:35 AM CST · #142 · qtf2 sub-1 0-bit-step fusion: bit-identical (incl. a real K0.125 layer via rxq job on card 0), kernel ×3.8 (K0.125) to ×1.7 (K0.875), layer ×2.7; step 2 skipped (w108)
 - **Status:** done (judge (a) PASS; patch not merged: lead) · **Machine:** dad1 (RX 9070 XT, gfx1201, `/data/w108`), gpubox card 0 · **Code:**
   `v3/e3/exl3frac2/sub1fuse/` (patch `qtf2-sub1fuse.patch`, not merged) · **Rule:** `v3/e3/exl3frac2/SUB1FUSE.md`,

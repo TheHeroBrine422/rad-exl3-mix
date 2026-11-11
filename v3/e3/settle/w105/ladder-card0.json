@@ -1,0 +1,23 @@
+{
+ "root": "/data/w105/ladder",
+ "settings": "/data/w105/code/pipeline/config/v3.toml",
+ "python": "/data/venv-exl3/bin/python",
+ "env": {"ROCR_VISIBLE_DEVICES": "0", "EXL3_QT_OPTIMIZED": "1", "ROCM_HOME": "/opt/rocm/core-10.1", "ROCM_PATH": "/opt/rocm/core-10.1",
+         "PYTORCH_ROCM_ARCH": "gfx1201", "TORCH_EXTENSIONS_DIR": "/data/w105/build", "OMP_NUM_THREADS": "4", "MAX_JOBS": "4",
+         "PYTHONPATH": "/data/w105/code/pipeline:/data/w105/exl3:/data/exllamav3", "RXQ_RXM": "/data/w105/code",
+         "RXQ_EXL3_SRC": "/data/exl3frac/src", "RXQ_REFIT_CPU_FALLBACK": "1"},
+ "inputs": {"ckpt": "/data/workspace/models/qwen38-27b-bf16", "hessians": "/root/challenge/hessians/calib", "hin": null,
+            "hout": "/data/swap27/hout-bn"},
+ "model": "/data/workspace/models/qwen38-27b-bf16",
+ "swj_meta": "/data/swj27/swj27-qad",
+ "passes": ["1", "2", "3"],
+ "steps": ["jobs", "assemble", "swj", "post", "recipe"],
+ "swj_batch": 2,
+ "dup_frac": 0.015,
+ "dup_seed_delta": 1,
+ "chunk": 32,
+ "mode": "persist",
+ "ram_lock": "/root/ram.lock",
+ "devices": [{"name": "card0", "device": 0, "host": "local", "lock": "/root/card0.lock", "ram_lock": "/root/ram.lock",
+              "workers": 3, "vram_gib": 28.0, "nice": 5, "kinds": ["quant", "swj"]}]
+}

@@ -1,0 +1,6 @@
+14:41:41 p1: proc N=1 2.5-i8 L8-12: 20 jobs in 342 s = 211 jobs/h; tensor walls 240 s; VRAM peak 11.19 GiB; GPU busy 60.5% (idle 0.243); lock wait 1885 s
+15:04:52 w1: persist N=1 2.5-i8 L8-12: 20 jobs in 216 s = 333 jobs/h; tensor walls 214 s; VRAM peak 11.25 GiB; GPU busy 93.6% (idle 0.021); lock wait 1172 s; vs p1: 0 of 67 files differ
+15:21:17 w2: persist N=2 2.5-i8 L8-12: 20 jobs in 199 s = 362 jobs/h; tensor walls 391 s; VRAM peak 17.78 GiB; GPU busy 97.8% (idle 0.01); lock wait 783 s; vs p1: 0 of 67 files differ
+15:30:52 w3: persist N=3 2.5-i8 L8-12: 20 jobs in 194 s = 370 jobs/h; tensor walls 551 s; VRAM peak 22.96 GiB; GPU busy 98.0% (idle 0.01); lock wait 377 s; vs p1: 0 of 67 files differ
+15:46:35 p2: proc N=2 2.5-i8 L8-12: 20 jobs in 225 s = 320 jobs/h; tensor walls 381 s; VRAM peak 17.72 GiB; GPU busy 88.2% (idle 0.029); lock wait 717 s; vs p1: 0 of 67 files differ
+15:46:36 BENCH DONE (p1 w1 w2 w3 p2)
