@@ -61,3 +61,21 @@ search3; nothing from verify or public.
 
 `mkhp.py` (H′ dirs + stats), `run.sh` (driver, idempotent; `/data/yb/w103/`), `report.py` (this rule; `--nstat`),
 `queue.d-60-w103.sh` (registration), results copied to `data/` when done.
+
+## Amendment 1 · 2026-11-11 (CST), before any data: machine move to gpubox card 0
+
+The 4070 is out (user, lead 11-11), so #137 runs on **gpubox card 0** (`/root/card0.lock`, then `/root/ram.lock` shared, per
+GPU unit; queued behind other card-0 jobs). **The decision rule, arms, ρ grid, seeds, slices' documents and thresholds
+are unchanged.**
+- **No data was seen.** The 4070 run was stopped 11-09 ~04:12 UTC inside its first unit (the K3 noise source); nothing
+  of it was scored or read, and its outputs (4070 `/data/yb/w103`) stay unused.
+- **Inputs rebuilt on gpubox** with the same recipes, documents and code (`gpubox/setup.sh`; code = `git archive`
+  c983c47 + this folder): the 0.8B model (HF, w106's download), g08-fit1 (the ledger's 87 documents, scored ranges
+  checked against it), **g08-search2 / g08-search3** (`gpubox/docs.py`: more.sh's seeded draw, search1's documents from
+  the ledger: a deterministic draw, so the same 170 + 170 documents; still first use), the calib input Hessians (`hcollect.py`, setup08.sh) and
+  C18's H_out dy (`collect.py`, yaqaFact7.sh's environment). They are not bit-identical to the 4070's (other GPU and
+  kernels; C18's sampled labels): every arm shares them and every decision is a within-run pair, so the rule is unaffected.
+- **Reproduction gate dropped** (it was information only): d1112's rows and g08-search1 live on the 4070.
+- **Stack:** as in Setup. Settings stamp 87a7e4ab32f9d5b9 (11-09) changes nothing here: i8 is already the codebook, and
+  refit = "hout" is wired into rxq only (w98's patch), not the 0.8B ourq path (like tile CD, excluded above).
+- Driver: `gpubox/w103.sh` (setup.sh, then `run.sh` with `W103_ENV=gpubox/env.sh`); outputs `/data/w103/run/` on gpubox.
