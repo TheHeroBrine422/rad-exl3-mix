@@ -88,7 +88,7 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
 - `tests/check_ladder.py [RQAH]` — the 55 levels and passes, every job of every level through rqah's rxq_quant checks,
   manifest pins, estimates, the post scripts at `--swj-batch` 1 and 4 (one swjfit call per level that has an swj step /
   up to 4 levels of a ladder pass that have an swj step, in build order, share one swj level pass), the swj level pass
-  count and hours (seconds).
+  count (seconds).
 
 GPU (prepared scripts, the lead runs them):
 - `tools/gpucheck27.sh cd|i4|c9` — gpubox card 0: tile CD on the real quantizer (rxq vs research module, M = I gate,

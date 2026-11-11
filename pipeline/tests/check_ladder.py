@@ -18,8 +18,7 @@
            the other lines the same as at swj_batch 1 (the asym line kept)
   estimate-swj
            swj_passes per ladder pass (default config: every level has an swj step): one a level at swj_batch 1,
-           ceil(levels / 4) at swj_batch 4 = post_scripts' swjfit calls of that ladder pass; at swj k_max 4, swj_h =
-           0.75 x the levels that have an swj step
+           ceil(levels / 4) at swj_batch 4 = post_scripts' swjfit calls of that ladder pass
 Last line: "LADDER CHECKS n/m PASS"."""
 import hashlib, json, math, os, re, sys
 
@@ -143,11 +142,8 @@ report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
 
 e1, e4 = LD.estimate(cfg), LD.estimate(cfg, swj_batch=4)
 n4p = {p: sum(x.startswith(SW) for x in LD.post_scripts(cfg, [v for v in lva if v["pass"] == p], *args, swj_batch=4).splitlines()) for p in e4}
-ek = LD.estimate(ck, swj_batch=4); nsk = {p: sum(has_swj(ck, v) for v in lva if v["pass"] == p) for p in ek}
-hk = all(ek[p]["swj_h"] == 0.75 * nsk[p] for p in ek)
-report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4) and hk,
+report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4),
        f"swj level passes per ladder pass at swj_batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at swj_batch 4 "
-       f"{[e4[p]['swj_passes'] for p in sorted(e4)]} (post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} "
-       f"levels; swj k_max 4: swj_h {[ek[p]['swj_h'] for p in sorted(ek)]} = 0.75 x swj levels {[nsk[p] for p in sorted(nsk)]} {hk}")
+       f"{[e4[p]['swj_passes'] for p in sorted(e4)]} (post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

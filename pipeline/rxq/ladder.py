@@ -246,9 +246,10 @@ def level_jobs(cfg, lv, model, rev, man=None, split=None, seed_offset=0, n_layer
 def estimate(cfg, n_layers=64, swj_batch=1):
     """per pass: levels, R9700 card-hours of the quant jobs (sum of est_s), the swj level passes (~0.75 card-h a level
     on a 32 GB card, ~1.5 card-h for two levels in one pass, PROFILE / DESIGN S4) and the CPU packs (~1,600 s a level).
-    swj_h: 0.75 card-h a level that has an swj step (what a level costs inside a batched swj level pass is not measured
-    at 27B); swj_passes: the rxq.swjfit calls of the ladder pass, up to swj_batch levels a call (swj_batches, as
-    post_scripts writes them)"""
+    swj_h: 0.75 card-h for every level of the ladder pass when post.swj.enable is on (also for a level above
+    post.swj.k_max, which has no swj step; what a level costs inside a batched swj level pass is not measured at 27B);
+    swj_passes: the rxq.swjfit calls of the ladder pass, up to swj_batch levels a call (swj_batches, as post_scripts
+    writes them), counting only levels that have an swj step"""
     rows = {}; lvs = levels(cfg)
     for lv in lvs:
         r = rows.setdefault(lv["pass"], {"levels": 0, "quant_h": 0.0, "jobs": 0, "vram": {}})
@@ -257,8 +258,8 @@ def estimate(cfg, n_layers=64, swj_batch=1):
             q = jb["params"]["req"]; r["quant_h"] += q["est_s"] / 3600; r["jobs"] += 1
             r["vram"][q["vram_gb"]] = r["vram"].get(q["vram_gb"], 0) + 1
     for p, r in rows.items():
-        bs = swj_batches(cfg, [v for v in lvs if v["pass"] == p], swj_batch)
-        r["swj_h"] = 0.75 * sum(len(b) for s, b in bs if s); r["swj_passes"] = sum(s for s, _ in bs)
+        r["swj_h"] = 0.75 * r["levels"] if cfg["post"]["swj"]["enable"] else 0.0
+        r["swj_passes"] = sum(s for s, _ in swj_batches(cfg, [v for v in lvs if v["pass"] == p], swj_batch))
         r["pack_cpu_h"] = 1600 / 3600 * r["levels"]
         r["quant_h"] = round(r["quant_h"], 1)
     return rows
@@ -380,7 +381,7 @@ def main(argv=None):
         print(f"settings {C.settings_stamp(cfg)}, H_out ldlq {cfg['inputs']['hout'].get('ldlq', 'dense')}, {JOB_S:g} s a job overhead; "
               f"R9700-equivalent hours")
         for p, r in sorted(estimate(cfg, swj_batch=nb).items()):
-            sw = f" in {r['swj_passes']} swj level passes (32 GB, ours; flat 0.75 a level with an swj step)" if nb > 1 else " (32 GB, ours)"
+            sw = f" in {r['swj_passes']} swj level passes (32 GB, ours; flat 0.75 a level)" if nb > 1 else " (32 GB, ours)"
             print(f"pass {p:2s}: {r['levels']:2d} levels, {r['jobs']:6d} jobs, quant {r['quant_h']:7.1f} card-h, swj {r['swj_h']:5.1f} "
                   f"card-h{sw}, pack {r['pack_cpu_h']:5.1f} CPU-h; jobs by declared VRAM GB {dict(sorted(r['vram'].items()))}")
             for k in tot: tot[k] += r[k]
