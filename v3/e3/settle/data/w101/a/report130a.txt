@@ -1,0 +1,23 @@
+tensor                     K    seed  f2_N        f2_P        r=P/N    f1 r
+L10 in_proj_qkv            2.5  0     4.8588e-03  3.3270e-03  0.6847   1.1695
+L10 in_proj_qkv            2.5  1     4.8572e-03  3.3283e-03  0.6852   1.1700
+L10 in_proj_qkv            4    0     6.1117e-04  4.1002e-04  0.6709   1.1748
+L10 in_proj_qkv            4    1     6.1119e-04  4.1016e-04  0.6711   1.1742
+  -> R 0.6779 over 4 (of 4); model g16/nat 0.6583; realized share 0.93
+L10 in_proj_z              2.5  0     3.5623e-03  3.3859e-03  0.9505   1.0255
+L10 in_proj_z              2.5  1     3.5636e-03  3.3859e-03  0.9501   1.0264
+L10 in_proj_z              4    0     4.4560e-04  4.2231e-04  0.9477   1.0249
+L10 in_proj_z              4    1     4.4610e-04  4.2211e-04  0.9462   1.0264
+  -> R 0.9486 over 4 (of 4); model g16/nat 0.9272; realized share 0.70
+L11 q_proj                 2.5  0     8.1962e-04  6.8245e-04  0.8326   1.1623
+L11 q_proj                 2.5  1     8.1960e-04  6.8096e-04  0.8308   1.1630
+L11 q_proj                 4    0     1.0299e-04  8.4192e-05  0.8174   1.1636
+L11 q_proj                 4    1     1.0296e-04  8.4372e-05  0.8195   1.1680
+  -> R 0.8251 over 4 (of 4); model g16/nat 0.8021; realized share 0.87
+L39 q_proj                 2.5  0     2.9089e-03  2.7093e-03  0.9314   1.0173
+L39 q_proj                 2.5  1     2.9074e-03  2.7089e-03  0.9317   1.0177
+L39 q_proj                 4    0     3.7355e-04  3.4369e-04  0.9201   1.0075
+L39 q_proj                 4    1     3.7343e-04  3.4341e-04  0.9196   1.0072
+  -> R 0.9257 over 4 (of 4); model g16/nat 0.92; realized share 0.93
+
+VERDICT (a): R(L10 qkv) = 0.6779 vs <= 0.90 -> PASS; q_proj geo 0.8739, z 0.9486452717451141; scope of (c) if (b) passes: ['in_proj_qkv', 'q_proj', 'in_proj_z']

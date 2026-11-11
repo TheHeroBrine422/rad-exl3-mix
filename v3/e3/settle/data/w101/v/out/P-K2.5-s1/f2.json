@@ -1,0 +1,22 @@
+{
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2_permbasis": 0.005319813726220304,
+  "f2": 0.005319813726220304,
+  "f1": 0.009074870586835012
+ },
+ "model.language_model.layers.3.self_attn.v_proj": {
+  "f2_permbasis": 0.004586194302471896,
+  "f2": 0.004586194302471896,
+  "f1": 0.013891308559061538
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2_permbasis": 0.013481782966275243,
+  "f2": 0.013481782966275243,
+  "f1": 0.015575132055962622
+ },
+ "model.language_model.layers.63.self_attn.v_proj": {
+  "f2_permbasis": 0.0021875317776909333,
+  "f2": 0.0021875317776909337,
+  "f1": 0.004055961205034529
+ }
+}

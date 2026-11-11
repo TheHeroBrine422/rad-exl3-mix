@@ -1,0 +1,19 @@
+17:00:01 N-K2.5-s0: card 0 held after 0 s
+17:00:11 N-K2.5-s0: rc 0, 10 s wall (incl. lock wait)
+17:00:11 P-K2.5-s0: card 0 held after 0 s
+17:00:21 P-K2.5-s0: rc 0, 10 s wall (incl. lock wait)
+17:00:21 N-K4-s0: card 0 held after 0 s
+17:00:29 N-K4-s0: rc 0, 8 s wall (incl. lock wait)
+17:00:29 P-K4-s0: card 0 held after 0 s
+17:00:37 P-K4-s0: rc 0, 8 s wall (incl. lock wait)
+17:00:37 N-K2.5-s1: card 0 held after 0 s
+17:00:47 N-K2.5-s1: rc 0, 10 s wall (incl. lock wait)
+17:00:47 P-K2.5-s1: card 0 held after 0 s
+17:00:57 P-K2.5-s1: rc 0, 10 s wall (incl. lock wait)
+17:00:57 N-K4-s1: card 0 held after 0 s
+17:01:05 N-K4-s1: rc 0, 8 s wall (incl. lock wait)
+17:01:05 P-K4-s1: card 0 held after 0 s
+17:01:13 P-K4-s1: rc 0, 8 s wall (incl. lock wait)
+17:01:28 f2: done
+17:01:28 report: /data/w101/v/report130a.txt
+17:01:28 il101 done: prep N:2.5:0 P:2.5:0 N:4:0 P:4:0 N:2.5:1 P:2.5:1 N:4:1 P:4:1 f2 report

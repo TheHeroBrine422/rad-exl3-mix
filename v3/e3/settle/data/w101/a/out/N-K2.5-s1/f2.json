@@ -1,0 +1,18 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2": 0.004857220014242211,
+  "f1": 0.007722381592552559
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2": 0.003563621258162224,
+  "f1": 0.003940167529160582
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "f2": 0.0008196027857175269,
+  "f1": 0.0006464105232491426
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "f2": 0.002907369692807785,
+  "f1": 0.00485262072966238
+ }
+}

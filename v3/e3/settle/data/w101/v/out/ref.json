@@ -1,0 +1,18 @@
+{
+ "model.language_model.layers.11.self_attn.v_proj": [
+  809932003.153647,
+  3429956405.967326
+ ],
+ "model.language_model.layers.3.self_attn.v_proj": [
+  524211763.3427106,
+  2627693178.935951
+ ],
+ "model.language_model.layers.39.self_attn.v_proj": [
+  68007804.31979865,
+  9967335599.077543
+ ],
+ "model.language_model.layers.63.self_attn.v_proj": [
+  572581210.5535989,
+  308082730236.0005
+ ]
+}

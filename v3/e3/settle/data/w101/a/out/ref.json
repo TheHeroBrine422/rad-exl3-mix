@@ -1,0 +1,18 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": [
+  3030137526.6982307,
+  35105708586.8427
+ ],
+ "model.language_model.layers.10.linear_attn.in_proj_z": [
+  2870881541.6576633,
+  44072582978.48033
+ ],
+ "model.language_model.layers.11.self_attn.q_proj": [
+  15755393546.735477,
+  642938598185.0154
+ ],
+ "model.language_model.layers.39.self_attn.q_proj": [
+  663390268.1555992,
+  284403396919.19025
+ ]
+}

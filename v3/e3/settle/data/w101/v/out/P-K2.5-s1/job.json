@@ -1,0 +1,31 @@
+{
+ "spec": {
+  "type": "rxq.quant",
+  "version": 1,
+  "level": "K2.5",
+  "K": 2.5,
+  "codebook": "i8",
+  "seed_offset": 1,
+  "keys": [
+   "model.language_model.layers.3.self_attn.v_proj",
+   "model.language_model.layers.11.self_attn.v_proj",
+   "model.language_model.layers.39.self_attn.v_proj",
+   "model.language_model.layers.63.self_attn.v_proj"
+  ],
+  "settings_stamp": "ed97adb7ed1f9919",
+  "inputs": {
+   "ckpt": "/data/w101/v/p16/ckpt",
+   "hessians": "/root/challenge/hessians/calib",
+   "hin": null,
+   "wpre": null,
+   "hout": "/data/w101/v/p16/hout"
+  }
+ },
+ "settings_stamp": "ed97adb7ed1f9919",
+ "code_stamp": "266aca8e473bb79b",
+ "kernels": "gpu",
+ "device": "AMD Radeon AI PRO R9700",
+ "host": null,
+ "tensors": 4,
+ "seconds": 4.9
+}

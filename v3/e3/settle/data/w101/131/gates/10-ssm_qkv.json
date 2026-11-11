@@ -1,0 +1,24 @@
+{
+ "gate": "10-ssm_qkv",
+ "block": [
+  79
+ ],
+ "G1_maxabs": {
+  "Wt": 0.0,
+  "T": 0.0,
+  "su": 0.0,
+  "r": 0.0,
+  "sv": 0.0,
+  "Wo": 0.0
+ },
+ "Lout_maxabs": 2.3528262518834886e-08,
+ "Lin_maxabs": 0.0,
+ "G2_max_dQ": 0.0,
+ "tiles_differ": 0,
+ "sec_ref": 27.7,
+ "sec_batch": 28.3,
+ "e2_ref": 88017.4299697961,
+ "e2_batch": 88017.4299697961,
+ "e2_ratio": 1.0,
+ "PASS": true
+}

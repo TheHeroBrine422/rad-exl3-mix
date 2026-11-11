@@ -1,0 +1,450 @@
+{
+ "model.language_model.layers.0.linear_attn.in_proj_qkv": [
+  8441345054.724855,
+  1410302151345.7861
+ ],
+ "model.language_model.layers.0.linear_attn.in_proj_z": [
+  5953885271.0020685,
+  479049885095.7263
+ ],
+ "model.language_model.layers.1.linear_attn.in_proj_qkv": [
+  3548340401.0250087,
+  11135986558.239777
+ ],
+ "model.language_model.layers.1.linear_attn.in_proj_z": [
+  3456734507.2966213,
+  8450023102.214696
+ ],
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": [
+  3030137526.6982307,
+  35105708586.8427
+ ],
+ "model.language_model.layers.10.linear_attn.in_proj_z": [
+  2870881541.6576633,
+  44072582978.48033
+ ],
+ "model.language_model.layers.11.self_attn.q_proj": [
+  15755393546.735477,
+  642938598185.0154
+ ],
+ "model.language_model.layers.12.linear_attn.in_proj_qkv": [
+  3796590878.1337605,
+  45054701263.2575
+ ],
+ "model.language_model.layers.12.linear_attn.in_proj_z": [
+  4248363063.6624193,
+  61365288091.65558
+ ],
+ "model.language_model.layers.13.linear_attn.in_proj_qkv": [
+  3527917463.4325843,
+  42147555392.513954
+ ],
+ "model.language_model.layers.13.linear_attn.in_proj_z": [
+  2578724075.6960545,
+  73659362950.20757
+ ],
+ "model.language_model.layers.14.linear_attn.in_proj_qkv": [
+  4227970255.5201545,
+  53238025882.73625
+ ],
+ "model.language_model.layers.14.linear_attn.in_proj_z": [
+  3739747051.6182013,
+  65321956154.33105
+ ],
+ "model.language_model.layers.15.self_attn.q_proj": [
+  14171826194.700367,
+  546731318002.7585
+ ],
+ "model.language_model.layers.16.linear_attn.in_proj_qkv": [
+  4350824978.61623,
+  50750812504.63797
+ ],
+ "model.language_model.layers.16.linear_attn.in_proj_z": [
+  3148059539.4609737,
+  74702942914.60675
+ ],
+ "model.language_model.layers.17.linear_attn.in_proj_qkv": [
+  4814967666.4726925,
+  62479769289.82034
+ ],
+ "model.language_model.layers.17.linear_attn.in_proj_z": [
+  3161799522.634073,
+  107122462367.27412
+ ],
+ "model.language_model.layers.18.linear_attn.in_proj_qkv": [
+  3929511253.5123863,
+  70393709720.78458
+ ],
+ "model.language_model.layers.18.linear_attn.in_proj_z": [
+  3186038715.5246687,
+  97994621861.65753
+ ],
+ "model.language_model.layers.19.self_attn.q_proj": [
+  6358141466.960992,
+  390421092646.8745
+ ],
+ "model.language_model.layers.2.linear_attn.in_proj_qkv": [
+  6146437848.7776785,
+  14582883121.154198
+ ],
+ "model.language_model.layers.2.linear_attn.in_proj_z": [
+  6871759614.164007,
+  12922990284.040688
+ ],
+ "model.language_model.layers.20.linear_attn.in_proj_qkv": [
+  1343796857.9091864,
+  199056817215.92172
+ ],
+ "model.language_model.layers.20.linear_attn.in_proj_z": [
+  1106949095.3929322,
+  163214830611.2065
+ ],
+ "model.language_model.layers.21.linear_attn.in_proj_qkv": [
+  640849025.8424523,
+  158406433859.6617
+ ],
+ "model.language_model.layers.21.linear_attn.in_proj_z": [
+  891512146.0889869,
+  157357314945.51022
+ ],
+ "model.language_model.layers.22.linear_attn.in_proj_qkv": [
+  683305346.4249222,
+  105796481820.26175
+ ],
+ "model.language_model.layers.22.linear_attn.in_proj_z": [
+  694484304.1401951,
+  107651705460.64787
+ ],
+ "model.language_model.layers.23.self_attn.q_proj": [
+  3746609566.522685,
+  390359991411.87366
+ ],
+ "model.language_model.layers.24.linear_attn.in_proj_qkv": [
+  824205985.0291879,
+  102028907586.14743
+ ],
+ "model.language_model.layers.24.linear_attn.in_proj_z": [
+  805556302.6553972,
+  73438049110.99722
+ ],
+ "model.language_model.layers.25.linear_attn.in_proj_qkv": [
+  847989627.3607805,
+  111074512175.53578
+ ],
+ "model.language_model.layers.25.linear_attn.in_proj_z": [
+  953561776.6478331,
+  110545567070.35109
+ ],
+ "model.language_model.layers.26.linear_attn.in_proj_qkv": [
+  967978376.824058,
+  92185030425.42572
+ ],
+ "model.language_model.layers.26.linear_attn.in_proj_z": [
+  860155453.771801,
+  97091628140.65193
+ ],
+ "model.language_model.layers.27.self_attn.q_proj": [
+  4189940138.308988,
+  242658015162.08142
+ ],
+ "model.language_model.layers.28.linear_attn.in_proj_qkv": [
+  742125118.6611329,
+  102044600717.07074
+ ],
+ "model.language_model.layers.28.linear_attn.in_proj_z": [
+  761766398.1075445,
+  96764631409.66187
+ ],
+ "model.language_model.layers.29.linear_attn.in_proj_qkv": [
+  599851862.749059,
+  94511805457.58481
+ ],
+ "model.language_model.layers.29.linear_attn.in_proj_z": [
+  596070517.5331789,
+  147016235798.49347
+ ],
+ "model.language_model.layers.3.self_attn.q_proj": [
+  27674390998.657833,
+  1100096076924.6787
+ ],
+ "model.language_model.layers.30.linear_attn.in_proj_qkv": [
+  659664382.2658609,
+  101501596319.1554
+ ],
+ "model.language_model.layers.30.linear_attn.in_proj_z": [
+  704740939.7356422,
+  122051638496.70325
+ ],
+ "model.language_model.layers.31.self_attn.q_proj": [
+  2473405120.252507,
+  199575879685.55807
+ ],
+ "model.language_model.layers.32.linear_attn.in_proj_qkv": [
+  598246460.5814168,
+  104907742633.43643
+ ],
+ "model.language_model.layers.32.linear_attn.in_proj_z": [
+  476020838.44447654,
+  126311048397.4093
+ ],
+ "model.language_model.layers.33.linear_attn.in_proj_qkv": [
+  606237628.4691517,
+  114277752234.77097
+ ],
+ "model.language_model.layers.33.linear_attn.in_proj_z": [
+  429658254.2966714,
+  219050533740.12985
+ ],
+ "model.language_model.layers.34.linear_attn.in_proj_qkv": [
+  437568556.7814865,
+  117362633754.09361
+ ],
+ "model.language_model.layers.34.linear_attn.in_proj_z": [
+  462701409.046795,
+  148581892817.27292
+ ],
+ "model.language_model.layers.35.self_attn.q_proj": [
+  1007867680.0868762,
+  218365892760.67636
+ ],
+ "model.language_model.layers.36.linear_attn.in_proj_qkv": [
+  251778041.48678666,
+  261663869622.8971
+ ],
+ "model.language_model.layers.36.linear_attn.in_proj_z": [
+  371219074.0029589,
+  237996021332.0399
+ ],
+ "model.language_model.layers.37.linear_attn.in_proj_qkv": [
+  263116321.84036812,
+  250730987447.40137
+ ],
+ "model.language_model.layers.37.linear_attn.in_proj_z": [
+  385154271.3293401,
+  286323037226.6953
+ ],
+ "model.language_model.layers.38.linear_attn.in_proj_qkv": [
+  181865909.56646588,
+  156154146939.42896
+ ],
+ "model.language_model.layers.38.linear_attn.in_proj_z": [
+  271168593.5100507,
+  228664267410.8114
+ ],
+ "model.language_model.layers.39.self_attn.q_proj": [
+  663390268.1555992,
+  284403396919.19025
+ ],
+ "model.language_model.layers.4.linear_attn.in_proj_qkv": [
+  2637355560.9952927,
+  14946182103.933779
+ ],
+ "model.language_model.layers.4.linear_attn.in_proj_z": [
+  2218780993.826404,
+  10942379586.905096
+ ],
+ "model.language_model.layers.40.linear_attn.in_proj_qkv": [
+  192434974.73852128,
+  160010054420.4174
+ ],
+ "model.language_model.layers.40.linear_attn.in_proj_z": [
+  266131125.96934962,
+  132439755709.42044
+ ],
+ "model.language_model.layers.41.linear_attn.in_proj_qkv": [
+  159168587.71100658,
+  138925794587.0604
+ ],
+ "model.language_model.layers.41.linear_attn.in_proj_z": [
+  234371203.44425768,
+  153250751610.66922
+ ],
+ "model.language_model.layers.42.linear_attn.in_proj_qkv": [
+  192783725.3622986,
+  116210202654.64603
+ ],
+ "model.language_model.layers.42.linear_attn.in_proj_z": [
+  227544500.14451417,
+  135745277858.84686
+ ],
+ "model.language_model.layers.43.self_attn.q_proj": [
+  878584065.2112153,
+  248676728140.8676
+ ],
+ "model.language_model.layers.44.linear_attn.in_proj_qkv": [
+  253148997.8977787,
+  134037877412.04556
+ ],
+ "model.language_model.layers.44.linear_attn.in_proj_z": [
+  252552659.80444998,
+  133098468090.3272
+ ],
+ "model.language_model.layers.45.linear_attn.in_proj_qkv": [
+  180990028.6462432,
+  115268682755.205
+ ],
+ "model.language_model.layers.45.linear_attn.in_proj_z": [
+  181505863.81143796,
+  172083131881.9444
+ ],
+ "model.language_model.layers.46.linear_attn.in_proj_qkv": [
+  261031342.2515501,
+  127265526411.50728
+ ],
+ "model.language_model.layers.46.linear_attn.in_proj_z": [
+  265690817.86688653,
+  160547555058.69144
+ ],
+ "model.language_model.layers.47.self_attn.q_proj": [
+  562188080.1486086,
+  267749996690.9097
+ ],
+ "model.language_model.layers.48.linear_attn.in_proj_qkv": [
+  274168481.199361,
+  152682898283.9157
+ ],
+ "model.language_model.layers.48.linear_attn.in_proj_z": [
+  220417307.41816556,
+  170617057418.3269
+ ],
+ "model.language_model.layers.49.linear_attn.in_proj_qkv": [
+  367321168.6953697,
+  176291577840.17957
+ ],
+ "model.language_model.layers.49.linear_attn.in_proj_z": [
+  282804989.26360226,
+  272253717286.78555
+ ],
+ "model.language_model.layers.5.linear_attn.in_proj_qkv": [
+  4190657780.7980986,
+  21852700557.552845
+ ],
+ "model.language_model.layers.5.linear_attn.in_proj_z": [
+  5028857540.306036,
+  27015649210.132973
+ ],
+ "model.language_model.layers.50.linear_attn.in_proj_qkv": [
+  280616929.7152898,
+  189599428804.22305
+ ],
+ "model.language_model.layers.50.linear_attn.in_proj_z": [
+  327654071.89728284,
+  237073530453.7409
+ ],
+ "model.language_model.layers.51.self_attn.q_proj": [
+  487966198.82422215,
+  342711679874.5415
+ ],
+ "model.language_model.layers.52.linear_attn.in_proj_qkv": [
+  242390837.38690495,
+  459089508695.42224
+ ],
+ "model.language_model.layers.52.linear_attn.in_proj_z": [
+  341733114.0529854,
+  375164178926.6661
+ ],
+ "model.language_model.layers.53.linear_attn.in_proj_qkv": [
+  237668823.61146063,
+  437132337841.0928
+ ],
+ "model.language_model.layers.53.linear_attn.in_proj_z": [
+  363034873.9820472,
+  363428118435.3663
+ ],
+ "model.language_model.layers.54.linear_attn.in_proj_qkv": [
+  191338318.86089507,
+  343425088530.4045
+ ],
+ "model.language_model.layers.54.linear_attn.in_proj_z": [
+  343270531.8657808,
+  421600301329.568
+ ],
+ "model.language_model.layers.55.self_attn.q_proj": [
+  454104922.96573126,
+  460535379643.8849
+ ],
+ "model.language_model.layers.56.linear_attn.in_proj_qkv": [
+  239626864.86153165,
+  516738852535.3002
+ ],
+ "model.language_model.layers.56.linear_attn.in_proj_z": [
+  394880714.63676274,
+  385445955717.4091
+ ],
+ "model.language_model.layers.57.linear_attn.in_proj_qkv": [
+  338265468.715409,
+  623627016810.5724
+ ],
+ "model.language_model.layers.57.linear_attn.in_proj_z": [
+  407341105.799855,
+  430211555903.9618
+ ],
+ "model.language_model.layers.58.linear_attn.in_proj_qkv": [
+  195203608.64468268,
+  472396320117.4282
+ ],
+ "model.language_model.layers.58.linear_attn.in_proj_z": [
+  414708865.28459334,
+  472902817312.67896
+ ],
+ "model.language_model.layers.59.self_attn.q_proj": [
+  517050426.0443761,
+  534958172933.5397
+ ],
+ "model.language_model.layers.6.linear_attn.in_proj_qkv": [
+  3516422738.177068,
+  27411555222.54601
+ ],
+ "model.language_model.layers.6.linear_attn.in_proj_z": [
+  4017778166.9333262,
+  48997948343.87103
+ ],
+ "model.language_model.layers.60.linear_attn.in_proj_qkv": [
+  578659773.614016,
+  843951847076.1367
+ ],
+ "model.language_model.layers.60.linear_attn.in_proj_z": [
+  468167569.05658495,
+  608939012459.2512
+ ],
+ "model.language_model.layers.61.linear_attn.in_proj_qkv": [
+  153880838.80484486,
+  471063759747.3013
+ ],
+ "model.language_model.layers.61.linear_attn.in_proj_z": [
+  330474914.61164325,
+  511637631160.99384
+ ],
+ "model.language_model.layers.62.linear_attn.in_proj_qkv": [
+  717144066.9445324,
+  675685405211.21
+ ],
+ "model.language_model.layers.62.linear_attn.in_proj_z": [
+  628498510.0557292,
+  541338381943.0761
+ ],
+ "model.language_model.layers.63.self_attn.q_proj": [
+  1220854340.549554,
+  720769328922.9744
+ ],
+ "model.language_model.layers.7.self_attn.q_proj": [
+  18800989901.38795,
+  831751234190.7197
+ ],
+ "model.language_model.layers.8.linear_attn.in_proj_qkv": [
+  3212913146.2397413,
+  33647447963.49004
+ ],
+ "model.language_model.layers.8.linear_attn.in_proj_z": [
+  3118205556.305029,
+  29670843804.98303
+ ],
+ "model.language_model.layers.9.linear_attn.in_proj_qkv": [
+  3106036067.180341,
+  32919992179.45537
+ ],
+ "model.language_model.layers.9.linear_attn.in_proj_z": [
+  2455968285.201919,
+  46019407959.2755
+ ]
+}

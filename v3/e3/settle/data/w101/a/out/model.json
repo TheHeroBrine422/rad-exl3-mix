@@ -1,0 +1,22 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "nat": 0.774573054368974,
+  "g16": 0.5098820699956079,
+  "ratio": 0.6582749904862061
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "nat": 0.6582948352173232,
+  "g16": 0.6103516083111231,
+  "ratio": 0.9271705862763262
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "nat": 0.7595828745992793,
+  "g16": 0.6092712649041495,
+  "ratio": 0.8021129560425816
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "nat": 0.8350411029217809,
+  "g16": 0.7682717209200968,
+  "ratio": 0.9200406042671908
+ }
+}

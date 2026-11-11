@@ -1,0 +1,22 @@
+{
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "nat": 0.8372397014586647,
+  "g16": 0.8159113498961068,
+  "ratio": 0.9745253939518169
+ },
+ "model.language_model.layers.3.self_attn.v_proj": {
+  "nat": 0.731530070485263,
+  "g16": 0.657543906711144,
+  "ratio": 0.8988610765856283
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "nat": 0.9844014193420714,
+  "g16": 0.9574897773499664,
+  "ratio": 0.9726619228057478
+ },
+ "model.language_model.layers.63.self_attn.v_proj": {
+  "nat": 0.5521872229660348,
+  "g16": 0.3656542369269115,
+  "ratio": 0.662192498701483
+ }
+}

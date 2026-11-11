@@ -1,0 +1,13 @@
+04:00:25 preps
+04:00:44 jobs
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+Terminated                 nice -n 19 python3 sec101.py "$@" >> $OUT/logs/$2-$3.log 2>&1
+04:03:59 preps
+04:04:02 jobs
+09:23:53 Q101DONE 152 rows files

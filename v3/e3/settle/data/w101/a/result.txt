@@ -1,0 +1,20 @@
+03:56:43 prep: mkperm101: ok
+03:58:08 N-K2.5-s0: card 0 held after 85 s
+03:59:34 N-K2.5-s0: rc 0, 171 s wall (incl. lock wait)
+04:01:14 P-K2.5-s0: card 0 held after 100 s
+04:02:04 P-K2.5-s0: rc 0, 150 s wall (incl. lock wait)
+04:03:23 N-K4-s0: card 0 held after 79 s
+04:04:08 N-K4-s0: rc 0, 124 s wall (incl. lock wait)
+04:30:01 P-K4-s0: card 0 held after 1553 s
+04:30:45 P-K4-s0: rc 0, 1597 s wall (incl. lock wait)
+04:58:00 N-K2.5-s1: card 0 held after 1635 s
+04:58:50 N-K2.5-s1: rc 0, 1685 s wall (incl. lock wait)
+05:06:36 P-K2.5-s1: card 0 held after 466 s
+05:07:28 P-K2.5-s1: rc 0, 518 s wall (incl. lock wait)
+05:09:26 N-K4-s1: card 0 held after 118 s
+05:10:12 N-K4-s1: rc 0, 164 s wall (incl. lock wait)
+05:11:41 P-K4-s1: card 0 held after 89 s
+05:12:25 P-K4-s1: rc 0, 133 s wall (incl. lock wait)
+05:14:23 f2: done
+05:14:23 report: /data/w101/report130a.txt
+05:14:23 il101 done: prep N:2.5:0 P:2.5:0 N:4:0 P:4:0 N:2.5:1 P:2.5:1 N:4:1 P:4:1 f2 report

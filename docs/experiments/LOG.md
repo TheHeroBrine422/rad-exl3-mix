@@ -4,6 +4,54 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 11:15 AM CST · #140 · C9 at low K (0.8B KL): no arm passes the rule, but the data show C9 hurts at K0.5 and helps from K1 (lead read; w106 driver)
+- **Status:** done, rule verdict **no arm passes → C9 stays as today**; post-hoc reading below (proposal, needs a confirm)
+  · **Machine:** gpubox card 0 (driver ran headless after the agent was stopped 14:43 UTC; one fix: PYTHONPATH for
+  swiglufit's `common` import, 15:40 UTC) · **Data:** `v3/e3/settle/data/w106/report.md` (+ result.txt), gpubox `/data/w106/`
+- KL ratio vs C9 as today (g08-search1, per-doc bootstrap), seeds 0 / 1:
+
+  | K | C9 off | α(K) taper (ak) | e clip 0.3 (e3) |
+  |---|---|---|---|
+  | 0.5 | **0.966 / 0.925** | = off | 0.982 / 0.944 |
+  | 1 | 1.028 / 1.041 | = off | **0.995 / 0.996** |
+  | 1.5 | 1.075 / 1.077 | 1.022 / 1.028 | 0.999 / 0.999 |
+  | 2 | 1.035 / 1.038 | = cur | 1.000 / 1.000 |
+
+- Rule (≤ 0.99 at K0.5 **and** K1 on both seeds, K2 ≤ 1.003): every arm fails — off / ak win big at K0.5 but lose
+  3–4% at K1; e3 wins everywhere below K2 but only 0.5% at K1. The proposed α(K) = α·clip(K−1, 0, 1) is **wrong**:
+  it turns C9 off at K1 (−3…4%) and halves it at K1.5 (+2.2…2.8% worse).
+- **Post-hoc reading (not a decision):** C9 should be OFF at K0.5 (−3.4 / −7.5%), ON from K1, and e clip 0.3 is a
+  small free gain at K1–1.5 (−0.5% / −0.1%). Crossover between K0.5 and K1 unmeasured. Proposal: confirm on a fresh
+  0.8B slice (g08-search2) with the arm "off at K < K*, e3 at K ≥ 1" at K0.25 / 0.5 / 0.75 / 0.875 / 1 / 1.5, rule
+  written first. Affects only sub-1 / 1.x levels (built last).
+- **Runtime:** none (C9 folds into svh).
+
+### 2026-11-11 11:01 AM CST · #130-03 · P16 tile interleave, 27B dense-splice pair: geo 0.9933, both parts < 1 → PASS (−0.7%, z −0.95); v_proj f2 0.87 (report) (w101)
+- **Status:** #130 (a) / (b) / (c) all PASS; adoption is the user's call after a timing (kernel note) · **Machine:** gpubox
+  card 0, 11-11 14:03–16:52 UTC (waited ~35 min on card0.lock behind another job; 4 quant units 11–12 min each, packs
+  ~10 s with `--reuse` + radmix ≤ 7 min, 8 scores 57–84 s) · **Code:** `v3/e3/settle/w101/il101c.sh` (+ `mksplice101.py`,
+  `bytes101.py`, `verdict130c.py`) · **Rule:** `v3/e3/settle/w101.md` amendment 1 (0446e9b, before data) · **Data:**
+  `v3/e3/settle/data/w101/c/` (verdict, docstat, per-doc sums, f2, census, gates)
+- **Arms:** all 112 ssm_qkv / ssm_z / attn_qg at K2.5 i8, stamp 87a7e4ab (refit "hout", H_out blocks, #117 order, tile
+  CD), natural vs P16 rows (P Wq un-permuted), dense bf16 into mix-base (seed 0) / mix-s1 (seed 1). Gates: rxq.pairs
+  PAIR OK (787 weights, 675 identical, the 112 arm weights differ in the codes plane), BYTES101 PASS 112 / 112, stamp.
+- **Result (golden-search27c, 91 docs, 145,597 positions):** N → P16 pooled **0.9930** [0.982, 1.005] / **0.9937**
+  [0.983, 1.003], **geo 0.9933**; xcorp 0.9931 / 0.9941, calib **0.9904 / 0.9856**; combined SE 0.0070 (doc 0.0035 +
+  #116 seed floor), z −0.95. Rule: geo ≤ 0.995 and both parts < 1 → **PASS**. Not significant alone: the rule's bar
+  is a screen. Per document: 62–69% of docs better, per-doc geo 0.979 / 0.979; leave-one-out ≤ 0.996; without the two
+  xcorp docs > 20% of their part 0.989 / 0.998. No confounder flag (size as predicted, same sign on every part and seed).
+- **Realized f2 on all 112 tensors (report):** qkv 0.806, z 0.936, q_proj 0.881 vs model 0.787 / 0.922 / 0.857.
+- **v_proj (amendment 2, report, (a)'s code):** f2 P16 / N L3 0.906, L11 0.976, L39 0.971, L63 0.657 (geo 0.87),
+  = model per tensor. The first launch failed in every unit (my copy of il101.sh pointed at a fork without 0008; rxq
+  refused, nothing written); fixed and rerun.
+- **Slice:** golden-search27c, its last use (retire, R55).
+- **Lead / user decide:** (1) whether to time the store-side remap (`w101/kernel-note130.md`: closed-form column map in
+  exl3i_8a8 / nt / rate kernels + a per-tensor format bit; plan for prefill microbench + e2e prefill + decode), and
+  whether to extend P16 to v_proj (and k_proj, model 0.95) in the same format bit; (2) a second-slice check before
+  adoption (the four spliced mixes are kept on gpubox `/data/w101/c/mix/`, 4 × 17 GB; delete when not needed).
+  B16 (h-fitted tiles) would cut the qkv model cost ~8% more than P16 (0.72 vs 0.78) but needs a per-tensor table, so P16 first.
+- **Runtime:** prefill + decode if adopted (store remap, ~0 expected, untimed); none for the experiment.
+
 ### 2026-11-11 10:25 AM CST · #143 · local ladder runner: persistent workers +58%, N = 3 +11% more; outputs identical; ladder ≈ 3.2–3.7 card-days
 - **Status:** done (measurement); runner built and tested, **not started** (freeze first) · **Machine:** gpubox card 0
   (5 bench arms + one driver run, ~23 min of card time in the gaps of w103 / w101 / w106), colo CPU (stand-in checks)

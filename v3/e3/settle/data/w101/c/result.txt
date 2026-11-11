@@ -1,0 +1,41 @@
+14:03:26 il101c start: prep 0 1 f2 verdict; settings 87a7e4ab32f9d5b9
+14:03:36 prep: mkperm101: ok
+14:23:39 N0: card 0 held after 1203 s
+14:35:59 N0: rc 0, 112 wq, 1943 s wall (incl. lock wait)
+14:49:46 P0: card 0 held after 827 s
+15:01:14 P0: rc 0, 112 wq, 1515 s wall (incl. lock wait)
+15:05:06 splice N0: MKSPLICE101 DONE
+15:11:03 splice P0: MKSPLICE101 DONE
+15:11:18 pack N0 rc=0 11s
+15:18:18 mix N0 ready (17G)
+15:21:24 pack P0 rc=0 8s
+15:21:47 mix P0 ready (17G)
+15:22:35 G-c1 P0 vs N0: PAIR OK {"a": "/data/w101/c/mix/mix-P0.rad", "b": "/data/w101/c/mix/mix-N0.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problem
+15:22:35 G-c1 N0 vs control: PAIR OK {"a": "/data/w101/c/mix/mix-N0.rad", "b": "/data/swap27/mix-base.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["(plane count)", "co
+15:22:35 G-c2 0: BYTES101 PASS (112 weights)
+15:32:19 score N0-x rc=0 84s
+15:48:02 score P0-x rc=0 83s
+15:51:37 score N0-c rc=0 58s
+15:52:59 score P0-c rc=0 58s
+15:52:59 seed 0 scored
+15:53:23 N1: card 0 held after 24 s
+16:04:51 N1: rc 0, 112 wq, 712 s wall (incl. lock wait)
+16:05:13 P1: card 0 held after 22 s
+16:16:43 P1: rc 0, 112 wq, 712 s wall (incl. lock wait)
+16:18:31 splice N1: MKSPLICE101 DONE
+16:19:53 splice P1: MKSPLICE101 DONE
+16:20:13 pack N1 rc=0 10s
+16:20:56 mix N1 ready (17G)
+16:21:26 pack P1 rc=0 8s
+16:22:56 mix P1 ready (17G)
+16:23:46 G-c1 P1 vs N1: PAIR OK {"a": "/data/w101/c/mix/mix-P1.rad", "b": "/data/w101/c/mix/mix-N1.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problem
+16:23:46 G-c1 N1 vs control: PAIR OK {"a": "/data/w101/c/mix/mix-N1.rad", "b": "/data/swap27/mix-s1.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["(plane count)", "code
+16:23:46 G-c2 1: BYTES101 PASS (112 weights)
+16:25:10 score N1-x rc=0 84s
+16:26:55 score P1-x rc=0 83s
+16:28:13 score N1-c rc=0 57s
+16:29:30 score P1-c rc=0 57s
+16:29:30 seed 1 scored
+16:52:18 f2: done
+16:52:18 W101 #130-03 VERDICT PASS: N -> P16 pooled r = 0.9930, 0.9937, geo 0.9933 (xcorp 0.9936, calib 0.9880), SE comb 0.0070 (doc 0.0035), z -0.95
+16:52:18 IL101C DONE: prep 0 1 f2 verdict

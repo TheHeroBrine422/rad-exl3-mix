@@ -1,0 +1,18 @@
+{
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2": 0.000682799590377504,
+  "f1": 0.0011211998688116862
+ },
+ "model.language_model.layers.3.self_attn.v_proj": {
+  "f2": 0.0006307470768759363,
+  "f1": 0.0016079874615502199
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2": 0.0017646431872733773,
+  "f1": 0.0019626777155324023
+ },
+ "model.language_model.layers.63.self_attn.v_proj": {
+  "f2": 0.0003971522056510232,
+  "f1": 0.0004686373485329084
+ }
+}

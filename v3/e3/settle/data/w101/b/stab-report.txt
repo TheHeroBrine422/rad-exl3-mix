@@ -1,0 +1,12 @@
+112 tensors; gate G-b max rel 6.13e-08 (PASS)
+
+family  arm    n  in-sample  held-out    G_in  G_out   kept     full full damped (perm2)   rho_head (mean, min)
+qkv     P16   48     0.7789    0.7840   0.221  0.216  0.977   0.7801              0.7874   0.971, 0.770
+qkv     B16   48     0.7187    0.7240   0.281  0.276  0.981   0.7200              0.7293   0.971, 0.770
+z       P16   48     0.9183    0.9216   0.082  0.078  0.959   0.9188              0.9217   0.951, 0.777
+z       B16   48     0.8931    0.8973   0.107  0.103  0.961   0.8938              0.8976   0.951, 0.777
+q_proj  P16   16     0.8511    0.8570   0.149  0.143  0.960   0.8525              0.8568   0.966, 0.858
+q_proj  B16   16     0.8041    0.8122   0.196  0.188  0.959   0.8059              0.8118   0.966, 0.858
+
+VERDICT (b): kept(qkv, P16) = 0.977 vs >= 0.75 -> PASS; z ok, q_proj ok (may join (c) with (a)'s scope rule)
+largest in -> out loss (P16, E->O): [('L16.linear_attn.in_proj_qkv', [0.6182, 0.6663]), ('L18.linear_attn.in_proj_qkv', [0.7481, 0.7875]), ('L19.self_attn.q_proj', [0.8048, 0.8451]), ('L23.self_attn.q_proj', [0.8182, 0.8565]), ('L0.linear_attn.in_proj_qkv', [0.4368, 0.456])]
