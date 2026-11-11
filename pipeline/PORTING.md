@@ -71,17 +71,18 @@ settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-dia
 - **knap5 must sit in a v3/nf directory** (it reads data relative to its own file and to the cwd): rxq.knap stages a
   symlink tree; abspath keeps the link's directory.
 - **The scale refit and the host CPU (GitHub issue 2).** The single-tensor path un-rotated the Hessian for the scale
-  refit on the CPU (`unrotate_H(H)`, H on the host): the job's only CPU BLAS use (`tests/check_hostmath.py`: 2 call
-  sites, the two `@` of blockwise_preapply_had_l_ / _r_). Today's code, torch 2.14.0+rocm10.1.0 with hipBLASLt off and
-  no OpenBLAS setting, 0.8B layers 0-3 (25 tensors): box A (Ryzen 9 9950X, 2 cards) vs box B (EPYC 7443, 4 cards) 20 of
-  29 files equal at K2.5 (5 suh + 6 svh values differ), 15 of 29 at K0.5 (9 suh + 11 svh), each one f16 step, trellis
-  equal (C9 `c` follows the scales); the pinned stack gave 29 of 29 on both. exl3-patches 0010 un-rotates on the device
-  (as original_H() and the batched path do): both stacks, both levels, box A = box B 29 of 29, check 0 call sites;
-  against today's code (pinned stack) trellis equal, 5 suh + 6 svh (K2.5) and 6 suh + 2 svh (K0.5) values one f16 step.
+  refit on the CPU (`unrotate_H(H)`, H on the host): the job's only CPU BLAS use (the two `@` of
+  blockwise_preapply_had_l_ / _r_). The tree before 0010, torch 2.14.0+rocm10.1.0 with hipBLASLt off and no OpenBLAS
+  setting, 0.8B layers 0-3 (25 tensors), on two hosts with the same card (a Ryzen 9 9950X with 2 R9700 and an EPYC 7443
+  with 4): host to host 20 of 29 files equal at K2.5 (5 suh + 6 svh values differ), 15 of 29 at K0.5 (9 suh + 11 svh),
+  each one f16 step, trellis equal (C9 `c` follows the scales); the pinned stack gave 29 of 29 on both. exl3-patches
+  0010 un-rotates on the device (as original_H() and the batched path do): both stacks, both levels, the two hosts 29
+  of 29. `tests/check_hostmath.py` (pinned stack, K2.5): 2 call sites before 0010, 0 with it. Against the tree before
+  0010 (pinned stack) trellis equal, 5 suh + 6 svh (K2.5) and 6 suh + 2 svh (K0.5) values one f16 step.
   Three paths: card / card (un-rotation and refit fit: no host math); card / CPU refit (the refit runs out of card
   memory and `RXQ_REFIT_CPU_FALLBACK=1` refits on the CPU: host dependent, see "CPU refit fallback and thread count");
   CPU / CPU (even the un-rotation does not fit: 0010's out-of-memory branch, the old result). At the 27B ffn_down size
-  (17,408² Hessian, random data, R9700) capped to the declared ffn_down job memory (9 GiB): today's tree un-rotates on
+  (17,408² Hessian, random data, R9700) capped to the declared ffn_down job memory (9 GiB): 0001–0009 un-rotates on
   the CPU and refits on the card, with 0010 both run on the card; neither run fell back to the CPU refit; peak 5.84 GiB
   in both. 0010 changes the code stamp (`rxq_code`), and assembly refuses a level whose tensors disagree on it
   (DESIGN.md, "Stamps"): a level made before 0010 is kept whole or redone whole.
