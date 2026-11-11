@@ -8,7 +8,8 @@ sha256 (the datapack manifest), resource requirements per job from the measured 
                                                            [-o JOBS.jsonl]
                                                            rqah jobs (admin.py enqueue-jobs reads them); MANIFEST = the
                                                            datapack's manifest.json (sha256 of every input)
-  python -m rxq.ladder estimate [--ldlq dense|blocks]       R9700 card-hours per pass (+ swj level passes, CPU packs)
+  python -m rxq.ladder estimate [--ldlq dense|blocks] [--swj-batch N]
+                                                           R9700 card-hours per pass (+ swj level passes, CPU packs)
   python -m rxq.ladder req                                  the per-tensor requirement table at a few K
   python -m rxq.ladder post [--pass P] [--levels a,b] [--export D --model M --meta G --scratch S --out O] [--swj-batch N]
                                                            per level, the steps after its jobs: export + assemble, swj
@@ -241,18 +242,21 @@ def level_jobs(cfg, lv, model, rev, man=None, split=None, seed_offset=0, n_layer
 
 
 # ------------------------------------------------------------------------------------------------- estimates
-def estimate(cfg, n_layers=64):
+def estimate(cfg, n_layers=64, swj_batch=1):
     """per pass: levels, R9700 card-hours of the quant jobs (sum of est_s), the swj level passes (~0.75 card-h a level
-    on a 32 GB card, ~1.5 card-h for two levels in one pass, PROFILE / DESIGN S4) and the CPU packs (~1,600 s a level)"""
-    rows = {}
-    for lv in levels(cfg):
+    on a 32 GB card, ~1.5 card-h for two levels in one pass, PROFILE / DESIGN S4) and the CPU packs (~1,600 s a level).
+    swj_passes: the rxq.swjfit calls of the pass at swj_batch levels a call (swj_batches, as post_scripts writes them);
+    swj_h stays 0.75 a level (the share of a batched pass is not measured at 27B)"""
+    rows = {}; lvs = levels(cfg)
+    for lv in lvs:
         r = rows.setdefault(lv["pass"], {"levels": 0, "quant_h": 0.0, "jobs": 0, "vram": {}})
         r["levels"] += 1
         for jb in level_jobs(cfg, lv, "m", "r", None, n_layers=n_layers):
             q = jb["params"]["req"]; r["quant_h"] += q["est_s"] / 3600; r["jobs"] += 1
             r["vram"][q["vram_gb"]] = r["vram"].get(q["vram_gb"], 0) + 1
-    for r in rows.values():
+    for p, r in rows.items():
         r["swj_h"] = 0.75 * r["levels"] if cfg["post"]["swj"]["enable"] else 0.0
+        r["swj_passes"] = sum(s for s, _ in swj_batches(cfg, [v for v in lvs if v["pass"] == p], swj_batch))
         r["pack_cpu_h"] = 1600 / 3600 * r["levels"]
         r["quant_h"] = round(r["quant_h"], 1)
     return rows
@@ -332,6 +336,7 @@ def main(argv=None):
     a2.add_argument("-o")
     a3 = sub.add_parser("estimate"); a3.add_argument("--ldlq", choices=("dense", "blocks"))
     a3.add_argument("--job-overhead", type=float, default=JOB_S, help="seconds per job beyond the tensors (default %(default)s)")
+    a3.add_argument("--swj-batch", type=_swj_batch, default=1, help="levels of one pass that share one swj pass (default %(default)s)")
     a4 = sub.add_parser("req"); a4.add_argument("--ldlq", choices=("dense", "blocks"))
     a5 = sub.add_parser("post"); a5.add_argument("--pass", dest="which"); a5.add_argument("--levels")
     a5.add_argument("--export", default="EXPORT"); a5.add_argument("--model", default="MODEL"); a5.add_argument("--meta", default="SWJMETA")
@@ -363,14 +368,16 @@ def main(argv=None):
         sys.stdout.write(post_scripts(cfg, lvs, a.export, a.model, a.meta, a.scratch, a.out, swj_batch=a.swj_batch))
     elif a.cmd == "estimate":
         JOB_S = a.job_overhead
-        tot = {"levels": 0, "quant_h": 0.0, "swj_h": 0.0, "pack_cpu_h": 0.0, "jobs": 0}
+        tot = {"levels": 0, "quant_h": 0.0, "swj_h": 0.0, "pack_cpu_h": 0.0, "jobs": 0, "swj_passes": 0}; nb = a.swj_batch
         print(f"settings {C.settings_stamp(cfg)}, H_out ldlq {cfg['inputs']['hout'].get('ldlq', 'dense')}, {JOB_S:g} s a job overhead; "
               f"R9700-equivalent hours")
-        for p, r in sorted(estimate(cfg).items()):
+        for p, r in sorted(estimate(cfg, swj_batch=nb).items()):
+            sw = f" in {r['swj_passes']} passes (32 GB, ours; flat 0.75 a level)" if nb > 1 else " (32 GB, ours)"
             print(f"pass {p:2s}: {r['levels']:2d} levels, {r['jobs']:6d} jobs, quant {r['quant_h']:7.1f} card-h, swj {r['swj_h']:5.1f} "
-                  f"card-h (32 GB, ours), pack {r['pack_cpu_h']:5.1f} CPU-h; jobs by declared VRAM GB {dict(sorted(r['vram'].items()))}")
+                  f"card-h{sw}, pack {r['pack_cpu_h']:5.1f} CPU-h; jobs by declared VRAM GB {dict(sorted(r['vram'].items()))}")
             for k in tot: tot[k] += r[k]
-        print(f"total  : {tot['levels']} levels, {tot['jobs']} jobs, quant {tot['quant_h']:.1f} card-h, swj {tot['swj_h']:.1f}, "
+        sw = f" in {tot['swj_passes']} passes" if nb > 1 else ""
+        print(f"total  : {tot['levels']} levels, {tot['jobs']} jobs, quant {tot['quant_h']:.1f} card-h, swj {tot['swj_h']:.1f}{sw}, "
               f"pack {tot['pack_cpu_h']:.1f} CPU-h")
     else:
         keys = [k for _, ks in qwen35.layer_plan(3) for k in ks] + [k for _, ks in qwen35.layer_plan(2) for k in ks

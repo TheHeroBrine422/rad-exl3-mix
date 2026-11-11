@@ -9,6 +9,7 @@
            H_out inputs at every level (apply_k_min 0); C9 on out_proj / o_proj only (alpha down 0)
   manifest pins carry the manifest's sha256; a missing input is refused
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
+  estimate-swj  swj_passes per pass: one a level at batch 1, ceil(levels / 4) at batch 4 = post_scripts' swjfit calls
   post     post_scripts at batch 1 = post_script per level, one --src a swjfit call; post-batch at batch 4 (default,
            asym on, swj k_max 4): one swjfit call per <= 4 consecutive swj levels of one pass, every --src once in
            level order, export before and apply after it, scratches distinct, every other line unchanged
@@ -129,5 +130,11 @@ sab, sad = (scr([x for x in LD.post_scripts(cfg, b, *args, swj_batch=2).splitlin
 report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
        f"default: {wb[0]} (per-pass ceil {n4}); asym on: {wa[0]}, asym line kept {asym_kept}; swj k_max 4: {wk[0]}; "
        f"scratch [A,B] != [A,C] {sab != sad}")
+
+e1, e4 = LD.estimate(cfg), LD.estimate(cfg, swj_batch=4)
+n4p = {p: sum(x.startswith(SW) for x in LD.post_scripts(cfg, [v for v in lva if v["pass"] == p], *args, swj_batch=4).splitlines()) for p in e4}
+report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4),
+       f"swj passes per pass at batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at batch 4 {[e4[p]['swj_passes'] for p in sorted(e4)]} "
+       f"(post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)
