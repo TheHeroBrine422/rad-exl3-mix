@@ -1,0 +1,328 @@
+--- a/v3/e3/exl3frac2/qtf2.cuh
++++ b/v3/e3/exl3frac2/qtf2.cuh
+@@ -25,6 +25,9 @@
+ //     (qtf2race.py). Every barrier is __syncthreads() again. Test build QTF2_BYTEHIST forces the byte history.
+ //   - v6: the uncached path (KA >= 5) takes the cached path's packed minimum instead of the strict-less scan with
+ //     per-candidate branches (same pick, ties to the lowest k). QTF2_SCANMIN restores the scan.
++//   - v10 (#142): KA = 0 forward pass with the 0-bit steps fused (qtf2_forward0): each thread keeps its own states'
++//     costs in registers between branching positions, global memory and barriers only where costs cross threads.
++//     Same operations in the same order per state, so the same output. QTF2_NOFUSE restores the per-step path.
+ 
+ #include <cuda_fp16.h>
+ #include <cstdint>
+@@ -322,6 +325,291 @@
+     }
+ }
+ 
++// a wave-uniform value made opaque in a scalar register (HIP: else the compiler folds its multiply into a 64-bit VALU
++// multiply-add per use, a quarter-rate instruction, instead of one scalar multiply)
++__device__ __forceinline__ uint32_t qtf2_uniform(uint32_t x)
++{
++#if defined(__HIPCC__) || defined(__HIP_PLATFORM_AMD__)
++    asm volatile("" : "+s"(x));
++#endif
++    return x;
++}
++
++// v10 (#142): where qtf2_forward0 stores the 15-bit node n (costs and history bytes): bits 0-1 stay, bits 9-14 -> 2-7,
++// bits 2-8 -> 8-14
++__device__ __forceinline__ uint32_t qtf2_adr0(uint32_t n)
++{
++    return (n & 3u) | (((n >> 9) & 63u) << 2) | (((n >> 2) & 127u) << 8);
++}
++
++// v10 (#142): one forward pass at KA = 0. A sub-1 state only moves at a branching position, so each thread keeps the
++// costs of the states it owns in registers between them: s = tb + mo(m) + r, tb = 8 wave + 1024 lane (thread = 32 wave +
++// lane), mo(m) = 128 (m & 7) + 32768 (m >> 3), m < 16, r < 8; pairs (r, r + 1) in acc[4 m + r / 2]. Bit 15 is in m, so
++// the two candidates (k = 0 / 1) of the out-edge o = s & 0x7fff of a (0, 1) min step are the thread's own (m, m + 8).
++// The lanes of a wave sit on state bits 10-14: the codebook table reads of one instruction then hit distinct LDS banks
++// (lanes 8 states apart conflicted ~2x more, a measured 2x slowdown). The 15-bit costs and the history rows are stored
++// at qtf2_adr0(node), a bit permutation that makes both the writer's and the reader's accesses 16 / 8-byte vectors with
++// the lanes contiguous (the traceback reads the history through it). Per step (D(i), D(i + 1)):
++//   (0, 0): acc = fma(d, d, acc) (registers only)
++//   (1, 0) fan-out: acc = fma(d, d, costs[s >> 1]) (global read, 8 bytes a thread per m)
++//   (0, 1) min: candidates fma(d, d, acc), strict-less pick (qtf2_step's KIN = 0 scan), 15-bit costs (16 bytes a thread
++//          per m pair) and history bytes (8) out
++//   (1, 1): qtf2_step's KIN = KOUT = 1 step (packed minimum), global in and out (same vector widths)
++// qtf2_step's arithmetic per state (half FMA chain in position order, salted / plain reads, first-step masks, the picks)
++// is kept, so the output is identical. Barriers only after a global write (ping-pong buffers: a buffer is rewritten two
++// writes later, after a barrier that follows every read of it). On return *pa holds the last position's 65536 costs
++// (argmin_cost reads them).
++// Codebook reads: decode_mul1_product_2's value depends only on the byte sum of the product (0..1020), so they read
++// tab[sum] (1024 halves in LDS, filled by the kernel with decode_mul1_product_2 itself: every codebook variant, the same
++// values; the 65536 table and the procedural reads were slower here). Products are formed by additions only (no
++// 32-bit multiply per value).
++template <int NT, uint32_t MASK, int L>
++__device__ __forceinline__ void qtf2_forward0
++(
++    const float* __restrict__ input_tile,
++    half** pa,                        // in / out: the last written cost buffer
++    half** pb,                        // the other one
++    uint8_t* __restrict__ hist,
++    const int roll,
++    const int pre_state,
++    const int thread
++)
++{
++    constexpr int NM = 16;                                    // state groups of 8 a thread
++    // step kinds this MASK has (D(i), D(i + 1)) = (0, 0) / (1, 1): the other kernels do not compile them (registers)
++    constexpr uint32_t ROT = ((MASK >> 1) | (MASK << 15)) & 0xffffu;  // bit i = D(i + 1)
++    constexpr bool HAS00 = (~MASK & ~ROT & 0xffffu) != 0, HAS11 = (MASK & ROT) != 0;
++    constexpr uint32_t C = 0x83DCD12Du;
++    static_assert(NT == 512 && (MASK & 1u) == 0 && (MASK >> 15) == 1, "KA = 0: 512 threads, position 0 plain, 15 branching");
++    half* a = *pa;
++    half* b = *pb;
++    half2 acc[4 * NM];
++    // the byte-sum table: tab[b] = the value of a product with byte sum b (static LDS: its address folds into the
++    // loads' offsets). Filled at every pass (2 values a thread)
++    __shared__ half tab[1024];
++    for (int x = thread; x < 1024; x += NT)
++    {
++        const uint32_t s = x > 1020 ? 1020 : x;
++        const uint32_t p = (s > 255 ? 255 : s) | ((s > 510 ? 255 : s > 255 ? s - 255 : 0) << 8)
++                         | ((s > 765 ? 255 : s > 510 ? s - 510 : 0) << 16) | ((s > 765 ? s - 765 : 0) << 24);
++        tab[x] = __low2half(decode_mul1_product_2(p, p));
++    }
++    // the tile's weights as halves, read once (a global load at every step was exposed latency: the waves of a block
++    // reach each step together)
++    __shared__ half wsh[L];
++    for (int x = thread; x < L; x += NT) wsh[x] = __float2half_rn(__ldg(input_tile + x));
++    __syncthreads();
++    // s0 = tb + mo(m) + 2 j (j < 4). tb is made opaque at every step: else the compiler hoists the per-state addresses
++    // and products out of the position loop (64-128 VGPRs) and spills
++    uint32_t tb = 8 * (thread >> 5) + 1024 * (thread & 31);
++    auto mo = [](int m) { return 128 * (m & 7) + 32768 * (m >> 3); };
++
++    // codebook pair of products (p0, p1): the byte sum x 2 is the table's byte offset
++    auto decp = [&](uint32_t p0, uint32_t p1) -> half2
++    {
++        const uint8_t* t8 = reinterpret_cast<const uint8_t*>(tab);
++#ifdef QTF2_F0NOTAB                           // timing-only build (output invalid): no table read
++        return __halves2half2(__ushort_as_half((uint16_t) __dp4a(p0, 0x02020202u, 0u)), __ushort_as_half((uint16_t) __dp4a(p1, 0x02020202u, 0u)));
++#endif
++        return __halves2half2(*reinterpret_cast<const half*>(t8 + __dp4a(p0, 0x02020202u, 0u)),
++                              *reinterpret_cast<const half*>(t8 + __dp4a(p1, 0x02020202u, 0u)));
++    };
++    // pair (s0, s0 + 1), s0 = tb + mo(m) + 2 j, at a 0-bit position (qtf2_step's KIN = 0 read, at s ^ salt): the bit
++    // fields are disjoint, so s0 ^ salt = (tb ^ (salt & 0x7c78)) + (2 j ^ (salt & 7)) + (mo(m) ^ (salt & 0x8380)) and
++    // p0 = xj[j] + um(m) (xj: 4 per step a thread, um: uniform, 16 per step); (s0 + 1) ^ salt = (s0 ^ salt) ^ 1:
++    // p1 = p0 + dc, dc = +-C (by salt's bit 0)
++    auto dec0 = [&](const uint32_t (&xj)[4], int m, int j, uint32_t salt, uint32_t dc) -> half2
++    {
++        const uint32_t p0 = xj[j] + qtf2_uniform(((uint32_t) mo(m) ^ (salt & 0x8380u)) * C);
++        return decp(p0, p0 + dc);
++    };
++    auto xjs = [&](uint32_t (&xj)[4], uint32_t salt)
++    {
++        const uint32_t xsc = (tb ^ (salt & 0x7c78u)) * C;
++        #pragma unroll
++        for (int j = 0; j < 4; ++j) xj[j] = xsc + ((uint32_t) (2 * j) ^ (salt & 7u)) * C;
++    };
++    // first step: d^2, other states than pre_state at infinity (qtf2_step's KIN = 0 first branch)
++    auto first_err = [&](uint32_t s0, half2 dh2) -> half2
++    {
++        const half2 e = __hmul2(dh2, dh2);
++        if (pre_state < 0) return e;
++        return __halves2half2((int) s0 == pre_state ? __low2half(e) : H_INF, (int) s0 + 1 == pre_state ? __high2half(e) : H_INF);
++    };
++    // stored addresses (qtf2_adr0): out-node o = tb + mo(m) + 2 j (+ h), m < 8, at wb + 8192 (m & 3) + 256 (j >> 1) +
++    // 4 (m >> 2) + 2 (j & 1) (+ h): one 16-byte group holds (m, m + 4) x j pair; in-node s0 >> 1 at rb + rm(m) + j
++    const uint32_t lane = thread & 31, wave = thread >> 5;
++    const uint32_t wb = 8 * lane + 512 * wave, rb = 4 * lane + 256 * wave;
++    auto rm = [](int m) { return 4096 * (m & 7) + 128 * (m >> 3); };
++    // (0, 1): min over k (k = 0: m, k = 1: m + 8), 15-bit costs o = tb + mo(m) + (0..7) to a, history bytes
++    auto min_step = [&](auto first_c, const half2 w2, const uint32_t salt, uint8_t* hist_row, const bool write_hist)
++    {
++        constexpr bool first = decltype(first_c)::value;
++        half* t = a; a = b; b = t;
++        uint32_t xj[4];
++        xjs(xj, salt);
++        const uint32_t dc = (salt & 1u) ? 0u - C : C;
++        #pragma unroll
++        for (int g = 0; g < NM / 2; ++g)
++        {
++            const int mq = g >> 1, jh = g & 1;
++            uint32_t cw[4], kw[2] = {0u, 0u};
++            #pragma unroll
++            for (int x = 0; x < 4; ++x)
++            {
++                const int m = mq + 4 * (x >> 1), j = 2 * jh + (x & 1);
++                const half2 dh0 = __hsub2(dec0(xj, m, j, salt, dc), w2);
++                const half2 dh1 = __hsub2(dec0(xj, m + NM / 2, j, salt, dc), w2);
++                const uint32_t s0 = tb + mo(m) + 2 * j;
++                const half2 e0 = first ? first_err(s0, dh0) : __hfma2(dh0, dh0, acc[4 * m + j]);
++                const half2 e1 = first ? first_err(s0 + 32768, dh1) : __hfma2(dh1, dh1, acc[4 * (m + NM / 2) + j]);
++                const bool lo = __hlt(__low2half(e1), __low2half(e0)), hi = __hlt(__high2half(e1), __high2half(e0));
++                cw[x] = QTF2_H2U(__halves2half2(lo ? __low2half(e1) : __low2half(e0), hi ? __high2half(e1) : __high2half(e0)));
++                kw[x >> 1] |= ((lo ? 1u : 0u) | (hi ? 0x100u : 0u)) << (16 * (x & 1));
++            }
++#ifdef QTF2_F0NOGLOB                           // timing-only build (output invalid): no global costs / barriers
++            acc[g] = QTF2_U2H(cw[0] ^ cw[1] ^ cw[2] ^ cw[3] ^ kw[0] ^ kw[1]);
++        }
++#else
++            *reinterpret_cast<uint4*>(a + wb + 8192 * mq + 256 * jh) = make_uint4(cw[0], cw[1], cw[2], cw[3]);
++            if (write_hist) *reinterpret_cast<uint2*>(hist_row + wb + 8192 * mq + 256 * jh) = make_uint2(kw[0], kw[1]);
++        }
++        __syncthreads();
++#endif
++    };
++
++    for (int i = 0; i < L; ++i)
++    {
++#if defined(__HIPCC__) || defined(__HIP_PLATFORM_AMD__)
++        asm volatile("" : "+v"(tb));
++#else
++        asm volatile("" : "+r"(tb));
++#endif
++        int ri = i + roll; if (ri >= L) ri -= L;
++#ifdef QTF2_NOHIST
++        const bool write_hist = false;                        // timing-only build (output invalid)
++#else
++        const bool write_hist = pre_state >= 0 || ri < L / 2;
++#endif
++        uint8_t* hist_row = hist + (size_t) 65536 * ri;
++        const half2 w2 = __half2half2(wsh[ri]);
++        const int din = (MASK >> (ri & 15)) & 1, dout = (MASK >> ((ri + 1) & 15)) & 1;
++        const uint32_t salt = qtf2_salt(ri);
++        const uint32_t dc = (salt & 1u) ? 0u - C : C;
++        uint32_t xj[4];
++        if (din == 0) xjs(xj, salt);
++        if (i == 0)                                           // ri = roll: D(ri) = 0, D(ri + 1) = MASK bit 1
++        {
++            if constexpr ((MASK >> 1) & 1u) min_step(qtf2_bool<true>{}, w2, salt, hist_row, write_hist);
++            else
++            {
++                #pragma unroll
++                for (int m = 0; m < NM; ++m)
++                    #pragma unroll
++                    for (int j = 0; j < 4; ++j)
++                        acc[4 * m + j] = first_err(tb + mo(m) + 2 * j, __hsub2(dec0(xj, m, j, salt, dc), w2));
++            }
++            continue;
++        }
++        switch (din * 2 + dout)
++        {
++            case 0:
++                if constexpr (HAS00)
++                #pragma unroll
++                for (int m = 0; m < NM; ++m)
++                    #pragma unroll
++                    for (int j = 0; j < 4; ++j)
++                    {
++                        const half2 dh2 = __hsub2(dec0(xj, m, j, salt, dc), w2);
++                        acc[4 * m + j] = __hfma2(dh2, dh2, acc[4 * m + j]);
++                    }
++                break;
++            case 1: min_step(qtf2_bool<false>{}, w2, salt, hist_row, write_hist); break;
++            case 2:
++            {
++                // in = s0 >> 1 = tb / 2 + mo(m) / 2 + j: four costs, one 8-byte load a group
++                const uint32_t pb0 = tb * C;
++                #pragma unroll
++                for (int m = 0; m < NM; ++m)
++                {
++#ifdef QTF2_F0NOGLOB
++                    const uint2 cin = make_uint2(QTF2_H2U(acc[4 * m]), QTF2_H2U(acc[4 * m + 1]));
++#else
++                    const uint2 cin = *reinterpret_cast<const uint2*>(a + rb + rm(m));
++#endif
++                    #pragma unroll
++                    for (int j = 0; j < 4; ++j)
++                    {
++                        const uint32_t p0 = pb0 + (uint32_t) (mo(m) + 2 * j) * C;
++                        const half2 dh2 = __hsub2(decp(p0, p0 + C), w2);
++                        const uint32_t cw = (j < 2 ? cin.x : cin.y) >> (16 * (j & 1));
++                        acc[4 * m + j] = __hfma2(dh2, dh2, __half2half2(__ushort_as_half((uint16_t) cw)));
++                    }
++                }
++                break;
++            }
++            default:
++            if constexpr (HAS11)
++            {
++                // (1, 1): qtf2_step<NT, 1, 1> (out o = tb + mo(m) + 2 j, m < 8; k = 0 / 1: state (k << 15) | o, in =
++                // state >> 1), with its packed minimum: k = 1 wins a half only if its cost bits are strictly lower
++                half* t = a; a = b; b = t;
++                const uint32_t pb0 = tb * C;
++                #pragma unroll
++                for (int g = 0; g < NM / 2; ++g)
++                {
++                    const int mq = g >> 1, jh = g & 1;
++                    uint2 c0[2], c1[2];                       // in-costs of m = mq, mq + 4 (k = 0 / 1)
++                    #pragma unroll
++                    for (int y = 0; y < 2; ++y)
++                    {
++#ifdef QTF2_F0NOGLOB
++                        c0[y] = make_uint2(QTF2_H2U(acc[g + 8 * y]), QTF2_H2U(acc[g + 8 * y + 1]));
++                        c1[y] = make_uint2(QTF2_H2U(acc[g + 8 * y + 2]), QTF2_H2U(acc[g + 8 * y + 3]));
++#else
++                        c0[y] = *reinterpret_cast<const uint2*>(b + rb + rm(mq + 4 * y));
++                        c1[y] = *reinterpret_cast<const uint2*>(b + rb + rm(mq + 4 * y) + 128);
++#endif
++                    }
++                    uint32_t cw[4], kw[2] = {0u, 0u};
++                    #pragma unroll
++                    for (int x = 0; x < 4; ++x)
++                    {
++                        const int m = mq + 4 * (x >> 1), j = 2 * jh + (x & 1);
++                        const uint32_t p0 = pb0 + (uint32_t) (mo(m) + 2 * j) * C, q0 = p0 + (C << 15);
++                        const half2 dh0 = __hsub2(decp(p0, p0 + C), w2), dh1 = __hsub2(decp(q0, q0 + C), w2);
++                        const uint2 v0 = c0[x >> 1], v1 = c1[x >> 1];
++                        const half i0 = __ushort_as_half((uint16_t) ((j < 2 ? v0.x : v0.y) >> (16 * (j & 1))));
++                        const half i1 = __ushort_as_half((uint16_t) ((j < 2 ? v1.x : v1.y) >> (16 * (j & 1))));
++                        const uint32_t e0 = QTF2_H2U(__hfma2(dh0, dh0, __half2half2(i0)));
++                        const uint32_t e1 = QTF2_H2U(__hfma2(dh1, dh1, __half2half2(i1)));
++                        const uint32_t best0 = min(e0 << 16, (e1 << 16) | 1u), best1 = min(e0 & 0xffff0000u, (e1 & 0xffff0000u) | 1u);
++                        cw[x] = (best0 >> 16) | (best1 & 0xffff0000u);
++                        kw[x >> 1] |= ((best0 & 1u) | ((best1 & 1u) << 8)) << (16 * (x & 1));
++                    }
++#ifdef QTF2_F0NOGLOB
++                    acc[g] = QTF2_U2H(cw[0] ^ cw[1] ^ cw[2] ^ cw[3] ^ kw[0] ^ kw[1]);
++                }
++#else
++                    *reinterpret_cast<uint4*>(a + wb + 8192 * mq + 256 * jh) = make_uint4(cw[0], cw[1], cw[2], cw[3]);
++                    if (write_hist) *reinterpret_cast<uint2*>(hist_row + wb + 8192 * mq + 256 * jh) = make_uint2(kw[0], kw[1]);
++                }
++                __syncthreads();
++#endif
++                break;
++            }
++        }
++    }
++    // the last position (15 mod 16) is a fan-out: its 65536 costs go out for argmin_cost
++    { half* t = a; a = b; b = t; }
++    #pragma unroll
++    for (int m = 0; m < NM; ++m)
++        *reinterpret_cast<uint4*>(a + tb + mo(m)) = make_uint4(QTF2_H2U(acc[4 * m]), QTF2_H2U(acc[4 * m + 1]),
++                                                                  QTF2_H2U(acc[4 * m + 2]), QTF2_H2U(acc[4 * m + 3]));
++    __syncthreads();
++    *pa = a; *pb = b;
++}
++
+ template <int KA, uint32_t MASK, int L = 256>
+ __global__ __launch_bounds__(Qtf2Geom<KA>::nt, Qtf2Geom<KA>::lds ? 1 : 2)
+ void qtf2_kernel
+@@ -374,6 +662,13 @@
+     // 15 KB / 14 for MASK 0) -- the mixed-rate kernels ran ~35% slower than integer K. Same arithmetic, same output.
+     auto forward = [&](int roll, int pre_state) QTF2_INLINE
+     {
++#ifndef QTF2_NOFUSE
++        if constexpr (KA == 0)                                // v10: 0-bit steps fused (qtf2_forward0)
++        {
++            qtf2_forward0<NT, MASK, L>(input_tile, &temp_costs, &temp_costs_inc, hist, roll, pre_state, thread);
++            return;
++        }
++#endif
+         auto step = [&](auto first_c, int i) QTF2_INLINE
+         {
+             constexpr bool first = decltype(first_c)::value;
+@@ -479,6 +774,9 @@
+                                                              : reinterpret_cast<const uint32_t*>(row)[t];
+                         k = (int) ((wd >> sh) & ((1u << kout) - 1));
+                     }
++#ifndef QTF2_NOFUSE
++                    else if constexpr (KA == 0) k = (int) hist[(size_t) edges_max * ri + qtf2_adr0(edge)];   // v10 layout
++#endif
+                     else k = (int) hist[(size_t) edges_max * ri + edge];
+                 }
+                 const uint32_t state = kout ? (((uint32_t) k << (16 - kout)) | (uint32_t) edge) : (uint32_t) edge;

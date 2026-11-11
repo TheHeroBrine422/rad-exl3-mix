@@ -1,0 +1,7 @@
+{"K": 0.125, "batch": 128, "cb": "i8", "full_tps": 48887, "noglob_tps": 51451, "global_share": 0.05}
+{"K": 0.25, "batch": 128, "cb": "i8", "full_tps": 44242, "noglob_tps": 49489, "global_share": 0.106}
+{"K": 0.375, "batch": 128, "cb": "i8", "full_tps": 38683, "noglob_tps": 45218, "global_share": 0.145}
+{"K": 0.5, "batch": 128, "cb": "i8", "full_tps": 36710, "noglob_tps": 43680, "global_share": 0.16}
+{"K": 0.625, "batch": 128, "cb": "i8", "full_tps": 31412, "noglob_tps": 35486, "global_share": 0.115}
+{"K": 0.75, "batch": 128, "cb": "i8", "full_tps": 28595, "noglob_tps": 34315, "global_share": 0.167}
+{"K": 0.875, "batch": 128, "cb": "i8", "full_tps": 28566, "noglob_tps": 33896, "global_share": 0.157}

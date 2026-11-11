@@ -4,6 +4,37 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 9:35 AM CST · #142 · qtf2 sub-1 0-bit-step fusion: bit-identical (incl. a real K0.125 layer via rxq job on card 0), kernel ×3.8 (K0.125) to ×1.7 (K0.875), layer ×2.7; step 2 skipped (w108)
+- **Status:** done (judge (a) PASS; patch not merged: lead) · **Machine:** dad1 (RX 9070 XT, gfx1201, `/data/w108`), gpubox card 0 · **Code:**
+  `v3/e3/exl3frac2/sub1fuse/` (patch `qtf2-sub1fuse.patch`, not merged) · **Rule:** `v3/e3/exl3frac2/SUB1FUSE.md`,
+  **committed alone (a99c06d) before any data** · **Data:** `v3/e3/exl3frac2/data/sub1fuse/`
+- **Question:** LOG #37's "not done" item: fuse the KA = 0 kernel's 0-bit steps (a sub-1 state only moves at a
+  branching position) so the per-position global cost traffic and barriers go; identical output → pure speed change.
+- **Setup:** HEAD's `v3/e3/exl3frac2` (ref) vs the patched `qtf2.cuh`, both built from the fork at b0052f7c; every KA = 0
+  instance (K0.125-0.875), i8 and mul1; qtf2check's tile set + a second Gaussian set (2,456 tiles).
+- **What changed:** each thread keeps 128 states' costs in registers between branching positions (bit 15 local, so the
+  (0, 1) min is in registers); codebook reads from a 1,024-entry byte-sum table in LDS (the mul1 decode depends only on
+  the product's byte sum, so the table, filled with `decode_mul1_product_2` itself, is exact for every codebook build);
+  lanes on state bits 10-14 (LDS bank conflicts of the table reads ~2× lower than lanes 8 states apart, measured 2×);
+  the 15-bit cost / history scratch in a swizzled layout (vector + coalesced for writer and reader; the traceback reads
+  it through `qtf2_adr0`); per-MASK step kinds only (registers). Same half arithmetic in the same order per state.
+- **Result:** (a) **PASS**: 0 differing indices / values, both codebooks, all seven sub-1 rates, LUT 1 / 0, batches 32 /
+  128; KA ≥ 1 instances identical; 4 runs deterministic; the `QTF2_NOFUSE` build = HEAD. Speed (i8, batch 128 =
+  production, tiles/s): K0.125 12.0k → 45.3k (×3.77), K0.25 ×3.26, K0.375 ×2.89, K0.5 14.1k → 36.5k (×2.60), K0.625
+  ×2.11, K0.75 ×1.80, K0.875 16.5k → 28.3k (×1.71); mul1 alike; at batch 32 ×6.1 … ×2.6. Step 2 (macro-step trellis):
+  global traffic + barriers are 5.0% of K0.125's kernel time (timing build `QTF2_F0NOGLOB`) < the rule's 30% → skipped;
+  what is left is the per-position codebook read of every state, which macro-steps would still need.
+- **Real layer (gpubox card 0, 9:38-9:43 AM CST):** `rxq job`, settings 524bc868, K0.125 i8, layer 10 (4 group jobs, 6
+  tensors), HEAD's tree vs the patched one: **all 6 tensor files bit-identical**; tensor seconds 167.6 → 62.0 (×2.70),
+  job wall 186 → 82 s (×2.27); implied R9700 kernel ratio ×3.3 at K0.125 (dad1 ×3.8).
+- **Projection (R9700-calibrated):** the seven KA = 0 levels' job wall 21.8 → 12.2 card-h (K0.125 3.53 → 1.48 h, K0.5
+  3.11 → 1.69 h, K0.875 2.73 → 2.01 h); trellis at K ≠ 0.125 scaled from PROFILE.md §0 by the old kernel's tile rate.
+- **Decision / next:** ships as a pure speed change if the lead merges it (judge (a)): settings stamp unchanged; the
+  code stamp changes automatically (it hashes `v3/e3/exl3frac2/*.*`; note: so does the rule file SUB1FUSE.md committed
+  there, a99c06d). CUDA build of the new path not compiled (no nvcc here, 4070 off limits).
+- **Runtime:** none (quantizer speed only; same codes).
+- **Files:** `v3/e3/exl3frac2/data/sub1fuse/README.md` (tables, development path), `dad1-*.jsonl`, `gpubox/`.
+
 ### 2026-11-11 8:15 AM CST · #141 · sub-1 follow-ups of #132 / #136: drift table at every sub-1 K, g recheck on production, NTRY 4, swj at sub-1 (w107): rule committed, queues running
 - **Status:** running · **Machine:** Thor + colo (-01 / -03, q87 runners, single-threaded, nice 19; colo ≤ 8 GB of ours,
   no ffn_down), gpubox card 0 (-02 now, -04 after w106's card steps; card0.lock → ram.lock shared) · **Code:**
@@ -18,6 +49,9 @@ versions of anything: git history.
   in these runs). G1 (Thor): the cur re-run reproduces w100's rows (same box bit-identical; cross-box rel2_B 3e-8, d_all
   8.5e-10 relative).
 - **Runtime:** none (-03: quant time only).
+- **9:30 AM CST, -01 phase a done (all 54 cur rows at the five new K):** measured table written before any tab row of
+  the new K (`data/w107/gates/table.json`): D = 1.3425 / 1.2452 / 1.1425 / 1.1137 / 1.0922 at K0.25 / 0.375 / 0.625 / 0.75 /
+  0.875 → T = 1.342 / 1.245 / 1.142 / 1.114 / 1.092. Colo's leftover jobs moved to Thor (colo runner stopped; its rows kept).
 
 ### 2026-11-11 8:14 AM CST · #130 / #131 · P16 tile interleave: (a) f2 0.68 on qkv and (b) held out kept 0.98, both PASS → 27B pair (c) queued on card 0; MLP / k_proj gain nothing in the model; per-section K FAILS (−0.02 bit) (w101)
 - **Status:** #130-01 PASS, #130-02 PASS, #130-03 running (queued on card0.lock), amendment 2 (v_proj f2) queued · #131

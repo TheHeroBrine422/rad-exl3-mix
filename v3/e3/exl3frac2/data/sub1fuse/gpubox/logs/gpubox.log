@@ -1,0 +1,23 @@
+15:28:20 build ref
+15:29:18 build new
+15:30:08 q27v3-524bc868-k0.125-i8 seed 0: 4 jobs -> /data/w108/jobs.part (settings 524bc8684c7fda53, est 0.05 R9700-h, hout bn1920, c9 writers 1)
+15:30:08 waiting for card0.lock
+15:38:22 card held
+15:42:50 jobs done
+L10-g0 model.language_model.layers.10.linear_attn.in_proj_qkv: identical True
+L10-g0 model.language_model.layers.10.linear_attn.in_proj_z: identical True
+L10-g0: job s ref 34.6 new 13.0 (x2.66); settings 524bc8684c7fda53 / 524bc8684c7fda53; code a3d17268c48e3f62 / 07061095fcb9940e
+L10-g1 model.language_model.layers.10.linear_attn.out_proj: identical True
+L10-g1: job s ref 16.4 new 7.1 (x2.31); settings 524bc8684c7fda53 / 524bc8684c7fda53; code a3d17268c48e3f62 / 07061095fcb9940e
+L10-g2 model.language_model.layers.10.mlp.gate_proj: identical True
+L10-g2 model.language_model.layers.10.mlp.up_proj: identical True
+L10-g2: job s ref 73.1 new 25.0 (x2.92); settings 524bc8684c7fda53 / 524bc8684c7fda53; code a3d17268c48e3f62 / 07061095fcb9940e
+L10-g3 model.language_model.layers.10.mlp.down_proj: identical True
+L10-g3: job s ref 44.7 new 18.2 (x2.46); settings 524bc8684c7fda53 / 524bc8684c7fda53; code a3d17268c48e3f62 / 07061095fcb9940e
+  L10-g0 linear_attn: tensor s ref 22.1 new 8.6 x2.57
+  L10-g0 linear_attn: tensor s ref 12.5 new 4.3 x2.91
+  L10-g1 linear_attn: tensor s ref 15.3 new 6.0 x2.55
+  L10-g2 mlp: tensor s ref 37.2 new 13.2 x2.82
+  L10-g2 mlp: tensor s ref 35.8 new 11.7 x3.06
+  L10-g3 mlp: tensor s ref 44.7 new 18.2 x2.46
+GPUBOX IDENTICAL: tensor s ref 167.6 new 62.0 x2.70

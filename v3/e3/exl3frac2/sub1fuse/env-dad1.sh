@@ -1,0 +1,9 @@
+export PYTHONPATH=/data/w108/pylib
+export PATH=/data/w108/pylib/bin:$PATH
+export PYTORCH_ROCM_ARCH=gfx1201
+export ROCR_VISIBLE_DEVICES=0
+export HIP_VISIBLE_DEVICES=0
+export W108_STUB=/data/w108/stub
+export MAX_JOBS=12
+export SRC=/data/w108/fork/exllamav3/exllamav3_ext
+export ROCM_HOME=/opt/rocm

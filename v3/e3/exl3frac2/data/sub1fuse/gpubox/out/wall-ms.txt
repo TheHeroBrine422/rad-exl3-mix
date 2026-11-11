@@ -1,0 +1,8 @@
+ref L10-g0 38045
+ref L10-g1 20022
+ref L10-g2 78080
+ref L10-g3 50052
+new L10-g0 18021
+new L10-g1 12015
+new L10-g2 30034
+new L10-g3 22026
