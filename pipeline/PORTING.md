@@ -79,8 +79,9 @@ settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-dia
   (as original_H() and the batched path do): both stacks, both levels, box A = box B 29 of 29, check 0 call sites;
   against today's code (pinned stack) trellis equal, 5 suh + 6 svh (K2.5) and 6 suh + 2 svh (K0.5) values one f16 step.
   Three paths: card / card (un-rotation and refit fit: no host math); card / CPU refit (the refit runs out of card
-  memory and `RXQ_REFIT_CPU_FALLBACK=1` refits on the CPU: host dependent as the bullet above says); CPU / CPU (even
-  the un-rotation does not fit: 0010's out-of-memory branch, the old result). At the 27B ffn_down size (17,408²
-  Hessian, random data, R9700) capped to the declared ffn_down job memory (9 GiB) both trees stay on the card, no refit
-  fallback, peak 5.84 GiB with and without 0010. 0010 changes the code stamp (`rxq_code`), and assembly refuses a level
-  whose tensors disagree on it (DESIGN.md, "Stamps"): a level made before 0010 is kept whole or redone whole.
+  memory and `RXQ_REFIT_CPU_FALLBACK=1` refits on the CPU: host dependent, see "CPU refit fallback and thread count");
+  CPU / CPU (even the un-rotation does not fit: 0010's out-of-memory branch, the old result). At the 27B ffn_down size
+  (17,408² Hessian, random data, R9700) capped to the declared ffn_down job memory (9 GiB): today's tree un-rotates on
+  the CPU and refits on the card, with 0010 both run on the card; neither run fell back to the CPU refit; peak 5.84 GiB
+  in both. 0010 changes the code stamp (`rxq_code`), and assembly refuses a level whose tensors disagree on it
+  (DESIGN.md, "Stamps"): a level made before 0010 is kept whole or redone whole.

@@ -67,24 +67,29 @@ wrap(torch.nn.functional, "linear", "F.linear")
 tr, pl = os.path.join(a.out, "traced"), os.path.join(a.out, "plain")
 for d in (tr, pl): shutil.rmtree(d, ignore_errors=True)
 spec = json.load(open(a.spec))
-_cap(a.device); job.run_quant(spec, tr, a.device)
-lines = [f"  {lb:22s} x{n:<5d} largest operand {big[(lb, s)]:>10d} elements | {s}" for (lb, s), n in sorted(seen.items(), key=lambda kv: -big[kv[0]])]
-report("hostmath", not seen, f"{len(seen)} call sites (torch {torch.__version__})" + "".join("\n" + l for l in lines))
-
-env = dict(os.environ, PYTHONPATH=PIPE + os.pathsep + os.environ.get("PYTHONPATH", ""))
-r = subprocess.run([sys.executable, "-m", "rxq", "job", a.spec, "-o", pl, "--device", str(a.device)], cwd=PIPE, env=env, capture_output=True, text=True)
-files = sorted(f for f in os.listdir(tr) if f.endswith(".safetensors") and f.startswith(("t-", "c9-")))
-diff = []
-for f in files:
-    q = os.path.join(pl, f)
-    if not os.path.exists(q): diff.append(f"{f} missing"); continue
-    with safe_open(os.path.join(tr, f), "pt") as x, safe_open(q, "pt") as y:
-        if x.metadata() != y.metadata() or sorted(x.keys()) != sorted(y.keys()) or not all(
-                x.get_tensor(n).dtype == y.get_tensor(n).dtype and torch.equal(x.get_tensor(n), y.get_tensor(n)) for n in x.keys()): diff.append(f)
-extra = sorted(set(f for f in os.listdir(pl) if f.endswith(".safetensors") and f.startswith(("t-", "c9-"))) - set(files))
-report("untouched", r.returncode == 0 and files and not diff and not extra,
-       f"plain job exit {r.returncode}; {len(files) - len(diff)}/{len(files)} files equal (tensors + metadata)"
-       + (f"; differ {diff[:5]}" if diff else "") + (f"; only in plain {extra[:5]}" if extra else "")
-       + (f"\n{r.stderr[-2000:]}" if r.returncode else ""))
+_cap(a.device)
+try: job.run_quant(spec, tr, a.device); err = None
+except Exception as e: err = e                         # a failed job is a FAIL line and the summary, not a traceback
+if err is not None: report("hostmath", False, f"the traced job raised {type(err).__name__}: {err}")
+else:
+    lines = [f"  {lb:22s} x{n:<5d} largest operand {big[(lb, s)]:>10d} elements | {s}" for (lb, s), n in sorted(seen.items(), key=lambda kv: -big[kv[0]])]
+    report("hostmath", not seen, f"{len(seen)} call sites (torch {torch.__version__})" + "".join("\n" + l for l in lines))
+    env = dict(os.environ, PYTHONPATH=PIPE + os.pathsep + os.environ.get("PYTHONPATH", ""))
+    r = subprocess.run([sys.executable, "-m", "rxq", "job", a.spec, "-o", pl, "--device", str(a.device)], cwd=PIPE, env=env, capture_output=True, text=True)
+    if r.returncode:
+        report("untouched", False, f"plain job exit {r.returncode}: " + "\n".join((r.stdout + "\n" + r.stderr).strip().splitlines()[-15:]))
+    else:
+        files = sorted(f for f in os.listdir(tr) if f.endswith(".safetensors") and f.startswith(("t-", "c9-")))
+        diff = []
+        for f in files:
+            q = os.path.join(pl, f)
+            if not os.path.exists(q): diff.append(f"{f} missing"); continue
+            with safe_open(os.path.join(tr, f), "pt") as x, safe_open(q, "pt") as y:
+                if x.metadata() != y.metadata() or sorted(x.keys()) != sorted(y.keys()) or not all(
+                        x.get_tensor(n).dtype == y.get_tensor(n).dtype and torch.equal(x.get_tensor(n), y.get_tensor(n)) for n in x.keys()): diff.append(f)
+        extra = sorted(set(f for f in os.listdir(pl) if f.endswith(".safetensors") and f.startswith(("t-", "c9-"))) - set(files))
+        report("untouched", files and not diff and not extra,
+               f"plain job exit {r.returncode}; {len(files) - len(diff)}/{len(files)} files equal (tensors + metadata)"
+               + (f"; differ {diff[:5]}" if diff else "") + (f"; only in plain {extra[:5]}" if extra else ""))
 print(f"HOSTMATH CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if res and all(res) else 1)
