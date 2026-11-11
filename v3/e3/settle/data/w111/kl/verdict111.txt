@@ -1,0 +1,34 @@
+D (128 tensors: ssm_qkv, ssm_z, attn_qg, attn_v), N -> P16:
+  seed 0: N0-v -> P0-v
+    pooled  0.171588 -> 0.170054: r 0.9911 [0.9749, 1.0124] z -0.88; p99 3.7187 -> 3.7056; top-1 0.89927 -> 0.89945 (193 docs, 299548 pos)
+    xcorp   0.212560 -> 0.210828: r 0.9919 [0.9750, 1.0148] z -0.74; p99 5.0579 -> 4.9462; top-1 0.89641 -> 0.89643 (130 docs, 222107 pos)
+    calib   0.054077 -> 0.053112: r 0.9822 [0.9585, 1.0061] z -1.38; p99 0.5589 -> 0.5500; top-1 0.90749 -> 0.90810 (63 docs, 77441 pos)
+    == xcorp: 130 docs  pooled r 0.9919 [0.9750, 1.0148] z -0.78  per-doc geo 0.9870  median 0.9839  docs better 0.62
+    == calib: 63 docs  pooled r 0.9822 [0.9585, 1.0061] z -1.46  per-doc geo 1.0017  median 0.9910  docs better 0.56
+    == both: 193 docs  pooled r 0.9911 [0.9758, 1.0126] z -0.96  per-doc geo 0.9917  median 0.9852  docs better 0.60
+  seed 1: N1-v -> P1-v
+    pooled  0.167630 -> 0.165886: r 0.9896 [0.9753, 1.0062] z -1.30; p99 3.5732 -> 3.6169; top-1 0.89973 -> 0.90016 (193 docs, 299548 pos)
+    xcorp   0.207475 -> 0.205162: r 0.9889 [0.9727, 1.0067] z -1.28; p99 4.7644 -> 4.6885; top-1 0.89655 -> 0.89689 (130 docs, 222107 pos)
+    calib   0.053352 -> 0.053237: r 0.9978 [0.9865, 1.0088] z -0.38; p99 0.5517 -> 0.5503; top-1 0.90882 -> 0.90956 (63 docs, 77441 pos)
+    == xcorp: 130 docs  pooled r 0.9889 [0.9727, 1.0067] z -1.33  per-doc geo 0.9895  median 0.9894  docs better 0.57
+    == calib: 63 docs  pooled r 0.9978 [0.9865, 1.0088] z -0.39  per-doc geo 1.0034  median 0.9997  docs better 0.51
+    == both: 193 docs  pooled r 0.9896 [0.9755, 1.0059] z -1.37  per-doc geo 0.9940  median 0.9968  docs better 0.55
+112 scope (w101's mixes as they are), N -> P16:
+  seed 0: N0 -> P0
+    pooled  0.171515 -> 0.171396: r 0.9993 [0.9726, 1.0262] z -0.05; p99 3.7962 -> 3.7732; top-1 0.89967 -> 0.89909 (193 docs, 299548 pos)
+    xcorp   0.212291 -> 0.212746: r 1.0021 [0.9746, 1.0288] z +0.16; p99 5.0335 -> 4.9238; top-1 0.89688 -> 0.89594 (130 docs, 222107 pos)
+    calib   0.054566 -> 0.052801: r 0.9677 [0.9308, 0.9987] z -1.65; p99 0.5585 -> 0.5525; top-1 0.90767 -> 0.90812 (63 docs, 77441 pos)
+    == xcorp: 130 docs  pooled r 1.0021 [0.9746, 1.0288] z +0.16  per-doc geo 0.9867  median 0.9893  docs better 0.58
+    == calib: 63 docs  pooled r 0.9677 [0.9308, 0.9987] z -1.84  per-doc geo 0.9896  median 0.9896  docs better 0.60
+    == both: 193 docs  pooled r 0.9993 [0.9739, 1.0245] z -0.05  per-doc geo 0.9876  median 0.9896  docs better 0.59
+  seed 1: N1 -> P1
+    pooled  0.167787 -> 0.167090: r 0.9958 [0.9639, 1.0275] z -0.27; p99 3.6052 -> 3.5725; top-1 0.90057 -> 0.89988 (193 docs, 299548 pos)
+    xcorp   0.207603 -> 0.206640: r 0.9954 [0.9602, 1.0293] z -0.28; p99 4.8284 -> 4.6781; top-1 0.89779 -> 0.89649 (130 docs, 222107 pos)
+    calib   0.053592 -> 0.053657: r 1.0012 [0.9881, 1.0162] z +0.16; p99 0.5606 -> 0.5609; top-1 0.90855 -> 0.90961 (63 docs, 77441 pos)
+    == xcorp: 130 docs  pooled r 0.9954 [0.9602, 1.0293] z -0.26  per-doc geo 0.9842  median 0.9864  docs better 0.58
+    == calib: 63 docs  pooled r 1.0012 [0.9881, 1.0162] z +0.17  per-doc geo 1.0100  median 1.0015  docs better 0.46
+    == both: 193 docs  pooled r 0.9958 [0.9658, 1.0294] z -0.26  per-doc geo 0.9925  median 0.9922  docs better 0.54
+v_proj increment r(128) / r(112): seed 0 0.9917, seed 1 0.9937, geo 0.9927
+joint with w101 (geo 0.9933, SE 0.0070): (i) 112 scope geo 0.9941 z -0.93; (ii) w101 112 + D geo 0.9922 z -1.41
+112 scope on this slice: geo 0.9976 (xcorp 0.9987, calib 0.9843), z -0.16 -> FAIL (reported)
+W111 #146-02 VERDICT D PASS: N -> P16 (128) pooled r = 0.9911, 0.9896, geo 0.9903 (xcorp 0.9904, calib 0.9900), SE comb 0.0090 (doc 0.0066), z -1.08; attn_v joins (increment geo 0.9927)

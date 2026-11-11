@@ -4,6 +4,36 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 12:50 PM CST · #146 · P16 interleave: A8 store remap costs +0.05…0.25% of prefill gemm (bar PASS; a raster tweak takes it to noise); second slice with v_proj: D geo 0.9903 PASS, joint z −1.41; the 112 alone 0.9976 here (w111)
+- **Status:** done (adopt-proposal under the rule; the user decides) · **Machine:** dad1 9070 XT (dev, card0.lock),
+  gpubox card 0 (bench 17:40 / 17:54 UTC, ~10 s each; v_proj units + packs + 16 scores 17:29–18:47 UTC) · **Code:**
+  `v3/e3/settle/w111/` (kl111.sh, hold111.sh, verdict111.py, proj111.py, mksplice111.py, bytes111.py); radiance fork
+  branch `qc-exl3-v3-p16` (758528b, 4aee43b, fc1032a P16.md: exl3i_8a8.hip.h / exl3i_a8_gemm.hip / exl3i_a8_dev.h, tests/bench_p16.hip,
+  tests/p16_build.sh) · **Rule:** `v3/e3/settle/w111.md` (1fa29c9, committed alone before data) · **Data:**
+  `v3/e3/settle/data/w111/` (`k/` bench CSVs + projections, `kl/` verdict, docstat, gates) · README `w111/README.md`
+- **Correction to w101's kernel note:** its closed form "stored 16 (8 b + t) + c → natural 16 (b + nb t) + c" is the
+  inverse of gperm (equal only at nb = 8); the quantized map is natural = 16 (8 (k mod nb) + ⌊k / nb⌋) + c, k = j >> 4.
+  Implemented that way (⌊k / nb⌋ by multiply-shift, exact for nb < 378, checked at launch).
+- **#146-01 kernel (A8 GEMM, `Exl3iA8Args.il16`):** remap off = today's kernel instruction for instruction (also A4's);
+  C1 (off == base) byte-identical at all 9 trunk shapes × K2.5 / K4 × T 512 / 2048 / 8192; C2 (on == host-gathered off)
+  byte-identical at all 24 remapped cells. R9700, 30 ABBA rounds, GEMM on / off geo (paired): ssm_qkv **1.010**, ssm_z
+  1.004, attn_qg **1.016**, attn_v 1.004 (worst cell 1.020); A / A run 0.998–1.001. Projected prefill gemm (A8, 48 GDN +
+  16 attention layers; the four families are 21% of it): **+0.05 / +0.17 / +0.16…0.25%** at T 512 / 2048 / 8192 →
+  **kernel bar PASS** (≤ +0.5%, ≤ 1.03 per shape). Reported variant (`il16 = 2`, the stored blocks that fill natural
+  blocks 8c…8c+7 run back to back): 1.003 / 1.001 / 1.005 / 1.002, projection ≤ +0.10% (noise). Decode: same remap on
+  `epilogue_block`'s y address (nt / rows / rate / T2), A4 one line; expected ≈ 0, not implemented or timed.
+- **#146-02 KL, golden-search27d (w110's fresh slice, first #130 use; 193 docs, 299,548 positions):** D = 112 + 16
+  v_proj at K2.5, dense splice into w101's mixes (gates: PAIR OK, BYTES111 16 / 16, stamp 87a7e4ab): N → P16 pooled
+  **0.9911 / 0.9896, geo 0.9903** (xcorp 0.9904, calib 0.9900), SE 0.0090, z −1.08 → **PASS**. 112 scope alone (w101's
+  mixes) 0.9993 / 0.9958, geo **0.9976** (xcorp 0.9987, calib 0.9843): w101's −0.7% does not repeat in size. v_proj
+  increment r(128) / r(112) 0.9917 / 0.9937, geo **0.9927 → attn_v joins**; large for 16 tensors → **unverified**
+  (one slice; hygiene holds). Joint with w101: 112 scope 0.9941 (z −0.93); w101 + D 0.9922 (**z −1.41**). Per doc (D):
+  xcorp geo 0.987 / 0.990, calib per-doc geo 1.002 / 1.003 (calib gain pooled only).
+- **Proposal (rule):** adopt P16 for ssm_qkv / ssm_z / attn_qg / attn_v (k_proj model 0.952, untested): a screen pass,
+  not significant; needs a format bit and the remap in every writing kernel. Lead / user decide; a v_proj check on a
+  third slice is cheap (the four D mixes are kept on gpubox `/data/w111/mix/`, 66 GB; w101's 65 GB of mixes deleted).
+- **Runtime:** prefill (+0.05…0.25% gemm as implemented, ≤ 0.1% with the raster) + decode (≈ 0, untimed) if adopted.
+
 ### 2026-11-11 12:40 PM CST · #144 · swj level pass: f32 GEMMs are 70% and can't be sped up bit-identically; more sources per pass is the only identical lever (S=8: −30% swj card-h); proposal `--numerics bf16` 2.2x faster, held-out within noise (w109)
 - **Status:** done (proposals for the lead / user) · **Machine:** dad1 RX 9070 XT (gfx1201, 16 GB) under dad1's
   card0.lock, 11-11 16:59–18:25 UTC; gpubox: read-only (w92 / w99 / swj27 timing.jsonl and w92's L0-7 scales), card 0

@@ -1,0 +1,7 @@
+mix-N1-v.rad: 787 weights, 5.1940 bpw (file), 5.1861 bpw (weights)
+  scheme        K codebook act         n       GB
+  plain                              577   10.287
+  exl3i       2.5 mul1i8   f16       208    6.016
+  exl3          4 mul1     f16         1    0.636
+  affine                               1    0.497
+CENSUS PASS [checked: mix base]

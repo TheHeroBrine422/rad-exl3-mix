@@ -1,0 +1,35 @@
+shape     rate     M   gemm_off   gemm_on  r_med   r_pair  r_call
+gdn_qkv   2.5   512     281.3     280.0 0.9953 0.9980 0.9974
+gdn_qkv   2.5  2048    1039.5    1046.7 1.0070 1.0077 1.0055
+gdn_qkv   2.5  8192    4799.2    4793.0 0.9987 1.0010 0.9988
+gdn_qkv     4   512     278.9     274.0 0.9828 0.9982 0.9890
+gdn_qkv     4  2048    1076.1    1070.4 0.9947 1.0034 0.9956
+gdn_qkv     4  8192    4822.5    4812.2 0.9979 0.9986 0.9980
+gdn_z     2.5   512     173.2     174.6 1.0081 1.0016 1.0043
+gdn_z     2.5  2048     651.7     648.2 0.9945 0.9989 0.9958
+gdn_z     2.5  8192    2734.6    2729.3 0.9980 0.9990 0.9983
+gdn_z       4   512     175.2     175.0 0.9989 0.9980 0.9992
+gdn_z       4  2048     646.2     644.4 0.9971 0.9960 0.9976
+gdn_z       4  8192    2725.2    2699.6 0.9906 0.9982 0.9917
+attn_qg   2.5   512     338.4     337.9 0.9987 0.9988 0.9993
+attn_qg   2.5  2048    1278.7    1268.5 0.9920 0.9991 0.9936
+attn_qg   2.5  8192    5816.8    5816.7 1.0000 1.0004 1.0000
+attn_qg     4   512     332.6     331.6 0.9972 0.9987 0.9983
+attn_qg     4  2048    1298.9    1309.0 1.0078 1.0025 1.0065
+attn_qg     4  8192    5833.0    5822.4 0.9982 0.9991 0.9983
+attn_v    2.5   512      41.4      41.3 0.9971 0.9971 0.9988
+attn_v    2.5  2048     123.7     123.0 0.9945 0.9968 0.9971
+attn_v    2.5  8192     432.2     436.2 1.0093 1.0019 1.0053
+attn_v      4   512      39.8      39.5 0.9929 0.9909 0.9966
+attn_v      4  2048     127.4     126.7 0.9943 0.9997 0.9966
+attn_v      4  8192     433.9     437.7 1.0088 0.9998 1.0053
+
+projected prefill gemm change (A8 everywhere; 48 GDN + 16 attention layers):
+  K 2.5 M   512: all-trunk    231.3 ms, remapped share  21.9%, delta     -5.0 us = -0.002% (from paired ratios -0.009%)
+  K 2.5 M  2048: all-trunk    641.8 ms, remapped share  20.8%, delta     +4.5 us = +0.001% (from paired ratios +0.051%)
+  K 2.5 M  8192: all-trunk   2451.4 ms, remapped share  21.2%, delta   -489.0 us = -0.020% (from paired ratios +0.006%)
+  K   4 M   512: all-trunk    204.5 ms, remapped share  20.8%, delta   -259.7 us = -0.127% (from paired ratios -0.026%)
+  K   4 M  2048: all-trunk    607.2 ms, remapped share  20.9%, delta   -214.4 us = -0.035% (from paired ratios +0.016%)
+  K   4 M  8192: all-trunk   2436.4 ms, remapped share  21.0%, delta  -1831.0 us = -0.075% (from paired ratios -0.026%)
+
+KERNEL BAR PASS: C1/C2 ok, projected max at M 2048 / 8192 +0.001% (<= +0.5%), worst remapped GEMM ratio at M >= 2048 1.0093 (<= 1.03)

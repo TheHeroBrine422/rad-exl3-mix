@@ -1,0 +1,55 @@
+17:29:18 kl111 start: prep 0 1; settings 87a7e4ab32f9d5b9
+17:29:19 prep: mkperm101: ok
+17:33:13 N0: card 0 held after 234 s
+17:33:33 N0: rc 0, 16 wq, 254 s wall (incl. lock wait)
+17:40:10 P0: card 0 held after 397 s
+17:40:30 P0: rc 0, 16 wq, 417 s wall (incl. lock wait)
+17:40:41 splice N0: MKSPLICE111 DONE
+17:47:17 splice P0: MKSPLICE111 DONE
+17:47:25 pack N0 rc=0 8s
+17:54:21 mix N0-v ready (17G)
+18:00:47 pack P0 rc=0 6s
+18:07:22 hold111: card0 + conv + ram held: 0 1 score verdict
+18:07:23 kl111 start: 0 1 score verdict; settings 87a7e4ab32f9d5b9
+18:07:46 mix P0-v ready (17G)
+18:08:54 G1 P0-v vs N0-v: PAIR OK {"a": "/data/w111/mix/mix-P0-v.rad", "b": "/data/w111/mix/mix-N0-v.rad", "weights": 787, "identical": 659, "arm_weights": 128, "arm_weights_changed": 128, "planes_changed": ["codes"], "problems": 0}
+18:08:54 G1 N0-v vs w101 N0: PAIR OK {"a": "/data/w111/mix/mix-N0-v.rad", "b": "/data/w101/c/mix/mix-N0.rad", "weights": 787, "identical": 771, "arm_weights": 16, "arm_weights_changed": 16, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:08:54 G1 P0-v vs w101 P0: PAIR OK {"a": "/data/w111/mix/mix-P0-v.rad", "b": "/data/w101/c/mix/mix-P0.rad", "weights": 787, "identical": 771, "arm_weights": 16, "arm_weights_changed": 16, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:08:54 G2 0: BYTES111 PASS (16 weights)
+18:08:54 seed 0 gated
+18:08:54 N1: card 0 held after 0 s
+18:09:14 N1: rc 0, 16 wq, 20 s wall (incl. lock wait)
+18:09:14 P1: card 0 held after 0 s
+18:09:34 P1: rc 0, 16 wq, 20 s wall (incl. lock wait)
+18:09:36 splice N1: MKSPLICE111 DONE
+18:09:37 splice P1: MKSPLICE111 DONE
+18:09:43 pack N1 rc=0 6s
+18:10:04 mix N1-v ready (17G)
+18:10:10 pack P1 rc=0 6s
+18:10:31 mix P1-v ready (17G)
+18:11:36 G1 P1-v vs N1-v: PAIR OK {"a": "/data/w111/mix/mix-P1-v.rad", "b": "/data/w111/mix/mix-N1-v.rad", "weights": 787, "identical": 659, "arm_weights": 128, "arm_weights_changed": 128, "planes_changed": ["codes"], "problems": 0}
+18:11:36 G1 N1-v vs w101 N1: PAIR OK {"a": "/data/w111/mix/mix-N1-v.rad", "b": "/data/w101/c/mix/mix-N1.rad", "weights": 787, "identical": 771, "arm_weights": 16, "arm_weights_changed": 16, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:11:36 G1 P1-v vs w101 P1: PAIR OK {"a": "/data/w111/mix/mix-P1-v.rad", "b": "/data/w101/c/mix/mix-P1.rad", "weights": 787, "identical": 771, "arm_weights": 16, "arm_weights_changed": 16, "planes_changed": ["(plane count)", "codes"], "problems": 0}
+18:11:36 G2 1: BYTES111 PASS (16 weights)
+18:11:36 seed 1 gated
+18:11:36 scores: card 0 held after 0 s
+18:14:45 score N0-v-x rc=0 189s
+18:17:52 score P0-v-x rc=0 187s
+18:20:59 score N0-x rc=0 187s
+18:24:06 score P0-x rc=0 187s
+18:25:23 score N0-v-c rc=0 77s
+18:26:39 score P0-v-c rc=0 76s
+18:27:54 score N0-c rc=0 75s
+18:29:10 score P0-c rc=0 76s
+18:32:17 score N1-v-x rc=0 187s
+18:35:24 score P1-v-x rc=0 187s
+18:38:31 score N1-x rc=0 187s
+18:41:38 score P1-x rc=0 187s
+18:42:54 score N1-v-c rc=0 76s
+18:44:10 score P1-v-c rc=0 76s
+18:45:26 score N1-c rc=0 76s
+18:46:42 score P1-c rc=0 76s
+18:46:42 all 16 scores done
+18:46:42 W111 #146-02 VERDICT D PASS: N -> P16 (128) pooled r = 0.9911, 0.9896, geo 0.9903 (xcorp 0.9904, calib 0.9900), SE comb 0.0090 (doc 0.0066), z -1.08; attn_v joins (increment geo 0.9927)
+18:46:42 KL111 DONE: 0 1 score verdict
+18:46:42 hold111: released (rc 0)

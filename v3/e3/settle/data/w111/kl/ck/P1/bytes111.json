@@ -1,0 +1,114 @@
+[
+ {
+  "weight": "blk.11.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9935764312744141
+ },
+ {
+  "weight": "blk.15.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.993649673461914
+ },
+ {
+  "weight": "blk.19.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9937562942504883
+ },
+ {
+  "weight": "blk.23.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.993618392944336
+ },
+ {
+  "weight": "blk.27.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9938224792480469
+ },
+ {
+  "weight": "blk.3.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9936201095581054
+ },
+ {
+  "weight": "blk.31.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9937372207641602
+ },
+ {
+  "weight": "blk.35.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9938787460327149
+ },
+ {
+  "weight": "blk.39.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9936491012573242
+ },
+ {
+  "weight": "blk.43.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9938068389892578
+ },
+ {
+  "weight": "blk.47.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9937858581542969
+ },
+ {
+  "weight": "blk.51.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9938497543334961
+ },
+ {
+  "weight": "blk.55.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9938482284545899
+ },
+ {
+  "weight": "blk.59.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9937267303466797
+ },
+ {
+  "weight": "blk.63.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9939697265625
+ },
+ {
+  "weight": "blk.7.attn_v.weight",
+  "quant": "",
+  "n_eq_patch": true,
+  "p_eq_patch": true,
+  "frac_differ": 0.9935871124267578
+ }
+]

@@ -1,0 +1,21 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.3.self_attn.v_proj               K2.5 proxy 1.390e-02 2.3s
+  model.language_model.layers.7.self_attn.v_proj               K2.5 proxy 1.098e-02 0.9s
+  model.language_model.layers.11.self_attn.v_proj              K2.5 proxy 9.079e-03 0.9s
+  model.language_model.layers.15.self_attn.v_proj              K2.5 proxy 9.931e-03 0.9s
+  model.language_model.layers.19.self_attn.v_proj              K2.5 proxy 1.166e-02 0.9s
+  model.language_model.layers.23.self_attn.v_proj              K2.5 proxy 1.470e-02 0.9s
+  model.language_model.layers.27.self_attn.v_proj              K2.5 proxy 9.171e-03 0.9s
+  model.language_model.layers.31.self_attn.v_proj              K2.5 proxy 9.961e-03 0.9s
+  model.language_model.layers.35.self_attn.v_proj              K2.5 proxy 1.330e-02 0.9s
+  model.language_model.layers.39.self_attn.v_proj              K2.5 proxy 1.558e-02 0.9s
+  model.language_model.layers.43.self_attn.v_proj              K2.5 proxy 1.020e-02 0.9s
+  model.language_model.layers.47.self_attn.v_proj              K2.5 proxy 1.175e-02 0.9s
+  model.language_model.layers.51.self_attn.v_proj              K2.5 proxy 1.217e-02 0.9s
+  model.language_model.layers.55.self_attn.v_proj              K2.5 proxy 1.523e-02 0.9s
+  model.language_model.layers.59.self_attn.v_proj              K2.5 proxy 9.588e-03 0.9s
+  model.language_model.layers.63.self_attn.v_proj              K2.5 proxy 4.086e-03 0.9s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 1, "keys": ["model.language_model.layers.3.self_attn.v_proj", "model.language_model.layers.7.self_attn.v_proj", "model.language_model.layers.11.self_attn.v_proj", "model.language_model.layers.15.self_attn.v_proj", "model.language_model.layers.19.self_attn.v_proj", "model.language_model.layers.23.self_attn.v_proj", "model.language_model.layers.27.self_attn.v_proj", "model.language_model.layers.31.self_attn.v_proj", "model.language_model.layers.35.self_attn.v_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.43.self_attn.v_proj", "model.language_model.layers.47.self_attn.v_proj", "model.language_model.layers.51.self_attn.v_proj", "model.language_model.layers.55.self_attn.v_proj", "model.language_model.layers.59.self_attn.v_proj", "model.language_model.layers.63.self_attn.v_proj"], "settings_stamp": "87a7e4ab32f9d5b9", "inputs": {"ckpt": "/data/w111/p16/ckpt", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/w111/p16/hout"}}, "settings_stamp": "87a7e4ab32f9d5b9", "code_stamp": "5716573c6c8bf586", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 16, "seconds": 15.4}
