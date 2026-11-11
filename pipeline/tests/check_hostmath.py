@@ -69,13 +69,14 @@ for d in (tr, pl): shutil.rmtree(d, ignore_errors=True)
 spec = json.load(open(a.spec))
 _cap(a.device)
 try: job.run_quant(spec, tr, a.device); err = None
-except Exception as e: err = e                         # a failed job is a FAIL line and the summary, not a traceback
+except (Exception, SystemExit) as e: err = e          # a failed job (run_quant / engine exit on bad settings) is a FAIL line and the summary
 if err is not None: report("hostmath", False, f"the traced job raised {type(err).__name__}: {err}")
 else:
     lines = [f"  {lb:22s} x{n:<5d} largest operand {big[(lb, s)]:>10d} elements | {s}" for (lb, s), n in sorted(seen.items(), key=lambda kv: -big[kv[0]])]
     report("hostmath", not seen, f"{len(seen)} call sites (torch {torch.__version__})" + "".join("\n" + l for l in lines))
     env = dict(os.environ, PYTHONPATH=PIPE + os.pathsep + os.environ.get("PYTHONPATH", ""))
-    r = subprocess.run([sys.executable, "-m", "rxq", "job", a.spec, "-o", pl, "--device", str(a.device)], cwd=PIPE, env=env, capture_output=True, text=True)
+    # the caller's cwd, as the traced job: SPEC, OUT and the spec's relative paths resolve the same in both runs
+    r = subprocess.run([sys.executable, "-m", "rxq", "job", a.spec, "-o", pl, "--device", str(a.device)], env=env, capture_output=True, text=True)
     if r.returncode:
         report("untouched", False, f"plain job exit {r.returncode}: " + "\n".join((r.stdout + "\n" + r.stderr).strip().splitlines()[-15:]))
     else:
