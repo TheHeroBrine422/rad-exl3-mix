@@ -35,6 +35,7 @@ def validate(cfg):
     q = cfg["quant"]; ho = cfg["inputs"]["hout"]
     assert q["out_scales"] == "always", "only out_scales = always is implemented (#48)"
     assert q["drift"] in ("interp", "exact")
+    assert isinstance(q.get("scale_clamp", False), bool), "quant.scale_clamp: true | false"
     assert isinstance(q["refit"], bool) or q["refit"] in ("hout", "undamped", "hout+undamped"), \
         f"quant.refit: true | false | hout | undamped | hout+undamped, not {q['refit']!r} (rxq/refit.py)"
     assert cfg["inputs"]["hin"]["blend"] in ("none", "xcorp")
@@ -115,6 +116,7 @@ def quant_settings(cfg, K, codebook, key, seed_offset=0):
     s = {"K": K, "codebook": codebook, "qtf2": q["qtf2"], "scaled_hessian": q["scaled_hessian"],
          "sigma_reg": q["sigma_reg"], "sigma_reg_in": q["sigma_reg_in"], "seed_offset": seed_offset,
          "drift": q["drift"], "block_trace": q["block_trace"], "refit": q["refit"]}
+    if q.get("scale_clamp"): s["scale_clamp"] = True
     if q["apply_sub1_damping"] and float(K) < 1 and inp: s["sigma_reg_in"] = q["sigma_reg_in_sub1"]
     lo = q.get("lowest_level_damping")      # #114-02 (user 11-08): the lowest level wants sigma 0.2 for both groups
     if lo and lo.get("enable", True) and float(K) <= float(lo["k_max"]): s["sigma_reg"] = s["sigma_reg_in"] = float(lo["sigma"])

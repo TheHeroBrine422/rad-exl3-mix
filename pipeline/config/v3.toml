@@ -77,6 +77,9 @@ block_trace = false            # ourq default: the regularized-domain proxy is o
 refit = "hout"                 # #138-03 adopted (user 11-09).                                  exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level. rxq/refit.py (w98, #138):
                                # true | false (no refit) | "hout" (suh step weighted by the H_out diagonal) | "undamped"
                                # (fit in the undamped H) | "hout+undamped"; true keeps the stamp, any other value changes it
+scale_clamp = true             # R14 (#132, user 11-11): after the refit, |su| / |sv| >= max(f16 min normal, 1e-3 * median |.|)
+                               # per vector, else the pre-refit value (if it clears the floor), else the floor (sign kept).
+                               # w100 scan: 92 f16 subnormals, all at K0.125; rxq/refit.py clamp_scales
 
 [quant.block_order]
 # #117 residual-stream 128-block permutation (w82 consensus order, w84 27B pairs): the residual readers' (attn q / k / v,
@@ -128,8 +131,9 @@ module = ""                    # "" = rxq/tilecd.py; a path loads another copy (
 # was a head mismatch). Amendment 2's rule then falls back to <= K3.5 until a K4 seed pair; LOG 11-06 7:50 PM says swj
 # "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision (decided: user 11-07, k_max below).
 enable = true
-k_max = 8.0                    # every level (user 2026-11-07: swj adopted at every level; K4 head-matched seed pair
-                               # 0.990 / 0.987 satisfies SWJ27 amendment 2's K4 condition). Was 3.5.
+k_max = 4.5                    # #129-02 (11-11, rule in v3/e3/settle/w99.md): at K6 swj gives pooled r 1.026 over 192
+                               # docs (27b + 27c), per-doc geo 0.989, calib per-doc geo 1.021 -> cap at K4.5 (saves ~0.75
+                               # card-h per level above it). Was 8.0 (user 11-07), before that 3.5.
 grid = "0.6:1.4:0.01"
 clamp = [0.5, 2.0]
 fit_pool = "qad"               # SWJ27.md: 725 qad docs / 927,611 tokens, cap 4096, seed 0

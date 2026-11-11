@@ -1,0 +1,24 @@
+goldens /data/w91/golden-search27b-x /data/w91/golden-search27b-c
+13:54:28 score k6c9-27b-x rc=0 71s
+13:55:23 score k6c9-27b-c rc=0 55s
+13:56:34 score k6swj-27b-x rc=0 71s
+13:57:28 score k6swj-27b-c rc=0 54s
+== 27b only
+== xcorp: 65 docs  pooled r 1.0422 [0.8074, 1.0921] z +0.50  per-doc geo 0.9764  median 0.9798  docs better 0.63
+   heaviest: 73.2% r 1.089 swe-rebench-openhands; 5.1% r 0.704 when2call; 3.2% r 1.434 wildchat; 3.2% r 0.745 wildchat
+   without 1 doc(s) > 20% of the part: r 0.9143 [0.7946, 1.1019] z -1.05
+   leave-one-out r range 0.9143 .. 1.0602
+   drop k heaviest: k0 1.0422  k1 0.9143  k2 0.9633  k3 0.8806  k5 0.9390  k10 0.9647
+== calib: 36 docs  pooled r 0.9875 [0.9456, 1.0181] z -0.67  per-doc geo 1.0018  median 1.0157  docs better 0.42
+   heaviest: 18.8% r 1.001 pg19; 16.7% r 1.005 wikimedia; 10.2% r 0.977 peS2o; 9.4% r 0.822 smoltalk2/multilingual
+   leave-one-out r range 0.9840 .. 1.0047
+   drop k heaviest: k0 0.9875  k1 0.9843  k2 0.9790  k3 0.9793  k5 1.0096  k10 1.0057
+== both: 101 docs  pooled r 1.0399 [0.8328, 1.0873] z +0.54  per-doc geo 0.9854  median 0.9913  docs better 0.55
+   heaviest: 70.2% r 1.089 swe-rebench-openhands; 4.9% r 0.704 when2call; 3.1% r 1.434 wildchat; 3.1% r 0.745 wildchat
+   leave-one-out r range 0.9244 .. 1.0571
+   drop k heaviest: k0 1.0399  k1 0.9244  k2 0.9673  k3 0.9008  k5 0.9517  k10 0.9853
+S129B DONE
+== 27b + 27c pooled (lead, docstat functions)
+x (27b+27c): 130 docs pooled 1.0261 [0.9262,1.0380]  per-doc geo 0.9745 median 0.9811 better 0.62  max share 0.77  without >20%: 0.9939 [0.8807,1.0457] (1 dropped)
+c (27b+27c): 62 docs pooled 0.9819 [0.9534,1.0025]  per-doc geo 1.0205 median 1.0035 better 0.47  max share 0.11  without >20%: 0.9819 [0.9534,1.0025] (0 dropped)
+all: 192 docs pooled 1.0258 [0.9254,1.0384]  per-doc geo 0.9891 median 0.9885 better 0.57  max share 0.77  without >20%: 0.9935 [0.8955,1.0439] (1 dropped)

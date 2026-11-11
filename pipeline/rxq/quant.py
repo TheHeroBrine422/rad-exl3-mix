@@ -114,7 +114,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
             else:
                 qa["H_out"] = (f.get_tensor("hout") if "hout" in f.keys() else torch.diag(f.get_tensor("hout_diag").float()))
             hraw = f.get_tensor("hout_diag").float() if "hout_diag" in f.keys() else qa["H_out"].diagonal().float()
-    refit.begin(key, s.get("refit", True), hraw, s.get("sigma_reg_out") or 0.01)
+    refit.begin(key, s.get("refit", True), hraw, s.get("sigma_reg_out") or 0.01, clamp=bool(s.get("scale_clamp")))
     try:
         with st("other"):
             wq, perr, t = Q.quantize_exl3(w, Hd, qa, save_wq)
@@ -158,7 +158,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
 
 def _diag_record(dg, s, qa, outdir, key):
     """the log record's "diag" (#139): trajectory, the proxy check, overload counters, tile CD's quantization-domain rel"""
-    r = {"refit": s.get("refit", True), "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"])}
+    r = {"refit": s.get("refit", True), "scale_clamp": bool(s.get("scale_clamp")), "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"])}
     for k in ("traj", "check", "overload", "arms", "d_off", "damping"):
         if k in dg: r[k] = dg[k]
     lp = qa.get("tile_cd_log")

@@ -544,3 +544,6 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   ~18 h + ~6 h today.
 - **User 11-08: for future models (V4 MoE etc.) the default is H_in only, no Σdy² / H_out**: ~2× the statistics
   time for ~−3% KLD is not worth it; revisit only if the collection gets cheap or a model shows a much larger gain.
+
+
+But what I will add to my lists of things to try is seeing if a lower quality but lower overhead int4/int8 quant can be viable. But that will need to be post very heavy trellis kernel optimization to confirm it’s as good as it’s gonna get.

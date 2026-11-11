@@ -4,6 +4,77 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 8:15 AM CST · #141 · sub-1 follow-ups of #132 / #136: drift table at every sub-1 K, g recheck on production, NTRY 4, swj at sub-1 (w107): rule committed, queues running
+- **Status:** running · **Machine:** Thor + colo (-01 / -03, q87 runners, single-threaded, nice 19; colo ≤ 8 GB of ours,
+  no ffn_down), gpubox card 0 (-02 now, -04 after w106's card steps; card0.lock → ram.lock shared) · **Code:**
+  `v3/e3/settle/w107/` · **Rule:** `v3/e3/settle/w107.md`, **committed alone (69cbd3e) before any data** · **Data:**
+  `v3/e3/settle/data/w107/` (when done)
+- **Question:** (-01) measured LDLQ drift D(K) at K0.25 / 0.375 / 0.625 / 0.75 / 0.875 (w100's proxy, same 27 × 2) and
+  what a measured table buys held-out at all eight sub-1 K; does log-linear interp of w100's three points (1.348 / 1.184 /
+  1.089) predict the new ones within 1%? (-02) on the real quantizer (layers 2–3, K0.125 / 0.5), does the table move g
+  off the 2.05 edge and lower the error on ≥ 80% of tensors with none worse by > 0.5%? (-03) NTRY 4 ratio and time
+  (information for a per-tensor knapsack option). (-04) #132-01 on today's 0.8B stack, w100's rule unchanged.
+- **Setup:** settings stamp 87a7e4ab (committed v3.toml; the lead's uncommitted `scale_clamp` / swj k_max edits are not
+  in these runs). G1 (Thor): the cur re-run reproduces w100's rows (same box bit-identical; cross-box rel2_B 3e-8, d_all
+  8.5e-10 relative).
+- **Runtime:** none (-03: quant time only).
+
+### 2026-11-11 8:14 AM CST · #130 / #131 · P16 tile interleave: (a) f2 0.68 on qkv and (b) held out kept 0.98, both PASS → 27B pair (c) queued on card 0; MLP / k_proj gain nothing in the model; per-section K FAILS (−0.02 bit) (w101)
+- **Status:** #130-01 PASS, #130-02 PASS, #130-03 running (queued on card0.lock), amendment 2 (v_proj f2) queued · #131
+  **FAIL** · **Machine:** gpubox card 0 ((a) 11-09 03:56–05:14 UTC; (c) / v_proj from 11-11 14:03 UTC), colo ((b), #131
+  queue 11-09 04:04–09:24 UTC, model extras 11-11) · **Code:** `v3/e3/settle/w101/` (README) · **Rule:**
+  `v3/e3/settle/w101.md` (acf54f2; amendment 1 = (c) recipe 0446e9b; amendment 2 = v_proj f2 80016b2; each before its
+  data) · **Data:** `v3/e3/settle/data/w101/`. Read on 11-11 after the 11-09 stop: every 11-09 job had finished, so
+  nothing was rerun.
+- **#130-01 (a), real rxq two-sided f2, P16 / natural** (geo over K2.5 / K4 × seeds 0 / 1; stamp ed97adb7):
+  L10 in_proj_qkv **0.678** (model 0.658), L11 q_proj 0.825, L39 q_proj 0.926, L10 in_proj_z 0.949. Seeds agree to
+  ±0.002. The unweighted f1 rises (qkv ×1.17), as expected for an H_out-driven gain. Pass (≤ 0.90); scope of (c)
+  = qkv + q_proj (geo 0.874 ≤ 0.95) + z (0.949 ≤ 0.95).
+- **#130-02 (b), stability over Σdy² block halves** (112 tensors, G-b 6e-8): P16 cost ratio in → out of sample qkv
+  0.779 → 0.784 (**kept 0.977**), z 0.918 → 0.922 (0.959), q_proj 0.851 → 0.857 (0.960); head-level Spearman ρ
+  0.97 / 0.95 / 0.97. Pass (≥ 0.75). B16 (h-fitted balanced tiles, report only) 0.72 on qkv, also stable.
+- **Lead note (where else):** model P16 / N, in-sample bn1920: v_proj 0.923, k_proj 0.952, mlp gate 1.000, up 1.000,
+  down's input side (π on its columns, 4 layers) **1.007, worse** → the MLP gets nothing (no kernel change would be
+  needed there, but there is no gain). v_proj ≤ 0.95 → real f2 per amendment 2 (L3 / L11 / L39 / L63, report only).
+- **#130-03 (c):** 112 tensors (48 qkv, 48 z, 16 q_proj) at K2.5, N vs P16, seeds 0 / 1, stamp 87a7e4ab (refit
+  "hout"), dense bf16 splice into mix-base / mix-s1, gates (rxq.pairs, bytes, stamp), golden-search27c (its last use,
+  R55; docstat per-document view printed). Pass: geo ≤ 0.995, both parts < 1. Kernel / timing note written
+  (`w101/kernel-note130.md`): store-side remap is closed-form (16-column tiles, `uint4` stores stay whole), ~4 int ops
+  per store in exl3i_8a8 / nt / rate kernels, plus a format bit; a separate gather costs ~0.1 ms per qkv call at T 2048.
+- **#131, per-section K at equal bytes** (w87 two-sided block proxy, 8 tensors × B2.5 / B4, chosen on one block half,
+  scored on the other): mean held-out gain **−0.018 bit** (attn_qg −0.003 / +0.003, ssm_qkv −0.037 / −0.034) vs ≥ 0.10
+  → **FAIL**, no 27B pair. In-sample +0.05–0.13 bit does not survive. Section boundaries lie on 128-row blocks (asserted).
+- **Runtime:** #131 none. #130: if adopted, prefill + decode (store-side un-permute in every kernel writing ssm_qkv /
+  ssm_z / attn_qg; ~0 expected for the store remap, not yet timed; timing plan in the kernel note).
+
+### 2026-11-11 8:25 AM CST · #129-02 · swj at K6 on 2× the documents: cap swj at k_max = 4.5 (by the rule) · R14 scale clamp adopted
+- **#129-02:** `mix-k6{c9,swj}` (same K6 codes, svh only) scored on golden-search27b x + c (w91 builds; ~4 min card 0),
+  pooled with #129's 27c rows (`v3/e3/settle/data/w99/s129b.txt`, `eval/docstat/docstat.py`). 192 docs: pooled r
+  **1.026** [0.925, 1.038], per-doc geo 0.989, median 0.989, 57% of docs better; xcorp 1.026 (one doc 77% of the
+  KL; without it 0.994 [0.881, 1.046]); calib pooled 0.982 [0.953, 1.003] but per-doc geo **1.021** (47% better). On 27b
+  alone the heavy doc is swe-rebench-openhands (73%, r 1.089), on 27c smoltalk2/longalign: each slice's xcorp part is one
+  document in pooled terms. Rule (w99.md #129-02, before data): pooled ≥ 1.00 → **cap**. No reading shows a gain worth
+  keeping; v3.toml `post.swj.k_max` 8.0 → **4.5** (~0.75 card-h saved per level above K4.5, ~15–18 card-h per ladder).
+- **R14 clamp (#132, user 11-11):** `quant.scale_clamp = true`: after the refit, |su| / |sv| ≥ max(f16 min normal,
+  1e-3 · median) per vector, else the pre-refit value, else the floor (sign kept); Qf, the logged proxy and every refit
+  arm follow the clamp (`pipeline/rxq/refit.py` clamp_scales). On the real w92 K0.125 codes (3 tensors with values under
+  the floor, 49 values) the one- / two-sided proxy changes by **≤ 4e-6 relative** (`v3/e3/settle/r14/r14.jsonl`,
+  `r14chk.py`). First check_diag run caught a stale logged proxy and unclamped arms when the clamp fires (random test
+  tensors), both fixed; checks re-running on colo.
+- **Settings stamp → `524bc8684c7fda53`** (swj k_max 4.5 + scale_clamp). Checks on colo: check_diag 20/20, check_cpujob 25/25, check_ladder 5/5 (rerun with the final v3.toml). User 11-11: agrees with the cap ("barely has an impact if at all").
+- **Runtime:** none (swj scales fold into svh; the clamp changes stored values only).
+
+### 2026-11-11 8:05 AM CST · #140 · C9 at low K on the 0.8B (off / today / α(K) / e clip 0.3), KL: rule committed, infra rebuild on gpubox (w106)
+- **Status:** running · **Machine:** gpubox card 0 (`/root/card0.lock` → `ram.lock` shared, behind other card-0 jobs;
+  the 4070 is out) · **Code:** `v3/e3/settle/w106/` · **Rule:** `v3/e3/settle/w106.md`, **committed alone (a139199)
+  before any data** · **Data:** `v3/e3/settle/data/w106/` (when done)
+- **Question:** #138-01 / R15: C9's c = (1−e)^(−α/2) has no K schedule (c up to 2.83 at gdn_out α 3). Does α(K) =
+  α·clip(K−1, 0, 1), or e clipped at 0.3, beat C9 as today by ≥ 1% at K0.5 and K1 (both seeds) without costing > 0.3% at K2?
+- **Setup:** today's settings via `rxq quant` on the 0.8B (stamp 87a7e4ab, block order off: the 27B's order), H_out c18 dy,
+  swj (g08-fit1); K0.5 / 1 / 1.5 / 2 × seeds 0 / 1; arms on fixed codes (writer row multipliers only), scored on g08-search1.
+  The 4070's 0.8B files are unreachable: h08 and the two goldens are rebuilt on card 0 (same documents), c18 copied from colo.
+- **Runtime:** none (C9 folds into svh).
+
 ### 2026-11-11 8:05 AM CST · #136-01, -03, -06 · NTRY 16 passes at every sub-1 level (−5.4 / −1.9 / −0.8%) and chains pass at K0.125 (−10.7%); tile CD helps at K6 and K1.5; card-0 rxq is reproducible (tensors bit-identical; only the safetensors header key order varies) (w102)
 - **Status:** done (all of #136 now read) · **Machine:** colo + Thor (-01, 81 CPU jobs, 11-09 ~04:15–06:30 UTC), gpubox
   card 0 (-03 / -06, 11-09 04:03–05:11 UTC, under card0.lock + ram.lock shared) · **Code:** `v3/e3/settle/w102/`
@@ -325,7 +396,8 @@ versions of anything: git history.
     mix.
 
 ### 2026-11-09 9:50 PM CST · #137 · A-15 partial activation denoising (H + ρN) vs equal-trace damping, 0.8B: rule committed, running (w103)
-- **Status:** running · **Machine:** 4070 (queue `/data/queue.d/95-w103.sh`, gpu.lock per unit, VRAM ≤ 7.2 GB, nice 19) ·
+- **11-11 8:00 AM CST: moved to gpubox card 0** (the 4070 is out), **amendment 1 committed alone (48d559f) before any data**: the 4070 run had been stopped 11-09 inside its first unit, nothing scored or read. Inputs rebuilt on gpubox (`gpubox/setup.sh`, `/data/w103`): model (w106's HF download, reflinked), g08-fit1 from the ledger's 87 docs (score check PASS, max |GPU − score.py| 1.5e-6), g08-search2 / -search3 by more.sh's seeded draw (`gpubox/docs.py`; 145,541 / 152,407 rows), 0.8B calib input Hessians (hcollect.py) and C18's H_out dy (collect.py, yaqaFact7's env). Reproduction gate (information only) dropped: its references are on the 4070. Driver `gpubox/w103.sh` (run.sh with `W103_ENV=gpubox/env.sh`).
+- **Status:** running · **Machine:** gpubox card 0 since 11-11 (was: 4070, queue `/data/queue.d/95-w103.sh`) ·
   **Code:** `proxy2b/exp/w103-pad/` (`mkhp.py`, `run.sh`, `report.py`; snapshot `/data/yb/w103/snap/`; moments.py from
   w07-denoise) · **Rule:** `proxy2b/exp/w103-pad/RULES.md`, **committed alone (dc45f47) before data**
 - **Question:** quantize every trunk linear against H′ = H + ρN (N = E[ηηᵀ] of the input error in a quantized model,

@@ -43,7 +43,7 @@ def check_mode(m):
     return m
 
 
-def begin(key, mode, h=None, sigma_out=0.01, diag=None, arms=None):
+def begin(key, mode, h=None, sigma_out=0.01, diag=None, arms=None, clamp=False):
     """the context of one tensor's quantize_exl3 call: mode (quant.refit), h = the raw H_out diagonal (n,) or None"""
     _CTX.clear()
     if diag is None: diag = os.environ.get("RXQ_DIAG", "1") != "0"
@@ -51,7 +51,7 @@ def begin(key, mode, h=None, sigma_out=0.01, diag=None, arms=None):
     for a in arms:
         if a not in ARM_NAMES or a == "cur": raise ValueError(f"RXQ_REFIT_ARMS: {a} (known: none, hout, undamped, hout+undamped)")
     _CTX.update(key=key, mode=check_mode(mode), h=None if h is None else h.flatten().double().cpu(), sigma_out=float(sigma_out),
-                diag=bool(diag), arms=list(arms), out={})
+                diag=bool(diag), arms=list(arms), out={}, clamp=bool(clamp))
     return _CTX
 
 
@@ -137,6 +137,23 @@ def refit_port(weight, weight_q, H, su, sv, rounds=2, chunk=16384, damping=0.0, 
     return Q, su, sv, e_before, e_after
 
 
+F16_MIN_NORMAL = 2.0 ** -14
+
+
+def clamp_scales(s, s_pre, rel=1e-3):
+    """R14: |s| >= floor = max(f16 min normal, rel * median |s|); a value below it takes the pre-refit value when that
+    clears the floor, else the floor with the value's sign. -> (clamped s, number changed). Shapes kept."""
+    v = s.float().flatten(); p = s_pre.float().flatten().to(v.device)
+    floor = max(F16_MIN_NORMAL, rel * float(v.abs().median()))
+    bad = v.abs() < floor
+    if not bool(bad.any()): return s, 0
+    sign = torch.where(v < 0, -1.0, 1.0)
+    sign = torch.where(v == 0, torch.where(p < 0, -1.0, 1.0), sign)
+    rep = torch.where(p.abs() >= floor, p, sign * floor)
+    out = torch.where(bad, rep, v)
+    return out.view(s.shape).to(s.dtype), int(bad.sum())
+
+
 def _stats(W, Q, H, d_off, h, chunk=16384, full=True):
     """per output channel (fp64 on the CPU): e (E^T H_e E)_nn and, with full, r / x / d and the tile map; H_e = H - d_off I"""
     dev = Q.device
@@ -208,6 +225,18 @@ def install(Q):
             Qf, su_f, sv_f, e_b, e_a = weight_q, su.float().view(k, 1), sv.float().view(1, n), f1, f1
         else:
             Qf, su_f, sv_f, e_b, e_a = _arm(weight, weight_q, H, su, sv, rounds, chunk, damping, mode, ctx)
+        if ctx.get("clamp"):                    # R14: Qf follows the clamped scales (Qf = Q_pre * su / su_pre * sv / sv_pre)
+            su_c, nu = clamp_scales(su_f, su_pre); sv_c, nv = clamp_scales(sv_f, sv_pre)
+            if nu or nv:
+                def ratio(a, b):                # an exact zero left Qf's row / column at 0: kept (counted), never inf
+                    a, b = a.float().flatten(), b.float().flatten()
+                    return torch.where(b == 0, torch.ones_like(b), a / torch.where(b == 0, torch.ones_like(b), b))
+                ru = ratio(su_c, su_f).to(Qf.device).view(k, 1); rv = ratio(sv_c, sv_f).to(Qf.device).view(1, n)
+                out.setdefault("clamp_zero", int((su_f.float() == 0).sum() + (sv_f.float() == 0).sum()))
+                Qf = (Qf.float() * ru * rv).to(Qf.dtype); su_f, sv_f = su_c, sv_c
+                st_c = _try_dev(lambda W_, Q_, H_: _stats(W_, Q_, H_, d_off, None, chunk, full=True), weight, Qf, H)
+                e_a = float(st_c["e"].sum() / st_c["r"].sum().clamp_min(1e-300))   # the logged proxy follows the clamp
+            out["clamp"] = {"su": nu, "sv": nv}
         if ctx["diag"]:
             post = _try_dev(lambda W_, Q_, H_: _stats(W_, Q_, H_, d_off, None, chunk, full=True), weight, Qf, H)
             h = hraw
@@ -225,6 +254,8 @@ def install(Q):
                 if m == mode: s_u, s_v = su_f, sv_f
                 elif m is False: s_u, s_v = su.float().view(k, 1), sv.float().view(1, n)
                 else: _, s_u, s_v, _, _ = _arm(weight, Q_pre.clone(), H, su, sv, rounds, chunk, damping, m, ctx)
+                if ctx.get("clamp") and m != mode:      # every arm under the same R14 clamp as the stored result
+                    s_u = clamp_scales(s_u, su_pre)[0]; s_v = clamp_scales(s_v, sv_pre)[0]
                 s_u16 = s_u.flatten().half().float().to(dev); s_v16 = s_v.flatten().half().float().to(dev)
                 Qa = Q_pre * (s_u16 / su_pre.to(dev)).view(k, 1) * (s_v16 / sv_pre.to(dev)).view(1, n)
                 st = _try_dev(lambda W_, Q_, H_: _stats(W_, Q_, H_, d_off, None, chunk, full=False), weight, Qa, H)
