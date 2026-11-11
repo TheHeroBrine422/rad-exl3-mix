@@ -1,0 +1,51 @@
+diff -ru a/pipeline/config/v3.toml b/pipeline/config/v3.toml
+--- a/pipeline/config/v3.toml	2026-11-11 16:14:29.486398857 +0000
++++ b/pipeline/config/v3.toml	2026-11-11 16:14:29.496259933 +0000
+@@ -71,7 +71,8 @@
+ lowest_level_damping = { enable = true, k_max = 0.125, sigma = 0.2 }   # #114-02 (w79, held-out): K0.125 wants sigma 0.2 on both groups (inputs -1.9%, rest -1.2% proxy); adopted by the user 11-08
+ gain = 1.0                     # #39 done: flat, keep 1.0 (w43 settle.py, no family >= 1% at >= 2 K)
+ out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1) -> always on
+-drift = "interp"               # LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
++drift = "measured"             # #141-01 (w107): measured sub-1 table (rxq/engine.py MEASURED_DRIFT), log-linear between;
++                               # was "interp": LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
+                                # identical at the table points; "exact" = exllamav3's lookup (OURQ_DRIFT_EXACT=1)
+ block_trace = false            # ourq default: the regularized-domain proxy is overwritten by the refit's (output-neutral)
+ refit = "hout"                 # #138-03 adopted (user 11-09).                                  exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level. rxq/refit.py (w98, #138):
+diff -ru a/pipeline/rxq/config.py b/pipeline/rxq/config.py
+--- a/pipeline/rxq/config.py	2026-11-11 16:14:29.473398858 +0000
++++ b/pipeline/rxq/config.py	2026-11-11 16:14:29.495884075 +0000
+@@ -34,7 +34,7 @@
+ def validate(cfg):
+     q = cfg["quant"]; ho = cfg["inputs"]["hout"]
+     assert q["out_scales"] == "always", "only out_scales = always is implemented (#48)"
+-    assert q["drift"] in ("interp", "exact")
++    assert q["drift"] in ("interp", "exact", "measured")
+     assert isinstance(q.get("scale_clamp", False), bool), "quant.scale_clamp: true | false"
+     assert isinstance(q["refit"], bool) or q["refit"] in ("hout", "undamped", "hout+undamped"), \
+         f"quant.refit: true | false | hout | undamped | hout+undamped, not {q['refit']!r} (rxq/refit.py)"
+diff -ru a/pipeline/rxq/engine.py b/pipeline/rxq/engine.py
+--- a/pipeline/rxq/engine.py	2026-11-11 16:14:29.479398857 +0000
++++ b/pipeline/rxq/engine.py	2026-11-11 16:14:29.495960379 +0000
+@@ -50,6 +50,9 @@
+     return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2")}
+ 
+ 
++MEASURED_DRIFT = {0.125: 1.348, 0.25: 1.342, 0.375: 1.245, 0.5: 1.184, 0.625: 1.142, 0.75: 1.114, 0.875: 1.092, 1: 1.089}
++
++
+ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True, block_order=None):
+     """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path]);
+     block_order: None or the stored order of the 40 residual 128-blocks (#117)"""
+@@ -80,8 +83,10 @@
+             r = orig_refit(*[mv(x, "cpu") for x in args], **{k: mv(v, "cpu") for k, v in kw.items()})
+             return tuple(mv(x, dev[0]) for x in r) if isinstance(r, tuple) else mv(r, dev[0])
+     Q.refit_scales = _refit
+-    if drift == "interp":
+-        _DT = sorted({**Q.LDLQ_DRIFT, 4: 1.0}.items())
++    if drift in ("interp", "measured"):
++        # "measured" (#141-01, w107): the LDLQ drift measured at every sub-1 level (w100 / w107 proxy, 27 tensors x 2,
++        # geo mean of d_all) replaces the flat 1.08 below K1 and exllamav3's K1 point; K >= 1.5 unchanged
++        _DT = sorted({**Q.LDLQ_DRIFT, **(MEASURED_DRIFT if drift == "measured" else {}), 4: 1.0}.items())
+ 
+         def _drift(K):
+             K = float(K)

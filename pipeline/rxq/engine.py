@@ -50,6 +50,9 @@ def _kernel_dirs():
     return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2")}
 
 
+MEASURED_DRIFT = {0.125: 1.348, 0.25: 1.342, 0.375: 1.245, 0.5: 1.184, 0.625: 1.142, 0.75: 1.114, 0.875: 1.092, 1: 1.089}
+
+
 def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True, block_order=None):
     """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path]);
     block_order: None or the stored order of the 40 residual 128-blocks (#117)"""
@@ -80,8 +83,10 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
             r = orig_refit(*[mv(x, "cpu") for x in args], **{k: mv(v, "cpu") for k, v in kw.items()})
             return tuple(mv(x, dev[0]) for x in r) if isinstance(r, tuple) else mv(r, dev[0])
     Q.refit_scales = _refit
-    if drift == "interp":
-        _DT = sorted({**Q.LDLQ_DRIFT, 4: 1.0}.items())
+    if drift in ("interp", "measured"):
+        # "measured" (#141-01, w107): the LDLQ drift measured at every sub-1 level (w100 / w107 proxy, 27 tensors x 2,
+        # geo mean of d_all) replaces the flat 1.08 below K1 and exllamav3's K1 point; K >= 1.5 unchanged
+        _DT = sorted({**Q.LDLQ_DRIFT, **(MEASURED_DRIFT if drift == "measured" else {}), 4: 1.0}.items())
 
         def _drift(K):
             K = float(K)

@@ -1,0 +1,14 @@
+14:14:15 real107 start (code 80016b2+w107-worktree, exl3 b0052f7c, stamp 87a7e4ab32f9d5b9)
+14:42:11 cur-K0.125: card 0 held after 1676 s
+14:49:46 cur-K0.125: rc 0, 13 t-files, 2131 s wall (incl. lock wait)
+15:11:18 tab-K0.125: card 0 held after 1292 s
+15:17:56 tab-K0.125: rc 0, 13 t-files, 1690 s wall (incl. lock wait)
+15:21:31 cur-K0.5: card 0 held after 215 s
+15:27:35 cur-K0.5: rc 0, 13 t-files, 579 s wall (incl. lock wait)
+15:32:19 tab-K0.5: card 0 held after 284 s
+15:38:22 tab-K0.5: rc 0, 13 t-files, 647 s wall (incl. lock wait)
+15:44:25 real cur-K0.125: 13 rows
+15:50:32 real tab-K0.125: 13 rows
+15:56:38 real cur-K0.5: 13 rows
+16:02:41 real tab-K0.5: 13 rows
+16:02:41 real107 done: cur:0.125 tab:0.125 cur:0.5 tab:0.5 real

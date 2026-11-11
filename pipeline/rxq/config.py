@@ -34,7 +34,7 @@ def load(path=None):
 def validate(cfg):
     q = cfg["quant"]; ho = cfg["inputs"]["hout"]
     assert q["out_scales"] == "always", "only out_scales = always is implemented (#48)"
-    assert q["drift"] in ("interp", "exact")
+    assert q["drift"] in ("interp", "exact", "measured")
     assert isinstance(q.get("scale_clamp", False), bool), "quant.scale_clamp: true | false"
     assert isinstance(q["refit"], bool) or q["refit"] in ("hout", "undamped", "hout+undamped"), \
         f"quant.refit: true | false | hout | undamped | hout+undamped, not {q['refit']!r} (rxq/refit.py)"

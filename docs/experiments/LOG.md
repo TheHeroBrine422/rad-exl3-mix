@@ -4,6 +4,34 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 11:10 AM CST · #141 · measured drift table helps at every sub-1 K (held out −2.4 … −0.1%) and takes production g off the 2.05 edge (13/13 tensors better at K0.125 and K0.5); NTRY 4 keeps 59–96% of NTRY 16's gain at ~¼ the cost; swj fails the sub-1 rule at K0.5 on the 0.8B, keeps K1 (w107)
+- **Status:** done (proposals for the lead) · **Machine:** Thor + colo (-01 / -03: 170 + 23 single-threaded jobs, 11-11
+  14:10–15:59 UTC), gpubox card 0 (-02 14:42–15:38 UTC, -04 evals 16:55–16:58 UTC, card0.lock → ram.lock shared) ·
+  **Code:** `v3/e3/settle/w107/` · **Rule:** `v3/e3/settle/w107.md` (69cbd3e, committed alone before data; its text says
+  "~8:20 AM CST", the commit is 8:06 AM CST) · **Data:** `v3/e3/settle/data/w107/` (`report.md`; rerun:
+  `python3 v3/e3/settle/w107/report107.py v3/e3/settle/data/w107`)
+- **Gates:** G1 PASS (cur re-run = w100's rows: same box bit-identical, cross-box rel2_B ≤ 5.6e-8, d_all ≤ 9.2e-10
+  relative); G0 PASS (T1 = w102's stored rows, worst 9.7e-8).
+- **-01 drift (w100's proxy, 27 × 2, held-out two-sided rel2_B):** D(K) = 1.3475 / **1.3425 / 1.2452** / 1.1838 /
+  **1.1425 / 1.1137 / 1.0922** / 1.0892 at K0.125 / 0.25 / 0.375 / 0.5 / 0.625 / 0.75 / 0.875 / 1. Log-linear interp of
+  w100's three points misses K0.25 by +4.0% (the drift is flat from K0.125 to K0.25), K0.625–0.875 by −1.5 … −1.9% →
+  **the eight-point table is needed.** Table arm vs cur (r, tensor-bootstrap 95% CI): 0.9758 [0.968, 0.983], **0.9654**
+  [0.956, 0.975], 0.9756, 0.9830, 0.9914, 0.9960, 0.9993 [0.9983, 1.0002], 0.9981 [0.997, 0.999]; r ≤ 1.000 at all 8 →
+  **proposed: T = 1.348 / 1.342 / 1.245 / 1.184 / 1.142 / 1.114 / 1.092 / 1.089** (K ≥ 1.5 unchanged). Patch:
+  `v3/e3/settle/w107/drift-measured.patch` (drift = "measured" in v3.toml + rxq/engine.py table; stamp → 159591b2670f304b on HEAD).
+- **-02 production (rxq, layers 2–3, 13 tensors, i8, in-sample calib H):** cur g = 2.050 (edge) on 13/13 at K0.125; with
+  the table g = 1.73–1.85, none at the edge. Two-sided error tab / cur: K0.125 geo **0.9877**, 13/13 ≤ 1, worst 0.9997
+  (q_proj 0.923); K0.5 geo **0.9816**, 13/13, worst 0.9981; one-sided agrees (0.9873 / 0.9835, 13/13). **Rule PASS → the
+  drift table is proposed for adoption.**
+- **-03 NTRY 4 (w102's setup, 27 × s0):** R4 = **0.9678 / 0.9859 / 0.9920** at K0.125 / 0.5 / 1 (NTRY 16: 0.9456 / 0.9812 /
+  0.9917: NTRY 4 keeps 59% / 75% / 96% of its gain); CPU factor 3.90–3.93 per tensor. Card-0 level time with w102's
+  shares (×4 GPU passes): K0.125 3.3 → ~12 h, K1 1.0 → ~3.0 h. Information only (ladder default stays NTRY 1).
+- **-04 swj at sub-1 (#132-01, w100's rule; 0.8B, w106's K0.5 / K1 quants reused, today's rxq stack, g08-search1):**
+  swj / base KL: K0.5 **0.9715 (z −22.7) / 1.0483 (z +35.6), geo 1.0092 → fails** (propose swj k_min above K0.5);
+  K1 0.9610 / 0.9724, geo **0.9666 → keeps**. Both sides are the jobs' wq, i.e. before C9's sidecar (as d1103's stack, which
+  had no C9). At K0.5 the 0.8B is near-random (KL 8.1–8.7, top-1 6–8%), so it is a weak proxy for the 27B at K0.5.
+- **Runtime:** none (-03: quant time only).
+
 ### 2026-11-11 11:15 AM CST · #140 · C9 at low K (0.8B KL): no arm passes the rule, but the data show C9 hurts at K0.5 and helps from K1 (lead read; w106 driver)
 - **Status:** done, rule verdict **no arm passes → C9 stays as today**; post-hoc reading below (proposal, needs a confirm)
   · **Machine:** gpubox card 0 (driver ran headless after the agent was stopped 14:43 UTC; one fix: PYTHONPATH for

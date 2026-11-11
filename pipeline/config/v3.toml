@@ -71,7 +71,8 @@ apply_sub1_damping = true      # ADOPTED by the user 2026-11-07 (LOG 9:25 AM CST
 lowest_level_damping = { enable = true, k_max = 0.125, sigma = 0.2 }   # #114-02 (w79, held-out): K0.125 wants sigma 0.2 on both groups (inputs -1.9%, rest -1.2% proxy); adopted by the user 11-08
 gain = 1.0                     # #39 done: flat, keep 1.0 (w43 settle.py, no family >= 1% at >= 2 K)
 out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1) -> always on
-drift = "interp"               # LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
+drift = "measured"             # #141-01 (w107; adopted 11-11, stamp 159591b2): measured sub-1 table (rxq/engine.py MEASURED_DRIFT), log-linear between;
+                               # was "interp": LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
                                # identical at the table points; "exact" = exllamav3's lookup (OURQ_DRIFT_EXACT=1)
 block_trace = false            # ourq default: the regularized-domain proxy is overwritten by the refit's (output-neutral)
 refit = "hout"                 # #138-03 adopted (user 11-09).                                  exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level. rxq/refit.py (w98, #138):
