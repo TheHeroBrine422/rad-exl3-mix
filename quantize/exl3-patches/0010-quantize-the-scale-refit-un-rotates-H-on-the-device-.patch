@@ -1,0 +1,34 @@
+From fb8f44c109d379ba5bd46866a9cf5af62add0fc3 Mon Sep 17 00:00:00 2001
+From: Phillip Kang <26475855+phillipxkang@users.noreply.github.com>
+Date: Tue, 10 Nov 2026 17:01:25 -0800
+Subject: [PATCH] quantize: the scale refit un-rotates H on the device (host
+ BLAS out of the result; CPU on out-of-memory)
+
+unrotate_H(H) with H on the CPU ran the two @ of blockwise_preapply_had_l_ / _r_ in the host BLAS (reached only
+from this call): results differed between hosts with the same card by 1 f16 ulp in a few suh / svh (GitHub issue 2
+of rad-exl3-mix). Now on the device, as original_H() and the batched path already do; on the CPU on out-of-memory.
+---
+ exllamav3/modules/quant/exl3_lib/quantize.py | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/exllamav3/modules/quant/exl3_lib/quantize.py b/exllamav3/modules/quant/exl3_lib/quantize.py
+index 40c06f52..4c67c7d1 100644
+--- a/exllamav3/modules/quant/exl3_lib/quantize.py
++++ b/exllamav3/modules/quant/exl3_lib/quantize.py
+@@ -1984,7 +1984,12 @@ def quantize_exl3(
+ 
+         # Polish: refit the per-channel fp16 scales to the quantized weight (free at inference)
+         if not q_fallback and H is not None and not quant_args.get("no_refit"):
+-            H_orig = unrotate_H(H, H_data["su"])
++            # On the device, as original_H() does: on the CPU the host BLAS's rounding differs between hosts
++            # (1 f16 ulp in a few suh / svh). No room on the card: on the CPU as before
++            try:
++                H_orig = unrotate_H(H.to(device), H_data["su"])
++            except torch.OutOfMemoryError:
++                H_orig = unrotate_H(H, H_data["su"])
+             weight_q, su_f, sv_f, e_before, e_after = refit_scales(weight_orig, weight_q, H_orig, su, sv,
+                                                                    damping = damping_share(quant_args))
+             del H_orig
+-- 
+2.54.0 (Apple Git-157)
+
