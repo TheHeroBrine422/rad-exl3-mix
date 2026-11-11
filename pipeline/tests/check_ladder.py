@@ -9,8 +9,11 @@
            H_out inputs at every level (apply_k_min 0); C9 on out_proj / o_proj only (alpha down 0)
   manifest pins carry the manifest's sha256; a missing input is refused
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
+  post     post_scripts at batch 1 = post_script per level, one --src a swjfit call; post-batch at batch 4 (default,
+           asym on, swj k_max 4): one swjfit call per <= 4 consecutive swj levels of one pass, every --src once in
+           level order, export before and apply after it, scratches distinct, every other line unchanged
 Last line: "LADDER CHECKS n/m PASS"."""
-import hashlib, json, os, sys
+import hashlib, json, math, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, ".."))
@@ -78,5 +81,53 @@ td, tb = sum(r["quant_h"] for r in ed.values()), sum(r["quant_h"] for r in eb.va
 k = "model.language_model.layers.10.mlp.gate_proj"
 report("estimate", set(ed) == {"1", "2", "3"} and tb < td and LD.tensor_vram(cfg, k, 0.5) > LD.tensor_vram(cfg, k, 2.5),
        f"quant card-h dense {td:.0f} / blocks {tb:.0f}; gate VRAM K0.5 {LD.tensor_vram(cfg, k, 0.5):.2f} > K2.5 {LD.tensor_vram(cfg, k, 2.5):.2f} GiB")
+
+from rxq import post as P  # noqa: E402
+args = ("EXPORT", "MODEL", "SWJMETA", "SCRATCH", "OUT"); SW = "python -m rxq.swjfit "
+lva = LD.levels(cfg)
+def has_swj(c, v): return any(x[0] == "swj" for x in P.plan_level(c, v["K"]))
+def srcs(x): return re.findall(r" --src (\S+?)=", x)
+def scr(x): return re.search(r" --scratch (\S+) ", x).group(1)
+t1 = LD.post_scripts(cfg, lva, *args); s1 = [x for x in t1.splitlines() if x.startswith(SW)]
+n1 = sum(has_swj(cfg, v) for v in lva)
+report("post", t1 == "".join(LD.post_script(cfg, v, *args) for v in lva) and len(s1) == n1 and all(x.count(" --src ") == 1 for x in s1),
+       f"{len(s1)} swjfit calls for {len(lva)} levels ({n1} with swj), at most {max(x.count(' --src ') for x in s1)} --src")
+
+
+def batch_ok(c, why):
+    """the batch-4 text of every level of c against its batch-1 text: every check of post-batch but the scratch pair"""
+    lv = LD.levels(c); ps = {v["name"]: v["pass"] for v in lv}; sw = [v["name"] for v in lv if has_swj(c, v)]
+    l4 = LD.post_scripts(c, lv, *args, swj_batch=4).splitlines(); s4 = [x for x in l4 if x.startswith(SW)]
+    l1 = LD.post_scripts(c, lv, *args).splitlines()
+    runs, prev = [], None                       # maximal runs of consecutive swj levels of one pass
+    for v in lv:
+        if not has_swj(c, v): prev = None; continue
+        if prev is None or prev["pass"] != v["pass"]: runs.append(0)
+        runs[-1] += 1; prev = v
+    want = sum(math.ceil(n / 4) for n in runs)
+    one_pass = all(len(srcs(x)) <= 4 and len({ps[n] for n in srcs(x)}) == 1 for x in s4)
+    order = [n for x in s4 for n in srcs(x)] == sw
+    at = {n: i for i, x in enumerate(l4) if x.startswith(SW) for n in srcs(x)}
+    def first(p): return min(i for i, x in enumerate(l4) if x.startswith(p))
+    place = all(n in at and first(f"admin.py export --level {n} ") < at[n] < first(f"python -m rxq.post apply EXPORT/{n}/level ") for n in sw)
+    scr_u = len({scr(x) for x in s4}) == len(s4)
+    rest = sorted(x for x in l4 if not x.startswith(SW)) == sorted(x for x in l1 if not x.startswith(SW))
+    why.append(f"{len(s4)} swjfit calls for {len(sw)} of {len(lv)} levels (want {want}), at most "
+               f"{max((len(srcs(x)) for x in s4), default=0)} --src; one pass {one_pass}, order {order}, place {place}, "
+               f"scratch unique {scr_u}, other lines {rest}")
+    return len(s4) == want and one_pass and order and place and scr_u and rest
+
+
+wb = []; ok4 = batch_ok(cfg, wb)
+n4 = sum(math.ceil(sum(has_swj(cfg, v) for v in lva if v["pass"] == p) / 4) for p in dict.fromkeys(v["pass"] for v in lva))
+ok4 &= sum(x.startswith(SW) for x in LD.post_scripts(cfg, lva, *args, swj_batch=4).splitlines()) == n4
+ca = C.with_overrides(cfg, **{"post.asym.enable": True}); wa = []; oka = batch_ok(ca, wa)
+asym_kept = "# asym is per mix" in LD.post_scripts(ca, lva, *args, swj_batch=4)
+ck = C.with_overrides(cfg, **{"post.swj.k_max": 4.0}); wk = []; okk = batch_ok(ck, wk)
+A, B, D = lva[0], lva[1], lva[2]
+sab, sad = (scr([x for x in LD.post_scripts(cfg, b, *args, swj_batch=2).splitlines() if x.startswith(SW)][0]) for b in ([A, B], [A, D]))
+report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
+       f"default: {wb[0]} (per-pass ceil {n4}); asym on: {wa[0]}, asym line kept {asym_kept}; swj k_max 4: {wk[0]}; "
+       f"scratch [A,B] != [A,C] {sab != sad}")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

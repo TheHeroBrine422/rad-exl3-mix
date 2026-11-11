@@ -10,9 +10,10 @@ sha256 (the datapack manifest), resource requirements per job from the measured 
                                                            datapack's manifest.json (sha256 of every input)
   python -m rxq.ladder estimate [--ldlq dense|blocks]       R9700 card-hours per pass (+ swj level passes, CPU packs)
   python -m rxq.ladder req                                  the per-tensor requirement table at a few K
-  python -m rxq.ladder post [--pass P] [--levels a,b] [--export D --model M --meta G --scratch S --out O]
+  python -m rxq.ladder post [--pass P] [--levels a,b] [--export D --model M --meta G --scratch S --out O] [--swj-batch N]
                                                            per level, the steps after its jobs: export + assemble, swj
-                                                           level pass, swj + C9 apply, pack recipe
+                                                           level pass (N consecutive levels of a pass share one), swj + C9
+                                                           apply, pack recipe
 
 Job params (rqah jobs/rxq_quant.py checks them): model, revision, arch, level, K, codebook, layer, group, keys,
 settings {rxq: the settings stamp, seed_offset}, stamp (rqah's settings stamp of the params), config (the settings
@@ -257,25 +258,67 @@ def estimate(cfg, n_layers=64):
     return rows
 
 
+def _post_parts(cfg, lv, export, model, meta, scratch, out):
+    """post_script's pieces of one level: (head lines, its swjfit --src or None, the lines after the swjfit call)"""
+    from . import post as P
+    steps = P.plan_level(cfg, lv["K"])
+    name = lv["name"]; L = f"{export}/{name}/level"; S = f"{out}/swj/{name}"; F = f"{out}/levels/{name}"
+    head = [f"# {name}: K{fmt_k(lv['K'])} {lv['codebook']}, post steps {[x[0] for x in steps]}",
+            f"admin.py export --level {name} {export}/{name} --checked --rxq-python python3 --rxq $RXQ"]
+    src = None; scales = []; tail = []
+    if any(x[0] == "swj" for x in steps): src = f"{name}={L}:level"; scales.append(f"{S}/scales")
+    if any(x == ("c9", "job") or x[0] == "c9" and x[1] == "job" for x in steps): scales.append(f"{L}/c9")
+    if any(x[0] == "asym" for x in steps): tail.append("# asym is per mix (#111): rxq.post plan_asym after the knapsack")
+    tail.append(f"python -m rxq.post apply {L} {','.join(scales)} {F}" if scales else f"cp -a {L} {F}")
+    tail.append(f"python -m rxq.mix recipe {F} > {F}.recipe   # then rad-convert exl3i (conv.lock + ram.lock exclusive)")
+    return head, src, tail
+
+
+def _swj_line(model, meta, scratch, out, names, srcs):
+    """one swj level pass for the levels names (sources srcs); a batch's scratch is unique to its levels"""
+    sc = f"{scratch}/{names[0]}"
+    if len(names) > 1: sc += f"+{len(names) - 1}-{hashlib.sha256(chr(10).join(names).encode()).hexdigest()[:8]}"
+    return f"python -m rxq.swjfit {model} {meta} {out}/swj {' '.join(f'--src {s}' for s in srcs)} --scratch {sc} --fused --no-cache"
+
+
+def swj_batches(cfg, lvs, n=1):
+    """lvs in order as [(swj, [levels])]: up to n consecutive levels of one pass that have an swj step share an entry
+    (one rxq.swjfit call, one bf16 forward); a level without one is an entry of its own (swj False)"""
+    from . import post as P
+    out = []
+    for lv in lvs:
+        swj = any(x[0] == "swj" for x in P.plan_level(cfg, lv["K"]))
+        if swj and out and out[-1][0] and len(out[-1][1]) < n and out[-1][1][-1]["pass"] == lv["pass"]: out[-1][1].append(lv)
+        else: out.append((swj, [lv]))
+    return out
+
+
 def post_script(cfg, lv, export, model, meta, scratch, out):
     """the per-level steps after its jobs are accepted (bash text): rqah export (rxq assemble of the accepted job dirs:
     the level + LEVEL/c9 from the writers' in-job C9), the swj level pass (S4, our 32 GB card; post.swj), the one
     rxq.post apply that folds swj's and C9's scales into svh (swj is fitted on the level without C9, as #112-02
     measured it), and the pack recipe (S8; rxq.mix pack_script holds the lock rule)"""
-    from . import post as P
-    steps = P.plan_level(cfg, lv["K"])
-    name = lv["name"]; L = f"{export}/{name}/level"; S = f"{out}/swj/{name}"; F = f"{out}/levels/{name}"
-    sh = [f"# {name}: K{fmt_k(lv['K'])} {lv['codebook']}, post steps {[x[0] for x in steps]}",
-          f"admin.py export --level {name} {export}/{name} --checked --rxq-python python3 --rxq $RXQ"]
-    scales = []
-    if any(x[0] == "swj" for x in steps):
-        sh.append(f"python -m rxq.swjfit {model} {meta} {out}/swj --src {name}={L}:level --scratch {scratch}/{name} --fused --no-cache")
-        scales.append(f"{S}/scales")
-    if any(x == ("c9", "job") or x[0] == "c9" and x[1] == "job" for x in steps): scales.append(f"{L}/c9")
-    if any(x[0] == "asym" for x in steps): sh.append("# asym is per mix (#111): rxq.post plan_asym after the knapsack")
-    sh.append(f"python -m rxq.post apply {L} {','.join(scales)} {F}" if scales else f"cp -a {L} {F}")
-    sh.append(f"python -m rxq.mix recipe {F} > {F}.recipe   # then rad-convert exl3i (conv.lock + ram.lock exclusive)")
-    return "\n".join(sh) + "\n"
+    head, src, tail = _post_parts(cfg, lv, export, model, meta, scratch, out)
+    return "\n".join(head + ([_swj_line(model, meta, scratch, out, [lv["name"]], [src])] if src else []) + tail) + "\n"
+
+
+def post_scripts(cfg, lvs, export, model, meta, scratch, out, swj_batch=1):
+    """post_script for the levels lvs in their order; swj_batch N > 1: up to N consecutive levels of one pass share one
+    swj level pass (swj_batches; rxq.swjfit takes several --src and fits each as if alone, GitHub issue 3): their heads,
+    the one swjfit call, then their tails. 1 = post_script per level"""
+    sh = []
+    for swj, b in swj_batches(cfg, lvs, swj_batch):
+        parts = [_post_parts(cfg, lv, export, model, meta, scratch, out) for lv in b]
+        if swj: sh += [x for h, _, _ in parts for x in h] + [_swj_line(model, meta, scratch, out, [lv["name"] for lv in b],
+                                                                       [s for _, s, _ in parts])] + [x for _, _, t in parts for x in t]
+        else: sh += parts[0][0] + parts[0][2]
+    return "".join(x + "\n" for x in sh)
+
+
+def _swj_batch(s):
+    n = int(s)
+    if n < 1: raise argparse.ArgumentTypeError(f"{s}: an swj pass fits at least 1 level")
+    return n
 
 
 def main(argv=None):
@@ -293,6 +336,7 @@ def main(argv=None):
     a5 = sub.add_parser("post"); a5.add_argument("--pass", dest="which"); a5.add_argument("--levels")
     a5.add_argument("--export", default="EXPORT"); a5.add_argument("--model", default="MODEL"); a5.add_argument("--meta", default="SWJMETA")
     a5.add_argument("--scratch", default="SCRATCH"); a5.add_argument("--out", default="OUT")
+    a5.add_argument("--swj-batch", type=_swj_batch, default=1, help="levels of one pass that share one swj pass (default %(default)s)")
     for x in (a1, a2, a3, a4, a5): x.add_argument("--config"); x.add_argument("--set", action="append", default=[])
     a = ap.parse_args(argv)
     cfg = C.load(a.config)
@@ -316,7 +360,7 @@ def main(argv=None):
     elif a.cmd == "post":
         lvs = levels(cfg, a.which)
         if a.levels: lvs = [v for v in lvs if v["name"] in a.levels.split(",") or fmt_k(v["K"]) + "-" + v["codebook"] in a.levels.split(",")]
-        for lv in lvs: sys.stdout.write(post_script(cfg, lv, a.export, a.model, a.meta, a.scratch, a.out))
+        sys.stdout.write(post_scripts(cfg, lvs, a.export, a.model, a.meta, a.scratch, a.out, swj_batch=a.swj_batch))
     elif a.cmd == "estimate":
         JOB_S = a.job_overhead
         tot = {"levels": 0, "quant_h": 0.0, "swj_h": 0.0, "pack_cpu_h": 0.0, "jobs": 0}
