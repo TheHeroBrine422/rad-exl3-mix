@@ -45,6 +45,7 @@ python -m rxq.knap handoff out.jsonl lib.json MIXDIR --tag T --frontier F   # S7
 python -m rxq.mix recipe LEVEL                          # S8: rad-convert recipe of a level (levelmix PACK: radmix mix)
 python -m rxq.ladder levels | estimate [--ldlq blocks] | req   # the 55 levels in build order, R9700 card-hours per pass,
                                                         # the per-tensor VRAM / seconds table (w81's 11-08 measurements)
+python -m rxq.ladder post [--swj-batch N]               # per level, the steps after its jobs; N levels share one swj pass
 python -m rxq.ladder jobs MANIFEST --model q27 --rev R --pass 1 -o jobs.jsonl   # rad-quant-at-home rxq_quant jobs (inputs
                                                         # pinned by the datapack manifest's sha256): admin.py enqueue-jobs
 python -m rxq.pairs mixes A.rad B.rad --arm attn_qg     # swap-pair hygiene (also: levels, same, splice)
@@ -64,7 +65,8 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
 - `tests/check_pairs.py OUT` — swap-pair hygiene, splice, no-op gate on synthetic levels and RAD2 containers.
 - `tests/check_mix.py SWAP27` — S8 recipe / mix text vs the swap27 arms' files; `tests/check_knap.py OUT` — S7 driver vs
   w63's knapsack solve (~1 min).
-- `tests/check_levelpass.py WORK RXM MODEL08` — swjfit / sibmom / hin vs the research tools on the 0.8B (colo, ~1 h);
+- `tests/check_levelpass.py WORK RXM MODEL08` — swjfit / sibmom / hin vs the research tools on the 0.8B, and `swjb`: a
+  level fitted in a two-source pass equals the level fitted alone (colo, ~1 h);
   `tests/check_deq_c9.py WORK RXM LEVEL MODEL HESS` — decoder, C9 and the quant job's C9 path vs the research tools on
   a 27B level; `tests/check_c9job.py JOB_OUT C9E27 MODEL HESS WORK` — a quant job's C9 files vs c9e27.py.
 - `tests/check_cpu.py OUT` — the 11-06 CPU ports (blend, H_out bn, swj math / apply, mkdenoise both paths; 4070 data).
