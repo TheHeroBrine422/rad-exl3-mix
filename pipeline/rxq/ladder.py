@@ -327,7 +327,7 @@ def post_scripts(cfg, lvs, export, model, meta, scratch, out, swj_batch=1):
 
 def _swj_batch(s):
     n = int(s)
-    if n < 1: raise argparse.ArgumentTypeError(f"{s}: an swj pass fits at least 1 level")
+    if n < 1: raise argparse.ArgumentTypeError(f"{s}: an swj level pass takes at least 1 level")
     return n
 
 
@@ -380,11 +380,11 @@ def main(argv=None):
         print(f"settings {C.settings_stamp(cfg)}, H_out ldlq {cfg['inputs']['hout'].get('ldlq', 'dense')}, {JOB_S:g} s a job overhead; "
               f"R9700-equivalent hours")
         for p, r in sorted(estimate(cfg, swj_batch=nb).items()):
-            sw = f" in {r['swj_passes']} passes (32 GB, ours; flat 0.75 a level)" if nb > 1 else " (32 GB, ours)"
+            sw = f" in {r['swj_passes']} swj level passes (32 GB, ours; flat 0.75 a level with an swj step)" if nb > 1 else " (32 GB, ours)"
             print(f"pass {p:2s}: {r['levels']:2d} levels, {r['jobs']:6d} jobs, quant {r['quant_h']:7.1f} card-h, swj {r['swj_h']:5.1f} "
                   f"card-h{sw}, pack {r['pack_cpu_h']:5.1f} CPU-h; jobs by declared VRAM GB {dict(sorted(r['vram'].items()))}")
             for k in tot: tot[k] += r[k]
-        sw = f" in {tot['swj_passes']} passes" if nb > 1 else ""
+        sw = f" in {tot['swj_passes']} swj level passes" if nb > 1 else ""
         print(f"total  : {tot['levels']} levels, {tot['jobs']} jobs, quant {tot['quant_h']:.1f} card-h, swj {tot['swj_h']:.1f}{sw}, "
               f"pack {tot['pack_cpu_h']:.1f} CPU-h")
     else:
