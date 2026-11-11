@@ -1,0 +1,1149 @@
+{
+ "windows": 1350,
+ "sequences": 1920,
+ "block_seqs": 128,
+ "mean_agent_share": 0.28854166666666664,
+ "collection_shares": {
+  "long-agentic": 0.17604166666666668,
+  "reasoning": 0.12864583333333332,
+  "science": 0.11145833333333334,
+  "agentic": 0.10625,
+  "books": 0.0796875,
+  "chat": 0.078125,
+  "code": 0.07760416666666667,
+  "web": 0.0625,
+  "multilingual": 0.051041666666666666,
+  "math": 0.051041666666666666,
+  "long": 0.027083333333333334,
+  "encyclopedic": 0.021875,
+  "legal": 0.015625,
+  "qa": 0.0067708333333333336,
+  "tools": 0.00625
+ },
+ "blocks": [
+  {
+   "block": 0,
+   "seqs": [
+    0,
+    127
+   ],
+   "agent_share": 0.3046875,
+   "agent_x_mean": 1.0559566787003611,
+   "shares": {
+    "long-agentic": 0.188,
+    "science": 0.133,
+    "reasoning": 0.125,
+    "agentic": 0.117,
+    "chat": 0.086,
+    "code": 0.062,
+    "web": 0.062,
+    "multilingual": 0.055,
+    "math": 0.055,
+    "books": 0.055,
+    "legal": 0.023,
+    "encyclopedic": 0.016,
+    "long": 0.016,
+    "qa": 0.008
+   },
+   "energy_l0": 0.7237813023981264,
+   "energy_l10": 0.6577168769655738,
+   "energy_all": 1.0502063816402019,
+   "loss_mean": 1.0572368421052631,
+   "distinct_docs": 86,
+   "top_loss_seqs": [
+    {
+     "seq": 127,
+     "loss": 2.795,
+     "doc": 75,
+     "cat": "books",
+     "source": "doab"
+    },
+    {
+     "seq": 99,
+     "loss": 2.513,
+     "doc": 4397,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 7,
+     "loss": 2.455,
+     "doc": 3836,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 50,
+     "loss": 2.331,
+     "doc": 1835,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/arb_Arab"
+    },
+    {
+     "seq": 23,
+     "loss": 2.272,
+     "doc": 3220,
+     "cat": "books",
+     "source": "pg19"
+    }
+   ]
+  },
+  {
+   "block": 1,
+   "seqs": [
+    128,
+    255
+   ],
+   "agent_share": 0.3515625,
+   "agent_x_mean": 1.2184115523465706,
+   "shares": {
+    "long-agentic": 0.219,
+    "agentic": 0.133,
+    "science": 0.117,
+    "books": 0.109,
+    "code": 0.094,
+    "web": 0.062,
+    "chat": 0.062,
+    "multilingual": 0.055,
+    "reasoning": 0.047,
+    "math": 0.031,
+    "qa": 0.023,
+    "long": 0.023,
+    "legal": 0.016,
+    "encyclopedic": 0.008
+   },
+   "energy_l0": 1.1007803222467212,
+   "energy_l10": 1.102233613629796,
+   "energy_all": 1.0665211631275588,
+   "loss_mean": 1.1504272727272726,
+   "distinct_docs": 83,
+   "top_loss_seqs": [
+    {
+     "seq": 243,
+     "loss": 2.524,
+     "doc": 3920,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 146,
+     "loss": 2.405,
+     "doc": 2012,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 202,
+     "loss": 2.353,
+     "doc": 357,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 206,
+     "loss": 2.324,
+     "doc": 2897,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 201,
+     "loss": 2.299,
+     "doc": 4439,
+     "cat": "books",
+     "source": "pg19"
+    }
+   ]
+  },
+  {
+   "block": 2,
+   "seqs": [
+    256,
+    383
+   ],
+   "agent_share": 0.2109375,
+   "agent_x_mean": 0.7310469314079423,
+   "shares": {
+    "reasoning": 0.148,
+    "long-agentic": 0.125,
+    "science": 0.117,
+    "math": 0.086,
+    "web": 0.086,
+    "chat": 0.086,
+    "agentic": 0.086,
+    "books": 0.078,
+    "code": 0.07,
+    "long": 0.039,
+    "multilingual": 0.031,
+    "legal": 0.023,
+    "encyclopedic": 0.016,
+    "qa": 0.008
+   },
+   "energy_l0": 0.9402526994613338,
+   "energy_l10": 0.8222177478650182,
+   "energy_all": 0.8810189590026755,
+   "loss_mean": 1.2016972477064218,
+   "distinct_docs": 98,
+   "top_loss_seqs": [
+    {
+     "seq": 314,
+     "loss": 2.618,
+     "doc": 1314,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/swe_Latn"
+    },
+    {
+     "seq": 361,
+     "loss": 2.546,
+     "doc": 2079,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 343,
+     "loss": 2.331,
+     "doc": 563,
+     "cat": "chat",
+     "source": "wildchat"
+    },
+    {
+     "seq": 265,
+     "loss": 2.308,
+     "doc": 3296,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 259,
+     "loss": 2.286,
+     "doc": 1910,
+     "cat": "books",
+     "source": "gutenberg"
+    }
+   ]
+  },
+  {
+   "block": 3,
+   "seqs": [
+    384,
+    511
+   ],
+   "agent_share": 0.25,
+   "agent_x_mean": 0.8664259927797835,
+   "shares": {
+    "long-agentic": 0.148,
+    "reasoning": 0.141,
+    "science": 0.117,
+    "chat": 0.086,
+    "agentic": 0.086,
+    "books": 0.078,
+    "code": 0.07,
+    "web": 0.055,
+    "multilingual": 0.047,
+    "encyclopedic": 0.047,
+    "math": 0.047,
+    "long": 0.039,
+    "legal": 0.023,
+    "tools": 0.016
+   },
+   "energy_l0": 1.3756612795584848,
+   "energy_l10": 1.9998826967936678,
+   "energy_all": 1.1620199015846886,
+   "loss_mean": 1.1354915254237288,
+   "distinct_docs": 94,
+   "top_loss_seqs": [
+    {
+     "seq": 388,
+     "loss": 2.537,
+     "doc": 1846,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 395,
+     "loss": 2.522,
+     "doc": 1314,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/swe_Latn"
+    },
+    {
+     "seq": 492,
+     "loss": 2.331,
+     "doc": 4237,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 455,
+     "loss": 2.299,
+     "doc": 1573,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/cmn_Hani"
+    },
+    {
+     "seq": 453,
+     "loss": 2.238,
+     "doc": 1089,
+     "cat": "web",
+     "source": "fineweb-edu"
+    }
+   ]
+  },
+  {
+   "block": 4,
+   "seqs": [
+    512,
+    639
+   ],
+   "agent_share": 0.296875,
+   "agent_x_mean": 1.028880866425993,
+   "shares": {
+    "long-agentic": 0.195,
+    "reasoning": 0.18,
+    "code": 0.125,
+    "agentic": 0.094,
+    "books": 0.086,
+    "science": 0.078,
+    "web": 0.062,
+    "multilingual": 0.047,
+    "chat": 0.047,
+    "long": 0.023,
+    "math": 0.023,
+    "encyclopedic": 0.016,
+    "legal": 0.008,
+    "tools": 0.008,
+    "qa": 0.008
+   },
+   "energy_l0": 0.700691224932885,
+   "energy_l10": 0.5511668056149656,
+   "energy_all": 0.9121149044662059,
+   "loss_mean": 0.9891282051282051,
+   "distinct_docs": 86,
+   "top_loss_seqs": [
+    {
+     "seq": 541,
+     "loss": 2.436,
+     "doc": 1467,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 570,
+     "loss": 2.311,
+     "doc": 1910,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 564,
+     "loss": 2.209,
+     "doc": 1160,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 567,
+     "loss": 2.206,
+     "doc": 4099,
+     "cat": "encyclopedic",
+     "source": "wikimedia"
+    },
+    {
+     "seq": 605,
+     "loss": 2.203,
+     "doc": 3028,
+     "cat": "web",
+     "source": "fineweb-edu"
+    }
+   ]
+  },
+  {
+   "block": 5,
+   "seqs": [
+    640,
+    767
+   ],
+   "agent_share": 0.265625,
+   "agent_x_mean": 0.92057761732852,
+   "shares": {
+    "long-agentic": 0.172,
+    "reasoning": 0.164,
+    "science": 0.141,
+    "books": 0.117,
+    "agentic": 0.086,
+    "chat": 0.07,
+    "math": 0.055,
+    "multilingual": 0.047,
+    "long": 0.047,
+    "code": 0.047,
+    "web": 0.023,
+    "encyclopedic": 0.016,
+    "legal": 0.008,
+    "tools": 0.008
+   },
+   "energy_l0": 2.7677341597530023,
+   "energy_l10": 1.4920788390478834,
+   "energy_all": 1.149597839737233,
+   "loss_mean": 1.0624347826086957,
+   "distinct_docs": 90,
+   "top_loss_seqs": [
+    {
+     "seq": 648,
+     "loss": 2.625,
+     "doc": 2647,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/arb_Arab"
+    },
+    {
+     "seq": 766,
+     "loss": 2.581,
+     "doc": 832,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 651,
+     "loss": 2.348,
+     "doc": 3220,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 681,
+     "loss": 2.274,
+     "doc": 4430,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 645,
+     "loss": 2.248,
+     "doc": 2830,
+     "cat": "books",
+     "source": "pg19"
+    }
+   ]
+  },
+  {
+   "block": 6,
+   "seqs": [
+    768,
+    895
+   ],
+   "agent_share": 0.2890625,
+   "agent_x_mean": 1.0018050541516246,
+   "shares": {
+    "long-agentic": 0.172,
+    "science": 0.102,
+    "reasoning": 0.094,
+    "code": 0.094,
+    "agentic": 0.094,
+    "chat": 0.086,
+    "multilingual": 0.07,
+    "books": 0.07,
+    "math": 0.062,
+    "web": 0.055,
+    "encyclopedic": 0.047,
+    "tools": 0.023,
+    "long": 0.016,
+    "legal": 0.016
+   },
+   "energy_l0": 6.325441017193902,
+   "energy_l10": 5.367621531131387,
+   "energy_all": 1.5591358125004353,
+   "loss_mean": 1.0434583333333332,
+   "distinct_docs": 90,
+   "top_loss_seqs": [
+    {
+     "seq": 882,
+     "loss": 2.842,
+     "doc": 75,
+     "cat": "books",
+     "source": "doab"
+    },
+    {
+     "seq": 791,
+     "loss": 2.622,
+     "doc": 4318,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 888,
+     "loss": 2.286,
+     "doc": 3688,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 893,
+     "loss": 2.25,
+     "doc": 4419,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 867,
+     "loss": 2.182,
+     "doc": 3803,
+     "cat": "books",
+     "source": "gutenberg"
+    }
+   ]
+  },
+  {
+   "block": 7,
+   "seqs": [
+    896,
+    1023
+   ],
+   "agent_share": 0.2734375,
+   "agent_x_mean": 0.9476534296028881,
+   "shares": {
+    "long-agentic": 0.148,
+    "reasoning": 0.133,
+    "science": 0.125,
+    "agentic": 0.109,
+    "chat": 0.094,
+    "books": 0.078,
+    "code": 0.078,
+    "web": 0.07,
+    "multilingual": 0.055,
+    "math": 0.047,
+    "long": 0.023,
+    "tools": 0.016,
+    "legal": 0.016,
+    "encyclopedic": 0.008
+   },
+   "energy_l0": 0.8816445415446714,
+   "energy_l10": 0.8371662316829841,
+   "energy_all": 0.9656910507637916,
+   "loss_mean": 1.0416206896551723,
+   "distinct_docs": 94,
+   "top_loss_seqs": [
+    {
+     "seq": 910,
+     "loss": 2.562,
+     "doc": 1573,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/cmn_Hani"
+    },
+    {
+     "seq": 976,
+     "loss": 2.451,
+     "doc": 97,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 961,
+     "loss": 2.397,
+     "doc": 731,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/jpn_Jpan"
+    },
+    {
+     "seq": 907,
+     "loss": 2.379,
+     "doc": 4439,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1012,
+     "loss": 2.378,
+     "doc": 2013,
+     "cat": "web",
+     "source": "fineweb-edu"
+    }
+   ]
+  },
+  {
+   "block": 8,
+   "seqs": [
+    1024,
+    1151
+   ],
+   "agent_share": 0.3125,
+   "agent_x_mean": 1.0830324909747293,
+   "shares": {
+    "long-agentic": 0.203,
+    "reasoning": 0.156,
+    "agentic": 0.109,
+    "multilingual": 0.086,
+    "chat": 0.078,
+    "books": 0.078,
+    "web": 0.078,
+    "science": 0.055,
+    "math": 0.055,
+    "long": 0.039,
+    "encyclopedic": 0.031,
+    "code": 0.023,
+    "qa": 0.008
+   },
+   "energy_l0": 0.8286428371260022,
+   "energy_l10": 0.9793006930863163,
+   "energy_all": 1.02955441891877,
+   "loss_mean": 1.063271186440678,
+   "distinct_docs": 85,
+   "top_loss_seqs": [
+    {
+     "seq": 1039,
+     "loss": 3.035,
+     "doc": 1153,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/ind_Latn"
+    },
+    {
+     "seq": 1117,
+     "loss": 2.692,
+     "doc": 2079,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1091,
+     "loss": 2.438,
+     "doc": 4439,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1063,
+     "loss": 2.416,
+     "doc": 3920,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1038,
+     "loss": 2.373,
+     "doc": 2647,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/arb_Arab"
+    }
+   ]
+  },
+  {
+   "block": 9,
+   "seqs": [
+    1152,
+    1279
+   ],
+   "agent_share": 0.3359375,
+   "agent_x_mean": 1.164259927797834,
+   "shares": {
+    "long-agentic": 0.211,
+    "science": 0.133,
+    "agentic": 0.125,
+    "chat": 0.094,
+    "code": 0.086,
+    "reasoning": 0.078,
+    "web": 0.078,
+    "books": 0.07,
+    "multilingual": 0.047,
+    "math": 0.039,
+    "encyclopedic": 0.031,
+    "qa": 0.008
+   },
+   "energy_l0": 18.734799590286105,
+   "energy_l10": 6.9290235185658835,
+   "energy_all": 2.309712890221879,
+   "loss_mean": 1.044940170940171,
+   "distinct_docs": 87,
+   "top_loss_seqs": [
+    {
+     "seq": 1169,
+     "loss": 2.505,
+     "doc": 832,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1249,
+     "loss": 2.362,
+     "doc": 3688,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1279,
+     "loss": 2.281,
+     "doc": 4124,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1225,
+     "loss": 2.275,
+     "doc": 357,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1193,
+     "loss": 2.242,
+     "doc": 1320,
+     "cat": "web",
+     "source": "fineweb-edu"
+    }
+   ]
+  },
+  {
+   "block": 10,
+   "seqs": [
+    1280,
+    1407
+   ],
+   "agent_share": 0.3046875,
+   "agent_x_mean": 1.0559566787003611,
+   "shares": {
+    "long-agentic": 0.18,
+    "reasoning": 0.164,
+    "code": 0.117,
+    "agentic": 0.117,
+    "science": 0.094,
+    "math": 0.078,
+    "books": 0.062,
+    "chat": 0.062,
+    "multilingual": 0.047,
+    "web": 0.031,
+    "legal": 0.023,
+    "long": 0.008,
+    "tools": 0.008,
+    "qa": 0.008
+   },
+   "energy_l0": 0.966667217675612,
+   "energy_l10": 0.8241152901059084,
+   "energy_all": 0.9721459074928556,
+   "loss_mean": 0.9938017241379311,
+   "distinct_docs": 91,
+   "top_loss_seqs": [
+    {
+     "seq": 1316,
+     "loss": 2.574,
+     "doc": 832,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1357,
+     "loss": 2.461,
+     "doc": 3836,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1293,
+     "loss": 2.327,
+     "doc": 3920,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1400,
+     "loss": 2.326,
+     "doc": 1835,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/arb_Arab"
+    },
+    {
+     "seq": 1282,
+     "loss": 2.256,
+     "doc": 528,
+     "cat": "books",
+     "source": "pg19"
+    }
+   ]
+  },
+  {
+   "block": 11,
+   "seqs": [
+    1408,
+    1535
+   ],
+   "agent_share": 0.34375,
+   "agent_x_mean": 1.1913357400722022,
+   "shares": {
+    "long-agentic": 0.195,
+    "agentic": 0.148,
+    "science": 0.148,
+    "chat": 0.086,
+    "reasoning": 0.078,
+    "web": 0.07,
+    "books": 0.062,
+    "code": 0.062,
+    "multilingual": 0.039,
+    "math": 0.039,
+    "legal": 0.023,
+    "encyclopedic": 0.016,
+    "long": 0.016,
+    "qa": 0.016
+   },
+   "energy_l0": 1.0427668738628466,
+   "energy_l10": 1.2099551902572692,
+   "energy_all": 1.3014343506098804,
+   "loss_mean": 1.0627477477477478,
+   "distinct_docs": 88,
+   "top_loss_seqs": [
+    {
+     "seq": 1477,
+     "loss": 2.769,
+     "doc": 75,
+     "cat": "books",
+     "source": "doab"
+    },
+    {
+     "seq": 1449,
+     "loss": 2.576,
+     "doc": 4397,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1488,
+     "loss": 2.346,
+     "doc": 2026,
+     "cat": "qa",
+     "source": "stackexchange"
+    },
+    {
+     "seq": 1496,
+     "loss": 2.329,
+     "doc": 2012,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1416,
+     "loss": 2.326,
+     "doc": 542,
+     "cat": "web",
+     "source": "fineweb-edu"
+    }
+   ]
+  },
+  {
+   "block": 12,
+   "seqs": [
+    1536,
+    1663
+   ],
+   "agent_share": 0.265625,
+   "agent_x_mean": 0.92057761732852,
+   "shares": {
+    "long-agentic": 0.188,
+    "science": 0.133,
+    "code": 0.109,
+    "books": 0.102,
+    "reasoning": 0.102,
+    "agentic": 0.078,
+    "web": 0.062,
+    "multilingual": 0.055,
+    "chat": 0.055,
+    "long": 0.047,
+    "math": 0.047,
+    "qa": 0.016,
+    "encyclopedic": 0.008
+   },
+   "energy_l0": 1.1035755741563216,
+   "energy_l10": 1.3647327790567765,
+   "energy_all": 1.021199884764431,
+   "loss_mean": 1.1939369369369368,
+   "distinct_docs": 89,
+   "top_loss_seqs": [
+    {
+     "seq": 1593,
+     "loss": 2.593,
+     "doc": 3920,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1556,
+     "loss": 2.316,
+     "doc": 2897,
+     "cat": "books",
+     "source": "gutenberg"
+    },
+    {
+     "seq": 1551,
+     "loss": 2.292,
+     "doc": 4439,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1615,
+     "loss": 2.292,
+     "doc": 3296,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1548,
+     "loss": 2.268,
+     "doc": 1910,
+     "cat": "books",
+     "source": "gutenberg"
+    }
+   ]
+  },
+  {
+   "block": 13,
+   "seqs": [
+    1664,
+    1791
+   ],
+   "agent_share": 0.2265625,
+   "agent_x_mean": 0.7851985559566788,
+   "shares": {
+    "reasoning": 0.125,
+    "long-agentic": 0.117,
+    "chat": 0.117,
+    "agentic": 0.102,
+    "science": 0.102,
+    "web": 0.078,
+    "books": 0.07,
+    "math": 0.07,
+    "code": 0.062,
+    "multilingual": 0.047,
+    "legal": 0.047,
+    "long": 0.031,
+    "encyclopedic": 0.023,
+    "tools": 0.008
+   },
+   "energy_l0": 1.0501435944507154,
+   "energy_l10": 0.7391028518481755,
+   "energy_all": 0.92210086976431,
+   "loss_mean": 1.1429210526315787,
+   "distinct_docs": 101,
+   "top_loss_seqs": [
+    {
+     "seq": 1738,
+     "loss": 2.646,
+     "doc": 1846,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1664,
+     "loss": 2.621,
+     "doc": 1314,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/swe_Latn"
+    },
+    {
+     "seq": 1711,
+     "loss": 2.489,
+     "doc": 2079,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1745,
+     "loss": 2.469,
+     "doc": 1314,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/swe_Latn"
+    },
+    {
+     "seq": 1753,
+     "loss": 2.312,
+     "doc": 4099,
+     "cat": "encyclopedic",
+     "source": "wikimedia"
+    }
+   ]
+  },
+  {
+   "block": 14,
+   "seqs": [
+    1792,
+    1919
+   ],
+   "agent_share": 0.296875,
+   "agent_x_mean": 1.028880866425993,
+   "shares": {
+    "reasoning": 0.195,
+    "long-agentic": 0.18,
+    "agentic": 0.109,
+    "books": 0.078,
+    "science": 0.078,
+    "code": 0.062,
+    "chat": 0.062,
+    "web": 0.062,
+    "encyclopedic": 0.047,
+    "long": 0.039,
+    "multilingual": 0.039,
+    "math": 0.031,
+    "tools": 0.008,
+    "legal": 0.008
+   },
+   "energy_l0": 0.7547299514985942,
+   "energy_l10": 0.5936301378297214,
+   "energy_all": 0.8527168057082528,
+   "loss_mean": 1.0882389380530975,
+   "distinct_docs": 85,
+   "top_loss_seqs": [
+    {
+     "seq": 1819,
+     "loss": 2.332,
+     "doc": 528,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1805,
+     "loss": 2.33,
+     "doc": 1573,
+     "cat": "multilingual",
+     "source": "fineweb2-hq/cmn_Hani"
+    },
+    {
+     "seq": 1891,
+     "loss": 2.319,
+     "doc": 1467,
+     "cat": "web",
+     "source": "fineweb-edu"
+    },
+    {
+     "seq": 1842,
+     "loss": 2.304,
+     "doc": 4237,
+     "cat": "books",
+     "source": "pg19"
+    },
+    {
+     "seq": 1853,
+     "loss": 2.267,
+     "doc": 2012,
+     "cat": "books",
+     "source": "gutenberg"
+    }
+   ]
+  }
+ ],
+ "energy_ratio_layers": {
+  "0": {
+   "ratio": [
+    0.724,
+    1.101,
+    0.94,
+    1.376,
+    0.701,
+    2.768,
+    6.325,
+    0.882,
+    0.829,
+    18.735,
+    0.967,
+    1.043,
+    1.104,
+    1.05,
+    0.755
+   ],
+   "tensors": 6
+  },
+  "10": {
+   "ratio": [
+    0.658,
+    1.102,
+    0.822,
+    2.0,
+    0.551,
+    1.492,
+    5.368,
+    0.837,
+    0.979,
+    6.929,
+    0.824,
+    1.21,
+    1.365,
+    0.739,
+    0.594
+   ],
+   "tensors": 6
+  },
+  "39": {
+   "ratio": [
+    1.186,
+    0.989,
+    0.875,
+    1.002,
+    1.251,
+    0.872,
+    0.88,
+    0.844,
+    1.066,
+    1.182,
+    1.118,
+    1.06,
+    0.843,
+    0.978,
+    0.899
+   ],
+   "tensors": 7
+  },
+  "50": {
+   "ratio": [
+    1.067,
+    0.991,
+    0.935,
+    1.002,
+    1.185,
+    1.041,
+    0.935,
+    0.923,
+    1.041,
+    1.083,
+    1.087,
+    0.988,
+    0.968,
+    1.002,
+    0.927
+   ],
+   "tensors": 6
+  },
+  "63": {
+   "ratio": [
+    1.009,
+    1.0,
+    1.003,
+    1.075,
+    0.997,
+    1.0,
+    1.0,
+    0.982,
+    1.014,
+    1.02,
+    0.971,
+    0.954,
+    1.058,
+    1.027,
+    0.987
+   ],
+   "tensors": 7
+  },
+  "all": {
+   "ratio": [
+    1.05,
+    1.067,
+    0.881,
+    1.162,
+    0.912,
+    1.15,
+    1.559,
+    0.966,
+    1.03,
+    2.31,
+    0.972,
+    1.301,
+    1.021,
+    0.922,
+    0.853
+   ],
+   "tensors": 400
+  }
+ }
+}

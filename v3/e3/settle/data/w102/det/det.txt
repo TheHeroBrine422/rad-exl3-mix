@@ -1,0 +1,21 @@
+04:56:18 L03-g0: card 0 held after 2928 s
+04:57:34 L03-g0: rc 0, 3004 s wall
+04:57:34 L03-g0: t-model.language_model.layers.3.self_attn.k_proj.safetensors DIFFERS (/data/w92/out/fs0/L03-g0/t-model.language_model.layers.3.self_attn.k_proj.safetensors /data/w102/det/L03-g0/t-model.language_model.layers.3.self_attn.k_proj.safetensors differ: char 31, line 1)
+04:57:34 L03-g0: t-model.language_model.layers.3.self_attn.q_proj.safetensors DIFFERS (/data/w92/out/fs0/L03-g0/t-model.language_model.layers.3.self_attn.q_proj.safetensors /data/w102/det/L03-g0/t-model.language_model.layers.3.self_attn.q_proj.safetensors differ: char 31, line 1)
+04:57:34 L03-g0: t-model.language_model.layers.3.self_attn.v_proj.safetensors DIFFERS (/data/w92/out/fs0/L03-g0/t-model.language_model.layers.3.self_attn.v_proj.safetensors /data/w102/det/L03-g0/t-model.language_model.layers.3.self_attn.v_proj.safetensors differ: char 27, line 1)
+04:57:34 L03-g0: tilecd.jsonl same (time fields removed)
+04:57:34 L03-g0: log.jsonl differs (time fields removed): 8 diff lines, /data/w102/det/L03-g0/log.jsonl.diff
+04:57:34 L03-g0: 0 / 3 tensor files byte-identical
+05:04:25 L02-g0: card 0 held after 411 s
+05:04:43 L02-g0: rc 0, 429 s wall
+05:04:43 L02-g0: t-model.language_model.layers.2.linear_attn.in_proj_qkv.safetensors DIFFERS (/data/w92/out/fs0/L02-g0/t-model.language_model.layers.2.linear_attn.in_proj_qkv.safetensors /data/w102/det/L02-g0/t-model.language_model.layers.2.linear_attn.in_proj_qkv.safetensors differ: char 27, line 1)
+05:04:43 L02-g0: t-model.language_model.layers.2.linear_attn.in_proj_z.safetensors DIFFERS (/data/w92/out/fs0/L02-g0/t-model.language_model.layers.2.linear_attn.in_proj_z.safetensors /data/w102/det/L02-g0/t-model.language_model.layers.2.linear_attn.in_proj_z.safetensors differ: char 27, line 1)
+05:04:43 L02-g0: log.jsonl differs (time fields removed): 6 diff lines, /data/w102/det/L02-g0/log.jsonl.diff
+05:04:43 L02-g0: 0 / 2 tensor files byte-identical
+05:08:28 L02-g2: card 0 held after 225 s
+05:08:50 L02-g2: rc 0, 247 s wall
+05:08:50 L02-g2: t-model.language_model.layers.2.mlp.gate_proj.safetensors DIFFERS (/data/w92/out/fs0/L02-g2/t-model.language_model.layers.2.mlp.gate_proj.safetensors /data/w102/det/L02-g2/t-model.language_model.layers.2.mlp.gate_proj.safetensors differ: char 57, line 1)
+05:08:50 L02-g2: t-model.language_model.layers.2.mlp.up_proj.safetensors DIFFERS (/data/w92/out/fs0/L02-g2/t-model.language_model.layers.2.mlp.up_proj.safetensors /data/w102/det/L02-g2/t-model.language_model.layers.2.mlp.up_proj.safetensors differ: char 27, line 1)
+05:08:50 L02-g2: log.jsonl differs (time fields removed): 6 diff lines, /data/w102/det/L02-g2/log.jsonl.diff
+05:08:50 L02-g2: 0 / 2 tensor files byte-identical
+05:08:50 det102 done

@@ -4,6 +4,85 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 8:05 AM CST · #136-01, -03, -06 · NTRY 16 passes at every sub-1 level (−5.4 / −1.9 / −0.8%) and chains pass at K0.125 (−10.7%); tile CD helps at K6 and K1.5; card-0 rxq is reproducible (tensors bit-identical; only the safetensors header key order varies) (w102)
+- **Status:** done (all of #136 now read) · **Machine:** colo + Thor (-01, 81 CPU jobs, 11-09 ~04:15–06:30 UTC), gpubox
+  card 0 (-03 / -06, 11-09 04:03–05:11 UTC, under card0.lock + ram.lock shared) · **Code:** `v3/e3/settle/w102/`
+  (`job102.py d3` + `ring102.c`, `report102.py`, `cd102.sh` + `f2cd102.py`, `det102.sh`) · **Rule:** `v3/e3/settle/w102.md`
+  (136d89b; amendment 1 for -06 e3f5653, before data) · **Data:** `v3/e3/settle/data/w102/` (`d3/`, `report102.txt`,
+  `cd/`, `det/`). Read on 11-11 after the 11-09 stop (all jobs had finished; nothing rerun).
+- **#136-01 (D-3, tail-biting search width / chained rings at sub-1, w87's two-sided held-out proxy, 27 tensors × s0, i8):**
+  G0 PASS (arm F = w95's stored rows to 3.3e-7). Per K, geo over 27 tensors with the tensor-bootstrap 95% CI:
+
+  | K | T16 / T1 (NTRY 16 vs 1) | O4 / O1 (chain of 4 vs 1 ring) | T1 / F (tail-biting cost vs free start) | O4 / T16 |
+  |---|---|---|---|---|
+  | 0.125 | **0.9456** [0.936, 0.954] PASS | **0.8930** [0.880, 0.905] PASS | 1.283 | 0.992 |
+  | 0.5 | **0.9812** [0.978, 0.985] PASS | 0.9831 fail | 1.105 | 1.073 |
+  | 1 | **0.9917** [0.988, 0.994] PASS | 0.9909 fail | 1.074 | 1.109 |
+
+  Bars: NTRY ≤ 0.995, chain ≤ 0.95. All 9 families gain at every K (K0.125 0.90–0.96, K1 0.981–0.996). B1, B2 and in-sample A
+  agree to ±0.005.
+  - **Quant-time cost of NTRY 16:** the CPU search takes ×15.7–16.1 per tensor (T16 846 / 1,458 / 1,566 s vs T1 54 / 92 / 97 s, median).
+    On the GPU the 2 trellis passes per tile become 32. In w95's real card-0 levels the trellis stages are **89% of
+    wall at K0.125** (400 tensors, 11,720 s summed) and **67% at K1** (3,731 s). Scaling the whole trellis share by
+    16 gives an upper bound of ~47 h for K0.125 and ~11 h for K1 per level, vs 3.3 h / 1.0 h today.
+  - **Reading:** this is encoder only (format, decoders and bpw unchanged), but at that price NTRY 16 is not cheap. The
+    lead decides: (a) NTRY 16 only at K0.125, where it buys 5.4%; (b) a smaller NTRY (4 was not measured); (c) chained
+    rings at K0.125, which match NTRY 16 there (O4 / T16 0.99) at ~1× quant time but need the #102 decoder change in
+    every kernel.
+  - **Side finding for every sub-1 proxy screen:** the free-start search used by #90 / #126 / w87 / w100 understates
+    production's tail-biting error by **28% / 10.5% / 7.4%** at K0.125 / 0.5 / 1 (T1 / F). Ratios between arms are
+    probably fine, but absolute sub-1 proxy numbers are optimistic.
+- **#136-03 (A-12, tile CD no-harm at the ladder ends, real rxq, w81's f2, q_proj of L3 / 23 / 43 / 63):** f2_cd / f2_off
+  **K6 0.9973 (0.9962–0.9982), K1.5 0.9958 (0.9915–0.9979)**: CD helps at both ends → **PASS, CD stays at every
+  level**. The f1 ratios are 1.001 / 1.003 (unweighted error, which CD does not optimise). In-job tilecd ratios are
+  0.995–0.998 (K6) and 0.991–0.997 (K1.5); cd1 accepts 3.4–5.6% of tiles; CD takes 12 s (K6) / 19 s (K1.5) per tensor.
+- **#136-06 (GPU repeat-run determinism, w92's fs0 L03-g0 / L02-g0 / L02-g2 rerun on card 0 with w92's staged code):**
+  **all 7 tensor files are bit-identical in every tensor** (q / k / v with tile CD + blocks H_out, GDN qkv / z, MLP
+  gate / up; `torch.equal` on every tensor, with the same offsets, dtypes and shapes), and the metadata values are equal. tilecd.jsonl is
+  identical; log.jsonl differs only in timings and maxrss.
+  - **But a byte `cmp` of the files fails:** safetensors writes `__metadata__` in a per-process order (rxq builds the
+    dict in a fixed order, `pipeline/rxq/job.py:86`; the serializer reorders it). So **a reproducibility or
+    verification check (e.g. rqah) must compare parsed tensors and metadata, or hash the data section, never whole
+    file bytes or file sha.**
+  - The 11-02 race does not reproduce on the V3 path.
+- **Runtime:** none for -03 / -06. -01: none if NTRY only (quant time ×~16 in the tile search at the chosen levels);
+  chains = decoder change in every kernel.
+
+### 2026-11-11 8:00 AM CST · #132, #133 · Sub-1 hygiene: C9, drift, g_scale edge and scan rules fire, zero floor stands; H_out shape: σ_out 0.01, p 1 stands (1 / 36 cells, edge-flagged) (w100)
+- **Status:** done (#132: proposals for the lead; #132-01 swj at sub-1 written, not run) / null (#133) · **Machine:** colo +
+  Thor (54 tensor × samples × {sub1, g125, hshape}, all finished 11-09 before the stop; nothing rerun), gpubox read-only scan ·
+  **Code:** `v3/e3/settle/w100/` (`report100.py` + amendment-1 / production-log / scan-verdict sections, added after data,
+  report-only) · **Rule:** `v3/e3/settle/w100.md` (372b555 / 7028b0c / e7561d3) · **Data:** `v3/e3/settle/data/w100/`
+  (`report.md`, `report.json`, `out/{colo,thor}`, `gates/`, `real/`, `scan/`, `w92logs/`)
+- **Gates:** G1 / G2 / G3 PASS (11-09 entry; G3 max 1.7e-10).
+- **#132-1 C9 at sub-1: FIRES.** gdn_out (α 3) c_mean **2.78 / 1.95 / 1.31** at K0.125 / 0.5 / 1 (95% of rows at the e clip
+  at K0.125); attn_o (α −1) 0.725 / 0.851 / 0.938 (fires at K0.125); real w92 i4 codes agree (2.81 / 1.47 at K0.125 / 0.875).
+  **Proposal: `post.c9` α(K) = α · clip(K − 1, 0, 1)** (C9 off at K ≤ 1). K1 gdn_out (1.310) is marginal.
+- **#132-2 g_scale edge: FIRES on the production logs, not on the proxy.** w92 K0.125: 13 / 13 at g 2.05; proxy 0 / 54
+  at any edge (picks 1.63–1.66; ext arm changes nothing). But amendment 1's fixed-g arms (K0.125, i8, 54 tensor × samples)
+  say a higher g is **worse**: held-out rel2_B vs the proxy's pick ×1.033 (g 2.05), ×1.076 (2.6), ×1.109 (3.3), 0 / 54
+  better. The proposal as written is the top grid to 3.9, but this evidence says **don't widen it**. Production's K0.125
+  search sits at the edge for its own reasons (drift 1.08 vs measured ~1.35, see 3). Suggest a production-side check of
+  K0.125 at g ≈ 1.65 instead.
+- **#132-3 drift: FIRES at K0.125 and K1.** Measured geo d_all **1.348** (K0.125; inputs 1.44, rest 1.24), 1.184 (K0.5:
+  within 1.0–1.2, no fire), **1.089** (K1, +0.85% vs 1.08). Per-tensor measured-drift arm, held-out rel2_B vs cur: 0.970 /
+  0.979 / 0.997 (all ≤ 1). **Proposal: drift table 1.35 at K0.125, 1.09 at K1** (to be checked against `drift = "interp"`
+  between table points). The arm used each tensor's own drift (an oracle), so the table value will buy somewhat less.
+- **#132-4 zero floor: stands.** Max rel at K0.125: real codes 0.788 (L3 up_proj), proxy 0.690 (L59 attn_v); nothing near 0.97.
+- **#132-5 suh / svh scan: FIRES (one value).** 71 dirs, 28,160 scale tensors: 0 zeros, 0 non-finite, 93 f16 subnormals
+  (92 at K0.125: w92 L3 q_proj / o_proj suh, down to 3.6e-7; 1 at K1: a4cost i4 L17 out_proj suh 5.5e-5, median 1.5e-2).
+  **Proposal: R14 clamp** (refit scales ≥ max(f16 min normal, 1e-3 · median)). The K1 hit is a retired i4 level.
+- **#132-01 swj at sub-1:** `v3/e3/settle/w100/swj4070.sh` written for the 4070, not run. The 4070 is now the user's,
+  so it would need porting to gpubox card 0 (lead's call).
+- **#133 H_out shape: null.** No "all" cell passes at any K. Best-picked held-out gains: K0.5 +0.40% (σ_out 0.1, p 1:
+  edge), K2.5 +0.05%, K4 +0.06% (σ_out 0.03, p 1). p 0.5 is worse everywhere (+0.6% at K0.5, +2.3% at K2.5 / 4); p 0.75
+  is worse at K ≥ 2.5. One family cell passes: **K0.5 ssm_z, σ_out 0.1, p 0.75: g +2.16%, 3 / 3 agree, swap +1.88%**. It
+  sits on the grid edge, so it is flagged (a candidate override that needs a wider grid), not proposed. **σ_out 0.01, p 1
+  stands.** The half collection costs 1–2% vs the full bn1920 (full / cur on (B, O): 0.990 / 0.983 / 0.983), so the
+  quantizer's own data could favour more smoothing than production wants.
+- **Caveat:** the proxy predates 87a7e4ab (refit "hout", drift "interp"); it uses w93's per-output-channel refit.
+- **Runtime:** none.
+
 ### 2026-11-11 7:55 AM CST · #128 / #129 · per-document re-read (diagnostic, post hoc): one xcorp document holds 85% of #129's xcorp KL
 - **Status:** diagnostic (no decision changed by it; #129-02 still decides) · **Machine:** gpubox CPU · **Code:**
   `eval/docstat/docstat.py` (new: pooled / per-doc geo / median / KL shares / > 20% exclusion / leave-one-out / drop-k

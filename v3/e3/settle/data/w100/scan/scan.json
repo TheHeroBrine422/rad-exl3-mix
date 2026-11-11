@@ -1,0 +1,2613 @@
+[
+ {
+  "dir": "/data/a4cost/q-i4/K1",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 1,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 5.507469177246094e-05,
+  "min_ratio": 0.00028630613370706105,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006666183471679688,
+    "median": 1.0263671875,
+    "min_ratio": 0.000649493042340628
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002930164337158203,
+    "median": 1.0234375,
+    "min_ratio": 0.00028630613370706105
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00046443939208984375,
+    "median": 1.0322265625,
+    "min_ratio": 0.0004499393921475875
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.000568389892578125,
+    "median": 1.0322265625,
+    "min_ratio": 0.0005506445127719962
+   },
+   {
+    "file": "q-L17.safetensors",
+    "t": "model.language_model.layers.17.linear_attn.out_proj.suh",
+    "zero": 0,
+    "subnormal": 1,
+    "nonfinite": 0,
+    "min_abs": 5.507469177246094e-05,
+    "median": 0.01511383056640625,
+    "min_ratio": 0.0036439929328621907
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/a4cost/q-i4/K2",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.00018799304962158203,
+  "min_ratio": 0.0002871547525411423,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006580352783203125,
+    "median": 1.01171875,
+    "min_ratio": 0.0006504132480694981
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00028967857360839844,
+    "median": 1.0087890625,
+    "min_ratio": 0.0002871547525411423
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004582405090332031,
+    "median": 1.0146484375,
+    "min_ratio": 0.0004516249097690087
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005555152893066406,
+    "median": 1.0185546875,
+    "min_ratio": 0.0005453956435762224
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/a4cost/q-i4/K3",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002894401550292969,
+  "min_ratio": 0.00028775409587378643,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.005859375,
+    "min_ratio": 0.00028775409587378643
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004565715789794922,
+    "median": 1.01171875,
+    "min_ratio": 0.0004512831050916988
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.015625,
+    "min_ratio": 0.0005450908954326923
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/asym27/s1/level-asym",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002474784851074219,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045800209045410156,
+    "median": 1.0126953125,
+    "min_ratio": 0.00045226050204918034
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005445672730547551
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/asym27/s1/q-asym",
+  "files": 64,
+  "tensors": 256,
+  "entries": 2162688,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 1080591,
+  "min_abs": 0.0002474784851074219,
+  "min_ratio": 0.014572102425876012,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/asym27/s1/q-noop",
+  "files": 64,
+  "tensors": 256,
+  "entries": 2162688,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 1080591,
+  "min_abs": 0.0002460479736328125,
+  "min_ratio": 0.014685792349726777,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/c9w27/base-a/level",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002484321594238281,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045561790466308594,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004499062047974928
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005550384521484375,
+    "median": 1.0166015625,
+    "min_ratio": 0.000545974423631124
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/c9w27/s1-a/level",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002460479736328125,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045800209045410156,
+    "median": 1.0126953125,
+    "min_ratio": 0.00045226050204918034
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005445672730547551
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/base/level-cd",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002484321594238281,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045561790466308594,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004499062047974928
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005550384521484375,
+    "median": 1.0166015625,
+    "min_ratio": 0.000545974423631124
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/base/q-cd",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 139340,
+  "min_abs": 0.00547027587890625,
+  "min_ratio": 0.11422413793103449,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/base/q-noop",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 139340,
+  "min_abs": 0.00547027587890625,
+  "min_ratio": 0.11428571428571428,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/s1/level-cd",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002460479736328125,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045800209045410156,
+    "median": 1.0126953125,
+    "min_ratio": 0.00045226050204918034
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005445672730547551
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/s1/q-cd",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 138980,
+  "min_abs": 0.005481719970703125,
+  "min_ratio": 0.11416789758739537,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cd27/s1/q-noop",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 138980,
+  "min_abs": 0.00548553466796875,
+  "min_ratio": 0.11422944362383063,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cdhout27/bn4/level-cd",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004544258117675781,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004495961654589372
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cdhout27/bn4/q-cd",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 139340,
+  "min_abs": 0.005939483642578125,
+  "min_ratio": 0.11416789758739537,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/cdhout27/bn4/q-noop",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 139340,
+  "min_abs": 0.005939483642578125,
+  "min_ratio": 0.11416789758739537,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/cdhout27/bn4s1/level-cd",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045490264892578125,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004500679347826087
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005540847778320312,
+    "median": 1.0146484375,
+    "min_ratio": 0.000546085478825794
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/cdhout27/bn4s1/q-cd",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 138980,
+  "min_abs": 0.006000518798828125,
+  "min_ratio": 0.11416789758739537,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/cdhout27/bn4s1/q-noop",
+  "files": 16,
+  "tensors": 32,
+  "entries": 278528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 138980,
+  "min_abs": 0.0059967041015625,
+  "min_ratio": 0.11416789758739537,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/recovered/lf-243284928",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002484321594238281,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045561790466308594,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004499062047974928
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005550384521484375,
+    "median": 1.0166015625,
+    "min_ratio": 0.000545974423631124
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-base4/K4",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004565715789794922,
+    "median": 1.0107421875,
+    "min_ratio": 0.00045171912741545894
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-base4s1/K4",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045680999755859375,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004519550120772947
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005540847778320312,
+    "median": 1.0146484375,
+    "min_ratio": 0.000546085478825794
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-bn/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.00024962425231933594,
+  "min_ratio": 0.000288076437864786,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.00390625,
+    "min_ratio": 0.000288076437864786
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004353523254394531,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004307253925120773
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005574226379394531,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005493751503849856
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-bn4/K4",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004544258117675781,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004495961654589372
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-bn4s1/K4",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045490264892578125,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004500679347826087
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005540847778320312,
+    "median": 1.0146484375,
+    "min_ratio": 0.000546085478825794
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-bns1/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.00024819374084472656,
+  "min_ratio": 0.000288076437864786,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.00390625,
+    "min_ratio": 0.000288076437864786
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00043892860412597656,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004342636624396135
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-bns2/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3399519,
+  "min_abs": 0.0002467632293701172,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004367828369140625,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004321407004830918
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-dy/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.00024628639221191406,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004334449768066406,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004288383152173913
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005540847778320312,
+    "median": 1.0146484375,
+    "min_ratio": 0.000546085478825794
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-s1/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002460479736328125,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045800209045410156,
+    "median": 1.0126953125,
+    "min_ratio": 0.00045226050204918034
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005445672730547551
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-s2/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3399519,
+  "min_abs": 0.0002498626708984375,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004570484161376953,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004513187831485053
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005545616149902344,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005455053734390009
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-xbn/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002510547637939453,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.000438690185546875,
+    "median": 1.0107421875,
+    "min_ratio": 0.00043402777777777775
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005517005920410156,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005437357134263715
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swap27/q-xbns1/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002529621124267578,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006566047668457031,
+    "median": 1.0078125,
+    "min_ratio": 0.0006515148074127907
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00043654441833496094,
+    "median": 1.0107421875,
+    "min_ratio": 0.000431904815821256
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005512237548828125,
+    "median": 1.0146484375,
+    "min_ratio": 0.000543265760346487
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/base4swj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004565715789794922,
+    "median": 1.0107421875,
+    "min_ratio": 0.00045171912741545894
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/baseswj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002484321594238281,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045561790466308594,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004499062047974928
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005550384521484375,
+    "median": 1.0166015625,
+    "min_ratio": 0.000545974423631124
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/bn4swj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002892017364501953,
+  "min_ratio": 0.00028779648019922256,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.0048828125,
+    "min_ratio": 0.00028779648019922256
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004544258117675781,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004495961654589372
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/bns1swj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.00024819374084472656,
+  "min_ratio": 0.000288076437864786,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.00390625,
+    "min_ratio": 0.000288076437864786
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00043892860412597656,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004342636624396135
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/bnswj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.00024962425231933594,
+  "min_ratio": 0.000288076437864786,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.0078125,
+    "min_ratio": 0.0006524610889050387
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002892017364501953,
+    "median": 1.00390625,
+    "min_ratio": 0.000288076437864786
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004353523254394531,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004307253925120773
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005574226379394531,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005493751503849856
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/swj27/lv/s1swj",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.0002460479736328125,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045800209045410156,
+    "median": 1.0126953125,
+    "min_ratio": 0.00045226050204918034
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0166015625,
+    "min_ratio": 0.0005445672730547551
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/v3ladder2/K2.5",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002484321594238281,
+  "min_ratio": 0.00028747499393792433,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006575584411621094,
+    "median": 1.009765625,
+    "min_ratio": 0.0006511990751934236
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.0068359375,
+    "min_ratio": 0.00028747499393792433
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00045561790466308594,
+    "median": 1.0126953125,
+    "min_ratio": 0.0004499062047974928
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005550384521484375,
+    "median": 1.0166015625,
+    "min_ratio": 0.000545974423631124
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/c9-job",
+  "files": 4,
+  "tensors": 4,
+  "entries": 22528,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 11338,
+  "min_abs": 0.0035572052001953125,
+  "min_ratio": 0.21746735074626866,
+  "flag": [],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w76chk/cd-gate",
+  "files": 3,
+  "tensors": 6,
+  "entries": 52224,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 26159,
+  "min_abs": 0.01074981689453125,
+  "min_ratio": 0.4746588693957115,
+  "flag": [],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w76chk/cd-gate.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/cd-hout-false",
+  "files": 3,
+  "tensors": 6,
+  "entries": 52224,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 26159,
+  "min_abs": 0.01157379150390625,
+  "min_ratio": 0.4722222222222222,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w76chk/cd-hout-false.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/cd-hout-true",
+  "files": 3,
+  "tensors": 6,
+  "entries": 52224,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 26159,
+  "min_abs": 0.01157379150390625,
+  "min_ratio": 0.47173489278752434,
+  "flag": [],
+  "K": [
+   "4"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w76chk/cd-hout-true.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-K2-q-L39.safetensors.txt",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-dumps",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-e2e.txt",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-kern.txt",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-keys.txt",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K0.5",
+  "files": 1,
+  "tensors": 8,
+  "entries": 40960,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 20285,
+  "min_abs": 0.003582000732421875,
+  "min_ratio": 0.2568784392196098,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K0.5.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K2-cb",
+  "files": 1,
+  "tensors": 8,
+  "entries": 40960,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 20285,
+  "min_abs": 0.00423431396484375,
+  "min_ratio": 0.24524966858152894,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K2-cb.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K2-qtf2",
+  "files": 1,
+  "tensors": 8,
+  "entries": 40960,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 20285,
+  "min_abs": 0.00423431396484375,
+  "min_ratio": 0.24524966858152894,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ourq-K2-qtf2.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-ref-keys.txt",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w76chk/i4-rxq-K0.5",
+  "files": 4,
+  "tensors": 6,
+  "entries": 23552,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 11637,
+  "min_abs": 0.003582000732421875,
+  "min_ratio": 0.2568784392196098,
+  "flag": [],
+  "K": [
+   "0.5"
+  ],
+  "codebook": [
+   "i4"
+  ]
+ },
+ {
+  "dir": "/data/w76chk/i4-rxq-K0.5.log",
+  "files": 0,
+  "tensors": 0,
+  "entries": 0,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 0,
+  "min_abs": null,
+  "min_ratio": null,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w90/blk27/q-perm9",
+  "files": 9,
+  "tensors": 18,
+  "entries": 146432,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 73414,
+  "min_abs": 0.0038547515869140625,
+  "min_ratio": 0.21459747817652763,
+  "flag": [],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w90/p0/q-perm",
+  "files": 9,
+  "tensors": 18,
+  "entries": 146432,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 73414,
+  "min_abs": 0.0038547515869140625,
+  "min_ratio": 0.21459747817652763,
+  "flag": [],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w92/lv/fs0/level",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002498626708984375,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004367828369140625,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004321407004830918
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w92/lv/fs1/level",
+  "files": 64,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.00024819374084472656,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "q-L09.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "q-L10.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "q-L14.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004374980926513672,
+    "median": 1.0107421875,
+    "min_ratio": 0.00043284835446859906
+   },
+   {
+    "file": "q-L16.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005521774291992188,
+    "median": 1.0146484375,
+    "min_ratio": 0.000544205666506256
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w92/lv/sub1-0.125/level",
+  "files": 2,
+  "tensors": 26,
+  "entries": 214016,
+  "zero": 0,
+  "subnormal": 46,
+  "nonfinite": 0,
+  "neg": 107247,
+  "min_abs": 3.5762786865234375e-07,
+  "min_ratio": 0.00010187449062754686,
+  "flag": [
+   {
+    "file": "q-L02.safetensors",
+    "t": "model.language_model.layers.2.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00016880035400390625,
+    "median": 1.21484375,
+    "min_ratio": 0.00013894820136655948
+   },
+   {
+    "file": "q-L03.safetensors",
+    "t": "model.language_model.layers.3.self_attn.o_proj.suh",
+    "zero": 0,
+    "subnormal": 2,
+    "nonfinite": 0,
+    "min_abs": 4.76837158203125e-07,
+    "median": 0.004680633544921875,
+    "min_ratio": 0.00010187449062754686
+   },
+   {
+    "file": "q-L03.safetensors",
+    "t": "model.language_model.layers.3.self_attn.q_proj.suh",
+    "zero": 0,
+    "subnormal": 44,
+    "nonfinite": 0,
+    "min_abs": 3.5762786865234375e-07,
+    "median": 0.000762939453125,
+    "min_ratio": 0.00046875
+   },
+   {
+    "file": "q-L03.safetensors",
+    "t": "model.language_model.layers.3.self_attn.q_proj.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00016820430755615234,
+    "median": 1.2080078125,
+    "min_ratio": 0.00013924107593977364
+   }
+  ],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w92/lv/sub1-0.875/level",
+  "files": 2,
+  "tensors": 26,
+  "entries": 214016,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 107220,
+  "min_abs": 0.00305938720703125,
+  "min_ratio": 0.20313986679352997,
+  "flag": [],
+  "K": [],
+  "codebook": []
+ },
+ {
+  "dir": "/data/w92/out/fs0",
+  "files": 464,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3400155,
+  "min_abs": 0.0002498626708984375,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "L09-g0/t-model.language_model.layers.9.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0078125,
+    "min_ratio": 0.0006519879481589147
+   },
+   {
+    "file": "L10-g0/t-model.language_model.layers.10.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "L14-g0/t-model.language_model.layers.14.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004367828369140625,
+    "median": 1.0107421875,
+    "min_ratio": 0.0004321407004830918
+   },
+   {
+    "file": "L16-g0/t-model.language_model.layers.16.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005536079406738281,
+    "median": 1.0146484375,
+    "min_ratio": 0.0005456155257459095
+   }
+  ],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w92/out/fs1",
+  "files": 464,
+  "tensors": 800,
+  "entries": 6799360,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 3396732,
+  "min_abs": 0.00024819374084472656,
+  "min_ratio": 0.0002883139287451362,
+  "flag": [
+   {
+    "file": "L09-g0/t-model.language_model.layers.9.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.9.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0006570816040039062,
+    "median": 1.0087890625,
+    "min_ratio": 0.0006513567884801549
+   },
+   {
+    "file": "L10-g0/t-model.language_model.layers.10.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.10.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0002894401550292969,
+    "median": 1.00390625,
+    "min_ratio": 0.0002883139287451362
+   },
+   {
+    "file": "L14-g0/t-model.language_model.layers.14.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.14.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0004374980926513672,
+    "median": 1.0107421875,
+    "min_ratio": 0.00043284835446859906
+   },
+   {
+    "file": "L16-g0/t-model.language_model.layers.16.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.16.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.0005521774291992188,
+    "median": 1.0146484375,
+    "min_ratio": 0.000544205666506256
+   }
+  ],
+  "K": [
+   "2.5"
+  ],
+  "codebook": [
+   "i8"
+  ]
+ },
+ {
+  "dir": "/data/w92/out/sub1-0.125",
+  "files": 15,
+  "tensors": 26,
+  "entries": 214016,
+  "zero": 0,
+  "subnormal": 46,
+  "nonfinite": 0,
+  "neg": 107247,
+  "min_abs": 3.5762786865234375e-07,
+  "min_ratio": 0.00010187449062754686,
+  "flag": [
+   {
+    "file": "L02-g0/t-model.language_model.layers.2.linear_attn.in_proj_qkv.safetensors",
+    "t": "model.language_model.layers.2.linear_attn.in_proj_qkv.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00016880035400390625,
+    "median": 1.21484375,
+    "min_ratio": 0.00013894820136655948
+   },
+   {
+    "file": "L03-g0/t-model.language_model.layers.3.self_attn.q_proj.safetensors",
+    "t": "model.language_model.layers.3.self_attn.q_proj.suh",
+    "zero": 0,
+    "subnormal": 44,
+    "nonfinite": 0,
+    "min_abs": 3.5762786865234375e-07,
+    "median": 0.000762939453125,
+    "min_ratio": 0.00046875
+   },
+   {
+    "file": "L03-g0/t-model.language_model.layers.3.self_attn.q_proj.safetensors",
+    "t": "model.language_model.layers.3.self_attn.q_proj.svh",
+    "zero": 0,
+    "subnormal": 0,
+    "nonfinite": 0,
+    "min_abs": 0.00016820430755615234,
+    "median": 1.2080078125,
+    "min_ratio": 0.00013924107593977364
+   },
+   {
+    "file": "L03-g1/t-model.language_model.layers.3.self_attn.o_proj.safetensors",
+    "t": "model.language_model.layers.3.self_attn.o_proj.suh",
+    "zero": 0,
+    "subnormal": 2,
+    "nonfinite": 0,
+    "min_abs": 4.76837158203125e-07,
+    "median": 0.004680633544921875,
+    "min_ratio": 0.00010187449062754686
+   }
+  ],
+  "K": [
+   "0.125"
+  ],
+  "codebook": [
+   "i4"
+  ]
+ },
+ {
+  "dir": "/data/w92/out/sub1-0.875",
+  "files": 15,
+  "tensors": 26,
+  "entries": 214016,
+  "zero": 0,
+  "subnormal": 0,
+  "nonfinite": 0,
+  "neg": 107220,
+  "min_abs": 0.00305938720703125,
+  "min_ratio": 0.20313986679352997,
+  "flag": [],
+  "K": [
+   "0.875"
+  ],
+  "codebook": [
+   "i4"
+  ]
+ }
+]

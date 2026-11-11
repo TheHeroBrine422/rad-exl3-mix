@@ -1,0 +1,74 @@
+{
+ "cd-K1.5": {
+  "model.language_model.layers.23.self_attn.q_proj": {
+   "f2": 0.00754293278037031,
+   "f1": 0.009685097131276675
+  },
+  "model.language_model.layers.3.self_attn.q_proj": {
+   "f2": 0.0011682821414044616,
+   "f1": 0.0018721215791439466
+  },
+  "model.language_model.layers.43.self_attn.q_proj": {
+   "f2": 0.010961954646454428,
+   "f1": 0.019143885098299136
+  },
+  "model.language_model.layers.63.self_attn.q_proj": {
+   "f2": 0.00868381776633423,
+   "f1": 0.018237547039085845
+  }
+ },
+ "cd-K6": {
+  "model.language_model.layers.23.self_attn.q_proj": {
+   "f2": 1.671186884494513e-05,
+   "f1": 2.227648261281354e-05
+  },
+  "model.language_model.layers.3.self_attn.q_proj": {
+   "f2": 2.1762030128408788e-06,
+   "f1": 3.77636792184443e-06
+  },
+  "model.language_model.layers.43.self_attn.q_proj": {
+   "f2": 2.3736833554701673e-05,
+   "f1": 4.296059376771537e-05
+  },
+  "model.language_model.layers.63.self_attn.q_proj": {
+   "f2": 1.7666449200205546e-05,
+   "f1": 3.954717340090268e-05
+  }
+ },
+ "off-K1.5": {
+  "model.language_model.layers.23.self_attn.q_proj": {
+   "f2": 0.007558945667437094,
+   "f1": 0.009678009401805587
+  },
+  "model.language_model.layers.3.self_attn.q_proj": {
+   "f2": 0.0011782861829139476,
+   "f1": 0.0018581836203537992
+  },
+  "model.language_model.layers.43.self_attn.q_proj": {
+   "f2": 0.01098740306413738,
+   "f1": 0.019118107622556335
+  },
+  "model.language_model.layers.63.self_attn.q_proj": {
+   "f2": 0.00871723624778697,
+   "f1": 0.018210068997968645
+  }
+ },
+ "off-K6": {
+  "model.language_model.layers.23.self_attn.q_proj": {
+   "f2": 1.6742911239388948e-05,
+   "f1": 2.2277315270352017e-05
+  },
+  "model.language_model.layers.3.self_attn.q_proj": {
+   "f2": 2.184488332051487e-06,
+   "f1": 3.764271689900695e-06
+  },
+  "model.language_model.layers.43.self_attn.q_proj": {
+   "f2": 2.37911409921685e-05,
+   "f1": 4.2942237842999496e-05
+  },
+  "model.language_model.layers.63.self_attn.q_proj": {
+   "f2": 1.7717338721877993e-05,
+   "f1": 3.952325221411329e-05
+  }
+ }
+}

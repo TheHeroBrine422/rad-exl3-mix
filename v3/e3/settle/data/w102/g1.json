@@ -1,0 +1,85 @@
+{
+ "a": {
+  "0.125": true,
+  "0.25": true,
+  "0.5": true,
+  "1": true,
+  "1.5": true,
+  "2": true
+ },
+ "b": {
+  "tb K1 ntry1": true,
+  "tb K1 ntry16": true,
+  "tb K2 ntry1": true,
+  "tb K2 ntry16": true,
+  "chain n4 K2": true
+ },
+ "c": {
+  "K0.125 n1 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.125 n1 ntry16": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.125 n4 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.125 n4 ntry16": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.5 n1 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.5 n1 ntry16": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.5 n4 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K0.5 n4 ntry16": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K1 n1 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K1 n1 ntry16": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K1 n4 ntry1": {
+   "violations": 0,
+   "decodes": true
+  },
+  "K1 n4 ntry16": {
+   "violations": 0,
+   "decodes": true
+  }
+ },
+ "sec_per_1k_tiles": {
+  "K0.125 n1 ntry1": 18.6,
+  "K0.125 n1 ntry16": 303.8,
+  "K0.125 n4 ntry1": 19.3,
+  "K0.125 n4 ntry16": 302.5,
+  "K0.125 free": 10.9,
+  "K0.5 n1 ntry1": 21.6,
+  "K0.5 n1 ntry16": 356.6,
+  "K0.5 n4 ntry1": 23.0,
+  "K0.5 n4 ntry16": 352.4,
+  "K0.5 free": 11.7,
+  "K1 n1 ntry1": 26.1,
+  "K1 n1 ntry16": 427.5,
+  "K1 n4 ntry1": 27.7,
+  "K1 n4 ntry16": 426.4,
+  "K1 free": 13.3
+ },
+ "PASS": true
+}

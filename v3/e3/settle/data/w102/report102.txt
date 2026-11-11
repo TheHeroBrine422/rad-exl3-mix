@@ -1,0 +1,108 @@
+#136-01 d3: 81 complete (tensor, K) of 81; tensors per K: K0.125 27, K0.5 27, K1 27
+G0 (F vs w95 i8 rows): 81 rows, max rel diff 3.26e-07, 0 bad -> PASS
+
+T16/T1: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 0.9456 | [0.9362, 0.9540] | 0.9401 | 0.9525
+  K0.5 | 27 | 0.9812 | [0.9776, 0.9846] | 0.9785 | 0.9845
+  K1 | 27 | 0.9917 | [0.9878, 0.9943] | 0.9903 | 0.9935
+
+T16/T1 per family (geo over layers):
+  K0.125: attn_k 0.9356, attn_output 0.9498, attn_qg 0.9642, attn_v 0.9604, ffn_down 0.9490, ffn_gate_up 0.9520, ssm_out 0.9592, ssm_qkv 0.9445, ssm_z 0.8975
+  K0.5: attn_k 0.9735, attn_output 0.9807, attn_qg 0.9729, attn_v 0.9856, ffn_down 0.9866, ffn_gate_up 0.9860, ssm_out 0.9846, ssm_qkv 0.9796, ssm_z 0.9812
+  K1: attn_k 0.9891, attn_output 0.9955, attn_qg 0.9814, attn_v 0.9940, ffn_down 0.9924, ffn_gate_up 0.9955, ssm_out 0.9905, ssm_qkv 0.9923, ssm_z 0.9948
+
+O4/O1: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 0.8930 | [0.8804, 0.9048] | 0.8842 | 0.9043
+  K0.5 | 27 | 0.9831 | [0.9799, 0.9864] | 0.9861 | 0.9794
+  K1 | 27 | 0.9909 | [0.9877, 0.9938] | 0.9910 | 0.9908
+
+O4/O1 per family (geo over layers):
+  K0.125: attn_k 0.8512, attn_output 0.9152, attn_qg 0.9155, attn_v 0.9175, ffn_down 0.9039, ffn_gate_up 0.8872, ssm_out 0.9110, ssm_qkv 0.8758, ssm_z 0.8629
+  K0.5: attn_k 0.9862, attn_output 0.9821, attn_qg 0.9937, attn_v 0.9766, ffn_down 0.9790, ffn_gate_up 0.9784, ssm_out 0.9778, ssm_qkv 0.9831, ssm_z 0.9911
+  K1: attn_k 0.9914, attn_output 0.9926, attn_qg 0.9866, attn_v 0.9867, ffn_down 0.9913, ffn_gate_up 0.9907, ssm_out 0.9887, ssm_qkv 0.9976, ssm_z 0.9927
+
+T1/F: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 1.2827 | [1.2544, 1.3130] | 1.3086 | 1.2510
+  K0.5 | 27 | 1.1052 | [1.1008, 1.1098] | 1.1113 | 1.0975
+  K1 | 27 | 1.0744 | [1.0718, 1.0774] | 1.0781 | 1.0698
+
+T1/F per family (geo over layers):
+  K0.125: attn_k 1.3320, attn_output 1.2437, attn_qg 1.2597, attn_v 1.2472, ffn_down 1.2498, ffn_gate_up 1.3042, ssm_out 1.2082, ssm_qkv 1.3104, ssm_z 1.3995
+  K0.5: attn_k 1.1215, attn_output 1.0988, attn_qg 1.1125, attn_v 1.1033, ffn_down 1.0998, ffn_gate_up 1.0979, ssm_out 1.0936, ssm_qkv 1.1132, ssm_z 1.1062
+  K1: attn_k 1.0825, attn_output 1.0708, attn_qg 1.0799, attn_v 1.0733, ffn_down 1.0698, ffn_gate_up 1.0684, ssm_out 1.0700, ssm_qkv 1.0780, ssm_z 1.0766
+
+O1/O0: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 1.2922 | [1.2576, 1.3283] | 1.3177 | 1.2611
+  K0.5 | 27 | 1.0983 | [1.0924, 1.1040] | 1.0993 | 1.0970
+  K1 | 27 | 1.0705 | [1.0684, 1.0727] | 1.0717 | 1.0689
+
+O4/T16(cross): K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 0.9924 | [0.9774, 1.0098] | 0.9952 | 0.9890
+  K0.5 | 27 | 1.0731 | [1.0524, 1.0947] | 1.0902 | 1.0520
+  K1 | 27 | 1.1094 | [1.0771, 1.1441] | 1.1414 | 1.0706
+
+T16/F: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.125 | 27 | 1.2129 | [1.1930, 1.2341] | 1.2303 | 1.1916
+  K0.5 | 27 | 1.0844 | [1.0796, 1.0895] | 1.0875 | 1.0805
+  K1 | 27 | 1.0655 | [1.0631, 1.0676] | 1.0676 | 1.0628
+
+Rule: NTRY 16 adopted at K if geo T16/T1 <= 0.995; chained if geo O4/O1 <= 0.95
+  K0.125: R_ntry 0.9456 -> PASS (propose NTRY 16); R_chain 0.8930 -> PASS
+  K0.5: R_ntry 0.9812 -> PASS (propose NTRY 16); R_chain 0.9831 -> fail (not adopted)
+  K1: R_ntry 0.9917 -> PASS (propose NTRY 16); R_chain 0.9909 -> fail (not adopted)
+  CPU sec per arm K0.125 (median): F 23, T1 54, T16 846, O0 30, O1 53, O4 54
+  CPU sec per arm K0.5 (median): F 48, T1 92, T16 1458, O0 46, O1 93, O4 98
+  CPU sec per arm K1 (median): F 52, T1 97, T16 1566, O0 48, O1 98, O4 101
+  K0.125 T16/T1 on B1 / B2 / A: 0.9461 / 0.9452 / 0.9413
+  K0.5 T16/T1 on B1 / B2 / A: 0.9807 / 0.9817 / 0.9816
+  K1 T16/T1 on B1 / B2 / A: 0.9916 / 0.9918 / 0.9912
+
+#136-02 b8: 81 (tensor, K) rows
+G0 (exact arm vs w87 / w95 i8 rows): 81 rows, max rel diff 1.19e-07 (rel_base 1.19e-07), 0 bad -> PASS
+
+L8/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0001 | [1.0000, 1.0002] | 1.0000 | 1.0002
+  K2.5 | 27 | 1.0034 | [1.0028, 1.0042] | 1.0034 | 1.0034
+  K4 | 27 | 1.0228 | [1.0186, 1.0272] | 1.0254 | 1.0196
+
+L8/fp16 per family (geo over layers):
+  K0.5: attn_k 0.9999, attn_output 1.0000, attn_qg 1.0002, attn_v 1.0001, ffn_down 1.0003, ffn_gate_up 1.0001, ssm_out 1.0003, ssm_qkv 1.0001, ssm_z 0.9997
+  K2.5: attn_k 1.0039, attn_output 1.0024, attn_qg 1.0037, attn_v 1.0025, ffn_down 1.0055, ffn_gate_up 1.0018, ssm_out 1.0041, ssm_qkv 1.0029, ssm_z 1.0041
+  K4: attn_k 1.0246, attn_output 1.0186, attn_qg 1.0238, attn_v 1.0204, ffn_down 1.0216, ffn_gate_up 1.0126, ssm_out 1.0257, ssm_qkv 1.0227, ssm_z 1.0354
+
+fp16/exact: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0000 | [1.0000, 1.0000] | 1.0000 | 1.0000
+  K2.5 | 27 | 1.0000 | [1.0000, 1.0000] | 1.0000 | 1.0000
+  K4 | 27 | 1.0001 | [1.0000, 1.0001] | 1.0001 | 1.0000
+
+L8su/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0000 | [0.9999, 1.0001] | 1.0000 | 1.0000
+  K2.5 | 27 | 1.0007 | [1.0005, 1.0010] | 1.0009 | 1.0006
+  K4 | 27 | 1.0057 | [1.0040, 1.0077] | 1.0068 | 1.0044
+
+L8sv/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0001 | [1.0000, 1.0002] | 1.0000 | 1.0002
+  K2.5 | 27 | 1.0027 | [1.0020, 1.0036] | 1.0026 | 1.0029
+  K4 | 27 | 1.0180 | [1.0139, 1.0231] | 1.0200 | 1.0155
+
+L9/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0000 | [0.9999, 1.0001] | 1.0000 | 1.0000
+  K2.5 | 27 | 1.0008 | [1.0006, 1.0010] | 1.0008 | 1.0009
+  K4 | 27 | 1.0060 | [1.0049, 1.0072] | 1.0060 | 1.0060
+
+E4M3/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0076 | [1.0053, 1.0103] | 1.0090 | 1.0059
+  K2.5 | 27 | 1.2019 | [1.1566, 1.2520] | 1.2297 | 1.1681
+  K4 | 27 | 2.4533 | [2.1373, 2.8229] | 2.6541 | 2.2236
+
+L8r/fp16: K | n | geo | 95% CI (tensor bootstrap) | inputs | rest
+  K0.5 | 27 | 1.0001 | [1.0000, 1.0002] | 1.0000 | 1.0002
+  K2.5 | 27 | 1.0033 | [1.0027, 1.0041] | 1.0033 | 1.0034
+  K4 | 27 | 1.0217 | [1.0178, 1.0258] | 1.0234 | 1.0195
+
+Rule: pass at K if geo L8/fp16 <= 1.001
+  K0.5: R 1.00008 -> PASS
+  K2.5: R 1.00344 -> fail
+  K4: R 1.02281 -> fail
+  log2 step (su / sv), median over tensors: 0.0117 / 0.0191
+  trunk bpw saved by 8-bit su / sv (fp16 -> 8 bit, every trunk tensor): 0.00224 bpw (trunk 24.33B weights); per family: ssm_qkv 0.00234, ssm_z 0.00286, ssm_out 0.00286, attn_qg 0.00221, attn_k 0.00937, attn_v 0.00937, attn_output 0.00286, ffn_gate 0.00202, ffn_up 0.00202, ffn_down 0.00202

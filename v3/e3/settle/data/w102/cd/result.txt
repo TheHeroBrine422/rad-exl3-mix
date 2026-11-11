@@ -1,0 +1,10 @@
+04:05:34 cd-K6: card 0 held after 97 s
+04:07:38 cd-K6: rc 0, 221 s wall (incl. lock wait)
+04:57:34 off-K6: card 0 held after 2996 s
+04:58:00 off-K6: rc 0, 3022 s wall (incl. lock wait)
+05:04:43 cd-K1.5: card 0 held after 403 s
+05:06:36 cd-K1.5: rc 0, 516 s wall (incl. lock wait)
+05:08:50 off-K1.5: card 0 held after 134 s
+05:09:26 off-K1.5: rc 0, 170 s wall (incl. lock wait)
+05:10:57 f2: done (/data/w102/out/f2.json)
+05:10:57 cd102 done: cd:6 off:6 cd:1.5 off:1.5 f2
