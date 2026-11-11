@@ -4,6 +4,14 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 7:40 AM CST · #128 / #129 · user decisions: H_out stays at every level; #129 gets more documents
+- **#128:** user: keep H_out at all levels (it helped in both uniform-K tests; the splice was inconclusive, not
+  negative). No config change (apply_k_min 0, apply_k_max 8).
+- **#129:** user asked whether more data makes it significant. Rule #129-02 (`v3/e3/settle/w99.md`, committed before
+  data): same two K6 mixes scored on golden-search27b too (~2× documents), pooled + per-document statistics; queued for
+  card 0 (both cards in the user's radiance today).
+- **Runtime:** none.
+
 ### 2026-11-10 2:24 AM CST · #— · Overfit audit of 11-08 → 11-10 (user cadence; run while DS d100 grinds, VM-local, no cards touched)
 - **Status:** done · **Machine:** VM (ledger + LOG mining only) · **Runtime:** none
 - Decisions since the 11-08 audit and the slices that made them: head Fisher/LDLQ (#124/125, w94: decided on
