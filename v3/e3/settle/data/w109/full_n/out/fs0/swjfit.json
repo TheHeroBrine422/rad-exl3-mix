@@ -1,0 +1,29 @@
+{
+ "tool": "rxq.swjfit",
+ "src": "/data/w109/lv8/fs0",
+ "mode": "level",
+ "meta": "/data/w109/meta/swj27-qad",
+ "grid": "0.6:1.4:0.01",
+ "docs": 725,
+ "tokens": 927611,
+ "cap": 4096,
+ "split": [
+  0,
+  4,
+  8
+ ],
+ "fused": true,
+ "no_cache": true,
+ "kernels": {
+  "causal_conv1d": null,
+  "fla": "0.6.0",
+  "torch": "2.15.0+rocm7.14"
+ },
+ "w109": {
+  "fast": true,
+  "ref_bf16": true,
+  "src_split": 2
+ },
+ "codebook": "i8",
+ "created": "2026-11-11T18:10:29Z"
+}

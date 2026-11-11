@@ -1,0 +1,2 @@
+{"stage": 0, "layers": [0, 4], "sources": 2, "docs": 100, "tokens": 143099, "load_s": 2.52, "run_s": 55.5, "resident_gib": 8.487, "peak_gib": 10.585, "maxrss_gib": 4.73, "gpu": "AMD Radeon RX 9070 XT", "t": "2026-11-11T17:05:48Z"}
+{"stage": 1, "layers": [4, 8], "sources": 2, "docs": 100, "tokens": 143099, "load_s": 1.67, "run_s": 50.63, "resident_gib": 8.487, "peak_gib": 10.585, "maxrss_gib": 5.39, "gpu": "AMD Radeon RX 9070 XT", "t": "2026-11-11T17:06:41Z"}

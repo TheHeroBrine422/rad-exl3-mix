@@ -12,7 +12,7 @@
  "swj_meta": "/data/swj27/swj27-qad",
  "passes": ["1", "2", "3"],
  "steps": ["jobs", "assemble", "swj", "post", "recipe"],
- "swj_batch": 2,
+ "swj_batch": 12,
  "dup_frac": 0.015,
  "dup_seed_delta": 1,
  "chunk": 32,

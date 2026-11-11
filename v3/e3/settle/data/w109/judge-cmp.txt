@@ -1,0 +1,53 @@
+# cmp109 (identity judge), dad1 RX 9070 XT
+== ref2a vs ref2b
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+IDENTICAL
+== ref2b vs prof2
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+IDENTICAL
+== ref2b vs fast2
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+IDENTICAL
+== ref8 vs fast8
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs0_b vs fs0_b: 16 scale files, 8 layers: identical
+fs0_c vs fs0_c: 16 scale files, 8 layers: identical
+fs0_d vs fs0_d: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+fs1_b vs fs1_b: 16 scale files, 8 layers: identical
+fs1_c vs fs1_c: 16 scale files, 8 layers: identical
+fs1_d vs fs1_d: 16 scale files, 8 layers: identical
+IDENTICAL
+== ref12 vs fast12
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs0_b vs fs0_b: 16 scale files, 8 layers: identical
+fs0_c vs fs0_c: 16 scale files, 8 layers: identical
+fs0_d vs fs0_d: 16 scale files, 8 layers: identical
+fs0_e vs fs0_e: 16 scale files, 8 layers: identical
+fs0_f vs fs0_f: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+fs1_b vs fs1_b: 16 scale files, 8 layers: identical
+fs1_c vs fs1_c: 16 scale files, 8 layers: identical
+fs1_d vs fs1_d: 16 scale files, 8 layers: identical
+fs1_e vs fs1_e: 16 scale files, 8 layers: identical
+fs1_f vs fs1_f: 16 scale files, 8 layers: identical
+IDENTICAL
+== ref2b vs pat32
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+IDENTICAL
+== num2 vs patbf
+fs0 vs fs0: 16 scale files, 8 layers: DIFFER swjfit.json: ['numerics']
+fs1 vs fs1: 16 scale files, 8 layers: DIFFER swjfit.json: ['numerics']
+DIFFER
+== num2 vs num2g
+fs0 vs fs0: 16 scale files, 8 layers: identical
+fs1 vs fs1: 16 scale files, 8 layers: identical
+IDENTICAL
+== full_t (dad1, today, 725 docs) vs w92 production fs0/fs1 (R9700, today, 725 docs), layers 0-7
+fs0 vs fs0: 16 scale files, 8 layers: DIFFER model.language_model.layers.0.mlp.gate_proj.safetensors:c 823 of 17408 differ, max |d| 0.06; model.language_model.layers.0.mlp.up_proj.safetensors:c 16943 of 17408 differ, max |d| 0.0542; model.language_model.layers.1.mlp.gate_proj.safetensors:c 416 of 17408 differ, max |d| 0.02; model.language_model.layers.1.mlp.up_proj.safetensors:c 17275 of 17408 dif
+fs1 vs fs1: 16 scale files, 8 layers: DIFFER model.language_model.layers.0.mlp.gate_proj.safetensors:c 846 of 17408 differ, max |d| 0.05; model.language_model.layers.0.mlp.up_proj.safetensors:c 16981 of 17408 differ, max |d| 0.0474; model.language_model.layers.1.mlp.gate_proj.safetensors:c 422 of 17408 differ, max |d| 0.01; model.language_model.layers.1.mlp.up_proj.safetensors:c 17297 of 17408 dif
+DIFFER

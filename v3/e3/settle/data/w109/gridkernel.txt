@@ -1,0 +1,33 @@
+# swjtri109.py (launch-grid reorder, same program body) vs rxq.swjtri at the 27B shape (J 17408, 81 grid points), dad1
+T 300: swjtri 1.29 ms (4.31 us/pos), cg 1.42 ms (4.74 us/pos), x0.91, identical True
+T 1280: swjtri 4.93 ms (3.85 us/pos), cg 4.81 ms (3.76 us/pos), x1.03, identical True
+T 4096: swjtri 15.20 ms (3.71 us/pos), cg 14.43 ms (3.52 us/pos), x1.05, identical True
+# trisweep.py: rxq.swjtri._grid_sums at other BJ / BC / num_warps (BT 16), T 1280; today = BJ 64 BC 8 nw 4 (default)
+today (BJ 64 BC 8 nw default): 4.89 ms
+BJ  32 BC  4 nw 2: 9.50 ms x0.52 identical True
+BJ  32 BC  4 nw 4: 9.53 ms x0.51 identical False
+BJ  32 BC  4 nw 8: 9.59 ms x0.51 identical False
+BJ  32 BC  8 nw 2: 5.22 ms x0.94 identical True
+BJ  32 BC  8 nw 4: 5.21 ms x0.94 identical False
+BJ  32 BC  8 nw 8: 6.30 ms x0.78 identical False
+BJ  32 BC 16 nw 2: 5.68 ms x0.86 identical True
+BJ  32 BC 16 nw 4: 5.53 ms x0.88 identical False
+BJ  32 BC 16 nw 8: 6.49 ms x0.75 identical False
+BJ  64 BC  4 nw 2: 8.69 ms x0.56 identical False
+BJ  64 BC  4 nw 4: 8.76 ms x0.56 identical True
+BJ  64 BC  4 nw 8: 8.97 ms x0.55 identical False
+BJ  64 BC  8 nw 2: 5.16 ms x0.95 identical False
+BJ  64 BC  8 nw 4: 4.84 ms x1.01 identical True
+BJ  64 BC  8 nw 8: 5.15 ms x0.95 identical False
+BJ  64 BC 16 nw 2: 18.08 ms x0.27 identical False
+BJ  64 BC 16 nw 4: 5.72 ms x0.86 identical True
+BJ  64 BC 16 nw 8: 5.68 ms x0.86 identical False
+BJ 128 BC  4 nw 2: 24.63 ms x0.20 identical False
+BJ 128 BC  4 nw 4: 8.66 ms x0.56 identical False
+BJ 128 BC  4 nw 8: 8.70 ms x0.56 identical True
+BJ 128 BC  8 nw 2: 24.61 ms x0.20 identical False
+BJ 128 BC  8 nw 4: 5.08 ms x0.96 identical False
+BJ 128 BC  8 nw 8: 5.10 ms x0.96 identical True
+BJ 128 BC 16 nw 2: 102.89 ms x0.05 identical False
+BJ 128 BC 16 nw 4: 19.16 ms x0.26 identical False
+BJ 128 BC 16 nw 8: 6.34 ms x0.77 identical True

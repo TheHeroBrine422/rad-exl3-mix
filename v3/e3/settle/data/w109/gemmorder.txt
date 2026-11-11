@@ -1,0 +1,25 @@
+# gemmorder.py on dad1 (RX 9070 XT, torch 2.15.0+rocm7.14), 11-11 ~17:10 UTC: which accumulation order reproduces torch's
+# f32 x @ W.T bits (8 outputs, K 5120, emulated on the CPU with math.fma)
+seq_fma      8/8 equal
+mul_add      0/8 equal
+inter2       0/8 equal
+inter2tree   0/8 equal
+inter4       0/8 equal
+inter4tree   0/8 equal
+inter8       0/8 equal
+inter8tree   0/8 equal
+inter16      0/8 equal
+inter16tree  0/8 equal
+inter32      1/8 equal
+inter32tree  0/8 equal
+inter64      0/8 equal
+inter64tree  0/8 equal
+chunk8       0/8 equal
+chunk16      0/8 equal
+chunk32      0/8 equal
+chunk64      0/8 equal
+chunk128     1/8 equal
+chunk256     0/8 equal
+chunk512     0/8 equal
+chunk1024    0/8 equal
+chunk2560    2/8 equal

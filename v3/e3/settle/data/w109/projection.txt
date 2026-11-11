@@ -1,0 +1,13 @@
+R9700 today's code, full pass: B 41.9 min + S x 30.4 min (S1 70, S2 106, S4 163 min measured)
+dad1 9070 XT dev (x51.86 = full): today B 52.0 s + S x 32.4 s (full 45.0 + S x 28.0 min); (b) numerics B 22.8 + S x 14.7 (ratios 0.438 / 0.454)
+
+case                                    swj h  card-0 days  swj share
+card 0, today's code, S=2                30.8  3.33-3.49   37%-39%
+card 0, today's code, S=4                24.5  3.06-3.23   32%-33%
+card 0, today's code, S=8                21.4  2.93-3.10   29%-30%
+card 0, today's code, S=12               20.3  2.89-3.06   28%-29%
+card 0, (b) numerics, S=8                 9.7  2.44-2.61   15%-16%
+card 0, (b) numerics, S=12                9.2  2.43-2.59   15%-16%
+dad1 9070 XT, today's code, S=2          30.3  2.04-2.21    0%- 0%  (+ dad1 in parallel)
+dad1 9070 XT, today's code, S=12         19.0  2.04-2.21    0%- 0%  (+ dad1 in parallel)
+dad1 9070 XT, (b) numerics, S=12          8.6  2.04-2.21    0%- 0%  (+ dad1 in parallel)

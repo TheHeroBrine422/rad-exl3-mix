@@ -1,0 +1,7 @@
+# scale movement: today's code on dad1 (RX 9070 XT) vs the same code's production pass on gpubox (R9700, w92, 11-09),
+# vs the (b) numerics change on one box; 725 docs, layers 0-7, both sources (computed 11-11 ~18:12 UTC on dad1)
+fs0 machine (dad1 today vs R9700 today): gate c moved 2.23%, up c moved 99.45%, max |dc| 0.06
+fs0 numerics (dad1 (b) vs dad1 today):    gate c moved 1.39%, up c moved 99.57%, max |dc| 0.11
+fs1 machine (dad1 today vs R9700 today): gate c moved 2.26%, up c moved 99.51%, max |dc| 0.05
+fs1 numerics (dad1 (b) vs dad1 today):    gate c moved 1.51%, up c moved 99.55%, max |dc| 0.05
+# held-out gain G (mean over the 8 layers): fs0 dad1 8.6095e-04 vs R9700 8.6095e-04 (rel 4e-6); fs1 8.6020e-04 vs 8.6024e-04 (rel 5e-5)

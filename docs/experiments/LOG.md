@@ -4,6 +4,44 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 12:40 PM CST · #144 · swj level pass: f32 GEMMs are 70% and can't be sped up bit-identically; more sources per pass is the only identical lever (S=8: −30% swj card-h); proposal `--numerics bf16` 2.2x faster, held-out within noise (w109)
+- **Status:** done (proposals for the lead / user) · **Machine:** dad1 RX 9070 XT (gfx1201, 16 GB) under dad1's
+  card0.lock, 11-11 16:59–18:25 UTC; gpubox: read-only (w92 / w99 / swj27 timing.jsonl and w92's L0-7 scales), card 0
+  not used · **Code:** `v3/e3/settle/w109/` (README) · **Rule:** `v3/e3/settle/w109.md` (b6433ad, committed alone before
+  data) · **Data:** `v3/e3/settle/data/w109/` (runs.jsonl, prof*.json, judge-*.txt, projection.txt)
+- **Setup:** dev passes on the bf16 27B cut to layers 0–7 (HF shards 1–3), w92's K2.5 i8 levels fs0 / fs1, swj27-qad
+  (first 100 docs = 143k tokens for speed, all 725 for the held-out judge); today's code = `python -m rxq.swjfit --fused
+  --no-cache` at 640ecfd. The 9070 XT matches the R9700: S=2 49.6 vs 52.9 min a level (scaled vs w92's pass).
+- **Profile (S=2, synchronized timers):** f32 GEMMs **70%** (sources 46%, the bf16 reference gate / up 25%), bf16 forward
+  13%, fused grid sums 10%, load / decode / boundary I/O / fit 6%. Shared per pass B ≈ 52 s, per source P ≈ 32.4 s (dev);
+  R9700 from production passes: B 41.9 + S × 30.4 min a full pass.
+- **(a) output-identical (judge: scales torch.equal, same box):** the hook's f32 GEMM = hipBLASLt's sequential FMA over k
+  (CPU emulation 8/8; all split / interleave orders fail); layouts, merged N, stacked documents and all BLAS backends give
+  the same bits at the same 15–17 TFLOP/s; Triton f32 `tl.dot` ≤ 11 TF and not identical. Grid kernel compute-bound:
+  launch reorder identical but ×0.91–1.05; identical tile configs all slower. `--fast` (async boundary writes, prefetch,
+  one aa² sum) identical but −3.8% (S=8) / +1.4% (S=12): under the 5% bar, dropped. **Sources per pass:** per level 83 /
+  57 / 46 / 39 / 37 s at S = 1 / 2 / 4 / 8 / 12 (dev); S=12 peaks at 11.3 GiB (fits 16 GB, one layer a stage). The
+  reference reproduces itself bit for bit (3 runs).
+- **Not identical across boxes:** today's code on the 9070 XT vs w92's R9700 production scales (L0–7, 725 docs): gate c
+  differs on 2.2% of channels, up c on 99.5% (max |dc| 0.06), held-out gain equal to 5e-5. Same box = bit-identical.
+  Likely machine-specific kernel choices in the forward (unverified).
+- **(b) proposals (swj stays ~29% of the ladder after (a) → in scope; judge: held-out gain on 8 layers × 2 sources):**
+  `--numerics bf16` (reference GEMMs bf16 × bf16 → f32, source weights as hi + lo bf16 in one GEMM over 2K): loss
+  −0.06% / −0.05% vs spread 1.19% → **PASS**; gate c moved on 1.4–1.5% of channels (less than the box-to-box 2.2%);
+  the reference-GEMM change alone already moves 1.5% (summation-order noise, not the split). Speed ×2.2 (S=2) / ×2.3
+  (S=8). **Fewer fit tokens: FAIL** (fit on half the fit half: −5.6% of the held-out gain vs spread 1.2%: the fit is
+  data-limited). Non-IEEE divide in the grid kernel: no-op (same bits, same time). Coarser grid: not tried.
+- **Patch** `v3/e3/settle/w109/swj-numerics.patch` (`rxq/swjfit.py --numerics f32|bf16`, split per tensor (peak back to
+  10.6 GiB); `rxrun/run.py` passes `[post.swj] numerics`): tested on dad1, f32 = today's bit for bit, bf16 = the dev arm
+  bit for bit, S=12 bf16 203 s / 11.3 GiB. Merging moves rxq's code stamp (all rxq/*.py hashed) and `numerics` the
+  settings stamp: before the ladder or never.
+- **Projection (w105's method, quant 49–53 h, 36 swj levels):** card 0 today S=2 **30.8 h** swj → 3.33–3.49 card-days;
+  S=8 21.4 h → 2.93–3.10; S=12 20.3 h → 2.89–3.06 (swj 28–29%); (b) S=12 9.2 h → 2.43–2.59 (15–16%). swj on dad1
+  instead: card 0 2.04–2.21 days, dad1 19.0 h (today, S=12) / 8.6 h ((b), S=12) in parallel; needs the full bf16 model
+  there, each level's gate / up (~3.6 GB at K2.5) up gpubox's 300 Mbps link, a remote swj slot and swj off rxrun's main
+  loop (not built).
+- **Runtime:** none (pass time only).
+
 ### 2026-11-11 11:40 AM CST · #147 · Stored layout vs IQR-V4's kernels before the ladder: no layout change needed; output-Hadamard epilogue measured at 3.0% of the A8 GEMM; fractional-K wdec8 1.35× K4 (w112)
 - **Status:** done (research; proposals for the lead) · **Machine:** dad1 RX 9070 XT card 0 (card0.lock, 17:34–17:35 UTC,
   ~45 s) · **Code:** scratch worktree of `qc-exl3-v3` 42960d5 + a bench-only epilogue ablation (`EXL3I_W112_NOHAD`, not

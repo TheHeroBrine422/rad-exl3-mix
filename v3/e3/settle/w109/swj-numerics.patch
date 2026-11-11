@@ -1,0 +1,103 @@
+--- a/pipeline/rxq/swjfit.py
++++ b/pipeline/rxq/swjfit.py
+@@ -16,8 +16,13 @@
+ apply_level folds them into the level), swiglu.jsonl, swjfit.json, .done. --write-wq: also OUT/<NAME>/wq/.
+ Restartable (SCRATCH/plan.json fixes the plan; progress.json after each checkpoint). VRAM_CAP_GB caps the allocator.
+ 
++--numerics bf16 (#144, w109; default f32 = the port's): the reference gate / up as bf16 x bf16 GEMMs with f32
++accumulation (exact products, another summation order) and each source's f32 weight as two bf16 terms in one GEMM over
++the doubled K (f32 accumulation; residual ~2^-16 relative): ~2.2x faster passes, results move at the f32-rounding level
++(held-out gain within 0.1%, fewer channels moved than between two gfx1201 cards: v3/e3/settle/data/w109/).
++
+ python -m rxq.swjfit MODEL META OUT --src NAME=DIR[:wq|:level] ... --scratch DIR [--stages N|auto|--split ..] [--fused]
+-       [--no-cache] [--grid 0.6:1.4:0.01] [--cap 4096] (python -m rxq.swjfit --help)"""
++       [--no-cache] [--grid 0.6:1.4:0.01] [--cap 4096] [--numerics f32|bf16] (python -m rxq.swjfit --help)"""
+ import argparse, hashlib, json, os, resource, shutil, sys, time
+ 
+ import numpy as np
+@@ -66,6 +71,7 @@
+     ap.add_argument("--fused-tol", type=float, default=1e-5)
+     ap.add_argument("--no-cache", action="store_true", help="use_cache=False (mkhin27's forward) instead of a fresh DynamicCache")
+     ap.add_argument("--plan-only", action="store_true")
++    ap.add_argument("--numerics", choices=("f32", "bf16"), default="f32", help="hook GEMMs: f32 (exact port) or bf16 (#144)")
+     a = ap.parse_args(argv)
+     dev = torch.device(os.environ.get("SWJ_DEV", "cuda")); GPU = dev.type == "cuda"
+     torch.set_grad_enabled(False)
+@@ -119,7 +125,7 @@
+     meta_hash = hashlib.sha256(open(f"{a.meta}/kld.json", "rb").read()).hexdigest()[:16]
+     plan = {"model": os.path.abspath(a.model), "meta": os.path.abspath(a.meta), "meta_sha256": meta_hash, "docs": nd,
+             "tokens": NTOK, "cap": a.cap, "grid": a.grid, "split": split, "sources": [list(x) for x in todo],
+-            "fused": a.fused, "no_cache": a.no_cache}
++            "fused": a.fused, "no_cache": a.no_cache, **({"numerics": a.numerics} if a.numerics != "f32" else {})}
+     os.makedirs(f"{a.scratch}/sums", exist_ok=True)
+     pf = f"{a.scratch}/plan.json"
+     if os.path.exists(pf):
+@@ -148,9 +154,14 @@
+ 
+     M.make_rotary()
+ 
++    BF = a.numerics == "bf16"
++
+     def source_wq(name, d, mode, key):
+-        if mode == "wq": return load_wq(d, key, dev).T.contiguous()
+-        return LV[name].get(key).contiguous()
++        """the source's gate / up (out, in) f32; --numerics bf16: [hi | lo] bf16 (out, 2 in), hi + lo ~= the f32 weight"""
++        w = load_wq(d, key, dev).T.contiguous() if mode == "wq" else LV[name].get(key).contiguous()
++        if not BF: return w
++        hi = w.bfloat16(); lo = (w - hi.float()).bfloat16(); del w
++        return torch.cat([hi, lo], 1).contiguous()
+ 
+     def new_sums(): return [torch.zeros(NG, NJ, dtype=torch.float64, device=dev), torch.zeros(NG, NJ, dtype=torch.float64, device=dev),
+                             torch.zeros(NJ, dtype=torch.float64, device=dev)]
+@@ -192,11 +203,19 @@
+ 
+         def hook(l, mlp):
+             def h(mod, inp):
+-                x = inp[0][0].float()                              # [T, hidden]
+-                g = x @ mlp.gate_proj.weight.float().T; u = x @ mlp.up_proj.weight.float().T
++                if BF:
++                    xb = inp[0][0]                                 # [T, hidden] bf16
++                    g = torch.mm(xb, mlp.gate_proj.weight.T, out_dtype=torch.float32)
++                    u = torch.mm(xb, mlp.up_proj.weight.T, out_dtype=torch.float32)
++                    x = torch.cat([xb, xb], 1)                     # the K of the [hi | lo] source weights
++                    mm = lambda w: torch.mm(x, w.T, out_dtype=torch.float32)
++                else:
++                    x = inp[0][0].float()                          # [T, hidden]
++                    g = x @ mlp.gate_proj.weight.float().T; u = x @ mlp.up_proj.weight.float().T
++                    mm = lambda w: x @ w.T
+                 aa = silu(g) * u; del g, u
+                 for name, _, _ in todo:
+-                    gq = x @ WQ[name][l][0].T; uq = x @ WQ[name][l][1].T
++                    gq = mm(WQ[name][l][0]); uq = mm(WQ[name][l][1])
+                     if not chk["done"]:
+                         err = swjtri.check(swj.acc, aa, gq, uq, GRID); chk["done"] = True
+                         log(f"fused check (layer {l}, source {name}, {aa.shape[0]} positions): max rel difference {err:.2e}")
+@@ -277,6 +296,7 @@
+             for key, mult in zip(gu(l), (cg.float(), cu.float())):
+                 write_scales(o, key, torch.ones(H), mult)
+                 if a.write_wq:
++                    assert not BF, "--write-wq with --numerics bf16: not supported"
+                     wq = source_wq(name, d, mode, key)
+                     write_wq(o, key, (wq * mult.view(-1, 1)).T)
+                     del wq
+@@ -288,7 +308,7 @@
+                     if not os.path.exists(dd): os.link(f"{d}/wq/{key}.safetensors", dd)
+         json.dump({"tool": TOOL, "src": d, "mode": mode, "meta": os.path.abspath(a.meta), "grid": a.grid,
+                    "docs": nd, "tokens": NTOK, "cap": a.cap, "split": split, "fused": a.fused, "no_cache": a.no_cache,
+-                   "kernels": F.kernel_paths(), "codebook": LV[name].codebook if mode == "level" else None,
++                   "kernels": F.kernel_paths(), **({"numerics": a.numerics} if BF else {}), "codebook": LV[name].codebook if mode == "level" else None,
+                    "created": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, open(f"{o}/swjfit.json", "w"), indent=1)
+         open(f"{o}/.done", "w").close()
+         log(f"{name}: scales -> {o}")
+--- a/pipeline/rxrun/run.py
++++ b/pipeline/rxrun/run.py
+@@ -197,7 +197,8 @@
+         if dev is None: raise SystemExit("no device of kind swj")
+         tag = "+".join(ladder.fmt_k(v["K"]) for v in todo)
+         args = [self.py, "-m", "rxq.swjfit", self.c["model"], self.c["swj_meta"], S, "--scratch", f"{self.root}/swjscr/{tag}",
+-                "--fused", "--no-cache"]
++                "--fused", "--no-cache"] + (["--numerics", self.cfg["post"]["swj"]["numerics"]]
++                                            if self.cfg["post"]["swj"].get("numerics", "f32") != "f32" else [])
+         for v in todo: args += ["--src", f"{v['name']}={self.D(v)}/level:level"]
+         env = {"VRAM_CAP_GB": "30", "TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL": "1", "TOKENIZERS_PARALLELISM": "false",
+                **{k: str(v) for k, v in (dev.get("env") or {}).items()}, **{k: str(v) for k, v in (self.c.get("swj_env") or {}).items()}}

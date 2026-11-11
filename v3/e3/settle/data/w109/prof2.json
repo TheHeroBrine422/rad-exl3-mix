@@ -1,0 +1,27 @@
+{
+ "sections_s": {
+  "load": 2.652,
+  "decode": 1.908,
+  "setup": 0.002,
+  "read": 0.438,
+  "fwd": 14.436,
+  "ref_gemm": 27.482,
+  "ref_swiglu": 0.677,
+  "src_gemm": 51.126,
+  "src_grid": 10.845,
+  "bwrite": 1.862,
+  "sums_save": 0.192,
+  "fit": 0.183
+ },
+ "wall_s": 111.88,
+ "sources": 2,
+ "layers": 8,
+ "docs": 100,
+ "tokens": 143099,
+ "split": [
+  0,
+  4,
+  8
+ ],
+ "gpu": "AMD Radeon RX 9070 XT"
+}

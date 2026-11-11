@@ -1,0 +1,31 @@
+# bstat (rule 2b judge), dad1
+== numerics, 725 docs: full_t vs full_n
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0119
+fs0: G today 8.6095e-04, prop 8.6140e-04, loss -0.0006 (<= spread); c moved on 50.482% of channels (gate 1.392%), max |dc| 0.11
+fs1: G today 8.6020e-04, prop 8.6063e-04, loss -0.0005 (<= spread); c moved on 50.529% of channels (gate 1.505%), max |dc| 0.05
+PASS
+== numerics + grid-fast, 725 docs: full_t vs full_ng
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0119
+fs0: G today 8.6095e-04, prop 8.6140e-04, loss -0.0006 (<= spread); c moved on 50.482% of channels (gate 1.392%), max |dc| 0.11
+fs1: G today 8.6020e-04, prop 8.6063e-04, loss -0.0005 (<= spread); c moved on 50.529% of channels (gate 1.505%), max |dc| 0.05
+PASS
+== fewer tokens (fit on even docs i%4==0, ~232k tok, vs all even ~464k; same odd held-out), 725 docs
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0119
+fs0: G today 8.6095e-04, prop 8.1265e-04, loss +0.0562 (> spread)
+fs1: G today 8.6020e-04, prop 8.1149e-04, loss +0.0569 (> spread)
+FAIL
+== 100 docs: ref2b vs refbf (ref GEMM bf16 only)
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0200
+fs0: G today 6.6791e-04, prop 6.6788e-04, loss -0.0000 (<= spread); c moved on 48.246% of channels (gate 1.515%), max |dc| 0.0412
+fs1: G today 6.6031e-04, prop 6.6021e-04, loss +0.0002 (<= spread); c moved on 48.287% of channels (gate 1.540%), max |dc| 0.04
+PASS
+== 100 docs: ref2b vs num2
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0200
+fs0: G today 6.6791e-04, prop 6.6835e-04, loss -0.0008 (<= spread); c moved on 51.105% of channels (gate 2.730%), max |dc| 0.04
+fs1: G today 6.6031e-04, prop 6.6066e-04, loss -0.0006 (<= spread); c moved on 51.145% of channels (gate 2.818%), max |dc| 0.04
+PASS
+== 100 docs: ref2b vs patbf (the patch, --numerics bf16)
+seed spread (|G fs0 - G fs1| / mean G, mean over 8 layers): 0.0200
+fs0: G today 6.6791e-04, prop 6.6835e-04, loss -0.0008 (<= spread); c moved on 51.105% of channels (gate 2.730%), max |dc| 0.04
+fs1: G today 6.6031e-04, prop 6.6066e-04, loss -0.0006 (<= spread); c moved on 51.145% of channels (gate 2.818%), max |dc| 0.04
+PASS

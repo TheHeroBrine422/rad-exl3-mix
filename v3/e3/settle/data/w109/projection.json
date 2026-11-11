@@ -1,0 +1,139 @@
+{
+ "R9700": {
+  "B_s": 2511.149999999996,
+  "P_s": 1825.6214285714286
+ },
+ "dad1_today": {
+  "B_s": 52.046567788461594,
+  "P_s": 32.37189855769231
+ },
+ "dad1_numerics": {
+  "B_s": 22.77373157894742,
+  "P_s": 14.707918421052632
+ },
+ "scale": 51.858419695455595,
+ "levels": 36,
+ "quant_h": [
+  49.0,
+  53.0
+ ],
+ "cases": [
+  {
+   "case": "card 0, today's code, S=2",
+   "where": "card0",
+   "swj_h": 30.81,
+   "card0_days": [
+    3.325,
+    3.492
+   ],
+   "swj_share": [
+    0.386,
+    0.368
+   ]
+  },
+  {
+   "case": "card 0, today's code, S=4",
+   "where": "card0",
+   "swj_h": 24.53,
+   "card0_days": [
+    3.064,
+    3.231
+   ],
+   "swj_share": [
+    0.334,
+    0.316
+   ]
+  },
+  {
+   "case": "card 0, today's code, S=8",
+   "where": "card0",
+   "swj_h": 21.4,
+   "card0_days": [
+    2.933,
+    3.1
+   ],
+   "swj_share": [
+    0.304,
+    0.288
+   ]
+  },
+  {
+   "case": "card 0, today's code, S=12",
+   "where": "card0",
+   "swj_h": 20.35,
+   "card0_days": [
+    2.89,
+    3.056
+   ],
+   "swj_share": [
+    0.293,
+    0.277
+   ]
+  },
+  {
+   "case": "card 0, (b) numerics, S=8",
+   "where": "card0",
+   "swj_h": 9.67,
+   "card0_days": [
+    2.445,
+    2.611
+   ],
+   "swj_share": [
+    0.165,
+    0.154
+   ]
+  },
+  {
+   "case": "card 0, (b) numerics, S=12",
+   "where": "card0",
+   "swj_h": 9.21,
+   "card0_days": [
+    2.425,
+    2.592
+   ],
+   "swj_share": [
+    0.158,
+    0.148
+   ]
+  },
+  {
+   "case": "dad1 9070 XT, today's code, S=2",
+   "where": "dad1",
+   "swj_h": 30.28,
+   "card0_days": [
+    2.042,
+    2.208
+   ],
+   "swj_share": [
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "case": "dad1 9070 XT, today's code, S=12",
+   "where": "dad1",
+   "swj_h": 19.04,
+   "card0_days": [
+    2.042,
+    2.208
+   ],
+   "swj_share": [
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "case": "dad1 9070 XT, (b) numerics, S=12",
+   "where": "dad1",
+   "swj_h": 8.61,
+   "card0_days": [
+    2.042,
+    2.208
+   ],
+   "swj_share": [
+    0.0,
+    0.0
+   ]
+  }
+ ]
+}

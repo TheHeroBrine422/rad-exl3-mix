@@ -1,0 +1,194 @@
+{
+ "backend_default": "_BlasBackend.Cublaslt",
+ "rows": [
+  {
+   "case": "today x@W.T",
+   "T": 400,
+   "ms": 4.992,
+   "tflops": 14.28,
+   "identical": true
+  },
+  {
+   "case": "x@Wt (K,N contiguous)",
+   "T": 400,
+   "ms": 4.845,
+   "tflops": 14.72,
+   "identical": true
+  },
+  {
+   "case": "merged N=2x (per GEMM)",
+   "T": 400,
+   "ms": 4.807,
+   "tflops": 14.83,
+   "identical": true
+  },
+  {
+   "case": "torch.mm",
+   "T": 400,
+   "ms": 4.954,
+   "tflops": 14.39,
+   "identical": true
+  },
+  {
+   "case": "stacked docs M+1000 (per row x T)",
+   "T": 400,
+   "ms": 4.217,
+   "tflops": 16.91,
+   "identical": true
+  },
+  {
+   "case": "bf16 GEMM (NOT same math: W rounded)",
+   "T": 400,
+   "ms": 0.987,
+   "tflops": 72.21,
+   "identical": false
+  },
+  {
+   "case": "backend hipblaslt",
+   "T": 400,
+   "ms": 5.068,
+   "tflops": 14.07,
+   "identical": true
+  },
+  {
+   "case": "backend cublas",
+   "T": 400,
+   "ms": 4.901,
+   "tflops": 14.55,
+   "identical": true
+  },
+  {
+   "case": "backend cublaslt",
+   "T": 400,
+   "ms": 4.933,
+   "tflops": 14.45,
+   "identical": true
+  },
+  {
+   "case": "today x@W.T",
+   "T": 1280,
+   "ms": 13.491,
+   "tflops": 16.91,
+   "identical": true
+  },
+  {
+   "case": "x@Wt (K,N contiguous)",
+   "T": 1280,
+   "ms": 12.864,
+   "tflops": 17.74,
+   "identical": true
+  },
+  {
+   "case": "merged N=2x (per GEMM)",
+   "T": 1280,
+   "ms": 13.568,
+   "tflops": 16.82,
+   "identical": true
+  },
+  {
+   "case": "torch.mm",
+   "T": 1280,
+   "ms": 13.723,
+   "tflops": 16.63,
+   "identical": true
+  },
+  {
+   "case": "stacked docs M+1000 (per row x T)",
+   "T": 1280,
+   "ms": 13.64,
+   "tflops": 16.73,
+   "identical": true
+  },
+  {
+   "case": "bf16 GEMM (NOT same math: W rounded)",
+   "T": 1280,
+   "ms": 2.046,
+   "tflops": 111.53,
+   "identical": false
+  },
+  {
+   "case": "backend hipblaslt",
+   "T": 1280,
+   "ms": 13.74,
+   "tflops": 16.61,
+   "identical": true
+  },
+  {
+   "case": "backend cublas",
+   "T": 1280,
+   "ms": 13.705,
+   "tflops": 16.65,
+   "identical": true
+  },
+  {
+   "case": "backend cublaslt",
+   "T": 1280,
+   "ms": 13.698,
+   "tflops": 16.66,
+   "identical": true
+  },
+  {
+   "case": "today x@W.T",
+   "T": 4096,
+   "ms": 42.889,
+   "tflops": 17.02,
+   "identical": true
+  },
+  {
+   "case": "x@Wt (K,N contiguous)",
+   "T": 4096,
+   "ms": 40.587,
+   "tflops": 17.99,
+   "identical": true
+  },
+  {
+   "case": "merged N=2x (per GEMM)",
+   "T": 4096,
+   "ms": 42.994,
+   "tflops": 16.98,
+   "identical": true
+  },
+  {
+   "case": "torch.mm",
+   "T": 4096,
+   "ms": 42.929,
+   "tflops": 17.01,
+   "identical": true
+  },
+  {
+   "case": "stacked docs M+1000 (per row x T)",
+   "T": 4096,
+   "ms": 43.048,
+   "tflops": 16.96,
+   "identical": true
+  },
+  {
+   "case": "bf16 GEMM (NOT same math: W rounded)",
+   "T": 4096,
+   "ms": 6.605,
+   "tflops": 110.54,
+   "identical": false
+  },
+  {
+   "case": "backend hipblaslt",
+   "T": 4096,
+   "ms": 42.92,
+   "tflops": 17.01,
+   "identical": true
+  },
+  {
+   "case": "backend cublas",
+   "T": 4096,
+   "ms": 42.932,
+   "tflops": 17.01,
+   "identical": true
+  },
+  {
+   "case": "backend cublaslt",
+   "T": 4096,
+   "ms": 42.909,
+   "tflops": 17.02,
+   "identical": true
+  }
+ ]
+}

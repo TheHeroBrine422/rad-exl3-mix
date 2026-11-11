@@ -547,3 +547,9 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 
 
 But what I will add to my lists of things to try is seeing if a lower quality but lower overhead int4/int8 quant can be viable. But that will need to be post very heavy trellis kernel optimization to confirm it’s as good as it’s gonna get.
+
+## swj fit data (2026-11-11, #144 finding)
+- [ ] **More swj fit tokens?** #144: fitting on half of the fit half (~232k vs ~464k tokens) lost 5.6% of the held-out
+  gain (spread 1.2%), so the fit is still data-limited at today's ~0.93M qad tokens. A doubled qad slice (or qad + xcorp)
+  might add a few % of swj's gain at ~2x the pass cost (affordable with `--numerics bf16`). Judge: held-out gain on
+  the same odd documents (`--fit-sub` style), then KL on a search slice.
