@@ -86,6 +86,10 @@ CPU (no GPU, seconds to minutes; results of the 11-07 runs in `data/w76-2026-11-
   manifest pins, estimates (seconds).
 
 GPU (prepared scripts, the lead runs them):
+- `tests/check_hostmath.py SPEC OUT [--device N]` — the CPU BLAS / LAPACK call sites of a quant job, as torch's wrapped
+  entry points see them, and the traced job equals a plain one (0.8B, 25 tensors, K2.5, pinned stack: 2 call sites
+  before exl3-patches 0010, none with it; 44 s with 0010). With 0010 the result can still use the host CPU when the
+  un-rotation or the refit does not fit on the card: see PORTING.md, "The scale refit and the host CPU".
 - `tools/gpucheck27.sh cd|i4|c9` — gpubox card 0: tile CD on the real quantizer (rxq vs research module, M = I gate,
   two-sided ratios with H_out), the qtf2 i4 kernel check and ourq-vs-rxq i4 bit-identity, C9 in the quant job vs
   c9e27.py on the card (and its per-writer time). Stage the code tree as in

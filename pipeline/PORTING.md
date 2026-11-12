@@ -70,3 +70,22 @@ settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-dia
   decodable by asym27's deq.py).
 - **knap5 must sit in a v3/nf directory** (it reads data relative to its own file and to the cwd): rxq.knap stages a
   symlink tree; abspath keeps the link's directory.
+- **The scale refit and the host CPU (GitHub issue 2).** In the tree before 0010 the single-tensor path un-rotated the
+  Hessian for the scale refit on the CPU (`unrotate_H(H)`, H on the host): `tests/check_hostmath.py` (pinned stack,
+  K2.5) found it the job's only CPU BLAS use, 2 call sites (the two `@` of blockwise_preapply_had_l_ / _r_); with 0010,
+  0. The tree before 0010, torch 2.14.0+rocm10.1.0 with hipBLASLt off and no OpenBLAS setting, 0.8B layers 0-3 (25
+  tensors), on two hosts with the same card (a Ryzen 9 9950X with 2 R9700 and an EPYC 7443 with 4): host to host 20 of
+  29 files equal at K2.5 (5 suh + 6 svh values differ, and 129 C9 `c` values, which follow the scales), 15 of 29 at
+  K0.5 (9 suh + 11 svh), each one f16 step, trellis equal; the pinned stack gave 29 of 29 at both levels. exl3-patches
+  0010 un-rotates on the job's device, the card (as original_H() and the batched path do): both stacks, both levels,
+  the two hosts 29 of 29. Against the tree before 0010 (pinned stack, the EPYC host) trellis equal, 5 suh + 6 svh
+  (K2.5) and 6 suh + 2 svh (K0.5) values one f16 step (C9 `c` follows). The paths with 0010: un-rotation and refit on
+  the card (no host math); un-rotation on the card, the refit out of card memory and then on the CPU when
+  `RXQ_REFIT_CPU_FALLBACK` (or `OURQ_REFIT_CPU_FALLBACK`) is set (host dependent, see "CPU refit fallback and thread
+  count"; unset, the job fails); un-rotation out of card memory and then on the CPU (0010's out-of-memory branch: host
+  dependent, as the tree before 0010; forced on a 2-tensor job, pinned stack, its tensors equal the tree before 0010's),
+  and the refit on the card or, as above, on the CPU. At the 27B ffn_down size (17,408² Hessian, random data, R9700)
+  capped to the declared ffn_down job memory (9 GiB): the tree before 0010 un-rotates on the CPU and refits on the
+  card, with 0010 both run on the card; neither run fell back to the CPU refit; peak 5.84 GiB in both. 0010 changes
+  the code stamp (`rxq_code`), and assembly refuses a level whose tensors disagree on it (DESIGN.md, "Stamps"): a level
+  made before 0010 is kept whole or redone whole.
