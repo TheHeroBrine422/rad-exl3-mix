@@ -59,6 +59,13 @@ settings: ourq's --sigma-in-sweep, per-linear --hin files (Sketch B), --hout-dia
   cards, 27B ffn_down), its scales depend on the BLAS thread count at the 1-ulp level (17 of 17,408 suh entries at 4 vs
   the default threads); the codes do not. Results from different donors can differ there; verification by score
   (rad-quant-at-home VERIFY.md) absorbs it, bit-identity checks must pin the thread count.
+- **Repeat runs on the card (GitHub issue 1).** With the pinned torch 2.15.0+rocm7.14 a quant job writes the same
+  tensors and metadata when it is run again, split one process per Hessian group, moved to another card, split over the
+  cards at once, or sharing a card with a second job (two R9700, 0.8B layers 0-3, K2.5 and K0.5;
+  tests/check_repeat.py). torch 2.14.0+rocm10.1.0 as it comes does not (K2.5: one of three repeats differed in all 29
+  files, the one-process-per-group run in 13 of 29). With hipBLASLt switched off there, ROCBLAS_USE_HIPBLASLT=0
+  together with TORCH_BLAS_PREFER_HIPBLASLT=0, the job repeats (K2.5, every unit). Compare tensors and metadata, never
+  file bytes (above).
 - **ourq's --save-wq rowerr** is computed from the weight after quantize_exl3 has regularized it in place (scaled,
   rotated): the per-row error is not in the original basis. Ported unchanged for parity; flagged in DESIGN.md.
 - **Tile CD with H_out is not per-row weights.** H_out is diagonal per output channel in the original basis, but the

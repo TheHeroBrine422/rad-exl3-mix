@@ -95,5 +95,9 @@ GPU (prepared scripts, the lead runs them):
 - `tests/check_quant.py REF_LEVEL JOB_OUT` — per-tensor jobs vs an ourq level (GPU run first; the ourq reference must
   hold each key's group head, i.e. q_proj / in_proj_qkv / gate_proj in its `--only`, or the key is BADREF); `tools/run4070.sh A|B|C|D`
   — the 11-06 4070 checks (they turn the 11-07 settings off to match their references).
+- `tests/check_repeat.py WORK SPEC [UNIT ...]` — a quant job run again in fresh processes (repeats, one process per
+  Hessian group, every device of `DEVICES`, the devices at once, two processes on one device) writes the same tensors
+  and metadata; unit `seed` is the control that must differ (0.8B layers 0-3, 25 tensors, every unit on two R9700:
+  about 4 min at K2.5, 9 min at K0.5).
 
 Licence: Apache-2.0 (LICENSE, NOTICE); exllamav3 is MIT (LICENSES/).
