@@ -1,0 +1,34 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2": 0.004854108756656276,
+  "f1": 0.00773000650792512
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2": 0.0035545157658141147,
+  "f1": 0.003947150702331162
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "f2": 0.0008180837669996019,
+  "f1": 0.0006477088146652907
+ },
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2": 0.005450154967367389,
+  "f1": 0.008886366782056784
+ },
+ "model.language_model.layers.3.self_attn.v_proj": {
+  "f2": 0.005053294566723347,
+  "f1": 0.012676925306321488
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "f2": 0.002907762226419015,
+  "f1": 0.004857735303728317
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2": 0.013861408508247878,
+  "f1": 0.015404013999495904
+ },
+ "model.language_model.layers.63.self_attn.v_proj": {
+  "f2": 0.0032571400439720686,
+  "f1": 0.003684742139065342
+ }
+}

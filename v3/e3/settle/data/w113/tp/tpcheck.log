@@ -1,0 +1,24 @@
+map in_proj_qkv  TP1: C map vs table: 0 tiles differ
+map in_proj_qkv  TP2: C map vs table: 0 tiles differ
+map in_proj_qkv  TP4: C map vs table: 0 tiles differ
+map in_proj_z    TP1: C map vs table: 0 tiles differ
+map in_proj_z    TP2: C map vs table: 0 tiles differ
+map in_proj_z    TP4: C map vs table: 0 tiles differ
+map q_proj       TP1: C map vs table: 0 tiles differ
+map q_proj       TP2: C map vs table: 0 tiles differ
+map q_proj       TP4: C map vs table: 0 tiles differ
+map v_proj       TP1: C map vs table: 0 tiles differ
+map v_proj       TP2: C map vs table: 0 tiles differ
+map v_proj       TP4: C map vs table: 0 tiles differ
+map k_proj       TP1: C map vs table: 0 tiles differ
+map k_proj       TP2: C map vs table: 0 tiles differ
+map k_proj       TP4: C map vs table: 0 tiles differ
+model.language_model.layers.10.linear_attn.in_proj_qkv N 10240: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.29e-15
+model.language_model.layers.10.linear_attn.in_proj_z N  6144: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.46e-15
+model.language_model.layers.11.self_attn.q_proj  N 12288: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.29e-15
+model.language_model.layers.11.self_attn.v_proj  N  1024: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.29e-15
+model.language_model.layers.3.self_attn.v_proj   N  1024: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.27e-15
+model.language_model.layers.39.self_attn.q_proj  N 12288: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.01e-15
+model.language_model.layers.39.self_attn.v_proj  N  1024: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.28e-15
+model.language_model.layers.63.self_attn.v_proj  N  1024: TP2 0 / TP4 0 outputs differ from TP1 (bit for bit); rel vs x·W_natᵀ 1.19e-15
+W113 #148-03 TPCHECK PASS

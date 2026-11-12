@@ -1,0 +1,13 @@
+== xcorp: 130 docs  pooled r 0.9927 [0.9860, 1.0096] z -1.01  per-doc geo 0.9856  median 0.9898  docs better 0.55
+   heaviest: 58.9% r 0.984 swe-smith; 12.4% r 1.013 smoltalk2/longalign; 3.9% r 1.010 hermes-fc; 1.6% r 1.044 when2call
+   without 1 doc(s) > 20% of the part: r 1.0048 [0.9919, 1.0115] z +0.95
+   leave-one-out r range 0.9899 .. 1.0048
+   drop k heaviest: k0 0.9927  k1 1.0048  k2 1.0013  k3 1.0000  k5 0.9956  k10 0.9876
+== calib: 72 docs  pooled r 1.0491 [0.9936, 1.1140] z +1.54  per-doc geo 1.0086  median 1.0003  docs better 0.49
+   heaviest: 7.1% r 0.981 wikipedia/hi; 6.6% r 1.000 fineweb-edu; 5.6% r 0.998 the-stack-smol-xl; 5.4% r 1.022 wikimedia
+   leave-one-out r range 1.0224 .. 1.0542
+   drop k heaviest: k0 1.0491  k1 1.0542  k2 1.0584  k3 1.0626  k5 1.0305  k10 1.0062
+== both: 202 docs  pooled r 0.9954 [0.9875, 1.0174] z -0.52  per-doc geo 0.9937  median 0.9944  docs better 0.52
+   heaviest: 56.1% r 0.984 swe-smith; 11.8% r 1.013 smoltalk2/longalign; 3.7% r 1.010 hermes-fc; 1.6% r 1.044 when2call
+   leave-one-out r range 0.9931 .. 1.0095
+   drop k heaviest: k0 0.9954  k1 1.0095  k2 1.0084  k3 1.0082  k5 1.0055  k10 1.0014

@@ -1,0 +1,15 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.10.linear_attn.in_proj_qkv       K2.5 proxy 9.048e-03 6.0s
+  model.language_model.layers.10.linear_attn.in_proj_z         K2.5 proxy 4.050e-03 3.0s
+     tile CD 3 (H_out): rel 7.5972e-04 -> 7.5886e-04 (x0.9989), accepted 0.015 / 0.006 / 0.003, 12.9s
+  model.language_model.layers.11.self_attn.q_proj              K2.5 proxy 7.537e-04 18.7s
+     tile CD 3 (H_out): rel 2.7930e-03 -> 2.7878e-03 (x0.9982), accepted 0.030 / 0.016 / 0.010, 13.3s
+  model.language_model.layers.39.self_attn.q_proj              K2.5 proxy 4.943e-03 19.1s
+  model.language_model.layers.3.self_attn.v_proj               K2.5 proxy 1.391e-02 0.9s
+  model.language_model.layers.11.self_attn.v_proj              K2.5 proxy 9.092e-03 0.9s
+  model.language_model.layers.39.self_attn.v_proj              K2.5 proxy 1.557e-02 0.9s
+  model.language_model.layers.63.self_attn.v_proj              K2.5 proxy 4.094e-03 0.9s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 0, "keys": ["model.language_model.layers.10.linear_attn.in_proj_qkv", "model.language_model.layers.10.linear_attn.in_proj_z", "model.language_model.layers.11.self_attn.q_proj", "model.language_model.layers.39.self_attn.q_proj", "model.language_model.layers.3.self_attn.v_proj", "model.language_model.layers.11.self_attn.v_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.63.self_attn.v_proj"], "settings_stamp": "87a7e4ab32f9d5b9", "inputs": {"ckpt": "/data/w113/a/perm/P/ckpt", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/w113/a/perm/P/hout"}}, "settings_stamp": "87a7e4ab32f9d5b9", "code_stamp": "5716573c6c8bf586", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 8, "seconds": 50.4}

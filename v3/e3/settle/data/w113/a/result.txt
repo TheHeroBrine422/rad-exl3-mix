@@ -1,0 +1,50 @@
+00:01:52 prep P: mkperm113 P: ok, 8 keys
+00:24:16 prep T: mkperm113 T: ok, 8 keys
+00:26:17 prep V: mkperm113 V: ok, 4 keys
+00:28:13 N-K2.5-s0: card 0 held after 116 s
+00:29:09 N-K2.5-s0: rc 0, 172 s wall (incl. lock wait)
+00:39:42 P-K2.5-s0: card 0 held after 633 s
+00:40:36 P-K2.5-s0: rc 0, 687 s wall (incl. lock wait)
+01:03:06 hold113: card0 + ram (shared) held: N:2.5:0 P:2.5:0 T:2.5:0 V:2.5:0
+01:03:06 T-K2.5-s0: card 0 held after 0 s
+01:04:04 T-K2.5-s0: rc 0, 58 s wall (incl. lock wait)
+01:04:04 V-K2.5-s0: card 0 held after 0 s
+01:04:14 V-K2.5-s0: rc 0, 10 s wall (incl. lock wait)
+01:04:14 a113 done: N:2.5:0 P:2.5:0 T:2.5:0 V:2.5:0
+01:04:14 hold113: released (rc 0)
+01:06:13 hold113: card0 + ram (shared) held: N:4:0 P:4:0 T:4:0 V:4:0
+01:06:13 N-K4-s0: card 0 held after 0 s
+01:07:01 N-K4-s0: rc 0, 48 s wall (incl. lock wait)
+01:07:01 P-K4-s0: card 0 held after 0 s
+01:07:49 P-K4-s0: rc 0, 48 s wall (incl. lock wait)
+01:07:49 T-K4-s0: card 0 held after 0 s
+01:08:37 T-K4-s0: rc 0, 48 s wall (incl. lock wait)
+01:08:37 V-K4-s0: card 0 held after 0 s
+01:08:45 V-K4-s0: rc 0, 8 s wall (incl. lock wait)
+01:08:45 a113 done: N:4:0 P:4:0 T:4:0 V:4:0
+01:08:45 hold113: released (rc 0)
+01:10:41 hold113: card0 + ram (shared) held: N:2.5:1 P:2.5:1 T:2.5:1 V:2.5:1
+01:10:41 N-K2.5-s1: card 0 held after 0 s
+01:11:37 N-K2.5-s1: rc 0, 56 s wall (incl. lock wait)
+01:11:37 P-K2.5-s1: card 0 held after 0 s
+01:12:31 P-K2.5-s1: rc 0, 54 s wall (incl. lock wait)
+01:12:31 T-K2.5-s1: card 0 held after 0 s
+01:13:27 T-K2.5-s1: rc 0, 56 s wall (incl. lock wait)
+01:13:27 V-K2.5-s1: card 0 held after 0 s
+01:13:37 V-K2.5-s1: rc 0, 10 s wall (incl. lock wait)
+01:13:37 a113 done: N:2.5:1 P:2.5:1 T:2.5:1 V:2.5:1
+01:13:37 hold113: released (rc 0)
+01:24:12 hold113: card0 + ram (shared) held: N:4:1 P:4:1 T:4:1 V:4:1
+01:24:12 N-K4-s1: card 0 held after 0 s
+01:25:00 N-K4-s1: rc 0, 48 s wall (incl. lock wait)
+01:25:01 P-K4-s1: card 0 held after 0 s
+01:25:47 P-K4-s1: rc 0, 47 s wall (incl. lock wait)
+01:25:47 T-K4-s1: card 0 held after 0 s
+01:26:35 T-K4-s1: rc 0, 48 s wall (incl. lock wait)
+01:26:35 V-K4-s1: card 0 held after 0 s
+01:26:45 V-K4-s1: rc 0, 10 s wall (incl. lock wait)
+01:26:45 a113 done: N:4:1 P:4:1 T:4:1 V:4:1
+01:26:45 hold113: released (rc 0)
+01:30:08 f2: done
+01:30:08 report: W113 #148-01 GATE: (b) scope = ssm_qkv,ssm_z,attn_qg
+01:30:08 a113 done: f2 report

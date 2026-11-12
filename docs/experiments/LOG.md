@@ -4,6 +4,54 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 9:05 PM CST · #148 · P16-TP 27B pair on fresh golden-search27e FAILS (geo 1.0005, z +0.04); full P16 also shows nothing on this third slice (1.0038; joint over three slices 0.9965, z −0.79); TP2 / TP4 functional check PASS (bit-exact) (w113)
+- **Status:** done (no adoption proposal: rule FAIL) · **Machine:** gpubox card 0 (T units 01:32–02:04 UTC, packs /
+  gates to 02:11, 12 scores 02:11–02:59 UTC, one per card hold between w110's scores), gpubox CPU (slice, tpcheck) ·
+  **Code / rule / data:** as below (`v3/e3/settle/w113/`, `w113.md` ed8c0fd, `data/w113/` `a/` `b/` `tp/`)
+- **Slice golden-search27e** (first use): 130 pieces of never-scored `xc8k-b2-c1` (187,589 positions; 27b-x / 27c-x /
+  27d-x / mX docs excluded) + 72 calib search docs never in the ledger and not in 27d-c (65,334 scored); ledger +72
+  rows `golden-search27e-c` (select, v3).
+- **#148-02 (b), 112 tensors (ssm_qkv 48, ssm_z 48, attn_qg 16) at K2.5, dense splice into w111's N mixes**; gates
+  PAIR OK (only the 112 changed, codes plane), BYTES113 112 / 112, stamp 87a7e4ab. N → P16-TP pooled **0.9933 / 1.0079,
+  geo 1.0005** (xcorp 0.9991, calib 1.0284), SE 0.0151, z +0.04 → **FAIL**. Reported: N → full P16 (128) 0.9954 /
+  1.0122, geo **1.0038** (xcorp 1.0016, calib 1.0476), z +0.52; P → T 0.9968. Per doc (N → T): per-doc geo 0.992 /
+  0.994, 56% / 55% better; xcorp 59% one swe-smith doc (r 0.984), without it 1.004 / 1.038; calib pooled 1.012 / 1.045
+  vs per-doc geo 1.002 / 0.995 (a few heavy docs). Joint full P16, 27c + 27d + 27e: **0.9965, z −0.79**; 128-tensor
+  P16 on 27d + 27e 0.9985 (z −0.26). This T pair with w101 / w111's P16 pairs: 0.9932, z −1.31 (arms differ).
+- **#148-03 TP functional check (CPU): PASS.** The C map (`p16tp_map.c`) == the table for all 5 families at TP 1 / 2 /
+  4; on the 8 real T-quantized tensors every TP2 / TP4 rank, computing from its loader-cut stored rows only (whole
+  stored blocks, output Hadamard inside the rank) and storing through the closed-form map, equals TP1 un-permuted by
+  the table bit for bit.
+- **Decision / next:** no adoption on this evidence (rule). P16-TP keeps P16's whole f2 gain on qkv / z / qg and is TP
+  1 / 2 / 4-safe with radiance's row cut unchanged, but P16's own KL gain has not repeated (0.9933 → 0.9903 → 1.0038).
+  w113's recommendation: do not adopt P16 (either form) before the freeze; if the user wants it, ship P16-TP on
+  qkv / z / qg (kernel requirements in `w113/README.md` "Proposal"); v_proj has no TP-safe form. User decides.
+  Cleanup: w111's four mixes (66 GB) and all w113 mixes / patches / codes deleted; golden-search27e kept on gpubox.
+- **Runtime:** none (no adoption); P + D if P16-TP were adopted (store remap, untimed in this form).
+
+### 2026-11-11 7:35 PM CST · #148 · P16-TP (interleave inside each TP4 rank's rows): real-quant f2 keeps 96 / 114 / 99.5% of full P16's log-gain on ssm_qkv / ssm_z / attn_qg (PASS); attn_v at TP4 width 2 keeps nothing (FAIL); 27B pair on fresh golden-search27e running (w113)
+- **Status:** running · **Machine:** gpubox card 0 (units 00:28–01:27 UTC in 4-unit holds of ~3 min between w110's packs),
+  gpubox CPU (f2, slice) · **Code:** `v3/e3/settle/w113/` (perm113.py, p16tp_map.c, a113.sh, f2il113.py, report148a.py,
+  slice113.sh, b113.sh, tpcheck113.py) · **Rule:** `v3/e3/settle/w113.md` (ed8c0fd, committed alone before data) ·
+  **Data:** `v3/e3/settle/data/w113/` · README `w113/README.md` (radiance sharding with file:line refs)
+- **Why:** user 11-11: P16 must work across cards. Full P16 (gperm(N, 16)) is not TP-safe: at TP4, 48 / 80 ssm_qkv
+  and 16 / 48 ssm_z stored blocks hold rows of two ranks; attn_v / attn_k blocks span ranks already at TP2; elsewhere
+  blocks sit at other ranks' positions (loader gather). Radiance's row cut is per stacked part (qkv q | k | v), every TP4
+  rank share is a multiple of 128 rows, TP4 sets nest in TP2 sets; exl3i weights refuse TP > 1 today.
+- **P16-TP:** gperm(N/4, 16) inside every TP4 rank's row set; one stored order serves TP 1 / 2 / 4 with the loader's cut
+  unchanged (no gather); widths ssm_qkv / ssm_z / attn_qg 8 (attn_qg = exactly full P16's block row sets), attn_v / k 2.
+  Kernel map closed form (`p16tp_map.c`; parts' tiles per TP4 rank, nb, m = 4 / t) == the table for every family / TP /
+  rank.
+- **#148-01 (a), real rxq f2, stamp 87a7e4ab, K2.5 / K4 × seeds 0 / 1** (R = geo f2_X / f2_N; keep = ln R_T / ln R_P):
+  ssm_qkv (L10) R_P 0.677, R_T 0.688, **keep 0.959**; ssm_z (L10) 0.948 / 0.941, **1.144**; attn_qg (L11, L39) 0.873 /
+  0.873, **0.995**; attn_v (L3 / L11 / L39 / L63) 0.865 / **1.002, keep −0.01 → FAIL**; report-only V (TP2-only, width 4)
+  R 0.975, keep 0.18. Model ratios agree tensor by tensor (e.g. L63 v_proj P 0.66, T 1.00). v_proj's gain needs rows of
+  different KV heads in one block, which no TP4-safe order allows. Seeds agree to ±0.003.
+- **Next:** (b) scope ssm_qkv + ssm_z + attn_qg (112 tensors), T vs w111's N mixes on **golden-search27e** (fresh: 130
+  pieces of never-scored xc8k-b2-c1, 187,589 positions + 72 calib search docs never in the ledger, 65,334 scored; ledger
+  rows added), plus full P16 (128) reported as a third slice.
+- **Runtime:** prefill + decode if adopted (store remap); the experiment changes nothing.
+
 ### 2026-11-11 6:20 PM CST · #144 · swj bf16 numerics ADOPTED (user) · settings stamp 4f8319840e59c5d0
 - User 11-11: "swj: do it". Applied `v3/e3/settle/w109/swj-numerics.patch` (`rxq.swjfit --numerics`, rxrun passes
   `[post.swj] numerics`) and set `numerics = "bf16"`. Checks on colo: check_diag 20/20, check_cpujob 25/25, check_ladder

@@ -1,0 +1,62 @@
+{
+ "map": {
+  "in_proj_qkv TP1": 0,
+  "in_proj_qkv TP2": 0,
+  "in_proj_qkv TP4": 0,
+  "in_proj_z TP1": 0,
+  "in_proj_z TP2": 0,
+  "in_proj_z TP4": 0,
+  "q_proj TP1": 0,
+  "q_proj TP2": 0,
+  "q_proj TP4": 0,
+  "v_proj TP1": 0,
+  "v_proj TP2": 0,
+  "v_proj TP4": 0,
+  "k_proj TP1": 0,
+  "k_proj TP2": 0,
+  "k_proj TP4": 0
+ },
+ "keys": {
+  "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+   "rel_vs_dense": 1.2854229684146242e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.10.linear_attn.in_proj_z": {
+   "rel_vs_dense": 1.4567098556243982e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.11.self_attn.q_proj": {
+   "rel_vs_dense": 1.2899418997082312e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.11.self_attn.v_proj": {
+   "rel_vs_dense": 1.2896276052618719e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.3.self_attn.v_proj": {
+   "rel_vs_dense": 1.274330630982032e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.39.self_attn.q_proj": {
+   "rel_vs_dense": 1.0131378796148518e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.39.self_attn.v_proj": {
+   "rel_vs_dense": 1.2773816921838748e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  },
+  "model.language_model.layers.63.self_attn.v_proj": {
+   "rel_vs_dense": 1.1898346490600263e-15,
+   "TP2_mismatch": 0,
+   "TP4_mismatch": 0
+  }
+ },
+ "pass": true
+}

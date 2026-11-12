@@ -1,0 +1,9 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.3.self_attn.v_proj               K2.5 proxy 1.375e-02 2.4s
+  model.language_model.layers.11.self_attn.v_proj              K2.5 proxy 8.990e-03 0.9s
+  model.language_model.layers.39.self_attn.v_proj              K2.5 proxy 1.548e-02 0.9s
+  model.language_model.layers.63.self_attn.v_proj              K2.5 proxy 3.638e-03 0.9s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 0, "keys": ["model.language_model.layers.3.self_attn.v_proj", "model.language_model.layers.11.self_attn.v_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.63.self_attn.v_proj"], "settings_stamp": "87a7e4ab32f9d5b9", "inputs": {"ckpt": "/data/w113/a/perm/V/ckpt", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/w113/a/perm/V/hout"}}, "settings_stamp": "87a7e4ab32f9d5b9", "code_stamp": "5716573c6c8bf586", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 4, "seconds": 5.0}

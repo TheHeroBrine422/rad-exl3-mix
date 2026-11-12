@@ -1,0 +1,133 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.0.linear_attn.in_proj_qkv        K2.5 proxy 1.648e-03 6.4s
+  model.language_model.layers.0.linear_attn.in_proj_z          K2.5 proxy 2.835e-03 3.0s
+  model.language_model.layers.1.linear_attn.in_proj_qkv        K2.5 proxy 3.940e-03 4.7s
+  model.language_model.layers.1.linear_attn.in_proj_z          K2.5 proxy 2.900e-03 3.0s
+  model.language_model.layers.2.linear_attn.in_proj_qkv        K2.5 proxy 5.428e-03 4.8s
+  model.language_model.layers.2.linear_attn.in_proj_z          K2.5 proxy 3.497e-03 3.0s
+     tile CD 3 (H_out): rel 2.5672e-04 -> 2.5580e-04 (x0.9964), accepted 0.022 / 0.011 / 0.007, 13.6s
+  model.language_model.layers.3.self_attn.q_proj               K2.5 proxy 4.622e-04 19.3s
+  model.language_model.layers.4.linear_attn.in_proj_qkv        K2.5 proxy 1.079e-02 4.8s
+  model.language_model.layers.4.linear_attn.in_proj_z          K2.5 proxy 9.004e-03 3.0s
+  model.language_model.layers.5.linear_attn.in_proj_qkv        K2.5 proxy 8.925e-03 4.8s
+  model.language_model.layers.5.linear_attn.in_proj_z          K2.5 proxy 4.422e-03 3.0s
+  model.language_model.layers.6.linear_attn.in_proj_qkv        K2.5 proxy 8.848e-03 4.7s
+  model.language_model.layers.6.linear_attn.in_proj_z          K2.5 proxy 2.881e-03 3.0s
+     tile CD 3 (H_out): rel 5.0674e-04 -> 5.0608e-04 (x0.9987), accepted 0.015 / 0.006 / 0.003, 13.2s
+  model.language_model.layers.7.self_attn.q_proj               K2.5 proxy 5.659e-04 19.0s
+  model.language_model.layers.8.linear_attn.in_proj_qkv        K2.5 proxy 8.987e-03 4.8s
+  model.language_model.layers.8.linear_attn.in_proj_z          K2.5 proxy 6.005e-03 3.0s
+  model.language_model.layers.9.linear_attn.in_proj_qkv        K2.5 proxy 9.361e-03 4.8s
+  model.language_model.layers.9.linear_attn.in_proj_z          K2.5 proxy 3.948e-03 3.0s
+  model.language_model.layers.10.linear_attn.in_proj_qkv       K2.5 proxy 9.030e-03 4.8s
+  model.language_model.layers.10.linear_attn.in_proj_z         K2.5 proxy 4.044e-03 3.0s
+     tile CD 3 (H_out): rel 7.6012e-04 -> 7.5923e-04 (x0.9988), accepted 0.014 / 0.006 / 0.003, 13.2s
+  model.language_model.layers.11.self_attn.q_proj              K2.5 proxy 7.539e-04 18.9s
+  model.language_model.layers.12.linear_attn.in_proj_qkv       K2.5 proxy 7.308e-03 4.8s
+  model.language_model.layers.12.linear_attn.in_proj_z         K2.5 proxy 3.079e-03 3.0s
+  model.language_model.layers.13.linear_attn.in_proj_qkv       K2.5 proxy 8.270e-03 4.8s
+  model.language_model.layers.13.linear_attn.in_proj_z         K2.5 proxy 2.661e-03 3.0s
+  model.language_model.layers.14.linear_attn.in_proj_qkv       K2.5 proxy 6.711e-03 4.8s
+  model.language_model.layers.14.linear_attn.in_proj_z         K2.5 proxy 3.329e-03 3.0s
+     tile CD 3 (H_out): rel 1.0476e-03 -> 1.0463e-03 (x0.9987), accepted 0.017 / 0.008 / 0.005, 13.2s
+  model.language_model.layers.15.self_attn.q_proj              K2.5 proxy 1.026e-03 18.9s
+  model.language_model.layers.16.linear_attn.in_proj_qkv       K2.5 proxy 8.496e-03 4.8s
+  model.language_model.layers.16.linear_attn.in_proj_z         K2.5 proxy 3.233e-03 3.0s
+  model.language_model.layers.17.linear_attn.in_proj_qkv       K2.5 proxy 7.578e-03 4.8s
+  model.language_model.layers.17.linear_attn.in_proj_z         K2.5 proxy 2.309e-03 3.0s
+  model.language_model.layers.18.linear_attn.in_proj_qkv       K2.5 proxy 7.603e-03 4.8s
+  model.language_model.layers.18.linear_attn.in_proj_z         K2.5 proxy 2.979e-03 3.0s
+     tile CD 3 (H_out): rel 1.5510e-03 -> 1.5494e-03 (x0.9990), accepted 0.015 / 0.006 / 0.004, 13.2s
+  model.language_model.layers.19.self_attn.q_proj              K2.5 proxy 1.913e-03 18.8s
+  model.language_model.layers.20.linear_attn.in_proj_qkv       K2.5 proxy 4.958e-03 4.8s
+  model.language_model.layers.20.linear_attn.in_proj_z         K2.5 proxy 3.454e-03 3.0s
+  model.language_model.layers.21.linear_attn.in_proj_qkv       K2.5 proxy 7.637e-03 4.8s
+  model.language_model.layers.21.linear_attn.in_proj_z         K2.5 proxy 5.241e-03 3.0s
+  model.language_model.layers.22.linear_attn.in_proj_qkv       K2.5 proxy 1.046e-02 4.8s
+  model.language_model.layers.22.linear_attn.in_proj_z         K2.5 proxy 6.290e-03 3.0s
+     tile CD 3 (H_out): rel 1.5813e-03 -> 1.5793e-03 (x0.9987), accepted 0.021 / 0.010 / 0.006, 13.3s
+  model.language_model.layers.23.self_attn.q_proj              K2.5 proxy 2.546e-03 19.0s
+  model.language_model.layers.24.linear_attn.in_proj_qkv       K2.5 proxy 9.713e-03 4.8s
+  model.language_model.layers.24.linear_attn.in_proj_z         K2.5 proxy 7.608e-03 3.0s
+  model.language_model.layers.25.linear_attn.in_proj_qkv       K2.5 proxy 9.427e-03 4.8s
+  model.language_model.layers.25.linear_attn.in_proj_z         K2.5 proxy 4.940e-03 3.0s
+  model.language_model.layers.26.linear_attn.in_proj_qkv       K2.5 proxy 9.816e-03 4.8s
+  model.language_model.layers.26.linear_attn.in_proj_z         K2.5 proxy 4.780e-03 3.0s
+     tile CD 3 (H_out): rel 1.3672e-03 -> 1.3652e-03 (x0.9985), accepted 0.020 / 0.010 / 0.005, 13.3s
+  model.language_model.layers.27.self_attn.q_proj              K2.5 proxy 3.515e-03 19.0s
+  model.language_model.layers.28.linear_attn.in_proj_qkv       K2.5 proxy 8.778e-03 4.8s
+  model.language_model.layers.28.linear_attn.in_proj_z         K2.5 proxy 4.346e-03 3.0s
+  model.language_model.layers.29.linear_attn.in_proj_qkv       K2.5 proxy 9.876e-03 4.8s
+  model.language_model.layers.29.linear_attn.in_proj_z         K2.5 proxy 3.055e-03 3.0s
+  model.language_model.layers.30.linear_attn.in_proj_qkv       K2.5 proxy 9.113e-03 4.8s
+  model.language_model.layers.30.linear_attn.in_proj_z         K2.5 proxy 3.571e-03 3.0s
+     tile CD 3 (H_out): rel 1.7906e-03 -> 1.7861e-03 (x0.9975), accepted 0.027 / 0.014 / 0.009, 13.5s
+  model.language_model.layers.31.self_attn.q_proj              K2.5 proxy 4.673e-03 19.2s
+  model.language_model.layers.32.linear_attn.in_proj_qkv       K2.5 proxy 9.882e-03 4.8s
+  model.language_model.layers.32.linear_attn.in_proj_z         K2.5 proxy 3.640e-03 3.0s
+  model.language_model.layers.33.linear_attn.in_proj_qkv       K2.5 proxy 1.062e-02 4.8s
+  model.language_model.layers.33.linear_attn.in_proj_z         K2.5 proxy 2.354e-03 3.0s
+  model.language_model.layers.34.linear_attn.in_proj_qkv       K2.5 proxy 1.026e-02 4.8s
+  model.language_model.layers.34.linear_attn.in_proj_z         K2.5 proxy 3.645e-03 3.1s
+     tile CD 3 (H_out): rel 2.8892e-03 -> 2.8833e-03 (x0.9979), accepted 0.026 / 0.013 / 0.008, 13.4s
+  model.language_model.layers.35.self_attn.q_proj              K2.5 proxy 5.497e-03 19.3s
+  model.language_model.layers.36.linear_attn.in_proj_qkv       K2.5 proxy 7.230e-03 5.1s
+  model.language_model.layers.36.linear_attn.in_proj_z         K2.5 proxy 3.815e-03 3.0s
+  model.language_model.layers.37.linear_attn.in_proj_qkv       K2.5 proxy 7.980e-03 4.8s
+  model.language_model.layers.37.linear_attn.in_proj_z         K2.5 proxy 3.893e-03 3.0s
+  model.language_model.layers.38.linear_attn.in_proj_qkv       K2.5 proxy 1.188e-02 4.9s
+  model.language_model.layers.38.linear_attn.in_proj_z         K2.5 proxy 4.448e-03 3.2s
+     tile CD 3 (H_out): rel 2.7918e-03 -> 2.7866e-03 (x0.9981), accepted 0.030 / 0.016 / 0.010, 13.5s
+  model.language_model.layers.39.self_attn.q_proj              K2.5 proxy 4.941e-03 19.2s
+  model.language_model.layers.40.linear_attn.in_proj_qkv       K2.5 proxy 1.018e-02 4.8s
+  model.language_model.layers.40.linear_attn.in_proj_z         K2.5 proxy 6.362e-03 3.0s
+  model.language_model.layers.41.linear_attn.in_proj_qkv       K2.5 proxy 1.076e-02 5.0s
+  model.language_model.layers.41.linear_attn.in_proj_z         K2.5 proxy 5.220e-03 3.1s
+  model.language_model.layers.42.linear_attn.in_proj_qkv       K2.5 proxy 1.126e-02 5.0s
+  model.language_model.layers.42.linear_attn.in_proj_z         K2.5 proxy 5.083e-03 3.2s
+     tile CD 3 (H_out): rel 2.5339e-03 -> 2.5291e-03 (x0.9981), accepted 0.024 / 0.012 / 0.007, 13.4s
+  model.language_model.layers.43.self_attn.q_proj              K2.5 proxy 4.716e-03 19.1s
+  model.language_model.layers.44.linear_attn.in_proj_qkv       K2.5 proxy 9.776e-03 5.0s
+  model.language_model.layers.44.linear_attn.in_proj_z         K2.5 proxy 4.695e-03 3.0s
+  model.language_model.layers.45.linear_attn.in_proj_qkv       K2.5 proxy 1.164e-02 4.8s
+  model.language_model.layers.45.linear_attn.in_proj_z         K2.5 proxy 3.913e-03 3.0s
+  model.language_model.layers.46.linear_attn.in_proj_qkv       K2.5 proxy 1.085e-02 5.0s
+  model.language_model.layers.46.linear_attn.in_proj_z         K2.5 proxy 4.201e-03 3.0s
+     tile CD 3 (H_out): rel 3.2473e-03 -> 3.2397e-03 (x0.9976), accepted 0.026 / 0.013 / 0.008, 13.4s
+  model.language_model.layers.47.self_attn.q_proj              K2.5 proxy 5.266e-03 19.1s
+  model.language_model.layers.48.linear_attn.in_proj_qkv       K2.5 proxy 1.098e-02 4.8s
+  model.language_model.layers.48.linear_attn.in_proj_z         K2.5 proxy 4.476e-03 3.0s
+  model.language_model.layers.49.linear_attn.in_proj_qkv       K2.5 proxy 1.145e-02 4.8s
+  model.language_model.layers.49.linear_attn.in_proj_z         K2.5 proxy 2.977e-03 3.0s
+  model.language_model.layers.50.linear_attn.in_proj_qkv       K2.5 proxy 1.061e-02 5.1s
+  model.language_model.layers.50.linear_attn.in_proj_z         K2.5 proxy 3.845e-03 3.0s
+     tile CD 3 (H_out): rel 4.2965e-03 -> 4.2897e-03 (x0.9984), accepted 0.019 / 0.010 / 0.006, 13.3s
+  model.language_model.layers.51.self_attn.q_proj              K2.5 proxy 5.588e-03 19.0s
+  model.language_model.layers.52.linear_attn.in_proj_qkv       K2.5 proxy 7.535e-03 4.9s
+  model.language_model.layers.52.linear_attn.in_proj_z         K2.5 proxy 4.243e-03 3.0s
+  model.language_model.layers.53.linear_attn.in_proj_qkv       K2.5 proxy 8.485e-03 4.9s
+  model.language_model.layers.53.linear_attn.in_proj_z         K2.5 proxy 4.771e-03 3.0s
+  model.language_model.layers.54.linear_attn.in_proj_qkv       K2.5 proxy 1.043e-02 4.8s
+  model.language_model.layers.54.linear_attn.in_proj_z         K2.5 proxy 4.348e-03 3.1s
+     tile CD 3 (H_out): rel 3.5207e-03 -> 3.5161e-03 (x0.9987), accepted 0.018 / 0.008 / 0.005, 13.4s
+  model.language_model.layers.55.self_attn.q_proj              K2.5 proxy 6.086e-03 19.1s
+  model.language_model.layers.56.linear_attn.in_proj_qkv       K2.5 proxy 8.324e-03 4.8s
+  model.language_model.layers.56.linear_attn.in_proj_z         K2.5 proxy 5.214e-03 3.0s
+  model.language_model.layers.57.linear_attn.in_proj_qkv       K2.5 proxy 7.082e-03 4.8s
+  model.language_model.layers.57.linear_attn.in_proj_z         K2.5 proxy 4.967e-03 3.0s
+  model.language_model.layers.58.linear_attn.in_proj_qkv       K2.5 proxy 9.468e-03 4.8s
+  model.language_model.layers.58.linear_attn.in_proj_z         K2.5 proxy 4.805e-03 3.5s
+     tile CD 3 (H_out): rel 2.9287e-03 -> 2.9247e-03 (x0.9986), accepted 0.016 / 0.007 / 0.005, 13.4s
+  model.language_model.layers.59.self_attn.q_proj              K2.5 proxy 6.375e-03 19.1s
+  model.language_model.layers.60.linear_attn.in_proj_qkv       K2.5 proxy 6.619e-03 5.0s
+  model.language_model.layers.60.linear_attn.in_proj_z         K2.5 proxy 4.006e-03 3.1s
+  model.language_model.layers.61.linear_attn.in_proj_qkv       K2.5 proxy 9.127e-03 5.4s
+  model.language_model.layers.61.linear_attn.in_proj_z         K2.5 proxy 4.351e-03 3.3s
+  model.language_model.layers.62.linear_attn.in_proj_qkv       K2.5 proxy 6.849e-03 5.3s
+  model.language_model.layers.62.linear_attn.in_proj_z         K2.5 proxy 4.127e-03 3.4s
+     tile CD 3 (H_out): rel 1.8805e-03 -> 1.8774e-03 (x0.9984), accepted 0.014 / 0.007 / 0.004, 13.3s
+  model.language_model.layers.63.self_attn.q_proj              K2.5 proxy 4.761e-03 19.2s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 1, "keys": ["model.language_model.layers.0.linear_attn.in_proj_qkv", "model.language_model.layers.0.linear_attn.in_proj_z", "model.language_model.layers.1.linear_attn.in_proj_qkv", "model.language_model.layers.1.linear_attn.in_proj_z", "model.language_model.layers.2.linear_attn.in_proj_qkv", "model.language_model.layers.2.linear_attn.in_proj_z", "model.language_model.layers.3.self_attn.q_proj", "model.language_model.layers.4.linear_attn.in_proj_qkv", "model.language_model.layers.4.linear_attn.in_proj_z", "model.language_model.layers.5.linear_attn.in_proj_qkv", "model.language_model.layers.5.linear_attn.in_proj_z", "model.language_model.layers.6.linear_attn.in_proj_qkv", "model.language_model.layers.6.linear_attn.in_proj_z", "model.language_model.layers.7.self_attn.q_proj", "model.language_model.layers.8.linear_attn.in_proj_qkv", "model.language_model.layers.8.linear_attn.in_proj_z", "model.language_model.layers.9.linear_attn.in_proj_qkv", "model.language_model.layers.9.linear_attn.in_proj_z", "model.language_model.layers.10.linear_attn.in_proj_qkv", "model.language_model.layers.10.linear_attn.in_proj_z", "model.language_model.layers.11.self_attn.q_proj", "model.language_model.layers.12.linear_attn.in_proj_qkv", "model.language_model.layers.12.linear_attn.in_proj_z", "model.language_model.layers.13.linear_attn.in_proj_qkv", "model.language_model.layers.13.linear_attn.in_proj_z", "model.language_model.layers.14.linear_attn.in_proj_qkv", "model.language_model.layers.14.linear_attn.in_proj_z", "model.language_model.layers.15.self_attn.q_proj", "model.language_model.layers.16.linear_attn.in_proj_qkv", "model.language_model.layers.16.linear_attn.in_proj_z", "model.language_model.layers.17.linear_attn.in_proj_qkv", "model.language_model.layers.17.linear_attn.in_proj_z", "model.language_model.layers.18.linear_attn.in_proj_qkv", "model.language_model.layers.18.linear_attn.in_proj_z", "model.language_model.layers.19.self_attn.q_proj", "model.language_model.layers.20.linear_attn.in_proj_qkv", "model.language_model.layers.20.linear_attn.in_proj_z", "model.language_model.layers.21.linear_attn.in_proj_qkv", "model.language_model.layers.21.linear_attn.in_proj_z", "model.language_model.layers.22.linear_attn.in_proj_qkv", "model.language_model.layers.22.linear_attn.in_proj_z", "model.language_model.layers.23.self_attn.q_proj", "model.language_model.layers.24.linear_attn.in_proj_qkv", "model.language_model.layers.24.linear_attn.in_proj_z", "model.language_model.layers.25.linear_attn.in_proj_qkv", "model.language_model.layers.25.linear_attn.in_proj_z", "model.language_model.layers.26.linear_attn.in_proj_qkv", "model.language_model.layers.26.linear_attn.in_proj_z", "model.language_model.layers.27.self_attn.q_proj", "model.language_model.layers.28.linear_attn.in_proj_qkv", "model.language_model.layers.28.linear_attn.in_proj_z", "model.language_model.layers.29.linear_attn.in_proj_qkv", "model.language_model.layers.29.linear_attn.in_proj_z", "model.language_model.layers.30.linear_attn.in_proj_qkv", "model.language_model.layers.30.linear_attn.in_proj_z", "model.language_model.layers.31.self_attn.q_proj", "model.language_model.layers.32.linear_attn.in_proj_qkv", "model.language_model.layers.32.linear_attn.in_proj_z", "model.language_model.layers.33.linear_attn.in_proj_qkv", "model.language_model.layers.33.linear_attn.in_proj_z", "model.language_model.layers.34.linear_attn.in_proj_qkv", "model.language_model.layers.34.linear_attn.in_proj_z", "model.language_model.layers.35.self_attn.q_proj", "model.language_model.layers.36.linear_attn.in_proj_qkv", "model.language_model.layers.36.linear_attn.in_proj_z", "model.language_model.layers.37.linear_attn.in_proj_qkv", "model.language_model.layers.37.linear_attn.in_proj_z", "model.language_model.layers.38.linear_attn.in_proj_qkv", "model.language_model.layers.38.linear_attn.in_proj_z", "model.language_model.layers.39.self_attn.q_proj", "model.language_model.layers.40.linear_attn.in_proj_qkv", "model.language_model.layers.40.linear_attn.in_proj_z", "model.language_model.layers.41.linear_attn.in_proj_qkv", "model.language_model.layers.41.linear_attn.in_proj_z", "model.language_model.layers.42.linear_attn.in_proj_qkv", "model.language_model.layers.42.linear_attn.in_proj_z", "model.language_model.layers.43.self_attn.q_proj", "model.language_model.layers.44.linear_attn.in_proj_qkv", "model.language_model.layers.44.linear_attn.in_proj_z", "model.language_model.layers.45.linear_attn.in_proj_qkv", "model.language_model.layers.45.linear_attn.in_proj_z", "model.language_model.layers.46.linear_attn.in_proj_qkv", "model.language_model.layers.46.linear_attn.in_proj_z", "model.language_model.layers.47.self_attn.q_proj", "model.language_model.layers.48.linear_attn.in_proj_qkv", "model.language_model.layers.48.linear_attn.in_proj_z", "model.language_model.layers.49.linear_attn.in_proj_qkv", "model.language_model.layers.49.linear_attn.in_proj_z", "model.language_model.layers.50.linear_attn.in_proj_qkv", "model.language_model.layers.50.linear_attn.in_proj_z", "model.language_model.layers.51.self_attn.q_proj", "model.language_model.layers.52.linear_attn.in_proj_qkv", "model.language_model.layers.52.linear_attn.in_proj_z", "model.language_model.layers.53.linear_attn.in_proj_qkv", "model.language_model.layers.53.linear_attn.in_proj_z", "model.language_model.layers.54.linear_attn.in_proj_qkv", "model.language_model.layers.54.linear_attn.in_proj_z", "model.language_model.layers.55.self_attn.q_proj", "model.language_model.layers.56.linear_attn.in_proj_qkv", "model.language_model.layers.56.linear_attn.in_proj_z", "model.language_model.layers.57.linear_attn.in_proj_qkv", "model.language_model.layers.57.linear_attn.in_proj_z", "model.language_model.layers.58.linear_attn.in_proj_qkv", "model.language_model.layers.58.linear_attn.in_proj_z", "model.language_model.layers.59.self_attn.q_proj", "model.language_model.layers.60.linear_attn.in_proj_qkv", "model.language_model.layers.60.linear_attn.in_proj_z", "model.language_model.layers.61.linear_attn.in_proj_qkv", "model.language_model.layers.61.linear_attn.in_proj_z", "model.language_model.layers.62.linear_attn.in_proj_qkv", "model.language_model.layers.62.linear_attn.in_proj_z", "model.language_model.layers.63.self_attn.q_proj"], "settings_stamp": "87a7e4ab32f9d5b9", "inputs": {"ckpt": "/data/w113/b/permT/ckpt", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/w113/b/permT/hout"}}, "settings_stamp": "87a7e4ab32f9d5b9", "code_stamp": "5716573c6c8bf586", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 112, "seconds": 685.7}

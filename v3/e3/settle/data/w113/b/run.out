@@ -1,0 +1,17 @@
+01:32:14 b113 start: prep 0 1 score verdict; scope ssm_qkv,ssm_z,attn_qg (112 tensors); settings 87a7e4ab32f9d5b9
+01:32:27 prep: mkperm113 T: ok, 112 keys
+01:43:56 T0: rc 0, 112 wq, 689 s wall (incl. lock wait)
+01:46:56 splice T0: MKSPLICE113 DONE
+01:51:18 mix T0 ready (17G)
+01:51:48 G1 T0 vs N0-v: PAIR OK {"a": "/data/w113/b/mix/mix-T0.rad", "b": "/data/w111/mix/mix-N0-v.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problems": 0}
+01:51:48 G2 0: BYTES113 PASS (112 weights)
+01:51:48 seed 0 gated
+02:03:32 T1: rc 0, 112 wq, 704 s wall (incl. lock wait)
+02:06:30 splice T1: MKSPLICE113 DONE
+02:10:49 mix T1 ready (17G)
+02:11:18 G1 T1 vs N1-v: PAIR OK {"a": "/data/w113/b/mix/mix-T1.rad", "b": "/data/w111/mix/mix-N1-v.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problems": 0}
+02:11:18 G2 1: BYTES113 PASS (112 weights)
+02:11:18 seed 1 gated
+02:59:20 all 12 scores done
+02:59:22 W113 #148-02 VERDICT FAIL: N -> P16-TP pooled r = 0.9933, 1.0079, geo 1.0005 (xcorp 0.9991, calib 1.0284), SE comb 0.0151, z +0.04
+02:59:22 B113 DONE: prep 0 1 score verdict

@@ -1,0 +1,51 @@
+DECIDING: N -> T (P16-TP):
+  seed 0: N0-v -> T0
+    pooled  0.323218 -> 0.321041: r 0.9933 [0.9847, 1.0133] z -0.71; p99 10.9373 -> 10.4638; top-1 0.88290 -> 0.88311 (202 docs, 252923 pos)
+    xcorp   0.415128 -> 0.411939: r 0.9923 [0.9834, 1.0137] z -0.78; p99 14.9674 -> 14.8663; top-1 0.87407 -> 0.87449 (130 docs, 187589 pos)
+    calib   0.059323 -> 0.060051: r 1.0123 [0.9854, 1.0416] z +0.81; p99 0.6588 -> 0.6848; top-1 0.90826 -> 0.90784 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 0.9923 [0.9834, 1.0137] z -0.92  per-doc geo 0.9870  median 0.9965  docs better 0.57
+    == calib: 72 docs  pooled r 1.0123 [0.9854, 1.0416] z +0.84  per-doc geo 1.0016  median 0.9953  docs better 0.54
+    == both: 202 docs  pooled r 0.9933 [0.9851, 1.0133] z -0.85  per-doc geo 0.9922  median 0.9959  docs better 0.56
+  seed 1: N1-v -> T1
+    pooled  0.319012 -> 0.321528: r 1.0079 [0.9866, 1.0582] z +0.50; p99 10.5088 -> 10.5379; top-1 0.88247 -> 0.88230 (202 docs, 252923 pos)
+    xcorp   0.409232 -> 0.411688: r 1.0060 [0.9852, 1.0584] z +0.37; p99 14.6169 -> 14.5217; top-1 0.87347 -> 0.87316 (130 docs, 187589 pos)
+    calib   0.059971 -> 0.062660: r 1.0448 [0.9726, 1.1404] z +0.96; p99 0.6868 -> 0.7354; top-1 0.90832 -> 0.90853 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 1.0060 [0.9852, 1.0584] z +0.28  per-doc geo 0.9938  median 1.0004  docs better 0.49
+    == calib: 72 docs  pooled r 1.0448 [0.9726, 1.1404] z +1.01  per-doc geo 0.9946  median 0.9746  docs better 0.65
+    == both: 202 docs  pooled r 1.0079 [0.9865, 1.0586] z +0.39  per-doc geo 0.9941  median 0.9942  docs better 0.55
+reported: N -> P (full P16, 128 tensors; third slice):
+  seed 0: N0-v -> P0-v
+    pooled  0.323218 -> 0.321735: r 0.9954 [0.9876, 1.0166] z -0.50; p99 10.9373 -> 10.6206; top-1 0.88290 -> 0.88258 (202 docs, 252923 pos)
+    xcorp   0.415128 -> 0.412115: r 0.9927 [0.9860, 1.0096] z -0.79; p99 14.9674 -> 14.8695; top-1 0.87407 -> 0.87417 (130 docs, 187589 pos)
+    calib   0.059323 -> 0.062233: r 1.0491 [0.9936, 1.1140] z +1.44; p99 0.6588 -> 0.7273; top-1 0.90826 -> 0.90674 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 0.9927 [0.9860, 1.0096] z -1.01  per-doc geo 0.9856  median 0.9898  docs better 0.55
+    == calib: 72 docs  pooled r 1.0491 [0.9936, 1.1140] z +1.54  per-doc geo 1.0086  median 1.0003  docs better 0.49
+    == both: 202 docs  pooled r 0.9954 [0.9875, 1.0174] z -0.52  per-doc geo 0.9937  median 0.9944  docs better 0.52
+  seed 1: N1-v -> P1-v
+    pooled  0.319012 -> 0.322913: r 1.0122 [0.9928, 1.0207] z +1.14; p99 10.5088 -> 10.8994; top-1 0.88247 -> 0.88281 (202 docs, 252923 pos)
+    xcorp   0.409232 -> 0.413528: r 1.0105 [0.9881, 1.0178] z +0.96; p99 14.6169 -> 14.8981; top-1 0.87347 -> 0.87401 (130 docs, 187589 pos)
+    calib   0.059971 -> 0.062735: r 1.0461 [0.9885, 1.1217] z +1.20; p99 0.6868 -> 0.7514; top-1 0.90832 -> 0.90809 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 1.0105 [0.9881, 1.0178] z +1.29  per-doc geo 1.0013  median 0.9993  docs better 0.51
+    == calib: 72 docs  pooled r 1.0461 [0.9885, 1.1217] z +1.28  per-doc geo 1.0080  median 1.0052  docs better 0.49
+    == both: 202 docs  pooled r 1.0122 [0.9932, 1.0210] z +1.70  per-doc geo 1.0037  median 0.9999  docs better 0.50
+reported: P -> T:
+  seed 0: P0-v -> T0
+    pooled  0.321735 -> 0.321041: r 0.9978 [0.9793, 1.0054] z -0.62; p99 10.6206 -> 10.4638; top-1 0.88258 -> 0.88311 (202 docs, 252923 pos)
+    xcorp   0.412115 -> 0.411939: r 0.9996 [0.9835, 1.0093] z -0.13; p99 14.8695 -> 14.8663; top-1 0.87417 -> 0.87449 (130 docs, 187589 pos)
+    calib   0.062233 -> 0.060051: r 0.9649 [0.9239, 1.0062] z -1.47; p99 0.7273 -> 0.6848; top-1 0.90674 -> 0.90784 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 0.9996 [0.9835, 1.0093] z -0.07  per-doc geo 1.0014  median 1.0007  docs better 0.48
+    == calib: 72 docs  pooled r 0.9649 [0.9239, 1.0062] z -1.62  per-doc geo 0.9931  median 1.0088  docs better 0.46
+    == both: 202 docs  pooled r 0.9978 [0.9792, 1.0045] z -0.36  per-doc geo 0.9984  median 1.0033  docs better 0.47
+  seed 1: P1-v -> T1
+    pooled  0.322913 -> 0.321528: r 0.9957 [0.9711, 1.0572] z -0.18; p99 10.8994 -> 10.5379; top-1 0.88281 -> 0.88230 (202 docs, 252923 pos)
+    xcorp   0.413528 -> 0.411688: r 0.9955 [0.9705, 1.0605] z -0.18; p99 14.8981 -> 14.5217; top-1 0.87401 -> 0.87316 (130 docs, 187589 pos)
+    calib   0.062735 -> 0.062660: r 0.9988 [0.9724, 1.0255] z -0.09; p99 0.7514 -> 0.7354; top-1 0.90809 -> 0.90853 (72 docs, 65334 pos)
+    == xcorp: 130 docs  pooled r 0.9955 [0.9705, 1.0605] z -0.17  per-doc geo 0.9925  median 0.9967  docs better 0.52
+    == calib: 72 docs  pooled r 0.9988 [0.9724, 1.0255] z -0.09  per-doc geo 0.9868  median 0.9927  docs better 0.54
+    == both: 202 docs  pooled r 0.9957 [0.9713, 1.0568] z -0.17  per-doc geo 0.9904  median 0.9953  docs better 0.53
+N->T: geo 1.0005 (xcorp 0.9991, calib 1.0284), SE comb 0.0151, z +0.04
+N->P: geo 1.0038 (xcorp 1.0016, calib 1.0476), SE comb 0.0072, z +0.52
+P->T: geo 0.9968 (xcorp 0.9976, calib 0.9817), SE comb 0.0139, z -0.23
+joint (w101 27c 112 P16 0.9933±0.0070, w111 27d 128 P16 0.9903±0.0090) + this slice's N->T: geo 0.9932 z -1.31  [arms differ: P16 on 27c / 27d, P16-TP here]
+joint full P16 over three slices (27c 112, 27d 128, 27e 128): geo 0.9965 z -0.79; 128-tensor P16 on 27d + 27e: geo 0.9985 z -0.26
+W113 #148-02 VERDICT FAIL: N -> P16-TP pooled r = 0.9933, 1.0079, geo 1.0005 (xcorp 0.9991, calib 1.0284), SE comb 0.0151, z +0.04

@@ -1,0 +1,42 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2_permbasis": 0.00331558302244243,
+  "f2": 0.0033155830224424294,
+  "f1": 0.009047990680012942
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2_permbasis": 0.0033751746974515387,
+  "f2": 0.0033751746974515395,
+  "f1": 0.004050594873243346
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "f2_permbasis": 0.000677414629904261,
+  "f2": 0.0006774146299042611,
+  "f1": 0.0007528872742802921
+ },
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2_permbasis": 0.005314148363866105,
+  "f2": 0.005314148363866105,
+  "f1": 0.009079270533233895
+ },
+ "model.language_model.layers.3.self_attn.v_proj": {
+  "f2_permbasis": 0.004574420156792114,
+  "f2": 0.004574420156792114,
+  "f1": 0.01390485012958403
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "f2_permbasis": 0.0027070413050108025,
+  "f2": 0.0027070413050108025,
+  "f1": 0.004940855289355298
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2_permbasis": 0.013477977464733467,
+  "f2": 0.013477977464733467,
+  "f1": 0.015579012405641685
+ },
+ "model.language_model.layers.63.self_attn.v_proj": {
+  "f2_permbasis": 0.0021348257142048653,
+  "f2": 0.0021348257142048653,
+  "f1": 0.004085762937893173
+ }
+}

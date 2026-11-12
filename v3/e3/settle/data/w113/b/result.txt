@@ -1,0 +1,37 @@
+01:32:07 slice calib part: 72 documents, 74195 tokens: books 3954, chat 8720, code 13716, encyclopedic 2754, legal 3329, math 3852, multilingual 8741, qa 4859, reasoning 5013, tools 5696, web 13561
+01:32:09 slice xcorp part: 130 pieces (1408 xcorp docs excluded): agentic 1, books 3, chat 19, code 19, encyclopedic 8, long 1, math 10, multilingual 19, qa 13, reasoning 2, science 2, tools 12, web 21
+01:32:09 golden-search27e-c 72 docs 74195 tokens 74123 rows 65334 scored
+01:32:09 golden-search27e-x 130 docs 187719 tokens 187589 rows 187589 scored
+01:32:14 b113 start: prep 0 1 score verdict; scope ssm_qkv,ssm_z,attn_qg (112 tensors); settings 87a7e4ab32f9d5b9
+01:32:27 prep: mkperm113 T: ok, 112 keys
+01:32:27 T0: card 0 held after 0 s
+01:43:56 T0: rc 0, 112 wq, 689 s wall (incl. lock wait)
+01:46:56 splice T0: MKSPLICE113 DONE
+01:48:13 pack T0 rc=0 12s
+01:51:18 mix T0 ready (17G)
+01:51:48 G1 T0 vs N0-v: PAIR OK {"a": "/data/w113/b/mix/mix-T0.rad", "b": "/data/w111/mix/mix-N0-v.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problems": 0}
+01:51:48 G2 0: BYTES113 PASS (112 weights)
+01:51:48 seed 0 gated
+01:52:01 T1: card 0 held after 13 s
+02:03:32 T1: rc 0, 112 wq, 704 s wall (incl. lock wait)
+02:06:30 splice T1: MKSPLICE113 DONE
+02:07:46 pack T1 rc=0 10s
+02:10:49 mix T1 ready (17G)
+02:11:18 G1 T1 vs N1-v: PAIR OK {"a": "/data/w113/b/mix/mix-T1.rad", "b": "/data/w111/mix/mix-N1-v.rad", "weights": 787, "identical": 675, "arm_weights": 112, "arm_weights_changed": 112, "planes_changed": ["codes"], "problems": 0}
+02:11:18 G2 1: BYTES113 PASS (112 weights)
+02:11:18 seed 1 gated
+02:14:18 score N0-v-x rc=0 165s (lock wait 15s)
+02:19:44 score T0-x rc=0 163s (lock wait 163s)
+02:23:34 score P0-v-x rc=0 164s (lock wait 66s)
+02:27:25 score N0-v-c rc=0 70s (lock wait 161s)
+02:29:39 score T0-c rc=0 69s (lock wait 65s)
+02:34:03 score P0-v-c rc=0 69s (lock wait 195s)
+02:38:04 score N1-v-x rc=0 163s (lock wait 78s)
+02:44:03 score T1-x rc=0 163s (lock wait 196s)
+02:48:04 score P1-v-x rc=0 164s (lock wait 78s)
+02:52:29 score N1-v-c rc=0 69s (lock wait 195s)
+02:54:56 score T1-c rc=0 69s (lock wait 78s)
+02:59:20 score P1-v-c rc=0 69s (lock wait 195s)
+02:59:20 all 12 scores done
+02:59:22 W113 #148-02 VERDICT FAIL: N -> P16-TP pooled r = 0.9933, 1.0079, geo 1.0005 (xcorp 0.9991, calib 1.0284), SE comb 0.0151, z +0.04
+02:59:22 B113 DONE: prep 0 1 score verdict

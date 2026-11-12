@@ -1,0 +1,5 @@
+260 xcorp docs from earlier search slices
+01:32:07 slice calib part: 72 documents, 74195 tokens: books 3954, chat 8720, code 13716, encyclopedic 2754, legal 3329, math 3852, multilingual 8741, qa 4859, reasoning 5013, tools 5696, web 13561
+01:32:09 slice xcorp part: 130 pieces (1408 xcorp docs excluded): agentic 1, books 3, chat 19, code 19, encyclopedic 8, long 1, math 10, multilingual 19, qa 13, reasoning 2, science 2, tools 12, web 21
+01:32:09 golden-search27e-c 72 docs 74195 tokens 74123 rows 65334 scored
+01:32:09 golden-search27e-x 130 docs 187719 tokens 187589 rows 187589 scored

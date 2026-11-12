@@ -209,5 +209,17 @@
   "line": "v3",
   "decisions": 1,
   "note": "#122 (w92, 2026-11-08): calib part of the two-part 27B search slice golden-search27c (26 search-pool docs, cap 8192, seed 9222, none from golden-search27 / golden-search27b-c); its xcorp part (65 pieces of night1105 xc8k-b2-c2, mX docs excluded) reads no calib. Decided #122's full-stack gate (2 pairs + 2 reference pairs)"
+ },
+ "golden-search27d-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 3,
+  "note": "#145 (w110, 2026-11-11): calib part of the two-part 27B search slice golden-search27d (63 search-pool docs never in the ledger under any use, calib_slice 60000 tokens cap 8192 seed 11110 -> 84,801 tokens); its xcorp part (130 pieces of night1105 xc8k-b2-c0, never scored; 27b-x / 27c-x / mX docs excluded) reads no calib. Decides #145's C9 and swj settings at sub-1 (17 arm-vs-T pairs, 2 decisions) Also decided #146 (w111, 2026-11-11): P16 interleave second-slice pair (N -> P16, 128 tensors incl. v_proj, 2 seeds + the 112-scope pair reported; 1 decision)"
+ },
+ "golden-search27e-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#148 (w113, 2026-11-11): calib part of the two-part 27B search slice golden-search27e (72 search-pool docs never in the ledger under any use and not in golden-search27d-c, calib_slice 60000 tokens cap 8192 seed 11148 -> 74,195 tokens, 65,334 scored); its xcorp part (130 pieces of night1105 xc8k-b2-c1, never scored; 27b-x / 27c-x / 27d-x / mX docs excluded) reads no calib. Decides #148's P16-TP pair (N -> P16-TP, 112 tensors, 2 seeds); the full-P16 pair (128 tensors) and P16 -> P16-TP are reported"
  }
 }

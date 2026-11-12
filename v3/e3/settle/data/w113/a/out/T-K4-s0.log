@@ -1,0 +1,15 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.10.linear_attn.in_proj_qkv       K4 proxy 1.157e-03 5.4s
+  model.language_model.layers.10.linear_attn.in_proj_z         K4 proxy 5.171e-04 2.6s
+     tile CD 3 (H_out): rel 9.4299e-05 -> 9.4196e-05 (x0.9989), accepted 0.014 / 0.006 / 0.003, 10.9s
+  model.language_model.layers.11.self_attn.q_proj              K4 proxy 9.572e-05 15.7s
+     tile CD 3 (H_out): rel 3.5428e-04 -> 3.5360e-04 (x0.9981), accepted 0.033 / 0.018 / 0.011, 11.3s
+  model.language_model.layers.39.self_attn.q_proj              K4 proxy 6.334e-04 16.1s
+  model.language_model.layers.3.self_attn.v_proj               K4 proxy 1.606e-03 0.8s
+  model.language_model.layers.11.self_attn.v_proj              K4 proxy 1.123e-03 0.8s
+  model.language_model.layers.39.self_attn.v_proj              K4 proxy 1.968e-03 0.8s
+  model.language_model.layers.63.self_attn.v_proj              K4 proxy 4.667e-04 0.8s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K4", "K": 4, "codebook": "i8", "seed_offset": 0, "keys": ["model.language_model.layers.10.linear_attn.in_proj_qkv", "model.language_model.layers.10.linear_attn.in_proj_z", "model.language_model.layers.11.self_attn.q_proj", "model.language_model.layers.39.self_attn.q_proj", "model.language_model.layers.3.self_attn.v_proj", "model.language_model.layers.11.self_attn.v_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.63.self_attn.v_proj"], "settings_stamp": "87a7e4ab32f9d5b9", "inputs": {"ckpt": "/data/w113/a/perm/T/ckpt", "hessians": "/root/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/w113/a/perm/T/hout"}}, "settings_stamp": "87a7e4ab32f9d5b9", "code_stamp": "5716573c6c8bf586", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 8, "seconds": 43.1}
