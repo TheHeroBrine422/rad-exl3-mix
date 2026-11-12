@@ -251,5 +251,23 @@
   "line": "v3",
   "decisions": 0,
   "note": "#151 (w114, 2026-11-12): verify row (standing overfit-audit action, report only): 82 clean verify-pool docs (never in the ledger under any use), calib_slice 100000 tokens cap 8192 seed 11151 -> 115,356 tokens, 94,135 scored; scored once each by V2 3.00 and today's K2.5 stack (stamp 4f831984) in V2 3.00"
+ },
+ "w119-headx-search": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#155 / #156 (w119, 2026-11-12): bf16 head inputs (final-norm output), one <= 256-row window per document inside the first 8,192 tokens (gen rows scored), 150 fresh search-pool docs (no golden-search27*, not in w94); E2 order / sigma_out and E3 layout decisions (v3/yaqa/w119/RULES.md)"
+ },
+ "w119-headx-fit": {
+  "role": "fit",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#156 / #157 (w119, 2026-11-12): bf16 head inputs, one <= 256-row window per document, 200 fit-pool docs; E3 plan choice and E9 head pricing (fit-gen, calib-weighted)"
+ },
+ "w119-headx-verify": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#156 (w119, 2026-11-12): bf16 head inputs, one <= 256-row window per document, 100 clean verify-pool docs (no golden); E3's single final check, read once"
  }
 }

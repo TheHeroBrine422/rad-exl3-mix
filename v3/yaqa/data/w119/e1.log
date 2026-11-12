@@ -1,0 +1,21 @@
+v4 -> h4-bf16: dKL/pos x -3.167e-04 [-4.51e-04, -1.60e-04]  c -4.415e-04 [-5.12e-04, -3.80e-04]  c/x 1.39 [0.94, 2.81]  doc-median c/x 1.18
+   x: kl 0.09279 -> 0.09247; doc median dKL/pos -3.48e-04, doc geo ratio 0.9392; LOO [-3.88e-04, -2.92e-04]; top-1% pos share 0.32; max doc share net 0.16 abs 0.13; >20%: []
+      sources: fineweb-edu 12d +0.19; pg19-long 1d +0.16; peS2o 1d +0.16; swe-rebench-openhands 1d -0.11; stackv2-edu 6d +0.07; wikipedia/ko 1d +0.07
+   c: kl 0.00827 -> 0.00782; doc median dKL/pos -4.12e-04, doc geo ratio 0.9371; LOO [-4.56e-04, -4.25e-04]; top-1% pos share 0.16; max doc share net 0.18 abs 0.18; >20%: []
+      sources: pg19 1d +0.18; wikimedia 1d +0.14; peS2o 1d +0.12; smoltalk2/multilingual 2d +0.11; smoltalk2/multi-turn-reasoning 2d +0.09; fineweb-edu 4d +0.08
+h4-u5 -> h4-s5-3: dKL/pos x -2.216e-04 [-2.68e-04, -1.67e-04]  c -2.587e-04 [-2.94e-04, -2.22e-04]  c/x 1.17 [0.91, 1.58]  doc-median c/x 1.12
+   x: kl 0.09275 -> 0.09253; doc median dKL/pos -2.23e-04, doc geo ratio 0.9667; LOO [-2.31e-04, -2.08e-04]; top-1% pos share 0.32; max doc share net 0.15 abs 0.14; >20%: []
+      sources: fineweb-edu 12d +0.18; pg19-long 1d +0.15; peS2o 1d +0.14; swe-rebench-openhands 1d +0.11; openthoughts3 1d +0.05; glaive-fc-v2 5d +0.05
+   c: kl 0.00814 -> 0.00788; doc median dKL/pos -2.51e-04, doc geo ratio 0.9670; LOO [-2.66e-04, -2.48e-04]; top-1% pos share 0.17; max doc share net 0.16 abs 0.16; >20%: []
+      sources: wikimedia 1d +0.16; pg19 1d +0.16; peS2o 1d +0.14; fineweb-edu 4d +0.11; smoltalk2/multi-turn-reasoning 2d +0.10; smoltalk2/multilingual 2d +0.06
+h4-u6 -> h4-s6-3: dKL/pos x -4.087e-05 [-5.63e-05, -2.10e-05]  c -5.062e-05 [-6.25e-05, -3.57e-05]  c/x 1.24 [0.77, 2.42]  doc-median c/x 1.03
+   x: kl 0.09255 -> 0.09251; doc median dKL/pos -4.62e-05, doc geo ratio 0.9932; LOO [-4.39e-05, -3.72e-05]; top-1% pos share 0.33; max doc share net 0.18 abs 0.11; >20%: []
+      sources: pg19-long 1d +0.18; peS2o 1d +0.17; fineweb-edu 12d +0.16; swe-rebench-openhands 1d +0.13; wildchat 5d -0.11; finemath-4plus 3d +0.11
+   c: kl 0.00791 -> 0.00786; doc median dKL/pos -4.77e-05, doc geo ratio 0.9931; LOO [-5.56e-05, -4.80e-05]; top-1% pos share 0.17; max doc share net 0.19 abs 0.16; >20%: []
+      sources: pg19 1d +0.19; smoltalk2/multi-turn-reasoning 2d +0.16; wikimedia 1d +0.14; peS2o 1d +0.14; fineweb-edu 4d +0.11; fineweb2-hq/ind_Latn 2d +0.06
+v8 -> h8-bf16: dKL/pos x -8.930e-06 [-1.18e-05, -5.36e-06]  c -1.228e-05 [-1.37e-05, -1.08e-05]  c/x 1.37 [1.00, 2.33]  doc-median c/x 0.98
+   x: kl 0.00587 -> 0.00586; doc median dKL/pos -1.27e-05, doc geo ratio 0.9506; LOO [-9.80e-06, -8.30e-06]; top-1% pos share 0.37; max doc share net 0.16 abs 0.10; >20%: []
+      sources: wildchat 5d -0.21; fineweb-edu 12d +0.18; pg19-long 1d +0.16; peS2o 1d +0.13; openthoughts3 1d +0.10; finemath-4plus 3d +0.07
+   c: kl 0.00027 -> 0.00026; doc median dKL/pos -1.24e-05, doc geo ratio 0.9515; LOO [-1.27e-05, -1.20e-05]; top-1% pos share 0.15; max doc share net 0.16 abs 0.16; >20%: []
+      sources: pg19 1d +0.16; wikimedia 1d +0.16; peS2o 1d +0.13; smoltalk2/multi-turn-reasoning 2d +0.09; fineweb-edu 4d +0.09; smoltalk2/multilingual 2d +0.09
+E1 VERDICT: (a) corpus-general: read head results on absolute dKL per position {'a': 4, 'b': 0}

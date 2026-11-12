@@ -4,6 +4,131 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 11:20 AM CST · #159 · Search-side prep for ladder pass 1 (w120): swj pricing fixed, sub-1 pricing path, kfit3 refit scaffolding, slice builder + per-doc readout, multi-host rxrun, V3 convergence plot
+- **Status:** done (tooling; decides nothing) · **Machine:** colo (CPU checks / dry runs), VM · **Code:** ef3ed55, f3256e1
+  · **Notes:** `v3/levels/reprice/sub1plan.md`, `search/refit/README.md`, `eval/slices/README.md`, `pipeline/rxrun/README.md`
+- **1 · swj pricing (w116 bug 3):** knap5 `KN_SWJ_ANCHORS` (`v3/levels/reprice/swj-anchors.json`: #104 K2.5 / K4, #145 K1
+  + the K0.5 / K1.5 splice arms) solves the gate / up factor per anchor K (`[knap].swj_mode = "gu"`), none above
+  `KN_SWJ_KMAX` = `[post.swj].k_max` 4.5. f(K) on gate / up: 0.5 → 0.894, 1 → 0.763, 1.5 → 0.828, 2.5 → 0.860, 4 → 0.973
+  (every solved anchor reproduced to 1e-4). w63's curve kept as `[knap.legacy]` for `--accurate`: check_knap's byte
+  repro of main-acc-2.5 PASS. **check_knap 7/7** (colo); settings stamp unchanged (4f831984; [knap] is unstamped).
+- **2 · sub-1 pricing:** V3R `i8-K<k>` options from `KN_SUB1` (per-tensor ratios from the 27B levels' own proxies,
+  `sub1ratios.py`; K0.25 / 0.5 / 0.75 now, w114's K0.25 / K0.75 proxies added) × a fitted kl_scale from whole-model
+  anchors (`KN_SUB1_FIT`, `sub1-anchors.json`), `KN_SAT` saturation link. **Finding:** #149's first T arms on 27f
+  (read from w114's running queue, provisional): U0.5 / U1 = 4.10, splice (even K0.5 / odd K1.5) / U1 = 1.93. Fitted to
+  U0.5, knap5 puts the splice at 0.97 × U1; a saturation C cannot reconcile them (degenerate). kfit2's depth
+  compounding over-predicts uniform sub-1 mixes. Anchors now fit on mixed-K mixes only (149-splice → kl_scale(0.5)),
+  uniform U-mixes are checks; pass-3 plan (≈ 6 card-h) uses two more splices as the K0.25 / K0.75 fit anchors.
+  `[knap].sub1_ratios` stays unset until pass 3.
+- **3 · kfit3 (refit scaffolding):** kfit2's model + V2 swaps as a weak prior (own slice offsets, weight 0.25) + a
+  per-tensor H_out prior (log h̄ from #139 diag sums, `diagsum.py`) + this week's 27B rows (`rows27.json`: w92 / w110 /
+  w114, flagged by stamp and slice) + held-out validation. Dry run (colo): β fitted 0.85–1.13 on every split, but on
+  random 20% holdouts of V2's block swaps the prior does not predict better (log-RMSE β0 / fit / 1: 0.170 / 0.161 /
+  0.159, 0.197 / 0.199 / 0.199, 0.196 / 0.205 / 0.203); V3 rows in-sample 0.0075; sub-1 rows mis-predicted by +0.4…+3.4
+  log (same compounding issue); w99's K6 rows (V2 8.00 head / embedding outside the option set) collapse φ3 → skipped.
+  Pass-1 calibration swaps designed (92 mixes on a fit-pool slice, ≈ 3.6 card-h; 16 per-tensor-varied swaps test the
+  prior, rule to commit before data).
+- **4 · slices + readout:** `eval/docstat/readout.py` (pair: pooled r + CI, r with every document capped at 20% of its
+  part, per-doc geo / median, top-1% position share, per-category ratios, flags; dens: per-doc density for sizing).
+  On 27d (N0 → P0) it reproduces docstat.py (x 1.0021 [0.9746, 1.0288]); the top 1% of positions hold 51% of the xcorp
+  part's KL. Sizing from 27c / 27d / 27f: the heavy xcorp pieces are agentic / tools / long / reasoning (density
+  2–9×); with them cut to 2,048 scored positions a 130-piece part has P(max doc > 20%) ≈ 0.001 (8k: 0.56). Builder
+  `eval/slices/mkslice27.sh` (+ `pickx.py`, `excl.py`). **Not built:** only 93 search-pool documents are in no ledger
+  row (≈ 2 calib parts at 45k tokens / cap 4,096), and w115 may take ~65 of them for its 27g; 121 more were used only
+  by the 0.8B / 2B proxy slices (MODE no27b) — the lead decides.
+- **5 · multi-host rxrun:** `rxrun.multi` (coordinator on the VM) + `rxrun.hostd` (per host, via plain ssh): one queue of
+  level units (consecutive levels, one swj pass each, per-host unit size and k_min / k_max / est-h limits) and eval
+  units (pack + radmix + radiance KLD, only on the host that holds the mix's levels; split mixes reported BLOCKED);
+  settings + tree stamp checked at every hello (a different tree is refused); units run detached (a dropped ssh / VM
+  restart does not stop them); results copied back as small JSON (`results.jsonl`, per-doc sums). **check_rxrun
+  multi 6/6** on colo's CPU stand-in (levels each on one host within limits, tree check, evals routed, blocked split,
+  rerun idempotent, coordinator killed mid-unit + restart, level byte-identical to rxrun.run's). box2's forward is up
+  (11-12 ~11 AM CST). Host confs `pipeline/rxrun/hosts/`; rollout steps in its README (restage box2 4156463 → HEAD,
+  `hostd --stamp` equal on both, radmix on box2).
+- **Plot (lead notes 2–9):** `search/convplot3.py` (+ `convplot3-refresh.sh`): KLD ÷ V2 at the same bpw on the same
+  slice (V2 refs scored on every slice, log-linear between them), best so far per band, event lines, failed evals
+  counted not plotted, held-out panel, IQR-V4 dotted at 0.88, V2's own search rescaled to its end (via convplot.py).
+- **Decision / next (lead):** calib budget for new slices (never vs no27b; w115's 27g first); merge order for the
+  ladder (multi rollout); keep #149's numbers provisional until w114 reports; refill `sub1-anchors.json` /
+  `rows27.json` pending rows (U0.25 calib part, #150 K2.5) from w114's report.
+- **Runtime:** none.
+
+### 2026-11-12 11:15 AM CST · #157 · Head E9: a uniform R16 K7 mul1 head beats deadcode's int8 GPTQ head (×0.45 KL at 1.125 fewer bits); int8 heads are off the hull; donor grid R16 σ 0.03 i8 to K6.5 + K7 mul1 (w119)
+- **Status:** done · **Machine:** box2 (4 cards) · **Code:** `v3/yaqa/w119/` (`score119.py`, `report119.py e9`,
+  `summary119.py`, `fetch119.py` / `int8rtn119.py` for the int8 heads) · **Rule:** `v3/yaqa/w119/RULES.md` (b2544e3 + amendments
+  6a7c9da, 0d7523d, 7a6f2b7) · **Data:** `v3/yaqa/data/w119/box2/rep/e9-{fit,search}-T03.json`, `data/w119/summary119.txt`
+- Head-only KL, fit-gen calib-weighted (pricing), 200 docs / 47,598 gen rows; search-gen in brackets:
+
+  | option | bits / head weight | KL fit [search] |
+  |---|---|---|
+  | R16 σ 0.03 i8 K6 / K6.5 / K7 | 6 / 6.5 / 7 | 2.54e-5 / 1.33e-5 / 8.38e-6 [2.49e-5 / 1.26e-5 / 8.04e-6] |
+  | **R16 σ 0.03 mul1 K7** | 7 | **6.87e-6** [6.78e-6] (hull) |
+  | int8 G128 GPTQ, deadcode's iq8r-dflash `output.weight` as shipped (W8A16, bf16 activations) | 8.125 | 1.48e-5 [1.45e-5] (×3.97 above the hull) |
+  | int8 G128 RTN, radiance `rule=search` scale / RTN FWHT128 | 8.125 | 3.19e-5 / 2.62e-5 |
+  | int8 heads with a8 activations (GPTQ / RTN / RTN-FWHT) | 8.125 | 1.33e-4 / 1.50e-4 / 4.68e-5 |
+  | T plans with a bf16 tier 1 (+ tier 2): e.g. [bf16,7,6,4] / [bf16,bf16,7,6] / [bf16,bf16,bf16,7] | 4.30 / 6.28 / 8.19 | 1.82e-4 / 1.53e-5 / 3.56e-6 (hull) |
+  | full bf16 head (f16 cast) | 16 | 2.8e-14 |
+
+- Verify (read once, report-only): K7 mul1 / int8 GPTQ **0.451 [0.378, 0.536]** (5.84e-6 vs 1.30e-5). i8 / mul1 at K7:
+  ×1.22 (R16; #94 ×1.27); in S order mul1 K7 2.46e-5 vs i8 3.09e-5.
+- **Rule:** int8 heads are 4–8.5× above the hull → **not offered** (any int8 variant; the a8 ones far worse). bf16-tier T
+  plans lie on the hull at 3.8–8.2 b but need a bf16 class and per-tier K (E6 not accepted): reported with their price
+  only. Amendment 2's read: K7 (mul1) is on the hull between K6.5 and the int8 head → **K7 mul1 donor recommended**; the
+  trellis head beats the int8 head from **K6.5 up** (1.33e-5 at 6.5 b vs 1.48e-5 at 8.125 b).
+- Deployable menu today (uniform R16 σ 0.03 i8 K3–K6.5, K7 mul1, bf16): all on its hull. Head marginal KL per model
+  bpw (1 head bit ≈ 0.047 bpw): K6 → K6.5 5.1e-4, K6.5 → K7 mul1 2.7e-4, K7 mul1 → bf16 1.6e-5; the trunk's (knap smoke
+  11-12) 6.0 → 6.5 3.8e-4, 6.5 → 7.0 1.3e-4: the knapsack should take ≥ K6.5 heads from the 6.0 mix, K7 mul1 at 6.5 / 7.0,
+  never a bf16 head (head-only KL ≈ whole-model ΔKL per position, #154).
+- **Runtime:** decode only: R16 logit un-permutation (E2); mul1 K7 = today's exl3dense path (`decl_exl3_weight`).
+
+### 2026-11-12 11:10 AM CST · #156 · Head E3: uniform R16 σ 0.03 (U) beats the slab head (geo ×0.71) and fixed tiers; verify geo ×0.70; whole-model (d) not run (w119)
+- **Status:** done ((d) not run) · **Machine:** box2 · **Code:** `report119.py e3 / verify`, S-slab plans by `headslab.py plan`
+  (HS_TRAIN=qad HS_FLOOR=3) on the box2 S donors (= w90's segments within a block) · **Rule:** as #157 · **Data:**
+  `data/w119/box2/rep/e3-T03-R16s003.json` (decision), `e3-T-R16.json` (σ 0.1, report), `verify.json`, `box2/slab/plan.json`
+- T donors re-quantized at E2's σ_out 0.03 (amendment 3); U = R16 σ 0.03 uniform. Plans on fit-gen, judged on fresh
+  search-gen (calib-weighted):
+
+  | budget | T (plan, bits) | U | S-slab | T / U | S-slab / U |
+  |---|---|---|---|---|---|
+  | 3 | [3,3,3,3] 4.18e-3 | 1.73e-3 | (S K3) 4.68e-3 | 2.42 [2.02, 2.92] | 2.71 [2.23, 3.37] |
+  | 4 | [7,7,7,3.5] 3.96 b 3.47e-4 | 3.70e-4 | s4-3 3.84e-4 | 0.936 [0.794, 1.041] | 1.037 [0.806, 1.249] |
+  | 5 | [7,7,7,4.5] 4.83 b 9.53e-5 | 9.36e-5 | s5-3 8.78e-5 | 1.018 [0.884, 1.125] | 0.938 [0.804, 1.090] |
+  | 6 | [7,7,7,5.5] 5.70 b 3.67e-5 | 2.49e-5 | s6-3 3.73e-5 | 1.471 [1.397, 1.549] | 1.498 [1.351, 1.724] |
+
+- Geo over budgets vs U: **T 1.358 [1.316, 1.387], S-slab 1.410 [1.327, 1.482]**; T fails the rare-token guard at B6
+  (1.31 vs S-slab); U's guards vs S-slab ≤ 0.94 everywhere. **Winner: U** (uniform R16 σ 0.03; no per-block K needed).
+  σ 0.1 families (report): T / U 1.375, S-slab / U 1.358.
+- **Final check (verify-gen, 100 clean docs, read once):** U / S-slab 0.372 [0.300, 0.455] / 1.008 [0.848, 1.249] /
+  1.010 [0.912, 1.137] / 0.644 [0.579, 0.711] at 3 / 4 / 5 / 6, geo **0.703** (search: 0.709); guards ≤ 1.04 / 0.91.
+- The tiers lose because they regroup rows by Fisher: R16's gain comes from mixing heavy and light rows inside each
+  128-row output-Hadamard block (uniform T03 K5 2.42e-4 vs U K5 9.36e-5). Per-block K is not worth a kernel here.
+- **(d) not run:** box2 has neither the V3 4.0 / 2.5 pick trunks nor a fresh xcorp golden; iceman is off limits. To do
+  when the R16 donors exist: U vs S-slab spliced into the 4.0 / 2.5 pick trunks on a fresh two-part slice (rule (d)).
+- **Runtime:** decode only (logit un-permutation, E2).
+
+### 2026-11-12 11:00 AM CST · #155 · Head E2: R16 row order cuts two-sided head KL to ×0.35 of today's Fisher-sorted order (K3–K5), σ_out 0.03; a8 head activations add a fixed +2.6e-5 (head stays f16) (w119)
+- **Status:** done · **Machine:** box2 (dumps card 0; quants 4 cards, ~3 min each; scores ~5 s / option) · **Code:**
+  `run119.sh`, `mkperm119.py`, `score119.py`, `report119.py e2` · **Rule:** as #157 · **Data:** `data/w119/box2/rep/e2.json`,
+  `report119.log`, `run119.log` (quants' proxy lines), `gate-*.json`
+- Dumps (headx94, G1 gates pass): search 150 docs / 36,001 gen rows, fit 200 / 47,598, verify 100 / 23,922, w94 qad
+  85 / 33,172. Environment check: box2 S K3 / K4 proxy_err = gpubox w94 two0 to all digits (ratio 1.000).
+- Search-gen, calib-weighted, X / S at equal K (guards rare-script / rare-token):
+
+  | X | K3 | K4 | K5 |
+  |---|---|---|---|
+  | R16 | 0.373 [0.307, 0.448] (0.82 / 0.79) | 0.355 [0.294, 0.420] (0.76 / 0.71) | 0.337 [0.275, 0.407] (0.72 / 0.68) |
+  | N | 0.649 [0.582, 0.717] (0.69 / 1.01) | 0.616 [0.553, 0.680] (0.66 / 0.98) | — |
+
+  N / R16 1.74 / 1.73 → N fails; **R16 adopted**. Fit-gen R16 / S 0.385 / 0.358 / 0.350; qad (in-sample Fisher) 0.284 /
+  0.262 / 0.261; unweighted 0.359 / 0.342 / 0.323.
+- σ_out at R16 K4: 0.03 / 0.1 = **0.952 [0.911, 0.991] → σ_out 0.03 adopted**; 0.3 / 0.1 = 1.101 [1.066, 1.141].
+- **a8 head activations** (the A8 path's input: had128(x ⊙ suh), int8 per (row, 128)): an almost constant **+2.5–2.9e-5**
+  head KL at every K: a8 / f16 S K3 1.006, K4 1.024 [1.021, 1.027], K5 1.090, K6 1.320, K7 1.813; R16 K4 1.066, K5 1.272,
+  K6 1.980 [1.761, 2.294] (= 0.02 → 0.53 bits of head). Rule not met (S K4 > 1.02) and no A8 head kernel to time → **head
+  stays f16**. Unrotated a8 on the int8 heads adds +1.2e-4 (×4.9–9.1).
+- **Runtime:** decode only: logits leave the head GEMM in stored order; R16 is closed-form (stored row s ↔ vocab
+  ((s >> 4) & 7) · 31,040 + (s >> 7) · 16 + (s & 15)), so the plugin un-permutes the logits (or maps the sampled id) with no table.
+
 ### 2026-11-12 4:30 AM CST · #158 · box2 (lent 4× R9700) set up for 27B work: rxq jobs and radiance KLD bit-identical to gpubox card 0 (w117)
 - **Status:** done · **Machine:** box2 (4× R9700, pip ROCm SDK 7.14.1, EPYC 7443) vs gpubox card 0 (ROCm 10.1) ·
   **Code:** rad-exl3-mix 4156463 + exllamav3-frac b0052f7c staged on both; radiance qc-exl3-v3 42960d5 (1.17.0 + our

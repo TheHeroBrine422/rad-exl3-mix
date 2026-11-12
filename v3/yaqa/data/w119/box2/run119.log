@@ -1,0 +1,109 @@
+10:33:57 dump search start (card 0)
+10:33:57 quant S K3 (S, sigma_out 0.1) card 1 start
+10:33:59 quant R16 K3 (R16, sigma_out 0.1) card 2 start
+10:34:01 quant N K3 (N, sigma_out 0.1) card 3 start
+10:37:32 quant S K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.002851673639060326, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nul
+10:37:33 quant S K4 (S, sigma_out 0.1) card 1 start
+10:37:33 quant N K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.0034401546491007002, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:37:33 quant R16 K4 (R16, sigma_out 0.1) card 3 start
+10:37:33 quant R16 K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.003620651825712338, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nul
+10:37:33 quant N K4 (N, sigma_out 0.1) card 2 start
+10:37:40 dump search rc 0 {"set": "search", "docs": 150, "rows": 37412, "gen_rows": 36001, "tokens": 122763, "sec": 215.3}
+10:37:40 dump fit start (card 0)
+10:39:39 quant N K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0008786661151672377, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:39:39 quant S K5 (S, sigma_out 0.1) card 2 start
+10:39:39 quant R16 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0009226249745112051, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:39:39 quant S K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0007302073125650472, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:39:39 quant R16 K5 (R16, sigma_out 0.1) card 3 start
+10:39:39 quant R16s003 K4 (R16, sigma_out 0.03) card 1 start
+10:40:42 i8 gptq fetched: saved /data/q27/w119/i8/gptq.part.npz: codes 248320x5120, scale 248320x40, |code| max 127
+10:41:44 quant R16s003 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": null
+10:41:44 quant R16s03 K4 (R16, sigma_out 0.3) card 1 start
+10:41:48 dump fit rc 0 {"set": "fit", "docs": 200, "rows": 49985, "gen_rows": 47598, "tokens": 146931, "sec": 242.2}
+10:41:48 dump verify start (card 0)
+10:42:28 quant R16 K5 OK: {"key": "lm_head", "K": 5, "proxy_err": 0.000238665456827391, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nul
+10:42:28 quant S K6 (S, sigma_out 0.1) card 3 start
+10:42:29 quant S K5 OK: {"key": "lm_head", "K": 5, "proxy_err": 0.00019314155892048753, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+10:42:29 quant S K7 (S, sigma_out 0.1) card 2 start
+10:43:40 quant T K4 (T, sigma_out 0.1) card 1 start
+10:43:41 quant T K5 (T, sigma_out 0.1) card 2 start
+10:43:42 quant T K3 (T, sigma_out 0.1) card 3 start
+10:43:47 quant R16s03 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0008367382672384704, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:43:47 quant R16 K6 (R16, sigma_out 0.1) card 1 start
+10:44:15 dump verify rc 0 {"set": "verify", "docs": 100, "rows": 24732, "gen_rows": 23922, "tokens": 71055, "sec": 139.1}
+10:44:29 quant S K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 5.4388074429125876e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+10:44:29 worker card 3: queue q-e2.txt done
+10:44:36 quant S K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 2.1161744565461206e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+10:44:36 worker card 2: queue q-e2.txt done
+10:45:48 quant T K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0008029827314552575, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:45:48 quant T K6 (T, sigma_out 0.1) card 1 start
+10:46:25 dump qad (w94 docs) rc 0 {"set": "qad", "docs": 85, "rows": 36828, "gen_rows": 33172, "tokens": 66651, "sec": 124.0}
+10:46:31 G1 search: True 0.000307 0.9939
+10:46:37 quant T K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.003150822580819043, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nul
+10:46:37 quant T K7 (T, sigma_out 0.1) card 3 start
+10:46:38 G1 fit: True 0.000203 0.9949
+10:46:43 G1 verify: True 0.000196 0.9947
+10:46:49 G1 qad: True 0.000193 0.9942
+10:47:17 i8 rtn: saved /data/q27/w119/i8/rtn.part.npz (rtn search): relative squared error 4.570e-05
+10:47:23 quant T K5 OK: {"key": "lm_head", "K": 5, "proxy_err": 0.00020780695659449315, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+10:47:23 quant T K3.5 (T, sigma_out 0.1) card 2 start
+10:47:47 i8 rtn-fwht: saved /data/q27/w119/i8/rtn-fwht.part.npz (fwht128 rtn search): relative squared error 4.023e-05
+10:47:48 quant R16 K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 6.276627686884088e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:47:48 worker card 1: queue q-e2.txt done
+10:48:41 quant T K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 1.814484377842658e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+10:48:41 quant T K4.5 (T, sigma_out 0.1) card 3 start
+10:49:32 quant T K3.5 OK: {"key": "lm_head", "K": 3.5, "proxy_err": 0.0015898027018836308, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": 
+10:49:32 quant T K5.5 (T, sigma_out 0.1) card 2 start
+10:49:47 quant T K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 5.4710434366993975e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+10:49:47 worker card 1: queue q-e3.txt done
+10:51:03 quant T K4.5 OK: {"key": "lm_head", "K": 4.5, "proxy_err": 0.00040721503555526777, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel":
+10:51:03 worker card 3: queue q-e3.txt done
+10:52:10 score search rc 0 (29 options)
+10:52:52 quant T K5.5 OK: {"key": "lm_head", "K": 5.5, "proxy_err": 0.00010638148415120415, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel":
+10:52:52 worker card 2: queue q-e3.txt done
+10:58:36 score fit rc 0 (37 options)
+11:01:33 score qad rc 0 (27 options)
+16:50:39 score fit rc 0 (3 options)
+16:51:08 quant S K6.5 (S, sigma_out 0.1) card 2 start
+16:51:11 quant Sm1 K7 (S, sigma_out 0.1) card 3 start
+16:51:35 score search rc 0 (11 options)
+16:52:25 quant T03 K3 (T, sigma_out 0.03) card 0 start
+16:52:27 quant T03 K4 (T, sigma_out 0.03) card 1 start
+16:52:29 quant T03 K5 (T, sigma_out 0.03) card 2 start
+16:52:31 quant T03 K6 (T, sigma_out 0.03) card 3 start
+16:54:15 quant Sm1 K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 1.656672187708915e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:54:15 worker card 3: queue q-e9.txt done
+16:54:29 quant T03 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0008995981942421281, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:54:29 quant R16s003 K3 (R16, sigma_out 0.03) card 1 start
+16:54:30 quant T03 K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.0035271553016114174, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:54:30 quant R16s003 K5 (R16, sigma_out 0.03) card 0 start
+16:55:45 quant S K6.5 OK: {"key": "lm_head", "K": 6.5, "proxy_err": 2.9973648516975014e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel":
+16:55:45 worker card 2: queue q-e9.txt done
+16:56:17 quant T03 K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 6.131028066397426e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:56:17 quant R16s003 K6 (R16, sigma_out 0.03) card 3 start
+16:56:36 quant R16s003 K3 OK: {"key": "lm_head", "K": 3, "proxy_err": 0.0041358342991082925, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:56:36 quant T03 K3.5 (T, sigma_out 0.03) card 1 start
+16:57:12 quant R16s003 K5 OK: {"key": "lm_head", "K": 5, "proxy_err": 0.0002729887488889197, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:57:12 quant T03 K4.5 (T, sigma_out 0.03) card 0 start
+16:58:17 quant R16s003 K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 7.180497659781057e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": nu
+16:58:17 quant T03 K5.5 (T, sigma_out 0.03) card 3 start
+16:58:32 quant T03 K5 OK: {"key": "lm_head", "K": 5, "proxy_err": 0.00023285275174894738, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+16:58:32 quant T03 K7 (T, sigma_out 0.03) card 2 start
+16:58:44 quant T03 K3.5 OK: {"key": "lm_head", "K": 3.5, "proxy_err": 0.0017806478042811532, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": 
+16:58:44 quant R16s003 K6.5 (R16, sigma_out 0.03) card 1 start
+16:59:31 quant T03 K4.5 OK: {"key": "lm_head", "K": 4.5, "proxy_err": 0.00045629356745236806, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel":
+16:59:31 quant R16s003 K7 (R16, sigma_out 0.03) card 0 start
+17:00:39 quant T03 K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 2.0337722304149687e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+17:00:39 quant R16s003m1 K7 (R16, sigma_out 0.03) card 2 start
+17:01:34 quant R16s003 K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 2.3720682370709803e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+17:01:34 worker card 0: queue q-e3b.txt done
+17:01:37 quant T03 K5.5 OK: {"key": "lm_head", "K": 5.5, "proxy_err": 0.000119212773668547, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+17:01:37 worker card 3: queue q-e3b.txt done
+17:03:15 quant R16s003m1 K7 OK: {"key": "lm_head", "K": 7, "proxy_err": 1.9580302195224128e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": n
+17:03:15 worker card 2: queue q-e3b.txt done
+17:03:24 quant R16s003 K6.5 OK: {"key": "lm_head", "K": 6.5, "proxy_err": 3.758924815457378e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": 
+17:03:24 worker card 1: queue q-e3b.txt done
+17:07:03 score qad rc 0 (18 options)
+17:07:22 score search rc 0 (18 options)
+17:07:50 score fit rc 0 (18 options)
+17:12:45 score verify rc 0 (13 options)

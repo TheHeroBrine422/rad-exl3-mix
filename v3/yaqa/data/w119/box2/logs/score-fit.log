@@ -1,0 +1,58 @@
+N-K3 (exl3 f16): mean KL 2.8808e-03 top-1 0.9759 7s
+N-K3-a8 (exl3 a8): mean KL 2.9065e-03 top-1 0.9756 16s
+N-K4 (exl3 f16): mean KL 6.3196e-04 top-1 0.9890 6s
+N-K4-a8 (exl3 a8): mean KL 6.5654e-04 top-1 0.9889 15s
+R16-K3 (exl3 f16): mean KL 1.5349e-03 top-1 0.9824 6s
+R16-K3-a8 (exl3 a8): mean KL 1.5604e-03 top-1 0.9822 14s
+R16-K4 (exl3 f16): mean KL 3.4240e-04 top-1 0.9917 6s
+R16-K4-a8 (exl3 a8): mean KL 3.6830e-04 top-1 0.9912 14s
+R16-K5 (exl3 f16): mean KL 8.4741e-05 top-1 0.9957 6s
+R16-K5-a8 (exl3 a8): mean KL 1.1105e-04 top-1 0.9947 14s
+R16-K6 (exl3 f16): mean KL 2.2142e-05 top-1 0.9977 6s
+R16-K6-a8 (exl3 a8): mean KL 4.8211e-05 top-1 0.9961 14s
+R16s003-K4 (exl3 f16): mean KL 3.3182e-04 top-1 0.9914 6s
+R16s03-K4 (exl3 f16): mean KL 3.6126e-04 top-1 0.9911 6s
+S-K3 (exl3 f16 blocks): mean KL 4.3555e-03 top-1 0.9674 7s
+S-K3-a8 (exl3 a8): mean KL 4.3799e-03 top-1 0.9673 15s
+S-K4 (exl3 f16 blocks): mean KL 1.0293e-03 top-1 0.9834 7s
+S-K4-a8 (exl3 a8): mean KL 1.0561e-03 top-1 0.9833 15s
+S-K5 (exl3 f16 blocks): mean KL 2.6783e-04 top-1 0.9919 7s
+S-K5-a8 (exl3 a8): mean KL 2.9468e-04 top-1 0.9912 15s
+S-K6 (exl3 f16 blocks): mean KL 7.4768e-05 top-1 0.9960 7s
+S-K6-a8 (exl3 a8): mean KL 1.0082e-04 top-1 0.9947 15s
+S-K7 (exl3 f16 blocks): mean KL 2.8705e-05 top-1 0.9971 7s
+S-K7-a8 (exl3 a8): mean KL 5.4758e-05 top-1 0.9959 15s
+T-K3.5 (exl3 f16 blocks): mean KL 1.7693e-03 top-1 0.9795 7s
+T-K3 (exl3 f16 blocks): mean KL 3.8154e-03 top-1 0.9691 7s
+T-K4.5 (exl3 f16 blocks): mean KL 4.3129e-04 top-1 0.9896 7s
+T-K4 (exl3 f16 blocks): mean KL 8.6748e-04 top-1 0.9854 7s
+T-K5 (exl3 f16 blocks): mean KL 2.1837e-04 top-1 0.9931 7s
+T-K6 (exl3 f16 blocks): mean KL 5.6603e-05 top-1 0.9958 7s
+T-K7 (exl3 f16 blocks): mean KL 1.9004e-05 top-1 0.9979 7s
+i8-gptq (int8 bf16): mean KL 1.3756e-05 top-1 0.9978 13s
+i8-gptq-a8 (int8 a8): mean KL 1.2904e-04 top-1 0.9945 13s
+i8-rtn (int8 bf16): mean KL 3.1201e-05 top-1 0.9969 13s
+i8-rtn-a8 (int8 a8): mean KL 1.4619e-04 top-1 0.9940 15s
+i8-rtn-fwht (int8 bf16): mean KL 2.6047e-05 top-1 0.9970 14s
+i8-rtn-fwht-a8 (int8 a8): mean KL 4.6366e-05 top-1 0.9965 13s
+T-K5.5 (exl3 f16 blocks): mean KL 1.1075e-04 top-1 0.9945 9s
+T-bf16 (bf16 f16 blocks): mean KL 2.1265e-11 top-1 1.0000 6s
+bf16-full (bf16 f16): mean KL 2.8965e-14 top-1 1.0000 5s
+R16s003-K3 (exl3 f16): mean KL 1.5255e-03 top-1 0.9832 8s
+R16s003-K5 (exl3 f16): mean KL 8.1819e-05 top-1 0.9959 6s
+R16s003-K6.5 (exl3 f16): mean KL 1.1251e-05 top-1 0.9984 6s
+R16s003-K6 (exl3 f16): mean KL 2.1443e-05 top-1 0.9982 6s
+R16s003-K7 (exl3 f16): mean KL 7.1328e-06 top-1 0.9988 6s
+R16s003m1-K7 (exl3 f16): mean KL 5.8912e-06 top-1 0.9989 6s
+S-K6.5 (exl3 f16 blocks): mean KL 4.0626e-05 top-1 0.9965 7s
+S-K6.5-a8 (exl3 a8): mean KL 6.6516e-05 top-1 0.9955 16s
+Sm1-K7 (exl3 f16 blocks): mean KL 2.2843e-05 top-1 0.9972 7s
+Sm1-K7-a8 (exl3 a8): mean KL 4.8730e-05 top-1 0.9962 14s
+T03-K3.5 (exl3 f16 blocks): mean KL 1.7544e-03 top-1 0.9802 7s
+T03-K3 (exl3 f16 blocks): mean KL 3.7489e-03 top-1 0.9692 7s
+T03-K4.5 (exl3 f16 blocks): mean KL 4.2323e-04 top-1 0.9891 7s
+T03-K4 (exl3 f16 blocks): mean KL 8.4516e-04 top-1 0.9861 7s
+T03-K5.5 (exl3 f16 blocks): mean KL 1.0989e-04 top-1 0.9949 7s
+T03-K5 (exl3 f16 blocks): mean KL 2.1510e-04 top-1 0.9926 7s
+T03-K6 (exl3 f16 blocks): mean KL 5.6244e-05 top-1 0.9957 7s
+T03-K7 (exl3 f16 blocks): mean KL 1.8621e-05 top-1 0.9980 7s

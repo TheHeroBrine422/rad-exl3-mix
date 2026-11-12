@@ -1,0 +1,20 @@
+{
+ "w119-headx-search": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#155 / #156 (w119, 2026-11-12): bf16 head inputs (final-norm output), one <= 256-row window per document inside the first 8,192 tokens (gen rows scored), 150 fresh search-pool docs (no golden-search27*, not in w94); E2 order / sigma_out and E3 layout decisions (v3/yaqa/w119/RULES.md)"
+ },
+ "w119-headx-fit": {
+  "role": "fit",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#156 / #157 (w119, 2026-11-12): bf16 head inputs, one <= 256-row window per document, 200 fit-pool docs; E3 plan choice and E9 head pricing (fit-gen, calib-weighted)"
+ },
+ "w119-headx-verify": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#156 (w119, 2026-11-12): bf16 head inputs, one <= 256-row window per document, 100 clean verify-pool docs (no golden); E3's single final check, read once"
+ }
+}

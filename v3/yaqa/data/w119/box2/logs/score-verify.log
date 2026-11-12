@@ -1,0 +1,13 @@
+R16s003-K3 (exl3 f16): mean KL 1.8738e-03 top-1 0.9823 4s
+R16s003-K4 (exl3 f16): mean KL 4.2221e-04 top-1 0.9909 4s
+R16s003-K5 (exl3 f16): mean KL 1.0123e-04 top-1 0.9955 4s
+R16s003-K6 (exl3 f16): mean KL 2.6495e-05 top-1 0.9980 4s
+R16s003-K6.5 (exl3 f16): mean KL 1.3540e-05 top-1 0.9982 4s
+R16s003-K7 (exl3 f16): mean KL 8.9112e-06 top-1 0.9985 4s
+R16s003m1-K7 (exl3 f16): mean KL 7.1872e-06 top-1 0.9988 4s
+S-K3 (exl3 f16 blocks): mean KL 4.2289e-03 top-1 0.9681 5s
+S-K4 (exl3 f16 blocks): mean KL 9.8128e-04 top-1 0.9829 5s
+S-K5 (exl3 f16 blocks): mean KL 2.5648e-04 top-1 0.9918 4s
+S-K6 (exl3 f16 blocks): mean KL 7.3710e-05 top-1 0.9957 5s
+S-K7 (exl3 f16 blocks): mean KL 2.8407e-05 top-1 0.9977 4s
+i8-gptq (int8 bf16): mean KL 1.3330e-05 top-1 0.9987 8s

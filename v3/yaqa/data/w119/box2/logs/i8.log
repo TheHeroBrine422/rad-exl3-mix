@@ -1,0 +1,6 @@
+output.weight: quant 'gptq' opts 'calib=/var/tmp/iq8r/grams,clamp=sym,codes=i8,group=128,rule=search,scale=bf16' shape [248320, 5120] scheme 'affine' transform ''
+  plane 'codes\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' dtype i8 dims (1, 1, 0, 0) bytes 1271398400 at 680550400
+  plane 'scale\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' dtype bf16 dims (1, 128, 0, 0) bytes 19865600 at 1951948800
+saved /data/q27/w119/i8/gptq.part.npz: codes 248320x5120, scale 248320x40, |code| max 127
+saved /data/q27/w119/i8/rtn.part.npz (rtn search): relative squared error 4.570e-05
+saved /data/q27/w119/i8/rtn-fwht.part.npz (fwht128 rtn search): relative squared error 4.023e-05

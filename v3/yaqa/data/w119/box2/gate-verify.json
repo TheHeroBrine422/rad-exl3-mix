@@ -1,0 +1,11 @@
+{
+ "dump": "/data/q27/w119/dump/verify",
+ "rows_checked": 24732,
+ "gen_checked": 23922,
+ "kl_top_gen": 0.0001955076609717814,
+ "top1_gen": 0.9947328818660647,
+ "kl_top_all": 0.0004341045365272894,
+ "top1_all": 0.9940967168041404,
+ "kl_top_p99_gen": 0.0029177780161617106,
+ "pass": true
+}
