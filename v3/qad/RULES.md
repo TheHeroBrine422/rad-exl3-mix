@@ -87,3 +87,14 @@ KL gain per arm (both parts, CIs), D0's card-hours (moments + denoise + writer j
 projection per shipped size, per-document sign counts, max |log| reached.
 
 ## Amendments
+
+### Amendment 1 — 2026-11-12 5:45 PM CST, before any training run (host and card layout only)
+- Host: **box2** instead of ds8. box2's share of the trunk ladder ended at 5:29 PM (all 49 levels done or assigned to
+  ds8's last unit); ds8 stays with the ladder and the search. The K2.5 level (final, level, specs, final.recipe) and
+  both slices were copied from ds8 over the 10 GbE link (sha256 over all level shards equal) to box2 `/data/q27/w125`.
+- Cards: the whole int8 student fits on one card (box2 gate: 25.35 GiB after the build, peak 28.76 of 31.86 GiB on a
+  2,048-token window, 7.3 s forward + backward a window), so A, C and D run on **one card each** (A then D on card 0,
+  C on card 1), B on 3 cards (0, 1, 3: student + bf16 teacher), D0 on card 2, the scoring on card 3; ≤ 4 cards. Where
+  the layers sit changes no arithmetic (run-to-run GPU noise only).
+- Student build: codes decoded in two phases (int8 to the host, then every layer placed at once) so the allocator does
+  not fragment; same arithmetic.
