@@ -146,6 +146,13 @@ sizes and 6.0.
 - **Speed gap to IQR, for the record:** decode (~30 vs ~100 tok/s at TP1) is mostly speculative decoding (DFlash2,
   bundled in V3); prefill (~1,500 vs ~2,500 tok/s) is the GEMM time V3's int8 path targets.
 
+## V3.1: scale-only QAD (user 2026-11-12)
+- **End-to-end scale-only QAD per shipped V3 mix**, after V3 releases (healing is off the V3 critical path; block-local
+  healing / block QAD dropped). Codes, format and kernels unchanged: same containers with retrained scale vectors.
+  Train on the qad pool, early-stop on search, check on verify. It also takes over sub-1 scale choices V3 left as is
+  (#149: C9 e_clip 0.3 not adopted). First check: heal K0.25 / K0.5 levels from e_clip 0.5 and 0.3 starts; same KL
+  ⇒ the clip question is closed.
+
 ## V4: QAD and after
 - **QAD** on the published V3 checkpoints, after scale healing (if healing did not already ship in V3: see the V3
   quantizer stack). 0.8B results to start from (each needs a 27B check): frozen-code healing
