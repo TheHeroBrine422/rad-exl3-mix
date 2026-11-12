@@ -44,34 +44,17 @@ def fmt_k(K):
 
 # ------------------------------------------------------------------------------------------------------ levels
 def levels(cfg, which=None):
-    """[{name, K, codebook, pass, priority, conditional}] in build order. pass: "1" coarse subset, "2" the rest of the
-    i8 levels + K1 + the first i4 twins, "2b" the other i4 twins (only if #46-03's A4 pays), "3" sub-1.
-    [ladder] i4_twin_range = [] builds no i4 twins (A4 out of V3, #46-03: w93's proposal, 11-08);
-    mul1_levels = [] builds no mul1 levels (int8-only, user + deadcode 11-09)"""
-    L, cb = cfg["ladder"], cfg["quant"]["codebook"]
+    """[{name, K, codebook, pass, priority, conditional}] in build order. [ladder] levels = K ranges [first, last, step];
+    pass "1" = on a [ladder] pass1 grid, "3" = sub-1 (K < 1), "2" = the rest. The codebook of every level comes from
+    [quant.codebook] (i8 everywhere since the int8-only decision, 11-09; i4 twins / mul1 levels retired)."""
+    L = cfg["ladder"]
     st = C.settings_stamp(cfg)
-    out = []
+    Ks = sorted({K for r in L["levels"] for K in _rng(*r)})
 
-    def add(K, codebook, p, cond=False):
-        out.append({"K": _kn(K), "codebook": codebook, "pass": p, "conditional": cond})
-    q1 = L["pass1_quarter"]; h1 = L["pass1_half"]; m1 = L.get("pass1_mul1_half") or [99, 0]
-    i8 = _rng(*L["i8_fine"]) + _rng(*L["i8_top"]) + [float(x) for x in L.get("i8_extra", [])]
-    low = _rng(*L["low"])                                # K0.125-1: the codebook from [quant.codebook] (i8 since #126)
-    tw = _rng(*L["i4_twin_range"]) if L["i4_twin_range"] else []
-    for K in i8:
-        coarse = (q1[0] <= K <= q1[1] and abs(K * 4 - round(K * 4)) < 1e-9) or (h1[0] <= K <= h1[1] and abs(K * 2 - round(K * 2)) < 1e-9)
-        add(K, "i8", "1" if coarse else "2")
-    for K in cb["mul1_levels"]:
-        add(K, "mul1", "1" if (m1[0] <= K <= m1[1] and abs(K * 2 - round(K * 2)) < 1e-9) else "2")
-    for K in low:
-        add(K, C.codebook_for(cfg, K), "3" if K < 1 else "2")
-    for K in tw:
-        add(K, "i4", "2" if K in [float(x) for x in cb["i4_twins"]] else "2b", cond=K not in [float(x) for x in cb["i4_twins"]])
-    for lv in out:                                       # every (K, codebook) must agree with the codebook table
-        K, c = float(lv["K"]), lv["codebook"]
-        ok = (c == "mul1" and K in cb["mul1_levels"]) or any(r["codebook"] == c and r["k_min"] <= K <= r["k_max"] for r in cb["by_level"]) \
-            or (c == "i4" and K in tw)
-        if not ok: raise SystemExit(f"[ladder] level K{K} {c}: not in [quant.codebook]")
+    def on_grid(K):
+        return any(a - 1e-9 <= K <= b + 1e-9 and abs(K / s - round(K / s)) < 1e-9 for a, b, s in L["pass1"])
+    out = [{"K": _kn(K), "codebook": C.codebook_for(cfg, K), "pass": "3" if K < 1 else "1" if on_grid(K) else "2",
+            "conditional": False} for K in Ks]
     fu = L["first_use"]
     rank = {"1": 0, "2": 1, "2b": 2, "3": 3}
     base = {"1": 60, "2": 40, "2b": 20, "3": 10}

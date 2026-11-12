@@ -176,22 +176,16 @@ enable = false
 
 # --------------------------------------------------------------------------- ladder plan (which levels, not in the stamp)
 [ladder]
-# The 49 levels (v3.md "Ladder"; 71 -> 55 when the i4 twins dropped 11-08 -> 50 on 11-09: mul1 out, i8 K7.5 / K8
-# added, int8-only decision, user + deadcode; all i8 since #126) and their build order
-# (local/TODO "Ladder build order", user 11-05; sub-1 last, LOG 11-08 5:00 AM). Outside the stamp: it picks which levels exist, not what a tensor's codes are; the codebook of
-# each level comes from [quant.codebook]. python -m rxq.ladder levels | jobs | estimate (w86, 11-08).
+# The 49 levels and their build order (v3.md "Ladder"). Outside the stamp: it picks which levels exist, not what a
+# tensor's codes are; every level's codebook comes from [quant.codebook] (i8 everywhere since 11-09). History: 71 -> 55
+# (i4 twins out, 11-08) -> 50 (mul1 out, i8 K7.5 / K8 in, 11-09) -> 49 (K8 out, 11-12). python -m rxq.ladder levels |
+# jobs | estimate.
 prefix = "q27v3"               # level names: <prefix>-<stamp[:8]>-k<K>-<codebook>
-low = [0.125, 1.0, 0.125]      # [first, last, step]: K0.125-1 (8; K < 1 = sub-1), codebook from [quant.codebook] (i8; i4 until #126)
-i8_fine = [1.125, 5.0, 0.125]  # i8 eighth steps (32)
-i8_top = [5.25, 7.0, 0.25]      # i8 quarter steps (8)
-i8_extra = [7.5]                 # i8 top level (user 11-09: "i8 K7, K7.5, K8"; 11-12: K8 dropped — never picked even
-                                 # at 7.0 (knap smoke, deadcode's ~0.0004 W8A8 floor above 6.5); K7.5 kept for a 7.0 release)
-i4_twin_range = []             # no i4 twins (16 removed, user 11-08: A4 out of V3, #46-03; their only use). Was [1.125, 3.0,
-                               # 0.125] (16 twins: quant.codebook.i4_twins first, the rest only if A4 paid)
-                               # mul1: quant.codebook.mul1_levels (7)
-pass1_quarter = [1.25, 5.0]    # pass 1 (~24 levels, e2e test + search calibration): i8 quarter steps,
-pass1_half = [5.5, 7.0]        # i8 half steps,
-pass1_mul1_half = []             # mul1 out (11-09); pass 1 = the 20 i8 coarse levels; no sub-1, no i4 twins
+levels = [[0.125, 5.0, 0.125], # [first, last, step]: K0.125-5 in eighths (40; K < 1 = sub-1),
+          [5.25, 7.0, 0.25],   #   K5.25-7 in quarters (8),
+          [7.5, 7.5, 0.25]]    #   K7.5 (user 11-12: kept for a 7.0 release; K8 dropped)
+pass1 = [[1.25, 5.0, 0.25],    # pass 1 = the coarse subset (20: e2e test + search calibration): quarter steps K1.25-5,
+         [5.5, 7.0, 0.5]]      #   half steps K5.5-7; pass 3 = sub-1 (K < 1, built last); pass 2 = everything else
 first_use = [2.5, 4.5]         # inside a pass, these K first ("order of use", v3.md)
 split = "group"                # job unit: "group" (one Hessian group of a layer, rqah quant_tensor's unit) | "tensor"
 n_layers = 64
