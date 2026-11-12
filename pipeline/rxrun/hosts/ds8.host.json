@@ -1,0 +1,44 @@
+{
+ "name": "ds8",
+ "root": "/data/q27/multi",
+ "run_conf": "/data/q27/multi/run.json",
+ "tree": "/data/q27/stage/code",
+ "slots": {
+  "level": 1,
+  "eval": 1
+ },
+ "limits": {
+  "kinds": [
+   "level",
+   "eval"
+  ]
+ },
+ "eval": {
+  "packs": "/data/q27/packs",
+  "mixes": "/data/q27/mixes",
+  "scores": "/data/q27/scores",
+  "card": 7,
+  "card_lock": "/data/q27/locks/card7.lock",
+  "ram_lock": "/data/q27/locks/ram.lock",
+  "conv_lock": "/data/q27/locks/conv.lock",
+  "aliases": {
+   "V2-3.00": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad"
+  },
+  "pack_cmd": [
+   "bash",
+   "-c",
+   "cd /data/q27 && RADIANCE_HOME=/data/q27/rad/home RADIANCE_HOST_DEVICES=1 /data/q27/rad/install/bin/rad-convert models/qwen38-27b-bf16 --recipe {recipe} --set quantization_config.quant_method=exl3 -o {out}"
+  ],
+  "mix_cmd": [
+   "/data/q27/tools/radmix",
+   "{out}",
+   "{base}",
+   "{mixfile}"
+  ],
+  "score_cmd": [
+   "bash",
+   "-c",
+   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
+  ]
+ }
+}

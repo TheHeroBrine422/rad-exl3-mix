@@ -4,6 +4,27 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 12:10 PM CST · #160 · ds8 (8× R9700S) set up for 27B work: rxq jobs and radiance KLD bit-identical to box2; 8 cards ≈ 1.9× box2 (w121)
+- **Status:** done · **Machine:** ds8 (8× R9700S, pip ROCm SDK 7.14.1, EPYC 7F52, 235 GB) vs box2 · **Code:** rad-exl3-mix
+  a84ed23 + exllamav3-frac b0052f7c staged on ds8 and (scratch, `/data/q27/w121`) on box2; radiance qc-exl3-v3 42960d5
+  built on ds8 · **Notes:** `local/notes/ds8.md`
+- **Setup:** box2's `/data/q27` layout and locks; data (bf16, calib Hessians + golden, H_out bn1920, V2 3.00, golden-search27c-c,
+  swj27-qad) and box2's venv rsynced over the 10 GbE link (150 GB in 4 min; `rsync -an` afterwards: 0 differ). ds8's system
+  python lacks transformers / pydantic (box2 has them): installed into the venv at box2's versions. Base exllamav3 ext
+  JIT-built in a throwaway copy (never in `RXQ_EXL3_SRC`). GPU order: HIP i = rocm-smi GPU[6 − 2⌊i/2⌋ + i mod 2].
+- **Check (no rule: identity gate):** (1) `check_rxrun.py` on ds8: RXRUN CHECKS 17/17 PASS. (2) L03 K2.5 i8 (w117's 4
+  jobs, 7 tensors) ds8 HIP 0 vs box2 HIP 0: `rxrun.cmp` **CMP SAME 15 files**, code stamp 9b9756bc1fd14b16 on both (HEAD;
+  w117's d2d96eac was 4156463, before 83e3a9d). (3) V2 3.00 on golden-search27c-c: `.rows` **byte-identical** to box2 and
+  gpubox (mean 0.63949, top-1 88.63%), 58 s.
+- **Throughput (K2.5 i8, N = 3):** 1 card 285 jobs/h, 1.31 est-s/s (= a box2 card); 8 cards 2,026 jobs/h, 9.37 est-s/s
+  (0.89 of linear: CPU-bound, 32 threads), VRAM 19–26 GB a card, host RAM ≥ 173 GB free → ≈ 1.94× box2, ≈ 5.4 card 0.
+- **Multi-host:** `pipeline/rxrun/hosts/ds8.{run,host}.json` (8 devices × 3, swj on HIP 0, evals on HIP 7), installed as
+  ds8 `/data/q27/multi/`, `radmix` built; `hostd --stamp` ds8 = box2-with-HEAD (tree 8557ed25d9bdc6a6); a live
+  `rxrun.multi` (0 levels) connected both. README / example lines: `local/workers/w121/rxrun-ds8.patch`. box2's own stage
+  is still 4156463 (no `rxrun.hostd`): restage before it joins.
+- **Decision / next:** ladder hosts = box2 + ds8 (lead note: not gpubox card 0); config `local/workers/w121/multi-coord-box2-ds8.json`.
+- **Runtime:** none.
+
 ### 2026-11-12 11:20 AM CST · #159 · Search-side prep for ladder pass 1 (w120): swj pricing fixed, sub-1 pricing path, kfit3 refit scaffolding, slice builder + per-doc readout, multi-host rxrun, V3 convergence plot
 - **Status:** done (tooling; decides nothing) · **Machine:** colo (CPU checks / dry runs), VM · **Code:** ef3ed55, f3256e1
   · **Notes:** `v3/levels/reprice/sub1plan.md`, `search/refit/README.md`, `eval/slices/README.md`, `pipeline/rxrun/README.md`
