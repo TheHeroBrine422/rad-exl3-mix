@@ -9,6 +9,11 @@ random weights and Hessians), under the V3 settings (H_out, tile CD on attn_qg, 
   run    rxrun.run on a two-level tiny ladder (layers 2-3, steps jobs + assemble; swj / post stubbed out): levels
          assembled, duplicate-seed jobs present beside the jobs (never in the level), a rerun skips everything, the
          status line has an ETA, rxrun.seedsd reports the pairs
+  multi  rxrun.multi (w120) over two local hostd "hosts" (1 and 2 devices; A k_max 3, B k_min 3.25 and 2 levels a unit) and
+         a third with a changed tree: every level built on exactly one host within its limits, the changed-tree host
+         refused, eval units (stub pack / mix / score) on the host that holds their level with the results fields,
+         a mix over levels on two hosts blocked, a rerun assigns nothing, a coordinator killed mid-unit and restarted
+         records the unit once; a level equal to rxrun.run's (part run) byte for byte
 Last line: "RXRUN CHECKS n/m PASS"."""
 import argparse, json, os, re, shutil, signal, subprocess, sys, tempfile, threading, time
 
@@ -170,5 +175,120 @@ if a.part in ("run", "all"):
            f"rc {p2.returncode}, {time.time() - t:.1f} s: {[x for x in out2.splitlines() if 'skip' in x][:2]}")
     p3 = subprocess.run([sys.executable, "-m", "rxrun.seedsd", R], capture_output=True, text=True, env=dict(os.environ))
     report("seedsd", p3.returncode == 0 and "pairs" in p3.stdout, (p3.stdout.strip().splitlines() or [p3.stderr[-200:]])[-1][:200])
+if a.part in ("multi", "all"):
+    # rxrun.multi (w120): two local "hosts" (hostd processes, own roots and devices) on one queue; eval units through stub
+    # pack / mix / score commands; a host with another tree stamp; a coordinator killed mid-unit and restarted
+    from rxq import ladder
+    MW = f"{W}/multi"; shutil.rmtree(MW, ignore_errors=True); os.makedirs(MW)
+    names = {f"{ladder.fmt_k(v['K'])}-{v['codebook']}": v["name"] for v in ladder.levels(cfg)}
+    LV = [names[k] for k in ("3.5-i8", "3.25-i8", "3.75-i8", "3-i8")]
+    stub = f"{MW}/stub.py"
+    open(stub, "w").write(r"""import hashlib, json, sys
+import numpy as np
+op = sys.argv[1]
+if op == "pack": open(sys.argv[3], "w").write("pack of " + open(sys.argv[2]).read()[:200])
+elif op == "mix": open(sys.argv[2], "w").write(open(sys.argv[3]).read() + open(sys.argv[4]).read() + "x" * 1000)
+else:
+    mix, g, o = sys.argv[2:5]; m = json.load(open(g + "/kld.json")); n = m["rows"]
+    h = int(hashlib.sha256(open(mix, "rb").read()).hexdigest()[:8], 16)
+    k = np.random.default_rng(h).gamma(0.5, 0.2, n).astype(np.float32); r = np.zeros((n, 4), np.float32); r[:, 0] = k
+    r.tofile(o + ".json.rows")
+    json.dump({"all": {"positions": n, "kld": {"mean": float(k.mean())}, "top1_agreement": 0.9}}, open(o + ".json", "w"))
+""")
+    for part, nd in (("x", 5), ("c", 3)):
+        gd = f"{MW}/golden-t-{part}"; os.makedirs(gd); docs, r = [], 0
+        for i in range(nd): docs.append({"tokens": 101 + 10 * i, "score_from": 0, "row0": r, "orig": i}); r += 100 + 10 * i
+        json.dump({"docs": docs, "rows": r}, open(f"{gd}/kld.json", "w")); np_ones = bytes([1]) * r; open(f"{gd}/gen.u8", "wb").write(np_ones)
+    open(f"{MW}/base.rad", "w").write("base")
+    PYX = sys.executable
+    from rxrun import hostd
+    tree2 = f"{MW}/tree2"
+    for d_ in hostd.TREE_DIRS:
+        if os.path.isdir(os.path.join(PIPE, "..", d_)): shutil.copytree(os.path.join(PIPE, "..", d_), f"{tree2}/{d_}", ignore=shutil.ignore_patterns("__pycache__"))
+    with open(f"{tree2}/pipeline/rxq/config.py", "a") as f: f.write("\n# a changed tree\n")
+
+    def host(nm, devs, unit_levels, limits, tree=os.path.join(PIPE, "..")):
+        H = f"{MW}/{nm}"; os.makedirs(H, exist_ok=True)
+        rc = {"root": f"{H}/ladder", "settings": CFG, "python": PYX, "layers": "2-3", "passes": ["1"], "steps": ["jobs", "assemble"],
+              "allow_standin": True, "dup_frac": 0.0, "template": None, "inputs": {"ckpt": ck, "hessians": hs, "hin": None, "hout": ho},
+              "env": ENV, "devices": [{"name": f"{nm}-{d}", "device": "cpu", "lock": f"{H}/card{d}.lock", "ram_lock": f"{H}/ram.lock",
+                                       "workers": 1, "vram_gib": 28.0, "nice": 0, "kinds": ["quant", "swj"]} for d in range(devs)]}
+        json.dump(rc, open(f"{H}/run.json", "w"), indent=1)
+        hc = {"name": nm, "root": H, "run_conf": f"{H}/run.json", "tree": tree, "slots": {"level": 1, "eval": 1}, "limits": limits,
+              "eval": {"packs": f"{H}/packs", "aliases": {"BASE": f"{MW}/base.rad", "GX": f"{MW}/golden-t-x", "GC": f"{MW}/golden-t-c"},
+                       "card_lock": f"{H}/card0.lock", "ram_lock": f"{H}/ram.lock", "conv_lock": f"{H}/conv.lock",
+                       "pack_cmd": [PYX, stub, "pack", "{recipe}", "{out}"], "mix_cmd": [PYX, stub, "mix", "{out}", "{base}", "{mixfile}"],
+                       "score_cmd": [PYX, stub, "score", "{mix}", "{golden}", "{out}"]}}
+        json.dump(hc, open(f"{H}/host.json", "w"), indent=1)
+        return {"name": nm, "cmd": [], "python": PYX, "hostconf": f"{H}/host.json", "unit_levels": unit_levels, "reconnect_s": 5}
+    # level units here have no post / recipe step: the stub pack reads final.recipe, so give each built level one
+    hA = host("hA", 1, 1, {"kinds": ["level", "eval"], "k_max": 3.0})
+    hB = host("hB", 2, 2, {"kinds": ["level", "eval"], "k_min": 3.25})
+    hC = host("hC", 1, 1, {"kinds": ["level", "eval"]}, tree=tree2)
+    ev = [{"tag": "e-u3", "mix": {"base": "BASE", "trunk": LV[3]}, "slices": [{"name": "t", "parts": {"x": "GX", "c": "GC"}}]},
+          {"tag": "e-u35", "mix": {"base": "BASE", "trunk": LV[0]}, "slices": [{"name": "t", "parts": {"x": "GX", "c": "GC"}}]},
+          {"tag": "e-split", "mix": {"base": "BASE", "parity": {"even": LV[3], "odd": LV[0]}}, "slices": [{"name": "t", "parts": {"x": "GX"}}]}]
+    open(f"{MW}/evals.jsonl", "w").write("".join(json.dumps(e) + "\n" for e in ev))
+    CO = {"root": f"{MW}/coord", "settings": CFG, "passes": ["1"], "levels": LV, "layers": "2-3", "hosts": [hA, hB, hC],
+          "evals": f"{MW}/evals.jsonl", "retries": 0}
+    json.dump(CO, open(f"{MW}/multi.json", "w"), indent=1)
+    # final.recipe stand-in: written by a watcher as levels get DONE (steps jobs + assemble have no recipe step)
+    stopw = threading.Event()
+
+    def recipes():
+        while not stopw.is_set():
+            for p_ in __import__("glob").glob(f"{MW}/h?/ladder/*/DONE"):
+                rp_ = os.path.join(os.path.dirname(p_), "final.recipe")
+                if not os.path.exists(rp_): open(rp_, "w").write(os.path.dirname(p_))
+            time.sleep(0.2)
+    thw = threading.Thread(target=recipes, daemon=True); thw.start()
+    t = time.time()
+    p = subprocess.run([sys.executable, "-m", "rxrun.multi", f"{MW}/multi.json"], capture_output=True, text=True, env=dict(os.environ), timeout=3600)
+    mlog = open(f"{MW}/coord/multi.log").read() if os.path.exists(f"{MW}/coord/multi.log") else p.stdout + p.stderr
+    where = {n: [h for h in ("hA", "hB", "hC") if os.path.exists(f"{MW}/{h}/ladder/{n}/DONE")] for n in LV}
+    once = all(len(v) == 1 for v in where.values())
+    kv = {v["name"]: v["K"] for v in ladder.levels(cfg)}
+    limit_ok = all((kv[n] <= 3.0) == (v == ["hA"]) for n, v in where.items())
+    st = [json.loads(x) for x in open(f"{MW}/coord/state.jsonl")]
+    units = [e for e in st if e["ev"] == "assign" and e["kind"] == "level"]
+    two = any(e["host"] == "hB" and len(e["levels"]) == 2 for e in units)
+    report("multi-levels", p.returncode == 0 and once and limit_ok and two and not any(e["host"] == "hC" for e in st if e["ev"] == "assign"),
+           f"rc {p.returncode}, {time.time() - t:.0f} s; level -> host {({n[-12:]: v for n, v in where.items()})}; limits (hA K <= 3, hB K >= 3.25) {limit_ok}; "
+           f"a 2-level unit on hB {two}; units {[(e['host'], len(e['levels'])) for e in units]}")
+    report("multi-tree-check", "hC: REFUSED" in mlog and "tree_stamp" in mlog, [x for x in mlog.splitlines() if "REFUSED" in x][:1])
+    res_ = [json.loads(x) for x in open(f"{MW}/coord/results.jsonl")] if os.path.exists(f"{MW}/coord/results.jsonl") else []
+    good = [r for r in res_ if not r.get("fail")]
+    fields = all(all(k in r for k in ("tag", "bytes", "positions", "kld", "p99", "top1", "slice", "host")) for r in good)
+    hosts_ok = all(r["host"] == where[LV[3] if r["tag"] == "e-u3" else LV[0]][0] for r in good)
+    docs_ok = all(os.path.exists(f"{MW}/coord/docs/{r['tag']}-{r['slice']}.json") for r in good)
+    pos_ok = all(r["positions"] == sum(100 + 10 * i for i in range(5)) + sum(100 + 10 * i for i in range(3)) for r in good)
+    split_blocked = "e-split BLOCKED" in mlog and not any(r["tag"] == "e-split" for r in res_)
+    report("multi-evals", len(good) == 2 and fields and hosts_ok and docs_ok and pos_ok and split_blocked,
+           f"{[(r['tag'], r['host'], round(r['kld'], 4), r['positions']) for r in good]}; fields {fields}, on the level's host {hosts_ok}, "
+           f"docs {docs_ok}; parity mix over two hosts blocked {split_blocked}")
+    n_assign = len([e for e in st if e["ev"] == "assign"])
+    t = time.time(); p2 = subprocess.run([sys.executable, "-m", "rxrun.multi", f"{MW}/multi.json"], capture_output=True, text=True, env=dict(os.environ), timeout=600)
+    st2 = [json.loads(x) for x in open(f"{MW}/coord/state.jsonl")]
+    report("multi-rerun", p2.returncode == 0 and len([e for e in st2 if e["ev"] == "assign"]) == n_assign, f"rc {p2.returncode}, {time.time() - t:.1f} s, "
+           f"assignments {n_assign} -> {len([e for e in st2 if e['ev'] == 'assign'])}")
+    # the coordinator killed while a level unit runs: the unit goes on (own process), the restart picks up its result
+    LV2 = [names["4-i8"]]
+    CO2 = dict(CO, root=f"{MW}/coord2", levels=LV2, hosts=[hB], evals=None)
+    json.dump(CO2, open(f"{MW}/multi2.json", "w"), indent=1)
+    pk = subprocess.Popen([sys.executable, "-m", "rxrun.multi", f"{MW}/multi2.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                          env=dict(os.environ), start_new_session=True)
+    t0 = time.time()
+    while time.time() - t0 < 600 and not (os.path.exists(f"{MW}/coord2/state.jsonl") and "assign" in open(f"{MW}/coord2/state.jsonl").read()): time.sleep(0.2)
+    time.sleep(2); os.killpg(pk.pid, signal.SIGKILL); pk.wait()
+    alive_after = any(open(f).read().strip() and os.path.exists(f"/proc/{open(f).read().strip()}") for f in __import__("glob").glob(f"{MW}/hB/units/*/pid"))
+    p3 = subprocess.run([sys.executable, "-m", "rxrun.multi", f"{MW}/multi2.json"], capture_output=True, text=True, env=dict(os.environ), timeout=1800)
+    st3 = [json.loads(x) for x in open(f"{MW}/coord2/state.jsonl")]
+    a3 = [e for e in st3 if e["ev"] == "assign"]; r3 = [e for e in st3 if e["ev"] == "result"]
+    report("multi-restart", p3.returncode == 0 and len(a3) == 1 and len(r3) == 1 and r3[0]["rc"] == 0 and os.path.exists(f"{MW}/hB/ladder/{LV2[0]}/DONE"),
+           f"unit alive after the coordinator's kill {alive_after}; assignments {len(a3)}, results {[(e['id'], e['rc']) for e in r3]}, rc {p3.returncode}")
+    stopw.set()
+    if os.path.isdir(f"{W}/ladder/{LV[0]}/level") and os.path.isdir(f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level"):
+        ok, why = same(f"{W}/ladder/{LV[0]}/level", f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level", "multi level vs rxrun.run level")
+        report("multi-identity", ok, why)
 print(f"RXRUN CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

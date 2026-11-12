@@ -84,8 +84,11 @@ if PART in ("v3", "all"):
           "KN_SUB1_FIT": "../levels/reprice/sub1-anchors.json", "KN_SUB1_FIT_OUT": os.path.abspath(f"{O}/sub1fit.json")}
     # a synthetic saturation anchor (ratio 20: below the model's raw U1 / U2.5 ratio) only to exercise KN_SAT's path
     sa = json.load(open(os.path.join(RXM, "v3", "levels", "reprice", "sub1-anchors.json")))
+    # (the path test only: one K0.5 scale anchor (145-splice) + the sat anchor; the other sub-1 anchors are skipped here)
     for a_ in sa["anchors"]:
         if a_["id"] == "149-sat": a_.update(ratio=20.0, skip=False, src="SYNTHETIC (check_knap only)")
+        elif a_["id"] == "145-splice": a_.pop("check", None)
+        else: a_["skip"] = True
     json.dump(sa, open(f"{O}/sub1-anchors-sat.json", "w"), indent=1)
     SAT = dict(S1, KN_SUB1_FIT=os.path.abspath(f"{O}/sub1-anchors-sat.json"), KN_SUB1_FIT_OUT=os.path.abspath(f"{O}/sub1fit-sat.json"))
     for tag, extra, tg in (("s1", S1, [2.5, 1.25]), ("nos1", {}, [2.5]), ("sat", SAT, [1.25])):

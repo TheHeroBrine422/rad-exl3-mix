@@ -31,14 +31,36 @@ integer `ours-K*` options and pops the rest). This note is the plan; nothing her
   `149-sat` (ratio = KL(U1) / KL(K2.5)) and the three `149-u*` uniform anchors (U0.25 / U0.5 / U0.75 vs U1), drop
   `skip`, and turn `145-splice` into a check (it is a second slice of the same K0.5 point).
 
+## Update 11-12 ~11:20 AM CST (w120): #149's first T arms, and kfit2's compounding at sub-1
+
+w114's #149 T arms on golden-search27f (read from its running queue, provisional until w114 reports; both parts,
+position-weighted): U1 1.3980, U0.75 2.6611, U0.5 5.7323, splice even K0.5 / odd K1.5 2.6924 → U0.5 / U1 **4.10**,
+U0.75 / U1 1.90, splice / U1 **1.93** (#145 on 27d with f32 swj: 2.09). The K0.25 / K0.75 proxies are in
+`data/levels/reprice/sub1/` and `sub1ratios-27b.json` now has K0.25 / 0.5 / 0.75 (the 27B is close to #90's CPU
+trellis except attn_qg / ssm_z / ssm_qkv at K0.25: 4.4 / 4.2 / 3.8 vs 7.4 / 5.6 / 4.6).
+
+**The model cannot fit both uniform and splice mixes at sub-1.** Fitted to U0.5 (kl_scale), knap5 puts the splice at
+0.97 × U1 (measured 1.93): kfit2's depth compounding (κ ≈ 30–45 at layer 0, ~3–4 in the middle; fitted on V2 mixes
+with KLD ≤ ~0.4) turns a modest per-layer cost into U0.5's 4.1× by compounding, so half the layers at K0.5 barely
+move the splice. The measurements are near additive instead (splice ≈ (U0.5 + U1.5) / 2 with U1.5 ≈ 0.4 × U1 gives
+~2.25 vs 1.93: mildly sub-additive). A saturation link C does not help (fitted to the splice it caps U0.5 near 2×:
+degenerate, kl_scale → bound). kfit3 shows the same: fitted on rows with KLD ≤ 2, it predicts the sub-1 rows with
+log-RMSE ~1.8. So, as prep (no decision):
+- `sub1-anchors.json` fits on **mixed-K mixes only** (149-splice fixes K0.5); uniform sub-1 mixes are checks. The
+  knapsack's 1–1.5 bpw mixes are mixed-K, so a splice is the closer anchor. K0.25 / 0.75 take K0.5's scale (clamped)
+  until their splices exist.
+- Step 2 below: the two splices are **fit** anchors (K0.25 and K0.75), the uniform U-mixes checks.
+- The real fix is in the model (compounding that weakens at large P, or per-K compounding): a kfit3 item after
+  pass 1, with these rows as its test (the 11-12 dry run is in LOG).
+
 ## Pass-3 measurement plan (when the sub-1 levels exist; card time on any of our R9700s)
 
 1. **Prices (CPU, minutes):** `sub1ratios.py` over the 7 sub-1 levels + K1 (pass 2) → `sub1ratios-ladder.json`;
    set `[knap].sub1_ratios` to it with `KN_SUB1_TENSORS = "1"` in `[knap].env`.
 2. **Anchors (one fresh two-part slice, `eval/slices/mkslice27.sh`; all mixes in V2 3.00, T arms only):**
    uniform U0.125, U0.25, U0.5, U0.75 (4), U1 (the reference), U2.5 (the saturation reference; any K2.5 ladder level),
-   and two splices: even K0.25 / odd K1.5 and even K0.75 / odd K1.25 (mixed-K inside the sub-1 band: tests the
-   model's compounding there, used as checks). 8 mixes: 6 level packs (~23 min each the first time, ram.lock
+   and two splices: even K0.25 / odd K1.5 and even K0.75 / odd K1.25 (mixed-K inside the sub-1 band: the **fit**
+   anchors of K0.25 / K0.75; the uniform U-mixes are checks of the compounding). 8 mixes: 6 level packs (~23 min each the first time, ram.lock
    exclusive) + 8 scores (~3 min each on ~280k positions) ≈ **3.5 card-h**.
 3. **Family transfer at sub-1 (checks, not fits):** in a uniform K1.5 base, one family group at K0.5 at a time —
    attn_in (q/k/v), ssm_in (qkv/z), gate_up, writers (o / out / down): 4 mixes on the same slice (`--reuse` packs,

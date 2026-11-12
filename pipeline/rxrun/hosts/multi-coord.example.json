@@ -1,0 +1,47 @@
+{
+ "root": "/workspace/rad-local/multi/v3",
+ "settings": "/workspace/rad-exl3-mix/pipeline/config/v3.toml",
+ "passes": [
+  "1",
+  "2",
+  "3"
+ ],
+ "retries": 1,
+ "evals": "/workspace/rad-local/multi/v3/evals.jsonl",
+ "hosts": [
+  {
+   "name": "gpubox",
+   "cmd": [
+    "<ssh argv of local/bin/ssh-gpubox.sh (ssh -p ... root@HOST), no remote command>",
+    "env",
+    "PYTHONPATH=/data/v3run/code/pipeline"
+   ],
+   "python": "/data/venv-exl3/bin/python",
+   "hostconf": "/data/v3run/multi/host.json",
+   "unit_levels": 2,
+   "reconnect_s": 60
+  },
+  {
+   "name": "box2",
+   "cmd": [
+    "ssh",
+    "-p",
+    "2241",
+    "-o",
+    "StrictHostKeyChecking=no",
+    "-o",
+    "ServerAliveInterval=30",
+    "-i",
+    "<key>",
+    "root@127.0.0.1",
+    "env",
+    "PYTHONPATH=/data/q27/stage/code/pipeline"
+   ],
+   "python": "/data/q27/venv/bin/python",
+   "hostconf": "/data/q27/multi/host.json",
+   "unit_levels": 4,
+   "reconnect_s": 60
+  }
+ ],
+ "about": "copy to local/ (ssh lines hold host addresses / key paths: never in the repo) and fill the <...> fields; run on the VM: python -m rxrun.multi CONF --follow"
+}

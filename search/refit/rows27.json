@@ -1,0 +1,293 @@
+{
+ "about": "kfit3 V3 rows (w120, 2026-11-12): this week's 27B whole-trunk mixes with per-tensor proxies, flagged by stamp and slice. kld = the arm's pooled KLD on its slice (both parts). trunk: 'all' = one level's proxy file for every trunk tensor, 'even' / 'odd' = layer-parity splice. swj: the trunk K values whose layers carry swj ('all' = every layer, [] = none). head / emb = V2 3.00's (ours-K4 head, e3 embedding). Proxy files: data/refit/ (slim copies of each level's proxy.jsonl). Slices: 27c (w92 / w99, 91 docs), 27d (w110, 193 docs), 27f (w114, 199 docs). w111 / w113 (P16 / P16-TP, 27d / 27e) are not rows: P16 only permutes rows (no proxy change) and was dropped; the pairs are within noise.",
+ "rows": [
+  {
+   "tag": "w92-27c-basectl",
+   "slice": "27c",
+   "stamp": "ladder2-K2.5",
+   "kld": 0.367936,
+   "positions": 145597,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "proxy-w92-basectl.jsonl"
+   },
+   "swj": [],
+   "src": "#122 w92 basectl = /data/v3ladder2/K2.5 (ladder2 seed 0, no H_out, no swj) in V2 3.00, golden-search27c (91 docs)",
+   "fam": "v3plain"
+  },
+  {
+   "tag": "w92-27c-s1ctl",
+   "slice": "27c",
+   "stamp": "swap27-s1-K2.5",
+   "kld": 0.360995,
+   "positions": 145597,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "proxy-w92-s1ctl.jsonl"
+   },
+   "swj": [],
+   "src": "#122 s1ctl = /data/swap27/q-s1/K2.5 (seed 1)",
+   "fam": "v3plain"
+  },
+  {
+   "tag": "w92-27c-fs0",
+   "slice": "27c",
+   "stamp": "w92-fullstack",
+   "kld": 0.357427,
+   "positions": 145597,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "proxy-w92-fs0.jsonl"
+   },
+   "swj": "all",
+   "src": "#122 fs0: full adopted stack K2.5 (H_out, CD, C9, swj) seed 0",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w92-27c-fs1",
+   "slice": "27c",
+   "stamp": "w92-fullstack",
+   "kld": 0.351173,
+   "positions": 145597,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "proxy-w92-fs1.jsonl"
+   },
+   "swj": "all",
+   "src": "#122 fs1: same, seed 1",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-k1-cs",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 1.0931,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-159591b2-k1-i8.jsonl"
+   },
+   "swj": "all",
+   "src": "#145 M1 T arm (uniform K1, C9 cur, swj on), golden-search27d (193 docs)",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-k1-cn",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 1.48203,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-159591b2-k1-i8.jsonl"
+   },
+   "swj": [],
+   "src": "#145 k1-cn = T x 1.3558 (swj off)",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-sp-ss",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 2.2824,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "even": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl",
+    "odd": "../levels/reprice/sub1/proxy-159591b2-k1.5-i8.jsonl"
+   },
+   "swj": "all",
+   "src": "#145 M2 T arm (even K0.5 / odd K1.5, swj on)",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-sp-nn",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 2.70852,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "even": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl",
+    "odd": "../levels/reprice/sub1/proxy-159591b2-k1.5-i8.jsonl"
+   },
+   "swj": [],
+   "src": "#145 sp-cc-nn = T x 1.1867",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-sp-ns",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 2.56314,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "even": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl",
+    "odd": "../levels/reprice/sub1/proxy-159591b2-k1.5-i8.jsonl"
+   },
+   "swj": [
+    1.5
+   ],
+   "src": "#145 sp-cc-ns = T x 1.1230 (swj off at K0.5)",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w110-27d-sp-sn",
+   "slice": "27d",
+   "stamp": "159591b2",
+   "kld": 2.42071,
+   "positions": 299548,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "even": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl",
+    "odd": "../levels/reprice/sub1/proxy-159591b2-k1.5-i8.jsonl"
+   },
+   "swj": [
+    0.5
+   ],
+   "src": "#145 sp-cc-sn = T x 1.0606 (swj off at K1.5)",
+   "fam": "v3hout"
+  },
+  {
+   "tag": "w99-27c-k6c9",
+   "slice": "27c",
+   "stamp": "ed97adb7",
+   "kld": 0.070703,
+   "positions": 145597,
+   "head": "ours-K8",
+   "emb": "e6",
+   "trunk": {
+    "all": "proxy-w99-k6.jsonl"
+   },
+   "swj": [],
+   "fam": "v3hout",
+   "src": "#129 k6c9 (K6 i8 level, C9, swj off) in V2 8.00, golden-search27c (91 docs); head / emb approximated: V2 8.00 has a K7-8 head (ours-K8 used) and a bf16 embedding (e6 = the highest level in the V2 data). SKIPPED by default (w120 dry run): with them phi3 collapses to ~0.01 and the V3 rows' within-slice RMSE goes 0.02 -> 0.09; V2 8.00's bf16 embedding / K7-8 head are outside the V2 option set (approximated)",
+   "skip": true
+  },
+  {
+   "tag": "w99-27c-k6swj",
+   "slice": "27c",
+   "stamp": "ed97adb7",
+   "kld": 0.072429,
+   "positions": 145597,
+   "head": "ours-K8",
+   "emb": "e6",
+   "trunk": {
+    "all": "proxy-w99-k6.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "src": "#129 k6swj (same codes, swj on), golden-search27c; head / emb as w99-27c-k6c9. SKIPPED by default (w120 dry run): with them phi3 collapses to ~0.01 and the V3 rows' within-slice RMSE goes 0.02 -> 0.09; V2 8.00's bf16 embedding / K7-8 head are outside the V2 option set (approximated)",
+   "skip": true
+  },
+  {
+   "tag": "w114-27f-u1-c",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": 1.39804,
+   "positions": 277776,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-159591b2-k1-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "src": "#149 U1 T arm (w110's K1 codes, bf16 swj), golden-search27f. PROVISIONAL: w114 has not reported #149 yet (read 11-12 16:55 UTC from its scores/*.json 'all', position-weighted over both parts)"
+  },
+  {
+   "tag": "w114-27f-u0.75-c",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": 2.6611,
+   "positions": 277776,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-4f831984-k0.75-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "src": "#149 U0.75 T arm, golden-search27f. PROVISIONAL: w114 has not reported #149 yet (read 11-12 16:55 UTC from its scores/*.json 'all', position-weighted over both parts)"
+  },
+  {
+   "tag": "w114-27f-u0.5-c",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": 5.73231,
+   "positions": 277776,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "src": "#149 U0.5 T arm, golden-search27f (top-1 0.19: past saturation; down-weighted by kfit3's bpw < 1.6 rule only if bpw is set). PROVISIONAL: w114 has not reported #149 yet (read 11-12 16:55 UTC from its scores/*.json 'all', position-weighted over both parts)"
+  },
+  {
+   "tag": "w114-27f-sp-c",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": 2.69244,
+   "positions": 277776,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "even": "../levels/reprice/sub1/proxy-159591b2-k0.5-i8.jsonl",
+    "odd": "../levels/reprice/sub1/proxy-159591b2-k1.5-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "src": "#149 sp-cc T arm (w110's splice, bf16 swj), golden-search27f. PROVISIONAL: w114 has not reported #149 yet (read 11-12 16:55 UTC from its scores/*.json 'all', position-weighted over both parts)"
+  },
+  {
+   "tag": "w114-27f-u0.25-c",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": null,
+   "positions": null,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "../levels/reprice/sub1/proxy-4f831984-k0.25-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "skip": true,
+   "src": "#149 U0.25 T arm: calib part not scored yet (xcorp 10.146); fill kld and drop skip"
+  },
+  {
+   "tag": "w114-27f-k2.5-1m",
+   "slice": "27f",
+   "stamp": "4f831984",
+   "kld": null,
+   "head": "ours-K4",
+   "emb": "e3",
+   "trunk": {
+    "all": "proxy-4f831984-k2.5-i8.jsonl"
+   },
+   "swj": "all",
+   "fam": "v3hout",
+   "skip": true,
+   "src": "#150 K2.5 1M swj arm in V2 3.00, golden-search27f: pending (w114); fetch the level's proxy (/data/w114/lv/q27v3-4f831984-k2.5-i8/level/proxy.jsonl) too. Also the saturation reference (sub1-anchors 149-sat)"
+  }
+ ],
+ "pending": [
+  "w114 #149 (27f): U0.25 / U0.5 / U0.75 / U1 T arms (stamp 4f831984; levels /data/w114/lv + /data/w110/lv) and #150 K2.5 / K4 1M arms (27f): add when scored",
+  "w99 #128 (mixed-K H_out splice K4 / K2.5, 27c) and #129 (swj K6): needs the bn / base / bn4 / base4 levels' proxies (gpubox /data/swap27)",
+  "w111 / w113 P16 splices (27b / 27e): partial-tensor swaps of interleaved rows; their per-tensor proxies are f2 screens, not level proxies: leave out",
+  "w106 / w107 0.8B rows: not this model"
+ ]
+}

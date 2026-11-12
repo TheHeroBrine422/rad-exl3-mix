@@ -1,6 +1,19 @@
 {
- "about": "knap5 KN_SUB1_FIT (w120, 2026-11-12): measured whole-model KL ratios of swj'd 27B mixes with sub-1 trunk levels, ratio = KL(mix) / KL(ref mix), same slice, same V2 3.00 head (ours-K4) + embedding (e3). Each solved anchor fixes an extra scale on every sub-1 option at K 'fit'. Splices: layer l even -> K.even, odd -> K.odd. Pending anchors (skip) are filled from their results; see sub1plan.md.",
+ "about": "knap5 KN_SUB1_FIT (w120, 2026-11-12): measured whole-model KL ratios of swj'd 27B mixes with sub-1 trunk levels, ratio = KL(mix) / KL(ref mix), same slice, same V2 3.00 head (ours-K4) + embedding (e3). Each solved anchor fixes an extra scale on every sub-1 option at K 'fit'. Splices: layer l even -> K.even, odd -> K.odd. Pending anchors (skip) are filled from their results; see sub1plan.md. Fit anchors are mixed-K mixes (like the knapsack's), uniform sub-1 mixes are checks (w120 dry run 11-12: kfit2's depth compounding over-predicts uniform sub-1 mixes: fitted to U0.5 = 4.10 x U1 the model puts the splice at 0.97 x U1 vs 1.93 measured; a saturation link C cannot reconcile them (degenerate fit). See sub1plan.md).",
  "anchors": [
+  {
+   "id": "149-splice",
+   "K": {
+    "even": 0.5,
+    "odd": 1.5
+   },
+   "ref": 1,
+   "ratio": 1.9259,
+   "head": "ours-K4",
+   "emb": "e3",
+   "src": "#149 T arm sp-cc 2.6924 / U1 1.3980 (w110's splice with today's bf16 swj), golden-search27f. PROVISIONAL: read by w120 11-12 16:55 UTC from w114's running #149 (scores/<arm>-c-f-{x,c}.json 'all', position-weighted over both parts; w114 has not reported yet: re-read from its report)",
+   "fit": 0.5
+  },
   {
    "id": "145-splice",
    "K": {
@@ -12,19 +25,30 @@
    "fit": 0.5,
    "head": "ours-K4",
    "emb": "e3",
-   "src": "#145 T arms (stamp 159591b2, swj f32 + in-job C9): splice even K0.5 / odd K1.5 KLD 2.2824 / uniform K1 1.0931, golden-search27d (193 docs)"
+   "src": "#145 T arms (stamp 159591b2, swj f32 + in-job C9): splice even K0.5 / odd K1.5 KLD 2.2824 / uniform K1 1.0931, golden-search27d (193 docs); check since 149-u0.5 gives the direct uniform point",
+   "check": true
   },
   {
    "id": "149-u0.5",
    "K": 0.5,
    "ref": 1,
-   "ratio": null,
+   "ratio": 4.1003,
    "fit": 0.5,
    "head": "ours-K4",
    "emb": "e3",
-   "skip": true,
-   "check": true,
-   "src": "#149 T arms U0.5 / U1 (stamp 4f831984, bf16 swj), golden-search27f: pending (w114). Fill ratio, drop skip; becomes the K0.5 fit anchor (145-splice -> check) since it is a direct uniform point"
+   "src": "#149 T arms U0.5 5.7323 / U1 1.3980 (stamp 4f831984, bf16 swj), golden-search27f (199 docs, 277,776 positions). PROVISIONAL: read by w120 11-12 16:55 UTC from w114's running #149 (scores/<arm>-c-f-{x,c}.json 'all', position-weighted over both parts; w114 has not reported yet: re-read from its report)",
+   "check": true
+  },
+  {
+   "id": "149-u0.75",
+   "K": 0.75,
+   "ref": 1,
+   "ratio": 1.9035,
+   "fit": 0.75,
+   "head": "ours-K4",
+   "emb": "e3",
+   "src": "#149 T arms U0.75 2.6611 / U1 1.3980, golden-search27f. PROVISIONAL: read by w120 11-12 16:55 UTC from w114's running #149 (scores/<arm>-c-f-{x,c}.json 'all', position-weighted over both parts; w114 has not reported yet: re-read from its report)",
+   "check": true
   },
   {
    "id": "149-u0.25",
@@ -35,18 +59,7 @@
    "head": "ours-K4",
    "emb": "e3",
    "skip": true,
-   "src": "#149 T arms U0.25 / U1, golden-search27f: pending (w114)"
-  },
-  {
-   "id": "149-u0.75",
-   "K": 0.75,
-   "ref": 1,
-   "ratio": null,
-   "fit": 0.75,
-   "head": "ours-K4",
-   "emb": "e3",
-   "skip": true,
-   "src": "#149 T arms U0.75 / U1, golden-search27f: pending (w114)"
+   "src": "#149 T arms U0.25 / U1, golden-search27f: pending (w114; xcorp part 10.146 scored, calib part not yet)"
   },
   {
    "id": "149-sat",
