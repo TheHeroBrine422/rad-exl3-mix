@@ -14,6 +14,8 @@ random weights and Hessians), under the V3 settings (H_out, tile CD on attn_qg, 
          refused, eval units (stub pack / mix / score) on the host that holds their level with the results fields,
          a mix over levels on two hosts blocked, a rerun assigns nothing, a coordinator killed mid-unit and restarted
          records the unit once; a level equal to rxrun.run's (part run) byte for byte
+  evalstall  (w123) one hostd host building two levels while an eval unit's (slow stub) pack runs: eval.ram_mode
+         "exclusive" reproduces the 11-12 freeze (no level job starts during the pack), "shared" does not; same level bytes
 Last line: "RXRUN CHECKS n/m PASS"."""
 import argparse, json, os, re, shutil, signal, subprocess, sys, tempfile, threading, time
 
@@ -308,5 +310,103 @@ else:
     if os.path.isdir(f"{W}/ladder/{LV[0]}/level") and os.path.isdir(f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level"):
         ok, why = same(f"{W}/ladder/{LV[0]}/level", f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level", "multi level vs rxrun.run level")
         report("multi-identity", ok, why)
+if a.part in ("evalstall", "all"):
+    # w123 (lead notes 11-12): an eval unit's pack must not stop the host's level work (box2 + ds8 froze 11-12
+    # 15:14-15:51 CST: the eval's rad-convert held ram.lock exclusive; every card worker took its card lock and waited at
+    # ram.lock shared, so did the CPU lane's assemble / post). One hostd host (1 device, chunk 1: a session per job, as
+    # production's chunk 32 x 4 cards leaves the same gaps), two levels a unit each, an eval on the first level whose
+    # stub pack sleeps PACK_S while holding the eval's locks. eval.ram_mode "exclusive" (the old rule) must reproduce the
+    # stall (no job starts while the pack runs), "shared" must not (jobs keep starting), with the same level bytes.
+    from rxq import ladder
+    from rxrun import hostd
+    PACK_S = 20
+    names = {f"{ladder.fmt_k(v['K'])}-{v['codebook']}": v["name"] for v in ladder.levels(cfg)}
+    LVS = [names["3-i8"], names["3.25-i8"]]
+    out = {}
+    for mode in ("exclusive", "shared"):
+        SW = f"{W}/evalstall-{mode}"; shutil.rmtree(SW, ignore_errors=True); os.makedirs(SW)
+        stub = f"{SW}/stub.py"
+        open(stub, "w").write(r"""import json, os, sys, time
+import numpy as np
+op = sys.argv[1]
+if op == "pack":
+    t0 = time.time(); time.sleep(float(os.environ.get("PACK_S", "20")))
+    open(sys.argv[3], "w").write("pack of " + open(sys.argv[2]).read()[:200])
+    open(os.path.dirname(sys.argv[3]) + "/../pack.times", "a").write(f"{t0} {time.time()}\n")
+elif op == "mix": open(sys.argv[2], "w").write(open(sys.argv[3]).read() + open(sys.argv[4]).read())
+else:
+    mix, g, o = sys.argv[2:5]; m = json.load(open(g + "/kld.json")); n = m["rows"]
+    r = np.zeros((n, 4), np.float32); r[:, 0] = 0.1; r.tofile(o + ".json.rows")
+    json.dump({"all": {"positions": n, "kld": {"mean": 0.1}, "top1_agreement": 0.9}}, open(o + ".json", "w"))
+""")
+        gd = f"{SW}/golden-t-c"; os.makedirs(gd)
+        json.dump({"docs": [{"tokens": 101, "score_from": 0, "row0": 0, "orig": 0}], "rows": 100}, open(f"{gd}/kld.json", "w"))
+        open(f"{gd}/gen.u8", "wb").write(bytes([1]) * 100); open(f"{SW}/base.rad", "w").write("base")
+        H = f"{SW}/h"; os.makedirs(H)
+        rc_ = {"root": f"{H}/ladder", "settings": CFG, "python": sys.executable, "layers": "2-3", "passes": ["1"], "steps": ["jobs", "assemble"],
+               "allow_standin": True, "dup_frac": 0.0, "template": None, "chunk": 1, "ram_lock": f"{H}/ram.lock",
+               "inputs": {"ckpt": ck, "hessians": hs, "hin": None, "hout": ho}, "env": ENV,
+               "devices": [{"name": "h-0", "device": "cpu", "lock": f"{H}/card0.lock", "ram_lock": f"{H}/ram.lock", "workers": 1,
+                            "vram_gib": 28.0, "nice": 0, "yield_s": 2, "kinds": ["quant", "swj"]}]}
+        json.dump(rc_, open(f"{H}/run.json", "w"), indent=1)
+        hc = {"name": "h", "root": H, "run_conf": f"{H}/run.json", "tree": os.path.join(PIPE, ".."), "slots": {"level": 1, "eval": 1},
+              "limits": {"kinds": ["level", "eval"]},
+              "eval": {"packs": f"{H}/packs", "aliases": {"BASE": f"{SW}/base.rad", "GC": gd}, "ram_mode": mode, "pack_ram_gib": 0.5,
+                       "mix_ram_gib": 0.5, "card_lock": f"{H}/card0.lock", "ram_lock": f"{H}/ram.lock", "conv_lock": f"{H}/conv.lock",
+                       "pack_cmd": [sys.executable, stub, "pack", "{recipe}", "{out}"], "mix_cmd": [sys.executable, stub, "mix", "{out}", "{base}", "{mixfile}"],
+                       "score_cmd": [sys.executable, stub, "score", "{mix}", "{golden}", "{out}"]}}
+        json.dump(hc, open(f"{H}/host.json", "w"), indent=1)
+        # one eval per level: the eval on whichever level the coordinator builds first packs while the other one builds
+        open(f"{SW}/evals.jsonl", "w").write("".join(json.dumps({"tag": f"e-{i}", "mix": {"base": "BASE", "trunk": n},
+                                                                 "slices": [{"name": "t", "parts": {"c": "GC"}}]}) + "\n" for i, n in enumerate(LVS)))
+        CO = {"root": f"{SW}/coord", "settings": CFG, "passes": ["1"], "levels": LVS, "layers": "2-3", "evals": f"{SW}/evals.jsonl", "retries": 0,
+              "hosts": [{"name": "h", "cmd": [], "python": sys.executable, "hostconf": f"{H}/host.json", "unit_levels": 1, "reconnect_s": 5}]}
+        json.dump(CO, open(f"{SW}/multi.json", "w"), indent=1)
+        stopw = threading.Event()
+
+        def recipes(H=H, stopw=stopw):
+            while not stopw.is_set():
+                for p_ in __import__("glob").glob(f"{H}/ladder/*/DONE"):
+                    rp_ = os.path.join(os.path.dirname(p_), "final.recipe")
+                    if not os.path.exists(rp_): open(rp_, "w").write(os.path.dirname(p_))
+                time.sleep(0.2)
+        thw = threading.Thread(target=recipes, daemon=True); thw.start()
+        t = time.time()
+        p = subprocess.run([sys.executable, "-m", "rxrun.multi", f"{SW}/multi.json"], capture_output=True, text=True,
+                           env=dict(os.environ, PACK_S=str(PACK_S)), timeout=3600)
+        stopw.set()
+        pt = [tuple(map(float, l.split())) for l in open(f"{H}/pack.times")] if os.path.exists(f"{H}/pack.times") else []
+        J_ = {}
+        for n in LVS:
+            f_ = f"{H}/ladder/{n}/logs/jobs.jsonl"
+            J_[n] = sorted((json.loads(l)["t0"], json.loads(l)["t1"]) for l in open(f_)) if os.path.exists(f_) else []
+        second = max(LVS, key=lambda n: J_[n][0][0] if J_[n] else 0)            # the level built while the first one's eval ran
+        u_ = f"{H}/units/lv-{second}/req.json"
+        lo = os.path.getmtime(u_) if os.path.exists(u_) else (J_[second][0][0] if J_[second] else 0)    # its unit's start
+        hi = J_[second][-1][1] if J_[second] else 0
+        # the longest stretch inside (pack window x the level's life) with no job of it running
+        idle, n_in = 0.0, 0
+        for ps, pe in pt:
+            a_, b_ = max(ps, lo), min(pe, hi)
+            if b_ <= a_: continue
+            cur = a_
+            for t0_, t1_ in J_[second]:
+                if t1_ <= cur: continue
+                if t0_ >= b_: break
+                idle = max(idle, t0_ - cur) if t0_ > cur else idle; cur = max(cur, t1_)
+                if a_ < t0_ < b_: n_in += 1
+            idle = max(idle, b_ - cur) if b_ > cur else idle
+        res_ = [json.loads(x) for x in open(f"{SW}/coord/results.jsonl")] if os.path.exists(f"{SW}/coord/results.jsonl") else []
+        out[mode] = {"rc": p.returncode, "wall": time.time() - t, "pack": pt, "inside": n_in, "idle": idle, "second": second,
+                     "overlap": any(min(pe, hi) > max(ps, lo) for ps, pe in pt), "jobs": len(J_[second]),
+                     "eval_ok": sum(1 for r in res_ if not r.get("fail")) == 2, "done": all(os.path.exists(f"{H}/ladder/{n}/DONE") for n in LVS)}
+    ex, sh_ = out["exclusive"], out["shared"]
+    report("evalstall-repro", ex["rc"] == 0 and ex["done"] and ex["eval_ok"] and ex["overlap"] and ex["idle"] >= PACK_S - 3,
+           f"ram_mode exclusive (the old rule): a {PACK_S} s pack while {ex['second'][-9:]} builds: its card idle {ex['idle']:.1f} s at a stretch, "
+           f"{ex['inside']} job starts during the pack (wall {ex['wall']:.0f} s)")
+    report("evalstall-fixed", sh_["rc"] == 0 and sh_["done"] and sh_["eval_ok"] and sh_["overlap"] and sh_["inside"] >= 1 and sh_["idle"] < PACK_S / 4,
+           f"ram_mode shared: longest idle stretch {sh_['idle']:.1f} s, {sh_['inside']} job starts during the pack (wall {sh_['wall']:.0f} s)")
+    ok, why = same(f"{W}/evalstall-exclusive/h/ladder/{ex['second']}/level", f"{W}/evalstall-shared/h/ladder/{ex['second']}/level", "the level built beside the pack, both rules")
+    report("evalstall-identity", ok, why)
 print(f"RXRUN CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

@@ -24,6 +24,11 @@ eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weigh
   search's results.jsonl fields (tag, bytes, bpw, positions, kld, p99, top1, slice) per slice pooled over its parts, the
   parts, and per-document KL sums (eval/docstat/readout.py's inputs, small) -- rows files stay on the host.
 Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model}.
+Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
+= cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
+radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
+"ram_mode": "shared" (box2, ds8) makes pack and mix hold ram.lock shared after a RAM admission ("pack_ram_gib",
+"mix_ram_gib"), so an eval never stops the host's level work; default "exclusive" (gpubox) as before (RamGate).
 Limits (HOSTCONF "limits"): kinds, k_min / k_max (levels outside are not taken), max_unit_est_h; the coordinator
 checks them before it hands out a unit, hostd checks again."""
 import argparse, fcntl, glob, hashlib, json, os, signal, subprocess, sys, threading, time
@@ -199,6 +204,68 @@ class Lock:
         if self.fd is not None: fcntl.flock(self.fd, fcntl.LOCK_UN); os.close(self.fd); self.fd = None
 
 
+def mem_available_gib():
+    for l in open("/proc/meminfo"):
+        if l.startswith("MemAvailable:"): return int(l.split()[1]) / 2 ** 20
+    return 0.0
+
+
+class RamGate:
+    """ram.lock for a pack / mix step, per host (HOSTCONF eval.ram_mode; w123, lead notes 11-12):
+      "exclusive" (default; gpubox's memguard rule): ram.lock exclusive. On a host that also runs level work this
+                  stops it: every card worker takes its card lock and then waits at ram.lock (shared) for the whole
+                  pack, and so does the CPU lane's assemble / post (box2 + ds8, 11-12 15:14-15:51 CST)
+      "shared":   ram.lock shared (beside level sessions and scores) after a RAM admission: wait until MemAvailable >=
+                  eval.<step>_ram_gib (pack default 16: the k3 pack's anonymous peak is ~4 GiB, its file pages are
+                  reclaimable; mix default 4: radmix's RSS is page cache). The pool's host-RAM guard still protects jobs.
+    conv.lock (exclusive) keeps one pack / mix at a time per host."""
+    DEFAULT_GIB = {"pack": 16.0, "mix": 4.0}
+
+    def __init__(self, E, step, log=None):
+        self.E, self.step, self.log = E, step, log
+        self.shared = E.get("ram_mode", "exclusive") == "shared"
+        self.lock = Lock(E.get("ram_lock"), not self.shared)
+
+    def __enter__(self):
+        if self.shared:
+            need = float(self.E.get(f"{self.step}_ram_gib", self.DEFAULT_GIB.get(self.step, 8.0))); said = False
+            while mem_available_gib() < need:
+                if not said and self.log:
+                    with open(self.log, "a") as f: f.write(f"# {self.step}: waiting for MemAvailable >= {need} GiB\n")
+                said = True; time.sleep(5)
+        self.lock.__enter__(); return self
+
+    def __exit__(self, *e):
+        self.lock.__exit__(*e)
+
+
+class CardLock:
+    """the eval card: HOSTCONF eval.cards = [{"card": N, "lock": PATH}, ...] -> the first whose lock is free (tried in
+    order, polled every 2 s), held exclusive while the score runs; without eval.cards the single eval.card / card_lock
+    (w123: several eval units of one host score on different cards; a unit's mix runs while the others score)"""
+    def __init__(self, E):
+        self.cards = E.get("cards") or [{"card": E.get("card", 0), "lock": E.get("card_lock")}]
+        self.fd, self.card = None, None
+
+    def __enter__(self):
+        if len(self.cards) == 1 or not all(c.get("lock") for c in self.cards):
+            c = self.cards[0]; self.card = c["card"]
+            if c.get("lock"):
+                self.fd = os.open(c["lock"], os.O_RDWR | os.O_CREAT, 0o644); fcntl.flock(self.fd, fcntl.LOCK_EX)
+            return self
+        while True:
+            for c in self.cards:
+                fd = os.open(c["lock"], os.O_RDWR | os.O_CREAT, 0o644)
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB); self.fd, self.card = fd, c["card"]; return self
+                except BlockingIOError:
+                    os.close(fd)
+            time.sleep(2)
+
+    def __exit__(self, *e):
+        if self.fd is not None: fcntl.flock(self.fd, fcntl.LOCK_UN); os.close(self.fd); self.fd = None
+
+
 def sh(cmd, log, env=None, nice=10):
     with open(log, "a") as lf:
         lf.write(f"$ {' '.join(cmd)}\n"); lf.flush()
@@ -260,7 +327,7 @@ def run_eval(H, u, req):
     for n in need:                                                # packs (kept, reused by later evals)
         pk = pkn(n)
         if os.path.exists(pk): continue
-        with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):
+        with Lock(E.get("conv_lock"), True), RamGate(E, "pack", log):
             if not os.path.exists(pk):
                 if os.path.exists(pk + ".part"): os.remove(pk + ".part")
                 rc = sh(fill(E["pack_cmd"], recipe=f"{R}/{n}/final.recipe", out=pk + ".part", reuse="", model=E.get("model", "")), log)
@@ -270,20 +337,29 @@ def run_eval(H, u, req):
     lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
     open(mf, "w").write("\n".join(lines) + "\n")
     if not os.path.exists(mrad):
-        with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):
+        with Lock(E.get("conv_lock"), True), RamGate(E, "mix", log):
             rc = sh(fill(E["mix_cmd"], out=mrad + ".part", base=rp(mx["base"]), mixfile=mf), log)
             if rc or not os.path.exists(mrad + ".part"): return {"rc": 1, "err": f"mix {tag} rc {rc} ({log})"}
             os.replace(mrad + ".part", mrad)
     import numpy as np
     nbytes = os.path.getsize(mrad); res = {"rc": 0, "kind": "eval", "tag": tag, "host": H.name, "bytes": nbytes,
                                           "bpw": nbytes * 8 / PARAMS, "slices": {}}
+    def score(g, o):
+        with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
+            return sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=cl.card), log, nice=0)
     for sl in req["slices"]:
         parts = {}; ks = []
+        todo = [(pn, rp(g)) for pn, g in sl["parts"].items() if not os.path.exists(f"{SC}/{tag}-{sl['name']}-{pn}.json.rows")]
+        if E.get("goldcat") and len(todo) > 1:                   # one run for every part (one load); rows split back per part
+            from rxrun import goldcat
+            cg = goldcat.cached(E.get("goldcat_dir", f"{H.root}/goldcat"), todo); o = f"{SC}/{tag}-{sl['name']}-cat"
+            rc = score(cg, o)
+            if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']} (goldcat) rc {rc} ({log})"}
+            goldcat.report(cg, o + ".json.rows", f"{SC}/{tag}-{sl['name']}"); os.remove(o + ".json.rows")
         for pn, g in sl["parts"].items():
             g = rp(g); o = f"{SC}/{tag}-{sl['name']}-{pn}"
             if not os.path.exists(o + ".json.rows"):
-                with Lock(E.get("card_lock"), True), Lock(E.get("ram_lock"), False):
-                    rc = sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=E.get("card", 0)), log, nice=0)
+                rc = score(g, o)
                 if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']}-{pn} rc {rc} ({log})"}
             j = json.load(open(o + ".json"))["all"]; docs, k = doc_sums(g, o + ".json.rows")
             parts[pn] = {"positions": int(len(k)), "kld": float(k.mean()) if len(k) else None, "p99": float(np.percentile(k, 99)) if len(k) else None,

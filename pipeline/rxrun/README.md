@@ -11,7 +11,7 @@ to `python -m rxq job` processes (the donors' / w92's path). Outside `rxq/` so i
 | `cmp.py` | identity of job / level dirs: tensor bytes, dtypes, shapes, offsets + the metadata dict |
 | `seedsd.py` | the proxy's seed SD per family and K band from the duplicate-seed jobs |
 | `multi.py`, `hostd.py` | the multi-host queue (below) |
-| `../tests/check_rxrun.py FORK` | CPU stand-in checks (pool 6, run 5) |
+| `../tests/check_rxrun.py FORK` | CPU stand-in checks (pool 6, run 5, multi, evalstall 3) |
 
 ## Run (gpubox card 0)
 
@@ -61,6 +61,14 @@ over ssh, a state file; all work happens on the hosts.
 - Configs: `hosts/gpubox-card0.{run,host}.json`, `hosts/box2.{run,host}.json`, `hosts/ds8.{run,host}.json` (8 cards; w121) (host side), `hosts/multi-coord.example.json`
   (coordinator: copy to `local/`, it holds ssh lines). Checks: `tests/check_rxrun.py FORK WORK --part multi` (CPU
   stand-in: two local hostd hosts + one with another tree; stub pack / mix / score).
+
+**Evals beside level work (w123, 11-12):** an eval's pack / mix used to hold ram.lock exclusive: every card worker of
+the host then waits at ram.lock (shared) holding its card lock, and the CPU lane's assemble / post too -- box2 + ds8 froze
+11-12 15:14–15:51 CST. HOSTCONF `eval.ram_mode` `"shared"` (box2, ds8) takes ram.lock shared after a RAM admission
+(`pack_ram_gib` 16: the k3 pack's anonymous peak is ~4 GiB, its 30-40 GB RSS is the mmap'd bf16 source; `mix_ram_gib`
+4); conv.lock keeps one pack / mix a host; default `"exclusive"` (gpubox). `eval.goldcat` scores a slice's parts in one
+run (`goldcat.py`, rows byte-identical); `eval.cards` [{card, lock}] scores on the first free card. Check:
+`check_rxrun.py --part evalstall` (the old rule reproduces the stall, the shared one does not).
 
 **Pause one card (user 11-12):** `touch <run root>/HOLD-<device name>` on the host (e.g. `/data/q27/ladder/HOLD-c3`): that card finishes its running jobs, releases its card and ram locks (other work can take it by the lock) and idles; the host's other cards keep going; the swj pass uses an unpaused swj card. `rm` the file to rejoin. Whole host: `HOLD`; whole run: the coordinator's `ROOT/HOLD`. Check: `check_rxrun.py --part pool` (dev-hold).
 

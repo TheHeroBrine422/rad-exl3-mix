@@ -21,6 +21,10 @@
   "card_lock": "/data/q27/locks/card7.lock",
   "ram_lock": "/data/q27/locks/ram.lock",
   "conv_lock": "/data/q27/locks/conv.lock",
+  "ram_mode": "shared",
+  "pack_ram_gib": 16,
+  "mix_ram_gib": 4,
+  "goldcat": true,
   "aliases": {
    "V2-3.00": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad"
   },
