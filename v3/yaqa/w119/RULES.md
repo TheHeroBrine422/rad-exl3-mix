@@ -182,3 +182,17 @@ otherwise the custom grid stops at K6.5 i8 (user 11-12) and the int8 GPTQ head c
 
 **a8 cost per K (lead note 4)** is reported on every uniform donor (already in amendment 1); prefill / decode time is
 reported as not measured unless an A8 head kernel exists (none today), so the head stays f16 (amendment 1).
+
+## Amendment 3 (2026-11-12 ~11:05 AM CST, after the E2 readout; before any E3 / E9 readout)
+
+E2 (search-gen, calib-weighted) adopted **R16** (R16 / S 0.373 / 0.355 / 0.337 at K3 / 4 / 5; N fails N / R16 ≤ 1.05)
+and **σ_out 0.03** (0.952 [0.911, 0.991] vs 0.1 at R16 K4). The E3 T donors had been quantized at σ_out 0.1 ahead of
+E2 (the rule says "E2's flags and σ_out"), so, as the rule already requires and with no change to any criterion:
+- **T donors are re-quantized at σ_out 0.03** (`T03`, K3, 3.5, 4, 4.5, 5, 5.5, 6, 7); E3's decision uses T03. The σ 0.1
+  T donors are reported only.
+- **U = the adopted recipe**, R16 σ_out 0.03 (`R16s003`, K3, 4, 5, 6). This makes U the stronger baseline (T and
+  S-slab must beat it by 10%); U at σ 0.1 (E2's donors) is reported beside it. S-slab stays today's recipe (S σ 0.1).
+- **E9 / amendment 2 arms in the adopted recipe:** R16 σ_out 0.03 K6.5 i8, K7 i8 and K7 mul1 (the S-order K6.5 i8 /
+  K7 mul1 of amendment 2 are kept as the codebook comparison at a fixed order). The hull uses every option; the
+  "custom grid stops at K6.5 unless K7 bridges" read of amendment 2 is made on the R16 σ 0.03 donors.
+- T-bf16 rows do not depend on σ_out: T03 plans with bf16 tiers use the same T-bf16 score.
