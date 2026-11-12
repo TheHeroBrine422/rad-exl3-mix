@@ -561,10 +561,13 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
   FP4 experts as released; window 0 recomputed bit-identically each session): 128 windows × 8,192 tokens (~1.05M tokens,
   542 GB) + the same tokens as 512 fresh 2,048-token cuts (542 GB). Mix: agentic 19, SWE 12, math 19, science 12, code
   12, chat / IF 18, multilingual 12, long-context 6, safety 6, web 6, legal 6 (Nemotron SFT sets + nebius SWE; 13-gram
-  screened against their build data). **Use:** an independent *eval* reference (cross-check our goldens' noise floor
-  and our KLD numbers against a third party's harness; compare with their TrellisMX-K2 / K3 builds, a trellis quant
-  of the same model); too small and too eval-shaped for QAD (1M tokens; our own 100M calib set is the training side).
-  Storage: keep top-k only on our side (full-vocab fp32 is ~0.5 MB a position).
+  screened against their build data). **Usable as QAD training data** (full-vocab targets from the official reference
+  implementation are ideal KD targets, and ~1M tokens is a real amount for scale-only QAD). The trade-off: it is the one
+  *independent* eval reference for this model (a third party's harness, the reference for their TrellisMX-K2 / K3
+  builds, a trellis quant of the same model); training on it spends that. Decide per use: train on it if teacher data
+  is short, or keep it held out as the cross-check of our goldens / noise floor and our numbers vs theirs. Our own 100M
+  calib set (teacher top-k computed by us) is the bulk training side either way. Storage: 1.08 TB for ~1M positions;
+  keep top-k on our side (full-vocab fp32 is ~0.5 MB a position).
 - **Public Qwen3.8-27B teacher data for QAD (searched 11-12):** no full-logit teacher set exists for the 27B. Candidates:
   - `logic65/whittle-distill-qwen3.8-27b`: 25,178 rows, 78M tokens, **top-20 logprobs on 25.4M answer tokens**
     (thinking on, agentic / tool prompts; licence "other": check before use). Closest match to QAD targets; top-20 only
