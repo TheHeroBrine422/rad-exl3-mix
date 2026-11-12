@@ -144,6 +144,24 @@ if a.part in ("pool", "all"):
     r = pool.run_jobs(jobs_of(S25, f"{H}/k2.5"), dev(), H, mode="persist", hold=f"{W}/HOLD")
     os.remove(f"{W}/HOLD")
     report("hold", r["held"] and r["done"] == 0, f"{r}")
+    # per-card pause: HOLD-cpu1 pauses one of two devices on a shared queue (it takes no job, holds no lock); the other
+    # runs the jobs; removing the file mid-run lets the paused card rejoin; outputs identical
+    P = f"{W}/devhold"; shutil.rmtree(P, ignore_errors=True); os.makedirs(P); HP = f"{P}/HOLD"
+    open(f"{HP}-cpu1", "w").close()
+    q = pool.JobQueue(jobs_of(S25, f"{P}/k2.5")); rr = {}
+    def unpause():
+        while not os.path.exists(f"{P}/k2.5/{S25[1][0]}/job.json"): time.sleep(0.2)
+        locked_by_cpu1 = os.path.exists(f"{P}/cpu1/jobs.jsonl")
+        rr["before"] = locked_by_cpu1; os.remove(f"{HP}-cpu1")
+    ths = [threading.Thread(target=lambda d: rr.__setitem__(d["name"], pool.run_jobs(q, d, f"{P}/{d['name']}", mode="persist", hold=HP)),
+                            args=(dev(nm, lock=f"{W}/{nm}.lock", pause_poll_s=0.5),)) for nm in ("cpu0", "cpu1")]
+    tu = threading.Thread(target=unpause)
+    for th in ths + [tu]: th.start()
+    for th in ths + [tu]: th.join()
+    ok, why = same(f"{W}/proc1/k2.5", f"{P}/k2.5", "card pause")
+    report("dev-hold", ok and not rr["before"] and rr["cpu0"]["done"] + rr["cpu1"]["done"] == 8 and rr["cpu1"]["done"] > 0
+           and not rr["cpu0"]["held"] and not rr["cpu1"]["held"],
+           f"{why}; cpu1 took no job while paused {not rr['before']}; after rm: per device cpu0 {rr['cpu0']['done']}, cpu1 {rr['cpu1']['done']}")
 
 if a.part in ("run", "all"):
     R = f"{W}/ladder"

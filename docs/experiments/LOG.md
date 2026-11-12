@@ -52,6 +52,8 @@ versions of anything: git history.
   6c57a3d1ee013f43 (fit_tokens 1M).
 - **Runtime:** none.
 
+- **Per-card pause (user 11-12, lead):** `ROOT/HOLD-<dev>` pauses one card (finishes its jobs, frees its locks, idles; the others drain the queue; swj picks an unpaused card); `check_rxrun --part pool` 7/7 incl. the new dev-hold check (ds8, CPU stand-in). Staged with the next restage (after the ladder: staging mid-run moves the tree stamp).
+
 ### 2026-11-12 12:20 PM CST · #152 / #153 · Re-LDLQ after the refit: no gain (f2 ×1.0006 at K2.5, ×1.89 quant time); tile CD on six more families: every family helps a little (f2 ×0.995–0.999) but none reaches the 0.99 gate; no 27B pairs (w115)
 - **Status:** done, both (a) gates FAIL → (b) not run · **Machine:** box2 HIP 0–3 (one unit per card lock; amendment
   1: moved from gpubox card 0 by the lead's resume note) · **Code:** rad-exl3-mix a84ed23 + `v3/e3/settle/w115/rxq-w115.patch`

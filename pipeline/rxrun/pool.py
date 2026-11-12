@@ -7,7 +7,10 @@ modeled VRAM <= its max_job_vram): the card lock is taken (exclusive), then ram.
 dev["workers"] jobs run at once (mode "persist": rxrun.worker processes, reused; mode "proc": one
 `python -m rxq job SPEC -o OUT --device D` process a job, w92's way); the session ends when the jobs are done, after
 `chunk` jobs (the locks are released so a waiting job can take the card, then taken again), or at the hold file
-(no new job starts; the running ones finish). Admission (each start): the modeled peak VRAM of the running jobs plus
+(no new job starts; the running ones finish). Per-card pause (user 11-12): the file HOLD-<dev name> next to the
+hold file (e.g. ROOT/HOLD-c3) pauses only that card: its running jobs finish, it releases the card and ram locks (so
+other work can take the card) and waits, taking no jobs; the other cards keep draining the shared queue; rm the file
+and it rejoins. A device hold never ends the run by itself. Admission (each start): the modeled peak VRAM of the running jobs plus
 this one (rxq.ladder.tensor_vram x 1.1 + 0.6 GiB a process) <= dev["vram_gib"], and host MemAvailable >= its RAM + the
 guard. A job alone always starts. Host-RAM guard: MemAvailable < guard_mb while jobs run -> the newest job is killed
 and requeued (as memguard.sh; its dir is cleaned before the rerun). A failed job stops the run (PoolError) unless it
@@ -246,6 +249,16 @@ def fits(dev, j):
     return j["vram"] <= float(dev.get("max_job_vram", dev.get("vram_gib", 28.0)))
 
 
+def dev_hold(hold, dev):
+    """the per-card pause file of dev (None without a hold file)"""
+    return f"{hold}-{dev['name']}" if hold else None
+
+
+def paused(hold, dev):
+    h = dev_hold(hold, dev)
+    return bool(h) and os.path.exists(h)
+
+
 def run_jobs(jobs, dev, logdir, mode="persist", hold=None, chunk=None, py=None, prefetch=True, guard_gib=3.0,
              on_done=None, tag=""):
     """run the jobs not yet done on dev = {name, device, env, lock, ram_lock, workers, vram_gib, max_job_vram, nice};
@@ -257,9 +270,14 @@ def run_jobs(jobs, dev, logdir, mode="persist", hold=None, chunk=None, py=None, 
     n = int(dev.get("workers", 1))
     res = {"done": 0, "held": False, "wall": 0.0, "jobs": len(q)}
     t_all = time.time()
+    said = False
     while q.peek(1):
         if hold and os.path.exists(hold): res["held"] = True; break
         if not any(fits(dev, j) for j in q.peek(10 ** 9)): break          # the rest is for bigger cards
+        if paused(hold, dev):                                           # this card only: no locks held, no jobs
+            if not said: print(f"rxrun.pool: {dev['name']} paused ({dev_hold(hold, dev)})", flush=True); said = True
+            time.sleep(dev.get("pause_poll_s", 5)); continue
+        if said: print(f"rxrun.pool: {dev['name']} resumed", flush=True); said = False
         with Locks(dev.get("lock"), dev.get("ram_lock")):
             done = _session(q, dev, logdir, mode, n, hold, py, prefetch, guard_gib, on_done, tag, chunk)
         res["done"] += len(done)
@@ -279,7 +297,7 @@ def _session(q, dev, logdir, mode, n, hold, py, prefetch, guard_gib, on_done, ta
     jl = open(f"{logdir}/jobs.jsonl", "a")
     try:
         while True:
-            stop_new = (hold and os.path.exists(hold)) or (chunk and started >= chunk)
+            stop_new = (hold and os.path.exists(hold)) or paused(hold, dev) or (chunk and started >= chunk)
             busy = [s for s in slots if s.job]
             if not busy and (stop_new or not any(fits(dev, j) for j in q.peek(10 ** 9))): break
             if not stop_new:

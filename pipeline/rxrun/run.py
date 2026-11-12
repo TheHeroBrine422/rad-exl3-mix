@@ -18,6 +18,8 @@ listed; conditional levels only if CONF names their pass) on our own cards, rest
 Every step writes .part then renames (assemble, post, recipe), or has its own .done (swjfit), so a killed run leaves
 nothing a rerun would trust. The CPU steps run in a background lane while the card goes on with the next level.
 Hold: touch ROOT/HOLD -> no new job starts; the running ones finish, the CPU lane drains, the run exits (rm to resume).
+Pause one card: touch ROOT/HOLD-<device name> (e.g. HOLD-c3) -> that card finishes its jobs, frees its locks and idles;
+the others go on; the swj pass picks an unpaused swj card (waits if all are paused); rm to rejoin (rxrun.pool).
 Status: ROOT/status.txt (one line, rewritten after every job and step; also --status): level, jobs, jobs/h and the
 throughput in estimated R9700-seconds per wall second over the measured jobs, ETA (CST) of the whole ladder.
 
@@ -211,8 +213,12 @@ class Run:
     def swj(self, lvs):
         S = self.swjdir(); todo = [v for v in lvs if not os.path.exists(f"{S}/{v['name']}/.done")]
         if not todo: return
-        dev = next((d for d in self.devs if "swj" in d.get("kinds", [])), None)
-        if dev is None: raise SystemExit("no device of kind swj")
+        sw = [d for d in self.devs if "swj" in d.get("kinds", [])]
+        if not sw: raise SystemExit("no device of kind swj")
+        while all(pool.paused(self.hold, d) for d in sw):         # every swj card paused (HOLD-<dev>): wait
+            if self.held(): raise RuntimeError("HOLD while the swj cards are paused")
+            time.sleep(5)
+        dev = next(d for d in sw if not pool.paused(self.hold, d))
         tag = "+".join(ladder.fmt_k(v["K"]) for v in todo)
         args = [self.py, "-m", "rxq.swjfit", self.c["model"], self.c["swj_meta"], S, "--scratch", f"{self.root}/swjscr/{tag}",
                 "--fused", "--no-cache"] + (["--numerics", self.cfg["post"]["swj"]["numerics"]]
@@ -317,7 +323,8 @@ class Run:
         else:
             h = left / 3600 + nswj * self.swj_h()
             eta = f"ETA ~{h:.1f} h at the model's est (no jobs measured yet)"; meas = "- jobs/h"
-        line = f"{cst()} | levels {ndone}/{len(self.levels)} | {where} | {meas} | {eta}" + (" | HOLD" if self.held() else "")
+        line = (f"{cst()} | levels {ndone}/{len(self.levels)} | {where} | {meas} | {eta}" + (" | HOLD" if self.held() else "")
+                + "".join(f" | paused {d['name']}" for d in self.devs if pool.paused(self.hold, d)))
         with self.log_lock:
             open(f"{self.root}/status.txt.part", "w").write(line + "\n"); os.replace(f"{self.root}/status.txt.part", f"{self.root}/status.txt")
         return line

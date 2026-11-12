@@ -62,6 +62,8 @@ over ssh, a state file; all work happens on the hosts.
   (coordinator: copy to `local/`, it holds ssh lines). Checks: `tests/check_rxrun.py FORK WORK --part multi` (CPU
   stand-in: two local hostd hosts + one with another tree; stub pack / mix / score).
 
+**Pause one card (user 11-12):** `touch <run root>/HOLD-<device name>` on the host (e.g. `/data/q27/ladder/HOLD-c3`): that card finishes its running jobs, releases its card and ram locks (other work can take it by the lock) and idles; the host's other cards keep going; the swj pass uses an unpaused swj card. `rm` the file to rejoin. Whole host: `HOLD`; whole run: the coordinator's `ROOT/HOLD`. Check: `check_rxrun.py --part pool` (dev-hold).
+
 **Rollout (lead):** (1) stage the frozen commit on both hosts (gpubox `/data/v3run/code` + the fork; box2
 `/data/q27/stage/code`, restaged from 4156463 to HEAD); (2) `hostd --stamp` on both: settings and tree stamps equal;
 (3) box2: build `radmix` (`mix/build.sh`) into `/data/q27/tools`, copy the search slices' goldens (x parts too: box2
