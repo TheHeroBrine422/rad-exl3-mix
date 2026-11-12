@@ -22,7 +22,7 @@
 import json, os, struct, sys, numpy as np
 
 BLK, HID = 128, 5120
-TRAIN, HELD = tuple(os.environ.get("HS_TRAIN", "qad").split(",")), ("verify",)
+TRAIN, HELD = tuple(os.environ.get("HS_TRAIN", "qad").split(",")), tuple(os.environ.get("HS_HELD", "fit").split(","))   # w118 11-12: was ("verify",) on every run (routine verify use)
 FLOOR = int(os.environ.get("HS_FLOOR", 3))
 
 def fisher(npz, pools):
