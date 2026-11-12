@@ -4,6 +4,16 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 3:20 PM CST · #163-02 · Pass-1 ladder plausibility (lead): clean except a uniform i8 slow-down at K7
+- **What:** `v3/levels/plaus.py` over the 27 finished levels' proxy errors (K1.25–K7, swj off; proxy logs copied from
+  box2 / ds8 to `rad-local/multi/v3/plaus/`). 402 flags: 2 isolated (layer 54 `in_proj_z` at K4.5 / K4.75, ±3.5–6%),
+  400 at K6.5 (every tensor).
+- **Reading:** not a K6.5 problem. Per +0.5 K the proxy error falls ×0.51–0.52 everywhere (5→5.5→6→6.5) but only
+  ×0.63 from K6.5 to K7, uniformly (K6.5 / geo(K6, K7) p10–p90 0.904–0.913): **the i8 codebook starts to flatten at K7**,
+  the same effect as the head's i8 / mul1 ×1.22 at K7 (#157, #94 ×1.27). Expected cost small: at 7 bpw the A8
+  activation floor (~0.0004) dominates the KLD anyway. Revisit only if the 7.0 size's knapsack wants K7+ heavily.
+- **Runtime:** none.
+
 ### 2026-11-12 2:40 PM CST · #162 · Head donors on ds8: w119's U recipe at 17 sizes (K1–K6.5 i8 + K7 mul1), bit-identical to box2; E5 no flags; fit-gen price table for knap5; E3 (d) whole-model on V2 3.00 / 4.00: 3 / 4 pairs pass, B5 on 4.00 is a tie (w122)
 - **Status:** done · **Machine:** ds8 (quants 11-12 12:13–12:30 PM CST on 8 cards; E3 (d) 12:25 PM–2:34 PM CST, from
   12:54 interleaved with the lead's k4-i8 ladder level run) · **Code:** `v3/yaqa/w122/` (run122.sh, rep122.py,
