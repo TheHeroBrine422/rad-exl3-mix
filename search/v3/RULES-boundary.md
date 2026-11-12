@@ -1,4 +1,4 @@
-# #166 boundary simulation: rules (w126, written 2026-11-12 ~6:10 PM CST, before any simulation run)
+# #166 boundary simulation: rules (w126, written 2026-11-12 ~5:52 PM CST, before any simulation run; git commit time is the attestation)
 
 Question (TODO "Continuous early stop", user 11-12): one scoring run per candidate with documents in a fixed shuffled
 order (x / c interleaved), the paired z vs the incumbent checked after every document from a warmup on, the run killed

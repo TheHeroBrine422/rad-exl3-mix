@@ -4,6 +4,15 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 5:53 PM CST · #166 · V3 search driver: build + test started (w126)
+- **Status:** running (build) · **Machine:** the VM (code), colo (simulation, fits, radiance host build), box2 / ds8
+  (dry run, by the locks) · **Code:** `search/v3/`, radiance branch `qc-exl3-v3-kldprog` (off qc-exl3-v3 81bad51) ·
+  **Brief:** `rad-local/workers/instr3/w126.md`
+- Boundary simulation rule fixed before data: `search/v3/RULES-boundary.md` (c17045c): F / w123's staged S3 / staged
+  in one run S1 / b(t) = 2((1 − t)/0.9)^p, p ∈ {0.5, 1, 2} × warmup 5 / 10 / 20 %; pick = best median gain/h vs F over
+  13 priors, real-document wrong accepts ≤ S3's + 0.005, worst prior ≥ S3's − 0.05.
+- **Runtime:** none (search tooling).
+
 ### 2026-11-12 4:45 PM CST · #161 · Search performance pass: the eval-vs-ladder freeze reproduced and fixed (per-host ram lock rule), packs ×14.9 byte-identical (`--no-error`), +10% per eval, and the V3 search eval protocol (sequential 1/8 → 1/2 → 1, reject early only: ×1.9 KL gain per card-hour, ×0.6 wrong accepts) (w123)
 - **Status:** done · **Machine:** box2 (timing runs cards 2 / 3, 11-12 12:15–12:55 PM CST, before the ladder; k3 packs
   CPU-only 3:57–4:33 PM CST beside the ladder), colo (CPU: SE study, decision model), the VM (CPU stand-in checks) ·
