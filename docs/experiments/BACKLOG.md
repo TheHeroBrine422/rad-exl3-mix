@@ -550,7 +550,8 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
 
 - **Lessons from the DeepSeek-V4.1-Flash-1017 calibration set (user, `Hero422/deepseek-v4.1-flash-1017-quant-calib`,
   11-12):** 100M-token corpus with pools sized per use (the 27B's ~10M calib starved its search pool by week 2); a
-  published bf16 noise floor (identical rerun / chunking / kernel) shipped with the goldens; score model-written rows only
+  published bf16 noise floor shipped with the goldens (matters for large MoEs with sparse attention, where reruns
+  flip routing and the floor is ~0.01; dense models like the 27B sit near 1e-5, user 11-12); score model-written rows only
   (`gen.u8`): tool output is fragile even for bf16 (batch layout moved trace KLD 0.46–0.94 on tool rows) — apply the same
   mask strictly in xcorp slices; Horvitz–Thompson expert sampling with the raw dumps kept so expert statistics can be
   rebuilt with any weighting; separate whole long traces for eval only.
