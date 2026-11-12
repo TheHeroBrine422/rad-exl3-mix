@@ -149,6 +149,12 @@ def tilecd():
     return _STATE.get("tilecd")
 
 
+def _hipify_output(name):
+    """files torch's hipify writes next to the sources on a ROCm build (x.hip, x_hip.cuh / .cpp / .h / .hpp, cuda_* -> hip_*):
+    no tracked source of the fork or of rad-exl3-mix's kernel dirs has "hip" in its name (checked 11-08, w92)"""
+    return name.endswith(".hip") or "_hip." in name or name.startswith("hip_")
+
+
 def code_stamp(Q):
     """hash of the code that decides the results: rxq's own modules, exllamav3's quantize.py, the kernel sources
     (the fork's exllamav3_ext and rad-exl3-mix's run-time builds) and tilecd.py if installed"""
@@ -156,10 +162,12 @@ def code_stamp(Q):
     files.append(Q.__file__)
     src = os.environ.get("RXQ_EXL3_SRC")
     if src: files += sorted(f for e in ("cu", "cuh", "cpp", "h", "py") for f in glob.glob(f"{src}/**/*.{e}", recursive=True))
-    for d in _kernel_dirs().values(): files += sorted(glob.glob(os.path.join(d, "*.*")))
+    for d in _kernel_dirs().values():                 # sources only (w116 11-12: .md / bench / data files moved the stamp)
+        files += sorted(f for e in ("cu", "cuh", "cpp", "h", "hip", "py") for f in glob.glob(os.path.join(d, f"*.{e}")))
     t = tilecd()
     if t is not None and not t.__file__.startswith(os.path.dirname(os.path.abspath(__file__))): files.append(t.__file__)
     for f in files:
+        if _hipify_output(os.path.basename(f)): continue    # ROCm build outputs (w92): the same code must stamp alike on CUDA
         if os.path.isfile(f) and not f.endswith(".pyc"): h.update(os.path.basename(f).encode()); h.update(open(f, "rb").read())
     if kernels(Q) != "gpu": h.update(kernels(Q).encode())          # the CPU stand-in never shares a stamp with a real run
     return h.hexdigest()[:16]

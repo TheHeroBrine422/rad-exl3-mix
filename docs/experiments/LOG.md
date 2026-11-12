@@ -4,6 +4,51 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 4:45 AM CST · code stamp · hash sources only (w116 bug 1) + w92's hipify patch; w116 final review: freeze without codebook ideas (user)
+- `rxq.engine.code_stamp` hashed every file in the kernel dirs (.md rule files, bench scripts) and ROCm hipify outputs,
+  so a docs commit or a CUDA / ROCm host split could split a level (assembly refuses mixed code stamps). Now: sources
+  only (cu / cuh / cpp / h / hip / py) and hipify outputs skipped (`v3/e3/settle/w92/codestamp-hipify.patch`). Checks on
+  colo: check_diag 20/20, check_cpujob 25/25, check_rxrun 11/11. Code stamp changes once (settings stamp unchanged).
+- w116 (Opus xhigh final review, `rad-local/research/final-review-2026-11-12.md`): nothing new in settings clears the
+  bar; per-tile salts best-of-4 and i8c-everywhere (Gaussian-tile numbers only, runtime costs) → **user: freeze without
+  them**. Other bugs logged in TODO (tilecd gate/up family name; knap swj pricing).
+- **Runtime:** none.
+
+### 2026-11-12 4:25 AM CST · #154 · Head E1: the head's cost per scored position is corpus-general (calib / xcorp 1.17–1.39, rule (a) 4 / 4); read head results in absolute ΔKL per position (w119)
+- **Status:** done · **Machine:** colo (CPU, seconds) · **Code:** `v3/yaqa/w119/e1_119.py` · **Rule:**
+  `v3/yaqa/w119/RULES.md` (b2544e3) · **Data:** `v3/yaqa/data/w119/e1.json`, `e1.log` (headwm90's rows, golden-search27b
+  x 65 docs / 86,597 pos, c 36 docs / 56,754 pos; report-only reuse of a decided slice)
+
+  | pair | ΔKL / pos xcorp | ΔKL / pos calib | calib / xcorp [95%] | doc-median ratio | doc geo ratio x / c |
+  |---|---|---|---|---|---|
+  | v4 → h4-bf16 | −3.17e-4 | −4.42e-4 | 1.39 [0.94, 2.81] | 1.18 | 0.939 / 0.937 |
+  | h4-u5 → h4-s5-3 | −2.22e-4 | −2.59e-4 | 1.17 [0.91, 1.58] | 1.12 | 0.967 / 0.967 |
+  | h4-u6 → h4-s6-3 | −4.09e-5 | −5.06e-5 | 1.24 [0.77, 2.42] | 1.03 | 0.993 / 0.993 |
+  | v8 → h8-bf16 | −8.93e-6 | −1.23e-5 | 1.37 [1.00, 2.33] | 0.98 | 0.951 / 0.952 |
+
+- **Rule (a) holds 4 / 4** (all in [0.5, 2], both parts same sign); no document holds > 20% of a part's net ΔKL (max
+  0.19), so (c) never fires; leave-one-out moves each part ≤ ~20%. The per-document relative head effect is the same on
+  both parts to 3 digits; the #34-02 "calib 15×" was the xcorp trunk-KL denominator (w118's F1, now per document).
+- xcorp's top-1% positions carry 32–37% of |ΔKL| (calib 15–17%): heavier tails, same mean.
+- **Decision:** head experiments are read and priced on absolute head-only ΔKL per scored position (both parts same
+  sign); knap5 keeps absolute head-only KL; the 11-08 note "size head changes on the calib part" is corrected (no
+  calib up-weighting). Calib-composition weighting of dumps (E2 / E3) stays, for the source mix (Thai / JA skew, F3).
+- **Runtime:** none.
+
+### 2026-11-12 4:20 AM CST · #154–#157 · Head E1 / E2 / E3 / E9 (w119): rule committed; E1 on colo, E2 / E3 wait for box2 (w117)
+- **Status:** running (E1) / planned (E2, E3, E9) · **Machine:** colo (E1, E3 (a) model), box2 4 cards (E2 / E3 / E9
+  after w117's setup) · **Code:** `v3/yaqa/w119/` · **Rule:** `v3/yaqa/w119/RULES.md` (b2544e3, alone, before data) ·
+  **Data:** `v3/yaqa/data/w119/`
+- From w118's plan (`local/research/head-emb-plan-2026-11-12.md`); user 11-12: donors held until E2 / E3; the head is
+  not bound by int8-only, so E2 carries an a8-vs-f16 head-activation arm and E9 prices bf16 tier rows, int8 G128
+  FWHT128 (RTN / GPTQ, f16 / a8) and a full bf16 head per byte.
+- E3 (a) before any quant (`tiers119.py`, model on qad / fit Fisher only): tiering 512 / 4,096 / 32,768 (geo model
+  error 1.974e-4 vs 1.986e-4 for 2048 / 16384 / 65536 and 2.067e-4 for 8192 / 65536; U R16 uniform 0.213 of one-sided,
+  = w118's number).
+- Dumps fixed (`docs119.json`, sha in the rule): fresh search 150 docs / 36,001 gen rows (decision), fit 200 / 47,598
+  (plans, pricing), clean verify 100 / 23,922 (final only); 64 fresh search docs kept for E3 (d)'s slice.
+- **Runtime:** E1 none; E2 / E3 / E9 decode only (head layout, classes, bf16 class); a8 head = eval rows only.
+
 ### 2026-11-12 4:00 AM CST · ladder top · K8 dropped (user), 49 levels; K7.5 kept for a 7.0 release
 - Knapsack smoke (a8 menu, the 50-level library, colo; `data/knap/topk.py`, `data/knap/topk-2026-11-12.txt`): 6.5 bpw
   picks K6.25–6.75 (265), K7 ×10, K7.5 ×1, K8 never; 7.0 picks K7 ×240, K7.5 ×33, K8 never (pred 0.00056 / 0.00050).
