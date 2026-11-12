@@ -37,10 +37,14 @@ makes them eligible (≈ 165k more tokens → 3–4 more parts). The design's ~3
 at either budget with 130-piece xcorp parts (calib ≈ 20%); options: smaller xcorp parts, or reuse calib parts across
 two rounds (the design's "rotated slowly"). Fresh xcorp is plentiful (b2-c0 / c1 / c2: ~550 unused pieces each).
 
-## Build (gpubox; stage the code at the commit whose ledger excludes every used document)
+## Build (not run yet: the lead decides the calib budget first)
+**Not built by w120:** w115's rule (`v3/e3/settle/w115.md`) may build **golden-search27g** from the same 93
+never-used documents (60k tokens: ~65 of them). Building ours first would starve it, so the names below start after
+it and the lead orders the builds. On gpubox (stage the code at the commit whose ledger excludes every used document;
+after w115's 27g is in the ledger):
 ```
-CODE=/data/w120/code OUT=/data/slices bash $CODE/eval/slices/mkslice27.sh 27g:xc8k-b2-c0:11201 27h:xc8k-b2-c1:11202
-MODE=no27b CODE=... OUT=/data/slices bash $CODE/eval/slices/mkslice27.sh 27i:xc8k-b2-c2:11203 27j:xc8k-b2-c0:11204   # after the lead's OK
+CODE=/data/w120/code OUT=/data/slices bash $CODE/eval/slices/mkslice27.sh 27h:xc8k-b2-c0:11201
+MODE=no27b CODE=... OUT=/data/slices bash $CODE/eval/slices/mkslice27.sh 27i:xc8k-b2-c1:11202 27j:xc8k-b2-c2:11203 27k:xc8k-b2-c0:11204   # after the lead's OK
 ```
 Then on the VM: add `golden-search27g-c` ... to `eval/pools/ledger-roles.json` (role select, decisions 0 until used) and
 `ledger_add.py` the copied `ledger/*-kld.json`. Score the reference containers on every new slice (V2 at the board

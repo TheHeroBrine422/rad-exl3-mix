@@ -31,7 +31,7 @@ integer `ours-K*` options and pops the rest). This note is the plan; nothing her
   `149-sat` (ratio = KL(U1) / KL(K2.5)) and the three `149-u*` uniform anchors (U0.25 / U0.5 / U0.75 vs U1), drop
   `skip`, and turn `145-splice` into a check (it is a second slice of the same K0.5 point).
 
-## Update 11-12 ~11:20 AM CST (w120): #149's first T arms, and kfit2's compounding at sub-1
+## Update 11-12 ~11:00 AM CST (w120): #149's first T arms, and kfit2's compounding at sub-1
 
 w114's #149 T arms on golden-search27f (read from its running queue, provisional until w114 reports; both parts,
 position-weighted): U1 1.3980, U0.75 2.6611, U0.5 5.7323, splice even K0.5 / odd K1.5 2.6924 → U0.5 / U1 **4.10**,
