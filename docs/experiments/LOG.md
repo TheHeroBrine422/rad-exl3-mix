@@ -4,6 +4,12 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 6:20 PM CST · #144 · swj bf16 numerics ADOPTED (user) · settings stamp 4f8319840e59c5d0
+- User 11-11: "swj: do it". Applied `v3/e3/settle/w109/swj-numerics.patch` (`rxq.swjfit --numerics`, rxrun passes
+  `[post.swj] numerics`) and set `numerics = "bf16"`. Checks on colo: check_diag 20/20, check_cpujob 25/25, check_ladder
+  5/5, check_rxrun 11/11. swj per ladder ~20 → ~9 card-h; ladder ~2.4–2.6 card-days on card 0.
+- **Runtime:** none (swj scales fold into svh).
+
 ### 2026-11-11 12:50 PM CST · #146 · P16 interleave: A8 store remap costs +0.05…0.25% of prefill gemm (bar PASS; a raster tweak takes it to noise); second slice with v_proj: D geo 0.9903 PASS, joint z −1.41; the 112 alone 0.9976 here (w111)
 - **Status:** done (adopt-proposal under the rule; the user decides) · **Machine:** dad1 9070 XT (dev, card0.lock),
   gpubox card 0 (bench 17:40 / 17:54 UTC, ~10 s each; v_proj units + packs + 16 scores 17:29–18:47 UTC) · **Code:**

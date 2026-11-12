@@ -197,7 +197,8 @@ class Run:
         if dev is None: raise SystemExit("no device of kind swj")
         tag = "+".join(ladder.fmt_k(v["K"]) for v in todo)
         args = [self.py, "-m", "rxq.swjfit", self.c["model"], self.c["swj_meta"], S, "--scratch", f"{self.root}/swjscr/{tag}",
-                "--fused", "--no-cache"]
+                "--fused", "--no-cache"] + (["--numerics", self.cfg["post"]["swj"]["numerics"]]
+                                            if self.cfg["post"]["swj"].get("numerics", "f32") != "f32" else [])
         for v in todo: args += ["--src", f"{v['name']}={self.D(v)}/level:level"]
         env = {"VRAM_CAP_GB": "30", "TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL": "1", "TOKENIZERS_PARALLELISM": "false",
                **{k: str(v) for k, v in (dev.get("env") or {}).items()}, **{k: str(v) for k, v in (self.c.get("swj_env") or {}).items()}}
