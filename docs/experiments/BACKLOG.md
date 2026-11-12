@@ -568,6 +568,20 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
   is short, or keep it held out as the cross-check of our goldens / noise floor and our numbers vs theirs. Our own 100M
   calib set (teacher top-k computed by us) is the bulk training side either way. Storage: 1.08 TB for ~1M positions;
   keep top-k on our side (full-vocab fp32 is ~0.5 MB a position).
+- [ ] **DeepSeek benchmark vs TrellisMX on their public reference (user 11-12: "a nice benchmark").** For whoever runs
+  the DeepSeek quant. `brandonmusic` publishes TrellisMX builds of DeepSeek-V4.1-Flash-1017 (K2, K2-Mix, K2-Mix-5GB, K3,
+  K4: trellis-coded routed experts, W2A8 E4M3 at K2; Engram tables K4 in host RAM; attention / shared experts / router /
+  head kept as released) and scores them on the teacher-logit set above with a fully specified protocol:
+  KL(official || build) in FP64 over the full 129,280 vocab at every row; headline = the 512 fresh 2,048-token cuts,
+  also the 128 full 8,192-token windows; BCa 95% window-block bootstrap, Wilson top-1. Their K2 (serving formats):
+  **cuts 0.1439** [0.1346, 0.1545], top-1 86.82%; **windows 0.2182** [0.1779, 0.2690], top-1 86.41%; experts-only
+  0.1429, Engram-only K4 0.0454. Speed on 2× RTX PRO 6000: decode 121 tok/s at batch 1 (299 at 8), prefill ~10k tok/s.
+  **Plan:** (1) reference check: score a few windows with our bf16 path against their logits (download those files
+  only, ~4 GB a window) → our engine's offset from the official reference; (2) score our DeepSeek quants on the same
+  cuts / windows with their protocol (convert their logits to our top-512 format on the fly, or compute the full-vocab
+  KL directly while streaming) and plot against their K2 / K2-Mix / K3 / K4 at equal bytes (count the Engram tables and
+  every kept-as-released tensor in the size). Keep the set held out (never train / select on it) so the comparison stays
+  clean; report with their interval method.
 - **Public Qwen3.8-27B teacher data for QAD (searched 11-12):** no full-logit teacher set exists for the 27B. Candidates:
   - `logic65/whittle-distill-qwen3.8-27b`: 25,178 rows, 78M tokens, **top-20 logprobs on 25.4M answer tokens**
     (thinking on, agentic / tool prompts; licence "other": check before use). Closest match to QAD targets; top-20 only
