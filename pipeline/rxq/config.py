@@ -1,8 +1,10 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """The settings file (config/v3.toml) and what a quant job derives from it.
 
-settings_stamp(cfg): sha256 of the canonical JSON of every result-affecting section (meta, inputs, quant, post), first
-16 hex digits. A level's jobs all carry it; assembly refuses mixed stamps.
+settings_stamp(cfg): the codes stamp: sha256 of the canonical JSON of every section a quant job reads (meta, inputs, quant,
+post minus SCALES), first 16 hex digits. A level's jobs all carry it; assembly refuses mixed stamps; level names carry it.
+scales_stamp(cfg): the same over [post]'s SCALES sections (swj, healing): steps that run after assembly on fixed codes.
+Changing them never invalidates a quant job; rxrun redoes only the level's swj pass + post apply (split: user 11-12).
 quant_settings(cfg, K, codebook, key): the resolved per-tensor settings (ourq's arguments for that tensor).
 Settings the engine reads per level: H_out between inputs.hout.apply_k_min and apply_k_max (hout_applies), the sub-1
 input damping (quant.apply_sub1_damping: sigma_reg_in_sub1 for the layer-input group below K1), tile CD (tile_cd), the
@@ -20,6 +22,7 @@ from . import qwen35
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT = os.path.join(HERE, "..", "config", "v3.toml")
 STAMPED = ("meta", "inputs", "quant", "post")
+SCALES = ("swj", "healing")      # [post] sections outside the codes stamp (C9 / asym stay in it: C9 runs inside the job)
 
 
 def load(path=None):
@@ -58,9 +61,18 @@ def validate(cfg):
     assert 0 < c9["e_clip"] < 1
 
 
+def _h(body):
+    return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:16]
+
+
 def settings_stamp(cfg):
     body = {k: cfg[k] for k in STAMPED}
-    return hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:16]
+    body["post"] = {k: v for k, v in cfg["post"].items() if k not in SCALES}
+    return _h(body)
+
+
+def scales_stamp(cfg):
+    return _h({k: cfg["post"].get(k) for k in SCALES})
 
 
 def codebook_for(cfg, K):

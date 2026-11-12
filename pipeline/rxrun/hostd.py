@@ -74,14 +74,24 @@ class Host:
     def stamps(self):
         from rxq import config as C
         st = C.settings_stamp(C.load(self.rc["settings"])) if self.rc else None
+        self.scales = C.scales_stamp(C.load(self.rc["settings"])) if self.rc else None
         env = (self.rc or {}).get("env") or {}
         ts, n = tree_stamp(self.hc["tree"], self.hc.get("tree_dirs"), env.get("RXQ_EXL3_SRC") or os.environ.get("RXQ_EXL3_SRC"))
         return st, ts, n
 
+    def current(self, n):
+        """level n is DONE at this host's settings and scales stamps (rxrun.run.level_current)"""
+        from rxq import config as C, ladder
+        from rxrun.run import level_current
+        if not hasattr(self, "_cfg"):
+            self._cfg = C.load(self.rc["settings"]); self._by = {v["name"]: v for v in ladder.levels(self._cfg)}
+        lv = self._by.get(n)
+        return lv is not None and level_current(f"{self.rc['root']}/{n}", self._cfg, lv, self.rc.get("steps"))
+
     def levels_done(self):
         if not self.rc: return []
         r = self.rc["root"]
-        return sorted(os.path.basename(os.path.dirname(p)) for p in glob.glob(f"{r}/*/DONE"))
+        return sorted(n for n in (os.path.basename(os.path.dirname(p)) for p in glob.glob(f"{r}/*/DONE")) if self.current(n))
 
     def units(self):
         out = {}
@@ -101,7 +111,7 @@ class Host:
         def send(o):
             with wl: proto.write(json.dumps(o) + "\n"); proto.flush()
         st, ts, nf = self.stamps()
-        send({"hello": self.name, "pid": os.getpid(), "settings_stamp": st, "tree_stamp": ts, "tree_files": nf,
+        send({"hello": self.name, "pid": os.getpid(), "settings_stamp": st, "scales_stamp": self.scales, "tree_stamp": ts, "tree_files": nf,
               "kinds": self.hc.get("limits", {}).get("kinds", ["level", "eval"]), "slots": self.hc.get("slots", {"level": 1, "eval": 1}),
               "limits": self.hc.get("limits", {}), "levels_done": self.levels_done(), "units": self.units()})
         stop = threading.Event(); sent = {}
@@ -210,7 +220,7 @@ def run_level(H, u, req):
     for n in req["levels"]:
         d = f"{conf['root']}/{n}"; jl = f"{d}/logs/jobs.jsonl"
         recs = [json.loads(x) for x in open(jl)] if os.path.exists(jl) else []
-        res["levels"][n] = {"done": os.path.exists(f"{d}/DONE"), "jobs": len(recs), "job_wall": round(sum(r.get("wall", 0) for r in recs), 1)}
+        res["levels"][n] = {"done": H.current(n), "jobs": len(recs), "job_wall": round(sum(r.get("wall", 0) for r in recs), 1)}
     if not all(v["done"] for v in res["levels"].values()):
         res["rc"] = 1; res["err"] = f"rxrun.run rc {rc}, levels not DONE: {[n for n, v in res['levels'].items() if not v['done']]}"
     return res
@@ -241,10 +251,14 @@ def run_eval(H, u, req):
     elif "trunk" in mx: lv = {w: mx["trunk"] for w in trunk}
     else: lv = {w: mx["parity"]["even" if int(w.split(".")[1]) % 2 == 0 else "odd"] for w in trunk}
     need = sorted(set(lv.values()))
-    miss = [n for n in need if not os.path.exists(f"{R}/{n}/DONE")]
+    miss = [n for n in need if not H.current(n)]
     if miss: return {"rc": 1, "err": f"levels not built on this host: {miss}"}
+
+    def pkn(n):                                                   # a pack per level and scales stamp (split, 11-12)
+        s = json.load(open(f"{R}/{n}/DONE")).get("scales")
+        return f"{P}/{n}" + (f"-s{s[:8]}" if s else "") + ".rad"
     for n in need:                                                # packs (kept, reused by later evals)
-        pk = f"{P}/{n}.rad"
+        pk = pkn(n)
         if os.path.exists(pk): continue
         with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):
             if not os.path.exists(pk):
@@ -253,7 +267,7 @@ def run_eval(H, u, req):
                 if rc or not os.path.exists(pk + ".part"): return {"rc": 1, "err": f"pack {n} rc {rc} ({log})"}
                 os.replace(pk + ".part", pk)
     mf = f"{MX}/{tag}.mix"; mrad = f"{MX}/{tag}.rad"
-    lines = [f"{w} {P}/{lv[w]}.rad" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
+    lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
     open(mf, "w").write("\n".join(lines) + "\n")
     if not os.path.exists(mrad):
         with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):

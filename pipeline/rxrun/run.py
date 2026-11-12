@@ -13,7 +13,7 @@ listed; conditional levels only if CONF names their pass) on our own cards, rest
     final/      rxq.post apply level SWJ,level/c9 (or a copy when no post step applies) [CPU lane]
     final.recipe  rxq.mix recipe final (the pack's rad-convert recipe; packs are per mix, not here)
     DONE        written last: a level with DONE is skipped
-  ROOT/swj/<level>/ the swj level pass (rxq.swjfit --fused --no-cache, swj_batch levels in one staged pass) on a device
+  ROOT/swj-<scales stamp[:8]>/<level>/ the swj level pass (rxq.swjfit --fused --no-cache, swj_batch levels in one staged pass) on a device
                     with kind "swj" (the card lock + ram.lock shared for the pass)
 Every step writes .part then renames (assemble, post, recipe), or has its own .done (swjfit), so a killed run leaves
 nothing a rerun would trust. The CPU steps run in a background lane while the card goes on with the next level.
@@ -48,10 +48,25 @@ def load_conf(p):
     return json.load(open(p))
 
 
+def swj_planned(cfg, lv, steps=None):
+    """the level has a swj pass under cfg (and steps, when given)"""
+    from rxq import post
+    return (steps is None or "swj" in steps) and any(x[0] == "swj" for x in post.plan_level(cfg, lv["K"]))
+
+
+def level_current(D, cfg, lv, steps=None):
+    """D/DONE exists and was made at cfg's scales stamp where the level has a swj pass (stamp split, user 11-12:
+    a DONE without "scales" counts only for levels without swj)"""
+    if not os.path.exists(f"{D}/DONE"): return False
+    try: got = json.load(open(f"{D}/DONE")).get("scales")
+    except ValueError: return False
+    return got == (C.scales_stamp(cfg) if swj_planned(cfg, lv, steps) else None)
+
+
 class Run:
     def __init__(self, conf):
         self.c = conf; self.root = conf["root"]; os.makedirs(self.root, exist_ok=True)
-        self.cfg = C.load(conf["settings"]); self.st = C.settings_stamp(self.cfg)
+        self.cfg = C.load(conf["settings"]); self.st = C.settings_stamp(self.cfg); self.ss = C.scales_stamp(self.cfg)
         self.py = conf.get("python", sys.executable)
         self.env = dict(os.environ); self.env.update({k: str(v) for k, v in (conf.get("env") or {}).items()})
         self.steps = conf.get("steps", ["jobs", "assemble", "swj", "post", "recipe"])
@@ -187,11 +202,14 @@ class Run:
         self.log(f"{lv['name']}: assembled in {time.time() - t:.0f} s")
 
     def swj_needed(self, lv):
-        from rxq import post
-        return "swj" in self.steps and any(x[0] == "swj" for x in post.plan_level(self.cfg, lv["K"]))
+        return swj_planned(self.cfg, lv, self.steps)
+
+    def swjdir(self): return f"{self.root}/swj-{self.ss[:8]}"
+
+    def is_done(self, lv): return level_current(self.D(lv), self.cfg, lv, self.steps)
 
     def swj(self, lvs):
-        S = f"{self.root}/swj"; todo = [v for v in lvs if not os.path.exists(f"{S}/{v['name']}/.done")]
+        S = self.swjdir(); todo = [v for v in lvs if not os.path.exists(f"{S}/{v['name']}/.done")]
         if not todo: return
         dev = next((d for d in self.devs if "swj" in d.get("kinds", [])), None)
         if dev is None: raise SystemExit("no device of kind swj")
@@ -218,7 +236,7 @@ class Run:
         if os.path.exists(f"{F}/.done"): return
         for p in (F + ".part", F + ".part.scales"): shutil.rmtree(p, ignore_errors=True)
         scales = []
-        if self.swj_needed(lv): scales.append(f"{self.root}/swj/{lv['name']}")
+        if self.swj_needed(lv): scales.append(f"{self.swjdir()}/{lv['name']}")
         if os.path.exists(f"{D}/level/c9/.done"): scales.append(f"{D}/level/c9")
         t = time.time()
         if scales:
@@ -240,7 +258,8 @@ class Run:
 
     def finish(self, lv):
         D = self.D(lv)
-        json.dump({"level": lv["name"], "steps": self.steps, "settings": self.st, "t": cst()}, open(f"{D}/DONE.part", "w"))
+        json.dump({"level": lv["name"], "steps": self.steps, "settings": self.st, "scales": self.ss if self.swj_needed(lv) else None,
+                   "t": cst()}, open(f"{D}/DONE.part", "w"))
         os.replace(f"{D}/DONE.part", f"{D}/DONE")
         self.log(f"{lv['name']}: DONE")
         self.status(lv)
@@ -250,13 +269,13 @@ class Run:
         """estimated R9700-seconds of the jobs not done, over every level not DONE; swj passes left"""
         s, nswj = 0.0, 0
         for lv in self.levels:
-            if os.path.exists(f"{self.D(lv)}/DONE"): continue
+            if self.is_done(lv): continue
             if lv["name"] not in self._est:
                 jobs = ladder.level_jobs(self.cfg, lv, "m", "r", None, layers=self.c.get("layers"))
                 self._est[lv["name"]] = [(f"L{j['params']['layer']:02d}-g{j['params']['group']}", j["params"]["req"]["est_s"]) for j in jobs]
             for n, e in self._est[lv["name"]]:
                 if not os.path.exists(f"{self.D(lv)}/out/{n}/job.json"): s += e
-            if self.swj_needed(lv) and not os.path.exists(f"{self.root}/swj/{lv['name']}/.done"): nswj += 1
+            if self.swj_needed(lv) and not os.path.exists(f"{self.swjdir()}/{lv['name']}/.done"): nswj += 1
         return s, nswj
 
     def measured(self, window=400):
@@ -285,7 +304,7 @@ class Run:
 
     def status(self, lv=None, rec=None):
         left, nswj = self.est_left(); jph, rate = self.measured()
-        ndone = sum(os.path.exists(f"{self.D(v)}/DONE") for v in self.levels)
+        ndone = sum(self.is_done(v) for v in self.levels)
         if lv is not None:
             jobs = self._est.get(lv["name"]) or []
             jd = sum(os.path.exists(f"{self.D(lv)}/out/{n}/job.json") for n, _ in jobs)
@@ -325,7 +344,12 @@ class Run:
         try:
             for lv in self.levels:
                 check()
-                if os.path.exists(f"{self.D(lv)}/DONE"): self.log(f"{lv['name']}: skip (DONE)"); continue
+                if self.is_done(lv): self.log(f"{lv['name']}: skip (DONE)"); continue
+                if os.path.exists(f"{self.D(lv)}/DONE"):          # DONE at another scales stamp: redo swj + post only
+                    self.log(f"{lv['name']}: DONE at another scales stamp: redo swj / post (jobs and assembly kept)")
+                    for x in ("DONE", "final.recipe"):
+                        if os.path.exists(f"{self.D(lv)}/{x}"): os.remove(f"{self.D(lv)}/{x}")
+                    shutil.rmtree(f"{self.D(lv)}/final", ignore_errors=True)
                 if self.held(): self.log("HOLD: stop before " + lv["name"]); break
                 self.cur = ""; self.status(lv)
                 if "jobs" in self.steps and not self.run_jobs(lv):
@@ -371,7 +395,7 @@ def main(argv=None):
     if a.estimate: print(json.dumps(r.estimate(a.rate, a.swj_h))); return
     if a.plan:
         for lv in r.levels:
-            st = "DONE" if os.path.exists(f"{r.D(lv)}/DONE") else "todo"
+            st = "DONE" if r.is_done(lv) else "stale" if os.path.exists(f"{r.D(lv)}/DONE") else "todo"
             print(f"{lv['pass']:2s} {lv['name']:28s} {st}  swj {r.swj_needed(lv)}")
         return
     r.run()

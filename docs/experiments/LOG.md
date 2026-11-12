@@ -4,6 +4,20 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 1:00 PM CST · #163 · Settings stamp split: codes stamp vs scales stamp (user 11-12)
+- **What:** `rxq.config.settings_stamp` (the codes stamp: job specs, level names, assembly) now hashes `[meta]`,
+  `[inputs]`, `[quant]` and `[post]` minus `SCALES = (swj, healing)`; new `scales_stamp` hashes those two. C9 / asym
+  stay in the codes stamp (C9 runs inside the quant job). rxrun: swj output under `ROOT/swj-<scales[:8]>/`, `DONE`
+  records `scales` (null for levels without a swj pass), a level whose DONE has another scales stamp redoes only swj +
+  post + recipe (jobs and assembly kept); hostd counts only current levels, packs are named `<level>-s<scales[:8]>.rad`,
+  hello carries the scales stamp and the coordinator refuses a mismatch.
+- **Why:** #150 (swj fit tokens) and V3.1's scale-only QAD change scales on fixed codes; before the split they moved the
+  one stamp and made every finished quant job stale. Now the trunk ladder can start before #150 lands.
+- **Checks:** `tests/check_split.py` 10/10 (new), `check_ladder` 5/5, `check_rxrun` 17/17 (ds8, CPU stand-in).
+- **Stamps:** codes **144dd6e18dcda787** (levels `q27v3-144dd6e1-…`; the old combined stamp was 4f831984), scales
+  6c57a3d1ee013f43 (fit_tokens 1M).
+- **Runtime:** none.
+
 ### 2026-11-12 12:20 PM CST · #152 / #153 · Re-LDLQ after the refit: no gain (f2 ×1.0006 at K2.5, ×1.89 quant time); tile CD on six more families: every family helps a little (f2 ×0.995–0.999) but none reaches the 0.99 gate; no 27B pairs (w115)
 - **Status:** done, both (a) gates FAIL → (b) not run · **Machine:** box2 HIP 0–3 (one unit per card lock; amendment
   1: moved from gpubox card 0 by the lead's resume note) · **Code:** rad-exl3-mix a84ed23 + `v3/e3/settle/w115/rxq-w115.patch`

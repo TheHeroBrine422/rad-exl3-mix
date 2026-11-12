@@ -91,7 +91,7 @@ class Multi:
     def __init__(self, conf, follow=False):
         self.c = conf; self.R = conf["root"]; os.makedirs(f"{self.R}/docs", exist_ok=True)
         self.follow = follow
-        self.cfg = C.load(conf["settings"]); self.st = C.settings_stamp(self.cfg)
+        self.cfg = C.load(conf["settings"]); self.st = C.settings_stamp(self.cfg); self.ss = C.scales_stamp(self.cfg)
         passes = conf.get("passes", ["1", "2", "3"])
         lv = [v for v in ladder.levels(self.cfg) if v["pass"] in passes]
         if conf.get("levels"): lv = [v for v in lv if v["name"] in conf["levels"] or f"{ladder.fmt_k(v['K'])}-{v['codebook']}" in conf["levels"]]
@@ -151,9 +151,11 @@ class Multi:
     # ----------------------------------------------------------------------------------------------- hosts
     def on_hello(self, cn, m):
         cn.hello = m
-        mine = {"settings_stamp": m["settings_stamp"], "tree_stamp": m["tree_stamp"]}
+        mine = {"settings_stamp": m["settings_stamp"], "scales_stamp": m.get("scales_stamp"), "tree_stamp": m["tree_stamp"]}
         if m["settings_stamp"] != self.st:
             cn.refused = f"settings stamp {m['settings_stamp']} != the coordinator's {self.st}"
+        elif m.get("scales_stamp") != self.ss:
+            cn.refused = f"scales stamp {m.get('scales_stamp')} != the coordinator's {self.ss}"
         else:
             for k, v in mine.items():
                 if k in self.ref and self.ref[k] != v: cn.refused = f"{k} {v} != {self.ref[k]} (the first host's / CONF expect): restage"
