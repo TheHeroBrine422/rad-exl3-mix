@@ -4,6 +4,13 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 12:45 AM CST · #130 / #146 / #148 · P16 output-row interleave DROPPED (user)
+- KL across three slices: 0.9933 → 0.9903 → 1.0038 (full P16), TP-safe P16-TP 1.0005 on 27e; combined z −0.79. Real
+  quant error −32% on qkv does not move KL. Fixed costs (format field, remap in six kernels, TP split) not worth an
+  unresolved gain. The TP-safe map + closed-form kernel formula stay in `v3/e3/settle/w113/` for future models.
+- C9 e_clip 0.3 below K1 (#145 post hoc, −4% at K0.5): user wants more data → #149 (w114).
+- **Runtime:** none.
+
 ### 2026-11-11 9:55 PM CST · #145 · C9 and swj at sub-1 on the 27B (fixed codes, two mixes, fresh slice 27d): rule says no change (C9 as today, swj at every level); e_clip 0.3 helps at K0.5 (−4.1%, every statistic) but misses the band pattern by 0.0002; swj off costs +12…36% (w110)
 - **Status:** done (rule: no change; proposals for the lead) · **Machine:** gpubox card 0 (levels 11:25 AM–3:10 PM,
   swj 3:10–5:23 PM, packs 5:24–7:24 PM under conv.lock + ram.lock excl., scores 7:46–9:37 PM CST) · **Code:**
