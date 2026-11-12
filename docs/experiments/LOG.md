@@ -41,7 +41,7 @@ versions of anything: git history.
   units (pack + radmix + radiance KLD, only on the host that holds the mix's levels; split mixes reported BLOCKED);
   settings + tree stamp checked at every hello (a different tree is refused); units run detached (a dropped ssh / VM
   restart does not stop them); results copied back as small JSON (`results.jsonl`, per-doc sums). **check_rxrun
-  multi 6/6** on colo's CPU stand-in (levels each on one host within limits, tree check, evals routed, blocked split,
+  17/17** (multi part 6/6) on colo's CPU stand-in (levels each on one host within limits, tree check, evals routed, blocked split,
   rerun idempotent, coordinator killed mid-unit + restart, level byte-identical to rxrun.run's). box2's forward is up
   (11-12 ~11 AM CST). Host confs `pipeline/rxrun/hosts/`; rollout steps in its README (restage box2 4156463 → HEAD,
   `hostd --stamp` equal on both, radmix on box2).
