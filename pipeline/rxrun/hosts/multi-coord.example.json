@@ -41,6 +41,27 @@
    "hostconf": "/data/q27/multi/host.json",
    "unit_levels": 4,
    "reconnect_s": 60
+  },
+  {
+   "name": "ds8",
+   "cmd": [
+    "ssh",
+    "-p",
+    "2240",
+    "-o",
+    "StrictHostKeyChecking=no",
+    "-o",
+    "ServerAliveInterval=30",
+    "-i",
+    "<key>",
+    "root@127.0.0.1",
+    "env",
+    "PYTHONPATH=/data/q27/stage/code/pipeline"
+   ],
+   "python": "/data/q27/venv/bin/python",
+   "hostconf": "/data/q27/multi/host.json",
+   "unit_levels": 8,
+   "reconnect_s": 60
   }
  ],
  "about": "copy to local/ (ssh lines hold host addresses / key paths: never in the repo) and fill the <...> fields; run on the VM: python -m rxrun.multi CONF --follow"

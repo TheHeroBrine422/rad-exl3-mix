@@ -58,7 +58,7 @@ over ssh, a state file; all work happens on the hosts.
   (per-part per-document KL sums: `eval/docstat/readout.py`'s inputs); rows files stay on the host.
 - **Eval queue:** the search appends `{"tag", "mix": {"base", "trunk" | "parity" | "levels", "donors"}, "slices":
   [{"name", "parts": {"x": GOLDEN, "c": GOLDEN}}]}` lines to CONF `evals`; names in HOSTCONF `eval.aliases` resolve per host.
-- Configs: `hosts/gpubox-card0.{run,host}.json`, `hosts/box2.{run,host}.json` (host side), `hosts/multi-coord.example.json`
+- Configs: `hosts/gpubox-card0.{run,host}.json`, `hosts/box2.{run,host}.json`, `hosts/ds8.{run,host}.json` (8 cards; w121) (host side), `hosts/multi-coord.example.json`
   (coordinator: copy to `local/`, it holds ssh lines). Checks: `tests/check_rxrun.py FORK WORK --part multi` (CPU
   stand-in: two local hostd hosts + one with another tree; stub pack / mix / score).
 
@@ -69,5 +69,6 @@ counts as ours since 11-12), the V2 reference containers; (4) copy the host conf
 (5) on the VM: `setsid nohup python -m rxrun.multi local/.../multi-coord.json --follow > multi.out 2>&1 &`
 (`--status`, `touch ROOT/HOLD`). If box2's ssh is refused on 127.0.0.1:2241 the forward is down: the coordinator keeps
 gpubox going and retries box2 every `reconnect_s`; the user restores the forward (AGENTS.md "box2").
+ds8 (w121, 11-12): staged at a84ed23 with `/data/q27/multi/{run,host}.json` (rollout steps 1, 2, 4 done there; tree stamp 8557ed25d9bdc6a6; step 3: `tools/radmix` + V2 3.00 only, no search-slice goldens yet); `local/notes/ds8.md`.
 Not built: moving level dirs between hosts (an eval whose levels are split stays BLOCKED until someone copies them);
 a 9070 XT host (needs its own `max_job_vram` limits; the unit-level split works as is).
