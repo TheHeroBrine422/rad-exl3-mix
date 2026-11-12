@@ -1,0 +1,82 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2": 0.004852540767598818,
+  "f1": 0.007726795244762431
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2": 0.0035556945953747238,
+  "f1": 0.003944607376168696
+ },
+ "model.language_model.layers.10.linear_attn.out_proj": {
+  "f2": 0.00820339671205949,
+  "f1": 0.010726609829674442
+ },
+ "model.language_model.layers.10.mlp.down_proj": {
+  "f2": 0.016807447444754018,
+  "f1": 0.02005755615338098
+ },
+ "model.language_model.layers.10.mlp.gate_proj": {
+  "f2": 0.012896121939314824,
+  "f1": 0.016347755430905733
+ },
+ "model.language_model.layers.10.mlp.up_proj": {
+  "f2": 0.015817305721239117,
+  "f1": 0.020240487405625028
+ },
+ "model.language_model.layers.11.mlp.down_proj": {
+  "f2": 0.017821663243860985,
+  "f1": 0.019831440887925746
+ },
+ "model.language_model.layers.11.mlp.gate_proj": {
+  "f2": 0.011662387307528933,
+  "f1": 0.015778781982612407
+ },
+ "model.language_model.layers.11.mlp.up_proj": {
+  "f2": 0.013353297650994753,
+  "f1": 0.019784174445564916
+ },
+ "model.language_model.layers.11.self_attn.k_proj": {
+  "f2": 0.0019506145230998322,
+  "f1": 0.0048898304344517085
+ },
+ "model.language_model.layers.11.self_attn.o_proj": {
+  "f2": 0.003343533358963762,
+  "f1": 0.00277436717832242
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "f2": 0.0008182250785089081,
+  "f1": 0.0006467143639079969
+ },
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2": 0.005449811197701387,
+  "f1": 0.00889286632269464
+ },
+ "model.language_model.layers.39.mlp.down_proj": {
+  "f2": 0.022438597879351842,
+  "f1": 0.022373018305596366
+ },
+ "model.language_model.layers.39.mlp.gate_proj": {
+  "f2": 0.008311892651276045,
+  "f1": 0.00834373609369728
+ },
+ "model.language_model.layers.39.mlp.up_proj": {
+  "f2": 0.023065662674946603,
+  "f1": 0.02454126072465938
+ },
+ "model.language_model.layers.39.self_attn.k_proj": {
+  "f2": 0.004762198163032404,
+  "f1": 0.006666000143576587
+ },
+ "model.language_model.layers.39.self_attn.o_proj": {
+  "f2": 0.01576543222660414,
+  "f1": 0.015392131016387384
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "f2": 0.0029062499626795893,
+  "f1": 0.004853836330407893
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2": 0.013865862697128509,
+  "f1": 0.015409569923757577
+ }
+}

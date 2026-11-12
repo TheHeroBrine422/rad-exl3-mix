@@ -1,0 +1,30 @@
+{
+ "spec": {
+  "type": "rxq.quant",
+  "version": 1,
+  "level": "q27v3-4f831984-k2.5-i8",
+  "K": 2.5,
+  "codebook": "i8",
+  "seed_offset": 0,
+  "keys": [
+   "model.language_model.layers.3.mlp.gate_proj",
+   "model.language_model.layers.3.mlp.up_proj"
+  ],
+  "settings_stamp": "4f8319840e59c5d0",
+  "config": "/data/w115/code/pipeline/config/v3.toml",
+  "inputs": {
+   "ckpt": "/data/q27/models/qwen38-27b-bf16",
+   "hessians": "/data/q27/challenge/hessians/calib",
+   "hin": null,
+   "wpre": null,
+   "hout": "/data/q27/hout/bn1920"
+  }
+ },
+ "settings_stamp": "4f8319840e59c5d0",
+ "code_stamp": "a7f68e737df527a2",
+ "kernels": "gpu",
+ "device": "AMD Radeon AI PRO R9700",
+ "host": null,
+ "tensors": 2,
+ "seconds": 22.6
+}

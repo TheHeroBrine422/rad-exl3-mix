@@ -4,6 +4,33 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 12:20 PM CST · #152 / #153 · Re-LDLQ after the refit: no gain (f2 ×1.0006 at K2.5, ×1.89 quant time); tile CD on six more families: every family helps a little (f2 ×0.995–0.999) but none reaches the 0.99 gate; no 27B pairs (w115)
+- **Status:** done, both (a) gates FAIL → (b) not run · **Machine:** box2 HIP 0–3 (one unit per card lock; amendment
+  1: moved from gpubox card 0 by the lead's resume note) · **Code:** rad-exl3-mix a84ed23 + `v3/e3/settle/w115/rxq-w115.patch`
+  (code stamp a7f68e73; settings stamp 4f8319840e59c5d0) · **Rule:** `v3/e3/settle/w115.md` (064bb6b; amendment 1
+  de81e4a, before any data) · **Data:** `v3/e3/settle/data/w115/box2/` (`a/report.txt`)
+- **Checks:** c0 (staged tree on box2 vs gpubox card 0, w117's L03 K2.5 specs): `rxrun.cmp --tensors` CMP SAME 15 files
+  (code stamps a7f68e73 vs d2d96eac only). c1 stamps PASS. c2: N's seed-0 t-files == w114's ladder levels (sha256 per
+  tensor, gpubox `/data/w114/lv`): K2.5 20 / 20, K4 20 / 20 identical. c3: every R tensor's pass 0 == N (PASS); every
+  C_F tensor has a tile CD line.
+- **#152-01 re-LDLQ (R vs N, L10 / L39, 13 tensors × 2 seeds; f2 = two-sided, after the refit, before C9):** geo ρ
+  **K2.5 1.0006 (gate ≤ 0.99: FAIL)**, K1.5 1.0033, K4 0.9999; f1 0.9999 / 1.0014 / 0.9998. Worst at low K on the GDN
+  tensors (K1.5 ssm_out 1.015, ssm_qkv 1.007); ffn gate / up ~1.000. Best-of by the job's own proxy (report only): 1.0002
+  at K2.5. Quant time R / N 1.84–1.89×. Re-running LDLQ on the refit's scales finds no better codes (a likely
+  reading, not tested: the refit already takes what the new scales offer). Dead end.
+- **#153-01 tile CD per family (C_F vs N, L10 / L11 / L39, K2.5 + K4 × 2 seeds; gate geo ≤ 0.99):** ffn_down **0.9952**,
+  ffn_up 0.9972, ffn_gate 0.9977, ssm_z 0.9986, ssm_qkv 0.9988, attn_v 0.9989: all FAIL. Very consistent across seeds,
+  layers and K (spread ±0.0008). Quant time C / N: ffn_down 3.20×, gate / up 3.62×, ssm_qkv 2.65×, ssm_z 4.32×, attn_v
+  4.53×. Added cost per 50-level ladder (serial, Δs per tensor × trunk count): ffn_down ~30.5 box2 card-h (≈ 21.9
+  card-0 h), gate 20.7 (14.9), up 20.8 (14.9), ssm_qkv 9.0 (6.5), ssm_z 7.5 (5.4), attn_v 0.9 (0.6). The patch's tile
+  CD family-name fix (`ffn_gate` / `ffn_up`; the old `ffn_gate_up` never matched) is what made gate / up testable.
+- **Decision / next:** no settings change (stamp stays 4f831984). Proposals for the user: (1) drop `[quant.reldlq]`;
+  the patch's `tilecd.py` name fix can merge alone (it changes no current output). (2) Tile CD on ffn_down (f2 ×0.995
+  at ~22 card-0 h per ladder) and attn_v (×0.999 at 0.6 card-0 h) are below the gate; only worth a 27B pair if the
+  user wants to spend card time on sub-1% f2 gains. Slice golden-search27g was **not built**, so the 93 never-used
+  search-pool documents are still free for w120's 27h+.
+- **Runtime:** none.
+
 ### 2026-11-12 12:10 PM CST · #160 · ds8 (8× R9700S) set up for 27B work: rxq jobs and radiance KLD bit-identical to box2; 8 cards ≈ 1.9× box2 (w121)
 - **Status:** done · **Machine:** ds8 (8× R9700S, pip ROCm SDK 7.14.1, EPYC 7F52, 235 GB) vs box2 · **Code:** rad-exl3-mix
   a84ed23 + exllamav3-frac b0052f7c staged on ds8 and (scratch, `/data/q27/w121`) on box2; radiance qc-exl3-v3 42960d5

@@ -1,0 +1,11 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+     tile CD 3 (H_out): rel 1.6279e-02 -> 1.6243e-02 (x0.9978), accepted 0.060 / 0.031 / 0.019, 26.6s
+  model.language_model.layers.10.mlp.up_proj                   K2.5 proxy 2.024e-02 40.2s
+     tile CD 3 (H_out): rel 1.3827e-02 -> 1.3793e-02 (x0.9975), accepted 0.056 / 0.029 / 0.018, 26.5s
+  model.language_model.layers.11.mlp.up_proj                   K2.5 proxy 1.979e-02 37.4s
+     tile CD 3 (H_out): rel 2.3565e-02 -> 2.3498e-02 (x0.9971), accepted 0.102 / 0.058 / 0.039, 26.8s
+  model.language_model.layers.39.mlp.up_proj                   K2.5 proxy 2.450e-02 37.6s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 0, "keys": ["model.language_model.layers.10.mlp.up_proj", "model.language_model.layers.11.mlp.up_proj", "model.language_model.layers.39.mlp.up_proj"], "settings_stamp": "3fe0104d378a30bc", "inputs": {"ckpt": "/data/q27/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/q27/hout/bn1920"}}, "settings_stamp": "3fe0104d378a30bc", "code_stamp": "a7f68e737df527a2", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 3, "seconds": 115.2}

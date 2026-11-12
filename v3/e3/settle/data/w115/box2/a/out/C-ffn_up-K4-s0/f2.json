@@ -1,0 +1,14 @@
+{
+ "model.language_model.layers.10.mlp.up_proj": {
+  "f2": 0.0020054152987684323,
+  "f1": 0.0025822501674791967
+ },
+ "model.language_model.layers.11.mlp.up_proj": {
+  "f2": 0.001690022947044789,
+  "f1": 0.002522347556336459
+ },
+ "model.language_model.layers.39.mlp.up_proj": {
+  "f2": 0.0029407346508620222,
+  "f1": 0.0031375917320789802
+ }
+}

@@ -1,0 +1,232 @@
+# V3 quantizer settings: the one file the freeze pins. Every result-affecting setting of the pipeline is here, with its
+# evidence: the experiment number in rad-exl3-mix docs/experiments/INDEX.md, its status there, and the rule / result
+# file. 2026-11-07 (w76): the adopted settings are ON (H_out at K >= 4, tile CD on attn_qg, sub-1 input damping 0.05,
+# swj at every level, C9 alpha on the writers); the one still open is a switch, off (writers asym, #105). With the
+# quant switches off (tile_cd, hout, apply_sub1_damping) the file reproduces the 11-06 ladder quantizer (ourq.py with
+# the hconv / swap27 "ladder settings"; C9 only adds a scales file per writer); tools/run4070.sh shows the overrides.
+#
+# 2026-11-08 (w86, user / lead): H_out at every level (apply_k_min 0) on w81's block-diagonal path (inputs.hout.ldlq), the
+# #117 residual block order on (quant.block_order), sigma 0.2 at K0.125; [ladder] (unstamped) plans the levels (55
+# since 11-09: 50, int8-only (mul1 out, user + deadcode 11-09; the 16 i4 twins were dropped 11-08).
+# Changing any value changes the settings stamp (rxq/config.py), so a level can never mix settings.
+# Status words: adopted (in the ladder now) | open (a switch; the experiment decides) | dropped (kept for the record).
+
+[meta]
+name = "v3"
+version = 3                    # 2: 11-07 adopted settings on (H_out K >= 4, tile CD, sub-1 damping); post.c9 added
+                               # 3: C9 alpha on (user 11-07 1:40 PM CST), computed in the writers' quant jobs
+                               # (11-08 changes: header; the version stays 3, the stamp tells the settings apart)
+date = "2026-11-08"
+model = "qwen38-27b"           # datapack id; the architecture plan is rxq/qwen35.py
+
+# ---------------------------------------------------------------------------------------------------------- inputs
+[inputs.hin]
+# Input Hessians: the challenge's published calib Hessians (sum of x x^T over all 10.26M calib tokens), packed upper.
+source = "calib"               # AGENTS.md data discipline: allowed for every entry
+# xcorp blend (#101, statistics, DROPPED by the user 2026-11-06): H_in = (1 - w) calib/rows + w xcorp/rows (per-token
+# means), stored at calib's scale (port of proxy2b/exp/d1108/blend.py "hin"). 0.8B: X0.5 PASS incl. verify (calib -2%,
+# xcorp -3..-6%; K4 0.982, K5 0.990); 27B pairs bn -> xbn 0.988, bns1 -> xbns1 0.997, pooled ~0.993 vs the rule's
+# <= 0.98: not worth it. Kept as a switch for the record.
+blend = "none"                 # "none" | "xcorp"
+blend_weight = 0.5             # the 27B recipe if adopted (amendment 3: full mX, w 0.5)
+blend_dir = ""                 # datapack: hessians-xcorp/ (mkhin27.py over mX, 1,148 docs / 1.14M tokens)
+
+[inputs.hout]
+# Diagonal output Hessian H_out = sum dy^2, block-normalized estimator (#33-27 done; #33-28 done 11-07). H27
+# amendment 5: K2.5 three seed pairs 0.972 / 0.992 / 0.976, geo 0.9801 vs <= 0.98 -> NOT adopted for levels <= K3.5;
+# K4 pairs bn4 / base4 0.9613, bn4s1 / base4s1 0.9672, geo 0.9643, seed floor 0.0062 -> PASS, ADOPTED for levels
+# >= K4 (LOG 2026-11-07 6:55 AM CST). Two-sided LDLQ (ldlq_2hess); tile CD runs on the two-sided objective.
+# Cost: ~5x quant time per layer on the R9700 (~3.2 h a K >= 4 level vs ~37 min) unless ldlq_2hess exploits the
+# block-diagonal rotated H_out (PROFILE.md target T1). [11-08: both superseded: H_out at every level (apply_k_min
+# below, user) on the #115 block-diagonal path (ldlq below, ~1.07x a one-sided level).]
+enable = true
+estimator = "bn"               # "bn" (block-normalized, port of v3/yaqa/hconv/mkhalf.py MKHALF_NORM=1) | "dy" (plain mean)
+snapshot = 1920                # H27 amendment 2
+sigma_reg_out = 0.01           # output damping (H27; #33-16)
+dir = "hout/bn1920"            # datapack relpath: <key>.safetensors ("hout_diag"), mkbn over the 1,920 snapshot (gpubox:
+                               # /data/swap27/hout-bn, the K4 arms' dir); a job's inputs.hout overrides it
+apply_k_min = 0.0              # user 11-08: H_out at every level (lower KLD on average at K2.5: 3/3 pairs < 1, geo 0.980; K4 PASS 0.964). Cost: w81 fast block-diagonal H_out
+apply_k_max = 8.0
+# #115 (w81, 11-08): a diagonal H_out is exactly block diagonal (128) after the output Hadamard, so the two-sided LDLQ's
+# feedback can stay inside each tile's 128-column group: same objective, float order differs (codes differ, so it is
+# stamped). "blocks" needs fork patch 0008 (prepare_H_out_blocks / ldlq_2hess_blocks; rxq refuses a fork without it);
+# "dense" = the 11-07 path. #115's card-0 gate PASSED 11-08 (w81: 18/20 tensors within 1e-4 of dense on the two-sided
+# objective, the rest near-tie flips; ~37 min an H_out level vs ~190 dense): blocks by default (lead 11-08 10:00 AM CST).
+# rxq levelargs maps ourq levels made before 11-08 (no --hout-blocks) to dense, so their no-op gates stay bit-identical.
+ldlq = "blocks"                # "dense" | "blocks"
+schedule = "group"             # blocks only: "group" (anti-diagonals inside every group at once) | "diag" (the dense order)
+
+# ------------------------------------------------------------------------------------------------ per-tensor quant
+[quant]
+# exllamav3 fork eb5a2139 (= upstream a3bfbfd0 + rad-exl3-mix quantize/exl3-patches 0001-0007) driven exactly as
+# ourq.py does (rxq/engine.py installs the same kernel swaps and patches).
+qtf2 = true                    # #37 done: qtf2 fractional quantizer, bit-identical on the old rates, 1/8 steps, sub-1
+scaled_hessian = true          # ladder setting since 11-01 (exllamav3 scaled_hessian: P diag(su) H diag(su) P per tensor);
+                               # no INDEX row of its own; part of every adopted-stack comparison (LOG #33-10 "base")
+sigma_reg = 0.025              # #38 done (re-checked at fractional K, i8, w43 11-06: keep)
+sigma_reg_in = 0.005           # #38 done: layer-input group (attn q/k/v, GDN qkv/z)
+sigma_reg_in_sub1 = 0.05       # #38 verdict "input 0.005 (0.05 below K1)" (the layer-input group: attn q/k/v, GDN qkv/z;
+                               # v3/levels/ladder2.sh's sigin rule); ourq takes it as --sigma-reg-in 0.05 at K < 1
+apply_sub1_damping = true      # ADOPTED by the user 2026-11-07 (LOG 9:25 AM CST); false = ourq's 0.005 at every K
+lowest_level_damping = { enable = true, k_max = 0.125, sigma = 0.2 }   # #114-02 (w79, held-out): K0.125 wants sigma 0.2 on both groups (inputs -1.9%, rest -1.2% proxy); adopted by the user 11-08
+gain = 1.0                     # #39 done: flat, keep 1.0 (w43 settle.py, no family >= 1% at >= 2 K)
+out_scales = "always"          # #48 negative: upstream's auto rule +2.5% (z 2.1) -> always on
+drift = "measured"             # #141-01 (w107; adopted 11-11, stamp 159591b2): measured sub-1 table (rxq/engine.py MEASURED_DRIFT), log-linear between;
+                               # was "interp": LDLQ drift log-linear between exllamav3's table points (ourq, trunk review 11-02);
+                               # identical at the table points; "exact" = exllamav3's lookup (OURQ_DRIFT_EXACT=1)
+block_trace = false            # ourq default: the regularized-domain proxy is overwritten by the refit's (output-neutral)
+refit = "hout"                 # #138-03 adopted (user 11-09).                                  exllamav3 fork refit_scales (su / sv, 2 rounds): part of every level. rxq/refit.py (w98, #138):
+                               # true | false (no refit) | "hout" (suh step weighted by the H_out diagonal) | "undamped"
+                               # (fit in the undamped H) | "hout+undamped"; true keeps the stamp, any other value changes it
+scale_clamp = true             # R14 (#132, user 11-11): after the refit, |su| / |sv| >= max(f16 min normal, 1e-3 * median |.|)
+                               # per vector, else the pre-refit value (if it clears the floor), else the floor (sign kept).
+                               # w100 scan: 92 f16 subnormals, all at K0.125; rxq/refit.py clamp_scales
+
+[quant.block_order]
+# #117 residual-stream 128-block permutation (w82 consensus order, w84 27B pairs): the residual readers' (attn q / k / v,
+# GDN qkv / z, gate / up; 272 tensors) LDLQ visits their input blocks in this order, route B (rxq/blkorder.py, port of
+# w84's blkorder84.py): no permuted checkpoint, Hessians or reverse permutation anywhere (w84 G2: route A == route B bit
+# for bit). ADOPTED by the user 11-08 (lead note 9:55 AM CST; w84 report). The order = v3/e3/settle/data/w84/p0-blkorder84.json.
+enable = true
+stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11, 1, 9, 10, 15, 27, 24, 33, 12, 16, 25,
+                22, 19, 20, 23, 18, 2, 21, 28, 13, 30, 8, 31]   # v3/e3/settle/w84/order82.json: natural block at stored position p
+
+[quant.codebook]
+# Codebook by level (v3.md "Ladder", user 11-04 / 11-05). i8 = int8-rounded mul1 (#43 done, x1.000 K1-6; #94
+# negative above K7: i8 K7 costs ~0.18 bit); i4 = int4 grid (#90-02: within 0.3% of i8 to K1.5); mul1 = unrounded
+# (f16 path) for K6-8. [11-09 (user + deadcode, int8-only): mul1 is OUT (A16 serving retired, LOG 12:17 PM CST); i8
+# runs to K8 - the #94 penalties are accepted (K7 ~0.18 bit; at K8 x4.5 error, mul1 parity would need f16) for one
+# kernel path and long-term maintainability.] i8c dropped (#78-04 null on top of H_out). User 2026-11-07 (TODO, after the w58 / w63 re-pricing):
+# keep the 17 i4 levels, drop mul1 K6 / K6.25 (near-duplicates of i8 K6 / K6.25); applied below 11-07.
+# [11-08: A4 is out of V3 (#46-03 fail, user 11-07), and A4 was the 16 i4 twins' only use (never picked at 2.0-7.0
+# without it, v3/levels/reprice.md); all 16 removed (user 11-08, lead note 4:25 PM CST; w93): ladder 71 -> 55 levels.]
+# [11-08 (user, 5:20 PM CST; #126 w95): one codebook. i8 also at the sub-1 levels and K1 (K0.125-1 were i4); no i4
+# anywhere (A4, i4's only reason, is out). #126 held-out two-sided proxy: see v3/e3/settle/w95.md. The settings stamp
+# changes with this edit (user: fine).]
+# A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
+by_level = [
+  { k_min = 0.125, k_max = 8.0,  codebook = "i8" },   # one codebook everywhere (11-09): i8 to K8
+]
+mul1_levels = []                 # retired 11-09 (int8-only; user + deadcode; the codebook and the f16-path levels are out)
+i4_twins = []                  # none (A4 out, user 11-08; was [2.0, 3.0], inert since w93's twin drop)
+hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
+
+[quant.tile_cd]
+# #77 ADOPTED for attn_qg only (user 11-06; the CPU proxy's cd3 / LDLQ 0.963-0.978 was ~3x too optimistic, its LDLQ
+# order was reversed; real GPU quantizer 0.987-0.996 on attn_qg, x3.7 its quant time). w50's GPU module merged as
+# rxq/tilecd.py (11-07, w76; identical without H_out: tests/check_tilecd.py). 27B no-harm check v3/e3/settle/CD27.md
+# PASSED 11-06 at K2.5 without H_out (s1 0.9994, base 0.9997, no-op gates bit-exact). With H_out (K >= 4) CD runs on
+# the two-sided objective tr(E^T H E M) (user 11-07: write it); its 27B K4 no-harm pair (tools/cdhout27.sh) PASSED
+# 11-08 (geo 0.9998; LOG 8:00 AM CST): CD stays on at every level with H_out.
+enable = true                  # attn_qg at every K (user 11-06 / 11-07)
+sweeps = 3
+families = ["attn_qg", "ssm_z"]
+k_max = 8.0                    # every level; tools/CDHOUT27.md FAIL -> 3.875 (CD off where H_out applies)
+module = ""                    # "" = rxq/tilecd.py; a path loads another copy (comparisons with the research module only)
+
+# -------------------------------------------------------------------------------------- post-quant (frozen codes)
+[post.swj]
+# Joint gate / up output-scale refit through the SwiGLU, codes fixed (C10). #85 done (0.8B), #104 PASS at 27B K2.5:
+# base -> baseswj 0.9346, s1 -> s1swj 0.9346 (two seed pairs, z -12.5 / -14.6), verify 0.935 / 0.932; stacks with H_out
+# (0.924 / 0.921). K4, head-matched (SWJ27 amendment 2, verify): 0.990 / 0.987, geo 0.989 (-1.1%; the 11-06 K4 -22%
+# was a head mismatch). Amendment 2's rule then falls back to <= K3.5 until a K4 seed pair; LOG 11-06 7:50 PM says swj
+# "stays adopted (it never hurts)": the K >= 4 scope is a lead / user decision (decided: user 11-07, k_max below).
+enable = true
+k_max = 4.5                    # #129-02 (11-11, rule in v3/e3/settle/w99.md): at K6 swj gives pooled r 1.026 over 192
+                               # docs (27b + 27c), per-doc geo 0.989, calib per-doc geo 1.021 -> cap at K4.5 (saves ~0.75
+                               # card-h per level above it). Was 8.0 (user 11-07), before that 3.5.
+grid = "0.6:1.4:0.01"
+clamp = [0.5, 2.0]
+fit_pool = "qad"               # SWJ27.md: 725 qad docs / 927,611 tokens, cap 4096, seed 0
+fit_tokens = 1048576
+numerics = "bf16"              # #144 (w109, user 11-11): bf16 x bf16 hook GEMMs, f32 accumulate, source split in two bf16
+                               # terms: 2.2x faster passes, held-out gain -0.06% (seed spread 1.19%); 1.4-1.5% of gate
+                               # scales move (less than R9700 vs 9070 XT f32 runs, 2.2%)
+fused = true                   # swjtri.py fused grid sums (KL 0.99980 vs exact, z -0.59)
+
+[post.asym]
+# [11-08: #105 per-level negative (s1 -> s1a 1.0067); the per-mix form is open, after the freeze.]
+# Writers' sibling-sequential asymmetric target, rho 0 (#87 done on the 0.8B; #105 QUEUED at 27B, ASYM27.md:
+# PASS = geo <= 0.97 and both pairs < 1). #111 (0.8B, 11-07): per-level asym writers next to siblings of another K
+# fail (x1.08-1.24 vs plain); a per-mix writer pass keeps the gain: the rollout form is a user decision if #105 passes.
+# Order: H_out -> swj -> writers (#87-07 / #87-08); runs last on the mix's final siblings (the correction does not
+# transfer across sibling roundings). rxq: S5 stub (rxq/post.py plan_asym: the per-mix pass's steps), off.
+enable = false                 # OPEN: #105 (27B) + the user's rollout pick
+scope = "per-mix"              # #111: per-level writers are refused (config.validate); a per-mix pass after the knapsack
+lam = 1.0
+rho = 0.0
+moment_tokens = 1000000        # qad windows (843 windows, 1,002,035 tokens)
+
+[post.c9]
+# C9 alpha on the writers' rows (#112), ADOPTED by the user 2026-11-07 (LOG 1:40 PM CST) on #112-02's PARTIAL: 27B, swj
+# K2.5 levels, fixed codes, two seed pairs search 0.9939 / 0.9911 (z -2.0 / -4.2), geo 0.9925 vs the rule's <= 0.99;
+# verify 0.9920 / 0.9936 (keeps 0.96 of the gain). 0.8B #112: PASS on both stacks; #112-01: gdn_out alpha 3 (4-4.75 not
+# better by 0.5%). Per output row n of a writer, e_n = (q_n - t_n) M (q_n - t_n)^T / t_n M t_n^T (t = W, M = the calib
+# H_in of its group; with asym writers t = W F and M = G), c_n = (1 - e_n)^(-alpha / 2), folded into svh AFTER
+# everything else (swj, asym), on the codes the mix ships. Plain writers: computed inside each writer's quant job (w76,
+# rxq.post.c9_tensor; the separate level pass took 859 s a 27B level in w75's run). Runtime: none (scales).
+enable = true                  # ADOPTED (user 11-07): attn_o -1, gdn_out 3, down 0, plain writers
+alpha = { attn_o = -1.0, gdn_out = 3.0, down = 0.0 }
+e_clip = 0.5                   # e_n clipped to [0, 0.5] (never reached at K >= 2 on the 0.8B)
+
+[post.healing]
+# Frozen-code scale healing (#89, 0.8B done; 27B deferred by the user, 11-05): post-quantization, never blocks the
+# freeze; re-run the knapsack after it.
+enable = false
+
+# --------------------------------------------------------------------------- ladder plan (which levels, not in the stamp)
+[ladder]
+# The 49 levels and their build order (v3.md "Ladder"). Outside the stamp: it picks which levels exist, not what a
+# tensor's codes are; every level's codebook comes from [quant.codebook] (i8 everywhere since 11-09). History: 71 -> 55
+# (i4 twins out, 11-08) -> 50 (mul1 out, i8 K7.5 / K8 in, 11-09) -> 49 (K8 out, 11-12). python -m rxq.ladder levels |
+# jobs | estimate.
+prefix = "q27v3"               # level names: <prefix>-<stamp[:8]>-k<K>-<codebook>
+levels = [[0.125, 5.0, 0.125], # [first, last, step]: K0.125-5 in eighths (40; K < 1 = sub-1),
+          [5.25, 7.0, 0.25],   #   K5.25-7 in quarters (8),
+          [7.5, 7.5, 0.25]]    #   K7.5 (user 11-12: kept for a 7.0 release; K8 dropped)
+pass1 = [[1.25, 5.0, 0.25],    # pass 1 = the coarse subset (20: e2e test + search calibration): quarter steps K1.25-5,
+         [5.5, 7.0, 0.5]]      #   half steps K5.5-7; pass 3 = sub-1 (K < 1, built last); pass 2 = everything else
+first_use = [2.5, 4.5]         # inside a pass, these K first ("order of use", v3.md)
+split = "group"                # job unit: "group" (one Hessian group of a layer, rqah quant_tensor's unit) | "tensor"
+n_layers = 64
+
+# ------------------------------------------------------------------------------- S7 knapsack (pricing, not in the stamp)
+[knap]
+# rxq.knap's knap5 run (rad-exl3-mix v3/levels/reprice/knap5.py, the 11-07 re-pricing solver; paths relative to the tree's
+# v3/nf, the repo checkout by default). These are the w63 "main" arm's switches (v3/levels/reprice/mkjobs2.py; data
+# data/levels/reprice/swj2/out): tests/check_knap.py reproduces its 2.5 bpw solve byte for byte. The V3R menu's level
+# lists come from the library of levels that exist (rxq.knap library), not from here.
+solver = "../levels/reprice/knap5.py"
+model = "../../data/v3/kfit2-model-final.json"
+aq = "../e1b/data/aq.jsonl"
+aqfactors = "../e1b/data/aqfactors.json"
+map = "../e1b/data/e0-ident.map"
+swj_mode = "gu"                # KN_SWJ when post.swj is on: gate / up only (what swj changes); w120 11-12 (w116 bug 3)
+swj_anchors = "../levels/reprice/swj-anchors.json"   # KN_SWJ_ANCHORS: the measured 27B pairs (#104 K2.5 / K4, #145 K1 +
+                               # K0.5 / K1.5 splice); f(K) solved per anchor; KN_SWJ_KMAX = [post.swj].k_max (no swj above)
+cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
+modes = "a8"                   # KN_MODES: int8 activations only (user + deadcode 11-09, LOG 12:17 PM CST): knap5's
+                               # menu drops the f16-prefill / bf16-tensor rows; one variant per size ("accurate"
+                               # retired). KN_MODES unset / "f16" keeps the old menus (w63 reproduction only)
+sub1_ratios = ""               # KN_SUB1 (sub-1 levels' error ratios); "" = sub-1 levels are not priced (a warning)
+env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
+
+[knap.legacy]
+# rxq.knap --accurate only (tests/check_knap.py: w63's main-acc-2.5 byte for byte): the w63 swj curve, every trunk family,
+# no k_max cap (w116 bug 3: K4.625-4.875 priced with swj, flat 0.91 below K2). Never for V3 solves.
+swj_mode = "all"
+swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"
+
+# ------------------------------------------------------------------------------------------- dropped (for the record)
+[dropped]
+i8c = "#78-04 null on top of H_out"
+yaqa_full = "#33 Sketch A / B: worse"
+row_slab_trunk = "#96 ceiling 0.036 bit"
+act_order_down = "#103 negative (0.994-0.998)"
+chained_tail_biting = "#102 negative"
+best_of_n_seeds = "#41 null (spread 0.5%)"
+group_scales = "#40 negative"
+# Also closed, with no switch here (comment only, outside the stamp): xcorp H_in blend (#101, above), hash codebook (#100,
+# above), A1 down-from-up (#81-04, user 11-07), joint refits beyond the MLP (#108 fail), clipped i8 (#109 negative),
+# bf16 (row, 128) scales (#110 fail), and the A16 / bf16 serving options + mul1 codebook (int8-only decision,
+# user + deadcode 11-09: A8-g128 everywhere; KLD cost of A8 measured x1.0014 at K2.5 full stack, #122).

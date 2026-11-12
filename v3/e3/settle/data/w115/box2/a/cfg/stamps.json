@@ -1,0 +1,10 @@
+{
+ "base": "4f8319840e59c5d0",
+ "R": "8792a7c7ef3ddcd7",
+ "ssm_qkv": "4d3c04b2d029f089",
+ "ssm_z": "50695e5cd8d314c8",
+ "ffn_gate": "312176b36dde0c92",
+ "ffn_up": "3fe0104d378a30bc",
+ "ffn_down": "22e5d30f4cc4d17e",
+ "attn_v": "3104e28870db0e91"
+}

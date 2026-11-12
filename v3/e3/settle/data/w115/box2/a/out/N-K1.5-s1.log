@@ -1,0 +1,27 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.10.linear_attn.in_proj_qkv       K1.5 proxy 3.205e-02 9.6s
+  model.language_model.layers.10.linear_attn.in_proj_z         K1.5 proxy 1.619e-02 5.3s
+  model.language_model.layers.10.linear_attn.out_proj          K1.5 proxy 4.475e-02 5.7s
+  model.language_model.layers.10.mlp.gate_proj                 K1.5 proxy 6.765e-02 11.2s
+  model.language_model.layers.10.mlp.up_proj                   K1.5 proxy 8.334e-02 11.2s
+  model.language_model.layers.10.mlp.down_proj                 K1.5 proxy 8.196e-02 19.2s
+     tile CD 3 (H_out): rel 4.0087e-03 -> 3.9949e-03 (x0.9966), accepted 0.041 / 0.024 / 0.015, 19.8s
+  model.language_model.layers.11.self_attn.q_proj              K1.5 proxy 2.786e-03 27.9s
+  model.language_model.layers.11.self_attn.k_proj              K1.5 proxy 2.113e-02 1.4s
+  model.language_model.layers.11.self_attn.v_proj              K1.5 proxy 3.820e-02 1.3s
+  model.language_model.layers.11.self_attn.o_proj              K1.5 proxy 1.203e-02 5.7s
+  model.language_model.layers.11.mlp.gate_proj                 K1.5 proxy 6.542e-02 11.2s
+  model.language_model.layers.11.mlp.up_proj                   K1.5 proxy 8.166e-02 11.2s
+  model.language_model.layers.11.mlp.down_proj                 K1.5 proxy 8.112e-02 18.9s
+     tile CD 3 (H_out): rel 1.2595e-02 -> 1.2550e-02 (x0.9965), accepted 0.055 / 0.035 / 0.025, 20.0s
+  model.language_model.layers.39.self_attn.q_proj              K1.5 proxy 1.988e-02 28.0s
+  model.language_model.layers.39.self_attn.k_proj              K1.5 proxy 2.829e-02 1.4s
+  model.language_model.layers.39.self_attn.v_proj              K1.5 proxy 6.398e-02 1.3s
+  model.language_model.layers.39.self_attn.o_proj              K1.5 proxy 6.401e-02 5.6s
+  model.language_model.layers.39.mlp.gate_proj                 K1.5 proxy 3.397e-02 11.2s
+  model.language_model.layers.39.mlp.up_proj                   K1.5 proxy 9.968e-02 11.2s
+  model.language_model.layers.39.mlp.down_proj                 K1.5 proxy 9.141e-02 18.8s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K1.5", "K": 1.5, "codebook": "i8", "seed_offset": 1, "keys": ["model.language_model.layers.10.linear_attn.in_proj_qkv", "model.language_model.layers.10.linear_attn.in_proj_z", "model.language_model.layers.10.linear_attn.out_proj", "model.language_model.layers.10.mlp.gate_proj", "model.language_model.layers.10.mlp.up_proj", "model.language_model.layers.10.mlp.down_proj", "model.language_model.layers.11.self_attn.q_proj", "model.language_model.layers.11.self_attn.k_proj", "model.language_model.layers.11.self_attn.v_proj", "model.language_model.layers.11.self_attn.o_proj", "model.language_model.layers.11.mlp.gate_proj", "model.language_model.layers.11.mlp.up_proj", "model.language_model.layers.11.mlp.down_proj", "model.language_model.layers.39.self_attn.q_proj", "model.language_model.layers.39.self_attn.k_proj", "model.language_model.layers.39.self_attn.v_proj", "model.language_model.layers.39.self_attn.o_proj", "model.language_model.layers.39.mlp.gate_proj", "model.language_model.layers.39.mlp.up_proj", "model.language_model.layers.39.mlp.down_proj"], "settings_stamp": "4f8319840e59c5d0", "inputs": {"ckpt": "/data/q27/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/q27/hout/bn1920"}}, "settings_stamp": "4f8319840e59c5d0", "code_stamp": "a7f68e737df527a2", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 20, "seconds": 217.2}

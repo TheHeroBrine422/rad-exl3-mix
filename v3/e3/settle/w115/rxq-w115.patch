@@ -1,0 +1,312 @@
+diff --git a/pipeline/rxq/config.py b/pipeline/rxq/config.py
+index 4d81ebe..a382ca9 100644
+--- a/pipeline/rxq/config.py
++++ b/pipeline/rxq/config.py
+@@ -53,6 +53,10 @@ def validate(cfg):
+     assert a["scope"] in ("per-mix", "per-level"), "post.asym.scope: per-mix | per-level"
+     if a["enable"] and a["scope"] == "per-level":
+         raise ValueError("post.asym: per-level writers next to siblings of another K fail (#111); per-mix only")
++    rl = q.get("reldlq")                    # #152 (w115): experiment switch; absent = off (stamp unchanged)
++    if rl is not None:
++        assert set(rl) <= {"enable", "passes"} and isinstance(rl.get("enable"), bool), f"quant.reldlq: {rl}"
++        assert int(rl.get("passes", 1)) >= 1, "quant.reldlq.passes >= 1"
+     c9 = cfg["post"]["c9"]
+     assert set(c9["alpha"]) <= {"attn_o", "gdn_out", "down"}, c9["alpha"]
+     assert 0 < c9["e_clip"] < 1
+@@ -125,9 +129,12 @@ def quant_settings(cfg, K, codebook, key, seed_offset=0):
+         s["hout"] = cfg["inputs"]["hout"]["dir"]; s["sigma_reg_out"] = cfg["inputs"]["hout"]["sigma_reg_out"]
+         if hout_ldlq(cfg): s["hout_blocks"] = hout_ldlq(cfg)
+     cd = q["tile_cd"]
+-    if cd["enable"] and qwen35.family(key) in cd["families"] and float(K) <= cd["k_max"]:
++    fams = set(cd["families"]) | ({"ffn_gate", "ffn_up"} if "ffn_gate_up" in cd["families"] else set())   # tilecd's alias
++    if cd["enable"] and qwen35.family(key) in fams and float(K) <= cd["k_max"]:
+         s["tile_cd"] = cd["sweeps"]
+     if block_order(cfg) is not None and qwen35.family(key) in qwen35.READERS: s["block_order"] = True
++    rl = q.get("reldlq")
++    if rl and rl["enable"]: s["reldlq"] = int(rl.get("passes", 1))
+     return s
+ 
+ 
+diff --git a/pipeline/rxq/engine.py b/pipeline/rxq/engine.py
+index 667ce3c..005c3d6 100644
+--- a/pipeline/rxq/engine.py
++++ b/pipeline/rxq/engine.py
+@@ -126,6 +126,8 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
+     if block_order is not None:                          # after tile CD: its wrappers run inside the permutation
+         from . import blkorder
+         blkorder.install(Q, block_order)
++    from . import reldlq
++    reldlq.install(Q)                                    # #152 (experiment, off unless quant.reldlq): outside the block order
+     from . import refit
+     refit.install(Q)                                     # last: outside every other wrapper
+     _warm_refit(device)                                  # load the refit kernels while VRAM is empty (ourq does it here)
+diff --git a/pipeline/rxq/quant.py b/pipeline/rxq/quant.py
+index bfe3a50..8c26b1b 100644
+--- a/pipeline/rxq/quant.py
++++ b/pipeline/rxq/quant.py
+@@ -68,6 +68,7 @@ def quant_args(s, key, seed, device, outdir, hname):
+     if s.get("sigma_reg") is not None: qa["sigma_reg"] = s["sigma_reg"]
+     if s.get("sigma_reg_in") is not None and qwen35.is_input_group(hname): qa["sigma_reg"] = s["sigma_reg_in"]
+     if s.get("sigma_reg_out") is not None: qa["sigma_reg_out"] = s["sigma_reg_out"]
++    if s.get("reldlq"): qa["reldlq"] = s["reldlq"]                                  # #152 (rxq/reldlq.py)
+     t = engine.tilecd()
+     if t is not None and s.get("tile_cd"): qa.update(t.args(key, s["K"], outdir))   # s: the family and the level's K (k_max)
+     return qa
+@@ -149,6 +150,7 @@ def quantize_tensor(Q, ck, key, s, hess_dir, device, outdir, hin_dir=None, wpre_
+     if s.get("hout_blocks"): rec["hout_blocks"] = s["hout_blocks"]
+     if "proxy_err_2s" in qa: rec["proxy_err_2s"] = qa["proxy_err_2s"]   # two-sided, quantization domain, before the refit (fork 0008)
+     if qa.get("block_order"): rec["block_order"] = True
++    if qa.get("reldlq_rec"): rec["reldlq"] = qa["reldlq_rec"]
+     if dg: rec["diag"] = _diag_record(dg, s, qa, outdir, key)
+     if diag_out is not None: diag_out.update(dg)
+     del Hd, qa
+diff --git a/pipeline/rxq/reldlq.py b/pipeline/rxq/reldlq.py
+new file mode 100644
+index 0000000..0a3163c
+--- /dev/null
++++ b/pipeline/rxq/reldlq.py
+@@ -0,0 +1,70 @@
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""Re-LDLQ after the refit (#152, w115 2026-11-12; ideas round 2 rank 22). EXPERIMENT SWITCH, off unless the settings
++file has [quant.reldlq] with enable = true (absent table: off, settings stamp unchanged).
++
++Today LDLQ picks the codes against the pre-refit scales (regularize's output / input channel scales and g_scale), then
++the refit moves su / sv. With quant_args["reldlq"] = P (> 0) quantize_exl3 runs P more passes: each pass regularizes
++the ORIGINAL weight with the previous pass's stored scales (suh / svh as f16, so the target is what the previous pass
++ships; g = 1, since su already carries 1 / g), and then runs exactly the normal path: scaled_ldl in the new su,
++prepare_H_out in the new sv, LDLQ (tile CD where the family has it, the #117 block order), the dequant and the refit
++(quant.refit mode, R14 clamp) again. The last pass's result is stored; nothing else changes (same seed, same Hessians).
++
++install(Q) wraps Q.quantize_exl3 outermost (outside the #117 block order's wrapper, so its once-a-call checks hold per
++pass) and is a pass-through for quant_args without "reldlq". Per tensor quant_args["reldlq_rec"] = per pass: the
++refit's logged proxy (undamped calib H_in metric, original basis), and seconds; pass 0 = the normal quantization."""
++import time
++
++import torch
++
++from . import refit
++
++
++def install(Q):
++    if getattr(Q, "_rxq_reldlq", False): return
++    inner = Q.quantize_exl3
++
++    def quantize_exl3(weight, H_data, quant_args, return_weight_q, *a, **kw):
++        P = int(quant_args.get("reldlq") or 0)
++        if P <= 0: return inner(weight, H_data, quant_args, return_weight_q, *a, **kw)
++        w0 = weight.clone() if weight.numel() <= 5e8 else weight.cpu().clone()   # quantize_exl3 regularizes in place
++        t0 = time.time()
++        r = inner(weight, H_data, quant_args, return_weight_q, *a, **kw)
++        recs = [{"pass": 0, "proxy_err": float(r[1]), "s": round(time.time() - t0, 2)}]
++        ctx_out = refit._CTX.get("out") if refit._CTX else None
++        traj0 = dict(ctx_out.get("traj", {})) if ctx_out else {}
++        g0, zeros0 = quant_args.get("g_scale"), quant_args.get("zeros")
++        for p in range(1, P + 1):
++            if quant_args.get("q_fallback"): break                      # fallback tensors: no LDLQ to redo
++            t1 = time.time()
++            su = r[2]["suh"].float().view(-1, 1); sv = r[2]["svh"].float().view(1, -1)
++            r = None                                                     # free the previous pass's weight_q first
++            orig_reg = Q.regularize
++            Q.regularize = _regularize2(Q, su, sv, zeros0)
++            try:
++                r = inner(w0.clone().to(weight.device), H_data, quant_args, return_weight_q, *a, **kw)
++            finally:
++                Q.regularize = orig_reg
++            recs.append({"pass": p, "proxy_err": float(r[1]), "s": round(time.time() - t1, 2)})
++        quant_args["g_scale"] = g0                                       # the record keeps pass 0's search result
++        quant_args["reldlq_rec"] = recs
++        if ctx_out is not None and traj0: refit._CTX["out"].setdefault("traj", {})["pass0"] = traj0
++        del w0
++        return r
++
++    Q.quantize_exl3 = quantize_exl3
++    Q._rxq_reldlq = True
++
++
++def _regularize2(Q, su_f, sv_f, zeros0):
++    """regularize() with the scales fixed: W / sv, output Hadamard, / su, input Hadamard (regularize's order and
++    in-place ops); zero scales (zero channels) divide by 1 and stay 0 in the stored vectors"""
++    def regularize(weight, su, sv, quant_args, verbose, H_diag, pb, skip_g_scale=False, q_fallback=False):
++        quant_args["out_scales_hessian"] = False
++        quant_args["zeros"] = bool(zeros0)
++        s_v = sv_f.to(weight.device, torch.float); s_u = su_f.to(weight.device, torch.float)
++        weight /= torch.where(s_v == 0, torch.ones_like(s_v), s_v)
++        Q.blockwise_preapply_had_r_(weight, Q.had_n)
++        weight /= torch.where(s_u == 0, torch.ones_like(s_u), s_u)
++        Q.blockwise_preapply_had_l_(weight, Q.had_k)
++        return True, weight, 1.0, s_u.clone(), s_v.clone()
++    return regularize
+diff --git a/pipeline/rxq/tilecd.py b/pipeline/rxq/tilecd.py
+index 617932f..ffbd3f0 100644
+--- a/pipeline/rxq/tilecd.py
++++ b/pipeline/rxq/tilecd.py
+@@ -27,10 +27,12 @@ tile shares, seconds; "hout": true for the two-sided objective)."""
+ import json, os, time
+ import torch
+ 
+-# key suffix -> family (the challenge's tensor names; gate and up are one family here, as in the research module)
++# key suffix -> family: qwen35.FAMILY's names, which config.quant_settings tests (w115: gate and up were one family
++# "ffn_gate_up" here, a name quant_settings never matches, so CD could not be switched on for them; the name stays an
++# alias for both)
+ FAMILY = (("self_attn.q_proj", "attn_qg"), ("self_attn.k_proj", "attn_k"), ("self_attn.v_proj", "attn_v"),
+           ("self_attn.o_proj", "attn_output"), ("linear_attn.in_proj_qkv", "ssm_qkv"), ("linear_attn.in_proj_z", "ssm_z"),
+-          ("linear_attn.out_proj", "ssm_out"), ("mlp.gate_proj", "ffn_gate_up"), ("mlp.up_proj", "ffn_gate_up"),
++          ("linear_attn.out_proj", "ssm_out"), ("mlp.gate_proj", "ffn_gate"), ("mlp.up_proj", "ffn_up"),
+           ("mlp.down_proj", "ffn_down"), ("lm_head", "head"))
+ _CFG = {"sweeps": 0, "families": set()}
+ _CAP = {}                                  # the current linear's metric inputs, captured from scaled_ldl / finalize / prepare_H_out
+@@ -51,6 +53,7 @@ def install(Q, sweeps, families):
+     """wrap exllamav3's quantize module Q: finalize_capture_H, scaled_ldl and prepare_H_out record the metrics, ldlq and
+     ldlq_2hess run CD after themselves when quant_args["tile_cd"] is set"""
+     fams = {f.strip() for f in families.split(",") if f.strip()}
++    if "ffn_gate_up" in fams: fams = (fams - {"ffn_gate_up"}) | {"ffn_gate", "ffn_up"}
+     bad = fams - {f for _, f in FAMILY}
+     if bad: raise SystemExit(f"tile CD families: unknown {sorted(bad)} (known: {sorted({f for _, f in FAMILY})})")
+     _CFG.update(sweeps=int(sweeps), families=fams)
+diff --git a/pipeline/tests/check_reldlq.py b/pipeline/tests/check_reldlq.py
+new file mode 100644
+index 0000000..f75952a
+--- /dev/null
++++ b/pipeline/tests/check_reldlq.py
+@@ -0,0 +1,141 @@
++#!/usr/bin/env python3
++"""check_reldlq.py BASE_PIPE FORK [WORK] -- CPU checks (rxq/cpukern.py stand-in kernels, the fork's real quantize.py) of
++w115's patch: rxq/reldlq.py (#152, re-LDLQ after the refit) and tile CD's gate / up family names (#153). Tiny two-layer
++model as check_cpujob.py (layer 2 GDN + MLP, layer 3 attention + MLP), K2.5 and K0.5 i8, H_out blocks (today's settings).
++  off      the patched pipeline with no [quant.reldlq] (today's settings file) == BASE_PIPE (rad-exl3-mix HEAD's
++           pipeline/, unpatched): every t-file's tensors bit-identical, same settings stamp
++  stamp    a settings file with [quant.reldlq] enable = false has another stamp but the same t-files as off
++  on       [quant.reldlq] enable = true, passes = 1: every tensor stored, each log record has two passes, pass 0's
++           proxy == the off run's proxy_err (the first pass is today's quantization), the stored t-files differ from
++           off's on most tensors, the decoded t-file == the job's wq (f16), q_proj still runs tile CD twice (two
++           tilecd.jsonl lines), the record's diag traj has pass0
++  cdfam    tile CD families + ffn_gate (then ffn_up, ffn_down, ssm_qkv, attn_v) one at a time: tilecd.jsonl lists q_proj
++           and exactly that family's keys; tensors outside it bit-identical to off; the alias ffn_gate_up = gate + up
++Last line: "RELDLQ CHECKS n/m PASS"."""
++import json, os, re, subprocess, sys, tempfile
++
++import numpy as np
++import torch
++from safetensors import safe_open
++from safetensors.torch import save_file
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++PIPE = os.path.normpath(os.path.join(HERE, ".."))
++
++if len(sys.argv) > 1 and sys.argv[1] == "--run":          # child: one job (one engine setup a process)
++    sys.path.insert(0, sys.argv[4])
++    from rxq import job
++    spec = json.load(open(sys.argv[2]))
++    job.run_quant(spec, sys.argv[3], device="cpu", save_wq=True)
++    sys.exit(0)
++
++sys.path.insert(0, PIPE)
++from rxq import config as C, deq, job, qwen35  # noqa: E402
++
++BASE, FORK = sys.argv[1], sys.argv[2]
++W = sys.argv[3] if len(sys.argv) > 3 else tempfile.mkdtemp(prefix="w115chk-")
++res = []
++
++
++def report(name, ok, why):
++    res.append(bool(ok)); print(f"{'PASS' if ok else 'FAIL'} {name}: {why}", flush=True)
++
++
++SH = {"ssm_qkv": (384, 256), "ssm_z": (256, 256), "ssm_out": (256, 256), "attn_qg": (256, 256), "attn_k": (128, 256),
++      "attn_v": (128, 256), "attn_output": (256, 256), "ffn_gate": (384, 256), "ffn_up": (384, 256), "ffn_down": (256, 384)}
++g = torch.Generator().manual_seed(115)
++ck, hs, ho = f"{W}/ckpt", f"{W}/hess", f"{W}/hout/bn1920"
++for d in (ck, hs, ho): os.makedirs(d, exist_ok=True)
++tens, keys = {}, []
++for l in (2, 3):
++    for hname, ks in qwen35.layer_plan(l):
++        k_in = SH[qwen35.family(ks[0])][1]
++        A = torch.randn(4 * k_in, k_in, generator=g) * torch.linspace(0.3, 2.0, k_in)
++        H = (A.T @ A).float(); iu = torch.triu_indices(k_in, k_in)
++        save_file({"hessian_upper": H[iu[0], iu[1]].contiguous()}, f"{hs}/{hname}.safetensors", metadata={"k": str(k_in), "rows": str(4 * k_in)})
++        for key in ks:
++            n, k = SH[qwen35.family(key)]
++            tens[f"{key}.weight"] = (torch.randn(n, k, generator=g) * 0.02).to(torch.bfloat16)
++            save_file({"hout_diag": (torch.rand(n, generator=g) + 0.1).float()}, f"{ho}/{key}.safetensors")
++            keys.append(key)
++save_file(tens, f"{ck}/model.safetensors")
++
++base = open(os.path.join(PIPE, "config", "v3.toml")).read()
++assert base == open(os.path.join(BASE, "config", "v3.toml")).read(), "the patch must not touch v3.toml"
++def cdfams(fams): return re.sub(r'^families = \["attn_qg"\]', "families = " + json.dumps(fams), base, count=1, flags=re.M)
++CFGS = {"off": base, "rl0": base + "\n[quant.reldlq]\nenable = false\npasses = 1\n",
++        "rl1": base + "\n[quant.reldlq]\nenable = true\npasses = 1\n"}
++for f in ("ffn_gate", "ffn_up", "ffn_down", "ssm_qkv", "attn_v", "ffn_gate_up"): CFGS[f"cd-{f}"] = cdfams(["attn_qg", f])
++for m, t in CFGS.items(): open(f"{W}/{m}.toml", "w").write(t)
++
++
++def run(name, pipe, cfgname, K):
++    out = f"{W}/out-{name}-K{K}"
++    cfg = C.load(f"{W}/{cfgname}.toml"); st = C.settings_stamp(cfg)
++    for gi, ks in enumerate([list(ks) for l in (2, 3) for _, ks in qwen35.layer_plan(l)]):
++        spec = {"type": "rxq.quant", "version": 1, "level": f"t-k{K}-i8", "K": K, "codebook": "i8", "seed_offset": 0, "keys": ks,
++                "settings_stamp": st, "config": f"{W}/{cfgname}.toml",
++                "inputs": {"ckpt": ck, "hessians": hs, "hin": None, "wpre": None, "hout": ho}}
++        sp = f"{W}/spec-{name}-K{K}-{gi}.json"; json.dump(spec, open(sp, "w"))
++        env = dict(os.environ, RXQ_CPU_STANDIN="1", RXQ_EXL3_SRC=f"{FORK}/exllamav3/exllamav3_ext", PYTHONPATH=pipe,
++                   OMP_NUM_THREADS="2", RXQ_RXM=os.path.dirname(pipe))
++        r = subprocess.run([sys.executable, __file__, "--run", sp, out, pipe], env=env, capture_output=True, text=True)
++        if r.returncode: print(r.stdout[-1500:], r.stderr[-3000:]); return out, st, False
++    return out, st, True
++
++
++def tfile(out, key):
++    with safe_open(job.tensor_file(out, key), "pt") as f: return {n.rsplit(".", 1)[1]: f.get_tensor(n) for n in f.keys()}
++
++
++def same(a, b): return a.keys() == b.keys() and all(torch.equal(a[n], b[n]) for n in a)
++
++
++def recs(out): return {json.loads(x)["key"]: json.loads(x) for x in open(f"{out}/log.jsonl")}
++
++
++def cdkeys(out):
++    p = f"{out}/tilecd.jsonl"
++    return [json.loads(x)["key"] for x in open(p)] if os.path.exists(p) else []
++
++
++lut = torch.from_numpy(deq.codebook_lut("i8").astype(np.float32))
++for K in (2.5, 0.5):
++    ob, sb, okb = run("base", BASE, "off", K)
++    oo, so, oko = run("off", PIPE, "off", K)
++    report(f"off-K{K}", okb and oko and sb == so and all(same(tfile(ob, k), tfile(oo, k)) for k in keys),
++           f"patched pipeline, no [quant.reldlq], == HEAD's pipeline on {len(keys)} tensors (stamp {so})")
++    o0, s0, ok0 = run("rl0", PIPE, "rl0", K)
++    report(f"stamp-K{K}", ok0 and s0 != so and all(same(tfile(o0, k), tfile(oo, k)) for k in keys),
++           f"enable = false: stamp {s0} (!= {so}), t-files == off")
++    o1, s1, ok1 = run("rl1", PIPE, "rl1", K)
++    if ok1:
++        R0, R1 = recs(oo), recs(o1)
++        two = all(len(R1[k].get("reldlq", [])) == 2 for k in keys)
++        p0 = max(abs(R1[k]["reldlq"][0]["proxy_err"] - R0[k]["proxy_err"]) / R0[k]["proxy_err"] for k in keys) if two else 1.0
++        nd = sum(not same(tfile(o1, k), tfile(oo, k)) for k in keys)
++        worst = 0.0
++        for k in keys:
++            t = tfile(o1, k); Wd = deq.weight(t["trellis"], t["suh"], t["svh"], K, lut)
++            with safe_open(f"{o1}/wq/{k}.safetensors", "pt") as f: wq = f.get_tensor("weight").float().T
++            worst = max(worst, float((Wd - wq).norm() / wq.norm()))
++        cdk = cdkeys(o1); q = [k for k in keys if qwen35.family(k) == "attn_qg"]
++        tr = all("pass0" in R1[k].get("diag", {}).get("traj", {}) for k in keys)
++        ratio = [round(R1[k]["reldlq"][1]["proxy_err"] / R1[k]["reldlq"][0]["proxy_err"], 4) for k in keys]
++        report(f"on-K{K}", two and p0 < 1e-12 and nd >= len(keys) // 2 and worst < 2e-3 and cdk == [x for x in q for _ in (0, 1)] and tr,
++               f"2 passes {two}, pass-0 proxy == off (max rel {p0:.1e}), {nd}/{len(keys)} t-files differ, decode {worst:.1e}, "
++               f"tile CD lines {len(cdk)} (q_proj x2), traj pass0 {tr}; pass1/pass0 proxy {ratio}")
++    else: report(f"on-K{K}", False, "run failed")
++
++for f in ("ffn_gate", "ffn_up", "ffn_down", "ssm_qkv", "attn_v", "ffn_gate_up"):
++    oc, sc, okc = run(f"cd-{f}", PIPE, f"cd-{f}", 2.5)
++    fam = {"ffn_gate_up": ("ffn_gate", "ffn_up")}.get(f, (f,))
++    want = [k for k in keys if qwen35.family(k) in ("attn_qg",) + fam]
++    oo = f"{W}/out-off-K2.5"
++    rest = all(same(tfile(oc, k), tfile(oo, k)) for k in keys if k not in want or qwen35.family(k) == "attn_qg")
++    nd = sum(not same(tfile(oc, k), tfile(oo, k)) for k in want if qwen35.family(k) != "attn_qg")
++    report(f"cdfam-{f}", okc and sorted(cdkeys(oc)) == sorted(want) and rest,
++           f"tile CD on {sorted(set(qwen35.family(k) for k in want))}: tilecd.jsonl {len(cdkeys(oc))} keys (want {len(want)}), "
++           f"other tensors == off {rest}, {nd} family tensors changed")
++print(f"RELDLQ CHECKS {sum(res)}/{len(res)} PASS")
++sys.exit(0 if all(res) else 1)

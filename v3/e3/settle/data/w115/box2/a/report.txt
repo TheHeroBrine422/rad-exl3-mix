@@ -1,0 +1,67 @@
+units done: 36: C-attn_v-K2.5-s0 C-attn_v-K2.5-s1 C-attn_v-K4-s0 C-attn_v-K4-s1 C-ffn_down-K2.5-s0 C-ffn_down-K2.5-s1 C-ffn_down-K4-s0 C-ffn_down-K4-s1 C-ffn_gate-K2.5-s0 C-ffn_gate-K2.5-s1 C-ffn_gate-K4-s0 C-ffn_gate-K4-s1 C-ffn_up-K2.5-s0 C-ffn_up-K2.5-s1 C-ffn_up-K4-s0 C-ffn_up-K4-s1 C-ssm_qkv-K2.5-s0 C-ssm_qkv-K2.5-s1 C-ssm_qkv-K4-s0 C-ssm_qkv-K4-s1 C-ssm_z-K2.5-s0 C-ssm_z-K2.5-s1 C-ssm_z-K4-s0 C-ssm_z-K4-s1 N-K1.5-s0 N-K1.5-s1 N-K2.5-s0 N-K2.5-s1 N-K4-s0 N-K4-s1 R-K1.5-s0 R-K1.5-s1 R-K2.5-s0 R-K2.5-s1 R-K4-s0 R-K4-s1
+c1 stamps: PASS (N 4f8319840e59c5d0; arms {'base': '4f8319840e59c5d0', 'R': '8792a7c7ef3ddcd7', 'ssm_qkv': '4d3c04b2d029f089', 'ssm_z': '50695e5cd8d314c8', 'ffn_gate': '312176b36dde0c92', 'ffn_up': '3fe0104d378a30bc', 'ffn_down': '22e5d30f4cc4d17e', 'attn_v': '3104e28870db0e91'})
+c2 N == w114 levels (seed 0): K2.5 20 identical / 0 differ / 0 missing; K4 20 identical / 0 differ / 0 missing
+c3: PASS
+
+## #152-01 re-LDLQ (R) vs N: f2 ratio rho per tensor (seeds 0 / 1), geo; quant time R / N
+K1.5: geo rho f2 1.0033 (n 26), f1 1.0014; time R/N 1.84x (496 s vs 270 s)
+   L10.ffn_down           s0 1.0036 s1 1.0034
+   L10.ffn_gate           s0 1.0003 s1 1.0006
+   L10.ffn_up             s0 1.0007 s1 1.0008
+   L10.ssm_out            s0 1.0147 s1 1.0144
+   L10.ssm_qkv            s0 1.0076 s1 1.0067
+   L10.ssm_z              s0 1.0065 s1 1.0080
+   L39.attn_k             s0 1.0033 s1 1.0030
+   L39.attn_output        s0 1.0030 s1 1.0028
+   L39.attn_qg            s0 1.0017 s1 1.0016
+   L39.attn_v             s0 1.0018 s1 1.0018
+   L39.ffn_down           s0 1.0006 s1 1.0008
+   L39.ffn_gate           s0 0.9996 s1 0.9995
+   L39.ffn_up             s0 0.9998 s1 0.9997
+   best-of by the job's own proxy (report only): geo 1.0013, pass 1 picked 14/26
+K2.5: geo rho f2 1.0006 (n 26), f1 0.9999; time R/N 1.89x (480 s vs 254 s)
+   L10.ffn_down           s0 1.0005 s1 1.0004
+   L10.ffn_gate           s0 1.0002 s1 1.0001
+   L10.ffn_up             s0 1.0000 s1 1.0000
+   L10.ssm_out            s0 1.0033 s1 1.0033
+   L10.ssm_qkv            s0 1.0014 s1 1.0017
+   L10.ssm_z              s0 1.0011 s1 1.0012
+   L39.attn_k             s0 0.9997 s1 1.0005
+   L39.attn_output        s0 1.0003 s1 1.0003
+   L39.attn_qg            s0 1.0000 s1 1.0003
+   L39.attn_v             s0 1.0004 s1 1.0000
+   L39.ffn_down           s0 1.0001 s1 1.0002
+   L39.ffn_gate           s0 0.9999 s1 0.9999
+   L39.ffn_up             s0 0.9999 s1 1.0000
+   best-of by the job's own proxy (report only): geo 1.0002, pass 1 picked 15/26
+K4: geo rho f2 0.9999 (n 26), f1 0.9998; time R/N 1.84x (365 s vs 198 s)
+   L10.ffn_down           s0 1.0000 s1 1.0000
+   L10.ffn_gate           s0 1.0000 s1 1.0001
+   L10.ffn_up             s0 0.9999 s1 0.9999
+   L10.ssm_out            s0 0.9999 s1 1.0005
+   L10.ssm_qkv            s0 1.0000 s1 1.0003
+   L10.ssm_z              s0 1.0007 s1 0.9998
+   L39.attn_k             s0 1.0002 s1 0.9987
+   L39.attn_output        s0 0.9999 s1 0.9999
+   L39.attn_qg            s0 0.9998 s1 1.0000
+   L39.attn_v             s0 0.9998 s1 0.9996
+   L39.ffn_down           s0 0.9999 s1 1.0000
+   L39.ffn_gate           s0 1.0000 s1 1.0000
+   L39.ffn_up             s0 0.9999 s1 1.0000
+   best-of by the job's own proxy (report only): geo 1.0000, pass 1 picked 21/26
+
+## #153-01 tile CD on family F (C_F) vs N: f2 ratio per tensor / K / seed; geo over K2.5 + K4 x seeds; added time
+ssm_qkv   geo 0.9988 (n 4) fail; added s/tensor K2.5 +16.0 K4 +10.9; ~8.96 box2 card-h per ladder = ~6.45 card-0 h (serial, 48 tensors x 50 levels)
+   K2.5/L10.ssm_qkv/s0 0.9988 K2.5/L10.ssm_qkv/s1 0.9988 K4/L10.ssm_qkv/s0 0.9987 K4/L10.ssm_qkv/s1 0.9988
+ssm_z     geo 0.9986 (n 4) fail; added s/tensor K2.5 +12.6 K4 +9.7; ~7.45 box2 card-h per ladder = ~5.36 card-0 h (serial, 48 tensors x 50 levels)
+   K2.5/L10.ssm_z/s0 0.9985 K2.5/L10.ssm_z/s1 0.9986 K4/L10.ssm_z/s0 0.9986 K4/L10.ssm_z/s1 0.9986
+ffn_gate  geo 0.9977 (n 12) fail; added s/tensor K2.5 +27.8 K4 +18.8; ~20.68 box2 card-h per ladder = ~14.88 card-0 h (serial, 64 tensors x 50 levels)
+   K2.5/L10.ffn_gate/s0 0.9980 K2.5/L11.ffn_gate/s0 0.9979 K2.5/L39.ffn_gate/s0 0.9976 K2.5/L10.ffn_gate/s1 0.9980 K2.5/L11.ffn_gate/s1 0.9979 K2.5/L39.ffn_gate/s1 0.9975 K4/L10.ffn_gate/s0 0.9978 K4/L11.ffn_gate/s0 0.9977 K4/L39.ffn_gate/s0 0.9973 K4/L10.ffn_gate/s1 0.9978 K4/L11.ffn_gate/s1 0.9977 K4/L39.ffn_gate/s1 0.9973
+ffn_up    geo 0.9972 (n 12) fail; added s/tensor K2.5 +27.6 K4 +19.1; ~20.75 box2 card-h per ladder = ~14.93 card-0 h (serial, 64 tensors x 50 levels)
+   K2.5/L10.ffn_up/s0 0.9977 K2.5/L11.ffn_up/s0 0.9974 K2.5/L39.ffn_up/s0 0.9969 K2.5/L10.ffn_up/s1 0.9977 K2.5/L11.ffn_up/s1 0.9973 K2.5/L39.ffn_up/s1 0.9969 K4/L10.ffn_up/s0 0.9975 K4/L11.ffn_up/s0 0.9971 K4/L39.ffn_up/s0 0.9965 K4/L10.ffn_up/s1 0.9975 K4/L11.ffn_up/s1 0.9971 K4/L39.ffn_up/s1 0.9965
+ffn_down  geo 0.9952 (n 12) fail; added s/tensor K2.5 +38.7 K4 +29.9; ~30.50 box2 card-h per ladder = ~21.94 card-0 h (serial, 64 tensors x 50 levels)
+   K2.5/L10.ffn_down/s0 0.9950 K2.5/L11.ffn_down/s0 0.9950 K2.5/L39.ffn_down/s0 0.9963 K2.5/L10.ffn_down/s1 0.9950 K2.5/L11.ffn_down/s1 0.9949 K2.5/L39.ffn_down/s1 0.9963 K4/L10.ffn_down/s0 0.9945 K4/L11.ffn_down/s0 0.9945 K4/L39.ffn_down/s0 0.9959 K4/L10.ffn_down/s1 0.9945 K4/L11.ffn_down/s1 0.9944 K4/L39.ffn_down/s1 0.9958
+attn_v    geo 0.9989 (n 8) fail; added s/tensor K2.5 +4.2 K4 +3.8; ~0.89 box2 card-h per ladder = ~0.64 card-0 h (serial, 16 tensors x 50 levels)
+   K2.5/L11.attn_v/s0 0.9991 K2.5/L39.attn_v/s0 0.9989 K2.5/L11.attn_v/s1 0.9991 K2.5/L39.attn_v/s1 0.9988 K4/L11.attn_v/s0 0.9991 K4/L39.attn_v/s0 0.9987 K4/L11.attn_v/s1 0.9991 K4/L39.attn_v/s1 0.9988
+
+GATES: #152 K2.5 geo 1.0006 (n 26) FAIL; #153 pass: none (ssm_qkv 0.9988, ssm_z 0.9986, ffn_gate 0.9977, ffn_up 0.9972, ffn_down 0.9952, attn_v 0.9989)

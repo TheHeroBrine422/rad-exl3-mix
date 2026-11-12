@@ -1,0 +1,82 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2": 0.02102246433536505,
+  "f1": 0.03204945766338558
+ },
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2": 0.015586409213083834,
+  "f1": 0.016189836292282787
+ },
+ "model.language_model.layers.10.linear_attn.out_proj": {
+  "f2": 0.03436283910391422,
+  "f1": 0.044745255200736744
+ },
+ "model.language_model.layers.10.mlp.down_proj": {
+  "f2": 0.0689061345571743,
+  "f1": 0.08196162416254373
+ },
+ "model.language_model.layers.10.mlp.gate_proj": {
+  "f2": 0.0539966085475322,
+  "f1": 0.06764770671004736
+ },
+ "model.language_model.layers.10.mlp.up_proj": {
+  "f2": 0.06593795606565425,
+  "f1": 0.08334343853589671
+ },
+ "model.language_model.layers.11.mlp.down_proj": {
+  "f2": 0.07310336264885943,
+  "f1": 0.0811177113477492
+ },
+ "model.language_model.layers.11.mlp.gate_proj": {
+  "f2": 0.04901285675526396,
+  "f1": 0.06541828735584702
+ },
+ "model.language_model.layers.11.mlp.up_proj": {
+  "f2": 0.05590876866237096,
+  "f1": 0.08165728303144089
+ },
+ "model.language_model.layers.11.self_attn.k_proj": {
+  "f2": 0.008541457771664668,
+  "f1": 0.021134961282405964
+ },
+ "model.language_model.layers.11.self_attn.o_proj": {
+  "f2": 0.014556437530341427,
+  "f1": 0.012033519166012061
+ },
+ "model.language_model.layers.11.self_attn.q_proj": {
+  "f2": 0.0036037036163273713,
+  "f1": 0.0027856950744837667
+ },
+ "model.language_model.layers.11.self_attn.v_proj": {
+  "f2": 0.024067927424222695,
+  "f1": 0.03819527234991918
+ },
+ "model.language_model.layers.39.mlp.down_proj": {
+  "f2": 0.09168102881417636,
+  "f1": 0.0914121488870153
+ },
+ "model.language_model.layers.39.mlp.gate_proj": {
+  "f2": 0.034110123601318716,
+  "f1": 0.03397373194137271
+ },
+ "model.language_model.layers.39.mlp.up_proj": {
+  "f2": 0.09405888883510363,
+  "f1": 0.09967546781570748
+ },
+ "model.language_model.layers.39.self_attn.k_proj": {
+  "f2": 0.020412760739532458,
+  "f1": 0.028288670069245438
+ },
+ "model.language_model.layers.39.self_attn.o_proj": {
+  "f2": 0.06555962389492857,
+  "f1": 0.06401371546985796
+ },
+ "model.language_model.layers.39.self_attn.q_proj": {
+  "f2": 0.012176250029866,
+  "f1": 0.019883419228005
+ },
+ "model.language_model.layers.39.self_attn.v_proj": {
+  "f2": 0.057941910273550806,
+  "f1": 0.0639820776618863
+ }
+}

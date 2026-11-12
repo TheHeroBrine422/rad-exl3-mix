@@ -1,0 +1,6 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_qkv": {
+  "f2": 0.0006101200006670763,
+  "f1": 0.0009873625265930568
+ }
+}

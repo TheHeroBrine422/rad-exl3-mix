@@ -1,0 +1,6 @@
+{
+ "model.language_model.layers.10.linear_attn.in_proj_z": {
+  "f2": 0.0004446944016711604,
+  "f1": 0.0005055741836348259
+ }
+}

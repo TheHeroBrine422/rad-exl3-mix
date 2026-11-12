@@ -1,0 +1,14 @@
+{
+ "model.language_model.layers.10.mlp.gate_proj": {
+  "f2": 0.012869093155542136,
+  "f1": 0.01634862932223787
+ },
+ "model.language_model.layers.11.mlp.gate_proj": {
+  "f2": 0.011636893214607872,
+  "f1": 0.01578133441722582
+ },
+ "model.language_model.layers.39.mlp.gate_proj": {
+  "f2": 0.008292015179149284,
+  "f1": 0.008340205755413537
+ }
+}

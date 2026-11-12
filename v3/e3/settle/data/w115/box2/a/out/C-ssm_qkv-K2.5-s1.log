@@ -1,0 +1,7 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+block order: installed (LDLQ first visits natural block 31, last 6)
+     tile CD 3 (H_out): rel 5.0326e-03 -> 5.0265e-03 (x0.9988), accepted 0.021 / 0.010 / 0.006, 15.7s
+  model.language_model.layers.10.linear_attn.in_proj_qkv       K2.5 proxy 7.731e-03 25.3s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K2.5", "K": 2.5, "codebook": "i8", "seed_offset": 1, "keys": ["model.language_model.layers.10.linear_attn.in_proj_qkv"], "settings_stamp": "4d3c04b2d029f089", "inputs": {"ckpt": "/data/q27/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/q27/hout/bn1920"}}, "settings_stamp": "4d3c04b2d029f089", "code_stamp": "a7f68e737df527a2", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 1, "seconds": 25.3}

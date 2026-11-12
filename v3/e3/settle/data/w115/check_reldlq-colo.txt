@@ -1,0 +1,13 @@
+PASS off-K2.5: patched pipeline, no [quant.reldlq], == HEAD's pipeline on 13 tensors (stamp 4f8319840e59c5d0)
+PASS stamp-K2.5: enable = false: stamp a128efb1cf324ea8 (!= 4f8319840e59c5d0), t-files == off
+PASS on-K2.5: 2 passes True, pass-0 proxy == off (max rel 0.0e+00), 13/13 t-files differ, decode 3.9e-04, tile CD lines 2 (q_proj x2), traj pass0 True; pass1/pass0 proxy [1.0025, 1.0212, 0.9952, 1.0205, 1.0022, 0.9954, 1.0175, 1.0289, 1.0125, 1.0008, 1.0024, 1.0197, 1.0199]
+PASS off-K0.5: patched pipeline, no [quant.reldlq], == HEAD's pipeline on 13 tensors (stamp 4f8319840e59c5d0)
+PASS stamp-K0.5: enable = false: stamp a128efb1cf324ea8 (!= 4f8319840e59c5d0), t-files == off
+PASS on-K0.5: 2 passes True, pass-0 proxy == off (max rel 0.0e+00), 13/13 t-files differ, decode 3.7e-04, tile CD lines 2 (q_proj x2), traj pass0 True; pass1/pass0 proxy [1.0201, 1.0205, 1.0356, 1.0338, 1.0197, 1.0195, 1.009, 1.0278, 1.0339, 1.0263, 1.0242, 1.0247, 1.0183]
+PASS cdfam-ffn_gate: tile CD on ['attn_qg', 'ffn_gate']: tilecd.jsonl 3 keys (want 3), other tensors == off True, 2 family tensors changed
+PASS cdfam-ffn_up: tile CD on ['attn_qg', 'ffn_up']: tilecd.jsonl 3 keys (want 3), other tensors == off True, 2 family tensors changed
+PASS cdfam-ffn_down: tile CD on ['attn_qg', 'ffn_down']: tilecd.jsonl 3 keys (want 3), other tensors == off True, 2 family tensors changed
+PASS cdfam-ssm_qkv: tile CD on ['attn_qg', 'ssm_qkv']: tilecd.jsonl 2 keys (want 2), other tensors == off True, 1 family tensors changed
+PASS cdfam-attn_v: tile CD on ['attn_qg', 'attn_v']: tilecd.jsonl 2 keys (want 2), other tensors == off True, 1 family tensors changed
+PASS cdfam-ffn_gate_up: tile CD on ['attn_qg', 'ffn_gate', 'ffn_up']: tilecd.jsonl 5 keys (want 5), other tensors == off True, 4 family tensors changed
+RELDLQ CHECKS 12/12 PASS

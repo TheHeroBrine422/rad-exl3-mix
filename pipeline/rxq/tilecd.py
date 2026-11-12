@@ -27,10 +27,12 @@ tile shares, seconds; "hout": true for the two-sided objective)."""
 import json, os, time
 import torch
 
-# key suffix -> family (the challenge's tensor names; gate and up are one family here, as in the research module)
+# key suffix -> family: qwen35.FAMILY's names, which config.quant_settings tests (w115: gate and up were one family
+# "ffn_gate_up" here, a name quant_settings never matches, so CD could not be switched on for them; the name stays an
+# alias for both)
 FAMILY = (("self_attn.q_proj", "attn_qg"), ("self_attn.k_proj", "attn_k"), ("self_attn.v_proj", "attn_v"),
           ("self_attn.o_proj", "attn_output"), ("linear_attn.in_proj_qkv", "ssm_qkv"), ("linear_attn.in_proj_z", "ssm_z"),
-          ("linear_attn.out_proj", "ssm_out"), ("mlp.gate_proj", "ffn_gate_up"), ("mlp.up_proj", "ffn_gate_up"),
+          ("linear_attn.out_proj", "ssm_out"), ("mlp.gate_proj", "ffn_gate"), ("mlp.up_proj", "ffn_up"),
           ("mlp.down_proj", "ffn_down"), ("lm_head", "head"))
 _CFG = {"sweeps": 0, "families": set()}
 _CAP = {}                                  # the current linear's metric inputs, captured from scaled_ldl / finalize / prepare_H_out
@@ -51,6 +53,7 @@ def install(Q, sweeps, families):
     """wrap exllamav3's quantize module Q: finalize_capture_H, scaled_ldl and prepare_H_out record the metrics, ldlq and
     ldlq_2hess run CD after themselves when quant_args["tile_cd"] is set"""
     fams = {f.strip() for f in families.split(",") if f.strip()}
+    if "ffn_gate_up" in fams: fams = (fams - {"ffn_gate_up"}) | {"ffn_gate", "ffn_up"}
     bad = fams - {f for _, f in FAMILY}
     if bad: raise SystemExit(f"tile CD families: unknown {sorted(bad)} (known: {sorted({f for _, f in FAMILY})})")
     _CFG.update(sweeps=int(sweeps), families=fams)
