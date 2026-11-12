@@ -582,9 +582,10 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
   KL directly while streaming) and plot against their K2 / K2-Mix / K3 / K4 at equal bytes (count the Engram tables and
   every kept-as-released tensor in the size). Keep the set held out (never train / select on it) so the comparison stays
   clean; report with their interval method.
-  Context (11-12): their K2 is ~3 bpw over the whole model (~262 GB: K2 experts ~2.25 bpw, K4 Engram, rest as released);
-  KL 0.144 / top-1 86.8% sits between the dense 27B's V2 2.0 (0.164 / 84.9%) and 2.5 (0.067 / 90.2%) on the board corpus.
-  DeepSeek's pinned bf16 floor (~0.0056, ds41 NOTES) explains little of it; looks beatable, verify on their set.
+  Context (11-12): count sizes **without the Engram tables** (they live in host RAM / SSD; user 11-12): their K2 is
+  ~158 GB for ~560B params ≈ **2.2–2.3 bpw**. KL 0.144 / top-1 86.8% vs the dense 27B's V2 interpolated at 2.25
+  (~0.10–0.11 / ~88%): slightly behind V2's curve, before any routing inflation; a competent single-K trellis quant,
+  a fair target. Our edge would be per-expert / per-tensor K (knapsack), H_out / swj-style scale fits and healing.
 - **Public Qwen3.8-27B teacher data for QAD (searched 11-12):** no full-logit teacher set exists for the 27B. Candidates:
   - `logic65/whittle-distill-qwen3.8-27b`: 25,178 rows, 78M tokens, **top-20 logprobs on 25.4M answer tokens**
     (thinking on, agentic / tool prompts; licence "other": check before use). Closest match to QAD targets; top-20 only
