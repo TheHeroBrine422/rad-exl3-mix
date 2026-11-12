@@ -201,14 +201,21 @@ model = "../../data/v3/kfit2-model-final.json"
 aq = "../e1b/data/aq.jsonl"
 aqfactors = "../e1b/data/aqfactors.json"
 map = "../e1b/data/e0-ident.map"
-swj_mode = "all"               # KN_SWJ when post.swj is on (every ours trunk option x r(K))
-swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"   # KN_SWJ_PTS: the corrected swj curve (w63; 27B K2.5 verify, K4 head-matched)
+swj_mode = "gu"                # KN_SWJ when post.swj is on: gate / up only (what swj changes); w120 11-12 (w116 bug 3)
+swj_anchors = "../levels/reprice/swj-anchors.json"   # KN_SWJ_ANCHORS: the measured 27B pairs (#104 K2.5 / K4, #145 K1 +
+                               # K0.5 / K1.5 splice); f(K) solved per anchor; KN_SWJ_KMAX = [post.swj].k_max (no swj above)
 cd_factor = 0.0                # KN_CD when tile CD is on; 0 = not priced (as the w63 main arm; reprice "cd" arm used 0.99)
 modes = "a8"                   # KN_MODES: int8 activations only (user + deadcode 11-09, LOG 12:17 PM CST): knap5's
                                # menu drops the f16-prefill / bf16-tensor rows; one variant per size ("accurate"
                                # retired). KN_MODES unset / "f16" keeps the old menus (w63 reproduction only)
 sub1_ratios = ""               # KN_SUB1 (sub-1 levels' error ratios); "" = sub-1 levels are not priced (a warning)
 env = { KN_EMBT = "2", KN_HEADSLAB = "1", KN_LEVELS = "../../data/v3/levels", KN_DAMP = "1", KN_TP = "../levels/reprice/twopass-m2048.jsonl" }
+
+[knap.legacy]
+# rxq.knap --accurate only (tests/check_knap.py: w63's main-acc-2.5 byte for byte): the w63 swj curve, every trunk family,
+# no k_max cap (w116 bug 3: K4.625-4.875 priced with swj, flat 0.91 below K2). Never for V3 solves.
+swj_mode = "all"
+swj_pts = "2:0.91,2.5:0.935,4:0.989,5:1.0"
 
 # ------------------------------------------------------------------------------------------- dropped (for the record)
 [dropped]

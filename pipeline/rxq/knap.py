@@ -4,8 +4,10 @@
   library   the levels that exist: one entry per (codebook, K) named as the knapsack names its options (i8-K2.375,
             i4-K1, m1-K6.5): dir, K, codebook, settings / code stamps, post passes applied (swj), packed donor if any
   env       knap5's switches from the settings file ([knap], outside the stamp: pricing, not quantization) and the
-            library: the V3R menu lists KN_I4 / KN_I8 / KN_M1 = the library's levels, KN_SWJ / KN_SWJ_PTS when
-            post.swj is on, KN_CD when tile CD is on and [knap].cd_factor is set, KN_NOA4 unless [knap].a4
+            library: the V3R menu lists KN_I4 / KN_I8 / KN_M1 = the library's levels (sub-1 levels: KN_I8_SUB1, priced
+            with KN_SUB1 = [knap].sub1_ratios), KN_SWJ = [knap].swj_mode with KN_SWJ_ANCHORS = [knap].swj_anchors (the
+            measured pairs) and KN_SWJ_KMAX = [post.swj].k_max when post.swj is on, KN_CD when tile CD is on and
+            [knap].cd_factor is set, KN_NOA4 unless [knap].a4. --accurate pins [knap.legacy] (w63's swj curve)
   solve     knap5.py (rad-exl3-mix v3/levels/reprice, the solver of the 11-07 re-pricing; run in place from a tree that
             holds its data, as run5.py runs it) for targets x lambdas -> one JSON line per solve, picks included
   handoff   a solve line -> the search stream's inputs: MIXDIR/knap-<tag>-<base>-<target>.mix (radmix's format,
@@ -65,16 +67,22 @@ def env(cfg, lib, accurate=False):
     sub1 = []
     for name, v in lib.items():
         cb = CBN[v["codebook"]]
-        if v["K"] < 1: sub1.append(name); continue
+        if v["K"] < 1:
+            if cb != "i8": raise SystemExit(f"knap: sub-1 level {name}: only i8 sub-1 levels are priced (knap5 KN_I8_SUB1)")
+            sub1.append(v["K"]); continue
         by[cb].append(v["K"])
     for cb, var in (("i4", "KN_I4"), ("i8", "KN_I8"), ("m1", "KN_M1")):
         e[var] = _klist(by[cb])
     if sub1 and not kn.get("sub1_ratios"):
-        print(f"knap: {len(sub1)} sub-1 levels in the library ({', '.join(sorted(sub1)[:3])}..) are not priced: set "
-              f"[knap].sub1_ratios (knap5 KN_SUB1)", file=sys.stderr)
-    if kn.get("sub1_ratios"): e["KN_SUB1"] = kn["sub1_ratios"]
+        print(f"knap: {len(sub1)} sub-1 levels in the library (K {_klist(sub1)}) are not priced: set "
+              f"[knap].sub1_ratios (knap5 KN_SUB1; v3/levels/reprice/sub1plan.md)", file=sys.stderr)
+    if kn.get("sub1_ratios") and sub1: e["KN_SUB1"] = kn["sub1_ratios"]; e["KN_I8_SUB1"] = _klist(sub1)
+    sw = kn.get("legacy", {}) if accurate else kn
     if cfg["post"]["swj"]["enable"]:
-        e["KN_SWJ"] = kn["swj_mode"]; e["KN_SWJ_PTS"] = kn["swj_pts"]
+        e["KN_SWJ"] = sw["swj_mode"]
+        if sw.get("swj_anchors"):
+            e["KN_SWJ_ANCHORS"] = sw["swj_anchors"]; e["KN_SWJ_KMAX"] = f"{float(cfg['post']['swj']['k_max']):g}"
+        else: e["KN_SWJ_PTS"] = sw["swj_pts"]
     if cfg["quant"]["tile_cd"]["enable"] and kn.get("cd_factor"):
         e["KN_CD"] = f"{kn['cd_factor']:g}"
     if not kn.get("a4"): e["KN_NOA4"] = "1"
@@ -102,7 +110,7 @@ def stage_tree(rxm, solver, scratch):
     return nf, os.path.basename(src)
 
 
-def solve(cfg, lib, out, tree, targets, lambdas, accurate=False, extra_env=None):
+def solve(cfg, lib, out, tree, targets, lambdas, accurate=False, extra_env=None, log=None):
     kn = cfg["knap"]
     nf, solver = stage_tree(tree, kn["solver"], os.path.join(os.path.dirname(os.path.abspath(out)), ".knaptree"))
     E = dict(os.environ, OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", KN_BK=str(1 << 18))
@@ -111,7 +119,8 @@ def solve(cfg, lib, out, tree, targets, lambdas, accurate=False, extra_env=None)
     E.update(env(cfg, lib, accurate)); E.update(extra_env or {})
     argv = [sys.executable, solver, kn["model"], kn["aq"], kn["aqfactors"], kn["map"], os.path.abspath(out),
             ",".join(map(str, targets)), ",".join(map(str, lambdas))]
-    return subprocess.call(argv, cwd=nf, env=E)
+    if log is None: return subprocess.call(argv, cwd=nf, env=E)
+    with open(log, "w") as lf: return subprocess.call(argv, cwd=nf, env=E, stderr=lf)
 
 
 def handoff(line, lib, mixdir, tag, base="v3", donors=None, frontier=None):

@@ -1,0 +1,17 @@
+{
+ "about": "knap5 KN_SWJ_ANCHORS (w120, 2026-11-12): measured 27B swj pairs. r = KL(swj on everywhere) / KL(arm with swj off on the 'off' layers); head / emb = the fixed head and embedding of the mixes (V2 3.00 = ours-K4 head + e3; V2 4.00 = ours-K5 + e4). Splices: layer l even -> K.even, odd -> K.odd (w110 arms110.sh). Solved anchors fix the gate_up factor f(K_off); 'check' anchors are only reported. Replaces the w63 curve 2:0.91,2.5:0.935,4:0.989,5:1.0 (K2 point never measured, 'all' families, priced above post.swj.k_max).",
+ "anchors": [
+  {"id": "104-k2.5", "K": 2.5, "head": "ours-K4", "emb": "e3", "r": 0.9346,
+   "src": "#104 base -> baseswj and s1 -> s1swj 0.9346 / 0.9346 (golden-search27, 103 docs; verify 0.935 / 0.932), K2.5 levels in V2 3.00"},
+  {"id": "104-k4", "K": 4, "head": "ours-K5", "emb": "e4", "r": 0.989,
+   "src": "#104 amendment 2, head-matched K4 in V2 4.00, verify 0.990 / 0.987, geo 0.989"},
+  {"id": "145-k1", "K": 1, "head": "ours-K4", "emb": "e3", "r": 0.73757, "unverified": true,
+   "src": "#145 k1-cn: swj off at uniform K1 in V2 3.00 = 1.3558 (golden-search27d, 193 docs, x 1.313 / c 1.521); 'unverified' (one slice, ~8x the 0.8B)"},
+  {"id": "145-ns", "K": {"even": 0.5, "odd": 1.5}, "off": [0.5], "head": "ours-K4", "emb": "e3", "r": 0.89047,
+   "src": "#145 sp-cc-ns: swj off on the K0.5 layers of the even K0.5 / odd K1.5 splice = 1.1230 (golden-search27d); needs sub-1 options (KN_SUB1)"},
+  {"id": "145-sn", "K": {"even": 0.5, "odd": 1.5}, "off": [1.5], "head": "ours-K4", "emb": "e3", "r": 0.94286,
+   "src": "#145 sp-cc-sn: swj off on the K1.5 layers of the splice = 1.0606 (golden-search27d); needs sub-1 options"},
+  {"id": "145-nn", "K": {"even": 0.5, "odd": 1.5}, "off": [0.5, 1.5], "head": "ours-K4", "emb": "e3", "r": 0.84267, "check": true,
+   "src": "#145 sp-cc-nn: swj off on both = 1.1867 (check of additivity: ns + sn give 1.184)"}
+ ]
+}

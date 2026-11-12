@@ -22,6 +22,24 @@ All new switches default off: without them knap5 is knap4 byte for byte (checked
               uniform trunk K (V2 3.00 / 4.00 head and embedding, as the arms). 'all': every ours trunk option x r(K).
               'gu': only ffn_gate_up (swj refits gate / up scales), factor f(K) solved so the model reproduces r(K) at
               those uniform-K points. Linear in K between the points, held flat outside them.
+  KN_SWJ_KMAX=k  (w120, 11-12) no swj factor on options above K k (= [post.swj].k_max: those levels get no swj pass);
+              unset = the legacy curve on every option.
+  KN_SWJ_ANCHORS=FILE  (w120) the swj factor from measured 27B pairs instead of KN_SWJ_PTS: anchors {id, K (one K =
+              uniform trunk, or {"even": k, "odd": k} = layer-parity splice), off (the K whose layers have swj off in
+              the arm; default [K]), r = KL(swj on everywhere) / KL(arm), head, emb (the mix's fixed head / embedding
+              options), check (true: reported, not solved), skip (true: left out)}. Each solved anchor fixes the factor
+              f(K_off) on the swj families (gu: ffn_gate_up; all: every trunk tensor) so that the model reproduces r,
+              Gauss-Seidel over the anchors (splices couple two K). Between the anchor K: linear in K; below the
+              lowest: flat; from the highest to KN_SWJ_KMAX: flat; above KN_SWJ_KMAX: 1. Anchors whose mix has an
+              option the menu lacks (e.g. sub-1 without KN_SUB1) are skipped with a note. File: swj-anchors.json.
+  KN_SAT=C    (w120) saturation link KLD = C (1 - exp(-P / C)) in the anchor solves and as the output's kld_sat (the DP
+              still minimises P: monotone, same picks at lambda 0). A KN_SUB1_FIT anchor with "sat": true (K = a low mix,
+              ref = a >= 2 bpw mix on the same slice, ratio = KL(K) / KL(ref)) fits C (ideas round 2 rank 23).
+  KN_SUB1_FIT=FILE  (w120; with KN_SWJ_ANCHORS and KN_SUB1) measured whole-model KL ratios of swj'd 27B mixes with
+              sub-1 levels: anchors {id, K (as above), ref (the reference mix's K, e.g. 1), ratio = KL(mix) / KL(ref),
+              fit (the sub-1 K whose scale is solved), head, emb, check}; solved for an extra scale on every sub-1
+              option at K fit (on top of the KN_SUB1 file's kl_scale), alternating with the swj solve until both
+              hold. KN_SUB1_FIT_OUT=F writes {kl_scale_extra, swj}. Plan and anchors: sub1plan.md.
   KN_CD=x     tile CD on attn_qg: error x x (0.99) at every level.
   KN_HEAD16=1 head budgets on a 1/16-bit grid K3-8 from the existing donors: error on the lower convex hull of the
               integer + slab heads in (bytes, error) (a row mix of two heads; conservative), bytes linear in K (+1 MB).
@@ -73,6 +91,12 @@ Switches (env, all default off = knap3's V2-like menu):
               option, error = its K1 error x its family's rel(k) / rel(K1) (FILE: {"ratios": {family: {"k": ratio}}},
               CPU trellis proxy), bytes linear in K (the K1 bytes less (1 - k) x the K1 -> K2 step), family of K1.
               f16 path only (no int8 sub-1 container in the option table yet); not for the head (not measured).
+              With KN_V3R (w120, 11-12): i8-K<k> options (a8 mode) for every k in KN_I8_SUB1 (the library's sub-1
+              levels; default: the file's k), error = base(K1) x R8(1) x ratio(fam, k) x scale(k); ratio log-linear
+              in k between the file's points (clamped at its ends); scale = FILE's "kl_scale" {k: s} (27B anchors:
+              v3/levels/reprice/sub1plan.md), log-linear between its points, 1 if absent. Bytes as above.
+              KN_SUB1_TENSORS=1: the file's per-tensor "tensors" table where a tensor has it (sub1ratios.py, the
+              27B levels' own proxies), else the family's ratio.
   KN_BK=BYTES  DP bucket size (default 256 KiB since 2026-11-05; 1 MiB before). At 1 MiB a 1024 x 5120 tensor's K0.75 (0.47 MiB) rounds to 0 buckets.
 The rest is knap3 (below).
 
@@ -214,7 +238,7 @@ for t in md["tensors"]:
         for c in list(o):
             if c.startswith("ours-K"): o[c] = [o[c][0], o[c][1] * dampf(float(c[6:])), o[c][2]]
 if os.environ.get("KN_FRAC") == "1" and LEV: print(f"measured fractional positions: {NLEV[0]} tensor-levels", file=sys.stderr)
-if os.environ.get("KN_SUB1"):
+if os.environ.get("KN_SUB1") and not V3R:
     S1 = json.load(open(os.environ["KN_SUB1"]))["ratios"]; NS1 = 0
     for t in md["tensors"]:
         o = t["opts"]; fam = t["w"].split(".")[-2]
@@ -247,6 +271,24 @@ if V3R:
         if excess: return 1 + math.exp(math.log(tab[lo] - 1) + f * (math.log(tab[hi] - 1) - math.log(tab[lo] - 1)))
         return math.exp(math.log(tab[lo]) + f * (math.log(tab[hi]) - math.log(tab[lo])))
     def r8(K): return rtab(R8, K, excess=(K > 6 and R8MID == "excess"))
+    def _klist(ks): return ",".join(f"{k:g}" for k in ks)
+    def _loglin(pts, x):                 # log-linear in x between {x: v} points, clamped at the ends
+        ks = sorted(pts); x = min(max(x, ks[0]), ks[-1])
+        if x in pts: return pts[x]
+        lo = max(k for k in ks if k < x); hi = min(k for k in ks if k > x); f = (x - lo) / (hi - lo)
+        return math.exp(math.log(pts[lo]) + f * (math.log(pts[hi]) - math.log(pts[lo])))
+    S1K, S1F, S1SC, S1T, NS1V = [], {}, {}, {}, [0]
+    if os.environ.get("KN_SUB1"):
+        _s1 = json.load(open(os.environ["KN_SUB1"]))
+        S1F = {f: {float(k): float(v) for k, v in r.items()} for f, r in _s1["ratios"].items()}
+        S1SC = {float(k): float(v) for k, v in (_s1.get("kl_scale") or {}).items()}
+        S1T = {n: {float(k): float(v) for k, v in r.items()} for n, r in (_s1.get("tensors") or {}).items()} \
+            if os.environ.get("KN_SUB1_TENSORS") == "1" else {}
+        S1K = sorted(_ks("KN_I8_SUB1", "") or {k for r in S1F.values() for k in r if 0 < k < 1})
+        assert all(0 < k < 1 for k in S1K), S1K
+    def s1ratio(fam, k, w=None):         # per tensor (KN_SUB1_TENSORS=1) where measured, else the family's
+        return _loglin(S1T[w], k) if w in S1T else _loglin(S1F[fam], k)
+    def s1scale(k): return _loglin(S1SC, k) if S1SC else 1.0
     CDF = float(os.environ.get("KN_CD", 1.0)); PHII = os.environ.get("KN_PHI_INTERP", "1") == "1"
     def base(t, K):
         """(bytes, error, family) of the mul1 level K for trunk tensor t from the model's integer options"""
@@ -271,7 +313,15 @@ if V3R:
             for K in ks:
                 b_, e, fa = base(t, K); e *= rf(K) * (CDF if fam == "attn_qg" else 1.0)
                 c = f"{cb}-K{K:g}"; new[c] = [b_, e, K]; t["family_of"][c] = fa; MODES[(t["w"], c)] = modes; NV += 1
+        for k in S1K:                                        # sub-1 (KN_SUB1): from the K1 level, per-family ratio
+            if fam not in S1F: continue
+            (b1, _, _), (b2, _, _) = ints["ours-K1"], ints["ours-K2"]
+            _, e1, fa = base(t, 1.0)
+            c = f"i8-K{k:g}"; new[c] = [b1 - (1 - k) * (b2 - b1), e1 * r8(1.0) * s1ratio(fam, k, t["w"]) * s1scale(k), k]
+            t["family_of"][c] = fa; MODES[(t["w"], c)] = ("a8",); NV += 1; NS1V[0] += 1
         o.clear(); o.update(keep); o.update(new)
+    if S1K: print(f"V3R sub-1: {NS1V[0]} tensor-levels at K {_klist(S1K)} (families {sorted(S1F)}; kl_scale "
+                  f"{ {k: round(s1scale(k), 4) for k in S1K} })", file=sys.stderr)
     print(f"V3R menu: {NV} tensor-levels (i4 {len(I4)}, i8 {len(I8)}, m1 {len(M1)} levels; R8 mid {R8MID}, "
           f"phi interp {PHII}, CD {CDF})", file=sys.stderr)
 SLABF = {5: 0.69, 5.5: 0.70, 6: 0.71}
@@ -406,6 +456,8 @@ def wcost(t, c, e):
     fam = t["family_of"].get(c); ph = math.exp(phi.get(fam, 0.0)) if fam in phi else 1.0
     return t["s"] * t["eb"] * (ph * e / t["eb"]) ** q * KF.get((t["w"], c), 1.0)
 
+SATC = [float(os.environ["KN_SAT"])] if os.environ.get("KN_SAT") else [None]   # saturation link C (w120): KLD = C (1 - e^(-P/C))
+def satf(P): return SATC[0] * (1 - math.exp(-P / SATC[0])) if SATC[0] else P
 SWJ = os.environ.get("KN_SWJ", "")
 if SWJ:
     assert V3R and SWJ in ("gu", "all")
@@ -427,7 +479,114 @@ if SWJ:
         for l in range(NL + 1): P = P * (1 + kap[l] * X[l]) + X[l]
         return P
     CAL = {2.5: ("ours-K4", "e3"), 4: ("ours-K5", "e4")}   # V2 3.00 / 4.00 head and embedding (the swj arms)
-    if SWJ == "all":
+    SKMAX = float(os.environ["KN_SWJ_KMAX"]) if os.environ.get("KN_SWJ_KMAX") else None
+    def swjfam(t): return t["w"] != "output.weight" and (SWJ == "all" or t["w"].split(".")[-2] == "ffn_gate_up")
+    def opt_at(t, K):                    # the trunk option at level K (i8, i4 at K1 in the legacy menu)
+        for c in (f"i8-K{K:g}", f"i4-K{K:g}"):
+            if c in t["opts"]: return c
+        return None
+    def mix_kld(kl, fac, head, emb):     # weights-only model KLD: layer l at K kl(l), swj families x fac(l, K)
+        X = np.zeros(NL + 1)
+        for t in TS:
+            if t["w"] == "output.weight": c = head
+            else: c = opt_at(t, kl(t["layer"]))
+            if c is None or c not in t["opts"]: return None
+            w = wcost(t, c, t["opts"][c][1]) / KF.get((t["w"], c), 1.0)       # (KF: empty until the curve is set)
+            X[t["layer"]] += w * (fac(t["layer"], kl(t["layer"])) if swjfam(t) else 1.0)
+        P = md["c0"] + md["emb"][emb]["cost"]
+        for l in range(NL + 1): P = P * (1 + kap[l] * X[l]) + X[l]
+        return satf(P)
+    def ftab(pts, K):                    # the anchors' factor curve: linear between, flat outside, 1 above KMAX
+        if SKMAX is not None and K > SKMAX + 1e-9: return 1.0
+        return lin(pts, K)
+    if os.environ.get("KN_SWJ_ANCHORS"):
+        def kfun(a):                         # layer -> K of an anchor's mix, and its K set
+            K = a["K"]
+            if isinstance(K, dict): return (lambda l: float(K["even"]) if l % 2 == 0 else float(K["odd"])), sorted({float(K["even"]), float(K["odd"])})
+            return (lambda l: float(K)), [float(K)]
+        def bisect(fn, target, lo, hi):      # fn increasing in x: fn(x) = target
+            for _ in range(60):
+                mid = (lo + hi) / 2
+                if fn(mid) > target: hi = mid
+                else: lo = mid
+            return (lo + hi) / 2
+        F = {}; use = []
+        def fcur(K):                         # the current curve at K (an anchor's own value where it has one)
+            if SKMAX is not None and K > SKMAX + 1e-9: return 1.0
+            return F[K] if K in F else lin(sorted(F.items()), K) if F else 1.0
+        for a in [a for a in json.load(open(os.environ["KN_SWJ_ANCHORS"]))["anchors"] if not a.get("skip")]:
+            kl, ks = kfun(a); off = [float(x) for x in a.get("off", ks)]
+            if mix_kld(kl, lambda l, K: 1.0, a["head"], a["emb"]) is None:
+                print(f"swj anchor {a['id']}: skipped (no option for K {ks} in the menu)", file=sys.stderr); continue
+            use.append((a, kl, off))
+            if not a.get("check"): F.setdefault(off[0], 1.0)
+        # sub-1 scale anchors (KN_SUB1_FIT, w120): measured KL(mix) / KL(ref) of swj'd 27B mixes with sub-1 levels fix
+        # kl_scale(k) of the sub-1 options (on top of the KN_SUB1 file's), alternating with the swj solve
+        S1FIT = []
+        if os.environ.get("KN_SUB1_FIT"):
+            for a in [a for a in json.load(open(os.environ["KN_SUB1_FIT"]))["anchors"] if not a.get("skip")]:
+                kl, ks = kfun(a); rl, _ = kfun({"K": a["ref"]})
+                if mix_kld(kl, lambda l, K: 1.0, a["head"], a["emb"]) is None or mix_kld(rl, lambda l, K: 1.0, a["head"], a["emb"]) is None:
+                    print(f"sub-1 anchor {a['id']}: skipped (no option for K {ks} / ref {a['ref']})", file=sys.stderr); continue
+                S1FIT.append((a, kl, rl, "sat" if a.get("sat") and not a.get("check") else float(a["fit"]) if not a.get("check") else None))
+        S1E0 = {(i, c): t["opts"][c][1] for i, t in enumerate(TS) for c in t["opts"] if (t["w"], c) in MODES and t["opts"][c][2] < 1}
+        S1X = {}                                 # k -> the fitted extra scale on the sub-1 options at k
+        def set_s1(k, x):
+            S1X[k] = x
+            for (i, c), e0 in S1E0.items():
+                if TS[i]["opts"][c][2] == k: TS[i]["opts"][c][1] = e0 * x
+        for k in {f for _, _, _, f in S1FIT if f not in (None, "sat")}: set_s1(k, 1.0)
+        for outer in range(20):
+            for it in range(30):                 # swj: Gauss-Seidel, each anchor solves f at its off-K, the others held
+                moved = 0.0
+                for a, kl, off in use:
+                    if a.get("check"): continue
+                    k0 = off[0]
+                    on = lambda f0: mix_kld(kl, lambda l, K: f0 if K == k0 else fcur(K), a["head"], a["emb"])
+                    arm = mix_kld(kl, lambda l, K: 1.0 if K in off else fcur(K), a["head"], a["emb"])
+                    if on(0.0) / arm > a["r"]:
+                        if it == 0 and outer == 0: print(f"swj anchor {a['id']}: r {a['r']:.4f} not reachable (floor {on(0.0) / arm:.4f}): f = 0", file=sys.stderr)
+                        new = 0.0
+                    else: new = bisect(lambda f0: on(f0) / arm, a["r"], 0.0, 1.5)
+                    moved = max(moved, abs(new - F[k0])); F[k0] = new
+                if moved < 1e-7: break
+            moved = 0.0
+            for a, kl, rl, k in S1FIT:           # sub-1 scales: KL(mix) / KL(ref) with swj on (the curve above)
+                if k is None: continue
+                if k == "sat":                   # saturation C: KL(low mix) / KL(ref) shrinks as C drops (C = inf: none)
+                    def srat(lc):
+                        SATC[0] = math.exp(lc); return mix_kld(kl, lambda l, K: fcur(K), a["head"], a["emb"]) / mix_kld(rl, lambda l, K: fcur(K), a["head"], a["emb"])
+                    old = SATC[0]; SATC[0] = None
+                    raw = mix_kld(kl, lambda l, K: fcur(K), a["head"], a["emb"]) / mix_kld(rl, lambda l, K: fcur(K), a["head"], a["emb"])
+                    if raw <= a["ratio"]:
+                        if outer == 0: print(f"sat anchor {a['id']}: measured {a['ratio']:.3f} >= the model's {raw:.3f}: no saturation", file=sys.stderr)
+                        SATC[0] = None
+                    else: srat(bisect(lambda lc: srat(lc), a["ratio"], math.log(1e-3), math.log(1e4)))
+                    moved = max(moved, 0.0 if old == SATC[0] else 1.0 if old is None or SATC[0] is None else abs(math.log(SATC[0] / old)))
+                    continue
+                ref = mix_kld(rl, lambda l, K: fcur(K), a["head"], a["emb"]); old = S1X[k]
+                def rat(x):
+                    set_s1(k, x); return mix_kld(kl, lambda l, K: fcur(K), a["head"], a["emb"]) / mix_kld(rl, lambda l, K: fcur(K), a["head"], a["emb"])
+                new = bisect(lambda lx: rat(math.exp(lx)), a["ratio"], -8.0, 8.0); set_s1(k, math.exp(new))
+                moved = max(moved, abs(math.log(S1X[k] / old)))
+            if moved < 1e-7: break
+        FG = sorted(F.items()) or [(0.0, 1.0)]
+        for a, kl, off in use:
+            on = mix_kld(kl, lambda l, K: fcur(K), a["head"], a["emb"])
+            arm = mix_kld(kl, lambda l, K: 1.0 if K in off else fcur(K), a["head"], a["emb"])
+            print(f"swj anchor {a['id']}: measured r {a['r']:.4f}, model {on / arm:.4f}{' (check)' if a.get('check') else ''}; "
+                  f"model KLD on {on:.5f}", file=sys.stderr)
+        for a, kl, rl, k in S1FIT:
+            m = mix_kld(kl, lambda l, K: fcur(K), a["head"], a["emb"]) / mix_kld(rl, lambda l, K: fcur(K), a["head"], a["emb"])
+            print(f"sub-1 anchor {a['id']}: measured KL ratio {a['ratio']:.4f}, model {m:.4f}{' (check)' if k is None else ''}", file=sys.stderr)
+        if SATC[0]: print(f"saturation: C {SATC[0]:.4f} (KLD = C (1 - exp(-P / C)); reported as kld_sat, the DP still minimises P)", file=sys.stderr)
+        if S1X:
+            print(f"sub-1 fitted kl_scale x {({k: round(v, 4) for k, v in sorted(S1X.items())})} (on top of the file's)", file=sys.stderr)
+            if os.environ.get("KN_SUB1_FIT_OUT"):
+                json.dump({"kl_scale_extra": {f"{k:g}": v for k, v in sorted(S1X.items())}, "swj": {f"{k:g}": v for k, v in FG}, "sat_c": SATC[0]},
+                          open(os.environ["KN_SUB1_FIT_OUT"], "w"), indent=1)
+        print(f"swj anchors {SWJ}: {len(use)} used, {outer + 1} outer sweeps; f(K) {[(k, round(v, 4)) for k, v in FG]}, kmax {SKMAX}", file=sys.stderr)
+    elif SWJ == "all":
         FG = SPTS
     else:
         FG = []
@@ -444,7 +603,11 @@ if SWJ:
     for t in TS:
         if t["w"] == "output.weight" or (SWJ == "gu" and t["w"].split(".")[-2] != "ffn_gate_up"): continue
         for c, (b, e, bits) in t["opts"].items():
-            if (t["w"], c) in MODES: KF[(t["w"], c)] = lin(FG, bits)
+            if (t["w"], c) in MODES: KF[(t["w"], c)] = ftab(FG, bits) if SKMAX is not None else lin(FG, bits)
+    _kf = [(TS[WI[w]]["opts"][c][2], v) for (w, c), v in KF.items()]
+    print(f"swj factor: {sum(v != 1.0 for _, v in _kf)} of {len(_kf)} options != 1, K range with a factor "
+          f"{min((b for b, v in _kf if v != 1.0), default=None)}..{max((b for b, v in _kf if v != 1.0), default=None)}, "
+          f"min {min((v for _, v in _kf), default=1.0):.4f}", file=sys.stderr)
     print(f"swj {SWJ}: factor points {[(k, round(v, 4)) for k, v in FG]}", file=sys.stderr)
 
 def gemm_ms(N, K, mode, g, fam=None):
@@ -687,6 +850,7 @@ with open(OUT, "a") as f:
                 N, K = shape(TS[i]); flops[o[0]] += 2.0 * N * K
             tot = sum(flops.values())
             r = {"target": tg, "lambda": lam, "bpw": s["bytes"] * 8 / PARAMS, "kld": s["kld"], "kld_w": s["kld_w"],
+                 **({"kld_sat": satf(s["kld_w"]) + s["kld"] - s["kld_w"]} if SATC[0] else {}),
                  "kld_a": s["kld_a"], "t_lin_ms": s["t_lin"], "t_f16_ms": T_F16,
                  "prefill_speedup": (T_F16 + T_OTHER) / (s["t_lin"] + T_OTHER), "emb": s["emb"],
                  "flop_share": {k: round(v / tot, 3) for k, v in flops.items()}, "modes": dict(modes.most_common())}

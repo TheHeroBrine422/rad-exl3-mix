@@ -1,0 +1,63 @@
+{
+ "about": "knap5 KN_SUB1_FIT (w120, 2026-11-12): measured whole-model KL ratios of swj'd 27B mixes with sub-1 trunk levels, ratio = KL(mix) / KL(ref mix), same slice, same V2 3.00 head (ours-K4) + embedding (e3). Each solved anchor fixes an extra scale on every sub-1 option at K 'fit'. Splices: layer l even -> K.even, odd -> K.odd. Pending anchors (skip) are filled from their results; see sub1plan.md.",
+ "anchors": [
+  {
+   "id": "145-splice",
+   "K": {
+    "even": 0.5,
+    "odd": 1.5
+   },
+   "ref": 1,
+   "ratio": 2.088,
+   "fit": 0.5,
+   "head": "ours-K4",
+   "emb": "e3",
+   "src": "#145 T arms (stamp 159591b2, swj f32 + in-job C9): splice even K0.5 / odd K1.5 KLD 2.2824 / uniform K1 1.0931, golden-search27d (193 docs)"
+  },
+  {
+   "id": "149-u0.5",
+   "K": 0.5,
+   "ref": 1,
+   "ratio": null,
+   "fit": 0.5,
+   "head": "ours-K4",
+   "emb": "e3",
+   "skip": true,
+   "check": true,
+   "src": "#149 T arms U0.5 / U1 (stamp 4f831984, bf16 swj), golden-search27f: pending (w114). Fill ratio, drop skip; becomes the K0.5 fit anchor (145-splice -> check) since it is a direct uniform point"
+  },
+  {
+   "id": "149-u0.25",
+   "K": 0.25,
+   "ref": 1,
+   "ratio": null,
+   "fit": 0.25,
+   "head": "ours-K4",
+   "emb": "e3",
+   "skip": true,
+   "src": "#149 T arms U0.25 / U1, golden-search27f: pending (w114)"
+  },
+  {
+   "id": "149-u0.75",
+   "K": 0.75,
+   "ref": 1,
+   "ratio": null,
+   "fit": 0.75,
+   "head": "ours-K4",
+   "emb": "e3",
+   "skip": true,
+   "src": "#149 T arms U0.75 / U1, golden-search27f: pending (w114)"
+  },
+  {
+   "id": "149-sat",
+   "sat": true,
+   "K": 1,
+   "ref": 2.5,
+   "ratio": null,
+   "head": "ours-K4",
+   "emb": "e3",
+   "skip": true,
+   "src": "saturation C: #149 U1 T arm / #150 K2.5 1M arm (both in V2 3.00, stamp 4f831984), golden-search27f: pending (w114). The model's raw KL(U1) / KL(K2.5) is ~28 (1.600 / 0.0567); a smaller measured ratio fits C"
+  }
+ ]
+}
