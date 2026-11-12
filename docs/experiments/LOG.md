@@ -4,6 +4,14 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 4:00 AM CST · ladder top · K8 dropped (user), 49 levels; K7.5 kept for a 7.0 release
+- Knapsack smoke (a8 menu, the 50-level library, colo; `data/knap/topk.py`, `data/knap/topk-2026-11-12.txt`): 6.5 bpw
+  picks K6.25–6.75 (265), K7 ×10, K7.5 ×1, K8 never; 7.0 picks K7 ×240, K7.5 ×33, K8 never (pred 0.00056 / 0.00050).
+  With deadcode's radiance 2.0 plan (INT8 G128 FWHT128 for 8-bit; the winning recipe runs 1–6.5 bpw; W8A8 floor ~0.0004)
+  the user drops K8 and keeps K7.5 (a 7.0 release may still happen). `[ladder] i8_extra = [7.5]`; check_ladder 5/5
+  (49 levels: pass 1 20, pass 2 22, pass 3 7). Ladder menu is unstamped: settings stamp unchanged (4f831984).
+- **Runtime:** none.
+
 ### 2026-11-12 1:10 AM CST · #152 / #153 · Re-LDLQ after the refit; tile CD on more families: rule committed, f2 screens queued behind w114 (w115)
 - **Status:** running (queued) · **Machine:** gpubox card 0 after w114's driver (`/data/w115/a/a115.sh` waits for
   `D114 DONE / STOP`), CPU checks on colo · **Code:** `v3/e3/settle/w115/` (`rxq-w115.patch`, `a115.sh`, `report115.py`)

@@ -1,0 +1,18 @@
+V3R menu: 14448 tensor-levels (i4 0, i8 43, m1 0 levels; R8 mid excess, phi interp True, CD 1.0)
+50 levels; top: [6.25, 6.5, 6.75, 7.0, 7.5, 8.0]
+target 6.5: bpw 6.500 pred KLD 0.000562  top trunk K picks: i8-K6.25x46, i8-K6.5x78, i8-K6.75x141, i8-K7x10, i8-K7.5x1  head: None
+target 5.5: bpw 5.500 pred KLD 0.001157  top trunk K picks: i8-K5.75x100, i8-K6x49, i8-K6.25x10, i8-K6.5x9, i8-K6.75x6  head: None
+V3R menu: 14448 tensor-levels (i4 0, i8 43, m1 0 levels; R8 mid excess, phi interp True, CD 1.0)
+50 levels; top: [6.25, 6.5, 6.75, 7.0, 7.5, 8.0]
+target 6.5: bpw 6.500 pred KLD 0.000562  top trunk K picks: i8-K6.25x46, i8-K6.5x78, i8-K6.75x141, i8-K7x10, i8-K7.5x1  head: None
+target 5.5: bpw 5.500 pred KLD 0.001157  top trunk K picks: i8-K5.75x100, i8-K6x49, i8-K6.25x10, i8-K6.5x9, i8-K6.75x6  head: None
+target 7.0: bpw 7.000 pred KLD 0.000496  top trunk K picks: i8-K6.25x1, i8-K6.5x7, i8-K6.75x55, i8-K7x240, i8-K7.5x33  head: None
+target 6.0: bpw 6.000 pred KLD 0.000751  top trunk K picks: i8-K6x126, i8-K6.25x37, i8-K6.5x39, i8-K6.75x34, i8-K7x1  head: None
+V3R menu: 14448 tensor-levels (i4 0, i8 43, m1 0 levels; R8 mid excess, phi interp True, CD 1.0)
+50 levels; top: [6.25, 6.5, 6.75, 7.0, 7.5, 8.0]
+target 6.5: bpw 6.500 pred KLD 0.000562  top trunk K picks: i8-K6.25x46, i8-K6.5x78, i8-K6.75x141, i8-K7x10, i8-K7.5x1  head: None
+V3R menu: 14448 tensor-levels (i4 0, i8 43, m1 0 levels; R8 mid excess, phi interp True, CD 1.0)
+50 levels; top: [6.25, 6.5, 6.75, 7.0, 7.5, 8.0]
+target 6.5: bpw 6.500 pred KLD 0.000562  top trunk K picks: i8-K6.25x46, i8-K6.5x78, i8-K6.75x141, i8-K7x10, i8-K7.5x1  head: None
+target 5.5: bpw 5.500 pred KLD 0.001157  top trunk K picks: i8-K5.75x100, i8-K6x49, i8-K6.25x10, i8-K6.5x9, i8-K6.75x6  head: None
+target 7.0: bpw 7.000 pred KLD 0.000496  top trunk K picks: i8-K6.25x1, i8-K6.5x7, i8-K6.75x55, i8-K7x240, i8-K7.5x33  head: None
