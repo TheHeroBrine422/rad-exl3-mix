@@ -4,6 +4,40 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 2:40 PM CST · #162 · Head donors on ds8: w119's U recipe at 17 sizes (K1–K6.5 i8 + K7 mul1), bit-identical to box2; E5 no flags; fit-gen price table for knap5; E3 (d) whole-model on V2 3.00 / 4.00: 3 / 4 pairs pass, B5 on 4.00 is a tie (w122)
+- **Status:** done · **Machine:** ds8 (quants 11-12 12:13–12:30 PM CST on 8 cards; E3 (d) 12:25 PM–2:34 PM CST, from
+  12:54 interleaved with the lead's k4-i8 ladder level run) · **Code:** `v3/yaqa/w122/` (run122.sh, rep122.py,
+  e3d122.sh, verdict122.py, mixhash122.py; w119's staged tree copied unchanged) · **Rule:** `v3/yaqa/w122/RULES.md`
+  (d802f08, alone, before data) · **Data:** `v3/yaqa/data/w122/` (rep/e5.json, rep/hcurve122.json, e3d/read/verdict.json,
+  mixhash.txt, ledger-w122.jsonl); donors ds8 `/data/q27/heads/q/R16s003{,m1}/K*`
+- **Build:** identity gate R16s003 K4 rebuilt on ds8 = w119's box2 donor (q-head, wq, rowerr sha256 equal; scores on
+  search-gen / fit-gen bit-equal). First attempt differed in `q-head.safetensors` only: ourq's code stamp hashes
+  absolute paths, fixed by placing w119's tree at its box2 path (`/data/q27/w119` symlink); wq was equal both times.
+  11 new donors (K1, 1.5, 2, 2.25, 2.5, 2.75, 3.25, 3.5, 3.75, 4.5, 5.5) built, 6 copied from box2 (K3, 4, 5, 6, 6.5,
+  K7 mul1). Quant wall 2.5–4 min per donor, 8 in parallel.
+- **E5 (search-gen, U / S ratios rare-script / rare-token):** K3 0.87 / 0.78, K4 0.78 / 0.68, K5 0.75 / 0.68, K6 0.71 /
+  0.61, K6.5 0.64 / 0.54, K7 0.49 / 0.43; in-between K vs interpolated S 0.65–0.83; guard KL monotone in K on both
+  sets. **No flags** (thresholds 1.10 / 1.30). Fit-gen the same picture.
+- **Price table (fit-gen, calib-weighted head-only KL per position):** u1 1.28e-1, u1.5 3.52e-2, u2 1.11e-2, u2.25
+  6.90e-3, u2.5 4.28e-3, u2.75 2.67e-3, u3 1.80e-3, u3.25 1.22e-3, u3.5 7.97e-4, u3.75 5.54e-4, u4 3.91e-4, u4.5
+  1.92e-4, u5 9.67e-5, u5.5 4.92e-5, u6 2.54e-5, u6.5 1.33e-5, u7 (mul1) 6.87e-6; `rep/hcurve122.json` (headgrid.py
+  format; unweighted KL, top-1, rare-token guard beside).
+- **E3 (d)** (fresh slice golden-hd122: x 130 pieces xc8k-b2-c1, 181,090 pos; c 37 search_rest docs, 28,586 gen pos;
+  U vs S-slab spliced as bf16-dequantized rows; ratio U / S, 95% CI doc bootstrap within part):
+  - V2 3.00, B3 (head ratio 0.37 → pass test): x 0.9770, c 0.9754, pooled **0.9768** [0.959, 0.986] → PASS
+  - V2 3.00, B4 (0.96 → no-harm): pooled **0.9997** [0.9992, 1.0003] → PASS
+  - V2 4.00, B4 (no-harm): pooled **1.0005** [0.9995, 1.0020] → PASS
+  - V2 4.00, B5 (1.07 → pass test): x 1.0000, c 1.0003, pooled **1.0000** [0.9998, 1.0004] → **FAIL** (a tie; the pass
+    test asks U better). Confounder check: every arm byte-identical to its trunk base outside output.weight (PASS);
+    second slice not run (lead decides).
+  - Whole-model KL, V2 3.00 x / c: own head 0.11745 / 0.06721, U3 0.11689 / 0.06656, U4 0.11611 / 0.06610, bf16 head
+    0.11589 / 0.06604; V2 4.00: own 0.05612 / 0.01863, U4 0.05593 / 0.01846, U5 0.05575 / 0.01831, bf16 0.05568 / 0.01829.
+- **Reading:** the U head is confirmed as no worse than S-slab from B4 up and clearly better at B3. At B5 the two are
+  equal whole-model, so S's 7% head-KL lead at B5 does not show in the full model.
+- **Runtime:** none beyond #155's (R16 logit un-permute in the plugin; K7 mul1 via decl_exl3_weight).
+
+- **Lead (11-12):** B5 tie accepted as **U confirmed** (whole-model equal, U better than V2's own head at every budget; S-slab is superseded either way); no second slice. Ledger rows merged; ds8 E3 (d) containers deleted, donors kept.
+
 ### 2026-11-12 1:00 PM CST · #163 · Settings stamp split: codes stamp vs scales stamp (user 11-12)
 - **What:** `rxq.config.settings_stamp` (the codes stamp: job specs, level names, assembly) now hashes `[meta]`,
   `[inputs]`, `[quant]` and `[post]` minus `SCALES = (swj, healing)`; new `scales_stamp` hashes those two. C9 / asym
@@ -278,6 +312,29 @@ versions of anything: git history.
 - **Next:** 36 real-quant units (N / R / C_F) → f2 (w98's f2calc98) → gates (#152 geo ≤ 0.99 at K2.5; #153 per family
   geo ≤ 0.99) → K2.5 KL pairs only for what passes.
 - **Runtime:** none.
+
+### 2026-11-12 12:35 PM CST · #149 · C9 e_clip 0.3 at sub-1, second slice: rule ADOPTS at K0.5 only (K0.5 −2.4%, every statistic); hurts at K0.25 (+6.1%, every doc), ~0 at K0.75 / K1 — NOT adopted (user 11-12) (w114)
+- **Status:** done · rule: ADOPT at K0.5 — **not adopted (user 11-12): defer to V3.1 QAD** · **Machine:** gpubox
+  card 0 (12:57 AM – 12:32 PM CST, interleaved with #150's quants) · **Code:** `v3/e3/settle/w114/` (d114.sh,
+  verdict114.py; w110's c9g1 / c9e3) · **Rule:** `v3/e3/settle/w114.md` (fac1d0e, alone, before data) · **Data:**
+  `v3/e3/settle/data/w114/p149/` (verdict149.txt / .json, census, hygiene, e3rows)
+- **Setup:** fixed codes, scale-only arms (one seed): T = today's (bf16 swj 1M + in-job C9), E = T with only the rows
+  e_clip 0.3 moves replaced (G1 PASS at K0.25 / K0.75: max rel 3.5e-7 / 1.0e-6). Levels K0.25 / K0.75 new at
+  4f831984; K0.5 / K1 / K1.5 = w110's (G0 PASS) with today's swj. e3 changes 97% / 82% / 12% / 0.4% of writer rows at
+  K0.25 / 0.5 / 0.75 / 1. Mixes in V2 3.00, all 6 arm mixes PAIR OK (svh only). Deciding slice **golden-search27f**
+  (199 docs, 270k pos); 27e (second use) reported.
+- **Result (pooled r E/T on 27f; 27e in brackets):** U0.25 **1.0612** (1.0533; 0% of docs better), U0.5 **0.9757**
+  [0.965, 0.986] (0.9792; x 0.977 / c 0.973, per-doc geo 0.967, 89% better), U0.75 0.9961 (0.9985), U1 1.0002
+  (1.0002; guard ≤ 1.003 holds), splice ec 0.9762 / ee 0.9760 (0.9816 / 0.9814; #145's 27d: 0.9593; joint 27d + 27f
+  0.974, z −10.4). T KLD: U0.25 10.0, U0.5 5.73, U0.75 2.59, U1 1.32, splice 2.62.
+- **Rule verdict:** cond holds at K0.5 only (K0.75 −0.4% misses ≤ 0.98; K0.25 worse) → **adopt e_clip 0.3 for ladder
+  levels K0.375 and K0.5** (K* = 0.5), **flagged**: K0.25 is +6% worse, so K0.375 (inside the band by the rule) sits
+  between a gain and a loss, untested. Settings-stamp change (`post.c9.e_clip` by K).
+- **Decision (user 11-12):** e_clip stays 0.5 at every level, no settings-stamp change: the effect only touches sub-1
+  levels (1.0–1.75 bpw sizes, low priority) and V3.1's scale-only QAD retrains those scales anyway. For the record:
+  K0.25 +5–6% (all docs worse), K0.5 −2–2.5% on 27f + 27e, K0.75 ~null, K1 null, splice −1.8–2.4% (27d's −4.1% shrank
+  on the fresh slices).
+- **Runtime:** none (scales).
 
 ### 2026-11-12 1:00 AM CST · #149 / #150 / #151 · w114 overnight card-0 queue started (C9 e_clip confirm, swj fit tokens, verify row)
 - **Status:** running · **Machine:** gpubox card 0 (driver `d114.sh`, started 12:57 AM CST) · **Code:** `v3/e3/settle/w114/`

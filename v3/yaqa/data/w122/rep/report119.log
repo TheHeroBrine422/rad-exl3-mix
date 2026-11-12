@@ -1,0 +1,38 @@
+IDENT search: {'ref': {'rows': True, 'doc': True, 'lse': True, 'top': True}, 'scores': {'repro-K4 vs w119 R16s003-K4': True, 'R16s003-K4 vs w119 R16s003-K4': True, 'R16s003-K6 vs w119 R16s003-K6': True}}
+search R16s003-K1      KL 1.324e-01 (unw 1.282e-01) top1 0.8557 rare-script 4.779e-01 rare-token 4.837e-01
+search R16s003-K1.5    KL 3.499e-02 (unw 3.460e-02) top1 0.9234 rare-script 1.394e-01 rare-token 1.251e-01
+search R16s003-K2      KL 1.116e-02 (unw 1.118e-02) top1 0.9536 rare-script 4.854e-02 rare-token 3.914e-02
+search R16s003-K2.25   KL 6.853e-03 (unw 6.905e-03) top1 0.9639 rare-script 3.192e-02 rare-token 2.323e-02
+search R16s003-K2.5    KL 4.062e-03 (unw 4.139e-03) top1 0.9700 rare-script 1.761e-02 rare-token 1.304e-02
+search R16s003-K2.75   KL 2.664e-03 (unw 2.665e-03) top1 0.9758 rare-script 1.169e-02 rare-token 8.249e-03
+search R16s003-K3      KL 1.726e-03 (unw 1.740e-03) top1 0.9814 rare-script 7.708e-03 rare-token 5.213e-03 | vs S 0.870 / 0.781
+search R16s003-K3.25   KL 1.155e-03 (unw 1.171e-03) top1 0.9839 rare-script 5.030e-03 rare-token 3.454e-03 | vs S~ 0.809 / 0.741
+search R16s003-K3.5    KL 7.770e-04 (unw 8.090e-04) top1 0.9865 rare-script 3.623e-03 rare-token 2.413e-03 | vs S~ 0.830 / 0.742
+search R16s003-K3.75   KL 5.417e-04 (unw 5.577e-04) top1 0.9880 rare-script 2.520e-03 rare-token 1.622e-03 | vs S~ 0.822 / 0.715
+search R16s003-K4      KL 3.704e-04 (unw 3.788e-04) top1 0.9909 rare-script 1.672e-03 rare-token 1.073e-03 | vs S 0.777 / 0.678
+search R16s003-K4.5    KL 1.885e-04 (unw 1.896e-04) top1 0.9935 rare-script 8.213e-04 rare-token 5.390e-04 | vs S~ 0.745 / 0.676
+search R16s003-K5      KL 9.361e-05 (unw 9.569e-05) top1 0.9955 rare-script 4.239e-04 rare-token 2.712e-04 | vs S 0.750 / 0.675
+search R16s003-K5.5    KL 4.929e-05 (unw 4.942e-05) top1 0.9964 rare-script 2.246e-04 rare-token 1.404e-04 | vs S~ 0.750 / 0.651
+search R16s003-K6      KL 2.492e-05 (unw 2.490e-05) top1 0.9973 rare-script 1.126e-04 rare-token 7.021e-05 | vs S 0.709 / 0.605
+search R16s003-K6.5    KL 1.258e-05 (unw 1.292e-05) top1 0.9982 rare-script 5.529e-05 rare-token 3.523e-05 | vs S 0.637 / 0.539
+search R16s003m1-K7    KL 6.775e-06 (unw 6.903e-06) top1 0.9987 rare-script 2.918e-05 rare-token 1.920e-05 | vs S 0.485 / 0.431
+IDENT fit: {'ref': {'rows': True, 'doc': True, 'lse': True, 'top': True}, 'scores': {'repro-K4 vs w119 R16s003-K4': True, 'R16s003-K4 vs w119 R16s003-K4': True, 'R16s003-K6 vs w119 R16s003-K6': True}}
+fit R16s003-K1      KL 1.282e-01 (unw 1.151e-01) top1 0.8653 rare-script 4.162e-01 rare-token 4.640e-01
+fit R16s003-K1.5    KL 3.523e-02 (unw 3.102e-02) top1 0.9284 rare-script 1.289e-01 rare-token 1.214e-01
+fit R16s003-K2      KL 1.109e-02 (unw 9.621e-03) top1 0.9579 rare-script 4.215e-02 rare-token 3.497e-02
+fit R16s003-K2.25   KL 6.895e-03 (unw 5.829e-03) top1 0.9672 rare-script 2.706e-02 rare-token 2.050e-02
+fit R16s003-K2.5    KL 4.284e-03 (unw 3.644e-03) top1 0.9737 rare-script 1.679e-02 rare-token 1.239e-02
+fit R16s003-K2.75   KL 2.672e-03 (unw 2.300e-03) top1 0.9794 rare-script 1.113e-02 rare-token 7.531e-03
+fit R16s003-K3      KL 1.799e-03 (unw 1.526e-03) top1 0.9832 rare-script 7.118e-03 rare-token 4.937e-03 | vs S 0.807 / 0.783
+fit R16s003-K3.25   KL 1.217e-03 (unw 1.030e-03) top1 0.9863 rare-script 5.053e-03 rare-token 3.253e-03 | vs S~ 0.814 / 0.737
+fit R16s003-K3.5    KL 7.972e-04 (unw 6.880e-04) top1 0.9885 rare-script 3.387e-03 rare-token 2.097e-03 | vs S~ 0.775 / 0.679
+fit R16s003-K3.75   KL 5.537e-04 (unw 4.742e-04) top1 0.9912 rare-script 2.285e-03 rare-token 1.438e-03 | vs S~ 0.743 / 0.665
+fit R16s003-K4      KL 3.905e-04 (unw 3.318e-04) top1 0.9914 rare-script 1.596e-03 rare-token 1.005e-03 | vs S 0.738 / 0.664
+fit R16s003-K4.5    KL 1.917e-04 (unw 1.632e-04) top1 0.9943 rare-script 7.802e-04 rare-token 4.783e-04 | vs S~ 0.702 / 0.625
+fit R16s003-K5      KL 9.674e-05 (unw 8.182e-05) top1 0.9959 rare-script 4.000e-04 rare-token 2.406e-04 | vs S 0.700 / 0.621
+fit R16s003-K5.5    KL 4.923e-05 (unw 4.188e-05) top1 0.9967 rare-script 2.032e-04 rare-token 1.250e-04 | vs S~ 0.678 / 0.608
+fit R16s003-K6      KL 2.537e-05 (unw 2.144e-05) top1 0.9982 rare-script 1.054e-04 rare-token 6.335e-05 | vs S 0.670 / 0.581
+fit R16s003-K6.5    KL 1.327e-05 (unw 1.125e-05) top1 0.9984 rare-script 5.517e-05 rare-token 3.324e-05 | vs S 0.667 / 0.563
+fit R16s003m1-K7    KL 6.866e-06 (unw 5.891e-06) top1 0.9989 rare-script 2.819e-05 rare-token 1.705e-05 | vs S 0.471 / 0.412
+E5 flags: none
+price table: rep/hcurve122.json (17 donors)

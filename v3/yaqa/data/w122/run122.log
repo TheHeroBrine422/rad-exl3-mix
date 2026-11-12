@@ -1,0 +1,49 @@
+18:13:40 pull done: 37G
+18:13:59 quant repro K4 (R16, sigma_out 0.03, i8) card 0 start
+18:17:40 quant repro K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": true, "hout_blocks": "group", "h
+18:17:40 worker card 0: queue /data/q27/heads/q-repro.txt done
+18:18:07 ident q-head.safetensors DIFFERS ds8 fd468b51bf4b5c55 box2 5f08ca4d9dcd120c
+18:18:11 ident wq/lm_head.safetensors SAME 1c1fbbfc552ae047
+18:18:11 ident wq/lm_head.rowerr.npz SAME 9898ac238767f92f
+18:18:11 ident proxy ds8 {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": tr | box2 {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": tr
+18:18:11 IDENT FAIL: STOP
+18:18:57 quant repro K4 (R16, sigma_out 0.03, i8) card 0 start
+18:22:39 quant repro K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": true, "hout_blocks": "group", "h
+18:22:39 worker card 0: queue /data/q27/heads/q-repro.txt done
+18:23:04 ident q-head.safetensors SAME 5f08ca4d9dcd120c
+18:23:08 ident wq/lm_head.safetensors SAME 1c1fbbfc552ae047
+18:23:08 ident wq/lm_head.rowerr.npz SAME 9898ac238767f92f
+18:23:08 ident proxy ds8 {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": tr | box2 {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": tr
+18:23:08 IDENT PASS
+18:23:14 quant R16s003 K1 (R16, sigma_out 0.03, i8) card 0 start
+18:23:17 quant R16s003 K1.5 (R16, sigma_out 0.03, i8) card 1 start
+18:23:20 quant R16s003 K2 (R16, sigma_out 0.03, i8) card 2 start
+18:23:23 quant R16s003 K2.25 (R16, sigma_out 0.03, i8) card 3 start
+18:23:26 quant R16s003 K2.5 (R16, sigma_out 0.03, i8) card 4 start
+18:23:29 quant R16s003 K2.75 (R16, sigma_out 0.03, i8) card 5 start
+18:23:32 quant R16s003 K3.25 (R16, sigma_out 0.03, i8) card 6 start
+18:23:35 quant R16s003 K3.5 (R16, sigma_out 0.03, i8) card 7 start
+18:25:40 quant R16s003 K2 OK: {"key": "lm_head", "K": 2, "proxy_err": 0.01654281844327992, "fallback": false, "hout": true, "hout_blocks": "group", "h
+18:25:40 quant R16s003 K3.75 (R16, sigma_out 0.03, i8) card 2 start
+18:25:49 quant R16s003 K3.5 OK: {"key": "lm_head", "K": 3.5, "proxy_err": 0.002088303614377966, "fallback": false, "hout": true, "hout_blocks": "group",
+18:25:49 quant R16s003 K4.5 (R16, sigma_out 0.03, i8) card 7 start
+18:26:09 quant R16s003 K1 OK: {"key": "lm_head", "K": 1, "proxy_err": 0.07177431277313631, "fallback": false, "hout": true, "hout_blocks": "group", "h
+18:26:09 quant R16s003 K5.5 (R16, sigma_out 0.03, i8) card 0 start
+18:26:16 quant R16s003 K2.75 OK: {"key": "lm_head", "K": 2.75, "proxy_err": 0.005856514351353032, "fallback": false, "hout": true, "hout_blocks": "group"
+18:26:16 worker card 5: queue /data/q27/heads/q-grid.txt done
+18:26:16 quant R16s003 K1.5 OK: {"key": "lm_head", "K": 1.5, "proxy_err": 0.03410001810965252, "fallback": false, "hout": true, "hout_blocks": "group", 
+18:26:16 worker card 1: queue /data/q27/heads/q-grid.txt done
+18:26:18 quant R16s003 K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008261560372273328, "fallback": false, "hout": true, "hout_blocks": "group",
+18:26:19 worker card 4: queue /data/q27/heads/q-grid.txt done
+18:26:25 quant R16s003 K2.25 OK: {"key": "lm_head", "K": 2.25, "proxy_err": 0.011667441082084722, "fallback": false, "hout": true, "hout_blocks": "group"
+18:26:25 worker card 3: queue /data/q27/heads/q-grid.txt done
+18:26:54 quant R16s003 K3.25 OK: {"key": "lm_head", "K": 3.25, "proxy_err": 0.002939259526718931, "fallback": false, "hout": true, "hout_blocks": "group"
+18:26:54 worker card 6: queue /data/q27/heads/q-grid.txt done
+18:27:53 quant R16s003 K3.75 OK: {"key": "lm_head", "K": 3.75, "proxy_err": 0.0014863136626948683, "fallback": false, "hout": true, "hout_blocks": "group
+18:27:53 worker card 2: queue /data/q27/heads/q-grid.txt done
+18:28:17 quant R16s003 K4.5 OK: {"key": "lm_head", "K": 4.5, "proxy_err": 0.0005351186089361712, "fallback": false, "hout": true, "hout_blocks": "group"
+18:28:17 worker card 7: queue /data/q27/heads/q-grid.txt done
+18:29:33 quant R16s003 K5.5 OK: {"key": "lm_head", "K": 5.5, "proxy_err": 0.00013973559611810433, "fallback": false, "hout": true, "hout_blocks": "group
+18:29:33 worker card 0: queue /data/q27/heads/q-grid.txt done
+18:32:51 score search rc 0 (18 options)
+18:33:13 score fit rc 0 (18 options)

@@ -1,0 +1,39 @@
+18:25:53 x part: 130 pieces (520 xcorp docs excluded; caps {'agentic': 2048, 'tools': 2048, 'long': 2048, 'reasoning': 2048}): agentic 1, books 3, chat 19, code 19, encyclopedic 8, long 1, math 10, multilingual 19, qa 13, reasoning 2, science 2, tools 12, web 21 | /data/q27/heads/slices/golden-hd122-x.part: 130 docs, 181090 rows (4 cut to their category cap)
+18:25:54 c part: 
+18:27:10 FAIL V2 4.00 download
+18:31:46 V2 4.00 downloaded
+18:34:16 bf16 container built
+18:34:28 t3 + bf16 head base built
+18:34:41 t4 + bf16 head base built
+18:37:53 score t3-own-x rc=0 165s
+18:37:55 score t4-own-x rc=0 167s
+18:38:35 score t3-own-c rc=0 42s
+18:38:38 score t4-own-c rc=0 43s
+18:40:28 score t4-bf16-x rc=0 320s
+18:40:34 score t3-bf16-x rc=0 326s
+18:41:44 score t4-bf16-c rc=0 76s
+18:41:51 score t3-bf16-c rc=0 77s
+18:42:04 mix t3-U3 (U u3 on t3): u3 written into /data/q27/heads/e3d/mix/t3-U3.rad.part (output.weight at 1677721
+18:47:09 score t3-U3-x rc=0 305s
+18:47:19 mix t3-S3 (S u3 on t3): u3 written into /data/q27/heads/e3d/mix/t3-S3.rad.part (output.weight at 1677721
+18:48:37 score t3-U3-c rc=0 78s
+18:52:24 score t3-S3-x rc=0 305s
+18:52:34 mix t3-U4 (U u4 on t3): u4 written into /data/q27/heads/e3d/mix/t3-U4.rad.part (output.weight at 1677721
+18:53:51 score t3-S3-c rc=0 77s
+18:57:47 score t3-U4-x rc=0 313s
+18:59:11 score t3-U4-c rc=0 84s
+19:02:42 mix t3-S4 (S s4-3 on t3): s4-3 written into /data/q27/heads/e3d/mix/t3-S4.rad.part (output.weight at 16777
+19:14:55 score t3-S4-x rc=0 327s
+19:17:37 score t3-S4-c rc=0 79s
+19:24:51 mix t4-U4 (U u4 on t4): u4 written into /data/q27/heads/e3d/mix/t4-U4.rad.part (output.weight at 1677721
+19:36:32 score t4-U4-x rc=0 325s
+19:41:06 score t4-U4-c rc=0 78s
+19:47:25 mix t4-S4 (S s4-3 on t4): s4-3 written into /data/q27/heads/e3d/mix/t4-S4.rad.part (output.weight at 16777
+19:57:53 score t4-S4-x rc=0 309s
+19:58:04 mix t4-U5 (U u5 on t4): u5 written into /data/q27/heads/e3d/mix/t4-U5.rad.part (output.weight at 1677721
+19:59:27 score t4-S4-c rc=0 83s
+20:03:39 score t4-U5-x rc=0 335s
+20:08:20 score t4-U5-c rc=0 80s
+20:13:27 mix t4-S5 (S s5-3 on t4): s5-3 written into /data/q27/heads/e3d/mix/t4-S5.rad.part (output.weight at 16777
+20:31:13 score t4-S5-x rc=0 327s
+20:34:13 score t4-S5-c rc=0 80s

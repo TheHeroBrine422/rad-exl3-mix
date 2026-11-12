@@ -1,0 +1,2 @@
+130 pieces (520 xcorp docs excluded; caps {'agentic': 2048, 'tools': 2048, 'long': 2048, 'reasoning': 2048}): agentic 1, books 3, chat 19, code 19, encyclopedic 8, long 1, math 10, multilingual 19, qa 13, reasoning 2, science 2, tools 12, web 21
+/data/q27/heads/slices/golden-hd122-x.part: 130 docs, 181090 rows (4 cut to their category cap)

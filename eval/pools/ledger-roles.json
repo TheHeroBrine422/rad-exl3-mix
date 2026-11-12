@@ -269,5 +269,11 @@
   "line": "v3",
   "decisions": 1,
   "note": "#156 (w119, 2026-11-12): bf16 head inputs, one <= 256-row window per document, 100 clean verify-pool docs (no golden); E3's single final check, read once"
+ },
+ "golden-hd122-c": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#162 E3 (d) (w122, 2026-11-12): calib part of the two-part whole-model check slice golden-hd122 = the 37 docs of w119's docs119.json search_rest (reserved by #156 (d)) that only 0.8B / 2B proxy slices had used, each cut to 4,096 tokens (golden_pick --maxtok 4096; 41,245 scored rows); xcorp part golden-hd122-x (130 pieces of night1105 xc8k-b2-c1, pickx seed 11222, golden-search27b-x ... 27f-x docs excluded) reads no calib. Decides only E3 (d)'s U vs S-slab check on V2 3.00 / 4.00 trunks (v3/yaqa/w122/RULES.md)"
  }
 }
