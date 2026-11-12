@@ -4,6 +4,30 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-11 9:55 PM CST · #145 · C9 and swj at sub-1 on the 27B (fixed codes, two mixes, fresh slice 27d): rule says no change (C9 as today, swj at every level); e_clip 0.3 helps at K0.5 (−4.1%, every statistic) but misses the band pattern by 0.0002; swj off costs +12…36% (w110)
+- **Status:** done (rule: no change; proposals for the lead) · **Machine:** gpubox card 0 (levels 11:25 AM–3:10 PM,
+  swj 3:10–5:23 PM, packs 5:24–7:24 PM under conv.lock + ram.lock excl., scores 7:46–9:37 PM CST) · **Code:**
+  `v3/e3/settle/w110/` (levels110.json for rxrun, arms110.sh, c9g1.py, c9e3.py, verdict110.py, slice110.sh) · **Rule:**
+  `v3/e3/settle/w110.md` (c6e9cd1, alone, before data; amendments 1 149396a / 2 70f8b72 before any pack or score: G1
+  GPU-vs-CPU rounding tolerance 1e-5, e3 = in-job c with only the clipped rows replaced) · **Data:**
+  `v3/e3/settle/data/w110/` (`report.md`, `verdict.txt`, `docstat-M{1,2}.txt`, `docsums.json`, hygiene, census)
+- **Setup:** three i8 levels at stamp 159591b2 (K0.5 / K1 / K1.5, seed 0, rxrun N = 3, #142 fusion), one 3-source
+  swj pass (0.74 h / level), C9 arms cur / off / e3 (e_clip 0.3) × swj on / off as scale-only finals (same codes, one
+  seed); mixes into V2 3.00: M1 uniform K1 (6 arms), M2 even K0.5 / odd K1.5 (6 uniform + 6 band arms); all 16 arm
+  mixes PAIR OK vs T with `--planes svh`. Fresh slice **golden-search27d**: 130 never-scored xcorp pieces
+  (xc8k-b2-c0, 222k pos) + 63 calib search docs never in the ledger (77k pos). T KLD: K1 1.093, splice 2.282.
+- **Result (pooled r vs T, both parts same sign unless noted):** swj off: K1 **1.356**, splice 1.187, K0.5-only 1.123,
+  K1.5-only 1.061. C9 off: K1 1.097, splice 1.043 [0.956, 1.131], K0.5-only 1.004 (per-doc 0.988), K1.5-only 1.004.
+  e3: K1 1.0013 (z +2.6), **K0.5-only 0.9593** [0.945, 0.972] (x 0.957 / c 0.968, per-doc geo 0.965, 89% of xcorp docs
+  better), K1.5-only 0.9998 (e3 moves 6 writers there), both 0.959.
+- **Rule verdict:** C9 stays; swj stays at every level ≤ K4.5. #140's 0.8B "C9 off at K0.5" and #141-04's swj K0.5
+  doubt do not carry to the 27B. e3 passes at K0.5 but the "below K1" pattern also needed worse(K1.5): 0.9998 → report only.
+- **Proposals:** (1) e_clip 0.3 for K < 1 (0.5 from K1): post hoc, confirm on a second fresh slice with the kept mixes
+  (`/data/w110/mix/mix-sp-cc-ss.rad`, `mix-sp-ec-ss.rad`) + a K0.75 point before adopting; (2) swj at K1 −26% is ~8× the
+  0.8B → "unverified" until a second slice (supports the status quo); (3) the levels are 159591b2, now superseded by
+  4f831984 (swj bf16 numerics): codes reusable only if the lead re-stamps, otherwise a fresh ROOT.
+- **Runtime:** none (scales). Card: ~3.75 h quant, 2.2 h swj, ~1.3 h scores. Cleaned: packs, finals, 15 of 18 mixes.
+
 ### 2026-11-11 9:05 PM CST · #148 · P16-TP 27B pair on fresh golden-search27e FAILS (geo 1.0005, z +0.04); full P16 also shows nothing on this third slice (1.0038; joint over three slices 0.9965, z −0.79); TP2 / TP4 functional check PASS (bit-exact) (w113)
 - **Status:** done (no adoption proposal: rule FAIL) · **Machine:** gpubox card 0 (T units 01:32–02:04 UTC, packs /
   gates to 02:11, 12 scores 02:11–02:59 UTC, one per card hold between w110's scores), gpubox CPU (slice, tpcheck) ·

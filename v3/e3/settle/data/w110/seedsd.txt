@@ -1,0 +1,15 @@
+seed SD of ln proxy_err, % (90% bootstrap over pairs); 18 pairs from lv
+family                              all K                 K<1                K1-2
+attn_k                      0.0421% (n 2)          0.0264% n1          0.0534% n1
+attn_output                 0.0356% (n 2)          0.0219% n1          0.0454% n1
+attn_qg                    0.00793% (n 1)                   -         0.00793% n1
+attn_v                      0.0537% (n 1)                   -          0.0537% n1
+ffn_down                   0.00945% (n 1)                   -         0.00945% n1
+ffn_gate                  0.000346% (n 1)                   -        0.000346% n1
+ffn_up                     0.00943% (n 2)         0.00682% n1          0.0115% n1
+ssm_out                     0.0102% (n 2)          0.0124% n1         0.00737% n1
+ssm_qkv      0.0254% [0.00187, 0.0359] (n 3)           0.044% n1         0.00228% n2
+ssm_z        0.0305% [0.0179, 0.0393] (n 3)          0.0113% n1          0.0365% n2
+band K<1     0.0239% [0.014, 0.0326] (n 6)
+band K1-2    0.03% [0.0199, 0.0384] (n 12)
+SEEDSD 18 pairs, pooled SD 0.0281% [0.0204, 0.0343] (n 18)

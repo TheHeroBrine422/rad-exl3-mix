@@ -1,0 +1,143 @@
+## sp-oo-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.0458 [0.9363, 1.1586] z +0.80  per-doc geo 1.0123  median 1.0370  docs better 0.34
+   heaviest: 8.5% r 0.576 swe-rebench-openhands; 5.8% r 1.726 wildchat; 3.8% r 1.031 pg19; 2.8% r 0.998 doab
+   leave-one-out r range 1.0039 .. 1.0892
+   drop k heaviest: k0 1.0458  k1 1.0892  k2 1.0461  k3 1.0468  k5 1.0361  k10 1.0287
+== calib: 63 docs  pooled r 1.0340 [0.9758, 1.0836] z +1.22  per-doc geo 1.0252  median 1.0474  docs better 0.17
+   heaviest: 12.2% r 1.048 pg19; 8.0% r 1.047 fineweb-edu; 7.0% r 1.093 fineweb2-hq/hun_Latn; 5.9% r 1.048 finemath-4plus
+   leave-one-out r range 1.0193 .. 1.0573
+   drop k heaviest: k0 1.0340  k1 1.0320  k2 1.0305  k3 1.0245  k5 0.9989  k10 1.0466
+== both: 193 docs  pooled r 1.0429 [0.9577, 1.1300] z +0.96  per-doc geo 1.0165  median 1.0397  docs better 0.28
+   heaviest: 6.4% r 0.576 swe-rebench-openhands; 4.4% r 1.726 wildchat; 2.9% r 1.048 pg19; 2.9% r 1.031 pg19
+   leave-one-out r range 1.0114 .. 1.0750
+   drop k heaviest: k0 1.0429  k1 1.0750  k2 1.0428  k3 1.0427  k5 1.0442  k10 1.0232
+## sp-ee-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 0.9562 [0.9373, 0.9713] z -4.87  per-doc geo 0.9664  median 0.9766  docs better 0.89
+   heaviest: 8.5% r 0.857 swe-rebench-openhands; 5.8% r 0.929 wildchat; 3.8% r 0.982 pg19; 2.8% r 0.969 doab
+   leave-one-out r range 0.9547 .. 0.9654
+   drop k heaviest: k0 0.9562  k1 0.9654  k2 0.9679  k3 0.9672  k5 0.9655  k10 0.9660
+== calib: 63 docs  pooled r 0.9679 [0.9432, 0.9833] z -2.97  per-doc geo 0.9621  median 0.9802  docs better 0.84
+   heaviest: 12.2% r 0.986 pg19; 8.0% r 0.977 fineweb-edu; 7.0% r 0.978 fineweb2-hq/hun_Latn; 5.9% r 0.987 finemath-4plus
+   leave-one-out r range 0.9654 .. 0.9781
+   drop k heaviest: k0 0.9679  k1 0.9654  k2 0.9643  k3 0.9629  k5 0.9569  k10 0.9740
+== both: 193 docs  pooled r 0.9590 [0.9426, 0.9716] z -5.46  per-doc geo 0.9650  median 0.9787  docs better 0.88
+   heaviest: 6.4% r 0.857 swe-rebench-openhands; 4.4% r 0.929 wildchat; 2.9% r 0.986 pg19; 2.9% r 0.982 pg19
+   leave-one-out r range 0.9579 .. 0.9660
+   drop k heaviest: k0 0.9590  k1 0.9660  k2 0.9679  k3 0.9673  k5 0.9667  k10 0.9643
+## sp-cc-nn vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.1683 [1.1024, 1.2228] z +5.36  per-doc geo 1.2108  median 1.2507  docs better 0.12
+   heaviest: 8.5% r 0.830 swe-rebench-openhands; 5.8% r 1.113 wildchat; 3.8% r 1.207 pg19; 2.8% r 1.267 doab
+   leave-one-out r range 1.1648 .. 1.1997
+   drop k heaviest: k0 1.1683  k1 1.1997  k2 1.2055  k3 1.2055  k5 1.2033  k10 1.2046
+== calib: 63 docs  pooled r 1.2447 [1.2048, 1.2878] z +11.38  per-doc geo 1.2797  median 1.2645  docs better 0.00
+   heaviest: 12.2% r 1.219 pg19; 8.0% r 1.272 fineweb-edu; 7.0% r 1.157 fineweb2-hq/hun_Latn; 5.9% r 1.441 finemath-4plus
+   leave-one-out r range 1.2325 .. 1.2548
+   drop k heaviest: k0 1.2447  k1 1.2484  k2 1.2460  k3 1.2546  k5 1.2459  k10 1.2587
+== both: 193 docs  pooled r 1.1867 [1.1310, 1.2311] z +7.15  per-doc geo 1.2329  median 1.2575  docs better 0.08
+   heaviest: 6.4% r 0.830 swe-rebench-openhands; 4.4% r 1.113 wildchat; 2.9% r 1.219 pg19; 2.9% r 1.207 pg19
+   leave-one-out r range 1.1831 .. 1.2112
+   drop k heaviest: k0 1.1867  k1 1.2112  k2 1.2161  k3 1.2160  k5 1.2150  k10 1.2156
+## sp-oo-nn vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.2908 [1.1513, 1.4381] z +3.89  per-doc geo 1.2432  median 1.2930  docs better 0.14
+   heaviest: 8.5% r 0.705 swe-rebench-openhands; 5.8% r 2.206 wildchat; 3.8% r 1.208 pg19; 2.8% r 1.226 doab
+   leave-one-out r range 1.2344 .. 1.3449
+   drop k heaviest: k0 1.2908  k1 1.3449  k2 1.2867  k3 1.2903  k5 1.2790  k10 1.2627
+== calib: 63 docs  pooled r 1.2661 [1.1917, 1.3380] z +7.19  per-doc geo 1.3110  median 1.3004  docs better 0.03
+   heaviest: 12.2% r 1.227 pg19; 8.0% r 1.276 fineweb-edu; 7.0% r 1.190 fineweb2-hq/hun_Latn; 5.9% r 1.412 finemath-4plus
+   leave-one-out r range 1.2459 .. 1.2926
+   drop k heaviest: k0 1.2661  k1 1.2714  k2 1.2710  k3 1.2788  k5 1.2362  k10 1.2781
+== both: 193 docs  pooled r 1.2848 [1.1737, 1.4008] z +4.86  per-doc geo 1.2649  median 1.2950  docs better 0.10
+   heaviest: 6.4% r 0.705 swe-rebench-openhands; 4.4% r 2.206 wildchat; 2.9% r 1.227 pg19; 2.9% r 1.208 pg19
+   leave-one-out r range 1.2424 .. 1.3247
+   drop k heaviest: k0 1.2848  k1 1.3247  k2 1.2811  k3 1.2830  k5 1.2871  k10 1.2609
+## sp-ee-nn vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.1235 [1.0486, 1.1848] z +3.49  per-doc geo 1.1667  median 1.2297  docs better 0.16
+   heaviest: 8.5% r 0.745 swe-rebench-openhands; 5.8% r 1.019 wildchat; 3.8% r 1.185 pg19; 2.8% r 1.224 doab
+   leave-one-out r range 1.1193 .. 1.1585
+   drop k heaviest: k0 1.1235  k1 1.1585  k2 1.1680  k3 1.1672  k5 1.1614  k10 1.1619
+== calib: 63 docs  pooled r 1.2065 [1.1487, 1.2560] z +7.42  per-doc geo 1.2352  median 1.2416  docs better 0.05
+   heaviest: 12.2% r 1.195 pg19; 8.0% r 1.245 fineweb-edu; 7.0% r 1.129 fineweb2-hq/hun_Latn; 5.9% r 1.406 finemath-4plus
+   leave-one-out r range 1.1941 .. 1.2283
+   drop k heaviest: k0 1.2065  k1 1.2081  k2 1.2044  k3 1.2117  k5 1.1945  k10 1.2280
+== both: 193 docs  pooled r 1.1434 [1.0804, 1.1940] z +4.87  per-doc geo 1.1886  median 1.2332  docs better 0.12
+   heaviest: 6.4% r 0.745 swe-rebench-openhands; 4.4% r 1.019 wildchat; 2.9% r 1.195 pg19; 2.9% r 1.185 pg19
+   leave-one-out r range 1.1397 .. 1.1708
+   drop k heaviest: k0 1.1434  k1 1.1708  k2 1.1784  k3 1.1778  k5 1.1763  k10 1.1723
+## sp-oc-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.0040 [0.9098, 1.0949] z +0.08  per-doc geo 0.9846  median 1.0093  docs better 0.42
+   heaviest: 8.5% r 0.575 swe-rebench-openhands; 5.8% r 1.514 wildchat; 3.8% r 1.007 pg19; 2.8% r 0.972 doab
+   leave-one-out r range 0.9725 .. 1.0437
+   drop k heaviest: k0 1.0040  k1 1.0437  k2 1.0118  k3 1.0120  k5 1.0019  k10 0.9967
+== calib: 63 docs  pooled r 1.0048 [0.9470, 1.0548] z +0.17  per-doc geo 0.9946  median 1.0174  docs better 0.33
+   heaviest: 12.2% r 1.022 pg19; 8.0% r 1.012 fineweb-edu; 7.0% r 1.079 fineweb2-hq/hun_Latn; 5.9% r 1.011 finemath-4plus
+   leave-one-out r range 0.9902 .. 1.0276
+   drop k heaviest: k0 1.0048  k1 1.0024  k2 1.0014  k3 0.9940  k5 0.9691  k10 1.0171
+== both: 193 docs  pooled r 1.0042 [0.9293, 1.0763] z +0.11  per-doc geo 0.9878  median 1.0149  docs better 0.39
+   heaviest: 6.4% r 0.575 swe-rebench-openhands; 4.4% r 1.514 wildchat; 2.9% r 1.022 pg19; 2.9% r 1.007 pg19
+   leave-one-out r range 0.9806 .. 1.0337
+   drop k heaviest: k0 1.0042  k1 1.0337  k2 1.0099  k3 1.0095  k5 1.0106  k10 0.9917
+## sp-co-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.0031 [0.9914, 1.0125] z +0.56  per-doc geo 1.0080  median 1.0133  docs better 0.29
+   heaviest: 8.5% r 0.941 swe-rebench-openhands; 5.8% r 1.033 wildchat; 3.8% r 1.010 pg19; 2.8% r 1.014 doab
+   leave-one-out r range 1.0013 .. 1.0089
+   drop k heaviest: k0 1.0031  k1 1.0089  k2 1.0072  k3 1.0071  k5 1.0063  k10 1.0053
+== calib: 63 docs  pooled r 1.0068 [0.9873, 1.0172] z +0.83  per-doc geo 1.0094  median 1.0148  docs better 0.11
+   heaviest: 12.2% r 1.014 pg19; 8.0% r 1.018 fineweb-edu; 7.0% r 1.017 fineweb2-hq/hun_Latn; 5.9% r 1.019 finemath-4plus
+   leave-one-out r range 1.0057 .. 1.0150
+   drop k heaviest: k0 1.0068  k1 1.0058  k2 1.0046  k3 1.0034  k5 1.0005  k10 1.0145
+== both: 193 docs  pooled r 1.0040 [0.9940, 1.0121] z +0.83  per-doc geo 1.0085  median 1.0141  docs better 0.23
+   heaviest: 6.4% r 0.941 swe-rebench-openhands; 4.4% r 1.033 wildchat; 2.9% r 1.014 pg19; 2.9% r 1.010 pg19
+   leave-one-out r range 1.0027 .. 1.0084
+   drop k heaviest: k0 1.0040  k1 1.0084  k2 1.0071  k3 1.0069  k5 1.0066  k10 1.0052
+## sp-ec-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 0.9567 [0.9381, 0.9713] z -4.93  per-doc geo 0.9663  median 0.9768  docs better 0.89
+   heaviest: 8.5% r 0.860 swe-rebench-openhands; 5.8% r 0.933 wildchat; 3.8% r 0.982 pg19; 2.8% r 0.969 doab
+   leave-one-out r range 0.9551 .. 0.9656
+   drop k heaviest: k0 0.9567  k1 0.9656  k2 0.9678  k3 0.9672  k5 0.9655  k10 0.9660
+== calib: 63 docs  pooled r 0.9677 [0.9427, 0.9832] z -2.95  per-doc geo 0.9618  median 0.9805  docs better 0.84
+   heaviest: 12.2% r 0.986 pg19; 8.0% r 0.977 fineweb-edu; 7.0% r 0.979 fineweb2-hq/hun_Latn; 5.9% r 0.987 finemath-4plus
+   leave-one-out r range 0.9652 .. 0.9781
+   drop k heaviest: k0 0.9677  k1 0.9652  k2 0.9641  k3 0.9627  k5 0.9567  k10 0.9738
+== both: 193 docs  pooled r 0.9593 [0.9431, 0.9716] z -5.53  per-doc geo 0.9648  median 0.9787  docs better 0.88
+   heaviest: 6.4% r 0.860 swe-rebench-openhands; 4.4% r 0.933 wildchat; 2.9% r 0.986 pg19; 2.9% r 0.982 pg19
+   leave-one-out r range 0.9582 .. 0.9662
+   drop k heaviest: k0 0.9593  k1 0.9662  k2 0.9678  k3 0.9672  k5 0.9666  k10 0.9642
+## sp-ce-ss vs sp-cc-ss
+== xcorp: 130 docs  pooled r 0.9998 [0.9996, 0.9999] z -3.13  per-doc geo 0.9998  median 0.9999  docs better 0.57
+   heaviest: 8.5% r 1.000 swe-rebench-openhands; 5.8% r 1.000 wildchat; 3.8% r 1.000 pg19; 2.8% r 1.000 doab
+   leave-one-out r range 0.9997 .. 0.9998
+   drop k heaviest: k0 0.9998  k1 0.9998  k2 0.9997  k3 0.9997  k5 0.9997  k10 0.9997
+== calib: 63 docs  pooled r 0.9997 [0.9992, 1.0001] z -1.02  per-doc geo 0.9997  median 1.0000  docs better 0.46
+   heaviest: 12.2% r 1.000 pg19; 8.0% r 1.000 fineweb-edu; 7.0% r 1.000 fineweb2-hq/hun_Latn; 5.9% r 1.000 finemath-4plus
+   leave-one-out r range 0.9997 .. 1.0000
+   drop k heaviest: k0 0.9997  k1 0.9997  k2 0.9997  k3 0.9996  k5 0.9995  k10 0.9998
+== both: 193 docs  pooled r 0.9998 [0.9996, 0.9999] z -3.01  per-doc geo 0.9998  median 1.0000  docs better 0.53
+   heaviest: 6.4% r 1.000 swe-rebench-openhands; 4.4% r 1.000 wildchat; 2.9% r 1.000 pg19; 2.9% r 1.000 pg19
+   leave-one-out r range 0.9997 .. 0.9998
+   drop k heaviest: k0 0.9998  k1 0.9998  k2 0.9997  k3 0.9997  k5 0.9997  k10 0.9997
+## sp-cc-ns vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.1084 [1.0597, 1.1518] z +4.57  per-doc geo 1.1460  median 1.1713  docs better 0.13
+   heaviest: 8.5% r 0.861 swe-rebench-openhands; 5.8% r 0.999 wildchat; 3.8% r 1.153 pg19; 2.8% r 1.193 doab
+   leave-one-out r range 1.1058 .. 1.1312
+   drop k heaviest: k0 1.1084  k1 1.1312  k2 1.1402  k3 1.1396  k5 1.1373  k10 1.1389
+== calib: 63 docs  pooled r 1.1692 [1.1379, 1.2012] z +10.46  per-doc geo 1.1907  median 1.1900  docs better 0.03
+   heaviest: 12.2% r 1.154 pg19; 8.0% r 1.192 fineweb-edu; 7.0% r 1.088 fineweb2-hq/hun_Latn; 5.9% r 1.311 finemath-4plus
+   leave-one-out r range 1.1604 .. 1.1782
+   drop k heaviest: k0 1.1692  k1 1.1713  k2 1.1693  k3 1.1771  k5 1.1677  k10 1.1794
+== both: 193 docs  pooled r 1.1230 [1.0821, 1.1579] z +6.21  per-doc geo 1.1604  median 1.1813  docs better 0.10
+   heaviest: 6.4% r 0.861 swe-rebench-openhands; 4.4% r 0.999 wildchat; 2.9% r 1.154 pg19; 2.9% r 1.153 pg19
+   leave-one-out r range 1.1203 .. 1.1410
+   drop k heaviest: k0 1.1230  k1 1.1410  k2 1.1480  k3 1.1478  k5 1.1465  k10 1.1473
+## sp-cc-sn vs sp-cc-ss
+== xcorp: 130 docs  pooled r 1.0552 [1.0332, 1.0724] z +5.18  per-doc geo 1.0701  median 1.0751  docs better 0.05
+   heaviest: 8.5% r 0.934 swe-rebench-openhands; 5.8% r 1.062 wildchat; 3.8% r 1.066 pg19; 2.8% r 1.081 doab
+   leave-one-out r range 1.0540 .. 1.0664
+   drop k heaviest: k0 1.0552  k1 1.0664  k2 1.0667  k3 1.0667  k5 1.0672  k10 1.0668
+== calib: 63 docs  pooled r 1.0776 [1.0641, 1.0909] z +11.37  per-doc geo 1.0848  median 1.0812  docs better 0.02
+   heaviest: 12.2% r 1.073 pg19; 8.0% r 1.097 fineweb-edu; 7.0% r 1.057 fineweb2-hq/hun_Latn; 5.9% r 1.141 finemath-4plus
+   leave-one-out r range 1.0736 .. 1.0805
+   drop k heaviest: k0 1.0776  k1 1.0782  k2 1.0764  k3 1.0783  k5 1.0769  k10 1.0805
+== both: 193 docs  pooled r 1.0606 [1.0418, 1.0749] z +6.85  per-doc geo 1.0749  median 1.0783  docs better 0.04
+   heaviest: 6.4% r 0.934 swe-rebench-openhands; 4.4% r 1.062 wildchat; 2.9% r 1.073 pg19; 2.9% r 1.066 pg19
+   leave-one-out r range 1.0594 .. 1.0693
+   drop k heaviest: k0 1.0606  k1 1.0693  k2 1.0696  k3 1.0695  k5 1.0693  k10 1.0701

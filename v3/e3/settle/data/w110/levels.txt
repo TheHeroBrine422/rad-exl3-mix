@@ -1,0 +1,3 @@
+k0.5: {"level": "q27v3-159591b2-k0.5-i8", "steps": ["jobs", "assemble", "swj", "post", "recipe"], "settings": "159591b2670f304b", "t": "11-11 17:23 CST"} 262 job lines, 1.5G level
+k1: {"level": "q27v3-159591b2-k1-i8", "steps": ["jobs", "assemble", "swj", "post", "recipe"], "settings": "159591b2670f304b", "t": "11-11 17:23 CST"} 262 job lines, 2.9G level
+k1.5: {"level": "q27v3-159591b2-k1.5-i8", "steps": ["jobs", "assemble", "swj", "post", "recipe"], "settings": "159591b2670f304b", "t": "11-11 17:23 CST"} 262 job lines, 4.3G level

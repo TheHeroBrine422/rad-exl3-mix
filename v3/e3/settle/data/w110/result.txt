@@ -1,0 +1,111 @@
+17:28:18 slice calib part: 63 documents, 84801 tokens: books 11800, chat 8240, code 9501, encyclopedic 2232, legal 1715, math 12463, multilingual 7624, qa 4480, reasoning 8192, tools 6850, web 11704
+17:28:19 slice xcorp part: 130 pieces (1278 xcorp docs excluded): agentic 1, books 2, chat 16, code 17, encyclopedic 8, legal 1, long 1, math 8, multilingual 19, qa 10, reasoning 3, science 2, tools 16, web 26
+17:28:19 golden-search27d-c 63 docs 84801 tokens 84738 rows 77441 scored
+17:28:19 golden-search27d-x 130 docs 222237 tokens 222107 rows 222107 scored
+17:31:11 arms110 start: c9 finals packs mixes hyg score verdict
+17:31:11 cfg e3: > e_clip = 0.3                   # e_n clipped to [0, 0.5] (never reached at K >= 2 on the 0.8B)
+19:08:25 c9 k15: G1 FAIL {"writers_a": 64, "writers_b": 64, "unequal": ["model.language_model.layers.0.linear_attn.out_proj", "model.language_model.layers.1.linear_attn.out_proj", "model.language_model.layers.10.linear_attn.out_proj", "model.language_model.layers.11.self_attn.o_proj", "model.language_model.layers.12.linear_attn.out_proj", "model.language_model.layers.13.linear_attn.out_proj", "model.language_model.layers.14.linear_attn.out_proj", "model.language_model.layers.15.self_attn.o_proj", "model.language_model.layers.16.linear_attn.out_proj", "model.language_model.layers.17.linear_attn.out_proj", "model.language_model.layers.18.linear_attn.out_proj", "model.language_model.layers.19.self_attn.o_proj", "model.language_model.layers.2.linear_attn.out_proj", "model.language_model.layers.20.linear_attn.out_proj", "model.language_model.layers.21.linear_attn.out_proj", "model.language_model.layers.22.linear_attn.out_proj", "model.language_model.layers.23.self_attn.o_proj", "model.language_model.layers.24.linear_attn.out_proj", "model.language_model.layers.25.linear_attn.out_proj", "model.language_model.layers.26.linear_attn.out_proj", "model.language_model.layers.27.self_attn.o_proj", "model.language_model.layers.28.linear_attn.out_proj", "model.language_model.layers.29.linear_attn.out_proj", "model.language_model.layers.3.self_attn.o_proj", "model.language_model.layers.30.linear_attn.out_proj", "model.language_model.layers.31.self_attn.o_proj", "model.language_model.layers.32.linear_attn.out_proj", "model.language_model.layers.33.linear_attn.out_proj", "model.language_model.layers.34.linear_attn.out_proj", "model.language_model.layers.35.self_attn.o_proj", "model.language_model.layers.36.linear_attn.out_proj", "model.language_model.layers.37.linear_attn.out_proj", "model.language_model.layers.38.linear_attn.out_proj", "model.language_model.layers.39.self_attn.o_proj", "model.language_model.layers.4.linear_attn.out_proj", "model.language_model.layers.40.linear_attn.out_proj", "model.language_model.layers.41.linear_attn.out_proj", "model.language_model.layers.42.linear_attn.out_proj", "model.language_model.layers.43.self_attn.o_proj", "model.language_model.layers.44.linear_attn.out_proj", "model.language_model.layers.45.linear_attn.out_proj", "model.language_model.layers.46.linear_attn.out_proj", "model.language_model.layers.47.self_attn.o_proj", "model.language_model.layers.48.linear_attn.out_proj", "model.language_model.layers.49.linear_attn.out_proj", "model.language_model.layers.5.linear_attn.out_proj", "model.language_model.layers.50.linear_attn.out_proj", "model.language_model.layers.51.self_attn.o_proj", "model.language_model.layers.52.linear_attn.out_proj", "model.language_model.layers.53.linear_attn.out_proj", "model.language_model.layers.54.linear_attn.out_proj", "model.language_model.layers.55.self_attn.o_proj", "model.language_model.layers.56.linear_attn.out_proj", "model.language_model.layers.57.linear_attn.out_proj", "model.language_model.layers.58.linear_attn.out_proj", "model.language_model.layers.59.self_attn.o_proj", "model.language_model.layers.6.linear_attn.out_proj", "model.language_model.layers.60.linear_attn.out_proj", "model.language_model.layers.61.linear_attn.out_proj", "model.language_model.layers.62.linear_attn.out_proj", "model.language_model.layers.63.self_attn.o_proj", "model.language_model.layers.7.self_attn.o_proj", "model.language_model.layers.8.linear_attn.out_proj", "model.language_model.layers.9.linear_attn.out_proj"], "e3_writers_differ": 64, "e3_max_rel": 0.18155011693372172}
+19:08:25 ARMS110 STOP: G1 k15
+19:25:48 arms110 start: c9 finals packs mixes hyg score verdict
+19:25:49 c9 k15: G1 PASS {"writers_a": 64, "writers_b": 64, "unequal": [], "bit_identical": 0, "max_rel": 6.395389472366664e-07}
+19:25:50 c9 k15 e3x: E3 DONE {"writers": 64, "rows": 327680, "rows_changed": 40, "writers_changed": 13, "max_rel": 0.18155011693372172}
+20:01:02 c9 k1: G1 FAIL {"writers_a": 64, "writers_b": 64, "unequal": ["model.language_model.layers.0.linear_attn.out_proj", "model.language_model.layers.21.linear_attn.out_proj", "model.language_model.layers.54.linear_attn.out_proj"], "bit_identical": 0, "max_rel": 1.756604948460235e-06}
+20:01:02 ARMS110 STOP: G1 k1
+20:26:21 arms110 start: c9 finals packs mixes hyg score verdict
+20:26:22 c9 k1: G1 PASS {"writers_a": 64, "writers_b": 64, "unequal": [], "bit_identical": 0, "max_rel": 1.756604948460235e-06}
+20:26:23 c9 k1 e3x: E3 DONE {"writers": 64, "rows": 327680, "rows_changed": 1394, "writers_changed": 52, "max_rel": 0.39631837156712857}
+21:19:26 c9 k05: G1 PASS {"writers_a": 64, "writers_b": 64, "unequal": [], "bit_identical": 0, "max_rel": 1.3662998361806497e-06}
+21:19:27 c9 k05 e3x: E3 DONE {"writers": 64, "rows": 327680, "rows_changed": 270193, "writers_changed": 64, "max_rel": 0.39631837156712857}
+23:24:30 final k15-fS: SWJAPPLY DONE 128 tensors (128 scale vectors changed) -> /data/w110/fin/k15-fS
+23:24:31 final k15-fSE: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w110/fin/k15-fSE
+23:24:33 final k15-fC: SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/w110/fin/k15-fC
+23:24:35 final k1-fS: SWJAPPLY DONE 128 tensors (128 scale vectors changed) -> /data/w110/fin/k1-fS
+23:24:36 final k1-fSE: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w110/fin/k1-fSE
+23:24:37 final k1-fC: SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/w110/fin/k1-fC
+23:24:39 final k05-fS: SWJAPPLY DONE 128 tensors (128 scale vectors changed) -> /data/w110/fin/k05-fS
+23:24:40 final k05-fSE: SWJAPPLY DONE 192 tensors (192 scale vectors changed) -> /data/w110/fin/k05-fSE
+23:24:41 final k05-fC: SWJAPPLY DONE 64 tensors (64 scale vectors changed) -> /data/w110/fin/k05-fC
+23:47:20 pack k15-T rc=0 1359s
+23:49:18 pack k15-O rc=0 118s
+23:51:16 pack k15-E rc=0 118s
+00:01:50 pack k15-N rc=0 634s
+00:24:14 pack k1-T rc=0 1342s
+00:26:14 pack k1-O rc=0 118s
+00:28:13 pack k1-E rc=0 116s
+00:39:42 pack k1-N rc=0 633s
+01:03:06 pack k05-T rc=0 1350s
+01:06:13 pack k05-O rc=0 119s
+01:10:41 pack k05-E rc=0 116s
+01:24:12 pack k05-N rc=0 635s
+01:26:50 mix k1-cs ready, 1.2677 bpw
+01:30:14 mix k1-os ready, 1.2677 bpw
+01:30:19 mix k1-es ready, 1.2677 bpw
+01:30:25 mix k1-cn ready, 1.2677 bpw
+01:30:30 mix k1-on ready, 1.2677 bpw
+01:30:35 mix k1-en ready, 1.2677 bpw
+01:30:41 mix sp-cc-ss ready, 1.2646 bpw
+01:30:47 mix sp-oo-ss ready, 1.2646 bpw
+01:30:53 mix sp-ee-ss ready, 1.2646 bpw
+01:30:58 mix sp-cc-nn ready, 1.2646 bpw
+01:31:04 mix sp-oo-nn ready, 1.2646 bpw
+01:31:10 mix sp-ee-nn ready, 1.2646 bpw
+01:31:16 mix sp-oc-ss ready, 1.2646 bpw
+01:31:21 mix sp-co-ss ready, 1.2646 bpw
+01:31:27 mix sp-ec-ss ready, 1.2646 bpw
+01:31:33 mix sp-ce-ss ready, 1.2646 bpw
+01:31:38 mix sp-cc-ns ready, 1.2646 bpw
+01:31:44 mix sp-cc-sn ready, 1.2646 bpw
+01:31:50 hygiene k1-os vs k1-cs: PAIR OK {"a": "/data/w110/mix/mix-k1-os.rad", "b": "/data/w110/mix/mix-k1-cs.rad", "weights": 787, "identical": 723, "arm_weights": 64, "arm_weights_changed": 64, "planes_changed": ["svh"], "problems": 0}
+01:31:56 hygiene k1-es vs k1-cs: PAIR OK {"a": "/data/w110/mix/mix-k1-es.rad", "b": "/data/w110/mix/mix-k1-cs.rad", "weights": 787, "identical": 735, "arm_weights": 64, "arm_weights_changed": 52, "planes_changed": ["svh"], "problems": 0}
+01:32:03 hygiene k1-cn vs k1-cs: PAIR OK {"a": "/data/w110/mix/mix-k1-cn.rad", "b": "/data/w110/mix/mix-k1-cs.rad", "weights": 787, "identical": 723, "arm_weights": 64, "arm_weights_changed": 64, "planes_changed": ["svh"], "problems": 0}
+01:32:09 hygiene k1-on vs k1-cs: PAIR OK {"a": "/data/w110/mix/mix-k1-on.rad", "b": "/data/w110/mix/mix-k1-cs.rad", "weights": 787, "identical": 659, "arm_weights": 128, "arm_weights_changed": 128, "planes_changed": ["svh"], "problems": 0}
+01:32:16 hygiene k1-en vs k1-cs: PAIR OK {"a": "/data/w110/mix/mix-k1-en.rad", "b": "/data/w110/mix/mix-k1-cs.rad", "weights": 787, "identical": 671, "arm_weights": 128, "arm_weights_changed": 116, "planes_changed": ["svh"], "problems": 0}
+01:32:24 hygiene sp-oo-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-oo-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 723, "arm_weights": 64, "arm_weights_changed": 64, "planes_changed": ["svh"], "problems": 0}
+01:32:31 hygiene sp-ee-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-ee-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 749, "arm_weights": 64, "arm_weights_changed": 38, "planes_changed": ["svh"], "problems": 0}
+01:32:36 hygiene sp-cc-nn vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-cc-nn.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 723, "arm_weights": 64, "arm_weights_changed": 64, "planes_changed": ["svh"], "problems": 0}
+01:32:42 hygiene sp-oo-nn vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-oo-nn.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 659, "arm_weights": 128, "arm_weights_changed": 128, "planes_changed": ["svh"], "problems": 0}
+01:32:47 hygiene sp-ee-nn vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-ee-nn.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 685, "arm_weights": 128, "arm_weights_changed": 102, "planes_changed": ["svh"], "problems": 0}
+01:32:52 hygiene sp-oc-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-oc-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 755, "arm_weights": 64, "arm_weights_changed": 32, "planes_changed": ["svh"], "problems": 0}
+01:32:58 hygiene sp-co-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-co-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 755, "arm_weights": 64, "arm_weights_changed": 32, "planes_changed": ["svh"], "problems": 0}
+01:33:03 hygiene sp-ec-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-ec-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 755, "arm_weights": 64, "arm_weights_changed": 32, "planes_changed": ["svh"], "problems": 0}
+01:33:09 hygiene sp-ce-ss vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-ce-ss.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 781, "arm_weights": 64, "arm_weights_changed": 6, "planes_changed": ["svh"], "problems": 0}
+01:33:15 hygiene sp-cc-ns vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-cc-ns.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 755, "arm_weights": 64, "arm_weights_changed": 32, "planes_changed": ["svh"], "problems": 0}
+01:33:20 hygiene sp-cc-sn vs sp-cc-ss: PAIR OK {"a": "/data/w110/mix/mix-sp-cc-sn.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 755, "arm_weights": 64, "arm_weights_changed": 32, "planes_changed": ["svh"], "problems": 0}
+01:46:38 score k1-cs-x rc=0 162s
+01:48:01 score k1-cs-c rc=0 65s
+01:50:56 score k1-os-x rc=0 163s
+01:52:01 score k1-os-c rc=0 65s
+02:06:14 score k1-es-x rc=0 162s
+02:07:36 score k1-es-c rc=0 66s
+02:10:28 score k1-cn-x rc=0 162s
+02:11:33 score k1-cn-c rc=0 65s
+02:17:01 score k1-on-x rc=0 163s
+02:20:50 score k1-on-c rc=0 66s
+02:26:15 score k1-en-x rc=0 161s
+02:28:30 score k1-en-c rc=0 65s
+02:32:54 score sp-cc-ss-x rc=0 195s
+02:35:21 score sp-cc-ss-c rc=0 78s
+02:41:20 score sp-oo-ss-x rc=0 196s
+02:45:21 score sp-oo-ss-c rc=0 78s
+02:51:20 score sp-ee-ss-x rc=0 195s
+02:53:47 score sp-ee-ss-c rc=0 78s
+02:58:11 score sp-cc-nn-x rc=0 195s
+03:00:39 score sp-cc-nn-c rc=0 79s
+03:03:53 score sp-oo-nn-x rc=0 194s
+03:05:11 score sp-oo-nn-c rc=0 78s
+03:08:25 score sp-ee-nn-x rc=0 194s
+03:09:43 score sp-ee-nn-c rc=0 78s
+03:12:57 score sp-oc-ss-x rc=0 194s
+03:14:15 score sp-oc-ss-c rc=0 78s
+03:17:30 score sp-co-ss-x rc=0 195s
+03:18:48 score sp-co-ss-c rc=0 78s
+03:22:03 score sp-ec-ss-x rc=0 195s
+03:23:21 score sp-ec-ss-c rc=0 78s
+03:26:36 score sp-ce-ss-x rc=0 195s
+03:27:54 score sp-ce-ss-c rc=0 78s
+03:31:09 score sp-cc-ns-x rc=0 195s
+03:32:27 score sp-cc-ns-c rc=0 78s
+03:35:42 score sp-cc-sn-x rc=0 195s
+03:37:01 score sp-cc-sn-c rc=0 79s
+03:37:02 verdict: VERDICT {"c9": "stays (cur)", "c9_band": null, "swj": "stays at every level <= K4.5", "swj_band": null}
+03:37:02 ARMS110 DONE (c9 finals packs mixes hyg score verdict)

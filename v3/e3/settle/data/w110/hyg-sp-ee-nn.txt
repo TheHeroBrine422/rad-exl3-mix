@@ -1,0 +1,1 @@
+PAIR OK {"a": "/data/w110/mix/mix-sp-ee-nn.rad", "b": "/data/w110/mix/mix-sp-cc-ss.rad", "weights": 787, "identical": 685, "arm_weights": 128, "arm_weights_changed": 102, "planes_changed": ["svh"], "problems": 0}

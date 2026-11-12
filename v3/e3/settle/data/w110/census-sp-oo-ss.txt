@@ -1,0 +1,8 @@
+mix-sp-oo-ss.rad: 787 weights, 1.2646 bpw (file), 1.2591 bpw (weights)
+  scheme        K codebook act         n       GB
+  exl3i       1.5 mul1i8   f16       176    2.274
+  exl3i       0.5 mul1i8   f16       160    0.774
+  exl3          4 mul1     f16         1    0.636
+  affine                               1    0.497
+  plain                              449    0.052
+CENSUS PASS [checked: mix base]
