@@ -4,6 +4,28 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 4:30 AM CST · #158 · box2 (lent 4× R9700) set up for 27B work: rxq jobs and radiance KLD bit-identical to gpubox card 0 (w117)
+- **Status:** done · **Machine:** box2 (4× R9700, pip ROCm SDK 7.14.1, EPYC 7443) vs gpubox card 0 (ROCm 10.1) ·
+  **Code:** rad-exl3-mix 4156463 + exllamav3-frac b0052f7c staged on both; radiance qc-exl3-v3 42960d5 (1.17.0 + our
+  five plugins) built on box2, gpubox install-117 (1.17.0) + `/data/a4cost/home` (plugins from 42960d5) · **Notes:** `local/notes/box2.md`
+- **Check (no rule: identity gate):** (1) `pipeline/tests/check_rxrun.py` on box2: RXRUN CHECKS 11/11 PASS. (2) L03 K2.5
+  i8 level jobs (4 jobs, 7 tensors: H_out blocks, tile CD on attn_qg, C9 writer) as `python -m rxq job` on box2 HIP 0
+  and gpubox card 0: `rxrun.cmp` **CMP SAME 15 files** (t- / c9- / diag-, tensors + parsed metadata; code stamp
+  d2d96eac5de12f03 on both). (3) V2 3.00 (HF file, sha = gpubox `/data/release`) on golden-search27c-c (w92's calib
+  part, 26 docs / 67,932 positions): `.rows` **byte-identical** box2 vs gpubox (mean KL 0.63949, top-1 88.63%).
+- **Pitfall:** a JIT build of the base exllamav3 ext inside `RXQ_EXL3_SRC` wrote 13 `*_hip.cpp` files there and changed
+  the code stamp (b74f6f09 vs d2d96eac); fixed on box2 by a precompiled base ext outside the source tree (gpubox's
+  layout). 83e3a9d (later the same morning) now skips hipify outputs in the stamp; restage box2 to it before production.
+- **Throughput (K2.5 i8, persistent workers):** one box2 card N = 3: 286 jobs/h (1.31 est-s/s), VRAM peak ~20 GB;
+  N = 4 no gain (274 jobs/h, 26.5 GB); 4 cards × 3: 1,043 jobs/h (4.83 est-s/s). gpubox card 0 N = 3 (w105): 370 jobs/h
+  → a box2 card ≈ 0.75 card 0, the box ≈ 2.8. Per stage on the same tensors: 1.39× wall; trellis 1.33× (power cap 210 W
+  vs gpubox 250 W), CPU-side stages ~2×. Radiance score 57 s vs 51 s.
+- **Incident:** a stale `flock` chain of mine (killed while queued, its inner `flock -s ram` survived) ran ~12 s of an L03 job on gpubox card 0 without card0.lock beside w114's ladder (10:14 UTC); killed, outputs deleted; w114's jobs.jsonl shows no failed job. Kill a lock chain by its innermost process, never its parent.
+- **Decision / next:** box2 can run rxq levels (rxrun, 4 local devices), swj, packs and calib-only scores; multi-host
+  rxrun is not built (remote slot, per-host paths, tree check, rsync-back; box2's uplink is busy with the DeepSeek HF
+  upload). Plan in `local/notes/box2.md`; the lead decides the split.
+- **Runtime:** none.
+
 ### 2026-11-12 4:45 AM CST · code stamp · hash sources only (w116 bug 1) + w92's hipify patch; w116 final review: freeze without codebook ideas (user)
 - `rxq.engine.code_stamp` hashed every file in the kernel dirs (.md rule files, bench scripts) and ROCm hipify outputs,
   so a docs commit or a CUDA / ROCm host split could split a level (assembly refuses mixed code stamps). Now: sources
