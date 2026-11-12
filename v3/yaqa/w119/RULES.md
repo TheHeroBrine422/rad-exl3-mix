@@ -165,3 +165,20 @@ E1 has been read (#154, rule (a)); nothing of E2 / E3 / E9 has been dumped, quan
 The rule is tightened, not loosened: a8 is recorded as acceptable for the head only if the original condition holds
 **and** it buys measurable time; no A8 head kernel exists to time here, so unless a timing is supplied the head stays
 f16 (said so in the report).
+
+## Amendment 2 (2026-11-12 ~10:55 AM CST, lead notes 4–5 for w119; before any E2 / E3 / E9 verdict or hull is computed)
+
+State: every E2 / E3 donor of the rule is quantized and scored on search / fit / qad (score119 per-option outputs);
+no `report119.py` readout (E2 verdict, E3 plans, E9 hull) has been run. The S-slab plans were built from the box2 S
+donors (`headslab.py plan`, HS_TRAIN=qad, HS_FLOOR=3) before any readout. Nothing below changes a rule; it adds arms.
+
+**#157 extra trellis arms (lead note 5: mul1 heads are servable today through `decl_exl3_weight`):** two more S-order
+donors with E2's flags: **K7 mul1** (`--codebook mul1`) and **K6.5 i8**; scored like every option (head-only KL,
+fit-gen calib-weighted = pricing, search-gen reported). Both enter the E9 hull as uniform options and as T / S-slab
+donors only in a report-only re-plan (E3's decision stays on the rule's donor grid). Reported: K7 mul1 / i8 K7 and
+K6.5 i8 / K7 i8 ratios with CIs, and K7 mul1 vs deadcode's int8 GPTQ head per byte. **Read:** a K7 donor is
+recommended for the grid only if (mul1 or i8) K7 is on the fit-gen hull between the K6.5 donor and the int8 head;
+otherwise the custom grid stops at K6.5 i8 (user 11-12) and the int8 GPTQ head covers the top.
+
+**a8 cost per K (lead note 4)** is reported on every uniform donor (already in amendment 1); prefill / decode time is
+reported as not measured unless an A8 head kernel exists (none today), so the head stays f16 (amendment 1).
