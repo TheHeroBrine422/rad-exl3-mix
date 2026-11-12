@@ -16,3 +16,4 @@
 Related code (2026-11-07): `pipeline/` (the production quantizer pipeline, package `rxq`, merged in from its side repo; its
 `config/v3.toml` pins the V3 freeze settings with their evidence from `experiments/`) and `rad-quant-at-home` (the
 job system for donated compute that runs the ladder's per-tensor jobs). This repository stays the research record.
+- `research/ideas-runs/`: the raw reports of the four ideas passes (11-02 → 11-08), with the critic rankings.
