@@ -599,6 +599,27 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
   Takeaway: for V3.1 our own qad pool + xcorp + session traces with our top-512 goldens remain the main QAD data; whittle
   (if licensable) and a Distill-1M slice are optional add-ons, ledger-recorded as non-calib corpora.
 
+## User ideas (2026-11-12)
+- [ ] **Vision blind spot.** Our corpora, Hessians, H_out and goldens are text only, so the quantizer weights directions
+  image tokens use by how text uses them. V3: measure only: a vision KLD eval (image + text prompts, bf16 goldens,
+  mmproj unchanged) on finished mixes vs V2 / bf16, plus w124's vision e2e test. If vision degrades much more than
+  text, add image-token activations to the calibration statistics in V4 (a codes change, so not for V3).
+- [ ] **Much larger bf16 goldens (top-512 logits) on the lent cards.** ~4 KB a position: 100M tokens ≈ 400 GB.
+  QAD (V3.1): xcorp + session traces + self-generated text, as much as helps (the qad calib pool stays fixed at
+  ~5.7M). Search: xcorp parts may grow (allowed for accept / reject); calib parts stay limited by the pools. Build
+  after the ladder; size it with w123's noise-vs-cost model.
+- [ ] **Self-generated (on-policy) text.** The board scores only model-written rows (`gen.u8`), so text the model
+  writes itself is the real target distribution. Generate prompts' answers with a fast quant (IQR-V4 or our V3 once
+  built: only the token stream matters), then score every position with the bf16 teacher. Use for QAD training
+  (on-policy distillation, `xcorp/selfgen.py` exists) and as an extra xcorp search part; never for final selection
+  (verify stays calib).
+- [ ] **Intermediate-layer loss in QAD** (the NVIDIA recipe in ROADMAP V4): add per-block hidden-state MSE vs bf16 to
+  the final-KL loss. Viable: the teacher forward runs alongside (hidden states are too big to store). Expected to help
+  low-bit stability / convergence more than the final KL; test as an arm in the V3.1 pilot (KL only vs KL + block MSE,
+  same steps), keep only if it wins on verify.
+- **Mining with the local Qwen** (user): after w114, card 0 joins llama-swap and makes the 27B faster; restart the
+  mining pass then (`mine/mix/PAUSE` off), Qwen only.
+
 ## swj fit data (2026-11-11, #144 finding)
 - [ ] **More swj fit tokens?** #144: fitting on half of the fit half (~232k vs ~464k tokens) lost 5.6% of the held-out
   gain (spread 1.2%), so the fit is still data-limited at today's ~0.93M qad tokens. A doubled qad slice (or qad + xcorp)
