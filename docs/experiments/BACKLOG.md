@@ -548,6 +548,13 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 
 But what I will add to my lists of things to try is seeing if a lower quality but lower overhead int4/int8 quant can be viable. But that will need to be post very heavy trellis kernel optimization to confirm it’s as good as it’s gonna get.
 
+- **Lessons from the DeepSeek-V4.1-Flash-1017 calibration set (user, `Hero422/deepseek-v4.1-flash-1017-quant-calib`,
+  11-12):** 100M-token corpus with pools sized per use (the 27B's ~10M calib starved its search pool by week 2); a
+  published bf16 noise floor (identical rerun / chunking / kernel) shipped with the goldens; score model-written rows only
+  (`gen.u8`): tool output is fragile even for bf16 (batch layout moved trace KLD 0.46–0.94 on tool rows) — apply the same
+  mask strictly in xcorp slices; Horvitz–Thompson expert sampling with the raw dumps kept so expert statistics can be
+  rebuilt with any weighting; separate whole long traces for eval only.
+
 ## swj fit data (2026-11-11, #144 finding)
 - [ ] **More swj fit tokens?** #144: fitting on half of the fit half (~232k vs ~464k tokens) lost 5.6% of the held-out
   gain (spread 1.2%), so the fit is still data-limited at today's ~0.93M qad tokens. A doubled qad slice (or qad + xcorp)
