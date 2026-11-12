@@ -1,0 +1,10 @@
+pack4-stock.log:I recipe   9 rule(s)
+pack4-stock.log:I plan     787 weight(s): 336 quantised by the recipe, 451 kept as the checkpoint holds them
+pack4-stock.log:I weights  787 written in 2078 s: 483 a thread each, 304 across every thread
+pack4-stock.log:I finish   0 s
+pack4-stock.log:I wrote /data/q27/w123/packs/q27v3-144dd6e1-k3-i8-stock.rad: 787 weight(s), 13.30 GiB of weights, 248077 vocab token(s)
+pack4-noerr.log:I recipe   9 rule(s)
+pack4-noerr.log:I plan     787 weight(s): 336 quantised by the recipe, 451 kept as the checkpoint holds them
+pack4-noerr.log:I weights  787 written in 133 s: 483 a thread each, 304 across every thread
+pack4-noerr.log:I finish   1 s
+pack4-noerr.log:I wrote /data/q27/w123/packs/q27v3-144dd6e1-k3-i8-noerr.rad: 787 weight(s), 13.30 GiB of weights, 248077 vocab token(s)

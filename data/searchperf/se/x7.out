@@ -1,0 +1,5 @@
+part kind        pairs  maxshare med  P(>0.2)  SE cap20/SE med  |cap20-pooled|/SE med  sign flips
+c                  147         0.12     0.08             1.00                   0.00        0.00
+golden-search27    290         0.10     0.00             1.00                   0.00        0.00
+golden-verify27     13         0.19     0.08             1.00                   0.00        0.00
+x                  130         0.28     0.58             1.00                   0.06        0.05

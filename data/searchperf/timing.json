@@ -1,0 +1,14 @@
+{
+ "s_per_tok": 0.0007783018867924527,
+ "run_s": 7.6850000000000005,
+ "mix_s": 11.19,
+ "n_runs": 14,
+ "n_mix": 13,
+ "tok_per_s": 1284.8611735406196,
+ "runs_per_eval": 2,
+ "decisions_per_slice": 20,
+ "x_docs": 130,
+ "calib_docs": 50,
+ "calib_tok": 45000,
+ "x_tok_cap": 1400
+}

@@ -1,0 +1,309 @@
+===== x2
+== a4cost / swap27 pairs on golden-search27 (calib, 103 docs, 123k pos)
+K1-a8                  K1-gate_up-0-15-g128   dlog  +0.28  se  0.03  z  +8.5  sdu 0.003 maxsh 0.10  geo  +0.27/0.11
+K1-a8                  K1-gate_up-0-15-g64    dlog  +0.16  se  0.03  z  +5.1  sdu 0.003 maxsh 0.10  geo  +0.23/0.14
+K1-a8                  K1-gate_up-16-31-g128  dlog  +0.16  se  0.02  z  +7.3  sdu 0.002 maxsh 0.10  geo  +0.25/0.17
+K1-a8                  K1-gate_up-16-31-g64   dlog  +0.14  se  0.02  z  +6.2  sdu 0.002 maxsh 0.10  geo  +0.28/0.08
+K1-a8                  K1-gate_up-32-47-g128  dlog  +0.12  se  0.02  z  +6.0  sdu 0.002 maxsh 0.10  geo  +0.18/0.09
+K1-a8                  K1-gate_up-32-47-g64   dlog  +0.06  se  0.01  z  +4.8  sdu 0.001 maxsh 0.10  geo  +0.03/0.04
+K1-a8                  K1-gate_up-48-63-g128  dlog  +0.09  se  0.02  z  +5.8  sdu 0.002 maxsh 0.10  geo  +0.12/0.04
+K1-a8                  K1-gate_up-48-63-g64   dlog  +0.04  se  0.01  z  +4.0  sdu 0.001 maxsh 0.10  geo  +0.08/0.04
+K1-gate_up-0-15-g128   K1-gate_up-0-15-g64    dlog  -0.11  se  0.02  z  -4.9  sdu 0.002 maxsh 0.10  geo  -0.04/0.05
+K1-gate_up-0-15-g128   K1-gate_up-16-31-g128  dlog  -0.11  se  0.03  z  -3.5  sdu 0.003 maxsh 0.10  geo  -0.01/0.09
+K1-gate_up-0-15-g128   K1-gate_up-16-31-g64   dlog  -0.14  se  0.03  z  -5.2  sdu 0.003 maxsh 0.10  geo  +0.01/0.08
+K1-gate_up-0-15-g128   K1-gate_up-32-47-g128  dlog  -0.15  se  0.03  z  -5.2  sdu 0.003 maxsh 0.10  geo  -0.09/0.15
+K1-gate_up-0-15-g128   K1-gate_up-32-47-g64   dlog  -0.21  se  0.04  z  -5.5  sdu 0.004 maxsh 0.10  geo  -0.23/0.11
+K1-gate_up-0-15-g128   K1-gate_up-48-63-g128  dlog  -0.18  se  0.04  z  -4.6  sdu 0.004 maxsh 0.10  geo  -0.15/0.13
+K1-gate_up-0-15-g128   K1-gate_up-48-63-g64   dlog  -0.23  se  0.04  z  -6.4  sdu 0.004 maxsh 0.10  geo  -0.19/0.10
+K1-gate_up-0-15-g64    K1-gate_up-16-31-g128  dlog  -0.00  se  0.03  z  -0.1  sdu 0.003 maxsh 0.10  geo  +0.02/0.10
+K1-gate_up-0-15-g64    K1-gate_up-16-31-g64   dlog  -0.03  se  0.03  z  -0.9  sdu 0.003 maxsh 0.10  geo  +0.05/0.10
+K1-gate_up-0-15-g64    K1-gate_up-32-47-g128  dlog  -0.04  se  0.03  z  -1.2  sdu 0.003 maxsh 0.10  geo  -0.05/0.19
+K1-gate_up-0-15-g64    K1-gate_up-32-47-g64   dlog  -0.10  se  0.04  z  -2.7  sdu 0.004 maxsh 0.10  geo  -0.20/0.14
+K1-gate_up-0-15-g64    K1-gate_up-48-63-g128  dlog  -0.07  se  0.04  z  -1.7  sdu 0.004 maxsh 0.10  geo  -0.11/0.16
+K1-gate_up-0-15-g64    K1-gate_up-48-63-g64   dlog  -0.12  se  0.04  z  -3.1  sdu 0.004 maxsh 0.10  geo  -0.16/0.14
+K1-gate_up-16-31-g128  K1-gate_up-16-31-g64   dlog  -0.02  se  0.02  z  -1.2  sdu 0.002 maxsh 0.10  geo  +0.03/0.13
+K1-gate_up-16-31-g128  K1-gate_up-32-47-g128  dlog  -0.04  se  0.03  z  -1.3  sdu 0.003 maxsh 0.10  geo  -0.08/0.19
+K1-gate_up-16-31-g128  K1-gate_up-32-47-g64   dlog  -0.10  se  0.03  z  -3.9  sdu 0.003 maxsh 0.10  geo  -0.22/0.17
+K1-gate_up-16-31-g128  K1-gate_up-48-63-g128  dlog  -0.07  se  0.03  z  -2.5  sdu 0.003 maxsh 0.10  geo  -0.14/0.18
+K1-gate_up-16-31-g128  K1-gate_up-48-63-g64   dlog  -0.12  se  0.02  z  -4.9  sdu 0.002 maxsh 0.10  geo  -0.18/0.15
+K1-gate_up-16-31-g64   K1-gate_up-32-47-g128  dlog  -0.01  se  0.03  z  -0.5  sdu 0.003 maxsh 0.10  geo  -0.11/0.11
+K1-gate_up-16-31-g64   K1-gate_up-32-47-g64   dlog  -0.08  se  0.03  z  -2.9  sdu 0.003 maxsh 0.10  geo  -0.25/0.08
+K1-gate_up-16-31-g64   K1-gate_up-48-63-g128  dlog  -0.04  se  0.03  z  -1.5  sdu 0.003 maxsh 0.10  geo  -0.16/0.08
+K1-gate_up-16-31-g64   K1-gate_up-48-63-g64   dlog  -0.09  se  0.03  z  -3.5  sdu 0.003 maxsh 0.10  geo  -0.21/0.07
+K1-gate_up-32-47-g128  K1-gate_up-32-47-g64   dlog  -0.06  se  0.02  z  -2.8  sdu 0.002 maxsh 0.10  geo  -0.14/0.09
+K1-gate_up-32-47-g128  K1-gate_up-48-63-g128  dlog  -0.03  se  0.02  z  -1.3  sdu 0.002 maxsh 0.10  geo  -0.06/0.07
+K1-gate_up-32-47-g128  K1-gate_up-48-63-g64   dlog  -0.08  se  0.02  z  -3.6  sdu 0.002 maxsh 0.10  geo  -0.10/0.10
+K1-gate_up-32-47-g64   K1-gate_up-48-63-g128  dlog  +0.03  se  0.01  z  +2.2  sdu 0.001 maxsh 0.10  geo  +0.08/0.04
+K1-gate_up-32-47-g64   K1-gate_up-48-63-g64   dlog  -0.02  se  0.01  z  -1.4  sdu 0.001 maxsh 0.10  geo  +0.04/0.06
+K1-gate_up-48-63-g128  K1-gate_up-48-63-g64   dlog  -0.05  se  0.01  z  -4.3  sdu 0.001 maxsh 0.10  geo  -0.04/0.06
+K2-a8                  K2-down-0-15-g64       dlog  +0.18  se  0.07  z  +2.5  sdu 0.007 maxsh 0.09  geo  +0.18/0.10
+K2-a8                  K2-down-16-31-g64      dlog  +0.37  se  0.06  z  +6.2  sdu 0.006 maxsh 0.09  geo  +0.46/0.20
+K2-a8                  K2-down-32-47-g64      dlog  +0.52  se  0.08  z  +6.9  sdu 0.008 maxsh 0.09  geo  +0.28/0.23
+K2-a8                  K2-down-48-63-g64      dlog  +1.15  se  0.09  z +13.5  sdu 0.009 maxsh 0.09  geo  +0.77/0.13
+K2-a8                  K2-f16                 dlog  +0.01  se  0.02  z  +0.6  sdu 0.002 maxsh 0.09  geo  +0.07/0.05
+K2-a8                  K2-gate_up-0-15-g128   dlog  +0.62  se  0.10  z  +6.1  sdu 0.010 maxsh 0.09  geo  +0.40/0.13
+K2-a8                  K2-gate_up-0-15-g64    dlog  +0.44  se  0.11  z  +4.0  sdu 0.011 maxsh 0.09  geo  +0.37/0.12
+K2-a8                  K2-gate_up-16-31-g128  dlog  +0.77  se  0.10  z  +7.6  sdu 0.011 maxsh 0.09  geo  +0.73/0.37
+K2-a8                  K2-gate_up-16-31-g64   dlog  +0.73  se  0.11  z  +6.7  sdu 0.011 maxsh 0.09  geo  +0.76/0.33
+K2-a8                  K2-gate_up-32-47-g128  dlog  +1.23  se  0.11  z +11.4  sdu 0.011 maxsh 0.09  geo  +1.10/0.28
+K2-a8                  K2-gate_up-32-47-g64   dlog  +0.96  se  0.11  z  +9.1  sdu 0.011 maxsh 0.09  geo  +0.69/0.52
+K2-a8                  K2-gate_up-48-63-g128  dlog  +3.02  se  0.19  z +16.3  sdu 0.019 maxsh 0.09  geo  +2.18/0.25
+K2-a8                  K2-gate_up-48-63-g64   dlog  +2.50  se  0.17  z +15.0  sdu 0.017 maxsh 0.09  geo  +1.88/0.19
+K2-down-0-15-g64       K2-down-16-31-g64      dlog  +0.18  se  0.09  z  +2.1  sdu 0.009 maxsh 0.09  geo  +0.28/0.22
+K2-down-0-15-g64       K2-down-32-47-g64      dlog  +0.33  se  0.11  z  +3.0  sdu 0.011 maxsh 0.09  geo  +0.10/0.28
+K2-down-0-15-g64       K2-down-48-63-g64      dlog  +0.97  se  0.11  z  +8.9  sdu 0.011 maxsh 0.09  geo  +0.59/0.16
+K2-down-0-15-g64       K2-f16                 dlog  -0.17  se  0.07  z  -2.5  sdu 0.007 maxsh 0.09  geo  -0.11/0.10
+K2-down-0-15-g64       K2-gate_up-0-15-g128   dlog  +0.43  se  0.12  z  +3.7  sdu 0.012 maxsh 0.09  geo  +0.22/0.15
+K2-down-0-15-g64       K2-gate_up-0-15-g64    dlog  +0.25  se  0.10  z  +2.5  sdu 0.010 maxsh 0.09  geo  +0.19/0.11
+K2-down-0-15-g64       K2-gate_up-16-31-g128  dlog  +0.59  se  0.11  z  +5.2  sdu 0.012 maxsh 0.09  geo  +0.55/0.37
+K2-down-0-15-g64       K2-gate_up-16-31-g64   dlog  +0.55  se  0.11  z  +4.9  sdu 0.011 maxsh 0.09  geo  +0.58/0.32
+K2-down-0-15-g64       K2-gate_up-32-47-g128  dlog  +1.05  se  0.12  z  +8.8  sdu 0.012 maxsh 0.09  geo  +0.92/0.29
+K2-down-0-15-g64       K2-gate_up-32-47-g64   dlog  +0.77  se  0.13  z  +5.7  sdu 0.013 maxsh 0.09  geo  +0.51/0.51
+K2-down-0-15-g64       K2-gate_up-48-63-g128  dlog  +2.84  se  0.19  z +15.2  sdu 0.019 maxsh 0.09  geo  +2.00/0.28
+K2-down-0-15-g64       K2-gate_up-48-63-g64   dlog  +2.32  se  0.18  z +12.8  sdu 0.018 maxsh 0.09  geo  +1.70/0.22
+K2-down-16-31-g64      K2-down-32-47-g64      dlog  +0.15  se  0.09  z  +1.6  sdu 0.009 maxsh 0.09  geo  -0.18/0.29
+K2-down-16-31-g64      K2-down-48-63-g64      dlog  +0.79  se  0.10  z  +7.7  sdu 0.010 maxsh 0.09  geo  +0.30/0.28
+K2-down-16-31-g64      K2-f16                 dlog  -0.35  se  0.06  z  -5.7  sdu 0.006 maxsh 0.09  geo  -0.40/0.19
+K2-down-16-31-g64      K2-gate_up-0-15-g128   dlog  +0.25  se  0.10  z  +2.6  sdu 0.010 maxsh 0.09  geo  -0.07/0.25
+K2-down-16-31-g64      K2-gate_up-0-15-g64    dlog  +0.07  se  0.12  z  +0.6  sdu 0.012 maxsh 0.09  geo  -0.10/0.22
+K2-down-16-31-g64      K2-gate_up-16-31-g128  dlog  +0.41  se  0.10  z  +4.3  sdu 0.010 maxsh 0.09  geo  +0.27/0.30
+K2-down-16-31-g64      K2-gate_up-16-31-g64   dlog  +0.36  se  0.13  z  +2.9  sdu 0.013 maxsh 0.09  geo  +0.29/0.29
+K2-down-16-31-g64      K2-gate_up-32-47-g128  dlog  +0.87  se  0.12  z  +7.5  sdu 0.012 maxsh 0.09  geo  +0.64/0.33
+K2-down-16-31-g64      K2-gate_up-32-47-g64   dlog  +0.59  se  0.12  z  +5.0  sdu 0.012 maxsh 0.09  geo  +0.23/0.41
+K2-down-16-31-g64      K2-gate_up-48-63-g128  dlog  +2.65  se  0.19  z +13.8  sdu 0.020 maxsh 0.09  geo  +1.72/0.31
+K2-down-16-31-g64      K2-gate_up-48-63-g64   dlog  +2.13  se  0.18  z +12.1  sdu 0.018 maxsh 0.09  geo  +1.42/0.28
+K2-down-32-47-g64      K2-down-48-63-g64      dlog  +0.64  se  0.11  z  +5.7  sdu 0.011 maxsh 0.09  geo  +0.49/0.26
+K2-down-32-47-g64      K2-f16                 dlog  -0.50  se  0.08  z  -6.2  sdu 0.008 maxsh 0.09  geo  -0.22/0.25
+K2-down-32-47-g64      K2-gate_up-0-15-g128   dlog  +0.10  se  0.11  z  +0.9  sdu 0.011 maxsh 0.09  geo  +0.12/0.25
+K2-down-32-47-g64      K2-gate_up-0-15-g64    dlog  -0.08  se  0.14  z  -0.6  sdu 0.014 maxsh 0.09  geo  +0.08/0.28
+K2-down-32-47-g64      K2-gate_up-16-31-g128  dlog  +0.26  se  0.11  z  +2.3  sdu 0.012 maxsh 0.09  geo  +0.45/0.41
+K2-down-32-47-g64      K2-gate_up-16-31-g64   dlog  +0.21  se  0.14  z  +1.5  sdu 0.014 maxsh 0.09  geo  +0.48/0.32
+K2-down-32-47-g64      K2-gate_up-32-47-g128  dlog  +0.72  se  0.12  z  +6.0  sdu 0.012 maxsh 0.09  geo  +0.82/0.42
+K2-down-32-47-g64      K2-gate_up-32-47-g64   dlog  +0.44  se  0.13  z  +3.5  sdu 0.012 maxsh 0.09  geo  +0.41/0.58
+K2-down-32-47-g64      K2-gate_up-48-63-g128  dlog  +2.50  se  0.19  z +12.9  sdu 0.020 maxsh 0.09  geo  +1.90/0.30
+K2-down-32-47-g64      K2-gate_up-48-63-g64   dlog  +1.98  se  0.17  z +11.8  sdu 0.017 maxsh 0.09  geo  +1.60/0.29
+K2-down-48-63-g64      K2-f16                 dlog  -1.14  se  0.09  z -12.8  sdu 0.009 maxsh 0.09  geo  -0.70/0.14
+K2-down-48-63-g64      K2-gate_up-0-15-g128   dlog  -0.53  se  0.11  z  -5.0  sdu 0.011 maxsh 0.09  geo  -0.37/0.16
+K2-down-48-63-g64      K2-gate_up-0-15-g64    dlog  -0.72  se  0.12  z  -5.9  sdu 0.013 maxsh 0.09  geo  -0.40/0.17
+K2-down-48-63-g64      K2-gate_up-16-31-g128  dlog  -0.38  se  0.12  z  -3.3  sdu 0.012 maxsh 0.09  geo  -0.03/0.42
+K2-down-48-63-g64      K2-gate_up-16-31-g64   dlog  -0.42  se  0.12  z  -3.6  sdu 0.012 maxsh 0.09  geo  -0.01/0.38
+K2-down-48-63-g64      K2-gate_up-32-47-g128  dlog  +0.08  se  0.14  z  +0.6  sdu 0.014 maxsh 0.09  geo  +0.33/0.30
+K2-down-48-63-g64      K2-gate_up-32-47-g64   dlog  -0.19  se  0.14  z  -1.4  sdu 0.014 maxsh 0.09  geo  -0.08/0.58
+K2-down-48-63-g64      K2-gate_up-48-63-g128  dlog  +1.87  se  0.15  z +12.4  sdu 0.016 maxsh 0.09  geo  +1.41/0.22
+K2-down-48-63-g64      K2-gate_up-48-63-g64   dlog  +1.35  se  0.14  z  +9.7  sdu 0.014 maxsh 0.09  geo  +1.11/0.16
+K2-f16                 K2-gate_up-0-15-g128   dlog  +0.61  se  0.11  z  +5.7  sdu 0.010 maxsh 0.09  geo  +0.33/0.13
+K2-f16                 K2-gate_up-0-15-g64    dlog  +0.42  se  0.11  z  +3.9  sdu 0.011 maxsh 0.09  geo  +0.30/0.11
+K2-f16                 K2-gate_up-16-31-g128  dlog  +0.76  se  0.10  z  +7.4  sdu 0.011 maxsh 0.09  geo  +0.67/0.34
+K2-f16                 K2-gate_up-16-31-g64   dlog  +0.72  se  0.11  z  +6.8  sdu 0.011 maxsh 0.09  geo  +0.69/0.31
+K2-f16                 K2-gate_up-32-47-g128  dlog  +1.22  se  0.11  z +10.9  sdu 0.011 maxsh 0.09  geo  +1.03/0.29
+K2-f16                 K2-gate_up-32-47-g64   dlog  +0.94  se  0.11  z  +8.3  sdu 0.011 maxsh 0.09  geo  +0.63/0.50
+K2-f16                 K2-gate_up-48-63-g128  dlog  +3.01  se  0.19  z +16.2  sdu 0.019 maxsh 0.09  geo  +2.12/0.24
+K2-f16                 K2-gate_up-48-63-g64   dlog  +2.49  se  0.17  z +14.4  sdu 0.018 maxsh 0.09  geo  +1.82/0.19
+K2-gate_up-0-15-g128   K2-gate_up-0-15-g64    dlog  -0.18  se  0.10  z  -1.8  sdu 0.011 maxsh 0.09  geo  -0.03/0.14
+K2-gate_up-0-15-g128   K2-gate_up-16-31-g128  dlog  +0.15  se  0.13  z  +1.2  sdu 0.013 maxsh 0.09  geo  +0.34/0.42
+K2-gate_up-0-15-g128   K2-gate_up-16-31-g64   dlog  +0.11  se  0.15  z  +0.8  sdu 0.015 maxsh 0.09  geo  +0.36/0.36
+K2-gate_up-0-15-g128   K2-gate_up-32-47-g128  dlog  +0.62  se  0.15  z  +4.1  sdu 0.015 maxsh 0.09  geo  +0.70/0.28
+K2-gate_up-0-15-g128   K2-gate_up-32-47-g64   dlog  +0.34  se  0.15  z  +2.3  sdu 0.014 maxsh 0.09  geo  +0.29/0.57
+K2-gate_up-0-15-g128   K2-gate_up-48-63-g128  dlog  +2.40  se  0.18  z +13.7  sdu 0.018 maxsh 0.09  geo  +1.78/0.25
+K2-gate_up-0-15-g128   K2-gate_up-48-63-g64   dlog  +1.88  se  0.17  z +10.8  sdu 0.018 maxsh 0.09  geo  +1.48/0.21
+K2-gate_up-0-15-g64    K2-gate_up-16-31-g128  dlog  +0.34  se  0.13  z  +2.6  sdu 0.013 maxsh 0.09  geo  +0.37/0.39
+K2-gate_up-0-15-g64    K2-gate_up-16-31-g64   dlog  +0.30  se  0.15  z  +2.0  sdu 0.015 maxsh 0.09  geo  +0.39/0.33
+K2-gate_up-0-15-g64    K2-gate_up-32-47-g128  dlog  +0.80  se  0.16  z  +4.9  sdu 0.017 maxsh 0.09  geo  +0.73/0.26
+K2-gate_up-0-15-g64    K2-gate_up-32-47-g64   dlog  +0.52  se  0.15  z  +3.4  sdu 0.015 maxsh 0.09  geo  +0.33/0.54
+K2-gate_up-0-15-g64    K2-gate_up-48-63-g128  dlog  +2.58  se  0.17  z +15.1  sdu 0.018 maxsh 0.09  geo  +1.82/0.27
+K2-gate_up-0-15-g64    K2-gate_up-48-63-g64   dlog  +2.06  se  0.19  z +11.1  sdu 0.019 maxsh 0.09  geo  +1.52/0.20
+K2-gate_up-16-31-g128  K2-gate_up-16-31-g64   dlog  -0.04  se  0.11  z  -0.4  sdu 0.011 maxsh 0.09  geo  +0.02/0.29
+K2-gate_up-16-31-g128  K2-gate_up-32-47-g128  dlog  +0.46  se  0.15  z  +3.2  sdu 0.015 maxsh 0.09  geo  +0.37/0.55
+K2-gate_up-16-31-g128  K2-gate_up-32-47-g64   dlog  +0.19  se  0.13  z  +1.4  sdu 0.013 maxsh 0.09  geo  -0.04/0.32
+K2-gate_up-16-31-g128  K2-gate_up-48-63-g128  dlog  +2.25  se  0.18  z +12.5  sdu 0.018 maxsh 0.09  geo  +1.45/0.39
+K2-gate_up-16-31-g128  K2-gate_up-48-63-g64   dlog  +1.73  se  0.18  z  +9.8  sdu 0.018 maxsh 0.09  geo  +1.15/0.42
+K2-gate_up-16-31-g64   K2-gate_up-32-47-g128  dlog  +0.50  se  0.14  z  +3.6  sdu 0.014 maxsh 0.09  geo  +0.34/0.48
+K2-gate_up-16-31-g64   K2-gate_up-32-47-g64   dlog  +0.23  se  0.15  z  +1.5  sdu 0.015 maxsh 0.09  geo  -0.07/0.44
+K2-gate_up-16-31-g64   K2-gate_up-48-63-g128  dlog  +2.29  se  0.20  z +11.6  sdu 0.020 maxsh 0.09  geo  +1.42/0.39
+K2-gate_up-16-31-g64   K2-gate_up-48-63-g64   dlog  +1.77  se  0.21  z  +8.5  sdu 0.021 maxsh 0.09  geo  +1.12/0.38
+K2-gate_up-32-47-g128  K2-gate_up-32-47-g64   dlog  -0.28  se  0.12  z  -2.3  sdu 0.012 maxsh 0.09  geo  -0.41/0.65
+K2-gate_up-32-47-g128  K2-gate_up-48-63-g128  dlog  +1.79  se  0.21  z  +8.7  sdu 0.021 maxsh 0.09  geo  +1.08/0.40
+K2-gate_up-32-47-g128  K2-gate_up-48-63-g64   dlog  +1.27  se  0.19  z  +6.7  sdu 0.019 maxsh 0.09  geo  +0.78/0.32
+K2-gate_up-32-47-g64   K2-gate_up-48-63-g128  dlog  +2.06  se  0.21  z  +9.7  sdu 0.022 maxsh 0.09  geo  +1.49/0.54
+K2-gate_up-32-47-g64   K2-gate_up-48-63-g64   dlog  +1.54  se  0.18  z  +8.4  sdu 0.019 maxsh 0.09  geo  +1.19/0.56
+K2-gate_up-48-63-g128  K2-gate_up-48-63-g64   dlog  -0.52  se  0.14  z  -3.6  sdu 0.015 maxsh 0.09  geo  -0.30/0.18
+K3-a8                  K3-gate_up-0-15-g128   dlog  +2.67  se  0.35  z  +7.7  sdu 0.034 maxsh 0.10  geo  +1.54/0.52
+K3-a8                  K3-gate_up-0-15-g64    dlog  +1.99  se  0.25  z  +8.1  sdu 0.025 maxsh 0.10  geo  +1.22/0.39
+K3-a8                  K3-gate_up-16-31-g128  dlog  +3.98  se  0.59  z  +6.7  sdu 0.060 maxsh 0.10  geo  +5.38/1.35
+K3-a8                  K3-gate_up-16-31-g64   dlog  +3.05  se  0.31  z  +9.7  sdu 0.032 maxsh 0.10  geo  +2.63/0.63
+K3-a8                  K3-gate_up-32-47-g128  dlog  +5.86  se  0.47  z +12.4  sdu 0.047 maxsh 0.10  geo  +6.54/1.19
+K3-a8                  K3-gate_up-32-47-g64   dlog  +5.59  se  0.38  z +14.6  sdu 0.039 maxsh 0.10  geo  +5.21/0.76
+K3-a8                  K3-gate_up-48-63-g64   dlog +11.77  se  0.60  z +19.7  sdu 0.062 maxsh 0.10  geo  +8.38/0.91
+K3-gate_up-0-15-g128   K3-gate_up-0-15-g64    dlog  -0.68  se  0.36  z  -1.9  sdu 0.036 maxsh 0.10  geo  -0.33/0.39
+K3-gate_up-0-15-g128   K3-gate_up-16-31-g128  dlog  +1.31  se  0.66  z  +2.0  sdu 0.067 maxsh 0.10  geo  +3.84/1.60
+K3-gate_up-0-15-g128   K3-gate_up-16-31-g64   dlog  +0.38  se  0.51  z  +0.7  sdu 0.051 maxsh 0.10  geo  +1.09/0.87
+K3-gate_up-0-15-g128   K3-gate_up-32-47-g128  dlog  +3.19  se  0.68  z  +4.7  sdu 0.067 maxsh 0.10  geo  +5.00/1.32
+K3-gate_up-0-15-g128   K3-gate_up-32-47-g64   dlog  +2.92  se  0.58  z  +5.1  sdu 0.057 maxsh 0.10  geo  +3.67/0.89
+K3-gate_up-0-15-g128   K3-gate_up-48-63-g128  dlog +10.74  se  0.83  z +12.9  sdu 0.086 maxsh 0.10  geo  +8.08/0.87
+K3-gate_up-0-15-g128   K3-gate_up-48-63-g64   dlog  +9.10  se  0.66  z +13.8  sdu 0.067 maxsh 0.10  geo  +6.84/0.74
+K3-gate_up-0-15-g64    K3-gate_up-16-31-g128  dlog  +1.99  se  0.67  z  +3.0  sdu 0.068 maxsh 0.10  geo  +4.16/1.49
+K3-gate_up-0-15-g64    K3-gate_up-16-31-g64   dlog  +1.05  se  0.42  z  +2.5  sdu 0.043 maxsh 0.10  geo  +1.41/0.74
+K3-gate_up-0-15-g64    K3-gate_up-32-47-g128  dlog  +3.87  se  0.58  z  +6.6  sdu 0.059 maxsh 0.10  geo  +5.33/1.26
+K3-gate_up-0-15-g64    K3-gate_up-32-47-g64   dlog  +3.60  se  0.48  z  +7.4  sdu 0.050 maxsh 0.10  geo  +3.99/0.79
+K3-gate_up-0-15-g64    K3-gate_up-48-63-g128  dlog +11.42  se  0.76  z +15.0  sdu 0.078 maxsh 0.10  geo  +8.41/0.90
+K3-gate_up-0-15-g64    K3-gate_up-48-63-g64   dlog  +9.77  se  0.58  z +17.0  sdu 0.059 maxsh 0.10  geo  +7.16/0.84
+K3-gate_up-16-31-g128  K3-gate_up-16-31-g64   dlog  -0.94  se  0.56  z  -1.7  sdu 0.056 maxsh 0.10  geo  -2.75/1.17
+K3-gate_up-16-31-g128  K3-gate_up-32-47-g128  dlog  +1.88  se  0.80  z  +2.4  sdu 0.081 maxsh 0.10  geo  +1.16/1.25
+K3-gate_up-16-31-g128  K3-gate_up-32-47-g64   dlog  +1.61  se  0.73  z  +2.2  sdu 0.074 maxsh 0.10  geo  -0.17/1.24
+K3-gate_up-16-31-g128  K3-gate_up-48-63-g128  dlog  +9.43  se  0.84  z +11.3  sdu 0.085 maxsh 0.10  geo  +4.25/1.63
+K3-gate_up-16-31-g128  K3-gate_up-48-63-g64   dlog  +7.78  se  0.80  z  +9.7  sdu 0.082 maxsh 0.10  geo  +3.00/1.75
+K3-gate_up-16-31-g64   K3-gate_up-32-47-g128  dlog  +2.81  se  0.52  z  +5.4  sdu 0.053 maxsh 0.10  geo  +3.92/1.11
+K3-gate_up-16-31-g64   K3-gate_up-32-47-g64   dlog  +2.55  se  0.50  z  +5.1  sdu 0.052 maxsh 0.10  geo  +2.58/0.76
+K3-gate_up-16-31-g64   K3-gate_up-48-63-g128  dlog +10.36  se  0.74  z +14.0  sdu 0.077 maxsh 0.10  geo  +7.00/1.09
+K3-gate_up-16-31-g64   K3-gate_up-48-63-g64   dlog  +8.72  se  0.58  z +15.1  sdu 0.059 maxsh 0.10  geo  +5.75/1.21
+K3-gate_up-32-47-g128  K3-gate_up-32-47-g64   dlog  -0.27  se  0.32  z  -0.8  sdu 0.032 maxsh 0.10  geo  -1.33/0.74
+K3-gate_up-32-47-g128  K3-gate_up-48-63-g128  dlog  +7.55  se  1.05  z  +7.2  sdu 0.110 maxsh 0.10  geo  +3.08/1.53
+K3-gate_up-32-47-g128  K3-gate_up-48-63-g64   dlog  +5.91  se  0.86  z  +6.8  sdu 0.089 maxsh 0.10  geo  +1.84/1.55
+K3-gate_up-32-47-g64   K3-gate_up-48-63-g128  dlog  +7.82  se  1.05  z  +7.5  sdu 0.110 maxsh 0.10  geo  +4.42/1.15
+K3-gate_up-32-47-g64   K3-gate_up-48-63-g64   dlog  +6.18  se  0.86  z  +7.2  sdu 0.089 maxsh 0.10  geo  +3.17/1.17
+K3-gate_up-48-63-g128  K3-gate_up-48-63-g64   dlog  -1.64  se  0.41  z  -4.0  sdu 0.043 maxsh 0.10  geo  -1.24/0.60
+base                   bn                     dlog  -2.85  se  1.45  z  -2.0  sdu 0.147 maxsh 0.10  geo  -6.00/1.57
+base                   bns1                   dlog  -3.28  se  1.20  z  -2.7  sdu 0.122 maxsh 0.10  geo  -3.52/1.81
+base                   bns2                   dlog  -3.90  se  1.25  z  -3.1  sdu 0.126 maxsh 0.10  geo  -7.34/1.80
+base                   dy                     dlog  -1.71  se  1.16  z  -1.5  sdu 0.120 maxsh 0.10  geo  -1.46/1.62
+base                   s1                     dlog  -2.51  se  0.97  z  -2.6  sdu 0.097 maxsh 0.10  geo  -1.91/1.54
+base                   s2                     dlog  -1.49  se  1.15  z  -1.3  sdu 0.118 maxsh 0.10  geo  -1.24/1.78
+base                   xbn                    dlog  -4.05  se  1.13  z  -3.6  sdu 0.113 maxsh 0.10  geo  -7.99/1.77
+base                   xbns1                  dlog  -3.57  se  0.97  z  -3.7  sdu 0.097 maxsh 0.10  geo  -5.73/1.90
+base4                  base4s1                dlog  +0.62  se  1.44  z  +0.4  sdu 0.143 maxsh 0.13  geo  -1.23/2.09
+base4                  bn4                    dlog  -3.94  se  1.62  z  -2.4  sdu 0.160 maxsh 0.13  geo  -6.67/2.19
+base4                  bn4s1                  dlog  -2.71  se  1.50  z  -1.8  sdu 0.147 maxsh 0.13  geo  -5.49/2.42
+base4s1                bn4                    dlog  -4.57  se  1.49  z  -3.1  sdu 0.154 maxsh 0.13  geo  -5.44/2.16
+base4s1                bn4s1                  dlog  -3.33  se  1.28  z  -2.6  sdu 0.126 maxsh 0.13  geo  -4.26/2.68
+bn                     bns1                   dlog  -0.43  se  0.98  z  -0.4  sdu 0.099 maxsh 0.10  geo  +2.48/1.79
+bn                     bns2                   dlog  -1.05  se  0.96  z  -1.1  sdu 0.097 maxsh 0.10  geo  -1.34/1.48
+bn                     dy                     dlog  +1.14  se  0.88  z  +1.3  sdu 0.089 maxsh 0.10  geo  +4.54/1.61
+bn                     s1                     dlog  +0.34  se  1.45  z  +0.2  sdu 0.148 maxsh 0.10  geo  +4.09/1.90
+bn                     s2                     dlog  +1.36  se  1.60  z  +0.8  sdu 0.161 maxsh 0.10  geo  +4.76/1.89
+bn                     xbn                    dlog  -1.20  se  0.91  z  -1.3  sdu 0.094 maxsh 0.10  geo  -1.98/1.36
+bn                     xbns1                  dlog  -0.72  se  1.37  z  -0.5  sdu 0.138 maxsh 0.10  geo  +0.27/1.91
+bn4                    bn4s1                  dlog  +1.24  se  1.52  z  +0.8  sdu 0.157 maxsh 0.12  geo  +1.18/2.29
+bns1                   bns2                   dlog  -0.62  se  0.78  z  -0.8  sdu 0.078 maxsh 0.10  geo  -3.82/1.99
+bns1                   dy                     dlog  +1.57  se  0.82  z  +1.9  sdu 0.084 maxsh 0.10  geo  +2.06/2.16
+bns1                   s1                     dlog  +0.78  se  1.12  z  +0.7  sdu 0.115 maxsh 0.10  geo  +1.61/1.60
+bns1                   s2                     dlog  +1.79  se  1.34  z  +1.3  sdu 0.133 maxsh 0.10  geo  +2.28/2.26
+bns1                   xbn                    dlog  -0.77  se  0.81  z  -0.9  sdu 0.079 maxsh 0.10  geo  -4.47/1.81
+bns1                   xbns1                  dlog  -0.29  se  1.18  z  -0.2  sdu 0.119 maxsh 0.10  geo  -2.21/2.32
+bns2                   dy                     dlog  +2.19  se  0.97  z  +2.3  sdu 0.100 maxsh 0.10  geo  +5.88/1.67
+bns2                   s1                     dlog  +1.39  se  1.07  z  +1.3  sdu 0.109 maxsh 0.10  geo  +5.43/1.90
+bns2                   s2                     dlog  +2.41  se  1.22  z  +2.0  sdu 0.121 maxsh 0.10  geo  +6.10/1.91
+bns2                   xbn                    dlog  -0.15  se  0.84  z  -0.2  sdu 0.083 maxsh 0.10  geo  -0.65/1.61
+bns2                   xbns1                  dlog  +0.33  se  1.09  z  +0.3  sdu 0.112 maxsh 0.10  geo  +1.61/1.53
+dy                     s1                     dlog  -0.79  se  1.27  z  -0.6  sdu 0.131 maxsh 0.10  geo  -0.45/2.02
+dy                     s2                     dlog  +0.22  se  1.30  z  +0.2  sdu 0.134 maxsh 0.10  geo  +0.22/1.70
+dy                     xbn                    dlog  -2.34  se  0.85  z  -2.8  sdu 0.087 maxsh 0.10  geo  -6.53/1.90
+dy                     xbns1                  dlog  -1.86  se  1.13  z  -1.6  sdu 0.117 maxsh 0.10  geo  -4.27/1.75
+s1                     s2                     dlog  +1.02  se  0.95  z  +1.1  sdu 0.093 maxsh 0.10  geo  +0.67/1.83
+s1                     xbn                    dlog  -1.55  se  1.08  z  -1.4  sdu 0.108 maxsh 0.10  geo  -6.07/1.93
+s1                     xbns1                  dlog  -1.07  se  1.02  z  -1.0  sdu 0.102 maxsh 0.10  geo  -3.82/1.87
+s2                     xbn                    dlog  -2.56  se  1.24  z  -2.1  sdu 0.122 maxsh 0.09  geo  -6.75/2.18
+s2                     xbns1                  dlog  -2.08  se  1.01  z  -2.1  sdu 0.103 maxsh 0.09  geo  -4.49/1.42
+xbn                    xbns1                  dlog  +0.48  se  0.96  z  +0.5  sdu 0.095 maxsh 0.10  geo  +2.26/2.08
+== cross-slice
+c baseswj            s1swj              arch27  -2.51±0.99  rify27  -1.27±0.87  z -0.94
+c baseswj            s1                 arch27  +4.26±1.05  rify27  +5.82±1.09  z -1.03
+c base               s1                 arch27  -2.51±0.97  rify27  -0.89±0.79  z -1.29
+c base               baseswj            arch27  -6.76±0.48  rify27  -6.71±0.70  z -0.06
+c base               s1swj              arch27  -9.27±1.07  rify27  -7.98±0.97  z -0.90
+c base4              bn4                arch27  -3.94±1.62  rify27  -3.01±1.02  z -0.49
+c s1                 s1swj              arch27  -6.77±0.44  rify27  -7.09±0.56  z +0.45
+c base4swj           bn4swj             arch27  -7.00±1.96  rify27  -3.93±1.24  z -1.32
+c k6c9               k6swj              h27b-c  -1.26±1.90  h27c-c  -2.56±1.60  z +0.52
+x k6c9               k6swj              h27b-x  +4.13±8.80  h27c-x  +2.43±4.60  z +0.17
+c N0                 N1                 h27c-c  -1.44±2.38  h27d-c  -1.80±2.53  z +0.10
+c N0                 P0                 h27c-c  -0.96±0.71  h27d-c  -3.29±1.82  z +1.19
+c N0                 P1                 h27c-c  -2.89±2.03  h27d-c  -1.68±2.18  z -0.40
+c N1                 P0                 h27c-c  +0.48±2.71  h27d-c  -1.49±1.64  z +0.62
+c N1                 P1                 h27c-c  -1.45±0.70  h27d-c  +0.12±0.72  z -1.57
+c P0                 P1                 h27c-c  -1.93±2.36  h27d-c  +1.61±1.61  z -1.24
+x N0                 N1                 h27c-x  -2.26±0.70  h27d-x  -2.23±2.03  z -0.01
+x N0                 P0                 h27c-x  -0.69±0.67  h27d-x  +0.21±1.38  z -0.59
+x N0                 P1                 h27c-x  -2.85±0.87  h27d-x  -2.70±3.24  z -0.05
+x N1                 P0                 h27c-x  +1.57±0.54  h27d-x  +2.45±1.50  z -0.55
+x N1                 P1                 h27c-x  -0.59±0.54  h27d-x  -0.47±1.78  z -0.07
+x P0                 P1                 h27c-x  -2.16±0.80  h27d-x  -2.91±2.25  z +0.31
+c N0-v               N1-v               h27d-c  -1.35±1.59  h27e-c  +1.09±1.66  z -1.06
+c N0-v               P0-v               h27d-c  -1.80±1.24  h27e-c  +4.79±3.03  z -2.01
+c N0-v               P1-v               h27d-c  -1.57±1.68  h27e-c  +5.59±4.11  z -1.61
+c N1-v               P0-v               h27d-c  -0.45±1.41  h27e-c  +3.70±2.70  z -1.36
+c N1-v               P1-v               h27d-c  -0.22±0.56  h27e-c  +4.51±3.40  z -1.37
+c P0-v               P1-v               h27d-c  +0.23±1.48  h27e-c  +0.80±2.13  z -0.22
+x N0-v               N1-v               h27d-x  -2.42±2.51  h27e-x  -1.43±1.89  z -0.32
+x N0-v               P0-v               h27d-x  -0.82±1.05  h27e-x  -0.73±0.72  z -0.07
+x N0-v               P1-v               h27d-x  -3.54±2.50  h27e-x  -0.39±1.92  z -1.00
+x N1-v               P0-v               h27d-x  +1.60±2.15  h27e-x  +0.70±1.88  z +0.32
+x N1-v               P1-v               h27d-x  -1.12±0.84  h27e-x  +1.04±0.81  z -1.85
+x P0-v               P1-v               h27d-x  -2.72±2.07  h27e-x  +0.34±2.14  z -1.03
+c sp-cc              sp-ec              h27e-c  -1.37±0.64  h27f-c  -1.87±0.52  z +0.61
+c u05-c              u05-e              h27e-c  -4.10±1.56  h27f-c  -2.69±0.52  z -0.85
+c u1-c               u1-e               h27e-c  -0.06±0.03  h27f-c  -0.06±0.03  z +0.05
+x sp-cc              sp-ec              h27e-x  -1.97±0.49  h27f-x  -2.58±0.33  z +1.04
+x u05-c              u05-e              h27e-x  -1.42±0.48  h27f-x  -2.37±0.72  z +1.10
+x u1-c               u1-e               h27e-x  +0.04±0.02  h27f-x  +0.03±0.04  z +0.09
+n 40 mean z -0.42 sd z 0.83 rms 0.93
+===== x3
+golden-search27      n=379   cap512: eff 1.28 tok 0.46 bias|z| 0.84  cap1024: eff 0.99 tok 0.60 bias|z| 0.48  cap2048: eff 1.05 tok 0.72 bias|z| 0.35  cap4096: eff 0.96 tok 0.82 bias|z| 0.17
+golden-search27b-c   n= 27   cap512: eff 1.08 tok 0.38 bias|z| 0.58  cap1024: eff 1.15 tok 0.51 bias|z| 0.86  cap2048: eff 1.18 tok 0.65 bias|z| 1.00  cap4096: eff 1.08 tok 0.79 bias|z| 0.34
+golden-search27c-c   n= 51   cap512: eff 1.29 tok 0.34 bias|z| 1.07  cap1024: eff 1.39 tok 0.44 bias|z| 0.79  cap2048: eff 1.03 tok 0.60 bias|z| 0.53  cap4096: eff 0.99 tok 0.74 bias|z| 0.20
+golden-search27d-c   n= 70   cap512: eff 0.44 tok 0.39 bias|z| 0.75  cap1024: eff 0.57 tok 0.54 bias|z| 0.63  cap2048: eff 0.91 tok 0.70 bias|z| 0.40  cap4096: eff 1.12 tok 0.84 bias|z| 0.13
+golden-search27e-c   n= 18   cap512: eff 0.74 tok 0.50 bias|z| 0.77  cap1024: eff 0.80 tok 0.67 bias|z| 0.37  cap2048: eff 1.10 tok 0.82 bias|z| 0.21  cap4096: eff 0.99 tok 0.94 bias|z| 0.07
+golden-search27f-c   n= 13   cap512: eff 0.34 tok 0.46 bias|z| 0.39  cap1024: eff 0.79 tok 0.64 bias|z| 0.21  cap2048: eff 0.97 tok 0.81 bias|z| 0.17  cap4096: eff 0.98 tok 0.92 bias|z| 0.08
+golden-verify27      n= 13   cap512: eff 1.31 tok 0.36 bias|z| 0.56  cap1024: eff 0.95 tok 0.47 bias|z| 0.50  cap2048: eff 1.02 tok 0.62 bias|z| 0.32  cap4096: eff 1.00 tok 0.77 bias|z| 0.39
+golden-search27b-x   n= 27   cap512: eff 0.77 tok 0.34 bias|z| 0.65  cap1024: eff 0.90 tok 0.51 bias|z| 0.52  cap2048: eff 1.36 tok 0.66 bias|z| 0.38  cap4096: eff 1.27 tok 0.81 bias|z| 0.23
+golden-search27c-x   n= 52   cap512: eff 3.22 tok 0.31 bias|z| 1.14  cap1024: eff 3.63 tok 0.49 bias|z| 1.36  cap2048: eff 2.26 tok 0.64 bias|z| 0.94  cap4096: eff 1.83 tok 0.81 bias|z| 0.31
+golden-search27d-x   n= 80   cap512: eff 0.13 tok 0.27 bias|z| 1.09  cap1024: eff 0.18 tok 0.45 bias|z| 0.68  cap2048: eff 0.28 tok 0.63 bias|z| 0.46  cap4096: eff 0.57 tok 0.79 bias|z| 0.25
+golden-search27e-x   n= 18   cap512: eff 0.97 tok 0.32 bias|z| 1.76  cap1024: eff 0.83 tok 0.51 bias|z| 1.36  cap2048: eff 0.90 tok 0.69 bias|z| 0.92  cap4096: eff 0.79 tok 0.84 bias|z| 0.79
+golden-search27f-x   n= 13   cap512: eff 0.14 tok 0.29 bias|z| 3.30  cap1024: eff 0.18 tok 0.47 bias|z| 1.54  cap2048: eff 0.35 tok 0.63 bias|z| 0.77  cap4096: eff 0.52 tok 0.78 bias|z| 0.08
+===== x4
+pairs with both parts: 173
+slope c~x (through 0, weighted): 1.042
+pairs |x| > 2 SE: 39  same sign on c: 0.97  c sig same sign: 0.77
+z of c - b x: sd 2.09  (1 = differences explained by noise)
+sd_u x / sd_u c per doc: median 1.05  IQR [0.72 1.87]
+SE^2*docs ratio x/c (per-doc variance): 2.02
+golden-search27b 27 slope 8.719 z sd 3.44
+golden-search27c 51 slope 2.076 z sd 1.78
+golden-search27d 64 slope 0.995 z sd 0.98
+golden-search27e 18 slope 0.571 z sd 1.12
+golden-search27f 13 slope 0.718 z sd 1.11
+===== x5
+parts: Counter({'golden-search27': 379, 'golden-search27d-x': 80, 'golden-search27d-c': 70, 'golden-search27c-x': 52, 'golden-search27c-c': 51, 'golden-search27b-c': 27, 'golden-search27b-x': 27, 'golden-search27e-c': 18, 'golden-search27e-x': 18, 'golden-search27f-c': 13, 'golden-search27f-x': 13, 'golden-verify27': 13})
+== x: n pairs 190
+  |dlog|  0.0- 0.5%:   60 pairs  sd_u median 0.045 IQR 0.009-0.126   docs med 65  SE@100docs 0.45%
+  |dlog|  0.5- 1.0%:   24 pairs  sd_u median 0.118 IQR 0.069-0.143   docs med 97  SE@100docs 1.18%
+  |dlog|  1.0- 2.0%:   20 pairs  sd_u median 0.130 IQR 0.068-0.159   docs med 130  SE@100docs 1.30%
+  |dlog|  2.0- 4.0%:   42 pairs  sd_u median 0.117 IQR 0.071-0.219   docs med 65  SE@100docs 1.17%
+  |dlog|  4.0- 8.0%:   27 pairs  sd_u median 0.148 IQR 0.108-0.505   docs med 130  SE@100docs 1.48%
+  |dlog|  8.0-13.0%:   17 pairs  sd_u median 0.370 IQR 0.251-0.575   docs med 130  SE@100docs 3.70%
+  sd_u/|dlog| median (|dlog|>0.5%): 6.3
+== c: n pairs 571
+  |dlog|  0.0- 0.5%:  121 pairs  sd_u median 0.009 IQR 0.003-0.015   docs med 103  SE@100docs 0.09%
+  |dlog|  0.5- 1.0%:   66 pairs  sd_u median 0.032 IQR 0.012-0.102   docs med 103  SE@100docs 0.32%
+  |dlog|  1.0- 2.0%:   83 pairs  sd_u median 0.094 IQR 0.034-0.120   docs med 103  SE@100docs 0.94%
+  |dlog|  2.0- 4.0%:  122 pairs  sd_u median 0.099 IQR 0.059-0.131   docs med 103  SE@100docs 0.99%
+  |dlog|  4.0- 8.0%:  118 pairs  sd_u median 0.109 IQR 0.069-0.136   docs med 103  SE@100docs 1.09%
+  |dlog|  8.0-13.0%:   61 pairs  sd_u median 0.109 IQR 0.092-0.159   docs med 103  SE@100docs 1.09%
+  sd_u/|dlog| median (|dlog|>0.5%): 2.4
+===== x6
+docs 103 tokens 171720 positions 123460 base KL 0.03083836682284506
+w123b2:s27-L00-03 dlog  -4.53%  se 0.71%  sd_u 0.074  sd_u/|dlog|   1.6  docs better 0.70  doc-geo -3.13
+w123b2:s27-L00-07 dlog  -4.95%  se 0.72%  sd_u 0.074  sd_u/|dlog|   1.5  docs better 0.77  doc-geo -3.24
+w123b2:s27-L08-15 dlog  -4.82%  se 0.42%  sd_u 0.042  sd_u/|dlog|   0.9  docs better 0.86  doc-geo -4.78
+w123b2:s27-L16-23 dlog  -4.43%  se 0.39%  sd_u 0.038  sd_u/|dlog|   0.9  docs better 0.80  doc-geo -3.86
+w123b2:s27-L24-31 dlog  -3.39%  se 0.42%  sd_u 0.043  sd_u/|dlog|   1.3  docs better 0.82  doc-geo -2.96
+w123b2:s27-L32-39 dlog  -4.58%  se 0.54%  sd_u 0.055  sd_u/|dlog|   1.2  docs better 0.85  doc-geo -4.81
+w123b2:s27-L40-47 dlog  -3.89%  se 0.41%  sd_u 0.042  sd_u/|dlog|   1.1  docs better 0.90  doc-geo -4.27
+w123b2:s27-L48-55 dlog  -5.86%  se 0.45%  sd_u 0.046  sd_u/|dlog|   0.8  docs better 0.96  doc-geo -6.80
+w123b2:s27-L56-63 dlog  -8.11%  se 0.54%  sd_u 0.054  sd_u/|dlog|   0.7  docs better 0.96  doc-geo -8.39
+w123b2:s27-L60-63 dlog  -3.65%  se 0.25%  sd_u 0.025  sd_u/|dlog|   0.7  docs better 0.88  doc-geo -3.53
+w123b2:s27-all dlog -54.38%  se 1.35%  sd_u 0.137  sd_u/|dlog|   0.3  docs better 0.98  doc-geo -54.19
+w123b2:s27-attn dlog  -2.30%  se 0.31%  sd_u 0.032  sd_u/|dlog|   1.4  docs better 0.75  doc-geo -2.12
+w123b2:s27-ffn_down dlog -14.20%  se 0.78%  sd_u 0.078  sd_u/|dlog|   0.5  docs better 0.93  doc-geo -14.25
+cross-move corr of per-doc u (excluding 'all'): mean 0.001 median -0.027 range -0.7 0.95
+disjoint 8-layer groups: 8 corr mean -0.05 range -0.7 0.48
+sum of group dlogs -40.03 vs all -54.38

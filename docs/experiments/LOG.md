@@ -4,6 +4,61 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 4:45 PM CST · #161 · Search performance pass: the eval-vs-ladder freeze reproduced and fixed (per-host ram lock rule), packs ×14.9 byte-identical (`--no-error`), +10% per eval, and the V3 search eval protocol (sequential 1/8 → 1/2 → 1, reject early only: ×1.9 KL gain per card-hour, ×0.6 wrong accepts) (w123)
+- **Status:** done · **Machine:** box2 (timing runs cards 2 / 3, 11-12 12:15–12:55 PM CST, before the ladder; k3 packs
+  CPU-only 3:57–4:33 PM CST beside the ladder), colo (CPU: SE study, decision model), the VM (CPU stand-in checks) ·
+  **Code:** `search/perf/` (README: results + protocol) · **Data:** `data/searchperf/` (README) · **Brief:**
+  `rad-local/workers/instr3/w123.md` + lead notes `rad-local/workers/notes/w123.md` (3:30 / 3:52 PM)
+- **Part 1, one eval** (V2 3.00 mix, golden-search27 = 103 calib docs / 172k tokens, box2 210 W): score phase 130–137 s
+  (1,285 tok/s, ~87% of an eval); 7.7 s fixed per radiance run (load 3.8–5.8 s); radmix (ext4 full copy, 10.1 GB)
+  median 11.2 s, its 10 GB "RSS" is page cache of the mmap'd sources. Scoring settings: max-model-len 12288 and
+  batched-tokens 4096 / 8192 byte-identical but no faster; max-num-seqs 2 is 2.4% faster but its rows differ (out);
+  max-num-seqs 4 fails at start; two processes on one card +6% (rows identical; only where two models fit).
+- **Packs:** the lead's eval ev-p1-u3 (3:11 PM) waited **11.7 min for conv.lock + ram.lock exclusive**, then packed k3
+  for 27 min on one core until the kill. decbench: the error report's decode of one K3 gate_up = 15.8 s on one core
+  (4 threads 4.0 s, bit-identical) → a pack is ~all error decode. **`rad-convert --no-error`** (radiance patch on
+  42960d5, `search/perf/rad-convert-no-error.patch`) on the same level: **2,083 s → 140 s (×14.9), container
+  byte-identical** (cmp, 14,288,037,888 bytes). Pack memory: **anonymous RSS ≤ 4.1 GiB** (stock) / 2.9 GiB (no-error);
+  the 36–50 GB RSS is the mmap'd bf16 source (page cache); host MemAvailable stayed ≥ 76 GB.
+- **The 11-12 freeze:** the eval's pack gets ram.lock exclusive only when every card session is out (a level boundary;
+  sessions are 32 jobs a card); then each card worker holds its card lock and waits in `flock(ram.lock, LOCK_SH)`
+  (`pool.Locks`), as does the CPU lane's assemble / post (`run.py`), for the whole pack: box2 + ds8 idle 3:23–3:50 PM.
+  Reproduced on the CPU stand-in (new `check_rxrun.py --part evalstall`: a 20 s stub pack leaves the level's card idle
+  20.0 s, its first job starts the instant the pack ends) and fixed per host: hostd `eval.ram_mode "shared"` (box2 and
+  ds8 host confs) = ram.lock shared after a RAM admission (MemAvailable ≥ `pack_ram_gib` 16 / `mix_ram_gib` 4;
+  conv.lock still one pack / mix a host; default `"exclusive"` for gpubox) → longest idle stretch 2.2 s, level bytes
+  identical. check_rxrun **21 / 21 PASS** on the patched tree. Both k3 packs above ran this way beside the ladder
+  (status kept advancing, no idle cards).
+- **Speed-ups, byte-identical:** goldcat (a slice's x + c in one run; split rows == each part's own run, top1 /
+  positions from rows == its report) −7.7 s; mix under ram.lock shared and overlapped with the previous score −11.2 s;
+  several eval cards per host. `search/perf/hostd-evalperf.patch` (rxrun.hostd RamGate / `eval.ram_mode`,
+  `eval.goldcat`, `eval.cards`; new `rxrun/goldcat.py`; box2 / ds8 host confs; README; check_rxrun evalstall);
+  eval-path test 17 / 17 PASS (`test_hostd_patch.py`). **Per eval (standard 227k-token slice): 203 s → 184 s, 17.7 →
+  19.5 evals / card-h** (+6% more with two processes per card at ≤ 4 bpw), no lock waits, packs 35 → 2.3 min a level.
+- **Part 2, noise** (1,450 stored 27B pair × part reports: gpubox w90–w114 + 14 new box2 runs): per-document noise ≈
+  |log r| for real level moves (eight 8-layer 3.00 → 3.50 moves −3.4 … −8.1%, SE 0.39–0.72% on 103 docs), 2–3 |log r|
+  for mixed pairs; x parts 1.9× calib per document; disjoint moves' per-doc noise uncorrelated (mean 0.00). Bootstrap
+  SE calibrated (cross-slice z sd 0.83, n 40); SE ∝ 1/√f (0.91–1.06). Caps ≤ 1024 shift estimates 0.5–1.5 SE (keep
+  calib 4096 / heavy x 2048); heavy docs (58% of x pairs have one doc > 20% of the KL) are not helped by the cap20
+  readout (SE ×1.00). The 130 / 50 x / c split is within 2% of noise-optimal. V2's history: 711 candidates vs the best
+  before them: median +1.5%, p10 / p90 −8 / +15%, 27% within ±2%.
+- **Decision model** (`protocol.py`; incl. rescoring the incumbent after early accepts and one incumbent eval per
+  rotation): vs every candidate on the full slice, **seq 1/8 → 1/2 → 1, reject if z ≥ 0 / ≥ 0.5, accept only on the
+  whole slice (pooled and both parts < 0): 92 s / decision, gain / h ×1.89 (worst prior ×1.35), correct / h ×2.05,
+  wrong accepts ×0.60**; on V2's candidates ×1.70 / ×0.58; a fixed 1/4 slice ×2.7 median but ×−5.4 when most moves
+  are bad. Real documents (76 27d-f pairs scaled to ±0.5 / ±1%): bad moves accepted 0.8–1.1% (model 0.7–0.8%), good
+  ones 67–68% (model 70–71%). **Per decision: 213 s → 92 s, 16.9 → 39 decisions / card-h** (with Part 1).
+- **Protocol (recommended):** stage goldens per slice (`goldcat.py stages ... 0.125,0.5,1`); incumbent on the whole
+  slice; candidate as above; a new slice every ~25 decisions (the calib part's selection optimism reaches 1 SE after
+  25–66 decisions in close-call regimes): a fresh x part each time, a fresh draw of ~50 calib docs from the 214-doc
+  budget (each doc returns ~1 rotation in 4; count uses in the registry); scarce candidates (one per knapsack fit) →
+  the whole slice.
+- **For the lead:** apply hostd-evalperf.patch before any eval runs on a ladder host (it moves the tree stamp:
+  restage); build `rad-convert --no-error` into the staged radiance and use it in the hosts' `pack_cmd`; pack each
+  level when it is DONE (ram.lock shared on box2 / ds8) instead of on the first eval that needs it; the search driver
+  (stages + rule) is not built here.
+- **Runtime:** none (eval side only; containers and score rows byte-identical).
+
 ### 2026-11-12 3:20 PM CST · #163-02 · Pass-1 ladder plausibility (lead): clean except a uniform i8 slow-down at K7
 - **What:** `v3/levels/plaus.py` over the 27 finished levels' proxy errors (K1.25–K7, swj off; proxy logs copied from
   box2 / ds8 to `rad-local/multi/v3/plaus/`). 402 flags: 2 isolated (layer 54 `in_proj_z` at K4.5 / K4.75, ±3.5–6%),

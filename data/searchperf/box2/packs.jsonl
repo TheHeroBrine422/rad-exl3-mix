@@ -1,0 +1,9 @@
+{"pack": "noerr", "rc": 1, "wall": 722.3, "bytes": 0, "maxrss_kb": 233380, "cpu_s": 0.6}
+{"pack": "stock", "rc": 1, "wall": 797.9, "bytes": 0, "maxrss_kb": 233412, "cpu_s": 0.6}
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:20.17
+	Maximum resident set size (kbytes): 10000020
+PACKTEST DONE
+{"pack": "k3-stock", "rule": "conv excl + ram shared", "rc": "0", "wall": 2083.0, "bytes": 14288037888, "peak_rss_gib": 35.88, "peak_anon_gib": 4.11, "peak_file_gib": 31.78, "min_memavail_gib": 76.5, "samples": 208, "killed": false}
+{"pack": "k3-noerr", "rule": "conv excl + ram shared", "rc": "0", "wall": 140.2, "bytes": 14288037888, "peak_rss_gib": 49.93, "peak_anon_gib": 2.85, "peak_file_gib": 48.33, "min_memavail_gib": 79.6, "samples": 14, "killed": false}
+{"cmp": "k3 stock vs noerr", "result": "IDENTICAL"}
+PACKTEST4 DONE

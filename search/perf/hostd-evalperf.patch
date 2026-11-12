@@ -1,0 +1,424 @@
+diff -ruN a/pipeline/rxrun/goldcat.py b/pipeline/rxrun/goldcat.py
+--- a/pipeline/rxrun/goldcat.py	1970-01-01 00:00:00.000000000 +0000
++++ b/pipeline/rxrun/goldcat.py	2026-11-12 22:18:43.784829669 +0000
+@@ -0,0 +1,123 @@
++#!/usr/bin/env python3
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""goldcat.py OUT NAME=GOLDEN... -- one golden holding several goldens' documents in order (w123, #161), so one radiance
++run scores every part of a slice (one model load, one process start instead of one per part).
++
++OUT/{kld.json, tokens.i32, gen.u8, top.bin, rows.f32}: the parts' files concatenated, documents' row0 shifted; each
++document keeps its own fields and gets "part": NAME. OUT/parts.json: [{"name", "golden", "doc0", "docs", "row0", "rows"}]
++-- the slice of the combined golden (and of its score rows) that is each part. Refuses goldens of different form
++(format / model / top / n_vocab). Radiance scores every document on its own (max-num-seqs 1, prefill from the
++document's start), so a part's rows inside the combined run are byte for byte the part's own run (checked by w123 on
++golden-search27 halves; `split` below cuts a combined .rows file back into per-part files).
++
++  goldcat.py split OUT ROWS PREFIX   -> PREFIX-<NAME>.json.rows per part (the rows each part's own run writes)
++  goldcat.py stages GOLDEN OUTPREFIX SEED F1,F2,..,1   -> OUTPREFIX-s1, -s2, ...: the stages of a sequential decision,
++             disjoint document subsets (a seeded permutation; stage k = documents F_{k-1} n .. F_k n of it, kept in the
++             golden's order); stages.json beside them names each stage's documents ("orig" when the golden has it)
++
++In rxrun.hostd (patch search/perf/hostd-evalperf.patch): cached() builds a slice's combined golden once per host,
++report() writes each part's rows and a per-part report (positions and top1 over the part's rows: the numbers its own
++run reports in "all", checked equal on golden-search27 and h2)."""
++import hashlib, json, os, shutil, sys
++
++import numpy as np
++
++KEYS = ("format", "model", "top", "n_vocab")
++
++
++def cat(out, parts):
++    os.makedirs(out + ".part", exist_ok=True); o = out + ".part"
++    ms = [(n, g, json.load(open(f"{g}/kld.json"))) for n, g in parts]
++    for k in KEYS:
++        if len({json.dumps(m.get(k)) for _, _, m in ms}) != 1: raise SystemExit(f"goldens differ in {k}")
++    docs, plist, r, d0 = [], [], 0, 0
++    files = {f: open(f"{o}/{f}", "wb") for f in ("tokens.i32", "gen.u8", "top.bin", "rows.f32")}
++    for n, g, m in ms:
++        R = m["rows"]; tok = sum(d["tokens"] for d in m["docs"])
++        sizes = {"tokens.i32": tok * 4, "gen.u8": R, "top.bin": R * m["top"] * 8, "rows.f32": R * 12}
++        for f, fh in files.items():
++            if os.path.getsize(f"{g}/{f}") != sizes[f]: raise SystemExit(f"{g}/{f}: {os.path.getsize(f'{g}/{f}')} bytes, expected {sizes[f]}")
++            with open(f"{g}/{f}", "rb") as src: shutil.copyfileobj(src, fh, 1 << 24)
++        for d in m["docs"]:
++            e = dict(d); e["row0"] = d["row0"] + r; e["part"] = n; docs.append(e)
++        plist.append({"name": n, "golden": os.path.abspath(g), "doc0": d0, "docs": len(m["docs"]), "row0": r, "rows": R})
++        r += R; d0 += len(m["docs"])
++    for fh in files.values(): fh.close()
++    mm = dict(ms[0][2]); mm["rows"] = r; mm["docs"] = docs
++    mm["corpus"] = "+".join(str(m.get("corpus", "?")) for _, _, m in ms); mm.pop("corpus_fnv1a64", None)
++    json.dump(mm, open(f"{o}/kld.json", "w")); json.dump(plist, open(f"{o}/parts.json", "w"), indent=1)
++    os.replace(o, out)
++    print(f"{out}: {len(docs)} documents, {r} rows from {len(parts)} goldens", file=sys.stderr)   # stdout: hostd's protocol
++
++
++def split(out, rows, prefix):
++    P = json.load(open(f"{out}/parts.json")); K = np.fromfile(rows, np.float32).reshape(-1, 4)
++    if len(K) != sum(p["rows"] for p in P): raise SystemExit(f"{rows}: {len(K)} rows, {out} has {sum(p['rows'] for p in P)}")
++    for p in P: K[p["row0"]:p["row0"] + p["rows"]].tofile(f"{prefix}-{p['name']}.json.rows")
++
++
++def sub(golden, out, idx):
++    """a golden of the documents idx (indices into GOLDEN's docs, any order: kept in GOLDEN's order), rows renumbered"""
++    m = json.load(open(f"{golden}/kld.json")); idx = sorted(set(int(i) for i in idx)); o = out + ".part"
++    os.makedirs(o, exist_ok=True)
++    tok_off = [0]
++    for d in m["docs"]: tok_off.append(tok_off[-1] + d["tokens"])
++    per_row = {"gen.u8": 1, "top.bin": m["top"] * 8, "rows.f32": 12}
++    src = {f: open(f"{golden}/{f}", "rb") for f in ("tokens.i32",) + tuple(per_row)}
++    dst = {f: open(f"{o}/{f}", "wb") for f in src}
++    docs, r = [], 0
++    for i in idx:
++        d = m["docs"][i]; n = d["tokens"] - 1 - d["score_from"]
++        src["tokens.i32"].seek(tok_off[i] * 4); dst["tokens.i32"].write(src["tokens.i32"].read(d["tokens"] * 4))
++        for f, b in per_row.items():
++            src[f].seek(d["row0"] * b); dst[f].write(src[f].read(n * b))
++        e = dict(d); e["row0"] = r; docs.append(e); r += n
++    for fh in list(src.values()) + list(dst.values()): fh.close()
++    mm = dict(m); mm["rows"] = r; mm["docs"] = docs; mm["subset_of"] = os.path.abspath(golden); mm.pop("corpus_fnv1a64", None)
++    json.dump(mm, open(f"{o}/kld.json", "w")); os.replace(o, out)
++    return len(docs), r
++
++
++def stages(golden, prefix, seed, fr):
++    import numpy as np
++    m = json.load(open(f"{golden}/kld.json")); n = len(m["docs"]); perm = np.random.default_rng(int(seed)).permutation(n)
++    F = [0.0] + [float(x) for x in fr.split(",")]
++    if F[-1] != 1.0 or sorted(F) != F: raise SystemExit(f"stage fractions {fr}: increasing, ending at 1")
++    rec = []
++    for k in range(1, len(F)):
++        idx = perm[round(F[k - 1] * n):round(F[k] * n)]; out = f"{prefix}-s{k}"
++        if not os.path.exists(f"{out}/kld.json"): sub(golden, out, idx)
++        rec.append({"stage": k, "golden": os.path.abspath(out), "f": F[k], "docs": sorted(int(i) for i in idx),
++                    "orig": sorted(m["docs"][i].get("orig", i) for i in idx)})
++        print(f"{out}: {len(idx)} documents (cumulative fraction {F[k]:g})")
++    json.dump({"golden": os.path.abspath(golden), "seed": int(seed), "fractions": F[1:], "stages": rec}, open(f"{prefix}-stages.json", "w"), indent=1)
++
++
++def cached(root, parts):
++    """the combined golden of parts [(name, golden), ...] under root, built once (key: the part names and paths)"""
++    key = hashlib.sha256(json.dumps([[n, os.path.abspath(g)] for n, g in parts]).encode()).hexdigest()[:16]
++    out = f"{root}/cat-{key}"
++    if not os.path.exists(f"{out}/parts.json"):
++        os.makedirs(root, exist_ok=True)
++        if os.path.exists(out + ".part"): shutil.rmtree(out + ".part")
++        cat(out, parts)
++    return out
++
++
++def report(out, rows, prefix):
++    """split(out, rows, prefix) plus PREFIX-<NAME>.json per part: {"all": {"positions", "top1_agreement"}, "goldcat"}"""
++    import numpy as np
++    split(out, rows, prefix); K = np.fromfile(rows, np.float32).reshape(-1, 4)
++    for p in json.load(open(f"{out}/parts.json")):
++        m = json.load(open(f"{p['golden']}/kld.json")); sel = np.zeros(p["rows"], bool)
++        for d in m["docs"]: sel[d["row0"]:d["row0"] + d["tokens"] - 1 - d["score_from"]] = True
++        k = K[p["row0"]:p["row0"] + p["rows"]][sel]
++        json.dump({"all": {"positions": int(len(k)), "top1_agreement": float(k[:, 3].astype(np.float64).mean()) if len(k) else None},
++                   "goldcat": os.path.abspath(out)}, open(f"{prefix}-{p['name']}.json", "w"))
++
++
++if __name__ == "__main__":
++    a = sys.argv[1:]
++    if a[0] == "split": split(*a[1:4])
++    elif a[0] == "stages": stages(*a[1:5])
++    else: cat(a[0], [x.split("=", 1) for x in a[1:]])
+diff -ruN a/pipeline/rxrun/hostd.py b/pipeline/rxrun/hostd.py
+--- a/pipeline/rxrun/hostd.py	2026-11-12 22:18:43.768909184 +0000
++++ b/pipeline/rxrun/hostd.py	2026-11-12 22:18:43.784609724 +0000
+@@ -24,6 +24,11 @@
+   search's results.jsonl fields (tag, bytes, bpw, positions, kld, p99, top1, slice) per slice pooled over its parts, the
+   parts, and per-document KL sums (eval/docstat/readout.py's inputs, small) -- rows files stay on the host.
+ Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model}.
++Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
++= cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
++radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
++"ram_mode": "shared" (box2, ds8) makes pack and mix hold ram.lock shared after a RAM admission ("pack_ram_gib",
++"mix_ram_gib"), so an eval never stops the host's level work; default "exclusive" (gpubox) as before (RamGate).
+ Limits (HOSTCONF "limits"): kinds, k_min / k_max (levels outside are not taken), max_unit_est_h; the coordinator
+ checks them before it hands out a unit, hostd checks again."""
+ import argparse, fcntl, glob, hashlib, json, os, signal, subprocess, sys, threading, time
+@@ -199,6 +204,68 @@
+         if self.fd is not None: fcntl.flock(self.fd, fcntl.LOCK_UN); os.close(self.fd); self.fd = None
+ 
+ 
++def mem_available_gib():
++    for l in open("/proc/meminfo"):
++        if l.startswith("MemAvailable:"): return int(l.split()[1]) / 2 ** 20
++    return 0.0
++
++
++class RamGate:
++    """ram.lock for a pack / mix step, per host (HOSTCONF eval.ram_mode; w123, lead notes 11-12):
++      "exclusive" (default; gpubox's memguard rule): ram.lock exclusive. On a host that also runs level work this
++                  stops it: every card worker takes its card lock and then waits at ram.lock (shared) for the whole
++                  pack, and so does the CPU lane's assemble / post (box2 + ds8, 11-12 15:14-15:51 CST)
++      "shared":   ram.lock shared (beside level sessions and scores) after a RAM admission: wait until MemAvailable >=
++                  eval.<step>_ram_gib (pack default 16: the k3 pack's anonymous peak is ~4 GiB, its file pages are
++                  reclaimable; mix default 4: radmix's RSS is page cache). The pool's host-RAM guard still protects jobs.
++    conv.lock (exclusive) keeps one pack / mix at a time per host."""
++    DEFAULT_GIB = {"pack": 16.0, "mix": 4.0}
++
++    def __init__(self, E, step, log=None):
++        self.E, self.step, self.log = E, step, log
++        self.shared = E.get("ram_mode", "exclusive") == "shared"
++        self.lock = Lock(E.get("ram_lock"), not self.shared)
++
++    def __enter__(self):
++        if self.shared:
++            need = float(self.E.get(f"{self.step}_ram_gib", self.DEFAULT_GIB.get(self.step, 8.0))); said = False
++            while mem_available_gib() < need:
++                if not said and self.log:
++                    with open(self.log, "a") as f: f.write(f"# {self.step}: waiting for MemAvailable >= {need} GiB\n")
++                said = True; time.sleep(5)
++        self.lock.__enter__(); return self
++
++    def __exit__(self, *e):
++        self.lock.__exit__(*e)
++
++
++class CardLock:
++    """the eval card: HOSTCONF eval.cards = [{"card": N, "lock": PATH}, ...] -> the first whose lock is free (tried in
++    order, polled every 2 s), held exclusive while the score runs; without eval.cards the single eval.card / card_lock
++    (w123: several eval units of one host score on different cards; a unit's mix runs while the others score)"""
++    def __init__(self, E):
++        self.cards = E.get("cards") or [{"card": E.get("card", 0), "lock": E.get("card_lock")}]
++        self.fd, self.card = None, None
++
++    def __enter__(self):
++        if len(self.cards) == 1 or not all(c.get("lock") for c in self.cards):
++            c = self.cards[0]; self.card = c["card"]
++            if c.get("lock"):
++                self.fd = os.open(c["lock"], os.O_RDWR | os.O_CREAT, 0o644); fcntl.flock(self.fd, fcntl.LOCK_EX)
++            return self
++        while True:
++            for c in self.cards:
++                fd = os.open(c["lock"], os.O_RDWR | os.O_CREAT, 0o644)
++                try:
++                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB); self.fd, self.card = fd, c["card"]; return self
++                except BlockingIOError:
++                    os.close(fd)
++            time.sleep(2)
++
++    def __exit__(self, *e):
++        if self.fd is not None: fcntl.flock(self.fd, fcntl.LOCK_UN); os.close(self.fd); self.fd = None
++
++
+ def sh(cmd, log, env=None, nice=10):
+     with open(log, "a") as lf:
+         lf.write(f"$ {' '.join(cmd)}\n"); lf.flush()
+@@ -260,7 +327,7 @@
+     for n in need:                                                # packs (kept, reused by later evals)
+         pk = pkn(n)
+         if os.path.exists(pk): continue
+-        with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):
++        with Lock(E.get("conv_lock"), True), RamGate(E, "pack", log):
+             if not os.path.exists(pk):
+                 if os.path.exists(pk + ".part"): os.remove(pk + ".part")
+                 rc = sh(fill(E["pack_cmd"], recipe=f"{R}/{n}/final.recipe", out=pk + ".part", reuse="", model=E.get("model", "")), log)
+@@ -270,20 +337,29 @@
+     lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
+     open(mf, "w").write("\n".join(lines) + "\n")
+     if not os.path.exists(mrad):
+-        with Lock(E.get("conv_lock"), True), Lock(E.get("ram_lock"), True):
++        with Lock(E.get("conv_lock"), True), RamGate(E, "mix", log):
+             rc = sh(fill(E["mix_cmd"], out=mrad + ".part", base=rp(mx["base"]), mixfile=mf), log)
+             if rc or not os.path.exists(mrad + ".part"): return {"rc": 1, "err": f"mix {tag} rc {rc} ({log})"}
+             os.replace(mrad + ".part", mrad)
+     import numpy as np
+     nbytes = os.path.getsize(mrad); res = {"rc": 0, "kind": "eval", "tag": tag, "host": H.name, "bytes": nbytes,
+                                           "bpw": nbytes * 8 / PARAMS, "slices": {}}
++    def score(g, o):
++        with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
++            return sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=cl.card), log, nice=0)
+     for sl in req["slices"]:
+         parts = {}; ks = []
++        todo = [(pn, rp(g)) for pn, g in sl["parts"].items() if not os.path.exists(f"{SC}/{tag}-{sl['name']}-{pn}.json.rows")]
++        if E.get("goldcat") and len(todo) > 1:                   # one run for every part (one load); rows split back per part
++            from rxrun import goldcat
++            cg = goldcat.cached(E.get("goldcat_dir", f"{H.root}/goldcat"), todo); o = f"{SC}/{tag}-{sl['name']}-cat"
++            rc = score(cg, o)
++            if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']} (goldcat) rc {rc} ({log})"}
++            goldcat.report(cg, o + ".json.rows", f"{SC}/{tag}-{sl['name']}"); os.remove(o + ".json.rows")
+         for pn, g in sl["parts"].items():
+             g = rp(g); o = f"{SC}/{tag}-{sl['name']}-{pn}"
+             if not os.path.exists(o + ".json.rows"):
+-                with Lock(E.get("card_lock"), True), Lock(E.get("ram_lock"), False):
+-                    rc = sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=E.get("card", 0)), log, nice=0)
++                rc = score(g, o)
+                 if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']}-{pn} rc {rc} ({log})"}
+             j = json.load(open(o + ".json"))["all"]; docs, k = doc_sums(g, o + ".json.rows")
+             parts[pn] = {"positions": int(len(k)), "kld": float(k.mean()) if len(k) else None, "p99": float(np.percentile(k, 99)) if len(k) else None,
+diff -ruN a/pipeline/rxrun/hosts/box2.host.json b/pipeline/rxrun/hosts/box2.host.json
+--- a/pipeline/rxrun/hosts/box2.host.json	2026-11-12 22:18:43.769525205 +0000
++++ b/pipeline/rxrun/hosts/box2.host.json	2026-11-12 22:18:43.784768984 +0000
+@@ -21,6 +21,10 @@
+   "card_lock": "/data/q27/locks/card3.lock",
+   "ram_lock": "/data/q27/locks/ram.lock",
+   "conv_lock": "/data/q27/locks/conv.lock",
++  "ram_mode": "shared",
++  "pack_ram_gib": 16,
++  "mix_ram_gib": 4,
++  "goldcat": true,
+   "aliases": {
+    "V2-3.00": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad"
+   },
+diff -ruN a/pipeline/rxrun/hosts/ds8.host.json b/pipeline/rxrun/hosts/ds8.host.json
+--- a/pipeline/rxrun/hosts/ds8.host.json	2026-11-12 22:18:43.769711526 +0000
++++ b/pipeline/rxrun/hosts/ds8.host.json	2026-11-12 22:18:43.784798400 +0000
+@@ -21,6 +21,10 @@
+   "card_lock": "/data/q27/locks/card7.lock",
+   "ram_lock": "/data/q27/locks/ram.lock",
+   "conv_lock": "/data/q27/locks/conv.lock",
++  "ram_mode": "shared",
++  "pack_ram_gib": 16,
++  "mix_ram_gib": 4,
++  "goldcat": true,
+   "aliases": {
+    "V2-3.00": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad"
+   },
+diff -ruN a/pipeline/rxrun/README.md b/pipeline/rxrun/README.md
+--- a/pipeline/rxrun/README.md	2026-11-12 22:18:43.772833480 +0000
++++ b/pipeline/rxrun/README.md	2026-11-12 22:18:43.785093095 +0000
+@@ -11,7 +11,7 @@
+ | `cmp.py` | identity of job / level dirs: tensor bytes, dtypes, shapes, offsets + the metadata dict |
+ | `seedsd.py` | the proxy's seed SD per family and K band from the duplicate-seed jobs |
+ | `multi.py`, `hostd.py` | the multi-host queue (below) |
+-| `../tests/check_rxrun.py FORK` | CPU stand-in checks (pool 6, run 5) |
++| `../tests/check_rxrun.py FORK` | CPU stand-in checks (pool 6, run 5, multi, evalstall 3) |
+ 
+ ## Run (gpubox card 0)
+ 
+@@ -62,6 +62,14 @@
+   (coordinator: copy to `local/`, it holds ssh lines). Checks: `tests/check_rxrun.py FORK WORK --part multi` (CPU
+   stand-in: two local hostd hosts + one with another tree; stub pack / mix / score).
+ 
++**Evals beside level work (w123, 11-12):** an eval's pack / mix used to hold ram.lock exclusive: every card worker of
++the host then waits at ram.lock (shared) holding its card lock, and the CPU lane's assemble / post too -- box2 + ds8 froze
++11-12 15:14–15:51 CST. HOSTCONF `eval.ram_mode` `"shared"` (box2, ds8) takes ram.lock shared after a RAM admission
++(`pack_ram_gib` 16: the k3 pack's anonymous peak is ~4 GiB, its 30-40 GB RSS is the mmap'd bf16 source; `mix_ram_gib`
++4); conv.lock keeps one pack / mix a host; default `"exclusive"` (gpubox). `eval.goldcat` scores a slice's parts in one
++run (`goldcat.py`, rows byte-identical); `eval.cards` [{card, lock}] scores on the first free card. Check:
++`check_rxrun.py --part evalstall` (the old rule reproduces the stall, the shared one does not).
++
+ **Pause one card (user 11-12):** `touch <run root>/HOLD-<device name>` on the host (e.g. `/data/q27/ladder/HOLD-c3`): that card finishes its running jobs, releases its card and ram locks (other work can take it by the lock) and idles; the host's other cards keep going; the swj pass uses an unpaused swj card. `rm` the file to rejoin. Whole host: `HOLD`; whole run: the coordinator's `ROOT/HOLD`. Check: `check_rxrun.py --part pool` (dev-hold).
+ 
+ **Rollout (lead):** (1) stage the frozen commit on both hosts (gpubox `/data/v3run/code` + the fork; box2
+diff -ruN a/pipeline/tests/check_rxrun.py b/pipeline/tests/check_rxrun.py
+--- a/pipeline/tests/check_rxrun.py	2026-11-12 22:18:43.781594261 +0000
++++ b/pipeline/tests/check_rxrun.py	2026-11-12 22:18:43.785717632 +0000
+@@ -14,6 +14,8 @@
+          refused, eval units (stub pack / mix / score) on the host that holds their level with the results fields,
+          a mix over levels on two hosts blocked, a rerun assigns nothing, a coordinator killed mid-unit and restarted
+          records the unit once; a level equal to rxrun.run's (part run) byte for byte
++  evalstall  (w123) one hostd host building two levels while an eval unit's (slow stub) pack runs: eval.ram_mode
++         "exclusive" reproduces the 11-12 freeze (no level job starts during the pack), "shared" does not; same level bytes
+ Last line: "RXRUN CHECKS n/m PASS"."""
+ import argparse, json, os, re, shutil, signal, subprocess, sys, tempfile, threading, time
+ 
+@@ -308,5 +310,103 @@
+     if os.path.isdir(f"{W}/ladder/{LV[0]}/level") and os.path.isdir(f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level"):
+         ok, why = same(f"{W}/ladder/{LV[0]}/level", f"{MW}/{where[LV[0]][0]}/ladder/{LV[0]}/level", "multi level vs rxrun.run level")
+         report("multi-identity", ok, why)
++if a.part in ("evalstall", "all"):
++    # w123 (lead notes 11-12): an eval unit's pack must not stop the host's level work (box2 + ds8 froze 11-12
++    # 15:14-15:51 CST: the eval's rad-convert held ram.lock exclusive; every card worker took its card lock and waited at
++    # ram.lock shared, so did the CPU lane's assemble / post). One hostd host (1 device, chunk 1: a session per job, as
++    # production's chunk 32 x 4 cards leaves the same gaps), two levels a unit each, an eval on the first level whose
++    # stub pack sleeps PACK_S while holding the eval's locks. eval.ram_mode "exclusive" (the old rule) must reproduce the
++    # stall (no job starts while the pack runs), "shared" must not (jobs keep starting), with the same level bytes.
++    from rxq import ladder
++    from rxrun import hostd
++    PACK_S = 20
++    names = {f"{ladder.fmt_k(v['K'])}-{v['codebook']}": v["name"] for v in ladder.levels(cfg)}
++    LVS = [names["3-i8"], names["3.25-i8"]]
++    out = {}
++    for mode in ("exclusive", "shared"):
++        SW = f"{W}/evalstall-{mode}"; shutil.rmtree(SW, ignore_errors=True); os.makedirs(SW)
++        stub = f"{SW}/stub.py"
++        open(stub, "w").write(r"""import json, os, sys, time
++import numpy as np
++op = sys.argv[1]
++if op == "pack":
++    t0 = time.time(); time.sleep(float(os.environ.get("PACK_S", "20")))
++    open(sys.argv[3], "w").write("pack of " + open(sys.argv[2]).read()[:200])
++    open(os.path.dirname(sys.argv[3]) + "/../pack.times", "a").write(f"{t0} {time.time()}\n")
++elif op == "mix": open(sys.argv[2], "w").write(open(sys.argv[3]).read() + open(sys.argv[4]).read())
++else:
++    mix, g, o = sys.argv[2:5]; m = json.load(open(g + "/kld.json")); n = m["rows"]
++    r = np.zeros((n, 4), np.float32); r[:, 0] = 0.1; r.tofile(o + ".json.rows")
++    json.dump({"all": {"positions": n, "kld": {"mean": 0.1}, "top1_agreement": 0.9}}, open(o + ".json", "w"))
++""")
++        gd = f"{SW}/golden-t-c"; os.makedirs(gd)
++        json.dump({"docs": [{"tokens": 101, "score_from": 0, "row0": 0, "orig": 0}], "rows": 100}, open(f"{gd}/kld.json", "w"))
++        open(f"{gd}/gen.u8", "wb").write(bytes([1]) * 100); open(f"{SW}/base.rad", "w").write("base")
++        H = f"{SW}/h"; os.makedirs(H)
++        rc_ = {"root": f"{H}/ladder", "settings": CFG, "python": sys.executable, "layers": "2-3", "passes": ["1"], "steps": ["jobs", "assemble"],
++               "allow_standin": True, "dup_frac": 0.0, "template": None, "chunk": 1, "ram_lock": f"{H}/ram.lock",
++               "inputs": {"ckpt": ck, "hessians": hs, "hin": None, "hout": ho}, "env": ENV,
++               "devices": [{"name": "h-0", "device": "cpu", "lock": f"{H}/card0.lock", "ram_lock": f"{H}/ram.lock", "workers": 1,
++                            "vram_gib": 28.0, "nice": 0, "yield_s": 2, "kinds": ["quant", "swj"]}]}
++        json.dump(rc_, open(f"{H}/run.json", "w"), indent=1)
++        hc = {"name": "h", "root": H, "run_conf": f"{H}/run.json", "tree": os.path.join(PIPE, ".."), "slots": {"level": 1, "eval": 1},
++              "limits": {"kinds": ["level", "eval"]},
++              "eval": {"packs": f"{H}/packs", "aliases": {"BASE": f"{SW}/base.rad", "GC": gd}, "ram_mode": mode, "pack_ram_gib": 0.5,
++                       "mix_ram_gib": 0.5, "card_lock": f"{H}/card0.lock", "ram_lock": f"{H}/ram.lock", "conv_lock": f"{H}/conv.lock",
++                       "pack_cmd": [sys.executable, stub, "pack", "{recipe}", "{out}"], "mix_cmd": [sys.executable, stub, "mix", "{out}", "{base}", "{mixfile}"],
++                       "score_cmd": [sys.executable, stub, "score", "{mix}", "{golden}", "{out}"]}}
++        json.dump(hc, open(f"{H}/host.json", "w"), indent=1)
++        # one eval per level: the eval on whichever level the coordinator builds first packs while the other one builds
++        open(f"{SW}/evals.jsonl", "w").write("".join(json.dumps({"tag": f"e-{i}", "mix": {"base": "BASE", "trunk": n},
++                                                                 "slices": [{"name": "t", "parts": {"c": "GC"}}]}) + "\n" for i, n in enumerate(LVS)))
++        CO = {"root": f"{SW}/coord", "settings": CFG, "passes": ["1"], "levels": LVS, "layers": "2-3", "evals": f"{SW}/evals.jsonl", "retries": 0,
++              "hosts": [{"name": "h", "cmd": [], "python": sys.executable, "hostconf": f"{H}/host.json", "unit_levels": 1, "reconnect_s": 5}]}
++        json.dump(CO, open(f"{SW}/multi.json", "w"), indent=1)
++        stopw = threading.Event()
++
++        def recipes(H=H, stopw=stopw):
++            while not stopw.is_set():
++                for p_ in __import__("glob").glob(f"{H}/ladder/*/DONE"):
++                    rp_ = os.path.join(os.path.dirname(p_), "final.recipe")
++                    if not os.path.exists(rp_): open(rp_, "w").write(os.path.dirname(p_))
++                time.sleep(0.2)
++        thw = threading.Thread(target=recipes, daemon=True); thw.start()
++        t = time.time()
++        p = subprocess.run([sys.executable, "-m", "rxrun.multi", f"{SW}/multi.json"], capture_output=True, text=True,
++                           env=dict(os.environ, PACK_S=str(PACK_S)), timeout=3600)
++        stopw.set()
++        pt = [tuple(map(float, l.split())) for l in open(f"{H}/pack.times")] if os.path.exists(f"{H}/pack.times") else []
++        J_ = {}
++        for n in LVS:
++            f_ = f"{H}/ladder/{n}/logs/jobs.jsonl"
++            J_[n] = sorted((json.loads(l)["t0"], json.loads(l)["t1"]) for l in open(f_)) if os.path.exists(f_) else []
++        second = max(LVS, key=lambda n: J_[n][0][0] if J_[n] else 0)            # the level built while the first one's eval ran
++        u_ = f"{H}/units/lv-{second}/req.json"
++        lo = os.path.getmtime(u_) if os.path.exists(u_) else (J_[second][0][0] if J_[second] else 0)    # its unit's start
++        hi = J_[second][-1][1] if J_[second] else 0
++        # the longest stretch inside (pack window x the level's life) with no job of it running
++        idle, n_in = 0.0, 0
++        for ps, pe in pt:
++            a_, b_ = max(ps, lo), min(pe, hi)
++            if b_ <= a_: continue
++            cur = a_
++            for t0_, t1_ in J_[second]:
++                if t1_ <= cur: continue
++                if t0_ >= b_: break
++                idle = max(idle, t0_ - cur) if t0_ > cur else idle; cur = max(cur, t1_)
++                if a_ < t0_ < b_: n_in += 1
++            idle = max(idle, b_ - cur) if b_ > cur else idle
++        res_ = [json.loads(x) for x in open(f"{SW}/coord/results.jsonl")] if os.path.exists(f"{SW}/coord/results.jsonl") else []
++        out[mode] = {"rc": p.returncode, "wall": time.time() - t, "pack": pt, "inside": n_in, "idle": idle, "second": second,
++                     "overlap": any(min(pe, hi) > max(ps, lo) for ps, pe in pt), "jobs": len(J_[second]),
++                     "eval_ok": sum(1 for r in res_ if not r.get("fail")) == 2, "done": all(os.path.exists(f"{H}/ladder/{n}/DONE") for n in LVS)}
++    ex, sh_ = out["exclusive"], out["shared"]
++    report("evalstall-repro", ex["rc"] == 0 and ex["done"] and ex["eval_ok"] and ex["overlap"] and ex["idle"] >= PACK_S - 3,
++           f"ram_mode exclusive (the old rule): a {PACK_S} s pack while {ex['second'][-9:]} builds: its card idle {ex['idle']:.1f} s at a stretch, "
++           f"{ex['inside']} job starts during the pack (wall {ex['wall']:.0f} s)")
++    report("evalstall-fixed", sh_["rc"] == 0 and sh_["done"] and sh_["eval_ok"] and sh_["overlap"] and sh_["inside"] >= 1 and sh_["idle"] < PACK_S / 4,
++           f"ram_mode shared: longest idle stretch {sh_['idle']:.1f} s, {sh_['inside']} job starts during the pack (wall {sh_['wall']:.0f} s)")
++    ok, why = same(f"{W}/evalstall-exclusive/h/ladder/{ex['second']}/level", f"{W}/evalstall-shared/h/ladder/{ex['second']}/level", "the level built beside the pack, both rules")
++    report("evalstall-identity", ok, why)
+ print(f"RXRUN CHECKS {sum(res)}/{len(res)} PASS")
+ sys.exit(0 if all(res) else 1)

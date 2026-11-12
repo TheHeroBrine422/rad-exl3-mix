@@ -1,0 +1,2 @@
+{"host": "colo", "m": 48, "rows": 34816, "cols": 5120, "one_call_s": 15.80, "threads": 1, "split_s": 16.04, "identical": true}
+{"host": "colo", "m": 48, "rows": 34816, "cols": 5120, "one_call_s": 15.92, "threads": 4, "split_s": 3.99, "identical": true}
