@@ -620,6 +620,21 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
 - **Mining with the local Qwen** (user): after w114, card 0 joins llama-swap and makes the 27B faster; restart the
   mining pass then (`mine/mix/PAUSE` off), Qwen only.
 
+## QTIP fine-tuning, checked against our plan (2026-11-12, user asked)
+QTIP (arXiv 2406.11235 §3.1.2, §4.2, A.3.5) fine-tunes with QuIP#'s recipe: (1) **within a block, quantize matrices in
+order (v, q, k, o, up/gate, down) and tune the not-yet-quantized weights** (plus the continuous parameters) on the
+block's output; (2) end-to-end tuning of the continuous parameters (QuIP#: sign vectors as reals, norms); (3) for the
+HYB code only, **tune the 2 KiB codebook LUT** (computed codes 1MAD / 3INST are "not tunable"). Paper: computed codes
+without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bullet"); HYB 2-bit Llama 2 7B W2 6.83 →
+5.86 with (1) + (3) together (no split ablation).
+- (2) = our V3.1 scale-only QAD (suh / svh = the sign vectors as reals; norms are arm C of #165). Covered.
+- (1) = sequential sibling compensation. It assumes the siblings' exact quantization, so it breaks mix-and-match: our
+  asym writers (#87 / #105 / #111) are the same idea and fail per level next to siblings of another K (#111). Only
+  possible per shipped mix (a per-mix requant): a V4 item with end-to-end code-aware QAD, not V3.
+- (3) Our i8 codebook is computed (int8 decode in the kernel), not a LUT: tuning it would mean a LUT gather in the
+  inner loop (kernel cost) or a new computed family; codebook-shape changes gave nothing on top of H_out (i8c #78-03 /
+  -04). Not pursued; a tunable LUT would be a V4 format question judged with its decode cost.
+
 ## swj fit data (2026-11-11, #144 finding)
 - [ ] **More swj fit tokens?** #144: fitting on half of the fit half (~232k vs ~464k tokens) lost 5.6% of the held-out
   gain (spread 1.2%), so the fit is still data-limited at today's ~0.93M qad tokens. A doubled qad slice (or qad + xcorp)
