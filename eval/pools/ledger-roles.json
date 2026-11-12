@@ -221,5 +221,35 @@
   "line": "v3",
   "decisions": 1,
   "note": "#148 (w113, 2026-11-11): calib part of the two-part 27B search slice golden-search27e (72 search-pool docs never in the ledger under any use and not in golden-search27d-c, calib_slice 60000 tokens cap 8192 seed 11148 -> 74,195 tokens, 65,334 scored); its xcorp part (130 pieces of night1105 xc8k-b2-c1, never scored; 27b-x / 27c-x / 27d-x / mX docs excluded) reads no calib. Decides #148's P16-TP pair (N -> P16-TP, 112 tensors, 2 seeds); the full-P16 pair (128 tensors) and P16 -> P16-TP are reported"
+ },
+ "swj27-qad": {
+  "role": "train",
+  "line": "v3",
+  "decisions": 0,
+  "note": "swj's fit META (SWJ27.md, 2026-11-06): calib_slice qad 1,048,576 tokens asked, cap 4096, seed 0 -> 725 qad docs / 927,611 tokens; [post.swj] scales (2 x 17,408 a layer) fitted to their activations in every swj level pass since #104 (fit_tokens = 1M). Missing from the ledger until w114 (2026-11-12) added it"
+ },
+ "swj114-qad2m": {
+  "role": "train",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#150 (w114, 2026-11-12): swj fit META 2M = swj27-qad + calib_slice qad 1,169,541 tokens asked, cap 4096, seed 1 excluding swj27-qad -> 1,699 docs / 2,112,907 tokens; swj fits on w114's K2.5 / K4 levels (the 2M arm)"
+ },
+ "swj114-qad4m": {
+  "role": "train",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#150 (w114, 2026-11-12): swj fit META 4M = swj114-qad2m + 4096-token windows of qad docs (w114/mkwin114.py seed 4, category shares of the qad pool's uncapped tokens) -> 2,905 windows of 2,519 docs / 4,210,502 tokens; ledger from/to = the doc's covered span; swj fits on w114's K2.5 / K4 levels (the 4M arm)"
+ },
+ "golden-search27f-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 2,
+  "note": "#149 / #150 (w114, 2026-11-12): calib part of the two-part 27B search slice golden-search27f (69 search-pool docs never in the ledger under any use, calib_slice 60000 tokens cap 8192 seed 11149 -> 76,394 tokens, 68,952 scored); its xcorp part (130 pieces of night1105 xc8k-b2-c2, never scored; 27b-x / 27c-x / 27d-x / 27e-x / mX docs excluded) reads no calib. Decides #149 (C9 e_clip 0.3 below K1) and #150 (swj fit_tokens)"
+ },
+ "golden-verify27-w114": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#151 (w114, 2026-11-12): verify row (standing overfit-audit action, report only): 82 clean verify-pool docs (never in the ledger under any use), calib_slice 100000 tokens cap 8192 seed 11151 -> 115,356 tokens, 94,135 scored; scored once each by V2 3.00 and today's K2.5 stack (stamp 4f831984) in V2 3.00"
  }
 }

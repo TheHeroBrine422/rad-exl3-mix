@@ -4,6 +4,30 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 1:10 AM CST · #152 / #153 · Re-LDLQ after the refit; tile CD on more families: rule committed, f2 screens queued behind w114 (w115)
+- **Status:** running (queued) · **Machine:** gpubox card 0 after w114's driver (`/data/w115/a/a115.sh` waits for
+  `D114 DONE / STOP`), CPU checks on colo · **Code:** `v3/e3/settle/w115/` (`rxq-w115.patch`, `a115.sh`, `report115.py`)
+  · **Rule:** `v3/e3/settle/w115.md` (064bb6b, alone, before data) · **Data:** `v3/e3/settle/data/w115/`
+- **Patch (not merged):** `rxq/reldlq.py` + hooks: `[quant.reldlq] enable, passes` (absent = off, stamp unchanged): after
+  the normal quantization, LDLQ + trellis again on the refit's stored scales (g = 1), then refit again. `rxq/tilecd.py`:
+  gate / up family names fixed (was `ffn_gate_up`, which `config.quant_settings` never matches: CD could not be
+  switched on for gate / up). CPU stand-in check `check_reldlq.py` 12 / 12 PASS (flag off == HEAD bit for bit at
+  K2.5 / K0.5; per-family CD touches only that family).
+- **Next:** 36 real-quant units (N / R / C_F) → f2 (w98's f2calc98) → gates (#152 geo ≤ 0.99 at K2.5; #153 per family
+  geo ≤ 0.99) → K2.5 KL pairs only for what passes.
+- **Runtime:** none.
+
+### 2026-11-12 1:00 AM CST · #149 / #150 / #151 · w114 overnight card-0 queue started (C9 e_clip confirm, swj fit tokens, verify row)
+- **Status:** running · **Machine:** gpubox card 0 (driver `d114.sh`, started 12:57 AM CST) · **Code:** `v3/e3/settle/w114/`
+  · **Rule:** `v3/e3/settle/w114.md` (fac1d0e, alone, before data) · **Data:** `v3/e3/settle/data/w114/`
+- **Setup done:** G0 PASS (w110's K0.5 / K1 / K1.5 job specs = today's except level / stamp / config; settings differ
+  only in post.swj.numerics; quant code diff c6e9cd1..95999af = swjfit.py only) → reused with today's bf16 swj.
+  Slices: **golden-search27f** = 130 never-scored xcorp pieces (xc8k-b2-c2, 201,451 pos) + 69 calib search docs never
+  in the ledger (68,952 pos); **golden-verify27-w114** = 82 clean verify docs (94,135 pos). swj METAs 1M (swj27-qad,
+  927,611), 2M (2,112,907), 4M (4,210,502 incl. 1,206 4096-token windows: the qad pool has only 3.2M tokens at cap
+  4096). Ledger rows added (27f-c select, verify check, the three METAs train; swj27-qad was missing from the ledger).
+- **Runtime:** none (scales only); card ~14 h (quant ~4, swj ~7, scores ~3.5).
+
 ### 2026-11-12 12:45 AM CST · #130 / #146 / #148 · P16 output-row interleave DROPPED (user)
 - KL across three slices: 0.9933 → 0.9903 → 1.0038 (full P16), TP-safe P16-TP 1.0005 on 27e; combined z −0.79. Real
   quant error −32% on qkv does not move KL. Fixed costs (format field, remap in six kernels, TP split) not worth an
