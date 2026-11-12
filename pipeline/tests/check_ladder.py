@@ -9,12 +9,22 @@
            H_out inputs at every level (apply_k_min 0); C9 on out_proj / o_proj only (alpha down 0)
   manifest pins carry the manifest's sha256; a missing input is refused
   estimate per-pass rows; blocks cost less than dense; the requirement table puts sub-1 above K2.5
+  post     post_scripts at swj_batch 1 (default config) = post_script per level; one swjfit call per level that has an
+           swj step, one --src each
+  post-batch
+           swj_batch 4 (default config, asym on, swj k_max 4): ceil(swj levels / 4) swjfit calls a ladder pass, at most
+           4 --src a call, all of one ladder pass; every level that has an swj step named once, in level order, its
+           export line before and its apply line after that call; scratches distinct (also [A, B] against [A, C]);
+           the other lines the same as at swj_batch 1 (the asym line kept)
+  estimate-swj
+           swj_passes per ladder pass (default config: every level has an swj step): one a level at swj_batch 1,
+           ceil(levels / 4) at swj_batch 4 = post_scripts' swjfit calls of that ladder pass
 Last line: "LADDER CHECKS n/m PASS"."""
-import hashlib, json, os, sys
+import hashlib, json, math, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, ".."))
-from rxq import config as C, ladder as LD, qwen35  # noqa: E402
+from rxq import config as C, ladder as LD, post as P, qwen35  # noqa: E402
 
 RQ = sys.argv[1] if len(sys.argv) > 1 else "/workspace/rad-quant-at-home"
 jobs = None
@@ -78,5 +88,62 @@ td, tb = sum(r["quant_h"] for r in ed.values()), sum(r["quant_h"] for r in eb.va
 k = "model.language_model.layers.10.mlp.gate_proj"
 report("estimate", set(ed) == {"1", "2", "3"} and tb < td and LD.tensor_vram(cfg, k, 0.5) > LD.tensor_vram(cfg, k, 2.5),
        f"quant card-h dense {td:.0f} / blocks {tb:.0f}; gate VRAM K0.5 {LD.tensor_vram(cfg, k, 0.5):.2f} > K2.5 {LD.tensor_vram(cfg, k, 2.5):.2f} GiB")
+
+args = ("EXPORT", "MODEL", "SWJMETA", "SCRATCH", "OUT"); SW = "python -m rxq.swjfit "
+lva = LD.levels(cfg)
+
+
+def has_swj(c, v): return any(x[0] == "swj" for x in P.plan_level(c, v["K"]))
+
+
+def srcs(x): return re.findall(r" --src (\S+?)=", x)
+
+
+def scr(x): return re.search(r" --scratch (\S+) ", x).group(1)
+
+
+t1 = LD.post_scripts(cfg, lva, *args); s1 = [x for x in t1.splitlines() if x.startswith(SW)]
+n1 = sum(has_swj(cfg, v) for v in lva)
+report("post", t1 == "".join(LD.post_script(cfg, v, *args) for v in lva) and len(s1) == n1 and all(x.count(" --src ") == 1 for x in s1),
+       f"{len(s1)} swjfit calls for {len(lva)} levels ({n1} with swj), at most {max(x.count(' --src ') for x in s1)} --src")
+
+
+def batch_ok(c, why):
+    """the swj_batch 4 text of every level of c against its swj_batch 1 text: every check of post-batch but the scratch
+    pair and the asym line"""
+    lv = LD.levels(c); ps = {v["name"]: v["pass"] for v in lv}; sw = [v["name"] for v in lv if has_swj(c, v)]
+    l4 = LD.post_scripts(c, lv, *args, swj_batch=4).splitlines(); s4 = [x for x in l4 if x.startswith(SW)]
+    l1 = LD.post_scripts(c, lv, *args).splitlines()
+    want = sum(math.ceil(sum(has_swj(c, v) for v in lv if v["pass"] == p) / 4) for p in dict.fromkeys(ps.values()))  # per ladder pass
+    one_pass = all(len(srcs(x)) <= 4 and len({ps[n] for n in srcs(x)}) == 1 for x in s4)
+    order = [n for x in s4 for n in srcs(x)] == sw
+    at = {n: i for i, x in enumerate(l4) if x.startswith(SW) for n in srcs(x)}
+    def first(p): return min(i for i, x in enumerate(l4) if x.startswith(p))
+    place = all(n in at and first(f"admin.py export --level {n} ") < at[n] < first(f"python -m rxq.post apply EXPORT/{n}/level ") for n in sw)
+    scr_u = len({scr(x) for x in s4}) == len(s4)
+    rest = sorted(x for x in l4 if not x.startswith(SW)) == sorted(x for x in l1 if not x.startswith(SW))
+    why.append(f"{len(s4)} swjfit calls for {len(sw)} of {len(lv)} levels (want {want}), at most "
+               f"{max((len(srcs(x)) for x in s4), default=0)} --src; <= 4 --src and one ladder pass a call {one_pass}, level order "
+               f"{order}, export before / apply after {place}, scratch unique {scr_u}, other lines {rest}")
+    return len(s4) == want and one_pass and order and place and scr_u and rest
+
+
+wb = []; ok4 = batch_ok(cfg, wb)
+n4 = sum(math.ceil(sum(has_swj(cfg, v) for v in lva if v["pass"] == p) / 4) for p in dict.fromkeys(v["pass"] for v in lva))
+ok4 &= sum(x.startswith(SW) for x in LD.post_scripts(cfg, lva, *args, swj_batch=4).splitlines()) == n4
+ca = C.with_overrides(cfg, **{"post.asym.enable": True}); wa = []; oka = batch_ok(ca, wa)
+asym_kept = "# asym is per mix" in LD.post_scripts(ca, lva, *args, swj_batch=4)
+ck = C.with_overrides(cfg, **{"post.swj.k_max": 4.0}); wk = []; okk = batch_ok(ck, wk)
+A, B, D = lva[0], lva[1], lva[2]
+sab, sad = (scr([x for x in LD.post_scripts(cfg, b, *args, swj_batch=2).splitlines() if x.startswith(SW)][0]) for b in ([A, B], [A, D]))
+report("post-batch", ok4 and oka and asym_kept and okk and sab != sad,
+       f"default: {wb[0]} (sum over ladder passes of ceil(swj levels / 4) {n4}); asym on: {wa[0]}, asym line kept {asym_kept}; "
+       f"swj k_max 4: {wk[0]}; scratch [A,B] != [A,C] {sab != sad}")
+
+e1, e4 = LD.estimate(cfg), LD.estimate(cfg, swj_batch=4)
+n4p = {p: sum(x.startswith(SW) for x in LD.post_scripts(cfg, [v for v in lva if v["pass"] == p], *args, swj_batch=4).splitlines()) for p in e4}
+report("estimate-swj", all(e1[p]["swj_passes"] == e1[p]["levels"] and e4[p]["swj_passes"] == math.ceil(e4[p]["levels"] / 4) == n4p[p] for p in e4),
+       f"swj level passes per ladder pass at swj_batch 1 {[e1[p]['swj_passes'] for p in sorted(e1)]}, at swj_batch 4 "
+       f"{[e4[p]['swj_passes'] for p in sorted(e4)]} (post_scripts {[n4p[p] for p in sorted(n4p)]}) for {[e4[p]['levels'] for p in sorted(e4)]} levels")
 print(f"LADDER CHECKS {sum(res)}/{len(res)} PASS")
 sys.exit(0 if all(res) else 1)

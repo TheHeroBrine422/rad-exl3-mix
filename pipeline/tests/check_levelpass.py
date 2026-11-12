@@ -6,14 +6,18 @@ tools run as subprocesses in the same environment (P2B_BLOCK=causal_conv1d,fla: 
          --no-cache (the production forward), --ckpt-min 0 (a checkpoint after every document: the resume path);
          scales files, swiglu.jsonl and swjfit.json (but tool / created) equal
   swjc   the same with the fresh-DynamicCache forward (no --no-cache)
+  swjb   rxq.swjfit, one source alone vs the same source in a two-source call: sources a (as swj) and b (made as a,
+         seed 77) each fitted alone (--split 0,8,16,24: 3 stages) and both in one call (--split 0,12,24: 2 stages),
+         --no-cache; every other file of OUT/a and OUT/b (scales, swiglu.jsonl, .done) equal, swjfit.json equal but
+         split / created
   sib    rxq.sibmom vs v3/yaqa/asym27/sibmom27.py: --wq siblings (q/k/v or GDN qkv/z, gate / up + noise), every layer,
          256-token windows; every moment file (H, C, N, metadata), windows.json and the per-layer done markers equal
   hin    rxq.hin vs eval/gold27/mkhin27.py: 3 stages, 256-token chunks, a flush (checkpoint) every 2 documents; every
          OUT file byte for byte (97 Hessians), collect.json equal but tool / created / plan.out. Both sides run with
          OMP_NUM_THREADS=1: at 4 threads on a loaded host the CPU SDPA (full-attention layers) is not reproducible run to
          run, mkhin27.py against itself included (colo 11-07: 84 of 97 files differed between two mkhin27 runs)
-Inputs are made under WORK once (meta/, wq/). Files compare by content: safetensors tensors torch.equal + metadata
-dict (header bytes vary by process), other files by bytes. Last line "LEVELPASS CHECKS n/m PASS"."""
+Inputs are made under WORK once (meta/, wq/; wqb/ for swjb). Files compare by content: safetensors tensors torch.equal +
+metadata dict (header bytes vary by process), other files by bytes. Last line "LEVELPASS CHECKS n/m PASS"."""
 import filecmp, json, os, shutil, subprocess, sys
 
 import numpy as np
@@ -81,19 +85,27 @@ if not os.path.exists(f"{W}/meta/.done"):
     json.dump({"docs": [{"tokens": n} for n in lens]}, open(f"{W}/meta/kld.json", "w"))
     json.dump({"pool": ["qad"] * len(lens)}, open(f"{W}/meta/pools.json", "w"))
     open(f"{W}/meta/.done", "w").close()
-if not os.path.exists(f"{W}/wq/.done"):
-    os.makedirs(f"{W}/wq/wq", exist_ok=True)
+
+
+def stand_in(d, seed):
+    """a :wq source under d (once): every layer's attention siblings + gate / up of the 0.8B, + noise of 0.03 x the
+    tensor's std (generator seed), f16"""
+    if os.path.exists(f"{d}/.done"): return
+    os.makedirs(f"{d}/wq", exist_ok=True)
     ix = json.load(open(f"{M08}/model.safetensors.index.json"))["weight_map"]
     cfg = json.load(open(f"{M08}/config.json")); lt = cfg["text_config"]["layer_types"]
-    gen = torch.Generator().manual_seed(76)
+    gen = torch.Generator().manual_seed(seed)
     for l in range(len(lt)):
         att = [f"self_attn.{s}_proj" for s in "qkv"] if lt[l] == "full_attention" else ["linear_attn.in_proj_qkv", "linear_attn.in_proj_z"]
         for s in att + ["mlp.gate_proj", "mlp.up_proj"]:
             k = f"{Lp}.{l}.{s}"
             with safe_open(f"{M08}/{ix[k + '.weight']}", "pt") as f: w = f.get_tensor(k + ".weight").float()
             q = w + 0.03 * w.std() * torch.randn(w.shape, generator=gen)
-            save_file({"weight": q.half().contiguous()}, f"{W}/wq/wq/{k}.safetensors")
-    open(f"{W}/wq/.done", "w").close()
+            save_file({"weight": q.half().contiguous()}, f"{d}/wq/{k}.safetensors")
+    open(f"{d}/.done", "w").close()
+
+
+stand_in(f"{W}/wq", 76)
 
 
 def want(u): return not only or u in only
@@ -113,6 +125,23 @@ for unit, extra in (("swj", ["--no-cache"]), ("swjc", [])):
     n, bad = same_tree(f"{da}/a", f"{db}/a", skip=("swjfit.json",)) if ra == rb == 0 else (0, ["(a run failed)"])
     js = ra == rb == 0 and json_eq(f"{da}/a/swjfit.json", f"{db}/a/swjfit.json", ("tool", "created"))
     report(unit, ra == rb == 0 and not bad and js, f"rc {ra}/{rb}; {n} files compared, {len(bad)} differ {bad[:2]}; swjfit.json equal {js}")
+
+# ---------------------------------------------------------------- swjb
+if want("swjb"):
+    stand_in(f"{W}/wqb", 77)
+    rcs = {}
+    for side, srcs, split in (("a", ["a"], "0,8,16,24"), ("b", ["b"], "0,8,16,24"), ("ab", ["a", "b"], "0,12,24")):
+        d = f"{W}/swjb-{side}"; shutil.rmtree(d, ignore_errors=True); shutil.rmtree(d + "-scr", ignore_errors=True)
+        sv = [x for s in srcs for x in ("--src", f"{s}={W}/{'wq' if s == 'a' else 'wqb'}:wq")]
+        rcs[side] = run(f"swjb/{side}", [PY, "-m", "rxq.swjfit", M08, f"{W}/meta", d] + sv + ["--scratch", d + "-scr",
+                        "--split", split, "--cap", "512", "--ckpt-min", "0", "--no-cache"], d + ".log")
+    ok = not any(rcs.values())
+    (na, ba), (nb, bb) = ((same_tree(f"{W}/swjb-{s}/{s}", f"{W}/swjb-ab/{s}", skip=("swjfit.json",)) if ok else (0, ["(a run failed)"]))
+                          for s in "ab")
+    js = ok and all(json_eq(f"{W}/swjb-{s}/{s}/swjfit.json", f"{W}/swjb-ab/{s}/swjfit.json", ("split", "created")) for s in "ab")
+    report("swjb", ok and na > 0 and nb > 0 and not ba and not bb and js,
+           f"rc {rcs}; a alone vs a in a + b: {na} files compared, {len(ba)} differ {ba[:2]}; b: {nb} compared, {len(bb)} differ {bb[:2]}; "
+           f"swjfit.json equal {js}")
 
 # ---------------------------------------------------------------- sib
 if want("sib"):
