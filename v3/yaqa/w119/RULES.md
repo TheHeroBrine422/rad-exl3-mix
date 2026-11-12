@@ -141,3 +141,27 @@ The bf16 tier is offered only once E6 accepts a bf16 class (until then reported 
 LOG + INDEX rows #154–#157 as results land; data into `v3/yaqa/data/w119/`; ledger rows for the three dumps
 (`w119-headx-{search,fit,verify}`) and the E3 (d) slice. Machines: colo (CPU), box2 (GPU, per-card locks, ram.lock
 shared), gpubox card 0 only for short checks.
+
+## Amendment 1 (2026-11-12 ~4:45 AM CST, after the lead's notes 2–4 for w119; before any E2 / E3 / E9 data)
+
+E1 has been read (#154, rule (a)); nothing of E2 / E3 / E9 has been dumped, quantized or scored.
+
+**#157 int8 head arms, as deadcode ships them** (lead note 3: the head line has *no* fwht128; the kernel
+`logits_gemm_i8` is W8A16):
+- **GPTQ (as shipped):** `output.weight` of `StillDeadcode/qwen3.8-27b-iq8r-dflash` read as is (int8 codes −127…127,
+  unrotated, one bf16 scale per (row, 128), GPTQ'd by rad-convert against the calib `lm_head.input` Hessian). Taken
+  as-is: no tuning of ours on it.
+- **RTN:** the same grid by round-to-nearest with radiance's `rule=search` scale (`lq_grid.cpp` `search_sym`: 21
+  multiples 0.70–1.10 of the absmax scale plus each one's least-squares refit, scale rounded to bf16, no importance
+  weights), re-implemented in python.
+- **RTN FWHT128** (the plan's first description): report only.
+- Activations: **bf16** (the kernel's) is the priced arm; **a8** (int8 per (row, 128 inputs), unrotated) is
+  reported. Bits per head weight: 8.125.
+- Same hull rule. Also reported: KL per byte against the trunk's marginal KL per byte at the 6.0 / 6.5 / 7.0 mixes
+  (knap5's λ where available), and the lowest budget at which a trellis head still beats the int8 head on the hull
+  (how far down the custom donor grid must go).
+
+**#155 a8 arm, extended (lead note 4):** a8 vs f16 is computed for every E2 uniform donor (KL cost per K, report).
+The rule is tightened, not loosened: a8 is recorded as acceptable for the head only if the original condition holds
+**and** it buys measurable time; no A8 head kernel exists to time here, so unless a timing is supplied the head stays
+f16 (said so in the report).
