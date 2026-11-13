@@ -5,7 +5,8 @@ halves K5.5-7.5 (KA 5-7). Masks: the fork's canonical frac_mask(n), n = 16 x the
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 def frac_mask(n): return sum(1 << i for i in range(16) if ((i + 1) * n) // 16 - (i * n) // 16)
-MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: range(2, 16, 2), 4: range(2, 16, 2), 5: (4, 8, 12), 6: (4, 8, 12), 7: (4, 8, 12)}
+MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: range(2, 16, 2), 4: range(2, 16, 2), 5: range(2, 16, 2), 6: range(2, 16, 2), 7: range(2, 16, 2)}
+# 2026-11-13 (w140 patch, lead note 11:00): 1/8 steps K5.125-7.875 for the R16 head ladder (plugin exl3i_plan_tab covers m 2..126)
 # 2026-11-02 (user): 1/8 steps up to K4.875, quarters K5.25-6.75 (i8 to K7), quarters to K7.75 (plain codebook K6-8, user)
 # KA 5 quarters (K5.25 / 5.75): head donors only (headremake.sh), the trunk ladder stops at K5.5 / 6
 # integer K1-4 (MASK 0): the same search as exllamav3's integer kernel; qtf2int6check.py tests identity / speed, and

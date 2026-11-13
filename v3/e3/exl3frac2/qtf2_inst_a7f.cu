@@ -3,6 +3,10 @@
 #include "qtf2_types.cuh"
 #include "qtf2.cuh"
 
+fp_qtf2 qtf2_a7_m8080() { return qtf2_kernel<7, 0x8080u>; }
 fp_qtf2 qtf2_a7_m8888() { return qtf2_kernel<7, 0x8888u>; }
+fp_qtf2 qtf2_a7_ma4a4() { return qtf2_kernel<7, 0xa4a4u>; }
 fp_qtf2 qtf2_a7_maaaa() { return qtf2_kernel<7, 0xaaaau>; }
+fp_qtf2 qtf2_a7_mdada() { return qtf2_kernel<7, 0xdadau>; }
 fp_qtf2 qtf2_a7_meeee() { return qtf2_kernel<7, 0xeeeeu>; }
+fp_qtf2 qtf2_a7_mfefe() { return qtf2_kernel<7, 0xfefeu>; }

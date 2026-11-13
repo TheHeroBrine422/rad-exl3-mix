@@ -6153,3 +6153,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Goldens: `eval/night1105/gold4.sh` (= gold3.sh, `--kld-top 256`, 8k) — ds8 xq-c00..23 (3 lanes, after gold3's b3 chunks),
   box2 xq-c24..39 (2 lanes); ~1,000–1,150 positions/s a lane; `/data/q27/gold4/gold/` on each (~2 KB a position ≈ 80 GB).
   For QAD scale-up / LoRA healing (single epoch over lots of data). Non-calib, no ledger rows. **Runtime:** none.
+
+### 2026-11-13 4:30 PM CST · data · gold3 + gold4 goldens done
+- gold3 (9 night1105 b3 chunks, top-512, ds8) + gold4 (40 xq chunks, top-256: ds8 c00–23, box2 c24–39): all 49 chunks
+  rc=0, **47.97M recorded positions** (ds8 32.27M incl. gold3, box2 15.69M); disk ds8 31 + 47 GB, box2 31 GB
+  (`/data/q27/gold{3,4}/gold/`). Wall ~3 h on 10 cards. Ready for the QAD scale-up / LoRA-healing tests. **Runtime:** none.
