@@ -26,6 +26,9 @@ eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weigh
   search's results.jsonl fields (tag, bytes, bpw, positions, kld, p99, top1, slice) per slice pooled over its parts, the
   parts, and per-document KL sums (eval/docstat/readout.py's inputs, small) -- rows files stay on the host.
 Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model} {progress}.
+Census (w142, #178; HOSTCONF eval.census_cmd, optional): run on every mix before it is scored ({mix} {mixfile} {base}, e.g.
+store/census.py {mix} --mix {mixfile} --base {base} --fast [--expect-act a8g128 ...]); a non-zero exit fails the unit
+unscored. A pass is remembered in <mix>.census (newer than the mix: not run again).
 Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
 = cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
 radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
@@ -411,6 +414,12 @@ def run_eval(H, u, req):
             rc = sh(fill(E["mix_cmd"], out=mrad + ".part", base=rp(mx["base"]), mixfile=mf), log)
             if rc or not os.path.exists(mrad + ".part"): return {"rc": 1, "err": f"mix {tag} rc {rc} ({log})"}
             os.replace(mrad + ".part", mrad)
+    if E.get("census_cmd"):                                       # w142 (#178, mining B2): the container must be what the mix
+        ok = mrad + ".census"                                     # says before a KLD means anything (store/census.py)
+        if not (os.path.exists(ok) and os.path.getmtime(ok) >= os.path.getmtime(mrad)):
+            rc = sh(fill(E["census_cmd"], mix=mrad, mixfile=mf, base=rp(mx["base"])), log)
+            if rc: return {"rc": 1, "err": f"census {tag} rc {rc}: the container differs from its mix / expectations ({log}); not scored"}
+            open(ok, "w").write("CENSUS PASS\n")
     import numpy as np
     nbytes = os.path.getsize(mrad); res = {"rc": 0, "kind": "eval", "tag": tag, "host": H.name, "bytes": nbytes,
                                           "bpw": nbytes * 8 / PARAMS, "slices": {}}
