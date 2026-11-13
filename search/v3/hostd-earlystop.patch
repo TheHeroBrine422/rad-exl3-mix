@@ -1,0 +1,257 @@
+diff --git a/pipeline/rxrun/README.md b/pipeline/rxrun/README.md
+index ae9f950..f73feb9 100644
+--- a/pipeline/rxrun/README.md
++++ b/pipeline/rxrun/README.md
+@@ -70,6 +70,14 @@ the host then waits at ram.lock (shared) holding its card lock, and the CPU lane
+ run (`goldcat.py`, rows byte-identical); `eval.cards` [{card, lock}] scores on the first free card. Check:
+ `check_rxrun.py --part evalstall` (the old rule reproduces the stall, the shared one does not).
+ 
++**Early stop (w126, #166; patch `search/v3/hostd-earlystop.patch`):** an eval line may carry `"early_stop": {"rule",
++"ref", "parts"}` (the search driver's: the incumbent's per-document KL sums on the slice's one interleaved golden). With
++HOSTCONF `eval.score_cmd_progress` (score_cmd + radiance `--kld-progress {progress}`, radiance branch
++`qc-exl3-v3-kldprog`) hostd follows the progress file, pairs each finished document with the incumbent's
++(`rxrun/earlystop.py` = `search/v3/seqrule.py`) and kills the run at the rule's boundary; the result carries
++`"stopped"` and the scored documents' sums only. Not stopped = the same result as score_cmd. Check:
++`search/v3/test_hostd_es.py PIPELINE_DIR` (11 checks).
++
+ **Pause one card (user 11-12):** `touch <run root>/HOLD-<device name>` on the host (e.g. `/data/q27/ladder/HOLD-c3`): that card finishes its running jobs, releases its card and ram locks (other work can take it by the lock) and idles; the host's other cards keep going; the swj pass uses an unpaused swj card. `rm` the file to rejoin. Whole host: `HOLD`; whole run: the coordinator's `ROOT/HOLD`. Check: `check_rxrun.py --part pool` (dev-hold).
+ 
+ **Rollout (lead):** (1) stage the frozen commit on both hosts (gpubox `/data/v3run/code` + the fork; box2
+diff --git a/pipeline/rxrun/earlystop.py b/pipeline/rxrun/earlystop.py
+new file mode 100644
+index 0000000..16ee375
+--- /dev/null
++++ b/pipeline/rxrun/earlystop.py
+@@ -0,0 +1,86 @@
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""seqrule.py -- the search's accept / reject rule on per-document KL sums, paired with the incumbent (w126, #166).
++
++One module for the boundary simulation (boundsim.py), the driver (driver.py) and the hosts' early-stop watcher
++(hostd patch: a byte-identical copy as pipeline/rxrun/earlystop.py; test_v3.py checks the copy). Pure Python.
++
++A candidate is scored document by document (radiance --kld-progress) in a fixed order with x / c interleaved. After
++document k the paired statistic over the scored documents is
++    d  = log(sum B / sum A)                                  (B candidate, A incumbent: KL sums on the same positions)
++    se = sd(u) / sqrt(k),  u_d = B_d / mean B - A_d / mean A (delta method, both parts pooled)
++    z  = d / se.
++Rules (reject early only; accept only on the whole slice: d < 0 and d < 0 on every part):
++    {"kind": "curve", "p": P, "warmup": W, "b0": 2, "t0": 0.1}   reject once t >= W and z > b0 ((1 - t) / (1 - t0))^P,
++                                                                 t = documents scored / documents in the slice
++    {"kind": "stages", "at": [F1, ..], "z": [Z1, ..]}            reject at the document completing fraction F_i if z >= Z_i
++    {"kind": "full"}                                             never early
++"""
++import math
++
++INF = float("inf")
++
++
++def boundary(rule, t):
++    """the reject bound on z at slice fraction t (INF = no early reject there)"""
++    k = rule.get("kind", "full")
++    if k == "curve":
++        if t < rule.get("warmup", 0.1) or t >= 1.0: return INF
++        return rule.get("b0", 2.0) * ((1.0 - t) / (1.0 - rule.get("t0", 0.1))) ** rule["p"]
++    return INF
++
++
++class Paired:
++    """running paired statistic of one candidate vs the incumbent over the documents scored so far"""
++
++    def __init__(self, n_total, rule):
++        self.N, self.rule = n_total, rule
++        self.k = 0; self.SA = self.SB = self.SAA = self.SBB = self.SAB = 0.0
++        self.part = {}                                   # part -> [sum A, sum B, docs]
++        self.stage = 0; self.stopped = None
++
++    def add(self, a, b, part="all"):
++        self.k += 1; self.SA += a; self.SB += b; self.SAA += a * a; self.SBB += b * b; self.SAB += a * b
++        p = self.part.setdefault(part, [0.0, 0.0, 0]); p[0] += a; p[1] += b; p[2] += 1
++
++    def d(self):
++        return math.log(self.SB / self.SA) if self.SA > 0 and self.SB > 0 else 0.0
++
++    def se(self):
++        if self.k < 3 or self.SA <= 0 or self.SB <= 0: return INF
++        mA, mB = self.SA / self.k, self.SB / self.k
++        su2 = self.SBB / (mB * mB) - 2 * self.SAB / (mA * mB) + self.SAA / (mA * mA)   # sum of u^2 (mean u is 0)
++        return math.sqrt(max(su2, 0.0) / (self.k - 1)) / math.sqrt(self.k)
++
++    def z(self):
++        s = self.se()
++        return self.d() / s if s not in (0.0, INF) else 0.0
++
++    def check(self):
++        """after a document: "reject" (stop the run) or None"""
++        if self.stopped: return self.stopped
++        t = self.k / self.N; r = self.rule
++        if r.get("kind") == "stages":
++            while self.stage < len(r["at"]) and self.k >= math.ceil(r["at"][self.stage] * self.N - 1e-9):
++                zb = r["z"][self.stage]; self.stage += 1
++                if self.z() >= zb: self.stopped = "reject"; return self.stopped
++            return None
++        if self.z() > boundary(r, t): self.stopped = "reject"
++        return self.stopped
++
++    def final(self):
++        """after the whole slice: "accept" iff the pooled and every part's log ratio are < 0"""
++        if self.stopped: return self.stopped
++        parts_ok = all(p[1] < p[0] for p in self.part.values())
++        return "accept" if self.d() < 0 and parts_ok else "reject"
++
++    def summary(self):
++        return {"k": self.k, "n": self.N, "d": self.d(), "se": self.se(), "z": self.z(),
++                "parts": {p: {"logr": math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None, "docs": v[2]} for p, v in self.part.items()}}
++
++
++def interleave(nx, nc):
++    """the part of each position of a two-part order: position k (1-based) is x iff floor(k nx / N) steps up"""
++    N = nx + nc; out = []
++    for k in range(1, N + 1):
++        out.append("x" if (k * nx) // N > ((k - 1) * nx) // N else "c")
++    return out
+diff --git a/pipeline/rxrun/hostd.py b/pipeline/rxrun/hostd.py
+index 01f63bd..583f4de 100644
+--- a/pipeline/rxrun/hostd.py
++++ b/pipeline/rxrun/hostd.py
+@@ -23,12 +23,19 @@ eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weigh
+   over the base container) -> each part scored (eval.score_cmd, the eval card's lock + ram.lock shared). Result: the
+   search's results.jsonl fields (tag, bytes, bpw, positions, kld, p99, top1, slice) per slice pooled over its parts, the
+   parts, and per-document KL sums (eval/docstat/readout.py's inputs, small) -- rows files stay on the host.
+-Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model}.
++Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model} {progress}.
+ Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
+ = cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
+ radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
+ "ram_mode": "shared" (box2, ds8) makes pack and mix hold ram.lock shared after a RAM admission ("pack_ram_gib",
+ "mix_ram_gib"), so an eval never stops the host's level work; default "exclusive" (gpubox) as before (RamGate).
++Early stop (w126, #166; TODO "Continuous early stop"): an eval line with "early_stop": {"rule", "ref": [[A_d, n_d], ..],
++"parts": [..]} (the incumbent's per-document KL sums on the slice's one golden, in its order; rxrun/earlystop.py, a copy
++of search/v3/seqrule.py) is scored with HOSTCONF eval.score_cmd_progress (score_cmd + radiance --kld-progress
++{progress}); the host follows the progress file, pairs each finished document with the incumbent's and kills the run
++when the rule rejects. The slice's result then has "stopped": {k, z, d, ...}, its docs list holds the scored documents'
++sums (null for the rest) and kld / positions cover the scored documents only. A run that is not stopped gives the same
++result as without early stop (its rows file); the progress sums are checked against it.
+ Limits (HOSTCONF "limits"): kinds, k_min / k_max (levels outside are not taken), max_unit_est_h; the coordinator
+ checks them before it hands out a unit, hostd checks again."""
+ import argparse, fcntl, glob, hashlib, json, os, signal, subprocess, sys, threading, time
+@@ -304,6 +311,62 @@ def doc_sums(golden, rows):
+     return out, np.concatenate(allk) if allk else np.zeros(0)
+ 
+ 
++def progress_docs(golden, prog, seen, gen=None):
++    """new complete lines of a --kld-progress file -> {doc: [KL sum over the golden's gen positions, positions]}"""
++    import numpy as np
++    out = {}
++    if not os.path.exists(prog): return out, seen
++    with open(prog) as f:
++        f.seek(seen)
++        while True:
++            l = f.readline()
++            if not l or not l.endswith("\n"): break
++            seen = f.tell(); j = json.loads(l)
++            kl = np.fromfile(prog + ".kl", np.float32, count=j["rows"], offset=j["kl_off"]).astype(np.float64)
++            g = gen[j["row0"]:j["row0"] + j["rows"]] if gen is not None else np.ones(j["rows"], bool)
++            out[j["doc"]] = [round(float(kl[g].sum()), 6), int(g.sum())]
++    return out, seen
++
++
++def score_watch(E, mix, g, o, es, log, poll=0.5):
++    """score golden g with --kld-progress and stop at the early-stop rule (w126). -> (rc, docs, stopped)"""
++    import numpy as np
++    from rxrun import earlystop as ES
++    m = json.load(open(f"{g}/kld.json")); N = len(m["docs"]); gen = np.fromfile(f"{g}/gen.u8", np.uint8).astype(bool)
++    ref, parts = es["ref"], es.get("parts") or ["all"] * N
++    if len(ref) != N or len(parts) != N: raise ValueError(f"early_stop ref / parts for {N} documents: {len(ref)} / {len(parts)}")
++    prog = o + ".progress"
++    for f in (prog, prog + ".kl"):
++        if os.path.exists(f): os.remove(f)
++    P = ES.Paired(N, es["rule"]); docs = [None] * N; ptr = 0; seen = 0; stopped = None
++    with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
++        cmd = fill(E["score_cmd_progress"], mix=mix, golden=g, out=o, card=cl.card, progress=prog)
++        with open(log, "a") as lf:
++            lf.write(f"$ {' '.join(cmd)}\n"); lf.flush()
++            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=lf, stderr=subprocess.STDOUT, start_new_session=True)
++        t0 = time.time()
++        while True:
++            done = p.poll() is not None
++            new, seen = progress_docs(g, prog, seen, gen)
++            for d, v in new.items(): docs[d] = v
++            while ptr < N and docs[ptr] is not None and stopped is None:
++                P.add(ref[ptr][0], docs[ptr][0], parts[ptr]); ptr += 1
++                if P.check():
++                    stopped = dict(P.summary(), at_s=round(time.time() - t0, 1))
++                    try: os.killpg(p.pid, signal.SIGTERM)
++                    except ProcessLookupError: pass
++                    try: p.wait(15)
++                    except subprocess.TimeoutExpired:
++                        os.killpg(p.pid, signal.SIGKILL); p.wait()
++                    with open(log, "a") as lf: lf.write(f"# early stop after {P.k} of {N} documents: z {P.z():+.3f}, log r {P.d():+.5f}\n")
++            if stopped is not None or done: break
++            time.sleep(poll)
++    if stopped is not None:
++        for f in glob.glob(o + ".json.part*"): os.remove(f)
++        return 0, [docs[i] if i < ptr else None for i in range(N)], stopped
++    return p.returncode, docs, None
++
++
+ def run_eval(H, u, req):
+     E = H.hc["eval"]; R = H.rc["root"]; t0 = time.time()
+     P = E.get("packs", f"{H.root}/packs"); MX = E.get("mixes", f"{H.root}/mixes"); SC = E.get("scores", f"{H.root}/scores")
+@@ -347,8 +410,23 @@ def run_eval(H, u, req):
+     def score(g, o):
+         with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
+             return sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=cl.card), log, nice=0)
++    es = req.get("early_stop") if E.get("score_cmd_progress") else None
+     for sl in req["slices"]:
+         parts = {}; ks = []
++        if es and len(sl["parts"]) == 1:                          # early stop (w126): one golden, followed document by document
++            (pn, g), = sl["parts"].items(); g = rp(g); o = f"{SC}/{tag}-{sl['name']}-{pn}"
++            if not os.path.exists(o + ".json.rows"):
++                rc, pdocs, stopped = score_watch(E, mrad, g, o, es, log)
++                if stopped is not None:
++                    kd = [d for d in pdocs if d is not None]; S = sum(d[0] for d in kd); n = sum(d[1] for d in kd)
++                    parts[pn] = {"positions": n, "kld": S / n if n else None, "p99": None, "top1": None, "positions_all": None, "docs": pdocs}
++                    res["slices"][sl["name"]] = {"tag": tag, "slice": sl["name"], "bytes": nbytes, "positions": n, "kld": S / n if n else 0.0,
++                                                 "p99": None, "top1": None, "parts": parts, "stopped": stopped}
++                    continue
++                if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']}-{pn} rc {rc} ({log})"}
++                full, _ = doc_sums(g, o + ".json.rows")
++                if [d[0] for d in pdocs if d is not None] and any(d is not None and abs(d[0] - f[0]) > 1e-4 * max(1.0, abs(f[0])) for d, f in zip(pdocs, full)):
++                    with open(log, "a") as lf: lf.write("# WARN progress sums differ from the rows file's\n")
+         todo = [(pn, rp(g)) for pn, g in sl["parts"].items() if not os.path.exists(f"{SC}/{tag}-{sl['name']}-{pn}.json.rows")]
+         if E.get("goldcat") and len(todo) > 1:                   # one run for every part (one load); rows split back per part
+             from rxrun import goldcat
+diff --git a/pipeline/rxrun/hosts/box2.host.json b/pipeline/rxrun/hosts/box2.host.json
+index 587e117..92b010c 100644
+--- a/pipeline/rxrun/hosts/box2.host.json
++++ b/pipeline/rxrun/hosts/box2.host.json
+@@ -43,6 +43,11 @@
+    "bash",
+    "-c",
+    "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
++  ],
++  "score_cmd_progress": [
++   "bash",
++   "-c",
++   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part --kld-progress {progress} > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
+   ]
+  }
+ }
+\ No newline at end of file
+diff --git a/pipeline/rxrun/hosts/ds8.host.json b/pipeline/rxrun/hosts/ds8.host.json
+index 4e024c6..1f914f1 100644
+--- a/pipeline/rxrun/hosts/ds8.host.json
++++ b/pipeline/rxrun/hosts/ds8.host.json
+@@ -43,6 +43,11 @@
+    "bash",
+    "-c",
+    "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
++  ],
++  "score_cmd_progress": [
++   "bash",
++   "-c",
++   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part --kld-progress {progress} > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
+   ]
+  }
+ }
+\ No newline at end of file

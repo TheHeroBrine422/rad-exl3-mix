@@ -1,0 +1,56 @@
+boundsim: 446 two-part pairs; RX 1.93, x KL share w 0.76, tokens / doc x 1400 c 900; M 4000
+== per rule over 13 priors (normal s <= 0.04 x 4 + V2): gain/h vs F (median, min), good-move loss, slice fraction scored; real documents P(accept) at delta -1 / -0.5 / +0.5 / +1 %
+  F            gain/h x1.000 (min 1.000)  good-loss +0.000  frac 1.000  real P(acc) 0.739 0.753 0.0202 0.0154  NOT eligible
+  S3           gain/h x1.767 (min 1.300)  good-loss +0.106  frac 0.401  real P(acc) 0.673 0.686 0.0108 0.0080  eligible
+  S1           gain/h x1.811 (min 1.365)  good-loss +0.106  frac 0.401  real P(acc) 0.673 0.686 0.0108 0.0080  eligible
+  B p0.5 w5    gain/h x1.713 (min 1.279)  good-loss +0.020  frac 0.500  real P(acc) 0.719 0.734 0.0131 0.0096  eligible
+  B p0.5 w10   gain/h x1.665 (min 1.262)  good-loss +0.008  frac 0.527  real P(acc) 0.729 0.743 0.0151 0.0110  eligible
+  B p0.5 w20   gain/h x1.580 (min 1.236)  good-loss +0.003  frac 0.568  real P(acc) 0.734 0.749 0.0164 0.0124  NOT eligible
+  B p1 w5      gain/h x1.785 (min 1.337)  good-loss +0.018  frac 0.472  real P(acc) 0.714 0.729 0.0122 0.0088  eligible
+  B p1 w10     gain/h x1.739 (min 1.322)  good-loss +0.009  frac 0.495  real P(acc) 0.723 0.737 0.0138 0.0098  eligible
+  B p1 w20     gain/h x1.651 (min 1.298)  good-loss +0.005  frac 0.533  real P(acc) 0.728 0.743 0.0149 0.0110  eligible
+  B p2 w5      gain/h x1.867 (min 1.399)  good-loss +0.025  frac 0.437  real P(acc) 0.704 0.718 0.0104 0.0074  eligible
+  B p2 w10     gain/h x1.826 (min 1.386)  good-loss +0.018  frac 0.456  real P(acc) 0.710 0.725 0.0117 0.0082  eligible
+  B p2 w20     gain/h x1.730 (min 1.362)  good-loss +0.014  frac 0.493  real P(acc) 0.715 0.729 0.0126 0.0090  eligible
+== tied (within 2% of the best guarded median): ['B p2 w5']
+== PICK: B p2 w5
+== per prior (gain/h vs F) for F / S3 / S1 / pick
+  N(0.5%,1%)   s 0.01       S3           x1.943  wrong acc 0.0024 (F 0.0038)  good-loss +0.039  P(rej|good) 0.227 (F 0.137)  cost 101 s (F 203)
+  N(0.5%,1%)   s 0.01       S1           x2.008  wrong acc 0.0024 (F 0.0038)  good-loss +0.039  P(rej|good) 0.227 (F 0.137)  cost 97 s (F 203)
+  N(0.5%,1%)   s 0.01       B p2 w5      x2.057  wrong acc 0.0024 (F 0.0038)  good-loss +0.011  P(rej|good) 0.175 (F 0.137)  cost 98 s (F 203)
+  N(0.5%,1%)   s 0.02       S3           x1.776  wrong acc 0.0064 (F 0.0101)  good-loss +0.106  P(rej|good) 0.369 (F 0.231)  cost 102 s (F 203)
+  N(0.5%,1%)   s 0.02       S1           x1.838  wrong acc 0.0064 (F 0.0101)  good-loss +0.106  P(rej|good) 0.369 (F 0.231)  cost 99 s (F 203)
+  N(0.5%,1%)   s 0.02       B p2 w5      x1.867  wrong acc 0.0066 (F 0.0101)  good-loss +0.034  P(rej|good) 0.294 (F 0.231)  cost 105 s (F 203)
+  N(0.5%,1%)   s 0.04       S3           x1.503  wrong acc 0.0148 (F 0.0233)  good-loss +0.204  P(rej|good) 0.538 (F 0.374)  cost 108 s (F 203)
+  N(0.5%,1%)   s 0.04       S1           x1.561  wrong acc 0.0148 (F 0.0233)  good-loss +0.204  P(rej|good) 0.538 (F 0.374)  cost 104 s (F 203)
+  N(0.5%,1%)   s 0.04       B p2 w5      x1.640  wrong acc 0.0154 (F 0.0233)  good-loss +0.078  P(rej|good) 0.461 (F 0.374)  cost 114 s (F 203)
+  N(0%,1%)     s 0.01       S3           x1.508  wrong acc 0.0026 (F 0.0041)  good-loss +0.027  P(rej|good) 0.140 (F 0.067)  cost 131 s (F 203)
+  N(0%,1%)     s 0.01       S1           x1.586  wrong acc 0.0026 (F 0.0041)  good-loss +0.027  P(rej|good) 0.140 (F 0.067)  cost 125 s (F 203)
+  N(0%,1%)     s 0.01       B p2 w5      x1.574  wrong acc 0.0026 (F 0.0041)  good-loss +0.007  P(rej|good) 0.095 (F 0.067)  cost 128 s (F 203)
+  N(0%,1%)     s 0.02       S3           x1.440  wrong acc 0.0067 (F 0.0106)  good-loss +0.084  P(rej|good) 0.274 (F 0.148)  cost 129 s (F 203)
+  N(0%,1%)     s 0.02       S1           x1.513  wrong acc 0.0067 (F 0.0106)  good-loss +0.084  P(rej|good) 0.274 (F 0.148)  cost 123 s (F 203)
+  N(0%,1%)     s 0.02       B p2 w5      x1.496  wrong acc 0.0069 (F 0.0106)  good-loss +0.025  P(rej|good) 0.200 (F 0.148)  cost 133 s (F 203)
+  N(0%,1%)     s 0.04       S3           x1.300  wrong acc 0.0148 (F 0.0233)  good-loss +0.182  P(rej|good) 0.455 (F 0.287)  cost 128 s (F 203)
+  N(0%,1%)     s 0.04       S1           x1.365  wrong acc 0.0148 (F 0.0233)  good-loss +0.182  P(rej|good) 0.455 (F 0.287)  cost 122 s (F 203)
+  N(0%,1%)     s 0.04       B p2 w5      x1.399  wrong acc 0.0155 (F 0.0233)  good-loss +0.067  P(rej|good) 0.368 (F 0.287)  cost 136 s (F 203)
+  N(0.5%,0.5%) s 0.01       S3           x2.212  wrong acc 0.0047 (F 0.0074)  good-loss +0.128  P(rej|good) 0.387 (F 0.234)  cost 80 s (F 203)
+  N(0.5%,0.5%) s 0.01       S1           x2.246  wrong acc 0.0047 (F 0.0074)  good-loss +0.128  P(rej|good) 0.387 (F 0.234)  cost 79 s (F 203)
+  N(0.5%,0.5%) s 0.01       B p2 w5      x2.397  wrong acc 0.0048 (F 0.0074)  good-loss +0.042  P(rej|good) 0.305 (F 0.234)  cost 81 s (F 203)
+  N(0.5%,0.5%) s 0.02       S3           x1.767  wrong acc 0.0116 (F 0.0183)  good-loss +0.219  P(rej|good) 0.564 (F 0.396)  cost 90 s (F 203)
+  N(0.5%,0.5%) s 0.02       S1           x1.811  wrong acc 0.0116 (F 0.0183)  good-loss +0.219  P(rej|good) 0.564 (F 0.396)  cost 88 s (F 203)
+  N(0.5%,0.5%) s 0.02       B p2 w5      x1.969  wrong acc 0.0120 (F 0.0183)  good-loss +0.082  P(rej|good) 0.489 (F 0.396)  cost 95 s (F 203)
+  N(0.5%,0.5%) s 0.04       S3           x1.475  wrong acc 0.0271 (F 0.0428)  good-loss +0.249  P(rej|good) 0.699 (F 0.551)  cost 104 s (F 203)
+  N(0.5%,0.5%) s 0.04       S1           x1.528  wrong acc 0.0271 (F 0.0428)  good-loss +0.249  P(rej|good) 0.699 (F 0.551)  cost 100 s (F 203)
+  N(0.5%,0.5%) s 0.04       B p2 w5      x1.839  wrong acc 0.0281 (F 0.0428)  good-loss +0.008  P(rej|good) 0.648 (F 0.551)  cost 110 s (F 203)
+  N(1%,2%)     s 0.01       S3           x1.999  wrong acc 0.0006 (F 0.0010)  good-loss +0.012  P(rej|good) 0.136 (F 0.085)  cost 101 s (F 203)
+  N(1%,2%)     s 0.01       S1           x2.066  wrong acc 0.0006 (F 0.0010)  good-loss +0.012  P(rej|good) 0.136 (F 0.085)  cost 97 s (F 203)
+  N(1%,2%)     s 0.01       B p2 w5      x2.177  wrong acc 0.0006 (F 0.0010)  good-loss +0.003  P(rej|good) 0.107 (F 0.085)  cost 93 s (F 203)
+  N(1%,2%)     s 0.02       S3           x1.943  wrong acc 0.0024 (F 0.0038)  good-loss +0.039  P(rej|good) 0.227 (F 0.137)  cost 101 s (F 203)
+  N(1%,2%)     s 0.02       S1           x2.008  wrong acc 0.0024 (F 0.0038)  good-loss +0.039  P(rej|good) 0.227 (F 0.137)  cost 97 s (F 203)
+  N(1%,2%)     s 0.02       B p2 w5      x2.057  wrong acc 0.0024 (F 0.0038)  good-loss +0.011  P(rej|good) 0.175 (F 0.137)  cost 98 s (F 203)
+  N(1%,2%)     s 0.04       S3           x1.776  wrong acc 0.0064 (F 0.0101)  good-loss +0.106  P(rej|good) 0.369 (F 0.231)  cost 102 s (F 203)
+  N(1%,2%)     s 0.04       S1           x1.838  wrong acc 0.0064 (F 0.0101)  good-loss +0.106  P(rej|good) 0.369 (F 0.231)  cost 99 s (F 203)
+  N(1%,2%)     s 0.04       B p2 w5      x1.867  wrong acc 0.0066 (F 0.0101)  good-loss +0.034  P(rej|good) 0.294 (F 0.231)  cost 105 s (F 203)
+  V2 all       s 0.01+2|d|  S3           x1.612  wrong acc 0.0006 (F 0.0010)  good-loss +0.089  P(rej|good) 0.129 (F 0.027)  cost 115 s (F 203)
+  V2 all       s 0.01+2|d|  S1           x1.681  wrong acc 0.0006 (F 0.0010)  good-loss +0.089  P(rej|good) 0.129 (F 0.027)  cost 110 s (F 203)
+  V2 all       s 0.01+2|d|  B p2 w5      x1.719  wrong acc 0.0006 (F 0.0010)  good-loss +0.016  P(rej|good) 0.050 (F 0.027)  cost 116 s (F 203)
