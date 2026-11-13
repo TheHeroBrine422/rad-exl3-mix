@@ -6145,3 +6145,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   a lane (xc8k-b3-c0: 1.0M positions, 3.8 GiB). Fresh xcorp / trace data for QAD scale-up, slices and H_out. Non-calib
   (no ledger rows). Corpora copied from gpubox `/data/night1105/corpora/chunks` (text, 10 MB).
 - **Runtime:** none.
+
+### 2026-11-13 1:42 PM CST · data · 40M-token xcorp QAD corpus + bf16 goldens (user: up to 30–50M for QAD / LoRA healing)
+- Corpus: colo `xcorp/kldcorpus.py` over xcorp v1 meta, 8k pieces (≤ 4 a document), seed 1113, skipping the night1105
+  b2 / b3 xc8k pieces (xc8k-b1's meta is lost: overlap with b1 possible — training data only, never a slice) →
+  40,000,846 tokens / 24,370 pieces, split into 40 chunks `xq-c00..39` (colo `/data/work/xq/`).
+- Goldens: `eval/night1105/gold4.sh` (= gold3.sh, `--kld-top 256`, 8k) — ds8 xq-c00..23 (3 lanes, after gold3's b3 chunks),
+  box2 xq-c24..39 (2 lanes); ~1,000–1,150 positions/s a lane; `/data/q27/gold4/gold/` on each (~2 KB a position ≈ 80 GB).
+  For QAD scale-up / LoRA healing (single epoch over lots of data). Non-calib, no ledger rows. **Runtime:** none.
