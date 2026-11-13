@@ -25,6 +25,13 @@ final pick and published number. qad and verify are unchanged and stay strictly 
 | xcorp (`docs/CORPORA.md`) | fresh search slices (8k chunks); healing data. Not a quantizer-statistics source (H_in blend dropped at 27B, #101) and not a substitute for calib when screening on the 0.8B (#93); see "xcorp as a statistics source" |
 | own agent traces (private) | fresh agentic search slices (32k chunks, each = the session's system block + consecutive turns from a user-role message, so every chunk looks like a real agent request; all chunks of a session used; bootstrap by session); 2–3 whole long sessions as a real-use guard before release; our machines only |
 
+**Final picks (user 2026-11-13):** the top ~5 candidates per release band are scored on **ver4 + a fresh xcorp part**:
+the existing `golden-ver4` (91 verify docs, frozen) as the calib part, plus a large never-used xcorp draw (several
+hundred docs, 8k cap). The rest of verify stays unspent for later releases (V3.1 QAD checks, V4). Pick = best pooled
+(paired, per-document bootstrap), and not significantly worse on the calib part (its own CI; the calib part is small,
+so it vetoes, it does not rank). Published numbers stay calib verify; the xcorp part is reported separately as the
+real-world number. Public is never read for this.
+
 ## Goldens
 - Made by stock radiance (1.17): `radiance --model <bf16> --kld-record DIR --kld-corpus FILE.jsonl --kld-top 512`, the
   same top-512 form as the challenge's golden (~4 KB a position), bf16 KV, TP2 for the bf16 27B.
