@@ -33,6 +33,16 @@ versions of anything: git history.
   Optional: mkmenu head bytes formula.
 - **Runtime:** D (the quantized head: −3.1 ms / decode step vs a bf16 head; prefill unchanged); none for the search's KLD
 
+### 2026-11-13 9:45 AM CST · #174 · Embedding options (interim): the search's l3 embedding costs **−44 % KLD at 6.0** (l5 swap, same trunk); donors l2–l7 + bf16 built on ds8 (w135)
+- **Status:** running · **Machine:** ds8 (coordinator, one slot; donors under conv.lock), colo (fits), VM (HF range
+  relay) · **Code:** `search/v3/emb174/` · **Brief:** `rad-local/workers/instr3/w135.md` + lead note (trellis ladder)
+- **Result so far** (calibration swaps on s171b, whole slice, f16 as the incumbents; per-part log ratio vs the
+  incumbent ± paired SE): 2.0 + l4 c −0.0071 ± 0.0029 / x −0.0018 ± 0.0028; 2.0 + l5 −0.0083 / −0.0022; 3.5 + l4
+  c −0.041 ± 0.012 / x −0.014 ± 0.012; **6.0 + l5 c −0.61 ± 0.14 / x −0.56 ± 0.07** (KLD 0.02965 → 0.01687). The l3
+  embedding (V2 3.00's, the menu's only option) is most of the 6.0 error; every size ≥ ~4.5 is handicapped until the
+  embedding menu is loaded. Remaining: 3.5 + l6, 6.0 + bf16, 1.5 + l2, 6.0 + l7.
+
+
 ### 2026-11-13 9:50 AM CST · #173 · Sensitivity model: D + T + S done — kfit3 mispredicts the search's own moves; M1 (per-(label, size) offsets) −69 % ratio error on T (P pending to 3:30 PM)
 - **Status:** running (P window open) · **Machine:** colo · **Code:** `search/refit/w133/` · **Data:** `data/refit/w133/`
   (ds-S0, dev/ and test/ fits + predictions, report-T.json, sol-S0.json, picks/)
@@ -5534,3 +5544,13 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 11. **Dead ends that restate a log entry** (embedding run5/run6, Best-of-N, upstream auto rule, GPTQ) are kept as separate entries, as the brief asks.
 12. **Undated process pitfalls** have no INDEX row and no date in the source; placed at 2026-10-30 (≤ V2 era). This is an assumption.
 13. **Not converted:** the tracker header, "Plan to the V3 stream (2026-11-01, user)", "Running / queued now", "Backlog" and "Candidate experiments". They are outside the two sources the brief names. The user decisions in the plan appear in the Log entries where the Log records them.
+
+### 2026-11-13 10:15 AM CST · #171 · V3 search PAUSED (user)
+- **Stopped at:** 520 decisions, 70 accepts, slice s171b (driver STOP 10:11 CST; coordinator drained under HOLD; guard
+  killed). State resumes from `local/workers/w131/run/drv/` (README `search/v3/run171/`: restart = guard + driver).
+- **Why:** the ver3 monitor (104 verify docs) showed no held-out gain after the first reads (consecutive reads worse 22
+  / better 23); first reads already 0.74–0.81 × V2 at 3.0–5.0 (from the knapsack solve). Pending changes (A8 activations
+  #172, embedding ladder #174, a new sensitivity model #173, maybe a codebook change #177, QAD) invalidate incumbents.
+- **Next:** w132 checks initial pick vs current incumbent on a fresh A8 slice (did the search help?); picks come from a
+  knapsack re-solve on the best model; a short search polish only at the end, once the format is fixed.
+- **Runtime:** none.
