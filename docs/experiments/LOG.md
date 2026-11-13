@@ -4,6 +4,59 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 2:10 AM CST · #171 · Search driver: per-part fit labels (+ x ratio scale, adopted) and equal-weight per-part accept / early stop; boundary pick unchanged; launch prepared (w131)
+- **Status:** done (code + checks); launch waits for w130's ds8 ROCm 10.1 pass · **Machine:** colo (fits, boundsim,
+  stand-ins), ds8 (slices, V2 downloads), VM · **Rules:** `search/v3/RULES-parts.md` (committed alone, 1ef9958, before
+  any run) · **Code:** `search/v3/{fit,seqrule,driver,boundsim,slices}.py`, `search/v3/earlystop-parts.patch`,
+  `search/v3/run171/`, `search/refit/w131/parts131.py` · **Data:** `data/searchv3/w131/`
+- **Why** (w129, #169): kfit3 predicts held-out calib swap ratios to ~3 % but xcorp ratios to ~14 % (compressed), and
+  xcorp is ~90 % of a two-part slice's pooled KL, so pooled rows and a pooled accept were xcorp-driven.
+- **fit.py:** each slice part is its own label (`S|x|full`, `S|c|pre<k>`; own offset, own anchor, own paired SE).
+  **Test A** (w129's rows, β 0, train fit129 U + G + the s129 anchors u-k2.5 / u-k4, predict the 8 held-out s129 group
+  swaps vs their base), held-out log-RMSE:
+
+  | arm | all | x | c | λ |
+  |---|---|---|---|---|
+  | A pooled s129 label | 0.133 | – | – | – |
+  | C parts as labels (before) | 0.105 | 0.146 | 0.028 | – |
+  | E parts + x scale (after) | **0.063** | **0.085** | **0.027** | 0.765 |
+
+  Rule (E x ≤ 0.9 × C x and E c ≤ C c + 0.005) → **x scale adopted** (`fit_opts.xscale: true` in the launch config):
+  x-part rows are predicted as exp(soff) · P^λ; moves keep predicting P (calib scale). Caveat: λ is set by one anchor
+  pair on s129 here; in the search every x label holds many rows. λ = 0.765 means xcorp log ratios ≈ ¾ of calib's.
+- **Accept / early-stop statistic** (seqrule `stat: "pmean"`, now the default): d = mean of the parts' log ratios,
+  se = √(Σ se_p²) / n_parts (each part's delta-method SE over its scored documents; no stop until every part has 3
+  documents), size-adjusted as before; accept iff d + off < 0 and every part's d_p + off < 0. With one part it equals
+  the old pooled statistic (checked). Decisions also log the pooled log r.
+- **Test B (boundary under pmean)**, boundsim `--stat pmean`, otherwise RULES-boundary.md: **pick unchanged, B p2 w5**
+  (gain/h ×1.939 vs F, min ×1.444; S1 ×1.923 tied within 2 %, B p2 w5 wins on good-move loss 1.3 % vs 7.5 %; real
+  documents P(accept) −1 % / −0.5 % / +0.5 % / +1 %: 0.732 / 0.745 / 0.0108 / 0.0090, S3 0.705 / 0.717 / 0.0106 /
+  0.0090). The pooled rerun reproduces w126's table exactly.
+- **Hosts:** ds8's staged `rxrun/earlystop.py` was still w126's (no `off`: `earlystop-sizeadj.patch` was never staged,
+  so the hosts would have stopped on raw KLD). `earlystop-parts.patch` makes it = seqrule.py (supersedes the sizeadj
+  patch); `test_hostd_es.py` 11 / 11 PASS on a tree with it (copy check included).
+- **Found and fixed on the way:** (1) w129's head-θ start (`fit-headinit.patch`, merged d3f589a) diverges on the
+  stand-in's synthetic menu: at HEAD the stand-in's fits reached log-RMSE 2–8 at the nfev cap (si6 and `--real`), so the
+  stand-in had not been rerun since the merge. fit.py now fits from both starts (head-priced and default) and keeps the
+  lower cost; the driver's fit path still reproduces fit129h2 exactly (max |Δx| 0). (2) `slices.py poolcheck` passed
+  vacuously: calib docs carry the dataset name in `source`, so every doc was skipped; now a doc is calib by part "c" or
+  the golden's calib corpus hash. Re-checked: fit129 (71 fit / 47 search), s129-c (23 / 18), s171a–d all fit + search.
+- **Stand-in** (colo, new code): si6 (w126's config) **7 / 7 PASS**: true KL −57.4 / −33.1 / −35.1 / −17.5 %, 0 of 62
+  accepts truly worse, fit vs truth corr 0.993 (RMSE 0.0008), 4 rotations, restart, monitor; 198 of 249 rejects stopped
+  early, 13.1 card-h vs 21.7 all-full (w126: 230 / 266, 11.5 h: the per-part SE is wider, the c part has fewer documents).
+  Realistic stand-in (`--real --layers 64`, sizes 2.5 / 4 / 6, 300 evals): **7 / 7 PASS**, true KL −36.8 / −25.8 /
+  −29.1 %, 0 of 50 accepts truly worse, fit corr 0.989, 152 of 183 rejects stopped early (10.1 vs 16.4 card-h).
+- **Launch prepared** (`search/v3/run171/`, state `local/workers/w131/run/`): slices s171a–d on ds8 (x 130 pieces of
+  xc8k-b2-c0 / c1 each, no overlap, 27b–f / hd122 / s129 x docs excluded; c 57 / 43 / 58 / 54 merged-pool docs, least
+  used first, ≥ 45k positions at cap 4,096; s171a all never used, d all used once), registered, ledger rows (role
+  select, 212 lines); menu129h + fit129h2 (prior_obs, `fit_done` line), init per size = fit129h2's knapsack optimum
+  (1.5–7.0; 1.0 / 1.25 are below menu129h's cheapest mix 1.352 bpw and are skipped; 7.0 is above its top 6.837: pinned
+  at the all-max mix), sizes 1.0–1.75 by 0.25 + 2.0–7.0 by 0.5, rule B p2 w5 pmean, rotate 25, audit 0.1, monitor
+  ver3-8k alert-only; V2 refs 3.00–5.00 on ds8 (3.50–5.00 downloaded from our HF repo) scored on ver3 by `ref171.py`
+  (a hostd eval cannot score a bare container); disk guard `guard171.py` (HOLD < 100 GB, deletes scored mixes, keeps
+  the coordinator up).
+- **Runtime:** none (search tooling).
+
 ### 2026-11-13 1:25 AM CST · #169 · Trunk × head anchors (lead note 1:00 AM): 6 mixes K3 / K4 × R16 u3 / u4 / u5; the head was **unpriced** in fit.py (x0 bug) — fixed by a head-θ start (patch), refit **fit129h2** = the model for the R16-head search (w129)
 - **Status:** done · **Machine:** ds8 (6 evals, ~6 min), colo · **Code:** `search/refit/w129/th129.py`,
   `fit-headinit.patch` (for the lead) · **Data:** `data/refit/w129/th129.json`, `fit129h2.*`, `specs129th.jsonl`

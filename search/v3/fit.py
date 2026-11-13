@@ -11,6 +11,10 @@ depth compounding P_l = P_{l-1} (1 + kappa_l X_l) + X_l, KLD = P x slice offset)
   - kfit3's priors (theta smoothness / shrinkage, kappa, per-group family deviations, slice offsets) + a weak prior on
     the family factors (log phi ~ N(0, phi_sd)), which a one-family menu cannot identify;
   - Laplace posterior (J^T J at the optimum) for Thompson draws and move uncertainty.
+Per-part labels (w131, #171): a two-part slice gives one row per part, labelled "S|x|full" / "S|c|pre<k>" (part_of);
+each part keeps its own offset and anchor (w129: xcorp ratios are compressed vs calib's, so a pooled label is
+xcorp-driven). opts "xscale" (default off; search/v3/RULES-parts.md test A): x-part rows are predicted as
+exp(soff) P^lambda (one fitted lambda, prior log lambda ~ N(0, 0.5)); predictions for moves stay on P (calib scale).
 The embedding is a level (kfit3's emb term); the head is a tensor in layer n_layers.
 
   python3 fit.py IN.json OUT.json      (IN: {"menu": MENU or path, "obs": [...], "opts": {...}, "x0": [...]}) -- the
@@ -33,6 +37,11 @@ import kfit3 as K3            # noqa: E402
 import menu as MN             # noqa: E402
 
 GL = K3.GL
+
+
+def part_of(label):
+    """the slice part of a row label "S|p|full" / "S|p|pre<k>" (None for a pooled / one-part label "S|full")"""
+    return next((f for f in label.split("|")[1:] if f != "full" and not f.startswith("pre")), None)
 
 
 class SData:
@@ -70,23 +79,44 @@ class SData:
 
 
 class SModel(K3.Model):
-    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", **kw):
+    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", xscale=False, **kw):
         p = np.where(D.hbar > 0, np.log(np.where(D.hbar > 0, D.hbar, 1)), 0.0)
         for g in range(len(GL)):                                        # centred per group (kfit3.prior_vector)
             m = (D.grp == g) & (D.hbar > 0)
             if m.any(): p[D.grp == g] = np.where(D.hbar[D.grp == g] > 0, p[D.grp == g] - p[m].mean(), 0.0)
         super().__init__(D, beta=beta, prior_p=p, v2wt=1.0, **kw)
         self.tau, self.phi_sd = tau, phi_sd
+        self.XM = np.array([part_of(r["slice"]) == "x" for r in D.rows], bool)
+        self.xscale = bool(xscale) and bool(self.XM.any())
         # every family a row uses (kfit3 keeps only names starting "v3" as V3 families; ours all do)
 
-    def x0(self):
+    def layout(self):
+        L = super().layout()
+        if getattr(self, "xscale", False): L["lamx"] = slice(self.N, self.N + 1); self.N += 1
+        return L
+
+    def lam(self, x):
+        return math.exp(x[self.layout()["lamx"]][0]) if self.xscale else 1.0
+
+    def predict_rows(self, x, idx):
+        P = super().predict_rows(x, idx)
+        if not self.xscale: return P
+        idx = np.asarray(idx, int); so = np.exp(self.unpack(x)["soff"][self.SLI[idx]])
+        return np.where(self.XM[idx], so * (P / so) ** self.lam(x), P)
+
+    def head_init(self):
+        """w129's head start applies (a menu that prices heads, FIT_HEAD_S0 > 0)"""
+        M = self.D.M
+        return float(os.environ.get("FIT_HEAD_S0", 0.5)) > 0 and MN.HEAD in M.WI and len(M.T[M.WI[MN.HEAD]]["opts"]) > 1
+
+    def x0(self, head=True):
         L = self.layout(); x = np.zeros(self.N)
         k0 = float(np.median([r["kld"] for r in self.D.rows])) if self.D.rows else 0.1
         x[L["theta"]] = math.log(0.7 * k0 / max(self.D.eb.sum(), 1e-30)); x[L["c0"]] = math.log(0.1 * k0); x[L["q"]] = math.log(1.0)
         x[L["kap"]] = math.log(1.0)
         hs = float(os.environ.get("FIT_HEAD_S0", 0.5))                 # w129 (#169): the head's err is its plan's head-only KL
         M = self.D.M                                                    # (~1e-3), so at the trunk's theta its cost and gradient
-        if hs > 0 and MN.HEAD in M.WI and len(M.T[M.WI[MN.HEAD]]["opts"]) > 1:   # vanish and the head stays unpriced
+        if head and hs > 0 and MN.HEAD in M.WI and len(M.T[M.WI[MN.HEAD]]["opts"]) > 1:   # vanish and the head stays unpriced
             x[L["theta"].stop - 1] = math.log(hs)                       # (measured s_head 0.43); priced-head menus only
         if self.beta_mode == "fit": x[L["beta"]] = 1.0
         if self.sat: x[L["sat"]] = math.log(5.0)
@@ -105,14 +135,21 @@ class SModel(K3.Model):
         if self.v3fams:
             res.append(u["dev3"].ravel() / self.v3sd); res.append(x[L["phi3"]] / self.phi_sd)
         if self.NS > 1: res.append(x[L["soff"]] / 3.0)
+        if self.xscale: res.append(x[L["lamx"]] / 0.5)
         del sg
         return np.concatenate(res)
 
     def fit(self, idx=None, xi=None):
         idx = list(range(len(self.D.rows))) if idx is None else idx
         self.layout()                                                   # sets self.N (an x0 given before any layout() crashed)
-        r = least_squares(lambda x: self.residuals(x, idx), self.x0() if xi is None or len(xi) != self.N else np.asarray(xi),
-                          method="trf", x_scale="jac", max_nfev=int(os.environ.get("FIT_NFEV", 300)))
+        f = lambda x0: least_squares(lambda x: self.residuals(x, idx), x0, method="trf", x_scale="jac",
+                                     max_nfev=int(os.environ.get("FIT_NFEV", 300)))
+        if xi is not None and len(xi) == self.N: r = f(np.asarray(xi))
+        else:                                                           # w131: the head start (w129) is right for the real menu
+            r = f(self.x0())                                            # (head err = head-only KL) and diverges on others (the
+            if self.head_init():                                        # stand-in's synthetic heads): fit from both starts, keep
+                r2 = f(self.x0(head=False))                             # the lower cost
+                if r2.cost < r.cost: r = r2
         self.res = r
         return r.x
 
@@ -181,7 +218,7 @@ class SModel(K3.Model):
         u = self.unpack(x); tb = self.tables(x)
         return {"model": "kfit3/search-v3", "x": x.tolist(), "q": u["q"], "c0": u["c0"], "kappa": tb["kl"].tolist(),
                 "phi3": {k: math.exp(v) for k, v in u["phi3"].items()}, "slices": dict(zip(self.slices, u["soff"].tolist())),
-                "emb": dict(zip(self.levels, u["emb"].tolist())), "beta": u["beta"],
+                "emb": dict(zip(self.levels, u["emb"].tolist())), "beta": u["beta"], "lamx": self.lam(x),
                 "tensors": [{"w": w, "s": float(tb["s"][i]), "eb": float(self.D.eb[i])} for i, w in enumerate(self.D.W)]}
 
 
@@ -189,7 +226,8 @@ def build(M, obs, opts=None):
     opts = opts or {}
     D = SData(M, obs)
     return SModel(D, tau=opts.get("tau", 0.02), phi_sd=opts.get("phi_sd", 1.0), beta=str(opts.get("beta", "0")),
-                  theta_sd=opts.get("theta_sd", 4.0), v3_group_sd=opts.get("v3_group_sd", 0.3), smooth=opts.get("smooth", 0.5))
+                  theta_sd=opts.get("theta_sd", 4.0), v3_group_sd=opts.get("v3_group_sd", 0.3), smooth=opts.get("smooth", 0.5),
+                  xscale=bool(opts.get("xscale", False)))
 
 
 def fit_obs(M, obs, opts=None, x0=None, ndraw=0, seed=0):

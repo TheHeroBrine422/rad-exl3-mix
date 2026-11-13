@@ -22,6 +22,7 @@ submit anything). Design: TODO "Search driver", "Continuous early stop" (+ the u
 | `boundsim.py`, `RULES-boundary.md` | the early-stop boundary simulation (rule committed before data, c17045c) — result below |
 | `standin.py` | CPU stand-in end-to-end (synthetic truth, fake executor speaking the queue's file protocol) |
 | `hostd-earlystop.patch`, `test_hostd_es.py` | rxrun.hostd: `early_stop` evals scored with `--kld-progress`, followed, killed at the boundary (+ README, box2 / ds8 `score_cmd_progress`); offline check |
+| `RULES-parts.md`, `earlystop-parts.patch`, `run171/` | #171 (w131): per-part fit labels + x ratio scale (`fit_opts.xscale`), the equal-weight per-part statistic (seqrule `stat` "pmean", default) for accept and the hosts' early stop (the patch makes rxrun/earlystop.py = seqrule.py; supersedes `earlystop-sizeadj.patch`), the first real run's tools and launch (`run171/README.md`) |
 | `radiance-kld-progress.patch` | radiance `--kld-progress FILE` (branch `qc-exl3-v3-kldprog` = qc-exl3-v3 81bad51 + ca5491d) |
 
 ## Boundary simulation (RULES-boundary.md; `data/searchv3/boundsim/`)

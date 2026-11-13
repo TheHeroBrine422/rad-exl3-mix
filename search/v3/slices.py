@@ -83,6 +83,7 @@ def goldmix(out, parts, seed, select=None):
     return man
 
 
+CALIB_FNV = "f3fe4bf9488a5616"                   # the calib corpus's fnv1a64 (eval/pools/ledger_add.py)
 MERGED = ("fit", "search")                       # one pool since 2026-11-13 (user; eval-data.md)
 HEADX = ("w94-headx-search", "w94-headx-qad", "w119-headx-search", "w119-headx-fit", "w119-headx-verify")
 
@@ -204,8 +205,9 @@ def main(argv):
         pool = json.load(open(argv[1]))["pool"]; bad = 0
         for g in argv[2:]:
             m = json.load(open(g if g.endswith(".json") else f"{g}/kld.json")); c = {}
-            for d in m["docs"]:
-                if d.get("part", "c") != "c" or d.get("orig") is None or str(d.get("source", "calib")) not in ("calib", ""): continue
+            calib = m.get("corpus_fnv1a64") == CALIB_FNV                 # a calib golden (its docs' "source" is the dataset name)
+            for d in m["docs"]:                                          # w131: the old test (source == "calib") skipped every doc
+                if d.get("orig") is None or not (d.get("part") == "c" or ("part" not in d and calib)): continue
                 p = pool[int(d["orig"])]; c[p] = c.get(p, 0) + 1
             out = {p: k for p, k in c.items() if p not in MERGED}; bad += bool(out)
             print(f"{g}: calib docs by pool {c}" + (f"  OUTSIDE fit + search: {out}" if out else "  ok"))

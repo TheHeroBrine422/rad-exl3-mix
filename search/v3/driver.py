@@ -7,7 +7,8 @@ Loop (one pass a few seconds; never waits on one eval):
   1 ingest     new lines of the eval queue's results (rxrun.multi ROOT/results.jsonl + docs/<tag>-<slice>.json; a
                stopped run carries "stopped" and per-document sums for the scored documents only)
   2 decide     a candidate vs its size's CURRENT incumbent on the same slice, paired per document (seqrule.Paired):
-               stopped -> reject; whole slice -> accept iff the SIZE-ADJUSTED pooled log r < 0 and every part's < 0;
+               stopped -> reject; whole slice -> accept iff the SIZE-ADJUSTED log r < 0 and every part's < 0, log r =
+               the equal-weight mean of the parts' log ratios (w131, #171; seqrule "pmean", the hosts' early stop too);
                an accept makes it the incumbent. Size-adjusted (w127, #167; TODO "Size-adjusted score in the search"):
                log KLD + b (bpw - reference bpw), b = the size's current fit's local slope -d log KLD / d bpw (the
                model's knapsack optimum at size -/+ b_delta; CONF b_default before the first fit; updated each refit;
@@ -15,8 +16,9 @@ Loop (one pass a few seconds; never waits on one eval):
                "size_adjust": false = raw KLD (the A/B's control arm). A result on a slice that is no longer active only feeds the fit ("stale"). Audit runs (a
                random audit_frac of the candidates are scored without early stop) are decided by the rule applied after
                the fact -- the same decision as a stopped run -- and log the early-stop bias (prefix vs whole-slice ratio)
-  3 fit rows   every result is a row (seqrule labels: "S|full", or "S|pre<k>" with k cut down to a 5% grid), plus
-               the generating incumbent's KLD on the same documents as the label's anchor; SE = paired delta-method SE
+  3 fit rows   every result is a row per slice part (w131, #171: labels "S|x|full" / "S|c|pre<k>", k = documents scored
+               cut down to a 5% grid; one-part slices "S|full" / "S|pre<k>"), plus the generating incumbent's KLD on the
+               same documents as the label's anchor; SE = the part's paired delta-method SE
   4 refit      every refit_every results (and when the first rows exist): fit.py on all rows + CONF prior_obs, run
                through CONF fit_cmd (colo) as a background process; the driver keeps generating from the last model
   5 rotate     when a size has decided rotate_after candidates on the active slice: the registry's next ready slice
@@ -305,7 +307,7 @@ class Driver:
         s = self.sub[t]
         self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1
         self.kind_stats[s["kind"]][1] += 1; self.kind_stats[s["kind"]][0] += d == "accept"
-        self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(),
+        self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(),
                   "off": P.off, "se": P.se(), "parts": P.summary()["parts"]})
         if d == "accept":
             old = self.inc.get(size); self.inc[size] = t
@@ -330,18 +332,24 @@ class Driver:
         full = k == N
         kq = N if full else (k // g) * g
         if kq < 3: return
-        label = f"{r['slice']}|" + ("full" if full else f"pre{kq}")
-        kl = sum(docs[:kq]) / max(sum(pos[:kq]), 1)
+        parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * N
+        pset = sorted(set(parts)) if len(set(parts)) > 1 else [None]       # one row per part (w131, #171)
         ref = s.get("ref") if s.get("ref") in self.res else None
-        se = 0.0
-        if ref and ref != t:
-            P = self.paired(self.res[ref], r, self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * N, k=kq)
-            se = P.se() if P.se() != SR.INF else 0.5
-            rr = self.res[ref]
-            if all(x is not None for x in rr["docs"][:kq]):
-                self.obs[(ref, label)] = {"tag": f"{ref}@{label}", "assign": self.assign(ref), "label": label, "size": self.sub[ref]["size"],
-                                          "kld": sum(rr["docs"][:kq]) / max(sum(rr["pos"][:kq]), 1), "se": 0.0}
-        self.obs[(t, label)] = {"tag": f"{t}@{label}", "assign": a, "label": label, "kld": kl, "se": se, "size": s["size"]}
+        rr = self.res[ref] if ref and ref != t else None
+        for p in pset:
+            ix = [i for i in range(kq) if p is None or parts[i] == p]
+            if len(ix) < 3: continue
+            label = f"{r['slice']}|" + (f"{p}|" if p else "") + ("full" if full else f"pre{kq}")
+            kl = sum(docs[i] for i in ix) / max(sum(pos[i] for i in ix), 1)
+            se = 0.0
+            if rr is not None:
+                P = SR.Paired(len(ix), {"kind": "full"})
+                for i in ix: P.add(rr["docs"][i], docs[i])
+                se = P.se() if P.se() != SR.INF else 0.5
+                if all(rr["docs"][i] is not None for i in ix):
+                    self.obs[(ref, label)] = {"tag": f"{ref}@{label}", "assign": self.assign(ref), "label": label, "size": self.sub[ref]["size"],
+                                              "kld": sum(rr["docs"][i] for i in ix) / max(sum(rr["pos"][i] for i in ix), 1), "se": 0.0}
+            self.obs[(t, label)] = {"tag": f"{t}@{label}", "assign": a, "label": label, "kld": kl, "se": se, "size": s["size"]}
 
     @property
     def fit(self):
@@ -545,15 +553,27 @@ class Driver:
         return act
 
     # ------------------------------------------------------------------------------------------------ report
+    def kld_norm(self, t, r):
+        """a whole-slice KLD on the fit's common scale: per part (w131, #171) KLD_p / exp(offset of "S|p|full"), the x part
+        un-compressed by the fit's lamx, then the parts' geometric mean (the accept statistic's equal weights)"""
+        md = (self.fits[self.gname[self.sub[t]["size"]]] or {}).get("model", {}); soff = md.get("slices", {}); lam = md.get("lamx", 1.0) or 1.0
+        parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * len(r["docs"])
+        if len(set(parts)) < 2: return r["kld"] / math.exp(soff.get(f"{r['slice']}|full", 0.0))
+        lv = []
+        for p in sorted(set(parts)):
+            ix = [i for i, q in enumerate(parts) if q == p]
+            kp = sum(r["docs"][i] for i in ix) / max(sum(r["pos"][i] for i in ix), 1)
+            ln = math.log(kp) - soff.get(f"{r['slice']}|{p}|full", 0.0)
+            lv.append(ln / lam if p == "x" and f"{r['slice']}|{p}|full" in soff else ln)
+        return math.exp(sum(lv) / len(lv))
+
     def report(self):
         bands = release_bands(self.sizes)
         pts = []
         for t, r in self.res.items():
             if r.get("fail") or not r.get("docs") or any(x is None for x in r["docs"]) or self.sub[t]["kind"] in ("monitor", "monitor_ref"): continue
-            soff = (self.fits[self.gname[self.sub[t]["size"]]] or {}).get("model", {}).get("slices", {})
-            off = soff.get(f"{r['slice']}|full", 0.0)
             pts.append({"tag": t, "bpw": self.sub[t]["bpw"], "bpw_container": r["bpw"], "kld": r["kld"], "slice": r["slice"],
-                        "kld_norm": r["kld"] / math.exp(off), "size": self.sub[t]["size"]})
+                        "kld_norm": self.kld_norm(t, r), "size": self.sub[t]["size"]})
         fr = {}; topn = int(self.c.get("topn", 5))
         for T, (lo, hi) in bands.items():
             p = sorted([dict(x) for x in pts if lo <= (x["bpw"] or 0) <= hi], key=lambda x: (x["bpw"], x["kld_norm"]))

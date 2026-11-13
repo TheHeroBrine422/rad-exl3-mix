@@ -13,7 +13,10 @@ z = paired delta-method statistic over the scored documents (seqrule.py). Two ev
    run per stage reached) + the incumbent's full eval / 25.
  2 real documents: 27d-f pairs scaled to delta (protocol.py section 4), drawn with replacement at their own sizes, a
    fresh interleaved order per draw: P(accept) and the fraction scored per rule.
-Outputs: OUTDIR/{normal.json, real.json, pick.json}; tables on stdout."""
+Outputs: OUTDIR/{normal.json, real.json, pick.json}; tables on stdout.
+--stat pmean (w131, #171; RULES-parts.md test B): the statistic is the mean of the two parts' log ratios, SE =
+1/2 sqrt(SE_x^2 + SE_c^2) from each part's scored documents, no stop before each part has 3 documents (seqrule "pmean");
+real-document pairs are filtered and scaled on that mean. Default "pooled" = the w126 run."""
 import json, math, os, sys
 
 import numpy as np
@@ -26,6 +29,7 @@ import protocol as PR         # noqa: E402
 import slicese as SS          # noqa: E402
 
 KILL_S = 2.0
+STAT = "pooled"
 DPS = 25                      # decisions per slice (rotation)
 RULES = [("F", {"kind": "full"}), ("S3", {"kind": "stages", "at": [0.125, 0.5], "z": [0.0, 0.5], "runs": True}),
          ("S1", {"kind": "stages", "at": [0.125, 0.5], "z": [0.0, 0.5]})]
@@ -71,11 +75,12 @@ class Normal:
         vx = (np.cumsum(ex * ex, 1) - kx * self.Ex ** 2) / np.maximum(kx - 1, 1)
         vc = (np.cumsum(ec * ec, 1) - kc * self.Ec ** 2) / np.maximum(kc - 1, 1)
         self.Vx, self.Vc = vx / kx, vc / kc
-        self.valid = (self.kx >= 2) & (self.kc >= 2)
+        self.valid = (self.kx >= 3) & (self.kc >= 3) if STAT == "pmean" else (self.kx >= 2) & (self.kc >= 2)
 
     def paths(self, d, X, C, w):
         sx, sc = X * math.sqrt(self.Nx), C * math.sqrt(self.Nc)
         mx = d + sx * self.Ex; mc = d + sc * self.Ec
+        if STAT == "pmean": w = 0.5
         p = w * mx + (1 - w) * mc
         se = np.sqrt(w * w * sx * sx * self.Vx + (1 - w) ** 2 * sc * sc * self.Vc)
         z = np.where(self.valid[None, :], p / np.maximum(se, 1e-15), 0.0)
@@ -121,7 +126,7 @@ def normal_eval(T, SE, w, tok_x, tok_c, priors, M):
 def real_eval(P, nd=400, targets=(-0.01, -0.005, 0.005, 0.01)):
     rng = np.random.default_rng(7); out = []
     for (g, a, b), rec in P.items():
-        lr = PR.pooled(rec)[0]
+        lr = PR.pooled(rec)[0] if STAT == "pooled" else pmean_lr(rec)
         if not 0.01 <= abs(lr) <= 0.15: continue
         Nx, Nc = len(rec["x"][0]), len(rec["c"][0]); N = Nx + Nc
         isx = np.array([o == "x" for o in SR.interleave(Nx, Nc)])
@@ -129,7 +134,8 @@ def real_eval(P, nd=400, targets=(-0.01, -0.005, 0.005, 0.01)):
             k = tg / lr
             R = {p: (A, np.where(A > 0, A * (B / np.where(A > 0, A, 1)) ** k, B)) for p, (A, B, _, _) in rec.items()}
             (Ax, Bx), (Ac, Bc) = R["x"], R["c"]
-            true = math.log((Bx.sum() + Bc.sum()) / (Ax.sum() + Ac.sum()))
+            true = math.log((Bx.sum() + Bc.sum()) / (Ax.sum() + Ac.sum())) if STAT == "pooled" else \
+                0.5 * (math.log(Bx.sum() / Ax.sum()) + math.log(Bc.sum() / Ac.sum()))
             ix = rng.integers(0, Nx, (nd, Nx)); ic = rng.integers(0, Nc, (nd, Nc))
             A = np.empty((nd, N)); B = np.empty((nd, N))
             A[:, isx] = Ax[ix]; B[:, isx] = Bx[ix]; A[:, ~isx] = Ac[ic]; B[:, ~isx] = Bc[ic]
@@ -141,12 +147,34 @@ def real_eval(P, nd=400, targets=(-0.01, -0.005, 0.005, 0.01)):
             se = np.sqrt(np.maximum(su2, 0) / np.maximum(kk - 1, 1)) / np.sqrt(kk)
             dd = np.log(SB / SA)
             z = np.where(kk >= 3, dd / np.maximum(se, 1e-15), 0.0)
+            if STAT == "pmean": dd, z = pmean_paths(A, B, isx)
             fin = (dd[:, -1] < 0) & (Bx[ix].sum(1) < Ax[ix].sum(1)) & (Bc[ic].sum(1) < Ac[ic].sum(1))
             for rn, rule in RULES:
                 acc, docs, stop = apply(rule, z, fin)
                 out.append({"golden": g, "a": a, "b": b, "target": tg, "true": true, "rule": rn, "p_accept": float(acc.mean()),
                             "frac": float((docs / N).mean())})
     return out
+
+
+def pmean_lr(rec):
+    return 0.5 * sum(math.log(rec[p][1].sum() / rec[p][0].sum()) for p in ("x", "c"))
+
+
+def pmean_paths(A, B, isx):
+    """seqrule "pmean" over (M, N) document paths in the interleaved order -> (d, z)"""
+    ds, vs, ks = [], [], []
+    for m in (isx, ~isx):
+        a, b = A * m[None, :], B * m[None, :]
+        k = np.cumsum(m)[None, :].astype(float); kk = np.maximum(k, 1)
+        SA, SB = np.cumsum(a, 1), np.cumsum(b, 1)
+        SAA, SBB, SAB = np.cumsum(a * a, 1), np.cumsum(b * b, 1), np.cumsum(a * b, 1)
+        SA1, SB1 = np.where(SA > 0, SA, 1), np.where(SB > 0, SB, 1)
+        mA, mB = SA1 / kk, SB1 / kk
+        su2 = SBB / mB ** 2 - 2 * SAB / (mA * mB) + SAA / mA ** 2
+        vs.append(np.maximum(su2, 0) / np.maximum(kk - 1, 1) / kk); ds.append(np.log(SB1 / SA1)); ks.append(k)
+    d = 0.5 * (ds[0] + ds[1]); se = 0.5 * np.sqrt(vs[0] + vs[1])
+    z = np.where((ks[0] >= 3) & (ks[1] >= 3), d / np.maximum(se, 1e-15), 0.0)
+    return d, z
 
 
 def pick(NR, RR):
@@ -177,7 +205,10 @@ def pick(NR, RR):
 
 
 def main():
-    npz, timing, v2, od = sys.argv[1:5]; M = int(sys.argv[5]) if len(sys.argv) > 5 else 4000
+    global STAT
+    av = sys.argv[1:]
+    if "--stat" in av: i = av.index("--stat"); STAT = av[i + 1]; del av[i:i + 2]
+    npz, timing, v2, od = av[:4]; M = int(av[4]) if len(av) > 4 else 4000
     os.makedirs(od, exist_ok=True)
     G = SS.load(npz); T = json.load(open(timing)); T["runs_per_eval"] = 1
     P = PR.two_part(G)
@@ -191,7 +222,7 @@ def main():
     RX = float(np.median(rx)); w = float(np.median(W)); tok_x = min(float(np.median(tx)), T.get("x_tok_cap", 1e9))
     tok_c = T["calib_tok"] / T["calib_docs"]
     SE = {"x": RX / math.sqrt(T["x_docs"]), "c": 1 / math.sqrt(T["calib_docs"])}
-    print(f"boundsim: {len(P)} two-part pairs; RX {RX:.2f}, x KL share w {w:.2f}, tokens / doc x {tok_x:.0f} c {tok_c:.0f}; M {M}")
+    print(f"boundsim (stat {STAT}): {len(P)} two-part pairs; RX {RX:.2f}, x KL share w {w:.2f}, tokens / doc x {tok_x:.0f} c {tok_c:.0f}; M {M}")
     priors = [(0.005, 0.01), (0.0, 0.01), (0.005, 0.005), (0.01, 0.02)]
     for name, smp in PR.v2_moves(v2).items():
         if name == "V2 all": priors.append(("emp", name, smp, (0.01, 2.0)))

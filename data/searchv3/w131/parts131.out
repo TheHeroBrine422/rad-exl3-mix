@@ -1,0 +1,4 @@
+[A] parts False xscale False: held-out log-RMSE all 0.1329 x None c None lambda 1.000 (train 0.0360)
+[C] parts True xscale False: held-out log-RMSE all 0.1050 x 0.14573835242323882 c 0.028302138848695115 lambda 1.000 (train 0.0372)
+[E] parts True xscale True: held-out log-RMSE all 0.0630 x 0.08498341065008763 c 0.026576389608461502 lambda 0.765 (train 0.0163)
+verdict: adopt xscale = True
