@@ -6323,3 +6323,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   menus drop every embedding option; M1's ≥ 4.5 gains that came from the l5 embedding are void (bf16 is better still).
   To check: stock `embed_lookup` already serves a bf16 table from pinned host (w144) — then no new code.
 - **Runtime:** decode/prefill ~none (host row gather ~10 KB a token); VRAM −0.4…−0.6 GB vs a quantized embedding.
+
+### 2026-11-13 5:45 PM CST · #177 context · e2e decode at 2.5: IQR-V4 iq2r 20.0 ms vs V3 2.5 28.7 ms (lead)
+- box2 card 3, rad10-perf with w137's after-fix kernels (home g3), bf16 KV, w138's bench.py, rounds interleaved ×2
+  (`v3/bench/iqrcmp/run.sh`, results box2 `/data/q27/iqrcmp/res/`). IQR iq2r (10.89 GB, drafter off) ctx 0 20.0 /
+  8k 21.1–21.3 ms a step; V3 K2.5 + R16 K2.5 head (10.63 GB) 28.7–29.4 / 30.0–30.4 → **×1.43**. At ~4 bpw ×1.19
+  (30.5 vs 25.7). V3 is compute-bound at low K (K4.125 → K2.5: −40 % bytes, −6 % time); IQR scales with bytes (floor
+  ~18 ms). IQR's code is also a trellis (mad L16), so the gap is the decode kernel's form. With its drafter on: 6.43 ms a
+  token (5.33 tokens / 33.2 ms step). Fed to w139's checkpoint (codebook + kernel pair for low K). **Runtime:** D (measurement).
