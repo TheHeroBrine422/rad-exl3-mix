@@ -17,7 +17,9 @@ result.json, acked}.
 level unit: rxrun.run on the host's ladder conf (HOSTCONF "run_conf") restricted to the unit's levels, swj_batch = the
   unit's level count (one swj pass for all of them). Restartable as rxrun.run is. Result: per level DONE, jobs, wall.
 eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weight: LEVEL, ...} | "trunk": LEVEL |
-  "parity": {"even": LEVEL, "odd": LEVEL}, "donors": {weight: PATH, ...} (head / embedding / V2 donors)}, "slices":
+  "parity": {"even": LEVEL, "odd": LEVEL}, "donors": {weight: PATH, ...} (head / embedding / V2 donors), "act": MODE |
+  {weight: MODE} (optional, w132 #172: radmix "act <weight> <mode>" lines, MODE f16 / a8t / a8g<N>; a string applies to
+  every trunk weight; no "act" = the base's modes, f16 for the V2 base)}, "slices":
   [{"name": S, "parts": {"x": GOLDEN, "c": GOLDEN}}]}. Steps: every level's pack (HOSTCONF eval.pack_cmd on the level's
   final.recipe, conv.lock + ram.lock exclusive; packs kept in eval.packs and reused) -> the mix (eval.mix_cmd, radmix
   over the base container) -> each part scored (eval.score_cmd, the eval card's lock + ram.lock shared). Result: the
@@ -398,6 +400,11 @@ def run_eval(H, u, req):
                 os.replace(pk + ".part", pk)
     mf = f"{MX}/{tag}.mix"; mrad = f"{MX}/{tag}.rad"
     lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
+    act = mx.get("act") or {}                                     # activation modes (w132): metadata only, same bytes
+    if isinstance(act, str): act = {w: act for w in trunk}
+    for w, m in act.items():
+        if not (m in ("f16", "a8t") or (m.startswith("a8g") and m[3:].isdigit())): return {"rc": 1, "err": f"act {w} {m}: radmix sets f16 / a8t / a8g<N> only"}
+    lines += [f"act {w} {m}" for w, m in act.items()]
     open(mf, "w").write("\n".join(lines) + "\n")
     if not os.path.exists(mrad):
         with Lock(E.get("conv_lock"), True), RamGate(E, "mix", log):

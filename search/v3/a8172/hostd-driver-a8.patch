@@ -1,0 +1,150 @@
+diff -ru a/pipeline/rxrun/hostd.py b/pipeline/rxrun/hostd.py
+--- a/pipeline/rxrun/hostd.py	2026-11-13 14:37:12.304741728 +0000
++++ b/pipeline/rxrun/hostd.py	2026-11-13 14:37:25.303192666 +0000
+@@ -17,7 +17,9 @@
+ level unit: rxrun.run on the host's ladder conf (HOSTCONF "run_conf") restricted to the unit's levels, swj_batch = the
+   unit's level count (one swj pass for all of them). Restartable as rxrun.run is. Result: per level DONE, jobs, wall.
+ eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weight: LEVEL, ...} | "trunk": LEVEL |
+-  "parity": {"even": LEVEL, "odd": LEVEL}, "donors": {weight: PATH, ...} (head / embedding / V2 donors)}, "slices":
++  "parity": {"even": LEVEL, "odd": LEVEL}, "donors": {weight: PATH, ...} (head / embedding / V2 donors), "act": MODE |
++  {weight: MODE} (optional, w132 #172: radmix "act <weight> <mode>" lines, MODE f16 / a8t / a8g<N>; a string applies to
++  every trunk weight; no "act" = the base's modes, f16 for the V2 base)}, "slices":
+   [{"name": S, "parts": {"x": GOLDEN, "c": GOLDEN}}]}. Steps: every level's pack (HOSTCONF eval.pack_cmd on the level's
+   final.recipe, conv.lock + ram.lock exclusive; packs kept in eval.packs and reused) -> the mix (eval.mix_cmd, radmix
+   over the base container) -> each part scored (eval.score_cmd, the eval card's lock + ram.lock shared). Result: the
+@@ -398,6 +400,11 @@
+                 os.replace(pk + ".part", pk)
+     mf = f"{MX}/{tag}.mix"; mrad = f"{MX}/{tag}.rad"
+     lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
++    act = mx.get("act") or {}                                     # activation modes (w132): metadata only, same bytes
++    if isinstance(act, str): act = {w: act for w in trunk}
++    for w, m in act.items():
++        if not (m in ("f16", "a8t") or (m.startswith("a8g") and m[3:].isdigit())): return {"rc": 1, "err": f"act {w} {m}: radmix sets f16 / a8t / a8g<N> only"}
++    lines += [f"act {w} {m}" for w, m in act.items()]
+     open(mf, "w").write("\n".join(lines) + "\n")
+     if not os.path.exists(mrad):
+         with Lock(E.get("conv_lock"), True), RamGate(E, "mix", log):
+diff -ru a/search/v3/driver.py b/search/v3/driver.py
+--- a/search/v3/driver.py	2026-11-13 14:37:12.306711264 +0000
++++ b/search/v3/driver.py	2026-11-13 15:55:52.253717396 +0000
+@@ -37,6 +37,13 @@
+                whole-slice measurement, KLD normalised by the model's slice offset, its size-adjusted score
+                log KLD_norm + b_T (bpw - T), the non-dominated ones marked, "top": the best CONF topn (5) assignments by
+                score). driver.py CONF --freeze-b OUT writes each band's b for the final picks (finalpick.py; before ver4)
++Activation mode (w132, #172): CONF "act" (f16 | a8t | a8g<N>, default f16) = the compute mode of every trunk weight in
++the eval containers (hostd: radmix act lines; metadata only, the bytes are unchanged). The mode in force is a state
++event ("act") and changes only AT A SLICE ROTATION (or the first slice's activation), so every incumbent is rescored on
++the new slice in the new mode before any candidate is compared with it; results still in flight on the old slice are
++stale (fit rows only). Monitor reads are compared within one mode; at a change every incumbent is rescored on the
++monitor golden in the new mode (CONF "act_monitor_rescore", default true). Submits and monitor reads in a non-f16 mode
++carry "act" (absent = f16; convplot4 splits the series on it and marks the "act" event).
+ State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
+ Restart = the same command (state replayed; outstanding evals stay in the queue)."""
+ import argparse, collections, json, math, os, random, subprocess, sys, time
+@@ -88,6 +95,7 @@
+         self.fitprocs = {g["name"]: None for g in self.groups}; self.fit_at = {g["name"]: 0 for g in self.groups}
+         self.res_off = 0; self.bias = []; self.nogen = {}; self.fixed0 = self.M.fixed; self.bytes_off = None; self.bytes_src = None
+         self.mon = collections.defaultdict(list); self.stopped_sizes = set()
++        self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+         self.replay()
+ 
+     # ------------------------------------------------------------------------------------------------ state
+@@ -117,6 +125,7 @@
+             elif ev == "alert": self.alerts[e["size"]] = e["on"]
+             elif ev == "bytes_offset": self.bytes_off = e["off"]; self.bytes_src = e.get("src", "measured"); self.M.fixed = self.fixed0 + e["off"]
+             elif ev == "monitor": self.mon[e["size"]].append(e)
++            elif ev == "act": self.act = e["mode"]
+             elif ev == "size_stop": self.stopped_sizes.add(e["size"])
+             elif ev == "fit_done":
+                 gn = e.get("group", self.groups[0]["name"]); self.fit_at[gn] = e["n_results"]; last_fit = getattr(self, "_lastfit", {}); last_fit[gn] = e["out"]; self._lastfit = last_fit
+@@ -143,6 +152,7 @@
+         h = MV.ahash(a)
+         json.dump(a, open(f"{self.R}/assign/{tag}.json", "w"))
+         line = {"tag": tag, "mix": self.M.eval_mix(a, self.c["base"]), "slices": [slice_entry or self.slice_entry(slice_name)]}
++        if self.act != "f16": line["mix"]["act"] = self.act
+         bs = self.b_of(size) if kind not in ("monitor", "incumbent") else 0.0
+         bpw = self.M.bpw(a)
+         if early and ref_tag:
+@@ -151,7 +161,7 @@
+                                   "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
+         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
+         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
+-             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **(extra or {})}
++             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
+         self.rec(e); self.sub[tag] = e
+         if kind != "monitor": self.seen.add(h)
+         return tag
+@@ -162,8 +172,8 @@
+ 
+     def on_monitor(self, t, s, r):
+         """the held-out curve of a size (alert-only: monitor_alert)"""
+-        size = s["size"]; bpw = self.sub[t]["bpw"]
+-        prev = list(self.mon[size])
++        size = s["size"]; bpw = self.sub[t]["bpw"]; mode = s.get("act", "f16")
++        prev = [m for m in self.mon[size] if m.get("act", "f16") == mode]     # one mode's reads only (w132)
+         best = min(prev, key=lambda m: self.mscore(size, m["kld"], m["bpw"])) if prev else None
+         se = imp = None
+         if best is not None:
+@@ -171,7 +181,7 @@
+             for a, b in zip(self.res[best["tag"]]["docs"], r["docs"]): P.add(a, b)
+             se, imp = P.se(), -P.da()
+         e = {"ev": "monitor", "size": size, "tag": t, "of": s.get("of"), "kld": r["kld"], "bpw": bpw, "dec_n": self.dec[size],
+-             "b": self.b_of(size), "improve": imp, "se": se}
++             "b": self.b_of(size), "improve": imp, "se": se, **({"act": mode} if mode != "f16" else {})}
+         self.rec(e); self.mon[size].append(e)
+         self.log(f"monitor {size}: {r['kld']:.5f} at {bpw:.4f} bpw ({self.c['monitor']['name']})" +
+                  (f", vs best {best['kld']:.5f}: size-adjusted {imp:+.4f} (se {se:.4f})" if best else ""))
+@@ -183,7 +193,7 @@
+         mc = self.c.get("monitor") or {}; n = self.dec[size]
+         if n < int(mc.get("alert_min", 50)): return None
+         w0 = n - math.ceil(float(mc.get("alert_frac", 0.2)) * n)
+-        reads = [m for m in self.mon.get(size, []) if m["tag"] in self.res]
++        reads = [m for m in self.mon.get(size, []) if m["tag"] in self.res and m.get("act", "f16") == self.act]
+         before = [m for m in reads if m.get("dec_n", 0) <= w0]
+         if not before: return None
+         sc = lambda m: self.mscore(size, m["kld"], m["bpw"])
+@@ -542,16 +552,33 @@
+         act = self.reg.active()
+         if act is None:
+             act = self.reg.activate_next()
+-            if act: self.rec({"ev": "rotate", "to": act, "from": None}); self.log(f"slice {act} active")
++            if act: self.rec({"ev": "rotate", "to": act, "from": None}); self.log(f"slice {act} active"); self.set_act(act)
+             return act
+         if self.reg.due(act, int(self.c.get("rotate_after", 25))):
+             nxt = [n for n, s in self.reg.d["slices"].items() if s["status"] == "ready"]
+             if nxt:
+                 new = self.reg.activate_next(); self.rec({"ev": "rotate", "to": new, "from": act})
+-                self.log(f"ROTATE {act} -> {new}"); return new
++                self.log(f"ROTATE {act} -> {new}"); self.set_act(new); return new
+             if not getattr(self, "_warned", False): self.log(f"rotation due on {act} but no ready slice: build one (slices.py)"); self._warned = True
+         return act
+ 
++    def set_act(self, slice_name):
++        """at a rotation: CONF "act" takes effect (w132, #172); the incumbents' monitor reads are redone in the new mode"""
++        want = self.c.get("act") or "f16"
++        if want == self.act: return
++        old = self.act; self.act = want
++        self.rec({"ev": "act", "mode": want, "act": want, "from": old, "slice": slice_name})
++        self.log(f"ACT MODE {old} -> {want} from slice {slice_name}: incumbents rescored on it in {want}")
++        with open(f"{self.R}/events.jsonl", "a") as f:                  # convplot3 --events: a marker at the switch
++            f.write(json.dumps({"step": self.res_lines, "label": f"act {want}", "t": cst()}) + "\n")
++        mc = self.c.get("monitor")
++        if mc and self.c.get("act_monitor_rescore", True):
++            for size in self.sizes:
++                t = self.inc.get(size)
++                if t is None or size in self.stopped_sizes: continue
++                self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t, "act_rescore": True},
++                            slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
++
+     # ------------------------------------------------------------------------------------------------ report
+     def kld_norm(self, t, r):
+         """a whole-slice KLD on the fit's common scale: per part (w131, #171) KLD_p / exp(offset of "S|p|full"), the x part
+@@ -593,7 +620,7 @@
+         json.dump(fr, open(f"{self.R}/frontier.json.part", "w"), indent=0); os.replace(f"{self.R}/frontier.json.part", f"{self.R}/frontier.json")
+         nd = sum(self.dec.values()); acc = sum(v[0] for v in self.kind_stats.values())
+         stopped = sum(1 for r in self.res.values() if r.get("stopped"))
+-        line = (f"{cst()} | slice {self.reg.active()} | submitted {len(self.sub)}, results {len(self.res)} ({stopped} stopped early), "
++        line = (f"{cst()} | slice {self.reg.active()} ({self.act}) | submitted {len(self.sub)}, results {len(self.res)} ({stopped} stopped early), "
+                 f"outstanding {len(self.outstanding())} | decisions {nd}, accepts {acc} | kinds " +
+                 " ".join(f"{k} {v[0]}/{v[1]}" for k, v in sorted(self.kind_stats.items())) +
+                 " | b " + " ".join(f"{z:g}:{self.b_of(z):.2f}" for z in self.sizes) +

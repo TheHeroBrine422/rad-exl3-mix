@@ -1,0 +1,42 @@
+11-13 08:33:58 CST start pid 2659395
+11-13 08:34:26 CST mix v3s171-2.5-explore-00419 f16 bytes 10509639680
+11-13 08:34:44 CST mix v3s171-2.5-explore-00419 a8 bytes 10509639680
+11-13 08:34:44 CST score v3s171-2.5-explore-00419 a8 ver3-8k card 2
+11-13 08:38:47 CST score v3s171-2.5-explore-00419 a8 ver3-8k rc 0 I kld: 148808 / 156030 positions, 102 / 104 documents, 227 s
+11-13 08:38:47 CST score v3s171-2.5-explore-00419 a8 s171b card 2
+11-13 08:44:30 CST score v3s171-2.5-explore-00419 a8 s171b rc 0 I kld: 218601 / 223891 positions, 172 / 173 documents, 332 s
+11-13 08:44:45 CST mix v3s171-3.5-block-00483 f16 bytes 13712711680
+11-13 08:45:00 CST mix v3s171-3.5-block-00483 a8 bytes 13712711680
+11-13 08:45:00 CST score v3s171-3.5-block-00483 a8 ver3-8k card 1
+11-13 08:49:04 CST score v3s171-3.5-block-00483 a8 ver3-8k rc 0 I kld: 148808 / 156030 positions, 102 / 104 documents, 226 s
+11-13 08:49:04 CST score v3s171-3.5-block-00483 a8 s171b card 1
+11-13 08:54:51 CST score v3s171-3.5-block-00483 a8 s171b rc 0 I kld: 218601 / 223891 positions, 172 / 173 documents, 332 s
+11-13 08:55:34 CST mix v3s171-5-pair-00449 f16 bytes 18556968960
+11-13 08:55:34 CST score v3s171-5-pair-00449 f16 ver3-8k card 3
+11-13 09:00:16 CST score v3s171-5-pair-00449 f16 ver3-8k rc 0 I kld: 148808 / 156030 positions, 102 / 104 documents, 257 s
+11-13 09:00:35 CST mix v3s171-5-pair-00449 a8 bytes 18556968960
+11-13 09:00:35 CST score v3s171-5-pair-00449 a8 ver3-8k card 3
+11-13 09:04:47 CST score v3s171-5-pair-00449 a8 ver3-8k rc 0 I kld: 146760 / 156030 positions, 102 / 104 documents, 226 s
+11-13 09:04:47 CST score v3s171-5-pair-00449 a8 s171b card 3
+11-13 09:10:36 CST score v3s171-5-pair-00449 a8 s171b rc 0 I kld: 217934 / 223891 positions, 170 / 173 documents, 332 s
+11-13 09:10:58 CST mix v3s171-6-explore-00372 f16 bytes 21760040960
+11-13 09:11:44 CST mix v3s171-6-explore-00372 a8 bytes 21760040960
+11-13 09:11:44 CST score v3s171-6-explore-00372 a8 ver3-8k card 4
+11-13 09:16:02 CST score v3s171-6-explore-00372 a8 ver3-8k rc 0 I kld: 154807 / 156030 positions, 103 / 104 documents, 241 s
+11-13 09:16:02 CST score v3s171-6-explore-00372 a8 s171b card 2
+11-13 09:22:04 CST score v3s171-6-explore-00372 a8 s171b rc 0 I kld: 218601 / 223891 positions, 172 / 173 documents, 347 s
+11-13 09:22:04 CST done
+11-13 09:22:11 CST start pid 3030232 PREV=1
+11-13 09:22:33 CST mix v3s171-2.5-block-00413 a8 bytes 10509639680
+11-13 09:22:33 CST score v3s171-2.5-block-00413 a8 s171b card 3
+11-13 09:28:23 CST score v3s171-2.5-block-00413 a8 s171b rc 0 I kld: 217934 / 223891 positions, 170 / 173 documents, 332 s
+11-13 09:29:13 CST mix v3s171-3.5-pair-00396 a8 bytes 13712711680
+11-13 09:29:13 CST score v3s171-3.5-pair-00396 a8 s171b card 3
+11-13 09:35:05 CST score v3s171-3.5-pair-00396 a8 s171b rc 0 I kld: 217008 / 223891 positions, 169 / 173 documents, 332 s
+11-13 09:35:26 CST mix v3s171-5-pair-00409 a8 bytes 18556968960
+11-13 09:35:26 CST score v3s171-5-pair-00409 a8 s171b card 3
+11-13 09:41:25 CST score v3s171-5-pair-00409 a8 s171b rc 0 I kld: 215696 / 223891 positions, 167 / 173 documents, 332 s
+11-13 09:41:55 CST mix v3s171-6-inc-00358 a8 bytes 21760040960
+11-13 09:41:55 CST score v3s171-6-inc-00358 a8 s171b card 3
+11-13 09:47:53 CST score v3s171-6-inc-00358 a8 s171b rc 0 I kld: 217008 / 223891 positions, 169 / 173 documents, 332 s
+11-13 09:47:53 CST done PREV

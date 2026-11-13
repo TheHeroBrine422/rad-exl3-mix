@@ -1,0 +1,88 @@
+11-13 10:40:02 CST worker 0 start pid 3581529
+11-13 10:40:02 CST worker 5 start pid 3581534
+11-13 10:40:02 CST worker 4 start pid 3581533
+11-13 10:40:02 CST worker 7 start pid 3581536
+11-13 10:40:02 CST worker 3 start pid 3581532
+11-13 10:40:02 CST worker 2 start pid 3581531
+11-13 10:40:02 CST worker 6 start pid 3581535
+11-13 10:40:02 CST worker 1 start pid 3581530
+11-13 10:42:49 CST mix v3s171-1.5-init-00000 bytes 7250042880 acts 336
+11-13 10:43:05 CST mix v3s171-3.5-init-00005 bytes 13695836160 acts 336
+11-13 10:43:33 CST mix v3s171-3-init-00004 bytes 12094300160 acts 336
+11-13 10:43:58 CST mix v3s171-4-init-00006 bytes 15337185280 acts 336
+11-13 10:44:15 CST mix v3s171-2-init-00002 bytes 8851578880 acts 336
+11-13 10:44:36 CST mix v3s171-2.5-init-00003 bytes 10492764160 acts 336
+11-13 10:45:05 CST mix v3s171-4.5-init-00007 bytes 16938721280 acts 336
+11-13 10:45:22 CST mix v3s171-1.75-init-00001 bytes 8050728960 acts 336
+11-13 10:48:36 CST score v3s171-1.5-init-00000 s171c card 0 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 10:48:38 CST score v3s171-3.5-init-00005 s171c card 5 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 10:49:02 CST score v3s171-3-init-00004 s171c card 4 rc 0 I kld: 188 documents in 319 s, 0 preemption(s)
+11-13 10:49:31 CST score v3s171-4-init-00006 s171c card 6 rc 0 I kld: 188 documents in 324 s, 0 preemption(s)
+11-13 10:49:48 CST score v3s171-2-init-00002 s171c card 2 rc 0 I kld: 188 documents in 323 s, 0 preemption(s)
+11-13 10:50:05 CST score v3s171-2.5-init-00003 s171c card 3 rc 0 I kld: 188 documents in 321 s, 0 preemption(s)
+11-13 10:50:36 CST score v3s171-4.5-init-00007 s171c card 7 rc 0 I kld: 188 documents in 319 s, 0 preemption(s)
+11-13 10:51:25 CST score v3s171-1.75-init-00001 s171c card 1 rc 0 I kld: 188 documents in 319 s, 0 preemption(s)
+11-13 10:54:05 CST score v3s171-1.5-init-00000 s171d card 0 rc 0 I kld: 184 documents in 323 s, 0 preemption(s)
+11-13 10:54:10 CST score v3s171-3.5-init-00005 s171d card 5 rc 0 I kld: 184 documents in 325 s, 0 preemption(s)
+11-13 10:54:32 CST score v3s171-3-init-00004 s171d card 4 rc 0 I kld: 184 documents in 325 s, 0 preemption(s)
+11-13 10:54:36 CST mix v3s171-5-init-00008 bytes 18540257280 acts 336
+11-13 10:54:48 CST mix v3s171-1.75-pair-00495 bytes 8067604480 acts 336
+11-13 10:54:57 CST mix v3s171-1.5-explore-00487 bytes 7266754560 acts 336
+11-13 10:55:06 CST score v3s171-4-init-00006 s171d card 6 rc 0 I kld: 184 documents in 327 s, 0 preemption(s)
+11-13 10:55:19 CST mix v3s171-2-partial-00593 bytes 8908103680 acts 336
+11-13 10:55:21 CST score v3s171-2-init-00002 s171d card 2 rc 0 I kld: 184 documents in 329 s, 0 preemption(s)
+11-13 10:55:38 CST score v3s171-2.5-init-00003 s171d card 3 rc 0 I kld: 184 documents in 327 s, 0 preemption(s)
+11-13 10:55:51 CST mix v3s171-6-init-00010 bytes 21743329280 acts 336
+11-13 10:56:07 CST score v3s171-4.5-init-00007 s171d card 7 rc 0 I kld: 184 documents in 322 s, 0 preemption(s)
+11-13 10:56:36 CST mix v3s171-6.5-init-00011 bytes 23265239040 acts 336
+11-13 10:56:52 CST score v3s171-1.75-init-00001 s171d card 1 rc 0 I kld: 184 documents in 322 s, 0 preemption(s)
+11-13 10:56:55 CST mix v3s171-2.5-block-00626 bytes 10509639680 acts 336
+11-13 10:57:24 CST mix v3s171-5.5-init-00009 bytes 20141793280 acts 336
+11-13 11:00:27 CST score v3s171-1.5-explore-00487 s171c card 4 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 11:01:37 CST score v3s171-6-init-00010 s171c card 2 rc 0 I kld: 188 documents in 329 s, 0 preemption(s)
+11-13 11:01:46 CST score v3s171-2-partial-00593 s171c card 6 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 11:02:06 CST score v3s171-5-init-00008 s171c card 0 rc 0 I kld: 188 documents in 322 s, 0 preemption(s)
+11-13 11:02:20 CST score v3s171-2.5-block-00626 s171c card 7 rc 0 I kld: 188 documents in 314 s, 0 preemption(s)
+11-13 11:03:07 CST score v3s171-5.5-init-00009 s171c card 1 rc 0 I kld: 188 documents in 325 s, 0 preemption(s)
+11-13 11:05:30 CST score v3s171-1.75-pair-00495 s171c card 5 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 11:05:36 CST score v3s171-6.5-init-00011 s171c card 3 rc 0 I kld: 188 documents in 327 s, 0 preemption(s)
+11-13 11:05:53 CST score v3s171-1.5-explore-00487 s171d card 4 rc 0 I kld: 184 documents in 322 s, 0 preemption(s)
+11-13 11:06:35 CST mix v3s171-5-pair-00449 bytes 18556968960 acts 336
+11-13 11:07:26 CST score v3s171-6-init-00010 s171d card 2 rc 0 I kld: 184 documents in 341 s, 0 preemption(s)
+11-13 11:07:49 CST score v3s171-5-init-00008 s171d card 0 rc 0 I kld: 184 documents in 335 s, 0 preemption(s)
+11-13 11:07:51 CST mix v3s171-4-block-00420 bytes 15353896960 acts 336
+11-13 11:07:53 CST score v3s171-2.5-block-00626 s171d card 7 rc 0 I kld: 184 documents in 325 s, 0 preemption(s)
+11-13 11:08:09 CST mix v3s171-3-block-00500 bytes 12111175680 acts 336
+11-13 11:08:41 CST score v3s171-2-partial-00593 s171d card 6 rc 0 I kld: 184 documents in 332 s, 0 preemption(s)
+11-13 11:08:57 CST score v3s171-5.5-init-00009 s171d card 1 rc 0 I kld: 184 documents in 341 s, 0 preemption(s)
+11-13 11:09:00 CST mix v3s171-6.5-pair-00588 bytes 23281950720 acts 336
+11-13 11:09:26 CST mix v3s171-6-explore-00372 bytes 21760040960 acts 336
+11-13 11:09:50 CST mix v3s171-3.5-pair-00510 bytes 13712711680 acts 336
+11-13 11:11:11 CST score v3s171-1.75-pair-00495 s171d card 5 rc 0 I kld: 184 documents in 337 s, 0 preemption(s)
+11-13 11:11:29 CST score v3s171-6.5-init-00011 s171d card 3 rc 0 I kld: 184 documents in 344 s, 0 preemption(s)
+11-13 11:11:44 CST mix v3s171-5.5-thompson-00540 bytes 20079042560 acts 336
+11-13 11:12:04 CST mix v3s171-4.5-solve-00599 bytes 16955432960 acts 336
+11-13 11:13:48 CST score v3s171-3-block-00500 s171c card 0 rc 0 I kld: 188 documents in 324 s, 0 preemption(s)
+11-13 11:14:05 CST score v3s171-5-pair-00449 s171c card 4 rc 0 I kld: 188 documents in 331 s, 0 preemption(s)
+11-13 11:15:22 CST score v3s171-3.5-pair-00510 s171c card 1 rc 0 I kld: 188 documents in 321 s, 0 preemption(s)
+11-13 11:15:41 CST score v3s171-6-explore-00372 s171c card 6 rc 0 I kld: 188 documents in 327 s, 0 preemption(s)
+11-13 11:16:55 CST score v3s171-6.5-pair-00588 s171c card 7 rc 0 I kld: 188 documents in 323 s, 0 preemption(s)
+11-13 11:17:40 CST score v3s171-4.5-solve-00599 s171c card 3 rc 0 I kld: 188 documents in 320 s, 0 preemption(s)
+11-13 11:19:08 CST score v3s171-4-block-00420 s171c card 2 rc 0 I kld: 188 documents in 326 s, 0 preemption(s)
+11-13 11:19:24 CST score v3s171-3-block-00500 s171d card 0 rc 0 I kld: 184 documents in 325 s, 0 preemption(s)
+11-13 11:19:24 CST worker 0 done
+11-13 11:19:33 CST score v3s171-5.5-thompson-00540 s171c card 5 rc 0 I kld: 188 documents in 328 s, 0 preemption(s)
+11-13 11:19:43 CST score v3s171-5-pair-00449 s171d card 4 rc 0 I kld: 184 documents in 331 s, 0 preemption(s)
+11-13 11:19:43 CST worker 4 done
+11-13 11:20:56 CST score v3s171-3.5-pair-00510 s171d card 1 rc 0 I kld: 184 documents in 328 s, 0 preemption(s)
+11-13 11:20:56 CST worker 1 done
+11-13 11:22:35 CST score v3s171-6.5-pair-00588 s171d card 7 rc 0 I kld: 184 documents in 327 s, 0 preemption(s)
+11-13 11:22:35 CST worker 7 done
+11-13 11:22:41 CST score v3s171-6-explore-00372 s171d card 6 rc 0 I kld: 184 documents in 331 s, 0 preemption(s)
+11-13 11:22:41 CST worker 6 done
+11-13 11:23:17 CST score v3s171-4.5-solve-00599 s171d card 3 rc 0 I kld: 184 documents in 331 s, 0 preemption(s)
+11-13 11:23:17 CST worker 3 done
+11-13 11:24:44 CST score v3s171-4-block-00420 s171d card 2 rc 0 I kld: 184 documents in 330 s, 0 preemption(s)
+11-13 11:24:44 CST worker 2 done
+11-13 11:25:13 CST score v3s171-5.5-thompson-00540 s171d card 5 rc 0 I kld: 184 documents in 332 s, 0 preemption(s)
+11-13 11:25:13 CST worker 5 done

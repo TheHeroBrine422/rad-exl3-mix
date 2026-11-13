@@ -4,6 +4,42 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 11:30 AM CST · #172 · A8 in the search: the gap is size-dependent (×0.99–1.01 at ≤ 3.5, **×1.05–1.07 at 5.0 / 6.0**), bytes identical, evals ~10% faster; switch prepared, not applied (search paused); **search-value check: the search gained −5.6% [−7.0, −4.0] pooled vs its knapsack starts** (w132)
+- **Status:** done · **Machine:** ds8 (1 card 8:34–9:48 AM CST, then 8 cards 10:40–11:35 AM CST; card / conv / ram locks; ~5.5 card-h),
+  colo + VM (CPU tests) · **Code:** `search/v3/a8172/` (README, RESTART-a8.md, RULES-value.md **62d6d4a**, committed alone
+  before its runs), `hostd-driver-a8.patch` applied (`pipeline/rxrun/hostd.py`, `search/v3/driver.py`) · **Data:**
+  `data/searchv3/w132/` (gap132, value, docsums, run logs, test outputs) · **Brief:** `rad-local/workers/instr3/w132.md` + lead
+  notes 9:00 AM (switch approved) and 10:15 AM CST (search paused: no live switch, value check, keep the patch)
+- **Gap** (the 2.5 / 3.5 / 5.0 / 6.0 incumbents at 8:30 AM, remixed with and without `act <w> a8g128` on the 336 trunk
+  weights; the search's own f16 rows; scored positions; 95% doc-bootstrap CI). ver3-8k: 0.994 / 0.995 / **1.068
+  [1.025, 1.090]** / **1.048 [1.023, 1.072]**. s171b (pmean): 1.008 / 0.995 / **1.045 [1.015, 1.082]** / **1.051 [1.032, 1.076]**.
+  A8 has an error floor that shows once the weight error is small. Control: the rebuilt f16 5.0 mix gives rows
+  byte-identical to the search's monitor rows. **w130's K4 0.157 → K4A 0.146 was not A8:** its K4A is k4.125, so the
+  extra 0.125 bit is confounded with A8.
+- **Bytes** identical with and without act lines (4 sizes). **Speed:** A8 path active (`exl3i_actq`, 1,394 ops vs 1,186);
+  score wall −9 to −13% (same-card pair 268 → 238 s).
+- **Ranking:** cross-size log ratios between ≤ 3.5 and ≥ 5.0 shrink by +0.04 to +0.07 under A8 (CIs exclude 0), so the
+  "vs V2" monitor reads at ≥ 5 are ~5% optimistic for what ships. Same-size decisions (each incumbent vs the one it
+  replaced, s171b): 3 of 4 accepts hold under A8; the marginal 6.0 accept (f16 z −0.77) flips to a reject; per-pair
+  shifts are within noise but of the order of the accepted gains.
+- **w129 calibration rows:** 83 of the 90 prior rows are below mean K4.5 (A8 ≈ f16). The 7 uniform rows at K ≥ 4.5 read
+  ~5% low for A8: rescore them in A8 if they are reused (w143's #173-02 A8 calibration rows cover this).
+- **Switch (prepared):** hostd writes radmix act lines from an eval's `"act"`. The driver's CONF `"act"` takes effect
+  only at a slice rotation, which rescores every incumbent on the new slice and on the ver3 monitor in A8. Monitor reads
+  are compared within one mode; convplot4-compatible `act` fields and event. Tests: test_hostd_act 4/4,
+  test_hostd_es all, test_driver_act (stand-in with an A8 executor) 7/7, stock standin 7/7 PASS.
+  Live: hostd staged on ds8 (~10:00 AM CST, settings stamp unchanged), the driver restarted with act at 10:09; the lead's
+  STOP at 10:11 came before any rotation, so no act event was written. driver.json is restored (A8 copy
+  `driver.json.a8-w132`). The patch stays in the repo as the A8 mix writer (opt-in per request / CONF).
+- **Search-value check** (RULES-value.md; initial knapsack pick vs current incumbent, both A8, on s171c + s171d: never
+  activated, 112 c + 260 x docs; size-adjusted pmean; CIs from a shared doc bootstrap):
+  - gained at 1.5 −0.019, 1.75 −0.059, 2.0 −0.085, 2.5 −0.060, 3.0 −0.094, 3.5 −0.075, 4.0 −0.084, 4.5 −0.115, 5.0 −0.085
+    (all CIs < 0, same sign on both slices);
+  - null at 5.5 +0.028, 6.0 −0.038, 6.5 +0.016;
+  - **pooled −0.056 [−0.070, −0.040] = gained (×0.946)**.
+  The ver3 monitor never scored the initial picks (its first read per size is the first accept), so it could not show
+  this. Open: the split between the first accept and later decisions (12 more A8 mixes, ~2 card-h).
+
 
 
 
