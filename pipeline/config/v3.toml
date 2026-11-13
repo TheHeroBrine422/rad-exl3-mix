@@ -139,8 +139,8 @@ grid = "0.6:1.4:0.01"
 clamp = [0.5, 2.0]
 fit_pool = "qad"               # SWJ27.md: 725 qad docs / 927,611 tokens, cap 4096, seed 0
 fit_tokens = 1048576
-numerics = "f32"               # 11-12 lead: f32 on the pip ROCm 7.14 hosts (bf16 + fused memory-faults on ds8, #168 w128);
-                               # equal quality (#144: bf16 held-out gain −0.06%), 2.2× slower. Was "bf16" #144 (w109, user 11-11): bf16 x bf16 hook GEMMs, f32 accumulate, source split in two bf16
+numerics = "bf16"              # #144 (w109, user 11-11): bf16 hook GEMMs, f32 accumulate; 2.2x faster, held-out −0.06%.
+                               # 11-12: the ds8 / box2 faults were a ROCm 7.14 clr pool bug, fixed by rxq.forward's guard (#168 w128) (w109, user 11-11): bf16 x bf16 hook GEMMs, f32 accumulate, source split in two bf16
                                # terms: 2.2x faster passes, held-out gain -0.06% (seed spread 1.19%); 1.4-1.5% of gate
                                # scales move (less than R9700 vs 9070 XT f32 runs, 2.2%)
 fused = true                   # swjtri.py fused grid sums (KL 0.99980 vs exact, z -0.59)

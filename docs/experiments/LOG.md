@@ -4,6 +4,99 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 9:45 PM CST · #168 · DONE: clr mem-pool VmHeap bug on pip ROCm 7.14 (rocBLAS-free repro on both hosts); fix = rxq.forward ROCm guard (ROCBLAS_USE_HIPBLASLT_BATCHED=0 + pool keep), **swj scales bit-identical** (#168-01 ADOPT), check 4/4; staged patch for the lead (w128)
+- **Status:** done · **Machine:** ds8 HIP 7 (card7.lock), box2 HIP 3 (card3.lock) · **Code:** branch `w128-rocm-guard`
+  ee81aec (worktree `/workspace/wt/w128-rxm`, on main 8df155a), patch
+  `rad-local/workers/w128/0001-rxq.forward-ROCm-guard-…patch` · **Rule:** `v3/e3/settle/w128.md` (d49364a, before data)
+  · **Data / repros:** `rad-local/workers/w128/` (README, data/ds8, upstream-issue.md draft, not sent)
+- **Root cause.** clr's (HIP runtime) default memory pool, VmHeap sub-allocator: after a trim (release threshold 0 →
+  at every synchronisation) a block from `hipMallocAsync` is written by one kernel and read back as zeros by the next.
+  rocBLAS 7.14's hipBLASLt bridge for batched GEMMs allocates its pointer arrays this way (3 per GEMM), and
+  transformers' torch GDN calls batched trsm (`torch.linalg.solve_triangular`) on every GDN layer, so the
+  pointer-array GEMM reads null pointers → memory fault at 0x0–0x5000. bf16, `--fused`, the card model, the host kernel
+  and the visible-devices variable have nothing to do with it; bf16 + fused only made passes reach the fault sooner.
+  rxq.hin's forward is exposed the same way.
+- **rocBLAS-free repro** (`vmheaprepro.py`: hipMallocAsync arrays → torch writes → Triton dereferences → hipFreeAsync →
+  sync), 3 min arms: default → fault at 0x0 in the Triton kernel in ~10 s (ds8 and box2); trim each iteration → ~5 s;
+  release threshold max → clean (715,741 iterations); threshold max + trim each iteration → fault;
+  `DEBUG_HIP_MEM_POOL_VMHEAP=0` + trim each iteration → clean (695,586).
+- **#168-01 (rule d49364a):** 2-source pass (K2.5 + K4 i8 ladder levels, 240 qad docs, fused + bf16, ds8 HIP 7):
+  DEF (pool keep only = today's kernels) vs FIX (the guard: + `ROCBLAS_USE_HIPBLASLT_BATCHED=0`): loss **+0.00000**
+  for both sources, **scales bit-identical** (0 channels moved) → **ADOPT** (the guard keeps both). FIX stages
+  1,718–1,985 tok/s vs DEF 1,635–1,897 (+4–5%). DEF itself = the unguarded default path bit for bit (4 layers × 60
+  docs, grid sums sha256 equal), so the guard reproduces exactly what the stack computes when it does not fault.
+- **Full passes, box2 HIP 3, fused + bf16 K2.5, 725 docs:** `ROCBLAS_USE_HIPBLASLT_BATCHED=0` (X2) all 4 stages, no
+  fault, 1,700–1,805 tok/s (36 min); `DEBUG_HIP_MEM_POOL_VMHEAP=0` (X3, hipBLASLt kernels kept) all 4 stages, no fault, 1,603–1,670 tok/s; **X2 and X3
+  scales byte-identical (128 / 128 files, swiglu.jsonl equal)**: the rocBLAS switch leaves a full 725-doc pass
+  bit for bit; unguarded (X1) fault at doc 220–240.
+- **Fix** (`rxq/forward.py`): `os.environ.setdefault("ROCBLAS_USE_HIPBLASLT_BATCHED", "0")` at import (before torch;
+  swjfit / hin import forward first) and `rocm_pool_keep()` in `Model()` (default pool release threshold UINT64_MAX via
+  hipMemPoolSetAttribute; ROCm only; no-op on CPU / CUDA). Test `tests/check_rocmguard.py` (ds8 HIP 7): **4/4 PASS**
+  (env; guard loop with a forced pool trim every 64 calls 74,153 calls clean; pool-keep loop 70,832 clean; f64 agreement
+  2.3e-7); the unguarded control loop faulted in 18 s.
+- **Lead decides / merges:** the patch moves rxq's code stamp (rxq/*.py hashed) and the staged tree stamp; the swj
+  numbers do not move. Without a restage: `swj_env {"ROCBLAS_USE_HIPBLASLT_BATCHED": "0"}` in rxrun's run config (or
+  the env of swjloop.sh) gives the same bits now. bf16 numerics (#144) can go back on: the f32 switch (2358791) did not
+  avoid the fault. Upstream report drafted (clr; rocBLAS cc), not sent.
+- **Runtime:** none (pass speed +4–10%).
+
+### 2026-11-12 9:25 PM CST · #168 · lead's priority 1 answered: **yes, box2 reproduces it** (and a rocBLAS-free repro faults on box2 in ~10 s); box2 card 2 not needed (w128)
+- box2 HIP 3 (card3.lock; free at 8:17 PM): fused + bf16 K2.5 pass `w128/X1` memory-faulted at doc 220–240, 8:20 PM CST
+  (addr 0x1000, same `Cijk_Alik_Bljk_S_B…UserArgs` GEMM). f32 fused not re-run there: ds8's D (unfused f32) and the
+  model-free stress show the fault does not depend on numerics. `card2.w128-done` touched (card 2 not used).
+- **rocBLAS-free repro** (`vmheaprepro.py`): hipMallocAsync small pointer arrays from the default pool → torch
+  `copy_` writes 192 pointers → a Triton kernel dereferences them → hipFreeAsync → sync, looped: **memory fault at 0x0
+  in the Triton kernel after ~10 s** (box2 HIP 3, 9:02 PM CST; with an explicit trim per iteration, ~5 s). A clr
+  (HIP runtime mem-pool VmHeap) bug, not rocBLAS / hipBLASLt / our code.
+- Same-card fix arms on box2 (all fused + bf16 K2.5, 725 docs): `ROCBLAS_USE_HIPBLASLT_BATCHED=0` (`X2`): **all 4
+  stages done, no fault**, 1,700–1,805 tok/s, 36 min; `DEBUG_HIP_MEM_POOL_VMHEAP=0` (`X3`): running.
+
+### 2026-11-12 9:10 PM CST · #168 · narrowed to the VmHeap of HIP's memory pool; in-process fix bit-identical; judge of the faster env fix pre-registered (w128)
+- **Status:** running (#168-01 judge on ds8 card 7, rule `v3/e3/settle/w128.md` d49364a, committed before data)
+- More stress arms (3 min, ds8 card 7, `trsmstress.py`): `HIP_MEM_POOL_USE_VM=0` + trim every call → fault (S6);
+  **`DEBUG_HIP_MEM_POOL_VMHEAP=0` + trim every call → clean** (53k calls, S7); no opportunistic / internal-dependency
+  reuse (pool attrs 2, 3 = 0) → fault (S5). So: clr's mem-pool VmHeap sub-allocator, after a trim, hands rocBLAS a
+  block whose contents the next GEMM does not see (it reads zeros as pointers); kernel ordering (S1) and torch's
+  allocator (S2) are not involved.
+- Bit-identity of the keep fix: 4 layers (L0–3) × 60 docs with the swj hooks (bf16, fused), default vs release
+  threshold UINT64_MAX: grid sums sha256 `bef4a739…` both (`swjrepro.py`).
+- Fix written (worktree `/workspace/wt/w128-rxm`, branch `w128-rocm-guard`): `rxq/forward.py` sets
+  `ROCBLAS_USE_HIPBLASLT_BATCHED=0` at import (setdefault, before torch) and `Model()` sets the default pool's release
+  threshold to UINT64_MAX on ROCm (`rocm_pool_keep`); test `tests/check_rocmguard.py`. Whether the rocBLAS switch stays
+  in depends on #168-01 (it changes the GDN forward at f32-rounding level).
+
+### 2026-11-12 8:40 PM CST · #168 · cause found: HIP default mem-pool trim under rocBLAS's hipMallocAsync pointer arrays (trsm_batched → hipBLASLt); **any numerics fault (f32 too: 5 of the 7 f32 reruns faulted 02:25–02:33 UTC)**; workaround `ROCBLAS_USE_HIPBLASLT_BATCHED=0` (w128)
+- **Status:** running (fix validation) · **Machine:** ds8 card 7 (card7.lock), box2 card 3 (card3.lock)
+- HIP API trace of one solve (`AMD_LOG_LEVEL=3`): rocBLAS's hipBLASLt bridge does, per inner GEMM, 3 ×
+  `hipMallocAsync` (pointer arrays, default HIP mem pool) + `addOffsetKernel`, the `Cijk_Alik_Bljk_S_B…UserArgs` GEMM,
+  3 × `hipFreeAsync`.
+- Stress repro (`trsmstress.py`, ds8 card 7, 3 min each; "fault" = HSA memory fault at 0x2000–0x4000 in that GEMM):
+  default → fault < 30 s (T1; also with no allocator churn, S2); `AMD_SERIALIZE_KERNEL=3` → fault (S1: not a
+  kernel-ordering race); default pool release threshold = UINT64_MAX (never trims) → **clean, 53k calls, 0 mismatches**
+  (S3); threshold max + `hipMemPoolTrimTo(pool, 0)` after each call → **fault** (S4); `ROCBLAS_USE_HIPBLASLT_BATCHED=0`
+  → **clean, 92k calls, 0 mismatches** (T2). No silent mismatch seen before any fault.
+- Real pass with `ROCBLAS_USE_HIPBLASLT_BATCHED=0` (box2 card 3, fused + bf16, `w128/X2`): stage 0 done (725 docs, no
+  fault, 1,700 tok/s vs 1,555 without), stage 1 at 480 docs.
+- **For the lead now:** start swj passes with `ROCBLAS_USE_HIPBLASLT_BATCHED=0` in the environment (rocBLAS then runs
+  its own batched trsm kernels; f32 rounding-level change in the GDN forward, being judged against the default path).
+
+### 2026-11-12 8:30 PM CST · #168 · interim: not bf16 / fused / ds8 — rocBLAS trsm_batched → hipBLASLt pointer-array GEMM faults on ROCm 7.14 (box2 too); model-free repro in seconds; candidate env fix ROCBLAS_USE_HIPBLASLT_BATCHED=0 (w128)
+- **Status:** running · **Machine:** ds8 card 7, box2 card 3 (card3.lock)
+- **D (unfused + f32) faulted too** (ds8 card 7, doc 140–160, 02:15:47 UTC, same kernel family, addr 0x2000): the fault
+  is not bf16- or fused-specific. **The f32 rerun on cards 0–6 is exposed to it as well.** Fault times across the ladder
+  logs cluster by launch (passes started together reach the same documents together), not a host-wide event.
+- **box2 reproduces it** (R9700, host 7.0.14-26): fused + bf16 K2.5 pass `w128/X1` on HIP 3 faulted at doc 220–240
+  (addr 0x1000, `Cijk_Alik_Bljk_S_B_Bias_HA_S_SAV_UserArgs_MT64x64x16`). Not ds8 hardware.
+- **Faulting op:** rocBLAS / hipBLASLt logs of one pass (`ROCBLAS_LAYER=2`, `HIPBLASLT_LOG_LEVEL=2`): the only f32
+  pointer-array (`batch_mode=1`) GEMMs are the ones rocBLAS `trsm_batched` issues to hipBLASLt (f32, transA T, K 16,
+  alpha −1 / beta 1, workspace 0, batch 48 × chunks) = `torch.linalg.solve_triangular` in transformers'
+  `torch_chunk_gated_delta_rule` (the torch GDN path: fla / causal_conv1d are not installed). The faulting kernel names
+  (`Alik_Bljk`, `S_B`, depth-U 16 / 32) match them.
+- **Minimal repro** (`rad-local/workers/w128/trsmstress.py`, pure torch, no model): solve_triangular on the GDN shapes
+  ([1, 48, nc, 64, 64] \ [.., 64, 128], nc 1..64, f32) in a loop: memory fault (addr 0x3000, same kernel) in < 30 s
+  on ds8 card 7. With `ROCBLAS_USE_HIPBLASLT_BATCHED=0`: running clean (18.5k calls / 60 s, 0 mismatches); real
+  pass `w128/X2` on box2 (fused + bf16, same env) past doc 240 at 1,706 tok/s (X1 without: 1,555 tok/s).
+
 ### 2026-11-12 8:20 PM CST · #167 · Search driver changes before the first run: size-adjusted score (accept, early stop, band bests, top-5, frozen b for the final picks), alert-only monitor, merged-pool draw, finalpick.py; stand-in A/B raw vs size-adjusted accept: no difference (ΔS +0.0002 [−0.0001, +0.0006]) → size-adjusted adopted by the rule; embedding-exploration fix (6.0: true KL −15%) (w127)
 - **Status:** done (code; the real run still needs the user's go) · **Machine:** VM (code), colo (stand-in runs,
   7:31–8:15 PM CST) · **Code:** `search/v3/` (driver, seqrule, moves, slices, menu, standin, finalpick.py, abreport.py,
@@ -38,6 +131,36 @@ versions of anything: git history.
   nearest unmeasured embedding half the time while one exists: seeds 0 / 1 at 6.0 gap +0.166 / +0.174 → +0.0046 / +0.0044
   (true KL −15%), other sizes within ±0.002, stand-in PASS; si6 (w126's config) 7 / 7 PASS before and after.
 - **Runtime:** none (search procedure; same format and kernels).
+
+### 2026-11-12 8:20 PM CST · #168 · swj fused + bf16 memory faults on ds8: investigation started (w128)
+- **Status:** running · **Machine:** ds8 card 7 (`/data/q27/swjdbg/`), box2 one card by the locks · **Brief:**
+  `rad-local/workers/instr3/w128.md`
+- Starting point (lead): every ds8 swj pass with `--fused --numerics bf16` faulted (HSA memory fault, address 0x0–0x5000,
+  attributed to a hipBLASLt f32 batched GEMM `Cijk_Alik_Bljk_S_B_Bias…`); single-card A / E (fused + bf16) faulted,
+  B / C / D (unfused bf16, fused f32, unfused f32) still running.
+
+### 2026-11-12 8:20 PM CST · #165 · Scale-only QAD pilot, arm A judged: verify 0.895 [0.879, 0.910], xcorp 0.896 [0.850, 0.938] vs the unhealed K2.5 mix (w125)
+- **Status:** running (B, then D0 → D; C / B / D0 / D judgements pending) · **Machine:** box2 cards 0–2 by
+  `/data/q27/locks/card*.lock` (card 3: w124); dad1 9070 XT for the tooling · **Code:** `v3/qad/` (README), rules
+  `v3/qad/RULES.md` (163ef05, amendment 1 bf2a886, both before data) · **Data:** box2 `/data/q27/w125` (runs, eval,
+  d0, `run165.log`) · **Brief:** `rad-local/workers/instr3/w125.md`
+- **Setup:** K2.5 i8 pass-1 level (ds8 `q27v3-144dd6e1-k2.5-i8/final`, C9 writer scales, no swj: #150 had none yet),
+  frozen codes, trainable suh / svh log multipliers of all 400 trunk linears (720 vectors, 5.67M values); 1,024 qad
+  docs × first 2,048 tokens (975,807 tokens, one epoch, 128 steps of 8 docs), KL to the published calib golden's
+  top-512 + tail; monitor 32 search docs. The whole int8 student fits one R9700 (25.4 GiB built, 28.8 peak).
+- **Monitor (32 search docs, KL/row):** A 0.06278 → 0.05637 at step 96 (−10.2%), C (+ q/k/final norm gains)
+  0.05643 at step 96 (−10.2%, no gain over A); both flat from step 64 (~0.49M tokens), 87% of the gain by step 32
+  (0.24M tokens); step 16 is above the start (warmup overshoot, 1e-3). max |log| 0.041 (trust 0.3 never binds).
+  Wall: 31 s/step, 66 min train + ~8 min evals = **~1.3 card-h per arm** on one R9700. B (+ block MSE, teacher on
+  2 more cards) at step 80: 0.05661 (on A's curve so far).
+- **Judgement, A vs unhealed** (packed with the level's recipe, mixed over V2 3.00, radiance bf16 KV; paired per
+  document): c = golden-verify27-w114 (2nd use) 0.04868 → 0.04359, **ratio 0.8955 [0.8792, 0.9102]**, 71 docs better /
+  10 worse (81 scored); x = golden-hd122-x (130 xcorp pieces, never trained on) 0.17248 → 0.15457, **ratio 0.8962
+  [0.8504, 0.9378]**, 126 / 4. **A gains** by the rule (both CIs below 1, same sign) and per document on both parts.
+  ~10 % KL at a pass-1 size for ~1.3 card-h, no runtime cost.
+- **D0:** sibling moments 23 / 64 layers (205 s a layer), paused at a layer boundary (d0/mom/STOP, 7:08 PM) so B could
+  take card 2; resumes on card 2 when B ends (`laneX.sh`), then denoise → no-op gate → 128 writer jobs → C9 → D on
+  card 0. Ledger: train / monitor / check / D0 moments (`qad165-*`, 1,843 lines) added.
 
 ### 2026-11-12 6:51 PM CST · #166 · V3 search driver built and tested: CPU stand-in 7 / 7 PASS, box2 dry run (17 evals, 6 early stops on the card), radiance --kld-progress byte-identical; boundary pick B p2 w5 (×1.87 gain/h vs full slice, S3 ×1.77) — the user decides (w126)
 - **Status:** done (build + tests); the first real run waits for the user's go · **Machine:** the VM (code, driver,
@@ -84,6 +207,34 @@ versions of anything: git history.
 - w114's #150: 2M 0.9921 at K2.5 / 0.9925 at K4 (rule bar ≤ 0.99 not met), 4M worse than 2M. **User: keep 1M** (gain
   ~0.8% for ~2.3× swj cost; V3.1 QAD retrains the scales). No settings change: scales stamp stays 6c57a3d1; the ladder's
   swj rerun uses today's settings. Full entries for #149–#151: w114's LOG / INDEX edits.
+- **Runtime:** none.
+
+### 2026-11-12 6:15 PM CST · #150 / #151 · swj fit tokens: 2M best but −0.8% (< 1% bar) → fit_tokens stays 1M; 4M no better than 2M; verify row K2.5 stack vs V2 3.00 r 1.64 (report only) (w114)
+- **Status:** done (#150 rule: fit_tokens stays 1,048,576; #151 report only) · **Machine:** gpubox card 0 (driver
+  `d114.sh` 12:57 AM – 6:10 PM CST 11-12, one restart: see Fix) · **Code:** `v3/e3/settle/w114/` · **Rule:**
+  `v3/e3/settle/w114.md` (fac1d0e, alone, before data) · **Data:** `v3/e3/settle/data/w114/p150/`, `p151/`, `run/`
+- **#150 setup:** K2.5 / K4 i8 at 4f831984 (kept, gpubox `/data/w114/lv`); one bf16 swj pass per META over both levels
+  (S = 2): 1M = swj27-qad (927,611 tok, rxrun's own pass), 2M = swj114-qad2m (2,112,907), 4M = swj114-qad4m
+  (4,210,502, 4096-token windows); arms change only ffn_gate / up svh (all 4 PAIR OK). K2.5 in V2 3.00, K4 in V2 4.00.
+- **#150 result (27f, r = KL(N) / KL(1M)):** K2.5 2M **0.9921** [0.977, 0.999] z −1.56 (x 0.992 / c 0.997, per-doc geo
+  0.998, 60% better); 4M 0.9967 [0.990, 1.000] (x 0.997 / c 0.998, geo 0.998). K4 2M 0.9925 (geo 1.001), 4M 0.9982
+  (geo 1.001): same sign, no "K4 disagrees" flag. KL K2.5: 1M 0.27303, 2M 0.27088, 4M 0.27211.
+- **#150 verdict:** best = 2M, but r 0.9921 misses ≤ 0.99 → **fit_tokens stays 1,048,576**. 4M (windows) is worse than 2M at
+  both levels. Held-out joint gain (each pass's own held-out half; diagnostic): K2.5 2.00% / 2.10% / 2.07%, K4 0.22% /
+  0.29% / 0.32% (1M / 2M / 4M).
+- **#150 cost (card 0, R9700, bf16, S = 2):** pass wall for 2 levels 2,609 s / 6,069 s / 12,647 s → **0.36 / 0.84 / 1.76
+  card-h per level** (×2.33 / ×4.85 for ×2.28 / ×4.54 tokens); the 36 swj levels at S = 2: 13 / 30 / 63 card-h (S = 12,
+  w109's B + S·P split scaled by the measured walls, approximate: 9 / 20 / 42 h).
+- **#151 verify row (golden-verify27-w114, 82 clean verify docs, 94,135 scored positions; per-doc over 81):** V2 3.00 KL
+  0.02763 (top-1 0.9368) vs today's K2.5 stack (trunk radmixed into V2 3.00, 2.62 bpw) 0.04541 (top-1 0.9202): r
+  **1.643** [1.581, 1.718] z +8.9, per-doc geo 1.702, median 1.639, 2.5% of docs better. Sizes differ (2.62 vs 3.00
+  bpw): this is the standing audit point, not a like-for-like comparison. No decision rides on it; never public.
+- **Fix (within the rule):** `packone` did not declare `n` local and overwrote p150's loop variable after the first 2M
+  pack (bogus mix tag `k25-1`, caught by hygiene as a no-op arm; then `apply k4-1` failed, driver stopped 4:40 PM CST).
+  `local n` added, bogus files moved to `run/bug-k25-1`, driver restarted (finished steps skipped; the k25-2m final /
+  pack predate the clobber and are correct). #149 was not affected (its loops do not use `n`).
+- **Kept on gpubox:** `/data/w114/lv` (K0.25 / K0.75 / K2.5 / K4 at 4f831984, valid ladder levels), mixes U0.25–U1 c / e
+  and K2.5 1M / 2M / 4M. Packs, splice / K4 mixes, finals and swj scratch deleted.
 - **Runtime:** none.
 
 ### 2026-11-12 5:53 PM CST · #166 · V3 search driver: build + test started (w126)
@@ -159,6 +310,54 @@ versions of anything: git history.
   the same effect as the head's i8 / mul1 ×1.22 at K7 (#157, #94 ×1.27). Expected cost small: at 7 bpw the A8
   activation floor (~0.0004) dominates the KLD anyway. Revisit only if the 7.0 size's knapsack wants K7+ heavily.
 - **Runtime:** none.
+
+### 2026-11-12 4:20 PM CST · #164 · Kernel perf pass (running): decode M 1 ×0.63 per layer at K4 (KS + DQ + DOT), fractional wdec8 ×0.45, R16 head un-permute; decode is ALU-bound, flat in K (w124)
+- **Status:** running (per-kernel part done; whole-model KLD / e2e on ds8 queued for after the trunk ladder) ·
+  **Machine:** dad1 9070 XT (benches, `/root/card0.lock`); ds8 R9700 (whole model, `/data/q27/w124/tools/wm.sh`, waits
+  for the ladder) · **Code:** radiance fork `qc-exl3-v3-perf` (off 42960d5): 1406d75 plan table, 20740e4 KS, ea3a9ea
+  DQ, 3494a31 DOT, 8d3f594 R16 · **Data:** `v3/bench/data/w124/` (README: tables, scripts) · **Brief:** TODO "Kernel
+  perf pass brief", `rad-local/workers/instr3/w124.md`, lead notes `rad-local/workers/notes/w124.md`
+- **Bar (user):** whole-model KLD vs today's kernels ≤ ~1e-5 (paired, bf16 KV) at every example rate; unit max-abs
+  first; prefill gemm_us + e2e tok/s; decode e2e step time (batch 1 / 4 / 8, interleaved A/B); decode-vs-K table.
+- **Finding (decode):** batch-1 decode was flat in K (gate_up ~300 µs from K0.5 to K4 = 30–290 GB/s of codes). The
+  decode-ablated floor (codes straight into the WMMA) is bandwidth-bound at K4 (gate_up 555 GB/s), so the time was
+  the trellis decode's ALU (54 VALU a 16×16 tile at K4) plus a grid of N/128 workgroups (40 on down, 8 on attn_k).
+  Per-value decode ALU does not shrink with K, so below K4 decode cannot fall with bytes on this codebook.
+- **Changes** (each with its unit test; all exl3i device tests PASS on gfx1201):
+  1. *Plan table* (1406d75): fractional / sub-1 lane plans built by the compiler (constexpr table), bit-exact
+     (host test 14336 lane-positions, 0 differ). A8 wdec8 layer ×0.45 (K1.5) / ×0.47 (K2.5), K4 ×1.00.
+  2. *KS* (20740e4): decode (T ≤ 16) K split across workgroups (~512 WGs), slice-ordered reduce by the last arriver,
+     which runs the Hadamard epilogue. test_ks: ≤ 1 bf16 ulp of max |y| vs unsplit, repeatable, rows independent.
+  3. *DQ* (ea3a9ea): decode form multiplies mul1i8's grid index q, scales the sums by the step once (weights exactly
+     q·step instead of fp16(q·step)); 54 → 42 VALU a tile; rows within one f16 ulp of the MT 4 form.
+  4. *DOT* (3494a31): T = 1 by v_dot2_f32_f16 instead of a 16-row WMMA; within one bf16 ulp of the WMMA form.
+  5. *R16* (8d3f594): exl3i encoding version 3 (transform `/r16`; older readers refuse), importer `rows=r16` (checked
+     against stamp.json's head_perm and the .npy = closed form, verified equal to w119's R16.npy on all 248320 rows),
+     record dtype EXL3I_DT_TILES_R16 from the layout hook, the epilogue stores output s at row
+     ((s>>4)&7)·N/8 + (s>>7)·16 + (s&15) on every f16 path. test_r16: natural vs R16 launches byte-identical at their
+     rows (T 1/4/16/17/600, f32/bf16, mul1i8 K2.5/4/6.5 at N 248320, mul1 K7); A8 refuses R16.
+- **Decode per layer (48 GDN : 16 attention), M 1, base → HEAD** (3 interleaved rounds; per shape in the data README):
+  K0.5 681 → 433, K1 607 → 372, K1.5 646 → 425, K2 632 → 382, K2.5 671 → 431, K3 658 → 390, K4 628 → 397,
+  K6.5 1013 → 630, K7 812 → 635 µs (×0.59–0.78); M 4 K4 641 → 409, M 8 704 → 431. down ×0.46–0.50, attn_k/v ×0.30.
+  **Small K vs K4 per shape (HEAD):** integer K1 / K2 / K3 ×0.84–1.02 (≤ K4 within noise); fractional K1.5 / K2.5
+  ×1.03–1.12 and K0.5 ×0.94–1.17: per-state bit extraction (+~9 VALU a tile vs K4's byte-aligned perm) and the
+  sub-1 salts; an extraction-free hash form gave nothing (refuted). gate_up K7: KS's 2-way split costs 5%.
+- **Prefill (A8 path layer, M 2048, base → HEAD):** K0.5 ×0.915, K1.5 ×0.923, K2.5 ×0.930, K4 ×1.000, K6.5
+  ×0.953 (M 512: ×0.79–0.88 at fractional rates); all from wdec8, now bandwidth-bound (fractional ≤ K4's time).
+  GEMM / actq unchanged. Refuted: wdec8 / GEMM overlap on a second stream (×1.03–1.40 slower: sub-chunk GEMMs and
+  the event waits cost more than the hidden decode; patch kept).
+- **Not possible today:** vision and DFlash2 e2e — qwen35_exl3 declares neither the vision tower nor a drafter (TODO
+  items "Vision in qwen35_exl3", "DFlash2 in qwen35_exl3"), so no V3 container serves them.
+- **Pending:** whole-model KLD (prefill / T 16 / T 1) frozen vs dev on a K2.5 and a K4 trunk pack, R16 heads (K4 i8,
+  K7 mul1) KLD + text + the real-data logits test (every vocab id vs w122's wq), e2e decode step time — ds8 after the
+  ladder (`/data/q27/w124/tools/wm.sh`, waits for 00:15 UTC + 15 quiet minutes).
+- **Incident (11-12 4:39–4:45 PM CST):** wm.sh's first start condition (no rxrun.worker) fired between two ladder units
+  on ds8; its pack held conv.lock + ram.lock exclusive for ~5 min before I stopped it (the k2.375 unit's last CPU step
+  likely waited that long). Start condition fixed (time + 15 quiet minutes). Second, 6:43–7:20 PM CST: after the
+  ladder's last unit wm.sh packed on ds8 (ram.lock exclusive, without --no-error) while the swj rerun had started there:
+  it blocked the 8 swj passes until the lead killed it (packs A–D had already failed: the rerun was rewriting the levels'
+  final shards). Moved to box2 (lead 7:20 PM CST): packs with --no-error, box2's own levels, one card by the locks.
+- **Runtime:** P (fractional wdec8) and D (decode GEMV); stored bytes unchanged; the R16 head needs encoding v3.
 
 ### 2026-11-12 2:40 PM CST · #162 · Head donors on ds8: w119's U recipe at 17 sizes (K1–K6.5 i8 + K7 mul1), bit-identical to box2; E5 no flags; fit-gen price table for knap5; E3 (d) whole-model on V2 3.00 / 4.00: 3 / 4 pairs pass, B5 on 4.00 is a tie (w122)
 - **Status:** done · **Machine:** ds8 (quants 11-12 12:13–12:30 PM CST on 8 cards; E3 (d) 12:25 PM–2:34 PM CST, from

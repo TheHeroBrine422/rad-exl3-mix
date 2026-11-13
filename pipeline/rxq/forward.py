@@ -11,10 +11,19 @@ embedding as a memmap of its checkpoint file, run_layers (Qwen3_5TextModel.forwa
 False, or a fresh DynamicCache per document = the whole model's dec(input_ids)).
 split_plan(): the stage boundaries (explicit, N balanced by bytes, or auto: the fewest that fit a VRAM budget).
 P2B_BLOCK=causal_conv1d,fla (env, read at import) makes those packages unimportable, so transformers runs its torch
-GDN path (proxy2b/common.py's switch; the CPU checks use it)."""
-import json, os, struct, sys
+GDN path (proxy2b/common.py's switch; the CPU checks use it).
+ROCm guard (#168): transformers' torch GDN solves its chunk systems with torch.linalg.solve_triangular (batched f32
+trsm). rocBLAS 7.14 (pip ROCm SDK 7.14.1) runs the GEMMs inside batched trsm on hipBLASLt with pointer arrays it
+hipMallocAsync's from HIP's default memory pool; after that pool trims (release threshold 0: at synchronisations), its
+VmHeap hands out blocks whose writes a later kernel does not see, and the GEMM reads null pointers (HSA memory fault
+at 0x0..0x5000 in Cijk_Alik_Bljk_S_B_*_UserArgs, after minutes, any numerics). Import sets
+ROCBLAS_USE_HIPBLASLT_BATCHED=0 (unless set; rocBLAS's own batched kernels, read when rocBLAS loads, so before torch;
+swj scales bit-identical, #168-01), and Model() on a ROCm device sets the pool's release threshold to UINT64_MAX
+(rocm_pool_keep: no trims, same kernels). No effect on CUDA or the CPU."""
+import ctypes, json, os, struct, sys
 
 for _b in filter(None, os.environ.get("P2B_BLOCK", "").split(",")): sys.modules[_b] = None
+os.environ.setdefault("ROCBLAS_USE_HIPBLASLT_BATCHED", "0")      # #168, before torch loads rocBLAS
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
 
@@ -32,6 +41,20 @@ def kernel_paths():
             out[mod] = None
     out["torch"] = torch.__version__
     return out
+
+
+def rocm_pool_keep(dev):
+    """#168: HIP's default memory pool of dev never trims (release threshold UINT64_MAX); -> True if set (ROCm only)"""
+    if dev.type != "cuda" or not torch.version.hip: return False
+    idx = dev.index if dev.index is not None else torch.cuda.current_device()
+    torch.cuda.init()
+    lib = next((ln.split()[-1] for ln in open("/proc/self/maps") if "libamdhip64.so" in ln), None)
+    if lib is None: raise RuntimeError("rocm_pool_keep: libamdhip64 is not loaded")
+    hip, pool = ctypes.CDLL(lib), ctypes.c_void_p()
+    v = ctypes.c_uint64(2**64 - 1)
+    if hip.hipDeviceGetDefaultMemPool(ctypes.byref(pool), idx) or hip.hipMemPoolSetAttribute(pool, 4, ctypes.byref(v)):
+        raise RuntimeError("rocm_pool_keep: hipMemPool calls failed")            # 4 = hipMemPoolAttrReleaseThreshold
+    return True
 
 
 def write_atomic(path, data):
@@ -56,6 +79,7 @@ class Model:
         self.LP = "model.language_model." if any(k.startswith("model.language_model.") for k in self.wmap) else "model."
         self.L = self.LP + "layers"
         self.rotary = None
+        rocm_pool_keep(torch.device(dev))
 
     def shape(self, k):
         with self.safe_open(f"{self.dir}/{self.wmap[k]}", "pt") as f: return f.get_slice(k).get_shape()

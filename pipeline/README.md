@@ -95,5 +95,8 @@ GPU (prepared scripts, the lead runs them):
 - `tests/check_quant.py REF_LEVEL JOB_OUT` — per-tensor jobs vs an ourq level (GPU run first; the ourq reference must
   hold each key's group head, i.e. q_proj / in_proj_qkv / gate_proj in its `--only`, or the key is BADREF); `tools/run4070.sh A|B|C|D`
   — the 11-06 4070 checks (they turn the 11-07 settings off to match their references).
+- `tests/check_rocmguard.py [SECONDS]` — #168, ROCm hosts: rxq.forward's guard against the pip ROCm 7.14 mem-pool fault
+  (batched trsm, transformers' torch GDN): env set at import, guarded / pool-keep loops clean (forced pool trims), f64
+  agreement; an unguarded control loop is reported (it faults on ds8 / box2) (~8 min, one card).
 
 Licence: Apache-2.0 (LICENSE, NOTICE); exllamav3 is MIT (LICENSES/).
