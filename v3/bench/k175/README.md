@@ -27,3 +27,23 @@ index; restartable: finished units are skipped).
 `audit.txt`, `profsum8k.txt` (+ `prof/` server logs), `e2e-card{0,1}.txt` (+ `e2e-*.jsonl`), `clk.txt` (+ smi /
 bench raw), `dclk-*.jsonl` / `smi-dclk-*.txt`, `kb/` (bench_twopass CSVs). The 8k prompt is w138's ctx-16k text (public
 radiance docs) cut to 8,192 tokens (`mk8k.py`): timing only, no corpus data.
+
+## Fractional-K decode (lead note 11-13 1:00 PM CST; fork a60dec3, PERF.md "Fractional-K decode")
+
+Same host and lock rules; builds of exl3i alone under `/data/q27/w137/{f0,fab,g0,g1,g2,g2p3,g2p4,g3,b714g}`.
+
+| script | what |
+|---|---|
+| `plugx.sh SRC OUT [XFLAGS]` | exl3i alone with ROCm 10.1's VOPD clang (+ extra HIP flags, e.g. `-DEXL3I_ABLATE_DECODE=1`), host tests, a home (b10d's + this exl3i.so) |
+| `dk.sh CARD ROUNDS "RATES" BUILD...`, `dksum.py`, `dktab.py` | bench_twopass decode (f16, M 1, every trunk shape + the LM head), builds interleaved; per-rate layer (48 : 16) / head us and GB/s; the before → after table (`DKO` = result dir) |
+| `dkx.sh`, `dkxsum.py` | the same for build + env variants (KS splits), other M / modes (`MS`, `MODES`); `--digest` compares y digests |
+| `isa.sh`, `kloop.py` | device asm of a unit with the build's flags (+ `XF`); instruction counts of each kernel's loops (the K loop: VALU / SALU / VMEM / waits) |
+| `kld2.sh CARD PACK TAG=HOME...` | whole-model KLD rows of a w138 pack per home (kld.sh's settings) |
+| `e2.sh CARD PACK ROUND ROW=HOME...`, `e2sum.py` | e2e: 8k prefill + ctx-0 decode (w138's server + bench.py), rows interleaved per round |
+
+`data/fk/`: `fk-decode.txt` (every bench summary: ablation, step by step g0 → g1 → g2 → PF 3 / 4, PF confirmation on a
+second card, the final g0 → g3 table, KS / PF variants, M 4 / 8, the A8 path, y digests), `fk-isa.txt` (K-loop counts
+and VGPRs), `fk-kld.txt`, `fk-tests.txt`, `fk-lint.txt`, `fk-e2e.txt`, `raw/` (bench CSVs, e2e jsonl). Builds: f0 / g0
+= 3055e75's kernels (+ the bench's head shape / digest), fab = f0 with `EXL3I_ABLATE_DECODE`, g1 = packed pairs only,
+g2 = + three-word buffer loads, g2p3 / g2p4 = + `EXL3I_DEC_PF` 3 / 4, g3 = a60dec3 (all three; PF 3 by default), b714g =
+a60dec3 with the pip ROCm 7.14.1.

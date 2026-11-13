@@ -651,3 +651,9 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
   gain (spread 1.2%), so the fit is still data-limited at today's ~0.93M qad tokens. A doubled qad slice (or qad + xcorp)
   might add a few % of swj's gain at ~2x the pass cost (affordable with `--numerics bf16`). Judge: held-out gain on
   the same odd documents (`--fit-sub` style), then KL on a search slice.
+
+- **Head tile layout split for fractional K (w137 #175 leftover, 11-13):** store each tile's first 128 B aligned (as K4) +
+  the fractional bits in a separate coalesced side stream (4 B a tile at K4.125); same codes and bytes, rad-convert
+  repack, no requant. Gain: head GEMV 576 → ~629 GB/s at K4.125 ≈ 90 µs ≈ 0.3% e2e decode, only if heads go fractional.
+  **Decide after w139 (#177):** do it if the codebook decision changes the container anyway, or if the speed-table redo
+  shows the knapsack picking fractional heads. Runtime: decode only.

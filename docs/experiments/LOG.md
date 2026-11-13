@@ -39,6 +39,47 @@ versions of anything: git history.
     fusion saves ~0.05 ms a step, not the ~0.45 ms w142 estimated.
   - A small-N (split-K) exl3i decode path would turn the one launch into that saving. Kernel follow-up, not done.
 
+### 2026-11-13 5:20 PM CST · #175-02 · Fractional-K decode (lead note 1:00 PM): why it decoded slower than its bytes, and a same-bits fix — trunk at integer K's read rate, head 531 → 576 GB/s at K4.125; e2e step −3.6 % (K4.125) / −3.9 % (K2.5) (w137)
+- **Status:** done · **Machine:** box2 (cards 0–3 under their locks, ~1.2 card-h: benches, gpu ctests on ROCm 10.1 +
+  7.14, 3 whole-model KLD runs, 10 e2e server runs; CPU for builds / ISA / radisa) · **Code:** fork `qc-exl3-v3` =
+  `qc-exl3-v3-perf` **fdfee1f** (3f41caf bench head shape + y digest, a60dec3 the kernel, fdfee1f PERF.md);
+  `v3/bench/k175/` (README section "Fractional-K decode") · **Data:** `v3/bench/k175/data/fk/`, box2 `/data/q27/w137/` ·
+  **Brief:** `rad-local/workers/notes/w137.md` (lead note 1:00 PM CST)
+- **Why** (bench_twopass decode form at T 1 with an LM-head shape, against the ablation build with the same loads and
+  no decode ALU): integer K4 / K6 read the head at 626 / 628 GB/s with or without decode (memory-bound); K4.125 / 4.5 /
+  5.5 / 6.5 at 531 / 555 / 506 / 537 against the ablation's 621 / 617 / 619 / 589, integer K7 522 vs 620. Not the plan
+  table (read once a wave) and no branches: the K loop's work. KA ≤ 4 fractional: four ubfe + two lshl_or a run and a
+  fourth load a tile (K4 shares the middle word and extracts by byte perms): 218 VALU a 4-tile loop vs K4's 185; KA 5–7:
+  both ubfe forms + a select a state and the global-load path (buffer loads were two-word only): 351 VALU, 140 VGPRs;
+  K7 the same load path. That work no longer hides behind two load stages. Below K4 every rate (integer too) is ALU-bound
+  by the codebook (K2 / K3 249 / 351 GB/s over the layer): w139's "K2.5 decode ALU 11 ms" is that, not the fraction;
+  "fractional at bytes / bandwidth" is reachable from K4.125 up, not at K2.5.
+- **Fix (a60dec3, same bits):** states as packed pairs (one shift / v_alignbit of the 32 / 64-bit window a state, one
+  v_perm a pair): MODE 0 218 → 209, sub-1 251 → 226, MODE 2 351 → 218 VALU; three-word runs by buffer loads (MODE 2
+  140 → 88 VGPRs, K7 276 → 224 VALU); the decode form's load stages 2 → 3. Checks: exl3i_gpu_test A (every rate ×
+  codebook vs the oracle) and all 8 gpu ctests on ROCm 10.1 and 7.14; bench y digests equal for 100 (rate, shape) groups
+  at M 1 and the A8 path at M 2048; **whole-model KLD rows byte-identical** at K4.125 A8 (0.285753 = today's kernels) and
+  K2.5 A8 (0.684857). KS splits for the head (KSPLIT 2 / 4) were as fast as PF 3 there but other bits and slower elsewhere.
+- **Decode µs, T 1** (card 2, 3 interleaved rounds, before → after; layer = 48 GDN : 16 attention): K2.5 gate_up 167.0 →
+  156.4, down 95.0 → 90.2, gdn_qkv 60.4 → 57.7, attn_o 42.9 → 42.1, head 1,023 → 1,016, layer 409.8 → 388.5 (×0.948);
+  K4.125 gate_up 177.0 → 172.6, down 96.2 → 94.3, attn_qg 71.4 → 67.9, head 1,234 → 1,139, layer 422.6 → 415.1 (×0.982);
+  K4.5 head 1,287 → 1,201, layer ×0.987; K6.5 gate_up 266.2 → 254.5, down 143.5 → 131.6, head 1,923 → 1,865, layer
+  617.8 → 580.8 (×0.940); K5.5 ×0.842 / head ×0.893, K7 ×0.861 / ×0.911, K3 ×0.943, K4 ×0.994, K6 ×0.973; K2 layer ×0.990
+  but head ×1.046 (PF 3's one loss). Read rate over the layer after: K4 482, K4.125 472, K4.5 485, K6 524, K6.5 532, K7 543
+  GB/s; head K4 629, K4.125 576, K4.5 595, K6.5 554 (still ~8 % under integer: the fourth load / 132-B tiles straddling
+  lines). T 4 / 8 ±1.5 % (K6.5 ×0.93–0.97); A8 prefill kernels ±1 %. Full table: PERF.md / `data/fk/fk-decode.txt`.
+- **e2e** (card 3, w138's server + bench.py, server ms / decode step at ctx 0, rows interleaved): V3 K4.125 A8 + R16 K4
+  head **31.67 → 30.54 ms** (3 rounds), V3 K2.5 + R16 K2.5 head **30.83 → 29.64 ms** (2 rounds); 8k prefill unchanged
+  (2,397 / 2,447 and 2,396 / 2,393 tok/s, order effects).
+- **radisa** on a60dec3 (exl3i, both toolchains): one MISSING_ALU_WAIT in RateInt<3>'s KS kernels (10.1 source mode
+  only; 7.14 object too) — a false positive of the suite: `s_mulk_i32 s3` (SOPK, reads D) sits between the v_cmp write
+  of s2 and the v_cndmask read; LLVM counts that SALU read (tied use), radisa's isadb gives s_mulk_i32 / s_addk_co_i32 no
+  read of D. Fix belongs in the suite (Code000), not our code.
+- **For the lead:** (1) adopt by rebuilding box2 / ds8 homes on fdfee1f (`radbuild-perf.sh`); bits unchanged, so no
+  re-scoring. (2) The search's decode prices for fractional K (w140's bytes / 525 GB/s rule for heads) are stale from
+  4.125 up: ~576–595 GB/s head, trunk at integer K's rate. (3) Further head gain at fractional K would need a stored
+  layout that keeps tiles in 128-B lines or shares words between runs (container change, not done).
+
 ### 2026-11-13 5:05 PM CST · #174-02 · Trellis token embedding served from the stored form (w144): `embed_exl3i` bit-exact, VRAM = codes, ~0 e2e time; 4 A8 anchors agree with w135's prices; host candidates (bf16 / int8-row / K8 trellis) all ≈ bf16
 - **Status:** done (kernel, donors K1.5–K8, checks, menu); host-RAM path: core patch + loader design for the lead (not
   applied) · **Machine:** box2 (cards under locks: 16 quants, identity, perf, GPU tests), ds8 (donors, 8 A8 evals) ·
