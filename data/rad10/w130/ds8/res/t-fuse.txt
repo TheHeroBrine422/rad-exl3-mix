@@ -1,0 +1,11 @@
+Test project /data/q27/rad10/pb/exl3i
+    Start 6: test_twopass_fuse
+1/1 Test #6: test_twopass_fuse ................   Passed   30.04 sec
+
+100% tests passed out of 1
+
+Label Time Summary:
+gpu    =  30.04 sec*proc (1 test)
+
+Total Test time (real) =  30.04 sec
+rc 0

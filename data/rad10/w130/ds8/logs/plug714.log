@@ -1,0 +1,11 @@
+07:34:29 exl3quant: build
+07:34:34 exl3quant: built, host tests 1 passed
+07:34:34 qwen35_exl3: build
+07:34:46 qwen35_exl3: built, host tests 0 passed
+07:34:46 exl3dense: build
+07:34:51 exl3dense: built, host tests 2 passed
+07:34:51 exl3r4d: build
+07:35:03 exl3r4d: built, host tests 0 passed
+07:35:03 exl3i: build
+07:35:34 exl3i: built, host tests 3 passed
+07:35:34 HOME READY /data/q27/rad10/ref714/home

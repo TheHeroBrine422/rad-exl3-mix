@@ -1,0 +1,1127 @@
+Test project /data/q27/rad10/r374/build
+        Start 137: r4d_emu_attn_shard0
+        Start 139: r4d_emu_attn_shard2
+        Start   5: abi_layout_test
+        Start   6: advance_test
+        Start   7: arch_test
+        Start   8: audio_gen_test
+        Start   9: build_test
+        Start  10: chat_test
+  1/147 Test   #8: audio_gen_test ...................   Passed    0.03 sec
+        Start  11: chatparse_gemma4_test
+  2/147 Test   #5: abi_layout_test ..................   Passed    0.04 sec
+        Start  12: chatparse_test
+  3/147 Test   #6: advance_test .....................   Passed    0.04 sec
+        Start  13: checkpoint_test
+  4/147 Test  #13: checkpoint_test ..................   Passed    0.05 sec
+        Start  15: clef_test
+  5/147 Test  #15: clef_test ........................   Passed    0.03 sec
+        Start  16: config_test
+  6/147 Test  #16: config_test ......................   Passed    0.04 sec
+        Start  17: convert_test
+  7/147 Test  #11: chatparse_gemma4_test ............   Passed    0.36 sec
+        Start  18: cvec_test
+  8/147 Test  #10: chat_test ........................   Passed    0.42 sec
+        Start  19: dashboard_test
+  9/147 Test   #9: build_test .......................   Passed    0.43 sec
+        Start  20: device_test
+ 10/147 Test  #19: dashboard_test ...................   Passed    0.03 sec
+        Start  21: diag_test
+ 11/147 Test  #18: cvec_test ........................   Passed    0.06 sec
+        Start  23: encoding_test
+ 12/147 Test  #23: encoding_test ....................   Passed    0.06 sec
+        Start  25: fixture_test
+ 13/147 Test  #21: diag_test ........................   Passed    0.21 sec
+        Start  26: format_test
+ 14/147 Test  #25: fixture_test .....................   Passed    0.57 sec
+        Start  27: gbnf_test_shard0
+ 15/147 Test  #20: device_test ......................   Passed    0.74 sec
+        Start  28: gbnf_test_shard1
+ 16/147 Test  #26: format_test ......................   Passed    1.58 sec
+        Start  29: gbnf_test_shard2
+ 17/147 Test   #7: arch_test ........................   Passed    2.49 sec
+        Start  30: gbnf_test_shard3
+ 18/147 Test  #12: chatparse_test ...................   Passed    5.01 sec
+        Start  31: gen_config_test
+ 19/147 Test  #31: gen_config_test ..................   Passed    0.03 sec
+        Start  32: gen_lora_test
+ 20/147 Test  #32: gen_lora_test ....................   Passed    0.06 sec
+        Start  33: gen_test
+ 21/147 Test  #33: gen_test .........................   Passed    0.04 sec
+        Start  34: glm5next_test
+ 22/147 Test  #30: gbnf_test_shard3 .................   Passed    3.63 sec
+        Start  35: harness_test
+ 23/147 Test  #28: gbnf_test_shard1 .................   Passed    5.10 sec
+        Start  36: hf_model_test
+ 24/147 Test  #36: hf_model_test ....................   Passed    0.03 sec
+        Start  37: host_experts_test
+ 25/147 Test  #27: gbnf_test_shard0 .................   Passed    5.36 sec
+        Start  38: hostmem_test
+ 26/147 Test  #38: hostmem_test .....................   Passed    0.03 sec
+        Start  39: images_test
+ 27/147 Test  #39: images_test ......................   Passed    0.05 sec
+        Start  40: issue_div_test
+ 28/147 Test  #37: host_experts_test ................   Passed    0.29 sec
+        Start  41: kbench_mutant_test
+ 29/147 Test  #35: harness_test .....................   Passed    0.62 sec
+        Start  42: kbench_test
+ 30/147 Test  #40: issue_div_test ...................   Passed    0.26 sec
+        Start  43: kld_test
+ 31/147 Test  #43: kld_test .........................   Passed    0.15 sec
+        Start  44: kv_window_test
+ 32/147 Test  #42: kbench_test ......................   Passed    0.20 sec
+        Start  46: laya_test
+ 33/147 Test  #46: laya_test ........................   Passed    0.03 sec
+        Start  47: lifecycle_test
+ 34/147 Test  #47: lifecycle_test ...................   Passed    0.18 sec
+        Start  48: lora_ops_test
+ 35/147 Test  #44: kv_window_test ...................   Passed    0.43 sec
+        Start  49: lora_test
+ 36/147 Test  #34: glm5next_test ....................   Passed    2.52 sec
+        Start  50: mem_test
+ 37/147 Test  #50: mem_test .........................   Passed    0.81 sec
+        Start  51: mica_test
+ 38/147 Test  #51: mica_test ........................   Passed    0.04 sec
+        Start  52: mm_test
+ 39/147 Test  #48: lora_ops_test ....................   Passed    1.54 sec
+        Start  53: mtp_couple_plan_test
+ 40/147 Test  #53: mtp_couple_plan_test .............   Passed    0.02 sec
+        Start  54: nemotron35_device_test
+ 41/147 Test  #54: nemotron35_device_test ...........***Skipped   0.28 sec
+        Start  55: nemotron35_test
+ 42/147 Test  #29: gbnf_test_shard2 .................***Failed    6.89 sec
+I gbnf: compiled a grammar of 61 rules in 7.1 ms: 84 mask keys (1 dense, 2 deep at most), 129018 remainder nodes, 3.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 79 rules in 5.6 ms: 128 mask keys (1 dense, 2 deep at most), 129080 remainder nodes, 3.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 92 rules in 18.8 ms: 139 mask keys (13 dense, 3 deep at most), 129260 remainder nodes, 3.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 43 rules in 4.6 ms: 65 mask keys (0 dense, 1 deep at most), 127972 remainder nodes, 3.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 54 rules in 4.8 ms: 58 mask keys (0 dense, 1 deep at most), 123697 remainder nodes, 3.2 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 230 rules in 64.3 ms: 193 mask keys (132 dense, 3 deep at most), 249086 remainder nodes, 6.6 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+    json schema: 6 grammars, 1714 masks compared (15 at a split character, 127 dead), 2322 accepts; 0 beyond the oracle's bound, 0 beyond the engine's
+  ok   gbnf_json_schema_grammars_agree_with_the_oracle (0.42 s)
+I chat: template loaded (8952 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I chat: template loaded (7764 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I chat: template loaded (9060 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I gbnf: compiled a grammar of 171 rules in 12.5 ms: 543 mask keys (13 dense, 2 deep at most), 127637 remainder nodes, 3.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the string "<|tool_call>call:bash{command:<|"|>cd /repo && go test ./... 2>&1 | head -50<|"|>,description:<|"|>Run the test suite<|"|>}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:edit_file{new_string:<|"|>for s.ll.Len() >= s.cap { // café<|"|>,old_string:<|"|>if s.ll.Len() >= s.cap {<|"|>,path:<|"|>/repo/日本/lru.go<|"|>,replace_all:false}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:read_file{limit:200,path:<|"|>/repo/cache/lru.go<|"|>}<tool_call|>" is not admitted by the grammar
+I gbnf: compiled a grammar of 174 rules in 12.2 ms: 567 mask keys (13 dense, 2 deep at most), 127640 remainder nodes, 3.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the string "<|tool_call>call:bash{command:<|"|>cd /repo && go test ./... 2>&1 | head -50<|"|>,description:<|"|>Run the test suite<|"|>}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:edit_file{new_string:<|"|>for s.ll.Len() >= s.cap { // café<|"|>,old_string:<|"|>if s.ll.Len() >= s.cap {<|"|>,path:<|"|>/repo/日本/lru.go<|"|>,replace_all:false}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:read_file{limit:200,path:<|"|>/repo/cache/lru.go<|"|>}<tool_call|>" is not admitted by the grammar
+    qwen3.8: 10 grammars, 5706 masks compared (12 at a split character, 22 dead), 8607 accepts; 0 beyond the oracle's bound, 0 beyond the engine's
+  ok   gbnf_qwen3_8_tool_call_grammars_agree_with_the_oracle (1.01 s)
+I gbnf: compiled a grammar of 13 rules in 0.3 ms: 11 mask keys (0 dense, 1 deep at most), 108 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 18 rules in 1.7 ms: 24 mask keys (9 dense, 2 deep at most), 33972 remainder nodes, 0.9 MiB
+I gbnf: compiled a grammar of 6 rules in 0.0 ms: 7 mask keys (1 dense, 1 deep at most), 20 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 28 rules in 0.1 ms: 7 mask keys (0 dense, 1 deep at most), 3 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 38 rules in 0.7 ms: 68 mask keys (6 dense, 1 deep at most), 11353 remainder nodes, 0.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 25 rules in 0.2 ms: 2 mask keys (1 dense, 1 deep at most), 3919 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 7 rules in 0.1 ms: 2 mask keys (1 dense, 1 deep at most), 3919 remainder nodes, 0.1 MiB
+I gbnf: compiled a grammar of 12 rules in 0.2 ms: 15 mask keys (2 dense, 1 deep at most), 3459 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 42 rules in 0.1 ms: 1 mask keys (0 dense, 1 deep at most), 0 remainder nodes, 0.0 MiB
+I gbnf: compiled a grammar of 40 rules in 0.1 ms: 12 mask keys (0 dense, 1 deep at most), 52 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 34 rules in 1.1 ms: 61 mask keys (7 dense, 1 deep at most), 25754 remainder nodes, 0.7 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 44 rules in 2.5 ms: 88 mask keys (11 dense, 2 deep at most), 21405 remainder nodes, 0.6 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 13 rules in 0.0 ms: 3 mask keys (0 dense, 1 deep at most), 105 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 34 rules in 0.6 ms: 70 mask keys (4 dense, 1 deep at most), 12124 remainder nodes, 0.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 75 rules in 0.2 ms: 25 mask keys (0 dense, 1 deep at most), 176 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 9 rules in 0.1 ms: 16 mask keys (0 dense, 1 deep at most), 151 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 33 rules in 0.4 ms: 33 mask keys (2 dense, 1 deep at most), 7344 remainder nodes, 0.2 MiB
+I gbnf: compiled a grammar of 5 rules in 0.0 ms: 3 mask keys (0 dense, 1 deep at most), 20 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 56 rules in 1.6 ms: 120 mask keys (11 dense, 1 deep at most), 38719 remainder nodes, 1.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 19 rules in 0.6 ms: 29 mask keys (5 dense, 1 deep at most), 14404 remainder nodes, 0.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 25 rules in 0.6 ms: 47 mask keys (4 dense, 1 deep at most), 8563 remainder nodes, 0.2 MiB
+I gbnf: compiled a grammar of 4 rules in 0.1 ms: 3 mask keys (1 dense, 1 deep at most), 3919 remainder nodes, 0.1 MiB
+I gbnf: compiled a grammar of 18 rules in 0.3 ms: 6 mask keys (1 dense, 1 deep at most), 7712 remainder nodes, 0.2 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 21 rules in 0.1 ms: 2 mask keys (0 dense, 1 deep at most), 170 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 19 rules in 0.2 ms: 6 mask keys (1 dense, 1 deep at most), 137 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 12 rules in 0.2 ms: 31 mask keys (2 dense, 1 deep at most), 2277 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 39 rules in 0.1 ms: 11 mask keys (0 dense, 1 deep at most), 197 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 9 rules in 0.0 ms: 6 mask keys (0 dense, 1 deep at most), 173 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 21 rules in 0.2 ms: 14 mask keys (1 dense, 1 deep at most), 4164 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 18 rules in 0.3 ms: 18 mask keys (2 dense, 1 deep at most), 6796 remainder nodes, 0.2 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+    random: 30 grammars, 1372 masks compared (104 at a split character, 86 dead), 1808 accepts; 0 beyond the oracle's bound, 0 beyond the engine's
+      refused 3: left recursion through rule 'r0'
+      refused 3: left recursion through rule 'r1'
+      refused 1: left recursion through rule 'r1_8'
+      refused 2: left recursion through rule 'r2'
+      refused 1: left recursion through rule 'r2_9'
+      refused 1: left recursion through rule 'r3'
+      refused 3: left recursion through rule 'r4'
+      refused 1: left recursion through rule 'r4_40'
+      refused 1: left recursion through rule 'r4_66'
+      refused 2: left recursion through rule 'r5'
+      refused 1: left recursion through rule 'r5_56'
+      refused 1: rule 'r3' can never match anything
+    30 of 50 random grammars compiled
+  ok   gbnf_random_grammars_1_to_50_agree_with_the_oracle (0.26 s)
+I gbnf: compiled a grammar of 36 rules in 0.5 ms: 15 mask keys (5 dense, 1 deep at most), 4094 remainder nodes, 0.1 MiB
+I gbnf: compiled a grammar of 10 rules in 0.0 ms: 1 mask keys (0 dense, 1 deep at most), 0 remainder nodes, 0.0 MiB
+I gbnf: compiled a grammar of 28 rules in 0.1 ms: 3 mask keys (0 dense, 1 deep at most), 20 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 66 rules in 0.6 ms: 40 mask keys (4 dense, 1 deep at most), 15715 remainder nodes, 0.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 25 rules in 0.9 ms: 22 mask keys (6 dense, 1 deep at most), 24941 remainder nodes, 0.7 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 23 rules in 0.0 ms: 2 mask keys (0 dense, 1 deep at most), 29 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 52 rules in 1.5 ms: 85 mask keys (11 dense, 1 deep at most), 20926 remainder nodes, 0.6 MiB
+E gbnf: no mask for this position: the grammar's parse forks into more than 16384 stacks or 262144 stack elements at one position; the request cannot be continued
+E gbnf: no mask for this position: the grammar's parse forks into more than 16384 stacks or 262144 stack elements at one position; the request cannot be continued
+I gbnf: compiled a grammar of 34 rules in 0.8 ms: 52 mask keys (3 dense, 1 deep at most), 15728 remainder nodes, 0.4 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 22 rules in 0.1 ms: 7 mask keys (0 dense, 1 deep at most), 91 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 14 rules in 0.0 ms: 2 mask keys (1 dense, 1 deep at most), 0 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 26 rules in 0.2 ms: 27 mask keys (1 dense, 1 deep at most), 2410 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 65 rules in 11.5 ms: 105 mask keys (19 dense, 3 deep at most), 57950 remainder nodes, 1.6 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 35 rules in 0.7 ms: 54 mask keys (5 dense, 1 deep at most), 13359 remainder nodes, 0.4 MiB
+I gbnf: compiled a grammar of 16 rules in 0.1 ms: 5 mask keys (1 dense, 1 deep at most), 105 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 22 rules in 0.7 ms: 44 mask keys (5 dense, 1 deep at most), 17754 remainder nodes, 0.5 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 54 rules in 46.4 ms: 35 mask keys (4 dense, 1 deep at most), 8048 remainder nodes, 0.2 MiB
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+I gbnf: compiled a grammar of 30 rules in 0.2 ms: 13 mask keys (1 dense, 1 deep at most), 1940 remainder nodes, 0.1 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 6 rules in 0.1 ms: 13 mask keys (0 dense, 1 deep at most), 104 remainder nodes, 0.0 MiB
+I gbnf: compiled a grammar of 5 rules in 0.3 ms: 6 mask keys (3 dense, 1 deep at most), 9999 remainder nodes, 0.3 MiB
+I gbnf: compiled a grammar of 8 rules in 0.0 ms: 6 mask keys (0 dense, 1 deep at most), 29 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 32 rules in 0.6 ms: 39 mask keys (5 dense, 1 deep at most), 11257 remainder nodes, 0.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 21 rules in 0.1 ms: 4 mask keys (0 dense, 1 deep at most), 2 remainder nodes, 0.0 MiB
+I gbnf: compiled a grammar of 32 rules in 0.7 ms: 62 mask keys (4 dense, 1 deep at most), 8869 remainder nodes, 0.3 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 64 rules in 2.2 ms: 123 mask keys (11 dense, 1 deep at most), 44303 remainder nodes, 1.2 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 48 rules in 1.2 ms: 68 mask keys (7 dense, 1 deep at most), 25497 remainder nodes, 0.7 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 48 rules in 1.6 ms: 80 mask keys (7 dense, 1 deep at most), 33123 remainder nodes, 0.9 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 111 rules in 247.1 ms: 185 mask keys (25 dense, 3 deep at most), 50562 remainder nodes, 1.4 MiB
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+I gbnf: compiled a grammar of 12 rules in 5.1 ms: 26 mask keys (9 dense, 1 deep at most), 11514 remainder nodes, 0.3 MiB
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+E gbnf: no mask for this position: one operation on this grammar discovers more than 8388608 stack elements of new states; the request cannot be continued
+I gbnf: compiled a grammar of 15 rules in 0.1 ms: 5 mask keys (0 dense, 1 deep at most), 108 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 23 rules in 0.6 ms: 46 mask keys (3 dense, 1 deep at most), 8738 remainder nodes, 0.2 MiB
+I gbnf: compiled a grammar of 6 rules in 0.1 ms: 12 mask keys (0 dense, 1 deep at most), 1656 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+I gbnf: compiled a grammar of 25 rules in 0.0 ms: 1 mask keys (0 dense, 1 deep at most), 0 remainder nodes, 0.0 MiB
+    random: 32 grammars, 1205 masks compared (84 at a split character, 40 dead), 1678 accepts; 3 beyond the oracle's bound, 14 beyond the engine's
+      refused 1: left recursion through rule 'r0'
+      refused 7: left recursion through rule 'r1'
+      refused 1: left recursion through rule 'r1_33'
+      refused 1: left recursion through rule 'r1_4'
+      refused 1: left recursion through rule 'r2_32'
+      refused 1: left recursion through rule 'r3'
+      refused 1: left recursion through rule 'r4'
+      refused 1: left recursion through rule 'r4_63'
+      refused 3: left recursion through rule 'r5'
+      refused 1: the grammar cannot be run within its bounds
+    32 of 50 random grammars compiled
+  ok   gbnf_random_grammars_201_to_250_agree_with_the_oracle (4.90 s)
+I gbnf: compiled a grammar of 1 rules in 0.3 ms: 3 mask keys (0 dense, 1 deep at most), 0 remainder nodes, 0.0 MiB
+E gbnf: the grammar has no live parse left; the request cannot be continued
+  ok   gbnf_dead_and_complete_states_agree_with_the_oracle
+I chat: template loaded (8952 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I gbnf: compiled a grammar of 119 rules in 3.0 ms: 260 mask keys (10 dense, 1 deep at most), 83320 remainder nodes, 2.3 MiB
+I gbnf: compiled a grammar of 524 rules in 4.3 ms: 692 mask keys (10 dense, 1 deep at most), 83320 remainder nodes, 2.3 MiB
+  ok   gbnf_rule_copies_share_one_plan
+I chat: template loaded (8952 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I gbnf: compiled a grammar of 171 rules in 76.3 ms: 1149 mask keys (16 dense, 3 deep at most), 32366 remainder nodes, 1.1 MiB
+E gbnf: the string "<|tool_call>call:bash{command:<|"|>cd /repo && go test ./... 2>&1 | head -50<|"|>,description:<|"|>Run the test suite<|"|>}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:edit_file{new_string:<|"|>for s.ll.Len() >= s.cap { // café<|"|>,old_string:<|"|>if s.ll.Len() >= s.cap {<|"|>,path:<|"|>/repo/日本/lru.go<|"|>,replace_all:false}<tool_call|>" is not admitted by the grammar
+E gbnf: the string "<|tool_call>call:read_file{limit:200,path:<|"|>/repo/cache/lru.go<|"|>}<tool_call|>" is not admitted by the grammar
+    48002-token vocabulary, one decoding pass 2047431 cpu ns; 1769 masks: p50 1283, p99 13275, max 175560
+  FAIL gbnf_a_mask_does_a_fraction_of_a_vocabulary_pass
+    /data/q27/rad10/r374/src/tests/gbnf_test.cpp:1616: CHECK(worst * 20 < pass)
+1 failure(s)
+slowest: gbnf_random_grammars_201_to_250_agree_with_the_oracle 4.90 s, gbnf_qwen3_8_tool_call_grammars_agree_with_the_oracle 1.01 s, gbnf_json_schema_grammars_agree_with_the_oracle 0.42 s
+
+        Start  56: p4b_kv_ring_test
+ 43/147 Test  #49: lora_test ........................   Passed    1.82 sec
+        Start  57: place_test
+ 44/147 Test  #56: p4b_kv_ring_test .................   Passed    0.29 sec
+        Start  58: plugin_test
+ 45/147 Test  #58: plugin_test ......................   Passed    0.40 sec
+        Start  59: precompiled_test
+ 46/147 Test  #59: precompiled_test .................   Passed    0.03 sec
+        Start  60: projection_test
+ 47/147 Test #137: r4d_emu_attn_shard0 ..............   Passed    9.86 sec
+        Start  61: quant_algo_test
+ 48/147 Test  #60: projection_test ..................   Passed    0.03 sec
+        Start  63: quant_m2xfp_test
+ 49/147 Test  #63: quant_m2xfp_test .................   Passed    0.31 sec
+        Start  64: quant_tcq_gpu_test
+ 50/147 Test  #55: nemotron35_test ..................   Passed    1.28 sec
+        Start  65: quant_test
+ 51/147 Test  #64: quant_tcq_gpu_test ...............   Passed    0.32 sec
+        Start  66: r4d_ar_links_test
+ 52/147 Test  #66: r4d_ar_links_test ................   Passed    0.08 sec
+        Start  67: r4d_bf16_capacity_test
+ 53/147 Test  #61: quant_algo_test ..................   Passed    0.85 sec
+        Start  68: r4d_bf16_gemm_rows_test
+ 54/147 Test  #68: r4d_bf16_gemm_rows_test ..........   Passed    0.03 sec
+        Start  69: recipe_test
+ 55/147 Test  #69: recipe_test ......................   Passed    0.03 sec
+        Start  70: ref2va_pack_test
+ 56/147 Test  #70: ref2va_pack_test .................   Passed    0.00 sec
+        Start  71: ref_test
+ 57/147 Test  #67: r4d_bf16_capacity_test ...........***Skipped   0.28 sec
+        Start  73: runtime_test
+ 58/147 Test  #73: runtime_test .....................   Passed    0.49 sec
+        Start  74: sample_test
+ 59/147 Test  #52: mm_test ..........................***Failed    2.87 sec
+  ok   smart_resize_is_the_references_for_pictures
+  ok   smart_resize_is_the_references_for_video
+  ok   the_frames_a_video_keeps_are_the_references
+  ok   a_picture_patchifies_as_the_reference_does
+  ok   a_clip_patchifies_and_is_stamped_as_the_reference_does
+  ok   the_rotary_layout_is_get_rope_index
+[swscaler @ 0x579899d5aa80] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d5aa80] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d5aa80] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899e4db40] No accelerated colorspace conversion found from yuv420p to rgb24.
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+  FAIL every_admitted_picture_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:303: CHECK_EQ(rc, RAD_OK): -12 vs 0
+  FAIL every_admitted_picture_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:305: CHECK_EQ(f.w, want): 0 vs 64
+  FAIL every_admitted_picture_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:306: CHECK_EQ(f.h, want): 0 vs 64
+  FAIL every_admitted_picture_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:307: CHECK(is_red(f))
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899d3f9c0] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f9c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+  ok   a_picture_of_an_awkward_width_converts_inside_its_buffer
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[swscaler @ 0x579899dfa200] No accelerated colorspace conversion found from yuv420p to rgb24.
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[swscaler @ 0x579899dc04c0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+  FAIL every_admitted_video_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:349: CHECK_EQ(rc, RAD_OK): -12 vs 0
+  FAIL every_admitted_video_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:350: CHECK(v.info.n_frames >= 1)
+  FAIL every_admitted_video_format_decodes
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:351: CHECK(!v.frames.empty())
+[swscaler @ 0x579899dc0140] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899dabd40] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899e24300] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899e75e40] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899dabd40] No accelerated colorspace conversion found from yuv420p to rgb24.
+[swscaler @ 0x579899efd580] No accelerated colorspace conversion found from yuv420p to rgb24.
+  ok   a_media_configuration_with_an_empty_band_names_it
+  ok   the_audio_front_end_is_the_references
+  ok   lfm2_sizes_and_tiles_are_the_references
+  ok   lfm2_pictures_are_the_references (0.21 s)
+  ok   gemma4_sizes_are_the_references
+  ok   gemma4_pictures_patchify_as_the_reference_does
+  ok   gemma4_resized_pictures_are_the_references_to_a_resampling_tolerance
+  ok   a_gemma4_clip_patchifies_as_the_reference_does
+  ok   gemma4_frames_are_sampled_as_the_reference_does
+  ok   gemma4_unified_sizes_are_the_references
+  ok   gemma4_unified_pictures_patchify_as_the_reference_does
+  ok   a_gemma4_unified_clip_patchifies_as_the_reference_does
+  ok   a_gemma4_unified_clip_of_audio_is_its_samples_in_frames
+  ok   gemma4_unified_vision_config_from_the_container
+  ok   glm5_canvases_are_the_references
+  ok   glm5_pictures_are_the_references (0.42 s)
+  ok   glm5_budget_is_one_pass_and_pictures_only
+  ok   glm5_reads_its_processor_from_the_container
+  ok   the_lanczos_resize_is_pillows_bit_for_bit
+  ok   the_white_composite_is_pillows_paste
+[IMGUTILS @ 0x7fff8f11e570] Picture size 60000x60000 is invalid
+[png @ 0x579899d50880] [IMGUTILS @ 0x7fff8f11de90] Picture size 60000x60000 is invalid
+[png @ 0x579899d50880] Invalid image size
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+  ok   a_picture_over_the_pixel_limit_is_refused_from_its_header (0.12 s)
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[swscaler @ 0x579899e3bb80] No accelerated colorspace conversion found from yuv420p to rgb24.
+  ok   a_video_over_the_pixel_limit_is_refused_before_a_frame_is_decoded
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[png @ 0x579899d50880] chunk too big
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[png @ 0x579899d520c0] chunk too big
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[png @ 0x579899d50880] chunk too big
+[png_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: png, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[png @ 0x579899d520c0] chunk too big
+[png @ 0x579899d689c0] chunk too big
+[jpeg_pipe @ 0x579899d4fb00] Format jpeg_pipe detected only with low score of 7, misdetection possible!
+[mjpeg @ 0x579899d50880] app: invalid len 16
+[mjpeg @ 0x579899d50880] unable to decode APP fields: Invalid data found when processing input
+[mjpeg @ 0x579899d50880] No JPEG data found in image
+[jpeg_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[jpeg_pipe @ 0x579899d4fb00] Format jpeg_pipe detected only with low score of 7, misdetection possible!
+[mjpeg @ 0x579899d520c0] com: invalid len 15
+[jpeg_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[jpeg_pipe @ 0x579899d4fb00] Format jpeg_pipe detected only with low score of 7, misdetection possible!
+[mjpeg @ 0x579899d50880] dqt: invalid len 67
+[jpeg_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[jpeg_pipe @ 0x579899d4fb00] Format jpeg_pipe detected only with low score of 7, misdetection possible!
+[mjpeg @ 0x579899d520c0] No JPEG data found in image
+[jpeg_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[jpeg_pipe @ 0x579899d4fb00] Format jpeg_pipe detected only with low score of 7, misdetection possible!
+[mjpeg @ 0x579899d50880] No JPEG data found in image
+[jpeg_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: mjpeg, none(bt470bg/unknown/unknown)): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[mjpeg @ 0x579899d520c0] EOI missing, emulating
+[swscaler @ 0x579899d3f980] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x579899d3f980] No accelerated colorspace conversion found from yuv420p to rgb24.
+[webp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: webp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[webp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: webp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[webp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: webp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[webp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: webp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[webp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: webp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[bmp @ 0x579899d50880] not enough data (33 < 3126), trying to decode anyway
+[bmp @ 0x579899d50880] Declared file size is less than header size (33 < 54)
+[bmp_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: bmp, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[bmp @ 0x579899d520c0] not enough data (781 < 3126), trying to decode anyway
+[bmp @ 0x579899d520c0] not enough data (727 < 3072)
+[bmp @ 0x579899d520c0] not enough data (781 < 3126), trying to decode anyway
+[bmp @ 0x579899d520c0] not enough data (727 < 3072)
+[bmp @ 0x579899d50880] not enough data (1563 < 3126), trying to decode anyway
+[bmp @ 0x579899d50880] not enough data (1509 < 3072)
+[bmp @ 0x579899d50880] not enough data (1563 < 3126), trying to decode anyway
+[bmp @ 0x579899d50880] not enough data (1509 < 3072)
+[bmp @ 0x579899d520c0] not enough data (2344 < 3126), trying to decode anyway
+[bmp @ 0x579899d520c0] not enough data (2290 < 3072)
+[bmp @ 0x579899d520c0] not enough data (2344 < 3126), trying to decode anyway
+[bmp @ 0x579899d520c0] not enough data (2290 < 3072)
+[bmp @ 0x579899d50880] not enough data (3125 < 3126), trying to decode anyway
+[bmp @ 0x579899d50880] not enough data (3071 < 3072)
+[bmp @ 0x579899d50880] not enough data (3125 < 3126), trying to decode anyway
+[bmp @ 0x579899d50880] not enough data (3071 < 3072)
+[tiff @ 0x579899d520c0] not enough bytes remaining in EXIF buffer: 2 required
+[tiff @ 0x579899d520c0] error decoding EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d520c0] could not parse EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d520c0] IFD offset is greater than image size
+[tiff_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: tiff, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[tiff @ 0x579899d689c0] not enough bytes remaining in EXIF buffer: 2 required
+[tiff @ 0x579899d689c0] error decoding EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d689c0] could not parse EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d689c0] IFD offset is greater than image size
+[tiff_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: tiff, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[tiff @ 0x579899d56e40] not enough bytes remaining in EXIF buffer: 2 required
+[tiff @ 0x579899d56e40] error decoding EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d56e40] could not parse EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d56e40] IFD offset is greater than image size
+[tiff_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: tiff, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[tiff @ 0x579899d50880] not enough bytes remaining in EXIF buffer: 2 required
+[tiff @ 0x579899d50880] error decoding EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d50880] could not parse EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d50880] IFD offset is greater than image size
+[tiff_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: tiff, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[tiff @ 0x579899d520c0] not enough bytes remaining in EXIF buffer: 2 required
+[tiff @ 0x579899d520c0] error decoding EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d520c0] could not parse EXIF data: Invalid data found when processing input
+[tiff @ 0x579899d520c0] IFD offset is greater than image size
+[tiff_pipe @ 0x579899d4fb00] Could not find codec parameters for stream 0 (Video: tiff, none): unspecified size
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[swscaler @ 0x579899db0d80] No accelerated colorspace conversion found from yuv420p to rgb24.
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Invalid mvhd time scale 0, defaulting to 1
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] reached eof, corrupted STSD atom
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] error reading header
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x579899d4fb00] Protocol name not provided, cannot determine if input is local or a network protocol, buffers and access patterns cannot be configured optimally without knowing the protocol
+[swscaler @ 0x579899e1dcc0] No accelerated colorspace conversion found from yuv420p to rgb24.
+[wav @ 0x579899d4fb00] Format not on whitelist 'mov,mp4,m4a,3gp,3g2,mj2,matroska,webm,avi,mpegts,flv,ogg,gif,apng,image2pipe,png_pipe,jpeg_pipe,jpegls_pipe,jpegxl_pipe,webp_pipe,bmp_pipe,tiff_pipe,qoi_pipe,pgm_pipe,ppm_pipe,pbm_pipe,pam_pipe,gif_pipe,avif,heif'
+[png_pipe @ 0x579899d4fb00] Format not on whitelist 'wav,w64,mp3,flac,ogg,mov,mp4,m4a,matroska,webm,aac,aiff'
+  ok   damaged_and_foreign_bytes_are_refused_with_a_reason
+[swscaler @ 0x579899d3f980] deprecated pixel format used, make sure you did set range correctly
+  ok   pictures_decode_the_right_way_up_and_the_right_way_round
+  ok   the_rgba_decode_keeps_alpha_and_the_rgb_decode_drops_it_uncomposited
+  FAIL lossless_encodes_decode_back_to_the_same_pixels
+    /data/q27/rad10/r374/src/tests/mm_test.cpp:1409: REQUIRE_EQ(encode_image(rgb.data(), 33, 17, 3, "webp", 100, &file, &why), RAD_OK): -18 vs 0
+  ok   stereo_audio_is_averaged_to_mono_and_resampled
+  ok   mono_audio_at_the_rate_passes_through_and_truncates_exactly
+  ok   the_qwen3_asr_front_end_is_the_references
+  ok   each_audio_front_end_runs_its_fft_at_any_length_it_takes
+  ok   gemma4_audio_settings_come_from_either_processor_file
+  ok   a_chunk_keeps_the_rows_three_convolutions_leave
+  ok   a_resampled_stream_is_its_tone_whether_pushed_whole_or_in_pieces
+  ok   unlimitedocr_configures_itself_from_the_container
+  ok   unlimitedocr_tie_order_is_the_references
+  ok   unlimitedocr_wide_lines_are_chunked_whole_tiles (0.17 s)
+  ok   unlimitedocr_tile_grids_are_the_references
+  ok   unlimitedocr_pictures_are_the_references (1.10 s)
+  ok   pillow_bicubic_resizes_in_the_references_pass_order
+  ok   several_pictures_pick_a_mode_only_where_the_processor_has_two (0.16 s)
+  ok   unlimitedocr_runs_follow_the_reference_layout
+    64x64 -> 40x40: max abs 1.19e-06, max rel 0.00196
+    24x24 -> 20x20: max abs 1.67e-06, max rel 0.000818
+    8x8 -> 5x5: max abs 4.77e-07, max rel 1.02e-06
+    16x16 -> 10x10: max abs 1.04e-06, max rel 4.03e-05
+    16x20 -> 10x13: max abs 1.07e-06, max rel 0.000124
+    synthetic fp32: worst abs 1.67e-06, worst rel 0.00196 (target < 1e-4)
+    sam 64->40 bf16: 111/1228800 bf16 mismatches, max abs 0.00195
+    clip 16->10 bf16: 12/102400 bf16 mismatches, max abs 1.91e-06
+  ok   unlimitedocr_bicubic_antialias_resample_is_the_reference
+  ok   avx2_preprocessing_is_bit_identical_to_scalar (0.27 s)
+8 failure(s)
+slowest: unlimitedocr_pictures_are_the_references 1.10 s, glm5_pictures_are_the_references 0.42 s, avx2_preprocessing_is_bit_identical_to_scalar 0.27 s
+  red.avif: no picture in it: the media holds no video stream
+  red-av1.mp4: no picture in it: the media holds no video stream
+
+        Start  75: sched_test
+ 60/147 Test  #57: place_test .......................   Passed    2.26 sec
+        Start  76: server_test
+ 61/147 Test  #71: ref_test .........................   Passed    0.74 sec
+        Start  77: shape_test
+ 62/147 Test  #17: convert_test .....................   Passed   11.35 sec
+        Start  78: shapes_test
+ 63/147 Test  #75: sched_test .......................   Passed    0.10 sec
+        Start  79: share_test
+ 64/147 Test  #79: share_test .......................   Passed    0.03 sec
+        Start  80: shipped_plugins_test
+ 65/147 Test  #78: shapes_test ......................   Passed    0.04 sec
+        Start  81: spark25_arch_test
+ 66/147 Test  #81: spark25_arch_test ................   Passed    0.02 sec
+        Start  82: spark25_chat_test
+ 67/147 Test  #82: spark25_chat_test ................   Passed    0.02 sec
+        Start  83: spark25_convert_test
+ 68/147 Test  #77: shape_test .......................   Passed    0.18 sec
+        Start  84: spark25_recipe_test
+ 69/147 Test  #84: spark25_recipe_test ..............   Passed    0.02 sec
+        Start  85: spechub_accept_test
+ 70/147 Test  #85: spechub_accept_test ..............   Passed    0.04 sec
+        Start  86: spechub_cooperative_test
+ 71/147 Test  #86: spechub_cooperative_test .........   Passed    0.03 sec
+        Start  87: spechub_couple_test
+ 72/147 Test  #80: shipped_plugins_test .............   Passed    0.30 sec
+        Start  88: spechub_dflash_couple_test
+ 73/147 Test  #83: spark25_convert_test .............   Passed    0.32 sec
+        Start  89: spechub_wiring_test
+ 74/147 Test  #89: spechub_wiring_test ..............   Passed    0.03 sec
+        Start  90: speech_stream_test
+ 75/147 Test  #90: speech_stream_test ...............   Passed    0.14 sec
+        Start  91: speech_test
+ 76/147 Test  #91: speech_test ......................   Passed    0.03 sec
+        Start  92: stream_test
+ 77/147 Test  #87: spechub_couple_test ..............   Passed    0.60 sec
+        Start  93: systemone_test
+ 78/147 Test  #74: sample_test ......................   Passed    1.04 sec
+        Start  94: text_split_test
+ 79/147 Test  #93: systemone_test ...................   Passed    0.03 sec
+        Start  95: text_test
+ 80/147 Test  #94: text_split_test ..................   Passed    0.03 sec
+        Start  96: tokenizer_perf_test
+ 81/147 Test  #92: stream_test ......................   Passed    0.34 sec
+        Start  97: tokenizer_regex_test
+ 82/147 Test  #97: tokenizer_regex_test .............   Passed    0.07 sec
+        Start  98: tokenizer_test
+ 83/147 Test  #95: text_test ........................   Passed    0.29 sec
+        Start  99: tools_test
+ 84/147 Test  #99: tools_test .......................   Passed    0.02 sec
+        Start 100: torch_zip_test
+ 85/147 Test #100: torch_zip_test ...................   Passed    0.06 sec
+        Start 101: transport_test
+ 86/147 Test  #96: tokenizer_perf_test ..............   Passed    0.73 sec
+        Start 102: trigger_test
+ 87/147 Test #102: trigger_test .....................   Passed    0.20 sec
+        Start 103: util_test
+ 88/147 Test #103: util_test ........................   Passed    0.70 sec
+        Start 104: vae_geom_test
+ 89/147 Test #104: vae_geom_test ....................   Passed    0.00 sec
+        Start 105: video_gen_test
+ 90/147 Test  #65: quant_test .......................   Passed    4.03 sec
+        Start 106: videos_test
+ 91/147 Test  #76: server_test ......................   Passed    3.01 sec
+        Start 107: wire_test
+ 92/147 Test #107: wire_test ........................   Passed    0.06 sec
+        Start 108: xstats_test
+ 93/147 Test #108: xstats_test ......................   Passed    0.33 sec
+        Start 109: yarn_test
+ 94/147 Test #109: yarn_test ........................   Passed    0.03 sec
+        Start 119: avx_check
+ 95/147 Test #106: videos_test ......................***Failed    0.64 sec
+I req refused -> 400 invalid_request_error: temperature: 'temperature' is not a field of /v1/videos
+I req refused -> 400 invalid_request_error: prompt: the prompt is required, as a non-empty string
+I req refused -> 400 invalid_request_error: prompt: the prompt is required, as a non-empty string
+I req refused -> 400 invalid_request_error: size: 250x256 is not a size this model makes: sides are multiples of 32 from 256, at most 1032192 pixels and 4:1; its canvas at that ratio is 768x800
+I req refused -> 400 invalid_request_error: size: expected WIDTHxHEIGHT, e.g. 1344x768
+I req refused -> 400 invalid_request_error: size: 4096x4096 is not a size this model makes: sides are multiples of 32 from 256, at most 1032192 pixels and 4:1; its canvas at that ratio is 768x768
+I req refused -> 400 invalid_request_error: seconds: this model makes 5.17 to 14.38 seconds
+I req refused -> 400 invalid_request_error: seconds: the length is a positive number of seconds
+I req refused -> 400 invalid_request_error: num_inference_steps: expected an integer in 2..65 (sigma grid points, the last one 0)
+I req refused -> 400 invalid_request_error: num_inference_steps: expected an integer in 2..65 (sigma grid points, the last one 0)
+I req refused -> 400 invalid_request_error: input_reference: only data: URLs are accepted; the server does not fetch remote URLs on a request's behalf
+I req refused -> 400 invalid_request_error: format: 'format' is not a field of /v1/videos
+I req refused -> 400 invalid_request_error: task: this server makes video from text, from reference media: t2va, ref2va
+I req refused -> 400 invalid_request_error: conditions: reference media arrive as ref_* file parts; conditions must be empty
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: audio_shift: the soundtrack schedule shift: a number in (0, 100], or omit it to run the model's trained shift 3
+I req refused -> 400 invalid_request_error: target: aspect_ratio must be w:h (16:9) or auto
+I req refused -> 400 invalid_request_error: size: give size or target's aspect_ratio and short_edge, not both
+I req refused -> 400 invalid_request_error: seconds: give seconds or target's duration_seconds, not both
+  ok   a_video_request_that_cannot_be_served_names_its_field
+I video video_5f1ed88f97cdf6eceda97bc41becf4f9: 256x256, 192 frames (8.00 s), 20 prompt tokens, 20 steps, seed=11
+W video video_5f1ed88f97cdf6eceda97bc41becf4f9: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_dd159968de95188a111e7282910d3c4f: 1344x768, 124 frames (5.17 s), 4 prompt tokens, 2 steps, seed=7213560882512866
+W video video_dd159968de95188a111e7282910d3c4f: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_81ca3836097a03c2653b247bd95cf390: 768x1344, 243 frames (10.12 s), 4 prompt tokens, 2 steps, seed=8880206318430996
+W video video_81ca3836097a03c2653b247bd95cf390: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   the_generator_gets_the_size_the_chunks_and_the_steps
+I video video_cb446c91290863b021a60eccd2231571: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=8138065230182374
+W video video_cb446c91290863b021a60eccd2231571: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_a76c0372da805e0ce4d80c7fce6fa99b: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=4220287034998978
+W video video_a76c0372da805e0ce4d80c7fce6fa99b: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   the_shift_threads_to_the_request_and_echoes
+I video video_f07c9140269d226240999c520c1418d3: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=4708221700207866
+W video video_f07c9140269d226240999c520c1418d3: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_01fdd0bddb895d01c57ab48920470aaf: 256x256, the length the model chooses, 20 prompt tokens, 2 steps, seed=7863220069398283
+W video video_01fdd0bddb895d01c57ab48920470aaf: failed: the video could not be written: this libavcodec has no H.264 encoder
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:279: CHECK_EQ(str_at(o, "status"), std::string("completed")): "failed" vs "completed"
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:280: CHECK_EQ(str_at(o, "seconds"), std::string("0.12")): "auto" vs "0.12"
+I video video_642f4964534039303c9d88315420f413: 256x256, the length the model chooses, 20 prompt tokens, 2 steps, seed=5626162413236943
+W video video_642f4964534039303c9d88315420f413: failed: the video could not be written: this libavcodec has no H.264 encoder
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:279: CHECK_EQ(str_at(o, "status"), std::string("completed")): "failed" vs "completed"
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:280: CHECK_EQ(str_at(o, "seconds"), std::string("0.12")): "auto" vs "0.12"
+I video video_2c473447ece483a5e24c4c3fb0f13477: 256x256, 192 frames (8.00 s), 20 prompt tokens, 2 steps, seed=774007873686199
+W video video_2c473447ece483a5e24c4c3fb0f13477: failed: the video could not be written: this libavcodec has no H.264 encoder
+I req refused -> 400 invalid_request_error: decoder: this model has one decoder and takes no name
+I video video_d9f6ef66dbdddfe60f2a5ea8b75ba177: 512x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=7612286887904681
+W video video_d9f6ef66dbdddfe60f2a5ea8b75ba177: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_7296c45578a0942a0136b93ba68f7e3d: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=6201945927881541
+W video video_7296c45578a0942a0136b93ba68f7e3d: failed: the video could not be written: this libavcodec has no H.264 encoder
+I req refused -> 400 invalid_request_error: decoder: this model decodes with vae, diffusion
+I req refused -> 400 invalid_request_error: decoder: the diffusion decoder makes frames of 131072 pixels at most
+  ok   a_decoder_is_named_and_held_to_its_area
+I req refused -> 400 invalid_request_error: latent_upscale: this model has no latent upscaler
+I req refused -> 400 invalid_request_error: latent_upscale: expected a factor from 1 to 4
+I req refused -> 400 invalid_request_error: latent_upscale: expected a factor from 1 to 4
+I req refused -> 400 invalid_request_error: upscale_refine_steps: counts the steps after a latent upscale; give latent_upscale above 1 with it
+I req refused -> 400 invalid_request_error: upscale_refine_steps: expected a positive integer
+I video video_572f959bfc11fd04cf402ff966c5a44e: 512x512, 124 frames (5.17 s), 20 prompt tokens, 2 steps (the first -2 at 256x256, upscaled for the last 4), seed=7458005900708102
+W video video_572f959bfc11fd04cf402ff966c5a44e: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_533067d691c1d754ae04e1101831a97a: 512x512, 124 frames (5.17 s), 20 prompt tokens, 2 steps (the first -1 at 256x256, upscaled for the last 3), seed=227629815747102
+W video video_533067d691c1d754ae04e1101831a97a: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_d9faf26b4ce38425bce1d571cb05d7f2: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=5389086257044964
+W video video_d9faf26b4ce38425bce1d571cb05d7f2: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   latent_upscale_reaches_the_generator_where_the_model_has_an_upscaler
+I video video_5bd0b5d377cac2433e302364d842c5fd: 512x256, 158 frames (6.58 s), 9 prompt tokens, 2 steps, seed=3868676541200470
+W video video_5bd0b5d377cac2433e302364d842c5fd: failed: the video could not be written: this libavcodec has no H.264 encoder
+I req refused -> 400 invalid_request_error: input_reference: this server reads reference media as ref_image_N file parts
+  ok   a_form_creates_a_video_too
+I req refused -> 400 invalid_request_error: target: expected JSON
+I req refused -> 400 invalid_request_error: conditions: expected JSON
+I req refused -> 400 invalid_request_error: loras: expected JSON
+I req refused -> 400 invalid_request_error: target: expected JSON
+I video video_d19634cc23951895b16cf2470ec28f29: 448x256, 124 frames (5.17 s), 9 prompt tokens, 2 steps, seed=8514661736797437
+W video video_d19634cc23951895b16cf2470ec28f29: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   a_form_field_of_brackets_is_refused_rather_than_parsed
+I video video_ceb5892835ddcd74b5c2f30aafa32e55: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=1164097536805143
+W video video_ceb5892835ddcd74b5c2f30aafa32e55: failed: the video could not be written: this libavcodec has no H.264 encoder
+  FAIL a_video_job_completes_and_serves_its_file
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:409: REQUIRE_EQ(str_at(o, "status"), std::string("completed")): "failed" vs "completed"
+I video video_0eb4c8db2bd66d824494afb50794c777: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=7999767448469758
+W video video_0eb4c8db2bd66d824494afb50794c777: failed: the video could not be written: this libavcodec has no H.264 encoder
+  FAIL a_failed_generation_is_a_failed_job_with_its_reason
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:469: CHECK_EQ(str_at(o["error"], "code"), std::string("generation_failed")): "encoding_failed" vs "generation_failed"
+  FAIL a_failed_generation_is_a_failed_job_with_its_reason
+    /data/q27/rad10/r374/src/tests/videos_test.cpp:470: CHECK(has(str_at(o["error"], "message"), "the engine stopped"))
+W req refused -> 501 not_implemented_error: /v1/videos requires a video generation model; this one does not make video
+W req refused -> 501 not_implemented_error: /v1/videos requires a video generation model
+  ok   the_video_routes_are_501_without_a_video_model
+I video video_387d04f7bb63a5255898537c711f2514: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 5 reference parts, seed=6761163633648800
+W video video_387d04f7bb63a5255898537c711f2514: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   ref2va_reference_media_reach_the_generator
+I video video_20ec3ee656b844dd515570d190d66065: 256x256, 124 frames (5.17 s), 40 prompt tokens, 2 steps, 2 reference parts, seed=2168227676951167
+W video video_20ec3ee656b844dd515570d190d66065: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   ref2va_pictures_are_presented_before_the_prompt
+I video video_c49b9442586475bd7e94c01b2bae27dc: 256x256, 124 frames (5.17 s), 54 prompt tokens, 2 steps, 4 reference parts, seed=6206702337606061
+W video video_c49b9442586475bd7e94c01b2bae27dc: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   ref2va_videos_and_audios_are_encoded_and_spoken
+I video video_78902fe64616c779c64f13bff6181e2c: 256x256, 124 frames (5.17 s), 36 prompt tokens, 2 steps, 2 reference parts, seed=4915057686532748
+W video video_78902fe64616c779c64f13bff6181e2c: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   fl2va_keyframes_feed_the_tower_and_pin_the_output_ends
+I video video_6101e00c11ff6ae42bd315b859c9eba8: 512x256, 124 frames (5.17 s), 36 prompt tokens, 2 steps, 2 reference parts, seed=6939282157399330
+W video video_6101e00c11ff6ae42bd315b859c9eba8: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   fl2va_keyframes_are_prepared_at_an_upscales_small_size_too
+I video video_fd4aedd222e78ea4bd78dc3a285b663c: 256x256, 124 frames (5.17 s), 21 prompt tokens, 2 steps, 1 reference parts, seed=502672422552096
+W video video_fd4aedd222e78ea4bd78dc3a285b663c: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   l2va_presents_its_sole_frame_as_picture_1
+I video video_d989c42528736a03f7d7eb67a16a4b58: 256x256, 124 frames (5.17 s), 34 prompt tokens, 2 steps, 2 reference parts, seed=2786451871355567
+W video video_d989c42528736a03f7d7eb67a16a4b58: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   first_frame_mode_center_cover_crops_the_first_anchor
+I req refused -> 400 invalid_request_error: first_frame_mode: expected "stretch" (the reference's own resize) or "center" (keep the anchor's aspect, crop the canvas)
+I video video_2eff4de208d022db8017cccbd96f4e32: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 1 reference parts, seed=6739023688203795
+W video video_2eff4de208d022db8017cccbd96f4e32: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_9d3fb0c0765a9c61697c94f060724e07: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 1 reference parts, seed=2531243699849472
+W video video_9d3fb0c0765a9c61697c94f060724e07: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   first_frame_mode_refuses_a_mode_it_does_not_know
+I video video_9233c523e88041d77de7102508dd0d06: 256x256, 124 frames (5.17 s), 6 prompt tokens, 2 steps, 2 reference parts, seed=6567501620587840
+W video video_9233c523e88041d77de7102508dd0d06: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   fl2va_without_a_tower_pins_only
+I req refused -> 400 invalid_request_error: last_frame: task 'fl2va' pins a last frame: give a last_frame part
+  ok   a_keyframe_task_refuses_a_missing_frame
+I req refused -> 400 invalid_request_error: task: ref2va takes at least one reference part: ref_image_N, ref_video_N, ref_video_audio_N or ref_audio_N
+I req refused -> 400 invalid_request_error: task: ref2va takes at least one reference part: ref_image_N, ref_video_N, ref_video_audio_N or ref_audio_N
+I req refused -> 400 invalid_request_error: ref_image_1: 'ref_image_1' carries an empty file
+I req refused -> 400 invalid_request_error: ref_image_2: the ref_image_N parts must be numbered 1 to 2 without gaps or repeats
+I req refused -> 400 invalid_request_error: ref_image_1: two parts are numbered ref_image_1
+I req refused -> 400 invalid_request_error: ref_video_audio_1: 'ref_video_audio_1' is the soundtrack of a reference video; give ref_video_1 with it
+I req refused -> 400 invalid_request_error: ref_image_10: this model takes at most 9 parts named ref_image_N
+I req refused -> 400 invalid_request_error: task: reference files are given: send them with task ref2va, or send none
+I req refused -> 400 invalid_request_error: task: reference files are given: send them with task ref2va, or send none
+I req refused -> 400 invalid_request_error: task: this server makes video from text: t2va
+  ok   ref2va_requests_are_refused_naming_the_part
+I req refused -> 400 invalid_request_error: negative_prompt: this model takes no guidance
+I req refused -> 400 invalid_request_error: stg_scale: this model takes no guidance
+I req refused -> 400 invalid_request_error: guidance_rescale: expected a number from 0 to 1
+I req refused -> 400 invalid_request_error: audio_guidance_scale: expected a number from 0 to 100
+I req refused -> 400 invalid_request_error: negative_prompt: expected a string
+I video video_46d20397e665f07eb6244d9905542add: 256x256, 124 frames (5.17 s), 20 prompt tokens, 1 steps, seed=2164236354553347
+W video video_46d20397e665f07eb6244d9905542add: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_4cd613d69724be1952833de1f96c9829: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=1673941915709889
+W video video_4cd613d69724be1952833de1f96c9829: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_e0ab845e0434efcc0a06e0e44e4b8302: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=7251532295098914
+W video video_e0ab845e0434efcc0a06e0e44e4b8302: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   guidance_and_the_negative_prompt_reach_a_guided_model
+I req refused -> 400 invalid_request_error: input_reference: this server reads reference media as ref_image_N file parts
+I req refused -> 400 invalid_request_error: input_reference: the picture could not be read: not a recognised image or video format (Invalid data found when processing input)
+I req refused -> 400 invalid_request_error: task: a video from a picture is i2va
+I video video_9ddface5f10a189ae4b16146b33101d6: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=1828355378286789
+W video video_9ddface5f10a189ae4b16146b33101d6: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_c0892362473fe47ca0b68f323957d1e4: 512x512, 124 frames (5.17 s), 20 prompt tokens, 2 steps (the first -1 at 256x256, upscaled for the last 3), seed=1536599274892973
+W video video_c0892362473fe47ca0b68f323957d1e4: failed: the video could not be written: this libavcodec has no H.264 encoder
+I video video_8cd518f38d8f0d8fe48242f3a5ca63f7: 512x256, 124 frames (5.17 s), 9 prompt tokens, 2 steps, seed=5385733414671884
+W video video_8cd518f38d8f0d8fe48242f3a5ca63f7: failed: the video could not be written: this libavcodec has no H.264 encoder
+  ok   input_reference_becomes_the_first_frame_at_the_first_steps_size
+W req refused -> 501 server_error: input_reference: the picture could not be prepared: this libavcodec has no H.264 encoder
+  ok   input_reference_takes_the_models_h264_round_trip
+7 failure(s)
+slowest: a_length_head_chooses_the_length_of_a_request_that_names_none 0.10 s
+
+        Start 120: avx_check_general
+ 96/147 Test #105: video_gen_test ...................   Passed    0.97 sec
+        Start 121: isa_tools
+ 97/147 Test #121: isa_tools ........................   Passed    0.06 sec
+        Start 122: r4d_emu_pick
+ 98/147 Test #122: r4d_emu_pick .....................   Passed    0.20 sec
+        Start 123: r4d_emu_norm
+ 99/147 Test #123: r4d_emu_norm .....................   Passed    0.38 sec
+        Start 124: r4d_emu_escale
+100/147 Test #124: r4d_emu_escale ...................   Passed    0.01 sec
+        Start 125: r4d_emu_qsa
+101/147 Test  #88: spechub_dflash_couple_test .......   Passed    4.37 sec
+        Start 126: r4d_emu_lora
+102/147 Test  #98: tokenizer_test ...................   Passed    5.16 sec
+        Start 127: r4d_emu_f32
+103/147 Test #127: r4d_emu_f32 ......................   Passed    0.41 sec
+        Start 128: r4d_emu_mhc
+104/147 Test #101: transport_test ...................   Passed    5.88 sec
+        Start 129: r4d_emu_fp8f32
+105/147 Test #120: avx_check_general ................   Passed    4.98 sec
+        Start 130: r4d_emu_kda
+106/147 Test #139: r4d_emu_attn_shard2 ..............   Passed   20.06 sec
+        Start 131: r4d_emu_moemx
+107/147 Test #130: r4d_emu_kda ......................   Passed    0.29 sec
+        Start 132: r4d_emu_mla
+108/147 Test #125: r4d_emu_qsa ......................   Passed    7.11 sec
+        Start 133: r4d_emu_moefuse
+109/147 Test #133: r4d_emu_moefuse ..................   Passed    0.79 sec
+        Start 134: r4d_emu_kvres
+110/147 Test #134: r4d_emu_kvres ....................   Passed    0.04 sec
+        Start 135: r4d_emu_dsa
+111/147 Test #128: r4d_emu_mhc ......................   Passed    6.00 sec
+        Start 136: r4d_emu_m2xfp4
+112/147 Test #136: r4d_emu_m2xfp4 ...................   Passed    0.65 sec
+        Start 138: r4d_emu_attn_shard1
+113/147 Test  #41: kbench_mutant_test ...............   Passed   18.88 sec
+        Start 142: halo_emu_gemm
+114/147 Test #135: r4d_emu_dsa ......................   Passed    2.00 sec
+        Start 143: halo_emu_norm
+115/147 Test #143: halo_emu_norm ....................   Passed    0.38 sec
+        Start 144: halo_emu_escale
+116/147 Test #144: halo_emu_escale ..................   Passed    0.01 sec
+        Start 145: halo_emu_pick
+117/147 Test #145: halo_emu_pick ....................   Passed    0.20 sec
+        Start 146: halo_emu_qsa
+118/147 Test #129: r4d_emu_fp8f32 ...................   Passed    7.95 sec
+        Start 147: halo_emu_lora
+119/147 Test #142: halo_emu_gemm ....................   Passed    7.70 sec
+        Start 148: halo_emu_f32
+120/147 Test #146: halo_emu_qsa .....................   Passed    7.36 sec
+        Start 149: halo_emu_mhc
+121/147 Test #148: halo_emu_f32 .....................   Passed    0.41 sec
+        Start 150: halo_emu_fp8f32
+122/147 Test #119: avx_check ........................   Passed   20.93 sec
+        Start 151: halo_emu_kda
+123/147 Test #151: halo_emu_kda .....................   Passed    0.26 sec
+        Start 152: halo_emu_mla
+124/147 Test #150: halo_emu_fp8f32 ..................   Passed    4.89 sec
+        Start 153: halo_emu_moefuse
+125/147 Test #153: halo_emu_moefuse .................   Passed    0.94 sec
+        Start 154: halo_emu_kvres
+126/147 Test #154: halo_emu_kvres ...................   Passed    0.03 sec
+        Start 155: halo_emu_dsa
+127/147 Test #149: halo_emu_mhc .....................   Passed    5.91 sec
+        Start 156: halo_emu_ref
+128/147 Test #156: halo_emu_ref .....................   Passed    0.02 sec
+        Start 157: halo_emu_paged
+129/147 Test #138: r4d_emu_attn_shard1 ..............   Passed   15.76 sec
+        Start 158: halo_emu_attn_shard0
+130/147 Test #155: halo_emu_dsa .....................   Passed    3.62 sec
+        Start 159: halo_emu_attn_shard1
+131/147 Test #159: halo_emu_attn_shard1 .............   Passed    2.06 sec
+        Start 160: halo_emu_attn_shard2
+132/147 Test #158: halo_emu_attn_shard0 .............   Passed    5.94 sec
+        Start 163: ops_doc
+133/147 Test #163: ops_doc ..........................   Passed    0.06 sec
+        Start 164: kernel_report_check
+134/147 Test #164: kernel_report_check ..............   Passed    0.02 sec
+        Start 165: rad_export_test
+135/147 Test #165: rad_export_test ..................   Passed    1.92 sec
+        Start 166: spark25_validation_test
+136/147 Test #166: spark25_validation_test ..........   Passed    0.26 sec
+        Start 167: dspark_qos_regression_test
+137/147 Test #167: dspark_qos_regression_test .......   Passed    0.09 sec
+        Start 174: vendor_sums
+138/147 Test #174: vendor_sums ......................   Passed    0.03 sec
+139/147 Test #160: halo_emu_attn_shard2 .............   Passed    5.71 sec
+140/147 Test #126: r4d_emu_lora .....................   Passed   49.45 sec
+141/147 Test #131: r4d_emu_moemx ....................   Passed   47.27 sec
+        Start  62: quant_ggml_test
+142/147 Test  #62: quant_ggml_test ..................   Passed    4.45 sec
+        Start  72: relayout_parity_test
+143/147 Test  #72: relayout_parity_test .............   Passed    0.56 sec
+144/147 Test #152: halo_emu_mla .....................   Passed   39.50 sec
+145/147 Test #147: halo_emu_lora ....................   Passed   55.97 sec
+146/147 Test #132: r4d_emu_mla ......................   Passed   88.79 sec
+147/147 Test #157: halo_emu_paged ...................   Passed  105.71 sec
+
+98% tests passed, 3 tests failed out of 147
+
+Label Time Summary:
+fast        = 664.93 sec*proc (147 tests)
+halo_emu    = 246.61 sec*proc (19 tests)
+r4d_emu     = 195.06 sec*proc (12 tests)
+unit        = 135.28 sec*proc (106 tests)
+
+Total Test time (real) = 145.36 sec
+
+The following tests did not run:
+	 54 - nemotron35_device_test (Skipped)
+	 67 - r4d_bf16_capacity_test (Skipped)
+
+The following tests FAILED:
+	 29 - gbnf_test_shard2 (Failed)                         fast unit
+	 52 - mm_test (Failed)                                  fast unit
+	106 - videos_test (Failed)                              fast unit
+Errors while running CTest

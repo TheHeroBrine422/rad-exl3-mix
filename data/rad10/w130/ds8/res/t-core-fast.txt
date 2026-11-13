@@ -1,0 +1,610 @@
+Test project /data/q27/rad10/build
+        Start 137: r4d_emu_attn_shard0
+        Start 139: r4d_emu_attn_shard2
+        Start   5: abi_layout_test
+        Start   6: advance_test
+        Start   7: arch_test
+        Start   8: audio_gen_test
+        Start   9: build_test
+        Start  10: chat_test
+  1/147 Test   #5: abi_layout_test ..................   Passed    0.03 sec
+        Start  11: chatparse_gemma4_test
+  2/147 Test   #8: audio_gen_test ...................   Passed    0.03 sec
+        Start  12: chatparse_test
+  3/147 Test   #6: advance_test .....................   Passed    0.03 sec
+        Start  13: checkpoint_test
+  4/147 Test  #13: checkpoint_test ..................   Passed    0.06 sec
+        Start  15: clef_test
+  5/147 Test  #15: clef_test ........................   Passed    0.03 sec
+        Start  16: config_test
+  6/147 Test  #16: config_test ......................   Passed    0.04 sec
+        Start  17: convert_test
+  7/147 Test  #11: chatparse_gemma4_test ............   Passed    0.45 sec
+        Start  18: cvec_test
+  8/147 Test   #9: build_test .......................   Passed    0.47 sec
+        Start  19: dashboard_test
+  9/147 Test  #19: dashboard_test ...................   Passed    0.03 sec
+        Start  20: device_test
+ 10/147 Test  #10: chat_test ........................   Passed    0.52 sec
+        Start  21: diag_test
+ 11/147 Test  #18: cvec_test ........................   Passed    0.07 sec
+        Start  23: encoding_test
+ 12/147 Test  #23: encoding_test ....................   Passed    0.07 sec
+        Start  25: fixture_test
+ 13/147 Test  #21: diag_test ........................   Passed    0.22 sec
+        Start  26: format_test
+ 14/147 Test  #25: fixture_test .....................   Passed    0.59 sec
+        Start  27: gbnf_test_shard0
+ 15/147 Test  #20: device_test ......................   Passed    0.78 sec
+        Start  28: gbnf_test_shard1
+ 16/147 Test  #26: format_test ......................   Passed    1.60 sec
+        Start  29: gbnf_test_shard2
+ 17/147 Test   #7: arch_test ........................   Passed    3.33 sec
+        Start  30: gbnf_test_shard3
+ 18/147 Test  #12: chatparse_test ...................   Passed    6.19 sec
+        Start  31: gen_config_test
+ 19/147 Test  #31: gen_config_test ..................   Passed    0.03 sec
+        Start  32: gen_lora_test
+ 20/147 Test  #32: gen_lora_test ....................   Passed    0.07 sec
+        Start  33: gen_test
+ 21/147 Test  #33: gen_test .........................   Passed    0.04 sec
+        Start  34: glm5next_test
+ 22/147 Test  #27: gbnf_test_shard0 .................   Passed    6.26 sec
+        Start  35: harness_test
+ 23/147 Test  #28: gbnf_test_shard1 .................   Passed    6.23 sec
+        Start  36: hf_model_test
+ 24/147 Test  #36: hf_model_test ....................   Passed    0.03 sec
+        Start  37: host_experts_test
+ 25/147 Test  #30: gbnf_test_shard3 .................   Passed    4.36 sec
+        Start  38: hostmem_test
+ 26/147 Test  #38: hostmem_test .....................   Passed    0.03 sec
+        Start  39: images_test
+ 27/147 Test  #39: images_test ......................***Failed    0.03 sec
+I req refused -> 400 invalid_request_error: wobble: 'wobble' is not a field of /v1/images/generations
+I req refused -> 400 invalid_request_error: prompt: the prompt is required
+I req refused -> 400 invalid_request_error: prompt: expected a string
+I req refused -> 400 invalid_request_error: n: expected an integer in 1..4
+I req refused -> 400 invalid_request_error: n: expected an integer in 1..4
+I req refused -> 400 invalid_request_error: response_format: url is not served: this server keeps no image to serve later; ask for b64_json
+I req refused -> 400 invalid_request_error: background: jpeg has no transparency; ask for png or webp
+I req refused -> 400 invalid_request_error: partial_images: partial images are sent on a stream; set stream
+I req refused -> 400 invalid_request_error: num_inference_steps: this model samples on its own 8-step schedule and takes no other
+I req refused -> 400 invalid_request_error: height: width and height go together
+I req refused -> 400 invalid_request_error: width: width and height go together
+I req refused -> 400 invalid_request_error: size: expected "WxH" or "auto"
+I req refused -> 400 invalid_request_error: size: 2048x2048 is larger than this model makes (1048576 pixels)
+I req refused -> 400 invalid_request_error: true_cfg_scale: guidance needs a negative_prompt
+I req refused -> 400 invalid_request_error: image: pictures go to /v1/images/edits
+I req refused -> 400 invalid_request_error: response_format: url is not served: this server keeps no image to serve later; ask for b64_json
+I req refused -> 400 invalid_request_error: image: an edit needs at least one picture
+W req refused -> 501 not_implemented_error: this model makes images from text only
+  ok   an_images_request_that_cannot_be_served_names_its_field
+W req refused -> 501 not_implemented_error: this is an image model: it serves /v1/images/generations and /v1/images/edits and generates no text
+W req refused -> 501 not_implemented_error: this is an image model: it serves /v1/images/generations and /v1/images/edits and generates no text
+  ok   an_image_model_names_the_images_endpoints_and_its_capabilities
+  ok   the_generator_gets_rounded_sizes_quality_steps_and_a_readable_seed
+  ok   usage_counts_each_pictures_tokens_in_every_branch
+I images: generation 256x128 n=1 steps=0 seed=947023228489323 guided
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_second_tokenizer_and_a_minimum_prompt_reach_the_generator
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=4081168005608147
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_second_tokenizer_and_a_minimum_prompt_reach_the_generator
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=821781692841976 guided
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_second_tokenizer_and_a_minimum_prompt_reach_the_generator
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: prompt: the prompt is 5 tokens to this model's second tokenizer, which reads at most 4
+I req refused -> 400 invalid_request_error: sampler: this model samples with flow-matching Euler on its own schedule
+I images: generation 256x128 n=1 steps=0 seed=3158214498394462
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_discrete_model_takes_its_sampler_and_reads_the_prompt_in_windows
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=6700741870637900
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_discrete_model_takes_its_sampler_and_reads_the_prompt_in_windows
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=216914695068037
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL a_discrete_model_takes_its_sampler_and_reads_the_prompt_in_windows
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: sampler: 'euler_ancestral' is not a sampler this model serves
+I req refused -> 400 invalid_request_error: scheduler: 'ddim_uniform' is not a scheduler this model serves
+I req refused -> 400 invalid_request_error: rebalance: this model has no rebalance
+I images: generation 256x128 n=1 steps=0 seed=8811721423972104
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I images: generation 256x128 n=1 steps=0 seed=1911963965982479
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=16982034056185
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=954633918805177
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=8163075129451699
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:271: CHECK_EQ(s.f->srv->router().dispatch(q).status, 200): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=6515996396680558
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_reaches_a_model_that_declares_it_and_is_refused_by_one_that_does_not
+    /data/q27/rad10/src/tests/images_test.cpp:274: CHECK_EQ(s.f->srv->router().dispatch(q).status, 200): 500 vs 200
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I images: generation 256x128 n=1 steps=0 seed=8981054532620646
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: rebalance: this model's rebalance has no presets; use true
+I req refused -> 400 invalid_request_error: rebalance: this model's rebalance has no presets; use true
+I req refused -> 400 invalid_request_error: rebalance: this model's rebalance has no presets; use true
+I images: generation 256x128 n=1 steps=0 seed=8655338428990778
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=6125139761833020
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=1786096250563007
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=4246756491996193
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=2600658253977839
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I images: generation 256x128 n=1 steps=0 seed=1397305291103077
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL rebalance_presets_reach_a_model_that_declares_them
+    /data/q27/rad10/src/tests/images_test.cpp:312: CHECK_EQ(s.f->srv->router().dispatch(q).status, 200): 500 vs 200
+I req refused -> 400 invalid_request_error: rebalance: expected true, false, "legacy", "balanced", "detail" or "subtle"
+I images: generation 256x128 n=1 steps=0 seed=4336936593413838 guided
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL guidance_follows_the_model_cards_terms_and_its_default_negative
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=8738112687848762 guided
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL guidance_follows_the_model_cards_terms_and_its_default_negative
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I images: generation 256x128 n=1 steps=0 seed=5961689349209901
+W req refused -> 500 server_error: the picture could not be encoded: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL guidance_follows_the_model_cards_terms_and_its_default_negative
+    /data/q27/rad10/src/tests/images_test.cpp:29: CHECK_EQ(r.status, status): 500 vs 200
+I req refused -> 400 invalid_request_error: guidance_scale: true_cfg_scale and guidance_scale are the same field; name one
+I req refused -> 400 invalid_request_error: background: this model makes opaque images
+  ok   an_auto_background_follows_the_pictures_alpha
+  ok   a_generators_failure_is_a_400_or_a_500_streamed_or_not
+  ok   a_multipart_edit_reads_text_fields_and_picture_parts
+  ok   a_streamed_generation_sends_previews_then_the_image
+22 failure(s)
+
+        Start  40: issue_div_test
+ 28/147 Test  #37: host_experts_test ................   Passed    0.27 sec
+        Start  41: kbench_mutant_test
+ 29/147 Test  #40: issue_div_test ...................   Passed    0.21 sec
+        Start  42: kbench_test
+ 30/147 Test  #35: harness_test .....................   Passed    0.65 sec
+        Start  43: kld_test
+ 31/147 Test  #42: kbench_test ......................   Passed    0.22 sec
+        Start  44: kv_window_test
+ 32/147 Test  #43: kld_test .........................   Passed    0.16 sec
+        Start  46: laya_test
+ 33/147 Test  #46: laya_test ........................   Passed    0.03 sec
+        Start  47: lifecycle_test
+ 34/147 Test  #47: lifecycle_test ...................   Passed    0.19 sec
+        Start  48: lora_ops_test
+ 35/147 Test  #44: kv_window_test ...................   Passed    0.47 sec
+        Start  49: lora_test
+ 36/147 Test  #34: glm5next_test ....................   Passed    3.24 sec
+        Start  50: mem_test
+ 37/147 Test  #29: gbnf_test_shard2 .................   Passed    7.72 sec
+        Start  51: mica_test
+ 38/147 Test  #51: mica_test ........................   Passed    0.05 sec
+        Start  52: mm_test
+ 39/147 Test  #48: lora_ops_test ....................   Passed    1.73 sec
+        Start  53: mtp_couple_plan_test
+ 40/147 Test  #53: mtp_couple_plan_test .............   Passed    0.03 sec
+        Start  54: nemotron35_device_test
+ 41/147 Test  #50: mem_test .........................   Passed    0.84 sec
+        Start  55: nemotron35_test
+ 42/147 Test  #54: nemotron35_device_test ...........***Skipped   0.22 sec
+        Start  56: p4b_kv_ring_test
+ 43/147 Test #137: r4d_emu_attn_shard0 ..............   Passed   10.58 sec
+        Start  57: place_test
+ 44/147 Test  #56: p4b_kv_ring_test .................   Passed    0.22 sec
+        Start  58: plugin_test
+ 45/147 Test  #49: lora_test ........................   Passed    2.16 sec
+        Start  59: precompiled_test
+ 46/147 Test  #59: precompiled_test .................   Passed    0.03 sec
+        Start  60: projection_test
+ 47/147 Test  #60: projection_test ..................   Passed    0.03 sec
+        Start  61: quant_algo_test
+ 48/147 Test  #58: plugin_test ......................   Passed    0.29 sec
+        Start  63: quant_m2xfp_test
+ 49/147 Test  #63: quant_m2xfp_test .................   Passed    0.29 sec
+        Start  64: quant_tcq_gpu_test
+ 50/147 Test  #64: quant_tcq_gpu_test ...............   Passed    0.23 sec
+        Start  65: quant_test
+ 51/147 Test  #61: quant_algo_test ..................   Passed    0.92 sec
+        Start  66: r4d_ar_links_test
+ 52/147 Test  #66: r4d_ar_links_test ................   Passed    0.09 sec
+        Start  67: r4d_bf16_capacity_test
+ 53/147 Test  #55: nemotron35_test ..................   Passed    1.57 sec
+        Start  68: r4d_bf16_gemm_rows_test
+ 54/147 Test  #68: r4d_bf16_gemm_rows_test ..........   Passed    0.03 sec
+        Start  69: recipe_test
+ 55/147 Test  #69: recipe_test ......................   Passed    0.03 sec
+        Start  70: ref2va_pack_test
+ 56/147 Test  #70: ref2va_pack_test .................   Passed    0.00 sec
+        Start  71: ref_test
+ 57/147 Test  #67: r4d_bf16_capacity_test ...........***Skipped   0.25 sec
+        Start  73: runtime_test
+ 58/147 Test  #17: convert_test .....................   Passed   12.33 sec
+        Start  74: sample_test
+ 59/147 Test  #52: mm_test ..........................   Passed    2.39 sec
+        Start  75: sched_test
+ 60/147 Test  #73: runtime_test .....................   Passed    0.47 sec
+        Start  76: server_test
+ 61/147 Test  #75: sched_test .......................   Passed    0.14 sec
+        Start  77: shape_test
+ 62/147 Test  #57: place_test .......................   Passed    2.35 sec
+        Start  78: shapes_test
+ 63/147 Test  #78: shapes_test ......................   Passed    0.03 sec
+        Start  79: share_test
+ 64/147 Test  #77: shape_test .......................   Passed    0.32 sec
+        Start  80: shipped_plugins_test
+ 65/147 Test  #71: ref_test .........................   Passed    0.91 sec
+        Start  81: spark25_arch_test
+ 66/147 Test  #79: share_test .......................   Passed    0.03 sec
+        Start  82: spark25_chat_test
+ 67/147 Test  #81: spark25_arch_test ................   Passed    0.02 sec
+        Start  83: spark25_convert_test
+ 68/147 Test  #82: spark25_chat_test ................   Passed    0.03 sec
+        Start  84: spark25_recipe_test
+ 69/147 Test  #84: spark25_recipe_test ..............   Passed    0.03 sec
+        Start  85: spechub_accept_test
+ 70/147 Test  #85: spechub_accept_test ..............   Passed    0.04 sec
+        Start  86: spechub_cooperative_test
+ 71/147 Test  #86: spechub_cooperative_test .........   Passed    0.03 sec
+        Start  87: spechub_couple_test
+ 72/147 Test  #80: shipped_plugins_test .............   Passed    0.27 sec
+        Start  88: spechub_dflash_couple_test
+ 73/147 Test  #83: spark25_convert_test .............   Passed    0.30 sec
+        Start  89: spechub_wiring_test
+ 74/147 Test  #89: spechub_wiring_test ..............   Passed    0.03 sec
+        Start  90: speech_stream_test
+ 75/147 Test  #90: speech_stream_test ...............   Passed    0.14 sec
+        Start  91: speech_test
+ 76/147 Test  #91: speech_test ......................   Passed    0.03 sec
+        Start  92: stream_test
+ 77/147 Test  #74: sample_test ......................   Passed    1.19 sec
+        Start  93: systemone_test
+ 78/147 Test  #93: systemone_test ...................   Passed    0.03 sec
+        Start  94: text_split_test
+ 79/147 Test  #94: text_split_test ..................   Passed    0.03 sec
+        Start  95: text_test
+ 80/147 Test  #87: spechub_couple_test ..............   Passed    0.71 sec
+        Start  96: tokenizer_perf_test
+ 81/147 Test  #92: stream_test ......................   Passed    0.39 sec
+        Start  97: tokenizer_regex_test
+ 82/147 Test  #97: tokenizer_regex_test .............   Passed    0.07 sec
+        Start  98: tokenizer_test
+ 83/147 Test  #95: text_test ........................   Passed    0.33 sec
+        Start  99: tools_test
+ 84/147 Test  #99: tools_test .......................   Passed    0.03 sec
+        Start 100: torch_zip_test
+ 85/147 Test #100: torch_zip_test ...................   Passed    0.07 sec
+        Start 101: transport_test
+ 86/147 Test  #96: tokenizer_perf_test ..............   Passed    0.89 sec
+        Start 102: trigger_test
+ 87/147 Test #102: trigger_test .....................   Passed    0.22 sec
+        Start 103: util_test
+ 88/147 Test #103: util_test ........................   Passed    0.71 sec
+        Start 104: vae_geom_test
+ 89/147 Test #104: vae_geom_test ....................   Passed    0.00 sec
+        Start 105: video_gen_test
+ 90/147 Test  #76: server_test ......................   Passed    3.37 sec
+        Start 106: videos_test
+ 91/147 Test #106: videos_test ......................***Failed    0.33 sec
+I req refused -> 400 invalid_request_error: temperature: 'temperature' is not a field of /v1/videos
+I req refused -> 400 invalid_request_error: prompt: the prompt is required, as a non-empty string
+I req refused -> 400 invalid_request_error: prompt: the prompt is required, as a non-empty string
+I req refused -> 400 invalid_request_error: size: 250x256 is not a size this model makes: sides are multiples of 32 from 256, at most 1032192 pixels and 4:1; its canvas at that ratio is 768x800
+I req refused -> 400 invalid_request_error: size: expected WIDTHxHEIGHT, e.g. 1344x768
+I req refused -> 400 invalid_request_error: size: 4096x4096 is not a size this model makes: sides are multiples of 32 from 256, at most 1032192 pixels and 4:1; its canvas at that ratio is 768x768
+I req refused -> 400 invalid_request_error: seconds: this model makes 5.17 to 14.38 seconds
+I req refused -> 400 invalid_request_error: seconds: the length is a positive number of seconds
+I req refused -> 400 invalid_request_error: num_inference_steps: expected an integer in 2..65 (sigma grid points, the last one 0)
+I req refused -> 400 invalid_request_error: num_inference_steps: expected an integer in 2..65 (sigma grid points, the last one 0)
+I req refused -> 400 invalid_request_error: input_reference: only data: URLs are accepted; the server does not fetch remote URLs on a request's behalf
+I req refused -> 400 invalid_request_error: format: 'format' is not a field of /v1/videos
+I req refused -> 400 invalid_request_error: task: this server makes video from text, from reference media: t2va, ref2va
+I req refused -> 400 invalid_request_error: conditions: reference media arrive as ref_* file parts; conditions must be empty
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: shift: the video schedule shift: a number in (0, 100], or omit it to run the model's trained shift 12
+I req refused -> 400 invalid_request_error: audio_shift: the soundtrack schedule shift: a number in (0, 100], or omit it to run the model's trained shift 3
+I req refused -> 400 invalid_request_error: target: aspect_ratio must be w:h (16:9) or auto
+I req refused -> 400 invalid_request_error: size: give size or target's aspect_ratio and short_edge, not both
+I req refused -> 400 invalid_request_error: seconds: give seconds or target's duration_seconds, not both
+  ok   a_video_request_that_cannot_be_served_names_its_field
+I video video_adeaccdf0af0299ec339468d1bce2702: 256x256, 192 frames (8.00 s), 20 prompt tokens, 20 steps, seed=11
+W video video_adeaccdf0af0299ec339468d1bce2702: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_c49262819d40a6f7509970235e1ddcea: 1344x768, 124 frames (5.17 s), 4 prompt tokens, 2 steps, seed=3296342048993118
+W video video_c49262819d40a6f7509970235e1ddcea: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_513fd386bf6ed8a9dabc2296ff76181a: 768x1344, 243 frames (10.12 s), 4 prompt tokens, 2 steps, seed=3182523342008916
+W video video_513fd386bf6ed8a9dabc2296ff76181a: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   the_generator_gets_the_size_the_chunks_and_the_steps
+I video video_8f017cfc5c810504a30a1f6231aa7fef: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=4908499022961805
+W video video_8f017cfc5c810504a30a1f6231aa7fef: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_3092fcfb5558d38769a737c022ec91b3: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=4145807420595779
+W video video_3092fcfb5558d38769a737c022ec91b3: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   the_shift_threads_to_the_request_and_echoes
+I video video_a1645850987c148df55f89a2daae4ab1: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=5461012384286453
+W video video_a1645850987c148df55f89a2daae4ab1: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_d71470de24cb82868e3f700eae256b2d: 256x256, the length the model chooses, 20 prompt tokens, 2 steps, seed=7410242820782007
+W video video_d71470de24cb82868e3f700eae256b2d: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/src/tests/videos_test.cpp:279: CHECK_EQ(str_at(o, "status"), std::string("completed")): "failed" vs "completed"
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/src/tests/videos_test.cpp:280: CHECK_EQ(str_at(o, "seconds"), std::string("0.12")): "auto" vs "0.12"
+I video video_3d3b772519e75d07d689e524182fa53d: 256x256, the length the model chooses, 20 prompt tokens, 2 steps, seed=2262219243843801
+W video video_3d3b772519e75d07d689e524182fa53d: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/src/tests/videos_test.cpp:279: CHECK_EQ(str_at(o, "status"), std::string("completed")): "failed" vs "completed"
+  FAIL a_length_head_chooses_the_length_of_a_request_that_names_none
+    /data/q27/rad10/src/tests/videos_test.cpp:280: CHECK_EQ(str_at(o, "seconds"), std::string("0.12")): "auto" vs "0.12"
+I video video_60a83cab4a6e0337366db854fa844186: 256x256, 192 frames (8.00 s), 20 prompt tokens, 2 steps, seed=5384924733265130
+W video video_60a83cab4a6e0337366db854fa844186: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I req refused -> 400 invalid_request_error: decoder: this model has one decoder and takes no name
+I video video_819ffaa12ac9cb8b17e900639bba839f: 512x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=7498827946399814
+W video video_819ffaa12ac9cb8b17e900639bba839f: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_09d2156be576a659a21e27d623f26520: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=1994440262219133
+W video video_09d2156be576a659a21e27d623f26520: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I req refused -> 400 invalid_request_error: decoder: this model decodes with vae, diffusion
+I req refused -> 400 invalid_request_error: decoder: the diffusion decoder makes frames of 131072 pixels at most
+  ok   a_decoder_is_named_and_held_to_its_area
+I req refused -> 400 invalid_request_error: latent_upscale: this model has no latent upscaler
+I req refused -> 400 invalid_request_error: latent_upscale: expected a factor from 1 to 4
+I req refused -> 400 invalid_request_error: latent_upscale: expected a factor from 1 to 4
+I req refused -> 400 invalid_request_error: upscale_refine_steps: counts the steps after a latent upscale; give latent_upscale above 1 with it
+I req refused -> 400 invalid_request_error: upscale_refine_steps: expected a positive integer
+I video video_1eb9c78995cdec6c2825d1a862600950: 512x512, 124 frames (5.17 s), 20 prompt tokens, 2 steps (the first -2 at 256x256, upscaled for the last 4), seed=7145209288929685
+W video video_1eb9c78995cdec6c2825d1a862600950: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_fe4ff57a34631f63c564597dfcb89322: 512x512, 124 frames (5.17 s), 20 prompt tokens, 2 steps (the first -1 at 256x256, upscaled for the last 3), seed=4784099312305566
+W video video_fe4ff57a34631f63c564597dfcb89322: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_b78678e25642651abe717f39130cfaf1: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=1617818864049439
+W video video_b78678e25642651abe717f39130cfaf1: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   latent_upscale_reaches_the_generator_where_the_model_has_an_upscaler
+I video video_3847b0aaa6275cb44c559e8025f84289: 512x256, 158 frames (6.58 s), 9 prompt tokens, 2 steps, seed=3777984831566602
+W video video_3847b0aaa6275cb44c559e8025f84289: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I req refused -> 400 invalid_request_error: input_reference: this server reads reference media as ref_image_N file parts
+  ok   a_form_creates_a_video_too
+I req refused -> 400 invalid_request_error: target: expected JSON
+I req refused -> 400 invalid_request_error: conditions: expected JSON
+I req refused -> 400 invalid_request_error: loras: expected JSON
+I req refused -> 400 invalid_request_error: target: expected JSON
+I video video_39736411e7035a9d2651f40b4f7aaafa: 448x256, 124 frames (5.17 s), 9 prompt tokens, 2 steps, seed=7766105579158715
+W video video_39736411e7035a9d2651f40b4f7aaafa: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   a_form_field_of_brackets_is_refused_rather_than_parsed (0.10 s)
+I video video_5fe8189a79abae1c552e2d2b0e6904a3: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=4404408010716218
+W video video_5fe8189a79abae1c552e2d2b0e6904a3: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  SKIP a_video_job_completes_and_serves_its_file: this build has no libavcodec to write the MP4 with
+  ok   a_video_job_completes_and_serves_its_file
+I video video_9cb4b532934f52c905d0f220baffef91: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=3209534438903736
+W video video_9cb4b532934f52c905d0f220baffef91: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  SKIP a_failed_generation_is_a_failed_job_with_its_reason: this build has no libavcodec to reach the generator with
+  ok   a_failed_generation_is_a_failed_job_with_its_reason
+W req refused -> 501 not_implemented_error: /v1/videos requires a video generation model; this one does not make video
+W req refused -> 501 not_implemented_error: /v1/videos requires a video generation model
+  ok   the_video_routes_are_501_without_a_video_model
+I video video_22b5e5cefef9f820c2e90f0d07dc9ae0: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 5 reference parts, seed=2960771575344154
+W video video_22b5e5cefef9f820c2e90f0d07dc9ae0: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   ref2va_reference_media_reach_the_generator
+I video video_1769d8bbfb5d2493c4cf702a83b8e013: 256x256, 124 frames (5.17 s), 40 prompt tokens, 2 steps, 2 reference parts, seed=6804597433524463
+W video video_1769d8bbfb5d2493c4cf702a83b8e013: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   ref2va_pictures_are_presented_before_the_prompt
+I video video_c70a7347e4e983107fb3fa4dca118738: 256x256, 124 frames (5.17 s), 54 prompt tokens, 2 steps, 4 reference parts, seed=3625473777295687
+W video video_c70a7347e4e983107fb3fa4dca118738: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   ref2va_videos_and_audios_are_encoded_and_spoken
+I video video_99bea4482f76476399728126f2b28bf2: 256x256, 124 frames (5.17 s), 36 prompt tokens, 2 steps, 2 reference parts, seed=7636934416061218
+W video video_99bea4482f76476399728126f2b28bf2: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   fl2va_keyframes_feed_the_tower_and_pin_the_output_ends
+I video video_a5eec7fb3aa0165838234a231675b932: 512x256, 124 frames (5.17 s), 36 prompt tokens, 2 steps, 2 reference parts, seed=7212817961082824
+W video video_a5eec7fb3aa0165838234a231675b932: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   fl2va_keyframes_are_prepared_at_an_upscales_small_size_too
+I video video_bf24b3d23afad3d67097c7a8d5fb175a: 256x256, 124 frames (5.17 s), 21 prompt tokens, 2 steps, 1 reference parts, seed=2654335059999095
+W video video_bf24b3d23afad3d67097c7a8d5fb175a: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   l2va_presents_its_sole_frame_as_picture_1
+I video video_cb71c74ac647e600c5b94336ce91d618: 256x256, 124 frames (5.17 s), 34 prompt tokens, 2 steps, 2 reference parts, seed=2745510535614602
+W video video_cb71c74ac647e600c5b94336ce91d618: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   first_frame_mode_center_cover_crops_the_first_anchor
+I req refused -> 400 invalid_request_error: first_frame_mode: expected "stretch" (the reference's own resize) or "center" (keep the anchor's aspect, crop the canvas)
+I video video_21c7dcddf3d131fd9f4de14f3abc15d3: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 1 reference parts, seed=1328900629242466
+W video video_21c7dcddf3d131fd9f4de14f3abc15d3: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_0a2dc8e782ff2c9aa6e1bb660bc74746: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, 1 reference parts, seed=4431962814925425
+W video video_0a2dc8e782ff2c9aa6e1bb660bc74746: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   first_frame_mode_refuses_a_mode_it_does_not_know
+I video video_a01fc402b7bdd1b07003b21e38f2ecbc: 256x256, 124 frames (5.17 s), 6 prompt tokens, 2 steps, 2 reference parts, seed=1637822262990594
+W video video_a01fc402b7bdd1b07003b21e38f2ecbc: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   fl2va_without_a_tower_pins_only
+I req refused -> 400 invalid_request_error: last_frame: task 'fl2va' pins a last frame: give a last_frame part
+  ok   a_keyframe_task_refuses_a_missing_frame
+I req refused -> 400 invalid_request_error: task: ref2va takes at least one reference part: ref_image_N, ref_video_N, ref_video_audio_N or ref_audio_N
+I req refused -> 400 invalid_request_error: task: ref2va takes at least one reference part: ref_image_N, ref_video_N, ref_video_audio_N or ref_audio_N
+I req refused -> 400 invalid_request_error: ref_image_1: 'ref_image_1' carries an empty file
+I req refused -> 400 invalid_request_error: ref_image_2: the ref_image_N parts must be numbered 1 to 2 without gaps or repeats
+I req refused -> 400 invalid_request_error: ref_image_1: two parts are numbered ref_image_1
+I req refused -> 400 invalid_request_error: ref_video_audio_1: 'ref_video_audio_1' is the soundtrack of a reference video; give ref_video_1 with it
+I req refused -> 400 invalid_request_error: ref_image_10: this model takes at most 9 parts named ref_image_N
+I req refused -> 400 invalid_request_error: task: reference files are given: send them with task ref2va, or send none
+I req refused -> 400 invalid_request_error: task: reference files are given: send them with task ref2va, or send none
+I req refused -> 400 invalid_request_error: task: this server makes video from text: t2va
+  ok   ref2va_requests_are_refused_naming_the_part
+I req refused -> 400 invalid_request_error: negative_prompt: this model takes no guidance
+I req refused -> 400 invalid_request_error: stg_scale: this model takes no guidance
+I req refused -> 400 invalid_request_error: guidance_rescale: expected a number from 0 to 1
+I req refused -> 400 invalid_request_error: audio_guidance_scale: expected a number from 0 to 100
+I req refused -> 400 invalid_request_error: negative_prompt: expected a string
+I video video_f209c5658419198ba68446d86b936ac7: 256x256, 124 frames (5.17 s), 20 prompt tokens, 1 steps, seed=8004390387849066
+W video video_f209c5658419198ba68446d86b936ac7: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_7b8aa8383da0630aafb2100f72ef8ee4: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=8482220603791419
+W video video_7b8aa8383da0630aafb2100f72ef8ee4: failed: the video could not be written: this build has no libavcodec, so it writes no video
+I video video_c5dad187dcf5f77b512b10ee4b14650c: 256x256, 124 frames (5.17 s), 20 prompt tokens, 2 steps, seed=7063763598224365
+W video video_c5dad187dcf5f77b512b10ee4b14650c: failed: the video could not be written: this build has no libavcodec, so it writes no video
+  ok   guidance_and_the_negative_prompt_reach_a_guided_model
+I req refused -> 400 invalid_request_error: input_reference: this server reads reference media as ref_image_N file parts
+I req refused -> 400 invalid_request_error: input_reference: the picture could not be read: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+I req refused -> 400 invalid_request_error: task: a video from a picture is i2va
+I req refused -> 400 invalid_request_error: input_reference: the picture could not be read: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL input_reference_becomes_the_first_frame_at_the_first_steps_size
+    /data/q27/rad10/src/tests/videos_test.cpp:1113: REQUIRE_EQ(r.status, 200): 400 vs 200
+I req refused -> 400 invalid_request_error: input_reference: the picture could not be read: this build has no media decoder: it was configured without libavformat / libavcodec / libswscale (RAD_WITH_FFMPEG)
+  FAIL input_reference_takes_the_models_h264_round_trip
+    /data/q27/rad10/src/tests/videos_test.cpp:1148: REQUIRE_EQ(r.status, 200): 400 vs 200
+6 failure(s)
+slowest: a_form_field_of_brackets_is_refused_rather_than_parsed 0.10 s
+
+        Start 107: wire_test
+ 92/147 Test #107: wire_test ........................   Passed    0.08 sec
+        Start 108: xstats_test
+ 93/147 Test #108: xstats_test ......................   Passed    0.33 sec
+        Start 109: yarn_test
+ 94/147 Test #109: yarn_test ........................   Passed    0.03 sec
+        Start 119: avx_check
+ 95/147 Test #105: video_gen_test ...................   Passed    1.27 sec
+        Start 120: avx_check_general
+ 96/147 Test  #65: quant_test .......................   Passed    5.50 sec
+        Start 121: isa_tools
+ 97/147 Test #121: isa_tools ........................   Passed    0.06 sec
+        Start 122: r4d_emu_pick
+ 98/147 Test #122: r4d_emu_pick .....................   Passed    0.25 sec
+        Start 123: r4d_emu_norm
+ 99/147 Test #123: r4d_emu_norm .....................   Passed    0.40 sec
+        Start 124: r4d_emu_escale
+100/147 Test #124: r4d_emu_escale ...................   Passed    0.01 sec
+        Start 125: r4d_emu_qsa
+101/147 Test  #88: spechub_dflash_couple_test .......   Passed    4.91 sec
+        Start 126: r4d_emu_lora
+102/147 Test #101: transport_test ...................   Passed    5.90 sec
+        Start 127: r4d_emu_f32
+103/147 Test  #98: tokenizer_test ...................   Passed    6.13 sec
+        Start 128: r4d_emu_mhc
+104/147 Test #127: r4d_emu_f32 ......................   Passed    0.45 sec
+        Start 129: r4d_emu_fp8f32
+105/147 Test #139: r4d_emu_attn_shard2 ..............   Passed   21.25 sec
+        Start 130: r4d_emu_kda
+106/147 Test #130: r4d_emu_kda ......................   Passed    0.35 sec
+        Start 131: r4d_emu_moemx
+107/147 Test #120: avx_check_general ................   Passed    5.79 sec
+        Start 132: r4d_emu_mla
+108/147 Test  #41: kbench_mutant_test ...............   Passed   17.86 sec
+        Start 133: r4d_emu_moefuse
+109/147 Test #133: r4d_emu_moefuse ..................   Passed    0.79 sec
+        Start 134: r4d_emu_kvres
+110/147 Test #134: r4d_emu_kvres ....................   Passed    0.04 sec
+        Start 135: r4d_emu_dsa
+111/147 Test #125: r4d_emu_qsa ......................   Passed    9.22 sec
+        Start 136: r4d_emu_m2xfp4
+112/147 Test #128: r4d_emu_mhc ......................   Passed    7.19 sec
+        Start 138: r4d_emu_attn_shard1
+113/147 Test #136: r4d_emu_m2xfp4 ...................   Passed    0.68 sec
+        Start 142: halo_emu_gemm
+114/147 Test #135: r4d_emu_dsa ......................   Passed    2.35 sec
+        Start 143: halo_emu_norm
+115/147 Test #143: halo_emu_norm ....................   Passed    0.41 sec
+        Start 144: halo_emu_escale
+116/147 Test #144: halo_emu_escale ..................   Passed    0.01 sec
+        Start 145: halo_emu_pick
+117/147 Test #129: r4d_emu_fp8f32 ...................   Passed    8.90 sec
+        Start 146: halo_emu_qsa
+118/147 Test #145: halo_emu_pick ....................   Passed    0.26 sec
+        Start 147: halo_emu_lora
+119/147 Test #142: halo_emu_gemm ....................   Passed    8.32 sec
+        Start 148: halo_emu_f32
+120/147 Test #148: halo_emu_f32 .....................   Passed    0.43 sec
+        Start 149: halo_emu_mhc
+121/147 Test #146: halo_emu_qsa .....................   Passed    8.94 sec
+        Start 150: halo_emu_fp8f32
+122/147 Test #119: avx_check ........................   Passed   24.49 sec
+        Start 151: halo_emu_kda
+123/147 Test #151: halo_emu_kda .....................   Passed    0.30 sec
+        Start 152: halo_emu_mla
+124/147 Test #149: halo_emu_mhc .....................   Passed    7.09 sec
+        Start 153: halo_emu_moefuse
+125/147 Test #150: halo_emu_fp8f32 ..................   Passed    5.48 sec
+        Start 154: halo_emu_kvres
+126/147 Test #154: halo_emu_kvres ...................   Passed    0.04 sec
+        Start 155: halo_emu_dsa
+127/147 Test #138: r4d_emu_attn_shard1 ..............   Passed   16.85 sec
+        Start 156: halo_emu_ref
+128/147 Test #156: halo_emu_ref .....................   Passed    0.02 sec
+        Start 157: halo_emu_paged
+129/147 Test #153: halo_emu_moefuse .................   Passed    1.06 sec
+        Start 158: halo_emu_attn_shard0
+130/147 Test #155: halo_emu_dsa .....................   Passed    4.08 sec
+        Start 159: halo_emu_attn_shard1
+131/147 Test #159: halo_emu_attn_shard1 .............   Passed    2.22 sec
+        Start 160: halo_emu_attn_shard2
+132/147 Test #158: halo_emu_attn_shard0 .............   Passed    6.40 sec
+        Start 163: ops_doc
+133/147 Test #163: ops_doc ..........................   Passed    0.07 sec
+        Start 164: kernel_report_check
+134/147 Test #164: kernel_report_check ..............   Passed    0.02 sec
+        Start 165: rad_export_test
+135/147 Test #165: rad_export_test ..................   Passed    2.48 sec
+        Start 166: spark25_validation_test
+136/147 Test #166: spark25_validation_test ..........   Passed    0.27 sec
+        Start 167: dspark_qos_regression_test
+137/147 Test #167: dspark_qos_regression_test .......   Passed    0.09 sec
+        Start 174: vendor_sums
+138/147 Test #174: vendor_sums ......................   Passed    0.04 sec
+139/147 Test #160: halo_emu_attn_shard2 .............   Passed    6.21 sec
+140/147 Test #126: r4d_emu_lora .....................   Passed   53.68 sec
+141/147 Test #131: r4d_emu_moemx ....................   Passed   56.51 sec
+        Start  62: quant_ggml_test
+142/147 Test #147: halo_emu_lora ....................   Passed   49.76 sec
+143/147 Test  #62: quant_ggml_test ..................   Passed    5.07 sec
+        Start  72: relayout_parity_test
+144/147 Test  #72: relayout_parity_test .............   Passed    0.57 sec
+145/147 Test #152: halo_emu_mla .....................   Passed   42.87 sec
+146/147 Test #132: r4d_emu_mla ......................   Passed  108.69 sec
+147/147 Test #157: halo_emu_paged ...................   Passed  114.66 sec
+
+99% tests passed, 2 tests failed out of 147
+
+Label Time Summary:
+fast        = 736.60 sec*proc (147 tests)
+halo_emu    = 258.55 sec*proc (19 tests)
+r4d_emu     = 224.73 sec*proc (12 tests)
+unit        = 149.48 sec*proc (106 tests)
+
+Total Test time (real) = 159.10 sec
+
+The following tests did not run:
+	 54 - nemotron35_device_test (Skipped)
+	 67 - r4d_bf16_capacity_test (Skipped)
+
+The following tests FAILED:
+	 39 - images_test (Failed)                              fast unit
+	106 - videos_test (Failed)                              fast unit
+Errors while running CTest

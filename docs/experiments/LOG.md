@@ -4,6 +4,51 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 3:35 AM CST · #170 · box2 + ds8 radiance on ROCm 10.1 (radiance's own compiler setup): KLD rows byte-identical to the 7.14 build, FUSE no longer hangs, search running on it (w130)
+- **Status:** done · **Machine:** ds8 (install, builds, validation card 6 / 5 / 4), box2 (copy, identity, 374503f media
+  build card 2) · **Code:** `pipeline/hosts/rad10/` (README: rocm10-get, llvm10-vopd, rad10build, ff10build, packhome,
+  plug714, val10 / valbox / valr374, kldcmp, hostjson10, `core-42960d5..ca5491d.patch`) · **Data:** `data/rad10/w130/`
+  (ds8, box2, box2-r374: logs, KLD reports, text, decode steps, benches; rows files stay on the hosts)
+- **Install:** ROCm 10.1.0 = `rocm/dev-ubuntu-24.04:10.1.0-full`'s self-contained `/opt/rocm/core-10.1` (sha256:5ed1362e…;
+  AMD clang 24.0.0git, ROCm/llvm-project d6f6cb69; HIP 7.16) copied to `/opt/rocm-10.1` on both hosts; the pip 7.14 SDK
+  and the torch venv untouched, no `/opt/rocm`. Driver: amdgpu DRM interface **3.64.0** on both (7.0.14-pve), the
+  minimum the GUIDE's "amdgpu interface is 3.N" entry needs; dad1 was unreachable, so the setup follows radiance's Dockerfile.
+- **Build, the Docker way:** the `llvm` stage natively (ROCm's libLLVM at d6f6cb69 + `docker/llvm-vopd-pairing.patch`,
+  3.5 min on ds8), shadow tree `/data/q27/rad10/rocm-repeatable`, radiance with `-DRAD_HIP_VOPD_REPEATABLE=ON
+  --rocm-path=/opt/rocm-10.1` (gfx1201, FFmpeg off, host g++ 15 as the 7.14 build). radiance's `docker/llvm-check.sh`
+  (host paths) PASS. Source: `qc-exl3-v3-perf` a3799b5 + `git diff 42960d5 ca5491d` (rad-convert `--no-error`,
+  `--kld-progress`: the frozen 7.14 install has both, the perf branch not). Prefix `/data/q27/rad10/{install,home}`;
+  the 7.14 comparison = frozen core + the same plugins on pip 7.14 (`rad10/ref714/home`). Copied to box2 (same paths;
+  sha256 of install / homes / compiler / HIP runtime identical).
+- **Validation (golden-ver3-8k, 156,030 positions; 7.14 vs 10.1, same pack file):**
+
+  | | KLD | top-1 | rows |
+  |---|---|---|---|
+  | V2 3.00 | 0.370660 | 88.81% | **byte-identical** (7.14 frozen = 7.14 perf = 10.1 ds8 = 10.1 box2 = 374503f) |
+  | K4 (ladder k4 final, bf16 head) | 0.156978 | 94.04% | **byte-identical** (ds8, box2, 374503f) |
+  | K4H (+ R16 K7 mul1 head) | 0.156984 | 94.03% | **byte-identical** |
+  | K4A (k4.125, act a8g128), FUSE off | 0.146470 | 94.45% | **byte-identical**; FUSE on (10.1) = FUSE off |
+
+  Packs by the 10.1 rad-convert = the 7.14 packs byte for byte (K4 bb5cfc28…, K4H 19178357…). K4H served: greedy
+  answers and top-3 logprobs identical 7.14 / 10.1 (R16 head text correct). **Decode step C 1 (K4 + K7 mul1 R16 head,
+  w124's dstep, ds8 R9700S 210 W): 30.17 / 30.16 ms (7.14) vs 30.02 / 30.02 ms (10.1)**; 8k: 38.4 vs 38.0 ms; 8k
+  prefill 1,640 vs 1,648 tok/s. Tests: core `-L gpu` 13/14 (r4d_selftest 36 min PASS, kbench, kbench_moe, *_card;
+  `quant_tcq_gpu_test_card` times out at its 120 s on the 7.14 build as well), core `-L fast` 145/147 (images / videos:
+  FFmpeg off, same on 7.14), exl3i device tests 6/6 on both hosts.
+- **FUSE (w124: hangs the R9700 under 7.14 / clang 23):** 10.1, no hang: `test_twopass_fuse` PASS; whole-model K4A
+  prefill with `EXL3I_A8_FUSE=1` completes with rows identical to FUSE off; bench (K4 mul1i8 A8, mean layer, 2 rounds):
+  **M 512 ×0.90, M 2048 ×0.97**. FUSE stays opt-in in the branch (w124 / lead to decide).
+- **374503f + media (lead note 2:55):** `/data/q27/rad10/r374` on both hosts with FFmpeg 8.1.3 (Dockerfile stage minus
+  libdav1d / libwebp / openh264 / nasm: no AVIF input, no video or WebP output). Device code of all six kernel libraries
+  byte-identical to the a3799b5 build; V2 / K4 rows identical; image prompts answered correctly.
+- **Source issue found (w124's branch, not the toolchain):** a3799b5's qwen35_exl3 failed every rad-convert from the HF
+  checkpoint (`v.patch.weight` mapped twice); ae909bf / 639ad2f fix that but then **pack the bf16 vision tower** into every
+  container (K4: 1,120 weights, 18.25 GB vs 787 / 17.33 GB). hostd `pack_cmd` therefore uses `rad10/home-pack` (1aa18de's
+  qwen35_exl3: text-only, byte-identical to the 7.14 packs).
+- **Switched:** `/data/q27/multi/host.json` on ds8 and box2: score → `rad10/{install,home}`, pack → `rad10/install` +
+  `home-pack` (`host.json.bak-714` kept; `hostjson10.py --back`, `--score /data/q27/rad10/r374`). The search (#171)
+  started on it at ~2:54 AM CST.
+
 ### 2026-11-13 2:45 AM CST · #164 · Pass 2: producer activation quant (AQ) — whole-model KLD rows byte-identical at K2.625 / K4.125 / K6.25, e2e prefill +0.7%; FUSE hangs the R9700 under ROCm 7.14 (now opt-in); vision + DFlash2 ported into qwen35_exl3 (w124)
 - **Status:** done (pass 2; speculation step timing pending) · **Machine:** dad1 9070 XT (unit tests, AQ kernel benches,
   until it dropped off the network ~6:40 AM UTC); box2 R9700 card 3 (whole model, e2e, debugging) · **Code:** fork

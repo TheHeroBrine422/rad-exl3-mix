@@ -1,0 +1,11 @@
+== /data/q27/rad10/build
+1/1 Test #114: quant_tcq_gpu_test_card ..........***Timeout 120.11 sec
+0% tests passed, 1 tests failed out of 1
+wall 120s
+== /data/q27/rad/build
+1/1 Test #114: quant_tcq_gpu_test_card ..........***Timeout 120.11 sec
+0% tests passed, 1 tests failed out of 1
+wall 121s
+TCQ DONE
+out of 1
+The following tests FAILED:

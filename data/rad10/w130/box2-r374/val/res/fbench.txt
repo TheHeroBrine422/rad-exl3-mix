@@ -1,0 +1,100 @@
+== FUSE=0 round 1
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build nogit); device AMD Radeon AI PRO R9700 gfx1201; rate K4 mul1i8, a / y bf16, 20 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120   512  a8          1351.1     1315.4   135.1
+gate_up   34816   5120  2048  a8          4193.7     4131.2   174.1
+down       5120  17408   512  a8           669.9      655.6   136.2
+down       5120  17408  2048  a8          2180.1     2101.0   167.5
+gdn_qkv   10240   5120   512  a8           366.8      359.8   146.3
+gdn_qkv   10240   5120  2048  a8          1212.7     1158.6   177.1
+gdn_z      6144   5120   512  a8           218.3      214.0   147.6
+gdn_z      6144   5120  2048  a8           742.4      703.0   173.6
+attn_qg   12288   5120   512  a8           446.7      437.3   144.2
+attn_qg   12288   5120  2048  a8          1459.2     1397.8   176.6
+attn_k     1024   5120   512  a8            69.3       68.7    77.4
+attn_k     1024   5120  2048  a8           185.2      181.9   115.9
+attn_v     1024   5120   512  a8            70.1       69.3    76.6
+attn_v     1024   5120  2048  a8           188.3      185.4   114.0
+attn_o     5120   6144   512  a8           220.3      214.7   146.2
+attn_o     5120   6144  2048  a8           750.3      713.2   171.7
+ssm_out    5120   6144   512  a8           219.8      214.8   146.6
+ssm_out    5120   6144  2048  a8           744.2      715.3   173.1
+layer M   512 a8  : GDN   2825.9 us, attention   2827.4 us, mean (48 GDN : 16 attention)   2826.3 us
+layer M  2048 a8  : GDN   9073.1 us, attention   8956.8 us, mean (48 GDN : 16 attention)   9044.0 us
+rc 0
+== FUSE=1 round 1
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build nogit); device AMD Radeon AI PRO R9700 gfx1201; rate K4 mul1i8, a / y bf16, 20 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120   512  a8          1090.2     1049.3   167.4
+gate_up   34816   5120  2048  a8          4046.8     3962.7   180.4
+down       5120  17408   512  a8           668.8      655.1   136.5
+down       5120  17408  2048  a8          2106.0     2017.3   173.3
+gdn_qkv   10240   5120   512  a8           355.1      349.0   151.2
+gdn_qkv   10240   5120  2048  a8          1192.4     1113.0   180.1
+gdn_z      6144   5120   512  a8           212.8      209.3   151.4
+gdn_z      6144   5120  2048  a8           714.2      685.7   180.4
+attn_qg   12288   5120   512  a8           411.3      403.8   156.6
+attn_qg   12288   5120  2048  a8          1413.9     1331.6   182.3
+attn_k     1024   5120   512  a8            70.1       69.6    76.6
+attn_k     1024   5120  2048  a8           185.1      183.7   116.0
+attn_v     1024   5120   512  a8            70.8       69.7    75.9
+attn_v     1024   5120  2048  a8           184.9      183.4   116.1
+attn_o     5120   6144   512  a8           218.5      215.2   147.4
+attn_o     5120   6144  2048  a8           736.0      692.6   175.1
+ssm_out    5120   6144   512  a8           218.4      215.1   147.5
+ssm_out    5120   6144  2048  a8           734.8      695.7   175.3
+layer M   512 a8  : GDN   2545.3 us, attention   2529.6 us, mean (48 GDN : 16 attention)   2541.3 us
+layer M  2048 a8  : GDN   8794.2 us, attention   8672.8 us, mean (48 GDN : 16 attention)   8763.8 us
+rc 0
+== FUSE=0 round 2
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build nogit); device AMD Radeon AI PRO R9700 gfx1201; rate K4 mul1i8, a / y bf16, 20 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120   512  a8          1359.2     1321.5   134.3
+gate_up   34816   5120  2048  a8          4185.8     4103.4   174.4
+down       5120  17408   512  a8           666.8      656.8   136.9
+down       5120  17408  2048  a8          2169.9     2095.3   168.2
+gdn_qkv   10240   5120   512  a8           367.0      360.2   146.3
+gdn_qkv   10240   5120  2048  a8          1208.6     1158.7   177.7
+gdn_z      6144   5120   512  a8           216.1      212.8   149.0
+gdn_z      6144   5120  2048  a8           731.4      705.8   176.2
+attn_qg   12288   5120   512  a8           444.6      435.4   144.9
+attn_qg   12288   5120  2048  a8          1451.9     1392.3   177.5
+attn_k     1024   5120   512  a8            69.6       69.4    77.1
+attn_k     1024   5120  2048  a8           187.6      185.3   114.4
+attn_v     1024   5120   512  a8            70.2       70.0    76.4
+attn_v     1024   5120  2048  a8           187.4      185.3   114.6
+attn_o     5120   6144   512  a8           219.0      215.2   147.1
+attn_o     5120   6144  2048  a8           752.6      707.7   171.2
+ssm_out    5120   6144   512  a8           219.9      215.6   146.5
+ssm_out    5120   6144  2048  a8           741.4      711.5   173.8
+layer M   512 a8  : GDN   2828.9 us, attention   2829.3 us, mean (48 GDN : 16 attention)   2829.0 us
+layer M  2048 a8  : GDN   9037.1 us, attention   8935.1 us, mean (48 GDN : 16 attention)   9011.6 us
+rc 0
+== FUSE=1 round 2
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build nogit); device AMD Radeon AI PRO R9700 gfx1201; rate K4 mul1i8, a / y bf16, 20 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120   512  a8          1078.8     1046.2   169.2
+gate_up   34816   5120  2048  a8          4022.2     3924.8   181.5
+down       5120  17408   512  a8           666.4      654.8   137.0
+down       5120  17408  2048  a8          2109.6     2000.3   173.1
+gdn_qkv   10240   5120   512  a8           354.6      347.0   151.4
+gdn_qkv   10240   5120  2048  a8          1180.2     1115.6   182.0
+gdn_z      6144   5120   512  a8           215.4      212.4   149.6
+gdn_z      6144   5120  2048  a8           724.3      683.4   177.9
+attn_qg   12288   5120   512  a8           409.8      403.0   157.2
+attn_qg   12288   5120  2048  a8          1416.7     1344.0   181.9
+attn_k     1024   5120   512  a8            70.0       69.7    76.7
+attn_k     1024   5120  2048  a8           186.7      183.3   115.0
+attn_v     1024   5120   512  a8            70.9       70.5    75.7
+attn_v     1024   5120  2048  a8           184.8      181.4   116.2
+attn_o     5120   6144   512  a8           219.0      215.6   147.1
+attn_o     5120   6144  2048  a8           726.5      699.2   177.4
+ssm_out    5120   6144   512  a8           220.2      217.2   146.3
+ssm_out    5120   6144  2048  a8           725.7      692.6   177.6
+layer M   512 a8  : GDN   2535.4 us, attention   2515.0 us, mean (48 GDN : 16 attention)   2530.3 us
+layer M  2048 a8  : GDN   8762.0 us, attention   8646.4 us, mean (48 GDN : 16 attention)   8733.1 us
+rc 0

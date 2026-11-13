@@ -1,0 +1,2 @@
+C        steps       tok   tok/step    ms/step  ctx8k.txt
+1          159       159      1.000      37.97  <- prefill 237 in window

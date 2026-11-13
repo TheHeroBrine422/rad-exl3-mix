@@ -1,0 +1,1655 @@
+09:05:45 start 374503f8 (qc-exl3-v3-perf) -DCMAKE_HIP_COMPILER=/data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++ -DCMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm-10.1 -DCMAKE_HIP_FLAGS=--rocm-path=/opt/rocm-10.1 -DRAD_HIP_VOPD_REPEATABLE=ON -DRAD_WITH_FFMPEG=ON -DPKG_CONFIG_EXECUTABLE=/data/q27/rad10/ffmpeg/venv/bin/pkgconf -DCMAKE_INSTALL_RPATH=/opt/rocm-10.1/lib;/data/q27/rad10/ffmpeg/inst/lib
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- radiance: HIP backend ON, targets gfx1201
+-- The HIP compiler identification is Clang 24.0.0
+-- Detecting HIP compiler ABI info
+-- Detecting HIP compiler ABI info - done
+-- Check for working HIP compiler: /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++ - skipped
+-- Detecting HIP compile features
+-- Detecting HIP compile features - done
+-- radiance: HIP Release flags '-O3 -DNDEBUG'
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- radiance: media decoding via libavformat 62.12.103
+-- libr3d: RDNA3 (gfx11xx) only, and this build targets gfx1201 -- not built
+-- libhalo: Strix Halo (gfx1151) only, and this build targets gfx1201 -- not built
+-- arch: 'hyv3_common' has no CMakeLists.txt -- not an architecture plugin, skipped
+-- Configuring done (4.6s)
+-- Generating done (0.3s)
+-- Build files have been written to: /data/q27/rad10/r374/build
+[0/2] Re-checking globbed directories...
+[1/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/src/unicode-data.cpp.o
+[2/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/unicode.cpp.o
+[3/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/shim/llama_shim.cpp.o
+[4/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/directio.cpp.o
+[5/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/string.cpp.o
+[6/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/aql_code.cpp.o
+[7/1024] Building CXX object core/CMakeFiles/rad_core.dir/util/rad_util.cpp.o
+[8/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/hip.cpp.o
+[9/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/lexer.cpp.o
+[10/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/dispatch.cpp.o
+[11/1024] Building CXX object core/CMakeFiles/rad_core.dir/util/stallwatch.cpp.o
+[12/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/host.cpp.o
+[13/1024] Building CXX object core/CMakeFiles/rad_core.dir/plugin/bands.cpp.o
+[14/1024] Building CXX object core/CMakeFiles/rad_core.dir/build/rad_bufplan.cpp.o
+[15/1024] Building CXX object core/CMakeFiles/rad_core.dir/plugin/schema.cpp.o
+[16/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/parser.cpp.o
+[17/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/arena.cpp.o
+[18/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/runtime.cpp.o
+[19/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/chat-auto-parser-helpers.cpp.o
+[20/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/kvbind.cpp.o
+[21/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/wtab.cpp.o
+[22/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/rank_barrier.cpp.o
+[23/1024] Building CXX object core/CMakeFiles/rad_core.dir/plugin/select.cpp.o
+[24/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/regex-partial.cpp.o
+[25/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/caps.cpp.o
+[26/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/hostarena.cpp.o
+[27/1024] Building CXX object core/CMakeFiles/rad_core.dir/build/startup.cpp.o
+[28/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/oracle.cpp.o
+[29/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/chat-auto-parser-generator.cpp.o
+[30/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/issue.cpp.o
+[31/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/pools.cpp.o
+[32/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/tierexec.cpp.o
+[33/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/ctx.cpp.o
+[34/1024] Building CXX object core/CMakeFiles/rad_core.dir/runtime/xprefetch.cpp.o
+[35/1024] Building CXX object core/CMakeFiles/rad_core.dir/plugin/loader.cpp.o
+[36/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/derive.cpp.o
+[37/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/advance.cpp.o
+[38/1024] Building CXX object core/CMakeFiles/rad_core.dir/device/aql.cpp.o
+[39/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/ngram.cpp.o
+[40/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/draft.cpp.o
+[41/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/geometry.cpp.o
+[42/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/vram_budget.cpp.o
+[43/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/lookup.cpp.o
+[44/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/jinja/value.cpp.o
+[45/1024] Building CXX object core/CMakeFiles/rad_core.dir/build/rad_builder.cpp.o
+[46/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/accept.cpp.o
+[47/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/json-partial.cpp.o
+[48/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/kv.cpp.o
+[49/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/src/unicode.cpp.o
+[50/1024] Building CXX object core/CMakeFiles/rad_core.dir/build/rad_graph.cpp.o
+[51/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/kvtier.cpp.o
+[52/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/word_scan.cpp.o
+[53/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/chat-peg-parser.cpp.o
+[54/1024] Building CXX object core/CMakeFiles/rad_core.dir/mem/prefix.cpp.o
+[55/1024] Building CXX object core/CMakeFiles/rad_core.dir/place/heat.cpp.o
+[56/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_grapheme_ucd.cpp.o
+[57/1024] Building CXX object core/CMakeFiles/rad_core.dir/place/stager.cpp.o
+[58/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_bpe.cpp.o
+[59/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_grapheme.cpp.o
+[60/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_ucd.cpp.o
+[61/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/gguf.cpp.o
+[62/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_nfc.cpp.o
+[63/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/batch.cpp.o
+In file included from /usr/include/c++/15/string:53,
+                 from /data/q27/rad10/r374/src/core/rad_internal.h:13,
+                 from /data/q27/rad10/r374/src/core/rad_core.h:8,
+                 from /data/q27/rad10/r374/src/core/sched/draft.h:37,
+                 from /data/q27/rad10/r374/src/core/sched/advance.h:26,
+                 from /data/q27/rad10/r374/src/core/sched/batch.h:11,
+                 from /data/q27/rad10/r374/src/core/sched/batch.cpp:3:
+In function ‘constexpr _OutIter std::__copy_move_a2(_InIter, _Sent, _OutIter) [with bool _IsMove = false; _InIter = const RadKVGroupBatch*; _Sent = const RadKVGroupBatch*; _OutIter = RadKVGroupBatch*]’,
+    inlined from ‘constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const RadKVGroupBatch*; _OI = RadKVGroupBatch*]’ at /usr/include/c++/15/bits/stl_algobase.h:492:42,
+    inlined from ‘constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = __gnu_cxx::__normal_iterator<const RadKVGroupBatch*, vector<RadKVGroupBatch> >; _OI = __gnu_cxx::__normal_iterator<RadKVGroupBatch*, vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_algobase.h:500:31,
+    inlined from ‘constexpr _OI std::copy(_II, _II, _OI) [with _II = __gnu_cxx::__normal_iterator<const RadKVGroupBatch*, vector<RadKVGroupBatch> >; _OI = __gnu_cxx::__normal_iterator<RadKVGroupBatch*, vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_algobase.h:642:7,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = RadKVGroupBatch; _Alloc = std::allocator<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/vector.tcc:250:21,
+    inlined from ‘constexpr void std::__fill_a1(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = vector<RadKVGroupBatch>*; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:925:11,
+    inlined from ‘constexpr void std::__fill_a1(__gnu_cxx::__normal_iterator<_Iterator, _Container>, __gnu_cxx::__normal_iterator<_Iterator, _Container>, const _Tp&) [with _Ite = vector<RadKVGroupBatch>*; _Cont = vector<vector<RadKVGroupBatch> >; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:961:21,
+    inlined from ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = __gnu_cxx::__normal_iterator<vector<RadKVGroupBatch>*, vector<vector<RadKVGroupBatch> > >; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:979:21,
+    inlined from ‘constexpr void std::fill(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = __gnu_cxx::__normal_iterator<vector<RadKVGroupBatch>*, vector<vector<RadKVGroupBatch> > >; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:1011:20,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = std::vector<RadKVGroupBatch>; _Alloc = std::allocator<std::vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/vector.tcc:283:13,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = std::vector<RadKVGroupBatch>; _Alloc = std::allocator<std::vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_vector.h:876:23,
+    inlined from ‘int rad::BatchBuilder::alloc_set(Set&, const std::vector<rad::KVGroupInfo>&)’ at /data/q27/rad10/r374/src/core/sched/batch.cpp:246:20:
+/usr/include/c++/15/bits/stl_algobase.h:426:32: warning: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ forming offset [8454757700450211128, 9223372036854775800] is out of the bounds [0, 8454757700450211128] [-Warray-bounds=]
+  426 |               __builtin_memmove(_GLIBCXX_TO_ADDR(__result),
+      |               ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  427 |                                 _GLIBCXX_TO_ADDR(__first),
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                                 __n * sizeof(*__first));
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+In function ‘constexpr _OutIter std::__copy_move_a2(_InIter, _Sent, _OutIter) [with bool _IsMove = false; _InIter = const RadKVGroupBatch*; _Sent = const RadKVGroupBatch*; _OutIter = RadKVGroupBatch*]’,
+    inlined from ‘constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const RadKVGroupBatch*; _OI = RadKVGroupBatch*]’ at /usr/include/c++/15/bits/stl_algobase.h:492:42,
+    inlined from ‘constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = __gnu_cxx::__normal_iterator<const RadKVGroupBatch*, vector<RadKVGroupBatch> >; _OI = __gnu_cxx::__normal_iterator<RadKVGroupBatch*, vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_algobase.h:500:31,
+    inlined from ‘constexpr _OI std::copy(_II, _II, _OI) [with _II = __gnu_cxx::__normal_iterator<const RadKVGroupBatch*, vector<RadKVGroupBatch> >; _OI = __gnu_cxx::__normal_iterator<RadKVGroupBatch*, vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_algobase.h:642:7,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = RadKVGroupBatch; _Alloc = std::allocator<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/vector.tcc:250:21,
+    inlined from ‘constexpr void std::__fill_a1(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = vector<RadKVGroupBatch>*; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:925:11,
+    inlined from ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = vector<RadKVGroupBatch>*; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:979:21,
+    inlined from ‘constexpr _OutputIterator std::__fill_n_a(_OutputIterator, _Size, const _Tp&, random_access_iterator_tag) [with _OutputIterator = vector<RadKVGroupBatch>*; _Size = long unsigned int; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:1148:20,
+    inlined from ‘constexpr _OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = vector<RadKVGroupBatch>*; _Size = long unsigned int; _Tp = vector<RadKVGroupBatch>]’ at /usr/include/c++/15/bits/stl_algobase.h:1178:29,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = std::vector<RadKVGroupBatch>; _Alloc = std::allocator<std::vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/vector.tcc:292:24,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = std::vector<RadKVGroupBatch>; _Alloc = std::allocator<std::vector<RadKVGroupBatch> >]’ at /usr/include/c++/15/bits/stl_vector.h:876:23,
+    inlined from ‘int rad::BatchBuilder::alloc_set(Set&, const std::vector<rad::KVGroupInfo>&)’ at /data/q27/rad10/r374/src/core/sched/batch.cpp:246:20:
+/usr/include/c++/15/bits/stl_algobase.h:426:32: warning: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ forming offset [8454757700450211128, 9223372036854775800] is out of the bounds [0, 8454757700450211128] [-Warray-bounds=]
+  426 |               __builtin_memmove(_GLIBCXX_TO_ADDR(__result),
+      |               ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  427 |                                 _GLIBCXX_TO_ADDR(__first),
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                                 __n * sizeof(*__first));
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+In function ‘constexpr _OutIter std::__copy_move_a2(_InIter, _Sent, _OutIter) [with bool _IsMove = false; _InIter = const RadKVStream*; _Sent = const RadKVStream*; _OutIter = RadKVStream*]’,
+    inlined from ‘constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const RadKVStream*; _OI = RadKVStream*]’ at /usr/include/c++/15/bits/stl_algobase.h:492:42,
+    inlined from ‘constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = __gnu_cxx::__normal_iterator<const RadKVStream*, vector<RadKVStream> >; _OI = __gnu_cxx::__normal_iterator<RadKVStream*, vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_algobase.h:500:31,
+    inlined from ‘constexpr _OI std::copy(_II, _II, _OI) [with _II = __gnu_cxx::__normal_iterator<const RadKVStream*, vector<RadKVStream> >; _OI = __gnu_cxx::__normal_iterator<RadKVStream*, vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_algobase.h:642:7,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = RadKVStream; _Alloc = std::allocator<RadKVStream>]’ at /usr/include/c++/15/bits/vector.tcc:250:21,
+    inlined from ‘constexpr void std::__fill_a1(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = vector<RadKVStream>*; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:925:11,
+    inlined from ‘constexpr void std::__fill_a1(__gnu_cxx::__normal_iterator<_Iterator, _Container>, __gnu_cxx::__normal_iterator<_Iterator, _Container>, const _Tp&) [with _Ite = vector<RadKVStream>*; _Cont = vector<vector<RadKVStream> >; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:961:21,
+    inlined from ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = __gnu_cxx::__normal_iterator<vector<RadKVStream>*, vector<vector<RadKVStream> > >; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:979:21,
+    inlined from ‘constexpr void std::fill(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = __gnu_cxx::__normal_iterator<vector<RadKVStream>*, vector<vector<RadKVStream> > >; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:1011:20,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = std::vector<RadKVStream>; _Alloc = std::allocator<std::vector<RadKVStream> >]’ at /usr/include/c++/15/bits/vector.tcc:283:13,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = std::vector<RadKVStream>; _Alloc = std::allocator<std::vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_vector.h:876:23,
+    inlined from ‘int rad::BatchBuilder::alloc_set(Set&, const std::vector<rad::KVGroupInfo>&)’ at /data/q27/rad10/r374/src/core/sched/batch.cpp:247:24:
+/usr/include/c++/15/bits/stl_algobase.h:426:32: warning: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ forming offset [6917529027641081832, 9223372036854775800] is out of the bounds [0, 6917529027641081832] [-Warray-bounds=]
+  426 |               __builtin_memmove(_GLIBCXX_TO_ADDR(__result),
+      |               ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  427 |                                 _GLIBCXX_TO_ADDR(__first),
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                                 __n * sizeof(*__first));
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+In function ‘constexpr _OutIter std::__copy_move_a2(_InIter, _Sent, _OutIter) [with bool _IsMove = false; _InIter = const RadKVStream*; _Sent = const RadKVStream*; _OutIter = RadKVStream*]’,
+    inlined from ‘constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const RadKVStream*; _OI = RadKVStream*]’ at /usr/include/c++/15/bits/stl_algobase.h:492:42,
+    inlined from ‘constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = __gnu_cxx::__normal_iterator<const RadKVStream*, vector<RadKVStream> >; _OI = __gnu_cxx::__normal_iterator<RadKVStream*, vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_algobase.h:500:31,
+    inlined from ‘constexpr _OI std::copy(_II, _II, _OI) [with _II = __gnu_cxx::__normal_iterator<const RadKVStream*, vector<RadKVStream> >; _OI = __gnu_cxx::__normal_iterator<RadKVStream*, vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_algobase.h:642:7,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>& std::vector<_Tp, _Alloc>::operator=(const std::vector<_Tp, _Alloc>&) [with _Tp = RadKVStream; _Alloc = std::allocator<RadKVStream>]’ at /usr/include/c++/15/bits/vector.tcc:250:21,
+    inlined from ‘constexpr void std::__fill_a1(_ForwardIterator, _ForwardIterator, const _Tp&) [with _ForwardIterator = vector<RadKVStream>*; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:925:11,
+    inlined from ‘constexpr void std::__fill_a(_FIte, _FIte, const _Tp&) [with _FIte = vector<RadKVStream>*; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:979:21,
+    inlined from ‘constexpr _OutputIterator std::__fill_n_a(_OutputIterator, _Size, const _Tp&, random_access_iterator_tag) [with _OutputIterator = vector<RadKVStream>*; _Size = long unsigned int; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:1148:20,
+    inlined from ‘constexpr _OI std::fill_n(_OI, _Size, const _Tp&) [with _OI = vector<RadKVStream>*; _Size = long unsigned int; _Tp = vector<RadKVStream>]’ at /usr/include/c++/15/bits/stl_algobase.h:1178:29,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_fill_assign(std::size_t, const value_type&) [with _Tp = std::vector<RadKVStream>; _Alloc = std::allocator<std::vector<RadKVStream> >]’ at /usr/include/c++/15/bits/vector.tcc:292:24,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::assign(size_type, const value_type&) [with _Tp = std::vector<RadKVStream>; _Alloc = std::allocator<std::vector<RadKVStream> >]’ at /usr/include/c++/15/bits/stl_vector.h:876:23,
+    inlined from ‘int rad::BatchBuilder::alloc_set(Set&, const std::vector<rad::KVGroupInfo>&)’ at /data/q27/rad10/r374/src/core/sched/batch.cpp:247:24:
+/usr/include/c++/15/bits/stl_algobase.h:426:32: warning: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ forming offset [6917529027641081832, 9223372036854775800] is out of the bounds [0, 6917529027641081832] [-Warray-bounds=]
+  426 |               __builtin_memmove(_GLIBCXX_TO_ADDR(__result),
+      |               ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  427 |                                 _GLIBCXX_TO_ADDR(__first),
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                                 __n * sizeof(*__first));
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+[64/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/unicode_norm.cpp.o
+[65/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/host_ref.cpp.o
+[66/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/unicode_norm_data.cpp.o
+[67/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/sampler.cpp.o
+[68/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/json-schema-to-grammar.cpp.o
+[69/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/grammar.cpp.o
+[70/1024] Building CXX object core/CMakeFiles/rad_core.dir/place/planner.cpp.o
+[71/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/json_partial.cpp.o
+[72/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/chat-diff-analyzer.cpp.o
+[73/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/gbnf.cpp.o
+[74/1024] Building CXX object core/CMakeFiles/rad_core.dir/sched/scheduler.cpp.o
+[75/1024] Building CXX object core/CMakeFiles/rad_core.dir/place/mover.cpp.o
+[76/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_regex.cpp.o
+[77/1024] Building CXX object core/CMakeFiles/rad_core.dir/place/xstats.cpp.o
+[78/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer.cpp.o
+[79/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/loras.cpp.o
+[80/1024] Building CXX object core/CMakeFiles/rad_core.dir/sample/gbnf_mask.cpp.o
+[81/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/metrics.cpp.o
+[82/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/liveview.cpp.o
+[83/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/chat.cpp.o
+[84/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/text_split.cpp.o
+[85/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/http.cpp.o
+In file included from /data/q27/rad10/r374/src/core/server/http.cpp:6:
+/data/q27/rad10/r374/src/vendor/cpp-httplib/httplib.h:258:62: note: ‘#pragma message: CPPHTTPLIB_WEBSOCKET_READ_TIMEOUT_SECOND is deprecated; define CPPHTTPLIB_WEBSOCKET_CLIENT_READ_TIMEOUT_SECOND and/or CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead’
+  258 |     "CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead")
+      |                                                              ^
+[86/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/sink.cpp.o
+[87/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/audio_gen.cpp.o
+[88/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/peg-parser.cpp.o
+[89/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/nemotron35.cpp.o
+[90/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/laya.cpp.o
+[91/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/chatparse.cpp.o
+[92/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/machine_key.cpp.o
+[93/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/dashboard.cpp.o
+[94/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/quantise.cpp.o
+[95/1024] Building CXX object vendor/CMakeFiles/rad_vendor_llama.dir/llama/common/chat.cpp.o
+[96/1024] Linking CXX static library vendor/librad_vendor_llama.a
+[97/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/imatrix.cpp.o
+[98/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/admin.cpp.o
+[99/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/clef.cpp.o
+/data/q27/rad10/r374/src/core/server/clef.cpp: In function ‘int rad::server::parse_clef_request(const std::string&, const OaiDeps&, const OaiLimits&, const std::string&, ClefRequest*, ApiError*)’:
+/data/q27/rad10/r374/src/core/server/clef.cpp:171:78: warning: enumerated and non-enumerated type in conditional expression [-Wextra]
+  171 |     const int64_t cap = lim.max_ctx > 0 && lim.max_ctx < RAD_CLEF_MAX_PROMPT ? lim.max_ctx
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+  172 |                                                                              : RAD_CLEF_MAX_PROMPT;
+      |                                                                              ~~~~~~~~~~~~~~~~~~~~~
+[100/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/tokenizer_json.cpp.o
+[101/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/table_copy.cpp.o
+[102/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/share.cpp.o
+[103/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/table_share.cpp.o
+[104/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/item.cpp.o
+[105/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/safetensors.cpp.o
+[106/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/imaging.cpp.o
+[107/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/encoding.cpp.o
+[108/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/radfile.cpp.o
+[109/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/mica.cpp.o
+[110/1024] Building CXX object core/CMakeFiles/rad_core.dir/text/chatfmt.cpp.o
+[111/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/resample.cpp.o
+[112/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/shapes.cpp.o
+[113/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/mp4.cpp.o
+[114/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/speech_stream.cpp.o
+[115/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/speech.cpp.o
+[116/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/recipe.cpp.o
+[117/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/images.cpp.o
+[118/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/tunecache.cpp.o
+[119/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/torch_zip.cpp.o
+[120/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/media.cpp.o
+[121/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/realtime.cpp.o
+[122/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/bind.cpp.o
+[123/1024] Building CXX object core/CMakeFiles/rad_core.dir/lora/slots.cpp.o
+[124/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/bringup.cpp.o
+[125/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/shape_driver.cpp.o
+[126/1024] Building CXX object core/CMakeFiles/rad_core.dir/diag/checks.cpp.o
+[127/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/carve.cpp.o
+[128/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/gen.cpp.o
+[129/1024] Building CXX object core/CMakeFiles/rad_core.dir/lora/declare.cpp.o
+[130/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/plan.cpp.o
+[131/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/mirror.cpp.o
+[132/1024] Building CXX object vendor/CMakeFiles/rad_vendor_httplib.dir/cpp-httplib/httplib.cpp.o
+In file included from /data/q27/rad10/r374/src/vendor/cpp-httplib/httplib.cpp:1:
+/data/q27/rad10/r374/src/vendor/cpp-httplib/httplib.h:258:62: note: ‘#pragma message: CPPHTTPLIB_WEBSOCKET_READ_TIMEOUT_SECOND is deprecated; define CPPHTTPLIB_WEBSOCKET_CLIENT_READ_TIMEOUT_SECOND and/or CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead’
+  258 |     "CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead")
+      |                                                              ^
+[133/1024] Linking CXX static library vendor/librad_vendor_httplib.a
+[134/1024] Building CXX object core/CMakeFiles/rad_core.dir/diag/sysinfo.cpp.o
+[135/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/driver.cpp.o
+[136/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/audio_driver.cpp.o
+[137/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/systemone.cpp.o
+[138/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_hostmem.cpp.o
+[139/1024] Building CXX object core/CMakeFiles/rad_core.dir/kvstream/stage.cpp.o
+[140/1024] Building CXX object core/CMakeFiles/rad_core.dir/diag/report.cpp.o
+[141/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/video_driver.cpp.o
+[142/1024] Building CXX object core/CMakeFiles/rad_core.dir/hf_model.cpp.o
+[143/1024] Building CXX object core/CMakeFiles/rad_core.dir/mm/processor.cpp.o
+[144/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_gen.cpp.o
+[145/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen/shape.cpp.o
+[146/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_kld.cpp.o
+[147/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_mm.cpp.o
+[148/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_probe.cpp.o
+[149/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_diag.cpp.o
+[150/1024] Building CXX object core/CMakeFiles/rad_core.dir/cvec.cpp.o
+[151/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_draft.cpp.o
+[152/1024] Building CXX object tools/CMakeFiles/rad-convert.dir/iface.cpp.o
+[153/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/videos.cpp.o
+[154/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/iface.cpp.o
+[155/1024] Building CXX object core/CMakeFiles/radiance.dir/main.cpp.o
+[156/1024] Building CXX object tools/CMakeFiles/rad-convert.dir/opshapes.cpp.o
+[157/1024] Building CXX object core/CMakeFiles/rad_core.dir/gen_config.cpp.o
+[158/1024] Building CXX object core/CMakeFiles/rad_core.dir/lora/adapter.cpp.o
+[159/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/opshapes.cpp.o
+[160/1024] Building CXX object tools/CMakeFiles/rad-convert.dir/kfixture.cpp.o
+[161/1024] Building CXX object core/CMakeFiles/rad_core.dir/config.cpp.o
+[162/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/kfixture.cpp.o
+[163/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_lora.cpp.o
+[164/1024] Building CXX object tests/CMakeFiles/harness_fixture.dir/harness_fixture.cpp.o
+[165/1024] Building CXX object tools/CMakeFiles/rad-convert.dir/kbench_core.cpp.o
+[166/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_ok.dir/kbmutant.cc.o
+[167/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_scale.dir/kbmutant.cc.o
+[168/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_nan.dir/kbmutant.cc.o
+[169/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_half.dir/kbmutant.cc.o
+[170/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/server.cpp.o
+[171/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_overrun.dir/kbmutant.cc.o
+[172/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/kbench_timer.cpp.o
+[173/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_refuse.dir/kbmutant.cc.o
+[174/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/kbench_core.cpp.o
+[175/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_shape.dir/kbmutant.cc.o
+[176/1024] Building CXX object core/CMakeFiles/rad_core.dir/kld.cpp.o
+[177/1024] Building CXX object core/CMakeFiles/rad_core.dir/lora/lora.cpp.o
+[178/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_argmax.dir/kbmutant.cc.o
+[179/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_dsa.cpp.o
+[180/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_inwrite.dir/kbmutant.cc.o
+[181/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_collective.cpp.o
+[182/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_kbarch.dir/kbarch.cc.o
+[183/1024] Building CXX object core/plugin/testplugin/CMakeFiles/kbm_enc.dir/kbmutant.cc.o
+[184/1024] Building CXX object core/CMakeFiles/rad_core.dir/format/checkpoint.cpp.o
+In file included from /data/q27/rad10/r374/src/core/format/checkpoint.cpp:4:
+In function ‘void rad_store_f32(void*, uint32_t, int64_t, float)’,
+    inlined from ‘rad::ckpt_import_form(CkptWeight*, const ImportForm&, std::string*)::<lambda(const rad::SrcTensor&)>’ at /data/q27/rad10/r374/src/core/format/checkpoint.cpp:3278:26:
+/data/q27/rad10/r374/src/abi/rad_plugin.h:529:33: warning: array subscript ‘int64_t {aka long int}[0]’ is partly outside array bounds of ‘uint8_t [4]’ {aka ‘unsigned char [4]’} [-Warray-bounds=]
+  529 |             ((int64_t*)base)[i] = r >= 9223372036854775808.0 ? INT64_MAX : (int64_t)r;
+      |             ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/data/q27/rad10/r374/src/core/format/checkpoint.cpp: In function ‘rad::ckpt_import_form(CkptWeight*, const ImportForm&, std::string*)::<lambda(const rad::SrcTensor&)>’:
+/data/q27/rad10/r374/src/core/format/checkpoint.cpp:3277:21: note: object ‘b’ of size 4
+ 3277 |             uint8_t b[4];
+      |                     ^
+[185/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_kvstream.cpp.o
+[186/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_glm.cpp.o
+[187/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_kda.cpp.o
+[188/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_lora.cpp.o
+[189/1024] Building HIP object core/CMakeFiles/rad_core.dir/runtime/wtab.hip.o
+[190/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_m2xfp4.cpp.o
+[191/1024] Building HIP object core/CMakeFiles/rad_core.dir/device/aql_blit.hip.o
+[192/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_audio.cpp.o
+[193/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_ngram.cpp.o
+[194/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_attn.cpp.o
+[195/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_mhc.cpp.o
+[196/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_elementwise.cpp.o
+[197/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_mla.cpp.o
+[198/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_gen.cpp.o
+[199/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_ple.cpp.o
+[200/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_hc.cpp.o
+[201/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_pixtral.cpp.o
+[202/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_ggml_tables.cpp.o
+[203/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_gdn.cpp.o
+[204/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_sam_attn.cpp.o
+[205/1024] Building CXX object core/CMakeFiles/rad_core.dir/server/oai.cpp.o
+[206/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_autoround.cpp.o
+[207/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_ltx.cpp.o
+[208/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_gpu.cpp.o
+[209/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_qsa.cpp.o
+[210/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_awq.cpp.o
+[211/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_ggml.cpp.o
+[212/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_m2xfp.cpp.o
+[213/1024] Building CXX object tools/CMakeFiles/rad-convert.dir/rad_convert.cpp.o
+[214/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_registry.cpp.o
+[215/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine_bringup.cpp.o
+[216/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_vsa.cpp.o
+[217/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_quant.cpp.o
+[218/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_fp8_layout.cpp.o
+[219/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_sample.cpp.o
+[220/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_paro.cpp.o
+[221/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_video.cpp.o
+[222/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_shapes.cpp.o
+[223/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_hess.cpp.o
+[224/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_iqr_layout.cpp.o
+[225/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_fuse.cpp.o
+[226/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_layout.cpp.o
+[227/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_registry.cpp.o
+[228/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_gptq.cpp.o
+[229/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_rows.cpp.o
+[230/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_moe.cpp.o
+[231/1024] Building CXX object core/CMakeFiles/rad_core.dir/engine.cpp.o
+[232/1024] Building HIP object core/CMakeFiles/rad_core.dir/runtime/xprefetch.hip.o
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+[233/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_ggml_port.cpp.o
+[234/1024] Building HIP object core/CMakeFiles/rad_core.dir/sched/advance.hip.o
+[235/1024] Building CXX object libr4d/CMakeFiles/libr4d.dir/r4d_shapes.cpp.o
+[236/1024] Building CXX object libquant/CMakeFiles/libquant.dir/lq_grid.cpp.o
+[237/1024] Linking HIP static library core/librad_core.a
+[238/1024] Linking HIP executable bin/radiance
+[239/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_vit_h72_bf16.hip.o
+[240/1024] Building CXX object tools/CMakeFiles/rad-kbench.dir/rad_kbench.cpp.o
+[241/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_nemotron_bf16.hip.o
+[242/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_sam_attn_bf16.hip.o
+[243/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h128_gqa1.hip.o
+[244/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_dense_bf16.hip.o
+[245/1024] Building CXX object libref/CMakeFiles/libref.dir/ref_gemm.cpp.o
+[246/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h128_gqa2.hip.o
+[247/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h128_gqa2w.hip.o
+[248/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_video.hip.o
+[249/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ltx.hip.o
+[250/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_gen.hip.o
+[251/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h256_gqa4.hip.o
+[252/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_gated_rmsnorm_h128_bf16.hip.o
+[253/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_vsa.hip.o
+[254/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_encoder_bf16.hip.o
+[255/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_kkt_solve_k128_c64_bf16.hip.o
+[256/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_chunk_scan_k128_v128_c64_bf16.hip.o
+[257/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h128_gqa4.hip.o
+[258/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_audio.hip.o
+[259/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_gqa8.hip.o
+[260/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dsa.hip.o
+[261/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gen.hip.o
+[262/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_conv_w4_h128_bf16.hip.o
+[263/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_kda.hip.o
+[264/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_mhc.hip.o
+[265/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_f32_nt_bias.hip.o
+[266/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ngram_ids.hip.o
+[267/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ple_gate_bf16.hip.o
+[268/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ple_conv_bf16.hip.o
+[269/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h256_gqa12.hip.o
+[270/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_gather_2rank.hip.o
+[271/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_glm.hip.o
+[272/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_fp8_f32scale.hip.o
+[273/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h256_gqa6_bs4.hip.o
+[274/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h256_gqa6.hip.o
+[275/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_gather_Nrank.hip.o
+[276/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_upscaler.hip.o
+[277/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_entry.hip.o
+[278/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_bf16_nt_m16.hip.o
+[279/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_moe_mxfp4.hip.o
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_120moe_mxfp4_p64_kernelILi32ELi64ELi128ELi4ELb1EEEvPKhPKfPKvS6_S6_S6_PKiS8_PtNS_6MxMetaE': desired occupancy was 14, final occupancy is 12
+[280/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_oneshot_2rank_exact.hip.o
+[281/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_oneshot_Nrank_exact.hip.o
+[282/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_twoshot_Nrank_ti8.hip.o
+[283/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_bf16_nt_tiled.hip.o
+[284/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_vit_bf16.hip.o
+[285/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_bf16_nt_m64.hip.o
+[286/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_oneshot_2rank_wht6.hip.o
+[287/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_wpa8i8_tiled.hip.o
+[288/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_givens_dense.hip.o
+[289/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w4a16_nt_m64.hip.o
+[290/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w8a16_nt_m64.hip.o
+[291/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_m2xfp4a8_tiled.hip.o
+[292/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w2a8_nt.hip.o
+[293/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w8a8_tiled.hip.o
+[294/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w4a8_prefill.hip.o
+[295/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w4a8_tiled.hip.o
+[296/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_mla.hip.o
+[297/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_iqr_embed.hip.o
+[298/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_mxfp4a8_tiled.hip.o
+[299/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_quant_act_fp8.hip.o
+[300/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_mxfp4a8_nt_m64.hip.o
+[301/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_givens_rotate.hip.o
+[302/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w5a16_nt_m64.hip.o
+[303/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gram_accum_fp8.hip.o
+[304/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w8a8_nt_m64.hip.o
+[305/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qsa_block_key_bf16.hip.o
+[306/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qsa_tail_store_bf16.hip.o
+[307/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_kv_resolve.hip.o
+[308/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qsa_work_bf16.hip.o
+[309/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_sample_chain_f32.hip.o
+[310/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qsa_select_bf16.hip.o
+[311/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_sample_ngram_f32.hip.o
+[312/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_mxfp4a8_gemv.hip.o
+[313/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_sample_stages_f32.hip.o
+[314/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_quant_act_i8.hip.o
+[315/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_kv_len_trim.hip.o
+[316/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_h256_gqa2.hip.o
+[317/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_prefetch.hip.o
+[318/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gelu_mul_quant_i8.hip.o
+[319/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_had_quant_act_i8.hip.o
+[320/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_model_bf16.hip.o
+[321/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_twoshot_Nrank_exact.hip.o
+[322/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_rmsnorm_had_quant_i8.hip.o
+[323/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_gated_norm_had_quant_i8.hip.o
+[324/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gated_had_quant_i8.hip.o
+[325/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dequant_w4_bf16.hip.o
+[326/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_pair_argmax_f32.hip.o
+[327/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qk_norm_rope_gate.hip.o
+[328/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_logits_vocab.hip.o
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_117vocab_tile_kernelILj4ELj8ELb0EEEvNS_4HeadEPKaS3_PKfPfjj': desired occupancy was 6, final occupancy is 4
+[329/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_expert_scale_bf16.hip.o
+[330/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dflash_conv_t2_g16_bf16.hip.o
+[331/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dflash_select_bf16.hip.o
+[332/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_table.cpp.o
+[333/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_support.cpp.o
+[334/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dflash_markov_bf16.hip.o
+[335/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_norm_join_bf16.hip.o
+[336/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_dflash_tree_bf16.hip.o
+[337/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qkv_norm_rope.hip.o
+[338/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_norm.cpp.o
+[339/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_dsa.cpp.o
+[340/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_mla.cpp.o
+[341/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_planes.cpp.o
+[342/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_hc.cpp.o
+[343/1024] Building HIP object libquant/CMakeFiles/libquant.dir/lq_tcq_gpu.hip.o
+[344/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_gemm_tile.cpp.o
+[345/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_kvstream.cpp.o
+[346/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_lora.cpp.o
+[347/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_quant.cpp.o
+[348/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_qsa_score_bf16.hip.o
+[349/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_rowtopk_bf16.hip.o
+[350/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_elementwise.cpp.o
+[351/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_gemm.cpp.o
+[352/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_glm.cpp.o
+[353/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_sam_attn.cpp.o
+[354/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_gen_attn.cpp.o
+[355/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_pixtral.cpp.o
+[356/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_misc.cpp.o
+[357/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_qsa.cpp.o
+[358/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_attn.cpp.o
+[359/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_moe.cpp.o
+[360/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_sample.cpp.o
+[361/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_fp8a16_nt_m1.hip.o
+[362/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_table.cpp.o
+[363/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_video.cpp.o
+[364/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_gen.cpp.o
+[365/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_support.cpp.o
+[366/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_gdn.cpp.o
+[367/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_vsa.cpp.o
+[368/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_norm.cpp.o
+[369/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_dsa.cpp.o
+[370/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_ltx.cpp.o
+[371/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_mla.cpp.o
+[372/1024] Building CXX object libavx/CMakeFiles/avx_lvl0.dir/avx_audio.cpp.o
+[373/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_planes.cpp.o
+[374/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_hc.cpp.o
+[375/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_lora.cpp.o
+[376/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_ar_ln_had_quant_i8.hip.o
+[377/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_kvstream.cpp.o
+[378/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_gemm_tile.cpp.o
+[379/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_quant.cpp.o
+[380/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_elementwise.cpp.o
+[381/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_glm.cpp.o
+[382/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_sam_attn.cpp.o
+[383/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_gemm.cpp.o
+[384/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gdn_recurrent_update_k128_v128_bf16_fp32state.hip.o
+[385/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_pixtral.cpp.o
+[386/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_gen_attn.cpp.o
+[387/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_moe.hip.o
+[388/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_qsa.cpp.o
+[389/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_misc.cpp.o
+[390/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_attn.cpp.o
+[391/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_table.cpp.o
+[392/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_moe.cpp.o
+[393/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_vsa.cpp.o
+[394/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_sample.cpp.o
+[395/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_support.cpp.o
+[396/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_video.cpp.o
+[397/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_ltx.cpp.o
+[398/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_dsa.cpp.o
+[399/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_w4a8_nt_m64.hip.o
+[400/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_norm.cpp.o
+[401/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_mla.cpp.o
+[402/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_gen.cpp.o
+[403/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_planes.cpp.o
+[404/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_audio.cpp.o
+[405/1024] Building CXX object libavx/CMakeFiles/avx_lvl1.dir/avx_gdn.cpp.o
+[406/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_lora.cpp.o
+[407/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_kvstream.cpp.o
+[408/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_gemm_tile.cpp.o
+[409/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_hc.cpp.o
+[410/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_sam_attn.cpp.o
+[411/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_quant.cpp.o
+[412/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_glm.cpp.o
+[413/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_elementwise.cpp.o
+[414/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_fused_quant_fp8.hip.o
+[415/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_table.cpp.o
+[416/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_pixtral.cpp.o
+[417/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_gen_attn.cpp.o
+[418/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_gemm.cpp.o
+[419/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_qsa.cpp.o
+[420/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_support.cpp.o
+[421/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_misc.cpp.o
+[422/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_moe.cpp.o
+[423/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_vsa.cpp.o
+[424/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_sample.cpp.o
+[425/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_attn.cpp.o
+[426/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_dsa.cpp.o
+[427/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_mxfp4a8_decode.hip.o
+[428/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_norm.cpp.o
+[429/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_video.cpp.o
+[430/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_ltx.cpp.o
+[431/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_mla.cpp.o
+[432/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_planes.cpp.o
+[433/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_gen.cpp.o
+[434/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_audio.cpp.o
+[435/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_lora.cpp.o
+[436/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_kvstream.cpp.o
+[437/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_hc.cpp.o
+[438/1024] Building CXX object libavx/CMakeFiles/avx_lvl2.dir/avx_gdn.cpp.o
+[439/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_sam_attn.cpp.o
+[440/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_m2xfp4a8_decode.hip.o
+[441/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_glm.cpp.o
+[442/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_quant.cpp.o
+[443/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_elementwise.cpp.o
+[444/1024] Building CXX object libavx/CMakeFiles/libavx.dir/avx_dispatch.cpp.o
+[445/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_gemm_tile.cpp.o
+[446/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_pixtral.cpp.o
+[447/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_gen_attn.cpp.o
+[448/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_qsa.cpp.o
+[449/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_misc.cpp.o
+[450/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_gemm.cpp.o
+[451/1024] Building CXX object libavx/CMakeFiles/libavx.dir/avx_registry.cpp.o
+[452/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_hc_bf16.hip.o
+[453/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_vsa.cpp.o
+[454/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_sample.cpp.o
+[455/1024] Building CXX object libavx/CMakeFiles/libavx.dir/avx_ngram.cpp.o
+[456/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_ltx.cpp.o
+[457/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_video.cpp.o
+[458/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_moe.cpp.o
+[459/1024] Building CXX object plugin/spechub/CMakeFiles/spechub.dir/spechub.cpp.o
+[460/1024] Building CXX object plugin/spechub/CMakeFiles/spechub.dir/ref_spechub.cpp.o
+[461/1024] Linking HIP executable bin/rad-convert
+[462/1024] Linking HIP executable bin/rad-kbench
+[463/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_audio.cpp.o
+[464/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_attn.cpp.o
+[465/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_gen.cpp.o
+[466/1024] Linking CXX executable tests/harness_fixture
+[467/1024] Building CXX object plugin/spechub/CMakeFiles/spechub.dir/exports.cpp.o
+[468/1024] Building CXX object arch/laya/CMakeFiles/laya.dir/laya.cpp.o
+[469/1024] Building CXX object libavx/CMakeFiles/avx_lvl3.dir/avx_gdn.cpp.o
+[470/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_over.dir/testplugin.cc.o
+[471/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_base.dir/testplugin.cc.o
+[472/1024] Building CXX object arch/nemotron35_embed/CMakeFiles/nemotron35_embed.dir/nemotron35_embed.cpp.o
+[473/1024] Building HIP object plugin/spechub/CMakeFiles/spechub.dir/spechub.hip.o
+[474/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_conflict.dir/testplugin.cc.o
+[475/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_badabi.dir/testplugin.cc.o
+[476/1024] Building CXX object arch/spark25_bf16/CMakeFiles/spark25_bf16.dir/spark25_bf16.cpp.o
+[477/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_badlayout.dir/testplugin.cc.o
+[478/1024] Building CXX object arch/lfm2_bf16/CMakeFiles/lfm2_bf16.dir/lfm2_bf16.cpp.o
+[479/1024] Building CXX object arch/clef_bf16/CMakeFiles/clef_bf16.dir/clef_bf16.cpp.o
+In file included from /data/q27/rad10/r374/src/arch/clef_bf16/clef_bf16.cpp:15:
+/data/q27/rad10/r374/build/rad_include/arch/rad_block_clef.h: In member function ‘int rad::arch::ClefHead::declare(RadBuilder*, const RadModelMeta*, const RadBuildCtx*, rad::arch::Names&, const rad::arch::Geom&, rad_buf, rad_buf, rad_weight, rad_kvgroup, int)’:
+/data/q27/rad10/r374/build/rad_include/arch/rad_block_clef.h:156:58: warning: enumerated and non-enumerated type in conditional expression [-Wextra]
+  156 |     const int64_t rows = g.max_ctx < RAD_CLEF_MAX_PROMPT ? g.max_ctx : RAD_CLEF_MAX_PROMPT;
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[480/1024] Building CXX object arch/gemma4/CMakeFiles/gemma4.dir/gemma4.cpp.o
+[481/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_arch.dir/testplugin.cc.o
+[482/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_arch2.dir/testplugin.cc.o
+[483/1024] Building CXX object arch/llama_dense_fp8/CMakeFiles/llama_dense_fp8.dir/llama_dense_fp8.cpp.o
+[484/1024] Building CXX object arch/llama_fp8/CMakeFiles/llama_fp8.dir/llama_fp8.cpp.o
+[485/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_ok.so
+[486/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_scale.so
+[487/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_ord_a.dir/testplugin.cc.o
+[488/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_ord_b.dir/testplugin.cc.o
+[489/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_nan.so
+[490/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_overrun.so
+[491/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_half.so
+[492/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_refuse.so
+[493/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_shape.so
+[494/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_argmax.so
+[495/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_inwrite.so
+[496/1024] Linking CXX shared module radiance_home/testarch/kbench/radtest_kbarch.so
+[497/1024] Linking CXX shared module radiance_home/testkernels/kbmut/kbm_enc.so
+[498/1024] Linking HIP shared module radiance_home/quantizers/libquant.so
+[499/1024] Building CXX object arch/qwen35_bf16/CMakeFiles/qwen35_bf16.dir/qwen35_bf16.cpp.o
+[500/1024] Linking CXX shared module radiance_home/kernels/libref.so
+[501/1024] Linking CXX shared module radiance_home/kernels/libavx.so
+[502/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_extra.dir/testplugin.cc.o
+[503/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_lora_bf16.hip.o
+[504/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_badtune_default.dir/testplugin.cc.o
+[505/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_badtune_twice.dir/testplugin.cc.o
+[506/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_decline.dir/testplugin.cc.o
+[507/1024] Building CXX object tools/CMakeFiles/rad_tokref.dir/tokref.cpp.o
+[508/1024] Building CXX object tests/CMakeFiles/rad_legacy_toolparse.dir/legacy/toolparse_legacy.cpp.o
+[509/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_archq_plain.dir/testplugin.cc.o
+[510/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_archq_fp8.dir/testplugin.cc.o
+[511/1024] Linking CXX shared module radiance_home/architectures/clef_bf16.so
+[512/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_archq_w8.dir/testplugin.cc.o
+[513/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_archq_w4.dir/testplugin.cc.o
+[514/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_rows.dir/tierrows.cc.o
+[515/1024] Building CXX object core/plugin/testplugin/CMakeFiles/radtest_quant.dir/testquant.cc.o
+[516/1024] Building CXX object arch/qwenimage21/CMakeFiles/qwenimage21.dir/qwenimage21.cpp.o
+[517/1024] Linking CXX shared module radiance_home/architectures/gemma4.so
+[518/1024] Building CXX object libavx/CMakeFiles/rad-avx-check.dir/avx_check_rows.cpp.o
+[519/1024] Building CXX object libavx/CMakeFiles/rad-avx-check.dir/avx_check.cpp.o
+[520/1024] Building CXX object libavx/CMakeFiles/rad-avx-check.dir/__/core/format/encoding.cpp.o
+[521/1024] Building CXX object arch/gemma4_bf16/CMakeFiles/gemma4_bf16.dir/gemma4_bf16.cpp.o
+[522/1024] Linking CXX shared module radiance_home/architectures/gemma4_bf16.so
+[523/1024] Building CXX object arch/breeze/CMakeFiles/breeze.dir/breeze.cpp.o
+[524/1024] Building CXX object libavx/CMakeFiles/rad-avx-bench.dir/avx_bench.cpp.o
+[525/1024] Building CXX object arch/embgemma2/CMakeFiles/embgemma2.dir/embgemma2.cpp.o
+[526/1024] Linking CXX shared module radiance_home/architectures/laya.so
+[527/1024] Linking CXX shared module radiance_home/architectures/lfm2_bf16.so
+[528/1024] Linking CXX shared module radiance_home/architectures/llama_dense_fp8.so
+[529/1024] Linking CXX shared module radiance_home/architectures/llama_fp8.so
+[530/1024] Building CXX object arch/hunyuan3d2/CMakeFiles/hunyuan3d2.dir/hunyuan3d2.cpp.o
+[531/1024] Building CXX object tests/CMakeFiles/rad_legacy_toolparse.dir/legacy/chatdiff.cpp.o
+[532/1024] Building CXX object arch/minimaxh3/CMakeFiles/minimaxh3.dir/rad_vae_geom.cpp.o
+[533/1024] Building CXX object arch/minimaxh3/CMakeFiles/minimaxh3.dir/rad_ref2va_pack.cpp.o
+[534/1024] Linking CXX shared module radiance_home/architectures/nemotron35_embed.so
+[535/1024] Building CXX object libavx/CMakeFiles/rad-avx-check.dir/avx_cases.cpp.o
+[536/1024] Linking CXX shared module radiance_home/architectures/qwen35_bf16.so
+[537/1024] Building CXX object libavx/CMakeFiles/rad-avx-bench.dir/avx_cases.cpp.o
+[538/1024] Building CXX object arch/gemma3/CMakeFiles/gemma3.dir/gemma3.cpp.o
+[539/1024] Building CXX object arch/flux3distilled/CMakeFiles/flux3distilled.dir/flux3distilled.cpp.o
+[540/1024] Building CXX object arch/flux3/CMakeFiles/flux3.dir/flux3.cpp.o
+[541/1024] Building CXX object arch/anima/CMakeFiles/anima.dir/anima.cpp.o
+[542/1024] Linking CXX shared module radiance_home/architectures/qwenimage21.so
+[543/1024] Building CXX object arch/bailing_hybrid/CMakeFiles/bailing_hybrid.dir/bailing_hybrid.cpp.o
+[544/1024] Linking CXX shared module radiance_home/architectures/spark25_bf16.so
+[545/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_attn_paged_window.hip.o
+[546/1024] Building CXX object arch/glm5next/CMakeFiles/glm5next.dir/glm5next.cpp.o
+[547/1024] Linking HIP shared module radiance_home/kernels/spechub.so
+[548/1024] Building CXX object arch/nomicbert/CMakeFiles/nomicbert.dir/nomicbert.cpp.o
+[549/1024] Building CXX object arch/hyv3_bf16/CMakeFiles/hyv3_bf16.dir/hyv3_bf16.cpp.o
+[550/1024] Building CXX object arch/hyv3_fp8/CMakeFiles/hyv3_fp8.dir/hyv3_fp8.cpp.o
+[551/1024] Building CXX object arch/hyv3_gguf/CMakeFiles/hyv3_gguf.dir/hyv3_gguf.cpp.o
+[552/1024] Building CXX object arch/fishomni/CMakeFiles/fishomni.dir/fishomni.cpp.o
+[553/1024] Linking HIP static library tools/librad_tokref.a
+[554/1024] Building CXX object tools/CMakeFiles/rad-info.dir/iface.cpp.o
+[555/1024] Building CXX object arch/qwen3asr_bf16/CMakeFiles/qwen3asr_bf16.dir/qwen3asr_bf16.cpp.o
+[556/1024] Building CXX object tools/CMakeFiles/rad-tokcheck.dir/iface.cpp.o
+[557/1024] Building CXX object tools/CMakeFiles/rad-info.dir/rad_info.cpp.o
+[558/1024] Building CXX object arch/krea2/CMakeFiles/krea2.dir/krea2.cpp.o
+[559/1024] Building CXX object arch/clef_fp8/CMakeFiles/clef_fp8.dir/clef_fp8.cpp.o
+In file included from /data/q27/rad10/r374/src/arch/clef_fp8/clef_fp8.cpp:16:
+/data/q27/rad10/r374/build/rad_include/arch/rad_block_clef.h: In member function ‘int rad::arch::ClefHead::declare(RadBuilder*, const RadModelMeta*, const RadBuildCtx*, rad::arch::Names&, const rad::arch::Geom&, rad_buf, rad_buf, rad_weight, rad_kvgroup, int)’:
+/data/q27/rad10/r374/build/rad_include/arch/rad_block_clef.h:156:58: warning: enumerated and non-enumerated type in conditional expression [-Wextra]
+  156 |     const int64_t rows = g.max_ctx < RAD_CLEF_MAX_PROMPT ? g.max_ctx : RAD_CLEF_MAX_PROMPT;
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[560/1024] Building CXX object tools/CMakeFiles/rad-info.dir/opshapes.cpp.o
+[561/1024] Building CXX object tools/CMakeFiles/rad-tune.dir/iface.cpp.o
+[562/1024] Building CXX object arch/minimaxmusic3/CMakeFiles/minimaxmusic3.dir/minimaxmusic3.cpp.o
+[563/1024] Building CXX object tools/CMakeFiles/rad-tokcheck.dir/rad_tokcheck.cpp.o
+[564/1024] Building CXX object arch/sdxl/CMakeFiles/sdxl.dir/sdxl.cpp.o
+[565/1024] Building CXX object tools/CMakeFiles/rad-info.dir/kfixture.cpp.o
+[566/1024] Building CXX object tools/CMakeFiles/rad-gbnf-check.dir/iface.cpp.o
+[567/1024] Building CXX object tools/CMakeFiles/rad-schemas.dir/rad_schemas.cpp.o
+[568/1024] Building CXX object arch/spark25_w8a8/CMakeFiles/spark25_w8a8.dir/spark25_w8a8.cpp.o
+[569/1024] Building CXX object tools/CMakeFiles/rad-gbnf-check.dir/__/tests/gbnf_oracle.cpp.o
+[570/1024] Linking HIP static library tests/librad_legacy_toolparse.a
+[571/1024] Building CXX object tools/CMakeFiles/rad-tune.dir/opshapes.cpp.o
+[572/1024] Building C object tests/CMakeFiles/abi_layout_test.dir/abi_c_test.c.o
+[573/1024] Building CXX object tools/CMakeFiles/rad-chatparse.dir/iface.cpp.o
+[574/1024] Building CXX object tools/CMakeFiles/rad-info.dir/kbench_core.cpp.o
+[575/1024] Building CXX object tools/CMakeFiles/rad-tune.dir/kfixture.cpp.o
+[576/1024] Building CXX object arch/minimaxh3/CMakeFiles/minimaxh3.dir/minimaxh3.cpp.o
+[577/1024] Building CXX object tools/CMakeFiles/rad-tune.dir/rad_tune.cpp.o
+[578/1024] Building CXX object arch/ltx2/CMakeFiles/ltx2.dir/ltx2.cpp.o
+[579/1024] Building CXX object tests/CMakeFiles/arch_test.dir/__/core/util/rad_util.cpp.o
+[580/1024] Building CXX object arch/qwen35_fp8/CMakeFiles/qwen35_fp8.dir/qwen35_fp8.cpp.o
+[581/1024] Building CXX object tools/CMakeFiles/rad-tune.dir/kbench_core.cpp.o
+[582/1024] Building CXX object arch/qwen35_w8a8/CMakeFiles/qwen35_w8a8.dir/qwen35_w8a8.cpp.o
+[583/1024] Building CXX object arch/qwen4exp_fp8/CMakeFiles/qwen4exp_fp8.dir/qwen4exp_fp8.cpp.o
+[584/1024] Building CXX object tests/CMakeFiles/advance_test.dir/advance_test.cpp.o
+[585/1024] Building CXX object arch/unlimitedocr_bf16/CMakeFiles/unlimitedocr_bf16.dir/unlimitedocr_bf16.cpp.o
+[586/1024] Building CXX object arch/qwen35moe_fp8/CMakeFiles/qwen35moe_fp8.dir/qwen35moe_fp8.cpp.o
+[587/1024] Building CXX object tools/CMakeFiles/rad-chatparse.dir/__/tests/legacy/toolparse_legacy.cpp.o
+[588/1024] Building CXX object tests/CMakeFiles/audio_gen_test.dir/audio_gen_test.cpp.o
+[589/1024] Building CXX object tools/CMakeFiles/rad-gbnf-check.dir/rad_gbnf_check.cpp.o
+[590/1024] Building CXX object tools/CMakeFiles/rad-chatparse.dir/rad_chatparse.cpp.o
+[591/1024] Building CXX object tests/CMakeFiles/cvec_test.dir/cvec_test.cpp.o
+[592/1024] Building CXX object tests/CMakeFiles/dspark_device_test.dir/dspark_device_test.cpp.o
+/data/q27/rad10/r374/src/tests/dspark_device_test.cpp: In function ‘void checkpoint_head(Fn, Fn, const char*)’:
+/data/q27/rad10/r374/src/tests/dspark_device_test.cpp:207:9: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  207 |         if(gw!=bw) ++changed; if(nmax>1) ++ties;
+      |         ^~
+/data/q27/rad10/r374/src/tests/dspark_device_test.cpp:207:31: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  207 |         if(gw!=bw) ++changed; if(nmax>1) ++ties;
+      |                               ^~
+[593/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_rmsnorm_quant_i8.hip.o
+[594/1024] Building CXX object tests/CMakeFiles/abi_layout_test.dir/abi_layout_test.cpp.o
+[595/1024] Building CXX object tools/CMakeFiles/rad-chatparse.dir/__/tests/legacy/chatdiff.cpp.o
+[596/1024] Building CXX object tools/CMakeFiles/rad-chatparse.dir/chatparse_serve.cpp.o
+[597/1024] Building CXX object tests/CMakeFiles/encoding_test.dir/encoding_test.cpp.o
+[598/1024] Building CXX object tests/CMakeFiles/clef_test.dir/clef_test.cpp.o
+[599/1024] Building CXX object tests/CMakeFiles/clef_decision_test.dir/clef_decision_test.cpp.o
+[600/1024] Building CXX object tests/CMakeFiles/device_test.dir/device_test.cpp.o
+[601/1024] Building CXX object tests/CMakeFiles/fixture_test.dir/__/tools/kfixture.cpp.o
+[602/1024] Building CXX object tests/CMakeFiles/fixture_test.dir/__/tools/opshapes.cpp.o
+[603/1024] Building CXX object tests/CMakeFiles/gbnf_test.dir/gbnf_oracle.cpp.o
+[604/1024] Building CXX object tests/CMakeFiles/chat_test.dir/chat_test.cpp.o
+[605/1024] Building CXX object tests/CMakeFiles/dashboard_test.dir/dashboard_test.cpp.o
+[606/1024] Building CXX object tests/CMakeFiles/glm5next_test.dir/__/core/util/rad_util.cpp.o
+[607/1024] Building CXX object tests/CMakeFiles/diag_test.dir/diag_test.cpp.o
+[608/1024] Building CXX object tests/CMakeFiles/fixture_test.dir/__/tools/kbench_core.cpp.o
+[609/1024] Building CXX object tests/CMakeFiles/gen_config_test.dir/gen_config_test.cpp.o
+[610/1024] Building CXX object libavx/CMakeFiles/rad-avx-check.dir/avx_check_hand.cpp.o
+[611/1024] Building CXX object tests/CMakeFiles/harness_test.dir/harness_test.cpp.o
+[612/1024] Building CXX object tests/CMakeFiles/build_test.dir/build_test.cpp.o
+[613/1024] Building CXX object tests/CMakeFiles/hf_model_test.dir/hf_model_test.cpp.o
+[614/1024] Building CXX object tests/CMakeFiles/hostmem_test.dir/hostmem_test.cpp.o
+[615/1024] Building CXX object tests/CMakeFiles/convert_test.dir/convert_test.cpp.o
+[616/1024] Building CXX object tests/CMakeFiles/fixture_test.dir/fixture_test.cpp.o
+[617/1024] Building CXX object tests/CMakeFiles/config_test.dir/config_test.cpp.o
+[618/1024] Building CXX object tests/CMakeFiles/chatparse_gemma4_test.dir/chatparse_gemma4_test.cpp.o
+[619/1024] Building CXX object tests/CMakeFiles/issue_div_test.dir/issue_div_test.cpp.o
+[620/1024] Building CXX object tests/CMakeFiles/kbench_mutant_test.dir/__/tools/kfixture.cpp.o
+[621/1024] Building CXX object tests/CMakeFiles/kbench_mutant_test.dir/__/tools/opshapes.cpp.o
+[622/1024] Building CXX object tests/CMakeFiles/gen_test.dir/gen_test.cpp.o
+[623/1024] Building CXX object tests/CMakeFiles/kbench_test.dir/__/tools/opshapes.cpp.o
+[624/1024] Building CXX object tests/CMakeFiles/host_experts_test.dir/host_experts_test.cpp.o
+[625/1024] Building CXX object tests/CMakeFiles/kbench_test.dir/__/tools/kfixture.cpp.o
+[626/1024] Building CXX object tests/CMakeFiles/kbench_mutant_test.dir/__/tools/kbench_core.cpp.o
+[627/1024] Building CXX object tests/CMakeFiles/kbench_mutant_test.dir/kbench_mutant_test.cpp.o
+[628/1024] Building CXX object tests/CMakeFiles/kbench_test.dir/__/tools/kbench_core.cpp.o
+[629/1024] Building CXX object tests/CMakeFiles/format_test.dir/format_test.cpp.o
+[630/1024] Building CXX object tests/CMakeFiles/gen_lora_test.dir/gen_lora_test.cpp.o
+[631/1024] Building CXX object tests/CMakeFiles/kv_window_test.dir/kv_window_test.cpp.o
+[632/1024] Building CXX object tests/CMakeFiles/lora_ops_test.dir/lora_ops_test.cpp.o
+[633/1024] Building CXX object tests/CMakeFiles/kbench_test.dir/kbench_test.cpp.o
+[634/1024] Building CXX object tests/CMakeFiles/chatparse_test.dir/chatparse_test.cpp.o
+[635/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/mm/media.cpp.o
+[636/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/mm/item.cpp.o
+[637/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/util/rad_util.cpp.o
+[638/1024] Building CXX object tests/CMakeFiles/checkpoint_test.dir/checkpoint_test.cpp.o
+[639/1024] Building CXX object tests/CMakeFiles/mtp_couple_plan_test.dir/mtp_couple_plan_test.cpp.o
+[640/1024] Building CXX object tests/CMakeFiles/nemotron35_device_test.dir/nemotron35_device_test.cpp.o
+[641/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_bpe.cpp.o
+[642/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_grapheme_ucd.cpp.o
+[643/1024] Building CXX object tests/CMakeFiles/kld_test.dir/kld_test.cpp.o
+[644/1024] Building CXX object tests/CMakeFiles/laya_test.dir/laya_test.cpp.o
+[645/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_ucd.cpp.o
+[646/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_grapheme.cpp.o
+[647/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_nfc.cpp.o
+[648/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/unicode_norm_data.cpp.o
+[649/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/unicode_norm.cpp.o
+[650/1024] Building CXX object tests/CMakeFiles/mica_test.dir/mica_test.cpp.o
+[651/1024] Building CXX object tests/CMakeFiles/images_test.dir/images_test.cpp.o
+[652/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/server/nemotron35.cpp.o
+[653/1024] Building CXX object tests/CMakeFiles/gbnf_test.dir/gbnf_test.cpp.o
+[654/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/mm/processor.cpp.o
+[655/1024] Building CXX object tests/CMakeFiles/precompiled_test.dir/precompiled_test.cpp.o
+[656/1024] Building CXX object tests/CMakeFiles/laya_decision_test.dir/laya_decision_test.cpp.o
+[657/1024] Building CXX object tests/CMakeFiles/lifecycle_test.dir/lifecycle_test.cpp.o
+[658/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer.cpp.o
+[659/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_regex.cpp.o
+[660/1024] Building CXX object tests/CMakeFiles/p4b_kv_ring_test.dir/p4b_kv_ring_test.cpp.o
+[661/1024] Building CXX object tests/CMakeFiles/projection_test.dir/projection_test.cpp.o
+[662/1024] Building CXX object tests/CMakeFiles/r4d_ar_links_test.dir/__/libr4d/r4d_fp8_layout.cpp.o
+[663/1024] Building CXX object tests/CMakeFiles/r4d_ar_links_test.dir/__/libr4d/r4d_layout.cpp.o
+[664/1024] Building CXX object tests/CMakeFiles/quant_ggml_test.dir/quant_ggml_test.cpp.o
+[665/1024] Building CXX object tests/CMakeFiles/quant_algo_test.dir/quant_algo_test.cpp.o
+[666/1024] Building CXX object tests/CMakeFiles/r4d_bf16_gemm_rows_test.dir/r4d_bf16_gemm_rows_test.cpp.o
+[667/1024] Building CXX object tests/CMakeFiles/r4d_ar_links_test.dir/r4d_ar_links_test.cpp.o
+[668/1024] Building CXX object tests/CMakeFiles/ref2va_pack_test.dir/__/arch/minimaxh3/rad_ref2va_pack.cpp.o
+[669/1024] Building CXX object tests/CMakeFiles/mm_test.dir/mm_test.cpp.o
+[670/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/text/tokenizer_json.cpp.o
+[671/1024] Building CXX object tests/CMakeFiles/quant_tcq_gpu_test.dir/quant_tcq_gpu_test.cpp.o
+[672/1024] Building CXX object tests/CMakeFiles/relayout_parity_test.dir/__/libr4d/r4d_fp8_layout.cpp.o
+[673/1024] Building CXX object tests/CMakeFiles/r4d_bf16_capacity_test.dir/r4d_bf16_capacity_test.cpp.o
+[674/1024] Building CXX object tests/CMakeFiles/quant_m2xfp_test.dir/quant_m2xfp_test.cpp.o
+[675/1024] Building CXX object tests/CMakeFiles/recipe_test.dir/recipe_test.cpp.o
+[676/1024] Building CXX object tests/CMakeFiles/lora_test.dir/lora_test.cpp.o
+[677/1024] Building CXX object tests/CMakeFiles/relayout_parity_test.dir/__/libr4d/r4d_layout.cpp.o
+[678/1024] Building CXX object tests/CMakeFiles/sample_test.dir/gbnf_oracle.cpp.o
+[679/1024] Building CXX object tests/CMakeFiles/relayout_parity_test.dir/__/tools/opshapes.cpp.o
+[680/1024] Building CXX object tests/CMakeFiles/glm5next_test.dir/glm5next_test.cpp.o
+[681/1024] Building CXX object tests/CMakeFiles/quant_test.dir/quant_test.cpp.o
+[682/1024] Building CXX object tests/CMakeFiles/share_test.dir/share_test.cpp.o
+[683/1024] Building CXX object tests/CMakeFiles/ref2va_pack_test.dir/ref2va_pack_test.cpp.o
+[684/1024] Building CXX object tests/CMakeFiles/spark25_arch_test.dir/__/core/util/rad_util.cpp.o
+[685/1024] Building CXX object tests/CMakeFiles/engine_e2e_test.dir/engine_e2e_test.cpp.o
+[686/1024] Building CXX object tests/CMakeFiles/shape_test.dir/shape_test.cpp.o
+[687/1024] Building CXX object tests/CMakeFiles/shipped_plugins_test.dir/shipped_plugins_test.cpp.o
+[688/1024] Building CXX object tests/CMakeFiles/relayout_parity_test.dir/relayout_parity_test.cpp.o
+[689/1024] Building CXX object tests/CMakeFiles/plugin_test.dir/plugin_test.cpp.o
+[690/1024] Building CXX object tests/CMakeFiles/spark25_recipe_test.dir/spark25_recipe_test.cpp.o
+[691/1024] Building CXX object tests/CMakeFiles/spechub_accept_test.dir/spechub_accept_test.cpp.o
+[692/1024] Building CXX object tests/CMakeFiles/spechub_cooperative_test.dir/spechub_cooperative_test.cpp.o
+[693/1024] Building CXX object tests/CMakeFiles/spechub_wiring_test.dir/spechub_wiring_test.cpp.o
+In file included from /data/q27/rad10/r374/src/tests/spechub_wiring_test.cpp:9:
+/data/q27/rad10/r374/src/tests/spechub_wiring_test.cpp: In function ‘void radtest_spechub_wiring_the_device_rows_are_production_and_the_oracle_rows_are_reference()’:
+/data/q27/rad10/r374/src/tests/rad_test.h:327:19: warning: comparison of integer expressions of different signedness: ‘unsigned int’ and ‘int’ [-Wsign-compare]
+  327 |          if (!(_a == _b)) ::radtest::fail(__FILE__, __LINE__,                          \
+      |                ~~~^~~~~
+/data/q27/rad10/r374/src/tests/spechub_wiring_test.cpp:64:5: note: in expansion of macro ‘CHECK_EQ’
+   64 |     CHECK_EQ(p.info()->kind, (int)RAD_PLUGIN_KERNEL);
+      |     ^~~~~~~~
+[694/1024] Building CXX object tests/CMakeFiles/spechub_couple_test.dir/spechub_couple_test.cpp.o
+[695/1024] Building CXX object tests/CMakeFiles/spechub_dflash_couple_test.dir/spechub_dflash_couple_test.cpp.o
+[696/1024] Building CXX object tests/CMakeFiles/text_split_test.dir/text_split_test.cpp.o
+[697/1024] Building CXX object tests/CMakeFiles/spark25_convert_test.dir/spark25_convert_test.cpp.o
+[698/1024] Building CXX object tests/CMakeFiles/shapes_test.dir/shapes_test.cpp.o
+[699/1024] Building CXX object tests/CMakeFiles/spark25_chat_test.dir/spark25_chat_test.cpp.o
+[700/1024] Building CXX object tests/CMakeFiles/tools_test.dir/__/tools/iface.cpp.o
+[701/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/nemotron35_test.cpp.o
+[702/1024] Building CXX object tests/CMakeFiles/nemotron35_test.dir/__/core/server/oai.cpp.o
+[703/1024] Building CXX object tests/CMakeFiles/runtime_test.dir/runtime_test.cpp.o
+[704/1024] Building CXX object tests/CMakeFiles/tokenizer_perf_test.dir/tokenizer_perf_test.cpp.o
+[705/1024] Building CXX object tests/CMakeFiles/tools_test.dir/tools_test.cpp.o
+[706/1024] Building CXX object tests/CMakeFiles/vae_geom_test.dir/__/arch/minimaxh3/rad_vae_geom.cpp.o
+[707/1024] Building CXX object tests/CMakeFiles/tokenizer_regex_test.dir/tokenizer_regex_test.cpp.o
+[708/1024] Building CXX object tests/CMakeFiles/systemone_test.dir/systemone_test.cpp.o
+[709/1024] Building CXX object tests/CMakeFiles/trigger_test.dir/trigger_test.cpp.o
+[710/1024] Building CXX object tests/CMakeFiles/place_test.dir/place_test.cpp.o
+[711/1024] Building CXX object tests/CMakeFiles/torch_zip_test.dir/torch_zip_test.cpp.o
+[712/1024] Building CXX object tests/CMakeFiles/sample_test.dir/sample_test.cpp.o
+[713/1024] Building r4d_emu cfg_stub.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[714/1024] Building CXX object tests/CMakeFiles/spark25_arch_test.dir/spark25_arch_test.cpp.o
+In file included from /data/q27/rad10/r374/src/tests/spark25_arch_test.cpp:6:
+/data/q27/rad10/r374/src/tests/../arch/spark25_w8a8/spark25_w8a8.cpp:668:29: warning: ‘const RadChatFormat* spark25_w8a8::chat_format(const RadModelMeta*)’ defined but not used [-Wunused-function]
+  668 | static const RadChatFormat* chat_format(const RadModelMeta*) { return spark25_bf16::spark_chat_format(); }
+      |                             ^~~~~~~~~~~
+[715/1024] Building CXX object tests/CMakeFiles/util_test.dir/util_test.cpp.o
+[716/1024] Building CXX object tests/CMakeFiles/speech_stream_test.dir/speech_stream_test.cpp.o
+[717/1024] Building r4d_emu emu.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[718/1024] Building CXX object tests/CMakeFiles/avx_subset_plugin.dir/avx_subset_plugin.cpp.o
+[719/1024] Building r4d_emu r4d_expert_scale_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[720/1024] Building r4d_emu r4d_dsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[721/1024] Building CXX object tests/CMakeFiles/vae_geom_test.dir/vae_geom_test.cpp.o
+[722/1024] Building CXX object tests/CMakeFiles/tokenizer_test.dir/tokenizer_test.cpp.o
+[723/1024] Building r4d_emu r4d_fp8_f32scale.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[724/1024] Building r4d_emu r4d_kda.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[725/1024] Building r4d_emu r4d_kv_resolve.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[726/1024] Building r4d_emu r4d_gemm_m2xfp4a8_tiled.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[727/1024] Building r4d_emu r4d_glm.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[728/1024] Building r4d_emu r4d_mhc.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[729/1024] Building CXX object tests/CMakeFiles/speech_test.dir/speech_test.cpp.o
+[730/1024] Building CXX object tests/CMakeFiles/yarn_test.dir/yarn_test.cpp.o
+[731/1024] Building CXX object tests/CMakeFiles/stream_test.dir/stream_test.cpp.o
+[732/1024] Building r4d_emu r4d_pair_argmax_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[733/1024] Building r4d_emu r4d_norm_join_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[734/1024] Building r4d_emu r4d_quant_act_fp8.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[735/1024] Building r4d_emu ref_host.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[736/1024] Building r4d_emu r4d_qsa_select_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[737/1024] Building r4d_emu r4d_lora_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[738/1024] Building r4d_emu test_dsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[739/1024] Building r4d_emu test_escale.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[740/1024] Building r4d_emu test_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[741/1024] Building CXX object tests/CMakeFiles/video_gen_test.dir/video_gen_test.cpp.o
+[742/1024] Building r4d_emu test_attn.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[743/1024] Building r4d_emu r4d_moe_mxfp4.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[744/1024] Building CXX object tests/CMakeFiles/text_test.dir/text_test.cpp.o
+/data/q27/rad10/r374/src/tests/text_test.cpp:1751:17: warning: trigraph ‘??<’ ignored, use ‘-trigraphs’ to enable [-Wtrigraphs]
+ 1751 |         "...!!!???</w>((()))[[]]</w>",
+[745/1024] Building r4d_emu test_fp8f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[746/1024] Building r4d_emu test_kda.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[747/1024] Building CXX object tests/CMakeFiles/xstats_test.dir/xstats_test.cpp.o
+[748/1024] Building r4d_emu test_kvres.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[749/1024] Building halo_emu cfg_host.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[750/1024] Building r4d_emu test_mhc.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[751/1024] Building r4d_emu test_m2xfp4.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[752/1024] Building r4d_emu r4d_mla.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[753/1024] Building r4d_emu test_pick.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[754/1024] Building r4d_emu test_moemx.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[755/1024] Building r4d_emu test_norm.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[756/1024] Building halo_emu emu.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[757/1024] Building r4d_emu test_lora.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[758/1024] Building r4d_emu test_moefuse.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[759/1024] Building r4d_emu test_mla.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[760/1024] Building CXX object tests/CMakeFiles/transport_test.dir/transport_test.cpp.o
+In file included from /data/q27/rad10/r374/src/tests/transport_test.cpp:10:
+/data/q27/rad10/r374/src/vendor/cpp-httplib/httplib.h:258:62: note: ‘#pragma message: CPPHTTPLIB_WEBSOCKET_READ_TIMEOUT_SECOND is deprecated; define CPPHTTPLIB_WEBSOCKET_CLIENT_READ_TIMEOUT_SECOND and/or CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead’
+  258 |     "CPPHTTPLIB_WEBSOCKET_SERVER_READ_TIMEOUT_SECOND instead")
+      |                                                              ^
+/data/q27/rad10/r374/src/tests/transport_test.cpp: In function ‘radtest_a_chunked_request_body_is_read_and_bounded()::<lambda(const std::string&)>’:
+/data/q27/rad10/r374/src/tests/transport_test.cpp:649:48: warning: ‘
+   ’ directive output may be truncated writing 2 bytes into a region of size between 0 and 15 [-Wformat-truncation=]
+  649 |             std::snprintf(len, sizeof len, "%zx\r\n", piece.size());
+      |                                                ^~~~
+In file included from /usr/include/stdio.h:974,
+                 from /usr/include/c++/15/cstdio:47,
+                 from /usr/include/c++/15/ext/string_conversions.h:47,
+                 from /usr/include/c++/15/bits/basic_string.h:4442,
+                 from /usr/include/c++/15/string:56,
+                 from /usr/include/c++/15/bits/locale_classes.h:42,
+                 from /usr/include/c++/15/bits/ios_base.h:43,
+                 from /usr/include/c++/15/ios:46,
+                 from /usr/include/c++/15/istream:42,
+                 from /usr/include/c++/15/sstream:42,
+                 from /usr/include/c++/15/chrono:51,
+                 from /data/q27/rad10/r374/src/tests/rad_test.h:33,
+                 from /data/q27/rad10/r374/src/tests/server_fakes.h:16,
+                 from /data/q27/rad10/r374/src/tests/transport_test.cpp:8:
+In function ‘int snprintf(char*, size_t, const char*, ...)’,
+    inlined from ‘radtest_a_chunked_request_body_is_read_and_bounded()::<lambda(const std::string&)>’ at /data/q27/rad10/r374/src/tests/transport_test.cpp:649:26:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:68:35: note: ‘__builtin___snprintf_chk’ output between 4 and 19 bytes into a destination of size 16
+   68 |   return __builtin___snprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   69 |                                    __glibc_objsize (__s), __fmt,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   70 |                                    __va_arg_pack ());
+      |                                    ~~~~~~~~~~~~~~~~~
+[761/1024] Building CXX object tests/CMakeFiles/wire_test.dir/wire_test.cpp.o
+[762/1024] Building halo_emu halo_attn_paged_h128_gqa1.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[763/1024] Building halo_emu halo_dsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[764/1024] Building halo_emu halo_attn_paged_h128_gqa2.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[765/1024] Building halo_emu halo_attn_paged_h128_gqa2w.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[766/1024] Building halo_emu halo_expert_scale_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[767/1024] Building halo_emu halo_attn_paged_h256_gqa4.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[768/1024] Building r4d_emu test_qsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[769/1024] Building halo_emu halo_attn_paged_h256_gqa2.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[770/1024] Building halo_emu halo_gemm_bf16_nt_tiled.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[771/1024] Building halo_emu halo_gemm_fp8_f32scale.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[772/1024] Building halo_emu halo_attn_paged_h128_gqa4.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[773/1024] Building halo_emu halo_attn_paged_gqa8.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[774/1024] Building halo_emu halo_gemm_nt_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[775/1024] Building halo_emu halo_gemm_mxfp4a8_decode.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[776/1024] Building halo_emu halo_encoder_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[777/1024] Building halo_emu halo_glm.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[778/1024] Building halo_emu halo_gemm_bf16_nt_m64.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[779/1024] Building halo_emu halo_audio.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[780/1024] Building halo_emu halo_hc_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+/data/q27/rad10/r374/src/libhalo/halo_hc_bf16.hip:335:1: warning: '/*' within block comment [-Wcomment]
+  335 | /* hc_read, its scratch sizing and mtp_enter are the rest of libr4d's r4d_hc_bf16.hip:
+      | ^
+1 warning generated.
+[781/1024] Building halo_emu halo_kda.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[782/1024] Building halo_emu halo_kv_resolve.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[783/1024] Building halo_emu halo_p2p_copy2d.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[784/1024] Building halo_emu halo_moe_mxfp4.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[785/1024] Building halo_emu halo_pair_argmax_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[786/1024] Building halo_emu halo_norm_join_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[787/1024] Building halo_emu halo_mhc.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[788/1024] Building halo_emu halo_quant_act_fp8.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[789/1024] Building halo_emu halo_router_sigmoid_topk_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[790/1024] Building halo_emu halo_gen.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[791/1024] Building halo_emu halo_qsa_select_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[792/1024] Building halo_emu halo_router_scatter.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[793/1024] Building halo_emu halo_attn_paged_h256_gqa6.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[794/1024] Building halo_emu ref_host.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[795/1024] Building halo_emu halo_model_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[796/1024] Building halo_emu test_escale.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[797/1024] Building halo_emu test_f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[798/1024] Building halo_emu test_dsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[799/1024] Building halo_emu test_attn.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[800/1024] Building halo_emu test_fp8f32.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[801/1024] Building halo_emu test_kda.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[802/1024] Building halo_emu test_kvres.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[803/1024] Building halo_emu test_mhc.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[804/1024] Building CXX object tests/CMakeFiles/mem_test.dir/mem_test.cpp.o
+[805/1024] Building halo_emu test_gemm.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[806/1024] Building halo_emu test_pick.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[807/1024] Building halo_emu halo_lora_bf16.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[808/1024] Linking CXX shared module radiance_home/testkernels/radtest_base.so
+[809/1024] Linking CXX shared module radiance_home/testkernels/radtest_over.so
+[810/1024] Linking CXX shared module radiance_home/testkernels/bad/radtest_conflict.so
+[811/1024] Linking CXX shared module radiance_home/testkernels/bad/radtest_badabi.so
+[812/1024] Building halo_emu test_moemx.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[813/1024] Linking CXX shared module radiance_home/testkernels/bad/radtest_badlayout.so
+[814/1024] Linking CXX shared module radiance_home/testarch/radtest_arch.so
+[815/1024] Linking CXX shared module radiance_home/testarch/radtest_arch2.so
+[816/1024] Linking CXX shared module radiance_home/testkernels/order/radtest_ord_a.so
+[817/1024] Linking CXX shared module radiance_home/testkernels/order/radtest_ord_b.so
+[818/1024] Linking CXX shared module radiance_home/testkernels/bad/radtest_badtune_default.so
+[819/1024] Linking CXX shared module radiance_home/testkernels/extra/radtest_extra.so
+[820/1024] Linking CXX shared module radiance_home/testkernels/bad/radtest_badtune_twice.so
+[821/1024] Linking CXX shared module radiance_home/testkernels/decline/radtest_decline.so
+[822/1024] Linking CXX shared module radiance_home/testarchq/radtest_archq_plain.so
+[823/1024] Linking CXX shared module radiance_home/testarchq/radtest_archq_fp8.so
+[824/1024] Building halo_emu test_lora.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[825/1024] Linking CXX shared module radiance_home/testarchq/radtest_archq_w4.so
+[826/1024] Linking CXX shared module radiance_home/testarchq/radtest_archq_w8.so
+[827/1024] Linking CXX shared module radiance_home/testrows/radtest_rows.so
+[828/1024] Linking CXX shared module radiance_home/testquant/radtest_quant.so
+[829/1024] Building CXX object tests/CMakeFiles/videos_test.dir/videos_test.cpp.o
+[830/1024] Linking CXX executable radiance_home/kernels/rad-avx-check
+[831/1024] Linking CXX shared module radiance_home/architectures/anima.so
+[832/1024] Linking CXX executable radiance_home/kernels/rad-avx-bench
+[833/1024] Linking CXX shared module radiance_home/architectures/bailing_hybrid.so
+[834/1024] Linking CXX shared module radiance_home/architectures/breeze.so
+[835/1024] Building halo_emu test_norm.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[836/1024] Linking CXX shared module radiance_home/architectures/embgemma2.so
+[837/1024] Linking CXX shared module radiance_home/architectures/clef_fp8.so
+[838/1024] Linking CXX shared module radiance_home/architectures/fishomni.so
+[839/1024] Building halo_emu test_moefuse.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[840/1024] Linking CXX shared module radiance_home/architectures/flux3.so
+[841/1024] Linking CXX shared module radiance_home/architectures/flux3distilled.so
+[842/1024] Linking CXX shared module radiance_home/architectures/glm5next.so
+[843/1024] Linking CXX shared module radiance_home/architectures/gemma3.so
+[844/1024] Linking CXX shared module radiance_home/architectures/hunyuan3d2.so
+[845/1024] Linking CXX shared module radiance_home/architectures/hyv3_bf16.so
+[846/1024] Linking CXX shared module radiance_home/architectures/hyv3_fp8.so
+[847/1024] Linking CXX shared module radiance_home/architectures/krea2.so
+[848/1024] Linking CXX shared module radiance_home/architectures/hyv3_gguf.so
+[849/1024] Linking CXX shared module radiance_home/architectures/ltx2.so
+[850/1024] Linking CXX shared module radiance_home/architectures/minimaxh3.so
+[851/1024] Linking CXX shared module radiance_home/architectures/minimaxmusic3.so
+[852/1024] Linking CXX shared module radiance_home/architectures/nomicbert.so
+[853/1024] Linking CXX shared module radiance_home/architectures/qwen35_fp8.so
+[854/1024] Linking CXX shared module radiance_home/architectures/qwen35_w8a8.so
+[855/1024] Linking CXX shared module radiance_home/architectures/qwen35moe_fp8.so
+[856/1024] Linking CXX shared module radiance_home/architectures/qwen3asr_bf16.so
+[857/1024] Linking CXX shared module radiance_home/architectures/qwen4exp_fp8.so
+[858/1024] Linking CXX shared module radiance_home/architectures/sdxl.so
+[859/1024] Linking HIP executable bin/rad-tokcheck
+[860/1024] Building halo_emu test_mla.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[861/1024] Linking CXX shared module radiance_home/architectures/unlimitedocr_bf16.so
+[862/1024] Linking CXX shared module radiance_home/architectures/spark25_w8a8.so
+[863/1024] Linking CXX executable bin/rad-schemas
+[864/1024] Linking HIP executable bin/rad-info
+[865/1024] Linking HIP executable bin/rad-tune
+[866/1024] Linking HIP executable bin/rad-gbnf-check
+[867/1024] Linking HIP executable tests/advance_test
+[868/1024] Linking HIP executable tests/abi_layout_test
+[869/1024] Building halo_emu test_paged.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[870/1024] Linking HIP executable tests/audio_gen_test
+[871/1024] Linking HIP executable tests/chat_test
+[872/1024] Linking HIP executable tests/chatparse_gemma4_test
+[873/1024] Linking HIP executable bin/rad-chatparse
+[874/1024] Linking HIP executable tests/checkpoint_test
+[875/1024] Linking HIP executable tests/build_test
+[876/1024] Linking HIP executable tests/clef_decision_test
+[877/1024] Linking HIP executable tests/chatparse_test
+[878/1024] Linking HIP executable tests/convert_test
+[879/1024] Linking HIP executable tests/clef_test
+[880/1024] Linking HIP executable tests/device_test
+[881/1024] Linking HIP executable tests/cvec_test
+[882/1024] Linking HIP executable tests/encoding_test
+[883/1024] Linking HIP executable tests/config_test
+[884/1024] Linking HIP executable tests/dashboard_test
+[885/1024] Linking HIP executable tests/fixture_test
+[886/1024] Linking HIP executable tests/diag_test
+[887/1024] Linking HIP executable tests/format_test
+[888/1024] Linking HIP executable tests/gen_config_test
+[889/1024] Linking HIP executable tests/gbnf_test
+[890/1024] Linking HIP executable tests/engine_e2e_test
+[891/1024] Linking HIP executable tests/gen_test
+[892/1024] Linking HIP executable tests/hf_model_test
+[893/1024] Linking HIP executable tests/gen_lora_test
+[894/1024] Linking HIP executable tests/hostmem_test
+[895/1024] Linking CXX executable tests/harness_test
+[896/1024] Linking HIP executable tests/issue_div_test
+[897/1024] Linking HIP executable tests/images_test
+[898/1024] Linking HIP executable tests/host_experts_test
+[899/1024] Linking HIP executable tests/kbench_test
+[900/1024] Linking HIP executable tests/kbench_mutant_test
+[901/1024] Linking HIP executable tests/kv_window_test
+[902/1024] Linking CXX executable tests/glm5next_test
+[903/1024] Linking HIP executable tests/kld_test
+[904/1024] Linking HIP executable tests/laya_decision_test
+[905/1024] Linking HIP executable tests/lora_ops_test
+[906/1024] Linking HIP executable tests/lora_test
+[907/1024] Linking HIP executable tests/laya_test
+[908/1024] Linking HIP executable tests/lifecycle_test
+[909/1024] Linking HIP executable tests/mtp_couple_plan_test
+[910/1024] Linking HIP executable tests/mica_test
+[911/1024] Linking HIP executable tests/mm_test
+[912/1024] Linking HIP executable tests/mem_test
+[913/1024] Linking HIP executable tests/place_test
+[914/1024] Linking HIP executable tests/precompiled_test
+[915/1024] Linking HIP executable tests/projection_test
+[916/1024] Linking HIP executable tests/plugin_test
+[917/1024] Linking HIP executable tests/quant_ggml_test
+[918/1024] Linking HIP executable tests/quant_algo_test
+[919/1024] Linking HIP executable tests/p4b_kv_ring_test
+[920/1024] Linking HIP executable tests/quant_m2xfp_test
+[921/1024] Linking HIP executable tests/quant_tcq_gpu_test
+[922/1024] Linking HIP executable tests/r4d_ar_links_test
+[923/1024] Linking HIP executable tests/r4d_bf16_gemm_rows_test
+[924/1024] Linking HIP executable tests/recipe_test
+[925/1024] Linking HIP executable tests/quant_test
+[926/1024] Linking CXX executable tests/nemotron35_test
+[927/1024] Linking HIP executable tests/shape_test
+[928/1024] Linking HIP executable tests/relayout_parity_test
+[929/1024] Linking HIP executable tests/runtime_test
+[930/1024] Linking HIP executable tests/share_test
+[931/1024] Linking CXX executable tests/ref2va_pack_test
+[932/1024] Linking HIP executable tests/shapes_test
+[933/1024] Linking HIP executable tests/sample_test
+[934/1024] Linking HIP executable tests/shipped_plugins_test
+[935/1024] Linking HIP executable tests/spark25_recipe_test
+[936/1024] Linking HIP executable tests/spark25_convert_test
+[937/1024] Linking HIP executable tests/spark25_chat_test
+[938/1024] Building halo_emu halo_gemm_mxfp4a8_tiled.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[939/1024] Building halo_emu halo_gemm_mxfp4a8_nt_m64.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[940/1024] Linking HIP executable tests/spechub_accept_test
+[941/1024] Linking CXX executable tests/spark25_arch_test
+[942/1024] Linking HIP executable tests/spechub_couple_test
+[943/1024] Linking HIP executable tests/spechub_cooperative_test
+[944/1024] Linking HIP executable tests/spechub_dflash_couple_test
+[945/1024] Linking HIP executable tests/spechub_wiring_test
+[946/1024] Linking HIP executable tests/text_split_test
+[947/1024] Linking HIP executable tests/text_test
+[948/1024] Linking HIP executable tests/tokenizer_perf_test
+[949/1024] Linking HIP executable tests/tokenizer_regex_test
+[950/1024] Linking HIP executable tests/speech_stream_test
+[951/1024] Linking HIP executable tests/stream_test
+[952/1024] Linking HIP executable tests/speech_test
+[953/1024] Linking HIP executable tests/systemone_test
+[954/1024] Linking HIP executable tests/tokenizer_test
+[955/1024] Linking HIP executable tests/torch_zip_test
+[956/1024] Linking HIP executable tests/trigger_test
+[957/1024] Linking HIP executable tests/tools_test
+[958/1024] Linking HIP executable tests/util_test
+[959/1024] Linking HIP executable tests/video_gen_test
+[960/1024] Linking HIP executable tests/xstats_test
+[961/1024] Linking HIP executable tests/transport_test
+[962/1024] Linking CXX executable tests/vae_geom_test
+[963/1024] Linking HIP executable tests/videos_test
+[964/1024] Linking HIP executable tests/wire_test
+[965/1024] Linking CXX shared module tests/libavx_subset_plugin.so
+[966/1024] Linking HIP executable tests/yarn_test
+[967/1024] Building halo_emu test_ref.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[968/1024] Building halo_emu halo_mla.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[969/1024] Building halo_emu test_qsa.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[970/1024] Building CXX object tests/CMakeFiles/sched_test.dir/sched_test.cpp.o
+In file included from /data/q27/rad10/r374/src/tests/sched_test.cpp:4:
+/data/q27/rad10/r374/src/tests/sched_test.cpp: In function ‘void radtest_a_preempted_prefill_waits_for_the_whole_prompt_and_running_headroom()’:
+/data/q27/rad10/r374/src/tests/rad_test.h:327:19: warning: comparison of integer expressions of different signedness: ‘long unsigned int’ and ‘int’ [-Wsign-compare]
+  327 |          if (!(_a == _b)) ::radtest::fail(__FILE__, __LINE__,                          \
+      |                ~~~^~~~~
+/data/q27/rad10/r374/src/tests/sched_test.cpp:1739:5: note: in expansion of macro ‘CHECK_EQ’
+ 1739 |     CHECK_EQ(f.sch.plan().e.size(), 2);
+      |     ^~~~~~~~
+/data/q27/rad10/r374/src/tests/sched_test.cpp: In function ‘void radtest_a_preempted_prefill_ignores_a_kv_group_that_holds_no_blocks()’:
+/data/q27/rad10/r374/src/tests/rad_test.h:327:19: warning: comparison of integer expressions of different signedness: ‘long unsigned int’ and ‘int’ [-Wsign-compare]
+  327 |          if (!(_a == _b)) ::radtest::fail(__FILE__, __LINE__,                          \
+      |                ~~~^~~~~
+/data/q27/rad10/r374/src/tests/sched_test.cpp:1927:5: note: in expansion of macro ‘CHECK_EQ’
+ 1927 |     CHECK_EQ(f.sch.plan().e.size(), 2);
+      |     ^~~~~~~~
+/data/q27/rad10/r374/src/tests/sched_test.cpp: In function ‘void radtest_a_preempted_prefill_falls_back_to_a_running_victim_after_the_wait()’:
+/data/q27/rad10/r374/src/tests/rad_test.h:327:19: warning: comparison of integer expressions of different signedness: ‘long unsigned int’ and ‘int’ [-Wsign-compare]
+  327 |          if (!(_a == _b)) ::radtest::fail(__FILE__, __LINE__,                          \
+      |                ~~~^~~~~
+/data/q27/rad10/r374/src/tests/sched_test.cpp:1960:5: note: in expansion of macro ‘CHECK_EQ’
+ 1960 |     CHECK_EQ(f.sch.plan().e.size(), 2);
+      |     ^~~~~~~~
+[971/1024] Linking HIP executable tests/sched_test
+[972/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_fp8a8.hip.o
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_119r4dchain_gemm_fp8a8ILb1ELj1ELj1ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_117gemm_fp8a8_kernelILb1ELj1ELj1ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_119r4dchain_gemm_fp8a8ILb1ELj2ELj2ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_117gemm_fp8a8_kernelILb1ELj2ELj2ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_119r4dchain_gemm_fp8a8ILb0ELj1ELj1ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_117gemm_fp8a8_kernelILb0ELj1ELj1ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_119r4dchain_gemm_fp8a8ILb0ELj2ELj2ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_117gemm_fp8a8_kernelILb0ELj2ELj2ELj256ELb0ELb0ELb0EEEvPKhPKvS2_S4_PvS5_PjjjjjjjjjPhPfPtjjjPKtj': desired occupancy was 8, final occupancy is 7
+[973/1024] Building halo_emu halo_gemm_fp8a8.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+/data/q27/rad10/r374/src/libhalo/halo_gemm_fp8a8.hip:1157:40: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+ 1157 | __global__ __launch_bounds__(512) void halo_gemm_fp8a8_gated_kernel(
+      |                                        ^
+/data/q27/rad10/r374/src/libhalo/halo_gemm_fp8a8.hip:1157:40: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/data/q27/rad10/r374/src/libhalo/halo_gemm_fp8a8.hip:1157:40: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+3 warnings generated.
+[974/1024] Building r4d_emu r4d_attn_paged_window.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[975/1024] Building halo_emu halo_attn_paged_window.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[976/1024] Linking halo_emu_lora
+[977/1024] Linking halo_emu_f32
+[978/1024] Linking halo_emu_norm
+[979/1024] Linking halo_emu_mhc
+[980/1024] Linking halo_emu_mla
+[981/1024] Linking halo_emu_qsa
+[982/1024] Linking halo_emu_pick
+[983/1024] Linking halo_emu_attn
+[984/1024] Linking halo_emu_ref
+[985/1024] Linking halo_emu_gemm
+[986/1024] Linking halo_emu_fp8f32
+[987/1024] Linking halo_emu_escale
+[988/1024] Linking halo_emu_kda
+[989/1024] Linking halo_emu_moefuse
+[990/1024] Linking halo_emu_dsa
+[991/1024] Linking halo_emu_moemx
+[992/1024] Linking halo_emu_kvres
+[993/1024] Linking halo_emu_paged
+[994/1024] Building CXX object tests/CMakeFiles/server_test.dir/server_test.cpp.o
+/data/q27/rad10/r374/src/tests/server_test.cpp: In function ‘void radtest_rerank_refuses_invalid_pairs_unsupported_options_and_nonfinite_scores()’:
+/data/q27/rad10/r374/src/tests/server_test.cpp:6417:29: warning: loop variable ‘body’ of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} binds to a temporary constructed from type ‘const char* const’ [-Wrange-loop-construct]
+ 6417 |     for (const std::string& body :
+      |                             ^~~~
+/data/q27/rad10/r374/src/tests/server_test.cpp:6417:29: note: use non-reference type ‘const std::string’ {aka ‘const std::__cxx11::basic_string<char>’} to make the copy explicit or ‘const char* const&’ to prevent copying
+[995/1024] Linking HIP executable tests/server_test
+[996/1024] Building r4d_emu r4d_gemm_m2xfp4a8_decode.o with /data/q27/rad10/rocm-repeatable/lib/llvm/bin/clang++
+[997/1024] Linking r4d_emu_dsa
+[998/1024] Linking r4d_emu_mla
+[999/1024] Linking r4d_emu_f32
+[1000/1024] Linking r4d_emu_mhc
+[1001/1024] Linking r4d_emu_attn
+[1002/1024] Linking r4d_emu_qsa
+[1003/1024] Linking r4d_emu_kvres
+[1004/1024] Linking r4d_emu_norm
+[1005/1024] Linking r4d_emu_kda
+[1006/1024] Linking r4d_emu_pick
+[1007/1024] Linking r4d_emu_escale
+[1008/1024] Linking r4d_emu_moefuse
+[1009/1024] Linking r4d_emu_fp8f32
+[1010/1024] Linking r4d_emu_m2xfp4
+[1011/1024] Linking r4d_emu_lora
+[1012/1024] Linking r4d_emu_moemx
+[1013/1024] Building CXX object libr4d/CMakeFiles/r4d_selftest.dir/r4d_selftest.cpp.o
+[1014/1024] Linking CXX executable bin/r4d_selftest
+[1015/1024] Building CXX object tests/CMakeFiles/ref_test.dir/ref_test.cpp.o
+In file included from /usr/include/c++/15/vector:67,
+                 from /usr/include/c++/15/chrono:53,
+                 from /data/q27/rad10/r374/src/tests/rad_test.h:33,
+                 from /data/q27/rad10/r374/src/tests/ref_test.cpp:14:
+In function ‘_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = __gnu_cxx::__normal_iterator<const int*, vector<int> >; _ForwardIterator = int*]’,
+    inlined from ‘constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _Sentinel, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = __gnu_cxx::__normal_iterator<const int*, vector<int> >; _Sentinel = __gnu_cxx::__normal_iterator<const int*, vector<int> >; _ForwardIterator = int*; _Tp = int]’ at /usr/include/c++/15/bits/stl_uninitialized.h:635:32,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_range_initialize_n(_Iterator, _Sentinel, size_type) [with _Iterator = __gnu_cxx::__normal_iterator<const int*, std::vector<int> >; _Sentinel = __gnu_cxx::__normal_iterator<const int*, std::vector<int> >; _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/stl_vector.h:1989:37,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with _InputIterator = __gnu_cxx::__normal_iterator<const int*, std::vector<int> >; <template-parameter-2-2> = void; _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/stl_vector.h:746:29,
+    inlined from ‘radtest_op_sample_ngram_ban_matches_the_reference_processor()::<lambda(const std::vector<int>&, int, int, const std::vector<int>&, bool)>’ at /data/q27/rad10/r374/src/tests/ref_test.cpp:5679:46,
+    inlined from ‘void radtest_op_sample_ngram_ban_matches_the_reference_processor()’ at /data/q27/rad10/r374/src/tests/ref_test.cpp:5702:55:
+/usr/include/c++/15/bits/stl_uninitialized.h:273:31: warning: ‘void* __builtin_memcpy(void*, const void*, long unsigned int)’ reading 32 bytes from a region of size 0 [-Wstringop-overread]
+  273 |               __builtin_memcpy(std::__niter_base(__result),
+      |               ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  274 |                                std::__niter_base(__first),
+      |                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  275 |                                __n * sizeof(_ValT));
+      |                                ~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/15/bits/c++allocator.h:33,
+                 from /usr/include/c++/15/bits/allocator.h:46,
+                 from /usr/include/c++/15/string:45,
+                 from /usr/include/c++/15/bits/locale_classes.h:42,
+                 from /usr/include/c++/15/bits/ios_base.h:43,
+                 from /usr/include/c++/15/ios:46,
+                 from /usr/include/c++/15/istream:42,
+                 from /usr/include/c++/15/sstream:42,
+                 from /usr/include/c++/15/chrono:51:
+In member function ‘_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = int]’,
+    inlined from ‘constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = int]’ at /usr/include/c++/15/bits/allocator.h:203:40,
+    inlined from ‘static constexpr _Tp* std::allocator_traits<std::allocator<_CharT> >::allocate(allocator_type&, size_type) [with _Tp = int]’ at /usr/include/c++/15/bits/alloc_traits.h:614:28,
+    inlined from ‘constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/stl_vector.h:387:33,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::_M_realloc_append(_Args&& ...) [with _Args = {int}; _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/vector.tcc:572:44,
+    inlined from ‘constexpr std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::emplace_back(_Args&& ...) [with _Args = {int}; _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/vector.tcc:123:21,
+    inlined from ‘constexpr void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>]’ at /usr/include/c++/15/bits/stl_vector.h:1434:21,
+    inlined from ‘void radtest_op_sample_ngram_ban_matches_the_reference_processor()’ at /data/q27/rad10/r374/src/tests/ref_test.cpp:5700:58:
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-8, -4] into source object of size 32 allocated by ‘operator new’
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                                         ^
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-28, -24] into source object of size 4 allocated by ‘operator new’
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-24, -20] into source object of size 8 allocated by ‘operator new’
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-20, -16] into source object of size 16 allocated by ‘operator new’
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-16, -12] into source object of size 16 allocated by ‘operator new’
+/usr/include/c++/15/bits/new_allocator.h:151:73: note: at offset [-12, -8] into source object of size 32 allocated by ‘operator new’
+[1016/1024] Linking HIP executable tests/ref_test
+[1017/1024] Building CXX object tests/CMakeFiles/arch_test.dir/arch_test.cpp.o
+[1018/1024] Linking CXX executable tests/arch_test
+[1019/1024] Building HIP object libr4d/CMakeFiles/libr4d.dir/r4d_gemm_iqr.hip.o
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj2ELj0ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj2ELj0ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj3ELj0ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj3ELj0ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj4ELj0ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj4ELj0ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj5ELj0ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj3ELj5ELj0ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj8ELj2ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj8ELj2ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj9ELj2ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj9ELj2ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj10ELj2ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj10ELj2ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj4ELj12ELj2ELj0ELj0ELj0EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj12ELj2ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj12ELj2ELj0ELj0ELj0EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj12ELj2ELj0ELj0ELj0EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj4ELj12ELj2ELj0ELj0ELj0EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj2ELj6ELj0ELj0ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj12ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj12ELj0ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj2ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj3ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj4ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj5ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj6ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj1ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj2ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj3ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj4ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj5ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj6ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj7ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj8ELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m16_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj4ELb0EEEvNS1_3CtxEPKaPKfPtjjjjNS_8GatedOutE': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj3ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj2ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 3
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj5ELj7ELj0ELj14ELj5ELj1EEELj1ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 4
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj2ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj3ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj4ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj5ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj6ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj7ELj0ELj16ELj5ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj2ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj3ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj4ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj5ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj6ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj7ELj0ELj16ELj0ELj1EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj4ELj0ELj16ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj5ELj0ELj16ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj6ELj0ELj16ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj7ELj0ELj16ELj0ELj0EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj2ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj3ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj4ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj5ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj6ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj7ELj0ELj16ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+ld.lld: warning: <unknown>:0:0: failed to meet occupancy target given by 'amdgpu-waves-per-eu' in '_ZN12_GLOBAL__N_114iqr_m64_kernelIN11r4d_iqr_dev5FormTILj6ELj2ELj0ELj15ELj0ELj3EEELj4ELj4EEEvNS1_3CtxEPKhPKfPvPtPjjjjjjj': desired occupancy was 6, final occupancy is 5
+[1020/1024] Linking HIP shared module radiance_home/kernels/libr4d.so
+[1021/1024] Linking HIP executable tests/dspark_device_test
+[1022/1024] Linking HIP executable tests/r4d_bf16_capacity_test
+[1023/1024] Linking HIP executable tests/nemotron35_device_test
+-- Install configuration: "Release"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels.rkb
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels_moe.rkb
+-- Installing: /data/q27/rad10/r374/install/share/radiance/vectors/qwen4exp-control-vector.gguf
+-- Installing: /data/q27/rad10/r374/install/share/radiance/vectors/qwen4exp-control-vector.json
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/third_party/qwen-community.LICENSE
+-- Installing: /data/q27/rad10/r374/install/libexec/radiance/hfget.sh
+-- Installing: /data/q27/rad10/r374/install/bin/rad-export
+-- Installing: /data/q27/rad10/r374/install/bin/radiance
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/radiance" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels/libref.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/kernels/libref.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/quantizers/libquant.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/quantizers/libquant.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels/libr4d.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/kernels/libr4d.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/r4d_selftest
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/r4d_selftest" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels/libavx.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/kernels/libavx.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/anima.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/anima.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/bailing_hybrid.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/bailing_hybrid.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/breeze.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/breeze.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/clef_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/clef_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/clef_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/clef_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/embgemma2.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/embgemma2.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/fishomni.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/fishomni.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/flux3.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/flux3.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/flux3distilled.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/flux3distilled.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/gemma3.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/gemma3.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/gemma4.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/gemma4.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/gemma4_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/gemma4_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/glm5next.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/glm5next.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/hunyuan3d2.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/hunyuan3d2.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/hyv3_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/hyv3_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/hyv3_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/hyv3_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/hyv3_gguf.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/hyv3_gguf.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/krea2.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/krea2.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/laya.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/laya.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/lfm2_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/lfm2_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/llama_dense_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/llama_dense_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/llama_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/llama_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/ltx2.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/ltx2.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/minimaxh3.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/minimaxh3.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/minimaxmusic3.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/minimaxmusic3.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/nemotron35_embed.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/nemotron35_embed.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/nomicbert.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/nomicbert.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen35_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen35_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen35_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen35_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen35_w8a8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen35_w8a8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen35moe_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen35moe_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen3asr_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen3asr_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwen4exp_fp8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwen4exp_fp8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/qwenimage21.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/qwenimage21.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/sdxl.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/sdxl.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/spark25_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/spark25_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/spark25_w8a8.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/spark25_w8a8.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/share/radiance/architectures/unlimitedocr_bf16.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/architectures/unlimitedocr_bf16.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_mtp_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_gemma4_chat.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_indexer.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_vision.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_qsa.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_ple.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_attn_gated_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_mlp.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_vae2d.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_dspark_bf16.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_clef.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_dspark.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_mla.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_hc.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_mlp_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_attn.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_kda.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_sam.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_mtp.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_dflash2.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_deepseek41_chat.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_router.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_gemma4_unified.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_gdn.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_gemma4_audio.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_resample.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_arch.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_moe_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_calib_full.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_glm_tp.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_gdn_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_mtp_hc.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_gemma4_dflash.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_vit.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_attn_fp8.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_attn_gated.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_glm_mhc.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/arch/rad_block_gemma4_vision.h
+-- Installing: /data/q27/rad10/r374/install/share/radiance/kernels/spechub.so
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/share/radiance/kernels/spechub.so" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-info
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-info" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-convert
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-convert" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-kbench
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-kbench" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-tune
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-tune" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-schemas
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-schemas" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Installing: /data/q27/rad10/r374/install/bin/rad-tokcheck
+-- Set non-toolchain portion of runtime path of "/data/q27/rad10/r374/install/bin/rad-tokcheck" to "/opt/rocm-10.1/lib:/data/q27/rad10/ffmpeg/inst/lib"
+-- Up-to-date: /data/q27/rad10/r374/install/include/radiance
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_clef.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_philox.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_plugin.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_format.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_spechub.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_device.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_sample.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_abi_layout.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_prefill_split.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_encoding.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_builder.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_abi_layout_rows.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_abi.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_laya.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_quant.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_types.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_yarn.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_planes.h
+-- Installing: /data/q27/rad10/r374/install/include/radiance/rad_runtime.h
+-- Installing: /data/q27/rad10/r374/install/lib/cmake/radiance/radianceTargets.cmake
+-- Installing: /data/q27/rad10/r374/install/lib/cmake/radiance/radiance-config.cmake
+-- Installing: /data/q27/rad10/r374/install/lib/cmake/radiance/radiance-config-version.cmake
+-- Installing: /data/q27/rad10/r374/install/lib/cmake/radiance/RadAddPlugin.cmake
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/LICENSE
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/NOTICE
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/third_party/llama.cpp.LICENSE
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/third_party/nlohmann-json.LICENSE
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/third_party/cpp-httplib.LICENSE
+-- Installing: /data/q27/rad10/r374/install/share/doc/radiance/third_party/liquidai-d1.LICENSE
+09:12:35 CORE DONE
+09:12:35 exl3quant: build
+09:12:40 exl3quant: built, host tests 1 passed
+09:12:40 qwen35_exl3: build
+09:12:50 qwen35_exl3: built, host tests 0 passed
+09:12:50 exl3dense: build
+09:12:55 exl3dense: built, host tests 2 passed
+09:12:55 exl3r4d: build
+09:13:06 exl3r4d: built, host tests 0 passed
+09:13:06 exl3i: build
+09:13:36 exl3i: built, host tests 3 passed
+09:13:36 HOME READY /data/q27/rad10/r374/home

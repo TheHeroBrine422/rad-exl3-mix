@@ -1,0 +1,20 @@
+Test project /data/q27/rad10/pb/exl3i
+    Start 4: exl3i_gpu_test
+1/6 Test #4: exl3i_gpu_test ...................   Passed   14.20 sec
+    Start 5: test_twopass
+2/6 Test #5: test_twopass .....................   Passed   25.00 sec
+    Start 6: test_a4
+3/6 Test #6: test_a4 ..........................   Passed   45.60 sec
+    Start 7: test_ks
+4/6 Test #7: test_ks ..........................   Passed    4.72 sec
+    Start 8: test_r16
+5/6 Test #8: test_r16 .........................   Passed    2.48 sec
+    Start 9: test_aq
+6/6 Test #9: test_aq ..........................   Passed   27.16 sec
+
+100% tests passed out of 6
+
+Label Time Summary:
+gpu    = 119.15 sec*proc (6 tests)
+
+Total Test time (real) = 119.16 sec

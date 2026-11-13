@@ -1,0 +1,12 @@
+07:57:58 start (pid 351332, card 6)
+07:57:58 card6.lock held
+07:57:58 core fast: scripts/val10.sh: line 24: ctest: command not found
+07:57:58 core gpu: 
+07:57:58 exl3quant gpu: 
+07:57:58 qwen35_exl3 gpu: 
+07:57:58 exl3dense gpu: 
+07:57:58 exl3r4d gpu: 
+07:57:58 exl3i gpu: 
+07:57:58 pack K4-r10: waiting for conv.lock + ram.lock
+07:57:58 pack K4-r10: start
+07:57:58 pack K4-r10: rc 2 

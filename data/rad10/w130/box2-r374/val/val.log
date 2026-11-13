@@ -1,0 +1,19 @@
+09:14:18 card2.lock held
+09:16:43 core fast: 98% tests passed, 3 tests failed out of 147
+09:19:08 exl3i gpu (FUSE test included): 100% tests passed out of 7
+09:19:09 fatbin same 6 differ 0
+09:19:09 pack K4
+09:21:22 pack K4 rc 0 18250805248 sha 5c233b2908572caa
+09:21:22 K4 pack weights: 0 v.*, 0 dflash
+09:21:22 pack K4p
+09:23:39 pack K4p rc 0 17328908288 sha 57d1faf8ea5abf52
+09:23:39 K4p pack weights: 0 v.*, 0 dflash
+09:23:39 kld V2
+09:25:44 kld V2 rc 0 rows sha 89faf27ad364b71d
+09:25:44 kld K4
+09:30:05 kld K4 rc 0 rows sha d7ee9f60febe6647
+09:30:05 rad10 rows: V2 89faf27ad364b71d, K4 d7ee9f60febe6647
+09:30:05 serve K4 with media
+09:30:24 images: hopper-describe 96 tokens, prompt 324 gull-what 96 tokens, prompt 797 dashboard-read 96 tokens, prompt 644 
+09:30:30 fbench written
+09:30:30 VALR374 DONE

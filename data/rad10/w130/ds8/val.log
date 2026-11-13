@@ -1,0 +1,71 @@
+08:01:09 start (pid 354757, card 6)
+08:01:09 card6.lock held
+08:03:49 core fast: 	 39 - images_test (Failed)                              fast unit
+08:11:33 start (pid 365135, card 5)
+08:11:33 card5.lock held
+08:11:34 exl3quant gpu: No tests were found!!!
+08:11:34 qwen35_exl3 gpu: No tests were found!!!
+08:11:34 exl3dense gpu: No tests were found!!!
+08:11:34 exl3r4d gpu: No tests were found!!!
+08:13:42 exl3i gpu: 100% tests passed out of 6
+08:13:42 pack K4-r10: waiting for conv.lock + ram.lock
+08:13:42 pack K4-r10: start
+08:13:42 pack K4-r10: rc 1 
+cat: /data/q27/rad10/val/packs/K4-r10.sha: No such file or directory
+08:13:42 K4 pack sha: 10.1  7.14 bb5cfc2826a6a1055d0b72b7b9d2ce51e9c0d668be60cc01c0c81acd9da9a12e
+08:13:42 pack K4H-r10: waiting for conv.lock + ram.lock
+08:13:42 pack K4H-r10: start
+08:13:43 pack K4H-r10: rc 1 
+08:13:43 pack K4H-r7: waiting for conv.lock + ram.lock
+08:13:43 pack K4H-r7: start
+08:13:44 pack K4H-r7: rc 1 
+cat: /data/q27/rad10/val/packs/K4H-r10.sha: No such file or directory
+cat: /data/q27/rad10/val/packs/K4H-r7.sha: No such file or directory
+08:13:44 K4H pack sha: 10.1  7.14 
+08:13:44 pack K4A-r10: waiting for conv.lock + ram.lock
+08:13:44 pack K4A-r10: start
+08:13:45 pack K4A-r10: rc 1 
+08:13:45 kld V2-r7f
+08:15:53 kld V2-r7f rc 0 0.37066039010374446 0.8880920335832853
+08:15:53 kld V2-r7
+08:17:52 start (pid 374843, card 4)
+08:17:52 card4.lock held
+08:17:52 pack K4-r10: waiting for conv.lock + ram.lock
+08:18:04 kld V2-r7 rc 0 0.37066039010374446 0.8880920335832853
+08:18:04 pack K4-r10: start
+08:18:04 kld V2-r10
+08:20:31 pack K4-r10: rc 0 17328908288
+08:20:44 K4 pack sha: 10.1 bb5cfc2826a6a1055d0b72b7b9d2ce51e9c0d668be60cc01c0c81acd9da9a12e 7.14 bb5cfc2826a6a1055d0b72b7b9d2ce51e9c0d668be60cc01c0c81acd9da9a12e
+08:20:44 pack K4H-r10: waiting for conv.lock + ram.lock
+08:22:42 kld V2-r10 rc 0 0.37066039010374446 0.8880920335832853
+08:22:42 pack K4H-r10: start
+08:22:42 kld K4-r7
+08:25:11 pack K4H-r10: rc 0 15899342848
+08:25:21 pack K4H-r7: waiting for conv.lock + ram.lock
+08:29:39 kld K4-r7 rc 0 0.1569782739425472 0.9404153047490867
+08:29:39 kld K4-r10
+08:29:39 pack K4H-r7: start
+08:32:09 pack K4H-r7: rc 0 15899342848
+08:32:19 K4H pack sha: 10.1 19178357ae988e23304bc0fa12c1d6cc7fa1b22ed62c0affd51c88f9f805bd8a 7.14 19178357ae988e23304bc0fa12c1d6cc7fa1b22ed62c0affd51c88f9f805bd8a
+08:32:19 pack K4A-r10: waiting for conv.lock + ram.lock
+08:36:47 kld K4-r10 rc 0 0.1569782739425472 0.9404153047490867
+08:36:47 kld K4H-r7
+08:36:47 pack K4A-r10: start
+08:39:17 pack K4A-r10: rc 0 17709017088
+08:39:29 PACKS DONE
+08:41:43 kld K4H-r7 rc 0 0.15698408111133105 0.9403191693905019
+08:41:43 kld K4H-r10
+08:43:58 kld K4H-r10 rc 0 0.15698408111133105 0.9403191693905019
+08:43:58 kld K4A-r7-f0
+08:47:52 kld K4A-r7-f0 rc 0 0.1464696825782464 0.944452989809652
+08:47:52 kld K4A-r10-f0
+08:51:44 kld K4A-r10-f0 rc 0 0.1464696825782464 0.944452989809652
+08:51:44 kldcmp written
+08:51:44 serve K4H-r7-1
+08:52:54 serve K4H-r10-1
+08:54:03 serve K4H-r7-2
+08:54:54 serve K4H-r10-2
+08:55:44 kld K4A-r10-f1
+08:59:40 kld K4A-r10-f1 rc 0 0.1464696825782464 0.944452989809652
+09:00:10 fuse test: 100% tests passed out of 1 rc 0 
+09:00:10 VAL DONE

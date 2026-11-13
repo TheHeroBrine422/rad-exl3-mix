@@ -1,0 +1,59 @@
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+CMake Warning (unused-cli):
+  Manually-specified variables were not used by the project:
+
+    CMAKE_HIP_COMPILER
+    CMAKE_HIP_COMPILER_ROCM_ROOT
+    CMAKE_HIP_FLAGS
+    RAD_GPU_TARGETS
+    RAD_HIPCC
+    RAD_HIP_VOPD_REPEATABLE
+
+
+-- Build files have been written to: /data/q27/rad10/pb-pack10
+[1/4] Building CXX object CMakeFiles/qwen35_exl3.dir/qwen35_exl3.cpp.o
+[2/4] Linking CXX shared module radiance_home/architectures/qwen35_exl3.so
+[3/4] Building CXX object CMakeFiles/qwen35_exl3_test.dir/tests/qwen35_exl3_test.cpp.o
+[4/4] Linking CXX executable qwen35_exl3_test
+08:17:25 built 10.1
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+CMake Warning (unused-cli):
+  Manually-specified variables were not used by the project:
+
+    RAD_GPU_TARGETS
+    RAD_HIPCC
+
+
+-- Build files have been written to: /data/q27/rad10/pb-pack7
+[1/4] Building CXX object CMakeFiles/qwen35_exl3.dir/qwen35_exl3.cpp.o
+[2/4] Linking CXX shared module radiance_home/architectures/qwen35_exl3.so
+[3/4] Building CXX object CMakeFiles/qwen35_exl3_test.dir/tests/qwen35_exl3_test.cpp.o
+[4/4] Linking CXX executable qwen35_exl3_test
+08:17:33 built 7.14
+08:17:34 PACK HOMES READY

@@ -1,0 +1,411 @@
+/data/q27/rad10/r374/val/packs/K4.rad
+  format        RAD2, 17.00 GiB, little-endian
+  architecture  qwen35
+  model         qwen35
+  source quant  exl3
+  recipe        9 line(s) -- --recipe prints it
+  created by    rad-convert Nov 13 2026 from models/qwen38-27b-bf16
+
+  section          offset        bytes    count
+  strings            248     3.01 MiB        -
+  metadata       3151264     3.16 KiB      135
+  directory      3154504   148.75 KiB     1120
+  planes         3306824    34.25 KiB     2192
+  encodings      3341896     4.44 KiB        8
+  vocab          3346440     4.02 MiB        -
+  profile        7560088          0 B        0
+  data           8388608    16.99 GiB     1120
+
+metadata (135)
+  n_layers                                      64
+  n_embd                                        5120
+  n_head                                        24
+  n_head_kv                                     4
+  head_dim                                      256
+  n_ff                                          17408
+  n_vocab                                       248320
+  n_ctx_train                                   262144
+  n_expert                                      0
+  n_expert_used                                 0
+  n_expert_shared                               0
+  rms_eps                                       1e-06
+  rope_theta                                    1e+07
+  architectures                                 Qwen3_5ForConditionalGeneration
+  image_token_id                                248056
+  language_model_only                           0
+  model_type                                    qwen3_5
+  text_config.attention_bias                    0
+  text_config.attention_dropout                 0
+  text_config.attn_output_gate                  1
+  text_config.bos_token_id                      248044
+  text_config.dtype                             bfloat16
+  text_config.eos_token_id                      248044
+  text_config.full_attention_interval           4
+  text_config.head_dim                          256
+  text_config.hidden_act                        silu
+  text_config.hidden_size                       5120
+  text_config.initializer_range                 0.02
+  text_config.intermediate_size                 17408
+  text_config.layer_types                       linear_attention linear_attention linear_attention full_attention linear_attention linear_attention linear_attention ful...
+  text_config.linear_conv_kernel_dim            4
+  text_config.linear_key_head_dim               128
+  text_config.linear_num_key_heads              16
+  text_config.linear_num_value_heads            48
+  text_config.linear_value_head_dim             128
+  text_config.mamba_ssm_dtype                   float32
+  text_config.max_position_embeddings           262144
+  text_config.model_type                        qwen3_5_text
+  text_config.mtp_num_hidden_layers             1
+  text_config.mtp_use_dedicated_embeddings      0
+  text_config.num_attention_heads               24
+  text_config.num_hidden_layers                 64
+  text_config.num_key_value_heads               4
+  text_config.output_gate_type                  swish
+  text_config.partial_rotary_factor             0.25
+  text_config.rms_norm_eps                      9.9999999999999995e-07
+  text_config.rope_parameters.mrope_interleaved  1
+  text_config.rope_parameters.mrope_section     11 11 10
+  text_config.rope_parameters.partial_rotary_factor  0.25
+  text_config.rope_parameters.rope_theta        10000000
+  text_config.rope_parameters.rope_type         default
+  text_config.tie_word_embeddings               0
+  text_config.use_cache                         1
+  text_config.vocab_size                        248320
+  tie_word_embeddings                           0
+  transformers_version                          5.8.0.dev0
+  video_token_id                                248057
+  vision_config.deepstack_visual_indexes        
+  vision_config.depth                           27
+  vision_config.hidden_act                      gelu_pytorch_tanh
+  vision_config.hidden_size                     1152
+  vision_config.in_channels                     3
+  vision_config.initializer_range               0.02
+  vision_config.intermediate_size               4304
+  vision_config.model_type                      qwen3_5
+  vision_config.num_heads                       16
+  vision_config.num_position_embeddings         2304
+  vision_config.out_hidden_size                 5120
+  vision_config.patch_size                      16
+  vision_config.spatial_merge_size              2
+  vision_config.temporal_patch_size             2
+  vision_end_token_id                           248054
+  vision_start_token_id                         248053
+  attention_bias                                0
+  attention_dropout                             0
+  attn_output_gate                              1
+  bos_token_id                                  248044
+  dtype                                         bfloat16
+  eos_token_id                                  248044
+  full_attention_interval                       4
+  head_dim                                      256
+  hidden_act                                    silu
+  hidden_size                                   5120
+  initializer_range                             0.02
+  intermediate_size                             17408
+  layer_types                                   linear_attention linear_attention linear_attention full_attention linear_attention linear_attention linear_attention ful...
+  linear_conv_kernel_dim                        4
+  linear_key_head_dim                           128
+  linear_num_key_heads                          16
+  linear_num_value_heads                        48
+  linear_value_head_dim                         128
+  mamba_ssm_dtype                               float32
+  max_position_embeddings                       262144
+  mtp_num_hidden_layers                         1
+  mtp_use_dedicated_embeddings                  0
+  num_attention_heads                           24
+  num_hidden_layers                             64
+  num_key_value_heads                           4
+  output_gate_type                              swish
+  partial_rotary_factor                         0.25
+  rms_norm_eps                                  9.9999999999999995e-07
+  rope_parameters.mrope_interleaved             1
+  rope_parameters.mrope_section                 11 11 10
+  rope_parameters.partial_rotary_factor         0.25
+  rope_parameters.rope_theta                    10000000
+  rope_parameters.rope_type                     default
+  use_cache                                     1
+  vocab_size                                    248320
+  generation.bos_token_id                       248044
+  generation.do_sample                          1
+  generation.eos_token_id                       248046 248044
+  generation.pad_token_id                       248044
+  generation.temperature                        1
+  generation.top_k                              20
+  generation.top_p                              0.94999999999999996
+  preprocessor.image_mean                       0.5 0.5 0.5
+  preprocessor.image_processor_type             Qwen2VLImageProcessorFast
+  preprocessor.image_std                        0.5 0.5 0.5
+  preprocessor.merge_size                       2
+  preprocessor.patch_size                       16
+  preprocessor.processor_class                  Qwen3VLProcessor
+  preprocessor.size.longest_edge                16777216
+  preprocessor.size.shortest_edge               65536
+  preprocessor.temporal_patch_size              2
+  video_preprocessor.image_mean                 0.5 0.5 0.5
+  video_preprocessor.image_std                  0.5 0.5 0.5
+  video_preprocessor.merge_size                 2
+  video_preprocessor.patch_size                 16
+  video_preprocessor.processor_class            Qwen3VLProcessor
+  video_preprocessor.size.longest_edge          25165824
+  video_preprocessor.size.shortest_edge         4096
+  video_preprocessor.temporal_patch_size        2
+  video_preprocessor.video_processor_type       Qwen3VLVideoProcessor
+  quantization_config.quant_method              exl3
+  radiance.encoder                              vision
+
+weight directory (1120 entries, grouped by layer and movement unit)
+
+  model                 12 tensor(s)       4.83 GiB   unit: one tensor
+
+  layer 0               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 1               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 2               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 3               10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 4               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 5               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 6               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 7               10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 8               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 9               13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 10              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 11              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 12              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 13              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 14              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 15              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 16              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 17              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 18              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 19              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 20              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 21              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 22              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 23              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 24              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 25              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 26              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 27              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 28              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 29              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 30              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 31              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 32              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 33              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 34              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 35              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 36              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 37              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 38              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 39              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 40              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 41              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 42              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 43              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 44              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 45              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 46              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 47              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 48              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 49              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 50              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 51              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 52              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 53              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 54              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 55              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 56              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 57              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 58              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 59              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 60              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 61              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 62              13 tensor(s)     183.80 MiB   unit: one tensor
+
+  layer 63              10 tensor(s)     177.78 MiB   unit: one tensor
+
+  layer 128             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 129             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 130             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 131             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 132             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 133             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 134             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 135             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 136             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 137             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 138             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 139             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 140             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 141             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 142             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 143             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 144             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 145             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 146             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 147             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 148             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 149             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 150             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 151             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 152             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 153             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 154             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  pool totals
+      planes              16.99 GiB
+      alignment pad        1.82 MiB   (4096 B per entry, 256 B per plane; the movement unit
+                                      never straddles a page needlessly)
+      data blob           16.99 GiB
+
+  by encoding
+      bf16                                         784       5.64 GiB    33.2%
+      exl3i:codes=u1[1x5120],record=u32{2176x10240},suh=f16[*x1],svh=f16[1x*],suh.1=f16[*x1]/mul1i8/h128/k4      64       5.32 GiB    31.3%
+      exl3i:codes=u1[1x17408],record=u32{320x34816},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      64       2.66 GiB    15.7%
+      exl3i:codes=u1[1x5120],record=u32{640x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      48       1.17 GiB     6.9%
+      exl3i:codes=u1[1x6144],record=u32{320x12288},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      64     961.69 MiB     5.5%
+      exl3i:codes=u1[1x5120],record=u32{384x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      48     721.31 MiB     4.1%
+      exl3i:codes=u1[1x5120],record=u32{768x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      16     480.72 MiB     2.8%
+      exl3i:codes=u1[1x5120],record=u32{64x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4      32      80.41 MiB     0.5%
+
+  by what made it
+      exl3i codebook=mul1i8,rate=4,src=/data/q27/rad10/r374/levels/q27v3-144dd6e1-k4-i8/final     336      11.34 GiB    66.8%
+      checkpoint                                   784       5.64 GiB    33.2%
+
+vocab
+  kind          bpe
+  tokens        248077
+  merges        247587
+  specials      bos=-1 eos=248046 eot=248046 pad=248044 unk=-1 sep=-1  add_bos=0 add_eos=0
+  chat template 9004 bytes
+  chain (4 steps, in order)
+       0  norm.NFC             flags=0x0
+       1  pre.Split            flags=0x0  arg0="(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?[\p{L}\p{M}]+..."  i=1
+       2  pre.ByteLevel        flags=0x0
+       3  dec.ByteLevel        flags=0x0
+  token types   normal=248044 unknown=0 control=21 user=12 byte=0
+  control/user  (the tokens a turn can end on; eos/eot marked)
+      248044   control  "<|endoftext|>"
+      248045   control  "<|im_start|>"
+      248046   control  "<|im_end|>" <- eos
+      248047   control  "<|object_ref_start|>"
+      248048   control  "<|object_ref_end|>"
+      248049   control  "<|box_start|>"
+      248050   control  "<|box_end|>"
+      248051   control  "<|quad_start|>"
+      248052   control  "<|quad_end|>"
+      248053   control  "<|vision_start|>"
+      248054   control  "<|vision_end|>"
+      248055   control  "<|vision_pad|>"
+      248056   control  "<|image_pad|>"
+      248057   control  "<|video_pad|>"
+      248058   user     "<tool_call>"
+      248059   user     "</tool_call>"
+      248060   user     "<|fim_prefix|>"
+      248061   user     "<|fim_middle|>"
+      248062   user     "<|fim_suffix|>"
+      248063   user     "<|fim_pad|>"
+      248064   user     "<|repo_name|>"
+      248065   user     "<|file_sep|>"
+      248066   user     "<tool_response>"
+      248067   user     "</tool_response>"
+      248068   user     "<think>"
+      248069   user     "</think>"
+      248070   control  "<|audio_start|>"
+      248071   control  "<|audio_end|>"
+      248072   control  "<tts_pad>"
+      248073   control  "<tts_text_bos>"
+      248074   control  "<tts_text_eod>"
+      248075   control  "<tts_text_bos_single>"
+      248076   control  "<|audio_pad|>"
+  first 8       "!" """ "#" "$" "%" "&" "'" "("
+
+expert profile: none. The placement planner will start cold and the heat
+engine will rank from real routing within a few dispatches (spec §5.3).

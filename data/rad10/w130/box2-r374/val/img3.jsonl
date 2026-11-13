@@ -1,0 +1,3 @@
+{"id": "hopper-describe", "image": "hopper.jpg", "text": "Describe this image in detail."}
+{"id": "gull-what", "image": "gull.jpg", "text": "What animal is shown here? Answer, then explain how you can tell."}
+{"id": "dashboard-read", "image": "dashboard.png", "text": "This is a screenshot of a monitoring dashboard. List the panel titles you can read and what each one shows."}

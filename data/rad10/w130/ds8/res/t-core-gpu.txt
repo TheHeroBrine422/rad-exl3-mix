@@ -1,0 +1,74 @@
+Test project /data/q27/rad10/build
+      Start 115: r4d_selftest
+ 1/14 Test #115: r4d_selftest .....................   Passed  2156.45 sec
+      Start 169: kbench
+ 2/14 Test #169: kbench ...........................   Passed   98.52 sec
+      Start 170: kbench_moe
+ 3/14 Test #170: kbench_moe .......................   Passed   95.26 sec
+      Start  22: dspark_device_test
+ 4/14 Test  #22: dspark_device_test ...............   Passed    0.38 sec
+      Start 110: device_test_card
+ 5/14 Test #110: device_test_card .................   Passed    2.03 sec
+      Start 111: mem_test_card
+ 6/14 Test #111: mem_test_card ....................   Passed    0.94 sec
+      Start 112: place_test_card
+ 7/14 Test #112: place_test_card ..................   Passed    3.72 sec
+      Start 113: runtime_test_card
+ 8/14 Test #113: runtime_test_card ................   Passed    3.12 sec
+      Start 114: quant_tcq_gpu_test_card
+ 9/14 Test #114: quant_tcq_gpu_test_card ..........***Timeout 120.10 sec
+I device: AQL backend, 1 device(s) [0:gfx1201]
+libquant: card 1023 is not there (1 visible)
+  ok   a_missing_card_is_refused (0.16 s)
+libquant: card 1 is not there (1 visible)
+    L10 k2, no Hessian, a short last run         same bytes
+libquant: GPTQ quantises 'blk.0.k384' against 1 calibration file(s), K=384
+    L12 k4, the V2 form, a short last run        same bytes
+libquant: GPTQ quantises 'blk.0.k512' against 1 calibration file(s), K=512
+    L14 k4 rb32, the V3 form                     same bytes
+libquant: 1 of 512 scales sat past fp8_e4m3's top under scale2_value=0 and were held there
+libquant: GPTQ quantises 'blk.0.k256' against 1 calibration file(s), K=256
+libquant: 1 of 512 scales sat past fp8_e4m3's top under scale2_value=0 and were held there
+    L14 k4, no row blocks                        same bytes
+    L12 k4 rb8                                   same bytes
+    L14 k2 rb8                                   same bytes
+    L14 k3 rb32                                  same bytes
+    L14 k5 rb32                                  same bytes
+    L14 k6 rb32                                  same bytes
+libquant: GPTQ quantises 'blk.0.k128' against 1 calibration file(s), K=128
+    L14 k7 rb32                                  same bytes
+    L12 k2                                       same bytes
+    L12 k3 rb8                                   same bytes
+libquant: 1 of 512 scales sat past fp8_e4m3's top under scale2_value=0 and were held there
+libquant: 1 of 512 scales sat past fp8_e4m3's top under scale2_value=0 and were held there
+    L12 k5                                       same bytes
+    L12 k6 rb8                                   same bytes
+    L12 k7                                       same bytes
+libquant: GPTQ quantises 'blk.0.k320' against 1 calibration file(s), K=320
+    L12 k3, a short last block, bf16 scales      same bytes
+libquant: GPTQ quantises 'blk.0.k256' against 1 calibration file(s), K=256
+    L10 k4, subnormal squared errors             same bytes
+
+      Start 116: device_test_nosvm
+10/14 Test #116: device_test_nosvm ................   Passed    4.76 sec
+      Start 117: device_test_hostkargs
+11/14 Test #117: device_test_hostkargs ............   Passed    2.18 sec
+      Start 118: runtime_test_hostkargs
+12/14 Test #118: runtime_test_hostkargs ...........   Passed    3.29 sec
+      Start 172: nemotron35_device_test_card
+13/14 Test #172: nemotron35_device_test_card ......   Passed    2.28 sec
+      Start 173: r4d_bf16_capacity_test_card
+14/14 Test #173: r4d_bf16_capacity_test_card ......   Passed    6.27 sec
+
+93% tests passed, 1 tests failed out of 14
+
+Label Time Summary:
+gpu       = 3080.66 sec*proc (14 tests)
+kbench    = 775.13 sec*proc (2 tests)
+slow      = 2156.45 sec*proc (1 test)
+
+Total Test time (real) = 2499.60 sec
+
+The following tests FAILED:
+	114 - quant_tcq_gpu_test_card (Timeout)                 gpu
+Errors while running CTest

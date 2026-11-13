@@ -1,0 +1,7 @@
+08:04:27 card2.lock held
+08:06:27 exl3i gpu: 100% tests passed out of 6
+08:06:27 kld V2-r10
+08:08:33 kld V2-r10 rc 0 89faf27ad364b71d
+08:08:33 kld K4-r10
+08:12:55 kld K4-r10 rc 0 d7ee9f60febe6647
+08:12:55 VALBOX DONE

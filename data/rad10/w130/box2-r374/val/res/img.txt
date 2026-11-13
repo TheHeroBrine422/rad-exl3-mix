@@ -1,0 +1,3 @@
+hopper-describe 96 tokens, prompt 324
+gull-what 96 tokens, prompt 797
+dashboard-read 96 tokens, prompt 644

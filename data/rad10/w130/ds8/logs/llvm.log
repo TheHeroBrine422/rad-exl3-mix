@@ -1,0 +1,5 @@
+07:39:47 start: llvm-project d6f6cb691863e9258034ab48c1dfce21689d5606
+07:42:21 fetched + patched
+07:42:29 configured
+07:45:53 built libLLVM.so.24.0git
+07:45:55 SHADOW READY /data/q27/rad10/rocm-repeatable

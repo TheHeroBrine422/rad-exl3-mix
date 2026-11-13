@@ -31,7 +31,7 @@
   "pack_cmd": [
    "bash",
    "-c",
-   "cd /data/q27 && RADIANCE_HOME=/data/q27/rad/home RADIANCE_HOST_DEVICES=1 /data/q27/rad/install/bin/rad-convert --no-error models/qwen38-27b-bf16 --recipe {recipe} --set quantization_config.quant_method=exl3 -o {out}"
+   "cd /data/q27 && RADIANCE_HOME=/data/q27/rad10/home-pack RADIANCE_HOST_DEVICES=1 /data/q27/rad10/install/bin/rad-convert --no-error models/qwen38-27b-bf16 --recipe {recipe} --set quantization_config.quant_method=exl3 -o {out}"
   ],
   "mix_cmd": [
    "/data/q27/tools/radmix",
@@ -42,12 +42,12 @@
   "score_cmd": [
    "bash",
    "-c",
-   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
+   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad10/home /data/q27/rad10/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
   ],
   "score_cmd_progress": [
    "bash",
    "-c",
-   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad/home /data/q27/rad/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part --kld-progress {progress} > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
+   "ROCR_VISIBLE_DEVICES={card} RADIANCE_HOME=/data/q27/rad10/home /data/q27/rad10/install/bin/radiance --model {mix} --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref {golden} --kld-out {out}.json.part --kld-progress {progress} > {out}.log 2>&1 && mv {out}.json.part.rows {out}.json.rows && mv {out}.json.part {out}.json"
   ]
  }
 }

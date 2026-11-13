@@ -1,0 +1,396 @@
+diff --git a/core/config.cpp b/core/config.cpp
+index 1c2de42..85d9045 100644
+--- a/core/config.cpp
++++ b/core/config.cpp
+@@ -336,6 +336,9 @@ static const Flag g_flags[] = {
+     "                                    mass of the rest, not the whole vocabulary (a corpus too large for\n"
+     "                                    full rows); 0 (default) keeps the whole vocabulary" },
+     { "--kld-out",            "FILE",   "the --kld-ref report as JSON, and every position's numbers in FILE.rows" },
++    { "--kld-progress",       "FILE",   "--kld-ref appends a JSON line to FILE as each document's last position\n"
++    "                                    is scored (its KL sum, rows, top-1), and the document's per-position KL\n"
++    "                                    to FILE.kl: a watcher can stop a run early. The report is unchanged" },
+     { "--kld-lora",           "NAME",   "run --kld-record / --kld-ref through the --lora adapter NAME" },
+     { "--kld-lora-sources",   "PREFIX", "--kld-lora only for documents whose source starts with PREFIX; the\n"
+     "                                    rest run as the base, in the same steps (a mixed batch)" },
+@@ -1080,6 +1083,7 @@ int config_parse(int argc, char** argv, Config* c) {
+             c->calib_layer_hi = hi;
+         }
+         else if (S("--kld-out"))               { if (!(v = need(i))) return RAD_E_INVAL; c->kld_out = v; }
++        else if (S("--kld-progress"))          { if (!(v = need(i))) return RAD_E_INVAL; c->kld_progress = v; }
+         else if (S("--kld-lora"))              { if (!(v = need(i))) return RAD_E_INVAL; c->kld_lora = v; }
+         else if (S("--kld-lora-sources"))      { if (!(v = need(i))) return RAD_E_INVAL; c->kld_lora_sources = v; }
+         else if (S("--debug-graph"))           { c->debug_graph = true; c->debug_selection = true; }
+@@ -1208,6 +1212,10 @@ int config_parse(int argc, char** argv, Config* c) {
+         RAD_ERR("--kld-out is the --kld-ref report");
+         return RAD_E_INVAL;
+     }
++    if (!c->kld_progress.empty() && c->kld_ref.empty()) {
++        RAD_ERR("--kld-progress follows a --kld-ref run");
++        return RAD_E_INVAL;
++    }
+ 
+     /* Runtime LoRA: the slot flags need slots, the named adapters must fit them, and KL mode's
+      * adapter is one of them. */
+@@ -1497,6 +1505,7 @@ const ShowRow kShow[] = {
+     { "--calib-dir",          [](const Config& c) { return or_none(c.calib_dir, "none"); } },
+     { "--calib-layers",       [](const Config& c) { return c.calib_layer_hi ? num(c.calib_layer_lo) + ":" + num(c.calib_layer_hi) : std::string("every layer"); } },
+     { "--kld-out",            [](const Config& c) { return or_none(c.kld_out, "none"); } },
++    { "--kld-progress",       [](const Config& c) { return or_none(c.kld_progress, "none"); } },
+     { "--kld-lora",           [](const Config& c) { return or_none(c.kld_lora, "none (the base)"); } },
+     { "--kld-lora-sources",   [](const Config& c) { return or_none(c.kld_lora_sources, "every document"); } },
+     { "--debug-graph",        [](const Config& c) { return onoff(c.debug_graph); } },
+diff --git a/core/kld.cpp b/core/kld.cpp
+index 64be394..25269d2 100644
+--- a/core/kld.cpp
++++ b/core/kld.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include <algorithm>
+ #include <cerrno>
++#include <chrono>
+ #include <cmath>
+ #include <cstring>
+ #include <ctime>
+@@ -243,7 +244,7 @@ Kld::Kld() {
+ }
+ 
+ Kld::~Kld() {
+-    for (int fd : { fd_logp_, fd_top_, fd_rows_ }) if (fd >= 0) ::close(fd);
++    for (int fd : { fd_logp_, fd_top_, fd_rows_, fd_prog_, fd_prog_kl_ }) if (fd >= 0) ::close(fd);
+ }
+ 
+ std::vector<int32_t> Kld::tokens(size_t d) const {
+@@ -253,13 +254,14 @@ std::vector<int32_t> Kld::tokens(size_t d) const {
+ 
+ int Kld::open(const Config& cfg, std::shared_ptr<const Vocab> vocab, int64_t n_vocab,
+               const std::string& model) {
+-    if (cfg.kld_record.empty()) return score_against(cfg.kld_ref, cfg.kld_out, n_vocab, model);
++    if (cfg.kld_record.empty())
++        return score_against(cfg.kld_ref, cfg.kld_out, n_vocab, model, cfg.kld_progress);
+     RAD_TRY(load_corpus(cfg.kld_corpus, vocab));
+     return record_into(cfg.kld_record, n_vocab, model, cfg.kld_top);
+ }
+ 
+ int Kld::score_against(const std::string& dir, const std::string& out, int64_t n_vocab,
+-                       const std::string& model) {
++                       const std::string& model, const std::string& progress) {
+     record_  = false;
+     dir_     = dir;
+     out_     = out;
+@@ -267,6 +269,20 @@ int Kld::score_against(const std::string& dir, const std::string& out, int64_t n
+     n_vocab_ = n_vocab;
+     RAD_TRY(load_ref(dir_));
+     size_rows();
++    progress_ = progress;
++    if (!progress_.empty()) {
++        for (auto [fd, path] : { std::pair<int*, std::string>{ &fd_prog_kl_, progress_ + ".kl" },
++                                 std::pair<int*, std::string>{ &fd_prog_, progress_ } }) {
++            *fd = ::open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_APPEND | O_CLOEXEC, 0644);
++            if (*fd < 0) {
++                RAD_ERR("kld: cannot create %s: %s", path.c_str(), std::strerror(errno));
++                return RAD_E_IO;
++            }
++        }
++        doc_out_.assign(docs_.size(), 0);
++        prog_off_ = 0;
++        t_open_ = std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();
++    }
+     return RAD_OK;
+ }
+ 
+@@ -485,6 +501,49 @@ int Kld::score(const std::vector<KldSpan>& spans, const std::vector<KldShard>& s
+         RAD_ERR("kld: reading or writing the reference in %s failed", dir_.c_str());
+         return RAD_E_IO;
+     }
++    if (fd_prog_ >= 0) return progress(spans);
++    return RAD_OK;
++}
++
++int Kld::progress(const std::vector<KldSpan>& spans) {
++    for (const KldSpan& s : spans) {
++        if (s.id == 0 || s.id > docs_.size() || doc_out_[(size_t)(s.id - 1)]) continue;
++        const Doc& d = docs_[(size_t)(s.id - 1)];
++        int64_t t1 = 0;
++        double sum = 0;
++        bool all = true;
++        for (int64_t r = d.row0; r < d.row0 + d.rows() && all; ++r) all = seen_[(size_t)r] != 0;
++        if (!all) continue;
++        for (int64_t r = d.row0; r < d.row0 + d.rows(); ++r) {
++            sum += (double)kl_[(size_t)r];
++            t1 += top1_[(size_t)r];
++        }
++        doc_out_[(size_t)(s.id - 1)] = 1;
++        const size_t nb = (size_t)d.rows() * sizeof(float);
++        const auto* b = reinterpret_cast<const char*>(kl_.data() + d.row0);
++        for (size_t done = 0; done < nb;) {
++            const ssize_t w = ::write(fd_prog_kl_, b + done, nb - done);
++            if (w < 0 && errno == EINTR) continue;
++            if (w <= 0) { RAD_ERR("kld: cannot write %s.kl", progress_.c_str()); return RAD_E_IO; }
++            done += (size_t)w;
++        }
++        const double t = std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count() - t_open_;
++        json j;
++        j["doc"] = (int64_t)(s.id - 1);
++        j["source"] = d.source;
++        j["row0"] = d.row0;
++        j["rows"] = d.rows();
++        j["kl_sum"] = sum;
++        j["top1"] = t1;
++        j["kl_off"] = prog_off_;
++        j["t"] = std::round(t * 1000.0) / 1000.0;
++        prog_off_ += (int64_t)nb;
++        const std::string line = j.dump() + "\n";
++        if (::write(fd_prog_, line.data(), line.size()) != (ssize_t)line.size()) {
++            RAD_ERR("kld: cannot write %s", progress_.c_str());
++            return RAD_E_IO;
++        }
++    }
+     return RAD_OK;
+ }
+ 
+diff --git a/core/kld.h b/core/kld.h
+index 3e93436..87a8e29 100644
+--- a/core/kld.h
++++ b/core/kld.h
+@@ -34,6 +34,13 @@
+  * [rows, N] {int32 id, f32 log p}, most likely first, and rows.f32 is [rows, 3], the third column
+  * the mass of every token outside the row's N, summed in double from the full row.
+  *
++ * Progress (`--kld-progress FILE`, ref mode): as a document's last scored row comes back, its
++ * per-position KL is appended to FILE.kl (f32, in row order) and then one JSON line to FILE:
++ *   {"doc": d, "source": S, "row0": r, "rows": n, "kl_sum": sum in double, "top1": agreements,
++ *    "kl_off": byte offset of its rows in FILE.kl, "t": seconds since the reference was opened}
++ * in the order the documents finish. A line is written after its rows, each with one write(),
++ * so a watcher that sees a line can read its rows. The rows and the report are unchanged.
++ *
+  * Document d scores positions [score_from, n - 1): the logits at p predict token p + 1, and the
+  * last token predicts nothing in the corpus. Its row r is row0 + p - score_from.
+  */
+@@ -86,7 +93,7 @@ public:
+     int add_doc(const std::string& source, const std::vector<int32_t>& ids, int64_t score_from);
+     int record_into(const std::string& dir, int64_t n_vocab, const std::string& model, int top = 0);
+     int score_against(const std::string& dir, const std::string& out, int64_t n_vocab,
+-                      const std::string& model);
++                      const std::string& model, const std::string& progress = std::string());
+ 
+     /* The corpus alone, for a run that only drives it through prefill (--calib-corpus). */
+     int load(const std::string& corpus, std::shared_ptr<const Vocab> vocab) { return load_corpus(corpus, vocab); }
+@@ -133,6 +140,8 @@ private:
+     void score_row(const Job& j, const std::vector<KldShard>& sh, Scratch& w);
+     void score_row_top(const Job& j, const std::vector<KldShard>& sh, Scratch& w);
+     int  report();
++    /* --kld-progress: the documents of `spans` whose every row is now scored, once each. */
++    int  progress(const std::vector<KldSpan>& spans);
+ 
+     bool record_ = false;
+     std::string dir_, out_, model_, ref_model_, corpus_;
+@@ -145,6 +154,11 @@ private:
+     std::vector<Doc> docs_;
+     int64_t n_rows_ = 0;
+     int fd_logp_ = -1, fd_top_ = -1, fd_rows_ = -1;
++    std::string progress_;
++    int fd_prog_ = -1, fd_prog_kl_ = -1;
++    int64_t prog_off_ = 0;             /* bytes in FILE.kl */
++    std::vector<uint8_t> doc_out_;     /* a document's progress line written */
++    double t_open_ = 0;
+ 
+     /* Per reference row. `seen_` marks a row written or scored; the rest is the ref mode's. */
+     std::vector<uint8_t> seen_;
+diff --git a/core/rad_core.h b/core/rad_core.h
+index 7ffa9dc..6f645c8 100644
+--- a/core/rad_core.h
++++ b/core/rad_core.h
+@@ -1044,6 +1044,7 @@ struct Config {
+     int32_t     calib_layer_hi = 0;
+     bool calib() const { return !calib_corpus.empty(); }
+     std::string kld_out;                /* --kld-out FILE: the report as JSON, rows beside it */
++    std::string kld_progress;           /* --kld-progress FILE: a line a document as it finishes */
+     bool kld() const { return !kld_record.empty() || !kld_ref.empty(); }
+ 
+     /* --mm-max-patches: the most patches one encoder pass carries, which bounds the largest image
+diff --git a/docs/GUIDE.md b/docs/GUIDE.md
+index 0de0ac7..358115a 100644
+--- a/docs/GUIDE.md
++++ b/docs/GUIDE.md
+@@ -2212,6 +2212,7 @@ flags are refused on it, and so are the pixel bands.
+ | `--calib-layers LO:HI` | record layers `LO`..`HI-1` only (default every layer), for a model whose statistics do not fit in host memory in one run |
+ | `--kld-top N` | `--kld-record` keeps each position's `N` most likely tokens exactly and the mass of the rest instead of the whole vocabulary, for a corpus too large for full rows; 0 (default) keeps the whole vocabulary |
+ | `--kld-out FILE` | the `--kld-ref` report as JSON, and every position's numbers in `FILE.rows` |
++| `--kld-progress FILE` | `--kld-ref` appends a JSON line to `FILE` as each document finishes (its KL sum, rows, top-1) and the document's per-position KL to `FILE.kl`, so a watcher can stop a run early; the report is unchanged |
+ | `--kld-lora NAME` | run the documents through the `--lora` adapter `NAME` (§4.9.1), e.g. against a reference recorded from the merged checkpoint |
+ | `--kld-lora-sources PREFIX` | with `--kld-lora`, only the documents whose `source` starts with `PREFIX` run through the adapter; the rest run as the base, in the same steps |
+ 
+diff --git a/docs/TOOLS.md b/docs/TOOLS.md
+index 6ff59b0..18bd715 100644
+--- a/docs/TOOLS.md
++++ b/docs/TOOLS.md
+@@ -848,6 +848,13 @@ numbers from the two forms do not compare.
+ agreement to `FILE.rows` (`[positions, 4]` f32, reference row order), so two candidates can be
+ compared position by position.
+ 
++`--kld-progress FILE` follows a run as it goes: when a document's last position is scored, its
++per-position KL is appended to `FILE.kl` (f32) and then one JSON line to `FILE` -- `doc`, `source`,
++`row0`, `rows`, `kl_sum` (double), `top1`, `kl_off` (its byte offset in `FILE.kl`), `t` (seconds) --
++in the order documents finish. A watcher comparing a candidate with an incumbent document by
++document can stop the run once the candidate is clearly worse. The report and `.rows` are the same
++as without it.
++
+ A runtime LoRA adapter (GUIDE.md §4.9.1) is scored the same way: `--lora NAME=DIR --kld-lora NAME`
+ runs every document through the adapter, against a reference recorded from the merged checkpoint
+ (or from PEFT itself). `--kld-lora-sources PREFIX` runs only the documents whose `source` starts
+diff --git a/tests/config_test.cpp b/tests/config_test.cpp
+index 658e9ac..7b2558f 100644
+--- a/tests/config_test.cpp
++++ b/tests/config_test.cpp
+@@ -192,6 +192,8 @@ TEST(the_kl_mode_records_or_scores_and_says_which_input_it_lacks) {
+     CHECK_EQ(parse({ "--kld-record", "/r" }, &f), RAD_E_INVAL);              /* no corpus */
+     CHECK_EQ(parse({ "--kld-ref", "/r", "--kld-corpus", "/c" }, &f), RAD_E_INVAL);
+     CHECK_EQ(parse({ "--kld-out", "/o.json" }, &f), RAD_E_INVAL);            /* nothing to report */
++    CHECK_EQ(parse({ "--kld-progress", "/p.jsonl" }, &f), RAD_E_INVAL);      /* nothing to follow */
++    CHECK_EQ(parse({ "--kld-record", "/r", "--kld-corpus", "/c.jsonl", "--kld-progress", "/p.jsonl" }, &f), RAD_E_INVAL);
+     CHECK_EQ(parse({ "--kld-ref" }, &f), RAD_E_INVAL);
+ 
+     /* --kld-top is the recording's form; a scoring run reads it from the reference. */
+@@ -559,6 +561,7 @@ const std::map<std::string, std::vector<std::string>>& legal_values() {
+         { "--kld-record", { "/r", "--kld-corpus", "/c.jsonl" } }, { "--kld-ref", { "/r" } },
+         { "--kld-corpus", { "/c.jsonl", "--kld-record", "/r" } },
+         { "--kld-out", { "/o.json", "--kld-ref", "/r" } },
++        { "--kld-progress", { "/p.jsonl", "--kld-ref", "/r" } },
+         { "--kld-top", { "512", "--kld-record", "/r", "--kld-corpus", "/c.jsonl" } },
+         { "--calib-corpus", { "/c.jsonl", "--calib-dir", "/d" } },
+         { "--calib-dir", { "/d", "--calib-corpus", "/c.jsonl" } },
+diff --git a/tests/kld_test.cpp b/tests/kld_test.cpp
+index 776e761..9bac835 100644
+--- a/tests/kld_test.cpp
++++ b/tests/kld_test.cpp
+@@ -15,6 +15,7 @@
+ #include <cmath>
+ #include <cstdio>
+ #include <cstdlib>
++#include <cstring>
+ #include <filesystem>
+ #include <fstream>
+ #include <random>
+@@ -178,6 +179,83 @@ TEST(a_candidate_scores_what_a_direct_computation_gives) {
+     CHECK(flips > 0);         /* the noise must flip some argmax for the check to mean anything */
+ }
+ 
++/* --kld-progress: a line a document as its last row comes back, in the order they finish, with
++ * the document's KL sum and its per-position KL in FILE.kl; the report's rows are byte for byte
++ * those of a run without it. */
++TEST(progress_lines_follow_documents_and_leave_the_rows_unchanged) {
++    TmpDir t;
++    REQUIRE(!t.path.empty());
++    const std::vector<float> ra = make_logits(40, 11), rb = make_logits(25, 12);
++    record(t.path + "/ref", ra, rb);
++    std::vector<float> ca = ra, cb = rb;
++    std::mt19937 g(13);
++    std::normal_distribution<float> n(0.0f, 0.6f);
++    for (float& v : ca) v += n(g);
++    for (float& v : cb) v += n(g);
++    {
++        Kld k;
++        CHECK_OK(k.score_against(t.path + "/ref", t.path + "/plain.json", V, "candidate"));
++        feed(k, 2, 25, cb);
++        feed(k, 1, 40, ca);
++        CHECK_OK(k.finish());
++    }
++    const std::string prog = t.path + "/prog.jsonl";
++    auto lines = [&] {
++        std::vector<nlohmann::json> v;
++        std::ifstream in(prog);
++        for (std::string l; std::getline(in, l);) if (!l.empty()) v.push_back(nlohmann::json::parse(l));
++        return v;
++    };
++    Kld k;
++    CHECK_OK(k.score_against(t.path + "/ref", t.path + "/prog.json", V, "candidate", prog));
++    /* document b (id 2) first; then half of a: only b's line exists */
++    feed(k, 2, 25, cb);
++    REQUIRE_EQ(lines().size(), (size_t)1);
++    {
++        std::vector<float> part(ca.begin(), ca.begin() + 20 * V);
++        Shards sh(part, 20);
++        CHECK_OK(k.score({ { 1, 0, 20, 0 } }, sh.s));
++    }
++    REQUIRE_EQ(lines().size(), (size_t)1);
++    {
++        std::vector<float> part(ca.begin() + 20 * V, ca.end());
++        Shards sh(part, 20);
++        CHECK_OK(k.score({ { 1, 20, 20, 0 } }, sh.s));
++    }
++    /* a repeated span (re-prefill) writes no second line */
++    {
++        std::vector<float> part(ca.begin() + 20 * V, ca.end());
++        Shards sh(part, 20);
++        CHECK_OK(k.score({ { 1, 20, 20, 0 } }, sh.s));
++    }
++    CHECK_OK(k.finish());
++    const auto L = lines();
++    REQUIRE_EQ(L.size(), (size_t)2);
++    CHECK_EQ(L[0]["doc"].get<int64_t>(), (int64_t)1);
++    CHECK_EQ(L[1]["doc"].get<int64_t>(), (int64_t)0);
++    CHECK_EQ(L[0]["source"].get<std::string>(), std::string("b"));
++    const std::vector<float> plain = read_rows(t.path + "/plain.json.rows");
++    const std::vector<float> rows = read_rows(t.path + "/prog.json.rows");
++    REQUIRE_EQ(rows.size(), plain.size());
++    CHECK(std::memcmp(rows.data(), plain.data(), rows.size() * sizeof(float)) == 0);
++    const std::vector<float> kl = read_rows(prog + ".kl");
++    REQUIRE_EQ(kl.size(), (size_t)55);
++    for (const auto& j : L) {
++        const int64_t row0 = j["row0"], nr = j["rows"], off = j["kl_off"];
++        double s = 0;
++        int64_t t1 = 0;
++        for (int64_t r = 0; r < nr; ++r) {
++            CHECK_EQ(kl[(size_t)(off / 4 + r)], rows[(size_t)((row0 + r) * 4)]);
++            s += (double)rows[(size_t)((row0 + r) * 4)];
++            t1 += (int64_t)rows[(size_t)((row0 + r) * 4 + 3)];
++        }
++        CHECK_EQ(j["kl_sum"].get<double>(), s);
++        CHECK_EQ(j["top1"].get<int64_t>(), t1);
++    }
++    CHECK_EQ(L[0]["rows"].get<int64_t>(), (int64_t)24);
++    CHECK_EQ(L[1]["rows"].get<int64_t>(), (int64_t)31);
++}
++
+ /* Control: a candidate identical to the reference scores a KL of only the f16 storage's
+  * second-order residue, and every argmax agrees. */
+ TEST(the_reference_against_itself_scores_zero) {
+diff --git a/tools/rad_convert.cpp b/tools/rad_convert.cpp
+index d56c3e1..7b9fd51 100644
+--- a/tools/rad_convert.cpp
++++ b/tools/rad_convert.cpp
+@@ -385,6 +385,9 @@ void usage() {
+         "      --plan-only      declare, plan every weight's encoding, print the plan, and stop\n"
+         "                       before writing anything\n"
+         "      --report N       the worst N quantisation errors to print (default 20)\n"
++        "      --no-error       measure nothing: no quantised weight is decoded back for the error\n"
++        "                       report (the container's bytes are the same; a pack that only\n"
++        "                       needs the container runs ~15x faster: k3 2083 s -> 140 s)\n"
+         "  -v, --verbose\n"
+         "  -h, --help\n");
+ }
+@@ -423,6 +426,7 @@ int main(int argc, char** argv) {
+     int      max_spec = kMaxSpecDefault;
+     bool     max_spec_given = false;
+     int      report_n = 20;
++    bool     no_error = false;
+     bool     verbose = false, plan_only = false, list_quant = false;
+     std::string reuse_path, changed_path;
+     std::vector<std::string> reuse_more;   /* --reuse given again: more containers to copy from */
+@@ -474,6 +478,7 @@ int main(int argc, char** argv) {
+         else if (a == "--draft-model") draft_dir = next("--draft-model");
+         else if (a == "--plan-only") plan_only = true;
+         else if (a == "--report")    report_n = (int)num("--report", 0, INT32_MAX);
++        else if (a == "--no-error")  no_error = true;
+         else if (a == "--reuse") {
+             const std::string r = next("--reuse");
+             if (reuse_path.empty()) reuse_path = r;
+@@ -1451,7 +1456,7 @@ int main(int argc, char** argv) {
+         /* Error is measured through the decoder readers use: the core's for plain and affine, the
+          * quantiser's hook for its own scheme (core/format/encoding.h). Quantiser decoders need
+          * not be reentrant, so those rows are decoded in one call. */
+-        bool core_decodes = true;
++        bool core_decodes = !no_error;   /* --no-error: io.band returns at once, L.err stays unset */
+         const bool own_scheme = !rad_enc_is(&L.enc, "plain") && !rad_enc_is(&L.enc, "affine");
+         std::vector<float> dec;
+         double num = 0, den = 0, num_i = 0, den_i = 0;
