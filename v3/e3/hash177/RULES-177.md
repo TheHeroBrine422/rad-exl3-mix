@@ -58,7 +58,7 @@ first stage-3 job starts; amendments get a date and go at the end, never above.
 Quant: 2 levels × 256 jobs on box2's free cards (~1 h on 2 cards); packs 2 × ~3 min (conv.lock + ram.lock); scores
 4 mixes × 2 slices × ~4–5 min. Runtime cost of what it measures: decode −4 to −10 % (stage 1), A8 prefill none.
 
-## Amendment 1 (2026-11-13 ~1:25 PM CST; lead note 12:15 PM CST from the w141 overfit audit): a fresh xcorp part
+## Amendment 1 (2026-11-13 ~1:12 PM CST; lead note 12:15 PM CST from the w141 overfit audit): a fresh xcorp part
 
 **Disclosure:** written AFTER the stage-3 rows on golden-search27c-c and golden-ver3-8k of both K were read (w139 saw
 the note late: stage-3 scoring began 12:45 PM CST). Those rows stay as reported; this amendment adds the part the two-part
