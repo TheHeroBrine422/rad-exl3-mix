@@ -41,3 +41,20 @@ rate=K rows=r16`), `home-pack`, `--no-error`; packs `i6, m6, i6.5, m6.5, m7.5, m
 
 **Runtime class:** price rows: none (same format). mul1 vs i8 head: **decode** (codebook ALU in the head GEMV; prefill
 head GEMM measured only if the decode result is mixed); measured above.
+
+## Amendment 1 (2026-11-13 12:15 PM CST, lead note 11:00 AM in `local/workers/notes/w140.md`; before any of its data)
+
+Extends the build, no decision changes. Results above are final (dc7b222).
+- **More donors**, same recipe and scripts (`run122.sh worker` on a shared queue, every ds8 card, card locks), in this
+  order: (1) i8 quarter steps not yet built: K1.25, 1.75, 4.25, 4.75, 5.25, 5.75, 6.25; (2) mul1 top: quarters K6.25,
+  6.75, 7.25, 7.75, then eighths K6.125, 6.375, 6.625, 6.875, 7.125, 7.375, 7.625, 7.875; (3) i8 eighths K1.125 …
+  6.375 (all x.125 / x.375 / x.625 / x.875; K4.125 first, for the timing below). 41 donors.
+- **Scores / price table:** `run122.sh score` on fit and search for every new donor; `hcurve140.json` regenerated as
+  hcurve122's 17 plans unchanged + every new donor: i8 at K → key `u<K>`, mul1 at K → `u<K>m` (the 4 above unchanged).
+  Same fields. Report-only flag as above: a donor whose fit-gen KL is above that of the next-lower K of its codebook.
+- **Disk:** after both score files of a donor exist, delete its `wq/lm_head.safetensors` (2.4 GB bf16 dequant; kept:
+  `wq/lm_head.rowerr.npz` = run122's done marker, `q-head.safetensors` = what packs / radmix use). Applies to the new
+  donors and to my 4 from above; w122's 17 are left as they are.
+- **Fractional-K decode:** packs = K4 ladder trunk + i8 head at K4, 4.125, 4.25, 4.5 (r16m140.sh with HEADS set);
+  statistic = profiled head GEMV ms per call (prof140.sh, 2 rounds interleaved, mean of rounds) and the whole-model
+  decode step (dstep, 1 round, report only). Reported as the head's decode price per K for the knapsack; no gate.
