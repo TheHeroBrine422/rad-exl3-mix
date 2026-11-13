@@ -1,0 +1,37 @@
+## perf: status INCOMPLETE, counts {'error': 0, 'incomplete': 24, 'info': 1974, 'review': 769325}
+  incomplete CFG_INDIRECT                 stock  4
+  info       VOPD_ANTIDEP                 stock  1927
+  info       VOPD_ANTIDEP                 ours   45
+  info       WATERFALL_CANDIDATE          stock  1
+  review     LOCAL_MEMORY_HAZARD          stock  679329
+  review     LOCAL_MEMORY_HAZARD          ours   89994
+  review     VOPD_SOURCE_HI               stock  2
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+## b10v: status INCOMPLETE, counts {'error': 0, 'incomplete': 4, 'info': 1955, 'review': 762603}
+  incomplete CFG_INDIRECT                 stock  4
+  info       VOPD_ANTIDEP                 stock  1912
+  info       VOPD_ANTIDEP                 ours   41
+  info       WATERFALL_CANDIDATE          stock  1
+  review     LOCAL_MEMORY_HAZARD          stock  672694
+  review     LOCAL_MEMORY_HAZARD          ours   89907
+  review     VOPD_SOURCE_HI               stock  2
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+## b714v: status INCOMPLETE, counts {'error': 0, 'incomplete': 5, 'info': 1862, 'review': 723833}
+  incomplete CFG_INDIRECT                 stock  5
+  info       VOPD_ANTIDEP                 stock  1823
+  info       VOPD_ANTIDEP                 ours   37
+  info       WATERFALL_CANDIDATE          stock  1
+  review     LOCAL_MEMORY_HAZARD          stock  617271
+  review     LOCAL_MEMORY_HAZARD          ours   106561
+  review     VOPD_SOURCE_HI               stock  1
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_121sam_attn_qtile_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiii call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_115sam_attn_kernelILi64EEEvPKtS2_S2_PtPKiS2_S2_iiiiiiiiiiiiiif call requires interprocedural/target evidence
+    incomplete CFG_INDIRECT _ZN12_GLOBAL__N_113couple_verifyEPKiPKfPKjS5_Pillllllll call requires interprocedural/target evidence

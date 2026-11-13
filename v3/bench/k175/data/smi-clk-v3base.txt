@@ -1,0 +1,474 @@
+T 1794592492.846137907
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1854Mhz)
+GPU[2]		: Average Graphics Package Power (W): 203.0
+T 1794592493.107735941
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1805Mhz)
+GPU[2]		: Average Graphics Package Power (W): 206.0
+T 1794592493.367879732
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1713Mhz)
+GPU[2]		: Average Graphics Package Power (W): 205.0
+T 1794592493.623972051
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1830Mhz)
+GPU[2]		: Average Graphics Package Power (W): 202.0
+T 1794592493.880751992
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2054Mhz)
+GPU[2]		: Average Graphics Package Power (W): 248.0
+T 1794592494.144138936
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1888Mhz)
+GPU[2]		: Average Graphics Package Power (W): 224.0
+T 1794592494.421902632
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1819Mhz)
+GPU[2]		: Average Graphics Package Power (W): 229.0
+T 1794592494.684348979
+GPU[2]		: Temperature (Sensor edge) (C): 37.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1887Mhz)
+GPU[2]		: Average Graphics Package Power (W): 208.0
+T 1794592494.947308109
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1862Mhz)
+GPU[2]		: Average Graphics Package Power (W): 221.0
+T 1794592495.205683828
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1830Mhz)
+GPU[2]		: Average Graphics Package Power (W): 227.0
+T 1794592495.463235589
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1893Mhz)
+GPU[2]		: Average Graphics Package Power (W): 232.0
+T 1794592495.723428653
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1825Mhz)
+GPU[2]		: Average Graphics Package Power (W): 225.0
+T 1794592495.993612858
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2284Mhz)
+GPU[2]		: Average Graphics Package Power (W): 311.0
+T 1794592496.252441619
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1846Mhz)
+GPU[2]		: Average Graphics Package Power (W): 204.0
+T 1794592496.519282813
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1774Mhz)
+GPU[2]		: Average Graphics Package Power (W): 200.0
+T 1794592496.781293021
+GPU[2]		: Temperature (Sensor edge) (C): 38.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1799Mhz)
+GPU[2]		: Average Graphics Package Power (W): 137.0
+T 1794592497.044156100
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 62.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1857Mhz)
+GPU[2]		: Average Graphics Package Power (W): 198.0
+T 1794592497.303234089
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1849Mhz)
+GPU[2]		: Average Graphics Package Power (W): 224.0
+T 1794592497.560943016
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1828Mhz)
+GPU[2]		: Average Graphics Package Power (W): 227.0
+T 1794592497.819016687
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1773Mhz)
+GPU[2]		: Average Graphics Package Power (W): 220.0
+T 1794592498.077107150
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1779Mhz)
+GPU[2]		: Average Graphics Package Power (W): 214.0
+T 1794592498.337120907
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1857Mhz)
+GPU[2]		: Average Graphics Package Power (W): 207.0
+T 1794592498.601885520
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1799Mhz)
+GPU[2]		: Average Graphics Package Power (W): 220.0
+T 1794592498.862508191
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1856Mhz)
+GPU[2]		: Average Graphics Package Power (W): 222.0
+T 1794592499.123428110
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1924Mhz)
+GPU[2]		: Average Graphics Package Power (W): 210.0
+T 1794592499.384159284
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1685Mhz)
+GPU[2]		: Average Graphics Package Power (W): 208.0
+T 1794592499.645359450
+GPU[2]		: Temperature (Sensor edge) (C): 39.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1827Mhz)
+GPU[2]		: Average Graphics Package Power (W): 194.0
+T 1794592499.904537376
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1834Mhz)
+GPU[2]		: Average Graphics Package Power (W): 223.0
+T 1794592500.167347788
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1851Mhz)
+GPU[2]		: Average Graphics Package Power (W): 231.0
+T 1794592500.424755989
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1709Mhz)
+GPU[2]		: Average Graphics Package Power (W): 211.0
+T 1794592500.679341407
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1777Mhz)
+GPU[2]		: Average Graphics Package Power (W): 198.0
+T 1794592500.936755069
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1763Mhz)
+GPU[2]		: Average Graphics Package Power (W): 220.0
+T 1794592501.191708378
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1811Mhz)
+GPU[2]		: Average Graphics Package Power (W): 206.0
+T 1794592501.448940889
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1811Mhz)
+GPU[2]		: Average Graphics Package Power (W): 199.0
+T 1794592501.705241349
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1787Mhz)
+GPU[2]		: Average Graphics Package Power (W): 222.0
+T 1794592501.962296417
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1835Mhz)
+GPU[2]		: Average Graphics Package Power (W): 207.0
+T 1794592502.216970061
+GPU[2]		: Temperature (Sensor edge) (C): 40.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1908Mhz)
+GPU[2]		: Average Graphics Package Power (W): 212.0
+T 1794592502.471875019
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1906Mhz)
+GPU[2]		: Average Graphics Package Power (W): 190.0
+T 1794592502.730484157
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1884Mhz)
+GPU[2]		: Average Graphics Package Power (W): 184.0
+T 1794592502.983537626
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1761Mhz)
+GPU[2]		: Average Graphics Package Power (W): 214.0
+T 1794592503.241062136
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1788Mhz)
+GPU[2]		: Average Graphics Package Power (W): 216.0
+T 1794592503.494428875
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 63.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2101Mhz)
+GPU[2]		: Average Graphics Package Power (W): 141.0
+T 1794592503.749810929
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1853Mhz)
+GPU[2]		: Average Graphics Package Power (W): 210.0
+T 1794592504.004859507
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1873Mhz)
+GPU[2]		: Average Graphics Package Power (W): 199.0
+T 1794592504.261894097
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1825Mhz)
+GPU[2]		: Average Graphics Package Power (W): 220.0
+T 1794592504.517786671
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1842Mhz)
+GPU[2]		: Average Graphics Package Power (W): 228.0
+T 1794592504.774282858
+GPU[2]		: Temperature (Sensor edge) (C): 41.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1792Mhz)
+GPU[2]		: Average Graphics Package Power (W): 222.0
+T 1794592505.032340971
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1845Mhz)
+GPU[2]		: Average Graphics Package Power (W): 211.0
+T 1794592505.287868378
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1741Mhz)
+GPU[2]		: Average Graphics Package Power (W): 216.0
+T 1794592505.541938188
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1787Mhz)
+GPU[2]		: Average Graphics Package Power (W): 215.0
+T 1794592505.796390766
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1880Mhz)
+GPU[2]		: Average Graphics Package Power (W): 214.0
+T 1794592506.053044109
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 61.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2426Mhz)
+GPU[2]		: Average Graphics Package Power (W): 309.0
+T 1794592506.306643705
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1799Mhz)
+GPU[2]		: Average Graphics Package Power (W): 221.0
+T 1794592506.560069795
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1778Mhz)
+GPU[2]		: Average Graphics Package Power (W): 215.0
+T 1794592506.811032005
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1790Mhz)
+GPU[2]		: Average Graphics Package Power (W): 204.0
+T 1794592507.066196311
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1810Mhz)
+GPU[2]		: Average Graphics Package Power (W): 204.0
+T 1794592507.338680497
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1772Mhz)
+GPU[2]		: Average Graphics Package Power (W): 221.0
+T 1794592507.605775498
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1865Mhz)
+GPU[2]		: Average Graphics Package Power (W): 208.0
+T 1794592507.875043251
+GPU[2]		: Temperature (Sensor edge) (C): 42.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1891Mhz)
+GPU[2]		: Average Graphics Package Power (W): 205.0
+T 1794592508.147786915
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1830Mhz)
+GPU[2]		: Average Graphics Package Power (W): 232.0
+T 1794592508.405152106
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1866Mhz)
+GPU[2]		: Average Graphics Package Power (W): 226.0
+T 1794592508.659446196
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1815Mhz)
+GPU[2]		: Average Graphics Package Power (W): 149.0
+T 1794592508.909895423
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1715Mhz)
+GPU[2]		: Average Graphics Package Power (W): 210.0
+T 1794592509.165784270
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1788Mhz)
+GPU[2]		: Average Graphics Package Power (W): 221.0
+T 1794592509.419724095
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 67.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2083Mhz)
+GPU[2]		: Average Graphics Package Power (W): 252.0
+T 1794592509.678210131
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1844Mhz)
+GPU[2]		: Average Graphics Package Power (W): 204.0
+T 1794592509.939218627
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 65.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1715Mhz)
+GPU[2]		: Average Graphics Package Power (W): 207.0
+T 1794592510.197454634
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1806Mhz)
+GPU[2]		: Average Graphics Package Power (W): 195.0
+T 1794592510.452994314
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1753Mhz)
+GPU[2]		: Average Graphics Package Power (W): 217.0
+T 1794592510.704050732
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1699Mhz)
+GPU[2]		: Average Graphics Package Power (W): 206.0
+T 1794592510.958969707
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1833Mhz)
+GPU[2]		: Average Graphics Package Power (W): 209.0
+T 1794592511.214463852
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1753Mhz)
+GPU[2]		: Average Graphics Package Power (W): 220.0
+T 1794592511.472227231
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1711Mhz)
+GPU[2]		: Average Graphics Package Power (W): 210.0
+T 1794592511.730457837
+GPU[2]		: Temperature (Sensor edge) (C): 44.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1857Mhz)
+GPU[2]		: Average Graphics Package Power (W): 205.0
+T 1794592511.986745353
+GPU[2]		: Temperature (Sensor edge) (C): 44.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1901Mhz)
+GPU[2]		: Average Graphics Package Power (W): 222.0
+T 1794592512.240542750
+GPU[2]		: Temperature (Sensor edge) (C): 44.0
+GPU[2]		: Temperature (Sensor junction) (C): 67.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1863Mhz)
+GPU[2]		: Average Graphics Package Power (W): 202.0
+T 1794592512.495557896
+GPU[2]		: Temperature (Sensor edge) (C): 44.0
+GPU[2]		: Temperature (Sensor junction) (C): 66.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (1810Mhz)
+GPU[2]		: Average Graphics Package Power (W): 204.0
+T 1794592512.745369144
+GPU[2]		: Temperature (Sensor edge) (C): 44.0
+GPU[2]		: Temperature (Sensor junction) (C): 64.0
+GPU[2]		: mclk clock level: 5: (1258Mhz)
+GPU[2]		: sclk clock level: 1: (2377Mhz)
+GPU[2]		: Average Graphics Package Power (W): 216.0
+T 1794592513.002444870
+GPU[2]		: Temperature (Sensor edge) (C): 43.0
+GPU[2]		: Temperature (Sensor junction) (C): 51.0
+GPU[2]		: mclk clock level: 4: (1124Mhz)
+GPU[2]		: sclk clock level: 1: (3249Mhz)
+GPU[2]		: Average Graphics Package Power (W): 95.0

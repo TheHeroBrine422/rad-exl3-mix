@@ -1,0 +1,3 @@
+row         prompt  8k ttft ms   tok/s         (r1 / r2)  client ttft  decode ms/step  n
+v3base        8243      3470.0    2376 2424 / 2376 / 2369       3468.4           32.04  9
+v3off         8244      3470.0    2376 2376 / 2376 / 2375       3471.8           31.80  9

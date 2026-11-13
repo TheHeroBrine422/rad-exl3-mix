@@ -1,0 +1,124 @@
+## lint0/10-base/obj
+exl3dense__exl3dense__embed_tq                               PASS         kernels    3  E    0  W   0
+exl3dense__exl3dense__exl3dense                              PASS         kernels    3  E    0  W   1
+exl3dense__exl3dense__exl3dense_linear                       PASS         kernels    8  E    0  W   0
+exl3i__bench_twopass__exl3i_a4_gemm                          PASS         kernels    4  E    0  W   1
+exl3i__bench_twopass__exl3i_a4_prep                          FAIL         kernels   15  E   10  W   0
+exl3i__bench_twopass__exl3i_a8_gemm                          PASS         kernels    3  E    0  W   1
+exl3i__bench_twopass__exl3i_a8_prep                          FAIL         kernels   44  E   24  W  11
+exl3i__exl3i__exl3i_a4_gemm                                  PASS         kernels    4  E    0  W   1
+exl3i__exl3i__exl3i_a4_prep                                  FAIL         kernels   15  E   10  W   0
+exl3i__exl3i__exl3i_a8_gemm                                  PASS         kernels    3  E    0  W   1
+exl3i__exl3i__exl3i_a8_prep                                  FAIL         kernels   44  E   24  W  11
+exl3i__exl3i__exl3i_nt_cb0                                   FAIL         kernels  114  E  234  W   0
+exl3i__exl3i__exl3i_nt_cb1                                   FAIL         kernels  114  E  276  W   0
+exl3i__exl3i__exl3i_nt_cb2                                   FAIL         kernels  114  E  733  W  10
+exl3i__tests__bench_twopass                                  INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__exl3i_gpu_test                                 FAIL         kernels   35  E   12  W   0
+exl3i__tests__test_a4                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_aq                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_ks                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_r16                                       INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_twopass                                   INCOMPLETE   kernels    0  E    0  W   0
+exl3r4d__exl3r4d__exl3r4d_nt                                 FAIL         kernels   44  E   81  W   0
+
+error   MISSING_ALU_WAIT           ?:?                                n 1404 kernels 370 units 9  ins {'s_or_b32': 183, 'v_pk_mul_lo_u16': 131, 's_cmp_lg_u32': 114}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi1ELi0EEEv9Exl3iGemm: v_pk_ashrrev_i16 reads s11 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+review  ALU_WAIT_TTMP              ?:?                                n   10 kernels  10 units 1  ins {'s_mul_u64': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions), and the compiler emits no s_wait_alu depctr_sa_sdst(0) here: a scalar read of a ttmp register lies in between, 
+review  REGISTER_SPILL             ?:?                                n   26 kernels  13 units 6  ins {'': 26}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 1 VGPR / 0 SGPR spills to scratch (8 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint0/714-base/obj
+exl3dense__exl3dense__embed_tq                               PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense__exl3dense                              PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense__exl3dense_linear                       PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass__exl3i_a4_gemm                          PASS         kernels    2  E    0  W   1
+exl3i__bench_twopass__exl3i_a4_prep                          FAIL         kernels   13  E    9  W   0
+exl3i__bench_twopass__exl3i_a8_gemm                          PASS         kernels    1  E    0  W   1
+exl3i__bench_twopass__exl3i_a8_prep                          FAIL         kernels   42  E   34  W  11
+exl3i__exl3i__exl3i_a4_gemm                                  PASS         kernels    2  E    0  W   1
+exl3i__exl3i__exl3i_a4_prep                                  FAIL         kernels   13  E    9  W   0
+exl3i__exl3i__exl3i_a8_gemm                                  PASS         kernels    1  E    0  W   1
+exl3i__exl3i__exl3i_a8_prep                                  FAIL         kernels   42  E   34  W  11
+exl3i__exl3i__exl3i_nt_cb0                                   FAIL         kernels  112  E  171  W   0
+exl3i__exl3i__exl3i_nt_cb1                                   FAIL         kernels  112  E  192  W   0
+exl3i__exl3i__exl3i_nt_cb2                                   FAIL         kernels  112  E  622  W  10
+exl3i__tests__bench_twopass                                  INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__exl3i_gpu_test                                 FAIL         kernels   33  E   11  W   0
+exl3i__tests__test_a4                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_aq                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_ks                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_r16                                       INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_twopass                                   INCOMPLETE   kernels    0  E    0  W   0
+exl3r4d__exl3r4d__exl3r4d_nt                                 FAIL         kernels   42  E   48  W   0
+
+error   MISSING_ALU_WAIT           ?:?                                n 1130 kernels 378 units 9  ins {'s_or_b32': 287, 'v_pk_mul_lo_u16': 111, 'v_cmp_ne_u32_e32': 91}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi1ELi0EEEv9Exl3iGemm: v_pk_mul_lo_u16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+review  ALU_WAIT_TTMP              ?:?                                n   10 kernels  10 units 1  ins {'s_mul_u64': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions), and the compiler emits no s_wait_alu depctr_sa_sdst(0) here: a scalar read of a ttmp register lies in between, 
+review  REGISTER_SPILL             ?:?                                n   26 kernels  13 units 6  ins {'': 26}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 3 VGPR / 0 SGPR spills to scratch (16 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint/10-v/obj
+exl3dense__exl3dense__embed_tq                               PASS         kernels    3  E    0  W   0
+exl3dense__exl3dense__exl3dense                              PASS         kernels    3  E    0  W   1
+exl3dense__exl3dense__exl3dense_linear                       PASS         kernels    8  E    0  W   0
+exl3i__bench_twopass__exl3i_a4_gemm                          PASS         kernels    4  E    0  W   1
+exl3i__bench_twopass__exl3i_a4_prep                          PASS         kernels   15  E    0  W   0
+exl3i__bench_twopass__exl3i_a8_gemm                          PASS         kernels    3  E    0  W   1
+exl3i__bench_twopass__exl3i_a8_prep                          PASS         kernels   44  E    0  W  11
+exl3i__exl3i__exl3i_a4_gemm                                  PASS         kernels    4  E    0  W   1
+exl3i__exl3i__exl3i_a4_prep                                  PASS         kernels   15  E    0  W   0
+exl3i__exl3i__exl3i_a8_gemm                                  PASS         kernels    3  E    0  W   1
+exl3i__exl3i__exl3i_a8_prep                                  PASS         kernels   44  E    0  W  11
+exl3i__exl3i__exl3i_nt_cb0                                   PASS         kernels  114  E    0  W   0
+exl3i__exl3i__exl3i_nt_cb1                                   PASS         kernels  114  E    0  W   0
+exl3i__exl3i__exl3i_nt_cb2                                   PASS         kernels  114  E    0  W   0
+exl3i__tests__bench_twopass                                  INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__exl3i_gpu_test                                 PASS         kernels   35  E    0  W   0
+exl3i__tests__test_a4                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_aq                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_ks                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_r16                                       INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_twopass                                   INCOMPLETE   kernels    0  E    0  W   0
+exl3r4d__exl3r4d__exl3r4d_nt                                 PASS         kernels   44  E    0  W   0
+
+review  REGISTER_SPILL             ?:?                                n   26 kernels  13 units 6  ins {'': 26}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 1 VGPR / 0 SGPR spills to scratch (8 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint/714-v/obj
+exl3dense__exl3dense__embed_tq                               PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense__exl3dense                              PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense__exl3dense_linear                       PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass__exl3i_a4_gemm                          PASS         kernels    2  E    0  W   1
+exl3i__bench_twopass__exl3i_a4_prep                          PASS         kernels   13  E    0  W   0
+exl3i__bench_twopass__exl3i_a8_gemm                          PASS         kernels    1  E    0  W   1
+exl3i__bench_twopass__exl3i_a8_prep                          PASS         kernels   42  E    0  W  11
+exl3i__exl3i__exl3i_a4_gemm                                  PASS         kernels    2  E    0  W   1
+exl3i__exl3i__exl3i_a4_prep                                  PASS         kernels   13  E    0  W   0
+exl3i__exl3i__exl3i_a8_gemm                                  PASS         kernels    1  E    0  W   1
+exl3i__exl3i__exl3i_a8_prep                                  PASS         kernels   42  E    0  W  11
+exl3i__exl3i__exl3i_nt_cb0                                   PASS         kernels  112  E    0  W   0
+exl3i__exl3i__exl3i_nt_cb1                                   PASS         kernels  112  E    0  W   0
+exl3i__exl3i__exl3i_nt_cb2                                   PASS         kernels  112  E    0  W   0
+exl3i__tests__bench_twopass                                  INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__exl3i_gpu_test                                 PASS         kernels   33  E    0  W   0
+exl3i__tests__test_a4                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_aq                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_ks                                        INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_r16                                       INCOMPLETE   kernels    0  E    0  W   0
+exl3i__tests__test_twopass                                   INCOMPLETE   kernels    0  E    0  W   0
+exl3r4d__exl3r4d__exl3r4d_nt                                 PASS         kernels   42  E    0  W   0
+
+review  REGISTER_SPILL             ?:?                                n   26 kernels  13 units 6  ins {'': 26}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 3 VGPR / 0 SGPR spills to scratch (16 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+

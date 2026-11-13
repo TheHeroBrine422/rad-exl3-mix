@@ -1,0 +1,1218 @@
+I device: AQL backend, 1 device(s) [0:gfx1201]
+I model: qwen35  arch=qwen35  quant=w8a8_fwht128  64 layers  262144 ctx
+I vocab: end-of-generation also on <|endoftext|>=248044 (a control token the container declares neither as eos nor eot; without this a turn ending on it runs on)
+I vocab: 248077 tokens, bos=-1 eos=248046
+I gbnf: vocabulary index built in 66 ms, 26.11 MiB
+I chained launches: off -- no drafter whose plugin measured a gain with them decodes speculatively
+I control vectors: not loaded (no --control-vector); a request that asks for one is refused
+I sampler: 248320-token vocabulary (248320 this rank), 8 rows, 7760 mask words (30.31 KiB per row)
+I host-site execution: 8 of 1362 declared ops have no host kernel (rmsnorm_had_quant_i8g, gemm_nt_q, gdn_conv_recurrent_update_had, gated_had_quant_i8g, qk_norm_rope_gate, qk_norm_rope_gate_kv_store, gate_had_quant_i8g, logits_gemm_vocab). Their weights may still be tiered to host or SSD -- only the arithmetic is pinned to the device. --debug-graph lists the bands.
+I declare: 1362 ops, 1324 weights, 58 buffers, 4 KV groups
+I activation arena: not lent -- the 'qwen35_w8a8' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+I placement: token embedding (615.73 MiB a rank) ram (default): pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I placement: encoder towers (879.19 MiB a rank) vram (default)
+I kv: the pool backs 81% of the worst case (8 sequences all at 40960 tokens), 6.5 full-length sessions; a larger --host-pool-mib gives the cache more
+I VRAM budget, per card:
+  card total          31.86 GiB
+  already held       226.68 MiB   measured: driver context, code objects, anything else resident
+  driver drift        16.00 MiB   what that moves by after it is read: kept free
+  activation arena   845.78 MiB   computed from the buffer plan
+  step staging        69.71 MiB   the step batch's block tables and media staging, and the
+                                  KV tiers' copy staging
+  hardware queues    106.11 MiB   3 a card at 35.37 MiB each, measured: the engine's streams
+  expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+  --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+  ------------------------------
+  claimable           30.53 GiB
+  static weights      13.23 GiB   off the top: every rank's own shard, and not a share of anything
+  ------------------------------
+  elastic             17.30 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+                                  and lends what no live request holds to the expert slab
+    experts                 0 B   0% of it -- a dense model, so there is no expert plane for this share to fill and the
+                                  cache took everything it could address
+    kv cache          17.30 GiB   100% of it -- 81% backing of the 8 x 40960 worst case: 6.5 full-length
+                                  sessions. With prefix caching a finished sequence's blocks stay held
+                                  for reuse, so the demand is live sessions, not running requests
+  ==============================
+  vram_weights        13.23 GiB   static + experts
+  vram_kv             17.30 GiB   the cache's share
+  unclaimed           96.72 MiB   the headroom, the unusable above, and what MiB rounding
+                                  could not place
+
+I pools:
+vram_weights    13.23 GiB budget,        0 B used,  13.23 GiB free
+vram_kv         17.30 GiB budget,        0 B used,  17.30 GiB free
+host_pool      616.00 MiB budget,        0 B used, 616.00 MiB free
+
+I placement: 'token_embd.weight' (615.73 MiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I mover: 0 slab slots (0 shadow, 0 more kept free out of a loan), 1 pinned pool slots, 13.23 GiB static vram
+I load: rank 0, mover took 13.23 GiB, weights pool 814.00 KiB free of 13.23 GiB
+I load: 8.00 GiB of 13.83 GiB read, 1.8 GB/s, at container offset 9272528896
+I load: one pass over the container, 13.83 GiB read in 10.0 s (1.5 GB/s) for 1 rank(s); 5.1 s of that was the disk (2.9 GB/s)
+I load: 890 weight(s), 12.92 GiB of planes, rearranged for their kernels by 16 worker(s) behind the read, 4.00 GiB held at most; done 13.5 s after the read began
+I load: 1324 weights, 13.83 GiB placed from 13.83 GiB of container read
+I chunk geometry: quantum 64 (attn block 16, state chunk 64), checkpoint interval 2048, max_tok 2048 -> prefill chunks of at most 2048
+I prefix resume: exact -- a hit resumes only where an idle server's cold prefill of the same prompt starts a chunk (every 2048 tokens) and a prompt's tail snapshot is taken where its last chunk starts, so the hit recomputes the cold run's own chunks and answers bit-identically; a turn re-prefills up to one chunk more than --prefix-resume nearest
+I checkpoint slots: auto: 64 linear-state snapshot(s) of 146.81 MiB in pinned host memory (9.18 GiB), none of it on the card; 8 a sequence for --max-num-seqs 8: geometric-backoff keeps 7 for a 40960-token session at a 2048-token interval, and one more for a running turn
+I kv tiers: off (no --prefix-cache-mib); a finished conversation's KV stays in VRAM until the cache evicts it
+I kv: KV layer bundles 16/48/48 (112 real layers)
+    vLLM stock    size 16 ->  7 groups, 112 slots (0 padding)
+    least-waste   size 16 ->  7 groups, 112 slots (0 padding)
+    radiance      per state kind, own pool ->  3 groups, 112 slots (0 padding)
+    (none)         ?        0 layers  state      0 B        0 slots =       0 B
+    kv_attn        full    16 layers  block   16 tok  page 1.00 MiB    16542 blocks = 16.15 GiB  (264672 tokens)
+    kv_gdn_state   linear  48 layers  state 144.00 MiB        8 slots =  1.12 GiB
+    kv_gdn_conv    conv    48 layers  state 2.81 MiB        8 slots = 22.50 MiB
+    pool at 0x7ba74ee00000, 17.30 GiB; groups at +0..+18577096704
+
+I prefix cache: 1 paged group(s) in 16-token entries; checkpoints every 2048 tokens (64 slots of 146.81 MiB a rank, pinned host memory), retention 'geometric-backoff'
+
+I arena: 673.12 MiB device + 172.66 MiB scratch + 0 B for the second lane = 845.78 MiB, charged to the VRAM budget before it was split
+W per-op timing is on; it adds synchronisations that change the mover's slot supply, so this run is not comparable with an unprofiled one (spec §16)
+I kv: the cache can grow to 17.30 GiB a card -- 264672 tokens of context, 6.5 sessions at 40960 -- with every block it lends the experts taken back; 1.15 GiB of that is per-sequence state, and nothing is lent: it is all the cache's
+I device allocations: 2 totalling 14.05 GiB, of which 30.53 GiB is the two pools -- the rest is the activation arena and the step staging. Anything on the card past this is the driver or a kernel plugin's own hipMalloc, which this cannot see.
+I card 0 settled at 214.37 MiB free, against 201.08 MiB (the 96.00 MiB --gpu-headroom-mib and 105.08 MiB kept for the step staging and for what is built on first use)
+I draft floor: 1 paged group(s), 1 prefix-cached, 0 in the window snapshot -> a hit leaves no hole
+I media staging: 20.00 MiB a rank for a step's encoder rows and 48.27 MiB for an encoder pass of up to 16384 patches
+I step batch: 4.34 MiB pinned staging ring + 1.44 MiB device slab a rank (1.33 MiB of it block tables), 4 KV group(s), 0 derived buffer(s)
+I scheduler: --busy-prefill-chunk auto: a prefill chunk sharing a step leaves decode rows and waiting requests their room and keeps at least 64 tokens
+I chat: template loaded (8952 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I chat: reply format template: reasoning "<think>\n".."\n</think>\n\n"; calls "<tool_call>\n""<function="NAME">\n" "<parameter="ARG">\n"""VALUE"</parameter>\n" "</function>\n""</tool_call>"; grammar on "<tool_call>\n"
+I sampling defaults for requests that send none: temperature 1.00, top_k 20, top_p 0.95, min_p 0.00 (from the container)
+I media: images and video through 'vision'; an image resizes to at most 4194304 pixels (16384 patches a pass), a video to 25165824 pixels over all its frames
+I chat: the template takes reasoning_effort low, medium, xhigh, and none or minimal turn thinking off
+I chat: a request naming no reasoning_effort renders as 'xhigh', the template's own default (--reasoning-effort sets another)
+I STARTUP REPORT -- radiance 1.17.0
+I CONFIGURATION -- every option not at its default, the value in force, and where it came from
+I   --model                            /data/q27/w138/hf/iqr-v4/qwen3.8-27b-iq4r-s-v4.rad  [command line]
+I   --radiance-home                    /data/q27/rad10-perf/home                   [environment (RADIANCE_HOME)]
+I   --kernels                          exl3r4d@0.1.0,exl3dense@0.2.0,exl3i@0.3.0,libavx@0.1.0,libr4d@0.5.0,spechub@0.1.0,libref@0.1.0  [auto]
+I                                        every kernel library under --radiance-home, in the loader's order (a reference implementation last); architecture plugin qwen35_w8a8@0.1.0
+I   --tp                               1                                           [command line]
+I   --p2p                              n/a                                         [auto]
+I                                        one rank: no collective crosses a card
+I   --max-num-seqs                     8                                           [command line]
+I   --max-model-len                    40960                                       [command line]
+I   --kv-cache-dtype                   bf16                                        [command line]
+I   --embedding-placement              ram                                         [auto]
+I                                        the table is 615.73 MiB a rank: pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I   --vision-tower-placement           vram                                        [auto]
+I                                        the towers are 879.19 MiB a rank
+I   --ngram-placement                  n/a                                         [auto]
+I                                        this model has no n-gram table
+I   --placement                        all_vram                                    [auto]
+I                                        13.23 GiB of weights fit the 13.23 GiB weights pool
+I   --checkpoint-slots                 64                                          [auto]
+I                                        8 a sequence for --max-num-seqs 8: geometric-backoff keeps 7 for a 40960-token session at a 2048-token interval, and one more for a running turn
+I   --num-speculative-tokens           0                                           [command line]
+I   --host                             127.0.0.1                                   [command line]
+I   --port                             8371                                        [command line]
+I   --served-model-name                qwen35                                      [auto]
+I                                        the name the container states
+I   --mm-max-patches                   16384                                       [auto]
+I                                        the model carries a vision tower: 16384 patches is a 2048 x 2048 image, the largest one encoder pass takes
+I   --temp                             1                                           [auto]
+I                                        from the container
+I   --top-k                            20                                          [auto]
+I                                        from the container
+I   --top-p                            0.95                                        [auto]
+I                                        from the container
+I   --min-p                            0                                           [auto]
+I                                        the container states no min_p, so this is the built-in default
+I   --max-n                            8                                           [auto]
+I                                        the larger of 8 and --max-num-seqs
+I   --max-queued-requests              64                                          [auto]
+I                                        8 x --max-num-seqs
+I   --http-threads                     48                                          [auto]
+I                                        one a hardware thread, at least 4
+I   --profile-ops                      on                                          [command line]
+I   109 options at their default (-v lists every option; /diagnostics carries them all)
+I ENVIRONMENT -- the RADIANCE_* variables set, by name; their values are not shown
+I   RADIANCE_HOME
+I DERIVED -- what startup worked out that no single option states
+I   chained launches                   off
+I                                        no drafter whose plugin measured a gain with them decodes speculatively
+I   kernel selection                   libavx (host) 1217, libr4d 2706 op bands
+I                                        attention:
+I                                        attn_dense -> attn_vit_h72_bf16
+I                                        attn_dense -> avx_attn_dense
+I                                        attn_paged -> attn_decode_h256_gqa6_bf16kv
+I                                        attn_paged -> attn_prefill_h256_gqa6_bf16kv
+I                                        attn_paged -> avx_attn_paged
+I                                        kv_store -> avx_kv_store
+I                                        kv_store -> kv_store_bf16
+I                                        qk_norm_rope_gate -> qk_norm_rope_gate
+I                                        qk_norm_rope_gate_kv_store -> qk_norm_rope_gate_kv_store_bf16
+I                                        rope -> avx_rope
+I                                        rope -> rope_bf16
+I                                        rope_table -> avx_rope_table
+I                                        rope_table -> rope_table_f32
+I   vram split                         weights 13.23 GiB (experts 0 B of it), KV cache 17.30 GiB, a card
+I                                        VRAM budget, per card:
+I                                          card total          31.86 GiB
+I                                          already held       226.68 MiB   measured: driver context, code objects, anything else resident
+I                                          driver drift        16.00 MiB   what that moves by after it is read: kept free
+I                                          activation arena   845.78 MiB   computed from the buffer plan
+I                                          step staging        69.71 MiB   the step batch's block tables and media staging, and the
+I                                                                          KV tiers' copy staging
+I                                          hardware queues    106.11 MiB   3 a card at 35.37 MiB each, measured: the engine's streams
+I                                          expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+I                                          --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+I                                          ------------------------------
+I                                          claimable           30.53 GiB
+I                                          static weights      13.23 GiB   off the top: every rank's own shard, and not a share of anything
+I                                          ------------------------------
+I                                          elastic             17.30 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+I                                                                          and lends what no live request holds to the expert slab
+I                                            experts                 0 B   0% of it -- a dense model, so there is no expert plane for this share to fill and the
+I                                                                          cache took everything it could address
+I                                            kv cache          17.30 GiB   100% of it -- 81% backing of the 8 x 40960 worst case: 6.5 full-length
+I                                                                          sessions. With prefix caching a finished sequence's blocks stay held
+I                                                                          for reuse, so the demand is live sessions, not running requests
+I                                          ==============================
+I                                          vram_weights        13.23 GiB   static + experts
+I                                          vram_kv             17.30 GiB   the cache's share
+I                                          unclaimed           96.72 MiB   the headroom, the unusable above, and what MiB rounding
+I                                                                          could not place
+I   weights by tier                    VRAM 13.23 GiB, host pool 615.73 MiB, container on disk 0 B, mapped 0 B (rank 0)
+I                                        the host pool holds the 615.73 MiB the placement flags put there (the token embedding, the encoder towers, the drafter's experts) beside the weights placed in it
+I   kv cache                           17.30 GiB a card: 264672 tokens, 6.5 sessions at 40960
+I                                        1.15 GiB of it is per-sequence state; nothing is lent: it is all the cache's
+I HARDWARE
+I   host      AMD EPYC 7443 24-Core Processor | 24 cores, 48 threads | RAM 113.57 GiB, 80.77 GiB available | swap none
+I   system    kernel 7.0.14-26-pve | Ubuntu 26.04.1 LTS | no container seen | cgroup memory unlimited | memlock unlimited
+I   memory    huge pages madvise (defrag madvise, shmem never) | ttm.pages_limit 125.86 GiB | pinned by this process 9.85 GiB
+I   iommu     passthrough (the display devices' IOMMU groups are of type identity)
+I   amdgpu    cwsr_enable 1 | boot parameters: iommu=pt pcie_aspm=off
+I   cpu       governor performance (acpi-cpufreq) | io_uring available
+I   runtime   HIP 7.16.26385 | backend device
+I   media     decoders libavformat 62.12.103
+I   card 0000:03:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card4
+I       link   00:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 01:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 02:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 03:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2604 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:27:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card3
+I       link   20:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 25:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 26:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 27:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2593 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:43:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card2
+I       link   40:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 41:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 42:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 43:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2608 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:63:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card1
+I       link   60:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 61:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 62:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 63:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2644 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:65:00.0  not serving  0x1a03:0x2000  unknown VRAM  NUMA 0  driver ast card0
+I       link   60:05.2 2.5 GT/s x1 (max 2.5 GT/s x1) -> 64:00.0 2.5 GT/s x1 (max 5.0 GT/s x1) -> 65:00.0 ? (max ?)  [read at ?% busy]
+I       power  cap unknown (default unknown, max unknown) | voltage offset unknown | sclk unknown | mclk unknown | runtime pm active (control on) | iommu group identity
+I   card 0000:83:00.0  not serving  gfx1201  31.86 GiB VRAM  NUMA 1  driver amdgpu card8
+I       link   80:01.1 2.5 GT/s x16 (max 16.0 GT/s x16) -> 81:00.0 2.5 GT/s x16 (max 32.0 GT/s x16) -> 82:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 83:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 0% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:a3:00.0  not serving  gfx1201  31.86 GiB VRAM  NUMA 1  driver amdgpu card7
+I       link   a0:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> a1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> a2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> a3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2541 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:c3:00.0  rank 0 (device 0)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA 1  driver amdgpu card6
+I       link   c0:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> c1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> c2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> c3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 88-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:e3:00.0  not serving  gfx1201  31.86 GiB VRAM  NUMA 1  driver amdgpu card5
+I       link   e0:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> e1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> e2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> e3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 100% busy]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2481 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I FINDINGS -- 1 warning, 2 notes
+I   WARN profile-ops: --profile-ops times every op, which restores synchronisations
+I        why: the run is slower and its numbers are not comparable against an unprofiled one
+I        fix: drop --profile-ops for anything measured
+I   note link-capped: card 0000:c3:00.0 (rank 0): the card's link is 32.0 GT/s x16 at most, and 0000:c0:01.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note power-cap-below-default: card 0000:c3:00.0 (rank 0): the power cap is 210 W, below the card's default of 300 W
+I        why: under a sustained load the power cap is what sets the clock on these cards (scripts/cardclock.py shows which limit binds)
+I        fix: echo 300000000 | sudo tee /sys/class/drm/card6/device/hwmon/hwmon*/power1_cap restores the default, with the server stopped; nothing to do if the cap was lowered on purpose
+W startup report: profile-ops: --profile-ops times every op, which restores synchronisations. Fix: drop --profile-ops for anything measured
+I serving on http://127.0.0.1:8371  (/v1/completions; /v1/chat/completions with tools and reasoning)
+I server: listening on http://127.0.0.1:8371 (48 threads, up to 128)
+I req chatcmpl-8c5b495589a69f3ed10fd7e2 chat from 127.0.0.1:59542 model=q msgs=1 tools=0 prompt=8200 tok n=1 max_tokens=1
+I req chatcmpl-8c5b495589a69f3ed10fd7e2 done from 127.0.0.1:59542 finish=length prompt=8200 (cache 0) gen=1 reason=0 ttft=3.26s 3.26s
+I stopping: draining in-flight requests
+
+per-op timing, rank 0. Not comparable with an unprofiled run:
+enabling this restores synchronisations that change the mover's slot supply.
+A row marked `host` was timed on the host clock around a host-site launch and
+includes everything that call waited on -- page faults, link reads. The rest are
+device event pairs around a kernel. `wait us` is how long, a call, the op's lane
+sat idle before it started -- stream waits and issue delays, in no op's time.
+
+       calls     total ms    us/call  site    join us    wait us  op / geometry
+           5       48.582    9716.38   dev          -    3412.65  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #5 blk.0.ssm_inz.weight
+           4       19.149    4787.17   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #821 blk.46.ffn_gate_up.weight
+           4       19.117    4779.26   dev          -       4.00  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #331 blk.18.ffn_gate_up.weight
+           4       19.003    4750.75   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1101 blk.62.ffn_gate_up.weight
+           4       18.871    4717.79   dev          -       3.94  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #541 blk.30.ffn_gate_up.weight
+           4       18.851    4712.84   dev          -       3.84  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1120 blk.63.ffn_gate_up.weight
+           4       18.838    4709.40   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1031 blk.58.ffn_gate_up.weight
+           4       18.822    4705.54   dev          -       3.92  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #961 blk.54.ffn_gate_up.weight
+           4       18.809    4702.31   dev          -       3.98  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1084 blk.61.ffn_gate_up.weight
+           4       18.800    4700.06   dev          -       4.01  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #401 blk.22.ffn_gate_up.weight
+           4       18.798    4699.50   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #611 blk.34.ffn_gate_up.weight
+           4       18.794    4698.38   dev          -       3.91  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #350 blk.19.ffn_gate_up.weight
+           4       18.779    4694.83   dev          -       4.04  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1014 blk.57.ffn_gate_up.weight
+           4       18.774    4693.54   dev          -       4.06  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #471 blk.26.ffn_gate_up.weight
+           4       18.772    4692.91   dev          -       4.00  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #751 blk.42.ffn_gate_up.weight
+           4       18.770    4692.41   dev          -       3.92  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #524 blk.29.ffn_gate_up.weight
+           4       18.767    4691.76   dev          -       3.99  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #261 blk.14.ffn_gate_up.weight
+           4       18.736    4683.93   dev          -       3.99  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #734 blk.41.ffn_gate_up.weight
+           4       18.734    4683.60   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #314 blk.17.ffn_gate_up.weight
+           4       18.728    4681.99   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #384 blk.21.ffn_gate_up.weight
+           4       18.715    4678.67   dev          -       4.02  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #891 blk.50.ffn_gate_up.weight
+           4       18.711    4677.72   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #664 blk.37.ffn_gate_up.weight
+           4       18.707    4676.64   dev          -       4.07  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #681 blk.38.ffn_gate_up.weight
+           4       18.699    4674.74   dev          -       3.94  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #454 blk.25.ffn_gate_up.weight
+           4       18.616    4654.10   dev          -       4.03  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #804 blk.45.ffn_gate_up.weight
+           4       18.605    4651.37   dev          -       3.94  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #944 blk.53.ffn_gate_up.weight
+           4       18.579    4644.81   dev          -       4.05  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #594 blk.33.ffn_gate_up.weight
+           4       18.560    4639.89   dev          -       3.87  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #280 blk.15.ffn_gate_up.weight
+           4       18.552    4638.07   dev          -       3.94  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #874 blk.49.ffn_gate_up.weight
+           4       18.529    4632.32   dev          -       3.96  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #297 blk.16.ffn_gate_up.weight
+           4       18.521    4630.34   dev          -       3.90  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #840 blk.47.ffn_gate_up.weight
+           4       18.507    4626.73   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #647 blk.36.ffn_gate_up.weight
+           4       18.488    4621.97   dev          -       3.98  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1067 blk.60.ffn_gate_up.weight
+           4       18.478    4619.50   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #244 blk.13.ffn_gate_up.weight
+           4       18.478    4619.41   dev          -       3.87  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #927 blk.52.ffn_gate_up.weight
+           4       18.477    4619.34   dev          -       4.06  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #420 blk.23.ffn_gate_up.weight
+           4       18.470    4617.54   dev          -       4.00  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #490 blk.27.ffn_gate_up.weight
+           4       18.376    4593.89   dev          -       3.96  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #700 blk.39.ffn_gate_up.weight
+           4       18.372    4592.99   dev          -       3.95  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #997 blk.56.ffn_gate_up.weight
+           4       18.339    4584.83   dev          -       3.98  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #910 blk.51.ffn_gate_up.weight
+           4       18.332    4583.09   dev          -       3.86  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #770 blk.43.ffn_gate_up.weight
+           4       18.331    4582.75   dev          -       3.88  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #437 blk.24.ffn_gate_up.weight
+           4       18.299    4574.82   dev          -       4.03  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #577 blk.32.ffn_gate_up.weight
+           4       18.281    4570.15   dev          -       3.92  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #1050 blk.59.ffn_gate_up.weight
+           4       18.271    4567.84   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #980 blk.55.ffn_gate_up.weight
+           4       18.232    4558.06   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #787 blk.44.ffn_gate_up.weight
+           4       18.231    4557.82   dev          -       3.97  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #630 blk.35.ffn_gate_up.weight
+           4       18.227    4556.74   dev          -       3.99  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #507 blk.28.ffn_gate_up.weight
+           4       18.196    4549.09   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #560 blk.31.ffn_gate_up.weight
+           4       18.171    4542.67   dev          -       3.85  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #857 blk.48.ffn_gate_up.weight
+           4       18.095    4523.76   dev          -       3.85  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #367 blk.20.ffn_gate_up.weight
+           4       17.991    4497.71   dev          -       3.84  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #717 blk.40.ffn_gate_up.weight
+           4       17.716    4428.95   dev          -       3.89  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #121 blk.6.ffn_gate_up.weight
+           4       17.611    4402.81   dev          -       3.84  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #227 blk.12.ffn_gate_up.weight
+           4       17.565    4391.22   dev          -       3.80  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #210 blk.11.ffn_gate_up.weight
+           4       17.564    4391.04   dev          -       4.04  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #191 blk.10.ffn_gate_up.weight
+           4       17.522    4380.53   dev          -       3.93  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #174 blk.9.ffn_gate_up.weight
+           4       17.428    4356.98   dev          -       3.92  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #104 blk.5.ffn_gate_up.weight
+           4       17.398    4349.45   dev          -       3.76  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #140 blk.7.ffn_gate_up.weight
+           4       17.262    4315.48   dev          -       3.94  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #157 blk.8.ffn_gate_up.weight
+           4       16.791    4197.85   dev          -       3.95  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #87 blk.4.ffn_gate_up.weight
+           4       16.607    4151.64   dev          -       3.74  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #70 blk.3.ffn_gate_up.weight
+           4       16.113    4028.19   dev          -       3.70  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #51 blk.2.ffn_gate_up.weight
+           4       14.627    3656.87   dev          -       3.61  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #34 blk.1.ffn_gate_up.weight
+           4       14.513    3628.18   dev          -       3.62  gemm_nt_q  N=34816 K=5120 group=128 dtype=i8a8h  #17 blk.0.ffn_gate_up.weight
+           5       12.576    2515.19   dev          -       3.88  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #344 -
+           5       12.539    2507.86   dev          -       3.89  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #484 -
+           5       12.528    2505.53   dev          -       3.84  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #414 -
+           5       12.505    2501.01   dev          -       3.84  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #274 -
+           5       12.452    2490.43   dev          -       3.90  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #904 -
+           5       12.447    2489.43   dev          -       3.83  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #1114 -
+           5       12.445    2488.95   dev          -       3.97  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #974 -
+           5       12.441    2488.16   dev          -       3.95  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #554 -
+           5       12.423    2484.67   dev          -       3.79  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #1044 -
+           5       12.423    2484.53   dev          -       3.79  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #624 -
+           5       12.402    2480.35   dev          -       3.86  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #834 -
+           5       12.393    2478.55   dev          -       3.87  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #764 -
+           5       12.378    2475.67   dev          -       3.90  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #694 -
+           5       12.321    2464.19   dev          -       3.79  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #204 -
+           5       12.289    2457.79   dev          -       3.71  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #134 -
+           5       11.664    2332.84   dev          -       3.71  attn_paged  head_dim=256 gqa=6 causal=1 window=0 n_head=24 block_size=16 max_seqs=8 max_ctx=40960 q_dtype=bf16 kv_dtype=bf16  #64 -
+           5        9.432    1886.39   dev          -       3.88  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1104 blk.62.ffn_down.weight
+           5        9.432    1886.35   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #824 blk.46.ffn_down.weight
+           5        9.406    1881.21   dev          -       3.89  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #264 blk.14.ffn_down.weight
+           5        9.402    1880.43   dev          -       3.89  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1017 blk.57.ffn_down.weight
+           5        9.402    1880.36   dev          -       3.92  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #334 blk.18.ffn_down.weight
+           5        9.376    1875.23   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #964 blk.54.ffn_down.weight
+           5        9.376    1875.20   dev          -       3.95  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #894 blk.50.ffn_down.weight
+           5        9.374    1874.83   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1034 blk.58.ffn_down.weight
+           5        9.369    1873.88   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #474 blk.26.ffn_down.weight
+           5        9.364    1872.75   dev          -       3.94  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1087 blk.61.ffn_down.weight
+           5        9.359    1871.86   dev          -       3.92  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #544 blk.30.ffn_down.weight
+           5        9.353    1870.53   dev          -       3.91  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #404 blk.22.ffn_down.weight
+           5        9.324    1864.77   dev          -       3.94  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #754 blk.42.ffn_down.weight
+           5        9.321    1864.29   dev          -       3.84  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #614 blk.34.ffn_down.weight
+           5        9.315    1862.95   dev          -       3.87  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #737 blk.41.ffn_down.weight
+           5        9.310    1862.03   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #947 blk.53.ffn_down.weight
+           5        9.309    1861.89   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #877 blk.49.ffn_down.weight
+           5        9.301    1860.22   dev          -       3.93  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #317 blk.17.ffn_down.weight
+           5        9.297    1859.33   dev          -       3.94  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #667 blk.37.ffn_down.weight
+           5        9.296    1859.19   dev          -       3.84  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #684 blk.38.ffn_down.weight
+           5        9.278    1855.62   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #527 blk.29.ffn_down.weight
+           5        9.264    1852.83   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #930 blk.52.ffn_down.weight
+           5        9.260    1851.99   dev          -       3.92  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #457 blk.25.ffn_down.weight
+           5        9.260    1851.92   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #597 blk.33.ffn_down.weight
+           5        9.248    1849.59   dev          -       3.88  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #387 blk.21.ffn_down.weight
+           5        9.235    1847.09   dev          -       4.02  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #807 blk.45.ffn_down.weight
+           5        9.231    1846.21   dev          -       3.89  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1070 blk.60.ffn_down.weight
+           5        9.221    1844.17   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #300 blk.16.ffn_down.weight
+           5        9.207    1841.42   dev          -       4.01  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #247 blk.13.ffn_down.weight
+           5        9.195    1838.98   dev          -       3.98  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #650 blk.36.ffn_down.weight
+           5        9.187    1837.42   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1000 blk.56.ffn_down.weight
+           5        9.173    1834.62   dev          -       3.84  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1123 blk.63.ffn_down.weight
+           5        9.153    1830.55   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #440 blk.24.ffn_down.weight
+           5        9.147    1829.39   dev          -       3.91  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #353 blk.19.ffn_down.weight
+           5        9.135    1826.99   dev          -       3.82  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #860 blk.48.ffn_down.weight
+           5        9.130    1825.91   dev          -       3.82  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #790 blk.44.ffn_down.weight
+           5        9.121    1824.11   dev          -       3.85  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #283 blk.15.ffn_down.weight
+           5        9.105    1820.94   dev          -       3.91  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #580 blk.32.ffn_down.weight
+           5        9.082    1816.43   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #913 blk.51.ffn_down.weight
+           5        9.077    1815.36   dev          -       3.93  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #510 blk.28.ffn_down.weight
+           5        9.074    1814.86   dev          -       3.87  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #423 blk.23.ffn_down.weight
+           5        9.057    1811.47   dev          -       3.83  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #843 blk.47.ffn_down.weight
+           5        9.051    1810.18   dev          -       3.84  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #370 blk.20.ffn_down.weight
+           5        9.040    1808.03   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #983 blk.55.ffn_down.weight
+           5        9.039    1807.84   dev          -       3.86  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #493 blk.27.ffn_down.weight
+           5        9.025    1804.96   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #1053 blk.59.ffn_down.weight
+           5        8.987    1797.31   dev          -       3.90  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #773 blk.43.ffn_down.weight
+           5        8.978    1795.64   dev          -       3.80  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #720 blk.40.ffn_down.weight
+           5        8.967    1793.36   dev          -       3.82  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #633 blk.35.ffn_down.weight
+           5        8.965    1793.08   dev          -       3.93  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #563 blk.31.ffn_down.weight
+           5        8.960    1792.06   dev          -       3.77  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #703 blk.39.ffn_down.weight
+           5        8.906    1781.16   dev          -       4.64  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #319 blk.18.ssm_inz.weight
+           5        8.864    1772.90   dev          -       3.81  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #230 blk.12.ffn_down.weight
+           5        8.860    1771.99   dev          -       4.53  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #1089 blk.62.ssm_inz.weight
+           5        8.849    1769.85   dev          -       4.57  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #1019 blk.58.ssm_inz.weight
+           5        8.847    1769.37   dev          -       4.65  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #809 blk.46.ssm_inz.weight
+           5        8.820    1764.04   dev          -       3.82  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #124 blk.6.ffn_down.weight
+           5        8.819    1763.88   dev          -       4.60  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #669 blk.38.ssm_inz.weight
+           5        8.805    1761.10   dev          -       4.57  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #949 blk.54.ssm_inz.weight
+           5        8.805    1761.07   dev          -       4.52  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #599 blk.34.ssm_inz.weight
+           5        8.803    1760.61   dev          -       4.46  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #739 blk.42.ssm_inz.weight
+           5        8.802    1760.35   dev          -       4.55  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #459 blk.26.ssm_inz.weight
+           5        8.799    1759.74   dev          -       4.49  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #1002 blk.57.ssm_inz.weight
+           5        8.796    1759.21   dev          -       4.58  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #1072 blk.61.ssm_inz.weight
+           5        8.794    1758.85   dev          -       3.76  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #194 blk.10.ffn_down.weight
+           5        8.792    1758.49   dev          -       4.62  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #529 blk.30.ssm_inz.weight
+           5        8.790    1758.02   dev          -       4.53  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #302 blk.17.ssm_inz.weight
+           5        8.781    1756.30   dev          -       4.57  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #389 blk.22.ssm_inz.weight
+           5        8.777    1755.31   dev          -       3.82  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #177 blk.9.ffn_down.weight
+           5        8.768    1753.58   dev          -       4.42  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #879 blk.50.ssm_inz.weight
+           5        8.759    1751.76   dev          -       4.50  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #932 blk.53.ssm_inz.weight
+           5        8.757    1751.36   dev          -       4.55  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #652 blk.37.ssm_inz.weight
+           5        8.756    1751.19   dev          -       3.79  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #107 blk.5.ffn_down.weight
+           5        8.731    1746.29   dev          -       4.66  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #249 blk.14.ssm_inz.weight
+           5        8.713    1742.67   dev          -       4.47  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #792 blk.45.ssm_inz.weight
+           5        8.712    1742.31   dev          -       3.78  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #213 blk.11.ffn_down.weight
+           5        8.709    1741.88   dev          -       4.50  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #442 blk.25.ssm_inz.weight
+           5        8.706    1741.19   dev          -       4.49  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #512 blk.29.ssm_inz.weight
+           5        8.690    1738.06   dev          -       3.79  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #160 blk.8.ffn_down.weight
+           5        8.679    1735.81   dev          -       4.46  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #862 blk.49.ssm_inz.weight
+           5        8.676    1735.28   dev          -       4.41  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #285 blk.16.ssm_inz.weight
+           5        8.658    1731.53   dev          -       4.45  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #722 blk.41.ssm_inz.weight
+           5        8.654    1730.75   dev          -       4.70  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #1055 blk.60.ssm_inz.weight
+           5        8.654    1730.74   dev          -       4.51  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #985 blk.56.ssm_inz.weight
+           5        8.650    1729.92   dev          -       4.55  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #582 blk.33.ssm_inz.weight
+           5        8.630    1725.94   dev          -       4.44  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #372 blk.21.ssm_inz.weight
+           5        8.621    1724.19   dev          -       4.53  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #355 blk.20.ssm_inz.weight
+           5        8.614    1722.90   dev          -       4.46  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #915 blk.52.ssm_inz.weight
+           5        8.610    1721.96   dev          -       4.53  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #425 blk.24.ssm_inz.weight
+           5        8.592    1718.50   dev          -       4.43  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #635 blk.36.ssm_inz.weight
+           5        8.572    1714.43   dev          -       4.56  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #845 blk.48.ssm_inz.weight
+           5        8.555    1711.10   dev          -       4.54  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #495 blk.28.ssm_inz.weight
+           5        8.546    1709.23   dev          -       3.74  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #143 blk.7.ffn_down.weight
+           5        8.545    1709.03   dev          -       4.48  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #775 blk.44.ssm_inz.weight
+           5        8.544    1708.87   dev          -       4.54  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #565 blk.32.ssm_inz.weight
+           5        8.508    1701.63   dev          -       4.38  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #705 blk.40.ssm_inz.weight
+           5        8.475    1695.07   dev          -       3.80  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #90 blk.4.ffn_down.weight
+           5        8.438    1687.70   dev          -       5.58  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #232 blk.13.ssm_inz.weight
+           5        8.337    1667.37   dev          -       4.42  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #109 blk.6.ssm_inz.weight
+           5        8.285    1656.94   dev          -       4.54  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #179 blk.10.ssm_inz.weight
+           5        8.275    1655.03   dev          -       3.77  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #73 blk.3.ffn_down.weight
+           5        8.271    1654.23   dev          -       4.51  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #162 blk.9.ssm_inz.weight
+           5        8.259    1651.85   dev          -       4.43  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #215 blk.12.ssm_inz.weight
+           5        8.202    1640.43   dev          -       4.12  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #54 blk.2.ffn_down.weight
+           5        8.099    1619.75   dev          -       4.40  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #145 blk.8.ssm_inz.weight
+           5        8.074    1614.85   dev          -       4.45  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #92 blk.5.ssm_inz.weight
+           5        7.894    1578.87   dev          -       4.46  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #75 blk.4.ssm_inz.weight
+           5        7.619    1523.74   dev          -       3.57  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #37 blk.1.ffn_down.weight
+           5        7.417    1483.31   dev          -       4.26  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #39 blk.2.ssm_inz.weight
+           5        7.224    1444.76   dev          -       3.53  gemm_nt_q  N=5120 K=17408 group=128 dtype=i8a8h  #20 blk.0.ffn_down.weight
+           5        6.887    1377.34   dev          -       4.26  gemm_nt_q  N=16384 K=5120 group=128 dtype=i8a8h  #22 blk.1.ssm_inz.weight
+           5        6.716    1343.23   dev          -       3.85  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #1106 blk.63.attn_qg.weight
+           5        6.704    1340.87   dev          -       3.83  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #826 blk.47.attn_qg.weight
+           5        6.701    1340.28   dev          -       3.82  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #476 blk.27.attn_qg.weight
+           5        6.697    1339.41   dev          -       3.87  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #336 blk.19.attn_qg.weight
+           5        6.693    1338.51   dev          -       3.92  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #406 blk.23.attn_qg.weight
+           5        6.671    1334.19   dev          -       3.86  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #1036 blk.59.attn_qg.weight
+           5        6.664    1332.84   dev          -       3.90  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #546 blk.31.attn_qg.weight
+           5        6.658    1331.61   dev          -       3.88  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #266 blk.15.attn_qg.weight
+           5        6.646    1329.27   dev          -       3.82  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #616 blk.35.attn_qg.weight
+           5        6.638    1327.65   dev          -       3.90  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #756 blk.43.attn_qg.weight
+           5        6.636    1327.17   dev          -       3.82  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #966 blk.55.attn_qg.weight
+           5        6.633    1326.59   dev          -       3.94  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #896 blk.51.attn_qg.weight
+           5        6.603    1320.55   dev          -       3.86  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #686 blk.39.attn_qg.weight
+           5        6.309    1261.90   dev          -       3.74  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #126 blk.7.attn_qg.weight
+           5        6.262    1252.48   dev          -       3.76  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #196 blk.11.attn_qg.weight
+           5        5.912    1182.47   dev          -       3.65  gemm_nt_q  N=12288 K=5120 group=128 dtype=i8a8h  #56 blk.3.attn_qg.weight
+           5        4.157     831.38   dev          -       4.14  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #4 blk.0.attn_norm.weight
+           5        4.028     805.68   dev          -       3.78  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1118 blk.63.attn_output.weight
+           5        3.984     796.86   dev          -       3.91  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #819 blk.46.ssm_out.weight
+           5        3.968     793.67   dev          -       3.80  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #539 blk.30.ssm_out.weight
+           5        3.960     791.93   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1099 blk.62.ssm_out.weight
+           5        3.957     791.46   dev          -       3.86  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #488 blk.27.attn_output.weight
+           5        3.954     790.82   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #959 blk.54.ssm_out.weight
+           5        3.947     789.34   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #609 blk.34.ssm_out.weight
+           5        3.946     789.28   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #469 blk.26.ssm_out.weight
+           5        3.941     788.29   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #522 blk.29.ssm_out.weight
+           5        3.939     787.87   dev          -       3.78  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #698 blk.39.attn_output.weight
+           5        3.937     787.35   dev          -       3.96  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #889 blk.50.ssm_out.weight
+           5        3.935     787.03   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #838 blk.47.attn_output.weight
+           5        3.934     786.86   dev          -       3.87  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1082 blk.61.ssm_out.weight
+           5        3.933     786.58   dev          -       3.83  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1029 blk.58.ssm_out.weight
+           5        3.932     786.32   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #978 blk.55.attn_output.weight
+           5        3.931     786.23   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #452 blk.25.ssm_out.weight
+           5        3.931     786.14   dev          -       3.89  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1048 blk.59.attn_output.weight
+           5        3.927     785.39   dev          -       3.88  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #679 blk.38.ssm_out.weight
+           5        3.926     785.27   dev          -       3.92  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #662 blk.37.ssm_out.weight
+           5        3.925     785.02   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #749 blk.42.ssm_out.weight
+           5        3.923     784.68   dev          -       3.86  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #908 blk.51.attn_output.weight
+           5        3.923     784.54   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #942 blk.53.ssm_out.weight
+           5        3.921     784.23   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #558 blk.31.attn_output.weight
+           5        3.920     784.08   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #802 blk.45.ssm_out.weight
+           5        3.916     783.13   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1012 blk.57.ssm_out.weight
+           5        3.914     782.79   dev          -       3.78  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #628 blk.35.attn_output.weight
+           5        3.913     782.60   dev          -       3.80  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #768 blk.43.attn_output.weight
+           5        3.911     782.28   dev          -       3.89  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #732 blk.41.ssm_out.weight
+           5        3.904     780.79   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #645 blk.36.ssm_out.weight
+           5        3.897     779.41   dev          -       3.90  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #592 blk.33.ssm_out.weight
+           5        3.890     778.01   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #872 blk.49.ssm_out.weight
+           5        3.889     777.86   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #925 blk.52.ssm_out.weight
+           5        3.872     774.35   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #1065 blk.60.ssm_out.weight
+           5        3.872     774.34   dev          -       3.83  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #995 blk.56.ssm_out.weight
+           5        3.863     772.68   dev          -       3.91  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #435 blk.24.ssm_out.weight
+           5        3.861     772.30   dev          -       3.83  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #575 blk.32.ssm_out.weight
+           5        3.851     770.27   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #505 blk.28.ssm_out.weight
+           5        3.845     769.03   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #785 blk.44.ssm_out.weight
+           5        3.844     768.84   dev          -       3.86  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #855 blk.48.ssm_out.weight
+           5        3.829     765.78   dev          -       3.74  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #715 blk.40.ssm_out.weight
+           5        3.760     752.05   dev          -       3.72  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #119 blk.6.ssm_out.weight
+           5        3.744     748.88   dev          -       3.68  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #138 blk.7.attn_output.weight
+           5        3.681     736.10   dev          -       3.74  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #102 blk.5.ssm_out.weight
+           5        3.605     720.91   dev          -       3.65  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #68 blk.3.attn_output.weight
+           5        3.561     712.30   dev          -       3.80  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #85 blk.4.ssm_out.weight
+           5        3.441     688.24   dev          -       3.66  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #15 blk.0.ssm_out.weight
+           5        3.441     688.12   dev          -       3.86  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #348 blk.19.attn_output.weight
+           5        3.421     684.23   dev          -       3.94  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #329 blk.18.ssm_out.weight
+           5        3.418     683.58   dev          -       3.84  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #278 blk.15.attn_output.weight
+           5        3.411     682.18   dev          -       3.68  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #49 blk.2.ssm_out.weight
+           5        3.361     672.14   dev          -       3.87  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #312 blk.17.ssm_out.weight
+           5        3.355     671.02   dev          -       3.90  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #399 blk.22.ssm_out.weight
+           5        3.355     670.92   dev          -       3.86  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #418 blk.23.attn_output.weight
+           5        3.339     667.74   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #382 blk.21.ssm_out.weight
+           5        3.338     667.63   dev          -       3.85  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #259 blk.14.ssm_out.weight
+           5        3.316     663.22   dev          -       3.79  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #295 blk.16.ssm_out.weight
+           5        3.291     658.14   dev          -       3.90  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #242 blk.13.ssm_out.weight
+           5        3.255     650.94   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #365 blk.20.ssm_out.weight
+           5        3.231     646.13   dev          -       3.76  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #208 blk.11.attn_output.weight
+           5        3.199     639.78   dev          -       3.74  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #172 blk.9.ssm_out.weight
+           5        3.183     636.65   dev          -       3.98  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #189 blk.10.ssm_out.weight
+           5        3.171     634.26   dev          -       3.77  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #225 blk.12.ssm_out.weight
+           5        3.158     631.66   dev          -       3.55  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #32 blk.1.ssm_out.weight
+           5        3.108     621.69   dev          -       3.82  gemm_nt_q  N=5120 K=6144 group=128 dtype=i8a8h  #155 blk.8.ssm_out.weight
+           5        1.986     397.14   dev          -       3.99  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #323 -
+           5        1.974     394.73   dev          -       3.93  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #813 -
+           5        1.962     392.40   dev          -       3.90  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #1093 -
+           5        1.962     392.35   dev          -       3.85  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #463 -
+           5        1.959     391.81   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #306 -
+           5        1.959     391.74   dev          -       3.89  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #393 -
+           5        1.958     391.53   dev          -       3.84  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #953 -
+           5        1.954     390.78   dev          -       3.90  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #253 -
+           5        1.954     390.71   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #533 -
+           5        1.952     390.38   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #1006 -
+           5        1.950     390.05   dev          -       3.86  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #743 -
+           5        1.950     390.02   dev          -       3.84  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #603 -
+           5        1.950     390.01   dev          -       3.95  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #656 -
+           5        1.945     388.93   dev          -       3.92  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #673 -
+           5        1.944     388.88   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #1023 -
+           5        1.943     388.58   dev          -       3.83  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #446 -
+           5        1.943     388.54   dev          -       3.88  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #516 -
+           5        1.942     388.44   dev          -       3.85  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #883 -
+           5        1.941     388.20   dev          -       3.86  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #796 -
+           5        1.941     388.18   dev          -       3.87  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #1076 -
+           5        1.940     387.95   dev          -       3.86  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #936 -
+           5        1.934     386.79   dev          -       3.83  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #726 -
+           5        1.933     386.62   dev          -       3.78  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #359 -
+           5        1.930     385.94   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #866 -
+           5        1.929     385.79   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #376 -
+           5        1.928     385.64   dev          -       3.86  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #586 -
+           5        1.927     385.35   dev          -       3.85  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #919 -
+           5        1.926     385.27   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #639 -
+           5        1.919     383.86   dev          -       3.91  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #989 -
+           5        1.916     383.28   dev          -       3.83  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #289 -
+           5        1.913     382.69   dev          -       3.87  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #1059 -
+           5        1.913     382.55   dev          -       3.92  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #236 -
+           5        1.910     381.93   dev          -       3.81  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #429 -
+           5        1.908     381.58   dev          -       3.78  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #779 -
+           5        1.901     380.11   dev          -       3.82  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #569 -
+           5        1.900     380.02   dev          -       3.93  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #499 -
+           5        1.895     378.92   dev          -       3.85  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #849 -
+           5        1.882     376.42   dev          -       3.74  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #709 -
+           5        1.858     371.64   dev          -       3.85  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #183 -
+           5        1.857     371.47   dev          -       3.73  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #113 -
+           5        1.846     369.12   dev          -       3.86  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #166 -
+           5        1.832     366.46   dev          -       3.76  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #219 -
+           5        1.822     364.32   dev          -       3.71  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #149 -
+           5        1.820     363.90   dev          -       3.76  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #96 -
+           5        1.754     350.78   dev          -       3.79  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #79 -
+           5        1.685     336.96   dev          -       4.04  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #9 -
+           5        1.661     332.11   dev          -       3.68  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #43 -
+           4        1.591     397.67   dev          -       4.03  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #332 -
+           5        1.589     317.70   dev          -       0.00  embed_lookup  n_embd=5120 n_vocab=248320 dtype=bf16 vocab_offset=0  #1 token_embd.weight
+           4        1.586     396.39   dev          -       4.07  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #822 -
+           4        1.582     395.59   dev          -       3.97  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1102 -
+           4        1.582     395.42   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #315 -
+           4        1.581     395.14   dev          -       4.02  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #472 -
+           4        1.580     394.97   dev          -       3.99  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #402 -
+           4        1.578     394.44   dev          -       4.06  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #262 -
+           4        1.574     393.59   dev          -       3.94  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #542 -
+           4        1.573     393.20   dev          -       3.99  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #892 -
+           4        1.572     392.96   dev          -       3.94  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #858 -
+           4        1.571     392.68   dev          -       4.01  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #752 -
+           4        1.570     392.47   dev          -       3.93  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #612 -
+           4        1.569     392.22   dev          -       4.05  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1085 -
+           4        1.568     392.01   dev          -       4.01  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1032 -
+           4        1.568     391.98   dev          -       3.99  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #805 -
+           4        1.566     391.53   dev          -       3.94  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #962 -
+           4        1.564     391.09   dev          -       4.04  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1015 -
+           4        1.564     391.04   dev          -       4.07  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #525 -
+           4        1.562     390.62   dev          -       3.97  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #735 -
+           4        1.561     390.32   dev          -       3.91  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #385 -
+           4        1.561     390.23   dev          -       4.01  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #945 -
+           4        1.561     390.13   dev          -       3.97  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #455 -
+           4        1.560     390.02   dev          -       3.92  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #682 -
+           4        1.559     389.80   dev          -       3.98  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #665 -
+           4        1.558     389.51   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #595 -
+           4        1.554     388.46   dev          -       4.01  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #298 -
+           4        1.552     387.90   dev          -       3.94  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #875 -
+           4        1.551     387.78   dev          -       4.07  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #648 -
+           4        1.550     387.38   dev          -       3.92  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #928 -
+           4        1.547     386.75   dev          -       3.99  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #245 -
+           4        1.545     386.16   dev          -       3.95  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1068 -
+           4        1.542     385.59   dev          -       3.94  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #438 -
+           4        1.542     385.50   dev          -       3.87  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #788 -
+           4        1.539     384.79   dev          -       4.00  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #998 -
+           4        1.534     383.42   dev          -       3.97  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #578 -
+           4        1.533     383.28   dev          -       4.01  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #508 -
+           4        1.532     382.89   dev          -       3.92  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #368 -
+           4        1.524     381.06   dev          -       3.98  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #281 -
+           4        1.523     380.75   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #491 -
+           4        1.522     380.47   dev          -       4.00  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #351 -
+           4        1.521     380.18   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #911 -
+           4        1.520     380.00   dev          -       3.85  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1121 -
+           4        1.520     379.95   dev          -       3.97  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #421 -
+           4        1.518     379.51   dev          -       3.86  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #718 -
+           4        1.514     378.62   dev          -       4.03  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #771 -
+           4        1.513     378.27   dev          -       3.87  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #631 -
+           4        1.512     377.95   dev          -       3.93  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #981 -
+           4        1.511     377.66   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #841 -
+           4        1.510     377.50   dev          -       4.05  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #1051 -
+           4        1.508     376.92   dev          -       3.95  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #561 -
+           5        1.507     301.45   dev          -       3.58  gdn_chunk_scan  head_k=128 head_v=128 scale=0.0883883  #26 -
+           4        1.501     375.29   dev          -       3.95  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #192 -
+           4        1.495     373.78   dev          -       3.90  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #228 -
+           4        1.495     373.78   dev          -       3.89  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #701 -
+           4        1.493     373.31   dev          -       3.84  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #122 -
+           4        1.485     371.13   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #175 -
+           4        1.475     368.64   dev          -       3.92  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #105 -
+           4        1.468     366.92   dev          -       3.96  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #158 -
+           4        1.455     363.68   dev          -       3.67  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #35 -
+           4        1.447     361.82   dev          -       3.92  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #211 -
+           4        1.437     359.24   dev          -       3.83  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #141 -
+           4        1.428     357.09   dev          -       3.85  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #88 -
+           4        1.381     345.21   dev          -       3.83  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #71 -
+           4        1.379     344.85   dev          -       3.83  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #52 -
+           4        1.251     312.71   dev          -       3.59  gated_had_quant_i8g  n=17408 group=128 dtype=bf16 act=silu  #18 -
+           1        1.237    1236.76   dev          -       3.20  logits_gemm_vocab  n_vocab=248320 n_embd=5120 dtype=bf16 vocab_offset=0 rows0=44544 rows1=41472 rows2=31744 rows3=130560  #1127 output.k6.weight
+           4        1.015     253.76   dev          -       4.09  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #340 blk.19.attn_q_norm.weight
+           4        1.012     253.03   dev          -       4.03  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #270 blk.15.attn_q_norm.weight
+           4        1.011     252.83   dev          -       4.06  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #410 blk.23.attn_q_norm.weight
+           4        1.011     252.83   dev          -       3.93  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #1110 blk.63.attn_q_norm.weight
+           4        1.010     252.42   dev          -       4.01  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #480 blk.27.attn_q_norm.weight
+           4        1.008     251.91   dev          -       4.07  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #830 blk.47.attn_q_norm.weight
+           4        1.007     251.84   dev          -       4.00  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #900 blk.51.attn_q_norm.weight
+           4        1.005     251.17   dev          -       4.04  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #620 blk.35.attn_q_norm.weight
+           4        1.004     251.09   dev          -       4.02  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #970 blk.55.attn_q_norm.weight
+           4        1.004     251.05   dev          -       3.98  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #550 blk.31.attn_q_norm.weight
+           4        1.004     250.94   dev          -       3.96  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #1040 blk.59.attn_q_norm.weight
+           4        1.003     250.85   dev          -       4.00  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #760 blk.43.attn_q_norm.weight
+           4        0.996     249.05   dev          -       3.95  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #690 blk.39.attn_q_norm.weight
+           4        0.964     240.92   dev          -       3.88  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #200 blk.11.attn_q_norm.weight
+           4        0.962     240.54   dev          -       3.84  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #130 blk.7.attn_q_norm.weight
+           4        0.911     227.84   dev          -       3.79  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #60 blk.3.attn_q_norm.weight
+           5        0.767     153.49   dev          -       3.85  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #489 blk.27.ffn_norm.weight
+           5        0.762     152.38   dev          -       4.38  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #357 blk.20.ssm_conv1d.weight
+           5        0.756     151.17   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #528 blk.30.attn_norm.weight
+           5        0.749     149.81   dev          -       3.93  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #898 blk.51.attn_v.weight
+           5        0.745     149.02   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #545 blk.31.attn_norm.weight
+           5        0.731     146.29   dev          -       4.54  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #864 blk.49.ssm_conv1d.weight
+           5        0.715     142.98   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #540 blk.30.ffn_norm.weight
+           5        0.696     139.21   dev          -       4.58  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #917 blk.52.ssm_conv1d.weight
+           5        0.664     132.73   dev          -       3.88  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #1107 blk.63.attn_k.weight
+           5        0.658     131.54   dev          -       3.87  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #1037 blk.59.attn_k.weight
+           5        0.655     130.96   dev          -       3.90  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #407 blk.23.attn_k.weight
+           5        0.654     130.85   dev          -       4.02  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #337 blk.19.attn_k.weight
+           5        0.654     130.77   dev          -       3.84  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #827 blk.47.attn_k.weight
+           5        0.653     130.58   dev          -       3.85  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #477 blk.27.attn_k.weight
+           5        0.651     130.13   dev          -       3.83  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #1108 blk.63.attn_v.weight
+           5        0.651     130.11   dev          -       3.87  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #897 blk.51.attn_k.weight
+           5        0.650     130.07   dev          -       3.90  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #617 blk.35.attn_k.weight
+           5        0.650     130.03   dev          -       3.94  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #547 blk.31.attn_k.weight
+           5        0.650     129.94   dev          -       3.84  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #967 blk.55.attn_k.weight
+           5        0.649     129.78   dev          -       3.90  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #757 blk.43.attn_k.weight
+           5        0.647     129.38   dev          -       3.91  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #267 blk.15.attn_k.weight
+           5        0.646     129.18   dev          -       3.80  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #687 blk.39.attn_k.weight
+           5        0.645     128.91   dev          -       3.86  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #338 blk.19.attn_v.weight
+           5        0.644     128.78   dev          -       3.82  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #1038 blk.59.attn_v.weight
+           5        0.644     128.74   dev          -       3.93  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #408 blk.23.attn_v.weight
+           5        0.643     128.58   dev          -       3.82  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #478 blk.27.attn_v.weight
+           5        0.641     128.18   dev          -       3.89  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #828 blk.47.attn_v.weight
+           5        0.639     127.80   dev          -       3.94  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #268 blk.15.attn_v.weight
+           5        0.639     127.79   dev          -      17.62  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #7 blk.0.ssm_conv1d.weight
+           5        0.638     127.66   dev          -       3.86  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #618 blk.35.attn_v.weight
+           5        0.638     127.61   dev          -       3.85  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #968 blk.55.attn_v.weight
+           5        0.638     127.58   dev          -       3.90  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #548 blk.31.attn_v.weight
+           5        0.637     127.39   dev          -       3.86  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #758 blk.43.attn_v.weight
+           5        0.634     126.76   dev          -       3.82  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #688 blk.39.attn_v.weight
+           5        0.627     125.34   dev          -       3.94  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #265 blk.15.attn_norm.weight
+           5        0.626     125.25   dev          -       3.92  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #405 blk.23.attn_norm.weight
+           5        0.626     125.15   dev          -       3.95  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #318 blk.18.attn_norm.weight
+           5        0.625     125.06   dev          -       3.88  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #475 blk.27.attn_norm.weight
+           5        0.625     125.03   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1105 blk.63.attn_norm.weight
+           5        0.625     124.98   dev          -       3.96  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #808 blk.46.attn_norm.weight
+           5        0.625     124.97   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #335 blk.19.attn_norm.weight
+           5        0.624     124.90   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #615 blk.35.attn_norm.weight
+           5        0.624     124.80   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #825 blk.47.attn_norm.weight
+           5        0.624     124.80   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1018 blk.58.attn_norm.weight
+           5        0.624     124.75   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #301 blk.17.attn_norm.weight
+           5        0.623     124.57   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #668 blk.38.attn_norm.weight
+           5        0.623     124.56   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #895 blk.51.attn_norm.weight
+           5        0.623     124.54   dev          -       3.84  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1088 blk.62.attn_norm.weight
+           5        0.623     124.51   dev          -       3.79  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #388 blk.22.attn_norm.weight
+           5        0.622     124.44   dev          -       3.89  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #755 blk.43.attn_norm.weight
+           5        0.622     124.42   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #651 blk.37.attn_norm.weight
+           5        0.622     124.40   dev          -       3.89  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #248 blk.14.attn_norm.weight
+           5        0.622     124.39   dev          -       3.84  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #948 blk.54.attn_norm.weight
+           5        0.621     124.29   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #598 blk.34.attn_norm.weight
+           5        0.621     124.23   dev          -       3.88  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1035 blk.59.attn_norm.weight
+           5        0.621     124.20   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #685 blk.39.attn_norm.weight
+           5        0.621     124.15   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #931 blk.53.attn_norm.weight
+           5        0.620     124.08   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #878 blk.50.attn_norm.weight
+           5        0.620     123.98   dev          -       3.90  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1001 blk.57.attn_norm.weight
+           5        0.620     123.97   dev          -       3.88  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #984 blk.56.attn_norm.weight
+           5        0.620     123.93   dev          -       3.69  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #127 blk.7.attn_k.weight
+           5        0.619     123.89   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #441 blk.25.attn_norm.weight
+           5        0.619     123.86   dev          -       3.91  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #965 blk.55.attn_norm.weight
+           5        0.619     123.85   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #738 blk.42.attn_norm.weight
+           5        0.619     123.73   dev          -       3.89  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1071 blk.61.attn_norm.weight
+           5        0.618     123.67   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #284 blk.16.attn_norm.weight
+           5        0.618     123.64   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #371 blk.21.attn_norm.weight
+           5        0.618     123.60   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #458 blk.26.attn_norm.weight
+           5        0.618     123.56   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #791 blk.45.attn_norm.weight
+           5        0.617     123.48   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #634 blk.36.attn_norm.weight
+           5        0.617     123.45   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #721 blk.41.attn_norm.weight
+           5        0.617     123.41   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #424 blk.24.attn_norm.weight
+           5        0.617     123.37   dev          -       3.92  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #511 blk.29.attn_norm.weight
+           5        0.616     123.22   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #861 blk.49.attn_norm.weight
+           5        0.616     123.18   dev          -       3.92  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #581 blk.33.attn_norm.weight
+           5        0.616     123.15   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #914 blk.52.attn_norm.weight
+           5        0.615     123.01   dev          -       3.92  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #354 blk.20.attn_norm.weight
+           5        0.615     122.97   dev          -       4.48  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #321 blk.18.ssm_conv1d.weight
+           5        0.615     122.93   dev          -       4.46  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #251 blk.14.ssm_conv1d.weight
+           5        0.615     122.93   dev          -       4.58  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #654 blk.37.ssm_conv1d.weight
+           5        0.615     122.90   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1054 blk.60.attn_norm.weight
+           5        0.614     122.85   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #774 blk.44.attn_norm.weight
+           5        0.614     122.75   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #564 blk.32.attn_norm.weight
+           5        0.613     122.63   dev          -       3.76  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #844 blk.48.attn_norm.weight
+           5        0.613     122.62   dev          -       4.70  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #391 blk.22.ssm_conv1d.weight
+           5        0.613     122.57   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #494 blk.28.attn_norm.weight
+           5        0.613     122.50   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #195 blk.11.attn_norm.weight
+           5        0.612     122.49   dev          -       4.69  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #461 blk.26.ssm_conv1d.weight
+           5        0.612     122.48   dev          -       4.55  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #811 blk.46.ssm_conv1d.weight
+           5        0.612     122.46   dev          -       4.74  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #444 blk.25.ssm_conv1d.weight
+           5        0.612     122.42   dev          -       4.50  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #514 blk.29.ssm_conv1d.weight
+           5        0.612     122.42   dev          -       4.53  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #881 blk.50.ssm_conv1d.weight
+           5        0.612     122.41   dev          -       3.93  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #330 blk.18.ffn_norm.weight
+           5        0.612     122.39   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #231 blk.13.attn_norm.weight
+           5        0.612     122.35   dev          -       4.66  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #304 blk.17.ssm_conv1d.weight
+           5        0.612     122.35   dev          -       3.85  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1100 blk.62.ffn_norm.weight
+           5        0.611     122.30   dev          -       4.50  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #1004 blk.57.ssm_conv1d.weight
+           5        0.611     122.29   dev          -       4.60  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #1091 blk.62.ssm_conv1d.weight
+           5        0.611     122.23   dev          -       4.40  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #951 blk.54.ssm_conv1d.weight
+           5        0.611     122.22   dev          -       4.60  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #794 blk.45.ssm_conv1d.weight
+           5        0.611     122.22   dev          -       4.66  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #601 blk.34.ssm_conv1d.weight
+           5        0.611     122.21   dev          -       4.54  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #287 blk.16.ssm_conv1d.weight
+           5        0.611     122.14   dev          -       4.47  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #531 blk.30.ssm_conv1d.weight
+           5        0.611     122.12   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #125 blk.7.attn_norm.weight
+           5        0.610     122.10   dev          -       4.66  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #671 blk.38.ssm_conv1d.weight
+           5        0.610     122.07   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #704 blk.40.attn_norm.weight
+           5        0.610     122.06   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #108 blk.6.attn_norm.weight
+           5        0.610     122.05   dev          -       4.73  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #374 blk.21.ssm_conv1d.weight
+           5        0.610     122.05   dev          -       3.83  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #197 blk.11.attn_k.weight
+           5        0.610     122.04   dev          -       4.54  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #1057 blk.60.ssm_conv1d.weight
+           5        0.610     122.03   dev          -       3.87  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #347 -
+           5        0.610     122.00   dev          -       4.46  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #934 blk.53.ssm_conv1d.weight
+           5        0.610     121.99   dev          -       4.67  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #567 blk.32.ssm_conv1d.weight
+           5        0.610     121.98   dev          -       4.56  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #724 blk.41.ssm_conv1d.weight
+           5        0.610     121.96   dev          -       4.54  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #987 blk.56.ssm_conv1d.weight
+           5        0.610     121.96   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #178 blk.10.attn_norm.weight
+           5        0.610     121.91   dev          -       4.57  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #1021 blk.58.ssm_conv1d.weight
+           5        0.609     121.89   dev          -       4.69  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #584 blk.33.ssm_conv1d.weight
+           5        0.609     121.88   dev          -       4.38  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #637 blk.36.ssm_conv1d.weight
+           5        0.609     121.86   dev          -       4.52  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #234 blk.13.ssm_conv1d.weight
+           5        0.609     121.84   dev          -       4.66  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #497 blk.28.ssm_conv1d.weight
+           5        0.609     121.78   dev          -       4.62  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #741 blk.42.ssm_conv1d.weight
+           5        0.608     121.60   dev          -       4.48  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #1074 blk.61.ssm_conv1d.weight
+           5        0.607     121.50   dev          -       4.57  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #111 blk.6.ssm_conv1d.weight
+           5        0.607     121.47   dev          -       4.40  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #847 blk.48.ssm_conv1d.weight
+           5        0.607     121.45   dev          -       3.94  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #400 blk.22.ffn_norm.weight
+           5        0.607     121.41   dev          -       3.83  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #128 blk.7.attn_v.weight
+           5        0.607     121.40   dev          -       4.64  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #427 blk.24.ssm_conv1d.weight
+           5        0.607     121.34   dev          -       3.74  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #214 blk.12.attn_norm.weight
+           5        0.607     121.31   dev          -       3.80  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #277 -
+           5        0.606     121.29   dev          -       4.64  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #707 blk.40.ssm_conv1d.weight
+           5        0.606     121.26   dev          -       4.35  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #164 blk.9.ssm_conv1d.weight
+           5        0.606     121.11   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #803 blk.45.ffn_norm.weight
+           5        0.605     121.10   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #161 blk.9.attn_norm.weight
+           5        0.605     121.08   dev          -       4.56  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #777 blk.44.ssm_conv1d.weight
+           5        0.605     121.07   dev          -       4.71  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #181 blk.10.ssm_conv1d.weight
+           5        0.605     120.98   dev          -       4.60  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #94 blk.5.ssm_conv1d.weight
+           5        0.605     120.92   dev          -       3.91  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #820 blk.46.ffn_norm.weight
+           5        0.605     120.90   dev          -       3.78  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #1117 -
+           5        0.604     120.88   dev          -       3.85  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #417 -
+           5        0.604     120.80   dev          -       4.52  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #147 blk.8.ssm_conv1d.weight
+           5        0.604     120.72   dev          -       3.76  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1119 blk.63.ffn_norm.weight
+           5        0.604     120.72   dev          -       4.50  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #217 blk.12.ssm_conv1d.weight
+           5        0.603     120.67   dev          -       3.91  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #960 blk.54.ffn_norm.weight
+           5        0.603     120.66   dev          -       3.79  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #91 blk.5.attn_norm.weight
+           5        0.603     120.62   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #383 blk.21.ffn_norm.weight
+           5        0.603     120.55   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #279 blk.15.ffn_norm.weight
+           5        0.602     120.50   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #750 blk.42.ffn_norm.weight
+           5        0.602     120.47   dev          -       3.90  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #260 blk.14.ffn_norm.weight
+           5        0.602     120.40   dev          -       3.85  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #523 blk.29.ffn_norm.weight
+           5        0.602     120.38   dev          -       3.80  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1030 blk.58.ffn_norm.weight
+           5        0.602     120.38   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #470 blk.26.ffn_norm.weight
+           5        0.602     120.36   dev          -       3.72  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #144 blk.8.attn_norm.weight
+           5        0.602     120.35   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #313 blk.17.ffn_norm.weight
+           5        0.602     120.34   dev          -       3.84  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #296 blk.16.ffn_norm.weight
+           5        0.602     120.34   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #419 blk.23.ffn_norm.weight
+           5        0.601     120.23   dev          -       3.92  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #487 -
+           5        0.601     120.22   dev          -       3.75  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #198 blk.11.attn_v.weight
+           5        0.601     120.22   dev          -       3.79  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #453 blk.25.ffn_norm.weight
+           5        0.601     120.20   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #243 blk.13.ffn_norm.weight
+           5        0.601     120.18   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #646 blk.36.ffn_norm.weight
+           5        0.601     120.18   dev          -       4.58  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #77 blk.4.ssm_conv1d.weight
+           5        0.601     120.15   dev          -       3.87  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #733 blk.41.ffn_norm.weight
+           5        0.601     120.14   dev          -       3.78  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #557 -
+           5        0.601     120.11   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #349 blk.19.ffn_norm.weight
+           5        0.600     120.06   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1083 blk.61.ffn_norm.weight
+           5        0.600     120.04   dev          -       3.85  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #680 blk.38.ffn_norm.weight
+           5        0.600     119.98   dev          -       3.86  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #907 -
+           5        0.600     119.97   dev          -       3.94  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #610 blk.34.ffn_norm.weight
+           5        0.600     119.96   dev          -       3.83  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #1047 -
+           5        0.599     119.86   dev          -       3.79  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #837 -
+           5        0.599     119.84   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #786 blk.44.ffn_norm.weight
+           5        0.599     119.83   dev          -       3.83  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #767 -
+           5        0.599     119.83   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #979 blk.55.ffn_norm.weight
+           5        0.599     119.82   dev          -       3.85  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #890 blk.50.ffn_norm.weight
+           5        0.599     119.77   dev          -       3.88  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #663 blk.37.ffn_norm.weight
+           5        0.599     119.77   dev          -       3.84  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #873 blk.49.ffn_norm.weight
+           5        0.598     119.68   dev          -       3.89  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #977 -
+           5        0.598     119.59   dev          -       3.89  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1013 blk.57.ffn_norm.weight
+           5        0.598     119.55   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #593 blk.33.ffn_norm.weight
+           5        0.598     119.54   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #839 blk.47.ffn_norm.weight
+           5        0.597     119.34   dev          -       3.81  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #697 -
+           5        0.597     119.33   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1066 blk.60.ffn_norm.weight
+           5        0.597     119.30   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #629 blk.35.ffn_norm.weight
+           5        0.596     119.23   dev          -       3.78  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #627 -
+           5        0.596     119.23   dev          -       3.93  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #996 blk.56.ffn_norm.weight
+           5        0.596     119.22   dev          -       3.86  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #506 blk.28.ffn_norm.weight
+           5        0.596     119.19   dev          -       4.65  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #41 blk.2.ssm_conv1d.weight
+           5        0.596     119.18   dev          -       3.66  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #55 blk.3.attn_norm.weight
+           5        0.596     119.16   dev          -       3.90  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #576 blk.32.ffn_norm.weight
+           5        0.595     119.09   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #366 blk.20.ffn_norm.weight
+           5        0.595     119.03   dev          -       3.79  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #559 blk.31.ffn_norm.weight
+           5        0.595     118.98   dev          -       3.80  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #943 blk.53.ffn_norm.weight
+           5        0.595     118.97   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #926 blk.52.ffn_norm.weight
+           5        0.595     118.94   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #909 blk.51.ffn_norm.weight
+           5        0.595     118.94   dev          -       3.84  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #190 blk.10.ffn_norm.weight
+           5        0.594     118.89   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #769 blk.43.ffn_norm.weight
+           5        0.594     118.85   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #74 blk.4.attn_norm.weight
+           5        0.594     118.79   dev          -       3.83  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #954 blk.54.ssm_norm.weight
+           5        0.594     118.79   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #856 blk.48.ffn_norm.weight
+           5        0.594     118.73   dev          -       3.78  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #699 blk.39.ffn_norm.weight
+           5        0.594     118.72   dev          -       3.83  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #1049 blk.59.ffn_norm.weight
+           5        0.592     118.42   dev          -       3.80  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #436 blk.24.ffn_norm.weight
+           5        0.592     118.38   dev          -       3.79  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #120 blk.6.ffn_norm.weight
+           5        0.590     118.03   dev          -       3.82  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #173 blk.9.ffn_norm.weight
+           5        0.590     118.02   dev          -       3.73  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #103 blk.5.ffn_norm.weight
+           5        0.590     117.97   dev          -       3.72  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #209 blk.11.ffn_norm.weight
+           5        0.589     117.85   dev          -       3.81  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #716 blk.40.ffn_norm.weight
+           5        0.589     117.82   dev          -       3.77  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #156 blk.8.ffn_norm.weight
+           5        0.589     117.78   dev          -       3.75  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #226 blk.12.ffn_norm.weight
+           5        0.589     117.71   dev          -       4.30  gdn_conv_prep  head_k=128 head_v=128 chunk=64 conv_width=4  #24 blk.1.ssm_conv1d.weight
+           5        0.585     116.95   dev          -       3.68  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #139 blk.7.ffn_norm.weight
+           5        0.584     116.70   dev          -       3.66  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #38 blk.2.attn_norm.weight
+           5        0.583     116.61   dev          -       3.70  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #57 blk.3.attn_k.weight
+           5        0.580     115.97   dev          -       3.80  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #86 blk.4.ffn_norm.weight
+           5        0.579     115.86   dev          -       3.78  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #207 -
+           5        0.578     115.69   dev          -       3.62  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #69 blk.3.ffn_norm.weight
+           5        0.574     114.85   dev          -       3.72  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #137 -
+           5        0.572     114.47   dev          -       3.65  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #21 blk.1.attn_norm.weight
+           5        0.571     114.13   dev          -       3.59  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #50 blk.2.ffn_norm.weight
+           5        0.570     113.94   dev          -       3.71  gemm_nt_q  N=1024 K=5120 group=128 dtype=i8a8h  #58 blk.3.attn_v.weight
+           5        0.567     113.39   dev          -       3.61  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #16 blk.0.ffn_norm.weight
+           5        0.559     111.79   dev          -       3.53  rmsnorm_had_quant_i8g  n=5120 eps=1e-06 group=128 dtype=bf16 wadd=1  #33 blk.1.ffn_norm.weight
+           5        0.553     110.50   dev          -       3.59  gate_had_quant_i8g  n=256 group=128 dtype=bf16 act=sigmoid  #67 -
+           5        0.547     109.46   dev          -       3.69  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #10 blk.0.ssm_norm.weight
+           5        0.475      94.99   dev          -       3.76  add  n=5120 dtype=bf16  #1124 -
+           5        0.469      93.86   dev          -       3.90  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #324 blk.18.ssm_norm.weight
+           5        0.468      93.58   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #814 blk.46.ssm_norm.weight
+           5        0.468      93.58   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #307 blk.17.ssm_norm.weight
+           5        0.468      93.52   dev          -       3.81  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #1094 blk.62.ssm_norm.weight
+           5        0.467      93.46   dev          -       3.93  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #394 blk.22.ssm_norm.weight
+           5        0.467      93.46   dev          -       3.94  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #254 blk.14.ssm_norm.weight
+           5        0.467      93.37   dev          -       3.84  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #1024 blk.58.ssm_norm.weight
+           5        0.467      93.36   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #464 blk.26.ssm_norm.weight
+           5        0.467      93.33   dev          -       3.80  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #1007 blk.57.ssm_norm.weight
+           5        0.467      93.33   dev          -       3.82  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #534 blk.30.ssm_norm.weight
+           5        0.466      93.30   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #114 blk.6.ssm_norm.weight
+           5        0.466      93.30   dev          -       3.89  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #587 blk.33.ssm_norm.weight
+           5        0.466      93.26   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #447 blk.25.ssm_norm.weight
+           5        0.466      93.25   dev          -       3.88  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #674 blk.38.ssm_norm.weight
+           5        0.466      93.23   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #744 blk.42.ssm_norm.weight
+           5        0.466      93.23   dev          -       3.94  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #1060 blk.60.ssm_norm.weight
+           5        0.466      93.18   dev          -       3.84  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #727 blk.41.ssm_norm.weight
+           5        0.466      93.18   dev          -       3.88  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #184 blk.10.ssm_norm.weight
+           5        0.466      93.18   dev          -       3.94  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #657 blk.37.ssm_norm.weight
+           5        0.466      93.16   dev          -       3.81  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #867 blk.49.ssm_norm.weight
+           5        0.466      93.16   dev          -       3.83  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #430 blk.24.ssm_norm.weight
+           5        0.466      93.14   dev          -       3.85  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #377 blk.21.ssm_norm.weight
+           5        0.466      93.14   dev          -       3.84  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #237 blk.13.ssm_norm.weight
+           5        0.466      93.14   dev          -       3.89  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #884 blk.50.ssm_norm.weight
+           5        0.466      93.13   dev          -       3.82  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #937 blk.53.ssm_norm.weight
+           5        0.466      93.11   dev          -       3.83  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #990 blk.56.ssm_norm.weight
+           5        0.466      93.11   dev          -       3.82  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #517 blk.29.ssm_norm.weight
+           5        0.466      93.10   dev          -       3.89  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #570 blk.32.ssm_norm.weight
+           5        0.466      93.10   dev          -       3.90  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #640 blk.36.ssm_norm.weight
+           5        0.465      93.09   dev          -       3.91  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #1077 blk.61.ssm_norm.weight
+           5        0.465      93.08   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #360 blk.20.ssm_norm.weight
+           5        0.465      93.08   dev          -       3.80  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #167 blk.9.ssm_norm.weight
+           5        0.465      93.06   dev          -       3.82  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #604 blk.34.ssm_norm.weight
+           5        0.465      93.06   dev          -       3.83  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #780 blk.44.ssm_norm.weight
+           5        0.465      93.06   dev          -       3.85  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #500 blk.28.ssm_norm.weight
+           5        0.465      93.06   dev          -       3.87  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #290 blk.16.ssm_norm.weight
+           5        0.465      93.04   dev          -       3.86  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #920 blk.52.ssm_norm.weight
+           5        0.465      92.99   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #850 blk.48.ssm_norm.weight
+           5        0.465      92.94   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #150 blk.8.ssm_norm.weight
+           5        0.465      92.94   dev          -       3.84  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #797 blk.45.ssm_norm.weight
+           5        0.464      92.90   dev          -       3.79  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #80 blk.4.ssm_norm.weight
+           5        0.464      92.84   dev          -       3.77  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #97 blk.5.ssm_norm.weight
+           5        0.464      92.78   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #220 blk.12.ssm_norm.weight
+           5        0.464      92.76   dev          -       3.76  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #710 blk.40.ssm_norm.weight
+           5        0.463      92.64   dev          -       3.60  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #27 blk.1.ssm_norm.weight
+           5        0.463      92.50   dev          -       3.62  gdn_gated_rmsnorm  channels=128 eps=1e-06 act=silu  #44 blk.2.ssm_norm.weight
+           5        0.432      86.38   dev          -       2.90  gemm_nt  N=96 K=5120 dtype=bf16  #6 blk.0.ssm_ab.weight
+           5        0.409      81.87   dev          -      97.85  gemm_nt  N=96 K=5120 dtype=bf16  #1090 blk.62.ssm_ab.weight
+           5        0.408      81.51   dev          -      98.07  gemm_nt  N=96 K=5120 dtype=bf16  #1073 blk.61.ssm_ab.weight
+           5        0.407      81.47   dev          -      97.82  gemm_nt  N=96 K=5120 dtype=bf16  #1020 blk.58.ssm_ab.weight
+           5        0.405      81.02   dev          -      98.11  gemm_nt  N=96 K=5120 dtype=bf16  #1003 blk.57.ssm_ab.weight
+           5        0.403      80.51   dev          -     215.66  gemm_nt  N=96 K=5120 dtype=bf16  #1056 blk.60.ssm_ab.weight
+           5        0.401      80.26   dev          -     198.96  gemm_nt  N=96 K=5120 dtype=bf16  #986 blk.56.ssm_ab.weight
+           5        0.397      79.42   dev          -      87.44  gemm_nt  N=96 K=5120 dtype=bf16  #320 blk.18.ssm_ab.weight
+           5        0.396      79.17   dev          -      86.94  gemm_nt  N=96 K=5120 dtype=bf16  #390 blk.22.ssm_ab.weight
+           5        0.395      78.99   dev          -      88.81  gemm_nt  N=96 K=5120 dtype=bf16  #600 blk.34.ssm_ab.weight
+           5        0.394      78.72   dev          -      87.52  gemm_nt  N=96 K=5120 dtype=bf16  #303 blk.17.ssm_ab.weight
+           5        0.393      78.68   dev          -      88.38  gemm_nt  N=96 K=5120 dtype=bf16  #460 blk.26.ssm_ab.weight
+           5        0.393      78.62   dev          -      87.67  gemm_nt  N=96 K=5120 dtype=bf16  #810 blk.46.ssm_ab.weight
+           5        0.393      78.61   dev          -      91.33  gemm_nt  N=96 K=5120 dtype=bf16  #950 blk.54.ssm_ab.weight
+           5        0.393      78.52   dev          -      88.16  gemm_nt  N=96 K=5120 dtype=bf16  #653 blk.37.ssm_ab.weight
+           5        0.392      78.50   dev          -      88.32  gemm_nt  N=96 K=5120 dtype=bf16  #530 blk.30.ssm_ab.weight
+           5        0.392      78.48   dev          -      88.64  gemm_nt  N=96 K=5120 dtype=bf16  #513 blk.29.ssm_ab.weight
+           5        0.392      78.42   dev          -      90.77  gemm_nt  N=96 K=5120 dtype=bf16  #880 blk.50.ssm_ab.weight
+           5        0.392      78.38   dev          -      87.14  gemm_nt  N=96 K=5120 dtype=bf16  #793 blk.45.ssm_ab.weight
+           5        0.392      78.30   dev          -      86.34  gemm_nt  N=96 K=5120 dtype=bf16  #740 blk.42.ssm_ab.weight
+           5        0.392      78.30   dev          -      87.15  gemm_nt  N=96 K=5120 dtype=bf16  #373 blk.21.ssm_ab.weight
+           5        0.391      78.29   dev          -      88.38  gemm_nt  N=96 K=5120 dtype=bf16  #670 blk.38.ssm_ab.weight
+           5        0.391      78.26   dev          -      91.04  gemm_nt  N=96 K=5120 dtype=bf16  #933 blk.53.ssm_ab.weight
+           5        0.389      77.78   dev          -      88.42  gemm_nt  N=96 K=5120 dtype=bf16  #443 blk.25.ssm_ab.weight
+           5        0.389      77.74   dev          -      88.36  gemm_nt  N=96 K=5120 dtype=bf16  #583 blk.33.ssm_ab.weight
+           5        0.388      77.68   dev          -      86.60  gemm_nt  N=96 K=5120 dtype=bf16  #723 blk.41.ssm_ab.weight
+           5        0.387      77.48   dev          -     198.97  gemm_nt  N=96 K=5120 dtype=bf16  #916 blk.52.ssm_ab.weight
+           5        0.387      77.46   dev          -      90.72  gemm_nt  N=96 K=5120 dtype=bf16  #863 blk.49.ssm_ab.weight
+           5        0.387      77.38   dev          -     187.75  gemm_nt  N=96 K=5120 dtype=bf16  #286 blk.16.ssm_ab.weight
+           5        0.387      77.38   dev          -     192.82  gemm_nt  N=96 K=5120 dtype=bf16  #636 blk.36.ssm_ab.weight
+           5        0.385      77.10   dev          -      85.98  gemm_nt  N=96 K=5120 dtype=bf16  #250 blk.14.ssm_ab.weight
+           5        0.385      77.05   dev          -     191.20  gemm_nt  N=96 K=5120 dtype=bf16  #426 blk.24.ssm_ab.weight
+           5        0.385      77.05   dev          -     193.94  gemm_nt  N=96 K=5120 dtype=bf16  #496 blk.28.ssm_ab.weight
+           5        0.385      77.02   dev          -     193.54  gemm_nt  N=96 K=5120 dtype=bf16  #566 blk.32.ssm_ab.weight
+           5        0.385      76.90   dev          -     191.75  gemm_nt  N=96 K=5120 dtype=bf16  #356 blk.20.ssm_ab.weight
+           5        0.382      76.46   dev          -     191.80  gemm_nt  N=96 K=5120 dtype=bf16  #846 blk.48.ssm_ab.weight
+           5        0.381      76.25   dev          -     191.56  gemm_nt  N=96 K=5120 dtype=bf16  #776 blk.44.ssm_ab.weight
+           5        0.381      76.14   dev          -     191.98  gemm_nt  N=96 K=5120 dtype=bf16  #706 blk.40.ssm_ab.weight
+           5        0.380      75.99   dev          -      86.56  gemm_nt  N=96 K=5120 dtype=bf16  #233 blk.13.ssm_ab.weight
+           5        0.378      75.67   dev          -      89.75  gemm_nt  N=96 K=5120 dtype=bf16  #110 blk.6.ssm_ab.weight
+           5        0.374      74.79   dev          -      89.78  gemm_nt  N=96 K=5120 dtype=bf16  #93 blk.5.ssm_ab.weight
+           5        0.374      74.78   dev          -      86.73  gemm_nt  N=96 K=5120 dtype=bf16  #180 blk.10.ssm_ab.weight
+           5        0.373      74.62   dev          -     201.32  gemm_nt  N=96 K=5120 dtype=bf16  #146 blk.8.ssm_ab.weight
+           5        0.372      74.47   dev          -     189.59  gemm_nt  N=96 K=5120 dtype=bf16  #216 blk.12.ssm_ab.weight
+           5        0.372      74.36   dev          -      87.03  gemm_nt  N=96 K=5120 dtype=bf16  #163 blk.9.ssm_ab.weight
+           5        0.365      73.03   dev          -     204.02  gemm_nt  N=96 K=5120 dtype=bf16  #76 blk.4.ssm_ab.weight
+           5        0.356      71.11   dev          -       4.02  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #328 -
+           5        0.352      70.47   dev          -      88.91  gemm_nt  N=96 K=5120 dtype=bf16  #40 blk.2.ssm_ab.weight
+           5        0.352      70.39   dev          -       3.94  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #818 -
+           5        0.351      70.16   dev          -       3.82  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #1098 -
+           5        0.350      70.05   dev          -       3.94  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #311 -
+           5        0.350      70.03   dev          -       3.86  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #398 -
+           5        0.350      70.02   dev          -       3.88  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #468 -
+           5        0.350      70.00   dev          -       3.82  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #538 -
+           5        0.350      69.92   dev          -       3.82  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #958 -
+           5        0.349      69.89   dev          -       3.88  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #258 -
+           5        0.349      69.78   dev          -       3.86  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #608 -
+           5        0.349      69.75   dev          -       3.91  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #661 -
+           5        0.348      69.67   dev          -       3.85  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #644 -
+           5        0.348      69.61   dev          -       3.79  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #1028 -
+           5        0.348      69.58   dev          -       3.84  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #678 -
+           5        0.348      69.50   dev          -       3.85  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #748 -
+           5        0.347      69.50   dev          -       3.86  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #521 -
+           5        0.347      69.46   dev          -       3.87  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #1081 -
+           5        0.347      69.46   dev          -       3.89  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #888 -
+           5        0.347      69.46   dev          -       3.89  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #451 -
+           5        0.347      69.40   dev          -       3.86  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #1011 -
+           5        0.346      69.30   dev          -       3.79  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #801 -
+           5        0.346      69.28   dev          -       3.91  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #381 -
+           5        0.346      69.22   dev          -       3.90  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #941 -
+           5        0.345      68.90   dev          -       3.86  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #731 -
+           5        0.344      68.86   dev          -       3.84  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #591 -
+           5        0.344      68.86   dev          -       3.84  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #871 -
+           5        0.343      68.66   dev          -       3.89  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #924 -
+           5        0.343      68.59   dev          -       3.81  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #294 -
+           5        0.342      68.44   dev          -       3.83  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #1064 -
+           5        0.342      68.43   dev          -       3.85  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #994 -
+           5        0.341      68.26   dev          -       3.82  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #241 -
+           5        0.341      68.21   dev          -       3.87  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #434 -
+           5        0.340      67.99   dev          -       3.92  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #574 -
+           5        0.340      67.93   dev          -       3.87  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #504 -
+           5        0.339      67.90   dev          -       3.80  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #784 -
+           5        0.339      67.78   dev          -       3.80  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #364 -
+           5        0.338      67.59   dev          -       3.81  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #854 -
+           5        0.336      67.18   dev          -       3.71  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #714 -
+           5        0.332      66.46   dev          -      94.74  gemm_nt  N=96 K=5120 dtype=bf16  #23 blk.1.ssm_ab.weight
+           5        0.332      66.43   dev          -       3.85  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #188 -
+           5        0.332      66.33   dev          -       3.73  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #118 -
+           5        0.331      66.22   dev          -       3.81  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #171 -
+           5        0.328      65.62   dev          -       3.81  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #224 -
+           5        0.324      64.90   dev          -       3.75  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #101 -
+           5        0.324      64.86   dev          -       3.81  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #154 -
+           5        0.320      63.94   dev          -       3.79  rmsnorm  n=5120 eps=1e-06 wadd=1 dtype=bf16  #1125 output_norm.weight
+           4        0.318      79.60   dev          -       4.05  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #342 -
+           4        0.317      79.28   dev          -       4.03  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #272 -
+           4        0.317      79.27   dev          -       4.06  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #412 -
+           4        0.317      79.13   dev          -       4.01  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #902 -
+           4        0.317      79.13   dev          -       4.09  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #482 -
+           4        0.316      79.11   dev          -       3.97  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #1112 -
+           4        0.316      78.92   dev          -       4.06  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #832 -
+           4        0.315      78.71   dev          -       4.03  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #972 -
+           4        0.315      78.65   dev          -       3.94  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #622 -
+           4        0.314      78.51   dev          -       3.96  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #552 -
+           4        0.314      78.50   dev          -       3.91  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #1042 -
+           4        0.313      78.36   dev          -       3.98  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #762 -
+           5        0.313      62.54   dev          -       3.71  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #84 -
+           4        0.312      77.89   dev          -       3.93  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #692 -
+           4        0.299      74.69   dev          -       3.96  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #202 -
+           4        0.298      74.49   dev          -       3.79  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #132 -
+           5        0.296      59.19   dev          -       3.62  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #48 -
+           5        0.285      57.03   dev          -       4.34  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #14 -
+           4        0.279      69.85   dev          -       3.69  rope  head_dim=256 n_head=24 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #62 -
+           5        0.274      54.82   dev          -       3.90  gdn_kkt_solve  head_k=128  #322 -
+           5        0.272      54.44   dev          -       3.82  gdn_kkt_solve  head_k=128  #602 -
+           5        0.272      54.42   dev          -       3.87  gdn_kkt_solve  head_k=128  #655 -
+           5        0.272      54.36   dev          -       3.85  gdn_kkt_solve  head_k=128  #812 -
+           5        0.272      54.35   dev          -       3.91  gdn_kkt_solve  head_k=128  #1092 -
+           5        0.271      54.28   dev          -       3.90  gdn_kkt_solve  head_k=128  #515 -
+           5        0.271      54.25   dev          -       3.83  gdn_kkt_solve  head_k=128  #742 -
+           5        0.271      54.21   dev          -       3.79  gdn_kkt_solve  head_k=128  #462 -
+           5        0.271      54.19   dev          -       3.91  gdn_kkt_solve  head_k=128  #305 -
+           5        0.271      54.18   dev          -       3.59  had_quant_act_i8g  n=6144 group=128 dtype=bf16  #31 -
+           5        0.271      54.14   dev          -       3.81  gdn_kkt_solve  head_k=128  #952 -
+           5        0.271      54.14   dev          -       3.79  gdn_kkt_solve  head_k=128  #392 -
+           5        0.270      54.07   dev          -       3.82  gdn_kkt_solve  head_k=128  #585 -
+           5        0.270      54.01   dev          -       3.95  gdn_kkt_solve  head_k=128  #1075 -
+           5        0.270      54.00   dev          -       3.77  gdn_kkt_solve  head_k=128  #865 -
+           5        0.270      53.91   dev          -       3.86  gdn_kkt_solve  head_k=128  #882 -
+           5        0.270      53.91   dev          -       3.81  gdn_kkt_solve  head_k=128  #532 -
+           5        0.269      53.90   dev          -       3.90  gdn_kkt_solve  head_k=128  #375 -
+           5        0.269      53.89   dev          -       3.81  gdn_kkt_solve  head_k=128  #795 -
+           5        0.269      53.86   dev          -       3.82  gdn_kkt_solve  head_k=128  #935 -
+           5        0.269      53.86   dev          -       3.82  gdn_kkt_solve  head_k=128  #1022 -
+           5        0.269      53.84   dev          -       3.89  gdn_kkt_solve  head_k=128  #252 -
+           5        0.269      53.78   dev          -       3.84  gdn_kkt_solve  head_k=128  #445 -
+           5        0.269      53.74   dev          -       3.86  gdn_kkt_solve  head_k=128  #672 -
+           5        0.268      53.67   dev          -       3.79  gdn_kkt_solve  head_k=128  #288 -
+           5        0.268      53.59   dev          -       3.99  gdn_kkt_solve  head_k=128  #1005 -
+           5        0.268      53.54   dev          -       3.83  gdn_kkt_solve  head_k=128  #638 -
+           5        0.268      53.53   dev          -       3.88  gdn_kkt_solve  head_k=128  #988 -
+           5        0.267      53.50   dev          -       3.83  gdn_kkt_solve  head_k=128  #235 -
+           5        0.267      53.47   dev          -       3.86  gdn_kkt_solve  head_k=128  #918 -
+           5        0.267      53.46   dev          -       3.87  gdn_kkt_solve  head_k=128  #725 -
+           5        0.267      53.41   dev          -       3.83  gdn_kkt_solve  head_k=128  #568 -
+           5        0.267      53.39   dev          -       3.85  gdn_kkt_solve  head_k=128  #428 -
+           5        0.267      53.34   dev          -       3.82  gdn_kkt_solve  head_k=128  #358 -
+           5        0.267      53.34   dev          -       3.89  gdn_kkt_solve  head_k=128  #498 -
+           5        0.266      53.20   dev          -       3.99  gdn_kkt_solve  head_k=128  #1058 -
+           5        0.265      53.06   dev          -       3.82  gdn_kkt_solve  head_k=128  #778 -
+           5        0.264      52.75   dev          -       3.76  gdn_kkt_solve  head_k=128  #848 -
+           5        0.263      52.66   dev          -       3.72  gdn_kkt_solve  head_k=128  #708 -
+           5        0.263      52.60   dev          -       3.86  gdn_kkt_solve  head_k=128  #182 -
+           5        0.262      52.42   dev          -       3.73  gdn_kkt_solve  head_k=128  #112 -
+           5        0.261      52.23   dev          -       3.82  gdn_kkt_solve  head_k=128  #165 -
+           5        0.260      51.91   dev          -       3.72  gdn_kkt_solve  head_k=128  #218 -
+           5        0.258      51.68   dev          -       3.74  gdn_kkt_solve  head_k=128  #95 -
+           5        0.258      51.53   dev          -       3.74  gdn_kkt_solve  head_k=128  #148 -
+           5        0.252      50.41   dev          -       3.74  gdn_kkt_solve  head_k=128  #78 -
+           5        0.243      48.63   dev          -       3.64  gdn_kkt_solve  head_k=128  #42 -
+           5        0.240      47.93   dev          -       3.59  gdn_kkt_solve  head_k=128  #8 -
+           5        0.229      45.82   dev          -       3.54  gdn_kkt_solve  head_k=128  #25 -
+           1        0.198     198.28   dev          -       3.48  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #53 blk.2.ffn_gate_up.weight
+           1        0.198     198.00   dev          -       3.44  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #999 blk.56.ffn_gate_up.weight
+           1        0.198     197.56   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1086 blk.61.ffn_gate_up.weight
+           1        0.197     197.28   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1033 blk.58.ffn_gate_up.weight
+           1        0.197     197.08   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1103 blk.62.ffn_gate_up.weight
+           1        0.197     196.72   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1016 blk.57.ffn_gate_up.weight
+           1        0.196     196.24   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1069 blk.60.ffn_gate_up.weight
+           1        0.196     196.04   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1122 blk.63.ffn_gate_up.weight
+           1        0.195     194.52   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #1052 blk.59.ffn_gate_up.weight
+           1        0.192     192.12   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #142 blk.7.ffn_gate_up.weight
+           4        0.189      47.17   dev          -       4.02  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #341 blk.19.attn_k_norm.weight
+           4        0.188      46.97   dev          -       4.07  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #411 blk.23.attn_k_norm.weight
+           4        0.188      46.92   dev          -       4.01  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #271 blk.15.attn_k_norm.weight
+           4        0.188      46.89   dev          -       4.07  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #901 blk.51.attn_k_norm.weight
+           4        0.188      46.88   dev          -       4.05  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #481 blk.27.attn_k_norm.weight
+           4        0.187      46.86   dev          -       3.95  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #1111 blk.63.attn_k_norm.weight
+           4        0.187      46.76   dev          -       3.96  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #551 blk.31.attn_k_norm.weight
+           4        0.187      46.66   dev          -       4.07  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #761 blk.43.attn_k_norm.weight
+           4        0.187      46.66   dev          -       4.01  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #1041 blk.59.attn_k_norm.weight
+           4        0.187      46.65   dev          -       3.93  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #621 blk.35.attn_k_norm.weight
+           4        0.187      46.65   dev          -       4.02  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #831 blk.47.attn_k_norm.weight
+           4        0.187      46.63   dev          -       4.06  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #971 blk.55.attn_k_norm.weight
+           4        0.185      46.28   dev          -       3.96  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #691 blk.39.attn_k_norm.weight
+           4        0.178      44.54   dev          -       3.86  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #201 blk.11.attn_k_norm.weight
+           4        0.178      44.48   dev          -       3.90  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #131 blk.7.attn_k_norm.weight
+           4        0.168      42.06   dev          -       3.81  rmsnorm  n=256 eps=1e-06 wadd=1 dtype=bf16  #61 blk.3.attn_k_norm.weight
+           1        0.166     165.96   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #106 blk.5.ffn_gate_up.weight
+           1        0.165     165.40   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #89 blk.4.ffn_gate_up.weight
+           1        0.165     165.32   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #123 blk.6.ffn_gate_up.weight
+           1        0.165     165.28   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #72 blk.3.ffn_gate_up.weight
+           1        0.165     165.00   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #596 blk.33.ffn_gate_up.weight
+           1        0.164     164.08   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #19 blk.0.ffn_gate_up.weight
+           1        0.164     164.00   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #403 blk.22.ffn_gate_up.weight
+           1        0.163     163.44   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #36 blk.1.ffn_gate_up.weight
+           1        0.163     163.28   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #473 blk.26.ffn_gate_up.weight
+           1        0.163     163.24   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #299 blk.16.ffn_gate_up.weight
+           1        0.163     163.04   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #352 blk.19.ffn_gate_up.weight
+           1        0.163     162.96   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #509 blk.28.ffn_gate_up.weight
+           1        0.163     162.88   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #316 blk.17.ffn_gate_up.weight
+           1        0.163     162.80   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #439 blk.24.ffn_gate_up.weight
+           1        0.163     162.80   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #526 blk.29.ffn_gate_up.weight
+           1        0.163     162.68   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #613 blk.34.ffn_gate_up.weight
+           1        0.163     162.64   dev          -       3.56  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #823 blk.46.ffn_gate_up.weight
+           1        0.163     162.56   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #543 blk.30.ffn_gate_up.weight
+           1        0.163     162.52   dev          -       3.52  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #683 blk.38.ffn_gate_up.weight
+           1        0.162     162.40   dev          -       3.56  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #333 blk.18.ffn_gate_up.weight
+           1        0.162     162.36   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #492 blk.27.ffn_gate_up.weight
+           1        0.162     162.24   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #982 blk.55.ffn_gate_up.weight
+           1        0.162     162.20   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #772 blk.43.ffn_gate_up.weight
+           1        0.162     162.20   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #562 blk.31.ffn_gate_up.weight
+           1        0.162     162.16   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #946 blk.53.ffn_gate_up.weight
+           1        0.162     162.12   dev          -       3.44  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #579 blk.32.ffn_gate_up.weight
+           1        0.162     162.08   dev          -       3.52  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #666 blk.37.ffn_gate_up.weight
+           1        0.162     162.08   dev          -       3.60  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #649 blk.36.ffn_gate_up.weight
+           1        0.162     161.96   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #369 blk.20.ffn_gate_up.weight
+           1        0.162     161.84   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #842 blk.47.ffn_gate_up.weight
+           1        0.162     161.80   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #963 blk.54.ffn_gate_up.weight
+           1        0.162     161.76   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #456 blk.25.ffn_gate_up.weight
+           1        0.162     161.76   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #719 blk.40.ffn_gate_up.weight
+           1        0.162     161.72   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #422 blk.23.ffn_gate_up.weight
+           1        0.162     161.72   dev          -       3.52  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #893 blk.50.ffn_gate_up.weight
+           1        0.162     161.64   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #912 blk.51.ffn_gate_up.weight
+           1        0.162     161.60   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #859 blk.48.ffn_gate_up.weight
+           1        0.161     161.48   dev          -       3.20  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #632 blk.35.ffn_gate_up.weight
+           1        0.161     161.44   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #876 blk.49.ffn_gate_up.weight
+           1        0.161     161.40   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #929 blk.52.ffn_gate_up.weight
+           1        0.161     161.28   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #789 blk.44.ffn_gate_up.weight
+           1        0.161     161.28   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #806 blk.45.ffn_gate_up.weight
+           1        0.161     161.24   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #386 blk.21.ffn_gate_up.weight
+           1        0.161     161.04   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #736 blk.41.ffn_gate_up.weight
+           1        0.161     161.00   dev          -       3.32  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #753 blk.42.ffn_gate_up.weight
+           1        0.161     160.56   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #702 blk.39.ffn_gate_up.weight
+           1        0.157     157.44   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #159 blk.8.ffn_gate_up.weight
+           1        0.157     157.36   dev          -       3.24  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #176 blk.9.ffn_gate_up.weight
+           1        0.157     157.04   dev          -       3.44  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #212 blk.11.ffn_gate_up.weight
+           1        0.157     156.96   dev          -       3.68  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #193 blk.10.ffn_gate_up.weight
+           1        0.156     156.36   dev          -       3.40  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #229 blk.12.ffn_gate_up.weight
+           1        0.156     155.52   dev          -       3.20  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #246 blk.13.ffn_gate_up.weight
+           1        0.155     155.28   dev          -       3.36  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #282 blk.15.ffn_gate_up.weight
+           1        0.155     155.00   dev          -       3.28  gemm_nt_q_gated  N=34816 K=5120 group=128 dtype=i8a8h act=silu  #263 blk.14.ffn_gate_up.weight
+           4        0.117      29.16   dev          -       4.06  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #275 -
+           4        0.117      29.14   dev          -       4.07  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #485 -
+           4        0.117      29.13   dev          -       4.17  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #345 -
+           4        0.116      29.10   dev          -       4.04  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #1115 -
+           4        0.116      29.08   dev          -       4.02  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #415 -
+           4        0.116      29.06   dev          -       3.92  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #555 -
+           4        0.116      29.05   dev          -       3.99  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #905 -
+           4        0.116      29.03   dev          -       3.95  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #625 -
+           4        0.116      29.02   dev          -       4.00  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #835 -
+           4        0.116      29.00   dev          -       3.92  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #1045 -
+           4        0.115      28.85   dev          -       3.94  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #765 -
+           4        0.115      28.67   dev          -       4.02  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #975 -
+           4        0.114      28.48   dev          -       3.94  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #695 -
+           4        0.114      28.46   dev          -       3.89  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #205 -
+           4        0.112      28.04   dev          -       3.88  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #135 -
+           4        0.111      27.67   dev          -       3.79  kv_store  head_dim=256 n_head_kv=4 block_size=16 kv_dtype=bf16  #65 -
+           4        0.080      20.11   dev          -       4.12  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #343 -
+           4        0.080      20.05   dev          -       4.01  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #483 -
+           4        0.080      19.96   dev          -       4.08  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #273 -
+           4        0.080      19.96   dev          -       4.07  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #903 -
+           4        0.080      19.95   dev          -       4.03  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #413 -
+           4        0.080      19.90   dev          -       3.97  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #1113 -
+           4        0.079      19.84   dev          -       4.00  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #833 -
+           4        0.079      19.79   dev          -       4.08  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #973 -
+           4        0.079      19.75   dev          -       3.97  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #623 -
+           4        0.079      19.73   dev          -       4.00  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #553 -
+           4        0.079      19.69   dev          -       3.97  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #763 -
+           4        0.079      19.68   dev          -       3.99  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #1043 -
+           4        0.078      19.57   dev          -       3.96  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #693 -
+           4        0.076      18.88   dev          -       3.88  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #133 -
+           4        0.075      18.85   dev          -       3.87  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #203 -
+           4        0.071      17.82   dev          -       3.72  rope  head_dim=256 n_head=4 n_head_kv=0 theta=1e+07 scale=1 mode=imrope rotary_dim=64 sections=11 11 10  #63 -
+           1        0.010      10.16   dev          -       3.24  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #836 blk.47.attn_q_norm.weight
+           1        0.008       8.36   dev          -       3.56  rope_table  rot=64 theta=1e+07 scale=1 dtype=f32  #3 -
+           1        0.008       8.36   dev          -       3.32  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #66 blk.3.attn_q_norm.weight
+           1        0.008       8.00   dev          -       3.48  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #276 blk.15.attn_q_norm.weight
+           1        0.008       7.84   dev          -       3.36  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #1046 blk.59.attn_q_norm.weight
+           1        0.008       7.80   dev          -       3.44  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #1116 blk.63.attn_q_norm.weight
+           1        0.008       7.80   dev          -       3.68  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #486 blk.27.attn_q_norm.weight
+           1        0.008       7.80   dev          -       3.36  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #416 blk.23.attn_q_norm.weight
+           1        0.008       7.80   dev          -       3.40  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #136 blk.7.attn_q_norm.weight
+           1        0.008       7.80   dev          -       3.24  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #626 blk.35.attn_q_norm.weight
+           1        0.008       7.76   dev          -       3.52  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #206 blk.11.attn_q_norm.weight
+           1        0.008       7.72   dev          -       3.28  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #346 blk.19.attn_q_norm.weight
+           1        0.008       7.60   dev          -       3.24  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #556 blk.31.attn_q_norm.weight
+           1        0.008       7.52   dev          -       3.32  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #906 blk.51.attn_q_norm.weight
+           1        0.008       7.52   dev          -       3.40  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #976 blk.55.attn_q_norm.weight
+           1        0.008       7.52   dev          -       3.32  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #696 blk.39.attn_q_norm.weight
+           1        0.007       7.40   dev          -       3.44  qk_norm_rope_gate_kv_store  head_dim=256 n_head=24 n_head_kv=4 rot=64 q_dtype=bf16 eps=1e-06 wadd=1 cs_f32=1 block_size=16 kv_dtype=bf16  #766 blk.43.attn_q_norm.weight
+           1        0.007       6.92   dev          -       3.24  gather_rows  n=5120 dtype=bf16  #1126 -
+       total     3179.731   (waited 62.052 ms besides)
+

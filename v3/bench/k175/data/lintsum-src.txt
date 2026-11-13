@@ -1,0 +1,269 @@
+lint/10-v:
+cache
+cc
+obj
+src
+
+lint/714-v:
+cache
+cc
+obj
+src
+## lint0/10-base/src
+exl3dense__embed_tq                                          PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense                                         PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense_linear                                  PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass                                         NO_KERNELS   kernels    0  E    0  W   0
+exl3i__exl3i_a4_gemm                                         PASS         kernels    2  E    0  W   1
+exl3i__exl3i_a4_prep                                         FAIL         kernels   13  E    8  W   0
+exl3i__exl3i_a8_gemm                                         PASS         kernels    1  E    0  W   1
+exl3i__exl3i_a8_prep                                         FAIL         kernels   42  E   24  W  11
+exl3i__exl3i_gpu_test                                        FAIL         kernels   33  E   12  W   0
+exl3i__exl3i_nt_cb0                                          FAIL         kernels  112  E  174  W   0
+exl3i__exl3i_nt_cb1                                          FAIL         kernels  112  E  218  W   0
+exl3i__exl3i_nt_cb2                                          FAIL         kernels  112  E  682  W  10
+exl3i__test_a4                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_aq                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_ks                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_r16                                              NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_twopass                                          NO_KERNELS   kernels    0  E    0  W   0
+exl3r4d__exl3r4d_nt                                          FAIL         kernels   42  E   61  W   0
+
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:410                 n  124 kernels  47 units 2  ins {'s_mul_u64': 37, 's_lshl_b64': 29, 's_add_nc_u64': 29}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi2ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:422                 n   91 kernels  91 units 3  ins {'s_or_b32': 91}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: s_or_b32 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:424                 n   91 kernels  91 units 3  ins {'v_cmp_ne_u32_e32': 91}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: v_cmp_ne_u32_e32 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:308           n   78 kernels  78 units 7  ins {'v_pk_mul_lo_u16': 78}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi1ELi0EEEv9Exl3iGemm: v_pk_mul_lo_u16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:109               n   78 kernels  78 units 2  ins {'v_pk_mad_u16': 78}
+        e.g. _Z17exl3i_wdec_kernelI8RateFracILi2ELi0EEEv9Exl3iGemm: v_pk_mad_u16 reads s4 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:415                 n   73 kernels  73 units 3  ins {'s_or_b32': 73}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: s_or_b32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:71                n   72 kernels  66 units 3  ins {'v_pk_mad_i16': 72}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi4ELi2EEEv9Exl3iGemm: v_pk_mad_i16 reads s1, s8 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:315           n   55 kernels  55 units 7  ins {'v_mad_u32_u16': 55}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi1ELi1ELb0ELi1ELb0ELb0E...: v_mad_u32_u16 reads s11 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:638           n   46 kernels  46 units 4  ins {'s_cmp_lg_u32': 46}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi4ELi1ELb0ELi1ELb0ELb0E...: s_cmp_lg_u32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:74                n   44 kernels  44 units 1  ins {'v_pk_min_i16': 44}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_min_i16 reads s15 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:500           n   35 kernels  17 units 2  ins {'s_and_b32': 15, 's_cmp_lg_u32': 9, 'v_add_nc_u32_e32': 9}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi1ELi1ELb0ELi1ELb0ELb0E...: s_mul_i32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:512           n   34 kernels  34 units 4  ins {'s_cmp_eq_u32': 34}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi4ELi1ELb0ELi1ELb0ELb0E...: s_cmp_eq_u32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:72                n   28 kernels  28 units 2  ins {'v_pk_ashrrev_i16': 28}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_ashrrev_i16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:309           n   28 kernels  28 units 5  ins {'v_pk_mul_lo_u16': 28}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi8ELi0EEEv9Exl3iGemm: v_pk_mul_lo_u16 reads s3 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:418           n   28 kernels  28 units 3  ins {'v_cndmask_b32_e64': 28}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi4ELi1ELb0ELi1ELb0ELb0E...: v_cndmask_b32_e64 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:316           n   28 kernels  28 units 3  ins {'v_mad_u32_u16': 28}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: v_mad_u32_u16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:368           n   21 kernels  21 units 2  ins {'v_pk_fma_f16': 21}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:88            n   20 kernels  10 units 1  ins {'s_and_b32': 10, 's_cmp_lg_u32': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi2ELi1ELb0ELi1ELb0ELb0E...: s_and_b32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           amd_warp_functions.h:156           n   19 kernels  19 units 3  ins {'v_cndmask_b32_e64': 19}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb0ELb1E...: v_cndmask_b32_e64 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:416                 n   18 kernels  18 units 2  ins {'s_or_b32': 18}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb1E...: s_or_b32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:381                 n   18 kernels  12 units 1  ins {'s_mul_i32': 18}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi2ELi1ELb0ELi1ELb1ELb1E...: s_mul_i32 reads s43 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:445           n   18 kernels   9 units 1  ins {'s_bcnt1_i32_b32': 9, 's_bitcmp0_b32': 9}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_bcnt1_i32_b32 reads s12 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:509           n   16 kernels  16 units 1  ins {'s_cmp_lg_u32': 16}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_cmp_lg_u32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:419           n   15 kernels  15 units 2  ins {'v_cndmask_b32_e64': 15}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi4ELi1ELb0ELi1ELb0ELb0E...: v_cndmask_b32_e64 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:296               n   14 kernels  14 units 1  ins {'v_pk_fma_f16': 14}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:377                 n   13 kernels  13 units 1  ins {'s_cmp_le_u32': 13}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi2ELi1ELb0ELi1ELb0ELb0E...: s_cmp_le_u32 reads s39 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:505           n   12 kernels  12 units 3  ins {'v_lshl_add_u32': 12}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi4ELi1ELb0ELi1ELb0ELb0E...: v_lshl_add_u32 reads s6 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:384               n   11 kernels  11 units 2  ins {'v_pk_fma_f16': 11}
+        e.g. _Z20exl3i_gemm_nt_kernelI8RateFracILi0ELi0EELi1ELi1ELb0ELi1ELb0ELb0...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           __clang_hip_math.h:450             n   10 kernels  10 units 1  ins {'s_bcnt1_i32_b32': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_bcnt1_i32_b32 reads s13 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:387                 n    8 kernels   8 units 3  ins {'v_cndmask_b32_e64': 8}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi2ELi1ELb0ELi1ELb0ELb1E...: v_cndmask_b32_e64 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:705           n    8 kernels   8 units 1  ins {'v_add3_u32': 8}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi2ELi1ELb0ELi1ELb0ELb0E...: v_add3_u32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:721           n    8 kernels   8 units 1  ins {'s_and_b32': 8}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi4ELi1ELb0ELi1ELb0ELb0E...: s_and_b32 reads s12 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:173               n    4 kernels   4 units 1  ins {'v_pk_lshrrev_b16': 4}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi1ELi1EEEv11Exl3iA8Args: v_pk_lshrrev_b16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:167               n    3 kernels   3 units 1  ins {'v_pk_mad_u16': 3}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi4ELi2EEEv11Exl3iA8Args: v_pk_mad_u16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:110           n    2 kernels   2 units 1  ins {'s_and_b32': 2}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi4ELi1EELi1ELi1ELb0ELi1ELb0ELb0E...: s_and_b32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:730           n    2 kernels   2 units 1  ins {'v_add3_u32': 2}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi8ELi2EELi2ELi1ELb0ELi1ELb0ELb0E...: v_add3_u32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:174               n    1 kernels   1 units 1  ins {'v_pk_max_u16': 1}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi8ELi1EEEv11Exl3iA8Args: v_pk_max_u16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:135               n    1 kernels   1 units 1  ins {'v_pk_sub_u16': 1}
+        e.g. _Z5k_decI7RateIntILi2ELi1EEEvPKjiPt: v_pk_sub_u16 reads s4 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:141                 n    1 kernels   1 units 1  ins {'v_cndmask_b32_e64': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi3ELi0EELi2ELi1ELb0ELi1ELb1ELb1E...: v_cndmask_b32_e64 reads s2 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:433           n    1 kernels   1 units 1  ins {'v_add3_u32': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi1ELi1ELb0ELi1ELb0ELb0E...: v_add3_u32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:229                 n    1 kernels   1 units 1  ins {'v_cndmask_b32_e64': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi3ELi2EELi2ELi1ELb0ELi1ELb1ELb1E...: v_cndmask_b32_e64 reads s2 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:431                 n    1 kernels   1 units 1  ins {'s_add_nc_u64': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI8RateFracILi2ELi2EELi1ELi1ELb0ELi1ELb1ELb0...: s_add_nc_u64 reads s16, s17 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+review  ALU_WAIT_TTMP              exl3i_nt.hip.h:410                 n   10 kernels  10 units 1  ins {'s_mul_u64': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions), and the compiler emits no s_wait_alu depctr_sa_sdst(0) here: a scalar read of a ttmp register lies in between, 
+review  REGISTER_SPILL             ?:?                                n   13 kernels  13 units 3  ins {'': 13}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 1 VGPR / 0 SGPR spills to scratch (8 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint0/714-base/src
+exl3dense__embed_tq                                          PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense                                         PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense_linear                                  PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass                                         NO_KERNELS   kernels    0  E    0  W   0
+exl3i__exl3i_a4_gemm                                         PASS         kernels    2  E    0  W   1
+exl3i__exl3i_a4_prep                                         FAIL         kernels   13  E    9  W   0
+exl3i__exl3i_a8_gemm                                         PASS         kernels    1  E    0  W   1
+exl3i__exl3i_a8_prep                                         FAIL         kernels   42  E   34  W  11
+exl3i__exl3i_gpu_test                                        FAIL         kernels   33  E   11  W   0
+exl3i__exl3i_nt_cb0                                          FAIL         kernels  112  E  171  W   0
+exl3i__exl3i_nt_cb1                                          FAIL         kernels  112  E  192  W   0
+exl3i__exl3i_nt_cb2                                          FAIL         kernels  112  E  622  W  10
+exl3i__test_a4                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_aq                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_ks                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_r16                                              NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_twopass                                          NO_KERNELS   kernels    0  E    0  W   0
+exl3r4d__exl3r4d_nt                                          FAIL         kernels   42  E   48  W   0
+
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:410                 n  124 kernels  47 units 2  ins {'s_mul_u64': 37, 's_lshl_b64': 29, 's_add_nc_u64': 29}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi2ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:730           n  105 kernels 105 units 4  ins {'s_or_b32': 105}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb0ELb0E...: s_or_b32 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:422                 n   91 kernels  91 units 3  ins {'s_or_b32': 91}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: s_or_b32 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:424                 n   91 kernels  91 units 3  ins {'v_cmp_ne_u32_e32': 91}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: v_cmp_ne_u32_e32 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:109               n   83 kernels  83 units 2  ins {'v_pk_mad_u16': 83}
+        e.g. _Z17exl3i_wdec_kernelI8RateFracILi2ELi0EEEv9Exl3iGemm: v_pk_mad_u16 reads s4 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:308           n   77 kernels  77 units 7  ins {'v_pk_mul_lo_u16': 77}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi1ELi0EEEv9Exl3iGemm: v_pk_mul_lo_u16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:415                 n   73 kernels  73 units 3  ins {'s_or_b32': 73}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb0E...: s_or_b32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:500           n   64 kernels  53 units 3  ins {'s_and_not1_b32': 44, 'v_add_nc_u32_e32': 10, 's_and_b32': 9}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi1ELi1ELb0ELi1ELb0ELb0E...: s_and_not1_b32 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:71                n   58 kernels  58 units 3  ins {'v_pk_mad_i16': 58}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi4ELi2EEEv9Exl3iGemm: v_pk_mad_i16 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:72                n   55 kernels  55 units 2  ins {'v_pk_ashrrev_i16': 55}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_ashrrev_i16 reads s1 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:74                n   38 kernels  38 units 2  ins {'v_pk_min_i16': 38}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_min_i16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:315           n   33 kernels  33 units 6  ins {'v_mad_u32_u16': 33}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi3ELi0EELi4ELi1ELb0ELi1ELb0ELb0E...: v_mad_u32_u16 reads s9 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:368           n   28 kernels  28 units 2  ins {'v_pk_fma_f16': 28}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:309           n   22 kernels  22 units 5  ins {'v_pk_mul_lo_u16': 22}
+        e.g. _Z17exl3i_wdec_kernelI7RateIntILi8ELi0EEEv9Exl3iGemm: v_pk_mul_lo_u16 reads s3 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:416                 n   18 kernels  18 units 2  ins {'s_or_b32': 18}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi0EELi2ELi1ELb0ELi1ELb1ELb1E...: s_or_b32 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:445           n   18 kernels   9 units 1  ins {'s_bcnt1_i32_b32': 9, 's_bitcmp0_b32': 9}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_bcnt1_i32_b32 reads s12 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:296               n   14 kernels  14 units 1  ins {'v_pk_fma_f16': 14}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi1EELi1ELi1ELb0ELi1ELb0ELb0E...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:381                 n   13 kernels   8 units 1  ins {'s_mul_i32': 13}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi4ELi1ELb0ELi1ELb1ELb0E...: s_mul_i32 reads s43 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:384               n   12 kernels  12 units 2  ins {'v_pk_fma_f16': 12}
+        e.g. _Z20exl3i_gemm_nt_kernelI8RateFracILi0ELi0EELi1ELi1ELb0ELi1ELb0ELb0...: v_pk_fma_f16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:377                 n   11 kernels  11 units 1  ins {'s_cmp_le_u32': 11}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_cmp_le_u32 reads s39 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           __clang_hip_math.h:450             n   10 kernels  10 units 1  ins {'s_bcnt1_i32_b32': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_bcnt1_i32_b32 reads s13 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:721           n   10 kernels  10 units 1  ins {'s_and_b32': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi4ELi1ELb0ELi1ELb0ELb0E...: s_and_b32 reads s12 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:316           n    9 kernels   9 units 4  ins {'v_mad_u32_u16': 9}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi6ELi1EELi2ELi1ELb0ELi1ELb1ELb0E...: v_mad_u32_u16 reads s5 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_a8_prep.hip:375              n    8 kernels   8 units 1  ins {'s_and_not1_b32': 8}
+        e.g. _Z21exl3i_a8_gemmd_kernelI7RateIntILi1ELi1EEEvN9exl3i_8a84TileE11Ex...: s_and_not1_b32 reads s57 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3r4d_common.hip.h:513           n    8 kernels   8 units 1  ins {'s_add_co_i32': 8}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb0ELb0E...: s_add_co_i32 reads s6 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:173               n    4 kernels   4 units 1  ins {'v_pk_lshrrev_b16': 4}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi1ELi1EEEv11Exl3iA8Args: v_pk_lshrrev_b16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:167               n    3 kernels   3 units 1  ins {'v_pk_mad_u16': 3}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi4ELi2EEEv11Exl3iA8Args: v_pk_mad_u16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:135               n    2 kernels   2 units 1  ins {'v_pk_sub_u16': 2}
+        e.g. _Z5k_decI7RateIntILi2ELi1EEEvPKjiPt: v_pk_sub_u16 reads s4 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:174               n    1 kernels   1 units 1  ins {'v_pk_max_u16': 1}
+        e.g. _Z21exl3i_a8_wdec8_kernelI7RateIntILi8ELi1EEEv11Exl3iA8Args: v_pk_max_u16 reads s0 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:374               n    1 kernels   1 units 1  ins {'s_and_not1_b32': 1}
+        e.g. _Z21exl3i_a8_gemmd_kernelI8RateFracILi1ELi1EEEvN9exl3i_8a84TileE11E...: s_and_not1_b32 reads s59 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_rate.hip.h:373               n    1 kernels   1 units 1  ins {'s_and_not1_b32': 1}
+        e.g. _Z21exl3i_a8_gemmd_kernelI8RateFracILi1ELi0EEEvN9exl3i_8a84TileE11E...: s_and_not1_b32 reads s59 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:380                 n    1 kernels   1 units 1  ins {'s_cmp_lt_u32': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi7ELi2EELi2ELi1ELb0ELi1ELb0ELb0E...: s_cmp_lt_u32 reads s35 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:431                 n    1 kernels   1 units 1  ins {'s_add_nc_u64': 1}
+        e.g. _Z20exl3i_gemm_nt_kernelI8RateFracILi2ELi2EELi1ELi1ELb0ELi1ELb1ELb0...: s_add_nc_u64 reads s16, s17 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_sa_sdst(0) before it
+review  ALU_WAIT_TTMP              exl3i_nt.hip.h:410                 n   10 kernels  10 units 1  ins {'s_mul_u64': 10}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi1ELi2EELi1ELi1ELb0ELi1ELb1ELb0E...: s_mul_u64 reads s31 before the last write to it is committed (the SGPR pair is read by vector instructions), and the compiler emits no s_wait_alu depctr_sa_sdst(0) here: a scalar read of a ttmp register lies in between, 
+review  REGISTER_SPILL             ?:?                                n   13 kernels  13 units 3  ins {'': 13}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 3 VGPR / 0 SGPR spills to scratch (16 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint/10-v/src
+exl3dense__embed_tq                                          PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense                                         PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense_linear                                  PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass                                         NO_KERNELS   kernels    0  E    0  W   0
+exl3i__exl3i_a4_gemm                                         PASS         kernels    2  E    0  W   1
+exl3i__exl3i_a4_prep                                         PASS         kernels   13  E    0  W   0
+exl3i__exl3i_a8_gemm                                         PASS         kernels    1  E    0  W   1
+exl3i__exl3i_a8_prep                                         PASS         kernels   42  E    0  W  12
+exl3i__exl3i_gpu_test                                        PASS         kernels   33  E    0  W   0
+exl3i__exl3i_nt_cb0                                          FAIL         kernels  112  E    1  W   0
+exl3i__exl3i_nt_cb1                                          PASS         kernels  112  E    0  W   0
+exl3i__exl3i_nt_cb2                                          FAIL         kernels  112  E    1  W   0
+exl3i__test_a4                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_aq                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_ks                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_r16                                              NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_twopass                                          NO_KERNELS   kernels    0  E    0  W   0
+exl3r4d__exl3r4d_nt                                          PASS         kernels   42  E    0  W   0
+
+error   MISSING_ALU_WAIT           exl3i_nt.hip.h:229                 n    2 kernels   2 units 2  ins {'v_cndmask_b32_e64': 2}
+        e.g. _Z20exl3i_gemm_nt_kernelI7RateIntILi3ELi0EELi2ELi1ELb0ELi1ELb1ELb1E...: v_cndmask_b32_e64 reads s2 before the last write to it is committed (the SGPR pair is read by vector instructions); insert s_wait_alu depctr_va_sdst(0) before it
+review  ALU_WAIT_TTMP              exl3i_a8_prep.hip:371              n    1 kernels   1 units 1  ins {'v_add_co_ci_u32_e64': 1}
+        e.g. _Z21exl3i_a8_gemmd_kernelI7RateIntILi1ELi1EEEvN9exl3i_8a84TileE11Ex...: v_add_co_ci_u32_e64 reads s40 before the last write to it is committed (the SGPR pair is read by vector instructions), and the compiler emits no s_wait_alu depctr_va_sdst(0) here: a scalar read of a ttmp register lies in
+review  REGISTER_SPILL             ?:?                                n   13 kernels  13 units 3  ins {'': 13}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 1 VGPR / 0 SGPR spills to scratch (8 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+
+## lint/714-v/src
+exl3dense__embed_tq                                          PASS         kernels    1  E    0  W   0
+exl3dense__exl3dense                                         PASS         kernels    1  E    0  W   1
+exl3dense__exl3dense_linear                                  PASS         kernels    6  E    0  W   0
+exl3i__bench_twopass                                         NO_KERNELS   kernels    0  E    0  W   0
+exl3i__exl3i_a4_gemm                                         PASS         kernels    2  E    0  W   1
+exl3i__exl3i_a4_prep                                         PASS         kernels   13  E    0  W   0
+exl3i__exl3i_a8_gemm                                         PASS         kernels    1  E    0  W   1
+exl3i__exl3i_a8_prep                                         PASS         kernels   42  E    0  W  11
+exl3i__exl3i_gpu_test                                        PASS         kernels   33  E    0  W   0
+exl3i__exl3i_nt_cb0                                          PASS         kernels  112  E    0  W   0
+exl3i__exl3i_nt_cb1                                          PASS         kernels  112  E    0  W   0
+exl3i__exl3i_nt_cb2                                          PASS         kernels  112  E    0  W   0
+exl3i__test_a4                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_aq                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_ks                                               NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_r16                                              NO_KERNELS   kernels    0  E    0  W   0
+exl3i__test_twopass                                          NO_KERNELS   kernels    0  E    0  W   0
+exl3r4d__exl3r4d_nt                                          PASS         kernels   42  E    0  W   0
+
+review  REGISTER_SPILL             ?:?                                n   13 kernels  13 units 3  ins {'': 13}
+        e.g. _Z20exl3i_a4_gemm_kernelILj128EEvN9exl3i_4a44TileE: 3 VGPR / 0 SGPR spills to scratch (16 bytes per lane)
+review  SCRATCH_USE                ?:?                                n    1 kernels   1 units 1  ins {'': 1}
+        e.g. _ZN16exl3dense_kernel19exl3_dequant_kernelEPKhxPKtS3_S3_Ptxxii: 528 bytes of scratch per lane without spills: a private array the compiler could not keep in registers (dynamic index?)
+

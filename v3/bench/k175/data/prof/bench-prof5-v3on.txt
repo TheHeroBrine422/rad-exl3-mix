@@ -1,0 +1,5 @@
+req 0: prompt 8202 tokens, 3.396 s
+req 1: prompt 8203 tokens, 3.400 s
+req 2: prompt 8202 tokens, 3.406 s
+req 3: prompt 8200 tokens, 3.410 s
+req 4: prompt 8199 tokens, 3.413 s

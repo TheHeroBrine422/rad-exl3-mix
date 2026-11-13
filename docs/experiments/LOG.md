@@ -4,6 +4,45 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 1:15 PM CST · #175 · Kernel profiling pass on box2 (w137): FUSE's ROCm 7.14 hang found (clang 23 splits the claim loop around thread 0) and fixed, FUSE on by default; radisa lint 1,404 / 1,130 errors → 0; **the 8k prefill gap to IQR-V4 S is in no op: both run at the 210 W cap** (V3 +5% energy a prefill) — stopped after the profile
+- **Status:** step 0 done; step 1 profile done, **stopped and reported (gap somewhere unexpected)**; no step-2 kernel
+  change · **Machine:** box2 (cards 0 / 1 / 3 under their locks, ~1.5 card-h; CPU for builds / lint / audit) · **Code:**
+  fork `qc-exl3-v3-perf` = `qc-exl3-v3` **3055e75** (5273e01 asm literals, e776f32 FUSE loop + default on + tests,
+  3055e75 PERF.md); `v3/bench/k175/` (README) · **Data:** `v3/bench/k175/data/`, box2 `/data/q27/w137/` · **Brief:**
+  `rad-local/workers/instr3/w137.md` + lead note 10:35 AM CST (FUSE default-on)
+- **Lint** (`radisa check`, source + object mode, every exl3i / exl3dense / exl3r4d unit, ROCm 10.1 VOPD clang and pip
+  ROCm 7.14.1): MISSING_ALU_WAIT 1,404 / 1,130 errors in 370 / 378 kernels, all from inline asm passing constants as
+  `"s"` operands (LLVM's GFX12 SGPR hazard pass does not see an asm's SGPR read) and the SALU sites downstream.
+  Fix 5273e01: the constants in the asm text → **0 errors** on both; same bits (asmlit, 2^26 inputs a form); no
+  measurable cost (wdec8 / decode ±0.4%, GEMM object byte-identical, e2e base − fix −74 / +4 / +12 ms). Left: review-only
+  REGISTER_SPILL (26 kernels) and one SCRATCH_USE (exl3dense dequant). `run.sh` audit of the whole staged build and our
+  plugins, both toolchains: 0 errors, every byte decodes, INCOMPLETE only in stock `sam_attn*` / `couple_verify`.
+- **FUSE hang:** not the lint's hazards (the lint-clean build still hung). From the ISA: clang 23 turned the claim loop's
+  two `if (tid == 0)` blocks into an outer loop for thread 0 and an inner loop (from the first barrier) for every other
+  thread; thread 0's release + next claim waited for the inner loop to end, which only thread 0 could end → the block
+  decoded one strip forever. clang 24 keeps one loop. Fix e776f32: wave-uniform branches (wave 0 claims / releases with
+  all lanes, lane 0 adds 1; `readfirstlane`). `test_twopass` with FUSE PASS on 7.14 (25 s; hung before) and 10.1; all
+  gpu ctests PASS on both; **whole-model KLD rows byte-identical** to today's kernels (0.285753, golden-search27c-c,
+  K4.125 A8) for 7.14 / 10.1 × FUSE off / on / the final default. **FUSE is on by default everywhere** (`EXL3I_A8_FUSE=0`
+  off); e2e at 8k FUSE on vs off: 3,448 vs 3,451 ms (±0.1%: no gain on this card).
+- **8k prefill e2e** (card 0, rad10-perf binary, w138's #176 server, chat API, 2 interleaved rounds × 3 runs; the web
+  UI's tok/s): V3 K4.125 A8 + R16 K4 head 2,404 (today's kernels) / 2,390 (fix, FUSE off) / 2,396 (FUSE on); IQR-V4 S
+  2,529 (−5%). Decode C 1: V3 31.4–31.6 ms, IQR 25.4.
+- **Profile** (`--profile-ops`, one warm 8k prefill = servers after 5 − 1 prefills, / 4): V3's ops 3,338 ms vs IQR's
+  3,378: GEMM 2,683 / 2,775, act-quant 209 / 205, GDN 155 / 164, attention 203 / 213, norms 20 / 20, elementwise 67 /
+  0.5 (V3's separate residual adds and sigmoid; IQR folds them). **No op family carries the gap.** rocm-smi during
+  back-to-back 8k prefills (card 1): both at the cap — V3 212 W, sclk 1,865 MHz, 3.36 s; IQR 208 W, 1,760 MHz, 3.26 s —
+  so time follows energy (~712 vs ~677 J a prefill); profiling's syncs take the card off the cap (IQR 3.26 → 3.43 s
+  profiled, V3 3.44 → 3.38). Decode at C 1 is at the cap too (V3 208 W / 2,397 MHz / 33.5 ms; IQR 203 W / 2,431 MHz /
+  25.6 ms): there the gap is work (trellis decode ALU, w124), not clocks. No unprofiled per-kernel split: rocprofv3
+  breaks radiance's AQL backend, `RADIANCE_AQL_STAMP` doubles prefill time. Junction temperature drifts 64 → 71 °C over
+  back-to-back runs (first-after-idle ~2% faster): every A/B here is interleaved.
+- **For the lead:** (1) the prefill lever on box2 is energy per prefill, not a slow op: folding V3's residual adds /
+  sigmoid into norms (−67 ms of ops, IQR's way) and fewer passes over activations; on an uncapped card the profile says
+  V3 ≈ IQR. Whether to pursue that (step 2) is yours. (2) box2's `rad10-perf/home` still has 5c9956c's plugins (others
+  use it now); the fixed homes are `/data/q27/w137/b10d/home` (10.1) and `b714d/home` (7.14); adopt by rerunning
+  `radbuild-perf.sh` on 3055e75. (3) w144 reads `/data/q27/w137/prompts/` (kept).
+
 ### 2026-11-13 1:05 PM CST · #178 · GDN a/b quantized (mining A2): no arm has a measurable KL cost (calib part within ±0.24 %), the freed 0.007–0.009 bpw buy 0.8–1.4 % in the trunk → G (stock INT8 G128 FWHT128 GPTQ) and T4 (trellis i8 K4, padded) go to the menu; container census extended + hostd / final-pack gates (B2) (w142)
 - **Status:** done · **Machine:** ds8 (GPTQ / RTN on the CPU via libquant 11:36 AM–12:58 PM CST; trellis quant 4.5 card-min; 10 scores + 1 determinism rescore + 1 profiled serve, card locks beside w132 / w140 / w143) · **Code:** `search/v3/ab178/` (README) · **Rule:** `RULES-178.md` (9d59b5a, before any run) · **Data:** `data/ab178/` (README)
 - **Arms** (a/b only, 48 GDN layers, 23.6M weights, today bf16 = 0.01404 bpw), each a dequantized splice into the #171
