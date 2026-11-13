@@ -13,7 +13,10 @@ Loop (one pass a few seconds; never waits on one eval):
                log KLD + b (bpw - reference bpw), b = the size's current fit's local slope -d log KLD / d bpw (the
                model's knapsack optimum at size -/+ b_delta; CONF b_default before the first fit; updated each refit;
                recorded per candidate at submit, so the hosts' early stop and the decision use the same b). CONF
-               "size_adjust": false = raw KLD (the A/B's control arm). A result on a slice that is no longer active only feeds the fit ("stale"). Audit runs (a
+               "size_adjust": false = raw KLD (the A/B's control arm). RULES-picks (w145): every per-part sum is the CAPPED
+               statistic (b) (a document <= CONF cap 0.2 of its part's whole-slice incumbent KL; weights in the hosts'
+               early-stop rule too) and an accept also needs the per-document guard (c) (each part's size-adjusted mean
+               log(B_d / A_d) has the sign of its (b); CONF guard "docmean"); cap / guard null = the old rule. A result on a slice that is no longer active only feeds the fit ("stale"). Audit runs (a
                random audit_frac of the candidates are scored without early stop) are decided by the rule applied after
                the fact -- the same decision as a stopped run -- and log the early-stop bias (prefix vs whole-slice ratio)
   3 fit rows   every result is a row per slice part (w131, #171: labels "S|x|full" / "S|c|pre<k>", k = documents scored
@@ -21,16 +24,20 @@ Loop (one pass a few seconds; never waits on one eval):
                same documents as the label's anchor; SE = the part's paired delta-method SE
   4 refit      every refit_every results (and when the first rows exist): fit.py on all rows + CONF prior_obs, run
                through CONF fit_cmd (colo) as a background process; the driver keeps generating from the last model
-  5 rotate     when a size has decided rotate_after candidates on the active slice: the registry's next ready slice
-               becomes active and every incumbent is scored on it first (whole slice, no early stop)
+  5 rotate     when the active slice has decided rotate_after (25) candidates, all sizes together (CONF rotate_unit
+               "slice", w145 after w141's audit; "size" = the old rule: any one size reaching rotate_after): the
+               registry's next ready slice becomes active and every incumbent is scored on it first (whole slice, no
+               early stop)
   6 generate   while fewer than queue_depth evals are outstanding: the size with the fewest decisions in flight +
                done, a move kind by share (moves.kind_shares: V2's kind rewards), moves.generate inside the size's byte
                window [target - size_tol, target]; appended to the queue with the early-stop block (rule + the
                incumbent's per-document sums on the slice, in the golden's order)
   monitor      (CONF "monitor": {"name", "golden", "alert_min", "alert_frac"}): every accept (a band's new best) is also
                scored on the held-out monitor golden (ver3-8k: verify pool, whole, no early stop; never a fit row, never a
-               decision). ALERT ONLY (user 11-13: no pre-set N, no automatic stop): a size gets a soft alert when its
-               size-adjusted ver3 best has not improved by more than the paired SE over its last alert_frac (0.2) of its
+               decision). Each read vs the size's best so far: (b) capped and (c) per-document mean with paired
+               bootstrap CIs (pickstat.py; the "monitor" event's "stats", pooled (a) beside, never alone); "best" =
+               the lowest size-adjusted capped score (mon_score). ALERT ONLY (user 11-13: no pre-set N, no automatic
+               stop): a size gets a soft alert when its size-adjusted capped best has not improved by more than the paired SE over its last alert_frac (0.2) of its
                decisions, once it has >= alert_min (50); the user / lead ends a size by hand (touch ROOT/STOP-<size>).
                ROOT/monitor.json = the curves + alert state; ROOT/events.jsonl = convplot3 --events lines (alerts)
   7 report     ROOT/status.txt, ROOT/frontier.json (per release band [T - 0.5 gap below, T + 0.3 gap above]: every
@@ -79,6 +86,10 @@ class Driver:
         self.sizes = [float(s) for s in c["sizes"]]; self.tol = float(c.get("size_tol", 0.02))
         self.rule = dict(c.get("rule") or {"kind": "curve", "p": 2.0, "warmup": 0.05})     # the pre-registered pick (c17045c)
         if "warmup" in c: self.rule["warmup"] = float(c["warmup"])
+        # RULES-picks (w145): decisions on the capped statistic (b) (a document <= CONF cap of its part's incumbent KL;
+        # null = uncapped) with the per-document sign guard (c) (CONF guard "docmean"; null = off)
+        self.cap = c.get("cap", 0.2); g = c.get("guard", "docmean")
+        if g: self.rule["guard"] = g
         self.sizeadj = bool(c.get("size_adjust", True)); self.b = {}; self.alerts = {}; self.res_lines = 0
         self.rng = random.Random(c.get("seed", 0))
         # state
@@ -157,7 +168,7 @@ class Driver:
         bpw = self.M.bpw(a)
         if early and ref_tag:
             r = self.res[ref_tag]; off = bs * (bpw - self.sub[ref_tag]["bpw"])
-            line["early_stop"] = {"rule": dict(self.rule, off=off), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
+            line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name)), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
                                   "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
@@ -166,6 +177,13 @@ class Driver:
         if kind != "monitor": self.seen.add(h)
         return tag
 
+    def prule(self, rule, off, ref_docs, parts):
+        """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice)"""
+        r = dict(rule, off=off)
+        w = SR.cap_weights([x or 0.0 for x in ref_docs], parts, self.cap) if self.cap else None
+        if w is not None: r["w"] = w
+        return r
+
     def mscore(self, size, kld, bpw):
         """a band's size-adjusted score: log KLD + b (bpw - T) (raw log KLD when size_adjust is off)"""
         return math.log(kld) + self.b_of(size) * (bpw - size)
@@ -173,19 +191,41 @@ class Driver:
     def on_monitor(self, t, s, r):
         """the held-out curve of a size (alert-only: monitor_alert)"""
         size = s["size"]; bpw = self.sub[t]["bpw"]; mode = s.get("act", "f16")
-        prev = [m for m in self.mon[size] if m.get("act", "f16") == mode]     # one mode's reads only (w132)
-        best = min(prev, key=lambda m: self.mscore(size, m["kld"], m["bpw"])) if prev else None
-        se = imp = None
+        prev = [m for m in self.mon[size] if m.get("act", "f16") == mode and m["tag"] in self.res]     # one mode's reads only (w132)
+        best = min(prev, key=lambda m: self.mon_score(size, m)) if prev else None
+        se = imp = st = None
         if best is not None:
-            P = SR.Paired(len(r["docs"]), {"kind": "full", "off": self.b_of(size) * (bpw - best["bpw"])})
-            for a, b in zip(self.res[best["tag"]]["docs"], r["docs"]): P.add(a, b)
+            P = self.mon_paired(size, best, t, bpw)
             se, imp = P.se(), -P.da()
+            try:                                                            # RULES-picks: (b) and (c) with paired bootstrap CIs
+                import pickstat as PS
+                st = PS.compare(self.res[best["tag"]]["docs"], r["docs"], off=self.b_of(size) * (bpw - best["bpw"]), cap=self.cap or 1.0,
+                                boot=int((self.c.get("monitor") or {}).get("boot", PS.BOOT)))
+            except Exception as ex:                                         # noqa: BLE001 -- the monitor never stops the driver
+                self.log(f"monitor {size}: bootstrap failed ({ex!r})")
         e = {"ev": "monitor", "size": size, "tag": t, "of": s.get("of"), "kld": r["kld"], "bpw": bpw, "dec_n": self.dec[size],
-             "b": self.b_of(size), "improve": imp, "se": se, **({"act": mode} if mode != "f16" else {})}
+             "b": self.b_of(size), "vs": best["tag"] if best else None, "improve": imp, "se": se, "stats": st, **({"act": mode} if mode != "f16" else {})}
         self.rec(e); self.mon[size].append(e)
         self.log(f"monitor {size}: {r['kld']:.5f} at {bpw:.4f} bpw ({self.c['monitor']['name']})" +
-                 (f", vs best {best['kld']:.5f}: size-adjusted {imp:+.4f} (se {se:.4f})" if best else ""))
+                 (f", vs best {best['kld']:.5f} (size-adjusted): (b) capped {st['b']['d']:+.4f} [{st['b']['ci'][0]:+.4f}, {st['b']['ci'][1]:+.4f}],"
+                  f" (c) per-doc {st['c']['d']:+.4f} [{st['c']['ci'][0]:+.4f}, {st['c']['ci'][1]:+.4f}]; pooled (a) {st['a']['d']:+.4f}" if st else
+                  f", vs best {best['kld']:.5f}: size-adjusted (b) {-imp:+.4f} (se {se:.4f})" if best else ""))
         self.monitor_alert(size); self.dump_monitor()
+
+    def mon_paired(self, size, ref, tag, bpw):
+        """a monitor read vs an earlier one: the capped statistic (b) (weights from the earlier read), size-adjusted"""
+        A = self.res[ref["tag"]]["docs"]; B = self.res[tag]["docs"]
+        P = SR.Paired(len(A), self.prule({"kind": "full"}, self.b_of(size) * (bpw - ref["bpw"]), A, ["m"] * len(A)))
+        for a, b in zip(A, B): P.add(a, b)
+        return P
+
+    def mon_score(self, size, m):
+        """a monitor read's size-adjusted score on the capped statistic (RULES-picks: never the raw pooled (a) alone):
+        log KLD of the size's first read in the mode (the anchor) + (b) of this read vs the anchor + b (bpw - T)"""
+        reads = [x for x in self.mon.get(size, []) if x.get("act", "f16") == m.get("act", "f16") and x["tag"] in self.res]
+        anc = reads[0] if reads else m
+        if anc["tag"] == m["tag"] or not self.cap: return self.mscore(size, m["kld"], m["bpw"])
+        return math.log(anc["kld"]) + self.mon_paired(size, anc, m["tag"], anc["bpw"]).d() + self.b_of(size) * (m["bpw"] - size)
 
     def monitor_alert(self, size):
         """user 11-13: no pre-set N, no stop. Soft alert when the size's size-adjusted monitor best has not improved by more
@@ -196,12 +236,11 @@ class Driver:
         reads = [m for m in self.mon.get(size, []) if m["tag"] in self.res and m.get("act", "f16") == self.act]
         before = [m for m in reads if m.get("dec_n", 0) <= w0]
         if not before: return None
-        sc = lambda m: self.mscore(size, m["kld"], m["bpw"])
+        sc = lambda m: self.mon_score(size, m)
         b0 = min(before, key=sc); b1 = min(reads, key=sc)
         if b1 is b0: imp, se = 0.0, 0.0
         else:
-            P = SR.Paired(len(self.res[b0["tag"]]["docs"]), {"kind": "full", "off": self.b_of(size) * (b1["bpw"] - b0["bpw"])})
-            for a, b in zip(self.res[b0["tag"]]["docs"], self.res[b1["tag"]]["docs"]): P.add(a, b)
+            P = self.mon_paired(size, b0, b1["tag"], b1["bpw"])
             imp, se = -P.da(), P.se()
         on = imp <= se
         if on != self.alerts.get(size, False):
@@ -263,7 +302,7 @@ class Driver:
 
     # ------------------------------------------------------------------------------------------------ decisions
     def paired(self, ref, cand, parts, k=None, rule=None, off=0.0):
-        P = SR.Paired(len(parts), dict(rule or {"kind": "full"}, off=off))
+        P = SR.Paired(len(parts), self.prule(dict(rule or {"kind": "full"}, guard=self.rule.get("guard")), off, ref["docs"], parts))
         for i, (a, b, p) in enumerate(zip(ref["docs"], cand["docs"], parts)):
             if k is not None and i >= k: break
             if a is None or b is None: break
@@ -318,7 +357,8 @@ class Driver:
         self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1
         self.kind_stats[s["kind"]][1] += 1; self.kind_stats[s["kind"]][0] += d == "accept"
         self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(),
-                  "off": P.off, "se": P.se(), "parts": P.summary()["parts"]})
+                  "off": P.off, "se": P.se(), "parts": P.summary()["parts"],
+                  "stat_b": P.w is not None, **({"why": P.why} if P.why else {})})
         if d == "accept":
             old = self.inc.get(size); self.inc[size] = t
             self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old})
@@ -328,7 +368,8 @@ class Driver:
                 self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
                             slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
         else:
-            self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else ""))
+            self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else "") +
+                     (" [guard: per-document mean " + ", ".join(f"{p} {P.docmean(p) + P.off:+.4f}" for p in P.part if P.docmean(p) is not None) + "]" if P.why == "guard" else ""))
 
     # ------------------------------------------------------------------------------------------------ fit rows
     def add_obs(self, t, r):
@@ -554,7 +595,7 @@ class Driver:
             act = self.reg.activate_next()
             if act: self.rec({"ev": "rotate", "to": act, "from": None}); self.log(f"slice {act} active"); self.set_act(act)
             return act
-        if self.reg.due(act, int(self.c.get("rotate_after", 25))):
+        if self.reg.due(act, int(self.c.get("rotate_after", 25)), self.c.get("rotate_unit", "slice")):
             nxt = [n for n, s in self.reg.d["slices"].items() if s["status"] == "ready"]
             if nxt:
                 new = self.reg.activate_next(); self.rec({"ev": "rotate", "to": new, "from": act})
@@ -615,7 +656,8 @@ class Driver:
             fr[str(T)] = {"band": [lo, hi], "b": self.b_of(T), "incumbent": self.inc.get(T), "stopped": T in self.stopped_sizes,
                           "alert": self.alerts.get(T, False),
                           "monitor": [{"tag": m["tag"], "of": m.get("of"), "kld": m["kld"], "bpw": m.get("bpw"),
-                                       "score": self.mscore(T, m["kld"], m["bpw"]) if m.get("bpw") else None} for m in self.mon.get(T, [])],
+                                       "score": self.mon_score(T, m) if m.get("bpw") and m["tag"] in self.res else None,
+                                       "stats": m.get("stats")} for m in self.mon.get(T, [])],
                           "top": top, "points": p}
         json.dump(fr, open(f"{self.R}/frontier.json.part", "w"), indent=0); os.replace(f"{self.R}/frontier.json.part", f"{self.R}/frontier.json")
         nd = sum(self.dec.values()); acc = sum(v[0] for v in self.kind_stats.values())

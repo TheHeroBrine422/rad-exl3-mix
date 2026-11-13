@@ -25,8 +25,10 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
           CORPUS OUT JSONL DOCS
   python3 slices.py poolcheck POOLS GOLDEN [GOLDEN ..]           the pools of each golden's calib docs ("orig"); exit 1
           if any is outside fit + search (a search slice / prior_obs golden must come from the merged pool)
-Rotation (driver): a slice is retired once any size has decided `rotate_after` candidates on it (default 25); the
-next "ready" slice becomes active (its incumbents are scored first, no early stop)."""
+  python3 slices.py retire REG NAME [WHY]                       retire a slice by hand (w145: s171b after w141's audit)
+Rotation (driver): a slice is retired once it has decided `rotate_after` candidates (default 25), all sizes together
+(driver CONF rotate_unit "slice", w145; "size" = any one size reaching it, the #171 run's rule); the next "ready" slice
+becomes active (its incumbents are scored first, no early stop)."""
 import json, os, random, shutil, sys, time
 
 import numpy as np
@@ -149,9 +151,18 @@ class Registry:
         for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
         self.save()
 
-    def due(self, name, rotate_after):
+    def due(self, name, rotate_after, unit="slice"):
+        """rotation due: the slice's decisions over all sizes reach rotate_after (unit "slice", w145 after w141's audit:
+        ~25 decisions a slice as eval-data.md meant), or any one size's (unit "size", the #171 run's rule)"""
         s = self.d["slices"][name]
-        return max(s["decisions"].values(), default=0) >= rotate_after
+        if unit == "size": return max(s["decisions"].values(), default=0) >= rotate_after
+        return sum(s["decisions"].values()) >= rotate_after
+
+    def retire(self, name, why=""):
+        s = self.d["slices"][name]
+        s["status"] = "retired"; s["retired"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        if why: s["retired_why"] = why
+        self.save(); return s
 
     def parts_of(self, name):
         return [d["part"] for d in self.d["slices"][name]["docs"]]
@@ -212,6 +223,8 @@ def main(argv):
             out = {p: k for p, k in c.items() if p not in MERGED}; bad += bool(out)
             print(f"{g}: calib docs by pool {c}" + (f"  OUTSIDE fit + search: {out}" if out else "  ok"))
         return 1 if bad else 0
+    elif argv[0] == "retire":
+        R = Registry(argv[1]); R.retire(argv[2], " ".join(argv[3:])); print(f"{argv[2]}: retired")
     elif argv[0] == "ledger":
         R = Registry(argv[1]); s = R.d["slices"][argv[2]]; os.makedirs(argv[3], exist_ok=True)
         c = s["parts"].get("c")

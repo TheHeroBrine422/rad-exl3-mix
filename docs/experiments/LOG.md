@@ -4,6 +4,9 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 12:55 PM CST · #— · RULES-picks implemented (w145): in-search (b) capped + (c) guard, finalpick on (a) with unit-bootstrap CIs, per-slice rotation, s171b retired; #171 replay 38 / 71 accepts hold; final-pick slice planned (~750k), no ver4 read
+- **One line:** `search/v3/picks145/README.md` (code seqrule / driver / slices / pickstat / finalpick, `earlystop-picks.patch` to restage on the hosts, tests 9 / 9 PASS, stand-in si145 PASS 7 / 7; replay `data/searchv3/w145/replay145.json`: of #171's 71 accepts 38 hold, 29 fail the (c) guard, 3 (b), 1 early stop; slice plan c ver4 205k + trace 4723 ~120k + 123 reused verify docs 151k, x ~210 fresh xcorp pieces 255k, ~0.35 card-h per candidate on ds8 A8) · **Runtime:** neither (decision statistics only).
+
 ### 2026-11-13 12:50 PM CST · #162-02 · Head ladder filled (amendment 1, lead note 11:00): 31 more R16 donors priced (48-plan hcurve140.json, smooth, no flags); eighths above K5 blocked by qtf2's instance menu (patch); fractional head decode +20–26% over K4 (w140)
 - **Status:** done · **Machine:** ds8 (quants 12:03–12:35 PM CST, run122 workers on all 8 cards under card locks beside
   w132 / w134 / w139 evals; scores + table post140.sh 12:18 / 12:39; fractional packs + serves + profiles 12:15–12:44 on
