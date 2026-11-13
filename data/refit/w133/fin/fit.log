@@ -1,0 +1,9 @@
+/data/work/w13/w133/code/search/refit/w133/m133.py:103: RuntimeWarning: overflow encountered in multiply
+  P = P * (1 + kl[l] * Xl) + Xl; Xp = X[:, l]
+/data/work/w13/w133/code/search/refit/w133/m133.py:119: RuntimeWarning: invalid value encountered in add
+  out = out + np.where(isx, x[L["lam1"]][0], x[L["mu1"]][0]) * d2
+/data/work/w13/w133/code/search/refit/w133/m133.py:131: RuntimeWarning: overflow encountered in exp
+  return np.exp(g + (num / np.maximum(den, 1e-300))[sl])
+/data/work/w13/w133/code/search/refit/w133/../../v3/fit.py:128: RuntimeWarning: divide by zero encountered in log
+  res = [(np.log(self.predict_rows(x, idx)) - np.log(km)) / np.sqrt(se * se + self.tau * self.tau)]
+{"rows": 1660, "params": 82, "cost": 1259.394048479283, "rmse_log": 0.05822850308544522, "lam": 1.2624535690668526, "emb": {"e0": 0.023531909201589204, "e1": 0.0, "e2": -0.0028621126927873206, "e3": -0.005433458619640336, "e4": -0.0032992712549086466, "e6": -0.005469243548226116}, "emb_names": ["e2", "base", "e4", "e5", "e6", "e7", "bf16"]}

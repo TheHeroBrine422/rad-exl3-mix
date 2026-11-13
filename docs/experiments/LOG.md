@@ -6,6 +6,54 @@ versions of anything: git history.
 
 
 
+
+### 2026-11-13 10:36 AM CST · #173 · Full-ladder re-solve with M1 (lead notes 10:15 / 10:50 AM): picks 1.5–7.0, sub-1 not priceable yet; A8 transfers within noise (n = 4); calibration plan for approval
+- **Status:** done (picks delivered; calibration rows proposed, not run) · **Machine:** ds8 (menu, CPU, 5 s; w132's A8
+  per-doc sums re-read), colo (fit / solves) · **Code:** `search/refit/w133/fin133.py`, `calplan173.md` ·
+  **Data:** `data/refit/w133/fin/` (fit-M1-full.json, solve*.json, curve.json, picksT/, picks/), menu133full / menu133e
+- **Menu:** `mkmenu129.py` over all 49 ladder levels (K0.125–K7.5) + the 17 R16 heads (hcurve122) = menu133full;
+  + w135's 7 embedding options (menu174: e2, base, e4–e7, bf16) = menu133e. menu129h's 20 levels are byte- and
+  err-identical inside it. 334 / 336 trunk tensors have err strictly falling over all 49 levels.
+- **Production fit:** M1 on every row (632 search results, 90 fit129, w135's 22 cal174 embedding rows): 1,660 rows, 82
+  params, in-sample log-RMSE 0.058, λ_x 1.26; embedding offsets e2 +0.024, e4 −0.003, e5 −0.005, e6 −0.003 (one row),
+  bf16 −0.005 (e7 unseen → priced as e6).
+- **Level prices (uniform-level curve):** smooth and monotone K1.25 → K7.5 (eighth steps interpolate; K7.5 ≈ K7,
+  −0.3 %). **Below K1.25 the prices break** (uniform K1 ≈ K1.125, K0.5 → 0: compounding overflow + the c-part curvature
+  extrapolating), as w120 saw with kfit2. M1's P is identified only up to label offsets (as kfit3's): absolute
+  predicted KLDs are not comparable with measurements, ratios are.
+- **Picks (trusted: trunk K ≥ 1.25, `picksT/pickT133-<size>.json`, from the best of incumbent / init / uniform
+  starts; bytes = the size's cap with the driver's offset):**
+
+  | size | head | emb | K range | vs incumbent: tensors, MB moved, pred c / x | vs init (fit129h2): tensors, MB, pred c |
+  |---|---|---|---|---|---|
+  | 1.5 | u2 | e2 | 1.25–3.125 | 152, 368, −0.120 / −0.087 | 148, 392, −0.158 |
+  | 1.75 | u2 | e2 | 1.25–3.375 | 260, 615, −0.137 / −0.132 | 265, 685, −0.202 |
+  | 2.0 | u2.25 | e2 | 1.25–3.625 | 264, 671, −0.113 / −0.119 | 269, 737, −0.211 |
+  | 2.5 | u2.5 | e2 | 1.25–4.125 | 290, 916, −0.103 / −0.117 | 256, 799, −0.170 |
+  | 3.0 | u3 | base | 1.375–4.5 | 260, 558, −0.077 / −0.090 | 263, 653, −0.166 |
+  | 3.5 | u3.5 | base | 1.75–5.0 | 262, 645, −0.086 / −0.104 | 272, 677, −0.216 |
+  | 4.0 | u3.75 | base | 2.125–5.75 | 260, 668, −0.096 / −0.118 | 268, 673, −0.248 |
+  | 4.5 | u4 | e5 | 2.5–6.0 | 279, 1,092, −0.144 / −0.180 | 284, 1,147, −0.326 |
+  | 5.0 | u4.5 | e5 | 3.0–6.5 | 258, 1,180, −0.281 / −0.353 | 259, 1,215, −0.402 |
+  | 5.5 | u5 | e5 | 3.5–6.75 | 256, 1,348, −0.408 / −0.514 | 248, 1,218, −0.459 |
+  | 6.0 | u6 | e5 | 4.0–7.0 | 252, 1,129, −0.469 / −0.594 | 249, 1,158, −0.507 |
+  | 6.5 | u6.5 | e5 | 4.625–7.0 | 233, 1,110, −0.515 / −0.652 | 238, 1,137, −0.526 |
+  | 7.0 | u7 | e5 | 6.0–7.5 | 78, 646, −0.529 / −0.671 | (init = incumbent) |
+
+  At ≥ 4.5 most of the predicted gain is the embedding (base → e5: w135 measured −0.62 c log at 6.0); 2.5–4.0 is the
+  trunk + head re-allocation on eighth steps (−8 … −10 %). Sizes 1.0 / 1.25 cannot be reached with K ≥ 1.25 (the
+  full-ladder solves there use K0.125–K0.875 on the broken prices: `picks/`, flagged, not for use). Every pick is a
+  large move (150–290 tensors), i.e. extrapolation for a model validated mostly on pair / block moves: **check before
+  use** (below).
+- **A8 transfer (w132's 4 incumbent pairs on s171b, per part):** A8 − f16 log r +0.025 / +0.005 (2.5 c / x), −0.008 /
+  −0.004 (3.5), +0.024 / +0.005 (5.0), +0.014 / +0.005 (6.0): all within ~1 SE (0.007–0.038); the sign differs only
+  in the two near-zero 6.0 ratios. A8 raises the KLD level +1 % (2.5), ±0 (3.5), +6 % c / +3–4 % x (5–6 bpw): an additive floor
+  that slightly compresses ratios at high sizes. **f16 conclusions transfer within noise** (n = 4, not enough to fit
+  the floor per level; m133 has the `mode` hook for it).
+- **Next (lead decides):** (1) recommended: the 13 trusted picks as a third arm in w132's search-value check (init vs
+  current incumbent, A8, fresh two-part slice): ~13 evals ≈ 1.2 card-h; (2) `calplan173.md`: 70 A8 calibration mixes
+  on fit129 (sub-1 levels + group swaps for 1.0 / 1.25, A8 rescore of w129's uniform levels and swaps, K7.5) ≈ 3.5
+  card-h, ~70 min wall (radmix-bound); needed before any 1.0 / 1.25 pick.
 ### 2026-11-13 10:27 AM CST · #173 · Sensitivity model: P done — **M1 wins** (T ∪ P-f16 ratio wMSE −63.6 % [−72.1, −52.5] vs kfit3); search paused 10:11, so P closed early
 - **Status:** done (the protocol); the full-ladder re-solve and a calibration-row design follow (lead notes 10:15 / 10:50 AM)
 - **P:** the search was stopped at 10:11 AM CST (user), so P = every decision after S0 (8:43:30) to the stop: 110

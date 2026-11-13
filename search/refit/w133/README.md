@@ -11,6 +11,9 @@ frozen candidates `candidates173.json`, 50554a8, before any T / P / S run). Resu
 | `ev133.py` | the protocol: `fit` / `pred` units (restartable), `s` (slice split), `report` (weighted ratio MSE per part, calls, AUC, clear-cut sign, accepted gains, paired bootstrap vs M0) |
 | `sol133.py` | step 3: moves.mckp re-solve per size from the current incumbent with each model; bytes moved / tensors changed vs incumbent and vs w129's init pick, cross-predictions |
 | `run133.sh` | colo runner (xargs, nice 19, single-threaded) |
+| `fin133.py` | the final re-solve (lead notes 11-13 10:15 / 10:50): `menu` (full-ladder trunk menu + w135's embedding options), `fit` (M1 on every row: search + fit129 + cal174), `solve` (per size, mckp from incumbent / init / uniform starts, `--min-k` to keep the trunk where rows exist), `curve` (uniform-level prices). Codebook-agnostic: a new ladder = a new mkmenu menu, same commands |
+| `fit-m1.patch` | fit.py opts `lsize` / `prof` / `lam2` = M1 inside the driver's fit (defaults unchanged) |
+| `calplan173.md` | calibration-row proposal (sub-1, A8, K7.5): needs the lead's approval |
 | `dev173.json` / `candidates173.json` | development variants (D only) / the frozen candidates |
 
 Data: `data/refit/w133/` (ds-S0 / ds-P datasets, fits and predictions per split, reports, picks/).
@@ -24,6 +27,16 @@ python3 ev133.py pred DS candidates173.json M1 CUT OUTDIR EVDS LO HI
 BOOT=4000 python3 ev133.py report OUTDIR "T=pred-*-ds-S0-*.json"
 python3 sol133.py OUT.json DS candidates173.json FITDIR CUT M0,M1 --state .. --assign .. --init $R/init --save-dir picks
 ```
+Final re-solve (colo; MENU = the ds's own menu129h for decoding its option indices):
+```
+python3 fin133.py menu menu133e.json menu133full.json --emb-menu local/workers/w135/menu174.json
+python3 fin133.py fit fit-M1-full.json menu133e.json candidates173.json M1 --ds ds-P.json.gz --obs cal174.obs.jsonl
+python3 fin133.py solve OUT.json menu133e.json candidates173.json M1 fit-M1-full.json --ds ds-P.json.gz --obs cal174.obs.jsonl \
+    --sizes 1.5,1.75,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7 --state drv/state.jsonl --assign drv/assign --init run/init --min-k 1.25 --save-dir picksT --tag pickT133
+```
+menu133full.json = `mkmenu129.py DIAGSUM --levels <all 49 /data/q27/ladder/q27v3-144dd6e1-k*-i8> --base V2-3.00 --diag k2.5 --heads hcurve122.json
+--head-donor '/data/q27/heads/donors/hd-{plan}.rad'` on ds8 (5 s).
+
 Using M1 in the search = fit.py with two changes (not made here: a patch for the lead if adopted): the search rows'
 labels carry their size (`S@size|p|...`) and the label offsets are profiled out, plus the λ1 / μ1 curvature terms
 (XModel's `prof`, `lam2`; `relabel`).

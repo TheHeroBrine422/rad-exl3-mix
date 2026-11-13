@@ -1,0 +1,3 @@
+size 6: 6.0000 bpw from incumbent pred c-KL 0.00913 head u6 emb e5 | vs incumbent: ch 252 1129.2 MB c -0.469 x -0.594 vs init: ch 249 1158.3 MB c -0.507 x -0.641 | K range 4.0-7.0
+size 6.5: 6.5000 bpw from incumbent pred c-KL 0.00825 head u6.5 emb e5 | vs incumbent: ch 233 1109.7 MB c -0.515 x -0.652 vs init: ch 238 1136.9 MB c -0.526 x -0.666 | K range 4.625-7.0
+size 7: 6.9999 bpw from incumbent pred c-KL 0.00800 head u7 emb e5 | vs incumbent: ch 78 645.5 MB c -0.529 x -0.671 vs init: ch 78 645.5 MB c -0.529 x -0.671 | K range 6.0-7.5

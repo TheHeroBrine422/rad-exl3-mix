@@ -1,0 +1,4 @@
+size 2.5: 2.5000 bpw from uniform pred c-KL 0.70248 head u2.5 emb e2 | vs incumbent: ch 289 919.0 MB c -0.103 x -0.117 vs init: ch 257 802.7 MB c -0.170 x -0.192 | K range 1.125-4.125
+size 3: 3.0000 bpw from incumbent pred c-KL 0.25936 head u3 emb base | vs incumbent: ch 260 558.2 MB c -0.077 x -0.090 vs init: ch 263 652.7 MB c -0.166 x -0.195 | K range 1.375-4.5
+size 3.5: 3.5000 bpw from init pred c-KL 0.11067 head u3.5 emb base | vs incumbent: ch 262 644.7 MB c -0.086 x -0.104 vs init: ch 272 676.8 MB c -0.216 x -0.260 | K range 1.75-5.0
+size 4: 4.0000 bpw from incumbent pred c-KL 0.05374 head u3.75 emb base | vs incumbent: ch 260 667.7 MB c -0.096 x -0.118 vs init: ch 268 672.6 MB c -0.248 x -0.304 | K range 2.125-5.75
