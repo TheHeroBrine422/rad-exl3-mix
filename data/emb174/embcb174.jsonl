@@ -1,0 +1,10 @@
+{"cb": "mul1", "method": "trellis", "bits": 2.0, "group": 128, "bpv": 2.125, "rel": 0.0634645097490475, "edge_factor_frac": 0.3972, "rows": 1024, "sec": 312.5}
+{"cb": "mul1", "method": "trellis", "bits": 3.0, "group": 128, "bpv": 3.125, "rel": 0.016145089132053873, "edge_factor_frac": 0.3446, "rows": 1024, "sec": 299.3}
+{"cb": "mul1", "method": "trellis", "bits": 4.0, "group": 128, "bpv": 4.125, "rel": 0.0041237278938666844, "edge_factor_frac": 0.3667, "rows": 1024, "sec": 307.9}
+{"cb": "mul1", "method": "trellis", "bits": 5.0, "group": 128, "bpv": 5.125, "rel": 0.0010573244334620804, "edge_factor_frac": 0.3857, "rows": 1024, "sec": 274.9}
+{"cb": "mul1", "method": "trellis", "bits": 6.0, "group": 128, "bpv": 6.125, "rel": 0.0002739387223750063, "edge_factor_frac": 0.4173, "rows": 1024, "sec": 284.5}
+{"cb": "mul1_i8", "method": "trellis", "bits": 2.0, "group": 128, "bpv": 2.125, "rel": 0.06345517958194039, "edge_factor_frac": 0.3993, "rows": 1024, "sec": 321.2}
+{"cb": "mul1_i8", "method": "trellis", "bits": 3.0, "group": 128, "bpv": 3.125, "rel": 0.016146730855296318, "edge_factor_frac": 0.3425, "rows": 1024, "sec": 277.4}
+{"cb": "mul1_i8", "method": "trellis", "bits": 4.0, "group": 128, "bpv": 4.125, "rel": 0.004124685558840508, "edge_factor_frac": 0.3643, "rows": 1024, "sec": 288.2}
+{"cb": "mul1_i8", "method": "trellis", "bits": 5.0, "group": 128, "bpv": 5.125, "rel": 0.0010592138685819145, "edge_factor_frac": 0.3863, "rows": 1024, "sec": 286.5}
+{"cb": "mul1_i8", "method": "trellis", "bits": 6.0, "group": 128, "bpv": 6.125, "rel": 0.00027487869649370857, "edge_factor_frac": 0.4156, "rows": 1024, "sec": 290.0}

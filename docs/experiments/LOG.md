@@ -4,6 +4,97 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 11:45 AM CST · #174 · Embedding options: 7 servable encodings (Lloyd l2–l7 + bf16) as ds8 donors, 13 anchor swaps (7 f16 + 6 A8) → per-size pick **l2 ≤ 2.5, l3 3.0–4.0, l4 / l5 4.5–5.0, l5 / l6 ≥ 5.5**; the fitted embedding term does not extrapolate across sizes (w135)
+- **Status:** done (menu + rows delivered; w133's M1 re-solve already reads menu174 + the f16 rows; the A8 rows and the
+  first l7 row are new for it) ·
+  **Machine:** ds8 (donors under conv.lock, one eval slot: the coordinator until the 10:11 pause, then card locks), colo
+  (fits), VM (HF range relay) · **Code:** `search/v3/emb174/` (README) · **Data:** `rad-local/workers/w135/`
+  (menu174.json, cal174 / a8-174 obs + json, embpick-*.json, loo1/, embprices174.json, HANDOFF.md) · **Brief:**
+  `rad-local/workers/instr3/w135.md` + lead notes (trellis ladder; 10:15 AM pause: build for the final re-solve, A8 anchors)
+- **Encodings in V2's 16 HF containers** (radinspect.py, range reads of the directories): rtn Lloyd-Max codebooks under
+  fwht128 + a bf16 scale per 128: l3 (1.50–3.50, 496,640,032 B), l4 (4.00–5.00, 655,564,864), l5 (5.50–6.00, 814,489,728),
+  l6 (6.50–7.50, 973,414,656); bf16 plain (8.00, 9.00; 2,542,796,800). The plugin (qwen35_exl3) serves any Lloyd width
+  B = 1..8 from the stored form (`embed_tq`) and bf16 (`embed_lookup`); **no trellis embedding gather exists**, so
+  trellis levels (embgpu.py) are bf16 fake-quant only and would count bf16 bytes (VRAM-size rule). Runtime of any
+  option: a gather of one 5,120-value row per token (≤ 10 KB): ~0 for prefill (`gemm_us` unchanged) and decode; VRAM =
+  bytes.
+- **Donors** `/data/q27/emb/emb-<o>.rad` (K0.125 pack + the embedding; radmix takes only token_embd): e4 / e5 / e6 /
+  bf16 from V2 4.00 / 5.50 / 6.50 / 8.00 (head + tail hash = the source's); e2 / e7 converted with V2's rule (rtn
+  table = fitlevels.py codebook, which reproduces V2's l3–l6 tables exactly; --reuse of the pack, 77 / 169 s). ds8's
+  own HF reads ran at 0.4 MiB/s (xet stalled): sources relayed through the VM (sparse: tables + token_embd only).
+- **Menu** `menu174.json` = menu129h + embedding options e2, base (l3, no donor: old rows keep their name), e4, e5,
+  e6, e7, bf16; err = V2's fitted floor (kfit2 c0 + emb level; e7 from a linear rel-error model, V2's e7 / e8 fits
+  sit below bf16). Sorted by bytes, so e2 is the cheapest: a driver must set `init_emb: base`.
+- **Anchors** (s171b whole, incumbent + embedding swap, per-part log ratio vs the incumbent ± paired SE; f16 via the
+  coordinator, A8 vs w132's A8 scores of the same incumbents):
+
+  | size | swap | mode | calib | xcorp | pmean |
+  |---|---|---|---|---|---|
+  | 1.5 | l2 | f16 | +0.016 ± 0.005 | +0.017 ± 0.003 | +0.017 ± 0.003 |
+  | 2.0 | l4 / l5 | f16 | −0.007 / −0.008 | −0.002 / −0.002 | −0.004 / −0.005 (± 0.002) |
+  | 2.5 | l2 | A8 | +0.060 ± 0.017 | +0.052 ± 0.007 | +0.056 ± 0.009 |
+  | 3.5 | l2 | A8 | +0.157 ± 0.026 | +0.134 ± 0.015 | +0.146 ± 0.015 |
+  | 3.5 | l4 | f16 / A8 | −0.040 / −0.021 | −0.014 / −0.018 | −0.027 / −0.019 (± 0.009) |
+  | 3.5 | l6 | f16 | −0.041 ± 0.012 | −0.021 ± 0.014 | −0.031 ± 0.009 |
+  | 5.0 | l6 | A8 | −0.281 ± 0.066 | −0.279 ± 0.042 | −0.280 ± 0.039 |
+  | 6.0 | l5 | f16 | −0.613 ± 0.138 | −0.563 ± 0.074 | −0.588 ± 0.078 |
+  | 6.0 | bf16 | f16 | −0.694 ± 0.130 | −0.573 ± 0.049 | −0.634 ± 0.069 |
+  | 6.0 | l5 | A8 | −0.601 ± 0.136 | −0.481 ± 0.078 | −0.541 ± 0.079 |
+  | 6.0 | l7 | A8 | −0.642 ± 0.129 | −0.527 ± 0.046 | −0.585 ± 0.069 |
+
+  f16 and A8 agree where both exist (3.5 l4, 6.0 l5). Above l3 the options differ little at a given size (l4 ≈ l5 ≈ l6 at
+  2.0 / 3.5; l5 ≈ l7 ≈ bf16 at 6.0); what grows is the l3 floor's share: −0.5 % at 2.0, −3 % at 3.5, −24 % at 5.0,
+  −44 % at 6.0. The calib part's absolute gain is roughly size-flat (−0.0010 / −0.0005 / −0.0005 KL at 2.0 / 3.5 /
+  6.0); the xcorp part's grows ~20× to 6.0, carried by a few high-KL documents (top 5 = 68 % at 6.0; one doc 0.84 →
+  0.42 at 6.0 but 1.80 → 1.79 at 3.5).
+- **Model form (leave-one-eval-out on colo, fit.py + fit-embprior.patch, 4 arms: embedding offset at P_0 as kfit3 /
+  after the compounding × V2 prior off / on):** every arm fails the cross-size hold-outs (6.0 l5 from the 2.0 row:
+  predicted −14 log, P_0 driven negative; 3.5 l4: −0.35 … −1.8 vs −0.04); on the other 10 held-out rows the prior
+  arms predict to 0.038 (P_0) / 0.034 (after) log-RMSE, the prior-off arms 0.31 / 0.33. → The patch's prior (default
+  sd 0.5) is worth having; the placement is not (kept at P_0, the "out" option stays off). No additive embedding
+  term fits both parts across sizes, so **the per-size choice comes from the measured swaps** (`embpick.py`: upgrades
+  = one log-linear curve of the l3 floor's share × a factor per option (l4 0.84, l5 1, l6 1.11, l7 1.04, bf16 1.12);
+  l2 = its own log-linear cost curve; score = log ratio + b × extra bpw).
+- **Predicted per-size choice** (V2 board slopes b; the driver's fitted b gives the same except 5.0 l5, 5.5 l6):
+  1.5–2.5 **l2** (2.5: −0.020, a near tie), 3.0–4.0 **l3** (4.0: l4 +0.003, a tie), 4.5–5.0 **l4**, 5.5 **l5**,
+  6.0–7.0 **l6** (l5 / l7 within 0.03–0.07: l5–l7 are one choice within noise, the cheapest is the safe pick; bf16
+  never at container bytes: +0.61 bpw for −0.05 vs l5). w133's M1 re-solve (#173, menu174 + the
+  f16 rows) picks e2 1.5–2.5, base 3.0–4.0, e5 4.5–7.0: the same switch points, l4 / l5 / l6 at the top within
+  noise.
+- **Stored form, placement, time (lead note; radiance core + two profiled runs on ds8, donors that differ only in the
+  embedding):** `embed_tq` (Lloyd) gathers per token from the stored codes on the card: static VRAM 3.40 GiB with l4
+  vs **2.79 GiB with bf16**, because radiance's default `--embedding-placement ram` pins a table read only by
+  `embed_lookup` (bf16) in host memory and reads it over the link in place (planner `is_embedding_table`; Lloyd tables
+  do not qualify and stay on the card). No load-time expansion either way. Time (`--profile-ops`, s171b, ~990-token
+  prefill calls): embed_tq 115 µs a call, embed_lookup (host, over the link) 203 µs, each ~0.01 % of the run;
+  decode reads one row a step. **Rule question for the user:** by VRAM as served, the bf16 embedding costs 0 VRAM
+  (and 2.4 GiB of pinned host RAM), which would make it the pick at every size and free l3's 0.15 bpw for the trunk;
+  by container bytes the table above stands. (Pinning Lloyd tables too would need is_embedding_table to accept
+  embed_tq.)
+- **Code choice for a trellis embedding (lead note: KL per byte only):** mul1 vs mul1_i8 on the same 1,024 sampled
+  rows (embcb174.py over embtrellis.py, scale group 128): row error equal to +0.02 % at K2–4, +0.2–0.3 % at K5–6
+  (< 0.01 bit): the int8 grid costs nothing, so the code can follow the kernel; mad / longer L wait for w139's
+  head bench.
+- **Trellis (lead note):** at equal row error a trellis embedding needs ~0.6 bit less than Lloyd at every width (CPU
+  rel curves, embmenu*.jsonl; #35's real swaps: t2.5 ≈ l3), i.e. ~95 MB = 0.028 bpw, worth ~4.5 % KLD at 1.5–3.0,
+  ~3 % at 4–5.5, ~2 % at ≥ 6 (b × 0.028). Only with a trellis gather kernel (an embed_tq analogue decoding 20 trellis
+  tiles a row; runtime ~0 as above); until then not offered (prices in `embprices174.json`, a prediction-only menu
+  `menu174-whatif-trellis.json`).
+- **Data:** s171b (merged fit + search pool, two-part; already in the ledger as #171's slice) re-read by 13 anchor evals
+  + 2 profile runs as fit rows / timing only; no new golden; verify and public untouched.
+- **Incidents:** the search paused at 10:11 (user): my f16 6.0 + l7 line (`w135-emb-6-e7`) is still queued in
+  `rad-local/multi/v3/evals.jsonl` under HOLD — drop it if the coordinator restarts (or let it run: ~10 min, unused).
+  An own-shell `pkill -f` killed one ssh session (nothing else). 99 GB of scored f16 calibration mixes deleted; donors
+  (23 GB, `/data/q27/emb/`) kept.
+- **Lead / user decide:** (0) the user: does the embedding count by container bytes or by VRAM as served (above)?
+  (1) the embedding per size for the finals (table above; M1 agrees) — the 4.0 and 2.5 ties and
+  l4 vs l5 vs l6 at 4.5–7.0 are the ones a final check should pair; (2) fit-embprior.patch for fit.py / m133 (its
+  unseen-label fallback prices a cheaper unmeasured embedding as free: the live fit picked e2 at every size ≤ 4.5
+  before the l2 row existed); (3) a trellis embedding gather kernel (~2–4.5 % at every size).
+
+
+
+
 ### 2026-11-13 11:30 AM CST · #172 · A8 in the search: the gap is size-dependent (×0.99–1.01 at ≤ 3.5, **×1.05–1.07 at 5.0 / 6.0**), bytes identical, evals ~10% faster; switch prepared, not applied (search paused); **search-value check: the search gained −5.6% [−7.0, −4.0] pooled vs its knapsack starts** (w132)
 - **Status:** done · **Machine:** ds8 (1 card 8:34–9:48 AM CST, then 8 cards 10:40–11:35 AM CST; card / conv / ram locks; ~5.5 card-h),
   colo + VM (CPU tests) · **Code:** `search/v3/a8172/` (README, RESTART-a8.md, RULES-value.md **62d6d4a**, committed alone

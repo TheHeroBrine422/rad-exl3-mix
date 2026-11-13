@@ -1,0 +1,19 @@
+in0   held n 14 rmse 4.3567 bias -1.5566 rmse/se 43.10 | in n 14 rmse 0.2094 bias +0.1125 rmse/se 4.33
+in5   held n 14 rmse 4.3466 bias -1.6566 rmse/se 42.74 | in n 14 rmse 0.1921 bias +0.1008 rmse/se 2.97
+out0  held n 14 rmse 4.3933 bias -1.7223 rmse/se 65.28 | in n 14 rmse 0.2183 bias +0.1234 rmse/se 4.39
+out5  held n 14 rmse 4.3743 bias -1.8095 rmse/se 60.88 | in n 14 rmse 0.1991 bias +0.1064 rmse/se 4.02
+held-out rows (meas / pred per arm):
+  w135-emb-1.5-e2@emb174-s171b|c|full      meas +0.0164 in0 +0.0000 in5 +0.0384 out0 +0.0000 out5 +0.0072
+  w135-emb-1.5-e2@emb174-s171b|x|full      meas +0.0170 in0 +0.0000 in5 +0.0262 out0 +0.0000 out5 +0.0049
+  w135-emb-2-e4@emb174-s171b|c|full        meas -0.0071 in0 +0.0017 in5 -0.0033 out0 +0.0008 out5 -0.0014
+  w135-emb-2-e4@emb174-s171b|x|full        meas -0.0018 in0 +0.0011 in5 -0.0023 out0 +0.0006 out5 -0.0009
+  w135-emb-2-e5@emb174-s171b|c|full        meas -0.0083 in0 -0.0100 in5 -0.0110 out0 -0.0030 out5 -0.0034
+  w135-emb-2-e5@emb174-s171b|x|full        meas -0.0022 in0 -0.0068 in5 -0.0075 out0 -0.0021 out5 -0.0023
+  w135-emb-3.5-e4@emb174-s171b|c|full      meas -0.0405 in0 -0.3730 in5 -0.3459 out0 -1.8271 out5 -1.6231
+  w135-emb-3.5-e4@emb174-s171b|x|full      meas -0.0138 in0 -0.2543 in5 -0.2357 out0 -1.2454 out5 -1.1062
+  w135-emb-3.5-e6@emb174-s171b|c|full      meas -0.0412 in0 -0.0371 in5 -0.0679 out0 -0.0279 out5 -0.0566
+  w135-emb-3.5-e6@emb174-s171b|x|full      meas -0.0210 in0 -0.0253 in5 -0.0463 out0 -0.0190 out5 -0.0386
+  w135-emb-6-bf16@emb174-s171b|c|full      meas -0.6941 in0 +0.0669 in5 -0.8010 out0 +0.1207 out5 -0.7909
+  w135-emb-6-bf16@emb174-s171b|x|full      meas -0.5732 in0 +0.0456 in5 -0.5459 out0 +0.0823 out5 -0.5390
+  w135-emb-6-e5@emb174-s171b|c|full        meas -0.6131 in0 -14.1220 in5 -14.1159 out0 -14.1172 out5 -14.1120
+  w135-emb-6-e5@emb174-s171b|x|full        meas -0.5634 in0 -9.6249 in5 -9.6199 out0 -9.6217 out5 -9.6166

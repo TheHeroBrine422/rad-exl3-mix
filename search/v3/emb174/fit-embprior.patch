@@ -1,0 +1,124 @@
+--- a/search/v3/fit.py	2026-11-13 14:59:33.507854903 +0000
++++ b/search/v3/fit.py	2026-11-13 16:46:04.309591516 +0000
+@@ -15,7 +15,13 @@
+ each part keeps its own offset and anchor (w129: xcorp ratios are compressed vs calib's, so a pooled label is
+ xcorp-driven). opts "xscale" (default off; search/v3/RULES-parts.md test A): x-part rows are predicted as
+ exp(soff) P^lambda (one fitted lambda, prior log lambda ~ N(0, 0.5)); predictions for moves stay on P (calib scale).
+-The embedding is a level (kfit3's emb term); the head is a tensor in layer n_layers.
++The embedding is a level (kfit3's emb term); the head is a tensor in layer n_layers. Embedding prior (w135, #174; opts
++"emb_prior_sd", default 0.5, 0 = off): a menu whose embedding options carry err (embmenu.py: V2's fitted floor c0 + emb
++level per encoding) gives each option the prior P_0 ratio rho = err / err(base option): fitted levels get the residual
++(log((c0 + emb) / c0) - log rho) / sd, and a level no row has used is priced at c0 (rho - 1) instead of the nearest
++lower seen level's offset (which gave every unmeasured embedding no gain). opts "emb_at": "in" (default: kfit3's
++P_0 = c0 + emb, compounded through the layers) | "out" (added after the compounding, P = P_L + emb: w135's calibration
++swaps change the KLD by about the same absolute amount at 2.0 and 6.0, which an offset at P_0 cannot fit).
+ 
+   python3 fit.py IN.json OUT.json      (IN: {"menu": MENU or path, "obs": [...], "opts": {...}, "x0": [...]}) -- the
+                                        driver's fit_cmd (run on colo: CPU, single-threaded)
+@@ -79,17 +85,27 @@
+ 
+ 
+ class SModel(K3.Model):
+-    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", xscale=False, **kw):
++    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", xscale=False, emb_prior_sd=0.5, emb_at="in", **kw):
+         p = np.where(D.hbar > 0, np.log(np.where(D.hbar > 0, D.hbar, 1)), 0.0)
+         for g in range(len(GL)):                                        # centred per group (kfit3.prior_vector)
+             m = (D.grp == g) & (D.hbar > 0)
+             if m.any(): p[D.grp == g] = np.where(D.hbar[D.grp == g] > 0, p[D.grp == g] - p[m].mean(), 0.0)
+         super().__init__(D, beta=beta, prior_p=p, v2wt=1.0, **kw)
+         self.tau, self.phi_sd = tau, phi_sd
++        self.emb_sd = float(emb_prior_sd or 0.0); self.rho = self.emb_rho(); self.emb_out = emb_at == "out"
+         self.XM = np.array([part_of(r["slice"]) == "x" for r in D.rows], bool)
+         self.xscale = bool(xscale) and bool(self.XM.any())
+         # every family a row uses (kfit3 keeps only names starting "v3" as V3 families; ours all do)
+ 
++    def emb_rho(self):
++        """label -> prior P_0 ratio vs the base label (menu embedding err), {} when the menu has no positive errs"""
++        D = self.D
++        if not D.has_emb: return {}
++        er = [o.get("err") or 0.0 for o in D.M.T[D.M.WI[MN.EMB]]["opts"]]
++        b = D.base.split("-")[-1]
++        if not b.startswith("e") or not b[1:].isdigit() or int(b[1:]) >= len(er) or er[int(b[1:])] <= 0: return {}
++        return {f"e{j}": e / er[int(b[1:])] for j, e in enumerate(er) if e > 0}
++
+     def layout(self):
+         L = super().layout()
+         if getattr(self, "xscale", False): L["lamx"] = slice(self.N, self.N + 1); self.N += 1
+@@ -99,7 +115,11 @@
+         return math.exp(x[self.layout()["lamx"]][0]) if self.xscale else 1.0
+ 
+     def predict_rows(self, x, idx):
+-        P = super().predict_rows(x, idx)
++        if self.emb_out:                                                # w135: the embedding term after the compounding
++            self._mats(); L = self.layout(); x0 = np.array(x, float); x0[L["emb"]] = 0.0; u = self.unpack(x); idx = np.asarray(idx, int)
++            so = np.exp(u["soff"][self.SLI[idx]])
++            P = np.maximum(super().predict_rows(x0, idx) + u["emb"][self.LVI[idx]] * so, 1e-9 * so)
++        else: P = super().predict_rows(x, idx)
+         if not self.xscale: return P
+         idx = np.asarray(idx, int); so = np.exp(self.unpack(x)["soff"][self.SLI[idx]])
+         return np.where(self.XM[idx], so * (P / so) ** self.lam(x), P)
+@@ -136,6 +156,10 @@
+             res.append(u["dev3"].ravel() / self.v3sd); res.append(x[L["phi3"]] / self.phi_sd)
+         if self.NS > 1: res.append(x[L["soff"]] / 3.0)
+         if self.xscale: res.append(x[L["lamx"]] / 0.5)
++        if self.emb_sd > 0 and self.rho:                                # w135: V2's embedding floor ratios as a prior
++            c0 = u["c0"]
++            res.append(np.array([(math.log(max(c0 + u["emb"][j], 1e-12) / c0) - math.log(self.rho[lv])) / self.emb_sd
++                                 for j, lv in enumerate(self.levels) if j != self.blv and lv in self.rho]))
+         del sg
+         return np.concatenate(res)
+ 
+@@ -176,6 +200,7 @@
+         seen = sorted(int(l[1:]) for l in emb if l.startswith("e") and l[1:].isdigit())
+         for j in range(len(D.emb_names)):                              # an embedding no row used: the nearest lower seen one's
+             if f"e{j}" in emb or not seen: continue                    # offset (no predicted gain, no loss) -- the search measures it
++            if self.emb_sd > 0 and f"e{j}" in self.rho: emb[f"e{j}"] = u["c0"] * (self.rho[f"e{j}"] - 1); continue   # w135: priced by the prior
+             lower = [k for k in seen if k < j]; emb[f"e{j}"] = emb[f"e{lower[-1] if lower else seen[0]}"]
+         return {"s": s, "eb": D.eb, "q": u["q"], "ph": ph, "kl": self.KA @ u["kap"], "c0": u["c0"],
+                 "emb": emb, "sat": u["sat"]}
+@@ -189,9 +214,10 @@
+         return tb["s"][i] * eb * (err * math.exp(lph) / eb) ** tb["q"]
+ 
+     def kl_from_X(self, tb, X, emb_label):
+-        P = tb["c0"] + tb["emb"].get(emb_label, 0.0)
++        e = tb["emb"].get(emb_label, 0.0)
++        P = tb["c0"] + (0.0 if self.emb_out else e)
+         for l in range(len(X)): P = P * (1 + tb["kl"][l] * X[l]) + X[l]
+-        P = max(P, 1e-9)
++        P = max(P + (e if self.emb_out else 0.0), 1e-9)
+         if tb["sat"]: P = tb["sat"] * -math.expm1(-P / tb["sat"])
+         return P
+ 
+@@ -207,18 +233,19 @@
+ 
+     def grad_X(self, tb, X, emb_label):
+         """dP_final / dX_l (no saturation) by a backward pass"""
+-        P = [tb["c0"] + tb["emb"].get(emb_label, 0.0)]
++        e = tb["emb"].get(emb_label, 0.0)
++        P = [tb["c0"] + (0.0 if self.emb_out else e)]
+         for l in range(len(X)): P.append(P[-1] * (1 + tb["kl"][l] * X[l]) + X[l])
+         g = np.zeros(len(X)); acc = 1.0
+         for l in range(len(X) - 1, -1, -1):
+             g[l] = acc * (P[l] * tb["kl"][l] + 1); acc *= (1 + tb["kl"][l] * X[l])
+-        return g, P[-1]
++        return g, P[-1] + (e if self.emb_out else 0.0)
+ 
+     def dump(self, x):
+         u = self.unpack(x); tb = self.tables(x)
+         return {"model": "kfit3/search-v3", "x": x.tolist(), "q": u["q"], "c0": u["c0"], "kappa": tb["kl"].tolist(),
+                 "phi3": {k: math.exp(v) for k, v in u["phi3"].items()}, "slices": dict(zip(self.slices, u["soff"].tolist())),
+-                "emb": dict(zip(self.levels, u["emb"].tolist())), "beta": u["beta"], "lamx": self.lam(x),
++                "emb": dict(zip(self.levels, u["emb"].tolist())), "emb_at": "out" if self.emb_out else "in", "beta": u["beta"], "lamx": self.lam(x),
+                 "tensors": [{"w": w, "s": float(tb["s"][i]), "eb": float(self.D.eb[i])} for i, w in enumerate(self.D.W)]}
+ 
+ 
+@@ -227,7 +254,8 @@
+     D = SData(M, obs)
+     return SModel(D, tau=opts.get("tau", 0.02), phi_sd=opts.get("phi_sd", 1.0), beta=str(opts.get("beta", "0")),
+                   theta_sd=opts.get("theta_sd", 4.0), v3_group_sd=opts.get("v3_group_sd", 0.3), smooth=opts.get("smooth", 0.5),
+-                  xscale=bool(opts.get("xscale", False)))
++                  xscale=bool(opts.get("xscale", False)), emb_prior_sd=opts.get("emb_prior_sd", 0.5),
++                  emb_at=opts.get("emb_at", "in"))
+ 
+ 
+ def fit_obs(M, obs, opts=None, x0=None, ndraw=0, seed=0):

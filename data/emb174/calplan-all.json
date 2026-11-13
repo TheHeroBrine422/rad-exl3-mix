@@ -1,0 +1,57 @@
+{
+ "evals": "/workspace/rad-local/multi/v3/evals.jsonl",
+ "results": "/workspace/rad-local/multi/v3/results.jsonl",
+ "host": [
+  "/workspace/rad-local/bin/ssh-ds8.sh"
+ ],
+ "runs": [
+  {
+   "tag": "w135-emb-2-e4",
+   "of": "v3s171-2-pair-00491",
+   "emb": "e4",
+   "donor": "/data/q27/emb/emb-e4.rad"
+  },
+  {
+   "tag": "w135-emb-3.5-e4",
+   "of": "v3s171-3.5-pair-00510",
+   "emb": "e4",
+   "donor": "/data/q27/emb/emb-e4.rad"
+  },
+  {
+   "tag": "w135-emb-2-e5",
+   "of": "v3s171-2-pair-00491",
+   "emb": "e5",
+   "donor": "/data/q27/emb/emb-e5.rad"
+  },
+  {
+   "tag": "w135-emb-6-e5",
+   "of": "v3s171-6-explore-00372",
+   "emb": "e5",
+   "donor": "/data/q27/emb/emb-e5.rad"
+  },
+  {
+   "tag": "w135-emb-3.5-e6",
+   "of": "v3s171-3.5-pair-00510",
+   "emb": "e6",
+   "donor": "/data/q27/emb/emb-e6.rad"
+  },
+  {
+   "tag": "w135-emb-6-bf16",
+   "of": "v3s171-6-explore-00372",
+   "emb": "bf16",
+   "donor": "/data/q27/emb/emb-bf16.rad"
+  },
+  {
+   "tag": "w135-emb-1.5-e2",
+   "of": "v3s171-1.5-explore-00487",
+   "emb": "e2",
+   "donor": "/data/q27/emb/emb-e2.rad"
+  },
+  {
+   "tag": "w135-emb-6-e7",
+   "of": "v3s171-6-explore-00372",
+   "emb": "e7",
+   "donor": "/data/q27/emb/emb-e7.rad"
+  }
+ ]
+}
