@@ -4,6 +4,26 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 10:35 PM CST · #169 · Pass-1 calibration swaps started (w129): rule committed, slices built, evals queued on ds8
+- **Status:** running · **Machine:** ds8 (eval units through rxrun.multi, ds8-only coordinator conf
+  `rad-local/workers/w129/coord-ds8.json`, same root / evals / state as coord.json), colo (fits) · **Rule:**
+  `search/refit/w129/RULES-prior.md` (f110f88, before data) · **Code:** `search/refit/w129/` (draw129, mkslices129,
+  mkspecs129, feed129, fit129) · **Data:** `data/refit/w129/` (doc lists, specs, K2.5 diag sums)
+- **Slices.** fit129 = 118 merged fit + search docs (least-used first: all had 0 counted uses; 71 fit / 47 search), cap
+  8,192, 142,152 scored positions (ledger role fit). Held-out s129 = 41 more least-used docs at cap 4,096 (46,322) + 130
+  xcorp pieces of xc8k-b2-c2 (pickx seed 16930, heavy cap 2,048, 164,363 positions; 27b–27f-x + hd122-x excluded; its
+  kld.json "model" set to the calib golden's string so goldcat accepts the pair, model_src keeps the original) (ledger
+  role check). Calib budget: these take 159 of the ~220 zero-use merged docs.
+- **Mixes.** V2 3.00's head + embedding for all (the README default; not the R16 donor). 20 U, 48 G (bases K2.5 / K4,
+  donors K−1 / K+1.5, 6 groups × 2 depth halves), 16 P (K2.5 → K1.5, top / bottom 8 by K2.5 h̄ in 8 families), 10 on
+  s129 (8 G + the two bases, the same mix scored on both slices). Queued only when every level is final (curlevels) and
+  packed; finished w129 mix containers are deleted (feeder) — ds8 /data had 335 GB free after the first 6 mixes.
+- **Coordinator state:** appended `level_at ds8` events for the 17 levels the state file placed on box2 (their dirs
+  were copied to ds8, checked), else their evals would have been routed to box2. ds8 host.json: eval cards 0–7 by
+  card lock (first free), slots.eval 6 (backup host.json.bak-w129); swj passes hold their card locks, so no eval
+  shares a swj card.
+- **Runtime:** none (allocation / fit only).
+
 ### 2026-11-12 9:45 PM CST · #168 · DONE: clr mem-pool VmHeap bug on pip ROCm 7.14 (rocBLAS-free repro on both hosts); fix = rxq.forward ROCm guard (ROCBLAS_USE_HIPBLASLT_BATCHED=0 + pool keep), **swj scales bit-identical** (#168-01 ADOPT), check 4/4; staged patch for the lead (w128)
 - **Status:** done · **Machine:** ds8 HIP 7 (card7.lock), box2 HIP 3 (card3.lock) · **Code:** branch `w128-rocm-guard`
   ee81aec (worktree `/workspace/wt/w128-rxm`, on main 8df155a), patch
