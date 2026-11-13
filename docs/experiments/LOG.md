@@ -6127,3 +6127,13 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   --kld-progress). Whole-model KLD within the kernel bar (w124 PERF.md, w136 #164-02). Same tree as the staged
   `/data/q27/rad10-perf` builds on box2 / ds8. The user pushes (update-git.sh).
 - **Runtime:** P + D (decode ~1.6× per layer; R16 head −3.1 ms a step; prefill AQ +0.7%).
+
+### 2026-11-13 1:30 PM CST · #171 / RULES-picks · fresh search slices s173a–f + the final-pick slice final750 (lead)
+- **Search slices** (restart): `draw171.py` seed 1113 → 6 calib parts (34–45 merged fit + search docs, ~45k scored each,
+  doc uses 2–3) + 130 xcorp pieces each (xc8k-b2-c0 / c1, s171 x excluded) via `mkslices171.sh` on ds8 (CPU, seconds);
+  registered in `local/workers/w131/run/registry.json`; s171c / s171d retired (w141 / w145). Ledger role + 227 rows.
+- **Final-pick slice `golden-final750`** (ds8 `/data/q27/final/`, `search/v3/picks145/mkfinal.sh`): x = 210 fresh
+  xc8k-b2-c2 pieces (272,573 scored), c1 = golden-ver4 (90 docs, 144,566 scored; copied by goldmix, not scored), c3 =
+  w145's 123 reused verify docs (136,284 scored) → 423 docs, **553,423 scored positions**. The trace-4723 chunk part (c2,
+  ~120k, needs a bf16 golden) is not built; 553k is inside the user's 500k–1M. Ledger role (final) + c3 rows.
+- **Runtime:** none.
