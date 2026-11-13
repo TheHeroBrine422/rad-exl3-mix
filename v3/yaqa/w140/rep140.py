@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """rep140.py -- w140 readouts on score119 outputs (RULES.md): price rows for the mul1 donors K6 / 6.5 / 7.5 / 8 (keys u<K>m)
 added to hcurve122.json's plans -> hcurve140.json, i8 vs mul1 at K6 / K6.5 (doc bootstrap), the curve to u8, the
-monotonicity flag. Env as rep122 / report119 (SC, DOCS, SHARE, PERMS, OUT), plus H122 (hcurve122.json)."""
-import json, os, sys
+monotonicity flag. `rep140.py table`: only the price table (amendment 1: every scored donor). Env as rep122 / report119 (SC, DOCS, SHARE, PERMS, OUT), plus H122 (hcurve122.json)."""
+import json, os, re, sys
 import numpy as np
 
 sys.path.insert(0, os.environ.get("R119", os.path.join(os.path.dirname(os.path.abspath(__file__)), "../w119")))
@@ -21,6 +21,7 @@ def row(S, n):
 
 
 def main():
+    if sys.argv[1:] == ["table"]: return table()
     res = {"sets": {}, "cmp": {}, "flags": []}
     for st in ("fit", "search"):
         S = R.Set(st); rows = {}
@@ -55,16 +56,29 @@ def main():
                 res["flags"].append(f"{b} {m} above {a} on both dumps")
     R.say(f"w140 flags: {res['flags'] or 'none'}")
     json.dump(res, open(f"{OUT}/rep140.json", "w"), indent=1)
-    h = json.load(open(os.environ["H122"])); F = res["sets"]["fit"]
-    for K in NEW:
-        r = F[f"R16s003m1-K{K:g}"]
-        h["plans"][f"u{K:g}m"] = {"avg_bits": float(K), "kl": r["kl"], "kl_unweighted": r["kl_unweighted"], "top1": r["top1"],
-                                 "guard_kl": r["rare_token"], "guard_n": r["n_rare_token"], "rare_script_kl": r["rare_script"],
-                                 "donor": f"R16s003m1-K{K:g}", "codebook": "mul1"}
-    h["recipe"] += "; u<K>m = mul1 at K (w140, #162-02)"
-    json.dump(h, open(f"{OUT}/hcurve140.json", "w"), indent=1)
-    R.say(f"price table: {OUT}/hcurve140.json ({len(h['plans'])} plans)")
+    table()
 
+
+def table():
+    """RULES amendment 1: hcurve140.json = hcurve122's plans unchanged + every other scored donor (i8 u<K>, mul1 u<K>m)"""
+    h = json.load(open(os.environ["H122"])); S = R.Set("fit"); old = {p["donor"] for p in h["plans"].values()}
+    don = []
+    for f in sorted(os.listdir(f"{R.SC}/fit")):
+        m = re.fullmatch(r"(R16s003(m1)?)-K([\d.]+)\.npz", f)
+        if m and m.group(0)[:-4] not in old: don.append((float(m.group(3)), bool(m.group(2)), m.group(0)[:-4]))
+    for K, m1, n in sorted(don):
+        r = row(S, n)
+        h["plans"][f"u{K:g}" + ("m" if m1 else "")] = {"avg_bits": K, "kl": r["kl"], "kl_unweighted": r["kl_unweighted"], "top1": r["top1"],
+            "guard_kl": r["rare_token"], "guard_n": r["n_rare_token"], "rare_script_kl": r["rare_script"], "donor": n,
+            "codebook": "mul1" if m1 else "i8"}
+    flags = []
+    for cb in ("i8", "mul1"):
+        pts = sorted((p["avg_bits"], p["kl"], k) for k, p in h["plans"].items() if p["codebook"] == cb)
+        flags += [f"{b[2]} KL {b[1]:.3e} above {a[2]} {a[1]:.3e}" for a, b in zip(pts, pts[1:]) if b[1] > a[1]]
+    h["recipe"] = h["recipe"].split("; u<K>m")[0] + "; u<K>m = mul1 at K (w140, #162-02)"
+    h["flags_w140"] = flags
+    json.dump(h, open(f"{OUT}/hcurve140.json", "w"), indent=1)
+    R.say(f"price table: {OUT}/hcurve140.json ({len(h['plans'])} plans, {len(don)} added); monotonicity flags: {flags or 'none'}")
 
 if __name__ == "__main__":
     main()

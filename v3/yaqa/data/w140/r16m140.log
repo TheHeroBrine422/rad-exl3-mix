@@ -60,3 +60,29 @@
 17:52:04 serve m8-3 (card 6)
 17:53:15 serve m8-3: 29.87 38.08 ms/step
 17:53:15 R16M140 DONE
+18:15:24 start (rad10-perf 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d))
+18:15:24 pack i4: waiting for conv.lock + ram.lock
+18:15:24 pack i4: start
+18:19:07 pack i4: rc 0 15422568448 bytes, 223 s
+18:19:07 ents i4: "output.weight": [8388608, 636454400, [248320, 5120]
+18:19:07 pack i4.125: waiting for conv.lock + ram.lock
+18:19:46 pack i4.125: start
+18:23:29 pack i4.125: rc 0 15442434048 bytes, 223 s
+18:23:29 ents i4.125: "output.weight": [8388608, 656320000, [248320, 5120]
+18:23:29 pack i4.25: waiting for conv.lock + ram.lock
+18:24:08 pack i4.25: start
+18:27:19 pack i4.25: rc 0 15462299648 bytes, 191 s
+18:27:19 ents i4.25: "output.weight": [8388608, 676185600, [248320, 5120]
+18:27:19 pack i4.5: waiting for conv.lock + ram.lock
+18:29:27 pack i4.5: start
+18:32:37 pack i4.5: rc 0 15502030848 bytes, 190 s
+18:32:37 ents i4.5: "output.weight": [8388608, 715916800, [248320, 5120]
+18:32:37 serve i4-1 (card 6)
+18:33:52 serve i4-1: 28.89 35.55 ms/step
+18:33:52 serve i4.125-1 (card 6)
+18:35:11 serve i4.125-1: 29.74 36.01 ms/step
+18:35:11 serve i4.25-1 (card 6)
+18:36:28 serve i4.25-1: 29.28 36.63 ms/step
+18:36:28 serve i4.5-1 (card 6)
+18:37:42 serve i4.5-1: 29.19 36.23 ms/step
+18:37:43 R16M140 DONE

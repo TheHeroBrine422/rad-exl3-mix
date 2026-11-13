@@ -32,3 +32,5 @@ w140 VERDICT K6: tie
 w140 VERDICT K6.5: tie
 w140 flags: none
 price table: rep/hcurve140.json (21 plans)
+price table: /data/q27/heads/w140/rep/hcurve140.json (33 plans, 16 added); monotonicity flags: none
+price table: /data/q27/heads/w140/rep/hcurve140.json (48 plans, 31 added); monotonicity flags: none

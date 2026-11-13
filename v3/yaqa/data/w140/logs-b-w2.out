@@ -1,0 +1,23 @@
+18:03:32 quant R16s003 K4.25 (R16, sigma_out 0.03, i8) card 2 start
+18:06:52 quant R16s003 K4.25 OK: {"key": "lm_head", "K": 4.25, "proxy_err": 0.0007512981740772499, "fallback": false, "hout": true, "hout_blocks": "group
+18:06:52 quant R16s003m1 K7.25 (R16, sigma_out 0.03, mul1) card 2 start
+18:10:58 quant R16s003m1 K7.25 OK: {"key": "lm_head", "K": 7.25, "proxy_err": 1.4118904274330586e-05, "fallback": false, "hout": true, "hout_blocks": "grou
+18:10:58 quant R16s003m1 K6.375 (R16, sigma_out 0.03, mul1) card 2 start
+18:11:18 quant R16s003m1 K6.375 FAIL (/data/q27/heads/q/R16s003m1/K6.375.log)
+18:11:18 quant R16s003m1 K6.625 (R16, sigma_out 0.03, mul1) card 2 start
+18:11:38 quant R16s003m1 K6.625 FAIL (/data/q27/heads/q/R16s003m1/K6.625.log)
+18:11:38 quant R16s003m1 K6.875 (R16, sigma_out 0.03, mul1) card 2 start
+18:13:51 quant R16s003m1 K6.875 FAIL (/data/q27/heads/q/R16s003m1/K6.875.log)
+18:13:51 quant R16s003m1 K7.375 (R16, sigma_out 0.03, mul1) card 2 start
+18:14:11 quant R16s003m1 K7.375 FAIL (/data/q27/heads/q/R16s003m1/K7.375.log)
+18:14:11 quant R16s003m1 K7.625 (R16, sigma_out 0.03, mul1) card 2 start
+18:14:31 quant R16s003m1 K7.625 FAIL (/data/q27/heads/q/R16s003m1/K7.625.log)
+18:14:31 quant R16s003m1 K7.875 (R16, sigma_out 0.03, mul1) card 2 start
+18:14:53 quant R16s003m1 K7.875 FAIL (/data/q27/heads/q/R16s003m1/K7.875.log)
+18:14:53 quant R16s003 K1.875 (R16, sigma_out 0.03, i8) card 2 start
+18:18:10 quant R16s003 K1.875 OK: {"key": "lm_head", "K": 1.875, "proxy_err": 0.019809315340962516, "fallback": false, "hout": true, "hout_blocks": "group
+18:18:11 quant R16s003 K3.625 (R16, sigma_out 0.03, i8) card 2 start
+18:20:44 quant R16s003 K3.625 OK: {"key": "lm_head", "K": 3.625, "proxy_err": 0.0017631167914429204, "fallback": false, "hout": true, "hout_blocks": "grou
+18:20:44 quant R16s003 K4.625 (R16, sigma_out 0.03, i8) card 2 start
+18:23:56 quant R16s003 K4.625 OK: {"key": "lm_head", "K": 4.625, "proxy_err": 0.0004524953632339486, "fallback": false, "hout": true, "hout_blocks": "grou
+18:23:56 worker card 2: queue /data/q27/heads/w140/q-w140b.txt done

@@ -1,0 +1,115 @@
+diff -ruN a/exl3frac2/mkqtf2.py b/exl3frac2/mkqtf2.py
+--- a/exl3frac2/mkqtf2.py	2026-11-13 18:15:46.966429829 +0000
++++ b/exl3frac2/mkqtf2.py	2026-11-13 18:15:47.012248493 +0000
+@@ -5,7 +5,8 @@
+ import os
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ def frac_mask(n): return sum(1 << i for i in range(16) if ((i + 1) * n) // 16 - (i * n) // 16)
+-MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: range(2, 16, 2), 4: range(2, 16, 2), 5: (4, 8, 12), 6: (4, 8, 12), 7: (4, 8, 12)}
++MENU = {0: range(2, 16, 2), 1: range(2, 16, 2), 2: range(2, 16, 2), 3: range(2, 16, 2), 4: range(2, 16, 2), 5: range(2, 16, 2), 6: range(2, 16, 2), 7: range(2, 16, 2)}
++# 2026-11-13 (w140 patch, lead note 11:00): 1/8 steps K5.125-7.875 for the R16 head ladder (plugin exl3i_plan_tab covers m 2..126)
+ # 2026-11-02 (user): 1/8 steps up to K4.875, quarters K5.25-6.75 (i8 to K7), quarters to K7.75 (plain codebook K6-8, user)
+ # KA 5 quarters (K5.25 / 5.75): head donors only (headremake.sh), the trunk ladder stops at K5.5 / 6
+ # integer K1-4 (MASK 0): the same search as exllamav3's integer kernel; qtf2int6check.py tests identity / speed, and
+diff -ruN a/exl3frac2/qtf2_inst_a5.cu b/exl3frac2/qtf2_inst_a5.cu
+--- a/exl3frac2/qtf2_inst_a5.cu	2026-11-13 18:15:46.967332270 +0000
++++ b/exl3frac2/qtf2_inst_a5.cu	2026-11-13 18:15:47.021719072 +0000
+@@ -3,6 +3,10 @@
+ #include "qtf2.cuh"
+ 
+ fp_qtf2 qtf2_a5_m0000() { return qtf2_kernel<5, 0x0000u>; }
++fp_qtf2 qtf2_a5_m8080() { return qtf2_kernel<5, 0x8080u>; }
+ fp_qtf2 qtf2_a5_m8888() { return qtf2_kernel<5, 0x8888u>; }
++fp_qtf2 qtf2_a5_ma4a4() { return qtf2_kernel<5, 0xa4a4u>; }
+ fp_qtf2 qtf2_a5_maaaa() { return qtf2_kernel<5, 0xaaaau>; }
++fp_qtf2 qtf2_a5_mdada() { return qtf2_kernel<5, 0xdadau>; }
+ fp_qtf2 qtf2_a5_meeee() { return qtf2_kernel<5, 0xeeeeu>; }
++fp_qtf2 qtf2_a5_mfefe() { return qtf2_kernel<5, 0xfefeu>; }
+diff -ruN a/exl3frac2/qtf2_inst_a6f.cu b/exl3frac2/qtf2_inst_a6f.cu
+--- a/exl3frac2/qtf2_inst_a6f.cu	2026-11-13 18:15:46.985433405 +0000
++++ b/exl3frac2/qtf2_inst_a6f.cu	2026-11-13 18:15:47.021749249 +0000
+@@ -3,6 +3,10 @@
+ #include "qtf2_types.cuh"
+ #include "qtf2.cuh"
+ 
++fp_qtf2 qtf2_a6_m8080() { return qtf2_kernel<6, 0x8080u>; }
+ fp_qtf2 qtf2_a6_m8888() { return qtf2_kernel<6, 0x8888u>; }
++fp_qtf2 qtf2_a6_ma4a4() { return qtf2_kernel<6, 0xa4a4u>; }
+ fp_qtf2 qtf2_a6_maaaa() { return qtf2_kernel<6, 0xaaaau>; }
++fp_qtf2 qtf2_a6_mdada() { return qtf2_kernel<6, 0xdadau>; }
+ fp_qtf2 qtf2_a6_meeee() { return qtf2_kernel<6, 0xeeeeu>; }
++fp_qtf2 qtf2_a6_mfefe() { return qtf2_kernel<6, 0xfefeu>; }
+diff -ruN a/exl3frac2/qtf2_inst_a7f.cu b/exl3frac2/qtf2_inst_a7f.cu
+--- a/exl3frac2/qtf2_inst_a7f.cu	2026-11-13 18:15:46.985522453 +0000
++++ b/exl3frac2/qtf2_inst_a7f.cu	2026-11-13 18:15:47.021793212 +0000
+@@ -3,6 +3,10 @@
+ #include "qtf2_types.cuh"
+ #include "qtf2.cuh"
+ 
++fp_qtf2 qtf2_a7_m8080() { return qtf2_kernel<7, 0x8080u>; }
+ fp_qtf2 qtf2_a7_m8888() { return qtf2_kernel<7, 0x8888u>; }
++fp_qtf2 qtf2_a7_ma4a4() { return qtf2_kernel<7, 0xa4a4u>; }
+ fp_qtf2 qtf2_a7_maaaa() { return qtf2_kernel<7, 0xaaaau>; }
++fp_qtf2 qtf2_a7_mdada() { return qtf2_kernel<7, 0xdadau>; }
+ fp_qtf2 qtf2_a7_meeee() { return qtf2_kernel<7, 0xeeeeu>; }
++fp_qtf2 qtf2_a7_mfefe() { return qtf2_kernel<7, 0xfefeu>; }
+diff -ruN a/exl3frac2/qtf2_table.inc b/exl3frac2/qtf2_table.inc
+--- a/exl3frac2/qtf2_table.inc	2026-11-13 18:15:46.967618669 +0000
++++ b/exl3frac2/qtf2_table.inc	2026-11-13 18:15:47.021865799 +0000
+@@ -39,16 +39,28 @@
+ fp_qtf2 qtf2_a4_meeee();
+ fp_qtf2 qtf2_a4_mfefe();
+ fp_qtf2 qtf2_a5_m0000();
++fp_qtf2 qtf2_a5_m8080();
+ fp_qtf2 qtf2_a5_m8888();
++fp_qtf2 qtf2_a5_ma4a4();
+ fp_qtf2 qtf2_a5_maaaa();
++fp_qtf2 qtf2_a5_mdada();
+ fp_qtf2 qtf2_a5_meeee();
++fp_qtf2 qtf2_a5_mfefe();
++fp_qtf2 qtf2_a6_m8080();
+ fp_qtf2 qtf2_a6_m8888();
++fp_qtf2 qtf2_a6_ma4a4();
+ fp_qtf2 qtf2_a6_maaaa();
++fp_qtf2 qtf2_a6_mdada();
+ fp_qtf2 qtf2_a6_meeee();
++fp_qtf2 qtf2_a6_mfefe();
+ fp_qtf2 qtf2_a6_m0000();
++fp_qtf2 qtf2_a7_m8080();
+ fp_qtf2 qtf2_a7_m8888();
++fp_qtf2 qtf2_a7_ma4a4();
+ fp_qtf2 qtf2_a7_maaaa();
++fp_qtf2 qtf2_a7_mdada();
+ fp_qtf2 qtf2_a7_meeee();
++fp_qtf2 qtf2_a7_mfefe();
+ fp_qtf2 qtf2_a7_m0000();
+ static const Qtf2Entry qtf2_table[] = {
+     {0, 0x8080u, &qtf2_a0_m8080, Qtf2Geom<0>::nt, Qtf2Geom<0>::shmem},
+@@ -91,15 +103,27 @@
+     {4, 0xeeeeu, &qtf2_a4_meeee, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
+     {4, 0xfefeu, &qtf2_a4_mfefe, Qtf2Geom<4>::nt, Qtf2Geom<4>::shmem},
+     {5, 0x0000u, &qtf2_a5_m0000, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
++    {5, 0x8080u, &qtf2_a5_m8080, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
+     {5, 0x8888u, &qtf2_a5_m8888, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
++    {5, 0xa4a4u, &qtf2_a5_ma4a4, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
+     {5, 0xaaaau, &qtf2_a5_maaaa, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
++    {5, 0xdadau, &qtf2_a5_mdada, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
+     {5, 0xeeeeu, &qtf2_a5_meeee, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
++    {5, 0xfefeu, &qtf2_a5_mfefe, Qtf2Geom<5>::nt, Qtf2Geom<5>::shmem},
++    {6, 0x8080u, &qtf2_a6_m8080, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
+     {6, 0x8888u, &qtf2_a6_m8888, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
++    {6, 0xa4a4u, &qtf2_a6_ma4a4, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
+     {6, 0xaaaau, &qtf2_a6_maaaa, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
++    {6, 0xdadau, &qtf2_a6_mdada, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
+     {6, 0xeeeeu, &qtf2_a6_meeee, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
++    {6, 0xfefeu, &qtf2_a6_mfefe, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
+     {6, 0x0000u, &qtf2_a6_m0000, Qtf2Geom<6>::nt, Qtf2Geom<6>::shmem},
++    {7, 0x8080u, &qtf2_a7_m8080, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+     {7, 0x8888u, &qtf2_a7_m8888, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
++    {7, 0xa4a4u, &qtf2_a7_ma4a4, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+     {7, 0xaaaau, &qtf2_a7_maaaa, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
++    {7, 0xdadau, &qtf2_a7_mdada, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+     {7, 0xeeeeu, &qtf2_a7_meeee, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
++    {7, 0xfefeu, &qtf2_a7_mfefe, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+     {7, 0x0000u, &qtf2_a7_m0000, Qtf2Geom<7>::nt, Qtf2Geom<7>::shmem},
+ };

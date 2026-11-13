@@ -10,7 +10,7 @@ set -u; Q=/data/q27; O=$Q/rad10-perf; W=$Q/heads/w140; L=$Q/locks; PY=$Q/venv/bi
 T=$Q/w124/tools; PR=$Q/w124/prompts; S=${S:-$Q/heads/w140/code}; CARD=${CARD:-6}; PORT=${PORT:-8140}; ROUNDS=${ROUNDS:-"1 2 3"}
 P=$W/packs; R=$W/res; mkdir -p $P $R $W/recipes; exec >> $W/r16m140.log 2>&1; ulimit -n 65536
 say() { echo "$(date -u +%T) $*"; }
-HEADS="i6 m6 i6.5 m6.5 m7.5 m8"
+HEADS=${HEADS:-"i6 m6 i6.5 m6.5 m7.5 m8"}   # amendment 1: HEADS="i4 i4.125 i4.25 i4.5"
 for h in $HEADS; do
   k=${h:1}; [ ${h:0:1} = i ] && { d=R16s003; cb=mul1i8; } || { d=R16s003m1; cb=mul1; }
   { cat $Q/ladder/q27v3-144dd6e1-k4-i8/final.recipe; echo "output.weight exl3i src=$Q/heads/q/$d/K$k codebook=$cb rate=$k rows=r16"; } > $W/recipes/$h.recipe

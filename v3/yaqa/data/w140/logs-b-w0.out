@@ -1,0 +1,27 @@
+18:03:32 quant R16s003 K1.25 (R16, sigma_out 0.03, i8) card 0 start
+18:08:49 quant R16s003 K1.25 OK: {"key": "lm_head", "K": 1.25, "proxy_err": 0.04923735613019797, "fallback": false, "hout": true, "hout_blocks": "group",
+18:08:49 quant R16s003m1 K6.125 (R16, sigma_out 0.03, mul1) card 0 start
+18:09:10 quant R16s003m1 K6.125 FAIL (/data/q27/heads/q/R16s003m1/K6.125.log)
+18:09:10 quant R16s003m1 K6.375 (R16, sigma_out 0.03, mul1) card 0 start
+18:09:36 quant R16s003m1 K6.375 FAIL (/data/q27/heads/q/R16s003m1/K6.375.log)
+18:09:36 quant R16s003m1 K6.625 (R16, sigma_out 0.03, mul1) card 0 start
+18:09:55 quant R16s003m1 K6.625 FAIL (/data/q27/heads/q/R16s003m1/K6.625.log)
+18:09:55 quant R16s003m1 K6.875 (R16, sigma_out 0.03, mul1) card 0 start
+18:10:16 quant R16s003m1 K6.875 FAIL (/data/q27/heads/q/R16s003m1/K6.875.log)
+18:10:16 quant R16s003m1 K7.125 (R16, sigma_out 0.03, mul1) card 0 start
+18:10:38 quant R16s003m1 K7.125 FAIL (/data/q27/heads/q/R16s003m1/K7.125.log)
+18:10:38 quant R16s003m1 K7.375 (R16, sigma_out 0.03, mul1) card 0 start
+18:11:02 quant R16s003m1 K7.375 FAIL (/data/q27/heads/q/R16s003m1/K7.375.log)
+18:11:02 quant R16s003m1 K7.625 (R16, sigma_out 0.03, mul1) card 0 start
+18:11:23 quant R16s003m1 K7.625 FAIL (/data/q27/heads/q/R16s003m1/K7.625.log)
+18:11:23 quant R16s003m1 K7.875 (R16, sigma_out 0.03, mul1) card 0 start
+18:11:43 quant R16s003m1 K7.875 FAIL (/data/q27/heads/q/R16s003m1/K7.875.log)
+18:11:43 quant R16s003 K4.125 (R16, sigma_out 0.03, i8) card 0 start
+18:14:12 quant R16s003 K4.125 OK: {"key": "lm_head", "K": 4.125, "proxy_err": 0.0008907391913450475, "fallback": false, "hout": true, "hout_blocks": "grou
+18:14:12 quant R16s003 K1.625 (R16, sigma_out 0.03, i8) card 0 start
+18:17:23 quant R16s003 K1.625 OK: {"key": "lm_head", "K": 1.625, "proxy_err": 0.028435741813235972, "fallback": false, "hout": true, "hout_blocks": "group
+18:17:23 quant R16s003 K2.875 (R16, sigma_out 0.03, i8) card 0 start
+18:20:26 quant R16s003 K2.875 OK: {"key": "lm_head", "K": 2.875, "proxy_err": 0.004923269419004162, "fallback": false, "hout": true, "hout_blocks": "group
+18:20:26 quant R16s003 K4.375 (R16, sigma_out 0.03, i8) card 0 start
+18:31:29 quant R16s003 K4.375 OK: {"key": "lm_head", "K": 4.375, "proxy_err": 0.0006341043339317658, "fallback": false, "hout": true, "hout_blocks": "grou
+18:31:29 worker card 0: queue /data/q27/heads/w140/q-w140b.txt done

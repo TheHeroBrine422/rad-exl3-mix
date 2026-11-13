@@ -1,0 +1,10 @@
+18:03:32 quant R16s003 K6.25 (R16, sigma_out 0.03, i8) card 4 start
+18:14:49 quant R16s003 K6.25 OK: {"key": "lm_head", "K": 6.25, "proxy_err": 5.180841528674705e-05, "fallback": false, "hout": true, "hout_blocks": "group
+18:14:49 quant R16s003m1 K6.625 (R16, sigma_out 0.03, mul1) card 4 start
+18:18:51 quant R16s003m1 K6.625 FAIL (/data/q27/heads/q/R16s003m1/K6.625.log)
+rmdir: failed to remove '/data/q27/heads/q/R16s003m1/K6.625.claim': Directory not empty
+18:18:51 quant R16s003 K3.875 (R16, sigma_out 0.03, i8) card 4 start
+18:21:30 quant R16s003 K3.875 OK: {"key": "lm_head", "K": 3.875, "proxy_err": 0.0012529586291060658, "fallback": false, "hout": true, "hout_blocks": "grou
+18:21:31 quant R16s003 K4.875 (R16, sigma_out 0.03, i8) card 4 start
+18:24:53 quant R16s003 K4.875 OK: {"key": "lm_head", "K": 4.875, "proxy_err": 0.00032347237740556285, "fallback": false, "hout": true, "hout_blocks": "gro
+18:24:53 worker card 4: queue /data/q27/heads/w140/q-w140b.txt done

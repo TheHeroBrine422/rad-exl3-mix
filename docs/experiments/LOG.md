@@ -4,6 +4,42 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 12:50 PM CST · #162-02 · Head ladder filled (amendment 1, lead note 11:00): 31 more R16 donors priced (48-plan hcurve140.json, smooth, no flags); eighths above K5 blocked by qtf2's instance menu (patch); fractional head decode +20–26% over K4 (w140)
+- **Status:** done · **Machine:** ds8 (quants 12:03–12:35 PM CST, run122 workers on all 8 cards under card locks beside
+  w132 / w134 / w139 evals; scores + table post140.sh 12:18 / 12:39; fractional packs + serves + profiles 12:15–12:44 on
+  card 6) · **Code:** `v3/yaqa/w140/` (post140.sh new; rep140.py `table`; r16m140.sh `HEADS`; prof140.sh) · **Rule:**
+  RULES.md amendment 1 (d8f9509, committed 12:03:19 PM CST before the first of its quants; the header's "12:15" is a
+  typo, the commit time stands) · **Data:** `v3/yaqa/data/w140/` (rep/hcurve140.json, res/headops140-frac.jsonl,
+  res/dstep-i4*, post140-*.out, logs-b-*.out)
+- **Built (27 of the 41 queued):** i8 quarters K1.25, 1.75, 4.25, 4.75, 5.25, 5.75, 6.25; mul1 quarters K6.25, 6.75,
+  7.25, 7.75; i8 eighths K1.125 … 4.875 (16). **Not buildable (14):** i8 eighths K5.125–6.375 and every mul1 eighth
+  K6.125–7.875: `qtf2: no instance for (KA, MASK)`; mkqtf2.py's menu has eighths only for KA 0–4 (≤ K4.875), quarters
+  for KA 5–7. The plugin decodes them (exl3i_plan_tab covers m = 2..126, i.e. K to 7.875), so only the quantizer
+  menu blocks them: `v3/yaqa/w140/qtf2-eighths-ka5-7.patch` (MENU KA 5–7 → all seven even masks; regenerated
+  qtf2_inst_a5.cu / a6f / a7f + table: 12 more instances) for the lead; not applied. The 14 are blocked by claim dirs
+  (`BLOCKED` file) on ds8.
+- **Price table:** `hcurve140.json` = hcurve122's 17 plans unchanged + 31 (`u<K>` i8, `u<K>m` mul1). Fit-gen
+  calib-weighted head KL: u1.125 9.14e-2, u1.25 6.55e-2, u1.375 4.84e-2, u1.625 2.60e-2, u1.75 1.95e-2, u1.875 1.46e-2,
+  u2.125 8.69e-3, u2.375 5.41e-3, u2.625 3.36e-3, u2.875 2.19e-3, u3.125 1.44e-3, u3.375 9.89e-4, u3.625 6.63e-4,
+  u3.875 4.68e-4, u4.125 3.29e-4, u4.25 2.69e-4, u4.375 2.30e-4, u4.625 1.59e-4, u4.75 1.32e-4, u4.875 1.16e-4, u5.25
+  6.73e-5, u5.75 3.59e-5, u6.25 1.80e-5; mul1 u6.25m 1.82e-5, u6.75m 9.70e-6, u7.25m 5.11e-6, u7.75m 2.65e-6. Monotone
+  in K within each codebook (no flags); i8 vs mul1 at K6.25 1.804e-5 vs 1.815e-5 (point only, as at K6 / 6.5).
+- **Disk:** `wq/lm_head.safetensors` dropped for all 31 new donors (≈ 74 GB; kept q-head + rowerr marker); fractional
+  packs deleted; ds8 420 GB free. **wq is not needed by the search** if it splices quantized heads by radmix (w136 C4);
+  it is needed only to re-score (score119) or to rebuild a bf16 `hd-u<K>.rad` donor (headslab) — a dequant from q-head
+  could regenerate it (not tested).
+- **Fractional-K head decode** (K4 trunk + i8 head; profiled head GEMV ms per call, mean of 2 interleaved rounds, 512
+  calls each): K4 **1.031**, K4.125 **1.235** (+20%), K4.25 **1.271** (+23%), K4.5 **1.297** (+26%); with the
+  K6 / 6.5 rows above: K6 1.58 (i8) / 1.55 (mul1), K6.5 1.95 / 1.93. Effective read rate ~615 GB/s at integer K, ~520–535
+  GB/s at fractional K (the bit-offset extraction), so price the head's decode as bytes / 615 GB/s (integer K) or
+  bytes / 525 GB/s (fractional K). Whole-model step (1 round, short / 8k): K4 28.89 / 35.55 ms, 4.125 29.74 / 36.01,
+  4.25 29.28 / 36.63, 4.5 29.19 / 36.23 (report only; ±7% noise on ds8, see the 12:05 entry).
+- **Hiccup:** run122's claim gave K1.25 to workers 0 and 5 at the same second (both logged "start"); worker 5 was
+  killed while it waited for its card lock and restarted. Nothing was written twice (K1.25's files are from one run; its
+  scores are monotone with its neighbours).
+- **Runtime:** price rows none (same format); fractional head = D (measured above), prefill unchanged.
+- **Cost:** ~1.3 card-h (27 quants × ~3–4 min, scores ~10 min, 4 packs + 12 serves / profiles ~0.3 card-h).
+
 ### 2026-11-13 12:40 PM CST · #172 · Value check, third arm (amendment 1): **w133's M1 re-solve picks beat the search's current incumbents −23% pooled [−25, −21]**; ~−7% where the menus are comparable (3.0–4.0), the rest mostly the l5 embedding at ≥ 4.5 that the search's menu lacked (w132)
 - **Status:** done · **Machine:** ds8 8 cards (11:33 AM–12:38 PM CST, card locks; ~2.6 card-h) · **Code:**
   `search/v3/a8172/` (RULES-value amendment 1 **1e0f7cf**, committed alone before any M1 mix; `mkm1mix.py`,
