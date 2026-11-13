@@ -76,3 +76,13 @@ Re-solve the knapsack at every search size with it (the driver's `solve` move: m
 size's byte cap) and with M0 on the same rows, and report vs the current incumbents and w129's fit129h2 picks: bytes
 moved (sum of |Δbytes| over tensors), tensors changed, predicted gain of the new pick vs the incumbent under both
 models. These picks are candidates for the lead's ver4 + xcorp test. Nothing is submitted to the search from here.
+
+## Amendment 1 (2026-11-13 ~9:45 AM CST, after D, before any T / P / S run): frozen candidates
+`candidates173.json`: M0 (kfit3 as run), **M1** = kfit3 + per-(label, size) offsets profiled out + per-part curvature
+λ1 / μ1 (the "per-part non-linear compression" term; the head, sibling and adjacent terms did nothing on D and are
+dropped), **M2** = ridge residual on M0 (gb8 + gk + h̄ + total features, α by CV), **M2b** = the same ridge (gb8) on
+M1, **M3** = per-tensor shrinkage (sd 0.1) on kfit3 + per-(label, size) offsets, **M4** = M1 + per-group q. The
+per-(label, size) offsets were added on D after D's in-sample residuals showed kfit3's search labels pooling every
+size (cross-size x misfit 0.27–0.39 log vs 0.06 / 0.10 within a size); they fall under "per-part non-linear
+compression". A ds133 fix found on D (an incumbent's anchor row kept the result index of its last re-creation instead
+of its first) was applied before the D numbers that chose these candidates. The decision rule is unchanged.

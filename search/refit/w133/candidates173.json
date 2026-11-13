@@ -1,0 +1,71 @@
+{
+ "about": "#173 frozen candidates (RULES-173.md amendment 1, w133 11-13): chosen on the D split only (fit ri <= 205, predict 205 < ri <= 307 of S0); no model changes after this file is committed. D part-mean wMSE vs M0 in 'd_D'.",
+ "D_summary": {
+  "M0": "wMSE 0.00597, clear-sign 0.31, c slope -0.27 (kfit3's own moves: optimizer's curse)",
+  "kept terms": "per-(label, size) offsets profiled (prof + relabel size): -73.9 %; + lam2 (x / c part curvature in log P): -78.2 %; + qg: -75.2 % alone, -78.6 % with lam2",
+  "dropped terms": "headk (head x trunk) -0.0 %, sib (+0.2 %), adj (+0.4 %) on M0; lam2 on M0 -15 %; tau 0.01 / 0.04 no better than 0.02; per-tensor random effects: on M0 +7 % (sd 0.1) / +60 % (0.25), on M1o -0.1 % (sd 0.1, 0.25)",
+  "residual ridge": "on M0, all features -59.8 %, gb8 -16 %, gk -4.9 %, tot 0; on M1o / M1ol +0.2...+0.4 % vs its base"
+ },
+ "models": {
+  "M0": {
+   "kind": "kfit",
+   "ext": {}
+  },
+  "M1": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "lam2": true
+   },
+   "relabel": "size",
+   "note": "kfit3 + per-(label, size) offsets (profiled) + per-part curvature lam2 (D -78.2 %)"
+  },
+  "M2": {
+   "kind": "resid",
+   "base": "M0",
+   "feats": [
+    "gb8",
+    "gk",
+    "hbar",
+    "tot"
+   ],
+   "alpha": "cv",
+   "note": "residual ridge on M0, features gb8 + gk + hbar + tot, alpha by 5-block CV (D -59.8 %)"
+  },
+  "M2b": {
+   "kind": "resid",
+   "base": "M1",
+   "feats": [
+    "gb8"
+   ],
+   "alpha": "cv",
+   "note": "residual ridge (gb8) on M1 (D -77.8 %)"
+  },
+  "M3": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "re": 0.1
+   },
+   "relabel": "size",
+   "note": "hierarchical per-tensor shrinkage sd 0.1 on kfit3 + per-(label, size) offsets (D -74.0 %)"
+  },
+  "M4": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "lam2": true,
+    "qg": true
+   },
+   "relabel": "size",
+   "note": "combination: M1 + per-group q (D -78.6 %)"
+  }
+ },
+ "d_D": {
+  "M1": -0.782,
+  "M2": -0.598,
+  "M2b": -0.778,
+  "M3": -0.74,
+  "M4": -0.786
+ }
+}
