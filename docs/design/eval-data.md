@@ -7,11 +7,17 @@ search needs fresh documents every round, and the user wants real-use coverage (
 
 ## Roles
 
+**2026-11-13 (user): fit and search are merged into one pool.** Why: V3's search refits the knapsack on its own
+results (as V2's stream did), so a separate fit pool only bought independence the merged pool keeps through slice
+rotation (~25 decisions a slice, own offset per slice), finalists re-measured on fresh slices, and verify for every
+final pick and published number. qad and verify are unchanged and stay strictly separate.
+
+
 | data | role |
 |---|---|
 | calib, all | the published input Hessians: **V3's only input statistics** (2026-11-06: the xcorp and self-generated blends were dropped, below) |
-| calib fit | sensitivity model fits (kfit2 / knap4) |
-| calib search | search accept/reject (with xcorp and own traces); its 2 long traces = long-context guard during the search, scored as ≤ 32k turn-aligned chunks (`agent-search32`, `eval/traces/`; 2026-11-07) |
+| calib fit + search (**one pool from 2026-11-13**, user) | sensitivity fits, knapsack refits and search accept / reject: 1,134 docs; slices drawn least-used first by the ledger's per-document decision counts; the pool ids in pools-v3.json are unchanged (fit and search are one role now, no document moved) |
+| calib search (merged into fit + search above) | search accept/reject (with xcorp and own traces); its 2 long traces = long-context guard during the search, scored as ≤ 32k turn-aligned chunks (`agent-search32`, `eval/traces/`; 2026-11-07) |
 | calib qad | training: H_out collection, healing |
 | calib verify | **final picks and every published number**; its long traces: rich and express as ≤ 32k chunks (`agent-verify32`) for finished mixes, and both whole (`agent-verify-whole`) only as a rare full-length sanity check (n = 2, reported together, never a selection or tuning target; user 2026-11-07); lua / requests stay the whole ver3-long / ver4-long goldens |
 | public | final reporting only; at the end also full-length KLD on its 2 long agentic traces (user 2026-11-07) |
