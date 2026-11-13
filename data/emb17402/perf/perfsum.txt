@@ -1,0 +1,14 @@
+{"row": "k4-l3", "round": 1, "step_ms_8k": 33.126417677419354, "ttft_ms_8k": 3473.6707570264116, "step_ms_0": 35.41743525490195, "prefill_s_8k": 3.45, "static_gib": 12.8, "emb_placement": null, "emb_op": "embed_tq", "emb_calls": 10, "emb_total_ms": 1.76, "emb_us_call": 176.02}
+{"row": "k4-l3", "round": 2, "step_ms_8k": 32.94083661290324, "ttft_ms_8k": 3478.9471640251577, "step_ms_0": 31.96705179215686, "prefill_s_8k": 3.451, "static_gib": 12.8, "emb_placement": null, "emb_op": "embed_tq", "emb_calls": 10, "emb_total_ms": 2.121, "emb_us_call": 212.09}
+{"row": "bf16", "round": 1, "step_ms_8k": 33.00770212903225, "ttft_ms_8k": 3474.780243996065, "step_ms_0": 31.97642305490196, "prefill_s_8k": 3.483, "static_gib": 12.34, "emb_placement": "I placement: 'token_embd.weight' (2.37 GiB) in the pinned host pool, read in place (--embedding-placement ram, the default)", "emb_op": "embed_lookup", "emb_calls": 10, "emb_total_ms": 2.621, "emb_us_call": 262.08}
+{"row": "bf16", "round": 2, "step_ms_8k": 36.28602125806452, "ttft_ms_8k": 3539.959790010471, "step_ms_0": 32.17807908235294, "prefill_s_8k": 3.501, "static_gib": 12.34, "emb_placement": "I placement: 'token_embd.weight' (2.37 GiB) in the pinned host pool, read in place (--embedding-placement ram, the default)", "emb_op": "embed_lookup", "emb_calls": 10, "emb_total_ms": 2.371, "emb_us_call": 237.06}
+{"row": "k4-t4", "round": 1, "step_ms_8k": 32.55135816129034, "ttft_ms_8k": 3463.44484295696, "step_ms_0": 31.58963870196079, "prefill_s_8k": 3.429, "static_gib": 12.93, "emb_placement": null, "emb_op": "embed_exl3i", "emb_calls": 10, "emb_total_ms": 29.367, "emb_us_call": 2936.68}
+{"row": "k4-t4", "round": 2, "step_ms_8k": 32.535163258064514, "ttft_ms_8k": 3459.3494670116343, "step_ms_0": 31.524328568627446, "prefill_s_8k": 3.431, "static_gib": 12.93, "emb_placement": null}
+{"row": "k4-t2.5", "round": 1, "step_ms_8k": 32.53134032258064, "ttft_ms_8k": 3465.2027569827624, "step_ms_0": 31.57061431372549, "prefill_s_8k": 3.427, "static_gib": 12.71, "emb_placement": null, "emb_op": "embed_exl3i", "emb_calls": 10, "emb_total_ms": 27.589, "emb_us_call": 2758.89}
+{"row": "k4-t2.5", "round": 2, "step_ms_8k": 32.54614464516129, "ttft_ms_8k": 3462.9203579970635, "step_ms_0": 31.560481062745104, "prefill_s_8k": 3.428, "static_gib": 12.71, "emb_placement": null, "emb_op": "embed_exl3i", "emb_calls": 10, "emb_total_ms": 27.503, "emb_us_call": 2750.33}
+
+       row    static_gib  prefill_s_8k    ttft_ms_8k     step_ms_0    step_ms_8k   emb_us_call     emb_calls
+     k4-l3          12.8          3.45          3476         33.69         33.03         194.1            10
+      bf16         12.34         3.492          3507         32.08         34.65         249.6            10
+     k4-t4         12.93          3.43          3461         31.56         32.54          2937            10
+   k4-t2.5         12.71         3.428          3464         31.57         32.54          2755            10

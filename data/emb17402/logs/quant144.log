@@ -1,0 +1,18 @@
+11-13 12:17:37 CST quant t-i8 K2.5 (i8, natural) card 1 start
+11-13 12:20:21 CST quant t-i8 K2.5 OK 164 s: {"level": "/data/q27/emb/trellis/t-i8/K2.5", "rel": 0.03457465337527971, "rows": 248320, "bytes_src": 397819428}
+11-13 12:23:37 CST quant t-i8-r16 K2.5 (i8, r16) card 2 start
+11-13 12:26:27 CST quant t-i8-r16 K2.5 OK 170 s: {"level": "/data/q27/emb/trellis/t-i8-r16/K2.5", "rel": 0.034554958304225204, "rows": 248320, "bytes_src": 397819428}
+11-13 12:32:23 CST quant t-i8 K3 (i8, natural) card 1 start
+11-13 12:34:31 CST quant t-i8 K3 OK 128 s: {"level": "/data/q27/emb/trellis/t-i8/K3", "rel": 0.0174064547624199, "rows": 248320, "bytes_src": 477281828}
+11-13 12:39:07 CST quant t-i8 K5 (i8, natural) card 1 start
+11-13 12:41:54 CST quant t-i8 K5 OK 167 s: {"level": "/data/q27/emb/trellis/t-i8/K5", "rel": 0.00115621858699516, "rows": 248320, "bytes_src": 795131428}
+11-13 12:42:18 CST quant t-i8 K6 (i8, natural) card 1 start
+11-13 12:44:22 CST quant t-i8 K6 OK 124 s: {"level": "/data/q27/emb/trellis/t-i8/K6", "rel": 0.00030531085231939886, "rows": 248320, "bytes_src": 954056228}
+11-13 12:44:44 CST quant t-i8 K1.5 (i8, natural) card 0 start
+11-13 12:47:43 CST quant t-i8 K1.5 OK 179 s: {"level": "/data/q27/emb/trellis/t-i8/K1.5", "rel": 0.13735137872429248, "rows": 248320, "bytes_src": 238894628}
+11-13 12:47:45 CST quant t-m1 K6.5 (mul1, natural) card 0 start
+11-13 12:52:14 CST quant t-m1 K6.5 OK 269 s: {"level": "/data/q27/emb/trellis/t-m1/K6.5", "rel": 0.00015908872338102068, "rows": 248320, "bytes_src": 1033518628}
+11-13 12:52:14 CST queue q-box2.txt done
+11-13 16:29:04 CST quant t-m1 K8 (mul1, natural) card 2 start
+11-13 16:31:55 CST quant t-m1 K8 OK 171 s: {"level": "/data/q27/emb/trellis/t-m1/K8", "rel": 2.3049663387352584e-05, "rows": 248320, "bytes_src": 1271905828}
+11-13 16:31:55 CST queue q-k8.txt done

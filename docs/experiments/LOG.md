@@ -4,6 +4,55 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 5:05 PM CST · #174-02 · Trellis token embedding served from the stored form (w144): `embed_exl3i` bit-exact, VRAM = codes, ~0 e2e time; 4 A8 anchors agree with w135's prices; host candidates (bf16 / int8-row / K8 trellis) all ≈ bf16
+- **Status:** done (kernel, donors K1.5–K8, checks, menu); host-RAM path: core patch + loader design for the lead (not
+  applied) · **Machine:** box2 (cards under locks: 16 quants, identity, perf, GPU tests), ds8 (donors, 8 A8 evals) ·
+  **Code:** fork `qc-exl3-v3-emb144` d9bbc7f / 5679e6f / 1deec9a (a clean merge into `qc-exl3-v3`, left to the lead:
+  that worktree has others' WIP); `search/v3/emb17402/` (README, RULES 2959c6c + amendments 88fefd2 / 60dcc1c / 9df4c15)
+  · **Data:** `data/emb17402/`, `rad-local/workers/w144/` (menu17402.json, a8-17402*.json / .obs.jsonl), donors
+  `/data/q27/emb/trellis/emb-t-{i8,m1}-K*.rad` (box2 + ds8) · **Brief:** `rad-local/workers/instr3/w144.md` + lead notes
+- **Kernel** (exl3dense `embed_exl3i`; exl3quant imports `token_embd.weight exl3i`, qwen35_exl3 serves it). A token's
+  row needs its whole 128-row block, because the output Hadamard spans 128 vocab rows. Per 128 columns the workgroup
+  decodes the block's 64 tiles and folds the column butterfly's cone for the token, in the oracle's f32 order. LDS only:
+  no scratch, no expanded table. mul1 / mul1i8 / mul1i4, m 2–128, natural / R16.
+- **Identity (pass):** whole-model per-position rows on golden-ver3-8k are **byte-identical** between A (the gather) and
+  REF (bf16 oracle rows, embed_lookup) at K2.5 and K4. KLD 0.172937 / 0.150998 both ways, |Δ| = 0 ≤ 1e-5. GPU test:
+  device == host bit for bit (3 codebooks × 8 rates × 2 row orders, small / large grids, repeats); host == oracle.
+- **VRAM as served** (w138 K4.125 + R16 K4 + A8 trunk, static weights): bf16 table host-pinned 12.34 GiB; Lloyd l3
+  12.80 (+497 MB); **t2.5 12.71 (+398 MB), t4 12.93 (+636 MB)**. Each is exactly the codes + scales bytes; no extra
+  buffer.
+- **Time** (box2, 2 interleaved rounds): 8k prefill e2e l3 3.450 s, t2.5 3.428, t4 3.430, bf16-host 3.492. Decode step
+  ~31.6–33.7 ms on every row (noise). Served op time per 8k prompt: embed_exl3i ≈ 13.8 / 14.5 ms (K2.5 / K4) vs embed_tq
+  1.0 and host bf16 embed_lookup 1.2 (+0.4% of the prefill; not visible e2e). Kernel bench, real ids (2,114 distinct of
+  8,192): M 8192 8.9 / 9.4 / 10.5 ms (K2.5 / K4 / K8); M 1 12–14 µs (embed_tq 35). Uniform ids, the worst case: 32–39 ms
+  at M 8192.
+- **Row order / codebook:** R16 vs natural rel −0.06% (K2.5) / −0.15% (K4): natural kept, and the kernel takes either.
+  mul1 vs mul1i8 at K6.5 / K7: 1.591e-4 / 8.36e-5 vs 1.604e-4 / 1.02e-4. The ladder is i8; mul1 is at K6.5 / K7 / K8.
+- **A8 anchors** (s171b, w135's setup, this branch's build; the build control's `.rows` are byte-identical to w132's, so
+  they pair as planned), log ratio vs the paired Lloyd row: t2.5 vs l3 (−99 MB) **−0.58% ± 0.46**; t4 vs l4 (−19 MB)
+  −1.00 ± 0.72; t6 vs l6 +0.65 ± 1.19; t5 vs l5 −0.73 ± 3.70. **Price check: all 4 agree** with the floor model
+  (|z| 1.45 / 0.85 / 1.34 / 1.19 ≤ 2). Fit rows: `a8-17402.obs.jsonl` (labels `emb17402a8-*`).
+- **Menu:** 17 trellis options t1.5–t7 (i8, half steps) + t6.5m / t7m / t8m (mul1) added to menu174 →
+  `rad-local/workers/w144/menu17402.json`, err = embprices174 floor model on the measured rel. For the lead / w143's re-solve.
+- **Host-RAM embedding** (lead notes; amendment 2):
+  - KL vs bf16 (2.5 incumbent, A8, s171b): **t8m −0.31% ± 0.32, i8row +0.24% ± 0.30: both ≈ bf16** by the pre-registered
+    rule (2-SE interval contains 0, within ±1%). For contrast, the incumbent's Lloyd l3 is +2.2% ± 1.1 vs bf16.
+  - rel: K8 mul1 2.3e-5; int8 per row 8.1e-5 (8.4e-5 after the bf16 output); int8 G128 4.2e-5; G128 + FWHT128 4.2e-5.
+    Floor-model err of every one is within 2e-6 of bf16's.
+  - **Link cost of the one-kernel idea:** a K8 trellis token reads its 128-row block, **640 KB, not 5 KB**. Same kernel on
+    mapped pinned host memory (`--host`), K8: decode M 1 37 µs vs 14 in VRAM (+23 µs a step, ~0.07%). 8k prefill with
+    real ids 40.9 ms vs 10.5 (host bf16 lookup ~1.2): ~+1% of the prefill. Uniform ids: 191 ms (+5.5%).
+  - A host exl3i table also needs a core change: the planner pins only tables read solely by `embed_lookup`, so today an
+    exl3i table always lands in VRAM. `patches/core-embed-exl3i-host.patch` adds `embed_exl3i` to `is_embedding_table`
+    and appends `RadBuildCtx.embedding_vram` (ABI 36) for the dual-table loader. Design in the `.md`: declare
+    `token_embd_host.weight` under `--embedding-placement ram` (default), `token_embd.weight` under `vram`. Undeclared
+    tables are never placed, so the unused one costs nothing *by construction*. **Not verified served:** it needs the
+    patch, ~10 plugin lines and a radmix add-as line.
+- **Lead decides:** merge `qc-exl3-v3-emb144`; the host format (bf16: zero code, 2.5 GB pinned; int8-row: 1.27 GB, a
+  5 KB-a-token gather to write; K8 trellis: 1.27 GB, this kernel, ~+1% 8k prefill); the core patch / ABI bump; the
+  loader default. My lean: host default, bf16 unless the 1.27 GB matters. **Runtime:** in-VRAM trellis ≈ 0 (+0.4% prefill
+  op time); host K8 ~+1% prefill.
+
 ### 2026-11-13 4:55 PM CST · #162-03 · qtf2 eighth steps K5.125–7.875 applied (w140's patch, 12 instances): existing levels byte-identical (K4 i8, K6 mul1, K6.25 i8; same stamps); the 14 blocked R16 head donors built and priced → hcurve140.json 62 plans, smooth, no flags (w146)
 - **Status:** done · **Machine:** ds8 (gate 4:29–4:35 PM CST on cards 2–4; build 4:35–4:51 on cards 2–5; scores 4:51–4:54;
   card locks + ram.lock shared beside w139h's iqrun on 0/1/6/7) · **Code:** `v3/e3/exl3frac2/` (w140's

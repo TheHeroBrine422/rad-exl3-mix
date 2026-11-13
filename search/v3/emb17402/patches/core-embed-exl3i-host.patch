@@ -1,0 +1,43 @@
+diff --git a/abi/rad_builder.h b/abi/rad_builder.h
+index 849b0b8..8d1eafb 100644
+--- a/abi/rad_builder.h
++++ b/abi/rad_builder.h
+@@ -295,6 +295,12 @@ typedef struct RadBuildCtx {
+      * fixed buffers ignores them, and the core says so at startup. */
+     int64_t  gen_max_pixels;
+     int64_t  gen_max_refs;
++
++    /* ---- appended in ABI 36 (proposed, #174-02; the release assigns the number) */
++    /* --embedding-placement as asked: 0 ram (the default), 1 vram. For a container that carries a token table for
++     * each (qwen35_exl3: token_embd_host.weight for ram, token_embd.weight for vram), the plugin declares only the
++     * one this placement reads; the other is never declared, so never mapped, pinned or uploaded. */
++    int32_t  embedding_vram;
+ } RadBuildCtx;
+ 
+ /* ================================================================== control vectors */
+diff --git a/core/engine_bringup.cpp b/core/engine_bringup.cpp
+index 3805b07..20fd65e 100644
+--- a/core/engine_bringup.cpp
++++ b/core/engine_bringup.cpp
+@@ -1014,6 +1014,7 @@ RadBuildCtx Engine::build_ctx(int rank, int64_t max_tok) const {
+     /* The engine always states the KV dtype. RAD_DT_INVALID (zero) remains valid in the ABI for
+      * other callers and means the plugin's default. */
+     bc.kv_dtype = cfg_.kv_cache_dtype == "bf16" ? RAD_BF16 : RAD_F8E4M3;
++    bc.embedding_vram = cfg_.embedding_placement == TablePlacement::Vram;
+     bc.kv_quant = cfg_.kv_cache_dtype == "fp8_v4" ? RAD_KVQ_V4
+                 : cfg_.kv_cache_dtype == "k6_v4"  ? RAD_KVQ_K6V4 : RAD_KVQ_NONE;
+     bc.attn_prefill_fp8 = cfg_.attn_prefill_fp8;
+diff --git a/core/place/planner.h b/core/place/planner.h
+index ba2282c..3348a22 100644
+--- a/core/place/planner.h
++++ b/core/place/planner.h
+@@ -437,7 +437,8 @@ int plan_check_weights_pool(const Plan& p, int64_t pool_bytes);
+  * whole every step and is neither. Shared by the budget resolver and the planner. */
+ bool read_only_by(const Program& prog, rad_weight w, const char* op);
+ inline bool is_embedding_table(const Program& prog, rad_weight w) {
+-    return read_only_by(prog, w, "embed_lookup");
++    /* embed_exl3i (exl3dense, #174-02) gathers a token's 128-row trellis block: a lookup too, M blocks a step */
++    return read_only_by(prog, w, "embed_lookup") || read_only_by(prog, w, "embed_exl3i");
+ }
+ inline bool is_ngram_table(const Program& prog, rad_weight w) {
+     return read_only_by(prog, w, "embed_lookup_q");

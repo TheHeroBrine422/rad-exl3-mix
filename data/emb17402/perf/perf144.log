@@ -1,0 +1,52 @@
+18:49:21 e2e-k4-l3-r1: serve k4-l3.rad card 3
+18:50:54 e2e-k4-l3-r1: done |  static weights 12.80 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-l3-r1 ctx 0 run 3: prompt 103 ttft 132 ms, client 32.07 ms/tok, server 32.07 ms/step x 1.00 tok
+18:50:54 prof-k4-l3-r1: serve k4-l3.rad card 3
+18:51:14 prof-k4-l3-r1: done |  static weights 12.80 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8203 tokens, 6.305 s
+18:51:14 e2e-k4-t4-r1: serve k4-t4.rad card 3
+18:52:33 e2e-k4-t4-r1: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t4-r1 ctx 0 run 3: prompt 102 ttft 132 ms, client 32.28 ms/tok, server 32.28 ms/step x 1.00 tok
+18:52:33 prof-k4-t4-r1: serve k4-t4.rad card 3
+18:52:50 prof-k4-t4-r1: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8200 tokens, 3.459 s
+18:52:50 e2e-k4-t2.5-r1: serve k4-t2.5.rad card 3
+18:54:12 e2e-k4-t2.5-r1: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t2.5-r1 ctx 0 run 3: prompt 105 ttft 131 ms, client 32.66 ms/tok, server 32.65 ms/step x 1.00 tok
+18:54:12 prof-k4-t2.5-r1: serve k4-t2.5.rad card 3
+18:54:30 prof-k4-t2.5-r1: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8203 tokens, 3.685 s
+18:54:30 e2e-bf16-r1: serve v3-k4.125-r16k4-a8.rad card 3
+18:55:58 e2e-bf16-r1: done |  static weights 12.34 GiB off the top: every rank's own shard, and not a share of anything | e2e-bf16-r1 ctx 0 run 3: prompt 103 ttft 141 ms, client 31.97 ms/tok, server 31.97 ms/step x 1.00 tok
+18:55:58 prof-bf16-r1: serve v3-k4.125-r16k4-a8.rad card 3
+18:56:15 prof-bf16-r1: done |  static weights 12.34 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.463 s
+18:56:15 perf r1 k4-l3 k4-t4 k4-t2.5 bf16 finished
+18:56:17 e2e-bf16-r2: serve v3-k4.125-r16k4-a8.rad card 1
+18:57:39 e2e-bf16-r2: done |  static weights 12.34 GiB off the top: every rank's own shard, and not a share of anything | e2e-bf16-r2 ctx 0 run 3: prompt 106 ttft 163 ms, client 32.18 ms/tok, server 32.18 ms/step x 1.00 tok
+18:57:39 prof-bf16-r2: serve v3-k4.125-r16k4-a8.rad card 1
+18:57:59 prof-bf16-r2: done |  static weights 12.34 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8204 tokens, 3.476 s
+18:57:59 e2e-k4-t2.5-r2: serve k4-t2.5.rad card 1
+18:59:17 e2e-k4-t2.5-r2: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t2.5-r2 ctx 0 run 3: prompt 104 ttft 127 ms, client 32.09 ms/tok, server 32.08 ms/step x 1.00 tok
+18:59:17 prof-k4-t2.5-r2: serve k4-t2.5.rad card 1
+18:59:34 prof-k4-t2.5-r2: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.475 s
+18:59:34 e2e-k4-t4-r2: serve k4-t4.rad card 1
+19:00:52 e2e-k4-t4-r2: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t4-r2 ctx 0 run 3: prompt 103 ttft 127 ms, client 31.98 ms/tok, server 31.97 ms/step x 1.00 tok
+19:00:52 prof-k4-t4-r2: serve k4-t4.rad card 1
+19:01:09 prof-k4-t4-r2: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.476 s
+19:01:09 e2e-k4-l3-r2: serve k4-l3.rad card 1
+19:02:26 e2e-k4-l3-r2: done |  static weights 12.80 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-l3-r2 ctx 0 run 3: prompt 103 ttft 126 ms, client 32.01 ms/tok, server 32.01 ms/step x 1.00 tok
+19:02:26 prof-k4-l3-r2: serve k4-l3.rad card 1
+19:02:43 prof-k4-l3-r2: done |  static weights 12.80 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.465 s
+19:02:43 perf r2 bf16 k4-t2.5 k4-t4 k4-l3 finished
+19:11:06 e2e-k4-t4-r1: serve k4-t4.rad card 0
+19:12:26 e2e-k4-t4-r1: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t4-r1 ctx 0 run 3: prompt 102 ttft 127 ms, client 31.63 ms/tok, server 31.62 ms/step x 1.00 tok
+19:12:26 prof-k4-t4-r1: serve k4-t4.rad card 0
+19:12:43 prof-k4-t4-r1: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8201 tokens, 3.448 s
+19:12:43 e2e-k4-t2.5-r1: serve k4-t2.5.rad card 0
+19:14:00 e2e-k4-t2.5-r1: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t2.5-r1 ctx 0 run 3: prompt 102 ttft 126 ms, client 33.11 ms/tok, server 33.10 ms/step x 1.00 tok
+19:14:00 prof-k4-t2.5-r1: serve k4-t2.5.rad card 0
+19:14:17 prof-k4-t2.5-r1: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8204 tokens, 3.448 s
+19:14:17 perf r1 k4-t4 k4-t2.5 finished
+19:14:17 e2e-k4-t2.5-r2: serve k4-t2.5.rad card 0
+19:15:34 e2e-k4-t2.5-r2: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t2.5-r2 ctx 0 run 3: prompt 102 ttft 125 ms, client 31.57 ms/tok, server 31.56 ms/step x 1.00 tok
+19:15:34 prof-k4-t2.5-r2: serve k4-t2.5.rad card 0
+19:15:51 prof-k4-t2.5-r2: done |  static weights 12.71 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8199 tokens, 3.445 s
+19:15:51 e2e-k4-t4-r2: serve k4-t4.rad card 0
+19:17:08 e2e-k4-t4-r2: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | e2e-k4-t4-r2 ctx 0 run 3: prompt 106 ttft 125 ms, client 31.55 ms/tok, server 31.55 ms/step x 1.00 tok
+19:17:08 prof-k4-t4-r2: serve k4-t4.rad card 0
+19:17:25 prof-k4-t4-r2: done |  static weights 12.93 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.455 s
+19:17:25 perf r2 k4-t2.5 k4-t4 finished

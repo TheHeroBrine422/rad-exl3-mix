@@ -1,0 +1,3 @@
+{"level": "int8-row", "rel": 8.113996387841083e-05, "rows": 248320, "bytes_codes": 1271398400, "bytes_scales": 496640}
+{"level": "int8-g128", "rel": 4.246418909605115e-05, "rows": 248320, "bytes_codes": 1271398400, "bytes_scales": 19865600}
+{"level": "int8-g128h", "rel": 4.1948948173706703e-05, "rows": 248320, "bytes_codes": 1271398400, "bytes_scales": 19865600}

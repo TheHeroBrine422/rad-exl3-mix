@@ -1,0 +1,107 @@
+host box2 card 2 Fri Nov 13 18:40:25 UTC 2026
+m=  2 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  2 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1   r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1   r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  2 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  2 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1i8 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1i8 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  2 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  2 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=  8 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 36 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 40 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m= 64 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=104 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=112 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1i4 r16=0: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+m=128 mul1i4 r16=1: device rc 0 / 0, 0 of 208384 (M 814) and 0 of 10240 (M 40) bf16 values differ from the host row
+embed_exl3i device == host: all bit-exact
+bench ids: /data/q27/goldens/golden-search27c-c/tokens.i32, 733 distinct of 8192
+bench embed_tq    l3          M=    1:      33.8 us  (33.825 us a token)
+bench embed_tq    l3          M=   16:      33.9 us  (2.122 us a token)
+bench embed_tq    l3          M=  128:      34.0 us  (0.265 us a token)
+bench embed_tq    l3          M= 1024:      87.2 us  (0.085 us a token)
+bench embed_tq    l3          M= 8192:     612.7 us  (0.075 us a token)
+bench embed_exl3i mul1i8 K2    M=    1:       8.7 us  (8.690 us a token)
+bench embed_exl3i mul1i8 K2    M=   16:      37.3 us  (2.331 us a token)
+bench embed_exl3i mul1i8 K2    M=  128:     234.6 us  (1.833 us a token)
+bench embed_exl3i mul1i8 K2    M= 1024:     597.7 us  (0.584 us a token)
+bench embed_exl3i mul1i8 K2    M= 8192:    1524.6 us  (0.186 us a token)
+bench embed_exl3i mul1i8 K2.5  M=    1:       9.1 us  (9.105 us a token)
+bench embed_exl3i mul1i8 K2.5  M=   16:      38.2 us  (2.388 us a token)
+bench embed_exl3i mul1i8 K2.5  M=  128:     243.5 us  (1.903 us a token)
+bench embed_exl3i mul1i8 K2.5  M= 1024:     627.0 us  (0.612 us a token)
+bench embed_exl3i mul1i8 K2.5  M= 8192:    1571.3 us  (0.192 us a token)
+bench embed_exl3i mul1i8 K4    M=    1:       9.7 us  (9.726 us a token)
+bench embed_exl3i mul1i8 K4    M=   16:      41.8 us  (2.613 us a token)
+bench embed_exl3i mul1i8 K4    M=  128:     281.6 us  (2.200 us a token)
+bench embed_exl3i mul1i8 K4    M= 1024:     784.2 us  (0.766 us a token)
+bench embed_exl3i mul1i8 K4    M= 8192:    1870.0 us  (0.228 us a token)
+bench embed_exl3i mul1i8 K6.5  M=    1:      10.6 us  (10.591 us a token)
+bench embed_exl3i mul1i8 K6.5  M=   16:      46.3 us  (2.891 us a token)
+bench embed_exl3i mul1i8 K6.5  M=  128:     310.9 us  (2.429 us a token)
+bench embed_exl3i mul1i8 K6.5  M= 1024:     870.5 us  (0.850 us a token)
+bench embed_exl3i mul1i8 K6.5  M= 8192:    2007.2 us  (0.245 us a token)
+bench embed_exl3i mul1i8 K7    M=    1:      11.0 us  (11.046 us a token)
+bench embed_exl3i mul1i8 K7    M=   16:      47.9 us  (2.993 us a token)
+bench embed_exl3i mul1i8 K7    M=  128:     338.0 us  (2.640 us a token)
+bench embed_exl3i mul1i8 K7    M= 1024:     905.2 us  (0.884 us a token)
+bench embed_exl3i mul1i8 K7    M= 8192:    2083.8 us  (0.254 us a token)
+bench embed_exl3i mul1   K2    M=    1:       8.3 us  (8.320 us a token)
+bench embed_exl3i mul1   K2    M=   16:      35.0 us  (2.191 us a token)
+bench embed_exl3i mul1   K2    M=  128:     234.2 us  (1.829 us a token)
+bench embed_exl3i mul1   K2    M= 1024:     601.0 us  (0.587 us a token)
+bench embed_exl3i mul1   K2    M= 8192:    1528.0 us  (0.187 us a token)
+bench embed_exl3i mul1   K2.5  M=    1:       8.5 us  (8.500 us a token)
+bench embed_exl3i mul1   K2.5  M=   16:      36.0 us  (2.253 us a token)
+bench embed_exl3i mul1   K2.5  M=  128:     244.0 us  (1.906 us a token)
+bench embed_exl3i mul1   K2.5  M= 1024:     618.2 us  (0.604 us a token)
+bench embed_exl3i mul1   K2.5  M= 8192:    1577.4 us  (0.193 us a token)
+bench embed_exl3i mul1   K4    M=    1:       9.5 us  (9.456 us a token)
+bench embed_exl3i mul1   K4    M=   16:      39.6 us  (2.473 us a token)
+bench embed_exl3i mul1   K4    M=  128:     290.0 us  (2.265 us a token)
+bench embed_exl3i mul1   K4    M= 1024:     776.0 us  (0.758 us a token)
+bench embed_exl3i mul1   K4    M= 8192:    1862.9 us  (0.227 us a token)
+bench embed_exl3i mul1   K6.5  M=    1:      10.2 us  (10.186 us a token)
+bench embed_exl3i mul1   K6.5  M=   16:      43.7 us  (2.734 us a token)
+bench embed_exl3i mul1   K6.5  M=  128:     323.6 us  (2.528 us a token)
+bench embed_exl3i mul1   K6.5  M= 1024:     864.5 us  (0.844 us a token)
+bench embed_exl3i mul1   K6.5  M= 8192:    2010.7 us  (0.245 us a token)
+bench embed_exl3i mul1   K7    M=    1:      10.5 us  (10.525 us a token)
+bench embed_exl3i mul1   K7    M=   16:      45.3 us  (2.834 us a token)
+bench embed_exl3i mul1   K7    M=  128:     338.1 us  (2.642 us a token)
+bench embed_exl3i mul1   K7    M= 1024:     901.9 us  (0.881 us a token)
+bench embed_exl3i mul1   K7    M= 8192:    2085.1 us  (0.255 us a token)
+rc 0

@@ -1,0 +1,17 @@
+{"level": "/data/q27/emb/trellis/t-i8/K4", "rel": 0.004459509530377722, "rows": 248320, "bytes_src": 636206628}
+{"level": "/data/q27/emb/trellis/t-i8-r16/K4", "rel": 0.004452600060767547, "rows": 248320, "bytes_src": 636206628}
+{"level": "/data/q27/emb/trellis/t-i8/K2", "rel": 0.06843408774243356, "rows": 248320, "bytes_src": 318357028}
+{"level": "/data/q27/emb/trellis/t-i8/K3.5", "rel": 0.0088138809581491, "rows": 248320, "bytes_src": 556744228}
+{"level": "/data/q27/emb/trellis/t-i8/K4.5", "rel": 0.002263823698482632, "rows": 248320, "bytes_src": 715669028}
+{"level": "/data/q27/emb/trellis/t-i8/K5.5", "rel": 0.000592109747844324, "rows": 248320, "bytes_src": 874593828}
+{"level": "/data/q27/emb/trellis/t-i8/K6.5", "rel": 0.00016036442107356615, "rows": 248320, "bytes_src": 1033518628}
+{"level": "/data/q27/emb/trellis/t-i8/K7", "rel": 0.00010184597465288716, "rows": 248320, "bytes_src": 1112981028}
+{"level": "/data/q27/emb/trellis/t-m1/K7", "rel": 8.358731539112948e-05, "rows": 248320, "bytes_src": 1112981028}
+{"level": "/data/q27/emb/trellis/t-i8/K2.5", "rel": 0.03457465337527971, "rows": 248320, "bytes_src": 397819428}
+{"level": "/data/q27/emb/trellis/t-i8-r16/K2.5", "rel": 0.034554958304225204, "rows": 248320, "bytes_src": 397819428}
+{"level": "/data/q27/emb/trellis/t-i8/K3", "rel": 0.0174064547624199, "rows": 248320, "bytes_src": 477281828}
+{"level": "/data/q27/emb/trellis/t-i8/K5", "rel": 0.00115621858699516, "rows": 248320, "bytes_src": 795131428}
+{"level": "/data/q27/emb/trellis/t-i8/K6", "rel": 0.00030531085231939886, "rows": 248320, "bytes_src": 954056228}
+{"level": "/data/q27/emb/trellis/t-i8/K1.5", "rel": 0.13735137872429248, "rows": 248320, "bytes_src": 238894628}
+{"level": "/data/q27/emb/trellis/t-m1/K6.5", "rel": 0.00015908872338102068, "rows": 248320, "bytes_src": 1033518628}
+{"level": "/data/q27/emb/trellis/t-m1/K8", "rel": 2.3049663387352584e-05, "rows": 248320, "bytes_src": 1271905828}
