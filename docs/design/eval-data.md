@@ -31,6 +31,11 @@ hundred docs, 8k cap). The rest of verify stays unspent for later releases (V3.1
 (paired, per-document bootstrap), and not significantly worse on the calib part (its own CI; the calib part is small,
 so it vetoes, it does not rank). Published numbers stay calib verify; the xcorp part is reported separately as the
 real-world number. Public is never read for this.
+**[2026-11-13, overfit audit]** "The rest of verify stays unspent" no longer holds: the V4 reserve (236 docs,
+`ver-2026-11-01.json`) was never in the ledger, and ledger-clean draws took 182 of its docs (golden-verify27-w114,
+w119-headx-verify; 0.8B g08-verify1 / -2 took 93 more). Untouched today: 28 verify docs + ver4. ver3 is spent for
+selection (~100 scorings, the #171 monitor). What V3.1 / V4 judge on is open (user); the reserve is now in the ledger
+(`@reserve-v4`).
 
 ## Goldens
 - Made by stock radiance (1.17): `radiance --model <bf16> --kld-record DIR --kld-corpus FILE.jsonl --kld-top 512`, the

@@ -4,6 +4,155 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 11:45 AM CST · #— · Overfit audit of 11-10 → 11-13 (user cadence; w141; read-only, no card time)
+- **Status:** done · **Machine:** VM (LOG, ledger, driver state), colo (calib script census, CPU, seconds), ds8 / box2
+  (read-only listings and `stat`) · **Code:** `rad-local/workers/w141/` (`dom141.py` per-document dominance,
+  `script141.py` script census, `g08draw141.py` 0.8B golden doc lists, `ledger141.py` new uses, `ledger_add-date.patch`)
+  · **Data:** same folder (`dom141.json`, `script141.json`, `g08docs141.json`) · **Brief:** `rad-local/workers/instr3/w141.md`
+- **Decisions and their slices** (#149–#178, 11-11 7:40 AM → now): C9 e_clip #149 and swj fit tokens #150 on fresh
+  golden-search27f (2 decisions; 27e reported); #152 / #153 on proxies only; head E1–E9 #154–#157 on w119-headx-search
+  (E2 R16, σ_out, a8 head, E3 layout: **4 decisions**, ledger said 2), pricing on w119-headx-fit, one verify-gen read;
+  #162 E3 (d) on hd122 (1); #161 / #166 / #167 on stored pairs and the CPU stand-in; #169 calibration on fit129 (fit)
+  + s129 (check); #171's search on s171a / s171b; #173 on the search's own rows (+ fit129 / s129 / cal174); #174 on
+  s171b; #172 value check on s171c + s171d; #177 stage 3 (planned) on golden-search27c-c; #178 (planned) on s171d.
+  Nothing was fitted or picked on the qad or verify pool by a search, fit or refit. Exceptions below are verify reads.
+- **Rules vs data** (git commit times; each rule file was committed alone, before its runs): w114 0:50 → run 0:57;
+  w115 0:59 (+ amendment 11:41, before its box2 data); w119 4:13 / 4:15 / 10:49 / 10:50 before each readout; w122
+  11:50 → 12:13; QAD 3:50 PM / 5:45 PM → arms 5:49 PM; boundary 5:53 PM, size-adj 7:29 PM → 7:31 PM; w128 8:44 PM;
+  prior 10:21 PM → 10:35 PM; parts 1:32 AM; RULES-173 8:43 AM (+ candidates 9:09); RULES-value 10:39:37 → first run
+  10:40:02; RULES-177 10:38; w142 / w143 11:27–11:29. **Caveats:** (1) RULES-parts' test A baseline (parts as labels,
+  x 0.146 / c 0.028) was already in w129's report-only follow-up when the rule was written; only the x-scale arm was
+  unseen. (2) QAD amendment 2 (3:52 AM) added arms H / A16 / W / L8 / L16 after arm A's verify and xcorp numbers
+  (8:20 PM): new arms, no criterion changed, all judged on the same verify slice. (3) #162 B5: the rule's FAIL (a
+  tie) was read by the lead as "U confirmed" (post hoc, harmless: whole-model equal, S-slab superseded). (4) #172's
+  third arm (M1 picks, lead note 10:45 AM): amendment 1 (1e0f7cf) committed 11:32:31 AM, first M1 mix 11:33:54: ok. (5) **#174 had no pre-registered rule**: the per-size embedding is a lead pick on s171b reads.
+  (6) RULES-173 was written after S0's rows existed (D / T are retrospective splits; P is the prospective part and
+  agrees: M1 −54 %). In-text times are wrong in several rule files (RULES-prior, RULES-173 amendment, w119 amendment 3,
+  RULES-177); git times are the record and all precede their data.
+- **Slice reuse:**
+  - **s171a 286 decisions, s171b 241** (driver registry; per calib doc 65–286 / 63–241). The driver rotates after 25
+    decisions *of one size*, so each slice decided ~12 × the design's "~25 decisions a slice" (eval-data.md, w123).
+    Each size has its own incumbent, so per-size selection optimism stayed within the bound, but every refit pools all
+    sizes' rows on the same calib documents. s171a is retired; **s171b is still "active"** in the paused registry and
+    was re-read by #174 (11 anchors), #172 (8 A8 rescorings) and ref134 (13): **retire it**. Lead decides the rotation
+    unit before any search restart (per slice, or per size with a per-slice cap on the c part).
+  - s171c / s171d: 12 decisions each by #172's two arms + 12 by its M1 arm (running) = 24 each; s171d also decides
+    #178: retire both after #172 / #178.
+  - golden-search27c-c (26 calib docs, **calib only**): 1 decision (#122), the #166 dry run (12 discarded), identity
+    scorings (#158, #160, #164). #177 stage 3 decides on it without an xcorp part, against the 11-08 two-part rule.
+    Acceptable as a table for the user (no automatic adopt). If it is to rank, add a fresh 130-piece x part by an
+    amendment before stage-3 data.
+  - **golden-verify27-w114 (82 verify docs): 10 reads** (#151 once, #165 nine arm comparisons): spent.
+  - **ver3-8k: ~100 scorings since 11-12.** Monitor 70; V2 refs 5; ref134 8; w132 A8 5; identity checks (#170 four
+    containers on several builds, #164-02 four). The 70 monitor reads were the basis of the 10:15 AM pause.
+    **ver3 is spent for any selection**; finals use ver4 + fresh xcorp as designed.
+- **ver4 untouched.** On ds8 (relatime), `golden-ver4/top.bin` and `rows.f32` have atime < mtime: never read since the
+  8:02 PM CST 11-12 copy. box2 has no ver4. No ledger use, result row or worker file reads it. The final-pick rule
+  (eval-data.md bfdd192, 7:10 PM CST 11-12) predates the copy. Other uses of ver4 documents: @yaqa 3 / @headsens 3
+  (11-01, known), and now g08-verify1 / -2 (below: 43 docs + the first 2k of the ver4 long trace, 0.8B settings
+  checks, never a pick between 27B mixes). **ver4 stays valid for the final picks.** Disclosure: this audit's grep
+  on ds8 opened `golden-ver4.jsonl` (the corpus text, a string search, no scoring) at 11:24 AM CST.
+- **Verify budget (new):** the V4 reserve (`ver-2026-11-01.json`, 236 docs, "not before V4") was never in the
+  ledger, so "clean verify" draws ("never in the ledger") took from it: **golden-verify27-w114 (82) and
+  w119-headx-verify (100) are reserve docs**, and g08-verify1 / -2 (0.8B, 11-05, also missing from the ledger)
+  took 93 more. **Untouched verify docs today: 28** (all reserve), plus ver4 (frozen). eval-data.md's "the rest of
+  verify stays unspent (V3.1 QAD checks, V4)" no longer holds: the user decides what V3.1 / V4 judge on.
+- **QAD #165:** trained on qad only (qad165-train 1,024 / qad165w-train 668 / D0 moments 705 docs, all qad); monitor =
+  32 search docs (step pick only); xcorp only as a judge (golden-hd122-x, also #162's x part). Verify was not
+  before / after only: 9 arm comparisons on verify27-w114 (and 2 on agent-verify32). The adopted arm A was the
+  first, pre-registered arm and no later arm beat it, so no pick rode on the extra reads.
+- **#173 (w133):** rows = s171a / s171b search rows (ds133 drops monitor and incumbent rows) + fit129 + s129 + cal174:
+  merged pool + xcorp only; rule alone before any candidate fit. The M1 re-solve picks move 150–290 tensors
+  (extrapolation): first held-out read = #172's third arm (running), then the finals.
+- **A3 (per-document dominance; dom141.py on the driver's per-document sums):**
+  - **ver3 monitor: one document holds a median 34 % (max 55 %) of the monitor's KL in all 70 reads.** It is calib
+    4681, an Arabic wildchat chat of 7,708 tokens (5.7 % of positions). Last vs first monitored accept per size
+    (12 sizes):
+    - pooled: −6.6 % mean, sign-mixed (5 sizes worse);
+    - without doc 4681: −3.1 % (10 better);
+    - per-document geo: −3.2 % (9 better).
+
+    Consecutive reads better / worse: 31 / 27 pooled, 35 / 23 without 4681, 37 / 21 geo. The "no held-out gain"
+    reading was mostly this one document. w132's fresh-slice value check (−5.6 % [−7.0, −4.0] vs the knapsack
+    starts) agrees with the per-document reading.
+  - **s171 x parts:** the largest document's share (median over whole-slice results) is 31 % on s171a (one wildchat
+    piece; > 20 % in 87 of 109 results, max 75 %) and 22 % on s171b (53 of 94). **c parts:** 11 % / 15 % (s171b:
+    6 results > 20 %; its heaviest doc, c:4661, is also an Arabic wildchat chat).
+  - **The 71 accepts:**
+    - all keep both parts negative pooled (required);
+    - 67 keep both negative with every document capped at 20 %;
+    - **42** keep both negative under the per-document geo mean (the c part's geo disagrees in sign in 22).
+  - Before any ver4 read, finalpick needs the A3 agreement check: the 20 %-capped ratio and the per-document geo must
+    agree in sign with the pooled pick. agent-verify32 bins are a report-only guard.
+- **B7 (rare-script share of the calib parts; script141.py on colo; main script by letters, tokens capped 4,096):**
+  - Rare scripts (not Latin, Cyrillic or Han) by token share:
+
+    | set | rare share | docs |
+    |---|---|---|
+    | calib | 3.8 % | |
+    | merged fit + search pool | 5.0 % | |
+    | s171a | 2.0 % | 1 |
+    | s171b | 5.2 % | 3 |
+    | s171c | 4.9 % | 2 |
+    | **s171d** | **12.0 %** | 2 (Hindi 8.3 %, Thai 3.7 %) |
+    | fit129 | 0.5 % | |
+    | ver3-8k | 6.8 % | 5 |
+
+  - No Japanese document in any s171 calib part (calib has 1.1 % kana + kanji).
+  - **Rare-script documents carry KL out of proportion:** s171b's 3 rare documents hold a median 16.5 % (max 32 %) of
+    its c-part KL, and both dominating documents (4681, 4661) are Arabic.
+  - Action: #172 / #178 report s171d's c part with and without its 2 rare documents; any head-option accept is read
+    per script.
+- **Ledger** (roles first, then `ledger_add.py` with `--date`; +9,429 lines, 23 uses):
+  - ver3-8k uses: mon171 (monitor, 71), ref171, w130, w136, a8172 (check);
+  - s171a-c-run171 (286) and s171b-c-run171 (241): the slices' own `golden-s171*-c` rows carry no count, so slices.py
+    counts them as 1;
+  - s171b-c-emb174 (select 11), s171b-c-a8172 (check), s171c-c / s171d-c-value172 (select 24 each);
+  - verify27-w114-qad165b (check 4);
+  - g08-verify1 / -2, g08-search2 / -3: reproduced from d1110's seeded draws; equal to
+    `v3/yaqa/verify27/excl-kld.json`'s lists;
+  - **@reserve-v4** (236, final, v4);
+  - w96's proposed rows: @w96-fisher, @w96-unigram, w94-headx-qad-127, w94-headx-search-127;
+  - @w78-s1mom: the same 843 qad windows as qad165-d0mom (v3.toml post.asym);
+  - @w103-noise-fit (the whole fit pool).
+
+  Pool-wide statistics collections carry decisions 0 so slices.py's least-used draw is not skewed. B10's
+  golden-search27 / golden-verify27 / swj27-qad were already in.
+  **Found:**
+  - ledger_add dates golden rows by the kld.json's "created", so every slice cut from the published calib golden is
+    dated 2026-10-25 (27b–f, verify27-w114, hd122, fit129, s129, s171, ref134), and the qad165 rows have no date. The
+    lead gets `ledger_add-date.patch`; today's rows used it.
+  - @headsens rows list 11 verify docs that w96's G0 says were not used (left as is).
+  - The search registry's x ids (`x:<source>:<idx>`) collide across xcorp chunk files: 6 s171c / d ids equal s171a / b
+    ids for different documents. Bookkeeping only; x parts are drawn by pickx with exclusions.
+  - Not added: 0.8B heal windows (d1104 / #89, #108 seed-11 moment windows) whose lists sit on the 4070 / iceman (off
+    limits): TODO.
+- **Public never used:**
+  - No public golden or public-corpus kld.json on ds8 or box2 since 11-10 (every kld.json there is calib or an xcorp
+    chunk). Nothing in the ledger, coordinator results or worker folders refers to public.
+  - One read to note: ds8's `challenge/corpus/manifest.json` and `public.jsonl` were each read once, 20 ms apart, at
+    12:34 PM CST 11-12. This was the first read after the box2 → ds8 copy (11:41 AM) and looks like a whole-tree
+    check; there is no public golden to score against. box2's one read is that copy.
+- **Adopted settings vs verify:** with verify rows: R16 / σ_out 0.03 / U head (verify-gen, once), QAD A (verify + xcorp
+  + agent32), #168 / #164 (bit-identical). **Without a verify row** (do not run separately: verify has 28 clean
+  docs; put them into the ver4 + xcorp finals as paired candidates):
+  - #174's per-size embedding (ties at 2.5 l2 / l3 and 4.0 l3 / l4; l4 / l5 / l6 at ≥ 4.5);
+  - the M1 picks;
+  - A8 at 5–6 bpw (+5–7 %, #172) on incumbents chosen in f16;
+  - i8 everywhere (#151's row is size-mismatched, report only).
+
+  The size-adjusted accept and per-part labels are procedures, checked by the stand-in.
+- **Lead / user decide:**
+  - the search's rotation unit and s171b retirement before any restart;
+  - #177 stage 3's x part;
+  - verify budget for V3.1 / V4 (user);
+  - finalpick's A3 agreement rule before the first ver4 read;
+  - `ledger_add-date.patch`;
+  - the registry x-id fix.
+
+  Next audit ~11-15.
+- **Runtime:** none.
+
 ### 2026-11-13 11:45 AM CST · #174 · Embedding options: 7 servable encodings (Lloyd l2–l7 + bf16) as ds8 donors, 13 anchor swaps (7 f16 + 6 A8) → per-size pick **l2 ≤ 2.5, l3 3.0–4.0, l4 / l5 4.5–5.0, l5 / l6 ≥ 5.5**; the fitted embedding term does not extrapolate across sizes (w135)
 - **Status:** done (menu + rows delivered; w133's M1 re-solve already reads menu174 + the f16 rows; the A8 rows and the
   first l7 row are new for it) ·
