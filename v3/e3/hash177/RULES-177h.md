@@ -69,3 +69,19 @@ unknown. Added before any replicate exists:
   direction; otherwise "within noise" (the single-seed labels above stay as reported, with this caveat).
 - HG / HC at K2.5 are dropped from the queue (their K4 rows differ from H's by ≤ 0.6 %, far inside the spread seen);
   HG / HC / H at K6 stay (the screen puts HG / HC's gain over H at K6).
+
+## Amendment 3 (2026-11-13 ~4:25 PM CST, lead note 1:55 PM CST; before any full-size libquant donor exists)
+
+**IQR-V4-form head donors through radiance libquant** (`beam/iqh.py` via `abqg` gptqsim on one ds8 card; only an 8,192-row
+timing run exists, never scored): upstream q38-27b-iq*r-v4's head line — `tcq=L tcq_rows=256 block=1x* scale=f32
+transform=fwht128 tcq_gain=G damp=0.01 tcq_order=1`, calib = the published lm_head input Hessian — at **K2 (L15, G 1.04)
+and K4 (L16, G 1.12)**, two codes through the same path: **Q-mad** (`tcq_code=mad`, IQR's code) and **Q-i8** (`tcq_lut` =
+mul1i8's 2^L values). 4 donors, ~5–6 h each on one card (4 cards in parallel).
+- Scoring: as above (score119.py, fit-gen deciding / search-gen, calib-weighted), perm id.
+- **Readouts:** (a) Q-mad / Q-i8 at K2 and K4 (the code, libquant's encoder held fixed); (b) Q-i8 K4 / w122's i8 K4 donor
+  and Q-mad K4 / w122's (IQR-V4's quantiser vs ours at equal K, same code: encoder + scales + rotation differ).
+- **Labels:** single donors per arm, so amendment 2's seed floor applies: a difference is called **resolved** only if
+  the calib-weighted CI excludes 1 on both slices in the same direction **and** the point estimates lie outside
+  ±4.5 % (the largest seed-floor spread seen); otherwise "within noise".
+- Not run on the head (reported from the proxies instead): L17–L20 exact / beam / seeded-refine donors — our LDLQ has no
+  GPU trellis above L16, and the proxies put the whole L20 gain at 1–3 % MSE (≤ 0.02 bpw), below this bench's floor.
