@@ -347,5 +347,143 @@
   "line": "v3",
   "decisions": 0,
   "note": "#171 plot (w134, 2026-11-13): the same reference containers scored once each on search slice s171b (calib part = golden-s171b-c; x part reads no calib) to normalise the search slice's own scores; no selection or fit"
+ },
+ "golden-ver3-8k-mon171": {
+  "role": "monitor",
+  "line": "v3",
+  "decisions": 71,
+  "note": "#171 (w131, 2026-11-13): golden-ver3-8k (the 104 ver3 docs at 8k) as the V3 search's held-out monitor: 70 reads of accepted incumbents (state.jsonl monitor events, 3:23-9:58 AM CST), alert-only and never fitted, but its reads were the basis of the user's 10:15 AM pause (+1 decision). Added by the w141 overfit audit; ver3 is spent for selection (finals: ver4 + fresh xcorp)"
+ },
+ "golden-ver3-8k-ref171": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#171 (w131, 2026-11-13): V2 3.00-5.00 reference scores on golden-ver3-8k for the monitor's scale (ref171.py, 5 scorings); fixed published containers. Added by w141"
+ },
+ "golden-ver3-8k-w130": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#170 (w130, 2026-11-13): ROCm 7.14 vs 10.1 identity scorings on golden-ver3-8k (V2 3.00, K4, K4 + R16 head, K4A A8; rows byte-identical); no selection. Added by w141"
+ },
+ "golden-ver3-8k-w136": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#164-02 (w136, 2026-11-13): quantized R16 head vs bf16-spliced head on golden-ver3-8k (K4 / K2.5 trunks, |dKL| <= 2e-6); identity check, no selection. Added by w141"
+ },
+ "golden-ver3-8k-a8172": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#172 (w132, 2026-11-13 8:34 AM CST): A8 vs f16 gap of four search incumbents (2.5 / 3.5 / 5.0 / 6.0) on golden-ver3-8k: 4 A8 + 1 f16 scorings (run132.sh); report only. Added by w141"
+ },
+ "golden-s171a-c-run171": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 286,
+  "note": "#171 (w131, 2026-11-13 2:55-6:35 AM CST): the search's decisions on s171a (registry: 286 decisions, 25 per size x 12 sizes; per calib doc 65-286 by early stops; retired 6:35). The golden-s171a-c row carries no number (counted 1 by slices.py); this row records the count. Added by w141"
+ },
+ "golden-s171b-c-run171": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 241,
+  "note": "#171 (w131, 2026-11-13 6:35-10:11 AM CST): the search's decisions on s171b (registry: 241, 19-22 per size; per calib doc 63-241); still 'active' in the paused registry: retire before any restart. Added by w141"
+ },
+ "golden-s171b-c-emb174": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 11,
+  "note": "#174 (w135, 2026-11-13): 11 embedding anchor swaps (7 f16 + 4 A8, +2 A8 queued) on s171b whole: the per-size embedding pick (no pre-registered rule; lead decides). Added by w141"
+ },
+ "golden-s171b-c-a8172": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#172 (w132, 2026-11-13): A8 rescoring of 8 search incumbents / predecessors on s171b (f16 vs A8 gap and accept agreement; report only, also read by #173's A8 transfer check). Added by w141"
+ },
+ "golden-verify27-w114-qad165b": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 4,
+  "note": "#165 amendment 2 (w125, 2026-11-13): 3rd use of golden-verify27-w114: arms A16, H, W, L8 judged (golden-verify27-w114-qad165 records the first 5 arm reads). With #151's read: 10 reads of these 82 docs, all from the V4 reserve. Added by w141"
+ },
+ "g08-verify1": {
+  "role": "check",
+  "line": "proxy-08",
+  "decisions": 2,
+  "note": "0.8B verify golden (proxy2b/exp/d1110/run.sh, 2026-11-05: 180 verify-pool docs, seed 1110, first 2,048 tokens, no exclusions: 24 ver4, 20 ver3, 44 V4-reserve docs). #93 stack check, #89-06c check. Reproduced from the seeded draw by w141 (g08draw141.py) = v3/yaqa/verify27/excl-kld.json's g08-verify1 list exactly; missing from the ledger until 11-13"
+ },
+ "g08-verify2": {
+  "role": "check",
+  "line": "proxy-08",
+  "decisions": 1,
+  "note": "0.8B verify golden (d1110 more.sh, 2026-11-05: 180 verify-pool docs, seed 2, excluding g08-verify1, 2,048 tokens: 19 ver4 + the ver4 long trace's first 2k, 26 ver3, 49 V4-reserve docs); #89-06c pooled check. Reproduced by w141 (= excl-kld.json's list); missing until 11-13"
+ },
+ "g08-search2": {
+  "role": "select",
+  "line": "proxy-08",
+  "decisions": null,
+  "note": "0.8B search golden (d1110 more.sh, 2026-11-05: 170 search-pool docs, seed 2, excluding g08-search1, 2,048 tokens); #137 (w103) deciding slice, #140 C9 low-K. Reproduced by w141 (g08draw141.py); count decisions as they happen"
+ },
+ "g08-search3": {
+  "role": "select",
+  "line": "proxy-08",
+  "decisions": null,
+  "note": "0.8B search golden (d1110 more.sh: 170 search-pool docs, seed 3, excluding g08-search1 / -search2, 2,048 tokens); #137 same-sign confirmation. Reproduced by w141"
+ },
+ "@reserve-v4": {
+  "role": "final",
+  "line": "v4",
+  "decisions": 0,
+  "note": "The V4 reserve (eval/pools/ver-2026-11-01.json 'reserve', 236 clean verify docs, mkver.py 2026-11-01: not to be read before V4). Never in the ledger, so ledger-based 'clean verify' draws took it: golden-verify27-w114 (82, #151 / #165) and w119-headx-verify (100, #156 / #157) are reserve docs; g08-verify1 / -2 took 93 more; 28 untouched at 2026-11-13. Marks the set; added by the w141 audit"
+ },
+ "@w96-fisher": {
+  "role": "fit-diag",
+  "line": "v3-head",
+  "decisions": 0,
+  "note": "#127 (w96, 2026-11-09): per-row Fisher / counts over the calib golden's pools-v3 qad rows (2,799 docs, gen + non-gen rows), split A / B by v3/yaqa/w96/split96.json (same docs as @headsens, whose rows list pools.json's qad incl. 11 docs now in verify: per w96's G0 they were not used). From local/workers/w96/ledger/README.md; added by w141 (decisions 0: a statistics collection, not a decision; so slices.py's least-used draw is not skewed toward search-pool docs)"
+ },
+ "@w96-unigram": {
+  "role": "fit-diag",
+  "line": "v3-head",
+  "decisions": 0,
+  "note": "#127 (w96, 2026-11-09): token counts only (no logits) over pools-v3 fit + qad docs. From w96's README; added by w141 (decisions 0: a statistics collection, not a decision; so slices.py's least-used draw is not skewed toward search-pool docs)"
+ },
+ "w94-headx-qad-127": {
+  "role": "fit",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#127 (w96, 2026-11-09): w94-headx-qad's 85 qad docs re-used to tune kappa / w (+1 decision on that collection). From w96's README; added by w141"
+ },
+ "w94-headx-search-127": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#127 (w96, 2026-11-09): w94-headx-search's 103 search docs as #127's held-out verdict (+1 decision; 3 in all). From w96's README; added by w141"
+ },
+ "@w78-s1mom": {
+  "role": "fit-hessian",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#105 (w78, 2026-11-07): 27B sibling moments s1 (asym writers), 843 qad windows / 1,002,035 tokens: v3.toml [post.asym] moment_tokens's draw, the same 705 qad docs as qad165-d0mom (identical window count and tokens; doc list taken from that row). Added by w141 (merge 11-13 B10) (decisions 0: a statistics collection, not a decision; so slices.py's least-used draw is not skewed toward search-pool docs)"
+ },
+ "@w103-noise-fit": {
+  "role": "fit-hessian",
+  "line": "proxy-08",
+  "decisions": 0,
+  "note": "#137 (w103, 2026-11-09/11): 0.8B input-error moments N = E[eta eta^T] on fit-pool 2,048-token windows, 'all of the pool up to 2M tokens' (the fit pool has 0.92M): every pools-v3 fit doc. proxy2b/exp/w103-pad/RULES.md; added by w141 (decisions 0: a statistics collection, not a decision; so slices.py's least-used draw is not skewed toward search-pool docs)"
+ },
+ "golden-s171c-c-value172": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 24,
+  "note": "#172 (w132, 2026-11-13 10:40 AM CST on): search-value check (RULES-value.md 62d6d4a), initial knapsack pick vs current incumbent per size, both A8, on s171c + s171d pooled by part: 12 size comparisons, + 12 for the M1 third arm (amendment 1e0f7cf 11:32:31 AM, before its first mix 11:33 AM; running at the audit) = 24 read on this slice. Added by the w141 audit"
+ },
+ "golden-s171d-c-value172": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 24,
+  "note": "#172 (w132, 2026-11-13 10:40 AM CST on): search-value check (RULES-value.md 62d6d4a), initial knapsack pick vs current incumbent per size, both A8, on s171c + s171d pooled by part: 12 size comparisons, + 12 for the M1 third arm (amendment 1e0f7cf 11:32:31 AM, before its first mix 11:33 AM; running at the audit) = 24 read on this slice. Added by the w141 audit"
  }
 }
