@@ -159,3 +159,14 @@ card, L16 on 2 (Adam state does not fit beside one card's 29.2 GiB peak).
 
 Ledger: W's train documents (positions up to 8,192), the monitor at 8,192, agent-verify32's check use. Cards: box2,
 ≤ 4 by the locks (A16 card 0, H card 1, W cards 2–3, then L8 / L16 / scoring).
+
+### Amendment 3 — 2026-11-13 4:42 AM CST, arm W stalled at step 32, before resuming it (implementation only)
+- Erratum to amendment 2's header: it was committed at 3:52 AM CST (51bef6e), not 3:58; the arms launched at 3:53 AM.
+- W stalled after step 32 (state.pt at step 32, 10:13 UTC): ~28 min in layer 0's GDN causal conv (transformers'
+  F.conv1d fallback -> MIOpen) on a 700-token document, its two cards near idle, MIOpen / CK compile output in the log:
+  MIOpen's per-shape solver search on the many new window lengths. Killed at 4:40 AM CST.
+- W resumes from its step-32 state (same data order; steps 33+ rerun) with the GDN causal conv computed by
+  qmodel.shift_conv1d (K shifted multiply-adds in f32, rounded to bf16 like F.conv1d's output; `--conv shift`).
+  Check (tests/convcheck.py, CPU, L 7 / 700 / 2,049 / 8,192): forward bit-identical to F.conv1d, input gradient within
+  bf16 rounding (rel 3.5e-3), weight gradient rel ≤ 5e-5 (the conv weights are frozen). Arithmetic otherwise unchanged;
+  the other arms keep F.conv1d. Nothing else about W changes.
