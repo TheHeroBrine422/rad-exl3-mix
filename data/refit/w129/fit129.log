@@ -1,0 +1,34 @@
+rows 94 (missing [])
+  U K1.25  kld 0.35342 bpw 1.494 dev +nan ± nan 
+  U K1.5   kld 0.20663 bpw 1.720 dev -0.030 ± 0.006 
+  U K1.75  kld 0.12828 bpw 1.946 dev -0.047 ± 0.009 
+  U K2     kld 0.08753 bpw 2.172 dev -0.001 ± 0.013 
+  U K2.25  kld 0.05986 bpw 2.398 dev -0.017 ± 0.009 
+  U K2.5   kld 0.04234 bpw 2.624 dev -0.016 ± 0.013 
+  U K2.75  kld 0.03095 bpw 2.851 dev +0.005 ± 0.018 
+  U K3     kld 0.02238 bpw 3.077 dev -0.011 ± 0.015 
+  U K3.25  kld 0.01654 bpw 3.303 dev -0.004 ± 0.012 
+  U K3.5   kld 0.01232 bpw 3.529 dev -0.026 ± 0.013 
+  U K3.75  kld 0.00967 bpw 3.755 dev -0.007 ± 0.013 
+  U K4     kld 0.00769 bpw 3.981 dev -0.002 ± 0.013 
+  U K4.25  kld 0.00614 bpw 4.207 dev -0.020 ± 0.009 
+  U K4.5   kld 0.00511 bpw 4.433 dev -0.010 ± 0.015 
+  U K4.75  kld 0.00434 bpw 4.659 dev -0.012 ± 0.026 
+  U K5     kld 0.00377 bpw 4.886 dev -0.030 ± 0.019 
+  U K5.5   kld 0.00312 bpw 5.338 dev -0.025 ± 0.008 
+  U K6     kld 0.00272 bpw 5.790 dev -0.042 ± 0.005 
+  U K6.5   kld 0.00258 bpw 6.242 dev -0.010 ± 0.004 
+  U K7     kld 0.00250 bpw 6.695 dev +nan ± nan 
+  [beta0] beta 0.000 q 0.952 train rmse 0.0172 | P rmse 0.0297 (n 16) order 8/8 | H rmse 0.12989440531515029 (x 0.14269118897652533, c 0.030767562820928348)
+  [beta-fit] beta 0.430 q 0.952 train rmse 0.0173 | P rmse 0.0311 (n 16) order 8/8 | H rmse 0.12929025049331638 (x 0.14208965267690038, c 0.03126319991060721)
+  [beta1] beta 1.000 q 0.952 train rmse 0.0175 | P rmse 0.0398 (n 16) order 5/8 | H rmse 0.1287236383209243 (x 0.14152393369438918, c 0.03170149975288745)
+    attn_qg-L0-63            meas log(hi/lo) -0.0372 ± 0.0045  pred(β fit) -0.0448  pred(β0) -0.0557  ok
+    attn_output-L0-63        meas log(hi/lo) -0.0444 ± 0.0051  pred(β fit) -0.0371  pred(β0) -0.0452  ok
+    ssm_qkv-L0-31            meas log(hi/lo) -0.0200 ± 0.0072  pred(β fit) -0.0119  pred(β0) -0.0256  ok
+    ssm_z-L32-63             meas log(hi/lo) -0.0138 ± 0.0034  pred(β fit) -0.0212  pred(β0) -0.0157  ok
+    ssm_out-L0-31            meas log(hi/lo) -0.0136 ± 0.0062  pred(β fit) -0.0215  pred(β0) -0.0492  ok
+    ffn_gate_up-L32-63       meas log(hi/lo) -0.1644 ± 0.0288  pred(β fit) -0.1973  pred(β0) -0.1647  ok
+    ffn_down-L0-31           meas log(hi/lo) -0.0242 ± 0.0088  pred(β fit) -0.0447  pred(β0) -0.0933  ok
+    ffn_down-L32-63          meas log(hi/lo) -0.1442 ± 0.0523  pred(β fit) -0.2011  pred(β0) -0.1671  ok
+VERDICT FAIL -> final refit beta 0: {'rows': 94, 'labels': 2, 'params': 75, 'rmse_log': 0.08741305617195193, 'chi2_per_row': 1.7587921742718489, 'cost': 85.22877354877039, 'nfev': 36}
+slopes b: 1.75 2.23, 2 1.83, 2.25 1.62, 2.5 1.50, 2.75 1.40, 3 1.31, 3.25 1.22, 3.5 1.12, 3.75 1.01, 4 0.88, 4.25 0.75, 4.5 0.62, 4.75 0.50, 5 0.39, 5.25 0.30, 5.5 0.22, 5.75 0.16, 6 0.11, 6.25 0.07, 6.5 0.04, 6.75 0.01

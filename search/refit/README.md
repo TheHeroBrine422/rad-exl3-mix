@@ -55,3 +55,6 @@ Cost: 92 mixes. Packs: the 20 pass-1 level packs (~23 min each, ram.lock exclusi
 slice (card 0; box2 cards ~10% slower), 120k fit slice ≈ 2 min → 92 × 2 + 8 × 4.3 ≈ **3.6 card-h** (≈ 1 h wall on
 box2's 4 cards + card 0). Swap mixes are eval units in `rxrun.multi` (mixes need their levels on one host: run them on
 the host that built K1.5 / K2.5 / K4 / K5.5, or copy those 4 level dirs to one host).
+
+**Run (w129, #169, 11-13):** `w129/` — done: prior FAIL (β 0), recommended refit `fit129c` (84 calib rows); held-out
+xcorp ratios are not predicted by calib-fitted rows (0.14 log-RMSE vs 0.03 on calib); see `w129/README.md` and LOG 11-13 1:15 AM CST.

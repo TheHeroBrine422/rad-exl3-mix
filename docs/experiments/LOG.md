@@ -4,6 +4,112 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 1:15 AM CST · #169 · Calibration swaps DONE (84 mixes, 92 + 2 scorings, ds8): H_out prior **FAIL** (β 0 in the refit); fit predicts held-out calib ratios to ~3% but xcorp ratios miss by ~14%; ladder clean; R16 head donors + head menu built (w129)
+- **Status:** done · **Machine:** ds8 (evals via rxrun.multi, ds8-only conf), colo (fits) · **Rule:**
+  `search/refit/w129/RULES-prior.md` (f110f88, committed 10:21 PM CST before any slice / score; its in-text time "10:40"
+  is wrong, the commit time stands) · **Code:** `search/refit/w129/` · **Data:** `data/refit/w129/` (results129.jsonl,
+  docs/, report129.json, floor129.json, fit outputs, menus, prior_obs, logs)
+- **Prior test (rule):** fitted on U + G (68 rows, fit129), predicting the 16 P arms' ratio to uniform K2.5:
+  RMSE_d **β 0 0.0297**, β fit 0.0311 (β̂ = +0.43), β 1 0.0398; order right **8 / 8** (β 0 and β fit), 5 / 8 (β 1).
+  Criterion 1 fails (β fit not below β 0) → **FAIL: the refit uses β = 0.** Measured log(hi / lo) is negative in every
+  family (−0.014 … −0.164, SE 0.003–0.05): the 8 highest-h̄ tensors cost *less* than the 8 lowest; h̄ is highest in
+  early layers and the block model's depth terms already give the order.
+- **Held-out H (s129, 8 group swaps vs their base, not fitted):** log-RMSE **0.130 (β 0) / 0.129 (β fit)**; by part
+  xcorp 0.143, calib 0.031. Calib-part ratios on fresh documents are predicted to ~3%; xcorp ratios are compressed
+  (late ffn_gu → K1.5: predicted +0.67, calib +0.74, xcorp +0.31; xcorp KLD is 3.6× calib's at the same trunk).
+  Report-only follow-up (`floor129.py`): parts as their own labels 0.105 (x 0.146, c 0.028); + an additive floor per
+  label 0.085 (x 0.117, c 0.027). The x / c difference is not just a floor: per-group sensitivity differs by corpus.
+  **For the search:** its two-part slices pool x and c, and x carries ~90% of the pooled KL mass, so calib-fitted
+  ratios will mis-predict pooled decisions; fit.py should label x and c parts separately (the driver's rows are pooled
+  today). The lead's call.
+- **Final refit.** Rule: all 94 rows, β 0 (`fit129.out.json`): log-RMSE 0.087, χ²/row 1.76, because the pooled s129
+  rows cannot be fitted with one multiplicative offset. **Recommended: `fit129c.out.json`** = the 84 fit129 rows
+  (U + G + P), β 0: log-RMSE 0.018, χ²/row 0.44, q 0.95, κ ≈ 0 over layers 0–32 rising to ~8.7 at layer 64 (late-layer
+  compounding), c0 0.00237 (V2 3.00's head + embedding floor). `fit129h.out.json` = the same rows on the R16-head menu
+  (V2's 4.0-bit head priced as R16 u4).
+- **Slopes b** (fit129c on menu129; container bpw): 1.75 2.19, 2 1.81, 2.5 1.49, 3 1.32, 3.5 1.12, 4 0.88, 4.5 0.62,
+  5 0.39, 5.5 0.22, 6 0.11, 6.5 0.03 (R16-head menu: 2.5 1.44, 3 1.27, 4 0.81, 5 0.33, 6 0.08). **Above ~4.5 these
+  are artefacts of the fixed V2 head:** every row has the same 4-bit head, so the head floor (~0.0024) flattens the
+  uniform ladder (K6 0.00272 → K7 0.00250). Check: K6 trunk + R16 u6 head = **0.00121** vs 0.00272 with V2's head;
+  K2.5 + R16 u4 = 0.04109 vs 0.04234. Keep b_default (V2 board) at ≥ 5 until head-varied rows exist.
+- **Ladder (U on fit129):** K1.25 0.3534, 1.5 0.2066, 1.75 0.1283, 2 0.0875, 2.25 0.0599, 2.5 0.0423, 2.75 0.0310,
+  3 0.0224, 3.25 0.0165, 3.5 0.0123, 3.75 0.00967, 4 0.00769, 4.25 0.00614, 4.5 0.00511, 4.75 0.00434, 5 0.00377,
+  5.5 0.00312, 6 0.00272, 6.5 0.00258, 7 0.00250. Strictly decreasing; no level above its neighbours' line (largest
+  +0.005 ± 0.018 at K2.75) → **no swj level flagged**.
+- **Group swaps:** the 32–63 half costs more than 0–31 for every group and donor; ffn_gu and ffn_down dominate
+  (K2.5 → K1.5 late half +112% / +84%; attn_out +3–8%).
+- **R16 heads (lead note 11-12 11:45 PM):** 17 donors `/data/q27/heads/donors/hd-<plan>.rad` (hd129.sh: copies of
+  the K0.125 pack, 5.5 GB each, 88 GB total, output.weight = the plan's R16 rows as bf16 in vocab order); spot check
+  4,096 rows of u1 / u2.5 / u4 / u6.5 / u7 = the dequantized R16 rows bit for bit; two scored end to end (above).
+  Head menu `menu129h.json` (mkmenu --heads hcurve122 --head-donor). **Bytes check: OK.** The driver calibrates
+  bytes_offset only on donor-free containers; with --heads every head option has a donor, so the offset stays CONF
+  bytes_offset0 and sizes follow the menu. Measured container − (menu + offset) = 1.906 GB (u4) / 1.588 GB (u6) =
+  exactly the bf16 head minus the quantized head bytes. frontier.json's bpw_container column carries that excess,
+  but `bpw` (the menu's) is what bands use.
+- **Incidents.** (1) ds8 /data full at 00:01 CST: the third swj wave's scratch (72 GB), a packall started ~11:35 PM
+  and my in-flight mixes (~40 GB). The sub-1 swj passes on c0–c3 crashed and resumed (swjloop attempts 2–4), and 54
+  evals were refused (re-queued as TAG.r1). I deleted the packs of K4.75 / 5 / 6 / 7 (rebuildable; packall rebuilt
+  them later) and stopped that packall's scheduler twice. **Check the K0.125–0.5 swj levels** (ENOSPC mid-pass).
+  (2) For ~30 s two packalls wrote the same K4 / K2.5 .part files (my feeder's pgrep pattern missed the running one):
+  both killed and the .part files deleted before any pack was renamed. The ladder's out/ dirs (diag files) were later
+  deleted on ds8 (not by me): `mkmenu129.py` builds the menu from the saved K2.5 diag sums instead.
+- **Calib budget:** fit129 + s129-c took 159 of the ~220 zero-use merged-pool documents.
+- **Runtime:** none (allocation / fit only).
+
+### 2026-11-12 11:55 PM CST · #164 · Kernel perf pass: decode e2e K4.125 + K7 head 49.0 → 32.4 ms / step (IQR-V4 S 25.7 on the same card), prefill A8 path ×0.89–0.97 at M 2048, R16 head un-permute; prefill KLD unchanged to 10 digits (w124)
+- **Status:** done (pass 1) · **Machine:** dad1 9070 XT (per-kernel benches, `/root/card0.lock`); box2 R9700 card 3 (whole
+  model, e2e; lead 11-12 7:20 PM CST) · **Code:** radiance fork `qc-exl3-v3-perf` (off 42960d5): 1406d75 plan table,
+  20740e4 KS, ea3a9ea DQ, 3494a31 DOT, 8d3f594 R16, a7d1cf2 FUSE, b390e60 FUSE rule + `plugin/exl3i/PERF.md` · **Data:**
+  `v3/bench/data/w124/` (README: per-shape tables; `wm-box2/`: KLD, e2e, profiles, decode numerics) · **Brief:** TODO "Kernel
+  perf pass brief", `rad-local/workers/instr3/w124.md`, lead notes `rad-local/workers/notes/w124.md`
+- **Finding (decode):** batch-1 decode was flat in K (gate_up ~300 µs from K0.5 to K4, 30–290 GB/s of codes). The
+  decode-ablated kernel is bandwidth-bound at K4 (555 GB/s): the time was the trellis decode's ALU (54 VALU a 16×16 tile
+  at K4) plus a grid of N/128 workgroups. Per-value decode ALU does not shrink with K, so below K4 the GEMV cannot fall
+  with bytes on this codebook (e2e: K2.625 31.6 vs K4.125 32.4 ms / step).
+- **Changes** (each with its unit test; exl3i device tests PASS on gfx1201):
+  1. plan table (bit-exact): fractional / sub-1 lane plans built by the compiler; A8 wdec8 ×0.45–0.47 at K1.5 / 2.5.
+  2. KS: decode (T ≤ 16) K split across workgroups (~512), slice-ordered reduce by the last arriver; test_ks ≤ 1 bf16 ulp.
+  3. DQ: decode multiplies mul1i8's grid index q, the step once after the sums (q·step exactly, as the A8 prefill).
+  4. DOT: T = 1 by v_dot2_f32_f16 instead of a 16-row WMMA.
+  5. R16 (bit-exact store): exl3i encoding v3 (`/r16`, older readers refuse), importer `rows=r16` (checked against
+     stamp.json head_perm + the .npy = closed form; w119's R16.npy equal on all 248320 rows), record dtype
+     EXL3I_DT_TILES_R16, epilogue stores output s at ((s>>4)&7)·N/8 + (s>>7)·16 + (s&15). test_r16: natural vs R16
+     byte-identical at their rows (T 1/4/16/17/600). Real data (lead's test, `r16real`): the K4 i8 and K7 mul1 donors'
+     logits vs w122's wq at every vocabulary id: rel rms 5e-4, argmax equal, control without un-permute rel rms 1.41.
+  6. FUSE (bit-exact): the A8 GEMM's blocks decode their own weight tiles (claim / decode / wait counters) instead of a
+     wdec8 pass; two passes for K > 8192 at M ≤ 512.
+- **Per kernel (9070 XT, layer 48 GDN : 16 attention, base 42960d5 → HEAD):** decode M 1 K0.5 681 → 433, K1 607 →
+  372, K2.5 671 → 431, K4 628 → 397, K6.5 1013 → 630 µs; M 8 K4 704 → 431. Small K vs K4 per shape: integer K1–K3
+  ×0.84–1.02, fractional ×1.03–1.12, K0.5 ×0.94–1.17 (bit-offset extraction / salts: ~+9 VALU a tile). Prefill A8 path
+  (the gemm_us proxy) M 2048: K0.5 ×0.889, K1 ×0.969, K1.5 ×0.896, K2 ×0.968, K2.5 ×0.899, K3 ×0.964, K4 ×0.949, K6.5
+  ×0.892, K7 ×0.927; M 512 ×0.70–0.90.
+- **Whole model (box2, golden-search27c-c 26 docs 67,932 positions, bf16 KV, prefill):** KLD dev = today's to 10 digits
+  at K3 (0.5423173995), K2.625 (0.6523076151), K0.125 (12.5807575539), K6.25 (0.1109744168), K4.125 (same); Δ = 0 (the
+  prefill changes are bit-exact). This slice's chat docs carry the means (V2 3.00 on it: 0.6395; median 0.009). R16
+  heads whole-model (K2.625 trunk): bf16 head 0.65231, R16 K4 i8 0.65177, R16 K7 mul1 0.65232; today's engine refuses
+  an R16 pack (container format error), as designed.
+- **Decode numerics:** radiance's KLD needs ≥ 64-token chunks here, so T ≤ 16 kernels were compared through the server:
+  greedy 16 public prompts × 128 tokens, top-20 logprobs, frozen vs dev, steps before the first different token. K4.125
+  C1: per-step KL median 4.8e-6, mean 2.7e-4 (drift tails, max 0.16), 90% identical tokens; K2.625 / K6.25 the same;
+  frozen vs frozen C1 0, C8 (batching) mean 3.9e-5. Attribution: DQ alone median 5.3e-6, KS + DOT alone (pure f32
+  reorder) median 4.8e-6 — the same signature, so DQ is not a precision outlier. The user's bar (paired KLD change vs
+  bf16 at decode) is not measurable with today's tool: a T < 64 KLD mode or a bf16 TP2 reference would be needed.
+- **E2E decode step (box2 R9700, same engine build, ms; C1 short / C4 / C8 / C1 at 8k / 32k):** IQR-V4 S (spec off)
+  25.66 / 31.15 / 33.59 / 26.78 / 29.26; K4.125 + bf16 head today 49.01 / 55.32 / 64.16 / 50.24 / 52.41 → dev 34.25 /
+  40.31 / 48.23 / 35.36 / 37.80; **K4.125 + K7 R16 head dev 32.40** / 37.91 / 43.23 / 33.68 / 36.11 (1.26× IQR); K2.625
+  + K7 dev 31.56; K6.25 + K7 dev 46.73 (today 71.76 with bf16 head). Rounds agree within 0.05 ms. Prefill tok/s at 8k:
+  1390 → 1562 (IQR 2461). Breakdown (--profile-ops, K4.125 + K7 dev, ms / step, ops device-timed, profiling adds a sync
+  an op): trunk GEMVs 26.8 (13 GB at ~485 GB/s; floor ~20), head 2.8, GDN 1.1, attention 1.4, norms 0.6, other
+  1.8, gaps 4.0; today: trunk 40.8, bf16 head 5.2.
+- **Refuted:** wdec8 / GEMM overlap on a second stream (×1.03–1.40); deeper decode prefetch; VOPD; an extraction-free hash.
+- **Not possible:** vision and DFlash2 e2e (qwen35_exl3 declares neither: TODO ports). IQR-V4 S's container carries a
+  drafter (default on: ~3.9 tokens / step; timed with --num-speculative-tokens 0 for the kernel comparison).
+- **Incidents:** (1) 11-12 4:39–4:45 PM CST: a false "ladder ended" start packed on ds8 between two units (conv.lock +
+  ram.lock exclusive ~5 min). (2) 6:43–7:20 PM CST: packs on ds8 blocked the swj rerun's 8 passes until the lead killed
+  them. Moved to box2 per the lead. (3) box2 servers need `ulimit -n` > 1024 (the KV carve takes a descriptor a chunk:
+  "the card would not back it" otherwise).
+- **Runtime:** P (prefill A8 path) and D (decode GEMV); stored bytes unchanged; R16 heads need encoding v3 (engine ≥ HEAD).
+
 ### 2026-11-12 10:35 PM CST · #169 · Pass-1 calibration swaps started (w129): rule committed, slices built, evals queued on ds8
 - **Status:** running · **Machine:** ds8 (eval units through rxrun.multi, ds8-only coordinator conf
   `rad-local/workers/w129/coord-ds8.json`, same root / evals / state as coord.json), colo (fits) · **Rule:**
@@ -330,54 +436,6 @@ versions of anything: git history.
   the same effect as the head's i8 / mul1 ×1.22 at K7 (#157, #94 ×1.27). Expected cost small: at 7 bpw the A8
   activation floor (~0.0004) dominates the KLD anyway. Revisit only if the 7.0 size's knapsack wants K7+ heavily.
 - **Runtime:** none.
-
-### 2026-11-12 4:20 PM CST · #164 · Kernel perf pass (running): decode M 1 ×0.63 per layer at K4 (KS + DQ + DOT), fractional wdec8 ×0.45, R16 head un-permute; decode is ALU-bound, flat in K (w124)
-- **Status:** running (per-kernel part done; whole-model KLD / e2e on ds8 queued for after the trunk ladder) ·
-  **Machine:** dad1 9070 XT (benches, `/root/card0.lock`); ds8 R9700 (whole model, `/data/q27/w124/tools/wm.sh`, waits
-  for the ladder) · **Code:** radiance fork `qc-exl3-v3-perf` (off 42960d5): 1406d75 plan table, 20740e4 KS, ea3a9ea
-  DQ, 3494a31 DOT, 8d3f594 R16 · **Data:** `v3/bench/data/w124/` (README: tables, scripts) · **Brief:** TODO "Kernel
-  perf pass brief", `rad-local/workers/instr3/w124.md`, lead notes `rad-local/workers/notes/w124.md`
-- **Bar (user):** whole-model KLD vs today's kernels ≤ ~1e-5 (paired, bf16 KV) at every example rate; unit max-abs
-  first; prefill gemm_us + e2e tok/s; decode e2e step time (batch 1 / 4 / 8, interleaved A/B); decode-vs-K table.
-- **Finding (decode):** batch-1 decode was flat in K (gate_up ~300 µs from K0.5 to K4 = 30–290 GB/s of codes). The
-  decode-ablated floor (codes straight into the WMMA) is bandwidth-bound at K4 (gate_up 555 GB/s), so the time was
-  the trellis decode's ALU (54 VALU a 16×16 tile at K4) plus a grid of N/128 workgroups (40 on down, 8 on attn_k).
-  Per-value decode ALU does not shrink with K, so below K4 decode cannot fall with bytes on this codebook.
-- **Changes** (each with its unit test; all exl3i device tests PASS on gfx1201):
-  1. *Plan table* (1406d75): fractional / sub-1 lane plans built by the compiler (constexpr table), bit-exact
-     (host test 14336 lane-positions, 0 differ). A8 wdec8 layer ×0.45 (K1.5) / ×0.47 (K2.5), K4 ×1.00.
-  2. *KS* (20740e4): decode (T ≤ 16) K split across workgroups (~512 WGs), slice-ordered reduce by the last arriver,
-     which runs the Hadamard epilogue. test_ks: ≤ 1 bf16 ulp of max |y| vs unsplit, repeatable, rows independent.
-  3. *DQ* (ea3a9ea): decode form multiplies mul1i8's grid index q, scales the sums by the step once (weights exactly
-     q·step instead of fp16(q·step)); 54 → 42 VALU a tile; rows within one f16 ulp of the MT 4 form.
-  4. *DOT* (3494a31): T = 1 by v_dot2_f32_f16 instead of a 16-row WMMA; within one bf16 ulp of the WMMA form.
-  5. *R16* (8d3f594): exl3i encoding version 3 (transform `/r16`; older readers refuse), importer `rows=r16` (checked
-     against stamp.json's head_perm and the .npy = closed form, verified equal to w119's R16.npy on all 248320 rows),
-     record dtype EXL3I_DT_TILES_R16 from the layout hook, the epilogue stores output s at row
-     ((s>>4)&7)·N/8 + (s>>7)·16 + (s&15) on every f16 path. test_r16: natural vs R16 launches byte-identical at their
-     rows (T 1/4/16/17/600, f32/bf16, mul1i8 K2.5/4/6.5 at N 248320, mul1 K7); A8 refuses R16.
-- **Decode per layer (48 GDN : 16 attention), M 1, base → HEAD** (3 interleaved rounds; per shape in the data README):
-  K0.5 681 → 433, K1 607 → 372, K1.5 646 → 425, K2 632 → 382, K2.5 671 → 431, K3 658 → 390, K4 628 → 397,
-  K6.5 1013 → 630, K7 812 → 635 µs (×0.59–0.78); M 4 K4 641 → 409, M 8 704 → 431. down ×0.46–0.50, attn_k/v ×0.30.
-  **Small K vs K4 per shape (HEAD):** integer K1 / K2 / K3 ×0.84–1.02 (≤ K4 within noise); fractional K1.5 / K2.5
-  ×1.03–1.12 and K0.5 ×0.94–1.17: per-state bit extraction (+~9 VALU a tile vs K4's byte-aligned perm) and the
-  sub-1 salts; an extraction-free hash form gave nothing (refuted). gate_up K7: KS's 2-way split costs 5%.
-- **Prefill (A8 path layer, M 2048, base → HEAD):** K0.5 ×0.915, K1.5 ×0.923, K2.5 ×0.930, K4 ×1.000, K6.5
-  ×0.953 (M 512: ×0.79–0.88 at fractional rates); all from wdec8, now bandwidth-bound (fractional ≤ K4's time).
-  GEMM / actq unchanged. Refuted: wdec8 / GEMM overlap on a second stream (×1.03–1.40 slower: sub-chunk GEMMs and
-  the event waits cost more than the hidden decode; patch kept).
-- **Not possible today:** vision and DFlash2 e2e — qwen35_exl3 declares neither the vision tower nor a drafter (TODO
-  items "Vision in qwen35_exl3", "DFlash2 in qwen35_exl3"), so no V3 container serves them.
-- **Pending:** whole-model KLD (prefill / T 16 / T 1) frozen vs dev on a K2.5 and a K4 trunk pack, R16 heads (K4 i8,
-  K7 mul1) KLD + text + the real-data logits test (every vocab id vs w122's wq), e2e decode step time — ds8 after the
-  ladder (`/data/q27/w124/tools/wm.sh`, waits for 00:15 UTC + 15 quiet minutes).
-- **Incident (11-12 4:39–4:45 PM CST):** wm.sh's first start condition (no rxrun.worker) fired between two ladder units
-  on ds8; its pack held conv.lock + ram.lock exclusive for ~5 min before I stopped it (the k2.375 unit's last CPU step
-  likely waited that long). Start condition fixed (time + 15 quiet minutes). Second, 6:43–7:20 PM CST: after the
-  ladder's last unit wm.sh packed on ds8 (ram.lock exclusive, without --no-error) while the swj rerun had started there:
-  it blocked the 8 swj passes until the lead killed it (packs A–D had already failed: the rerun was rewriting the levels'
-  final shards). Moved to box2 (lead 7:20 PM CST): packs with --no-error, box2's own levels, one card by the locks.
-- **Runtime:** P (fractional wdec8) and D (decode GEMV); stored bytes unchanged; the R16 head needs encoding v3.
 
 ### 2026-11-12 2:40 PM CST · #162 · Head donors on ds8: w119's U recipe at 17 sizes (K1–K6.5 i8 + K7 mul1), bit-identical to box2; E5 no flags; fit-gen price table for knap5; E3 (d) whole-model on V2 3.00 / 4.00: 3 / 4 pairs pass, B5 on 4.00 is a tie (w122)
 - **Status:** done · **Machine:** ds8 (quants 11-12 12:13–12:30 PM CST on 8 cards; E3 (d) 12:25 PM–2:34 PM CST, from

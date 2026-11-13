@@ -7,7 +7,7 @@ Runs on colo (scipy; single-threaded, a few min). Outputs in OUTDIR:
   prior_obs129.jsonl   the rows as the driver's CONF prior_obs (tag, assign, label, kld, se, size, kind)
   fit129.out.json      fit.py's output format for the final model ({report, model, x, draws, obs_tags}); its menu = MENU
   report129.json       every number below; a summary on stdout."""
-import json, math, os, sys
+import json, math, os, re, sys
 
 import numpy as np
 
@@ -26,11 +26,11 @@ def load_rows(specs, results, docsdir):
     for l in open(specs):
         s = json.loads(l); S[s["tag"]] = s
     for l in open(results):
-        r = json.loads(l)
-        if r.get("tag") in S and not r.get("fail"): R[(r["tag"], r["slice"])] = r
+        r = json.loads(l); t = re.sub(r"\.r\d+$", "", r.get("tag", ""))           # TAG.rN = a re-queue of TAG (feed129)
+        if t in S and not r.get("fail"): R[(t, r["slice"])] = r
     D = {}
     for (t, sl) in R:
-        p = f"{docsdir}/{t}-{sl}.json"
+        p = f"{docsdir}/{R[(t, sl)]['tag']}-{sl}.json"
         d = json.load(open(p)); D[(t, sl)] = np.array([x for pn in sorted(d) for x in d[pn]], float)   # [sum, n] per doc
     return S, R, D
 
