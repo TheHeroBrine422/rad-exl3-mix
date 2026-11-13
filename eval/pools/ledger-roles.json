@@ -299,5 +299,17 @@
   "line": "v3.1",
   "decisions": null,
   "note": "#165 arm D0 (w125, 2026-11-12): rxq.sibmom sibling moments (H / C / N of the 128 writers, #87 asym target) over the K2.5 i8 pass-1 level, --wins moments, 1M tokens asked -> 843 windows / 1,002,035 tokens of 705 qad-pool docs (pools-v3, seed 0 shuffle of 2,048-token windows of the published calib golden); feed the per-mix writer requant (D0) and D"
+ },
+ "golden-fit129": {
+  "role": "fit",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#169 (w129, 2026-11-12): pass-1 calibration swaps' fit slice: 118 merged fit + search docs, least-used first (draw129.py seed 169; all had 0 counted uses), cap 8,192 (142,152 scored rows) of the published calib golden; 92-row kfit3 / fit.py refit the V3 search starts from (search/refit/w129/RULES-prior.md)"
+ },
+ "golden-s129-c": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 1,
+  "note": "#169 (w129, 2026-11-12): calib part of the held-out check slice s129: the next 41 least-used merged-pool docs after fit129, cap 4,096 (46,322 rows); x part golden-s129-x = 130 pieces of night1105 xc8k-b2-c2 (pickx seed 16930, heavy cap 2,048, 27b-27f-x + hd122-x docs excluded; reads no calib). Scores 8 group swaps + 2 anchors once, not fitted for the validation; rows join the final refit as their own label"
  }
 }
