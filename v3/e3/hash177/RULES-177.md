@@ -1,4 +1,4 @@
-# #177 stage 3 rules: real 27B KL of the hash codebook (w139, written 2026-11-13 ~11:20 AM CST, before any stage-3 data)
+# #177 stage 3 rules: real 27B KL of the hash codebook (w139, written 2026-11-13 ~10:35 AM CST, before any stage-3 data)
 
 Brief: `rad-local/workers/instr3/w139.md` stage 3 + lead notes `notes/w139.md`. Stages 1–2 (speed, proxy) are in the LOG.
 This file fixes what stage 3 measures and how it is read before any hash level is quantized. It is committed before the
