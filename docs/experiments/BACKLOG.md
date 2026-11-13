@@ -628,6 +628,8 @@ But what I will add to my lists of things to try is seeing if a lower quality bu
   (full requant): V4 only. Natural home: deadcode's future **combined IQR-V4 + EXL3-V3 format** (user 11-13) — bring
   this measurement, our trellis / two-sided / knapsack results and #147's layout table (`rad-local/research/iqr-v4-
   kernels.md`) to that discussion.
+  **User 11-13:** V3 keeps mul1i8 (no ladder requant); the re-time waits for idle capacity / the joint-format work.
+  Known cost: at ~4.1 bpw our decode step is est. ~15–20% behind IQR-V4 S (24.55 ms, user's web UI), more below K4.
 
 ## QTIP fine-tuning, checked against our plan (2026-11-12, user asked)
 QTIP (arXiv 2406.11235 §3.1.2, §4.2, A.3.5) fine-tunes with QuIP#'s recipe: (1) **within a block, quantize matrices in
