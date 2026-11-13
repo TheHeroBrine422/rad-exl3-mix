@@ -25,3 +25,9 @@ CIs: paired bootstrap over documents (traces resampled as whole traces), 10,000 
 - Guard: (c) must have the same sign as (b) in each part (no CI requirement).
 - Held-out monitor: (b) and (c), both with CIs; never the raw pooled (a) alone (11-13: one document, calib 4681,
   held a median 34 % of ver3's KL).
+
+## Clarifications (lead, 2026-11-13 1:05 PM CST, before any data under this rule; w145's questions)
+- The (c) guard is computed size-adjusted, like (b) and (a).
+- Final picks: (a) is pooled over both parts (all documents of the slice).
+- The final (c) guard compares the pick with the runner-up and the default pick only (not every finalist).
+- Final-pick slice: the long trace enters as ≤ 32k chunks, capped near calib's trace share (w145 plan), not whole.
