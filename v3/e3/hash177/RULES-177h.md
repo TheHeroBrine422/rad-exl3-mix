@@ -54,3 +54,18 @@ it measures: decode −4 to −10 % (stage 1; HG / HC add a table / 2 FMAs a pai
 The Δbpw line above says "the K at which the I curve reaches the arm's KL, minus the arm's K (negative = the arm saves
 bits)": the formula and its stated sign disagree (an arm with less KL than I at K has K_eq > K). The stated convention
 stands: **Δbpw = K − K_eq, negative = the arm saves bits** (rep177h.py fixed to match). Nothing else changes.
+
+## Amendment 2 (2026-11-13 ~12:00 PM CST, after the K2.5 / K4 rows of H, HG, HC; adds a noise floor, changes no label)
+
+Seen: at K4 every arm is "at par" on fit-gen (×0.975–0.981) and "costs" on search-gen (×1.030–1.051), H K2.5 the
+same (0.979 / 1.035): slice-dependent beyond ±1 % (the rule above). The document bootstrap does not contain the
+quantization noise of one donor (a new codebook is a new draw of every row's error), so the head bench's resolution is
+unknown. Added before any replicate exists:
+- **Seed replicates** (ourq `--seed-offset 1` and `2`: new rotation seeds, everything else equal) of **i8 and H at K4 and
+  K2.5** (8 donors; names `i8s1`, `i8s2`, `Hs1`, `Hs2`), scored like the others.
+- **Readout (per K and set):** the seed floor = i8 s1 / s0 and s2 / s0 (calib-weighted ratios); the **3-seed ratio
+  R3 = mean over seeds of KL(H) / mean over seeds of KL(i8)** with a bootstrap that resamples documents (2,000, seed 0).
+  A codebook difference is called **resolved** only if R3's 95 % CI excludes 1 on both fit-gen and search-gen in the same
+  direction; otherwise "within noise" (the single-seed labels above stay as reported, with this caveat).
+- HG / HC at K2.5 are dropped from the queue (their K4 rows differ from H's by ≤ 0.6 %, far inside the spread seen);
+  HG / HC / H at K6 stay (the screen puts HG / HC's gain over H at K6).
