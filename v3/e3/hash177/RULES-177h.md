@@ -48,3 +48,9 @@ TCQ cross-check, and the head's decode-step time (box2 e2e, R16 head packs, base
 
 9 donors × ~4 min on one ds8 card (locks: card + ram.lock shared, w122's), scoring ~10 s a donor. Runtime cost of what
 it measures: decode −4 to −10 % (stage 1; HG / HC add a table / 2 FMAs a pair, to be timed); head-only rows, no ladder.
+
+## Amendment 1 (2026-11-13 ~11:50 AM CST, after the K4 H / HG fit-gen rows; a sign fix, no change of meaning)
+
+The Δbpw line above says "the K at which the I curve reaches the arm's KL, minus the arm's K (negative = the arm saves
+bits)": the formula and its stated sign disagree (an arm with less KL than I at K has K_eq > K). The stated convention
+stands: **Δbpw = K − K_eq, negative = the arm saves bits** (rep177h.py fixed to match). Nothing else changes.
