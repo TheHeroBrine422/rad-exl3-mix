@@ -98,3 +98,64 @@ projection per shipped size, per-document sign counts, max |log| reached.
   the layers sit changes no arithmetic (run-to-run GPU noise only).
 - Student build: codes decoded in two phases (int8 to the host, then every layer placed at once) so the allocator does
   not fragment; same arithmetic.
+
+### Amendment 2 — 2026-11-13 3:58 AM CST, before any H / W / L / long-slice data (lead notes 11-13: arms H, W, L, the long-context check)
+Arms A, B, C, D0, D are finished and judged by the rules above (run165.log, 11-13 2:45 AM CST); nothing below changes
+their rules or reruns them. Gates run before this text (tooling only, no training): head decode vs ourq's `wq`
+3.7e-3 (bf16 activations, = the trunk tensors'), one 8,192-token window fwd + bwd 31 s on 2 cards (peak 19.4 / 21.8
+GiB), r = 16 adapters 114.7M values (1-card peak 29.2 GiB before Adam state).
+
+**R16 head (arm H and its control A16).** Donor: w122 / w119 `R16s003/K4` (u4, i8; box2 `/data/q27/w119/q/R16s003/K4`,
+bit-identical to ds8's by w122's ident gate), the plan fit129 measured at this trunk size (K2.5 + R16 u4 0.04109 vs
+V2's head 0.04234; LOG #169). Loaded as a QLinear with its own suh / svh, rows in the stored R16 order; the targets'
+vocab ids are mapped to stored rows by `R16.npy` (stored row s = vocab R16[s]; equal to the lead's formula
+((s>>4)&7)·31040 + (s>>7)·16 + (s&15) on all 248,320 rows). The KL needs no un-permute (its sums run over all rows).
+- **A16** = arm A with this head in the student, frozen. **H** = A16 + the head's r (5,120) and c (248,320) log
+  multipliers trainable, same lr / trust / schedule / data / seed.
+- Container: level + the run's trunk scales; output.weight = the R16 head (H: with its healed suh / svh, f16 as stored)
+  dequantized by rxq.deq (f16 rows), un-permuted to vocab order as bf16 by `v3/yaqa/headslab.py build` into a copy of the
+  control's trunk pack, taken by radmix as `output.weight`; embedding etc. from V2 3.00 as before. The unhealed R16
+  export of this path vs ourq's own `wq`: 67.9% bit-equal, rel 4.6e-4 (f16 rounding of the f32 W); control16 / A16 and
+  H all use this path, so H vs A16 differs only in the scales. **control16** = the unhealed level + the unhealed R16 head.
+- **H beats A16** by the B / C rule (H / A16: c CI below 1 and x below 1). If it does, the later arm L trains the head
+  as well (lead: "every later arm includes the head"); B / D are finished and are not rerun. A16 / control16 and
+  A16 / control (V2 head) are reported.
+- Not run: H on V2 3.00's head (time). Embedding scales: not trained (the student embeds with the bf16 table and the
+  judged mix carries V2 3.00's embedding; the V3 trellis embedding has one bf16 scale per row, trainable once the
+  student embeds with the mix's own rows: scale-up).
+
+**W (8,192-token windows).** Arm A with --len 8192: the same seeded qad order and ≥ 16-scored-rows rule (counted in the
+first 8,192 tokens), documents taken in that order until A's 975,807 tokens are matched: the first **668** documents
+(978,494 tokens; 863,334 scored gen rows, 306,210 of them at positions ≥ 2,048), **5 documents per step (133
+steps)**, same lr / warmup / cosine / trust / patience; monitor = the same seeded 32-document search draw scored on
+their first 8,192 tokens. 2 cards (32 / 32 layers). Judged as A (vs control, both parts) and **W beats A** by the
+B / C rule (W / A).
+
+**L (low-rank adapters), r = 8 and r = 16.** Base X = H if H beats A16, else A16 (decided by `lbase` from the H / A16
+judgement before L starts). Every quantized trunk linear gets y += (x Aᵀ) Bᵀ on its input x: A [r, k] ~ N(0, 1/k)
+(seeded per tensor), B [n, r] = 0, f32 parameters, bf16 GEMMs; trained jointly with X's scales on the same data /
+order / steps; Adam (0.9, 0.99), adapter lr **1e-4** (same warmup + cosine; no trust clamp), the scales as A. L8 on 1
+card, L16 on 2 (Adam state does not fit beside one card's 29.2 GiB peak).
+- Scored on the **torch path** (radiance has no adapters): `qad.py --score` with the run's best state, every document
+  of c and x whole, the scorer's KL on gen rows; X scored the same way (its radiance numbers stay its official ones;
+  torch vs radiance for X reported as a calibration).
+- Bytes: adapter values × 2 (bf16) and × 1 + 2 bytes per adapter row (int8 + an f16 row scale); extra bpw = bits /
+  26,895,998,464 (the board's parameter count, `search/v3/menu.py`). **Size-adjusted ratio** = (L / X) × exp(b ·
+  extra bpw), b = **1.48** (fit129h2's local slope at 2.5 bpw with priced heads, LOG #169), also shown with b = 1.6
+  (V2 board). **L pays at a storage** if its size-adjusted c CI is below 1 and its size-adjusted x ratio is below 1.
+  Raw ratios reported too, plus an analytic decode / prefill cost of the two extra GEMMs per linear. A format +
+  kernel change: a V3.x / V4 candidate only, whatever the result.
+
+**Long-context check (every judged arm).**
+1. `posci.py` on c and x: KL by position bin 0–2k / 2–4k / 4–8k / 8k+ (c and x documents are capped at 8,192 tokens,
+   so 8k+ is empty there; 4–8k has 8 / 9 documents), ratio healed / unhealed with a 95% document bootstrap CI, for
+   A, B, C, D0, D vs control; A16, H vs control16; H vs A16; W vs control and vs A. L on the torch rows (L / X).
+2. **agent-verify32** (verify: the 18 ≤ 32k chunks of rich + express, 275,375 gen rows; golden from gpubox
+   `/data/agent32`, copied to box2; its first scored use) for **control, A and W** once (radiance, --max-model-len
+   32768): pooled ratio with a chunk bootstrap (n = 2 traces: per-trace ratios reported; chunk resampling understates
+   trace-level uncertainty) and the same bins.
+3. **Flag:** a healed arm whose ratio CI lies wholly above 1 in any 4k+ bin (4–8k, 8k+) on any of these slices is
+   flagged, whatever its pooled gain.
+
+Ledger: W's train documents (positions up to 8,192), the monitor at 8,192, agent-verify32's check use. Cards: box2,
+≤ 4 by the locks (A16 card 0, H card 1, W cards 2–3, then L8 / L16 / scoring).
