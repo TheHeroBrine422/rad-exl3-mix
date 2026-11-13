@@ -485,5 +485,11 @@
   "line": "v3",
   "decisions": 24,
   "note": "#172 (w132, 2026-11-13 10:40 AM CST on): search-value check (RULES-value.md 62d6d4a), initial knapsack pick vs current incumbent per size, both A8, on s171c + s171d pooled by part: 12 size comparisons, + 12 for the M1 third arm (amendment 1e0f7cf 11:32:31 AM, before its first mix 11:33 AM; running at the audit) = 24 read on this slice. Added by the w141 audit"
+ },
+ "golden-s173*-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": null,
+  "note": "#171 restart slices (lead, 2026-11-13 1:27 PM CST): calib parts of s173a-f, merged fit + search docs, least-used first (draw171.py seed 1113), >= 45,000 scored positions at cap 4,096; x parts from xc8k-b2-c0 / c1 (xc8k-b2-c2 kept for the final-pick slice)."
  }
 }
