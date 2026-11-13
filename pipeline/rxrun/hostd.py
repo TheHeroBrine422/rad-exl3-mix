@@ -23,12 +23,19 @@ eval unit (pack + score): {"tag", "mix": {"base": ALIAS | PATH, "levels": {weigh
   over the base container) -> each part scored (eval.score_cmd, the eval card's lock + ram.lock shared). Result: the
   search's results.jsonl fields (tag, bytes, bpw, positions, kld, p99, top1, slice) per slice pooled over its parts, the
   parts, and per-document KL sums (eval/docstat/readout.py's inputs, small) -- rows files stay on the host.
-Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model}.
+Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile} {mix} {golden} {card} {model} {progress}.
 Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
 = cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
 radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
 "ram_mode": "shared" (box2, ds8) makes pack and mix hold ram.lock shared after a RAM admission ("pack_ram_gib",
 "mix_ram_gib"), so an eval never stops the host's level work; default "exclusive" (gpubox) as before (RamGate).
+Early stop (w126, #166; TODO "Continuous early stop"): an eval line with "early_stop": {"rule", "ref": [[A_d, n_d], ..],
+"parts": [..]} (the incumbent's per-document KL sums on the slice's one golden, in its order; rxrun/earlystop.py, a copy
+of search/v3/seqrule.py) is scored with HOSTCONF eval.score_cmd_progress (score_cmd + radiance --kld-progress
+{progress}); the host follows the progress file, pairs each finished document with the incumbent's and kills the run
+when the rule rejects. The slice's result then has "stopped": {k, z, d, ...}, its docs list holds the scored documents'
+sums (null for the rest) and kld / positions cover the scored documents only. A run that is not stopped gives the same
+result as without early stop (its rows file); the progress sums are checked against it.
 Limits (HOSTCONF "limits"): kinds, k_min / k_max (levels outside are not taken), max_unit_est_h; the coordinator
 checks them before it hands out a unit, hostd checks again."""
 import argparse, fcntl, glob, hashlib, json, os, signal, subprocess, sys, threading, time
@@ -304,6 +311,62 @@ def doc_sums(golden, rows):
     return out, np.concatenate(allk) if allk else np.zeros(0)
 
 
+def progress_docs(golden, prog, seen, gen=None):
+    """new complete lines of a --kld-progress file -> {doc: [KL sum over the golden's gen positions, positions]}"""
+    import numpy as np
+    out = {}
+    if not os.path.exists(prog): return out, seen
+    with open(prog) as f:
+        f.seek(seen)
+        while True:
+            l = f.readline()
+            if not l or not l.endswith("\n"): break
+            seen = f.tell(); j = json.loads(l)
+            kl = np.fromfile(prog + ".kl", np.float32, count=j["rows"], offset=j["kl_off"]).astype(np.float64)
+            g = gen[j["row0"]:j["row0"] + j["rows"]] if gen is not None else np.ones(j["rows"], bool)
+            out[j["doc"]] = [round(float(kl[g].sum()), 6), int(g.sum())]
+    return out, seen
+
+
+def score_watch(E, mix, g, o, es, log, poll=0.5):
+    """score golden g with --kld-progress and stop at the early-stop rule (w126). -> (rc, docs, stopped)"""
+    import numpy as np
+    from rxrun import earlystop as ES
+    m = json.load(open(f"{g}/kld.json")); N = len(m["docs"]); gen = np.fromfile(f"{g}/gen.u8", np.uint8).astype(bool)
+    ref, parts = es["ref"], es.get("parts") or ["all"] * N
+    if len(ref) != N or len(parts) != N: raise ValueError(f"early_stop ref / parts for {N} documents: {len(ref)} / {len(parts)}")
+    prog = o + ".progress"
+    for f in (prog, prog + ".kl"):
+        if os.path.exists(f): os.remove(f)
+    P = ES.Paired(N, es["rule"]); docs = [None] * N; ptr = 0; seen = 0; stopped = None
+    with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
+        cmd = fill(E["score_cmd_progress"], mix=mix, golden=g, out=o, card=cl.card, progress=prog)
+        with open(log, "a") as lf:
+            lf.write(f"$ {' '.join(cmd)}\n"); lf.flush()
+            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=lf, stderr=subprocess.STDOUT, start_new_session=True)
+        t0 = time.time()
+        while True:
+            done = p.poll() is not None
+            new, seen = progress_docs(g, prog, seen, gen)
+            for d, v in new.items(): docs[d] = v
+            while ptr < N and docs[ptr] is not None and stopped is None:
+                P.add(ref[ptr][0], docs[ptr][0], parts[ptr]); ptr += 1
+                if P.check():
+                    stopped = dict(P.summary(), at_s=round(time.time() - t0, 1))
+                    try: os.killpg(p.pid, signal.SIGTERM)
+                    except ProcessLookupError: pass
+                    try: p.wait(15)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(p.pid, signal.SIGKILL); p.wait()
+                    with open(log, "a") as lf: lf.write(f"# early stop after {P.k} of {N} documents: z {P.z():+.3f}, log r {P.d():+.5f}\n")
+            if stopped is not None or done: break
+            time.sleep(poll)
+    if stopped is not None:
+        for f in glob.glob(o + ".json.part*"): os.remove(f)
+        return 0, [docs[i] if i < ptr else None for i in range(N)], stopped
+    return p.returncode, docs, None
+
+
 def run_eval(H, u, req):
     E = H.hc["eval"]; R = H.rc["root"]; t0 = time.time()
     P = E.get("packs", f"{H.root}/packs"); MX = E.get("mixes", f"{H.root}/mixes"); SC = E.get("scores", f"{H.root}/scores")
@@ -347,8 +410,23 @@ def run_eval(H, u, req):
     def score(g, o):
         with CardLock(E) as cl, Lock(E.get("ram_lock"), False):
             return sh(fill(E["score_cmd"], mix=mrad, golden=g, out=o, card=cl.card), log, nice=0)
+    es = req.get("early_stop") if E.get("score_cmd_progress") else None
     for sl in req["slices"]:
         parts = {}; ks = []
+        if es and len(sl["parts"]) == 1:                          # early stop (w126): one golden, followed document by document
+            (pn, g), = sl["parts"].items(); g = rp(g); o = f"{SC}/{tag}-{sl['name']}-{pn}"
+            if not os.path.exists(o + ".json.rows"):
+                rc, pdocs, stopped = score_watch(E, mrad, g, o, es, log)
+                if stopped is not None:
+                    kd = [d for d in pdocs if d is not None]; S = sum(d[0] for d in kd); n = sum(d[1] for d in kd)
+                    parts[pn] = {"positions": n, "kld": S / n if n else None, "p99": None, "top1": None, "positions_all": None, "docs": pdocs}
+                    res["slices"][sl["name"]] = {"tag": tag, "slice": sl["name"], "bytes": nbytes, "positions": n, "kld": S / n if n else 0.0,
+                                                 "p99": None, "top1": None, "parts": parts, "stopped": stopped}
+                    continue
+                if rc or not os.path.exists(o + ".json.rows"): return {"rc": 1, "err": f"score {tag} {sl['name']}-{pn} rc {rc} ({log})"}
+                full, _ = doc_sums(g, o + ".json.rows")
+                if [d[0] for d in pdocs if d is not None] and any(d is not None and abs(d[0] - f[0]) > 1e-4 * max(1.0, abs(f[0])) for d, f in zip(pdocs, full)):
+                    with open(log, "a") as lf: lf.write("# WARN progress sums differ from the rows file's\n")
         todo = [(pn, rp(g)) for pn, g in sl["parts"].items() if not os.path.exists(f"{SC}/{tag}-{sl['name']}-{pn}.json.rows")]
         if E.get("goldcat") and len(todo) > 1:                   # one run for every part (one load); rows split back per part
             from rxrun import goldcat

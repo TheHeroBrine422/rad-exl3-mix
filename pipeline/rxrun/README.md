@@ -70,6 +70,14 @@ the host then waits at ram.lock (shared) holding its card lock, and the CPU lane
 run (`goldcat.py`, rows byte-identical); `eval.cards` [{card, lock}] scores on the first free card. Check:
 `check_rxrun.py --part evalstall` (the old rule reproduces the stall, the shared one does not).
 
+**Early stop (w126, #166; patch `search/v3/hostd-earlystop.patch`):** an eval line may carry `"early_stop": {"rule",
+"ref", "parts"}` (the search driver's: the incumbent's per-document KL sums on the slice's one interleaved golden). With
+HOSTCONF `eval.score_cmd_progress` (score_cmd + radiance `--kld-progress {progress}`, radiance branch
+`qc-exl3-v3-kldprog`) hostd follows the progress file, pairs each finished document with the incumbent's
+(`rxrun/earlystop.py` = `search/v3/seqrule.py`) and kills the run at the rule's boundary; the result carries
+`"stopped"` and the scored documents' sums only. Not stopped = the same result as score_cmd. Check:
+`search/v3/test_hostd_es.py PIPELINE_DIR` (11 checks).
+
 **Pause one card (user 11-12):** `touch <run root>/HOLD-<device name>` on the host (e.g. `/data/q27/ladder/HOLD-c3`): that card finishes its running jobs, releases its card and ram locks (other work can take it by the lock) and idles; the host's other cards keep going; the swj pass uses an unpaused swj card. `rm` the file to rejoin. Whole host: `HOLD`; whole run: the coordinator's `ROOT/HOLD`. Check: `check_rxrun.py --part pool` (dev-hold).
 
 **Rollout (lead):** (1) stage the frozen commit on both hosts (gpubox `/data/v3run/code` + the fork; box2
