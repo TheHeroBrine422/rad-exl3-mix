@@ -16,13 +16,14 @@ Top, per bpw band (< 2.75, 2.75-4.5, 4.5-6, >= 6), geo-mean over the band's size
          held-out gap shows as the line leaving the circles.
   dots / x   every decided eval (rejected / accepted): its incumbent's estimate x exp(its log r), per size.
   circles    held-out monitor reads (ver3-8k) ÷ V2 measured on ver3-8k.
-  diamonds   (--results) the incumbents' full scores on the search slice ÷ V2 scored on that slice, where it is.
+  diamonds   (--results) the incumbents' full scores on the search slice ÷ V2 scored on that slice, where it is: with
+             --docs and --slice-kld the equal-weight geo-mean of the parts' (c / x) ratios, as the accept statistic.
   dotted     IQR-V4 on ver3-8k ÷ V2 on ver3-8k (both measured), geo-mean over the band's sizes inside IQR's range.
 Bottom: validation loss V2-style: per band the geo-mean of each size's latest held-out read (from the step every
 size of the band has one), black = all sizes, dashed = the same picks' training estimates.
 Modes: submits with "act" (A8, w132) and without (f16) are separate series: anchors, chains and lines restart at the
 "act" state event (red line); f16 and A8 numbers are never in one line."""
-import argparse, collections, json, math, os, re, sys
+import argparse, collections, json, math, os, re, sys, textwrap
 
 import matplotlib
 matplotlib.use("Agg")
@@ -51,7 +52,10 @@ def load_refs(paths):
         for l in open(p):
             if not l.strip(): continue
             r = json.loads(l); m = re.match(r"^ref-(V2|IQR4)-", r.get("tag", ""))
-            if m and r.get("kld"): rows[(r["tag"], r["slice"])] = (m.group(1), r["slice"], r["bpw"], r["kld"])
+            if m and r.get("kld"):
+                rows[(r["tag"], r["slice"])] = (m.group(1), r["slice"], r["bpw"], r["kld"])
+                for pn, pv in (r.get("parts") or {}).items():
+                    if pn != "m" and pv.get("kld"): rows[(r["tag"], f"{r['slice']}|{pn}")] = (m.group(1), f"{r['slice']}|{pn}", r["bpw"], pv["kld"])
     out = collections.defaultdict(lambda: collections.defaultdict(list))
     for fam, sl, b, k in rows.values(): out[sl][fam].append((b, k))
     return out
@@ -95,12 +99,18 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog="convplot4.py")
     ap.add_argument("state"); ap.add_argument("out")
     ap.add_argument("--refs", action="append", default=[]); ap.add_argument("--results")
-    ap.add_argument("--monitor", default="ver3-8k"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
+    ap.add_argument("--monitor", default="ver3-8k"); ap.add_argument("--docs", help="the coordinator's per-document sums dir")
+    ap.add_argument("--slice-kld", action="append", default=[], help="SLICE=kld.json: the slice's documents' parts (c / x)")
+    ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     a = ap.parse_args(argv)
     R = load_refs(a.refs + ([a.results] if a.results else []))
     V2m = R.get(a.monitor, {}).get("V2", []); IQm = R.get(a.monitor, {}).get("IQR4", [])
     v2 = lambda b, sl=a.monitor: loglin(R.get(sl, {}).get("V2", []), b)
     W = walk(a.state); sub = W["sub"]
+    parts_of = {}
+    for sk in a.slice_kld:
+        sl, f = sk.split("=", 1)
+        if os.path.exists(f): parts_of[sl] = [d.get("part") or "m" for d in json.load(open(f))["docs"]]
 
     # anchors: the first monitor read per (size, mode) whose pick's chain value is known
     anchor = {}
@@ -179,16 +189,24 @@ def main(argv=None):
             if e["ev"] == "result": step += 1; rstep.setdefault(e["tag"], step)
         for r in rows:
             if (r.get("positions") or 0) < 0.98 * full[r["slice"]] or r["tag"] not in rstep: continue
-            b = sub[r["tag"]].get("bpw") or r["bpw"]; v = v2(b, r["slice"])
-            if v is None: continue
-            ax.scatter([rstep[r["tag"]]], [r["kld"] / v], marker="D", s=16, color=COL[band(b)], alpha=0.7, lw=0); nd += 1
+            b = sub[r["tag"]].get("bpw") or r["bpw"]; y = None
+            dp = f"{a.docs}/{r['tag']}-{r['slice']}.json" if a.docs else None
+            if r["slice"] in parts_of and dp and os.path.exists(dp):     # equal-weight mean of the parts' log ratios
+                dd = json.load(open(dp))["m"]; acc = collections.defaultdict(lambda: [0.0, 0])
+                for (sm, n), pn in zip(dd, parts_of[r["slice"]]):
+                    if sm is not None: acc[pn][0] += sm; acc[pn][1] += n
+                lr = [math.log(acc[pn][0] / acc[pn][1] / v2(b, f"{r['slice']}|{pn}")) for pn in acc
+                      if acc[pn][1] and v2(b, f"{r['slice']}|{pn}")]
+                if lr and len(lr) == len(acc): y = math.exp(sum(lr) / len(lr))
+            elif v2(b, r["slice"]): y = r["kld"] / v2(b, r["slice"])
+            if y is None: continue
+            ax.scatter([rstep[r["tag"]]], [y], marker="D", s=16, color=COL[band(b)], alpha=0.7, lw=0); nd += 1
     # IQR-V4 lines (measured on the monitor slice)
     for bd in range(4):
         v = [loglin(IQm, s) / v2(s) for s in sizes if band(s) == bd and loglin(IQm, s) and v2(s)]
         if v:
-            y = gmean(v); ax.axhline(y, color=COL[bd], ls=":", lw=1.6)
-            ax.text(0.003, y, f" IQR-V4 {BN[bd]} ({len(v)} sizes, measured on {a.monitor}): {y:.2f}", color=COL[bd],
-                    fontsize=8, va="bottom", transform=ax.get_yaxis_transform())
+            y = gmean(v)
+            ax.axhline(y, color=COL[bd], ls=":", lw=1.6, label=f"IQR-V4 {BN[bd]} [{', '.join(f'{s:g}' for s in sizes if band(s) == bd and loglin(IQm, s) and v2(s))}], measured: {y:.3f}")
     for st, kind, lab in W["events"]:
         for x_ in (ax, ax2):
             x_.axvline(st, color="red" if kind == "act" else "gray", ls="--" if kind == "act" else ":", lw=1.6 if kind == "act" else 1)
@@ -198,11 +216,11 @@ def main(argv=None):
     for x_ in (ax, ax2):
         x_.set_yscale("log"); x_.grid(alpha=0.3, which="both")
         x_.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); x_.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylim(0.4, 1.6); ax.set_yticks([0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6])
+    ax.set_ylim(0.3, 2.0); ax.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     ax.set_ylabel(f"KLD ÷ V2 at the same bpw (V2 measured on {a.monitor})")
     ax.legend(loc="upper right", fontsize=7.5)
     ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; open circles: held-out "
-                 f"{a.monitor} reads;\n◆: incumbents on their search slice ÷ V2 there; dotted: IQR-V4 measured; lower is better)", fontsize=10)
+                 f"{a.monitor} reads;\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
 
     # bottom: validation
     for m, s0, s1 in segs:
@@ -232,7 +250,7 @@ def main(argv=None):
                          label=f"same picks, training estimate [{m}] {T[-1][1]:.3f} (gap {S[-1][1] / T[-1][1] - 1:+.1%})")
             summary.append(f"{m} validation (all {len(szs)} sizes): {S[0][1]:.3f} -> {S[-1][1]:.3f}"
                            + (f"; training est. {T[-1][1]:.3f}" if T else ""))
-    ax2.axhline(1.0, color="k", lw=0.9); ax2.set_ylim(0.4, 1.3); ax2.set_yticks([0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2])
+    ax2.axhline(1.0, color="k", lw=0.9); ax2.set_ylim(0.3, 2.0); ax2.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 2.0])
     ax2.set_xlabel("eval step (search results, in order)"); ax2.set_ylabel(f"score of the current picks ÷ V2 ({a.monitor})")
     ax2.set_title(f"Validation loss: the search's current picks scored on held-out {a.monitor}; stop when it stops falling", fontsize=10)
     ax2.legend(loc="upper right", fontsize=7.5)
@@ -241,8 +259,9 @@ def main(argv=None):
         + (f"; IQR-V4: {len(iqr)} ({iqr[0]:.2f}–{iqr[-1]:.2f})" if iqr else "; IQR-V4: none yet") \
         + f"; sizes without a held-out read (not in lines): {', '.join(f'{s:g}' for s in sorted(skipped)) or 'none'}" \
         + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)"
+    note = "\n".join(w for n in [note] + a.note for w in textwrap.wrap(n, 230)); nl = note.count("\n") + 1
     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
-    fig.tight_layout(rect=(0, 0.012, 1, 1)); fig.savefig(a.out, dpi=100)
+    fig.tight_layout(rect=(0, 0.012 * nl, 1, 1)); fig.savefig(a.out, dpi=100)
     print("\n".join(summary)); print(note); print(f"{W['steps']} results, {len(W['decs'])} decisions, {len(W['reads'])} held-out reads, {nd} slice diamonds")
     return 0
 
