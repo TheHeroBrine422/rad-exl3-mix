@@ -1,0 +1,3 @@
+### prefill ctx8k: 8444 prompt tokens in 5.135 s = 1645 tok/s
+### prefill ctx8k: 8444 prompt tokens in 5.159 s = 1637 tok/s
+### prefill ctx8k: 8444 prompt tokens in 5.162 s = 1636 tok/s

@@ -5,6 +5,43 @@ before 2026-11-02 ~05:00 CST were rewritten into this template from the old trac
 versions of anything: git history.
 
 
+### 2026-11-13 10:30 AM CST · #177 · Hash codebook revisited, stage 1 (speed on today's kernels): decode step −4.3 % at K4.125, −9.4 % at K2.5 (C 1); A8 prefill ±0 (w139)
+- **Status:** running (stage 2 proxy on colo + Thor) · **Machine:** box2 card 3 (HIP; rocm-smi GPU[0]), locks; one
+  other card (1) for 1 min · **Code:** fork `qc-exl3-v3-hash` **e7ebe45** (off `qc-exl3-v3-perf` 5c9956c: the hash bench
+  switch ported to the decode form), `v3/e3/hash177/` (`hbuild.sh`, `gbench.sh`, `estep.sh`, `gsum.py`, `esum.py`) ·
+  **Data:** `data/hash177/{g1,p1,e1}` · **Brief:** `rad-local/workers/instr3/w139.md` + `notes/w139.md`
+- **Builds** (`hbuild.sh`, exl3i only, rad10-perf's compiler setup; homes = rad10-perf/home + that exl3i.so): `base`
+  (mul1i8; device code byte-identical to rad10-perf's `.hip_fatbin`), `h24` = IQR's hash per state (`v_mad_u32_u24` +
+  AND, A 0xB5297B: the constant does not change the ops), `h16` = the hash with a 16-bit A on mul1i8's packed state
+  pairs (`v_mad_u32_u16` op_sel, keeps K4's perm extraction), `abl` = no decode ALU (floor). In the decode form (KS + DQ
+  + DOT) the hash's q = S − 126 is one packed add a pair (mul1i8's DQ: FMA + sub + max). Codes are random (bench) or
+  mul1i8 packs read as hash codes (garbage logits, valid timing).
+- **GEMV** (bench_twopass, f16 mode, 3 interleaved rounds, mean layer 48 GDN : 16 attention, base / h24 at T 1):
+  K1.5 ×1.13, K2 ×1.07, K2.5 ×1.13, K2.625 ×1.13, K3 ×1.01 (h16 ×1.20), K4 ×0.99, K4.125 ×1.01, K5 ×0.98, K6 ×0.98;
+  decode share of the layer (1 − abl / base) 44 / 33 / 32 / 30 / 23 / **5 / 8 / 6 / 6 %** at the same K. So on today's
+  kernels the codebook ALU matters only below K4; at K ≥ 4 the floor is ≤ 8 % away and the hash takes ≤ 3 % of it.
+  (w48 measured ×1.13–1.18 on the old, grid-bound kernels.) Run-to-run noise ±1–3 % at some K (codegen differences
+  between builds, e.g. h16 K3 ×1.20 at T 1 but ×1.08 at T 8).
+- **Whole model** (`estep.sh`: rad10-perf radiance, bf16 KV, spec off, w124's `dstep.sh` steady window; 2 interleaved
+  rounds; w138's V3 packs `q27v3-144dd6e1-k{4.125,2.5}-i8-s6c57a3d1` with the bf16 head, act f16):
+
+  | pack | step C 1 ms: base / h24 / h16 / abl | C 8 ms: base / h24 / abl | 8k prefill tok/s (f16 path): base / h24 / abl |
+  |---|---|---|---|
+  | K4.125 | 34.25 / **32.78 (−4.3 %)** / 34.86 / 29.79 | 48.26 / 45.16 (−6.4 %) / 43.17 | 1,566 / 1,648 (+5 %) / 1,770 |
+  | K2.5 | 33.59 / **30.45 (−9.4 %)** / 32.25 / 22.84 | 47.69 / 43.54 (−8.7 %) / 34.41 | 1,573 / 1,664 (+6 %) / 1,789 |
+
+  The decode ALU is 11 ms of K2.5's 33.6 ms step (4.5 ms at K4.125); the hash buys back 3.1 / 1.5 ms of it. The rest is
+  the fractional rates' state extraction and the hash / byte-sum work every codebook has: a kernel lever (no requant).
+  Against IQR-V4 S (25.7 ms, w124) the hash closes ~1.5 of ~8.5 ms at K4.125; the no-decode floor is still 29.8 ms.
+- **A8 prefill** (M 2048, bench_twopass a8 + phases, 2 rounds): h24 / base 1.000–1.001 at K2.5 / 4 / 4.125 (wdec8
+  bandwidth-bound, GEMM 87 %); the 8k prefill gain above is the f16 path's in-tile decode (packs with act f16).
+- **h16 dropped:** no faster than h24 end to end and (stage 2a, 64 iid tiles, 284 random 16-bit A) its best A costs
+  ×1.033–1.04 MSE vs mul1i8 at K2–4 (24-bit A ~×1.01).
+- **Next:** stage 2 (variant space on the CPU proxy: per-K A, output shaping, HYB LUT; L 17 / 18 for hash and mul1i8 on
+  #113's harness), then stage 3 (27B KL) only for a variant that survives. w138 (#176) owns the absolute decode numbers.
+- **Runtime:** D (decode −4 to −10 % at C 1 with the hash), P on the f16 prefill path (+5 %), A8 prefill none; the format
+  changes (every level requantized).
+
 ### 2026-11-13 10:10 AM CST · #164-02 · R16 head end to end in a staged build: quantized R16 head = the bf16-spliced head to 9e-7 (K4) / 2e-6 (K2.5) mean KLD, text correct, decode −3.1 ms / step (w136)
 - **Status:** done · **Machine:** box2 (cards 0 / 1, by the locks) · **Code:** fork `qc-exl3-v3-perf` **5c9956c** (=
   374503f + merge of `qc-exl3-v3`: rad-convert `--no-error`, `--kld-progress`); `pipeline/hosts/rad10perf/`

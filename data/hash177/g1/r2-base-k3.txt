@@ -1,0 +1,23 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w139-base); device AMD Radeon AI PRO R9700 gfx1201; rate K3 mul1i8, a / y bf16, 50 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120     1  f16          166.4      161.7     2.1
+gate_up   34816   5120     8  f16          181.6      173.3    15.7
+down       5120  17408     1  f16           95.6       93.8     1.9
+down       5120  17408     8  f16          107.8      106.4    13.2
+gdn_qkv   10240   5120     1  f16           60.9       60.2     1.7
+gdn_qkv   10240   5120     8  f16           68.9       68.0    12.2
+gdn_z      6144   5120     1  f16           42.9       42.5     1.5
+gdn_z      6144   5120     8  f16           49.8       48.8    10.1
+attn_qg   12288   5120     1  f16           68.6       68.3     1.8
+attn_qg   12288   5120     8  f16           78.2       77.0    12.9
+attn_k     1024   5120     1  f16           19.8       19.3     0.5
+attn_k     1024   5120     8  f16           22.4       22.0     3.8
+attn_v     1024   5120     1  f16           20.0       19.6     0.5
+attn_v     1024   5120     8  f16           22.4       22.1     3.8
+attn_o     5120   6144     1  f16           43.4       43.0     1.4
+attn_o     5120   6144     8  f16           50.0       49.4    10.1
+ssm_out    5120   6144     1  f16           43.1       42.6     1.5
+ssm_out    5120   6144     8  f16           49.0       48.4    10.3
+layer M     1 f16 : GDN    408.9 us, attention    413.8 us, mean (48 GDN : 16 attention)    410.1 us
+layer M     8 f16 : GDN    457.1 us, attention    462.4 us, mean (48 GDN : 16 attention)    458.4 us

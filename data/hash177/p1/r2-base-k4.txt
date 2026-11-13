@@ -1,0 +1,43 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w139-base); device AMD Radeon AI PRO R9700 gfx1201; rate K4 mul1i8, a / y bf16, 20 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120  2048  a8          4056.6     3880.6   180.0
+gate_up   34816   5120  2048  actq         139.5      136.5  5233.3
+gate_up   34816   5120  2048  wdec8        534.1      531.1  1367.0
+gate_up   34816   5120  2048  gemm        4856.4     3399.6   150.3
+down       5120  17408  2048  a8          2063.3     1943.9   176.9
+down       5120  17408  2048  actq         251.7      246.0  1450.5
+down       5120  17408  2048  wdec8        240.6      239.7  1517.6
+down       5120  17408  2048  gemm        1672.0     1631.1   218.3
+gdn_qkv   10240   5120  2048  a8          1149.7     1096.0   186.8
+gdn_qkv   10240   5120  2048  actq          80.4       77.9  2672.3
+gdn_qkv   10240   5120  2048  wdec8        140.2      139.0  1531.7
+gdn_qkv   10240   5120  2048  gemm        1018.5      988.2   210.9
+gdn_z      6144   5120  2048  a8           704.4      694.2   182.9
+gdn_z      6144   5120  2048  actq          74.1       71.9  1739.3
+gdn_z      6144   5120  2048  wdec8         42.7       42.3  3019.0
+gdn_z      6144   5120  2048  gemm         623.5      590.6   206.6
+attn_qg   12288   5120  2048  a8          1377.1     1309.3   187.1
+attn_qg   12288   5120  2048  actq          79.8       78.6  3227.7
+attn_qg   12288   5120  2048  wdec8        173.9      172.7  1482.0
+attn_qg   12288   5120  2048  gemm        1362.2     1239.8   189.2
+attn_k     1024   5120  2048  a8           187.6      185.5   114.4
+attn_k     1024   5120  2048  actq          72.4       72.0   296.4
+attn_k     1024   5120  2048  wdec8         16.0       15.8  1338.8
+attn_k     1024   5120  2048  gemm         107.2      106.5   200.4
+attn_v     1024   5120  2048  a8           188.2      185.6   114.1
+attn_v     1024   5120  2048  actq          72.6       72.0   295.8
+attn_v     1024   5120  2048  wdec8         16.3       15.8  1315.9
+attn_v     1024   5120  2048  gemm         107.1      106.4   200.5
+attn_o     5120   6144  2048  a8           710.4      701.2   181.4
+attn_o     5120   6144  2048  actq          86.4       85.4  1492.0
+attn_o     5120   6144  2048  wdec8         43.3       42.8  2977.1
+attn_o     5120   6144  2048  gemm         608.2      582.4   211.9
+ssm_out    5120   6144  2048  a8           712.2      696.1   180.9
+ssm_out    5120   6144  2048  actq          87.4       85.6  1474.2
+ssm_out    5120   6144  2048  wdec8         43.0       42.6  2999.3
+ssm_out    5120   6144  2048  gemm         615.4      592.2   209.4
+layer M  2048 a8  : GDN   8686.3 us, attention   8583.4 us, mean (48 GDN : 16 attention)   8660.6 us
+layer M  2048 actq: GDN    633.0 us, attention    702.4 us, mean (48 GDN : 16 attention)    650.4 us
+layer M  2048 wdec8: GDN   1000.5 us, attention   1024.2 us, mean (48 GDN : 16 attention)   1006.4 us
+layer M  2048 gemm: GDN   8785.9 us, attention   8713.2 us, mean (48 GDN : 16 attention)   8767.7 us

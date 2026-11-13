@@ -1,0 +1,18 @@
+15:45:10 card 3 (rocm-smi 0) locked; homes base h16 h24 abl; packs /data/q27/w139/packs/q27v3-144dd6e1-k4.125-i8-s6c57a3d1.rad /data/q27/w139/packs/q27v3-144dd6e1-k2.5-i8-s6c57a3d1.rad; rounds 2
+15:45:23 serve r1-base-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+15:47:29 serve r1-h16-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+15:49:33 serve r1-h24-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+15:51:35 serve r1-abl-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+15:53:26 serve r1-base-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+15:55:27 serve r1-h16-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+15:57:24 serve r1-h24-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+15:59:19 serve r1-abl-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:00:54 serve r2-base-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:03:02 serve r2-h16-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:05:08 serve r2-h24-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:07:09 serve r2-abl-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:09:00 serve r2-base-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:11:02 serve r2-h16-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:12:59 serve r2-h24-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:14:51 serve r2-abl-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:16:16 ALL DONE (card 3 released)

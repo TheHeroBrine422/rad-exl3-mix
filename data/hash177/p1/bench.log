@@ -1,0 +1,4 @@
+15:57:52 card 1 (rocm-smi 2) locked, rounds 2, builds base h24 h16 abl, M 2048, rates 2.5 4 4.125, modes a8,phases
+15:58:12 round 1 done
+15:58:32 round 2 done
+15:58:32 unlock card 1
