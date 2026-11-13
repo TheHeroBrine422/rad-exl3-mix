@@ -4,6 +4,9 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 12:05 PM CST · #171 plot · V3 search convergence in V2's layout + V2 / IQR-V4 references on ver3-8k and s171b, 1.5–7.4 bpw (w134)
+- **Status:** done (run ended at the 10:11 pause: 632 results, 527 decisions, f16 only, no A8 switch) · **Machine:** ds8 (refs: one card lock at a time), VM (plot) · **Code:** `search/convplot4.py`, `search/v3/ref134/` · **Data:** `data/searchv3/w134/refs134.jsonl` (49 rows), `/workspace/v3-convergence.png` · **Brief:** `rad-local/workers/instr3/w134.md` + lead notes · **Result:** held-out ver3 ÷ V2 at the same bpw, f16 picks at the end of the run: < 2.75 0.469, 2.75–4.5 0.774, 4.5–6 0.895, ≥ 6 1.694 (worse than V2), all 12 sizes 0.774 (training estimate 0.762, gap +1.6 %). IQR-V4 ÷ V2 on ver3: 0.46 (2.47), 0.79–0.83 (2.8–4.1), 0.73–0.92 (4.5–5.4), 0.93–1.36 (6.1–6.9). On s171b it is 0.89–0.98 up to 5.4, so ver3 favours IQR (V2 ≤ 2.5 degrades with depth on ver3: one slice, unverified). KL ≤ 0.0013 at ≥ 6 bpw on ver3 is near the floor (IQR 7.42 scores above 6.94), so the ≥ 6 ratios are noisy. Fixes vs V2's plot: a measured competitor line instead of a guessed one, held-out normalised by V2 measured on the same golden, the training-vs-held-out gap drawn, slice diamonds as the c / x parts' equal-weight ratio.
+
 ### 2026-11-13 12:05 PM CST · #162-02 · Extra R16 head donors at the top: mul1 u6 / u6.5 / u7.5 / u8 built, priced (hcurve140.json); i8 vs mul1 at equal bytes a tie at K6 / K6.5; curve halves per half bit to u8; plugin serves all four; head GEMV mul1 ≤ i8 (w140)
 - **Status:** done · **Machine:** ds8 (quants 10:25–10:30 AM CST on cards 2–5; scores 10:31; packs 10:31–10:52 under
   conv.lock; serves / profiles 10:55–11:56 AM on card 6, interleaved with w132's value evals) · **Code:** `v3/yaqa/w140/`
@@ -318,9 +321,6 @@ versions of anything: git history.
   - **pooled −0.056 [−0.070, −0.040] = gained (×0.946)**.
   The ver3 monitor never scored the initial picks (its first read per size is the first accept), so it could not show
   this. Open: the split between the first accept and later decisions (12 more A8 mixes, ~2 card-h).
-
-
-
 
 ### 2026-11-13 10:36 AM CST · #173 · Full-ladder re-solve with M1 (lead notes 10:15 / 10:50 AM): picks 1.5–7.0, sub-1 not priceable yet; A8 transfers within noise (n = 4); calibration plan for approval
 - **Status:** done (picks delivered; calibration rows proposed, not run) · **Machine:** ds8 (menu, CPU, 5 s; w132's A8
