@@ -1,4 +1,4 @@
-# #177 head bench rules: hash-codebook variants as R16 head donors, real head-only KL (w139, 2026-11-13 ~11:40 AM CST)
+# #177 head bench rules: hash-codebook variants as R16 head donors, real head-only KL (w139, 2026-11-13 ~11:25 AM CST)
 
 Written before any hash head donor exists. Committed alone before the first job. Lead notes 11-13 11:05 / 11:10 / 11:20 /
 11:35 AM CST (`notes/w139.md`): the head is the hash study's test bench; this file replaces the colo proxy table as the
