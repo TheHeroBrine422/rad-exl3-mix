@@ -1,0 +1,81 @@
+{
+ "about": "w131 (#171, user go 11-13): the V3 search, first real run. fit129h2 on menu129h (R16 heads), per-part labels + xscale (RULES-parts.md test A), equal-weight per-part accept / early stop (seqrule pmean), p2 / 5% boundary, merged-pool slices s171a-d, monitor ver3-8k alert-only, ds8 evals",
+ "root": "/workspace/rad-local/workers/w131/run/drv",
+ "menu": "/workspace/rad-local/workers/w131/run/menu129h.json",
+ "menu_remote": "/data/work/w13/w131/code/data/refit/w129/menu129h.json",
+ "registry": "/workspace/rad-local/workers/w131/run/registry.json",
+ "base": "V2-3.00",
+ "sizes": [
+  1.0,
+  1.25,
+  1.5,
+  1.75,
+  2.0,
+  2.5,
+  3.0,
+  3.5,
+  4.0,
+  4.5,
+  5.0,
+  5.5,
+  6.0,
+  6.5,
+  7.0
+ ],
+ "size_tol": 0.02,
+ "evals": "/workspace/rad-local/multi/v3/evals.jsonl",
+ "results": "/workspace/rad-local/multi/v3/results.jsonl",
+ "docs": "/workspace/rad-local/multi/v3/docs",
+ "rule": {
+  "kind": "curve",
+  "p": 2.0,
+  "warmup": 0.05,
+  "stat": "pmean"
+ },
+ "warmup": 0.05,
+ "queue_depth": 10,
+ "refit_every": 20,
+ "rotate_after": 25,
+ "audit_frac": 0.1,
+ "size_adjust": true,
+ "bytes_offset0": 8255936,
+ "topn": 5,
+ "ndraw": 16,
+ "seed": 171,
+ "tag_prefix": "v3s171",
+ "monitor": {
+  "name": "ver3-8k",
+  "golden": "/data/q27/goldens/golden-ver3-8k",
+  "alert_min": 50,
+  "alert_frac": 0.2
+ },
+ "fit_cmd": [
+  "bash",
+  "-c",
+  "n=$(basename {in} .in.json); local/bin/ssh-r640.sh \"mkdir -p /data/work/w13/w131/fits && cat > /data/work/w13/w131/fits/$n.in.json && cd /data/work/w13/w131/code/search/v3 && OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 nice -n 19 python3 -I fit.py /data/work/w13/w131/fits/$n.in.json /data/work/w13/w131/fits/$n.out.json > /data/work/w13/w131/fits/$n.log 2>&1 && cat /data/work/w13/w131/fits/$n.out.json\" < {in} > {out}.part && mv {out}.part {out}"
+ ],
+ "fit_retry_s": 120,
+ "fit_opts": {
+  "tau": 0.02,
+  "beta": "0",
+  "xscale": true
+ },
+ "prior_obs": "/workspace/rad-local/workers/w131/run/fit129h2.obs.jsonl",
+ "init": {
+  "1.5": "/workspace/rad-local/workers/w131/run/init/init-1.5.json",
+  "1.75": "/workspace/rad-local/workers/w131/run/init/init-1.75.json",
+  "2.0": "/workspace/rad-local/workers/w131/run/init/init-2.json",
+  "2.5": "/workspace/rad-local/workers/w131/run/init/init-2.5.json",
+  "3.0": "/workspace/rad-local/workers/w131/run/init/init-3.json",
+  "3.5": "/workspace/rad-local/workers/w131/run/init/init-3.5.json",
+  "4.0": "/workspace/rad-local/workers/w131/run/init/init-4.json",
+  "4.5": "/workspace/rad-local/workers/w131/run/init/init-4.5.json",
+  "5.0": "/workspace/rad-local/workers/w131/run/init/init-5.json",
+  "5.5": "/workspace/rad-local/workers/w131/run/init/init-5.5.json",
+  "6.0": "/workspace/rad-local/workers/w131/run/init/init-6.json",
+  "6.5": "/workspace/rad-local/workers/w131/run/init/init-6.5.json",
+  "7.0": "/workspace/rad-local/workers/w131/run/init/init-7.json"
+ },
+ "poll_s": 10,
+ "go": true
+}

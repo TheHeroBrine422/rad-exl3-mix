@@ -4,6 +4,68 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 2:45 AM CST · #164 · Pass 2: producer activation quant (AQ) — whole-model KLD rows byte-identical at K2.625 / K4.125 / K6.25, e2e prefill +0.7%; FUSE hangs the R9700 under ROCm 7.14 (now opt-in); vision + DFlash2 ported into qwen35_exl3 (w124)
+- **Status:** done (pass 2; speculation step timing pending) · **Machine:** dad1 9070 XT (unit tests, AQ kernel benches,
+  until it dropped off the network ~6:40 AM UTC); box2 R9700 card 3 (whole model, e2e, debugging) · **Code:** fork
+  `qc-exl3-v3-perf`: 128d363 + 8c3ba37 + e12c2bf (exl3i AQ, interface v3), 1aa18de (qwen35_exl3 AQ), d517103 (FUSE
+  opt-in), 8afc1fc + a3799b5 + ae909bf + 639ad2f (vision + DFlash2), 374503f (PERF.md) · **Data:**
+  `v3/bench/data/w124/wm-box2-pass2/` (README), `v3/bench/data/w124/aq/` (kernel benches)
+- **AQ** (lead scope 2): `exl3i_actq` with `pre` = rmsnorm / silu_mul / gate mul computes the producer's bf16 output
+  exactly as libr4d does and writes each consumer's rotated int8 plane; exl3i_dense reads them (`aq`) and skips its
+  quantiser; qwen35_exl3 issues it from 512 rows (GDN norm → qkv / z (+ h), attention norm → qg / k / v, gate mul → o, MLP
+  norm → gate_up, silu_mul → down; `QWEN35_EXL3_AQ=0` off). Unit: planes and outputs byte for byte (test_aq vs libr4d's
+  own rows: 0 bytes differ; arch test + step lint). Kernels (9070 XT, T 2048): attn −6.7%, GDN −5.0%, gate_up −2.8%, down
+  −11.5%, o −12.9%. **Whole model (box2, golden cut13, act a8g128 trunk): rows byte-identical today / dev AQ off / AQ on
+  at K2.625 0.291513, K4.125 0.079819, K6.25 0.028256** (and K4AV 0.077012). e2e prefill K4.125: 8k 2282 → 2299 tok/s
+  (today 2215), 32k 2119 → 2130 (today 2047); decode unchanged (34.6 ms; today 47.5). The act f16 containers of pass 1
+  never take the A8 path: a8g128 prefills at ~2290 tok/s at 8k vs 1566.
+- **FUSE (a7d1cf2) hangs the R9700 built with ROCm 7.14 / AMD clang 23** (first whole-model A8 run): on its first launch
+  two of eight waves in some blocks never pass the fence after their strip decode, so the barrier and counters never
+  complete (stages traced in host-mapped memory; test_twopass and bench_aq2 reproduce it; dad1's ROCm core-10.1 build
+  passes). d517103 makes it opt-in (`EXL3I_A8_FUSE=1`; CMake test_twopass_fuse); R9700 device tests PASS with it off.
+  Pass 1's FUSE number (×0.94–0.97) stays unusable until understood. w130 (ROCm 10.1 radiance from this branch) should
+  re-test it there.
+- **Vision + DFlash2** (lead scope 3, no core change): stock `rad_block_vit.h` (bf16 tower, gated on its weights) and
+  `rad_block_dflash2.h` (qwen35_fp8's declare_dflash2, taps 5 19 33 47 61, probe depth 7). Pack: K4.125 + tower +
+  incoai/Qwen3.8-27B-DFlash2 (MXFP4 linears, u2 head = IQR-V4 S's lines) with `--draft-model`. box2's radiance has no
+  media decoder: built one (FFmpeg 7.1.1 + the frozen source, `tools/ffbuild.sh`). Results: trunk rows unchanged; 9
+  image prompts answered correctly with IQR's token counts; KL vs IQR (stock path) median 1.0e-3 on images vs 5.8e-4 on
+  text; temp-0 spec on = off on 8 / 8 text prompts, 6 / 9 images (near-tie flips; stock IQR 7 / 8, 7 / 9); acceptance
+  34.8% (IQR 38.8%), ~3.4 tokens / step at C 1 (IQR ~3.9). VRAM: tower 0.86 GiB, drafter 1.55 GiB (IQR's the same).
+  **Not measured:** KLD vs stock bf16 on images (the bf16 layer_offload server segfaulted on the first image request);
+  step time with speculation (the 2400-token rerun was stopped for the report).
+- **Bugs found on the way (fixed):** a3799b5 / ae909bf / 639ad2f — a text-only container keeps vision_config, so media
+  must follow the tower's weights; the builder refuses a second COPY map; rad-convert answers encodings only for mapped
+  names (the tower now declares first through its own gate).
+- **Not done:** the lead's 1:00 AM CST reprioritisation (R16 head end to end in a staged build + build recipe) arrived
+  while the scope runs were in flight and was missed until 2:30 AM; pass 1's R16 results stand (8d3f594, r16real).
+- **Incidents:** box2 ladder finals trimmed under a running pack (lead 06:35 UTC): k2.625 / k4.125 / k6.25 copied from
+  ds8 (read only, over its direct link) into `/data/q27/w124/levels/` and deleted after use. Packs deleted after their
+  scores; box2 ≥ 380 GB free throughout.
+- **Runtime:** P (prefill: AQ), media + speculation for qwen35_exl3 containers; stored bytes unchanged.
+
+### 2026-11-13 3:30 AM CST · #171 · V3 search LAUNCHED on ds8 (rad10) — first 30 min: incumbents scored, early stops firing, first refit through colo, two accepts, monitor reads below V2 (w131)
+- **Status:** running · **Machine:** ds8 (7 eval slots, cards 0–7, rad10 score / home-pack pack per w130's host.json),
+  VM (driver, coordinator, disk guard), colo (fits) · **Code:** `search/v3/run171/` (0795f83) · **Data:**
+  `data/searchv3/w131/` (`driver171.json`, `refs171-ver3.jsonl`); live state `local/workers/w131/run/drv/`
+- **Start:** 2:55 AM CST after w130's "ds8 PASSES" (2:54; V2 3.00 / K4 / K4H rows byte-identical 7.14 vs 10.1). ds8's
+  `rxrun/earlystop.py` restaged = seqrule.py (pmean + off; backup `earlystop.py.bak-w131`); tree stamp 7dcaf8a0.
+- **V2 references on golden-ver3-8k** (rad10, gen positions as every hostd eval; `ref171.py`): 3.00 0.03992, 3.50
+  0.02300, 4.00 0.01205, 4.50 0.00747, 5.00 0.00492 (radiance's own all-position mean for 3.00 is 0.3707: 26k
+  non-gen positions carry KL up to 37; hostd and convplot3 use the gen-masked number). Lines appended to the
+  coordinator's results.jsonl before it started (backup `local/workers/w131/run/results.jsonl.bak-preref`).
+- **First 30 min:** 13 incumbents (1.5–7.0; 1.0 / 1.25 skipped: below menu129h) scored on s171a in ~8 min (1.5 0.543,
+  2.0 0.332, 2.5 0.187, 3.0 0.145, 3.5 0.081); 32 results, 17 decisions, 12 runs stopped early by the host (after 10–36
+  of 187 docs), no failed or refused evals; first refit (fit0000, 142 rows, 9 labels, log-RMSE 0.066, colo round
+  trip ~20 s) with **λ_x 0.635**; b from it: 1.5 2.67, 2.5 1.56, 3 1.43, 4 1.13, 5 0.66, 6 0.24, 6.5 0.10 (≥ 5.5 below
+  V2's board slope: w129's caveat, b applies inside the 0.02 bpw window only). Accepts: 3.5 pair (log r −0.0148),
+  4.5 explore (**log r −0.326, unverified**: one slice; likely a poor model-based init above K4, not checked). Monitor
+  (ver3-8k): 4.5 0.00552 (V2 4.50 0.00747, −26 %), 3.5 0.01870 (V2 3.50 0.02300, −19 %), at menu bpw (the containers
+  still carry the R16 head in bf16: +0.65 bpw on disk, w129). Disk guard: deletes scored mixes; ds8 456 GB free.
+- **Not yet:** the first rotation (rotate_after 25 decisions of one size, 13 sizes sharing ~7 slots: hours away);
+  slices s171b–d are ready, more are needed after ~4 rotations (`run171/README.md`).
+- **Runtime:** none (search).
+
 ### 2026-11-13 2:10 AM CST · #171 · Search driver: per-part fit labels (+ x ratio scale, adopted) and equal-weight per-part accept / early stop; boundary pick unchanged; launch prepared (w131)
 - **Status:** done (code + checks); launch waits for w130's ds8 ROCm 10.1 pass · **Machine:** colo (fits, boundsim,
   stand-ins), ds8 (slices, V2 downloads), VM · **Rules:** `search/v3/RULES-parts.md` (committed alone, 1ef9958, before
