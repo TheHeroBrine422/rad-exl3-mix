@@ -1,0 +1,498 @@
+11-12 19:31:09 CST slice syn0 active
+11-12 19:31:09 CST v3s-1.5-init-00000: incumbent of 1.5 scored on syn0: KLD 1.47447 at 1.2884 bpw (container 1.2884)
+11-12 19:31:09 CST v3s-2.5-init-00001: incumbent of 2.5 scored on syn0: KLD 0.28266 at 2.4202 bpw (container 2.4202)
+11-12 19:31:09 CST v3s-4-init-00002: incumbent of 4.0 scored on syn0: KLD 0.04967 at 3.7782 bpw (container 3.7782)
+11-12 19:31:09 CST v3s-6-init-00003: incumbent of 6.0 scored on syn0: KLD 0.01017 at 5.8153 bpw (container 5.8153)
+11-12 19:31:09 CST fit 0000 (all) started on 4 rows (4 results)
+11-12 19:31:09 CST fit all done on 4 rows: {'rows': 4, 'labels': 1, 'params': 39, 'rmse_log': 3.4457533437620634e-08, 'chi2_per_row': 2.9683040265118597e-12, 'cost': 5.93660802125735e-12, 'nfev': 27}
+11-12 19:31:10 CST b (size-adjusted score) 1.5:1.815 2.5:1.458 4:0.942 6:0.700
+11-12 19:31:11 CST ACCEPT v3s-6-thompson-00004 (thompson) for 6.0: log r -0.1760, size-adjusted -0.0766 (z -15.21) vs v3s-6-init-00003; 5.9572 bpw
+11-12 19:31:11 CST ACCEPT v3s-4-pair-00005 (pair) for 4.0: log r -0.2513, size-adjusted -0.0425 (z -14.06) vs v3s-4-init-00002; 3.9999 bpw
+11-12 19:31:11 CST reject v3s-1.5-partial-00006 (partial) for 1.5: log r -0.3020, size-adjusted +0.0819 (z +6.89) after 9 docs [stopped]
+11-12 19:31:11 CST ACCEPT v3s-2.5-block-00007 (block) for 2.5: log r -0.1342, size-adjusted -0.0179 (z -12.82) vs v3s-2.5-init-00001; 2.5000 bpw
+11-12 19:31:11 CST monitor 6.0: 0.01056 at 5.9572 bpw (ver)
+11-12 19:31:11 CST monitor 4.0: 0.04809 at 3.9999 bpw (ver)
+11-12 19:31:11 CST no new candidate for 6.0 (window 5.9272-6.0000 bpw)
+11-12 19:31:11 CST monitor 2.5: 0.30697 at 2.5000 bpw (ver)
+11-12 19:31:11 CST reject v3s-1.5-pair-00011 (pair) for 1.5: log r -0.3095, size-adjusted +0.0744 (z +6.04) after 9 docs [stopped]
+11-12 19:31:11 CST ACCEPT v3s-4-explore-00012 (explore) for 4.0: log r -0.0023, size-adjusted -0.0023 (z -5.73) vs v3s-4-pair-00005; 3.9999 bpw
+11-12 19:31:11 CST ACCEPT v3s-1.5-solve-00013 (solve) for 1.5: log r -0.4699, size-adjusted -0.0860 (z -24.64) vs v3s-1.5-init-00000; 1.5000 bpw
+11-12 19:31:11 CST reject v3s-2.5-block-00014 (block) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +0.47) after 121 docs [stopped]
+11-12 19:31:11 CST reject v3s-4-thompson-00015 (thompson) for 4.0: log r +1.3921, size-adjusted +1.3921 (z +30.42) after 9 docs [stopped]
+11-12 19:31:12 CST monitor 4.0: 0.04795 at 3.9999 bpw (ver), vs best 0.04809: size-adjusted +0.0028 (se 0.0003)
+11-12 19:31:12 CST monitor 1.5: 1.14637 at 1.5000 bpw (ver)
+11-12 19:31:13 CST ACCEPT v3s-2.5-pair-00018 (pair) for 2.5: log r -0.0052, size-adjusted -0.0052 (z -25.60) vs v3s-2.5-block-00007; 2.5000 bpw
+11-12 19:31:13 CST reject v3s-2.5-explore-00019 (explore) for 2.5: log r +0.0006, size-adjusted +0.0006 (z +1.41) after 49 docs [stopped]
+11-12 19:31:13 CST fit 0001 (all) started on 19 rows (20 results)
+11-12 19:31:14 CST reject v3s-1.5-pair-00020 (pair) for 1.5: log r +0.0097, size-adjusted +0.0097 (z +11.08) after 9 docs
+11-12 19:31:14 CST reject v3s-4-solve-00021 (solve) for 4.0: log r +0.7606, size-adjusted +0.7606 (z +9.61) after 9 docs [stopped]
+11-12 19:31:14 CST fit all done on 19 rows: {'rows': 19, 'labels': 4, 'params': 44, 'rmse_log': 0.0024783349128921963, 'chi2_per_row': 0.015353707529745025, 'cost': 0.14718843006318563, 'nfev': 72}
+11-12 19:31:15 CST b (size-adjusted score) 1.5:1.550 2.5:1.377 4:1.377 6:0.700
+11-12 19:31:18 CST monitor 2.5: 0.30525 at 2.5000 bpw (ver), vs best 0.30697: size-adjusted +0.0056 (se 0.0002)
+11-12 19:31:18 CST ACCEPT v3s-1.5-pair-00023 (pair) for 1.5: log r -0.0033, size-adjusted -0.0033 (z -12.36) vs v3s-1.5-solve-00013; 1.5000 bpw
+11-12 19:31:19 CST ACCEPT v3s-4-block-00024 (block) for 4.0: log r -0.0193, size-adjusted -0.0193 (z -7.33) vs v3s-4-explore-00012; 3.9999 bpw
+11-12 19:31:19 CST ACCEPT v3s-4-partial-00025 (partial) for 4.0: log r -0.0340, size-adjusted -0.0340 (z -15.48) vs v3s-4-block-00024; 3.9999 bpw
+11-12 19:31:19 CST monitor 1.5: 1.14314 at 1.5000 bpw (ver), vs best 1.14637: size-adjusted +0.0028 (se 0.0002)
+11-12 19:31:19 CST ACCEPT v3s-2.5-pair-00027 (pair) for 2.5: log r -0.0797, size-adjusted -0.0798 (z -84.48) vs v3s-2.5-pair-00018; 2.4999 bpw
+11-12 19:31:24 CST monitor 4.0: 0.04709 at 3.9999 bpw (ver), vs best 0.04795: size-adjusted +0.0183 (se 0.0026)
+11-12 19:31:24 CST monitor 4.0: 0.04525 at 3.9999 bpw (ver), vs best 0.04709: size-adjusted +0.0398 (se 0.0022)
+11-12 19:31:24 CST monitor 2.5: 0.28130 at 2.4999 bpw (ver), vs best 0.30525: size-adjusted +0.0819 (se 0.0009)
+11-12 19:31:24 CST ACCEPT v3s-1.5-partial-00031 (partial) for 1.5: log r -0.0572, size-adjusted -0.0572 (z -25.93) vs v3s-1.5-pair-00023; 1.5000 bpw
+11-12 19:31:27 CST reject v3s-4-block-00032 (block) for 4.0: log r +0.0064, size-adjusted +0.0064 (z +1.37) after 48 docs [stopped]
+11-12 19:31:27 CST reject v3s-2.5-thompson-00033 (thompson) for 2.5: log r +0.0989, size-adjusted +0.0989 (z +8.36) after 9 docs [stopped]
+11-12 19:31:27 CST monitor 1.5: 1.07663 at 1.5000 bpw (ver), vs best 1.14314: size-adjusted +0.0599 (se 0.0023)
+11-12 19:31:27 CST ACCEPT v3s-2.5-partial-00035 (partial) for 2.5: log r -0.0394, size-adjusted -0.0394 (z -36.10) vs v3s-2.5-pair-00027; 2.4999 bpw
+11-12 19:31:27 CST fit 0002 (all) started on 32 rows (36 results)
+11-12 19:31:32 CST ACCEPT v3s-1.5-pair-00036 (pair) for 1.5: log r -0.0056, size-adjusted -0.0056 (z -14.31) vs v3s-1.5-partial-00031; 1.5000 bpw
+11-12 19:31:32 CST reject v3s-2.5-partial-00037 (partial) for 2.5: log r +0.0010, size-adjusted +0.0010 (z +7.29) after 180 docs
+11-12 19:31:32 CST fit all done on 32 rows: {'rows': 32, 'labels': 4, 'params': 44, 'rmse_log': 0.0030298046201704307, 'chi2_per_row': 0.022316136173254945, 'cost': 0.3759343667876325, 'nfev': 9}
+11-12 19:31:33 CST b (size-adjusted score) 1.5:1.540 2.5:1.328 4:1.006 6:0.700
+11-12 19:31:35 CST monitor 2.5: 0.26962 at 2.4999 bpw (ver), vs best 0.28130: size-adjusted +0.0424 (se 0.0013)
+11-12 19:31:35 CST ACCEPT v3s-4-pair-00039 (pair) for 4.0: log r -0.0031, size-adjusted -0.0031 (z -8.05) vs v3s-4-partial-00025; 3.9999 bpw
+11-12 19:31:36 CST monitor 1.5: 1.07008 at 1.5000 bpw (ver), vs best 1.07663: size-adjusted +0.0061 (se 0.0003)
+11-12 19:31:36 CST ACCEPT v3s-4-explore-00041 (explore) for 4.0: log r -0.0287, size-adjusted -0.0286 (z -16.83) vs v3s-4-pair-00039; 4.0000 bpw
+11-12 19:31:38 CST monitor 4.0: 0.04514 at 3.9999 bpw (ver), vs best 0.04525: size-adjusted +0.0024 (se 0.0004)
+11-12 19:31:38 CST ACCEPT v3s-1.5-pair-00043 (pair) for 1.5: log r -0.0034, size-adjusted -0.0034 (z -19.04) vs v3s-1.5-pair-00036; 1.5000 bpw
+11-12 19:31:40 CST monitor 4.0: 0.04367 at 4.0000 bpw (ver), vs best 0.04514: size-adjusted +0.0329 (se 0.0014)
+11-12 19:31:40 CST ACCEPT v3s-1.5-solve-00045 (solve) for 1.5: log r -0.0291, size-adjusted -0.0291 (z -10.92) vs v3s-1.5-pair-00043; 1.5000 bpw
+11-12 19:31:43 CST monitor 1.5: 1.06680 at 1.5000 bpw (ver), vs best 1.07008: size-adjusted +0.0031 (se 0.0001)
+11-12 19:31:43 CST ACCEPT v3s-2.5-pair-00047 (pair) for 2.5: log r -0.0025, size-adjusted -0.0025 (z -29.12) vs v3s-2.5-partial-00035; 2.4999 bpw
+11-12 19:31:46 CST monitor 1.5: 1.03064 at 1.5000 bpw (ver), vs best 1.06680: size-adjusted +0.0345 (se 0.0024)
+11-12 19:31:46 CST reject v3s-2.5-block-00049 (block) for 2.5: log r +0.0087, size-adjusted +0.0087 (z +2.30) after 24 docs [stopped]
+11-12 19:31:46 CST monitor 2.5: 0.26890 at 2.4999 bpw (ver), vs best 0.26962: size-adjusted +0.0027 (se 0.0001)
+11-12 19:31:46 CST ACCEPT v3s-4-pair-00051 (pair) for 4.0: log r -0.0014, size-adjusted -0.0014 (z -7.35) vs v3s-4-explore-00041; 4.0000 bpw
+11-12 19:31:46 CST fit 0003 (all) started on 42 rows (52 results)
+11-12 19:31:47 CST reject v3s-1.5-explore-00052 (explore) for 1.5: log r +0.0131, size-adjusted +0.0131 (z +4.12) after 9 docs
+11-12 19:31:47 CST ACCEPT v3s-4-partial-00053 (partial) for 4.0: log r -0.0025, size-adjusted -0.0025 (z -2.37) vs v3s-4-pair-00051; 4.0000 bpw
+11-12 19:31:47 CST fit all done on 42 rows: {'rows': 42, 'labels': 5, 'params': 45, 'rmse_log': 0.002962160883579509, 'chi2_per_row': 0.02035070750736364, 'cost': 0.46047365091669207, 'nfev': 10}
+11-12 19:31:49 CST b (size-adjusted score) 1.5:1.526 2.5:1.313 4:0.991 6:0.700
+11-12 19:31:49 CST monitor 4.0: 0.04359 at 4.0000 bpw (ver), vs best 0.04367: size-adjusted +0.0018 (se 0.0002)
+11-12 19:31:49 CST ACCEPT v3s-2.5-pair-00055 (pair) for 2.5: log r -0.0050, size-adjusted -0.0050 (z -16.65) vs v3s-2.5-pair-00047; 2.4999 bpw
+11-12 19:31:49 CST monitor 4.0: 0.04339 at 4.0000 bpw (ver), vs best 0.04359: size-adjusted +0.0048 (se 0.0010)
+11-12 19:31:49 CST reject v3s-1.5-solve-00057 (solve) for 1.5: log r +0.0074, size-adjusted +0.0074 (z +15.09) after 9 docs [stopped]
+11-12 19:31:49 CST monitor 2.5: 0.26750 at 2.4999 bpw (ver), vs best 0.26890: size-adjusted +0.0052 (se 0.0002)
+11-12 19:31:49 CST ACCEPT v3s-1.5-pair-00059 (pair) for 1.5: log r -0.0003, size-adjusted -0.0003 (z -1.07) vs v3s-1.5-solve-00045; 1.5000 bpw
+11-12 19:31:49 CST reject v3s-4-partial-00060 (partial) for 4.0: log r +0.0020, size-adjusted +0.0020 (z +2.03) after 17 docs [stopped]
+11-12 19:31:50 CST ACCEPT v3s-2.5-pair-00061 (pair) for 2.5: log r -0.0009, size-adjusted -0.0009 (z -2.66) vs v3s-2.5-pair-00055; 2.4999 bpw
+11-12 19:31:50 CST monitor 1.5: 1.03116 at 1.5000 bpw (ver), vs best 1.03064: size-adjusted -0.0005 (se 0.0003)
+11-12 19:31:50 CST reject v3s-4-pair-00063 (pair) for 4.0: log r +0.0006, size-adjusted +0.0006 (z +4.09) after 9 docs [stopped]
+11-12 19:31:50 CST monitor 2.5: 0.26702 at 2.4999 bpw (ver), vs best 0.26750: size-adjusted +0.0018 (se 0.0003)
+11-12 19:31:50 CST ACCEPT v3s-2.5-thompson-00065 (thompson) for 2.5: log r -0.0099, size-adjusted -0.0097 (z -4.67) vs v3s-2.5-pair-00061; 2.5000 bpw
+11-12 19:31:50 CST reject v3s-1.5-block-00066 (block) for 1.5: log r +0.0515, size-adjusted +0.0515 (z +12.20) after 9 docs [stopped]
+11-12 19:31:50 CST ACCEPT v3s-4-pair-00067 (pair) for 4.0: log r -0.0006, size-adjusted -0.0006 (z -3.55) vs v3s-4-partial-00053; 4.0000 bpw
+11-12 19:31:50 CST fit 0004 (all) started on 56 rows (68 results)
+11-12 19:31:51 CST monitor 2.5: 0.26308 at 2.5000 bpw (ver), vs best 0.26702: size-adjusted +0.0147 (se 0.0020)
+11-12 19:31:51 CST reject v3s-1.5-thompson-00069 (thompson) for 1.5: log r +0.0392, size-adjusted +0.0392 (z +8.32) after 9 docs
+11-12 19:31:51 CST fit all done on 56 rows: {'rows': 56, 'labels': 5, 'params': 45, 'rmse_log': 0.0041700225093028245, 'chi2_per_row': 0.041710269154163655, 'cost': 1.1917047185680094, 'nfev': 11}
+11-12 19:31:52 CST b (size-adjusted score) 1.5:1.525 2.5:1.302 4:1.025 6:0.700
+11-12 19:31:52 CST monitor 4.0: 0.04336 at 4.0000 bpw (ver), vs best 0.04339: size-adjusted +0.0006 (se 0.0002)
+11-12 19:31:52 CST reject v3s-1.5-partial-00071 (partial) for 1.5: log r +0.0083, size-adjusted +0.0083 (z +5.70) after 9 docs [stopped]
+11-12 19:31:53 CST ACCEPT v3s-2.5-pair-00072 (pair) for 2.5: log r -0.0070, size-adjusted -0.0070 (z -22.77) vs v3s-2.5-thompson-00065; 2.5000 bpw
+11-12 19:31:53 CST ACCEPT v3s-2.5-solve-00073 (solve) for 2.5: log r -0.0373, size-adjusted -0.0373 (z -22.87) vs v3s-2.5-pair-00072; 2.5000 bpw
+11-12 19:31:53 CST ACCEPT v3s-4-pair-00074 (pair) for 4.0: log r -0.0017, size-adjusted -0.0017 (z -7.33) vs v3s-4-pair-00067; 4.0000 bpw
+11-12 19:31:53 CST reject v3s-4-explore-00075 (explore) for 4.0: log r +0.0033, size-adjusted +0.0033 (z +1.46) after 44 docs [stopped]
+11-12 19:31:53 CST monitor 2.5: 0.26123 at 2.5000 bpw (ver), vs best 0.26308: size-adjusted +0.0071 (se 0.0003)
+11-12 19:31:53 CST monitor 2.5: 0.25260 at 2.5000 bpw (ver), vs best 0.26123: size-adjusted +0.0336 (se 0.0015)
+11-12 19:31:54 CST monitor 4.0: 0.04326 at 4.0000 bpw (ver), vs best 0.04336: size-adjusted +0.0023 (se 0.0002)
+11-12 19:31:54 CST reject v3s-1.5-pair-00079 (pair) for 1.5: log r +0.0026, size-adjusted +0.0026 (z +3.50) after 9 docs [stopped]
+11-12 19:31:55 CST ACCEPT v3s-2.5-pair-00080 (pair) for 2.5: log r -0.0021, size-adjusted -0.0021 (z -5.28) vs v3s-2.5-solve-00073; 2.5000 bpw
+11-12 19:31:55 CST reject v3s-2.5-pair-00081 (pair) for 2.5: log r +0.0003, size-adjusted +0.0003 (z +0.92) after 180 docs
+11-12 19:31:55 CST reject v3s-1.5-solve-00082 (solve) for 1.5: log r +0.0042, size-adjusted +0.0042 (z +2.14) after 17 docs [stopped]
+11-12 19:31:55 CST reject v3s-4-thompson-00083 (thompson) for 4.0: log r +0.0600, size-adjusted +0.0600 (z +2.75) after 9 docs [stopped]
+11-12 19:31:55 CST fit 0005 (all) started on 69 rows (84 results)
+11-12 19:31:56 CST monitor 2.5: 0.25184 at 2.5000 bpw (ver), vs best 0.25260: size-adjusted +0.0030 (se 0.0004)
+11-12 19:31:56 CST reject v3s-4-partial-00085 (partial) for 4.0: log r +0.0011, size-adjusted +0.0011 (z +1.11) after 61 docs [stopped]
+11-12 19:31:56 CST fit all done on 69 rows: {'rows': 69, 'labels': 6, 'params': 46, 'rmse_log': 0.004010267478635184, 'chi2_per_row': 0.03721831889220325, 'cost': 1.3264573898499632, 'nfev': 13}
+11-12 19:31:57 CST b (size-adjusted score) 1.5:1.518 2.5:1.298 4:1.012 6:0.700
+11-12 19:31:57 CST reject v3s-1.5-block-00086 (block) for 1.5: log r +0.0030, size-adjusted +0.0030 (z +2.09) after 21 docs [stopped]
+11-12 19:31:57 CST reject v3s-4-pair-00087 (pair) for 4.0: log r +0.0003, size-adjusted +0.0003 (z +1.37) after 53 docs [stopped]
+11-12 19:31:58 CST reject v3s-2.5-pair-00088 (pair) for 2.5: log r +0.0003, size-adjusted +0.0003 (z +1.35) after 53 docs [stopped]
+11-12 19:31:58 CST reject v3s-1.5-solve-00089 (solve) for 1.5: log r +0.0074, size-adjusted +0.0074 (z +2.86) after 9 docs [stopped]
+11-12 19:31:58 CST reject v3s-2.5-partial-00090 (partial) for 2.5: log r +0.0089, size-adjusted +0.0089 (z +4.03) after 9 docs [stopped]
+11-12 19:31:58 CST reject v3s-1.5-explore-00091 (explore) for 1.5: log r +0.0058, size-adjusted +0.0058 (z +2.34) after 10 docs [stopped]
+11-12 19:31:58 CST reject v3s-2.5-thompson-00092 (thompson) for 2.5: log r +0.0249, size-adjusted +0.0249 (z +3.59) after 9 docs [stopped]
+11-12 19:31:58 CST reject v3s-4-pair-00093 (pair) for 4.0: log r +0.0002, size-adjusted +0.0002 (z +1.01) after 72 docs [stopped]
+11-12 19:31:59 CST reject v3s-1.5-block-00094 (block) for 1.5: log r +0.0037, size-adjusted +0.0037 (z +2.35) after 13 docs [stopped]
+11-12 19:31:59 CST reject v3s-4-pair-00095 (pair) for 4.0: log r +0.0001, size-adjusted +0.0001 (z +0.82) after 82 docs
+11-12 19:32:00 CST reject v3s-2.5-partial-00096 (partial) for 2.5: log r +0.0066, size-adjusted +0.0066 (z +3.25) after 9 docs
+11-12 19:32:00 CST reject v3s-2.5-pair-00097 (pair) for 2.5: log r +0.0001, size-adjusted +0.0001 (z +0.63) after 89 docs [stopped]
+11-12 19:32:00 CST reject v3s-1.5-pair-00098 (pair) for 1.5: log r +0.0010, size-adjusted +0.0010 (z +2.25) after 13 docs [stopped]
+11-12 19:32:00 CST reject v3s-4-solve-00099 (solve) for 4.0: log r +0.0043, size-adjusted +0.0043 (z +2.47) after 10 docs [stopped]
+11-12 19:32:00 CST fit 0006 (all) started on 91 rows (100 results)
+11-12 19:32:01 CST reject v3s-1.5-explore-00100 (explore) for 1.5: log r +0.0079, size-adjusted +0.0079 (z +2.15) after 15 docs [stopped]
+11-12 19:32:01 CST reject v3s-2.5-thompson-00101 (thompson) for 2.5: log r +0.0379, size-adjusted +0.0379 (z +5.52) after 9 docs [stopped]
+11-12 19:32:01 CST fit all done on 91 rows: {'rows': 91, 'labels': 9, 'params': 49, 'rmse_log': 0.004463131772409946, 'chi2_per_row': 0.04347540649828307, 'cost': 2.042290206253552, 'nfev': 11}
+11-12 19:32:02 CST b (size-adjusted score) 1.5:1.516 2.5:1.303 4:0.996 6:0.700
+11-12 19:32:02 CST reject v3s-4-block-00102 (block) for 4.0: log r +0.0102, size-adjusted +0.0102 (z +2.33) after 9 docs [stopped]
+11-12 19:32:02 CST reject v3s-1.5-partial-00103 (partial) for 1.5: log r +0.0048, size-adjusted +0.0048 (z +2.79) after 9 docs [stopped]
+11-12 19:32:03 CST reject v3s-4-pair-00104 (pair) for 4.0: log r +0.0005, size-adjusted +0.0005 (z +2.01) after 30 docs [stopped]
+11-12 19:32:03 CST reject v3s-2.5-partial-00105 (partial) for 2.5: log r +0.0019, size-adjusted +0.0019 (z +2.21) after 23 docs [stopped]
+11-12 19:32:03 CST ACCEPT v3s-4-pair-00106 (pair) for 4.0: log r -0.0014, size-adjusted -0.0014 (z -3.82) vs v3s-4-pair-00074; 4.0000 bpw
+11-12 19:32:03 CST reject v3s-2.5-pair-00107 (pair) for 2.5: log r +0.0029, size-adjusted +0.0029 (z +3.88) after 9 docs [stopped]
+11-12 19:32:03 CST ROTATE syn0 -> syn1
+11-12 19:32:03 CST stale v3s-1.5-solve-00108 (solve) for 1.5: scored on retired slice syn0 (stopped after 30 docs): fit rows only
+11-12 19:32:03 CST stale v3s-4-thompson-00109 (thompson) for 4.0: scored on retired slice syn0 (stopped after 9 docs): fit rows only
+11-12 19:32:03 CST monitor 4.0: 0.04326 at 4.0000 bpw (ver), vs best 0.04326: size-adjusted -0.0000 (se 0.0005)
+11-12 19:32:03 CST v3s-1.5-inc-00111: incumbent of 1.5 scored on syn1: KLD 0.98042 at 1.5000 bpw (container 1.5000)
+11-12 19:32:03 CST v3s-2.5-inc-00112: incumbent of 2.5 scored on syn1: KLD 0.24005 at 2.5000 bpw (container 2.5000)
+11-12 19:32:03 CST v3s-4-inc-00113: incumbent of 4.0 scored on syn1: KLD 0.04127 at 4.0000 bpw (container 4.0000)
+11-12 19:32:03 CST v3s-6-inc-00114: incumbent of 6.0 scored on syn1: KLD 0.01003 at 5.9572 bpw (container 5.9572)
+11-12 19:32:03 CST reject v3s-1.5-pair-00115 (pair) for 1.5: log r +0.0014, size-adjusted +0.0014 (z +2.29) after 14 docs [stopped]
+11-12 19:32:03 CST fit 0007 (all) started on 110 rows (116 results)
+11-12 19:32:05 CST reject v3s-4-block-00116 (block) for 4.0: log r +0.0063, size-adjusted +0.0063 (z +2.28) after 12 docs [stopped]
+11-12 19:32:05 CST reject v3s-2.5-explore-00117 (explore) for 2.5: log r +0.0009, size-adjusted +0.0009 (z +1.97) after 34 docs [stopped]
+11-12 19:32:05 CST fit all done on 110 rows: {'rows': 110, 'labels': 12, 'params': 52, 'rmse_log': 0.004387444665871969, 'chi2_per_row': 0.04226913532772945, 'cost': 2.3948311535076217, 'nfev': 10}
+11-12 19:32:06 CST b (size-adjusted score) 1.5:1.527 2.5:1.312 4:1.019 6:0.700
+11-12 19:32:06 CST reject v3s-1.5-pair-00118 (pair) for 1.5: log r +0.0056, size-adjusted +0.0056 (z +3.45) after 9 docs [stopped]
+11-12 19:32:06 CST reject v3s-1.5-pair-00119 (pair) for 1.5: log r +0.0004, size-adjusted +0.0004 (z +2.63) after 11 docs [stopped]
+11-12 19:32:07 CST reject v3s-2.5-solve-00120 (solve) for 2.5: log r +0.0013, size-adjusted +0.0013 (z +1.78) after 31 docs [stopped]
+11-12 19:32:07 CST reject v3s-4-thompson-00121 (thompson) for 4.0: log r +0.0144, size-adjusted +0.0144 (z +2.29) after 10 docs [stopped]
+11-12 19:32:08 CST reject v3s-4-partial-00122 (partial) for 4.0: log r +0.0026, size-adjusted +0.0026 (z +2.21) after 16 docs [stopped]
+11-12 19:32:08 CST reject v3s-2.5-pair-00123 (pair) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +2.28) after 9 docs [stopped]
+11-12 19:32:08 CST reject v3s-1.5-block-00124 (block) for 1.5: log r +0.0370, size-adjusted +0.0370 (z +3.97) after 9 docs
+11-12 19:32:08 CST reject v3s-4-partial-00125 (partial) for 4.0: log r +0.0041, size-adjusted +0.0041 (z +2.47) after 13 docs [stopped]
+11-12 19:32:08 CST reject v3s-2.5-explore-00126 (explore) for 2.5: log r +0.0017, size-adjusted +0.0017 (z +3.00) after 9 docs [stopped]
+11-12 19:32:08 CST reject v3s-1.5-solve-00127 (solve) for 1.5: log r +0.0055, size-adjusted +0.0055 (z +2.26) after 9 docs [stopped]
+11-12 19:32:08 CST reject v3s-2.5-pair-00128 (pair) for 2.5: log r +0.0006, size-adjusted +0.0006 (z +2.51) after 9 docs [stopped]
+11-12 19:32:08 CST reject v3s-1.5-pair-00129 (pair) for 1.5: log r +0.0005, size-adjusted +0.0005 (z +5.22) after 9 docs
+11-12 19:32:09 CST reject v3s-4-pair-00130 (pair) for 4.0: log r +0.0002, size-adjusted +0.0002 (z +2.06) after 27 docs
+11-12 19:32:09 CST reject v3s-2.5-thompson-00131 (thompson) for 2.5: log r +0.0247, size-adjusted +0.0247 (z +8.08) after 9 docs [stopped]
+11-12 19:32:09 CST fit 0008 (all) started on 129 rows (132 results)
+11-12 19:32:10 CST reject v3s-4-block-00132 (block) for 4.0: log r +0.0033, size-adjusted +0.0033 (z +2.75) after 9 docs [stopped]
+11-12 19:32:10 CST ACCEPT v3s-1.5-partial-00133 (partial) for 1.5: log r -0.0022, size-adjusted -0.0022 (z -6.07) vs v3s-1.5-inc-00111; 1.5000 bpw
+11-12 19:32:11 CST fit all done on 129 rows: {'rows': 129, 'labels': 13, 'params': 53, 'rmse_log': 0.004298616644244327, 'chi2_per_row': 0.040487453709692575, 'cost': 2.6835726607959303, 'nfev': 9}
+11-12 19:32:12 CST b (size-adjusted score) 1.5:1.540 2.5:1.311 4:1.016 6:0.700
+11-12 19:32:12 CST reject v3s-1.5-pair-00134 (pair) for 1.5: log r +0.0020, size-adjusted +0.0020 (z +6.46) after 180 docs
+11-12 19:32:12 CST reject v3s-2.5-pair-00135 (pair) for 2.5: log r +0.0015, size-adjusted +0.0015 (z +2.08) after 23 docs [stopped]
+11-12 19:32:12 CST monitor 1.5: 1.02834 at 1.5000 bpw (ver), vs best 1.03064: size-adjusted +0.0022 (se 0.0003)
+11-12 19:32:12 CST reject v3s-4-partial-00137 (partial) for 4.0: log r +0.0015, size-adjusted +0.0015 (z +2.83) after 18 docs [stopped]
+11-12 19:32:13 CST reject v3s-2.5-partial-00138 (partial) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +0.76) after 95 docs
+11-12 19:32:13 CST reject v3s-4-solve-00139 (solve) for 4.0: log r +0.0012, size-adjusted +0.0012 (z +2.00) after 22 docs [stopped]
+11-12 19:32:13 CST reject v3s-1.5-explore-00140 (explore) for 1.5: log r +0.0018, size-adjusted +0.0018 (z +2.76) after 9 docs [stopped]
+11-12 19:32:13 CST reject v3s-4-thompson-00141 (thompson) for 4.0: log r +0.0091, size-adjusted +0.0091 (z +2.15) after 14 docs [stopped]
+11-12 19:32:14 CST reject v3s-1.5-block-00142 (block) for 1.5: log r +0.0045, size-adjusted +0.0045 (z +4.87) after 9 docs [stopped]
+11-12 19:32:14 CST ACCEPT v3s-2.5-partial-00143 (partial) for 2.5: log r -0.0002, size-adjusted -0.0002 (z -7.57) vs v3s-2.5-inc-00112; 2.5000 bpw
+11-12 19:32:14 CST reject v3s-1.5-pair-00144 (pair) for 1.5: log r +0.0033, size-adjusted +0.0033 (z +2.50) after 9 docs [stopped]
+11-12 19:32:14 CST reject v3s-2.5-pair-00145 (pair) for 2.5: log r +0.0006, size-adjusted +0.0006 (z +2.17) after 13 docs [stopped]
+11-12 19:32:15 CST monitor 2.5: 0.25180 at 2.5000 bpw (ver), vs best 0.25184: size-adjusted +0.0002 (se 0.0000)
+11-12 19:32:15 CST reject v3s-4-partial-00147 (partial) for 4.0: log r +0.0011, size-adjusted +0.0011 (z +1.95) after 23 docs [stopped]
+11-12 19:32:15 CST fit 0009 (all) started on 146 rows (148 results)
+11-12 19:32:16 CST reject v3s-1.5-partial-00148 (partial) for 1.5: log r +0.0077, size-adjusted +0.0077 (z +3.49) after 9 docs [stopped]
+11-12 19:32:16 CST reject v3s-4-pair-00149 (pair) for 4.0: log r +0.0015, size-adjusted +0.0015 (z +2.95) after 9 docs [stopped]
+11-12 19:32:16 CST fit all done on 146 rows: {'rows': 146, 'labels': 14, 'params': 54, 'rmse_log': 0.004119425484233226, 'chi2_per_row': 0.03831183158243913, 'cost': 2.8742979178629855, 'nfev': 9}
+11-12 19:32:17 CST b (size-adjusted score) 1.5:1.537 2.5:1.310 4:1.018 6:0.700
+11-12 19:32:18 CST ACCEPT v3s-2.5-solve-00150 (solve) for 2.5: log r -0.0008, size-adjusted -0.0008 (z -2.24) vs v3s-2.5-partial-00143; 2.5000 bpw
+11-12 19:32:18 CST reject v3s-1.5-pair-00151 (pair) for 1.5: log r +0.0049, size-adjusted +0.0049 (z +2.75) after 9 docs [stopped]
+11-12 19:32:18 CST reject v3s-2.5-explore-00152 (explore) for 2.5: log r +0.0028, size-adjusted +0.0028 (z +3.27) after 9 docs [stopped]
+11-12 19:32:18 CST reject v3s-4-thompson-00153 (thompson) for 4.0: log r +0.0066, size-adjusted +0.0066 (z +2.32) after 11 docs [stopped]
+11-12 19:32:19 CST monitor 2.5: 0.25164 at 2.5000 bpw (ver), vs best 0.25180: size-adjusted +0.0006 (se 0.0003)
+11-12 19:32:19 CST reject v3s-1.5-solve-00155 (solve) for 1.5: log r +0.0087, size-adjusted +0.0087 (z +4.94) after 9 docs [stopped]
+11-12 19:32:19 CST reject v3s-4-solve-00156 (solve) for 4.0: log r +0.0013, size-adjusted +0.0013 (z +0.93) after 72 docs [stopped]
+11-12 19:32:19 CST reject v3s-4-pair-00157 (pair) for 4.0: log r +0.0002, size-adjusted +0.0002 (z +2.50) after 18 docs [stopped]
+11-12 19:32:20 CST reject v3s-2.5-partial-00158 (partial) for 2.5: log r +0.0007, size-adjusted +0.0007 (z +1.55) after 42 docs [stopped]
+11-12 19:32:20 CST reject v3s-2.5-block-00159 (block) for 2.5: log r +0.0156, size-adjusted +0.0156 (z +2.13) after 14 docs [stopped]
+11-12 19:32:21 CST reject v3s-1.5-partial-00160 (partial) for 1.5: log r +0.0087, size-adjusted +0.0087 (z +4.68) after 9 docs [stopped]
+11-12 19:32:21 CST reject v3s-2.5-block-00161 (block) for 2.5: log r +0.0001, size-adjusted +0.0001 (z +0.16) after 161 docs [stopped]
+11-12 19:32:23 CST reject v3s-1.5-pair-00162 (pair) for 1.5: log r +0.0041, size-adjusted +0.0041 (z +14.40) after 9 docs [stopped]
+11-12 19:32:23 CST reject v3s-4-pair-00163 (pair) for 4.0: log r +0.0004, size-adjusted +0.0004 (z +2.44) after 13 docs [stopped]
+11-12 19:32:23 CST fit 0010 (all) started on 166 rows (164 results)
+11-12 19:32:25 CST reject v3s-4-pair-00164 (pair) for 4.0: log r +0.0003, size-adjusted +0.0003 (z +2.43) after 11 docs [stopped]
+11-12 19:32:25 CST reject v3s-2.5-pair-00165 (pair) for 2.5: log r +0.0007, size-adjusted +0.0007 (z +2.24) after 16 docs [stopped]
+11-12 19:32:25 CST fit all done on 166 rows: {'rows': 166, 'labels': 17, 'params': 57, 'rmse_log': 0.0040071513974575205, 'chi2_per_row': 0.03680009973948499, 'cost': 3.1369601268000387, 'nfev': 10}
+11-12 19:32:26 CST b (size-adjusted score) 1.5:1.544 2.5:1.309 4:1.020 6:0.700
+11-12 19:32:27 CST reject v3s-1.5-pair-00166 (pair) for 1.5: log r +0.0035, size-adjusted +0.0035 (z +3.59) after 9 docs [stopped]
+11-12 19:32:27 CST reject v3s-2.5-pair-00167 (pair) for 2.5: log r +0.0002, size-adjusted +0.0002 (z +0.92) after 71 docs [stopped]
+11-12 19:32:28 CST ACCEPT v3s-4-pair-00168 (pair) for 4.0: log r -0.0009, size-adjusted -0.0009 (z -6.12) vs v3s-4-inc-00113; 4.0000 bpw
+11-12 19:32:28 CST reject v3s-1.5-solve-00169 (solve) for 1.5: log r +0.0074, size-adjusted +0.0074 (z +3.58) after 9 docs [stopped]
+11-12 19:32:28 CST reject v3s-4-thompson-00170 (thompson) for 4.0: log r +0.0223, size-adjusted +0.0222 (z +3.80) after 9 docs [stopped]
+11-12 19:32:28 CST reject v3s-2.5-partial-00171 (partial) for 2.5: log r +0.0001, size-adjusted +0.0001 (z +2.61) after 13 docs [stopped]
+11-12 19:32:30 CST monitor 4.0: 0.04323 at 4.0000 bpw (ver), vs best 0.04326: size-adjusted +0.0007 (se 0.0004)
+11-12 19:32:30 CST reject v3s-1.5-explore-00173 (explore) for 1.5: log r +0.0074, size-adjusted +0.0074 (z +6.91) after 9 docs [stopped]
+11-12 19:32:32 CST reject v3s-1.5-pair-00174 (pair) for 1.5: log r +0.0022, size-adjusted +0.0022 (z +2.59) after 13 docs [stopped]
+11-12 19:32:32 CST reject v3s-2.5-pair-00175 (pair) for 2.5: log r +0.0011, size-adjusted +0.0011 (z +1.82) after 30 docs [stopped]
+11-12 19:32:34 CST reject v3s-4-pair-00176 (pair) for 4.0: log r +0.0004, size-adjusted +0.0004 (z +2.42) after 18 docs [stopped]
+11-12 19:32:34 CST reject v3s-1.5-pair-00177 (pair) for 1.5: log r +0.0037, size-adjusted +0.0037 (z +3.86) after 9 docs [stopped]
+11-12 19:32:36 CST reject v3s-2.5-pair-00178 (pair) for 2.5: log r +0.0012, size-adjusted +0.0012 (z +1.93) after 30 docs [stopped]
+11-12 19:32:36 CST ACCEPT v3s-4-pair-00179 (pair) for 4.0: log r -0.0008, size-adjusted -0.0008 (z -6.23) vs v3s-4-pair-00168; 4.0000 bpw
+11-12 19:32:36 CST fit 0011 (all) started on 184 rows (180 results)
+11-12 19:32:37 CST reject v3s-2.5-pair-00180 (pair) for 2.5: log r +0.0008, size-adjusted +0.0008 (z +2.35) after 11 docs [stopped]
+11-12 19:32:37 CST reject v3s-1.5-partial-00181 (partial) for 1.5: log r +0.0034, size-adjusted +0.0034 (z +3.80) after 9 docs
+11-12 19:32:37 CST fit all done on 184 rows: {'rows': 184, 'labels': 18, 'params': 58, 'rmse_log': 0.003873764839519692, 'chi2_per_row': 0.034504476690302106, 'cost': 3.2548801515467987, 'nfev': 9}
+11-12 19:32:38 CST b (size-adjusted score) 1.5:1.544 2.5:1.309 4:1.021 6:0.700
+11-12 19:32:39 CST monitor 4.0: 0.04320 at 4.0000 bpw (ver), vs best 0.04323: size-adjusted +0.0006 (se 0.0001)
+11-12 19:32:39 CST reject v3s-4-pair-00183 (pair) for 4.0: log r +0.0000, size-adjusted +0.0000 (z +0.15) after 156 docs
+11-12 19:32:39 CST reject v3s-2.5-solve-00184 (solve) for 2.5: log r +0.0008, size-adjusted +0.0008 (z +1.61) after 43 docs [stopped]
+11-12 19:32:39 CST reject v3s-1.5-block-00185 (block) for 1.5: log r +0.0474, size-adjusted +0.0474 (z +4.98) after 9 docs [stopped]
+11-12 19:32:39 CST reject v3s-4-solve-00186 (solve) for 4.0: log r +0.0017, size-adjusted +0.0017 (z +1.84) after 38 docs [stopped]
+11-12 19:32:39 CST reject v3s-4-thompson-00187 (thompson) for 4.0: log r +0.0066, size-adjusted +0.0066 (z +2.52) after 9 docs [stopped]
+11-12 19:32:41 CST reject v3s-1.5-partial-00188 (partial) for 1.5: log r +0.0037, size-adjusted +0.0037 (z +4.53) after 9 docs [stopped]
+11-12 19:32:42 CST reject v3s-2.5-explore-00189 (explore) for 2.5: log r +0.0013, size-adjusted +0.0013 (z +2.22) after 10 docs
+11-12 19:32:42 CST reject v3s-2.5-pair-00190 (pair) for 2.5: log r +0.0006, size-adjusted +0.0006 (z +2.99) after 9 docs [stopped]
+11-12 19:32:42 CST reject v3s-1.5-pair-00191 (pair) for 1.5: log r +0.0042, size-adjusted +0.0042 (z +3.54) after 9 docs [stopped]
+11-12 19:32:42 CST ROTATE syn1 -> syn2
+11-12 19:32:42 CST stale v3s-4-partial-00192 (partial) for 4.0: scored on retired slice syn1 (stopped after 13 docs): fit rows only
+11-12 19:32:42 CST stale v3s-1.5-block-00193 (block) for 1.5: scored on retired slice syn1 (stopped after 9 docs): fit rows only
+11-12 19:32:42 CST v3s-1.5-inc-00194: incumbent of 1.5 scored on syn2: KLD 0.97997 at 1.5000 bpw (container 1.5000)
+11-12 19:32:42 CST v3s-2.5-inc-00195: incumbent of 2.5 scored on syn2: KLD 0.23988 at 2.5000 bpw (container 2.5000)
+11-12 19:32:42 CST fit 0012 (all) started on 201 rows (196 results)
+11-12 19:32:43 CST v3s-4-inc-00196: incumbent of 4.0 scored on syn2: KLD 0.04136 at 4.0000 bpw (container 4.0000)
+11-12 19:32:43 CST v3s-6-inc-00197: incumbent of 6.0 scored on syn2: KLD 0.01008 at 5.9572 bpw (container 5.9572)
+11-12 19:32:43 CST fit all done on 201 rows: {'rows': 201, 'labels': 19, 'params': 59, 'rmse_log': 0.003859981559055126, 'chi2_per_row': 0.034641256822687976, 'cost': 3.5584385749516323, 'nfev': 8}
+11-12 19:32:44 CST b (size-adjusted score) 1.5:1.557 2.5:1.307 4:1.021 6:0.700
+11-12 19:32:46 CST replayed: 202 submitted, 198 results, incumbents 4, fits ['all']
+11-12 19:32:46 CST reject v3s-2.5-thompson-00198 (thompson) for 2.5: log r +0.0129, size-adjusted +0.0129 (z +4.03) after 9 docs [stopped]
+11-12 19:32:46 CST reject v3s-1.5-pair-00199 (pair) for 1.5: log r +0.0016, size-adjusted +0.0016 (z +1.75) after 29 docs [stopped]
+11-12 19:32:46 CST ALERT 1.5: monitor best flat over the last 11 of 52 decisions (size-adjusted +0.0000 <= se 0.0000); end it by hand: touch /data/work/w13/w127/reg/si6/run/STOP-1.5
+11-12 19:32:46 CST ALERT 2.5: monitor best flat over the last 10 of 50 decisions (size-adjusted +0.0000 <= se 0.0000); end it by hand: touch /data/work/w13/w127/reg/si6/run/STOP-2.5
+11-12 19:32:46 CST no new candidate for 6.0 (window 5.9272-6.0000 bpw)
+11-12 19:32:46 CST reject v3s-4-pair-00200 (pair) for 4.0: log r +0.0007, size-adjusted +0.0007 (z +2.12) after 27 docs [stopped]
+11-12 19:32:46 CST ACCEPT v3s-4-partial-00201 (partial) for 4.0: log r -0.0004, size-adjusted -0.0004 (z -1.38) vs v3s-4-inc-00196; 4.0000 bpw
+11-12 19:32:46 CST reject v3s-2.5-solve-00202 (solve) for 2.5: log r +0.0031, size-adjusted +0.0031 (z +5.62) after 9 docs [stopped]
+11-12 19:32:46 CST reject v3s-2.5-block-00203 (block) for 2.5: log r +0.0013, size-adjusted +0.0013 (z +2.43) after 10 docs
+11-12 19:32:47 CST monitor 4.0: 0.04321 at 4.0000 bpw (ver), vs best 0.04320: size-adjusted -0.0002 (se 0.0003)
+11-12 19:32:47 CST reject v3s-2.5-partial-00205 (partial) for 2.5: log r +0.0002, size-adjusted +0.0002 (z +0.62) after 158 docs
+11-12 19:32:49 CST reject v3s-1.5-partial-00206 (partial) for 1.5: log r +0.0032, size-adjusted +0.0032 (z +2.53) after 10 docs [stopped]
+11-12 19:32:49 CST reject v3s-1.5-pair-00207 (pair) for 1.5: log r +0.0009, size-adjusted +0.0009 (z +1.20) after 55 docs [stopped]
+11-12 19:32:51 CST reject v3s-4-pair-00208 (pair) for 4.0: log r +0.0003, size-adjusted +0.0003 (z +0.79) after 79 docs [stopped]
+11-12 19:32:51 CST reject v3s-2.5-pair-00209 (pair) for 2.5: log r +0.0011, size-adjusted +0.0011 (z +2.39) after 9 docs [stopped]
+11-12 19:32:52 CST reject v3s-4-pair-00210 (pair) for 4.0: log r -0.0002, size-adjusted -0.0002 (z -0.94) after 180 docs
+11-12 19:32:52 CST reject v3s-1.5-pair-00211 (pair) for 1.5: log r +0.0022, size-adjusted +0.0022 (z +2.13) after 23 docs [stopped]
+11-12 19:32:52 CST fit 0013 (all) started on 223 rows (212 results)
+11-12 19:32:54 CST reject v3s-2.5-pair-00212 (pair) for 2.5: log r +0.0009, size-adjusted +0.0009 (z +2.06) after 19 docs [stopped]
+11-12 19:32:54 CST reject v3s-4-pair-00213 (pair) for 4.0: log r +0.0008, size-adjusted +0.0008 (z +2.03) after 18 docs [stopped]
+11-12 19:32:54 CST fit all done on 223 rows: {'rows': 223, 'labels': 24, 'params': 64, 'rmse_log': 0.003741953581001458, 'chi2_per_row': 0.03244662266821077, 'cost': 3.705717737406381, 'nfev': 8}
+11-12 19:32:55 CST b (size-adjusted score) 1.5:1.558 2.5:1.309 4:1.021 6:0.700
+11-12 19:32:56 CST reject v3s-2.5-pair-00214 (pair) for 2.5: log r +0.0010, size-adjusted +0.0010 (z +2.30) after 9 docs [stopped]
+11-12 19:32:56 CST reject v3s-1.5-pair-00215 (pair) for 1.5: log r +0.0021, size-adjusted +0.0021 (z +1.74) after 39 docs [stopped]
+11-12 19:32:57 CST reject v3s-4-pair-00216 (pair) for 4.0: log r +0.0013, size-adjusted +0.0013 (z +2.37) after 12 docs [stopped]
+11-12 19:32:57 CST reject v3s-2.5-partial-00217 (partial) for 2.5: log r +0.0002, size-adjusted +0.0002 (z +0.45) after 158 docs [stopped]
+11-12 19:32:57 CST reject v3s-4-pair-00218 (pair) for 4.0: log r +0.0011, size-adjusted +0.0011 (z +2.20) after 13 docs [stopped]
+11-12 19:32:57 CST reject v3s-1.5-partial-00219 (partial) for 1.5: log r +0.0006, size-adjusted +0.0006 (z +2.32) after 10 docs [stopped]
+11-12 19:32:57 CST ALERT 4.0: monitor best flat over the last 12 of 57 decisions (size-adjusted +0.0000 <= se 0.0000); end it by hand: touch /data/work/w13/w127/reg/si6/run/STOP-4
+11-12 19:32:58 CST reject v3s-2.5-explore-00220 (explore) for 2.5: log r +0.0056, size-adjusted +0.0056 (z +2.30) after 10 docs [stopped]
+11-12 19:32:58 CST reject v3s-4-solve-00221 (solve) for 4.0: log r +0.0006, size-adjusted +0.0006 (z +0.83) after 82 docs [stopped]
+11-12 19:32:59 CST reject v3s-1.5-thompson-00222 (thompson) for 1.5: log r +0.0092, size-adjusted +0.0092 (z +3.51) after 9 docs [stopped]
+11-12 19:32:59 CST reject v3s-1.5-explore-00223 (explore) for 1.5: log r +0.0162, size-adjusted +0.0162 (z +2.26) after 9 docs [stopped]
+11-12 19:32:59 CST reject v3s-4-block-00224 (block) for 4.0: log r +0.0092, size-adjusted +0.0092 (z +2.51) after 9 docs [stopped]
+11-12 19:32:59 CST reject v3s-2.5-pair-00225 (pair) for 2.5: log r +0.0012, size-adjusted +0.0012 (z +2.35) after 9 docs [stopped]
+11-12 19:33:01 CST reject v3s-1.5-partial-00226 (partial) for 1.5: log r +0.0004, size-adjusted +0.0004 (z +2.73) after 9 docs [stopped]
+11-12 19:33:01 CST reject v3s-4-block-00227 (block) for 4.0: log r +0.0014, size-adjusted +0.0014 (z +2.50) after 9 docs [stopped]
+11-12 19:33:01 CST fit 0014 (all) started on 245 rows (228 results)
+11-12 19:33:03 CST reject v3s-2.5-pair-00228 (pair) for 2.5: log r +0.0014, size-adjusted +0.0014 (z +2.03) after 18 docs [stopped]
+11-12 19:33:03 CST reject v3s-4-pair-00229 (pair) for 4.0: log r +0.0013, size-adjusted +0.0013 (z +2.33) after 20 docs [stopped]
+11-12 19:33:03 CST fit all done on 245 rows: {'rows': 245, 'labels': 27, 'params': 67, 'rmse_log': 0.004033318294900804, 'chi2_per_row': 0.03665757160245948, 'cost': 4.589114127936374, 'nfev': 8}
+11-12 19:33:04 CST b (size-adjusted score) 1.5:1.553 2.5:1.309 4:1.022 6:0.700
+11-12 19:33:04 CST reject v3s-2.5-pair-00230 (pair) for 2.5: log r +0.0015, size-adjusted +0.0015 (z +2.12) after 14 docs [stopped]
+11-12 19:33:04 CST reject v3s-1.5-pair-00231 (pair) for 1.5: log r +0.0037, size-adjusted +0.0037 (z +2.68) after 9 docs [stopped]
+11-12 19:33:05 CST reject v3s-1.5-partial-00232 (partial) for 1.5: log r +0.0022, size-adjusted +0.0022 (z +2.94) after 9 docs [stopped]
+11-12 19:33:05 CST reject v3s-4-solve-00233 (solve) for 4.0: log r +0.0037, size-adjusted +0.0037 (z +2.18) after 23 docs [stopped]
+11-12 19:33:06 CST reject v3s-2.5-partial-00234 (partial) for 2.5: log r +0.0019, size-adjusted +0.0019 (z +1.82) after 27 docs [stopped]
+11-12 19:33:06 CST reject v3s-1.5-thompson-00235 (thompson) for 1.5: log r +0.0092, size-adjusted +0.0092 (z +3.13) after 9 docs [stopped]
+11-12 19:33:07 CST reject v3s-2.5-thompson-00236 (thompson) for 2.5: log r +0.0136, size-adjusted +0.0136 (z +3.34) after 9 docs [stopped]
+11-12 19:33:07 CST reject v3s-4-pair-00237 (pair) for 4.0: log r +0.0009, size-adjusted +0.0009 (z +3.73) after 9 docs [stopped]
+11-12 19:33:08 CST reject v3s-1.5-pair-00238 (pair) for 1.5: log r +0.0036, size-adjusted +0.0036 (z +4.60) after 9 docs [stopped]
+11-12 19:33:08 CST reject v3s-4-pair-00239 (pair) for 4.0: log r +0.0013, size-adjusted +0.0013 (z +2.30) after 9 docs [stopped]
+11-12 19:33:09 CST reject v3s-2.5-solve-00240 (solve) for 2.5: log r +0.0008, size-adjusted +0.0008 (z +1.16) after 60 docs [stopped]
+11-12 19:33:09 CST reject v3s-2.5-explore-00241 (explore) for 2.5: log r +0.0007, size-adjusted +0.0007 (z +2.39) after 12 docs [stopped]
+11-12 19:33:10 CST reject v3s-1.5-pair-00242 (pair) for 1.5: log r +0.0033, size-adjusted +0.0033 (z +10.55) after 9 docs
+11-12 19:33:10 CST reject v3s-4-partial-00243 (partial) for 4.0: log r +0.0017, size-adjusted +0.0017 (z +2.26) after 11 docs [stopped]
+11-12 19:33:10 CST fit 0015 (all) started on 263 rows (244 results)
+11-12 19:33:10 CST reject v3s-2.5-block-00244 (block) for 2.5: log r +0.0104, size-adjusted +0.0104 (z +3.05) after 9 docs
+11-12 19:33:10 CST reject v3s-1.5-pair-00245 (pair) for 1.5: log r +0.0009, size-adjusted +0.0009 (z +1.69) after 35 docs [stopped]
+11-12 19:33:10 CST fit all done on 263 rows: {'rows': 263, 'labels': 27, 'params': 67, 'rmse_log': 0.004115806399813076, 'chi2_per_row': 0.03764610069910572, 'cost': 5.0698990271419815, 'nfev': 8}
+11-12 19:33:12 CST b (size-adjusted score) 1.5:1.558 2.5:1.310 4:1.021 6:0.700
+11-12 19:33:13 CST reject v3s-4-block-00246 (block) for 4.0: log r +0.0006, size-adjusted +0.0006 (z +2.02) after 22 docs [stopped]
+11-12 19:33:13 CST reject v3s-2.5-partial-00247 (partial) for 2.5: log r +0.0018, size-adjusted +0.0018 (z +2.32) after 27 docs [stopped]
+11-12 19:33:13 CST reject v3s-4-solve-00248 (solve) for 4.0: log r +0.0036, size-adjusted +0.0036 (z +2.10) after 21 docs [stopped]
+11-12 19:33:13 CST reject v3s-1.5-pair-00249 (pair) for 1.5: log r +0.0025, size-adjusted +0.0025 (z +2.17) after 18 docs [stopped]
+11-12 19:33:13 CST reject v3s-4-explore-00250 (explore) for 4.0: log r +0.0093, size-adjusted +0.0093 (z +2.27) after 10 docs [stopped]
+11-12 19:33:13 CST reject v3s-1.5-solve-00251 (solve) for 1.5: log r +0.0049, size-adjusted +0.0049 (z +3.88) after 9 docs [stopped]
+11-12 19:33:14 CST reject v3s-2.5-partial-00252 (partial) for 2.5: log r +0.0030, size-adjusted +0.0030 (z +2.25) after 21 docs
+11-12 19:33:14 CST reject v3s-1.5-thompson-00253 (thompson) for 1.5: log r +0.0104, size-adjusted +0.0104 (z +2.95) after 9 docs [stopped]
+11-12 19:33:14 CST reject v3s-2.5-partial-00254 (partial) for 2.5: log r +0.0023, size-adjusted +0.0023 (z +2.29) after 14 docs [stopped]
+11-12 19:33:14 CST reject v3s-4-thompson-00255 (thompson) for 4.0: log r +0.0049, size-adjusted +0.0049 (z +2.38) after 10 docs [stopped]
+11-12 19:33:14 CST reject v3s-4-block-00256 (block) for 4.0: log r +0.0117, size-adjusted +0.0117 (z +2.65) after 9 docs [stopped]
+11-12 19:33:14 CST reject v3s-2.5-explore-00257 (explore) for 2.5: log r +0.0011, size-adjusted +0.0011 (z +1.94) after 24 docs
+11-12 19:33:16 CST reject v3s-1.5-block-00258 (block) for 1.5: log r +0.0253, size-adjusted +0.0253 (z +2.38) after 9 docs [stopped]
+11-12 19:33:16 CST reject v3s-4-partial-00259 (partial) for 4.0: log r +0.0022, size-adjusted +0.0022 (z +2.29) after 10 docs [stopped]
+11-12 19:33:16 CST fit 0016 (all) started on 279 rows (260 results)
+11-12 19:33:17 CST reject v3s-1.5-pair-00260 (pair) for 1.5: log r +0.0025, size-adjusted +0.0025 (z +3.39) after 9 docs [stopped]
+11-12 19:33:17 CST reject v3s-2.5-solve-00261 (solve) for 2.5: log r +0.0025, size-adjusted +0.0025 (z +1.93) after 25 docs [stopped]
+11-12 19:33:17 CST fit all done on 279 rows: {'rows': 279, 'labels': 27, 'params': 67, 'rmse_log': 0.004146430536845141, 'chi2_per_row': 0.037908894445872275, 'cost': 5.404439923393439, 'nfev': 8}
+11-12 19:33:18 CST b (size-adjusted score) 1.5:1.560 2.5:1.309 4:1.023 6:0.700
+11-12 19:33:20 CST reject v3s-2.5-pair-00262 (pair) for 2.5: log r +0.0014, size-adjusted +0.0014 (z +2.59) after 9 docs [stopped]
+11-12 19:33:20 CST reject v3s-1.5-pair-00263 (pair) for 1.5: log r +0.0034, size-adjusted +0.0034 (z +4.75) after 9 docs [stopped]
+11-12 19:33:21 CST reject v3s-4-pair-00264 (pair) for 4.0: log r +0.0011, size-adjusted +0.0011 (z +3.95) after 9 docs [stopped]
+11-12 19:33:21 CST reject v3s-1.5-pair-00265 (pair) for 1.5: log r +0.0005, size-adjusted +0.0005 (z +2.81) after 9 docs [stopped]
+11-12 19:33:22 CST reject v3s-2.5-partial-00266 (partial) for 2.5: log r +0.0026, size-adjusted +0.0026 (z +1.98) after 23 docs [stopped]
+11-12 19:33:22 CST reject v3s-4-thompson-00267 (thompson) for 4.0: log r +0.0281, size-adjusted +0.0280 (z +9.30) after 9 docs
+11-12 19:33:23 CST reject v3s-4-pair-00268 (pair) for 4.0: log r +0.0017, size-adjusted +0.0017 (z +2.15) after 13 docs [stopped]
+11-12 19:33:23 CST reject v3s-1.5-pair-00269 (pair) for 1.5: log r +0.0025, size-adjusted +0.0025 (z +2.10) after 16 docs [stopped]
+11-12 19:33:24 CST reject v3s-2.5-explore-00270 (explore) for 2.5: log r +0.0114, size-adjusted +0.0114 (z +3.42) after 9 docs [stopped]
+11-12 19:33:24 CST reject v3s-1.5-pair-00271 (pair) for 1.5: log r +0.0002, size-adjusted +0.0002 (z +1.44) after 43 docs [stopped]
+11-12 19:33:24 CST ROTATE syn2 -> syn3
+11-12 19:33:24 CST stale v3s-4-solve-00272 (solve) for 4.0: scored on retired slice syn2 (stopped after 25 docs): fit rows only
+11-12 19:33:24 CST stale v3s-2.5-partial-00273 (partial) for 2.5: scored on retired slice syn2 (stopped after 19 docs): fit rows only
+11-12 19:33:24 CST v3s-1.5-inc-00274: incumbent of 1.5 scored on syn3: KLD 1.10424 at 1.5000 bpw (container 1.5000)
+11-12 19:33:24 CST v3s-2.5-inc-00275: incumbent of 2.5 scored on syn3: KLD 0.27022 at 2.5000 bpw (container 2.5000)
+11-12 19:33:24 CST fit 0017 (all) started on 295 rows (276 results)
+11-12 19:33:25 CST v3s-4-inc-00276: incumbent of 4.0 scored on syn3: KLD 0.04656 at 4.0000 bpw (container 4.0000)
+11-12 19:33:25 CST v3s-6-inc-00277: incumbent of 6.0 scored on syn3: KLD 0.01136 at 5.9572 bpw (container 5.9572)
+11-12 19:33:25 CST fit all done on 295 rows: {'rows': 295, 'labels': 28, 'params': 68, 'rmse_log': 0.004148383898900716, 'chi2_per_row': 0.037980542499970765, 'cost': 5.72589649273246, 'nfev': 8}
+11-12 19:33:27 CST b (size-adjusted score) 1.5:1.560 2.5:1.309 4:1.023 6:0.700
+11-12 19:33:28 CST reject v3s-2.5-pair-00278 (pair) for 2.5: log r +0.0027, size-adjusted +0.0027 (z +3.25) after 9 docs [stopped]
+11-12 19:33:28 CST reject v3s-1.5-pair-00279 (pair) for 1.5: log r +0.0040, size-adjusted +0.0040 (z +16.75) after 9 docs [stopped]
+11-12 19:33:29 CST reject v3s-4-pair-00280 (pair) for 4.0: log r +0.0022, size-adjusted +0.0022 (z +2.85) after 9 docs
+11-12 19:33:29 CST reject v3s-4-pair-00281 (pair) for 4.0: log r +0.0015, size-adjusted +0.0015 (z +3.40) after 9 docs [stopped]
+11-12 19:33:30 CST reject v3s-2.5-partial-00282 (partial) for 2.5: log r +0.0016, size-adjusted +0.0016 (z +1.73) after 32 docs [stopped]
+11-12 19:33:30 CST reject v3s-1.5-solve-00283 (solve) for 1.5: log r +0.0009, size-adjusted +0.0009 (z +2.15) after 18 docs [stopped]
+11-12 19:33:30 CST reject v3s-4-block-00284 (block) for 4.0: log r +0.0100, size-adjusted +0.0100 (z +3.96) after 9 docs [stopped]
+11-12 19:33:30 CST reject v3s-2.5-partial-00285 (partial) for 2.5: log r +0.0021, size-adjusted +0.0021 (z +1.94) after 23 docs [stopped]
+11-12 19:33:31 CST reject v3s-4-block-00286 (block) for 4.0: log r +0.0034, size-adjusted +0.0034 (z +2.62) after 9 docs [stopped]
+11-12 19:33:31 CST reject v3s-2.5-thompson-00287 (thompson) for 2.5: log r +0.0249, size-adjusted +0.0249 (z +7.71) after 9 docs [stopped]
+11-12 19:33:33 CST reject v3s-1.5-explore-00288 (explore) for 1.5: log r +0.0167, size-adjusted +0.0167 (z +3.70) after 9 docs [stopped]
+11-12 19:33:33 CST reject v3s-1.5-pair-00289 (pair) for 1.5: log r +0.0001, size-adjusted +0.0001 (z +0.54) after 113 docs [stopped]
+11-12 19:33:34 CST reject v3s-2.5-pair-00290 (pair) for 2.5: log r +0.0015, size-adjusted +0.0015 (z +3.44) after 9 docs [stopped]
+11-12 19:33:34 CST reject v3s-4-pair-00291 (pair) for 4.0: log r +0.0035, size-adjusted +0.0035 (z +2.57) after 9 docs [stopped]
+11-12 19:33:34 CST fit 0018 (all) started on 318 rows (292 results)
+11-12 19:33:36 CST reject v3s-1.5-pair-00292 (pair) for 1.5: log r +0.0037, size-adjusted +0.0037 (z +9.48) after 9 docs [stopped]
+11-12 19:33:36 CST reject v3s-2.5-pair-00293 (pair) for 2.5: log r +0.0012, size-adjusted +0.0012 (z +2.41) after 10 docs [stopped]
+11-12 19:33:36 CST fit all done on 318 rows: {'rows': 318, 'labels': 32, 'params': 72, 'rmse_log': 0.004195281143527637, 'chi2_per_row': 0.037470222013450086, 'cost': 6.086358428050804, 'nfev': 8}
+11-12 19:33:37 CST b (size-adjusted score) 1.5:1.563 2.5:1.311 4:1.022 6:0.700
+11-12 19:33:38 CST reject v3s-4-pair-00294 (pair) for 4.0: log r +0.0012, size-adjusted +0.0012 (z +2.53) after 9 docs [stopped]
+11-12 19:33:38 CST reject v3s-1.5-pair-00295 (pair) for 1.5: log r +0.0006, size-adjusted +0.0006 (z +2.34) after 9 docs [stopped]
+11-12 19:33:39 CST reject v3s-4-partial-00296 (partial) for 4.0: log r +0.0033, size-adjusted +0.0033 (z +3.30) after 9 docs [stopped]
+11-12 19:33:39 CST ACCEPT v3s-2.5-solve-00297 (solve) for 2.5: log r -0.0007, size-adjusted -0.0007 (z -1.29) vs v3s-2.5-inc-00275; 2.5000 bpw
+11-12 19:33:40 CST reject v3s-2.5-pair-00298 (pair) for 2.5: log r -0.0003, size-adjusted -0.0003 (z -0.72) after 180 docs
+11-12 19:33:40 CST reject v3s-1.5-pair-00299 (pair) for 1.5: log r +0.0029, size-adjusted +0.0029 (z +2.75) after 9 docs [stopped]
+11-12 19:33:41 CST monitor 2.5: 0.25137 at 2.5000 bpw (ver), vs best 0.25164: size-adjusted +0.0011 (se 0.0005)
+11-12 19:33:41 CST alert 2.5 cleared: monitor best improved +0.0011 > se 0.0005
+11-12 19:33:41 CST reject v3s-4-solve-00301 (solve) for 4.0: log r +0.0022, size-adjusted +0.0022 (z +1.85) after 31 docs [stopped]
+11-12 19:33:43 CST reject v3s-1.5-pair-00302 (pair) for 1.5: log r +0.0032, size-adjusted +0.0032 (z +8.60) after 9 docs [stopped]
+11-12 19:33:43 CST reject v3s-4-pair-00303 (pair) for 4.0: log r +0.0009, size-adjusted +0.0009 (z +3.57) after 9 docs [stopped]
+11-12 19:33:45 CST reject v3s-2.5-pair-00304 (pair) for 2.5: log r +0.0003, size-adjusted +0.0003 (z +1.89) after 23 docs [stopped]
+11-12 19:33:45 CST reject v3s-1.5-pair-00305 (pair) for 1.5: log r +0.0023, size-adjusted +0.0023 (z +2.23) after 10 docs [stopped]
+11-12 19:33:46 CST reject v3s-2.5-pair-00306 (pair) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +5.05) after 9 docs [stopped]
+11-12 19:33:46 CST reject v3s-4-pair-00307 (pair) for 4.0: log r +0.0026, size-adjusted +0.0026 (z +2.56) after 9 docs
+11-12 19:33:46 CST fit 0019 (all) started on 336 rows (308 results)
+11-12 19:33:48 CST reject v3s-4-pair-00308 (pair) for 4.0: log r +0.0008, size-adjusted +0.0008 (z +2.94) after 9 docs [stopped]
+11-12 19:33:48 CST reject v3s-1.5-pair-00309 (pair) for 1.5: log r +0.0007, size-adjusted +0.0007 (z +1.91) after 23 docs [stopped]
+11-12 19:33:48 CST fit all done on 336 rows: {'rows': 336, 'labels': 32, 'params': 72, 'rmse_log': 0.004158330406041898, 'chi2_per_row': 0.03633303853656763, 'cost': 6.235862229928347, 'nfev': 8}
+11-12 19:33:49 CST b (size-adjusted score) 1.5:1.563 2.5:1.312 4:1.021 6:0.700
+11-12 19:33:50 CST reject v3s-2.5-pair-00310 (pair) for 2.5: log r +0.0004, size-adjusted +0.0004 (z +2.21) after 16 docs [stopped]
+11-12 19:33:50 CST reject v3s-1.5-pair-00311 (pair) for 1.5: log r +0.0004, size-adjusted +0.0004 (z +2.02) after 19 docs [stopped]
+11-12 19:33:51 CST reject v3s-2.5-pair-00312 (pair) for 2.5: log r +0.0025, size-adjusted +0.0025 (z +2.11) after 15 docs [stopped]
+11-12 19:33:51 CST reject v3s-4-solve-00313 (solve) for 4.0: log r +0.0030, size-adjusted +0.0030 (z +2.13) after 13 docs [stopped]
+11-12 19:33:53 CST reject v3s-1.5-solve-00314 (solve) for 1.5: log r +0.0018, size-adjusted +0.0018 (z +2.42) after 21 docs [stopped]
+11-12 19:33:53 CST reject v3s-4-pair-00315 (pair) for 4.0: log r +0.0000, size-adjusted +0.0000 (z +1.80) after 30 docs
+11-12 19:33:55 CST reject v3s-2.5-pair-00316 (pair) for 2.5: log r +0.0002, size-adjusted +0.0002 (z +1.20) after 64 docs [stopped]
+11-12 19:33:55 CST reject v3s-1.5-pair-00317 (pair) for 1.5: log r +0.0023, size-adjusted +0.0023 (z +2.42) after 14 docs [stopped]
+11-12 19:33:57 CST reject v3s-4-block-00318 (block) for 4.0: log r +0.0017, size-adjusted +0.0017 (z +2.29) after 11 docs [stopped]
+11-12 19:33:57 CST reject v3s-2.5-pair-00319 (pair) for 2.5: log r +0.0009, size-adjusted +0.0009 (z +6.04) after 9 docs [stopped]
+11-12 19:33:59 CST reject v3s-4-pair-00320 (pair) for 4.0: log r +0.0027, size-adjusted +0.0027 (z +2.27) after 9 docs [stopped]
+11-12 19:33:59 CST reject v3s-2.5-pair-00321 (pair) for 2.5: log r +0.0004, size-adjusted +0.0004 (z +2.41) after 9 docs [stopped]
+11-12 19:34:00 CST reject v3s-1.5-pair-00322 (pair) for 1.5: log r +0.0005, size-adjusted +0.0005 (z +1.74) after 41 docs [stopped]
+11-12 19:34:00 CST reject v3s-1.5-pair-00323 (pair) for 1.5: log r +0.0011, size-adjusted +0.0011 (z +2.00) after 19 docs [stopped]
+11-12 19:34:00 CST fit 0020 (all) started on 354 rows (324 results)
+11-12 19:34:02 CST ACCEPT v3s-2.5-pair-00324 (pair) for 2.5: log r -0.0002, size-adjusted -0.0002 (z -2.79) vs v3s-2.5-solve-00297; 2.5000 bpw
+11-12 19:34:02 CST reject v3s-4-pair-00325 (pair) for 4.0: log r +0.0007, size-adjusted +0.0007 (z +2.22) after 10 docs [stopped]
+11-12 19:34:02 CST fit all done on 354 rows: {'rows': 354, 'labels': 34, 'params': 74, 'rmse_log': 0.004082506571471078, 'chi2_per_row': 0.03480517219672512, 'cost': 6.301989150203442, 'nfev': 8}
+11-12 19:34:03 CST b (size-adjusted score) 1.5:1.563 2.5:1.312 4:1.021 6:0.700
+11-12 19:34:04 CST reject v3s-2.5-pair-00326 (pair) for 2.5: log r +0.0001, size-adjusted +0.0001 (z +0.35) after 116 docs [stopped]
+11-12 19:34:04 CST reject v3s-4-pair-00327 (pair) for 4.0: log r +0.0008, size-adjusted +0.0008 (z +2.42) after 13 docs [stopped]
+11-12 19:34:05 CST monitor 2.5: 0.25132 at 2.5000 bpw (ver), vs best 0.25137: size-adjusted +0.0002 (se 0.0001)
+11-12 19:34:05 CST reject v3s-1.5-partial-00329 (partial) for 1.5: log r +0.0014, size-adjusted +0.0014 (z +2.04) after 22 docs [stopped]
+11-12 19:34:05 CST reject v3s-4-partial-00330 (partial) for 4.0: log r +0.0031, size-adjusted +0.0031 (z +2.73) after 9 docs [stopped]
+11-12 19:34:05 CST reject v3s-1.5-pair-00331 (pair) for 1.5: log r +0.0005, size-adjusted +0.0005 (z +1.19) after 59 docs [stopped]
+11-12 19:34:07 CST reject v3s-2.5-partial-00332 (partial) for 2.5: log r +0.0008, size-adjusted +0.0008 (z +1.74) after 30 docs [stopped]
+11-12 19:34:07 CST reject v3s-4-solve-00333 (solve) for 4.0: log r +0.0016, size-adjusted +0.0016 (z +2.48) after 10 docs [stopped]
+11-12 19:34:07 CST reject v3s-2.5-pair-00334 (pair) for 2.5: log r +0.0003, size-adjusted +0.0003 (z +1.79) after 31 docs
+11-12 19:34:07 CST reject v3s-1.5-pair-00335 (pair) for 1.5: log r +0.0009, size-adjusted +0.0009 (z +2.33) after 9 docs [stopped]
+11-12 19:34:09 CST reject v3s-2.5-thompson-00336 (thompson) for 2.5: log r +0.0132, size-adjusted +0.0132 (z +7.58) after 9 docs [stopped]
+11-12 19:34:09 CST reject v3s-1.5-thompson-00337 (thompson) for 1.5: log r +0.0143, size-adjusted +0.0143 (z +6.16) after 9 docs [stopped]
+11-12 19:34:10 CST reject v3s-4-pair-00338 (pair) for 4.0: log r +0.0006, size-adjusted +0.0006 (z +1.66) after 33 docs [stopped]
+11-12 19:34:10 CST reject v3s-1.5-pair-00339 (pair) for 1.5: log r +0.0000, size-adjusted +0.0000 (z +0.07) after 161 docs [stopped]
+11-12 19:34:10 CST fit 0021 (all) started on 374 rows (340 results)
+11-12 19:34:12 CST reject v3s-4-pair-00340 (pair) for 4.0: log r +0.0003, size-adjusted +0.0003 (z +1.09) after 68 docs [stopped]
+11-12 19:34:12 CST reject v3s-2.5-pair-00341 (pair) for 2.5: log r +0.0003, size-adjusted +0.0003 (z +2.54) after 9 docs [stopped]
+11-12 19:34:12 CST fit all done on 374 rows: {'rows': 374, 'labels': 36, 'params': 76, 'rmse_log': 0.004008375619656025, 'chi2_per_row': 0.03329369877424629, 'cost': 6.3794780975618295, 'nfev': 8}
+11-12 19:34:13 CST b (size-adjusted score) 1.5:1.566 2.5:1.313 4:1.021 6:0.700
+11-12 19:34:15 CST reject v3s-1.5-pair-00342 (pair) for 1.5: log r +0.0005, size-adjusted +0.0005 (z +1.19) after 56 docs [stopped]
+11-12 19:34:15 CST reject v3s-4-partial-00343 (partial) for 4.0: log r +0.0029, size-adjusted +0.0029 (z +2.73) after 9 docs [stopped]
+11-12 19:34:16 CST reject v3s-2.5-pair-00344 (pair) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +3.09) after 9 docs [stopped]
+11-12 19:34:16 CST reject v3s-4-pair-00345 (pair) for 4.0: log r +0.0004, size-adjusted +0.0004 (z +1.39) after 49 docs [stopped]
+11-12 19:34:18 CST reject v3s-1.5-solve-00346 (solve) for 1.5: log r +0.0018, size-adjusted +0.0018 (z +2.41) after 21 docs [stopped]
+11-12 19:34:18 CST reject v3s-2.5-pair-00347 (pair) for 2.5: log r +0.0006, size-adjusted +0.0006 (z +2.16) after 19 docs [stopped]
+11-12 19:34:20 CST reject v3s-2.5-block-00348 (block) for 2.5: log r +0.0088, size-adjusted +0.0088 (z +2.45) after 10 docs
+11-12 19:34:20 CST reject v3s-4-pair-00349 (pair) for 4.0: log r +0.0004, size-adjusted +0.0004 (z +1.53) after 49 docs [stopped]
+11-12 19:34:22 CST reject v3s-1.5-pair-00350 (pair) for 1.5: log r +0.0006, size-adjusted +0.0006 (z +2.04) after 23 docs [stopped]
+11-12 19:34:22 CST reject v3s-2.5-pair-00351 (pair) for 2.5: log r +0.0028, size-adjusted +0.0028 (z +3.37) after 9 docs [stopped]
+11-12 19:34:22 CST ROTATE syn3 -> syn4
+11-12 19:34:22 CST stale v3s-1.5-block-00352 (block) for 1.5: scored on retired slice syn3 (stopped after 9 docs): fit rows only
+11-12 19:34:22 CST stale v3s-4-partial-00353 (partial) for 4.0: scored on retired slice syn3 (stopped after 9 docs): fit rows only
+11-12 19:34:22 CST v3s-1.5-inc-00354: incumbent of 1.5 scored on syn4: KLD 0.96667 at 1.5000 bpw (container 1.5000)
+11-12 19:34:22 CST v3s-2.5-inc-00355: incumbent of 2.5 scored on syn4: KLD 0.23585 at 2.5000 bpw (container 2.5000)
+11-12 19:34:22 CST fit 0022 (all) started on 393 rows (356 results)
+11-12 19:34:23 CST v3s-4-inc-00356: incumbent of 4.0 scored on syn4: KLD 0.04081 at 4.0000 bpw (container 4.0000)
+11-12 19:34:23 CST v3s-6-inc-00357: incumbent of 6.0 scored on syn4: KLD 0.00997 at 5.9572 bpw (container 5.9572)
+11-12 19:34:23 CST fit all done on 393 rows: {'rows': 393, 'labels': 38, 'params': 78, 'rmse_log': 0.003922947025336222, 'chi2_per_row': 0.031827572369178395, 'cost': 6.413728735572379, 'nfev': 8}
+11-12 19:34:24 CST b (size-adjusted score) 1.5:1.565 2.5:1.312 4:1.020 6:0.700
+11-12 19:34:25 CST reject v3s-1.5-explore-00358 (explore) for 1.5: log r +0.0268, size-adjusted +0.0268 (z +10.02) after 9 docs [stopped]
+11-12 19:34:25 CST reject v3s-2.5-block-00359 (block) for 2.5: log r +0.0116, size-adjusted +0.0116 (z +3.41) after 9 docs [stopped]
+11-12 19:34:26 CST reject v3s-4-partial-00360 (partial) for 4.0: log r +0.0023, size-adjusted +0.0023 (z +3.31) after 9 docs
+11-12 19:34:26 CST reject v3s-1.5-pair-00361 (pair) for 1.5: log r +0.0019, size-adjusted +0.0019 (z +3.08) after 9 docs [stopped]
+11-12 19:34:28 CST reject v3s-4-solve-00362 (solve) for 4.0: log r +0.0031, size-adjusted +0.0031 (z +2.45) after 11 docs [stopped]
+11-12 19:34:28 CST reject v3s-4-pair-00363 (pair) for 4.0: log r +0.0006, size-adjusted +0.0006 (z +4.02) after 13 docs [stopped]
+11-12 19:34:30 CST reject v3s-2.5-pair-00364 (pair) for 2.5: log r +0.0007, size-adjusted +0.0007 (z +2.70) after 9 docs [stopped]
+11-12 19:34:30 CST reject v3s-1.5-pair-00365 (pair) for 1.5: log r +0.0010, size-adjusted +0.0010 (z +3.32) after 13 docs [stopped]
+11-12 19:34:33 CST reject v3s-2.5-block-00366 (block) for 2.5: log r +0.0009, size-adjusted +0.0009 (z +1.45) after 44 docs [stopped]
+11-12 19:34:33 CST reject v3s-4-pair-00367 (pair) for 4.0: log r +0.0000, size-adjusted +0.0000 (z +2.25) after 9 docs [stopped]
+11-12 19:34:35 CST reject v3s-1.5-block-00368 (block) for 1.5: log r +0.0039, size-adjusted +0.0039 (z +4.62) after 9 docs [stopped]
+11-12 19:34:35 CST reject v3s-4-pair-00369 (pair) for 4.0: log r +0.0021, size-adjusted +0.0021 (z +5.07) after 9 docs [stopped]
+11-12 19:34:38 CST reject v3s-2.5-block-00370 (block) for 2.5: log r +0.0078, size-adjusted +0.0078 (z +2.66) after 13 docs [stopped]
+11-12 19:34:38 CST ACCEPT v3s-1.5-pair-00371 (pair) for 1.5: log r -0.0016, size-adjusted -0.0016 (z -8.44) vs v3s-1.5-inc-00354; 1.5000 bpw
+11-12 19:34:38 CST fit 0023 (all) started on 413 rows (372 results)
+11-12 19:34:40 CST reject v3s-4-pair-00372 (pair) for 4.0: log r +0.0015, size-adjusted +0.0015 (z +3.31) after 9 docs
+11-12 19:34:40 CST reject v3s-1.5-thompson-00373 (thompson) for 1.5: log r +0.0135, size-adjusted +0.0135 (z +9.77) after 9 docs [stopped]
+11-12 19:34:40 CST fit all done on 413 rows: {'rows': 413, 'labels': 40, 'params': 80, 'rmse_log': 0.003909314549970331, 'chi2_per_row': 0.03218164219104112, 'cost': 6.822675595947517, 'nfev': 8}
+11-12 19:34:41 CST b (size-adjusted score) 1.5:1.565 2.5:1.313 4:1.020 6:0.700
+11-12 19:34:44 CST monitor 1.5: 1.02694 at 1.5000 bpw (ver), vs best 1.02834: size-adjusted +0.0014 (se 0.0002)
+11-12 19:34:44 CST alert 1.5 cleared: monitor best improved +0.0014 > se 0.0002
+11-12 19:34:44 CST reject v3s-2.5-thompson-00375 (thompson) for 2.5: log r +0.0132, size-adjusted +0.0132 (z +2.28) after 10 docs [stopped]
+11-12 19:34:45 CST reject v3s-4-solve-00376 (solve) for 4.0: log r +0.0071, size-adjusted +0.0071 (z +3.45) after 9 docs
+11-12 19:34:45 CST reject v3s-2.5-thompson-00377 (thompson) for 2.5: log r +0.0134, size-adjusted +0.0134 (z +4.77) after 9 docs [stopped]
+11-12 19:34:48 CST reject v3s-1.5-partial-00378 (partial) for 1.5: log r +0.0020, size-adjusted +0.0020 (z +2.78) after 13 docs [stopped]
+11-12 19:34:48 CST reject v3s-4-pair-00379 (pair) for 4.0: log r +0.0008, size-adjusted +0.0008 (z +2.55) after 10 docs [stopped]
+11-12 19:34:50 CST reject v3s-1.5-pair-00380 (pair) for 1.5: log r +0.0019, size-adjusted +0.0019 (z +5.25) after 9 docs [stopped]
+11-12 19:34:50 CST reject v3s-2.5-block-00381 (block) for 2.5: log r +0.0079, size-adjusted +0.0079 (z +2.66) after 13 docs
+11-12 19:34:52 CST reject v3s-4-block-00382 (block) for 4.0: log r +0.0272, size-adjusted +0.0272 (z +9.13) after 9 docs [stopped]
+11-12 19:34:52 CST reject v3s-1.5-pair-00383 (pair) for 1.5: log r +0.0001, size-adjusted +0.0001 (z +0.68) after 92 docs [stopped]
+11-12 19:34:55 CST reject v3s-2.5-pair-00384 (pair) for 2.5: log r +0.0034, size-adjusted +0.0034 (z +6.70) after 9 docs [stopped]
+11-12 19:34:55 CST reject v3s-2.5-block-00385 (block) for 2.5: log r +0.0005, size-adjusted +0.0005 (z +1.74) after 36 docs [stopped]
+11-12 19:34:57 CST reject v3s-1.5-pair-00386 (pair) for 1.5: log r +0.0011, size-adjusted +0.0011 (z +2.78) after 9 docs [stopped]
+11-12 19:34:57 CST reject v3s-4-block-00387 (block) for 4.0: log r +0.0249, size-adjusted +0.0249 (z +9.69) after 9 docs
+11-12 19:34:57 CST fit 0024 (all) started on 430 rows (388 results)
+11-12 19:35:01 CST reject v3s-1.5-pair-00388 (pair) for 1.5: log r +0.0021, size-adjusted +0.0021 (z +5.99) after 9 docs [stopped]
+11-12 19:35:01 CST reject v3s-2.5-thompson-00389 (thompson) for 2.5: log r +0.0254, size-adjusted +0.0254 (z +7.47) after 9 docs [stopped]
+11-12 19:35:01 CST fit all done on 430 rows: {'rows': 430, 'labels': 41, 'params': 81, 'rmse_log': 0.003944388842569837, 'chi2_per_row': 0.032898369950163105, 'cost': 7.24662239527162, 'nfev': 8}
+11-12 19:35:02 CST b (size-adjusted score) 1.5:1.565 2.5:1.317 4:1.022 6:0.700
+11-12 19:35:02 CST reject v3s-4-thompson-00390 (thompson) for 4.0: log r +0.0178, size-adjusted +0.0178 (z +5.50) after 9 docs [stopped]
+11-12 19:35:02 CST reject v3s-4-thompson-00391 (thompson) for 4.0: log r +0.0340, size-adjusted +0.0339 (z +10.24) after 9 docs [stopped]
+11-12 19:35:04 CST ACCEPT v3s-2.5-partial-00392 (partial) for 2.5: log r -0.0009, size-adjusted -0.0009 (z -7.70) vs v3s-2.5-inc-00355; 2.5000 bpw
+11-12 19:35:04 CST reject v3s-1.5-partial-00393 (partial) for 1.5: log r +0.0020, size-adjusted +0.0020 (z +2.79) after 13 docs [stopped]
+11-12 19:35:04 CST reject v3s-2.5-pair-00394 (pair) for 2.5: log r +0.0007, size-adjusted +0.0007 (z +6.28) after 180 docs
+11-12 19:35:04 CST reject v3s-1.5-pair-00395 (pair) for 1.5: log r +0.0003, size-adjusted +0.0003 (z +2.25) after 13 docs
+11-12 19:35:06 CST monitor 2.5: 0.25111 at 2.5000 bpw (ver), vs best 0.25132: size-adjusted +0.0008 (se 0.0001)
+11-12 19:35:06 CST reject v3s-4-partial-00397 (partial) for 4.0: log r +0.0024, size-adjusted +0.0024 (z +2.30) after 10 docs [stopped]
+11-12 19:35:08 CST reject v3s-4-partial-00398 (partial) for 4.0: log r +0.0023, size-adjusted +0.0023 (z +2.20) after 10 docs [stopped]
+11-12 19:35:08 CST reject v3s-1.5-pair-00399 (pair) for 1.5: log r +0.0046, size-adjusted +0.0046 (z +6.12) after 9 docs [stopped]
+11-12 19:35:08 CST | slice syn4 | submitted 402, results 400 (264 stopped early), outstanding 2 | decisions 336, accepts 40 | kinds block 2/35 explore 2/21 pair 21/160 partial 8/53 solve 5/33 thompson 2/30 | b 1.5:1.56 2.5:1.32 4:1.02 6:0.70 | ALERT 4 | fits all:430
+  PASS climb: 1.5: -57.6% 2.5: -33.1% 4.0: -35.1% 6.0: -17.5%
+  PASS wrong accepts: 0 of 40 accepts truly worse by > 0.5%
+  PASS early stops: 256 of 292 rejects stopped early; card time 10.39 h vs 21.72 h all-full (400 evals)
+  PASS fit recovers the model: one-step moves: corr 0.990, RMSE 0.0010 (true sd 0.0073); fits {'all': 430}
+  PASS rotation: 4 rotations, active syn4, incumbents on it or in flight: True
+  PASS restart: driver rebuilt from state.jsonl mid-run: same incumbents
+  PASS monitor: 40 monitor reads for 40 accepts, corr with true KL 1.000, none fitted: True; sizes stopped by the flat rule: []
+  info: audit runs stopped-after-the-fact 30; mean prefix - full log r +0.0010
+STANDIN PASS

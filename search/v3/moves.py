@@ -12,7 +12,10 @@ kind proposes one new assignment inside the window:
   block     the same with a whole group x 8-layer band moved one step up and bands moved down (measurable, V2's swaps)
   thompson  `solve` under a posterior draw of the parameters (Laplace) -- V2's ts
   explore   uncertainty: of 24 random pair / block moves, the one with the best UCB (predicted gain + 1 sd over 12
-            posterior draws); or a random band move with no model ranking (half the time) -- V2's tl / rd
+            posterior draws); or a random band move with no model ranking (half the time) -- V2's tl / rd. While some
+            embedding option has no row yet, half the explore moves try the unmeasured one nearest the incumbent's,
+            bytes repaired (w127: the fit gives an unseen embedding no gain, so no other kind would ever measure it;
+            the stand-in's 6.0 search stayed on E4 at +17% true KL vs the optimum's E6)
 Bytes come from the menu (heads: the quantized head's bytes). Candidates equal to the incumbent or to any assignment
 already evaluated (hash) are skipped; generate() returns None after a few tries."""
 import hashlib, json, math, random
@@ -214,6 +217,10 @@ def _gen(kind, pred, draws, a, lo, hi, rng):
         sc.sort(); k = rng.choice(sc[:6])[1]
         return block_move(pred, a, k, BD, lo, hi)
     if kind == "explore":
+        un = unseen_emb(pred, a)
+        if un and rng.random() < 0.5:
+            c = dict(a); c[MN.EMB] = un[0]
+            return repair(pred, c, lo, hi)
         BD = bands(D); keys = sorted(BD)
         if rng.random() < 0.5 or not draws:
             return block_move(pred, a, rng.choice(keys), BD, lo, hi)
@@ -231,6 +238,14 @@ def _gen(kind, pred, draws, a, lo, hi, rng):
             if bv is None or ucb > bv: best, bv = c, ucb
         return best
     raise ValueError(kind)
+
+
+def unseen_emb(pred, a):
+    """embedding options no fitted row has used, nearest the incumbent's first"""
+    if pred.emb is None or MN.EMB not in a or len(pred.emb["opts"]) < 2: return []
+    seen = set(getattr(pred.Mo, "levels", []) or []); names = [o["o"] for o in pred.emb["opts"]]
+    cur = names.index(a[MN.EMB])
+    return [names[j] for j in sorted(range(len(names)), key=lambda j: (abs(j - cur), -j)) if j != cur and f"e{j}" not in seen]
 
 
 def kind_shares(stats, share0=SHARE0, lo=0.05, hi=0.40):

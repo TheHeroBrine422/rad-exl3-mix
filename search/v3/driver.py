@@ -7,8 +7,12 @@ Loop (one pass a few seconds; never waits on one eval):
   1 ingest     new lines of the eval queue's results (rxrun.multi ROOT/results.jsonl + docs/<tag>-<slice>.json; a
                stopped run carries "stopped" and per-document sums for the scored documents only)
   2 decide     a candidate vs its size's CURRENT incumbent on the same slice, paired per document (seqrule.Paired):
-               stopped -> reject; whole slice -> accept iff pooled log r < 0 and every part < 0; an accept makes it the
-               incumbent. A result on a slice that is no longer active only feeds the fit ("stale"). Audit runs (a
+               stopped -> reject; whole slice -> accept iff the SIZE-ADJUSTED pooled log r < 0 and every part's < 0;
+               an accept makes it the incumbent. Size-adjusted (w127, #167; TODO "Size-adjusted score in the search"):
+               log KLD + b (bpw - reference bpw), b = the size's current fit's local slope -d log KLD / d bpw (the
+               model's knapsack optimum at size -/+ b_delta; CONF b_default before the first fit; updated each refit;
+               recorded per candidate at submit, so the hosts' early stop and the decision use the same b). CONF
+               "size_adjust": false = raw KLD (the A/B's control arm). A result on a slice that is no longer active only feeds the fit ("stale"). Audit runs (a
                random audit_frac of the candidates are scored without early stop) are decided by the rule applied after
                the fact -- the same decision as a stopped run -- and log the early-stop bias (prefix vs whole-slice ratio)
   3 fit rows   every result is a row (seqrule labels: "S|full", or "S|pre<k>" with k cut down to a 5% grid), plus
@@ -21,12 +25,16 @@ Loop (one pass a few seconds; never waits on one eval):
                done, a move kind by share (moves.kind_shares: V2's kind rewards), moves.generate inside the size's byte
                window [target - size_tol, target]; appended to the queue with the early-stop block (rule + the
                incumbent's per-document sums on the slice, in the golden's order)
-  monitor      (design/v3.md 5 "Budget and stop rule"; CONF "monitor": {"name", "golden", "flat_n"}): every accept (a band's
-               new best) is also scored on the held-out monitor golden (ver3-8k: verify pool, whole, no early stop; never a
-               fit row, never a decision); a size stops when its last flat_n monitor reads have not improved the best
-               monitor score by more than the paired SE (N fixed in CONF before the run); ROOT/monitor.json = the curves
+  monitor      (CONF "monitor": {"name", "golden", "alert_min", "alert_frac"}): every accept (a band's new best) is also
+               scored on the held-out monitor golden (ver3-8k: verify pool, whole, no early stop; never a fit row, never a
+               decision). ALERT ONLY (user 11-13: no pre-set N, no automatic stop): a size gets a soft alert when its
+               size-adjusted ver3 best has not improved by more than the paired SE over its last alert_frac (0.2) of its
+               decisions, once it has >= alert_min (50); the user / lead ends a size by hand (touch ROOT/STOP-<size>).
+               ROOT/monitor.json = the curves + alert state; ROOT/events.jsonl = convplot3 --events lines (alerts)
   7 report     ROOT/status.txt, ROOT/frontier.json (per release band [T - 0.5 gap below, T + 0.3 gap above]: every
-               whole-slice measurement, KLD normalised by the model's slice offset, the non-dominated ones marked)
+               whole-slice measurement, KLD normalised by the model's slice offset, its size-adjusted score
+               log KLD_norm + b_T (bpw - T), the non-dominated ones marked, "top": the best CONF topn (5) assignments by
+               score). driver.py CONF --freeze-b OUT writes each band's b for the final picks (finalpick.py; before ver4)
 State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
 Restart = the same command (state replayed; outstanding evals stay in the queue)."""
 import argparse, collections, json, math, os, random, subprocess, sys, time
@@ -60,7 +68,9 @@ class Driver:
         self.R = c["root"]; os.makedirs(f"{self.R}/assign", exist_ok=True); os.makedirs(f"{self.R}/fits", exist_ok=True)
         self.M = MN.Menu.load(c["menu"]); self.reg = SL.Registry(c["registry"])
         self.sizes = [float(s) for s in c["sizes"]]; self.tol = float(c.get("size_tol", 0.02))
-        self.rule = c.get("rule", {"kind": "curve", "p": 2.0, "warmup": 0.05})
+        self.rule = dict(c.get("rule") or {"kind": "curve", "p": 2.0, "warmup": 0.05})     # the pre-registered pick (c17045c)
+        if "warmup" in c: self.rule["warmup"] = float(c["warmup"])
+        self.sizeadj = bool(c.get("size_adjust", True)); self.b = {}; self.alerts = {}; self.res_lines = 0
         self.rng = random.Random(c.get("seed", 0))
         # state
         self.sub = {}            # tag -> submit event
@@ -74,7 +84,7 @@ class Driver:
         self.gname = {float(z): g["name"] for g in self.groups for z in g["sizes"]}
         self.fits = {g["name"]: None for g in self.groups}       # {"Mo", "x", "pred", "draws", "report", "model"}
         self.fitprocs = {g["name"]: None for g in self.groups}; self.fit_at = {g["name"]: 0 for g in self.groups}
-        self.res_off = 0; self.bias = []; self.nogen = {}; self.fixed0 = self.M.fixed; self.bytes_off = None
+        self.res_off = 0; self.bias = []; self.nogen = {}; self.fixed0 = self.M.fixed; self.bytes_off = None; self.bytes_src = None
         self.mon = collections.defaultdict(list); self.stopped_sizes = set()
         self.replay()
 
@@ -100,8 +110,10 @@ class Driver:
             elif ev == "decision":
                 self.dec[e["size"]] += 1
                 if e.get("kind"): self.kind_stats[e["kind"]][1] += 1; self.kind_stats[e["kind"]][0] += e["decision"] == "accept"
-            elif ev == "results_offset": self.res_off = e["off"]
-            elif ev == "bytes_offset": self.bytes_off = e["off"]; self.M.fixed = self.fixed0 + e["off"]
+            elif ev == "results_offset": self.res_off = e["off"]; self.res_lines = e.get("lines", self.res_lines)
+            elif ev == "b": self.b[e["size"]] = e["b"]
+            elif ev == "alert": self.alerts[e["size"]] = e["on"]
+            elif ev == "bytes_offset": self.bytes_off = e["off"]; self.bytes_src = e.get("src", "measured"); self.M.fixed = self.fixed0 + e["off"]
             elif ev == "monitor": self.mon[e["size"]].append(e)
             elif ev == "size_stop": self.stopped_sizes.add(e["size"])
             elif ev == "fit_done":
@@ -113,6 +125,9 @@ class Driver:
                 tags = json.load(open(out))["obs_tags"]; by = {o["tag"]: o for o in list(self.obs.values()) + self.prior_obs()}
                 if gn in self.fits and all(t in by for t in tags): self.fits[gn] = self.load_fit(out, [by[t] for t in tags])
             except (OSError, ValueError, KeyError) as e: self.log(f"replay: fit {gn} not reloaded ({e!r})")
+        if self.bytes_off is None and self.c.get("bytes_offset0") is not None:     # w126's measured container offset (8,255,936 B)
+            self.bytes_off = int(self.c["bytes_offset0"]); self.bytes_src = "conf"; self.M.fixed = self.fixed0 + self.bytes_off
+            self.rec({"ev": "bytes_offset", "off": self.bytes_off, "src": "conf"})
         self.log(f"replayed: {len(self.sub)} submitted, {len(self.res)} results, incumbents {len(self.inc)}, fits {[g for g, f in self.fits.items() if f]}")
 
     def assign(self, tag): return json.load(open(f"{self.R}/assign/{tag}.json"))
@@ -126,39 +141,82 @@ class Driver:
         h = MV.ahash(a)
         json.dump(a, open(f"{self.R}/assign/{tag}.json", "w"))
         line = {"tag": tag, "mix": self.M.eval_mix(a, self.c["base"]), "slices": [slice_entry or self.slice_entry(slice_name)]}
+        bs = self.b_of(size) if kind not in ("monitor", "incumbent") else 0.0
+        bpw = self.M.bpw(a)
         if early and ref_tag:
-            r = self.res[ref_tag]
-            line["early_stop"] = {"rule": self.rule, "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
+            r = self.res[ref_tag]; off = bs * (bpw - self.sub[ref_tag]["bpw"])
+            line["early_stop"] = {"rule": dict(self.rule, off=off), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
                                   "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
-             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": self.M.bpw(a), **(extra or {})}
+             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **(extra or {})}
         self.rec(e); self.sub[tag] = e
         if kind != "monitor": self.seen.add(h)
         return tag
 
+    def mscore(self, size, kld, bpw):
+        """a band's size-adjusted score: log KLD + b (bpw - T) (raw log KLD when size_adjust is off)"""
+        return math.log(kld) + self.b_of(size) * (bpw - size)
+
     def on_monitor(self, t, s, r):
-        """the held-out curve of a size and its stop rule (flat_n reads without an improvement > the paired SE)"""
-        size = s["size"]; mc = self.c["monitor"]
-        prev = [m for m in self.mon[size]]
-        best = min(prev, key=lambda m: m["kld"]) if prev else None
-        se = None; imp = None
+        """the held-out curve of a size (alert-only: monitor_alert)"""
+        size = s["size"]; bpw = self.sub[t]["bpw"]
+        prev = list(self.mon[size])
+        best = min(prev, key=lambda m: self.mscore(size, m["kld"], m["bpw"])) if prev else None
+        se = imp = None
         if best is not None:
-            P = SR.Paired(len(r["docs"]), {"kind": "full"})
+            P = SR.Paired(len(r["docs"]), {"kind": "full", "off": self.b_of(size) * (bpw - best["bpw"])})
             for a, b in zip(self.res[best["tag"]]["docs"], r["docs"]): P.add(a, b)
-            se, imp = P.se(), -P.d()
-        e = {"ev": "monitor", "size": size, "tag": t, "of": s.get("of"), "kld": r["kld"], "improve": imp, "se": se}
+            se, imp = P.se(), -P.da()
+        e = {"ev": "monitor", "size": size, "tag": t, "of": s.get("of"), "kld": r["kld"], "bpw": bpw, "dec_n": self.dec[size],
+             "b": self.b_of(size), "improve": imp, "se": se}
         self.rec(e); self.mon[size].append(e)
-        self.log(f"monitor {size}: {r['kld']:.5f} ({mc['name']})" + (f", vs best {best['kld']:.5f}: {imp:+.4f} (se {se:.4f})" if best else ""))
-        n = int(mc.get("flat_n", 4)); cur = self.mon[size]
-        if len(cur) > n:
-            ref = min(cur[:-n], key=lambda m: m["kld"])                    # the best before the last n reads
-            P = SR.Paired(len(r["docs"]), {"kind": "full"}); bl = min(cur[-n:], key=lambda m: m["kld"])
-            for a, b in zip(self.res[ref["tag"]]["docs"], self.res[bl["tag"]]["docs"]): P.add(a, b)
-            if -P.d() <= P.se():
-                self.stopped_sizes.add(size); self.rec({"ev": "size_stop", "size": size, "flat_n": n, "improve": -P.d(), "se": P.se()})
-                self.log(f"SIZE STOP {size}: the last {n} monitor reads improved the best by {-P.d():+.4f} <= se {P.se():.4f}")
-        json.dump({str(k): v for k, v in self.mon.items()}, open(f"{self.R}/monitor.json", "w"), indent=0)
+        self.log(f"monitor {size}: {r['kld']:.5f} at {bpw:.4f} bpw ({self.c['monitor']['name']})" +
+                 (f", vs best {best['kld']:.5f}: size-adjusted {imp:+.4f} (se {se:.4f})" if best else ""))
+        self.monitor_alert(size); self.dump_monitor()
+
+    def monitor_alert(self, size):
+        """user 11-13: no pre-set N, no stop. Soft alert when the size's size-adjusted monitor best has not improved by more
+        than the paired SE over its last alert_frac of decisions (>= alert_min decisions). -> (on, improve, se) or None"""
+        mc = self.c.get("monitor") or {}; n = self.dec[size]
+        if n < int(mc.get("alert_min", 50)): return None
+        w0 = n - math.ceil(float(mc.get("alert_frac", 0.2)) * n)
+        reads = [m for m in self.mon.get(size, []) if m["tag"] in self.res]
+        before = [m for m in reads if m.get("dec_n", 0) <= w0]
+        if not before: return None
+        sc = lambda m: self.mscore(size, m["kld"], m["bpw"])
+        b0 = min(before, key=sc); b1 = min(reads, key=sc)
+        if b1 is b0: imp, se = 0.0, 0.0
+        else:
+            P = SR.Paired(len(self.res[b0["tag"]]["docs"]), {"kind": "full", "off": self.b_of(size) * (b1["bpw"] - b0["bpw"])})
+            for a, b in zip(self.res[b0["tag"]]["docs"], self.res[b1["tag"]]["docs"]): P.add(a, b)
+            imp, se = -P.da(), P.se()
+        on = imp <= se
+        if on != self.alerts.get(size, False):
+            self.alerts[size] = on
+            self.rec({"ev": "alert", "size": size, "on": on, "dec_n": n, "window_from": w0, "improve": imp, "se": se})
+            msg = (f"ALERT {size}: monitor best flat over the last {n - w0} of {n} decisions (size-adjusted {imp:+.4f} <= se {se:.4f}); "
+                   f"end it by hand: touch {self.R}/STOP-{size:g}") if on else f"alert {size} cleared: monitor best improved {imp:+.4f} > se {se:.4f}"
+            self.log(msg)
+            with open(f"{self.R}/events.jsonl", "a") as f:
+                f.write(json.dumps({"step": self.res_lines, "label": (f"flat {size:g}" if on else f"unflat {size:g}"), "t": cst()}) + "\n")
+        return on, imp, se
+
+    def monitor_refs(self):
+        """CONF monitor "refs": [{"tag": "ref-V2-3.00", "mix": EVAL MIX}]: scored once each on the monitor golden, so
+        convplot3 (--heldout-re MONITOR_NAME) can put the monitor curves on its V2 scale; never a decision or a fit row"""
+        mc = self.c.get("monitor") or {}
+        for r in mc.get("refs", []):
+            if r["tag"] in self.sub: continue
+            line = {"tag": r["tag"], "mix": r["mix"], "slices": [{"name": mc["name"], "parts": {"m": mc["golden"]}}]}
+            with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
+            e = {"ev": "submit", "tag": r["tag"], "size": None, "kind": "monitor_ref", "slice": mc["name"], "hash": None, "early": False,
+                 "ref": None, "bytes": None, "bpw": None, "b": 0.0}
+            self.rec(e); self.sub[r["tag"]] = e
+
+    def dump_monitor(self):
+        json.dump({"curves": {str(k): v for k, v in self.mon.items()}, "alerts": {str(k): v for k, v in self.alerts.items()},
+                   "b": {str(k): self.b_of(k) for k in self.sizes}}, open(f"{self.R}/monitor.json", "w"), indent=0)
 
     def outstanding(self): return [t for t in self.sub if t not in self.res]
 
@@ -171,7 +229,7 @@ class Driver:
             while True:
                 l = f.readline()
                 if not l or not l.endswith("\n"): break
-                self.res_off = f.tell()
+                self.res_off = f.tell(); self.res_lines += 1
                 try: r = json.loads(l)
                 except ValueError: continue
                 t = r.get("tag")
@@ -188,12 +246,12 @@ class Driver:
                 self.res[t] = rr; self.n_results += 1; n += 1
                 self.rec({"ev": "result", "tag": t, "r": rr})
                 self.on_result(t, rr)
-        self.rec({"ev": "results_offset", "off": self.res_off})
+        self.rec({"ev": "results_offset", "off": self.res_off, "lines": self.res_lines})
         return n
 
     # ------------------------------------------------------------------------------------------------ decisions
-    def paired(self, ref, cand, parts, k=None, rule=None):
-        P = SR.Paired(len(parts), rule or {"kind": "full"})
+    def paired(self, ref, cand, parts, k=None, rule=None, off=0.0):
+        P = SR.Paired(len(parts), dict(rule or {"kind": "full"}, off=off))
         for i, (a, b, p) in enumerate(zip(ref["docs"], cand["docs"], parts)):
             if k is not None and i >= k: break
             if a is None or b is None: break
@@ -203,13 +261,14 @@ class Driver:
 
     def on_result(self, t, r):
         s = self.sub[t]; size = s["size"]
+        if s["kind"] == "monitor_ref": self.log(f"{t}: monitor reference scored: KLD {r.get('kld')}"); return
         self.add_obs(t, r)
         if r.get("fail"): self.log(f"{t}: FAILED ({r.get('err')})"); return
         if r.get("bytes") and not self.M.eval_mix(self.assign(t), self.c["base"])["donors"]:
             mb = self.M.bytes(self.assign(t))                               # menu bytes (with the calibrated offset) vs the container
-            if self.bytes_off is None:                                      # the first donor-free container calibrates the offset
-                self.bytes_off = r["bytes"] - (mb - self.M.fixed + self.fixed0); self.M.fixed = self.fixed0 + self.bytes_off
-                self.rec({"ev": "bytes_offset", "off": self.bytes_off, "tag": t}); self.log(f"bytes offset {self.bytes_off} (container - menu, from {t})")
+            if self.bytes_off is None or self.bytes_src == "conf":         # the first donor-free container calibrates the offset
+                self.bytes_off = r["bytes"] - (mb - self.M.fixed + self.fixed0); self.M.fixed = self.fixed0 + self.bytes_off; self.bytes_src = "measured"
+                self.rec({"ev": "bytes_offset", "off": self.bytes_off, "tag": t, "src": "measured"}); self.log(f"bytes offset {self.bytes_off} (container - menu, from {t})")
             else:
                 rel = r["bytes"] / mb - 1
                 if abs(rel) > float(self.c.get("bytes_tol", 0.0005)): self.log(f"WARN {t}: container {r['bytes']} bytes vs menu {mb} ({100 * rel:+.4f}%)")
@@ -225,18 +284,21 @@ class Driver:
         if cur is None or cur not in self.res or self.res[cur].get("slice") != r["slice"]:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None}); return
         ref = self.res[cur]
+        bs = s.get("b", 0.0) or 0.0                                       # the b recorded at submit (the hosts stopped on it)
+        off = lambda rt: bs * (s["bpw"] - self.sub[rt]["bpw"])
         if r.get("stopped"):
-            P = self.paired(self.res[s["ref"]] if s.get("ref") in self.res else ref, r, parts)
+            rt = s["ref"] if s.get("ref") in self.res else cur
+            P = self.paired(self.res[rt], r, parts, off=off(rt))
             d = "reject"; ndocs = P.k
         else:
             if s.get("audit") and s.get("ref") in self.res:                       # the rule after the fact
-                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule)
-                Pf = self.paired(self.res[s["ref"]], r, parts)
+                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule, off=off(s["ref"]))
+                Pf = self.paired(self.res[s["ref"]], r, parts, off=off(s["ref"]))
                 if Pe.stopped:
-                    self.rec({"ev": "bias", "tag": t, "k": Pe.k, "d_prefix": Pe.d(), "d_full": Pf.d(), "se_full": Pf.se()})
+                    self.rec({"ev": "bias", "tag": t, "k": Pe.k, "d_prefix": Pe.d(), "d_full": Pf.d(), "se_full": Pf.se(), "off": Pe.off})
                     self.bias.append({"d_prefix": Pe.d(), "d_full": Pf.d()})
                     self.decide(t, size, "reject", Pe, r["slice"], Pe.k); return
-            P = self.paired(ref, r, parts); d = P.final(); ndocs = P.k
+            P = self.paired(ref, r, parts, off=off(cur)); d = P.final(); ndocs = P.k
         self.decide(t, size, d, P, r["slice"], ndocs)
 
     def decide(self, t, size, d, P, sl, ndocs):
@@ -244,23 +306,23 @@ class Driver:
         self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1
         self.kind_stats[s["kind"]][1] += 1; self.kind_stats[s["kind"]][0] += d == "accept"
         self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(),
-                  "se": P.se(), "parts": P.summary()["parts"]})
+                  "off": P.off, "se": P.se(), "parts": P.summary()["parts"]})
         if d == "accept":
             old = self.inc.get(size); self.inc[size] = t
             self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old})
-            self.log(f"ACCEPT {t} ({s['kind']}) for {size}: log r {P.d():+.4f} (z {P.z():+.2f}) vs {old}; {s['bpw']:.4f} bpw")
+            self.log(f"ACCEPT {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) vs {old}; {s['bpw']:.4f} bpw")
             mc = self.c.get("monitor")
             if mc:                                                          # the band's new best -> the held-out monitor
                 self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
                             slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
         else:
-            self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else ""))
+            self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else ""))
 
     # ------------------------------------------------------------------------------------------------ fit rows
     def add_obs(self, t, r):
         if r.get("fail") or not r.get("docs"): return
         s = self.sub.get(t)
-        if s is None or s["kind"] == "monitor": return               # verify data: never a fit row
+        if s is None or s["kind"] in ("monitor", "monitor_ref"): return   # verify data: never a fit row
         a = self.assign(t); docs, pos = r["docs"], r["pos"]
         N = len(docs); k = sum(1 for x in docs if x is not None)
         if k == 0: return
@@ -300,6 +362,7 @@ class Driver:
             self.fits[gn] = self.load_fit(out, obs); self.fit_at[gn] = n_at
             self.rec({"ev": "fit_done", "group": gn, "n_results": n_at, "out": out, "report": self.fits[gn]["report"]})
             self.log(f"fit {gn} done on {len(obs)} rows: {self.fits[gn]['report']}")
+            if self.sizeadj: self.update_b(gn)
             return
         sz = {float(z) for z in g["sizes"]}
         obs = [o for o in self.obs.values() if g.get("rows", "all") == "all" or o.get("size") in sz]
@@ -318,6 +381,62 @@ class Driver:
     def prior_obs(self):
         p = self.c.get("prior_obs")
         return [json.loads(l) for l in open(p)] if p and os.path.exists(p) else []
+
+    # ------------------------------------------------------------------------------------------------ size adjustment
+    B_DEFAULT = [(2.5, 1.6), (3.0, 1.6), (4.0, 1.1), (5.5, 1.1), (6.0, 0.7), (7.0, 0.7)]   # V2 board slopes (TODO 11-13)
+
+    def b_default(self, size):
+        pts = [(float(x), float(y)) for x, y in (self.c.get("b_default") or self.B_DEFAULT)]
+        if size <= pts[0][0]: return pts[0][1]
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            if size <= x1: return y0 + (y1 - y0) * (size - x0) / (x1 - x0)
+        return pts[-1][1]
+
+    def b_of(self, size):
+        """the size's current b (0 = raw KLD when CONF size_adjust is false)"""
+        if not self.sizeadj: return 0.0
+        return self.b.get(size, self.b_default(size))
+
+    def slope(self, size, F):
+        """-d log KLD / d bpw of the fitted model's knapsack optimum around the size (size -/+ b_delta, central difference;
+        one-sided at the menu's ends), from the size's incumbent. None if it cannot be computed."""
+        pred = F["pred"]; db = float(self.c.get("b_delta", 0.1))
+        t = self.inc.get(size); a0 = self.assign(t) if t in self.sub else self.init_assign(size)
+        self.feasible(size); self.window(size); pts = []
+        for s2 in (size - db, size, size + db):
+            hi = s2 * self.M.P / 8; lo = (s2 - self.tol) * self.M.P / 8
+            if self._minb > hi or self._maxb < lo: continue
+            m = MV.mckp(pred, a0, hi, lo)
+            if m is not None: pts.append((self.M.bpw(m), math.log(pred.kl(m))))
+        if len(pts) < 2: return None
+        (x0, y0), (x1, y1) = pts[0], pts[-1]
+        if x1 - x0 < 1e-4: return None
+        b = -(y1 - y0) / (x1 - x0)
+        return b if math.isfinite(b) else None
+
+    def update_b(self, gn):
+        """after a refit: each of the group's sizes gets b = the new fit's local slope (clamped to CONF b_range)"""
+        F = self.fits[gn]; lo_b, hi_b = self.c.get("b_range", [0.05, 6.0])
+        for size in self.sizes:
+            if self.gname[size] != gn or not self.feasible(size): continue
+            try: b = self.slope(size, F)
+            except Exception as e:                          # noqa: BLE001 -- keep the old b
+                self.log(f"b {size}: slope failed ({e!r}); keeps {self.b_of(size):.3f}"); continue
+            if b is None: continue
+            b = min(hi_b, max(lo_b, b)); self.b[size] = b
+            self.rec({"ev": "b", "size": size, "b": b, "group": gn, "n_results": self.fit_at[gn]})
+        self.log("b (size-adjusted score) " + " ".join(f"{z:g}:{self.b_of(z):.3f}" for z in self.sizes if self.gname[z] == gn))
+
+    def freeze_b(self, out, force=False):
+        """TODO 'Final pick score': each release band's b, fixed before the ver4 reads (finalpick.py --b)"""
+        if os.path.exists(out) and not force: raise SystemExit(f"{out} exists (frozen); --force to overwrite")
+        bands = release_bands(self.sizes)
+        d = {"frozen": cst(), "conf": os.path.abspath(self.cp), "size_adjust": self.sizeadj,
+             "bands": {str(T): {"b": self.b.get(T, self.b_default(T)), "src": "fit" if T in self.b else "default", "band": list(bands[T]),
+                                "fit_results": self.fit_at[self.gname[T]]} for T in self.sizes}}
+        json.dump(d, open(out + ".part", "w"), indent=1); os.replace(out + ".part", out)
+        self.rec({"ev": "b_frozen", "out": out, "bands": d["bands"]})
+        return d
 
     def load_fit(self, out, obs):
         import fit as FT
@@ -430,25 +549,35 @@ class Driver:
         bands = release_bands(self.sizes)
         pts = []
         for t, r in self.res.items():
-            if r.get("fail") or not r.get("docs") or any(x is None for x in r["docs"]) or self.sub[t]["kind"] == "monitor": continue
+            if r.get("fail") or not r.get("docs") or any(x is None for x in r["docs"]) or self.sub[t]["kind"] in ("monitor", "monitor_ref"): continue
             soff = (self.fits[self.gname[self.sub[t]["size"]]] or {}).get("model", {}).get("slices", {})
             off = soff.get(f"{r['slice']}|full", 0.0)
             pts.append({"tag": t, "bpw": self.sub[t]["bpw"], "bpw_container": r["bpw"], "kld": r["kld"], "slice": r["slice"],
                         "kld_norm": r["kld"] / math.exp(off), "size": self.sub[t]["size"]})
-        fr = {}
+        fr = {}; topn = int(self.c.get("topn", 5))
         for T, (lo, hi) in bands.items():
-            p = sorted([x for x in pts if lo <= (x["bpw"] or 0) <= hi], key=lambda x: (x["bpw"], x["kld_norm"]))
+            p = sorted([dict(x) for x in pts if lo <= (x["bpw"] or 0) <= hi], key=lambda x: (x["bpw"], x["kld_norm"]))
             best = math.inf
             for x in p:
                 x["nondominated"] = x["kld_norm"] < best; best = min(best, x["kld_norm"])
-            fr[str(T)] = {"band": [lo, hi], "incumbent": self.inc.get(T), "stopped": T in self.stopped_sizes,
-                          "monitor": [{"tag": m["tag"], "of": m.get("of"), "kld": m["kld"]} for m in self.mon.get(T, [])], "points": p}
+                x["score"] = self.mscore(T, x["kld_norm"], x["bpw"])
+            by = collections.defaultdict(list)                              # an assignment scored on several slices: mean score
+            for x in p: by[self.sub[x["tag"]]["hash"]].append(x)
+            top = sorted(({"tags": [x["tag"] for x in v], "bpw": v[0]["bpw"], "score": sum(x["score"] for x in v) / len(v), "n": len(v)}
+                          for v in by.values()), key=lambda x: x["score"])[:topn]
+            fr[str(T)] = {"band": [lo, hi], "b": self.b_of(T), "incumbent": self.inc.get(T), "stopped": T in self.stopped_sizes,
+                          "alert": self.alerts.get(T, False),
+                          "monitor": [{"tag": m["tag"], "of": m.get("of"), "kld": m["kld"], "bpw": m.get("bpw"),
+                                       "score": self.mscore(T, m["kld"], m["bpw"]) if m.get("bpw") else None} for m in self.mon.get(T, [])],
+                          "top": top, "points": p}
         json.dump(fr, open(f"{self.R}/frontier.json.part", "w"), indent=0); os.replace(f"{self.R}/frontier.json.part", f"{self.R}/frontier.json")
         nd = sum(self.dec.values()); acc = sum(v[0] for v in self.kind_stats.values())
         stopped = sum(1 for r in self.res.values() if r.get("stopped"))
         line = (f"{cst()} | slice {self.reg.active()} | submitted {len(self.sub)}, results {len(self.res)} ({stopped} stopped early), "
                 f"outstanding {len(self.outstanding())} | decisions {nd}, accepts {acc} | kinds " +
                 " ".join(f"{k} {v[0]}/{v[1]}" for k, v in sorted(self.kind_stats.items())) +
+                " | b " + " ".join(f"{z:g}:{self.b_of(z):.2f}" for z in self.sizes) +
+                (" | ALERT " + " ".join(f"{z:g}" for z, v in sorted(self.alerts.items()) if v) if any(self.alerts.values()) else "") +
                 " | fits " + " ".join(f"{g}:{'none' if not f else f['report'].get('rows')}" + ("*" if self.fitprocs[g] else "") for g, f in self.fits.items()))
         open(f"{self.R}/status.txt", "w").write(line + "\n")
         return line
@@ -456,12 +585,17 @@ class Driver:
     # ------------------------------------------------------------------------------------------------ main
     def step(self):
         self.ingest()
+        for size in self.sizes:                                             # sizes ended by hand (alert-only monitor)
+            if size not in self.stopped_sizes and os.path.exists(f"{self.R}/STOP-{size:g}"):
+                self.stopped_sizes.add(size); self.rec({"ev": "size_stop", "size": size, "by": "hand"}); self.log(f"SIZE STOP {size} (by hand)")
+            if self.c.get("monitor"): self.monitor_alert(size)
         self.maybe_refit()
         act = self.rotate()
         if act is None: return "no slice"
         go = self.c.get("go") or self.c.get("dry")
         if not go: return "no go (CONF go / dry)"
         self.ensure_incumbents(act)
+        self.monitor_refs()
         self.generate(act)
         return self.report()
 
@@ -478,10 +612,13 @@ class Driver:
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="driver.py")
     ap.add_argument("conf"); ap.add_argument("--status", action="store_true"); ap.add_argument("--steps", type=int)
+    ap.add_argument("--freeze-b", metavar="OUT", help="write each release band's current b (the final picks' size adjustment) and exit")
+    ap.add_argument("--force", action="store_true")
     ap.add_argument("--dump-obs", help="write the fit input (every row) to this file and exit (fit.py check / offline fits)")
     a = ap.parse_args(argv)
     D = Driver(a.conf)
     if a.status: print(D.report()); return 0
+    if a.freeze_b: print(json.dumps(D.freeze_b(a.freeze_b, a.force), indent=1)); return 0
     if a.dump_obs:
         json.dump({"menu": D.c.get("menu_remote") or D.c["menu"], "obs": list(D.obs.values()) + D.prior_obs(), "opts": D.c.get("fit_opts", {})},
                   open(a.dump_obs, "w")); print(f"{a.dump_obs}: {len(D.obs)} rows"); return 0

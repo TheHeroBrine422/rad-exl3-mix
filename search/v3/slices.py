@@ -16,11 +16,15 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
   python3 slices.py add REG NAME MIXDIR [x=DIR c=DIR]           register a built slice (reads MIXDIR/kld.json)
   python3 slices.py show REG
   python3 slices.py ledger REG NAME OUTDIR                      the c part's kld.json for ledger_add.py (role: select)
-  python3 slices.py draw REG LEDGER POOLS N SEED [MODE]          N calib search-pool docs for the next c part: the budget =
-          docs fresh by the ledger (MODE never | no27b, eval/slices/excl.py's rule, | headx: also docs whose only 27B
-          uses are the head-input collections w94 / w119-headx-search; the lead decides the mode) + docs
-          this registry's own slices used (they return, least-decided first); never a doc of a ready / active slice.
-          Prints the doc indices (golden_pick.py's argument list); the c golden: golden_pick.py GOLD CORPUS OUT JSONL DOCS
+  python3 slices.py draw REG LEDGER POOLS N SEED [MODE]          N calib docs for the next c part. MODE merged (default,
+          user 11-13: fit + search are one pool, eval-data.md): every fit- or search-pool doc, LEAST-USED FIRST by
+          the ledger's decision counts (sum of each use's "decisions"; a use without a number counts 1; the
+          head-input collections w94 / w119-headx-* count 0: allowed) + this registry's own decisions on it, ties
+          random; old modes (search pool only, ledger-fresh docs only): never | no27b | headx. Never a doc of a ready /
+          active slice. Prints the doc indices (golden_pick.py's argument list); the c golden: golden_pick.py GOLD
+          CORPUS OUT JSONL DOCS
+  python3 slices.py poolcheck POOLS GOLDEN [GOLDEN ..]           the pools of each golden's calib docs ("orig"); exit 1
+          if any is outside fit + search (a search slice / prior_obs golden must come from the merged pool)
 Rotation (driver): a slice is retired once any size has decided `rotate_after` candidates on it (default 25); the
 next "ready" slice becomes active (its incumbents are scored first, no early stop)."""
 import json, os, random, shutil, sys, time
@@ -77,6 +81,32 @@ def goldmix(out, parts, seed, select=None):
     json.dump(man, open(f"{o}/kld.json", "w"), indent=0)
     shutil.rmtree(out, ignore_errors=True); os.replace(o, out)
     return man
+
+
+MERGED = ("fit", "search")                       # one pool since 2026-11-13 (user; eval-data.md)
+HEADX = ("w94-headx-search", "w94-headx-qad", "w119-headx-search", "w119-headx-fit", "w119-headx-verify")
+
+
+def ledger_use(led, mine=()):
+    """per calib doc: its decision count by the ledger (numeric "decisions" summed; a use without a number counts 1;
+    the head-input collections count 0; uses by this registry's own slices skipped -- the registry counts those)"""
+    use = {}
+    for l in open(led):
+        r = json.loads(l)
+        if r["doc"] == "all" or r["use"] in mine or r["use"] in HEADX: continue
+        d = r.get("decisions"); k = d if isinstance(d, (int, float)) and not isinstance(d, bool) else 1
+        use[int(r["doc"])] = use.get(int(r["doc"]), 0) + k
+    return use
+
+
+def draw_merged(R, led, pool, n, seed):
+    """N fit + search docs, least-used first (ledger decisions + this registry's own decisions), ties random"""
+    mine = {f"golden-{k}-c" for k in R.d["slices"]}; lu = ledger_use(led, mine); dd = R.d["doc_decisions"]
+    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") for d in s_["docs"] if d["id"].startswith("c:")}
+    cand = [i for i, p in enumerate(pool) if p in MERGED and i not in busy]
+    use = {i: lu.get(i, 0) + dd.get(f"c:{i}", 0) for i in cand}
+    rng = random.Random(seed); cand.sort(key=lambda i: (use[i], rng.random()))
+    return sorted(cand[:n]), len(cand), use
 
 
 def doc_id(d):
@@ -147,8 +177,14 @@ def main(argv):
         dd = R.d["doc_decisions"]
         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")
     elif argv[0] == "draw":
-        R = Registry(argv[1]); led, pools, n, seed = argv[2], argv[3], int(argv[4]), int(argv[5]); mode = argv[6] if len(argv) > 6 else "never"
+        R = Registry(argv[1]); led, pools, n, seed = argv[2], argv[3], int(argv[4]), int(argv[5]); mode = argv[6] if len(argv) > 6 else "merged"
         pool = json.load(open(pools))["pool"]; mine = {f"golden-{k}-c" for k in R.d["slices"]}
+        if mode == "merged":
+            pick, ncand, use = draw_merged(R, led, pool, n, seed)
+            print(" ".join(map(str, pick)))
+            print(f"draw: {ncand} fit + search docs available, {len(pick)} drawn (least-used first); uses on them: "
+                  f"min {min(use[i] for i in pick) if pick else 0}, max {max(use[i] for i in pick) if pick else 0}", file=sys.stderr)
+            return 0
         used = set()
         for l in open(led):
             r = json.loads(l)
@@ -164,6 +200,16 @@ def main(argv):
         print(" ".join(map(str, pick)))
         print(f"draw: {len(cand)} docs in the budget (mode {mode}), {len(pick)} drawn; decisions on them so far: "
               f"max {max([dd.get(f'c:{i}', 0) for i in pick] or [0])}", file=sys.stderr)
+    elif argv[0] == "poolcheck":
+        pool = json.load(open(argv[1]))["pool"]; bad = 0
+        for g in argv[2:]:
+            m = json.load(open(g if g.endswith(".json") else f"{g}/kld.json")); c = {}
+            for d in m["docs"]:
+                if d.get("part", "c") != "c" or d.get("orig") is None or str(d.get("source", "calib")) not in ("calib", ""): continue
+                p = pool[int(d["orig"])]; c[p] = c.get(p, 0) + 1
+            out = {p: k for p, k in c.items() if p not in MERGED}; bad += bool(out)
+            print(f"{g}: calib docs by pool {c}" + (f"  OUTSIDE fit + search: {out}" if out else "  ok"))
+        return 1 if bad else 0
     elif argv[0] == "ledger":
         R = Registry(argv[1]); s = R.d["slices"][argv[2]]; os.makedirs(argv[3], exist_ok=True)
         c = s["parts"].get("c")

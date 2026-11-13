@@ -15,7 +15,13 @@ Checks: (1) every size's true KLD falls (driver's incumbent vs its first); (2) w
 <= 5% of accepts; (3) early stops fired (>= 30% of the rejects stopped early) and saved card time; (4) the fit recovers
 the model: on 300 random one-step moves around the final incumbents, corr(predicted, true d log KL) >= 0.8 and the
 fitted log-ratio error RMSE <= 0.03; (5) a rotation happened and every incumbent was re-scored on the new slice;
-(6) a restarted driver (state replay) sees the same incumbents and continues."""
+(6) a restarted driver (state replay) sees the same incumbents and continues.
+--real (w127, #167; realistic byte jitter): the real ladder's K grid (0.125 steps to K5, 0.25 above; from K1), the real
+menu's per-tensor overhead, the base container's own head / embedding (H4 / E4: donor-free mixes, so the driver
+calibrates its byte offset as on box2) and every container w126's measured offset larger than its menu bytes
+(8,255,936 B on the 27B = 0.00246 bpw, kept in bpw); --size-adjust 0|1 = the driver's CONF size_adjust (the A/B arms);
+--traj FILE: the incumbents' TRUE KL / container bpw per eval + card-hours, the true optimum's slope b_true and log KL
+at each size (TruthPred: the truth through moves.mckp) for abreport.py."""
 import argparse, json, math, os, random, shutil, sys
 
 import numpy as np
@@ -78,9 +84,73 @@ def make_slice(name, rng, truth, nx=130, nc=50):
     return [next(ix) if p == "x" else next(ic) for p in pat]
 
 
+class TruthPred:
+    """the truth with moves.Pred's interface (mckp / repair / lin): the true knapsack optimum per size"""
+
+    def __init__(self, T):
+        self.T = T; M = T.M; self.M = M
+        self.W = [t["w"] for t in M.T if t["w"] != MN.EMB]
+        self.D = type("D", (), {"W": self.W})()
+        self.C, self.B, self.names = [], [], []
+        for w in self.W:
+            t = M.T[M.WI[w]]; eb = T.eb[w]
+            self.C.append(np.array([T.scale * T.s[w] * eb * (o["err"] / eb) ** T.q for o in t["opts"]]))
+            self.B.append(np.array([o["bytes"] for o in t["opts"]], float)); self.names.append([o["o"] for o in t["opts"]])
+        self.L = [T.L[w] for w in self.W]; self.NX = M.NL + 1
+        self.emb = M.T[M.WI[MN.EMB]]
+
+    def idx(self, a): return [self.M.oi[self.M.WI[w]][a[w]] for w in self.W]
+
+    def X(self, J):
+        X = np.zeros(self.NX)
+        for i, j in enumerate(J): X[self.L[i]] += self.C[i][j]
+        return X
+
+    def P(self, X, a):
+        P = [self.T.c0 + self.T.emb[a[MN.EMB]]]
+        for l in range(self.NX): P.append(P[-1] * (1 + self.T.kap * X[l]) + X[l])
+        return P
+
+    def kl(self, a): return self.P(self.X(self.idx(a)), a)[-1]
+
+    def lin(self, a):
+        J = self.idx(a); X = self.X(J); P = self.P(X, a); g = np.zeros(self.NX); acc = 1.0
+        for l in range(self.NX - 1, -1, -1):
+            g[l] = acc * (P[l] * self.T.kap + 1); acc *= (1 + self.T.kap * X[l])
+        return J, [g[self.L[i]] * (self.C[i] - self.C[i][J[i]]) / P[-1] for i in range(len(J))]
+
+    def assign(self, J, a0):
+        a = dict(a0)
+        for i, w in enumerate(self.W): a[w] = self.names[i][J[i]]
+        return a
+
+
+def true_frontier(T, sizes, tol, off_bytes, delta=0.1):
+    """per size: the truth's knapsack optimum under the container cap (menu bytes <= size - offset): log KL*, and
+    b_true = -d log KL* / d bpw (central difference at size -/+ delta, container bpw)"""
+    TP = TruthPred(T); M = T.M; lv = M.levels(); out = {}
+
+    def opt(s):
+        hi = s * M.P / 8 - off_bytes; lo = (s - tol) * M.P / 8 - off_bytes
+        best = None
+        for n in lv[::6] + lv[-1:]:                                     # several starts: mckp is a local Lagrangian
+            m = MV.mckp(TP, M.uniform(n), hi, lo)
+            if m is None or M.bytes(m) > hi: continue
+            k = TP.kl(m)
+            if best is None or k < best[0]: best = (k, m)
+        return best
+
+    for s in sizes:
+        o = opt(s); lo_ = opt(s - delta); hi_ = opt(s + delta)
+        pts = [(M.bpw(x[1]) + off_bytes * 8 / M.P, math.log(x[0])) for x in (lo_, o, hi_) if x is not None]
+        b = -(pts[-1][1] - pts[0][1]) / (pts[-1][0] - pts[0][0]) if len(pts) >= 2 and pts[-1][0] > pts[0][0] else None
+        out[s] = {"logkl_opt": math.log(o[0]) if o else None, "bpw_opt": (M.bpw(o[1]) + off_bytes * 8 / M.P) if o else None, "b_true": b}
+    return out
+
+
 class FakeExec:
-    def __init__(self, root, truth, slices, par):
-        self.root, self.T, self.S, self.par = root, truth, slices, par
+    def __init__(self, root, truth, slices, par, off_bytes=0, base=None):
+        self.root, self.T, self.S, self.par = root, truth, slices, par; self.off_bytes = off_bytes; self.base = base or {}
         self.off = 0; self.card_s = 0.0; self.card_s_full = 0.0; self.n = 0; self.stopped = 0
         os.makedirs(f"{root}/docs", exist_ok=True)
 
@@ -101,6 +171,7 @@ class FakeExec:
         for w, o in e["mix"]["levels"].items(): a[w] = o
         for w, path in e["mix"]["donors"].items():
             t = M.T[M.WI[w]]; a[w] = next(o["o"] for o in t["opts"] if (o.get("src") or {}).get("path") == path)
+        for w, o in self.base.items(): a.setdefault(w, o)                # no donor: the base container's own tensor
         sl = e["slices"][0]["name"]; docs = self.S[sl]
         P, sh = self.T.kl(a, parts=True)
         sums = [d["a"] * (d["tokens"] - 1) * P * sum(d["v"][str(b)] * s for b, s in sh.items()) for d in docs]
@@ -119,7 +190,7 @@ class FakeExec:
         self.card_s_full += MIX_S + RUN_S + TAU * sum(d["tokens"] for d in docs)
         self.n += 1; self.stopped += stopped is not None
         json.dump({"m": out}, open(f"{self.root}/docs/{e['tag']}-{sl}.json", "w"))
-        b = M.bytes(a)
+        b = M.bytes(a) + self.off_bytes
         kl = sum(x[0] for x in out if x) / sum(x[1] for x in out if x)
         r = {"tag": e["tag"], "slice": sl, "bytes": b, "bpw": b * 8 / M.P, "positions": sum(x[1] for x in out if x), "kld": kl}
         if stopped: r["stopped"] = stopped
@@ -133,32 +204,57 @@ def main(argv=None):
     ap.add_argument("--sizes", default="2.0,3.0,4.5"); ap.add_argument("--rotate-after", type=int, default=25)
     ap.add_argument("--groups", default=None, help="fit groups NAME:SIZE,SIZE:all|own;... (driver CONF fit_groups)")
     ap.add_argument("--flat-n", type=int, default=6)
+    ap.add_argument("--real", action="store_true", help="realistic byte jitter (w127): real K grid + overheads, base head / emb, container offset")
+    ap.add_argument("--size-adjust", type=int, default=1); ap.add_argument("--traj"); ap.add_argument("--slices", type=int, default=6)
+    ap.add_argument("--size-tol", type=float, default=None); ap.add_argument("--offset-bpw", type=float, default=8255936 * 8 / MN.PARAMS)
     a = ap.parse_args(argv)
     W = a.work; shutil.rmtree(W, ignore_errors=True); os.makedirs(W)
-    levels = tuple(np.round(np.arange(1.0, 6.01, 0.25), 3))
-    md = MN.synth(n_layers=a.layers, levels=levels, seed=a.seed); json.dump(md, open(f"{W}/menu.json", "w"))
+    if a.real:
+        levels = tuple(float(k) for k in np.r_[np.arange(1.0, 5.0, 0.125), np.arange(5.0, 7.51, 0.25)])
+        md = MN.synth(n_layers=a.layers, levels=levels, seed=a.seed, heads=(3.0, 4.0, 5.0, 6.0, 7.0), embs=(3.0, 4.0, 5.0, 6.0),
+                      real_bytes=True, base_head=4.0, base_emb=4.0)
+    else:
+        levels = tuple(np.round(np.arange(1.0, 6.01, 0.25), 3))
+        md = MN.synth(n_layers=a.layers, levels=levels, seed=a.seed)
+    json.dump(md, open(f"{W}/menu.json", "w"))
     M = MN.Menu(md); T = Truth(M, a.seed + 1)
+    off_bytes = int(round(a.offset_bpw * M.P / 8)) if a.real else 0
+    base = {MN.HEAD: "H4", MN.EMB: "E4"} if a.real else {}
     rng = np.random.default_rng(a.seed + 2)
     reg = SL.Registry(f"{W}/registry.json"); S = {}
-    for i in range(6):
+    for i in range(a.slices):
         name = f"syn{i}"; docs = make_slice(name, rng, T); S[name] = docs
         man = {"docs": [dict(d, row0=0) for d in docs]}
         reg.add(name, f"/synthetic/{name}", parts={"x": "synx", "c": "sync"}, man=man)
-        reg.d["slices"][name]["built"] = f"2026-11-12T00:00:{i:02d}Z"; reg.save()
+        reg.d["slices"][name]["built"] = f"2026-11-12T00:{i // 60:02d}:{i % 60:02d}Z"; reg.save()
     S["ver"] = make_slice("ver", rng, T)                               # the held-out monitor (not in the registry: never rotated)
     sizes = [float(x) for x in a.sizes.split(",")]
     conf = {"root": f"{W}/run", "menu": f"{W}/menu.json", "registry": f"{W}/registry.json", "base": "BASE", "sizes": sizes,
-            "size_tol": 0.03, "evals": f"{W}/evals.jsonl", "results": f"{W}/results.jsonl", "docs": f"{W}/docs",
+            "size_tol": a.size_tol if a.size_tol is not None else (0.02 if a.real else 0.03), "size_adjust": bool(a.size_adjust), "evals": f"{W}/evals.jsonl", "results": f"{W}/results.jsonl", "docs": f"{W}/docs",
             "queue_depth": 4, "refit_every": 15, "rotate_after": a.rotate_after, "audit_frac": 0.1, "seed": a.seed, "dry": True,
             "init_head": "H4", "init_emb": "E4", "ndraw": 8, "poll_s": 0, "fit_opts": {"beta": "fit"},
             "monitor": {"name": "ver", "golden": "/synthetic/ver", "flat_n": a.flat_n}}
     if a.groups:
         conf["fit_groups"] = [{"name": n, "sizes": [float(x) for x in z.split(",")], "rows": r} for n, z, r in (g.split(":") for g in a.groups.split(";"))]
     json.dump(conf, open(f"{W}/conf.json", "w"), indent=1)
-    D = DR.Driver(f"{W}/conf.json"); X = FakeExec(W, T, S, a.par)
+    D = DR.Driver(f"{W}/conf.json"); X = FakeExec(W, T, S, a.par, off_bytes, base)
     first = {}; steps = 0; restarted = False
+    TF = true_frontier(T, sizes, conf["size_tol"], off_bytes) if a.traj else None
+    tj = open(a.traj, "w") if a.traj else None
+    if tj: tj.write(json.dumps({"ev": "truth", "seed": a.seed, "size_adjust": bool(a.size_adjust), "off_bytes": off_bytes, "P": M.P,
+                                "frontier": {str(k): v for k, v in TF.items()}}) + "\n")
+    last = {}
     while X.n < a.results and steps < 20 * a.results:
         D.step(); X.step(M); steps += 1
+        if tj:                                                         # the incumbents' truth after every executor step
+            for s in sizes:
+                t = D.inc.get(s)
+                if t not in D.res or D.sub[t]["kind"] == "monitor": continue
+                ai = D.assign(t); key = (t, X.n)
+                if last.get(s) == key: continue
+                last[s] = key
+                tj.write(json.dumps({"ev": "inc", "n": X.n, "card_h": X.card_s / 3600, "size": s, "tag": t, "kl": T.kl(ai),
+                                     "bpw": (M.bytes(ai) + off_bytes) * 8 / M.P, "b": D.b_of(s), "dec": D.dec[s]}) + "\n")
         for fp in D.fitprocs.values():                                 # stand-in: fits finish before the next step
             if fp: fp[0].wait()
         for s in sizes:
@@ -221,6 +317,14 @@ def main(argv=None):
         f"none fitted: {nonfit}; sizes stopped by the flat rule: {sorted(D.stopped_sizes)}")
     bias = D.bias
     print(f"  info: audit runs stopped-after-the-fact {len(bias)}; mean prefix - full log r {np.mean([b['d_prefix'] - b['d_full'] for b in bias]) if bias else float('nan'):+.4f}")
+    if tj:
+        for e in acc:                                                  # every accept: its true change (raw and size-adjusted)
+            if not e.get("prev") or D.sub.get(e["tag"], {}).get("kind") in ("incumbent", None): continue
+            a1, a0 = D.assign(e["tag"]), D.assign(e["prev"])
+            tj.write(json.dumps({"ev": "accept", "size": e["size"], "tag": e["tag"], "dlogkl": math.log(T.kl(a1) / T.kl(a0)),
+                                 "dbpw": (M.bytes(a1) - M.bytes(a0)) * 8 / M.P}) + "\n")
+        tj.write(json.dumps({"ev": "end", "evals": X.n, "card_h": X.card_s / 3600, "pass": bool(ok), "b": {str(s): D.b_of(s) for s in sizes},
+                             "bytes_off": D.bytes_off, "accepts": n_acc, "rejects": len(rej), "stopped": st}) + "\n"); tj.close()
     print("STANDIN " + ("PASS" if ok else "FAIL"))
     json.dump({"gains": gains, "wrong": wrong, "accepts": n_acc, "rejects": len(rej), "stopped": st, "card_h": X.card_s / 3600,
                "card_h_full": X.card_s_full / 3600, "corr": corr, "rmse": rm, "rotations": len(rot), "evals": X.n, "pass": ok},

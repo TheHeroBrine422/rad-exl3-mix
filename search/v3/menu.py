@@ -94,19 +94,25 @@ class Menu:
         return {"base": base, "levels": lv, "donors": dn}
 
 
-def synth(n_layers=16, levels=(1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0), seed=0, heads=(3.0, 4.0, 5.0, 6.0), embs=(3.0, 4.0, 5.0)):
+def synth(n_layers=16, levels=(1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0), seed=0, heads=(3.0, 4.0, 5.0, 6.0), embs=(3.0, 4.0, 5.0),
+          real_bytes=False, base_head=None, base_emb=None):
     """a synthetic menu with the real tensor shapes' proportions (scaled down to n_layers): err(K) ~ R 2^(-2K) x a
-    per-tensor jitter, bytes ~ numel K / 8 + overhead"""
+    per-tensor jitter, bytes ~ numel K / 8 + overhead. real_bytes (w127): the real menu's overhead per tensor
+    ((rows + cols) x 2 + 4 bytes, box2 menu 11-12: K1 ssm_qkv 6,584,324 = 52,428,800 / 8 + 30,724). base_head / base_emb:
+    that head / embedding option is the base container's own (no donor path: a donor-free mix, as in the real menu)"""
     import random
     rng = random.Random(seed)
+    dims = {"attn_qg": (5120, 12288), "attn_k": (5120, 1024), "attn_v": (5120, 1024), "attn_output": (6144, 5120), "ssm_qkv": (5120, 10240),
+            "ssm_z": (5120, 6144), "ssm_out": (6144, 5120), "ffn_gate_up": (5120, 34816), "ffn_down": (17408, 5120)}
     numel = {"attn_qg": 5120 * 12288, "attn_k": 5120 * 1024, "attn_v": 5120 * 1024, "attn_output": 6144 * 5120,
              "ssm_qkv": 5120 * 10240, "ssm_z": 5120 * 6144, "ssm_out": 6144 * 5120, "ffn_gate_up": 5120 * 34816, "ffn_down": 17408 * 5120}
     T = []
     for w in trunk_names(n_layers):
         typ = re.match(r"blk\.\d+\.(\w+)\.weight$", w).group(1); n = numel[typ]; R = n * (0.5 + rng.random())
         jit = math.exp(rng.gauss(0, 0.15))
+        ovh = sum(dims[typ]) * 2 + 4 if real_bytes else 2 * 5120 * 2
         T.append({"w": w, "layer": layer_of(w), "group": group_of(w), "hbar": math.exp(rng.gauss(0, 0.5)),
-                  "opts": [{"o": f"L{k:g}", "K": k, "bytes": int(n * k / 8 + 2 * 5120 * 2), "err": R * jit * 2 ** (-1.6 * k) * math.exp(rng.gauss(0, 0.03)),
+                  "opts": [{"o": f"L{k:g}", "K": k, "bytes": int(n * k / 8 + ovh), "err": R * jit * 2 ** (-1.6 * k) * math.exp(rng.gauss(0, 0.03)),
                             "fam": "v3i8"} for k in levels]})
     vocab, dm = int(248320 * n_layers / 64), 5120                     # head / embedding scaled with the trunk
     T.append({"w": HEAD, "layer": n_layers, "group": "head", "hbar": None,
@@ -114,6 +120,9 @@ def synth(n_layers=16, levels=(1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0), see
                         "src": {"path": f"/heads/H{k:g}.rad"}} for k in heads]})
     T.append({"w": EMB, "layer": -1, "group": "emb", "hbar": None,
               "opts": [{"o": f"E{k:g}", "K": k, "bytes": int(vocab * dm * k / 8), "err": 0.0, "fam": "emb", "src": {"path": f"/emb/E{k:g}.rad"}} for k in embs]})
+    for t, base in ((T[-2], base_head), (T[-1], base_emb)):
+        for o in t["opts"]:
+            if base is not None and o["K"] == base: o.pop("src", None)
     # params scaled with the trunk: the real model's ratio of trunk to total
     tb = sum(numel[re.match(r"blk\.\d+\.(\w+)\.weight$", t["w"]).group(1)] for t in T[:-2])
     return {"params": tb + 2 * vocab * dm, "fixed_bytes": 2 * 1024 * 1024, "n_layers": n_layers, "groups": GROUPS, "tensors": T}

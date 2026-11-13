@@ -1,0 +1,11 @@
+seeds [0, 1, 2, 3, 4, 5], sizes [1.5, 2.5, 4.0, 6.0]
+primary final dS (adj - raw, true size-adjusted log KL): +0.0002 [-0.0001, +0.0006]
+dAUC vs card-hours: +0.0002 [-0.0000, +0.0006]; vs evals: +0.0002 [-0.0000, +0.0005]
+ size b_true  b_fit  gap raw  gap adj                  dS [95% CI] drift raw drift adj
+  1.5  1.721  1.710   0.0091   0.0094   +0.0003 [+0.0000, +0.0010]   -0.0000   -0.0000
+  2.5  1.327  1.328   0.0118   0.0117   -0.0001 [-0.0005, +0.0002]   -0.0000   -0.0000
+    4  1.037  1.035   0.0090   0.0093   +0.0004 [-0.0001, +0.0012]   -0.0000   -0.0000
+    6  0.432  0.327   0.1702   0.1703   +0.0001 [-0.0000, +0.0003]   -0.0000   -0.0000
+raw: 4800 evals, 151.6 card-h, accepts 730, wrong (true dS > +0.5%) 1, raw-wrong (d log KL > +0.5%) 0, rejects 3102 (2657 stopped early), checks pass [True, True, True, True, True, True]
+adj: 4800 evals, 152.0 card-h, accepts 739, wrong (true dS > +0.5%) 0, raw-wrong (d log KL > +0.5%) 0, rejects 3083 (2642 stopped early), checks pass [True, True, True, True, True, True]
+worse: {'a': False, 'b': False, 'c': False} -> ADOPT size-adjusted

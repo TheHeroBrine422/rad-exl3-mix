@@ -1,0 +1,63 @@
+--- a/pipeline/rxrun/earlystop.py
++++ b/pipeline/rxrun/earlystop.py
+@@ -8,8 +8,11 @@
+ document k the paired statistic over the scored documents is
+     d  = log(sum B / sum A)                                  (B candidate, A incumbent: KL sums on the same positions)
+     se = sd(u) / sqrt(k),  u_d = B_d / mean B - A_d / mean A (delta method, both parts pooled)
+-    z  = d / se.
+-Rules (reject early only; accept only on the whole slice: d < 0 and d < 0 on every part):
++    z  = (d + off) / se.
++off = the size adjustment (w127, #167): b (bpw_candidate - bpw_incumbent), b = the fit's local slope -d log KLD / d bpw
++at the size, so the compared score is log KLD + b bpw (rule key "off", default 0 = raw KLD; the driver puts it in the
++early-stop block's rule, so the hosts stop on the same adjusted statistic).
++Rules (reject early only; accept only on the whole slice: d + off < 0 and d + off < 0 on every part):
+     {"kind": "curve", "p": P, "warmup": W, "b0": 2, "t0": 0.1}   reject once t >= W and z > b0 ((1 - t) / (1 - t0))^P,
+                                                                  t = documents scored / documents in the slice
+     {"kind": "stages", "at": [F1, ..], "z": [Z1, ..]}            reject at the document completing fraction F_i if z >= Z_i
+@@ -36,7 +39,7 @@
+         self.N, self.rule = n_total, rule
+         self.k = 0; self.SA = self.SB = self.SAA = self.SBB = self.SAB = 0.0
+         self.part = {}                                   # part -> [sum A, sum B, docs]
+-        self.stage = 0; self.stopped = None
++        self.stage = 0; self.stopped = None; self.off = float(rule.get("off", 0.0) or 0.0)
+ 
+     def add(self, a, b, part="all"):
+         self.k += 1; self.SA += a; self.SB += b; self.SAA += a * a; self.SBB += b * b; self.SAB += a * b
+@@ -45,6 +48,10 @@
+     def d(self):
+         return math.log(self.SB / self.SA) if self.SA > 0 and self.SB > 0 else 0.0
+ 
++    def da(self):
++        """the size-adjusted log ratio d + off"""
++        return self.d() + self.off
++
+     def se(self):
+         if self.k < 3 or self.SA <= 0 or self.SB <= 0: return INF
+         mA, mB = self.SA / self.k, self.SB / self.k
+@@ -53,7 +60,7 @@
+ 
+     def z(self):
+         s = self.se()
+-        return self.d() / s if s not in (0.0, INF) else 0.0
++        return self.da() / s if s not in (0.0, INF) else 0.0
+ 
+     def check(self):
+         """after a document: "reject" (stop the run) or None"""
+@@ -68,13 +75,13 @@
+         return self.stopped
+ 
+     def final(self):
+-        """after the whole slice: "accept" iff the pooled and every part's log ratio are < 0"""
++        """after the whole slice: "accept" iff the pooled and every part's (size-adjusted) log ratio are < 0"""
+         if self.stopped: return self.stopped
+-        parts_ok = all(p[1] < p[0] for p in self.part.values())
+-        return "accept" if self.d() < 0 and parts_ok else "reject"
++        parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
++        return "accept" if self.da() < 0 and parts_ok else "reject"
+ 
+     def summary(self):
+-        return {"k": self.k, "n": self.N, "d": self.d(), "se": self.se(), "z": self.z(),
++        return {"k": self.k, "n": self.N, "d": self.d(), "off": self.off, "se": self.se(), "z": self.z(),
+                 "parts": {p: {"logr": math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None, "docs": v[2]} for p, v in self.part.items()}}
+ 
+ 

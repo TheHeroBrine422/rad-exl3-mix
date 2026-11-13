@@ -4,6 +4,41 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 8:20 PM CST · #167 · Search driver changes before the first run: size-adjusted score (accept, early stop, band bests, top-5, frozen b for the final picks), alert-only monitor, merged-pool draw, finalpick.py; stand-in A/B raw vs size-adjusted accept: no difference (ΔS +0.0002 [−0.0001, +0.0006]) → size-adjusted adopted by the rule; embedding-exploration fix (6.0: true KL −15%) (w127)
+- **Status:** done (code; the real run still needs the user's go) · **Machine:** VM (code), colo (stand-in runs,
+  7:31–8:15 PM CST) · **Code:** `search/v3/` (driver, seqrule, moves, slices, menu, standin, finalpick.py, abreport.py,
+  earlystop-sizeadj.patch, README) · **Rule:** `search/v3/RULES-sizeadj.md` (1a3a449, alone, before data) · **Data:**
+  `data/searchv3/sizeadj/` (ab/ 12 runs, embfix/, abreport.txt / .json, ab.png)
+- **Size-adjusted score (TODO 11-13):** accept iff log r + b (bpw_c − bpw_inc) < 0 pooled and on every part; the
+  hosts' early stop uses the same statistic (`off` in the rule; the hosts' copy needs `earlystop-sizeadj.patch` at the
+  restage). b per size = the fit's knapsack-optimum slope at size ∓ 0.1 bpw, refreshed each refit (~9 s at 64 layers),
+  V2-board defaults before the first fit; band bests (monitor, frontier `score`, `top` 5) use log KLD + b_T (bpw − T);
+  `driver.py CONF --freeze-b FILE` freezes each band's b for `finalpick.py`. Warmup = CONF `warmup` (rule stays p2 w5).
+- **Monitor alert-only (user 11-13):** no stop, no N; ALERT when the size-adjusted monitor best has not improved by
+  > paired SE over the last 20% of the size's decisions (≥ 50); events.jsonl for convplot3 `--events`, CONF
+  `monitor.refs` (V2 refs on the monitor golden for convplot3's scale); a size ends by hand (`ROOT/STOP-<size>`).
+- **Pools merged:** `slices.py draw` default `merged`: fit + search, least-used first by ledger decision counts
+  (headx collections count 0): today 220 docs at 0 uses, 177 at 1; `slices.py poolcheck`.
+- **Final picks:** `finalpick.py` (ver4 + fresh xcorp part, frozen b, pooled best, calib veto, per-part / pooled /
+  part-gap paired bootstrap CIs vs the pooled best); checked on synthetic candidates.
+- **Stand-in made realistic (`standin.py --real --layers 64`):** the real K grid (K1–K7.5, 0.125 steps to K5), the real
+  menu's per-tensor overhead, 27B parameter count, donor-free base head / embedding (the driver calibrates its offset),
+  containers 8,255,936 B over the menu (w126). True frontier per size via the truth's knapsack: b_true 1.72 / 1.33 /
+  1.04 / 0.43 at 1.5 / 2.5 / 4 / 6 (the fit's b at the end 1.71 / 1.33 / 1.04 / 0.33).
+- **A/B (6 seeds × 1.5 / 2.5 / 4 / 6, 800 evals a run, 12 runs, all stand-in checks PASS):** final true size-adjusted
+  ΔS (adj − raw) **+0.0002 [−0.0001, +0.0006]**; ΔAUC vs card-hours +0.0002 [−0.0000, +0.0006], vs evals +0.0002;
+  per size +0.0003 / −0.0001 / +0.0004 / +0.0001; bpw drift inside the bands 0.0000 in both arms; wrong accepts (true
+  ΔS > +0.5%) raw 1 of 730, adj 0 of 739; card-h 151.6 / 152.0. Rule: not worse on (a)–(c) → **adopt size-adjusted**
+  (driver default `size_adjust: true`).
+- **Why no difference:** every move kind repairs its bytes up to the size cap, and calibrated containers match the menu
+  exactly, so ≥ 90% of decisions compare equal bpw (|off| p90 0); 1 of 3,822 decisions changed sign. Inside a 0.02 bpw
+  window the adjustment is nearly a no-op; it matters for band bests / top-5 / final picks, where points differ in bpw.
+- **Found + fixed (moves.py):** an embedding option no row has used gets no predicted gain in the fit, so no kind ever
+  proposed it: at 6.0 both arms stayed on the base E4 at a true gap of +0.17 (true opt E6). Explore now tries the
+  nearest unmeasured embedding half the time while one exists: seeds 0 / 1 at 6.0 gap +0.166 / +0.174 → +0.0046 / +0.0044
+  (true KL −15%), other sizes within ±0.002, stand-in PASS; si6 (w126's config) 7 / 7 PASS before and after.
+- **Runtime:** none (search procedure; same format and kernels).
+
 ### 2026-11-12 6:51 PM CST · #166 · V3 search driver built and tested: CPU stand-in 7 / 7 PASS, box2 dry run (17 evals, 6 early stops on the card), radiance --kld-progress byte-identical; boundary pick B p2 w5 (×1.87 gain/h vs full slice, S3 ×1.77) — the user decides (w126)
 - **Status:** done (build + tests); the first real run waits for the user's go · **Machine:** the VM (code, driver,
   coordinator), colo (simulation, stand-ins, fits, radiance host tests), box2 (radiance build, identity test, dry run

@@ -16,6 +16,9 @@ submit anything). Design: TODO "Search driver", "Continuous early stop" (+ the u
 | `seqrule.py` | the accept / reject rule (paired delta-method z over the scored documents; `curve` b(t) = 2((1 − t)/0.9)^p after a warmup, `stages`, `full`); also the hosts' `rxrun/earlystop.py` (byte-identical copy) |
 | `slices.py` | slice registry (`ready` → `active` → `retired`, decisions per size, per-document decision counts) and `goldmix` (a slice's parts merged into one golden, seeded order, x / c interleaved) |
 | `menu.py`, `mkmenu.py` | the option menu (per tensor: options with bytes, absolute kfit3 error, family; head / embedding options with donor paths); `mkmenu.py` builds it from ladder level dirs (+ w122's head price table) |
+| `finalpick.py` | the final pick of a band (w127): top ~5 on ver4 (calib) + a fresh xcorp part, size-adjusted score with the band's frozen b, pooled best, calib part as a veto, per-part / pooled / part-gap paired bootstrap CIs vs the pooled best |
+| `abreport.py`, `RULES-sizeadj.md` | the #167 A/B (raw vs size-adjusted accept on the stand-in; rule committed before data, 1a3a449) |
+| `earlystop-sizeadj.patch` | pipeline/rxrun/earlystop.py = seqrule.py again (the size offset `off` in the early-stop rule): stage with the next restage |
 | `boundsim.py`, `RULES-boundary.md` | the early-stop boundary simulation (rule committed before data, c17045c) — result below |
 | `standin.py` | CPU stand-in end-to-end (synthetic truth, fake executor speaking the queue's file protocol) |
 | `hostd-earlystop.patch`, `test_hostd_es.py` | rxrun.hostd: `early_stop` evals scored with `--kld-progress`, followed, killed at the boundary (+ README, box2 / ds8 `score_cmd_progress`); offline check |
@@ -49,9 +52,38 @@ python3 -I search/v3/slices.py goldmix OUT SEED x=GOLDEN_X c=GOLDEN_C ; python3 
 # the driver (VM, light; fits through fit_cmd on colo; evals through the coordinator's CONF "evals")
 setsid nohup python3 search/v3/driver.py CONF.json > driver.out 2>&1 &      # --status; touch ROOT/STOP to end
 ```
+**Changes before the first run (w127, #167, 11-12):**
+- **Size-adjusted score** (TODO 11-13): accept / reject on log KLD + b·bpw: a candidate is accepted iff
+  log r + b (bpw_c − bpw_inc) < 0, pooled and on every part; the hosts' early stop uses the same statistic (`off` in the
+  early-stop rule: restage `earlystop-sizeadj.patch`). b per size = the current fit's local slope −d log KLD / d bpw (the
+  fitted model's knapsack optimum at size ∓ `b_delta` 0.1 bpw from the incumbent), refreshed after every refit, clamped to
+  `b_range` [0.05, 6]; before the first fit `b_default` (V2 board: 1.6 at ≤ 3, 1.1 at 4–5.5, 0.7 at ≥ 6, linear between).
+  Each candidate keeps the b of its submit (`state.jsonl` submit `b`). Band bests (monitor reads, frontier points, `top`)
+  use log KLD + b_T (bpw − T). `size_adjust: false` = the old raw rule. **Freeze for the final picks:**
+  `driver.py CONF --freeze-b ROOT/b-frozen.json` (refuses to overwrite) before any ver4 read; `finalpick.py` reads it.
+- **Monitor alert-only** (user 11-13): no automatic stop and no N. A size gets a soft ALERT (driver.log, status line,
+  `monitor.json` "alerts", `events.jsonl` for `convplot3.py --events`) when its size-adjusted monitor best has not improved
+  by more than the paired SE over its last `alert_frac` 0.2 of decisions, once it has ≥ `alert_min` 50; it clears when
+  the best improves. End a size by hand: `touch ROOT/STOP-<size>` (e.g. STOP-3.25). Curves: the monitor reads are in
+  the coordinator's results.jsonl under the monitor's slice name: `convplot3.py RESULTS OUT --heldout-re '^ver3' --events
+  ROOT/events.jsonl`; convplot3 normalises by V2 references on the same slice, so list them in CONF
+  `monitor.refs` ([{"tag": "ref-V2-3.00", "mix": EVAL MIX}, ...]: scored once on the monitor golden, never a decision).
+- **Warmup** of the boundary is CONF `warmup` (default 0.05, overrides `rule.warmup`); the rule stays the pre-registered
+  B p2 w5 unless the user says otherwise.
+- **Byte offset prior:** CONF `bytes_offset0` (w126 measured 8,255,936 B) is applied from the start; the first
+  donor-free container still re-calibrates it (with head donors in every mix nothing else would).
+- **Pools merged** (user 11-13): `slices.py draw REG LEDGER POOLS N SEED` (default mode `merged`) draws from fit + search
+  (1,134 docs) least-used first by ledger decision counts (head-input collections w94 / w119-headx count 0) plus this
+  registry's own; `slices.py poolcheck POOLS GOLDEN..` checks that a slice's (or a prior_obs golden's) calib docs are all
+  fit + search. fit.py / `prior_obs` rows may come from any fit + search slice (one pool; each label keeps its own offset).
+  Today: 220 docs with 0 counted uses, 177 with 1.
+- **Final picks:** `finalpick.py SPEC.json` (docstring: SPEC = band, frozen b file, parts c / x, candidates with
+  their rxrun docs files from whole runs).
+
 CONF keys: root, menu (+ menu_remote for the fit host), registry, base (host alias), sizes, size_tol (0.02 bpw below
 the target), evals / results / docs (the coordinator's), rule, queue_depth, refit_every, rotate_after (25), audit_frac
-(0.1: scored without early stop, decided by the rule after the fact, logs the early-stop bias), ndraw, fit_cmd
+(0.1: scored without early stop, decided by the rule after the fact, logs the early-stop bias), size_adjust (true),
+b_default, b_delta, b_range, warmup, bytes_offset0, topn (5), monitor {name, golden, alert_min, alert_frac, refs}, ndraw, fit_cmd
 (`{in}` `{out}`), fit_opts (tau 0.02, beta, ...), prior_obs (rows of the calibration swaps, obs JSONL), init
 ({size: assignment JSON | "nearest"}), init_head / init_emb, size_weights, go / dry.
 
@@ -94,8 +126,8 @@ the target), evals / results / docs (the coordinator's), rule, queue_depth, refi
    (`slices.py draw ... never`); `no27b` gives the same 27; **177** if docs used only by the head-input collections
    w94 / w119-headx-search (2 decisions on short windows) are allowed (`headx`). x parts: fresh xcorp (mkslice27 /
    pickx on the host with night1105's goldens), merged per host with `goldmix`; ledger rows (role select) per slice.
-6. **Monitor**: CONF `monitor` = golden-ver3-8k on each eval host and flat_n (fixed before the run).
-7. **Fit rows come from search slices** (x = xcorp, c = calib search pool), as the lead's design says; AGENTS.md
-   keeps sensitivity fits on the fit pool -- confirm, or give the driver fit-slice evals for its refits.
+6. **Monitor**: CONF `monitor` = golden-ver3-8k on each eval host (alert-only since w127: no N to fix) + `refs` (V2
+   containers for convplot3's scale).
+7. **Fit rows**: settled by the pool merge (user 11-13): search slices and prior_obs both come from fit + search.
 8. Fit groups for the low sizes (TODO "Low sizes in parallel"): `fit.py check OBS.json [SEED]` compares main-only vs
    joint on held-out 2.5–4.5 rows once real rows exist; set CONF `fit_groups` from it.
