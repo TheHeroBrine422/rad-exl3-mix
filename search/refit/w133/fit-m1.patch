@@ -1,0 +1,112 @@
+--- a/search/v3/fit.py
++++ b/search/v3/fit.py
+@@ -15,6 +15,12 @@
+ each part keeps its own offset and anchor (w129: xcorp ratios are compressed vs calib's, so a pooled label is
+ xcorp-driven). opts "xscale" (default off; search/v3/RULES-parts.md test A): x-part rows are predicted as
+ exp(soff) P^lambda (one fitted lambda, prior log lambda ~ N(0, 0.5)); predictions for moves stay on P (calib scale).
++opts "lsize" (w133, #173 model M1; default off): a search row's label carries its size ("S@size|p|..."), so each
++(label, size) has its own offset and the fit sees only candidate-vs-incumbent ratios (plus the one-label calibration
++rows' cross-level ratios), and the offsets are profiled out (closed-form weighted mean per label, no offset
++parameters); "lam2": per-part curvature of the part transform in log P (x: lambda logP + 1/2 lam1 (logP - m)^2, c:
++logP + 1/2 mu1 (logP - m)^2, lam1 / mu1 ~ N(0, 0.5), m = log median c-part KLD). #173 held-out (RULES-173.md): the
++search's ratio error -69 % vs the pooled-label fit.
+ The embedding is a level (kfit3's emb term); the head is a tensor in layer n_layers.
+ 
+   python3 fit.py IN.json OUT.json      (IN: {"menu": MENU or path, "obs": [...], "opts": {...}, "x0": [...]}) -- the
+@@ -47,8 +53,8 @@
+ class SData:
+     """kfit3.Data's interface (W, WI, eb, layer, grp, NL, base, rows) over a menu and the search's observations"""
+ 
+-    def __init__(self, M, obs):
+-        self.M = M
++    def __init__(self, M, obs, lsize=False):
++        self.M = M; self.lsize = lsize
+         self.W = [t["w"] for t in M.T if t["w"] != MN.EMB]; self.WI = {w: i for i, w in enumerate(self.W)}
+         self.NL = M.NL
+         ti = {t["w"]: t for t in M.T}
+@@ -74,12 +80,15 @@
+ 
+     def row(self, o):
+         e, fam, emb = self.features(o["assign"])
+-        return {"tag": o["tag"], "e": e, "fam": fam, "emb": emb, "slice": o["label"], "kld": float(o["kld"]), "v2": False,
++        lab = o["label"]
++        if self.lsize and "|" in lab and o.get("size") is not None: lab = lab.replace("|", f"@{float(o['size']):g}|", 1)
++        return {"tag": o["tag"], "e": e, "fam": fam, "emb": emb, "slice": lab, "kld": float(o["kld"]), "v2": False,
+                 "swj": None, "bpw": None, "se": float(o.get("se") or 0.0)}
+ 
+ 
+ class SModel(K3.Model):
+-    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", xscale=False, **kw):
++    def __init__(self, D, tau=0.02, phi_sd=1.0, beta="0", xscale=False, prof=False, lam2=False, **kw):
++        self.prof, self.lam2 = bool(prof), bool(lam2)
+         p = np.where(D.hbar > 0, np.log(np.where(D.hbar > 0, D.hbar, 1)), 0.0)
+         for g in range(len(GL)):                                        # centred per group (kfit3.prior_vector)
+             m = (D.grp == g) & (D.hbar > 0)
+@@ -88,21 +97,43 @@
+         self.tau, self.phi_sd = tau, phi_sd
+         self.XM = np.array([part_of(r["slice"]) == "x" for r in D.rows], bool)
+         self.xscale = bool(xscale) and bool(self.XM.any())
++        kl = [r["kld"] for r in D.rows if part_of(r["slice"]) != "x"] or [r["kld"] for r in D.rows] or [0.01]
++        self.m0 = math.log(float(np.median(kl)))
+         # every family a row uses (kfit3 keeps only names starting "v3" as V3 families; ours all do)
+ 
+     def layout(self):
+         L = super().layout()
+         if getattr(self, "xscale", False): L["lamx"] = slice(self.N, self.N + 1); self.N += 1
++        if getattr(self, "lam2", False): L["lam1"] = slice(self.N, self.N + 2); self.N += 2      # lam1 (x), mu1 (c)
++        if getattr(self, "prof", False):                                # offsets profiled: drop their parameters
++            k = L["soff"].stop - L["soff"].start
++            if k:
++                L = {n: (sl if sl.start < L["soff"].stop else slice(sl.start - k, sl.stop - k)) for n, sl in L.items() if n != "soff"}
++                L["soff"] = slice(self.N - k, self.N - k); self.N -= k
+         return L
+ 
+     def lam(self, x):
+         return math.exp(x[self.layout()["lamx"]][0]) if self.xscale else 1.0
+ 
++    def unpack(self, x):
++        u = super().unpack(x)
++        if getattr(self, "prof", False): u["soff"] = np.zeros(self.NS)   # profiled in predict_rows
++        return u
++
+     def predict_rows(self, x, idx):
+         P = super().predict_rows(x, idx)
+-        if not self.xscale: return P
+-        idx = np.asarray(idx, int); so = np.exp(self.unpack(x)["soff"][self.SLI[idx]])
+-        return np.where(self.XM[idx], so * (P / so) ** self.lam(x), P)
++        if not (self.xscale or self.lam2 or self.prof): return P
++        idx = np.asarray(idx, int); so = self.unpack(x)["soff"][self.SLI[idx]]
++        lp = np.log(P) - so                                             # log P without the label offset
++        g = np.where(self.XM[idx], self.lam(x) * lp, lp)
++        if self.lam2:
++            l1, m1 = x[self.layout()["lam1"]]; g = g + np.where(self.XM[idx], l1, m1) * 0.5 * (lp - self.m0) ** 2
++        if self.prof:                                                   # closed-form offsets (weighted mean per label)
++            km = np.log([self.D.rows[i]["kld"] for i in idx]); se = np.array([self.D.rows[i]["se"] for i in idx])
++            w = 1.0 / (se * se + self.tau * self.tau); sl = self.SLI[idx]
++            num = np.bincount(sl, w * (km - g), minlength=self.NS); den = np.bincount(sl, w, minlength=self.NS)
++            so = (num / np.maximum(den, 1e-300))[sl]
++        return np.exp(so + g)
+ 
+     def head_init(self):
+         """w129's head start applies (a menu that prices heads, FIT_HEAD_S0 > 0)"""
+@@ -136,6 +167,7 @@
+             res.append(u["dev3"].ravel() / self.v3sd); res.append(x[L["phi3"]] / self.phi_sd)
+         if self.NS > 1: res.append(x[L["soff"]] / 3.0)
+         if self.xscale: res.append(x[L["lamx"]] / 0.5)
++        if self.lam2: res.append(x[L["lam1"]] / 0.5)
+         del sg
+         return np.concatenate(res)
+ 
+@@ -224,10 +256,10 @@
+ 
+ def build(M, obs, opts=None):
+     opts = opts or {}
+-    D = SData(M, obs)
++    D = SData(M, obs, lsize=bool(opts.get("lsize", False)))
+     return SModel(D, tau=opts.get("tau", 0.02), phi_sd=opts.get("phi_sd", 1.0), beta=str(opts.get("beta", "0")),
+                   theta_sd=opts.get("theta_sd", 4.0), v3_group_sd=opts.get("v3_group_sd", 0.3), smooth=opts.get("smooth", 0.5),
+-                  xscale=bool(opts.get("xscale", False)))
++                  xscale=bool(opts.get("xscale", False)), prof=bool(opts.get("prof", False)), lam2=bool(opts.get("lam2", False)))
+ 
+ 
+ def fit_obs(M, obs, opts=None, x0=None, ndraw=0, seed=0):

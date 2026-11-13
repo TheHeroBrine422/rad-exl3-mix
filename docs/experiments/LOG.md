@@ -5,6 +5,40 @@ before 2026-11-02 ~05:00 CST were rewritten into this template from the old trac
 versions of anything: git history.
 
 
+
+### 2026-11-13 10:27 AM CST · #173 · Sensitivity model: P done — **M1 wins** (T ∪ P-f16 ratio wMSE −63.6 % [−72.1, −52.5] vs kfit3); search paused 10:11, so P closed early
+- **Status:** done (the protocol); the full-ladder re-solve and a calibration-row design follow (lead notes 10:15 / 10:50 AM)
+- **P:** the search was stopped at 10:11 AM CST (user), so P = every decision after S0 (8:43:30) to the stop: 110
+  events (8 accepts), all f16 on s171b (no A8 switch happened: **P-A8 is empty**; the A8 transfer question is open,
+  see the design below / w132's gap rows). This is the set the rule's 3:30 PM cut gives unless the search resumes.
+  Models frozen in 50554a8, fitted on all of S0 (cut 513).
+
+  | split | model | params | part-mean wMSE | vs M0 [95 % CI] | c / x wMSE | bal. acc | AUC | clear-cut sign |
+  |---|---|---|---|---|---|---|---|---|
+  | P (110) | M0 | 141 | 0.00393 | — | 0.00480 / 0.00305 | 0.434 | 0.49 | 0.10 (40) |
+  | P | **M1** | 77 | 0.00180 | −54.3 % [−64.5, −39.2] | 0.00180 / 0.00179 | 0.537 | 0.55 | 0.48 |
+  | P | M2b | 175 | 0.00175 | −55.5 % [−65.7, −40.4] | 0.00175 / 0.00174 | 0.556 | 0.55 | 0.53 |
+  | P | M4 | 84 | 0.00178 | −54.5 % [−64.6, −38.9] | | 0.596 | 0.55 | 0.60 |
+  | P | M3 | 412 | 0.00187 | −52.3 % [−61.8, −38.9] | | 0.464 | 0.49 | 0.45 |
+  | P | M2 | 315 | 0.00307 | −21.7 % [−28.6, −13.8] | | 0.445 | 0.52 | 0.15 |
+  | **T ∪ P-f16 (270, the rule's set)** | M0 | | 0.00387 | — | 0.00442 / 0.00333 | 0.524 | 0.47 | 0.17 (101) |
+  | | **M1** | 77 | **0.00141** | **−63.6 % [−72.1, −52.5]** | 0.00141 / 0.00141 | **0.584** | 0.61 | 0.58 |
+  | | M2b | 175 | 0.00137 | −64.5 % [−72.9, −53.5] | 0.00138 / 0.00137 | 0.588 | 0.61 | 0.62 |
+  | | M4 | 84 | 0.00144 | −62.9 % [−69.6, −53.5] | 0.00151 / 0.00137 | 0.601 | 0.62 | 0.69 |
+  | | M3 | 412 | 0.00153 | −60.6 % [−67.3, −51.2] | 0.00160 / 0.00145 | 0.535 | 0.58 | 0.55 |
+  | | M2 | 285 | 0.00283 | −27.0 % [−30.7, −22.2] | 0.00313 / 0.00253 | 0.541 | 0.52 | 0.28 |
+- **Decision (rule):** M1, M2b, M3, M4 pass (a) CI below 0 and ≥ 10 %, (b) no part worse, (c) balanced accuracy ≥
+  M0 − 0.02. Lowest wMSE M2b; M1 (−63.6 %) lies inside M2b's CI with 77 vs 175 parameters → **M1**. Guards: S
+  passes (fit129 within-label 0.177 vs 0.201, s129 0.147 vs 0.173); M4 fails S (0.391); P-A8 not testable (no rows).
+- **What M1 is:** kfit3 / fit.py with the search rows' labels split by size (one offset per (label, size), profiled
+  out in closed form) + a per-part curvature of the part transform; same per-tensor cost and compounding, so the
+  knapsack is unchanged. `search/refit/w133/fit-m1.patch` (fit.py opts `lsize`, `prof`, `lam2`; defaults unchanged,
+  checked to 8e-16; with them == M1 to 0.0) for the lead.
+- **Caveats:** the edge is in ratio magnitudes; calls on marginal moves stay hard (P: 8 accepts, M1 clear-cut sign 0.48
+  vs M0 0.10). All rows are act f16. Large moves (≥ 100 tensors) are rare among the held-out events: re-solve picks are
+  extrapolation and need the lead's ver4 + xcorp check. Times: the 9:50 entry below was written at 9:25 AM and
+  amendment 1's "~9:45" was 9:09 AM (git times are the record).
+- **Files:** `data/refit/w133/report-final.json`, `test/pred-*-ds-P-*.json`, `ds-P.json.gz`
 ### 2026-11-13 10:30 AM CST · #177 · Hash codebook revisited, stage 1 (speed on today's kernels): decode step −4.3 % at K4.125, −9.4 % at K2.5 (C 1); A8 prefill ±0 (w139)
 - **Status:** running (stage 2 proxy on colo + Thor) · **Machine:** box2 card 3 (HIP; rocm-smi GPU[0]), locks; one
   other card (1) for 1 min · **Code:** fork `qc-exl3-v3-hash` **e7ebe45** (off `qc-exl3-v3-perf` 5c9956c: the hash bench
