@@ -52,3 +52,12 @@ s171b is the slice the 11-13 overfit audit proposed to retire (241 search decisi
 four reads are pricing rows paired per document with w135's Lloyd rows on the same slice (a fresh slice would need every
 Lloyd arm re-scored); they make no accept / reject decision. golden-ver3-8k is read only for the identity check (A vs REF,
 same trunk), which ver3's status ("spent for any selection") allows. Verify (ver4) and public are not touched.
+
+## Amendment 1 (before any anchor run; identity / VRAM / time runs had started, no anchor data exists)
+
+- **Build control.** The anchors run on this branch's build (rad10-perf install 5c9956c + W/home), not rad10/home
+  (a3799b5), which w132 / w135 scored with. First eval: the 2.5 incumbent (v3s171-2.5-explore-00419) **unswapped**, A8,
+  same command. If its per-position rows equal w132's A8 rows of that incumbent (byte-identical `.rows`), the trellis arms
+  pair with w132's incumbent rows and w135's Lloyd rows as planned. If they differ, each incumbent is also scored unswapped
+  on this build (3 more evals) and every trellis arm pairs with its same-build incumbent; the comparison with w135's Lloyd
+  rows is then reported as cross-build (labelled so).
