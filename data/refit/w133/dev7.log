@@ -1,0 +1,17 @@
+11-13 09:07:53 CST start /data/work/w13/w133/out/u7 P=8
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1ol 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M3o25 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1s 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1oq 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M0 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1h 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1o 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:53 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1l 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:54 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1a 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:54 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M3r10 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:54 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2tot 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:54 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2gb8 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:55 CST rc 0 2s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2o_gb8 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:55 CST rc 0 2s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2gk 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:55 CST rc 0 2s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2all 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:07:55 CST done /data/work/w13/w133/out/u7

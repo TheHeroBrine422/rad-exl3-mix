@@ -1,0 +1,38 @@
+11-13 09:09:58 CST start /data/work/w13/w133/out/tA P=16
+11-13 09:11:06 CST rc 0 68s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 307 /data/work/w13/w133/out/test
+11-13 09:11:10 CST rc 0 72s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 307 /data/work/w13/w133/out/test
+11-13 09:11:15 CST rc 0 77s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 410 /data/work/w13/w133/out/test
+11-13 09:11:30 CST rc 0 92s s /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 /data/work/w13/w133/out/test
+11-13 09:11:30 CST rc 0 92s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 410 /data/work/w13/w133/out/test
+11-13 09:11:32 CST rc 0 94s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 513 /data/work/w13/w133/out/test
+11-13 09:11:47 CST rc 0 109s s /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 /data/work/w13/w133/out/test
+11-13 09:12:32 CST rc 0 154s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 307 /data/work/w13/w133/out/test
+11-13 09:12:34 CST rc 0 156s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 513 /data/work/w13/w133/out/test
+11-13 09:13:06 CST rc 0 188s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 307 /data/work/w13/w133/out/test
+11-13 09:13:41 CST rc 0 223s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 410 /data/work/w13/w133/out/test
+11-13 09:14:10 CST rc 0 252s s /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 /data/work/w13/w133/out/test
+11-13 09:14:49 CST rc 0 291s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 513 /data/work/w13/w133/out/test
+11-13 09:14:55 CST rc 0 297s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 410 /data/work/w13/w133/out/test
+11-13 09:17:47 CST rc 0 469s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 513 /data/work/w13/w133/out/test
+11-13 09:18:40 CST rc 0 522s s /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 /data/work/w13/w133/out/test
+11-13 09:18:40 CST done /data/work/w13/w133/out/tA
+11-13 09:18:40 CST start /data/work/w13/w133/out/tB P=12
+11-13 09:18:40 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:40 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:40 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M1 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:40 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M0 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2b 307 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2 307 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2b 410 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2 410 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2b 513 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2b 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M3 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2b 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:41 CST rc 0 1s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2 513 /data/work/w13/w133/out/test
+11-13 09:18:41 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M2 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:41 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 307 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 307 410
+11-13 09:18:42 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz candidates173.json M4 410 /data/work/w13/w133/out/test /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 410 513
+11-13 09:18:42 CST done /data/work/w13/w133/out/tB

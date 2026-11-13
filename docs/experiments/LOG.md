@@ -4,6 +4,60 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+
+### 2026-11-13 9:50 AM CST · #173 · Sensitivity model: D + T + S done — kfit3 mispredicts the search's own moves; M1 (per-(label, size) offsets) −69 % ratio error on T (P pending to 3:30 PM)
+- **Status:** running (P window open) · **Machine:** colo · **Code:** `search/refit/w133/` · **Data:** `data/refit/w133/`
+  (ds-S0, dev/ and test/ fits + predictions, report-T.json, sol-S0.json, picks/)
+- **Rules:** RULES-173.md 5363227 (8:43 AM) + amendment 1 = frozen `candidates173.json` 50554a8 (committed 9:09 AM
+  CST; its text says "~9:45", the git time is the record), before any T / P / S run.
+- **D (development, 93 events; chose the candidates):** kfit3 as the search fits it (M0) has a calibration slope of
+  −0.27 (c) on its held-out moves and gets 31 % of the clear-cut signs. Its in-sample misfit is cross-size: search
+  labels pool every size (x part 0.27–0.39 log across sizes vs 0.06 c / 0.10 x within a (label, size)), so the fit is
+  driven by level mismatches the decisions never use. Profiling one offset per (label, size) drops the in-sample cost
+  26,560 → 570 and the D ratio error −74 %; + per-part curvature λ1 / μ1 −78 % (= M1). Head κ, sibling, adjacent
+  terms: ±0.4 %; per-tensor shrinkage: +7 % on M0, −0.1 % on M1o; ridge residual on M0 −60 %, on M1 +0.4 %.
+- **T (rolling origin 307 / 410 of 513 results, 160 events, 26 accepts; paired bootstrap 4,000):**
+
+  | model | params | part-mean wMSE | vs M0 [95 % CI] | c / x wMSE | bal. acc | AUC | clear-cut sign (61) | slope c / x |
+  |---|---|---|---|---|---|---|---|---|
+  | M0 kfit3 | 111–133 | 0.00386 | — | 0.00422 / 0.00350 | 0.549 | 0.49 | 0.21 | 1.17 / 0.49 |
+  | **M1** offsets per (label, size) + λ1 / μ1 | 77 | **0.00119** | **−69.3 % [−78.6, −54.7]** | 0.00121 / 0.00116 | 0.616 | 0.65 | 0.66 | 1.15 / 0.96 |
+  | M2 ridge on M0 | 285 | 0.00270 | −30.2 % [−33.9, −24.5] | 0.00286 / 0.00254 | 0.569 | 0.54 | 0.36 | 1.43 / 1.31 |
+  | M2b ridge on M1 | 175 | 0.00116 | −70.0 % [−79.0, −55.5] | 0.00118 / 0.00113 | 0.615 | 0.65 | 0.69 | 1.15 / 0.97 |
+  | M3 shrinkage on M1o | 412 | 0.00132 | −65.7 % [−72.8, −53.7] | 0.00144 / 0.00121 | 0.577 | 0.63 | 0.62 | 1.32 / 1.05 |
+  | M4 = M1 + q per group | 84 | 0.00123 | −68.2 % [−75.0, −56.5] | 0.00140 / 0.00105 | 0.629 | 0.67 | 0.75 | 1.26 / 0.89 |
+
+  Both origins agree (T1 M1 −69.4 % [−83.1, −39.7], T2 −69.1 % [−78.2, −54.4]). By move kind (T), M0's error is
+  in its own model-driven moves: solve / thompson / partial wMSE 0.061 / 0.060 / 0.029 vs M1 0.006 / 0.009 / 0.008;
+  M0 predicts 92 % of the candidates to improve, 27 % do (M1: 57 %). Accepted moves (26): mean predicted log r M0
+  −0.0098, M1 −0.0026, measured −0.0142 (winner's curse in the measured value).
+- **S (fit without fit129, guard):** fit129 within-label RMSE M0 0.201 / M1 0.177 / M3 0.185 / M4 **0.391 (guard
+  fails)**; s129 part-mean M0 0.173 / M1 0.147 (c 0.237 → 0.065, x 0.110 → 0.229).
+- **x vs c scale:** M1's λ_x is 1.2–1.4 (x ratios larger than c) where the pooled fit had 0.70–0.75; model-free on
+  the 141 full-slice events x / c is not identified (corr 0.33, attenuation-corrected slope 0.95, 0.17–4.9 by slice /
+  direction), while s129's big swaps compress (x ≈ 0.4–0.7 c). The pooled λ was set by the cross-size misfit; M1's
+  gain is not from λ (its c-part error alone falls ~70 %).
+- **Provisional (rule on T only; final with P-f16):** M1, M2b, M3, M4 all pass (a)–(c); lowest wMSE M2b, M1 within
+  its CI with 77 vs 175 parameters → **M1**; M4 fails the S guard.
+- **Step 3 (provisional, M0 / M1 fitted on all of S0, re-solve from the 8:58 AM incumbents; `sol-S0.json`, picks/):**
+  every size's incumbent beats w129's init pick under both models (+1 … +19 % log M0, +1 … +17 % M1). The M1 solve
+  changes 125–239 tensors (244–891 MB) per size, predicted −0.6 … −11.8 % (part mean) by M1, ±0 … +7.6 % by M0; M0's
+  solve is predicted −1 … −11 % by M0 and +0.3 … +6 % by M1. Large moves are extrapolation for both (held-out events
+  are mostly pair / block moves).
+### 2026-11-13 9:05 AM CST · #173 · Sensitivity model on the existing data: claimed, protocol committed
+- **Status:** running · **Machine:** colo (CPU, nice 19, ≤ 10 single-threaded jobs) · **Code:** `search/refit/w133/`
+  (ds133.py dataset replay, m133.py models, ev133.py protocol, run133.sh) · **Brief:** `rad-local/workers/instr3/w133.md`
+- **Question:** does a better model fitted on the search's own rows + w129's calibration rows predict the search's
+  accept / reject ratios better than kfit3 (fit.py as the search runs it)?
+- **Pass rule** (RULES-173.md, committed alone as 5363227 at 8:43 AM CST, before any candidate was fitted): splits D
+  (develop: fit ri ≤ 0.4·N0, predict to 0.6·N0), T (rolling origin 0.6 / 0.8·N0), P (prospective: decisions after the
+  commit to 3:30 PM CST; f16 and A8 parts reported apart), S (calib fit129 / s129 by slice); metrics weighted
+  ratio MSE per part, call balanced accuracy / AUC, accepted gains; win = part-mean wMSE CI below 0 and ≥ 10 % on T ∪ P-f16,
+  no part > 5 % worse, balanced accuracy ≥ M0 − 0.02.
+- **Setup:** snapshot S0 = state.jsonl up to the commit: 513 results, 1,248 search rows + 90 fit129 rows, 417
+  decided events (63 accepts); ds133's per-part log r equals the driver's (max diff 0); M0 = XModel(ext {}) reproduces
+  SModel's predictions to 1e-15.
+
 ### 2026-11-13 6:50 AM CST · #165 · QAD pilot complete: **A (scales only) is the method** — verify 0.895 / xcorp 0.896, holds at long context (agent-verify32 0.915, 8k+ bin 0.911); B / C / D / H / W / L8 do not beat it, D0 fails (sequential writers dropped for V3.1), L16 not run (GPU faults) (w125)
 - **Status:** done (pilot) · **Machine:** box2 cards 0–3 by `/data/q27/locks/card*.lock` (11-13 3:48–6:42 AM CST; before:
   11-12 5:49 PM – 11-13 2:46 AM) · **Code:** `v3/qad/` (README; new: `headexport.py`, `posci.py`, `lcmp.py`,

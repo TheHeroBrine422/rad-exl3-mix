@@ -1,0 +1,13 @@
+11-13 09:02:12 CST start /data/work/w13/w133/out/u6 P=4
+11-13 09:02:43 CST rc 0 31s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1o_t01 205 /data/work/w13/w133/out/dev
+11-13 09:02:49 CST rc 0 37s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1o_t04 205 /data/work/w13/w133/out/dev
+11-13 09:02:50 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1o_t01 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:02:50 CST rc 0 0s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M1o_t04 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:03:18 CST rc 0 66s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M4lq 205 /data/work/w13/w133/out/dev
+11-13 09:03:19 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2o_all 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:03:20 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2ol_all 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:03:21 CST rc 0 1s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M2ol_gb8 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:03:47 CST rc 0 64s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M4lq 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:04:18 CST rc 0 126s fit /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M3o10 205 /data/work/w13/w133/out/dev
+11-13 09:04:49 CST rc 0 119s pred /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz dev173.json M3o10 205 /data/work/w13/w133/out/dev /data/work/w13/w133/code/data/refit/w133/ds-S0.json.gz 205 307
+11-13 09:04:49 CST done /data/work/w13/w133/out/u6

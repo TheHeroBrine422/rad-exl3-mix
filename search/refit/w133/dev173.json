@@ -1,0 +1,202 @@
+{
+ "about": "#173 development variants (D split only; RULES-173.md). Frozen candidates go to candidates173.json.",
+ "models": {
+  "M0": {
+   "kind": "kfit",
+   "ext": {}
+  },
+  "M1q": {
+   "kind": "kfit",
+   "ext": {
+    "qg": true
+   }
+  },
+  "M1h": {
+   "kind": "kfit",
+   "ext": {
+    "headk": true
+   }
+  },
+  "M1s": {
+   "kind": "kfit",
+   "ext": {
+    "sib": true
+   }
+  },
+  "M1a": {
+   "kind": "kfit",
+   "ext": {
+    "adj": true
+   }
+  },
+  "M1l": {
+   "kind": "kfit",
+   "ext": {
+    "lam2": true
+   }
+  },
+  "M3r10": {
+   "kind": "kfit",
+   "ext": {
+    "re": 0.1
+   }
+  },
+  "M3r25": {
+   "kind": "kfit",
+   "ext": {
+    "re": 0.25
+   }
+  },
+  "M3r50": {
+   "kind": "kfit",
+   "ext": {
+    "re": 0.5
+   }
+  },
+  "M2tot": {
+   "kind": "resid",
+   "base": "M0",
+   "feats": [
+    "tot"
+   ],
+   "alpha": "cv"
+  },
+  "M2gb8": {
+   "kind": "resid",
+   "base": "M0",
+   "feats": [
+    "gb8"
+   ],
+   "alpha": "cv"
+  },
+  "M2gk": {
+   "kind": "resid",
+   "base": "M0",
+   "feats": [
+    "gk"
+   ],
+   "alpha": "cv"
+  },
+  "M2all": {
+   "kind": "resid",
+   "base": "M0",
+   "feats": [
+    "gb8",
+    "gk",
+    "hbar",
+    "tot"
+   ],
+   "alpha": "cv"
+  },
+  "M1o": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true
+   },
+   "relabel": "size"
+  },
+  "M1ol": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "lam2": true
+   },
+   "relabel": "size"
+  },
+  "M1oq": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "qg": true
+   },
+   "relabel": "size"
+  },
+  "M3o25": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "re": 0.25
+   },
+   "relabel": "size"
+  },
+  "M2o_gb8": {
+   "kind": "resid",
+   "base": "M1o",
+   "feats": [
+    "gb8"
+   ],
+   "alpha": "cv"
+  },
+  "M4lq": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "lam2": true,
+    "qg": true
+   },
+   "relabel": "size"
+  },
+  "M1o_t01": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true
+   },
+   "relabel": "size",
+   "opts": {
+    "tau": 0.01,
+    "beta": "0",
+    "xscale": true
+   }
+  },
+  "M1o_t04": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true
+   },
+   "relabel": "size",
+   "opts": {
+    "tau": 0.04,
+    "beta": "0",
+    "xscale": true
+   }
+  },
+  "M3o10": {
+   "kind": "kfit",
+   "ext": {
+    "prof": true,
+    "re": 0.1
+   },
+   "relabel": "size"
+  },
+  "M2o_all": {
+   "kind": "resid",
+   "base": "M1o",
+   "feats": [
+    "gb8",
+    "gk",
+    "hbar",
+    "tot"
+   ],
+   "alpha": "cv"
+  },
+  "M2ol_all": {
+   "kind": "resid",
+   "base": "M1ol",
+   "feats": [
+    "gb8",
+    "gk",
+    "hbar",
+    "tot"
+   ],
+   "alpha": "cv"
+  },
+  "M2ol_gb8": {
+   "kind": "resid",
+   "base": "M1ol",
+   "feats": [
+    "gb8"
+   ],
+   "alpha": "cv"
+  }
+ }
+}
