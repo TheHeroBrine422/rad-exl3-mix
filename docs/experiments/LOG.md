@@ -4,6 +4,41 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 5:30 PM CST · #178-02 · GDN a/b served as one trellis K4 weight (T4): packed into the 2.5 incumbent (−0.00918 bpw), census PASS, wiring exact; KLD vs w142's arm −4.3e-4 (A8 + 1-ulp decode, within the slice's noise); prefill and decode time unchanged (the fused N 128 op costs about what the two bf16 ops did) (w147)
+- **Status:** done (served, packed, measured) · **Machine:** ds8 (build, donor, mixes, census; CPU), box2 (one card under
+  locks: 5 scores, 2 perf rounds, 1 decode profile) · **Code:** radiance `qc-exl3-v3` 179220f (branch `qc-exl3-v3-ab147`,
+  fast-forwarded onto w137's fdfee1f), `search/v3/ab17802/` (README; radmix and census add / drop patches for the lead)
+  · **Data:** `data/ab17802/` (README) · **Brief:** `rad-local/workers/instr3/w147.md`
+- **Served form.**
+  - `blk.N.ssm_ab.weight`: exl3i [128, 5120], a | b | a[0:32] (w142's padded in_proj_ab, `map_rows`).
+  - One `exl3i_dense` a GDN layer in the qkv / z input group, as the norm's AQ site's third plane. Same launch, no extra
+    actq; its own plane, because the scale refit gives it its own suh.
+  - The GDN ops read a and b as 48-column views. A layer without a trellis ssm_ab is served exactly as before.
+  - Recipe: `blk.*.ssm_ab.weight exl3i src=<in_proj_ab dir> codebook=mul1i8 rate=4`. Mix: `add` / `drop` lines (radmix
+    and census patches).
+- **Pack.** The 2.5 incumbent (A8 trunk) with T4 a/b: 739 weights. It is 30,867,456 B smaller than B (**0.00918 bpw**;
+  w142 counted 0.00936 without suh / svh). Static VRAM 9.77 → 9.74 GiB. Census full byte check PASS on both; the
+  negative runs fail as intended.
+- **Identity.**
+  - The donor's planes are byte-equal to w142's trellis.
+  - B on box2 with this build is byte-identical to w132's B rows: the plain path is unchanged.
+  - T4 with `QWEN35_EXL3_AQ=0` is byte-identical to T4 through the shared site: the plane wiring is right.
+  - w142's splice rebuilt on box2 is byte-identical to ds8's.
+- **KLD vs w142's simulated arm** (s171d): served T4 0.205516 vs 0.205950, **−4.3e-4: the ~1e-5 target is not met**.
+  - Split: the oracle's own decode rounding gives −2.6e-4 (1-ulp bf16 differences in 7 % of a/b values, vs w142's
+    fp16-then-bf16 path).
+  - The A8 activation of a/b gives −1.8e-4.
+  - Every pair's CI covers 0. This slice moves ~0.02 KL a position under any a/b perturbation, so no faithful served
+    form can sit within 1e-5 of the bf16 splice.
+  - T4 vs B: +0.21 % [−0.21, +0.50] (c −0.14 %, x +0.57 %). The pre-registered reading of #178 stands: no measurable cost.
+- **Time** (box2, 2 rounds).
+  - 8k prefill: 3.407 vs 3.401 s (unchanged). In the profile, a/b gemm_nt −12…−15 ms per 2 × 8k, and the 3-plane GDN
+    AQ sites +15…+17 ms.
+  - Decode step: ctx 0 32.66 vs 32.74 ms, ctx 8k 33.58 vs 33.77 ms (no gain; within ~0.2 ms spread).
+  - The decode op table explains it: `exl3i_dense` N 128 K4 takes 14.9 µs against 2 × 7.97 µs for the bf16 pair. The
+    fusion saves ~0.05 ms a step, not the ~0.45 ms w142 estimated.
+  - A small-N (split-K) exl3i decode path would turn the one launch into that saving. Kernel follow-up, not done.
+
 ### 2026-11-13 5:05 PM CST · #174-02 · Trellis token embedding served from the stored form (w144): `embed_exl3i` bit-exact, VRAM = codes, ~0 e2e time; 4 A8 anchors agree with w135's prices; host candidates (bf16 / int8-row / K8 trellis) all ≈ bf16
 - **Status:** done (kernel, donors K1.5–K8, checks, menu); host-RAM path: core patch + loader design for the lead (not
   applied) · **Machine:** box2 (cards under locks: 16 quants, identity, perf, GPU tests), ds8 (donors, 8 A8 evals) ·

@@ -1,0 +1,10 @@
+blk.*.attn_k.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.attn_output.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.attn_qg.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.attn_v.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ffn_down.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ffn_gate_up.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ssm_out.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ssm_qkv.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ssm_z.weight exl3i src=/data/q27/ladder/q27v3-144dd6e1-k0.125-i8/final codebook=mul1i8 rate=0.125
+blk.*.ssm_ab.weight exl3i src=/data/q27/w147/absrc-K4 codebook=mul1i8 rate=4

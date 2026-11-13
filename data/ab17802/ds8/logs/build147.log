@@ -1,0 +1,6 @@
+22:32:47 start  plugins exl3quant qwen35_exl3
+22:32:52 exl3quant: built, host tests 1 passed
+22:33:04 qwen35_exl3: HOST TESTS FAIL
+22:33:58 start  plugins qwen35_exl3
+22:34:10 qwen35_exl3: built, host tests 1 passed
+22:34:10 HOME READY /data/q27/w147/home

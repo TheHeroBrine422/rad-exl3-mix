@@ -1,0 +1,45 @@
+--- a/store/census.py
++++ b/store/census.py
+@@ -4,10 +4,12 @@
+ exl3.act.<weight>, f16 when absent), the bytes, and the real bpw (bytes x 8 / 26,895,998,464). design/v3.md §1c.4: the
+ container must be what the mix says before a KLD means anything.
+ 
+---mix: radmix's mix file ("<weight> <donor.rad>", "act <weight> <mode>"). Each named weight is checked byte-for-byte
++--mix: radmix's mix file ("<weight> <donor.rad>", "act <weight> <mode>", "add <weight> <donor.rad>", "drop <weight>": #178-02's
++       radmix add / drop lines). Each named (or added) weight is checked byte-for-byte
+        against its donor's entry (encoding struct, planes' bytes -- the same identity as store/scan.py's vid), and each
+        act line against the container's metadata; weights the mix does not name must equal the BASE given by --base, and
+-       (with --base) a weight with no act line must keep BASE's mode (radmix's rule).
++       (with --base) a weight with no act line must keep BASE's mode (radmix's rule). With --base, every BASE weight the
++       mix does not drop must be in the container, and a dropped one must not be (nor its act key).
+ --recipe: rad-convert's recipe ("PATTERN QUANTISER key=value ..."; "@" = the one stored in the container): each weight's quantiser and, for exl3 / exl3i,
+        rate= / bits= / codebook= checked against the stored encoding (first matching pattern wins, as rad-convert).
+ --fast: with --mix / --base, compare each weight's encoding struct and plane sizes only, not its bytes (seconds instead of
+@@ -131,11 +133,16 @@
+                 if want_k and r["K"] != want_k: bad.append(f"{r['name']}: K {r['K']}, recipe {want_k}")
+                 if "codebook" in kv and r["codebook"] != kv["codebook"]: bad.append(f"{r['name']}: codebook {r['codebook']}, recipe {kv['codebook']}")
+     if mix:
+-        donors = {}; acts = {}; named = set()
++        donors = {}; acts = {}; named = set(); dropped = set()
+         for l in open(mix):
+             t = l.split("#", 1)[0].split()
+             if len(t) == 3 and t[0] == "act": acts[t[1]] = t[2]
++            elif len(t) == 3 and t[0] == "add": named.add(t[1]); donors.setdefault(t[2], []).append(t[1])
++            elif len(t) == 2 and t[0] == "drop": dropped.add(t[1])
+             elif len(t) == 2: named.add(t[0]); donors.setdefault(t[1], []).append(t[0])
++        for n in dropped:
++            if n in R.w: bad.append(f"{n}: dropped by the mix, still in the container")
++            if f"exl3.act.{n}" in R.meta: bad.append(f"{n}: dropped by the mix, its act key is still set")
+         for d, names in donors.items():
+             D_ = Rad(d)
+             for n in names:
+@@ -156,6 +163,9 @@
+             for n in R.w:
+                 if n in named: continue
+                 if n not in B.w or R.ident(n, fast) != B.ident(n, fast): bad.append(f"{n}: not named by the mix and differs from base")
++            for n in B.w:                  # every BASE weight is kept unless dropped
++                if n not in R.w and n not in dropped: bad.append(f"{n}: in base, not dropped by the mix, missing")
++                if n in dropped and n in named: bad.append(f"{n}: both dropped and named by the mix")
+             for n in R.w:                  # no act line: radmix keeps BASE's metadata, so the mode must be BASE's
+                 ak = f"exl3.act.{n}"
+                 if n not in acts and R.meta.get(ak) != B.meta.get(ak):

@@ -1,0 +1,1 @@
+pdec-B ctx 0 run 0: prompt 103 ttft 183 ms, client 38.55 ms/tok, server 38.55 ms/step x 1.00 tok

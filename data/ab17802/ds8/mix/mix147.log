@@ -1,0 +1,4 @@
+11-13 16:36:35 CST 2.5-B.rad: /data/q27/w147/mix/2.5-B.rad.part: 787 weights (337 from donors, 336 act keys), 9.788 GiB, 0 cloned, 787 copied
+11-13 16:36:46 CST 2.5-Bx.rad: /data/q27/w147/mix/2.5-Bx.rad.part: 787 weights (337 from donors, 0 added, 0 dropped, 336 act keys), 9.788 GiB, 0 cloned, 787 copied
+11-13 16:36:51 CST 2.5: radmix147 = radmix on the B mixfile (byte-identical)
+11-13 16:37:03 CST 2.5-T4.rad: /data/q27/w147/mix/2.5-T4.rad.part: 739 weights (337 from donors, 48 added, 96 dropped, 384 act keys), 9.759 GiB, 0 cloned, 739 copied

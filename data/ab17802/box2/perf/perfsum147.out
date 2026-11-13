@@ -1,0 +1,29 @@
+{"row": "B", "round": 1, "step_ms_8k": 33.55949100000001, "ttft_ms_8k": 3438.0710190162063, "step_ms_0": 32.74200989019609, "prefill_s_8k": 3.414, "static_gib": 9.77, "prof_total_ms": 6737.257000000018, "prof": {"ab gemm_nt N48 (bf16)": {"calls": 960, "ms": 41.345, "us_call": 43.07}, "exl3i_actq K17408 planes=1": {"calls": 512, "ms": 231.397, "us_call": 451.95}, "exl3i_actq K5120 planes=2": {"calls": 896, "ms": 156.742, "us_call": 174.94}, "exl3i_actq K5120 planes=3": {"calls": 128, "ms": 30.847, "us_call": 240.99}, "exl3i_actq K6144 planes=1": {"calls": 128, "ms": 16.401, "us_call": 128.13}, "gdn_chunk_scan": {"calls": 480, "ms": 183.651, "us_call": 382.61}, "gdn_conv_prep": {"calls": 480, "ms": 65.175, "us_call": 135.78}, "gdn_gated_rmsnorm": {"calls": 480, "ms": 48.549, "us_call": 101.14}, "gdn_kkt_solve": {"calls": 480, "ms": 29.51, "us_call": 61.48}, "rmsnorm": {"calls": 586, "ms": 42.845, "us_call": 73.11}}}
+{"row": "B", "round": 2, "step_ms_8k": 33.59268458064517, "ttft_ms_8k": 3426.81742698187, "step_ms_0": 32.571702172549024, "prefill_s_8k": 3.4, "static_gib": 9.77, "prof_total_ms": 6695.21100000001, "prof": {"ab gemm_nt N48 (bf16)": {"calls": 960, "ms": 36.389, "us_call": 37.91}, "exl3i_actq K17408 planes=1": {"calls": 512, "ms": 228.615, "us_call": 446.51}, "exl3i_actq K5120 planes=2": {"calls": 896, "ms": 148.028, "us_call": 165.21}, "exl3i_actq K5120 planes=3": {"calls": 128, "ms": 29.755, "us_call": 232.46}, "exl3i_actq K6144 planes=1": {"calls": 128, "ms": 15.069, "us_call": 117.73}, "gdn_chunk_scan": {"calls": 480, "ms": 180.98, "us_call": 377.04}, "gdn_conv_prep": {"calls": 480, "ms": 59.746, "us_call": 124.47}, "gdn_gated_rmsnorm": {"calls": 480, "ms": 45.213, "us_call": 94.19}, "gdn_kkt_solve": {"calls": 480, "ms": 25.034, "us_call": 52.15}, "rmsnorm": {"calls": 586, "ms": 41.141, "us_call": 70.21}}}
+{"row": "T4", "round": 1, "step_ms_8k": 33.802324903225795, "ttft_ms_8k": 3436.55054300325, "step_ms_0": 32.749395917647064, "prefill_s_8k": 3.398, "static_gib": 9.74, "prof_total_ms": 6695.034000000019, "prof": {"ab exl3i_dense N128 (T4)": {"calls": 480, "ms": 26.686, "us_call": 55.6}, "exl3i_actq K17408 planes=1": {"calls": 512, "ms": 228.115, "us_call": 445.54}, "exl3i_actq K5120 planes=2": {"calls": 512, "ms": 84.36, "us_call": 164.77}, "exl3i_actq K5120 planes=3": {"calls": 512, "ms": 117.283, "us_call": 229.07}, "exl3i_actq K6144 planes=1": {"calls": 128, "ms": 15.089, "us_call": 117.88}, "gdn_chunk_scan": {"calls": 480, "ms": 181.022, "us_call": 377.13}, "gdn_conv_prep": {"calls": 480, "ms": 59.817, "us_call": 124.62}, "gdn_gated_rmsnorm": {"calls": 480, "ms": 45.349, "us_call": 94.48}, "gdn_kkt_solve": {"calls": 480, "ms": 25.039, "us_call": 52.16}, "rmsnorm": {"calls": 586, "ms": 41.084, "us_call": 70.11}}}
+{"row": "T4", "round": 2, "step_ms_8k": 33.741330322580644, "ttft_ms_8k": 3435.644680983387, "step_ms_0": 32.72335706666666, "prefill_s_8k": 3.403, "static_gib": 9.74, "prof_total_ms": 6701.028000000009, "prof": {"ab exl3i_dense N128 (T4)": {"calls": 480, "ms": 26.674, "us_call": 55.57}, "exl3i_actq K17408 planes=1": {"calls": 512, "ms": 228.205, "us_call": 445.71}, "exl3i_actq K5120 planes=2": {"calls": 512, "ms": 84.367, "us_call": 164.78}, "exl3i_actq K5120 planes=3": {"calls": 512, "ms": 117.22, "us_call": 228.95}, "exl3i_actq K6144 planes=1": {"calls": 128, "ms": 15.111, "us_call": 118.05}, "gdn_chunk_scan": {"calls": 480, "ms": 181.485, "us_call": 378.09}, "gdn_conv_prep": {"calls": 480, "ms": 59.863, "us_call": 124.71}, "gdn_gated_rmsnorm": {"calls": 480, "ms": 45.298, "us_call": 94.37}, "gdn_kkt_solve": {"calls": 480, "ms": 25.021, "us_call": 52.13}, "rmsnorm": {"calls": 586, "ms": 41.115, "us_call": 70.16}}}
+
+   row  n    static_gib  prefill_s_8k    ttft_ms_8k     step_ms_0    step_ms_8k prof_total_ms
+     B  2          9.77         3.407        3432.4        32.657        33.576        6716.2
+    T4  2          9.74        3.4005        3436.1        32.736        33.772          6698
+
+     B ab gemm_nt N48 (bf16)        calls    960  ms    38.867  us/call    40.49
+     B exl3i_actq K17408 planes=1   calls    512  ms   230.006  us/call   449.23
+     B exl3i_actq K5120 planes=2    calls    896  ms   152.385  us/call   170.07
+     B exl3i_actq K5120 planes=3    calls    128  ms    30.301  us/call   236.73
+     B exl3i_actq K6144 planes=1    calls    128  ms    15.735  us/call   122.93
+     B gdn_chunk_scan               calls    480  ms   182.315  us/call   379.83
+     B gdn_conv_prep                calls    480  ms    62.460  us/call   130.12
+     B gdn_gated_rmsnorm            calls    480  ms    46.881  us/call    97.66
+     B gdn_kkt_solve                calls    480  ms    27.272  us/call    56.81
+     B rmsnorm                      calls    586  ms    41.993  us/call    71.66
+    T4 ab exl3i_dense N128 (T4)     calls    480  ms    26.680  us/call    55.59
+    T4 exl3i_actq K17408 planes=1   calls    512  ms   228.160  us/call   445.62
+    T4 exl3i_actq K5120 planes=2    calls    512  ms    84.364  us/call   164.78
+    T4 exl3i_actq K5120 planes=3    calls    512  ms   117.251  us/call   229.01
+    T4 exl3i_actq K6144 planes=1    calls    128  ms    15.100  us/call   117.97
+    T4 gdn_chunk_scan               calls    480  ms   181.254  us/call   377.61
+    T4 gdn_conv_prep                calls    480  ms    59.840  us/call   124.66
+    T4 gdn_gated_rmsnorm            calls    480  ms    45.323  us/call    94.43
+    T4 gdn_kkt_solve                calls    480  ms    25.030  us/call    52.14
+    T4 rmsnorm                      calls    586  ms    41.100  us/call    70.13

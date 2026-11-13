@@ -1,0 +1,22 @@
+2.5-B.rad: 787 weights, 3.1260 bpw (file), 3.1206 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  plain                                       450    2.595
+  exl3i      2.25 mul1i8   a8g128     1 nat    50    1.444
+  exl3i       2.5 mul1i8   a8g128     1 nat    60    1.348
+  exl3i         2 mul1i8   a8g128     1 nat    55    1.010
+  exl3i      2.75 mul1i8   a8g128     1 nat    43    0.818
+  exl3i         3 mul1i8   a8g128     1 nat    31    0.699
+  exl3i       3.5 mul1i8   a8g128     1 nat    13    0.524
+  affine                                        1    0.497
+  exl3i      3.25 mul1i8   a8g128     1 nat    18    0.465
+  exl3i      1.75 mul1i8   a8g128     1 nat    30    0.398
+  exl3i      3.75 mul1i8   a8g128     1 nat     7    0.226
+  exl3i       1.5 mul1i8   a8g128     1 nat    13    0.144
+  exl3i      1.25 mul1i8   a8g128     1 nat     5    0.140
+  exl3i         4 mul1i8   a8g128     1 nat     7    0.100
+  exl3i       4.5 mul1i8   a8g128     1 nat     2    0.047
+  exl3i      4.75 mul1i8   a8g128     1 nat     1    0.019
+  exl3i      4.25 mul1i8   a8g128     1 nat     1    0.017
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  affine fwht128 u3  0.497 GB
+CENSUS PASS [checked: mix base act codebook version]

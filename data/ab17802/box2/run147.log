@@ -1,0 +1,33 @@
+11-13 16:40:56 CST card 0 held (pid 1714398)
+22:45:58 score 2.5-B-s171d rc=0 302s
+11-13 16:45:58 CST score B:   static weights       9.77 GiB   off the top: every rank's own shard, and not a share of anything|I                                          static weights       9.77 GiB   off the top: every rank's own shard, and not a share of anything|I kld: 10309 / 210258 positions, 9 / 184 documents, 15 s|I kld: 21135 / 210258 positions, 21 / 184 documents, 30 s|I kld: 31931 / 210258 positions, 31 / 184 documents, 45 s|I kld: 41976 / 210258 positions, 39 / 184 documents, 60 s|I kld: 52096 / 210258 positions, 46 / 184 documents, 75 s|I kld: 63950 / 210258 positions, 58 / 184 documents, 91 s|I kld: 74447 / 210258 positions, 69 / 184 documents, 106 s|I kld: 84615 / 210258 positions, 75 / 184 documents, 121 s|I kld: 95656 / 210258 positions, 89 / 184 documents, 136 s|I kld: 105483 / 210258 positions, 102 / 184 documents, 151 s|I kld: 116448 / 210258 positions, 112 / 184 documents, 166 s|I kld: 126142 / 210258 positions, 122 / 184 documents, 181 s|I kld: 136800 / 210258 positions, 131 / 184 documents, 196 s|I kld: 147969 / 210258 positions, 140 / 184 documents, 212 s|I kld: 160089 / 210258 positions, 144 / 184 documents, 227 s|I kld: 170770 / 210258 positions, 155 / 184 documents, 242 s|I kld: 179635 / 210258 positions, 163 / 184 documents, 257 s|I kld: 191910 / 210258 positions, 167 / 184 documents, 272 s|I kld: 203202 / 210258 positions, 175 / 184 documents, 287 s|
+22:51:04 score 2.5-T4-s171d rc=0 306s
+11-13 16:51:04 CST score T4:   static weights       9.74 GiB   off the top: every rank's own shard, and not a share of anything|I                                          static weights       9.74 GiB   off the top: every rank's own shard, and not a share of anything|I kld: 10309 / 210258 positions, 9 / 184 documents, 15 s|I kld: 20411 / 210258 positions, 20 / 184 documents, 30 s|I kld: 31453 / 210258 positions, 30 / 184 documents, 45 s|I kld: 41976 / 210258 positions, 39 / 184 documents, 60 s|I kld: 52096 / 210258 positions, 46 / 184 documents, 75 s|I kld: 62876 / 210258 positions, 57 / 184 documents, 91 s|I kld: 72030 / 210258 positions, 66 / 184 documents, 106 s|I kld: 82567 / 210258 positions, 75 / 184 documents, 121 s|I kld: 93663 / 210258 positions, 87 / 184 documents, 136 s|I kld: 104506 / 210258 positions, 100 / 184 documents, 151 s|I kld: 114027 / 210258 positions, 110 / 184 documents, 166 s|I kld: 125677 / 210258 positions, 121 / 184 documents, 181 s|I kld: 135837 / 210258 positions, 130 / 184 documents, 196 s|I kld: 146270 / 210258 positions, 139 / 184 documents, 211 s|I kld: 158041 / 210258 positions, 144 / 184 documents, 226 s|I kld: 168722 / 210258 positions, 154 / 184 documents, 241 s|I kld: 178060 / 210258 positions, 162 / 184 documents, 256 s|I kld: 190280 / 210258 positions, 165 / 184 documents, 272 s|I kld: 199106 / 210258 positions, 175 / 184 documents, 287 s|
+11-13 16:51:04 CST e2e-B-r1: serve 2.5-B.rad card 0
+11-13 16:52:23 CST e2e-B-r1: done |  static weights 9.77 GiB off the top: every rank's own shard, and not a share of anything | e2e-B-r1 ctx 0 run 3: prompt 103 ttft 125 ms, client 34.84 ms/tok, server 34.83 ms/step x 1.00 tok
+11-13 16:52:23 CST prof-B-r1: serve 2.5-B.rad card 0
+11-13 16:52:37 CST prof-B-r1: done |  static weights 9.77 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8204 tokens, 3.443 s
+11-13 16:52:37 CST e2e-T4-r1: serve 2.5-T4.rad card 0
+11-13 16:53:52 CST e2e-T4-r1: done |  static weights 9.74 GiB off the top: every rank's own shard, and not a share of anything | e2e-T4-r1 ctx 0 run 3: prompt 102 ttft 127 ms, client 32.75 ms/tok, server 32.75 ms/step x 1.00 tok
+11-13 16:53:52 CST prof-T4-r1: serve 2.5-T4.rad card 0
+11-13 16:54:09 CST prof-T4-r1: done |  static weights 9.74 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8203 tokens, 3.414 s
+11-13 16:54:09 CST e2e-T4-r2: serve 2.5-T4.rad card 0
+11-13 16:55:24 CST e2e-T4-r2: done |  static weights 9.74 GiB off the top: every rank's own shard, and not a share of anything | e2e-T4-r2 ctx 0 run 3: prompt 104 ttft 128 ms, client 32.73 ms/tok, server 32.72 ms/step x 1.00 tok
+11-13 16:55:24 CST prof-T4-r2: serve 2.5-T4.rad card 0
+11-13 16:55:38 CST prof-T4-r2: done |  static weights 9.74 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8206 tokens, 3.421 s
+11-13 16:55:38 CST e2e-B-r2: serve 2.5-B.rad card 0
+11-13 16:56:56 CST e2e-B-r2: done |  static weights 9.77 GiB off the top: every rank's own shard, and not a share of anything | e2e-B-r2 ctx 0 run 3: prompt 104 ttft 124 ms, client 32.83 ms/tok, server 32.83 ms/step x 1.00 tok
+11-13 16:56:56 CST prof-B-r2: serve 2.5-B.rad card 0
+11-13 16:57:10 CST prof-B-r2: done |  static weights 9.77 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8203 tokens, 3.416 s
+11-13 16:57:10 CST run147 finished
+11-13 16:57:18 CST run147b: card 0 held (pid 1737682)
+23:02:23 score 2.5-T4aq0-s171d rc=0 305s
+abpatch 2.5-T4o.rad: 96 weights from ab-T4oracle.safetensors, sha256 658265ae6c1473c1
+23:07:41 score 2.5-T4o-s171d rc=0 305s
+abpatch 2.5-T4s.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+23:12:57 score 2.5-T4s-s171d rc=0 306s
+11-13 17:12:57 CST run147b finished
+11-13 17:13:12 CST run147c: card 0 held (pid 1738856)
+11-13 17:13:29 CST pdec-B: pdec-B ctx 0 run 0: prompt 103 ttft 183 ms, client 38.55 ms/tok, server 38.55 ms/step x 1.00 tok
+11-13 17:13:46 CST pdec-T4: pdec-T4 ctx 0 run 0: prompt 104 ttft 186 ms, client 38.36 ms/tok, server 38.36 ms/step x 1.00 tok
+11-13 17:13:46 CST run147c finished

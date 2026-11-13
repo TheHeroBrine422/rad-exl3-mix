@@ -1,0 +1,6 @@
+22:39:16 start  plugins exl3i exl3dense exl3quant qwen35_exl3
+22:39:47 exl3i: built, host tests 3 passed
+22:39:52 exl3dense: built, host tests 2 passed
+22:39:56 exl3quant: built, host tests 1 passed
+22:40:07 qwen35_exl3: built, host tests 1 passed
+22:40:07 HOME READY /data/q27/w147/home

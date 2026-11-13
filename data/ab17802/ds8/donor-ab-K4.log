@@ -1,0 +1,17 @@
+I source   /data/q27/models/qwen38-27b-bf16 (1199 tensors)
+I arch     qwen35, quant exl3
+I device: AQL backend, 8 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201 4:gfx1201 5:gfx1201 6:gfx1201 7:gfx1201]
+I recipe   10 rule(s)
+W 15 of 1199 checkpoint tensors are read by no declared weight and are not written: mtp.fc.weight, mtp.layers.0.input_layernorm.weight, mtp.layers.0.mlp.down_proj.weight, mtp.layers.0.mlp.gate_proj.weight, mtp.layers.0.mlp.up_proj.weight, mtp.layers.0.post_attention_layernorm.weight, mtp.layers.0.self_attn.k_norm.weight, mtp.layers.0.self_attn.k_proj.weight, ...
+I plan     1072 weight(s): 384 quantised by the recipe, 688 kept as the checkpoint holds them
+I vocab    /data/q27/models/qwen38-27b-bf16/tokenizer.json
+I tokenizer: chat template from /data/q27/models/qwen38-27b-bf16/chat_template.jinja (9004 bytes)
+I tokenizer: /data/q27/models/qwen38-27b-bf16/tokenizer.json -> 248077 tokens, 247587 merges, 4 chain steps
+I tokenizer:   NFC
+I tokenizer:   Split((?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?[\p{L}\p{M}]+|\p{N}| ?[^\s\p{L}\p{M}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+ behavior=1 invert=0) [dfa: 20 states, 16 classes]
+I tokenizer:   ByteLevel(add_prefix_space=0 use_regex=0)
+I tokenizer:   decode ByteLevel
+I weights  1072 written in 4 s: 1072 a thread each, 0 across every thread
+I finish   3 s
+I wrote /data/q27/w147/donor-ab-K4.rad.part: 1072 weight(s), 5.98 GiB of weights, 248077 vocab token(s)
+I --reuse: 691 weight(s), 5.11 GiB, copied from /data/q27/packs/q27v3-144dd6e1-k0.125-i8-s6c57a3d1.rad; the other 381 were written

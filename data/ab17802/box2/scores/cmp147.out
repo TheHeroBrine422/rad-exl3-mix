@@ -1,0 +1,16 @@
+      B132: KLD 0.204430  c 0.054100  x 0.238458
+     T4sim: KLD 0.205950  c 0.054076  x 0.240327
+         B: KLD 0.204430  c 0.054100  x 0.238458
+        T4: KLD 0.205516  c 0.054023  x 0.239808
+     T4aq0: KLD 0.205516  c 0.054023  x 0.239808
+       T4o: KLD 0.205694  c 0.054114  x 0.240005
+       T4s: KLD 0.205950  c 0.054076  x 0.240327
+         B vs B132      : IDENTICAL ROWS; KLD diff +0.00e+00, mean |row diff| 0.00e+00; d +0.000% [+0.000, +0.000]  c +0.000%  x +0.000%
+       T4s vs T4sim     : IDENTICAL ROWS; KLD diff +0.00e+00, mean |row diff| 0.00e+00; d +0.000% [+0.000, +0.000]  c +0.000%  x +0.000%
+     T4aq0 vs T4        : IDENTICAL ROWS; KLD diff +0.00e+00, mean |row diff| 0.00e+00; d +0.000% [+0.000, +0.000]  c +0.000%  x +0.000%
+        T4 vs T4sim     : rows differ; KLD diff -4.33e-04, mean |row diff| 1.89e-02; d -0.158% [-0.422, +0.112]  c -0.099%  x -0.216%
+       T4o vs T4sim     : rows differ; KLD diff -2.56e-04, mean |row diff| 1.90e-02; d -0.033% [-0.247, +0.261]  c +0.069%  x -0.134%
+        T4 vs T4o       : rows differ; KLD diff -1.77e-04, mean |row diff| 2.01e-02; d -0.125% [-0.530, +0.181]  c -0.168%  x -0.082%
+        T4 vs B         : rows differ; KLD diff +1.09e-03, mean |row diff| 2.09e-02; d +0.211% [-0.212, +0.502]  c -0.143%  x +0.565%
+       T4o vs B         : rows differ; KLD diff +1.26e-03, mean |row diff| 2.11e-02; d +0.336% [+0.041, +0.619]  c +0.025%  x +0.647%
+     T4sim vs B132      : rows differ; KLD diff +1.52e-03, mean |row diff| 2.12e-02; d +0.369% [+0.029, +0.607]  c -0.044%  x +0.781%

@@ -1,0 +1,12 @@
+req 0: prompt 8202 tokens, 3.369 s
+req 1: prompt 8204 tokens, 3.390 s
+req 2: prompt 8201 tokens, 3.398 s
+req 3: prompt 8203 tokens, 3.405 s
+e2e-T4-r1 ctx 8k run 0 (warm): prompt 8242 ttft 3439 ms, client 33.69 ms/tok, server 33.70 ms/step x 1.00 tok
+e2e-T4-r1 ctx 8k run 1: prompt 8241 ttft 3429 ms, client 33.70 ms/tok, server 33.71 ms/step x 1.00 tok
+e2e-T4-r1 ctx 8k run 2: prompt 8244 ttft 3437 ms, client 33.79 ms/tok, server 33.80 ms/step x 1.00 tok
+e2e-T4-r1 ctx 8k run 3: prompt 8242 ttft 3439 ms, client 33.81 ms/tok, server 33.82 ms/step x 1.00 tok
+e2e-T4-r1 ctx 0 run 0 (warm): prompt 104 ttft 127 ms, client 32.73 ms/tok, server 32.73 ms/step x 1.00 tok
+e2e-T4-r1 ctx 0 run 1: prompt 105 ttft 127 ms, client 32.73 ms/tok, server 32.72 ms/step x 1.00 tok
+e2e-T4-r1 ctx 0 run 2: prompt 105 ttft 128 ms, client 32.77 ms/tok, server 32.77 ms/step x 1.00 tok
+e2e-T4-r1 ctx 0 run 3: prompt 102 ttft 127 ms, client 32.75 ms/tok, server 32.75 ms/step x 1.00 tok
