@@ -55,7 +55,7 @@ The Δbpw line above says "the K at which the I curve reaches the arm's KL, minu
 bits)": the formula and its stated sign disagree (an arm with less KL than I at K has K_eq > K). The stated convention
 stands: **Δbpw = K − K_eq, negative = the arm saves bits** (rep177h.py fixed to match). Nothing else changes.
 
-## Amendment 2 (2026-11-13 ~12:00 PM CST, after the K2.5 / K4 rows of H, HG, HC; adds a noise floor, changes no label)
+## Amendment 2 (2026-11-13 ~11:55 AM CST, after the K2.5 / K4 rows of H, HG, HC; adds a noise floor, changes no label)
 
 Seen: at K4 every arm is "at par" on fit-gen (×0.975–0.981) and "costs" on search-gen (×1.030–1.051), H K2.5 the
 same (0.979 / 1.035): slice-dependent beyond ±1 % (the rule above). The document bootstrap does not contain the
