@@ -4,6 +4,12 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 6:30 PM CST · #150 · Decision: swj fit_tokens stays 1M (user)
+- w114's #150: 2M 0.9921 at K2.5 / 0.9925 at K4 (rule bar ≤ 0.99 not met), 4M worse than 2M. **User: keep 1M** (gain
+  ~0.8% for ~2.3× swj cost; V3.1 QAD retrains the scales). No settings change: scales stamp stays 6c57a3d1; the ladder's
+  swj rerun uses today's settings. Full entries for #149–#151: w114's LOG / INDEX edits.
+- **Runtime:** none.
+
 ### 2026-11-12 5:53 PM CST · #166 · V3 search driver: build + test started (w126)
 - **Status:** running (build) · **Machine:** the VM (code), colo (simulation, fits, radiance host build), box2 / ds8
   (dry run, by the locks) · **Code:** `search/v3/`, radiance branch `qc-exl3-v3-kldprog` (off qc-exl3-v3 81bad51) ·
