@@ -1,0 +1,121 @@
+$ census mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad
+qwen3.8-27b-exl3-v2-3.00bpw.rad: 787 weights, 2.9991 bpw (file), 2.9950 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3          3 mul1     f16                244    6.553
+  exl3          4 mul1     f16                 32    1.833
+  exl3          2 mul1     f16                 56    1.118
+  affine                                        1    0.497
+  plain                                       449    0.052
+  exl3          5 mul1     f16                  5    0.016
+  output.weight      exl3 mul1 K4  0.636 GB  act f16
+  token_embd.weight  affine fwht128 u3  0.497 GB
+CENSUS PASS [checked: nothing (summary only)]
+rc 0
+
+$ census packs/q27v3-144dd6e1-k2.5-i8-s6c57a3d1.rad --expect-codebook mul1i8 --max-version 3
+q27v3-144dd6e1-k2.5-i8-s6c57a3d1.rad: 787 weights, 3.7976 bpw (file), 3.7947 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i       2.5 mul1i8   f16        1 nat   336    7.620
+  plain                                       451    5.138
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  plain - bf16  2.543 GB
+CENSUS PASS [checked: codebook version]
+rc 0
+
+$ census heads/donors/hd-u4.rad
+hd-u4.rad: 787 weights, 1.6495 bpw (file), 1.6465 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  plain                                       451    5.138
+  exl3i     0.125 mul1i8   f16        1 nat   336    0.398
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  plain - bf16  2.543 GB
+CENSUS PASS [checked: nothing (summary only)]
+rc 0
+
+$ census emb/emb-e5.rad
+emb-e5.rad: 787 weights, 1.1367 bpw (file), 1.1325 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  plain                                       450    2.595
+  affine                                        1    0.814
+  exl3i     0.125 mul1i8   f16        1 nat   336    0.398
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  affine fwht128 u5  0.814 GB
+CENSUS PASS [checked: nothing (summary only)]
+rc 0
+
+$ census heads/w140/packs/i6.5.rad --expect-head exl3i mul1i8 K* r16 --max-version 3
+i6.5.rad: 787 weights, 4.7055 bpw (file), 4.7026 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i         4 mul1i8   f16        1 nat   336   12.181
+  plain                                       450    2.595
+  exl3i       6.5 mul1i8   f16        3 r16     1    1.034
+  output.weight      exl3i mul1i8 K6.5 r16  1.034 GB  act f16
+  token_embd.weight  plain - bf16  2.543 GB
+CENSUS PASS [checked: head version]
+rc 0
+
+$ census heads/w140/packs/i6.5.rad --expect-head exl3i mul1i8 K* r16 --max-version 2
+i6.5.rad: 787 weights, 4.7055 bpw (file), 4.7026 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i         4 mul1i8   f16        1 nat   336   12.181
+  plain                                       450    2.595
+  exl3i       6.5 mul1i8   f16        3 r16     1    1.034
+  output.weight      exl3i mul1i8 K6.5 r16  1.034 GB  act f16
+  token_embd.weight  plain - bf16  2.543 GB
+MISMATCH output.weight: encoding version 3 > 2 (exl3i mul1i8 K6.5 r16)
+CENSUS FAIL (1) [checked: head version]
+rc 1
+
+$ census w132/value/mix/m1-1.5-a8.rad --mix w132/value/mix/m1-1.5-a8.mix --base mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad --expect-act a8g128 --expect-codebook mul1i8 --max-version 3 --expect-head plain - bf16
+Traceback (most recent call last):
+  File "/data/q27/w142/code/census.py", line 197, in <module>
+    main()
+    ~~~~^^
+  File "/data/q27/w142/code/census.py", line 112, in main
+    R = Rad(a[0]); bad = []
+  File "/data/q27/w142/code/census.py", line 47, in __init__
+    self.path = path; self.f = open(path, "rb")
+                               ~~~~^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'w132/value/mix/m1-1.5-a8.rad'
+rc 1
+
+$ census w132/value/mix/m1-1.5-a8.rad --mix w132/value/mix/m1-1.5-a8.mix --base mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad --fast --expect-head exl3i mul1i8 K* r16
+Traceback (most recent call last):
+  File "/data/q27/w142/code/census.py", line 197, in <module>
+    main()
+    ~~~~^^
+  File "/data/q27/w142/code/census.py", line 112, in main
+    R = Rad(a[0]); bad = []
+  File "/data/q27/w142/code/census.py", line 47, in __init__
+    self.path = path; self.f = open(path, "rb")
+                               ~~~~^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'w132/value/mix/m1-1.5-a8.rad'
+rc 1
+
+2.5-B.rad: 787 weights, 3.1260 bpw (file), 3.1206 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  plain                                       450    2.595
+  exl3i      2.25 mul1i8   a8g128     1 nat    50    1.444
+  exl3i       2.5 mul1i8   a8g128     1 nat    60    1.348
+  exl3i         2 mul1i8   a8g128     1 nat    55    1.010
+  exl3i      2.75 mul1i8   a8g128     1 nat    43    0.818
+  exl3i         3 mul1i8   a8g128     1 nat    31    0.699
+  exl3i       3.5 mul1i8   a8g128     1 nat    13    0.524
+  affine                                        1    0.497
+  exl3i      3.25 mul1i8   a8g128     1 nat    18    0.465
+  exl3i      1.75 mul1i8   a8g128     1 nat    30    0.398
+  exl3i      3.75 mul1i8   a8g128     1 nat     7    0.226
+  exl3i       1.5 mul1i8   a8g128     1 nat    13    0.144
+  exl3i      1.25 mul1i8   a8g128     1 nat     5    0.140
+  exl3i         4 mul1i8   a8g128     1 nat     7    0.100
+  exl3i       4.5 mul1i8   a8g128     1 nat     2    0.047
+  exl3i      4.75 mul1i8   a8g128     1 nat     1    0.019
+  exl3i      4.25 mul1i8   a8g128     1 nat     1    0.017
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  affine fwht128 u3  0.497 GB
+CENSUS PASS [checked: mix base act codebook version]
+
+== 2.5-T4 (arm container vs the B mix: the 96 a/b weights differ, nothing else)
+MISMATCH blk.25.ssm_b.weight: not named by the mix and differs from base
+... 56 more
+CENSUS FAIL (96) [checked: mix base]

@@ -4,6 +4,42 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 1:05 PM CST · #178 · GDN a/b quantized (mining A2): no arm has a measurable KL cost (calib part within ±0.24 %), the freed 0.007–0.009 bpw buy 0.8–1.4 % in the trunk → G (stock INT8 G128 FWHT128 GPTQ) and T4 (trellis i8 K4, padded) go to the menu; container census extended + hostd / final-pack gates (B2) (w142)
+- **Status:** done · **Machine:** ds8 (GPTQ / RTN on the CPU via libquant 11:36 AM–12:58 PM CST; trellis quant 4.5 card-min; 10 scores + 1 determinism rescore + 1 profiled serve, card locks beside w132 / w140 / w143) · **Code:** `search/v3/ab178/` (README) · **Rule:** `RULES-178.md` (9d59b5a, before any run) · **Data:** `data/ab178/` (README)
+- **Arms** (a/b only, 48 GDN layers, 23.6M weights, today bf16 = 0.01404 bpw), each a dequantized splice into the #171
+  incumbents at 2.5 / 4.0 with A8 trunk: G = the IQ8R recipe line (`gptq codes=i8 group=128 scale=bf16 transform=fwht128
+  clamp=sym rule=search`, radiance libquant's own `gptqsim` called through `abq.cpp` on the published layer-input Hessian),
+  R = same form RTN, T4 / T5 / T6 = rxq trellis i8 on a | b padded to 128 rows (exllamav3 LDLQ needs N % 128 = 0; the
+  lead's "48 rows = 3 tiles" does not hold for LDLQ), no H_out. Scored on golden-s171d (54 c + 130 x docs); B = w132's
+  score of the same mix (my rescore: rows byte-identical).
+- **Result** (d = pmean log KL ratio vs B, g = b_s × bpw saved): 2.5: G +0.41 % [+0.15, +0.68], R +0.18 %, T4 +0.37 %
+  [+0.03, +0.61], T5 +0.41 %, T6 +0.21 % vs g 1.0–1.4 % → all adopted; 4.0: G −0.56 % [−1.29, +0.60], R +0.76 % (null),
+  T4 −0.54 %, T5 −0.18 % (null), T6 −0.52 % vs g 0.8–1.1 %. d does not follow the weight error (G 3e-6 … T4 3e-4
+  Hessian-relative): the calib part moves ≤ ±0.24 % (R 4.0 +0.44 %), the x part is driven by 2–3 high-KL xcorp docs
+  (46, 45, 140) that swing ±50–170 KL units under any a/b perturbation (sign random: every arm + at 2.5, − at 4.0).
+  Frontier: T4 (0.00936 bpw, dominates T5 / T6 / R) and G (0.00691, the stock radiance-2.0 tensor).
+- **Time** (arm B 2.5 served with --profile-ops; shares, not wall): decode a/b gemm 0.90 ms of 36.3 ms a step (96
+  latency-bound ops ~9.4 µs; int8 bytes save ~nothing; fusing a | b into one N 96 op, as IQR does, is the speed item);
+  prefill 19 ms of 3,517 (0.55 %), so ≤ ~10 ms to win, while a stock i8a8h a/b needs its own had_quant_act_i8g on h (plain
+  fwht128 cannot read the trunk's suh·H128 A8 plane): +10–40 ms est. → serve G as w8a16 (neutral) or accept a small
+  prefill loss; T4 sits in the qkv / z su group, so an exl3i a | b weight could share `aq_in` at no quantizer cost.
+- **B2 (census):** `ab178/census/`: `census-178.patch` (store/census.py: R16 rows + exl3i encoding version, form
+  strings, head / embedding forms, `--fast` 0.2 s vs ~15 s, donor-name K / codebook check, a weight with no act line must
+  keep the base's mode, `--expect-act / -codebook / -head / -emb / --max-version`), `hostd-census.patch` (HOSTCONF
+  `eval.census_cmd`: every eval mix checked before scoring, a fail returns the unit unscored; test 8 / 8 PASS, the
+  early-stop test still 11 / 11), `finalpack.sh` (radmix → full census with the release expectations; output only on
+  PASS). Run on the V2 3.00 base, level packs, head / embedding donors, an R16 head pack, w132's M1 mixes and my B / arm
+  containers (`data/ab178/census-runs.txt`): all as intended; the negative tests (dropped act lines, misnamed donor,
+  wrong donor, R16 head under version 2, a search container under the release head rule) each FAIL as they should.
+  Seen: every search container carries a 2.54 GB bf16 head donor (by design, w136), so the release rule must not be
+  used on search mixes.
+- **For the lead:** (1) put G and T4 in w133's menu as a/b options (price ≈ 0 KL; bytes 0.00691 / 0.00936 bpw at every
+  size; larger share at 1.0–1.25). (2) Serving: either needs a qwen35_exl3 change (G: an i8 / w8a16 a/b path, stock 2.0
+  tensor; T4: a 128-row exl3i a | b weight in the qkv / z plane group, outputs 0–47 / 48–95, 96–127 dropped); the a | b
+  fusion is worth doing regardless. (3) Merge the census patches (store is in hostd's TREE_DIRS: restage box2 + ds8
+  together) and decide `--expect-act a8g128` for the restarted search.
+- **Runtime:** none measured for the served form (no reader yet); bf16 splice only. VRAM / bytes −0.0069 / −0.0094 bpw.
+
 ### 2026-11-13 12:55 PM CST · #— · RULES-picks implemented (w145): in-search (b) capped + (c) guard, finalpick on (a) with unit-bootstrap CIs, per-slice rotation, s171b retired; #171 replay 38 / 71 accepts hold; final-pick slice planned (~750k), no ver4 read
 - **One line:** `search/v3/picks145/README.md` (code seqrule / driver / slices / pickstat / finalpick, `earlystop-picks.patch` to restage on the hosts, tests 9 / 9 PASS, stand-in si145 PASS 7 / 7; replay `data/searchv3/w145/replay145.json`: of #171's 71 accepts 38 hold, 29 fail the (c) guard, 3 (b), 1 early stop; slice plan c ver4 205k + trace 4723 ~120k + 123 reused verify docs 151k, x ~210 fresh xcorp pieces 255k, ~0.35 card-h per candidate on ds8 A8) · **Runtime:** neither (decision statistics only).
 

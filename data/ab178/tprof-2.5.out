@@ -1,0 +1,5 @@
+tprof-2.5.log: 65 dumps, 256 decode steps between first and last; 96 a/b gemm ops, 208 activation-quantizer ops
+  prefill (2 chunks, 9k tokens)  all ops  3516.651 ms   a/b gemm   19.212 ms (0.55 %)   activation quantizers  224.065 ms (6.37 %, 1077.2 us per op)
+  decode (per step)              all ops    36.324 ms   a/b gemm    0.898 ms (2.47 %)   activation quantizers    0.000 ms (0.00 %, 0.0 us per op)
+  a/b gemm rows (first dump): [('gemm_nt', 'N=48 K=5120 dtype=bf16')]
+  quantizer rows (first dump): [('exl3i_actq', 'K=17408 planes=1 pre=silu_mul'), ('exl3i_actq', 'K=5120 planes=2 pre=rmsnorm eps=1e-06 wadd=1'), ('exl3i_actq', 'K=5120 planes=3 pre=rmsnorm eps=1e-06 wadd=1'), ('exl3i_actq', 'K=6144 planes=1 pre=mul')]

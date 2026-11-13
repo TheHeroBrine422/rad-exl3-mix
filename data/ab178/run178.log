@@ -1,0 +1,41 @@
+11-13 11:37:55 CST start pid 4087109
+11-13 11:51:11 CST start pid 9106
+11-13 11:54:33 CST card 1 (queued): trellis a/b K4,5,6
+11-13 11:59:02 CST trellis rc 0 wrote tq/ab-T6.safetensors
+11-13 12:04:51 CST start pid 119213
+11-13 12:09:57 CST start pid 138447
+11-13 12:10:11 CST mix 2.5 v3s171-2.5-block-00626 bytes 10509639680 acts 336
+11-13 12:10:34 CST mix 4.0 v3s171-4-block-00420 bytes 15353896960 acts 336
+abpatch 4.0-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+abpatch 2.5-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+11-13 12:11:27 CST card 5 (queued): score 2.5 T4
+11-13 12:15:37 CST card 1 (queued): score 4.0 T4
+11-13 12:17:11 CST score 2.5 T4 rc 0 I kld: 184 documents in 336 s, 0 preemption(s)
+abpatch 2.5-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 12:21:21 CST score 4.0 T4 rc 0 I kld: 184 documents in 336 s, 0 preemption(s)
+abpatch 4.0-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 12:22:27 CST card 3 (queued): score 2.5 T5
+11-13 12:28:23 CST card 3 (queued): score 4.0 T5
+11-13 12:28:23 CST score 2.5 T5 rc 0 I kld: 184 documents in 349 s, 0 preemption(s)
+abpatch 2.5-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 12:28:47 CST card 2: score 2.5 T6
+11-13 12:34:17 CST score 4.0 T5 rc 0 I kld: 184 documents in 346 s, 0 preemption(s)
+11-13 12:34:46 CST score 2.5 T6 rc 0 I kld: 184 documents in 350 s, 0 preemption(s)
+abpatch 4.0-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 12:35:17 CST card 5 (queued): score 4.0 T6
+11-13 12:41:20 CST score 4.0 T6 rc 0 I kld: 184 documents in 353 s, 0 preemption(s)
+abpatch 4.0-G.rad: 96 weights from ab-G.safetensors, sha256 9c974d8a6279fd99
+11-13 12:48:34 CST card 3: score 4.0 G
+abpatch 2.5-G.rad: 96 weights from ab-G.safetensors, sha256 9c974d8a6279fd99
+11-13 12:49:00 CST card 4: score 2.5 G
+11-13 12:51:45 CST score 4.0 Bm card 7 rc 0 I kld: 184 documents in 319 s, 0 preemption(s)
+4.0 Bm rows byte-identical to w132's
+11-13 12:54:03 CST score 4.0 G rc 0 I kld: 184 documents in 321 s, 0 preemption(s)
+11-13 12:54:24 CST score 2.5 G rc 0 I kld: 184 documents in 317 s, 0 preemption(s)
+abpatch 4.0-R.rad: 96 weights from ab-R.safetensors, sha256 d37cf694e375a19d
+11-13 12:54:29 CST card 1: score 4.0 R
+abpatch 2.5-R.rad: 96 weights from ab-R.safetensors, sha256 d37cf694e375a19d
+11-13 12:54:42 CST card 3: score 2.5 R
+11-13 13:00:07 CST score 4.0 R rc 0 I kld: 184 documents in 324 s, 0 preemption(s)
+11-13 13:00:10 CST score 2.5 R rc 0 I kld: 184 documents in 319 s, 0 preemption(s)
+11-13 13:00:13 CST done

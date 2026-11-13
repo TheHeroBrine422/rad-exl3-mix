@@ -1,0 +1,160 @@
+--- a/store/census.py
++++ b/store/census.py
+@@ -6,11 +6,26 @@
+ 
+ --mix: radmix's mix file ("<weight> <donor.rad>", "act <weight> <mode>"). Each named weight is checked byte-for-byte
+        against its donor's entry (encoding struct, planes' bytes -- the same identity as store/scan.py's vid), and each
+-       act line against the container's metadata; weights the mix does not name must equal the BASE given by --base.
++       act line against the container's metadata; weights the mix does not name must equal the BASE given by --base, and
++       (with --base) a weight with no act line must keep BASE's mode (radmix's rule).
+ --recipe: rad-convert's recipe ("PATTERN QUANTISER key=value ..."; "@" = the one stored in the container): each weight's quantiser and, for exl3 / exl3i,
+        rate= / bits= / codebook= checked against the stored encoding (first matching pattern wins, as rad-convert).
+-Exit 1 on any mismatch. Prints a summary table by (scheme, K, codebook, act)."""
+-import collections, fnmatch, hashlib, json, os, struct, sys
++--fast: with --mix / --base, compare each weight's encoding struct and plane sizes only, not its bytes (seconds instead of
++       reading every weight; radmix clones by reference, so a wrong donor shows in the encoding). The default hashes.
++Donor names: with --mix, a donor named like a level pack (q27v3-<stamp>-k<K>-<i8|i4|mul1>[-s<scales>].rad) must hold
++       that K and codebook (catches a mis-built donor pack, which the byte check against the same donor cannot).
++Expectations (what the caller intends, beyond the mix; each mismatch is a MISMATCH line, w142 #178 / mining B2):
++  --expect-act MODE        every trunk trellis weight (blk.*, exl3 / exl3i) has activation mode MODE (e.g. a8g128)
++  --expect-codebook CB     every trellis weight (trunk and head) is in codebook CB (mul1i8, mul1i4, mul1)
++  --expect-head PATTERN    output.weight's form matches PATTERN (fnmatch), e.g. 'exl3i mul1i8 K* r16' for a release,
++                           'plain - bf16' for the search's dequantized head donors
++  --expect-emb PATTERN     token_embd.weight's form, the same way
++  --max-version N          no exl3i weight needs a reader newer than encoding version N (exl3i_encoding.h: 1 base,
++                           2 codebook mul1i4, 3 R16 row order)
++A weight's form: "<scheme> <codebook> K<K> <r16|nat>" for exl3i, "<scheme> <codebook> K<K>" for exl3, otherwise
++"<scheme> <transform or -> <dtype of the first plane>".
++Exit 1 on any mismatch. Prints a summary table by (scheme, K, codebook, act, version, rows) and the head / embedding forms."""
++import collections, fnmatch, hashlib, json, os, re, struct, sys
+ 
+ HDR = struct.Struct("<IIQ5Q" + "Q" * 18)
+ ENT = struct.Struct("<QQQII6qiiiIQQQ2Q")
+@@ -50,8 +65,10 @@
+             self.w[cstr(S, e[0])] = dict(quant=cstr(S, e[1]), opts=cstr(S, e[2]), shape=list(e[5:5 + e[4]]), enc=eb,
+                                          planes=planes, bytes=sum(n for _, n in planes), offset=e[16])
+ 
+-    def ident(self, name):   # store/scan.py's vid: name, shape, encoding struct, each plane's bytes
++    def ident(self, name, fast=False):   # store/scan.py's vid: name, shape, encoding struct, each plane's bytes
+         w = self.w[name]; hs = hashlib.sha256(json.dumps([name, w["shape"]]).encode()); hs.update(w["enc"])
++        if fast:                         # --fast: the plane sizes, not their bytes
++            hs.update(json.dumps([pn for _, pn in w["planes"]]).encode()); return hs.hexdigest()[:32]
+         for po, pn in w["planes"]:
+             hs.update(struct.pack("<QQ", po - w["offset"], pn)); self.f.seek(po); left = pn
+             while left:
+@@ -60,19 +77,27 @@
+ 
+ 
+ def describe(eb):
+-    """(scheme, K, codebook, detail) of a stored encoding"""
++    """(scheme, K, codebook, detail) of a stored encoding (rows / version: describe2)"""
++    return describe2(eb)[:4]
++
++
++def describe2(eb):
++    """(scheme, K, codebook, detail, rows, version, form) of a stored encoding"""
+     scheme = eb[:24].split(b"\0")[0].decode(); tr = eb[24:48].split(b"\0")[0].decode()
+     n = struct.unpack_from("<I", eb, 48)[0]
+     pl = [PLANE.unpack_from(eb, 56 + 64 * i) for i in range(n)]
+     roles = [p[0].split(b"\0")[0].decode() for p in pl]
+-    if scheme == "exl3i":
+-        cb, _, k = tr.partition("/h128/k")
+-        return scheme, k, cb, "+".join(roles)
++    if scheme == "exl3i":                      # "<codebook>/h128/k<rate>[/r16]" (exl3i_encoding.h)
++        r16 = tr.endswith("/r16")
++        cb, _, k = (tr[:-4] if r16 else tr).partition("/h128/k")
++        rows = "r16" if r16 else "nat"; ver = 3 if r16 else 2 if cb == "mul1i4" else 1
++        return scheme, k, cb, "+".join(roles), rows, ver, f"{scheme} {cb} K{k} {rows}"
+     if scheme == "exl3":
+         ci = roles.index("codes") if "codes" in roles else 0
+-        return scheme, str(UK.get(pl[ci][1], "?")), tr.split("/")[0], "+".join(roles)
++        k, cb = str(UK.get(pl[ci][1], "?")), tr.split("/")[0]
++        return scheme, k, cb, "+".join(roles), "", "", f"{scheme} {cb} K{k}"
+     dt = DT.get(pl[0][1], str(pl[0][1])) if pl else "?"
+-    return scheme, "", "", f"{tr or '-'} {dt}"
++    return scheme, "", "", f"{tr or '-'} {dt}", "", "", f"{scheme} {tr or '-'} {dt}"
+ 
+ 
+ def main():
+@@ -80,13 +105,17 @@
+     def opt(k):
+         if k in a: i = a.index(k); v = a[i + 1]; del a[i:i + 2]; return v
+     mix, recipe, js, base = opt("--mix"), opt("--recipe"), opt("--json"), opt("--base")
++    e_act, e_cb, e_head, e_emb, maxv = (opt("--expect-act"), opt("--expect-codebook"), opt("--expect-head"),
++                                        opt("--expect-emb"), opt("--max-version"))
++    fast = "--fast" in a
++    if fast: a.remove("--fast")
+     R = Rad(a[0]); bad = []
+     rows = []
+     for name, w in R.w.items():
+-        sch, k, cb, det = describe(w["enc"])
++        sch, k, cb, det, ro, ver, form = describe2(w["enc"])
+         act = R.meta.get(f"exl3.act.{name}", "f16") if sch in ("exl3", "exl3i") else ""
+         rows.append(dict(name=name, scheme=sch, K=k, codebook=cb, act=act, planes=det, bytes=w["bytes"],
+-                         quantizer=w["quant"], options=w["opts"]))
++                         quantizer=w["quant"], options=w["opts"], rows=ro, version=ver, form=form))
+     by = {r["name"]: r for r in rows}
+     if recipe:   # first matching rule wins (rad-convert)
+         text = R.recipe if recipe == "@" else open(recipe).read()
+@@ -112,27 +141,54 @@
+             for n in names:
+                 if n not in R.w: bad.append(f"{n}: named by the mix, not in the container"); continue
+                 if n not in D_.w: bad.append(f"{n}: not in donor {d}"); continue
+-                if R.ident(n) != D_.ident(n): bad.append(f"{n}: differs from donor {os.path.basename(d)}")
++                if R.ident(n, fast) != D_.ident(n, fast): bad.append(f"{n}: differs from donor {os.path.basename(d)}")
++            m = re.search(r"-k([0-9.]+)-(i8|i4|mul1)(-s[0-9a-f]+)?\.rad$", os.path.basename(d))
++            if m:                          # a level pack: its name says K and codebook
++                wk, wcb = m.group(1), {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1"}[m.group(2)]
++                for n in names:
++                    r = by.get(n)
++                    if r and r["scheme"] in ("exl3", "exl3i") and (float(r["K"]) != float(wk) or r["codebook"] != wcb):
++                        bad.append(f"{n}: K{r['K']} {r['codebook']}, donor named k{wk} {wcb} ({os.path.basename(d)})")
+         for n, m in acts.items():
+             if R.meta.get(f"exl3.act.{n}") != m: bad.append(f"{n}: act {R.meta.get(f'exl3.act.{n}')}, mix {m}")
+         if base:
+             B = Rad(base)
+             for n in R.w:
+                 if n in named: continue
+-                if n not in B.w or R.ident(n) != B.ident(n): bad.append(f"{n}: not named by the mix and differs from base")
++                if n not in B.w or R.ident(n, fast) != B.ident(n, fast): bad.append(f"{n}: not named by the mix and differs from base")
++            for n in R.w:                  # no act line: radmix keeps BASE's metadata, so the mode must be BASE's
++                ak = f"exl3.act.{n}"
++                if n not in acts and R.meta.get(ak) != B.meta.get(ak):
++                    bad.append(f"{n}: act {R.meta.get(ak) or 'f16 (unset)'}, the mix has no act line and base has {B.meta.get(ak) or 'f16 (unset)'}")
++    trel = [r for r in rows if r["scheme"] in ("exl3", "exl3i")]
++    if e_act:
++        for r in trel:
++            if r["name"].startswith("blk.") and r["act"] != e_act: bad.append(f"{r['name']}: act {r['act']}, expected {e_act}")
++    if e_cb:
++        for r in trel:
++            if r["codebook"] != e_cb: bad.append(f"{r['name']}: codebook {r['codebook']}, expected {e_cb}")
++    for n, pat in (("output.weight", e_head), ("token_embd.weight", e_emb)):
++        if pat and (n not in by or not fnmatch.fnmatchcase(by[n]["form"], pat)):
++            bad.append(f"{n}: form {by[n]['form'] if n in by else 'absent'}, expected {pat}")
++    if maxv:
++        for r in trel:
++            if r["version"] and int(r["version"]) > int(maxv): bad.append(f"{r['name']}: encoding version {r['version']} > {maxv} ({r['form']})")
+     # summary
+     agg = collections.defaultdict(lambda: [0, 0])
+     for r in rows:
+-        key = (r["scheme"], r["K"], r["codebook"], r["act"]); agg[key][0] += 1; agg[key][1] += r["bytes"]
++        key = (r["scheme"], r["K"], r["codebook"], r["act"], str(r["version"]), r["rows"]); agg[key][0] += 1; agg[key][1] += r["bytes"]
+     print(f"{os.path.basename(a[0])}: {len(rows)} weights, {R.size * 8 / PARAMS:.4f} bpw (file), "
+           f"{sum(r['bytes'] for r in rows) * 8 / PARAMS:.4f} bpw (weights)")
+-    print(f"  {'scheme':<8} {'K':>6} {'codebook':<8} {'act':<8} {'n':>4} {'GB':>8}")
+-    for (s, k, c, ac), (n, b) in sorted(agg.items(), key=lambda x: -x[1][1]):
+-        print(f"  {s:<8} {k:>6} {c:<8} {ac:<8} {n:>4} {b / 1e9:>8.3f}")
++    print(f"  {'scheme':<8} {'K':>6} {'codebook':<8} {'act':<8} {'ver':>3} {'rows':<4} {'n':>4} {'GB':>8}")
++    for (s, k, c, ac, v, ro), (n, b) in sorted(agg.items(), key=lambda x: -x[1][1]):
++        print(f"  {s:<8} {k:>6} {c:<8} {ac:<8} {v:>3} {ro:<4} {n:>4} {b / 1e9:>8.3f}")
++    for n in ("output.weight", "token_embd.weight"):
++        if n in by: print(f"  {n:<18} {by[n]['form']}  {by[n]['bytes'] / 1e9:.3f} GB" + (f"  act {by[n]['act']}" if by[n]["act"] else ""))
+     if js: json.dump(dict(container=a[0], bytes=R.size, weights=rows, mismatches=bad), open(js, "w"), indent=1)
+     for b in bad[:40]: print("MISMATCH", b)
+     if len(bad) > 40: print(f"... {len(bad) - 40} more")
+-    checked = " ".join(x for x, v in (("recipe", recipe), ("mix", mix), ("base", base)) if v)
++    checked = " ".join(x for x, v in (("recipe", recipe), ("mix", mix), ("base", base), ("act", e_act), ("codebook", e_cb),
++                                      ("head", e_head), ("emb", e_emb), ("version", maxv)) if v) + (" (fast)" if fast and (mix or base) else "")
+     print("CENSUS", "PASS" if not bad else f"FAIL ({len(bad)})", f"[checked: {checked or 'nothing (summary only)'}]")
+     sys.exit(1 if bad else 0)
+ 
