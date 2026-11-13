@@ -61,3 +61,23 @@ same trunk), which ver3's status ("spent for any selection") allows. Verify (ver
   pair with w132's incumbent rows and w135's Lloyd rows as planned. If they differ, each incumbent is also scored unswapped
   on this build (3 more evals) and every trellis arm pairs with its same-build incumbent; the comparison with w135's Lloyd
   rows is then reported as cross-build (labelled so).
+
+## Amendment 2 (2026-11-13 4:40 PM CST, before any run below; lead notes 11-13: host-RAM embedding, K8 mul1 one kernel)
+
+The lead's notes ask whether a host-RAM embedding read by the same `embed_exl3i` (mul1 K8 trellis, codes in pinned host
+memory) is ≈ bf16 and what reading it over PCIe costs. Added, nothing above changes:
+
+5. **Host gather cost (no KL).** `exl3dense_embed_exl3i_gpu_test --bench-only [--host] [--tokens golden-ver3-8k ids]`
+   on one box2 card: the same kernel with record / suh / svh in device memory vs in mapped pinned host memory
+   (`--host`), K2.5 / K4 / K8, M = 1 (decode) … 8192 (8k prefill), uniform ids (worst case) and real text ids. Reported
+   as is, beside the served per-op µs of bf16 `embed_lookup` (host-pinned, radiance's default) from perf144.
+6. **KL of the host candidates (pricing, no selection).** Three more A8 arms in exactly the setup of item 4
+   (a8anchor144.sh, ds8, s171b whole, this branch's build), all on v3s171-2.5-explore-00419:
+   - **bf16**: the checkpoint's bf16 table (the K0.125 base pack's token_embd);
+   - **t8m**: mul1 K8 trellis (`/data/q27/emb/trellis/emb-t-m1-K8.rad`, quant144.sh + donor144.sh as the other levels);
+   - **i8row**: int8 per-row RTN (bf16 scale = absmax / 127), served as its bf16 dequantized rows (`embrtn144.py`): the
+     KL an int8 row gather would give, without building that gather.
+   Reported: pooled per-document paired log KL ratio (calib / xcorp parts, `calobs.py`) of t8m vs bf16 and i8row vs bf16
+   (and each vs the ctl row). **"≈ bf16"** for an arm means its paired 2-SE interval vs bf16 contains 0 and lies within
+   ±1%. The row errors `rel` (int8rel144.py: int8-row / int8-g128 / int8-g128h; K8 from embsrc.py) and their floor-model
+   `err` are reported beside. No accept / reject here: the lead decides the host format and the loader default.
