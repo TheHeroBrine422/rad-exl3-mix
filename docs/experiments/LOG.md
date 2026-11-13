@@ -5,6 +5,34 @@ before 2026-11-02 ~05:00 CST were rewritten into this template from the old trac
 versions of anything: git history.
 
 
+### 2026-11-13 10:10 AM CST · #164-02 · R16 head end to end in a staged build: quantized R16 head = the bf16-spliced head to 9e-7 (K4) / 2e-6 (K2.5) mean KLD, text correct, decode −3.1 ms / step (w136)
+- **Status:** done · **Machine:** box2 (cards 0 / 1, by the locks) · **Code:** fork `qc-exl3-v3-perf` **5c9956c** (=
+  374503f + merge of `qc-exl3-v3`: rad-convert `--no-error`, `--kld-progress`); `pipeline/hosts/rad10perf/`
+  (`radbuild-perf.sh`, `r16check.sh`, `trunc.sh`, `qdonor.sh`, `radents.py`, `kldpair.py`) · **Data:** `data/rad10perf/w136/`
+  · **Brief:** `rad-local/workers/instr3/w136.md` (w124's undelivered 1:00 AM item)
+- **Build:** `/data/q27/rad10-perf/{install,home,home-pack}` on box2 (8 min; w130's rad10 recipe on 5c9956c, FFmpeg on)
+  and copied to ds8 (sha256 tree identical). vs `rad10/r374`: plugins byte-identical, device code identical (core libs
+  differ only by embedded source paths). `home-pack` = 1aa18de's qwen35_exl3 (the head's packs carry the bf16 vision tower).
+- **Recipe line:** `output.weight exl3i src=/data/q27/heads/q/R16s003/K4 codebook=mul1i8 rate=4 rows=r16` (K2.5: `rate=2.5`;
+  R16s003m1 K7: `codebook=mul1`), appended to the trunk recipe, packed with home-pack `--no-error` (130 s); the importer
+  checks `rows=r16` against the stamp's R16.npy.
+- **Result** (golden-ver3-8k, 156,030 positions, K4 ladder trunk; A = quantized R16 head by rad-convert, B = the same
+  container with the search's bf16 donor spliced by radmix; only `output.weight` differs): K4 head 0.1570843 vs
+  0.1570834 (|Δ| 9.2e-7), K2.5 0.1584965 vs 0.1584986 (2.1e-6); per-document max |Δ| 1.4e-4 / 8.5e-5. That per-document
+  level is the bf16 splice's own noise: two unbiased bf16 roundings of the same head (B4 nearest vs B4s stochastic)
+  differ by 7.7e-6 mean, 1.2e-4 per document (truncation: 3.7e-4 / 4.1e-3); the donors are bf16(f16 dequant) value for
+  value. An f16 dense reference is impossible (qwen35_exl3 declares the head bf16 only). Top-1 93.950 / 93.949 %; all 20
+  served runs answer correctly, greedy text A = B. **Bytes:** head stored 636,454,400 (K4) / 398,067,200 (K2.5) = menu −
+  293,376 B (mkmenu prices trellis + 1 MiB; real trellis + 3 B × vocab + 2 B × 5120). **radmix splices the quantized
+  head byte for byte** (C4 = B4 + A4's head: rows identical to A4).
+- **Timing** (card 0, C 1, median of 3 interleaved rounds; other workers on cards 2 / 3): decode step short / 8k ctx
+  A4 29.00 / 30.15 ms vs B4 32.08 / 33.13 (−3.1 ms, −9.6 %: 1.9 GB less at ~620 GB/s); A2.5 29.13 / 30.92 vs B2.5
+  31.91 / 32.96 (the K2.5 head is no faster than K4: fractional-K decode); prefill 8k ~1,600 tok/s for all four.
+- **Decision / next:** lead. Release packs: the recipe line (real head). Search: scores stand (Δ below noise); switching
+  its donors to quantized-head containers is optional (smaller packs, faster scoring; README "For the lead").
+  Optional: mkmenu head bytes formula.
+- **Runtime:** D (the quantized head: −3.1 ms / decode step vs a bf16 head; prefill unchanged); none for the search's KLD
+
 ### 2026-11-13 9:50 AM CST · #173 · Sensitivity model: D + T + S done — kfit3 mispredicts the search's own moves; M1 (per-(label, size) offsets) −69 % ratio error on T (P pending to 3:30 PM)
 - **Status:** running (P window open) · **Machine:** colo · **Code:** `search/refit/w133/` · **Data:** `data/refit/w133/`
   (ds-S0, dev/ and test/ fits + predictions, report-T.json, sol-S0.json, picks/)

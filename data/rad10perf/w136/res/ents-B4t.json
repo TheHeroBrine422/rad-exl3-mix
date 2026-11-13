@@ -1,0 +1,1 @@
+{"file": "/data/q27/w136/packs/A4.rad", "weights": 787, "output.weight": [8388608, 636454400, [248320, 5120]], "payload_bytes": 15412707840, "other": "/data/q27/w136/packs/B4t.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}

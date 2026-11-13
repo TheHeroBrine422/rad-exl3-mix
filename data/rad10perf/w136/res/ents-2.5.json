@@ -1,0 +1,1 @@
+{"file": "/data/q27/w136/packs/A2.5.rad", "weights": 787, "output.weight": [8388608, 398067200, [248320, 5120]], "payload_bytes": 15174320640, "other": "/data/q27/w136/packs/B2.5.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}

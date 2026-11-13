@@ -1,0 +1,1 @@
+{"A": "A4", "B": "C4", "positions": 156030, "docs": 104, "kld_A": 0.15708431030337178, "kld_B": 0.15708431030337178, "abs_dmean": 0.0, "doc_abs_dmean_max": 0.0, "doc_worst": 103, "doc_worst_rows": 1223, "pos_abs_d_max": 0.0, "pos_abs_d_mean": 0.0, "pos_d0_share": 1.0, "top1_A": 0.9394988143305775, "top1_B": 0.9394988143305775, "top1_flips": 0, "rows_identical": true}

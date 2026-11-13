@@ -1,0 +1,17 @@
+15:33:41 f16ck 2.5: {"out": "/data/q27/w136/ck-f16-K2.5", "rows": 248320, "f16_head": "/data/q27/w136/ck-f16-K2.5/lm_head-f16.safetensors", "donor": "/data/q27/w136/heads/donors/hd-u2.5.rad", "donor_eq_bf16_of_f16": 1271398400, "of": 1271398400}
+15:33:41 f16ck 4: {"out": "/data/q27/w136/ck-f16-K4", "rows": 248320, "f16_head": "/data/q27/w136/ck-f16-K4/lm_head-f16.safetensors", "donor": "/data/q27/w136/heads/donors/hd-u4.rad", "donor_eq_bf16_of_f16": 1271398400, "of": 1271398400}
+15:34:06 pack F2.5: start
+15:34:06 pack F2.5: rc 1  bytes, 0 s
+Traceback (most recent call last):
+  File "/data/q27/tools/rad10perf/radents.py", line 46, in <module>
+    print(json.dumps(main(*sys.argv[1:3])))
+                     ~~~~^^^^^^^^^^^^^^^^
+  File "/data/q27/tools/rad10perf/radents.py", line 38, in main
+    B = entries(b)
+  File "/data/q27/tools/rad10perf/radents.py", line 10, in entries
+    f = open(path, "rb"); h = f.read(4096)
+FileNotFoundError: [Errno 2] No such file or directory: '/data/q27/w136/packs/F2.5.rad'
+15:34:06 ents A2.5 F2.5: 
+15:34:06 kld F2.5 (card 2)
+15:34:06 kld F2.5 rc 1
+15:34:36 stopped: the plugin declares output.weight bf16 only (f16 refused at declare)

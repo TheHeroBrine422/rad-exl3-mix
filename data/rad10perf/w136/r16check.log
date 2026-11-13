@@ -1,0 +1,68 @@
+15:19:24 start (rad10-perf 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d))
+15:19:24 pack A4: waiting for conv.lock + ram.lock
+15:19:24 pack A4: start
+15:21:34 pack A4: rc 0 15422568448 bytes, 130 s
+15:21:47 mix B4: /data/q27/w136/packs/B4.rad.part: 787 weights (1 from donors, 0 act keys), 16.143 GiB, 0 cloned, 787 copied
+15:21:47 pack A2.5: waiting for conv.lock + ram.lock
+15:21:47 pack A2.5: start
+15:23:57 pack A2.5: rc 0 15184181248 bytes, 130 s
+15:24:08 mix B2.5: /data/q27/w136/packs/B2.5.rad.part: 787 weights (1 from donors, 0 act keys), 16.143 GiB, 0 cloned, 787 copied
+15:24:38 ents 4: {"file": "/data/q27/w136/packs/A4.rad", "weights": 787, "output.weight": [8388608, 636454400, [248320, 5120]], "payload_bytes": 15412707840, "other": "/data/q27/w136/packs/B4.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}
+15:25:01 ents 2.5: {"file": "/data/q27/w136/packs/A2.5.rad", "weights": 787, "output.weight": [8388608, 398067200, [248320, 5120]], "payload_bytes": 15174320640, "other": "/data/q27/w136/packs/B2.5.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}
+15:25:01 kld A2.5 (card 1)
+15:25:01 kld A4 (card 0)
+15:27:12 kld A4 rc 0 0.15708431030337178 0.9394988143305775
+15:27:12 kld B4 (card 0)
+15:27:12 kld A2.5 rc 0 0.15849650426026102 0.932455297058258
+15:27:12 kld B2.5 (card 1)
+15:31:34 kld B4 rc 0 0.15708338561882912 0.9394859962827662
+15:31:40 kld B2.5 rc 0 0.158498558488962 0.9323271165801449
+15:31:40 kldpair: {"A": "A4", "B": "B4", "positions": 156030, "docs": 104, "kld_A": 0.15708431030337178, "kld_B": 0.15708338561882912, "abs_dmean": 9.246845426857941e-07, "doc_abs_dmean_max": 0.0001390495969827918, "doc_worst": 34, "doc_worst_rows": 933, "pos_abs_d_max": 0.024612903594970703, "pos_abs_d_mean": 0.00023998443799151236, "pos_d0_share": 6.409023905659168e-06, "top1_A": 0.9394988143305775, "top1_B": 0.9394859962827662, "top1_flips": 200, "rows_identical": false}
+{"A": "A2.5", "B": "B2.5", "positions": 156030, "docs": 104, "kld_A": 0.15849650426026102, "kld_B": 0.158498558488962, "abs_dmean": 2.054228701003913e-06, "doc_abs_dmean_max": 8.541214192153701e-05, "doc_worst": 52, "doc_worst_rows": 662, "pos_abs_d_max": 0.02223968505859375, "pos_abs_d_mean": 0.0002368277159335419, "pos_d0_share": 1.2818047811318337e-05, "top1_A": 0.932455297058258, "top1_B": 0.9323271165801449, "top1_flips": 154, "rows_identical": false}
+15:31:40 serve A4-1 (card 0)
+15:32:50 serve A4-1: 32.25 31.41 ms/step
+15:32:51 serve B4-1 (card 0)
+15:34:05 serve B4-1: 35.07 36.33 ms/step
+15:34:06 serve A4-2 (card 0)
+15:35:17 serve A4-2: 31.09 32.78 ms/step
+15:35:17 serve B4-2 (card 0)
+15:36:29 serve B4-2: 31.90 32.95 ms/step
+15:36:29 serve A2.5-1 (card 0)
+15:37:37 serve A2.5-1: 29.13 30.30 ms/step
+15:37:37 serve B2.5-1 (card 0)
+15:38:49 serve B2.5-1: 32.08 33.14 ms/step
+15:38:49 serve A2.5-2 (card 0)
+15:40:00 serve A2.5-2: 29.08 31.15 ms/step
+15:40:00 serve B2.5-2 (card 0)
+15:41:15 serve B2.5-2: 32.61 33.72 ms/step
+15:41:15 R16CHECK DONE
+15:48:27 start (rad10-perf 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d))
+15:48:27 ents 4: {"file": "/data/q27/w136/packs/A4.rad", "weights": 787, "output.weight": [8388608, 636454400, [248320, 5120]], "payload_bytes": 15412707840, "other": "/data/q27/w136/packs/B4.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}
+15:48:27 ents 2.5: {"file": "/data/q27/w136/packs/A2.5.rad", "weights": 787, "output.weight": [8388608, 398067200, [248320, 5120]], "payload_bytes": 15174320640, "other": "/data/q27/w136/packs/B2.5.rad", "other_weights": 787, "other_output.weight": [12582912, 2542796800, [248320, 5120]], "differ": ["output.weight"]}
+15:48:27 kldpair: {"A": "A4", "B": "B4", "positions": 156030, "docs": 104, "kld_A": 0.15708431030337178, "kld_B": 0.15708338561882912, "abs_dmean": 9.246845426857941e-07, "doc_abs_dmean_max": 0.0001390495969827918, "doc_worst": 34, "doc_worst_rows": 933, "pos_abs_d_max": 0.024612903594970703, "pos_abs_d_mean": 0.00023998443799151236, "pos_d0_share": 6.409023905659168e-06, "top1_A": 0.9394988143305775, "top1_B": 0.9394859962827662, "top1_flips": 200, "rows_identical": false}
+{"A": "A2.5", "B": "B2.5", "positions": 156030, "docs": 104, "kld_A": 0.15849650426026102, "kld_B": 0.158498558488962, "abs_dmean": 2.054228701003913e-06, "doc_abs_dmean_max": 8.541214192153701e-05, "doc_worst": 52, "doc_worst_rows": 662, "pos_abs_d_max": 0.02223968505859375, "pos_abs_d_mean": 0.0002368277159335419, "pos_d0_share": 1.2818047811318337e-05, "top1_A": 0.932455297058258, "top1_B": 0.9323271165801449, "top1_flips": 154, "rows_identical": false}
+15:48:27 serve A4-3 (card 0)
+15:49:34 serve A4-3: 29.00 30.14 ms/step
+15:49:34 serve B4-3 (card 0)
+15:50:47 serve B4-3: 32.59 33.13 ms/step
+15:50:47 serve A2.5-3 (card 0)
+15:51:56 serve A2.5-3: 29.14 32.95 ms/step
+15:51:56 serve B2.5-3 (card 0)
+15:53:10 serve B2.5-3: 31.74 32.96 ms/step
+15:53:10 serve A4-4 (card 0)
+15:54:18 serve A4-4: 29.00 30.15 ms/step
+15:54:18 serve B4-4 (card 0)
+15:55:30 serve B4-4: 32.08 33.14 ms/step
+15:55:30 serve A2.5-4 (card 0)
+15:56:38 serve A2.5-4: 28.99 30.92 ms/step
+15:56:39 serve B2.5-4 (card 0)
+15:57:50 serve B2.5-4: 31.91 33.13 ms/step
+15:57:51 serve A4-5 (card 0)
+15:58:58 serve A4-5: 28.99 30.31 ms/step
+15:58:59 serve B4-5 (card 0)
+16:00:13 serve B4-5: 31.91 33.12 ms/step
+16:00:13 serve A2.5-5 (card 0)
+16:01:21 serve A2.5-5: 29.13 30.15 ms/step
+16:01:22 serve B2.5-5 (card 0)
+16:02:33 serve B2.5-5: 31.91 32.96 ms/step
+16:02:34 R16CHECK DONE

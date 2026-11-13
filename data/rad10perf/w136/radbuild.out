@@ -1,0 +1,3 @@
+15:16:33 HOME READY /data/q27/rad10-perf/home
+15:16:41 pack qwen35_exl3 (1aa18de) built
+15:16:41 RADBUILD-PERF READY /data/q27/rad10-perf (src 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d); ff /data/q27/rad10/ffmpeg; tree.sha256)

@@ -1,0 +1,6 @@
+16:03:20 mix C4: /data/q27/w136/packs/C4.rad.part: 787 weights (1 from donors, 0 act keys), 14.371 GiB, 0 cloned, 787 copied 15430959104 bytes (A4 15422568448)
+16:03:47 ents A4 C4: {"file": "/data/q27/w136/packs/A4.rad", "weights": 787, "output.weight": [8388608, 636454400, [248320, 5120]], "payload_bytes": 15412707840, "other": "/data/q27/w136/packs/C4.rad", "other_weights": 787, "other_output.weight": [16777216, 636454400, [248320, 5120]], "differ": []}
+16:03:47 kld C4 (card 1)
+16:06:02 kld C4 rc 0
+16:06:02 kldpair A4 C4: {"A": "A4", "B": "C4", "positions": 156030, "docs": 104, "kld_A": 0.15708431030337178, "kld_B": 0.15708431030337178, "abs_dmean": 0.0, "doc_abs_dmean_max": 0.0, "doc_worst": 103, "doc_worst_rows": 1223, "pos_abs_d_max": 0.0, "pos_abs_d_mean": 0.0, "pos_d0_share": 1.0, "top1_A": 0.9394988143305775, "top1_B": 0.9394988143305775, "top1_flips": 0, "rows_identical": true}
+16:06:02 QDONOR DONE

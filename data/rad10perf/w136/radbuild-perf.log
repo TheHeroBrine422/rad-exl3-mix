@@ -1,0 +1,33 @@
+15:16:33 HOME READY /data/q27/rad10-perf/home
+-- The C compiler identification is GNU 15.2.0
+-- The CXX compiler identification is GNU 15.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+CMake Warning (unused-cli):
+  Manually-specified variables were not used by the project:
+
+    CMAKE_HIP_COMPILER
+    CMAKE_HIP_COMPILER_ROCM_ROOT
+    CMAKE_HIP_FLAGS
+    RAD_GPU_TARGETS
+    RAD_HIPCC
+    RAD_HIP_VOPD_REPEATABLE
+
+
+-- Build files have been written to: /data/q27/rad10-perf/pb-pack
+[1/4] Building CXX object CMakeFiles/qwen35_exl3.dir/qwen35_exl3.cpp.o
+[2/4] Linking CXX shared module radiance_home/architectures/qwen35_exl3.so
+[3/4] Building CXX object CMakeFiles/qwen35_exl3_test.dir/tests/qwen35_exl3_test.cpp.o
+[4/4] Linking CXX executable qwen35_exl3_test
+15:16:41 pack qwen35_exl3 (1aa18de) built
+15:16:41 RADBUILD-PERF READY /data/q27/rad10-perf (src 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d); ff /data/q27/rad10/ffmpeg; tree.sha256)

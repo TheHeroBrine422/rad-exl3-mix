@@ -1,0 +1,8 @@
+I source   /data/q27/w136/ck-f16-K2.5 (1199 tensors)
+I arch     qwen35, quant exl3
+I device: AQL backend, 4 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201]
+I recipe   9 rule(s)
+E declare: weight 'output.weight' is declared bf16, and 'output.weight' holds codes as f16: only an exact widening or narrowing is done at load; anything else is a quantisation, which a recipe does before the container is written (spec §4.4)
+E declare: op 'logits_gemm': weight operand 0 is handle 0, which this builder did not hand out
+E     weight 'output.weight' is declared bf16, and 'output.weight' holds codes as f16: only an exact widening or narrowing is done at load; anything else is a quantisation, which a recipe does before the container is written (spec §4.4)
+E     op 'logits_gemm': weight operand 0 is handle 0, which this builder did not hand out

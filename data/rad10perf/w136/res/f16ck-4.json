@@ -1,0 +1,1 @@
+{"out": "/data/q27/w136/ck-f16-K4", "rows": 248320, "f16_head": "/data/q27/w136/ck-f16-K4/lm_head-f16.safetensors", "donor": "/data/q27/w136/heads/donors/hd-u4.rad", "donor_eq_bf16_of_f16": 1271398400, "of": 1271398400}
