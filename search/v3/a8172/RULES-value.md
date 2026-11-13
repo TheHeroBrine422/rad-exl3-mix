@@ -37,3 +37,23 @@ of both slices are pooled by part (c = calib merged pool, x = xcorp).
 
 **Runs.** ds8, all 8 cards through `/data/q27/locks/card*.lock` (radmix under conv.lock + ram.lock shared). A mix is
 deleted after its two scores. Script: `run-value.sh`; analysis: `value.py`.
+
+## Amendment 1 (lead note 11-13 10:45 AM CST): third arm, w133's M1 re-solve picks
+
+Written and committed after the initial / current results were read (11:35 AM CST), before any M1 mix is built or
+scored. Amendment 1 adds an arm; it does not change the rules for the first two.
+
+- **Arm M1:** `data/refit/w133/fin/picksT/pickT133-<size>.json` (13 picks, 1.5–7.0; M1 fit-M1-full on
+  `menu133e.json`; none of its rows is on s171c / s171d). The mix is `Menu.eval_mix` of the pick on menu133e:
+  - the trunk levels map to ds8's packs, named as hostd names them (`packs/<level>-s<scales[:8]>.rad`);
+  - the head maps to the R16 donor (`heads/donors/hd-u*.rad`);
+  - the embedding maps to w135's donor (`emb/emb-e2.rad`, `emb-e5.rad`), or to the V2 base's own for "base".
+  It is built on the same V2-3.00 base plus `act <w> a8g128` on the 336 trunk weights and scored like the other two
+  arms.
+- **Comparisons**, with the same statistic, bootstrap (the same 2,000 resamples, seed 172), b_s and reading rules:
+  - (i) **M1 vs current** at the 12 sizes: the primary for this arm;
+  - (ii) M1 vs initial at the 12 sizes;
+  - 7.0 (M1 vs initial = current; b = 0.70, the driver's 7.0 b) is reported apart, not pooled.
+  - bpw_M1 = menu133e bpw + the driver's 8,255,936 B offset, as the driver computes bpw. Container bytes are reported
+    beside it.
+- Pooled readings for (i) and (ii): the mean over the 12 sizes, as before.
