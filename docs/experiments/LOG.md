@@ -6137,3 +6137,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   w145's 123 reused verify docs (136,284 scored) → 423 docs, **553,423 scored positions**. The trace-4723 chunk part (c2,
   ~120k, needs a bf16 golden) is not built; 553k is inside the user's 500k–1M. Ledger role (final) + c3 rows.
 - **Runtime:** none.
+
+### 2026-11-13 1:35 PM CST · data · bf16 goldens for the unrecorded night1105 chunks on ds8 (lead)
+- `eval/night1105/gold3.sh` on ds8 `/data/q27/gold3/`: radiance (rad10-perf) bf16 27B, TP2, exact wire, bf16 KV,
+  `--kld-record --kld-top 512`, 3 lanes (cards 0-1, 2-3, 4-5; 6-7 left to w139) over 9 chunks never recorded:
+  xc8k-b3-c0..c4 (8k xcorp), tr32k-b3-c0..c2 + tr32k-b2-c2 (32k own traces; ds8 counts as ours). ~1,000 positions/s
+  a lane (xc8k-b3-c0: 1.0M positions, 3.8 GiB). Fresh xcorp / trace data for QAD scale-up, slices and H_out. Non-calib
+  (no ledger rows). Corpora copied from gpubox `/data/night1105/corpora/chunks` (text, 10 MB).
+- **Runtime:** none.
