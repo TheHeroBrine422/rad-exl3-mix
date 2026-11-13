@@ -4,7 +4,7 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
-### 2026-11-13 1:35 AM CST · #169 · Trunk × head anchors (lead note 1:00 AM): 6 mixes K3 / K4 × R16 u3 / u4 / u5; the head was **unpriced** in fit.py (x0 bug) — fixed by a head-θ start (patch), refit **fit129h2** = the model for the R16-head search (w129)
+### 2026-11-13 1:25 AM CST · #169 · Trunk × head anchors (lead note 1:00 AM): 6 mixes K3 / K4 × R16 u3 / u4 / u5; the head was **unpriced** in fit.py (x0 bug) — fixed by a head-θ start (patch), refit **fit129h2** = the model for the R16-head search (w129)
 - **Status:** done · **Machine:** ds8 (6 evals, ~6 min), colo · **Code:** `search/refit/w129/th129.py`,
   `fit-headinit.patch` (for the lead) · **Data:** `data/refit/w129/th129.json`, `fit129h2.*`, `specs129th.jsonl`
 - **Measured (fit129):** K3 trunk: V2 head 0.02238, u3 0.02174, u4 0.02111, u5 0.02094; K4: V2 0.00769, u3 0.00713,
