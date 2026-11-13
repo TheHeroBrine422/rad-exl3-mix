@@ -84,6 +84,10 @@ class SModel(K3.Model):
         k0 = float(np.median([r["kld"] for r in self.D.rows])) if self.D.rows else 0.1
         x[L["theta"]] = math.log(0.7 * k0 / max(self.D.eb.sum(), 1e-30)); x[L["c0"]] = math.log(0.1 * k0); x[L["q"]] = math.log(1.0)
         x[L["kap"]] = math.log(1.0)
+        hs = float(os.environ.get("FIT_HEAD_S0", 0.5))                 # w129 (#169): the head's err is its plan's head-only KL
+        M = self.D.M                                                    # (~1e-3), so at the trunk's theta its cost and gradient
+        if hs > 0 and MN.HEAD in M.WI and len(M.T[M.WI[MN.HEAD]]["opts"]) > 1:   # vanish and the head stays unpriced
+            x[L["theta"].stop - 1] = math.log(hs)                       # (measured s_head 0.43); priced-head menus only
         if self.beta_mode == "fit": x[L["beta"]] = 1.0
         if self.sat: x[L["sat"]] = math.log(5.0)
         return x
@@ -106,6 +110,7 @@ class SModel(K3.Model):
 
     def fit(self, idx=None, xi=None):
         idx = list(range(len(self.D.rows))) if idx is None else idx
+        self.layout()                                                   # sets self.N (an x0 given before any layout() crashed)
         r = least_squares(lambda x: self.residuals(x, idx), self.x0() if xi is None or len(xi) != self.N else np.asarray(xi),
                           method="trf", x_scale="jac", max_nfev=int(os.environ.get("FIT_NFEV", 300)))
         self.res = r
