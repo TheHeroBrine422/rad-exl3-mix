@@ -491,5 +491,11 @@
   "line": "v3",
   "decisions": null,
   "note": "#171 restart slices (lead, 2026-11-13 1:27 PM CST): calib parts of s173a-f, merged fit + search docs, least-used first (draw171.py seed 1113), >= 45,000 scored positions at cap 4,096; x parts from xc8k-b2-c0 / c1 (xc8k-b2-c2 kept for the final-pick slice)."
+ },
+ "golden-final-c3": {
+  "role": "final",
+  "line": "v3",
+  "decisions": null,
+  "note": "V3 final-pick slice final750 (lead, 2026-11-13 1:29 PM CST; RULES-picks, w145 plan c3): 123 reused verify docs with no 27B use (plan145.py seed 145, cap 8,192), scored with golden-ver4 (c1) and 210 fresh xcorp pieces (xc8k-b2-c2, seed 7501) as golden-final750 (553k scored positions). Read only for final picks."
  }
 }
