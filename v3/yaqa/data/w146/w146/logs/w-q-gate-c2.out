@@ -1,0 +1,3 @@
+22:29:53 quant w146chk-i8 K6.25 (R16, sigma_out 0.03, i8) card 2 start
+22:35:16 quant w146chk-i8 K6.25 OK: {"key": "lm_head", "K": 6.25, "proxy_err": 5.180841528674705e-05, "fallback": false, "hout": true, "hout_blocks": "group
+22:35:16 worker card 2: queue /data/q27/heads/w146/q-gate.txt done

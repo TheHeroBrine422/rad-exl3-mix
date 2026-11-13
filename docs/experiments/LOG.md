@@ -4,6 +4,37 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 4:55 PM CST · #162-03 · qtf2 eighth steps K5.125–7.875 applied (w140's patch, 12 instances): existing levels byte-identical (K4 i8, K6 mul1, K6.25 i8; same stamps); the 14 blocked R16 head donors built and priced → hcurve140.json 62 plans, smooth, no flags (w146)
+- **Status:** done · **Machine:** ds8 (gate 4:29–4:35 PM CST on cards 2–4; build 4:35–4:51 on cards 2–5; scores 4:51–4:54;
+  card locks + ram.lock shared beside w139h's iqrun on 0/1/6/7) · **Code:** `v3/e3/exl3frac2/` (w140's
+  `qtf2-eighths-ka5-7.patch` applied: mkqtf2 MENU KA 5–7 → all seven even masks, instance units a5 / a6f / a7f +
+  `qtf2_table.inc`; equal to mkqtf2.py's regeneration, 63 instances), `v3/yaqa/w146/run146.sh` (gate → build → score →
+  `rep140.py table` → wq drop) · **Rule:** `v3/yaqa/w146/RULES.md` (76ca0b7, committed alone before the patch touched
+  ds8; its header says "~4:35 PM", the commit is 4:23 PM CST and stands) · **Data:** `v3/yaqa/data/w146/` (run146.log
+  with the gate lines, quant / score logs, proxy.jsonl), `v3/yaqa/data/w140/rep/hcurve140.json` (regenerated)
+- **Where the patch lives:** the qtf2 side extension is built at run time from this repo, not from the exllamav3 fork,
+  so no fork commit and no `quantize/exl3-patches/` number (AGENTS.md: run-time builds live in the repo). ourq's code
+  stamp does not hash `v3/e3/exl3frac2/` (its glob is `quantize/exl3frac2/`, which does not exist), so the patch
+  cannot move a stamp; the gate checks bytes.
+- **Identity gate: PASS.** Patched tree on ds8 (w119's tree in place, originals in `heads/w146/orig/`), JIT rebuild of
+  both variants (i8 .so 736,352 → 747,376 B), requant with run122's recipe: `R16s003/K4` (i8, integer K4: qtf2 MASK 0),
+  `R16s003m1/K6` (mul1, integer K6), `R16s003/K6.25` (i8, an existing quarter in the edited unit a6f). sha256 of
+  `q-head.safetensors` and `wq/lm_head.rowerr.npz` equal for all three (K4 also `wq/lm_head.safetensors`), stamps equal
+  (53fe4271…, 0e567f23…, 00f54c88…). **No stamp change; existing donors stay valid.** Check dirs deleted.
+- **Built (14 / 14, ~3–5 min each):** i8 K5.125, 5.375, 5.625, 5.875, 6.125, 6.375; mul1 K6.125 … 7.875 (eighths).
+  Fit-gen calib-weighted head KL: u5.125 8.12e-5, u5.375 5.92e-5, u5.625 4.09e-5, u5.875 2.95e-5, u6.125 2.15e-5,
+  u6.375 1.55e-5; u6.125m 2.10e-5, u6.375m 1.54e-5, u6.625m 1.12e-5, u6.875m 8.17e-6, u7.125m 5.78e-6, u7.375m 4.24e-6,
+  u7.625m 3.08e-6, u7.875m 2.31e-6. Per-eighth factor 0.82–0.88 along both curves (i8 K5–6.5, mul1 K6–8); no
+  monotonicity flags. i8 vs mul1 at K6.125 / 6.375: 2.149e-5 vs 2.101e-5, 1.549e-5 vs 1.544e-5 (points; same tie as w140).
+- **Price table:** `hcurve140.json` = the 48 existing plans with identical values (checked key by key) + 14 new keys
+  (`u<K>` i8, `u<K>m` mul1); 62 plans. Handed to w143 (`notes/w143.md`).
+- **Disk:** `wq/lm_head.safetensors` dropped for the 14 (as w140); ds8 349 GB free after.
+- **Not done:** other copies of exl3frac2 (ds8 / box2 `stage` trees used by rxq, iceman) are not patched; they need it
+  only to quantize eighths above K5.
+- **Runtime:** none for existing levels (identical output); the new levels are fractional-K heads, decode as w140's
+  price (~bytes / 525 GB/s), prefill unchanged.
+- **Cost:** ~1.2 card-h (3 gate quants, 14 quants, 2 score passes).
+
 ### 2026-11-13 1:15 PM CST · #175 · Kernel profiling pass on box2 (w137): FUSE's ROCm 7.14 hang found (clang 23 splits the claim loop around thread 0) and fixed, FUSE on by default; radisa lint 1,404 / 1,130 errors → 0; **the 8k prefill gap to IQR-V4 S is in no op: both run at the 210 W cap** (V3 +5% energy a prefill) — stopped after the profile
 - **Status:** step 0 done; step 1 profile done, **stopped and reported (gap somewhere unexpected)**; no step-2 kernel
   change · **Machine:** box2 (cards 0 / 1 / 3 under their locks, ~1.5 card-h; CPU for builds / lint / audit) · **Code:**

@@ -1,0 +1,9 @@
+22:35:23 quant R16s003 K5.375 (R16, sigma_out 0.03, i8) card 2 start
+22:39:30 quant R16s003 K5.375 OK: {"key": "lm_head", "K": 5.375, "proxy_err": 0.00016525525470789136, "fallback": false, "hout": true, "hout_blocks": "gro
+22:39:30 quant R16s003m1 K6.125 (R16, sigma_out 0.03, mul1) card 2 start
+22:43:22 quant R16s003m1 K6.125 OK: {"key": "lm_head", "K": 6.125, "proxy_err": 6.0927620973680186e-05, "fallback": false, "hout": true, "hout_blocks": "gro
+22:43:22 quant R16s003m1 K6.875 (R16, sigma_out 0.03, mul1) card 2 start
+22:47:12 quant R16s003m1 K6.875 OK: {"key": "lm_head", "K": 6.875, "proxy_err": 2.3020064931524638e-05, "fallback": false, "hout": true, "hout_blocks": "gro
+22:47:12 quant R16s003m1 K7.875 (R16, sigma_out 0.03, mul1) card 2 start
+22:51:17 quant R16s003m1 K7.875 OK: {"key": "lm_head", "K": 7.875, "proxy_err": 6.253208322117985e-06, "fallback": false, "hout": true, "hout_blocks": "grou
+22:51:17 worker card 2: queue /data/q27/heads/w146/q-build.txt done

@@ -1,0 +1,1 @@
+{"key": "lm_head", "K": 5.875, "proxy_err": 8.483836912781867e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hout_diag_scales": false, "sigma_reg": 0.025, "sweep_rel": null, "sweep_all": null, "g_scale": 0.6607829448761302, "drift": 1.0, "scaled_hessian": true, "gain": 1.0, "codebook": "i8", "out_scales": true, "head_mean_row": false, "s": 144.7}

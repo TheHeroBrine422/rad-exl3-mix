@@ -1,0 +1,34 @@
+22:25:14 start (tree patched: 5 files)
+22:29:53 restart on cards 2 3 4 5 (0/1/6/7 held by w139h iqrun; gold4 done)
+22:29:53 start (tree patched: 5 files)
+22:35:17 gate R16s003/K4 q-head.safetensors SAME 5f08ca4d9dcd120c
+22:35:17 gate R16s003/K4 wq/lm_head.rowerr.npz SAME 9898ac238767f92f
+22:35:20 gate R16s003/K4 wq/lm_head.safetensors SAME 1c1fbbfc552ae047
+22:35:20 gate R16s003/K4 stamp SAME 53fe4271173731f1
+22:35:22 gate R16s003m1/K6 q-head.safetensors SAME 2a30b3c016a7f2ae
+22:35:22 gate R16s003m1/K6 wq/lm_head.rowerr.npz SAME 679c66caac006a30
+22:35:22 gate R16s003m1/K6 stamp SAME 0e567f2356988944
+22:35:23 gate R16s003/K6.25 q-head.safetensors SAME 4108dc5aaff379f2
+22:35:23 gate R16s003/K6.25 wq/lm_head.rowerr.npz SAME b7b91141aad4a4f8
+22:35:23 gate R16s003/K6.25 stamp SAME 00f54c888ec617f4
+22:35:23 GATE PASS
+22:35:23 unblocked R16s003/K5.125
+22:35:23 unblocked R16s003/K5.375
+22:35:23 unblocked R16s003/K5.625
+22:35:23 unblocked R16s003/K5.875
+22:35:23 unblocked R16s003/K6.125
+22:35:23 unblocked R16s003/K6.375
+22:35:23 unblocked R16s003m1/K6.125
+22:35:23 unblocked R16s003m1/K6.375
+22:35:23 unblocked R16s003m1/K6.625
+22:35:23 unblocked R16s003m1/K6.875
+22:35:23 unblocked R16s003m1/K7.125
+22:35:23 unblocked R16s003m1/K7.375
+22:35:23 unblocked R16s003m1/K7.625
+22:35:23 unblocked R16s003m1/K7.875
+22:51:17 built 14 / 14
+22:53:02 score fit rc 0 (14 options)
+22:54:28 score search rc 0 (14 options)
+price table: /data/q27/heads/w146/rep/hcurve140.json (62 plans, 45 added); monotonicity flags: none
+22:54:30 wq dropped for 14 donor(s); 327G free
+22:54:30 RUN146 DONE
