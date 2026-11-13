@@ -1,0 +1,62 @@
+16:31:00 start (rad10-perf 5c9956c (qc-exl3-v3-perf = 374503f + merge of qc-exl3-v3 ca5491d))
+16:31:00 pack i6: waiting for conv.lock + ram.lock
+16:31:00 pack i6: start
+16:34:06 pack i6: rc 0 15740418048 bytes, 186 s
+16:34:06 ents i6: "output.weight": [8388608, 954304000, [248320, 5120]
+16:34:06 pack m6: waiting for conv.lock + ram.lock
+16:34:23 pack m6: start
+16:37:08 pack m6: rc 0 15740418048 bytes, 165 s
+16:37:08 ents m6: "output.weight": [8388608, 954304000, [248320, 5120]
+16:37:08 pack i6.5: waiting for conv.lock + ram.lock
+16:37:08 pack i6.5: start
+16:39:56 pack i6.5: rc 0 15819880448 bytes, 168 s
+16:39:56 ents i6.5: "output.weight": [8388608, 1033766400, [248320, 5120]
+16:39:56 pack m6.5: waiting for conv.lock + ram.lock
+16:39:56 pack m6.5: start
+16:42:40 pack m6.5: rc 0 15819880448 bytes, 164 s
+16:42:40 ents m6.5: "output.weight": [8388608, 1033766400, [248320, 5120]
+16:42:40 pack m7.5: waiting for conv.lock + ram.lock
+16:45:52 pack m7.5: start
+16:48:53 pack m7.5: rc 0 15978805248 bytes, 181 s
+16:48:53 ents m7.5: "output.weight": [8388608, 1192691200, [248320, 5120]
+16:48:53 pack m8: waiting for conv.lock + ram.lock
+16:48:53 pack m8: start
+16:51:55 pack m8: rc 0 16058267648 bytes, 182 s
+16:51:55 ents m8: "output.weight": [8388608, 1272153600, [248320, 5120]
+16:55:06 serve i6-1 (card 6)
+16:56:18 serve i6-1: 29.61 37.30 ms/step
+17:01:46 serve m6-1 (card 6)
+17:03:04 serve m6-1: 30.96 37.57 ms/step
+17:08:41 serve i6.5-1 (card 6)
+17:10:00 serve i6.5-1: 29.88 38.08 ms/step
+17:15:41 serve m6.5-1 (card 6)
+17:16:58 serve m6.5-1: 29.92 38.57 ms/step
+17:22:41 serve m7.5-1 (card 6)
+17:23:54 serve m7.5-1: 30.03 40.33 ms/step
+17:23:54 serve m8-1 (card 6)
+17:25:05 serve m8-1: 31.61 40.80 ms/step
+17:25:05 serve i6-2 (card 6)
+17:26:20 serve i6-2: 32.10 41.62 ms/step
+17:26:20 serve m6-2 (card 6)
+17:27:32 serve m6-2: 32.62 41.32 ms/step
+17:27:32 serve i6.5-2 (card 6)
+17:28:47 serve i6.5-2: 34.10 44.08 ms/step
+17:28:48 serve m6.5-2 (card 6)
+17:29:59 serve m6.5-2: 33.17 39.21 ms/step
+17:29:59 serve m7.5-2 (card 6)
+17:31:08 serve m7.5-2: 30.31 39.08 ms/step
+17:31:09 serve m8-2 (card 6)
+17:32:18 serve m8-2: 30.09 38.54 ms/step
+17:32:18 serve i6-3 (card 6)
+17:33:28 serve i6-3: 29.79 37.94 ms/step
+17:33:28 serve m6-3 (card 6)
+17:34:39 serve m6-3: 30.02 39.20 ms/step
+17:40:39 serve i6.5-3 (card 6)
+17:41:50 serve i6.5-3: 29.87 37.81 ms/step
+17:48:17 serve m6.5-3 (card 6)
+17:49:37 serve m6.5-3: 29.86 37.72 ms/step
+17:50:12 serve m7.5-3 (card 6)
+17:51:27 serve m7.5-3: 30.23 38.16 ms/step
+17:52:04 serve m8-3 (card 6)
+17:53:15 serve m8-3: 29.87 38.08 ms/step
+17:53:15 R16M140 DONE

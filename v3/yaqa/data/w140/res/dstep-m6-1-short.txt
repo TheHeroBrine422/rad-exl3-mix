@@ -1,0 +1,2 @@
+C        steps       tok   tok/step    ms/step  short.txt
+1          195       195      1.000      30.96

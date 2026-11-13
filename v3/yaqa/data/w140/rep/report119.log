@@ -1,0 +1,34 @@
+w140 fit R16s003-K5      KL 9.674e-05 (unw 8.182e-05) top1 0.9959 rare-script 4.000e-04 rare-token 2.406e-04
+w140 fit R16s003-K5.5    KL 4.923e-05 (unw 4.188e-05) top1 0.9967 rare-script 2.032e-04 rare-token 1.250e-04
+w140 fit R16s003-K6      KL 2.537e-05 (unw 2.144e-05) top1 0.9982 rare-script 1.054e-04 rare-token 6.335e-05
+w140 fit R16s003-K6.5    KL 1.327e-05 (unw 1.125e-05) top1 0.9984 rare-script 5.517e-05 rare-token 3.324e-05
+w140 fit R16s003m1-K7    KL 6.866e-06 (unw 5.891e-06) top1 0.9989 rare-script 2.819e-05 rare-token 1.705e-05
+w140 fit R16s003m1-K6    KL 2.532e-05 (unw 2.122e-05) top1 0.9979 rare-script 1.024e-04 rare-token 6.236e-05
+w140 fit R16s003m1-K6.5  KL 1.316e-05 (unw 1.115e-05) top1 0.9985 rare-script 5.378e-05 rare-token 3.228e-05
+w140 fit R16s003m1-K7.5  KL 3.684e-06 (unw 3.120e-06) top1 0.9991 rare-script 1.465e-05 rare-token 8.923e-06
+w140 fit R16s003m1-K8    KL 1.938e-06 (unw 1.647e-06) top1 0.9995 rare-script 7.668e-06 rare-token 4.682e-06
+w140 fit mul1/i8 K6: 0.998 [0.970, 1.034] (unw 0.990 [0.971, 1.011]); rare-script 0.971 rare-token 0.984
+w140 fit mul1/i8 K6.5: 0.992 [0.956, 1.034] (unw 0.991 [0.966, 1.017]); rare-script 0.975 rare-token 0.971
+w140 fit step m6 -> m6.5: 0.520 [0.499, 0.544]
+w140 fit step m6.5 -> m7: 0.522 [0.500, 0.540]
+w140 fit step m7 -> m7.5: 0.537 [0.516, 0.563]
+w140 fit step m7.5 -> m8: 0.526 [0.508, 0.545]
+w140 search R16s003-K5      KL 9.361e-05 (unw 9.569e-05) top1 0.9955 rare-script 4.239e-04 rare-token 2.712e-04
+w140 search R16s003-K5.5    KL 4.929e-05 (unw 4.942e-05) top1 0.9964 rare-script 2.246e-04 rare-token 1.404e-04
+w140 search R16s003-K6      KL 2.492e-05 (unw 2.490e-05) top1 0.9973 rare-script 1.126e-04 rare-token 7.021e-05
+w140 search R16s003-K6.5    KL 1.258e-05 (unw 1.292e-05) top1 0.9982 rare-script 5.529e-05 rare-token 3.523e-05
+w140 search R16s003m1-K7    KL 6.775e-06 (unw 6.903e-06) top1 0.9987 rare-script 2.918e-05 rare-token 1.920e-05
+w140 search R16s003m1-K6    KL 2.447e-05 (unw 2.476e-05) top1 0.9975 rare-script 1.043e-04 rare-token 6.855e-05
+w140 search R16s003m1-K6.5  KL 1.265e-05 (unw 1.292e-05) top1 0.9983 rare-script 5.655e-05 rare-token 3.659e-05
+w140 search R16s003m1-K7.5  KL 3.566e-06 (unw 3.635e-06) top1 0.9993 rare-script 1.506e-05 rare-token 1.008e-05
+w140 search R16s003m1-K8    KL 1.878e-06 (unw 1.866e-06) top1 0.9993 rare-script 7.539e-06 rare-token 4.949e-06
+w140 search mul1/i8 K6: 0.982 [0.945, 1.025] (unw 0.994 [0.969, 1.022]); rare-script 0.927 rare-token 0.976
+w140 search mul1/i8 K6.5: 1.005 [0.968, 1.042] (unw 1.000 [0.983, 1.017]); rare-script 1.023 rare-token 1.039
+w140 search step m6 -> m6.5: 0.517 [0.500, 0.533]
+w140 search step m6.5 -> m7: 0.536 [0.516, 0.561]
+w140 search step m7 -> m7.5: 0.526 [0.510, 0.541]
+w140 search step m7.5 -> m8: 0.527 [0.512, 0.543]
+w140 VERDICT K6: tie
+w140 VERDICT K6.5: tie
+w140 flags: none
+price table: rep/hcurve140.json (21 plans)

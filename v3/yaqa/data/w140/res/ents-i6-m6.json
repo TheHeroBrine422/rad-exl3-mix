@@ -1,0 +1,1 @@
+{"file": "packs/i6.rad", "weights": 787, "output.weight": [8388608, 954304000, [248320, 5120]], "payload_bytes": 15730557440, "other": "packs/m6.rad", "other_weights": 787, "other_output.weight": [8388608, 954304000, [248320, 5120]], "differ": ["output.weight"]}

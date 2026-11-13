@@ -4,6 +4,45 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 12:05 PM CST · #162-02 · Extra R16 head donors at the top: mul1 u6 / u6.5 / u7.5 / u8 built, priced (hcurve140.json); i8 vs mul1 at equal bytes a tie at K6 / K6.5; curve halves per half bit to u8; plugin serves all four; head GEMV mul1 ≤ i8 (w140)
+- **Status:** done · **Machine:** ds8 (quants 10:25–10:30 AM CST on cards 2–5; scores 10:31; packs 10:31–10:52 under
+  conv.lock; serves / profiles 10:55–11:56 AM on card 6, interleaved with w132's value evals) · **Code:** `v3/yaqa/w140/`
+  (rep140.py, r16m140.sh, prof140.sh, headops140.py; w122's `run122.sh worker` / `score` and score119 unchanged) ·
+  **Rule:** `v3/yaqa/w140/RULES.md` (41d3a9c, alone, committed 10:25:33 AM CST before the first quant at 10:25:44; the
+  file's "~10:35" is a typo, the commit time stands) · **Data:** `v3/yaqa/data/w140/` (rep/rep140.json, rep/hcurve140.json,
+  res/headops140.jsonl, res/dstep-*, res/ask-*, res/ents-*); donors ds8 `/data/q27/heads/q/R16s003m1/K{6,6.5,7.5,8}`
+- **Build:** w122's recipe (R16, two-sided, σ_out 0.03, f16, `--codebook mul1`), w119's tree at `/data/q27/w119`; the
+  stamp sources and every arg except K are equal to R16s003m1/K7's (the stamp hashes K, so the stamp itself differs per
+  K). 3–5 min per donor, 4 in parallel. proxy_err K6 7.17e-5, K6.5 3.73e-5, K7.5 1.02e-5, K8 5.29e-6.
+- **Price rows (fit-gen, calib-weighted head-only KL per position):** u6m 2.532e-5, u6.5m 1.316e-5, u7.5m 3.684e-6,
+  u8m 1.938e-6 (beside u6 i8 2.537e-5, u6.5 i8 1.327e-5, u7 mul1 6.866e-6); top-1 0.9979 / 0.9985 / 0.9991 / 0.9995;
+  rare-token guard 6.24e-5 / 3.23e-5 / 8.92e-6 / 4.68e-6. `hcurve140.json` = hcurve122's 17 plans unchanged + the 4 new
+  keys; headgrid.py reads it (u<K>m count as non-uniform plans there; the hull runs to 8.0).
+- **i8 vs mul1 at equal bytes (ratio mul1 / i8, 95% doc bootstrap):** K6 fit 0.998 [0.970, 1.034], search 0.982
+  [0.945, 1.025]; K6.5 fit 0.992 [0.956, 1.034], search 1.005 [0.968, 1.042]; guards 0.93–1.04 → **tie at both** (RULES).
+  #109's ×1.24 i8 penalty at K7 (trunk) does not show on the head at K6 / K6.5.
+- **Curve to u8 (mul1 steps, fit-gen ratio per +0.5 bit):** 6→6.5 0.520, 6.5→7 0.522, 7→7.5 0.537, 7.5→8 0.526 (search
+  0.517–0.536); no monotonicity flags. The head's KL keeps halving per half bit to u8.
+- **Plugin (rad10-perf 5c9956c):** K4 ladder trunk + head line `output.weight exl3i src=…/R16s003m1/K<K> codebook=mul1
+  rate=<K> rows=r16` packs and serves at 6 / 6.5 / 7.5 / 8 (and i8 at 6 / 6.5). Head stored bytes = 248,320·5,120·K/8 +
+  755,200 (K6 954,304,000 … K8 1,272,153,600). Greedy text and top-3 tokens identical across all six packs; 8k prefill
+  1,607–1,644 tok/s for all six. i8 / mul1 pairs differ only in output.weight (radents).
+- **Decode:** profiled head GEMV (`--profile-ops`, 512 decode calls, 2 rounds) ms per call: K6 i8 1.631 / 1.538, mul1
+  1.563 / 1.535; K6.5 i8 1.943 / 1.962, mul1 1.933 / 1.932 → **mul1 ≤ i8**. The pre-registered whole-model rule
+  (median of 3 rounds ≤ i8 × 1.01 on both prompts) **fails formally**: K6 short 30.96 vs 29.79 ms (+3.9%), 8k 39.20 vs
+  37.94 (+3.3%); K6.5 short 29.92 vs 29.88 (+0.1%), 8k 38.57 vs 38.08 (+1.3%). The ds8 timings swing up to 14% from round
+  to round (i6.5 short 29.87–34.10 ms; w132 evals on the other 7 cards), the per-round gap moves (K6 short +4.6 / +1.6 /
+  +0.8%, 8k +0.7 / −0.7 / +3.3%: sign flips), and the only differing tensor's op is equal or faster, so the slowdown reading is
+  **unverified noise**, not a mul1 cost. A quiet-box rerun would settle the whole-model line (~0.3 card-h). Whole-model
+  steps: m7.5 30.0–30.3 / 38.2–40.3 ms, m8 29.9–31.6 / 38.1–40.8 ms (short / 8k). K6.5's head GEMV is 0.4 ms slower than
+  K6's (the known fractional-K decode cost).
+- **Reading:** at K6 / K6.5 the codebook doesn't matter for the head (same KL, same bytes, same head GEMV time); above
+  K7 the curve keeps falling (u8 ≈ 0.28× u7) at +0.5 bit = +79 MB per step. Handed to w133 (notes/w133.md) for the
+  full-menu re-solve.
+- **Runtime:** price rows none (same format); mul1 vs i8 head: D, measured equal (head GEMV); prefill unchanged.
+- **Cost:** ~0.8 card-h (quants 0.3, serves / profiles 0.5); ds8 packs (95 GB) deleted, donors kept (4 × ~1 GB q-head +
+  2.4 GB wq each).
+
 ### 2026-11-13 11:45 AM CST · #— · Overfit audit of 11-10 → 11-13 (user cadence; w141; read-only, no card time)
 - **Status:** done · **Machine:** VM (LOG, ledger, driver state), colo (calib script census, CPU, seconds), ds8 / box2
   (read-only listings and `stat`) · **Code:** `rad-local/workers/w141/` (`dom141.py` per-document dominance,

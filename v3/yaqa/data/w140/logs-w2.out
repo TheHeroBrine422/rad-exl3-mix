@@ -1,0 +1,3 @@
+16:25:44 quant R16s003m1 K6 (R16, sigma_out 0.03, mul1) card 2 start
+16:28:41 quant R16s003m1 K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 7.171412825098623e-05, "fallback": false, "hout": true, "hout_blocks": "group", 
+16:28:41 worker card 2: queue /data/q27/heads/w140/q-w140.txt done

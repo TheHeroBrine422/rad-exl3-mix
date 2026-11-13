@@ -1,0 +1,20 @@
+### What is the capital of France? Answer in one sentence.
+The capital of France is Paris.
+### Write a Python function that returns the n-th Fibonacci number.
+```python
+def fibonacci(n: int) -> int:
+    """
+    Return the n-th Fibonacci number.
+    
+    The Fibonacci sequence is defined as:
+    F(0) = 0
+    F(1) = 1
+    F(n) = F(n-1) +
+### Translate to German: The weather is nice today.
+Das Wetter ist heute schön.
+### logprobs
+' jumps over the lazy dog.\n\nThe'
+{"tokens": [" jumps", " over", " the", " lazy", " dog", ".", "\n\n", "The"], "token_logprobs": [-0.336317241191864, -0.02088063769042492, -0.031144041568040848, -0.021021073684096336, -0.027970872819423676, -0.8321604132652283, -1.4259560108184814, -2.1048712730407715], "top_logprobs": [{" jumps": -0.336317241191864, " jumped": -2.0158588886260986, " is": -4.095327377319336}, {" over": -0.02088063769042492, "\n": -5.8725738525390625, ".": -6.4983930587768555}, {" the": -0.031144041568040848, " lazy": -4.73458194732666, " a": -4.7461748123168945}, {" lazy": -0.021021073684096336, " dog": -5.889911651611328, " ": -6.868129730224609}, {" dog": -0.027970872819423676, " dogs": -5.035375118255615, "\n": -6.602430820465088}, {".": -0.8321604132652283, "\n\n": -2.3180108070373535, "\n": -2.400826930999756}, {"\n\n": -1.4259560108184814, "\n": -1.469787836074829, " This": -2.108630418777466}, {"The": -2.1048712730407715, "This": -2.3512110710144043, "That": -3.0136075019836426}], "text_offset": [0, 6, 11, 15, 20, 24, 25, 27], "content": [{"id": 33075, "token": " jumps", "bytes": [32, 106, 117, 109, 112, 115], "logprob": -0.336317241191864, "top_logprobs": [{"id": 33075, "token": " jumps", "bytes": [32, 106, 117, 109, 112, 115], "logprob": -0.336317241191864}, {"id": 25174, "token": " jumped", "bytes": [32, 106, 117, 109, 112, 101, 100], "logprob": -2.0158588886260986}, {"id": 369, "token": " is", "bytes": [32, 105, 115], "logprob": -4.095327377319336}]}, {"id": 888, "token": " over", 
+### prefill ctx8k: 8444 prompt tokens in 5.231 s = 1614 tok/s
+### prefill ctx8k: 8443 prompt tokens in 5.241 s = 1611 tok/s
+### prefill ctx8k: 8444 prompt tokens in 5.262 s = 1605 tok/s
