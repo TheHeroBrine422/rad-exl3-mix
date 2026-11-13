@@ -170,3 +170,10 @@ Ledger: W's train documents (positions up to 8,192), the monitor at 8,192, agent
   Check (tests/convcheck.py, CPU, L 7 / 700 / 2,049 / 8,192): forward bit-identical to F.conv1d, input gradient within
   bf16 rounding (rel 3.5e-3), weight gradient rel ≤ 5e-5 (the conv weights are frozen). Arithmetic otherwise unchanged;
   the other arms keep F.conv1d. Nothing else about W changes.
+
+### Amendment 4 — 2026-11-13 6:07 AM CST, arm L16 stalled at step 16, before resuming it (implementation only)
+- L16 (2 cards) stalled after step 16 (state.pt at step 16, 11:36:59 UTC) like W: ~35 min in a GDN causal conv
+  (backward recompute), MIOpen / CK output in its log. Both stalls happened on 2-card layouts; W ran its 48 resumed
+  steps on 2 cards with qmodel.shift_conv1d without a stall.
+- L16 resumes from its step-16 state (same data order) with `--conv shift` (amendment 3's check). L8 (1 card, no
+  stall) keeps F.conv1d. Nothing else changes.
