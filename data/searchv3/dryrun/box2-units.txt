@@ -1,0 +1,25 @@
+w126dry-3-block-00004              wall   122.4 s  early True  packs 0  kld 0.02677
+w126dry-3-block-00014              wall   120.0 s  early False packs 0  kld 0.02634
+w126dry-3-explore-00007            wall    77.6 s  early True  packs 0  kld 0.02662
+w126dry-3-explore-00015            wall   125.5 s  early False packs 0  kld 0.02664
+w126dry-3-inc-00010                wall    83.1 s  early False packs 0  kld 0.02662
+w126dry-3-init-00000               wall   335.8 s  early False packs 1  kld 0.02888
+w126dry-3-pair-00002               wall   537.0 s  early True  packs 0  kld 0.02693
+w126dry-3-pair-00012               wall    99.3 s  early True  packs 0  STOPPED at doc 19/26 after 44.5 s (z +0.26)
+w126dry-3-solve-00009              wall    31.0 s  early True  packs 0  STOPPED at doc 3/26 after 16.0 s (z +2.69)
+w126dry-3.25-block-00016           wall    76.9 s  early True  packs 0  STOPPED at doc 5/26 after 21.5 s (z +1.91)
+w126dry-3.25-explore-00013         wall   103.3 s  early True  packs 0  kld 0.01901
+w126dry-3.25-inc-00011             wall   131.8 s  early False packs 0  kld 0.01931
+w126dry-3.25-init-00001            wall   394.6 s  early False packs 1  kld 0.02540
+w126dry-3.25-pair-00006            wall    89.9 s  early True  packs 0  STOPPED at doc 6/26 after 26.0 s (z +1.89)
+w126dry-3.25-partial-00003         wall   469.9 s  early True  packs 3  kld 0.01931
+w126dry-3.25-partial-00008         wall    86.1 s  early True  packs 0  STOPPED at doc 4/26 after 18.5 s (z +2.14)
+w126dry-3.25-thompson-00005        wall   177.1 s  early True  packs 1  STOPPED at doc 3/26 after 17.0 s (z +13.08)
+lock 00:17:10
+plain rc 0 00:18:08
+prog rc 0 00:19:07
+orig rc 0 00:20:06
+ROWS IDENTICAL
+interleaved vs original order: max |doc sum diff| 0.0 docs 26
+progress lines 26 order [0, 1, 2, 3, 4, 5, 6, 7] kl rows == rows file: True t last 51.661
+V2 3.00 dryA kld 0.6394942914229761

@@ -1,0 +1,191 @@
+{"ev": "rotate", "to": "dryA", "from": null, "t": "11-12 18:21:55 CST"}
+{"ev": "submit", "tag": "w126dry-3-init-00000", "size": 3.0, "kind": "incumbent", "slice": "dryA", "hash": "ca74ab94b2a23619", "early": false, "ref": null, "bytes": 9955321408, "bpw": 2.9611308675006325, "t": "11-12 18:21:55 CST"}
+{"ev": "incumbent", "size": 3.0, "tag": "w126dry-3-init-00000", "prev": null, "t": "11-12 18:21:55 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-init-00001", "size": 3.25, "kind": "incumbent", "slice": "dryA", "hash": "f9717df486824d2c", "early": false, "ref": null, "bytes": 10335430208, "bpw": 3.074191195194738, "t": "11-12 18:21:55 CST"}
+{"ev": "incumbent", "size": 3.25, "tag": "w126dry-3.25-init-00001", "prev": null, "t": "11-12 18:21:55 CST"}
+{"ev": "result", "tag": "w126dry-3-init-00000", "r": {"slice": "dryA", "docs": [53.817229, 4.082527, 22.933012, 48.45613, 145.04509, 6.351932, 208.891966, 7.087242, 65.874294, 282.263409, 53.35095, 41.311446, 17.54951, 11.338551, 0.312704, 63.930364, 124.754883, 10.669333, 15.331781, 25.72854, 72.57625, 2.776789, 103.308811, 3.416994, 4.821962, 99.425309], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 9963577344, "bpw": 2.963586529746762, "kld": 0.028883916473551853}, "t": "11-12 18:27:35 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:27:35 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:27:45 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:27:55 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:28:05 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:28:15 CST"}
+{"ev": "results_offset", "off": 427, "t": "11-12 18:28:25 CST"}
+{"ev": "result", "tag": "w126dry-3.25-init-00001", "r": {"slice": "dryA", "docs": [39.126146, 3.324739, 19.851454, 44.48681, 124.200535, 5.876749, 187.597636, 4.724478, 57.948753, 238.2119, 47.980624, 34.421664, 13.323286, 11.327069, 0.075696, 70.299472, 110.044071, 8.374845, 9.238186, 25.643662, 67.177248, 2.709751, 83.779807, 6.73553, 4.323825, 94.369775], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 10343686144, "bpw": 3.0766468574408674, "kld": 0.02540269465061224}, "t": "11-12 18:28:35 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:28:35 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:28:45 CST"}
+{"ev": "fit_done", "group": "all", "n_results": 2, "out": "/workspace/rad-local/workers/w126/dry/run/fits/fit0000-all.out.json", "report": {"rows": 2, "labels": 1, "params": 74, "rmse_log": 4.748057465222935e-13, "chi2_per_row": 5.636012423264811e-22, "cost": 5.639694801760368e-22, "nfev": 23}, "t": "11-12 18:28:45 CST"}
+{"ev": "submit", "tag": "w126dry-3-pair-00002", "size": 3.0, "kind": "pair", "slice": "dryA", "hash": "7bdd7b6621aa4e5b", "early": true, "ref": "w126dry-3-init-00000", "bytes": 10085983808, "bpw": 2.999995355145481, "pred_logr": -0.18207648997055415, "audit": false, "t": "11-12 18:28:45 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-partial-00003", "size": 3.25, "kind": "partial", "slice": "dryA", "hash": "96130423d524d085", "early": true, "ref": "w126dry-3.25-init-00001", "bytes": 10926401088, "bpw": 3.2499707650191514, "pred_logr": -0.5066542520286161, "audit": false, "t": "11-12 18:28:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:28:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:29:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:30:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:31:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:32:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:33:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:34:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:36 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:46 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:35:56 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:36:06 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:36:16 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:36:26 CST"}
+{"ev": "results_offset", "off": 860, "t": "11-12 18:36:36 CST"}
+{"ev": "result", "tag": "w126dry-3.25-partial-00003", "r": {"slice": "dryA", "docs": [31.35213, 2.658542, 14.147187, 35.791978, 92.559819, 3.54028, 136.39954, 3.835467, 46.098472, 189.738972, 37.361052, 25.800839, 10.888506, 7.783721, 0.110785, 39.754023, 91.495197, 6.309114, 7.636662, 18.885452, 44.460468, 1.840894, 67.005937, 5.267914, 3.911818, 75.092836], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 10934657024, "bpw": 3.2524264272652808, "kld": 0.0193098257110392}, "t": "11-12 18:36:46 CST"}
+{"ev": "bytes_offset", "off": 8255936, "tag": "w126dry-3.25-partial-00003", "t": "11-12 18:36:46 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-partial-00003", "size": 3.25, "decision": "accept", "kind": "partial", "k": 26, "z": -12.707656569100802, "logr": -0.27424118863137, "se": 0.02158078376922767, "parts": {"c": {"logr": -0.2705204751971015, "docs": 13}, "x": {"logr": -0.27943243074772345, "docs": 13}}, "t": "11-12 18:36:46 CST"}
+{"ev": "incumbent", "size": 3.25, "tag": "w126dry-3.25-partial-00003", "prev": "w126dry-3.25-init-00001", "t": "11-12 18:36:46 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:36:46 CST"}
+{"ev": "submit", "tag": "w126dry-3-block-00004", "size": 3.0, "kind": "block", "slice": "dryA", "hash": "c233fa0f6d10d58e", "early": true, "ref": "w126dry-3-init-00000", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.1728385659487367, "audit": false, "t": "11-12 18:36:46 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:36:56 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:37:06 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:37:16 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:37:26 CST"}
+{"ev": "results_offset", "off": 1299, "t": "11-12 18:37:36 CST"}
+{"ev": "result", "tag": "w126dry-3-pair-00002", "r": {"slice": "dryA", "docs": [51.950413, 3.925354, 17.869246, 48.536453, 134.365821, 5.535314, 200.133333, 8.003445, 60.109536, 267.931826, 50.430177, 38.439474, 14.784437, 12.746367, 0.173463, 54.940689, 114.943757, 10.217672, 11.288684, 24.131964, 63.133886, 3.029523, 98.195254, 3.310403, 4.213202, 91.777423], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 10094239744, "bpw": 3.0024510173916106, "kld": 0.026927493439642042}, "t": "11-12 18:37:46 CST"}
+{"ev": "decision", "tag": "w126dry-3-pair-00002", "size": 3.0, "decision": "accept", "kind": "pair", "k": 26, "z": -7.85817264344154, "logr": -0.07013709278771009, "se": 0.008925369290053302, "parts": {"c": {"logr": -0.07836871687585456, "docs": 13}, "x": {"logr": -0.058204815009714195, "docs": 13}}, "t": "11-12 18:37:46 CST"}
+{"ev": "incumbent", "size": 3.0, "tag": "w126dry-3-pair-00002", "prev": "w126dry-3-init-00000", "t": "11-12 18:37:46 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:37:46 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-thompson-00005", "size": 3.25, "kind": "thompson", "slice": "dryA", "hash": "be7a1c370171c44f", "early": true, "ref": "w126dry-3.25-partial-00003", "bytes": 10926465024, "bpw": 3.2499897822718733, "pred_logr": -0.08369028155483242, "audit": false, "t": "11-12 18:37:46 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:37:56 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:38:06 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:38:16 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:38:26 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:38:36 CST"}
+{"ev": "results_offset", "off": 1728, "t": "11-12 18:38:46 CST"}
+{"ev": "result", "tag": "w126dry-3-block-00004", "r": {"slice": "dryA", "docs": [52.055611, 3.94722, 18.28814, 48.839675, 132.117825, 5.498453, 195.085355, 8.263439, 59.074133, 266.505931, 50.644677, 38.886961, 14.915703, 12.277378, 0.215977, 57.164531, 113.871291, 10.392867, 10.780568, 24.594616, 60.879724, 2.639519, 97.876443, 3.438073, 4.165221, 93.799118], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.02677492996769392}, "t": "11-12 18:38:56 CST"}
+{"ev": "decision", "tag": "w126dry-3-block-00004", "size": 3.0, "decision": "reject", "kind": "block", "k": 26, "z": -1.2651115815111458, "logr": -0.005681823697030403, "se": 0.0044911640839170874, "parts": {"c": {"logr": -0.014244924038038466, "docs": 13}, "x": {"logr": 0.00647975673794243, "docs": 13}}, "t": "11-12 18:38:56 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:38:56 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-pair-00006", "size": 3.25, "kind": "pair", "slice": "dryA", "hash": "52f1ba40a33dbf9b", "early": true, "ref": "w126dry-3.25-partial-00003", "bytes": 10926383104, "bpw": 3.249965415821939, "pred_logr": -7.000365416201133e-05, "audit": false, "t": "11-12 18:38:56 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:06 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:16 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:26 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:36 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:46 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:39:56 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:40:06 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:40:16 CST"}
+{"ev": "results_offset", "off": 2157, "t": "11-12 18:40:26 CST"}
+{"ev": "result", "tag": "w126dry-3.25-pair-00006", "r": {"slice": "dryA", "docs": [31.264647, 2.718466, 13.984106, 36.246004, 93.084397, 3.719883, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "pos": [7376, 319, 692, 2243, 847, 251, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "stopped": {"k": 6, "n": 26, "d": 0.005359493609977027, "se": 0.0028370004793330152, "z": 1.8891408898306057, "parts": {"c": {"logr": 0.001982791153389239, "docs": 3}, "x": {"logr": 0.016381866128015468, "docs": 3}}, "at_s": 26.0}, "bytes": 10926383104, "bpw": 3.249965415821939, "kld": 0.015434643843792633}, "t": "11-12 18:40:36 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-pair-00006", "size": 3.25, "decision": "reject", "kind": "pair", "k": 6, "z": 1.8891408898306057, "logr": 0.005359493609977027, "se": 0.0028370004793330152, "parts": {"c": {"logr": 0.001982791153389239, "docs": 3}, "x": {"logr": 0.016381866128015468, "docs": 3}}, "t": "11-12 18:40:36 CST"}
+{"ev": "results_offset", "off": 2766, "t": "11-12 18:40:36 CST"}
+{"ev": "submit", "tag": "w126dry-3-explore-00007", "size": 3.0, "kind": "explore", "slice": "dryA", "hash": "224915a551485c96", "early": true, "ref": "w126dry-3-pair-00002", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.04785690717332561, "audit": false, "t": "11-12 18:40:36 CST"}
+{"ev": "result", "tag": "w126dry-3.25-thompson-00005", "r": {"slice": "dryA", "docs": [36.040063, 3.285137, 16.695586, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "pos": [7376, 319, 692, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "stopped": {"k": 3, "n": 26, "d": 0.15123845640455047, "se": 0.011563728219791257, "z": 13.078693439517775, "parts": {"c": {"logr": 0.14759436361472608, "docs": 2}, "x": {"logr": 0.21163050356536375, "docs": 1}}, "at_s": 17.0}, "bytes": 10926465024, "bpw": 3.2499897822718733, "kld": 0.00667947847859783}, "t": "11-12 18:40:46 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-thompson-00005", "size": 3.25, "decision": "reject", "kind": "thompson", "k": 3, "z": 13.078693439517775, "logr": 0.15123845640455047, "se": 0.011563728219791257, "parts": {"c": {"logr": 0.14759436361472608, "docs": 2}, "x": {"logr": 0.21163050356536375, "docs": 1}}, "t": "11-12 18:40:46 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:40:46 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-partial-00008", "size": 3.25, "kind": "partial", "slice": "dryA", "hash": "8664c4275d0a6b03", "early": true, "ref": "w126dry-3.25-partial-00003", "bytes": 10926465024, "bpw": 3.2499897822718733, "pred_logr": -0.1304379735587094, "audit": false, "t": "11-12 18:40:47 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:40:57 CST"}
+{"ev": "fit_done", "group": "all", "n_results": 6, "out": "/workspace/rad-local/workers/w126/dry/run/fits/fit0001-all.out.json", "report": {"rows": 7, "labels": 2, "params": 75, "rmse_log": 0.002619279905948822, "chi2_per_row": 0.01509253831483246, "cost": 0.055742151382543646, "nfev": 300}, "t": "11-12 18:40:57 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:41:07 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:41:17 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:41:27 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:41:37 CST"}
+{"ev": "results_offset", "off": 3376, "t": "11-12 18:41:47 CST"}
+{"ev": "result", "tag": "w126dry-3-explore-00007", "r": {"slice": "dryA", "docs": [51.520737, 3.942827, 16.622355, 47.174811, 128.260082, 5.627567, 197.978046, 8.456608, 63.106205, 268.411531, 49.919525, 37.501527, 13.893069, 13.65711, 0.094931, 53.987491, 116.154524, 9.224699, 10.910348, 26.847141, 59.732469, 2.82179, 95.162698, 3.124515, 3.504239, 90.68308], "pos": [7376, 319, 692, 2243, 847, 251, 8191, 281, 2677, 6530, 2469, 2026, 714, 249, 33, 375, 2136, 456, 458, 828, 2235, 127, 8191, 170, 167, 1732], "stopped": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.026622369302228877}, "t": "11-12 18:41:57 CST"}
+{"ev": "decision", "tag": "w126dry-3-explore-00007", "size": 3.0, "decision": "accept", "kind": "explore", "k": 26, "z": -1.7385705247256071, "logr": -0.011396011328583438, "se": 0.0065548168259565035, "parts": {"c": {"logr": -0.01809374431111513, "docs": 13}, "x": {"logr": -0.0018622775898388731, "docs": 13}}, "t": "11-12 18:41:57 CST"}
+{"ev": "incumbent", "size": 3.0, "tag": "w126dry-3-explore-00007", "prev": "w126dry-3-pair-00002", "t": "11-12 18:41:57 CST"}
+{"ev": "results_offset", "off": 3813, "t": "11-12 18:41:57 CST"}
+{"ev": "submit", "tag": "w126dry-3-solve-00009", "size": 3.0, "kind": "solve", "slice": "dryA", "hash": "e8dc0c2c116de98f", "early": true, "ref": "w126dry-3-explore-00007", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.3071305058292981, "audit": false, "t": "11-12 18:41:57 CST"}
+{"ev": "results_offset", "off": 3813, "t": "11-12 18:42:07 CST"}
+{"ev": "result", "tag": "w126dry-3.25-partial-00008", "r": {"slice": "dryA", "docs": [39.452578, 3.283851, 13.088151, 39.651521, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "pos": [7376, 319, 692, 2243, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "stopped": {"k": 4, "n": 26, "d": 0.12865652296995903, "se": 0.05998122689913605, "z": 2.144946504450581, "parts": {"c": {"logr": 0.1438913444486556, "docs": 2}, "x": {"logr": 0.11032378842942064, "docs": 2}}, "at_s": 18.5}, "bytes": 10926465024, "bpw": 3.2499897822718733, "kld": 0.008981759266227657}, "t": "11-12 18:42:17 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-partial-00008", "size": 3.25, "decision": "reject", "kind": "partial", "k": 4, "z": 2.144946504450581, "logr": 0.12865652296995903, "se": 0.05998122689913605, "parts": {"c": {"logr": 0.1438913444486556, "docs": 2}, "x": {"logr": 0.11032378842942064, "docs": 2}}, "t": "11-12 18:42:17 CST"}
+{"ev": "results_offset", "off": 4422, "t": "11-12 18:42:17 CST"}
+{"ev": "rotate", "to": "dryB", "from": "dryA", "t": "11-12 18:42:17 CST"}
+{"ev": "submit", "tag": "w126dry-3-inc-00010", "size": 3.0, "kind": "incumbent", "slice": "dryB", "hash": "224915a551485c96", "early": false, "ref": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "of": "w126dry-3-explore-00007", "t": "11-12 18:42:17 CST"}
+{"ev": "incumbent", "size": 3.0, "tag": "w126dry-3-inc-00010", "prev": "w126dry-3-explore-00007", "t": "11-12 18:42:17 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-inc-00011", "size": 3.25, "kind": "incumbent", "slice": "dryB", "hash": "96130423d524d085", "early": false, "ref": null, "bytes": 10934657024, "bpw": 3.2524264272652808, "of": "w126dry-3.25-partial-00003", "t": "11-12 18:42:17 CST"}
+{"ev": "incumbent", "size": 3.25, "tag": "w126dry-3.25-inc-00011", "prev": "w126dry-3.25-partial-00003", "t": "11-12 18:42:17 CST"}
+{"ev": "results_offset", "off": 4422, "t": "11-12 18:42:27 CST"}
+{"ev": "result", "tag": "w126dry-3-solve-00009", "r": {"slice": "dryA", "docs": [64.319889, 4.230645, 16.82659, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "pos": [7376, 319, 692, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "stopped": {"k": 3, "n": 26, "d": 0.16921946903801763, "se": 0.06296225487492813, "z": 2.6876335571870005, "parts": {"c": {"logr": 0.17464611586511208, "docs": 2}, "x": {"logr": 0.07045648499241833, "docs": 1}}, "at_s": 16.0}, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.010179697627280316}, "t": "11-12 18:42:37 CST"}
+{"ev": "decision", "tag": "w126dry-3-solve-00009", "size": 3.0, "decision": "stale", "kind": null, "t": "11-12 18:42:37 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:42:37 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:42:47 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:42:57 CST"}
+{"ev": "fit_done", "group": "all", "n_results": 10, "out": "/workspace/rad-local/workers/w126/dry/run/fits/fit0002-all.out.json", "report": {"rows": 10, "labels": 3, "params": 76, "rmse_log": 0.0038085570758185677, "chi2_per_row": 0.018481811440361318, "cost": 0.17134873679966972, "nfev": 300}, "t": "11-12 18:42:57 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:43:07 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:43:17 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:43:27 CST"}
+{"ev": "results_offset", "off": 5021, "t": "11-12 18:43:37 CST"}
+{"ev": "result", "tag": "w126dry-3-inc-00010", "r": {"slice": "dryB", "docs": [268.411531, 51.520737, 13.65711, 116.154524, 90.68308, 128.260082, 9.224699, 0.094931, 3.124515, 13.893069, 37.501527, 59.732469, 8.456608, 10.910348, 3.942827, 49.919525, 2.82179, 3.504239, 26.847141, 63.106205, 5.627567, 16.622355, 47.174811, 95.162698, 53.987491, 197.978046], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, 2677, 251, 692, 2243, 8191, 375, 8191], "stopped": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.02662236930222887}, "t": "11-12 18:43:47 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:43:47 CST"}
+{"ev": "submit", "tag": "w126dry-3-pair-00012", "size": 3.0, "kind": "pair", "slice": "dryB", "hash": "86b02982b9ea0bfa", "early": true, "ref": "w126dry-3-inc-00010", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.045885848427538505, "audit": false, "t": "11-12 18:43:47 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:43:57 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:44:07 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:44:17 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:44:27 CST"}
+{"ev": "results_offset", "off": 5448, "t": "11-12 18:44:37 CST"}
+{"ev": "result", "tag": "w126dry-3.25-inc-00011", "r": {"slice": "dryB", "docs": [189.738972, 31.35213, 7.783721, 91.495197, 75.092836, 92.559819, 6.309114, 0.110785, 5.267914, 10.888506, 25.800839, 44.460468, 3.835467, 7.636662, 2.658542, 37.361052, 1.840894, 3.911818, 18.885452, 46.098472, 3.54028, 14.147187, 35.791978, 67.005937, 39.754023, 136.39954], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, 2677, 251, 692, 2243, 8191, 375, 8191], "stopped": null, "bytes": 10934657024, "bpw": 3.2524264272652808, "kld": 0.0193098257110392}, "t": "11-12 18:44:47 CST"}
+{"ev": "results_offset", "off": 5879, "t": "11-12 18:44:47 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-explore-00013", "size": 3.25, "kind": "explore", "slice": "dryB", "hash": "406418d9691a134d", "early": true, "ref": "w126dry-3.25-inc-00011", "bytes": 10926465024, "bpw": 3.2499897822718733, "pred_logr": -0.08501656659576783, "audit": false, "t": "11-12 18:44:47 CST"}
+{"ev": "results_offset", "off": 5879, "t": "11-12 18:44:57 CST"}
+{"ev": "results_offset", "off": 5879, "t": "11-12 18:45:07 CST"}
+{"ev": "results_offset", "off": 5879, "t": "11-12 18:45:17 CST"}
+{"ev": "results_offset", "off": 5879, "t": "11-12 18:45:27 CST"}
+{"ev": "result", "tag": "w126dry-3-pair-00012", "r": {"slice": "dryB", "docs": [266.227633, 51.726117, 14.353805, 115.326222, 90.685765, 130.892501, 9.233794, 0.079788, 3.00889, 14.154024, 37.597066, 60.375371, 7.74738, 10.162979, 4.006725, 50.084779, 3.014644, 3.537649, 27.488184, null, null, null, null, null, null, null], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, null, null, null, null, null, null, null], "stopped": {"k": 19, "n": 26, "d": 0.0011594583492281671, "se": 0.0045307898161394645, "z": 0.2559064525787478, "parts": {"c": {"logr": -0.0028165818461226727, "docs": 10}, "x": {"logr": 0.005399132401232052, "docs": 9}}, "at_s": 44.5}, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.030861431619387373}, "t": "11-12 18:45:37 CST"}
+{"ev": "decision", "tag": "w126dry-3-pair-00012", "size": 3.0, "decision": "reject", "kind": "pair", "k": 19, "z": 0.2559064525787478, "logr": 0.0011594583492281671, "se": 0.0045307898161394645, "parts": {"c": {"logr": -0.0028165818461226727, "docs": 10}, "x": {"logr": 0.005399132401232052, "docs": 9}}, "t": "11-12 18:45:37 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:45:37 CST"}
+{"ev": "submit", "tag": "w126dry-3-block-00014", "size": 3.0, "kind": "block", "slice": "dryB", "hash": "d58f76413ab2284b", "early": false, "ref": "w126dry-3-inc-00010", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.20744682561991457, "audit": true, "t": "11-12 18:45:37 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:45:47 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:45:57 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:46:07 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:46:17 CST"}
+{"ev": "results_offset", "off": 6488, "t": "11-12 18:46:27 CST"}
+{"ev": "result", "tag": "w126dry-3.25-explore-00013", "r": {"slice": "dryB", "docs": [188.148555, 31.301024, 6.517245, 91.175015, 69.606814, 93.247412, 6.380575, 0.083684, 5.264433, 10.609556, 25.969321, 42.772843, 4.394048, 8.193519, 2.906904, 37.342556, 1.723599, 3.834416, 17.451853, 43.794898, 3.609866, 14.649206, 36.436118, 67.502699, 37.960998, 133.545721], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, 2677, 251, 692, 2243, 8191, 375, 8191], "stopped": null, "bytes": 10926465024, "bpw": 3.2499897822718733, "kld": 0.01901421351115512}, "t": "11-12 18:46:37 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-explore-00013", "size": 3.25, "decision": "accept", "kind": "explore", "k": 26, "z": -2.3439950435100063, "logr": -0.015427288076416265, "se": 0.006581621458258176, "parts": {"c": {"logr": -0.024141346820004274, "docs": 13}, "x": {"logr": -0.00925553915058755, "docs": 13}}, "t": "11-12 18:46:37 CST"}
+{"ev": "incumbent", "size": 3.25, "tag": "w126dry-3.25-explore-00013", "prev": "w126dry-3.25-inc-00011", "t": "11-12 18:46:37 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:46:37 CST"}
+{"ev": "submit", "tag": "w126dry-3-explore-00015", "size": 3.0, "kind": "explore", "slice": "dryB", "hash": "52e5777d32662e86", "early": false, "ref": "w126dry-3-inc-00010", "bytes": 10085965824, "bpw": 2.9999900059482694, "pred_logr": -0.1599327756905122, "audit": true, "t": "11-12 18:46:37 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:46:47 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:46:57 CST"}
+{"ev": "fit_done", "group": "all", "n_results": 14, "out": "/workspace/rad-local/workers/w126/dry/run/fits/fit0003-all.out.json", "report": {"rows": 15, "labels": 5, "params": 78, "rmse_log": 0.004750661319181734, "chi2_per_row": 0.02041350244024421, "cost": 0.34821011305204314, "nfev": 300}, "t": "11-12 18:46:57 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:47:07 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:47:17 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:47:27 CST"}
+{"ev": "results_offset", "off": 6929, "t": "11-12 18:47:37 CST"}
+{"ev": "result", "tag": "w126dry-3-block-00014", "r": {"slice": "dryB", "docs": [263.470618, 51.749792, 13.050053, 114.571189, 92.084733, 123.245769, 8.758207, 0.108462, 3.162934, 14.59268, 39.195317, 63.549336, 7.593022, 11.231337, 4.197269, 50.847517, 2.990185, 3.59285, 27.912265, 63.574866, 5.388524, 16.46221, 47.569265, 93.9135, 51.448365, 189.283727], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, 2677, 251, 692, 2243, 8191, 375, 8191], "stopped": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.026336970850335317}, "t": "11-12 18:47:47 CST"}
+{"ev": "decision", "tag": "w126dry-3-block-00014", "size": 3.0, "decision": "accept", "kind": "block", "k": 26, "z": -1.4176375645163568, "logr": -0.010778125018506607, "se": 0.007602877694753868, "parts": {"c": {"logr": -0.008152580687260625, "docs": 13}, "x": {"logr": -0.012641854379274986, "docs": 13}}, "t": "11-12 18:47:47 CST"}
+{"ev": "incumbent", "size": 3.0, "tag": "w126dry-3-block-00014", "prev": "w126dry-3-inc-00010", "t": "11-12 18:47:47 CST"}
+{"ev": "results_offset", "off": 7362, "t": "11-12 18:47:47 CST"}
+{"ev": "submit", "tag": "w126dry-3.25-block-00016", "size": 3.25, "kind": "block", "slice": "dryB", "hash": "70f00a7709f22fcd", "early": true, "ref": "w126dry-3.25-explore-00013", "bytes": 10926465024, "bpw": 3.2499897822718733, "pred_logr": -0.14096760401108047, "audit": false, "t": "11-12 18:47:47 CST"}
+{"ev": "results_offset", "off": 7362, "t": "11-12 18:47:57 CST"}
+{"ev": "results_offset", "off": 7362, "t": "11-12 18:48:07 CST"}
+{"ev": "results_offset", "off": 7362, "t": "11-12 18:48:17 CST"}
+{"ev": "results_offset", "off": 7362, "t": "11-12 18:48:27 CST"}
+{"ev": "result", "tag": "w126dry-3-explore-00015", "r": {"slice": "dryB", "docs": [269.193498, 50.627666, 11.926208, 112.357646, 93.844143, 126.979355, 9.009056, 0.158431, 3.144899, 14.488657, 40.792974, 60.889364, 8.507749, 11.427769, 4.082313, 51.364959, 2.678747, 3.43639, 27.318108, 64.942108, 5.014659, 16.265529, 46.932667, 94.996793, 56.578868, 192.198774], "pos": [6530, 7376, 249, 2136, 1732, 847, 456, 33, 170, 714, 2026, 2235, 281, 458, 319, 2469, 127, 167, 828, 2677, 251, 692, 2243, 8191, 375, 8191], "stopped": null, "bytes": 10085965824, "bpw": 2.9999900059482694, "kld": 0.02663854385418636}, "t": "11-12 18:50:30 CST"}
+{"ev": "bias", "tag": "w126dry-3-explore-00015", "k": 16, "d_prefix": 0.0038138070919991177, "d_full": 0.0006073703956938639, "se_full": 0.007045565168846769, "t": "11-12 18:50:30 CST"}
+{"ev": "decision", "tag": "w126dry-3-explore-00015", "size": 3.0, "decision": "reject", "kind": "explore", "k": 16, "z": 0.4708843453004863, "logr": 0.0038138070919991177, "se": 0.008099243752869733, "parts": {"c": {"logr": 0.01256196029965034, "docs": 8}, "x": {"logr": -0.005104552862801236, "docs": 8}}, "t": "11-12 18:50:30 CST"}
+{"ev": "result", "tag": "w126dry-3.25-block-00016", "r": {"slice": "dryB", "docs": [191.751598, 29.81547, 7.654478, 92.636661, 75.417342, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "pos": [6530, 7376, 249, 2136, 1732, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "stopped": {"k": 5, "n": 26, "d": 0.026855111434997136, "se": 0.01408953930709194, "z": 1.9060319042141904, "parts": {"c": {"logr": 0.03914757591808672, "docs": 3}, "x": {"logr": -0.0001952245842193227, "docs": 2}}, "at_s": 21.5}, "bytes": 10926465024, "bpw": 3.2499897822718733, "kld": 0.022042698163457806}, "t": "11-12 18:50:30 CST"}
+{"ev": "decision", "tag": "w126dry-3.25-block-00016", "size": 3.25, "decision": "reject", "kind": "block", "k": 5, "z": 1.9060319042141904, "logr": 0.026855111434997136, "se": 0.01408953930709194, "parts": {"c": {"logr": 0.03914757591808672, "docs": 3}, "x": {"logr": -0.0001952245842193227, "docs": 2}}, "t": "11-12 18:50:30 CST"}
+{"ev": "results_offset", "off": 8406, "t": "11-12 18:50:30 CST"}

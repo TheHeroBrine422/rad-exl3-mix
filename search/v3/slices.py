@@ -16,6 +16,11 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
   python3 slices.py add REG NAME MIXDIR [x=DIR c=DIR]           register a built slice (reads MIXDIR/kld.json)
   python3 slices.py show REG
   python3 slices.py ledger REG NAME OUTDIR                      the c part's kld.json for ledger_add.py (role: select)
+  python3 slices.py draw REG LEDGER POOLS N SEED [MODE]          N calib search-pool docs for the next c part: the budget =
+          docs fresh by the ledger (MODE never | no27b, eval/slices/excl.py's rule, | headx: also docs whose only 27B
+          uses are the head-input collections w94 / w119-headx-search; the lead decides the mode) + docs
+          this registry's own slices used (they return, least-decided first); never a doc of a ready / active slice.
+          Prints the doc indices (golden_pick.py's argument list); the c golden: golden_pick.py GOLD CORPUS OUT JSONL DOCS
 Rotation (driver): a slice is retired once any size has decided `rotate_after` candidates on it (default 25); the
 next "ready" slice becomes active (its incumbents are scored first, no early stop)."""
 import json, os, random, shutil, sys, time
@@ -141,6 +146,24 @@ def main(argv):
                   f" decisions {s['decisions']}")
         dd = R.d["doc_decisions"]
         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")
+    elif argv[0] == "draw":
+        R = Registry(argv[1]); led, pools, n, seed = argv[2], argv[3], int(argv[4]), int(argv[5]); mode = argv[6] if len(argv) > 6 else "never"
+        pool = json.load(open(pools))["pool"]; mine = {f"golden-{k}-c" for k in R.d["slices"]}
+        used = set()
+        for l in open(led):
+            r = json.loads(l)
+            if r["doc"] == "all" or r["use"] in mine: continue
+            if mode in ("no27b", "headx") and r["use"].startswith(("g08-", "g2b-")): continue
+            if mode == "headx" and r["use"] in ("w119-headx-search", "w94-headx-search"): continue
+            used.add(int(r["doc"]))
+        busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") for d in s_["docs"] if d["id"].startswith("c:")}
+        cand = [i for i, p in enumerate(pool) if p == "search" and i not in used and i not in busy]
+        rng = random.Random(seed); dd = R.d["doc_decisions"]
+        cand.sort(key=lambda i: (dd.get(f"c:{i}", 0), rng.random()))
+        pick = sorted(cand[:n])
+        print(" ".join(map(str, pick)))
+        print(f"draw: {len(cand)} docs in the budget (mode {mode}), {len(pick)} drawn; decisions on them so far: "
+              f"max {max([dd.get(f'c:{i}', 0) for i in pick] or [0])}", file=sys.stderr)
     elif argv[0] == "ledger":
         R = Registry(argv[1]); s = R.d["slices"][argv[2]]; os.makedirs(argv[3], exist_ok=True)
         c = s["parts"].get("c")

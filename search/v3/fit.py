@@ -130,8 +130,13 @@ class SModel(K3.Model):
         ph = {}
         for f in self.v3fams:
             j = self.v3fams.index(f); ph[f] = u["phi3"][f] + u["dev3"][j]
+        emb = dict(zip(self.levels, u["emb"]))
+        seen = sorted(int(l[1:]) for l in emb if l.startswith("e") and l[1:].isdigit())
+        for j in range(len(D.emb_names)):                              # an embedding no row used: the nearest lower seen one's
+            if f"e{j}" in emb or not seen: continue                    # offset (no predicted gain, no loss) -- the search measures it
+            lower = [k for k in seen if k < j]; emb[f"e{j}"] = emb[f"e{lower[-1] if lower else seen[0]}"]
         return {"s": s, "eb": D.eb, "q": u["q"], "ph": ph, "kl": self.KA @ u["kap"], "c0": u["c0"],
-                "emb": dict(zip(self.levels, u["emb"])), "sat": u["sat"]}
+                "emb": emb, "sat": u["sat"]}
 
     def cost(self, tb, i, err, fam):
         """one tensor's cost term at error err of family fam"""
@@ -192,7 +197,34 @@ def fit_obs(M, obs, opts=None, x0=None, ndraw=0, seed=0):
     return Mo, x, Mo.posterior(x, ndraw, seed), rep
 
 
+def check(M, obs, opts, test=(2.5, 4.5), main_min=2.0, frac=0.2, seed=0):
+    """TODO 'Low sizes in parallel': does a joint fit (every size's rows) predict held-out main-size rows (sizes in
+    [test]) better than a main-only fit (rows of sizes >= main_min)? Held out: a seeded fraction of the non-anchor rows
+    (se > 0) of the test sizes; their labels keep their anchors, so each held-out row is predicted relative to its
+    anchor. -> {arm: {"n", "logrmse"}}"""
+    import random
+    rng = random.Random(seed)
+    test_rows = [o for o in obs if o.get("se", 0) > 0 and test[0] <= (o.get("size") or -1) <= test[1]]
+    ho = {o["tag"] for o in test_rows if rng.random() < frac}
+    out = {}
+    for arm, keep in (("main-only", lambda o: (o.get("size") or 0) >= main_min), ("joint", lambda o: True)):
+        tr = [o for o in obs if o["tag"] not in ho and keep(o)]
+        Mo, x, _, _ = fit_obs(M, tr, opts)
+        errs = []
+        for o in obs:
+            if o["tag"] not in ho: continue
+            anc = [a for a in tr if a["label"] == o["label"] and a.get("se", 0) == 0]
+            if not anc: continue
+            a = anc[0]; lp = math.log(Mo.predict(x, o["assign"]) / Mo.predict(x, a["assign"])); lm = math.log(o["kld"] / a["kld"])
+            errs.append(lp - lm)
+        out[arm] = {"n": len(errs), "train_rows": len(tr), "logrmse": float(np.sqrt(np.mean(np.square(errs)))) if errs else None}
+    return out
+
+
 def main(argv):
+    if argv[0] == "check":                                            # fit.py check IN.json [SEED]
+        d = json.load(open(argv[1])); M = MN.Menu(d["menu"]) if isinstance(d["menu"], dict) else MN.Menu.load(d["menu"])
+        r = check(M, d["obs"], d.get("opts"), seed=int(argv[2]) if len(argv) > 2 else 0); print(json.dumps(r)); return 0
     d = json.load(open(argv[0]))
     M = MN.Menu(d["menu"]) if isinstance(d["menu"], dict) else MN.Menu.load(d["menu"])
     Mo, x, draws, rep = fit_obs(M, d["obs"], d.get("opts"), d.get("x0"), int(d.get("ndraw", 0)), int(d.get("seed", 0)))

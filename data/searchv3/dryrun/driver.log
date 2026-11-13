@@ -1,0 +1,31 @@
+11-12 18:21:55 CST slice dryA active
+11-12 18:27:35 CST w126dry-3-init-00000: incumbent of 3.0 scored on dryA: KLD 0.02888 at 2.964 bpw
+11-12 18:28:25 CST replayed: 2 submitted, 1 results, incumbents 2, fits []
+11-12 18:28:35 CST w126dry-3.25-init-00001: incumbent of 3.25 scored on dryA: KLD 0.02540 at 3.0742 bpw (container 3.0766)
+11-12 18:28:35 CST fit 0000 (all) started on 2 rows (2 results)
+11-12 18:28:45 CST fit all done on 2 rows: {'rows': 2, 'labels': 1, 'params': 74, 'rmse_log': 4.748057465222935e-13, 'chi2_per_row': 5.636012423264811e-22, 'cost': 5.639694801760368e-22, 'nfev': 23}
+11-12 18:29:56 CST replayed: 4 submitted, 2 results, incumbents 2, fits ['all']
+11-12 18:36:46 CST bytes offset 8255936 (container - menu, from w126dry-3.25-partial-00003)
+11-12 18:36:46 CST ACCEPT w126dry-3.25-partial-00003 (partial) for 3.25: log r -0.2742 (z -12.71) vs w126dry-3.25-init-00001; 3.2500 bpw
+11-12 18:37:46 CST ACCEPT w126dry-3-pair-00002 (pair) for 3.0: log r -0.0701 (z -7.86) vs w126dry-3-init-00000; 3.0000 bpw
+11-12 18:38:56 CST reject w126dry-3-block-00004 (block) for 3.0: log r -0.0057 (z -1.27) after 26 docs
+11-12 18:40:36 CST reject w126dry-3.25-pair-00006 (pair) for 3.25: log r +0.0054 (z +1.89) after 6 docs [stopped]
+11-12 18:40:36 CST fit 0001 (all) started on 7 rows (6 results)
+11-12 18:40:46 CST reject w126dry-3.25-thompson-00005 (thompson) for 3.25: log r +0.1512 (z +13.08) after 3 docs [stopped]
+11-12 18:40:57 CST fit all done on 7 rows: {'rows': 7, 'labels': 2, 'params': 75, 'rmse_log': 0.002619279905948822, 'chi2_per_row': 0.01509253831483246, 'cost': 0.055742151382543646, 'nfev': 300}
+11-12 18:41:57 CST ACCEPT w126dry-3-explore-00007 (explore) for 3.0: log r -0.0114 (z -1.74) vs w126dry-3-pair-00002; 3.0000 bpw
+11-12 18:42:17 CST reject w126dry-3.25-partial-00008 (partial) for 3.25: log r +0.1287 (z +2.14) after 4 docs [stopped]
+11-12 18:42:17 CST ROTATE dryA -> dryB
+11-12 18:42:37 CST fit 0002 (all) started on 10 rows (10 results)
+11-12 18:42:57 CST fit all done on 10 rows: {'rows': 10, 'labels': 3, 'params': 76, 'rmse_log': 0.0038085570758185677, 'chi2_per_row': 0.018481811440361318, 'cost': 0.17134873679966972, 'nfev': 300}
+11-12 18:43:47 CST w126dry-3-inc-00010: incumbent of 3.0 scored on dryB: KLD 0.02662 at 3.0000 bpw (container 3.0000)
+11-12 18:44:47 CST w126dry-3.25-inc-00011: incumbent of 3.25 scored on dryB: KLD 0.01931 at 3.2524 bpw (container 3.2524)
+11-12 18:45:37 CST reject w126dry-3-pair-00012 (pair) for 3.0: log r +0.0012 (z +0.26) after 19 docs [stopped]
+11-12 18:46:37 CST ACCEPT w126dry-3.25-explore-00013 (explore) for 3.25: log r -0.0154 (z -2.34) vs w126dry-3.25-inc-00011; 3.2500 bpw
+11-12 18:46:37 CST fit 0003 (all) started on 15 rows (14 results)
+11-12 18:46:57 CST fit all done on 15 rows: {'rows': 15, 'labels': 5, 'params': 78, 'rmse_log': 0.004750661319181734, 'chi2_per_row': 0.02041350244024421, 'cost': 0.34821011305204314, 'nfev': 300}
+11-12 18:47:47 CST ACCEPT w126dry-3-block-00014 (block) for 3.0: log r -0.0108 (z -1.42) vs w126dry-3-inc-00010; 3.0000 bpw
+11-12 18:48:37 CST STOP file: exit
+11-12 18:50:30 CST replayed: 17 submitted, 15 results, incumbents 2, fits ['all']
+11-12 18:50:30 CST reject w126dry-3-explore-00015 (explore) for 3.0: log r +0.0038 (z +0.47) after 16 docs
+11-12 18:50:30 CST reject w126dry-3.25-block-00016 (block) for 3.25: log r +0.0269 (z +1.91) after 5 docs [stopped]

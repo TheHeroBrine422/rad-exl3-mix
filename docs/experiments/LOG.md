@@ -4,6 +4,47 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-12 6:51 PM CST · #166 · V3 search driver built and tested: CPU stand-in 7 / 7 PASS, box2 dry run (17 evals, 6 early stops on the card), radiance --kld-progress byte-identical; boundary pick B p2 w5 (×1.87 gain/h vs full slice, S3 ×1.77) — the user decides (w126)
+- **Status:** done (build + tests); the first real run waits for the user's go · **Machine:** the VM (code, driver,
+  coordinator), colo (simulation, stand-ins, fits, radiance host tests), box2 (radiance build, identity test, dry run
+  6:17–6:49 PM CST on card 3 by card3.lock; packs CPU) · **Code:** `search/v3/` (README: files, run, tests, what the
+  first run needs), radiance branch `qc-exl3-v3-kldprog` (ca5491d on 81bad51; `search/v3/radiance-kld-progress.patch`),
+  `search/v3/hostd-earlystop.patch` · **Data:** `data/searchv3/` (boundsim, standin, dryrun) · **Brief:**
+  `rad-local/workers/instr3/w126.md`
+- **Driver** (`driver.py`): per size an incumbent; candidates from the fitted model (solve = Lagrangian MCKP at the
+  byte cap, partial, pair, block, thompson = Laplace draw, explore = UCB / random band; shares by V2's kind rewards);
+  ≤ queue_depth evals outstanding in rxrun.multi's queue; decisions paired per document vs the CURRENT incumbent
+  (stopped → reject; whole slice → accept iff pooled and both parts < 0); every eval a fit row (labels S|full /
+  S|pre<k> on a 5 % grid, the generating incumbent as anchor, residual / √(SE² + τ²)); kfit3 refits (subclass, not
+  edited) every N results on colo through fit_cmd, never blocking; fit groups for the low sizes; rotation every
+  rotate_after decisions of a size (incumbents re-scored first); held-out monitor (design/v3.md §5: every accept read
+  once on ver3-8k, flat-n stop rule, never fitted); release bands [T − 0.5 gap, T + 0.3 gap] with the non-dominated
+  points in frontier.json; sizes from menu (quantized) bytes, container offset calibrated on the first donor-free
+  result; audit_frac candidates scored whole and decided by the rule after the fact (early-stop bias); restart = replay.
+- **Early stop:** radiance `--kld-progress FILE` (a JSON line + the document's KL rows in FILE.kl as each document
+  finishes); kld_test (new case) + config_test PASS; on box2 with V2 3.00: rows byte-identical to a run without it,
+  the interleaved golden's per-document sums == the original order's (max diff 0.0). hostd patch: early_stop evals
+  scored with score_cmd_progress, followed, killed at the boundary (rxrun/earlystop.py = seqrule.py);
+  test_hostd_es.py 11 / 11.
+- **Boundary simulation** (rule c17045c before data; w123's 446 two-part pairs; 13 priors; real-document check):
+  b(t) = 2((1 − t)/0.9)^p × warmup. Gain/h vs full slice (median / worst): S3 (w123 staged) ×1.77 / 1.30, S1 ×1.81,
+  **B p2 w5 ×1.87 / 1.40 (pick)**, B p2 w10 ×1.83, B p1 w5 ×1.79, B p0.5 w5 ×1.71. Good-move loss 2.5 % (S3 10.6 %);
+  real-document P(accept) at +0.5 / +1 %: 0.0104 / 0.0074 (S3 0.0108 / 0.0080, full slice 0.0202 / 0.0154).
+- **CPU stand-in** (si6, si7; 400 / 300 evals): every size climbs (true KL −17 … −74 %), 0 wrong accepts (of 54 / 44),
+  86–89 % of rejects stopped early (card time 11.5 h vs 21.7 h all-full), fit vs truth corr 0.990, rotations,
+  restart, monitor: 7 / 7 PASS each.
+- **Dry run (box2, not a decision):** 6 pass-1 levels k2.625–k3.75 in V2 3.00, sizes 3.0 / 3.25, the retired
+  golden-search27c-c split in two pseudo-parts: 17 evals, 12 decisions, 5 accepts, 6 runs killed by the host after
+  3–19 of 26 docs (16–26 s vs ~60 s); rotation, refits (colo, 10–20 s round trip) and a driver restart worked.
+  Fixes found by it: byte offset container − menu 8.26 MB (now calibrated; 2 early candidates were 0.0025 bpw over
+  the cap), a stale stopped run's partial KLD read as a full one (now logged as stale).
+- **Found:** the calib search budget is **27** unused search-pool docs by today's ledger (not 214); 177 if docs used
+  only by the head-input collections (w94 / w119-headx-search) may return (`slices.py draw … headx`): lead decides.
+- **For the lead / user:** go + boundary; restage with hostd-earlystop.patch and radiance kldprog; the menu over all
+  levels per host (cross-host levels block an eval); calib budget mode; monitor golden + flat_n; whether refit rows
+  may come from search slices (AGENTS.md: sensitivity fits on the fit pool); fit groups after `fit.py check`.
+- **Runtime:** none (search tooling; radiance gains a reporting flag, kernels unchanged).
+
 ### 2026-11-12 6:30 PM CST · #150 · Decision: swj fit_tokens stays 1M (user)
 - w114's #150: 2M 0.9921 at K2.5 / 0.9925 at K4 (rule bar ≤ 0.99 not met), 4M worse than 2M. **User: keep 1M** (gain
   ~0.8% for ~2.3× swj cost; V3.1 QAD retrains the scales). No settings change: scales stamp stays 6c57a3d1; the ladder's

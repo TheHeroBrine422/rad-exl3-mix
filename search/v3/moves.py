@@ -63,7 +63,22 @@ class Pred:
 
 
 def mckp(pred, a, hi, lo, iters=3):
-    """Lagrangian multiple-choice knapsack at bytes <= hi (trunk + head; the embedding stays), re-linearised"""
+    """the model's optimum at bytes <= hi: Lagrangian multiple-choice knapsack over trunk + head on the costs
+    linearised at the current solution (re-linearised `iters` times), for every embedding option (exact prediction
+    picks the best), bytes repaired into [lo, hi]"""
+    embs = [o["o"] for o in pred.emb["opts"]] if pred.emb and len(pred.emb["opts"]) > 1 else [a.get(MN.EMB)]
+    best = None
+    for eo in embs:
+        cur = dict(a)
+        if eo is not None: cur[MN.EMB] = eo
+        cur = _mckp1(pred, cur, hi, lo, iters)
+        if cur is None: continue
+        k = pred.kl(cur); inw = lo <= pred.M.bytes(cur) <= hi
+        if best is None or (inw, -k) > (best[2], -best[0]): best = (k, cur, inw)      # in the window first, then predicted KL
+    return best[1] if best else None
+
+
+def _mckp1(pred, a, hi, lo, iters):
     M = pred.M; fixed = M.bytes(a) - sum(pred.B[i][j] for i, j in enumerate(pred.idx(a)))
     cur = dict(a)
     for _ in range(iters):
@@ -71,13 +86,16 @@ def mckp(pred, a, hi, lo, iters=3):
         def pick(lam):
             J = [int(np.argmin(dl[i] + lam * pred.B[i])) for i in range(len(dl))]
             return J, fixed + sum(pred.B[i][j] for i, j in enumerate(J))
-        lo_l, hi_l = 0.0, 1e-6
-        while pick(hi_l)[1] > hi and hi_l < 1e3: hi_l *= 4
-        for _ in range(60):
-            m = 0.5 * (lo_l + hi_l)
-            if pick(m)[1] > hi: lo_l = m
-            else: hi_l = m
-        J, b = pick(hi_l)
+        J, b = pick(0.0)
+        if b > hi:
+            sc = np.median([np.ptp(d) for d in dl if np.ptp(d) > 0] or [1.0]) / np.median([np.ptp(B) for B in pred.B if np.ptp(B) > 0] or [1.0])
+            lo_l, hi_l = 0.0, max(sc, 1e-30)
+            while pick(hi_l)[1] > hi and hi_l < sc * 1e12: lo_l = hi_l; hi_l *= 4
+            for _ in range(50):
+                m = 0.5 * (lo_l + hi_l)
+                if pick(m)[1] > hi: lo_l = m
+                else: hi_l = m
+            J, b = pick(hi_l)
         cur = repair(pred, pred.assign(J, cur), lo, hi)
     return cur
 

@@ -131,6 +131,8 @@ def main(argv=None):
     ap.add_argument("work"); ap.add_argument("--layers", type=int, default=16); ap.add_argument("--results", type=int, default=400)
     ap.add_argument("--seed", type=int, default=0); ap.add_argument("--par", type=int, default=2)
     ap.add_argument("--sizes", default="2.0,3.0,4.5"); ap.add_argument("--rotate-after", type=int, default=25)
+    ap.add_argument("--groups", default=None, help="fit groups NAME:SIZE,SIZE:all|own;... (driver CONF fit_groups)")
+    ap.add_argument("--flat-n", type=int, default=6)
     a = ap.parse_args(argv)
     W = a.work; shutil.rmtree(W, ignore_errors=True); os.makedirs(W)
     levels = tuple(np.round(np.arange(1.0, 6.01, 0.25), 3))
@@ -143,17 +145,22 @@ def main(argv=None):
         man = {"docs": [dict(d, row0=0) for d in docs]}
         reg.add(name, f"/synthetic/{name}", parts={"x": "synx", "c": "sync"}, man=man)
         reg.d["slices"][name]["built"] = f"2026-11-12T00:00:{i:02d}Z"; reg.save()
+    S["ver"] = make_slice("ver", rng, T)                               # the held-out monitor (not in the registry: never rotated)
     sizes = [float(x) for x in a.sizes.split(",")]
     conf = {"root": f"{W}/run", "menu": f"{W}/menu.json", "registry": f"{W}/registry.json", "base": "BASE", "sizes": sizes,
             "size_tol": 0.03, "evals": f"{W}/evals.jsonl", "results": f"{W}/results.jsonl", "docs": f"{W}/docs",
             "queue_depth": 4, "refit_every": 15, "rotate_after": a.rotate_after, "audit_frac": 0.1, "seed": a.seed, "dry": True,
-            "init_head": "H4", "init_emb": "E4", "ndraw": 8, "poll_s": 0, "fit_opts": {"beta": "fit"}}
+            "init_head": "H4", "init_emb": "E4", "ndraw": 8, "poll_s": 0, "fit_opts": {"beta": "fit"},
+            "monitor": {"name": "ver", "golden": "/synthetic/ver", "flat_n": a.flat_n}}
+    if a.groups:
+        conf["fit_groups"] = [{"name": n, "sizes": [float(x) for x in z.split(",")], "rows": r} for n, z, r in (g.split(":") for g in a.groups.split(";"))]
     json.dump(conf, open(f"{W}/conf.json", "w"), indent=1)
     D = DR.Driver(f"{W}/conf.json"); X = FakeExec(W, T, S, a.par)
     first = {}; steps = 0; restarted = False
     while X.n < a.results and steps < 20 * a.results:
         D.step(); X.step(M); steps += 1
-        if D.fitproc: D.fitproc[0].wait()                              # stand-in: fits finish before the next step
+        for fp in D.fitprocs.values():                                 # stand-in: fits finish before the next step
+            if fp: fp[0].wait()
         for s in sizes:
             t = D.inc.get(s)
             if s not in first and t in D.res: first[s] = T.kl(D.assign(t))
@@ -161,7 +168,9 @@ def main(argv=None):
             inc0 = dict(D.inc); D = DR.Driver(f"{W}/conf.json"); restarted = D.inc == inc0
             if not restarted: print(f"RESTART mismatch {inc0} vs {D.inc}")
     D.ingest()
-    if D.fitproc: D.fitproc[0].wait(); D.maybe_refit()
+    for fp in D.fitprocs.values():
+        if fp: fp[0].wait()
+    D.maybe_refit()
     print(D.report())
     ok = True
 
@@ -170,6 +179,7 @@ def main(argv=None):
         ok &= bool(cond); print(f"  {'PASS' if cond else 'FAIL'} {name}: {msg}")
     # (1) climb
     gains = {}
+    sizes = [s for s in sizes if D.feasible(s)]                        # a size below the menu is skipped by the driver
     for s in sizes:
         t = D.inc[s]; a1 = D.assign(t); gains[s] = math.log(T.kl(a1) / first[s])
     chk("climb", all(g < -0.02 for g in gains.values()), " ".join(f"{s}: {100 * g:+.1f}%" for s, g in gains.items()))
@@ -187,21 +197,28 @@ def main(argv=None):
     chk("early stops", len(rej) > 0 and st >= 0.3 * len(rej) and X.card_s < X.card_s_full,
         f"{st} of {len(rej)} rejects stopped early; card time {X.card_s / 3600:.2f} h vs {X.card_s_full / 3600:.2f} h all-full ({X.n} evals)")
     # (4) fit recovery
-    Mo, x = D.fit["Mo"], D.fit["x"]; pr = D.fit["pred"]; rr = random.Random(5); dp, dt = [], []
+    rr = random.Random(5); dp, dt = [], []
     for _ in range(300):
-        s = rr.choice(sizes); a0 = D.assign(D.inc[s]); a1 = dict(a0)
+        s = rr.choice(sizes); a0 = D.assign(D.inc[s]); a1 = dict(a0); pr = D.fits[D.gname[s]]["pred"]
         w = rr.choice([w for w in a0 if w != MN.EMB]); t = M.T[M.WI[w]]; j = M.oi[M.WI[w]][a0[w]]
         j2 = min(len(t["opts"]) - 1, max(0, j + rr.choice([-2, -1, 1, 2])))
         if j2 == j: continue
         a1[w] = t["opts"][j2]["o"]
         dp.append(math.log(pr.kl(a1) / pr.kl(a0))); dt.append(math.log(T.kl(a1) / T.kl(a0)))
     dp, dt = np.array(dp), np.array(dt); corr = float(np.corrcoef(dp, dt)[0, 1]); rm = float(np.sqrt(np.mean((dp - dt) ** 2)))
-    chk("fit recovers the model", corr >= 0.8 and rm <= 0.03, f"one-step moves: corr {corr:.3f}, RMSE {rm:.4f} (true sd {dt.std():.4f}); fit {D.fit['report']}")
+    chk("fit recovers the model", corr >= 0.8 and rm <= 0.03, f"one-step moves: corr {corr:.3f}, RMSE {rm:.4f} (true sd {dt.std():.4f}); fits " + str({g: f["report"]["rows"] for g, f in D.fits.items()}))
     # (5) rotation
     rot = [json.loads(l) for l in open(f"{W}/run/state.jsonl") if '"ev": "rotate"' in l and '"from": null' not in l]
     rescored = all(D.res.get(D.inc[s], {}).get("slice") == D.reg.active() or D.inc[s] in D.outstanding() for s in sizes)
     chk("rotation", len(rot) >= 1 and rescored, f"{len(rot)} rotations, active {D.reg.active()}, incumbents on it or in flight: {rescored}")
     chk("restart", restarted, "driver rebuilt from state.jsonl mid-run: same incumbents")
+    # (7) held-out monitor: every accept read once on "ver"; the curve follows the true KL; never a fit row
+    mons = [json.loads(l) for l in open(f"{W}/run/state.jsonl") if '"ev": "monitor"' in l]
+    nonfit = all(not o["tag"].split("@")[0].split("-")[2] == "mon" for o in D.obs.values())
+    tr = [(math.log(m["kld"]), math.log(T.kl(D.assign(m["tag"])))) for m in mons]
+    cm = float(np.corrcoef(*zip(*tr))[0, 1]) if len(tr) > 2 else float("nan")
+    chk("monitor", len(mons) >= n_acc - 2 and nonfit and cm > 0.9, f"{len(mons)} monitor reads for {n_acc} accepts, corr with true KL {cm:.3f}, "
+        f"none fitted: {nonfit}; sizes stopped by the flat rule: {sorted(D.stopped_sizes)}")
     bias = D.bias
     print(f"  info: audit runs stopped-after-the-fact {len(bias)}; mean prefix - full log r {np.mean([b['d_prefix'] - b['d_full'] for b in bias]) if bias else float('nan'):+.4f}")
     print("STANDIN " + ("PASS" if ok else "FAIL"))
