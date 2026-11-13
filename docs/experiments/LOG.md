@@ -5554,3 +5554,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Next:** w132 checks initial pick vs current incumbent on a fresh A8 slice (did the search help?); picks come from a
   knapsack re-solve on the best model; a short search polish only at the end, once the format is fixed.
 - **Runtime:** none.
+
+### 2026-11-13 10:30 AM CST · #164 · perf branch merged into qc-exl3-v3 (user)
+- Fork `qc-exl3-v3` fast-forwarded ca5491d → 5c9956c (19 commits: w124's KS / DQ / DOT decode, AQ producer stages,
+  FUSE opt-in, R16 head row order (encoding v3, store un-permute), vision + DFlash2 port, the merge of --no-error /
+  --kld-progress). Whole-model KLD within the kernel bar (w124 PERF.md, w136 #164-02). Same tree as the staged
+  `/data/q27/rad10-perf` builds on box2 / ds8. The user pushes (update-git.sh).
+- **Runtime:** P + D (decode ~1.6× per layer; R16 head −3.1 ms a step; prefill AQ +0.7%).
