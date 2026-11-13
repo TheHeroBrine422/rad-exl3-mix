@@ -62,7 +62,10 @@ same trunk), which ver3's status ("spent for any selection") allows. Verify (ver
   on this build (3 more evals) and every trellis arm pairs with its same-build incumbent; the comparison with w135's Lloyd
   rows is then reported as cross-build (labelled so).
 
-## Amendment 2 (2026-11-13 4:40 PM CST, before any run below; lead notes 11-13: host-RAM embedding, K8 mul1 one kernel)
+## Amendment 2 (2026-11-13 4:40 PM CST; lead notes 11-13: host-RAM embedding, K8 mul1 one kernel)
+
+Timing: item 5's bench ran 4:28–4:33 PM CST, before this amendment (a timing measurement, no KL, no choice). Item 6
+(the KL arms) is registered before any of its donors is built or scored.
 
 The lead's notes ask whether a host-RAM embedding read by the same `embed_exl3i` (mul1 K8 trellis, codes in pinned host
 memory) is ≈ bf16 and what reading it over PCIe costs. Added, nothing above changes:
