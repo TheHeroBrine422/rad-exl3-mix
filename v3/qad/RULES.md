@@ -177,3 +177,12 @@ Ledger: W's train documents (positions up to 8,192), the monitor at 8,192, agent
   steps on 2 cards with qmodel.shift_conv1d without a stall.
 - L16 resumes from its step-16 state (same data order) with `--conv shift` (amendment 3's check). L8 (1 card, no
   stall) keeps F.conv1d. Nothing else changes.
+
+### Amendment 5 — 2026-11-13 6:36 AM CST, arm L16 faults, before resuming it again (implementation only)
+- L16's 2-card runs end in a GPU memory fault on their second card (box2 card 3: layers 32–63 + head, ~98% VRAM),
+  always in the same hipBLASLt bf16 GEMM (`Cijk_Ailk_Bjlk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64x32…`): the first
+  run's "stall" after step 16 was such a fault (log line 1458), and both resumes faulted within ~2 min (the #168
+  fault family; no other run of the pilot logged one). W's stall had no fault message.
+- L16 resumes from its step-16 state once more with `TORCH_BLAS_PREFER_HIPBLASLT=0` (torch's GEMMs on rocBLAS; numerics
+  at bf16 rounding) and `--conv shift`. If it faults again, L16 is reported as not run (hardware / library), and L8
+  stands alone. Nothing else changes.
