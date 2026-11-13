@@ -4,7 +4,7 @@ Every search and calibration container so far was mixed without `act` lines, so 
 path. V3 ships A8 (int8 activations, a8g128 on every trunk weight; decision 11-09). This folder measures how much that
 matters for the search (1), prepares the switch (2) and checks whether the search's decisions bought anything (3).
 
-**Status (11-13 11:30 AM CST).** The user paused the search at 10:11 AM CST (lead note 10:15) before any rotation, so
+**Status (11-13 12:40 PM CST).** The user paused the search at 10:11 AM CST (lead note 10:15) before any rotation, so
 the live switch was never made: no `act` event in state, and `driver.json` is back to its pre-w132 config (the A8
 version is kept as `driver.json.a8-w132`). The patch is applied in the repo as the A8 mix writer for everything from
 now on (lead note item 3). It is opt-in: an eval request's `"act"`, or driver CONF `"act"`. hostd is staged on ds8
@@ -102,6 +102,39 @@ initial). 95% CIs from 2,000 document bootstrap resamples stratified by part.
 - **Open:** how much of the gain came from the first accept per size and how much from later decisions. Scoring the
   first accepted incumbents (12 more A8 mixes, ~2 card-h, ~25 min on 8 cards) on the same docs would split it.
 
+### 3b. Third arm: w133's M1 re-solve picks (amendment 1, committed 1e0f7cf before any M1 mix; 11:33 AM–12:38 PM CST, ~2.6 card-h)
+
+M1 picks are w133's `picksT` on menu133e: the R16 heads plus w135's embedding options. Built as A8 containers from
+ds8's packs and donors and scored on the same documents. Negative = M1 better; the same size adjustment applies.
+
+| size | M1 emb / head | M1 vs current D [95% CI] | reading | M1 vs initial D [95% CI] | KLD s171c current → M1 |
+|---|---|---|---|---|---|
+| 1.5 | e2 / u2 | −0.046 [−0.086, +0.000] | null | −0.065 [−0.110, −0.014] | 0.4700 → 0.4541 |
+| 1.75 | e2 / u2 | −0.094 [−0.109, −0.079] | gained | −0.154 [−0.174, −0.132] | 0.3297 → 0.3021 |
+| 2.0 | e2 / u2.25 | −0.059 [−0.075, −0.042] | gained | −0.144 [−0.169, −0.120] | 0.2412 → 0.2311 |
+| 2.5 | e2 / u2.5 | −0.055 [−0.082, −0.030] | gained | −0.114 [−0.141, −0.090] | 0.1428 → 0.1340 |
+| 3.0 | base / u3 | −0.070 [−0.097, −0.045] | gained | −0.164 [−0.208, −0.127] | 0.0882 → 0.0817 |
+| 3.5 | base / u3.5 | −0.070 [−0.101, −0.033] | gained | −0.144 [−0.179, −0.104] | 0.0575 → 0.0537 |
+| 4.0 | base / u3.75 | −0.076 [−0.106, −0.037] | gained | −0.160 [−0.190, −0.128] | 0.0369 → 0.0349 |
+| 4.5 | e5 / u4 | −0.100 [−0.141, −0.047] | gained | −0.215 [−0.265, −0.149] | 0.0270 → 0.0241 |
+| 5.0 | e5 / u4.5 | −0.275 [−0.344, −0.214] | gained | −0.360 [−0.421, −0.303] | 0.0211 → 0.0163 |
+| 5.5 | e5 / u5 | −0.481 [−0.540, −0.410] | gained | −0.453 [−0.508, −0.381] | 0.0185 → 0.0115 |
+| 6.0 | e5 / u6 | −0.643 [−0.723, −0.554] | gained | −0.680 [−0.768, −0.582] | 0.0154 → 0.0090 |
+| 6.5 | e5 / u6.5 | −0.799 [−0.912, −0.679] | gained | −0.783 [−0.876, −0.683] | 0.0145 → 0.0080 |
+| 7.0 (not pooled) | e5 / u7 | −0.720 [−0.831, −0.599] (vs initial = current, 6.84 bpw) | gained | | 0.0080 (M1) |
+| **pooled (12)** | | **−0.231 [−0.252, −0.206] (×0.794)** | **gained** | **−0.286 [−0.308, −0.260] (×0.751)** | |
+
+- **M1 beats the search's current incumbents at every size from 1.75 to 7.0;** 1.5's CI touches 0. Both slices and
+  both parts agree in sign at every size except 1.5's x part.
+- **The large high-size gains come with the embedding.** The search's menu (menu129h) had only V2 3.00's l3 embedding
+  ("base") at every size. Every M1 pick from 4.5 up uses l5 (e5) and gains −10% at 4.5, then −27% to −55% at 5.0–7.0.
+  At 3.0–4.0, where M1 also keeps "base", the gain is −7%: that is the M1 fit and re-solve's own trunk / head
+  allocation. At ≤ 2.5 the smaller l2 embedding frees bytes (−5% to −9%). The split between the embedding and the M1
+  model is not measured: that needs M1 on the old menu, or the current incumbents with e5.
+- **Reading for the lead:** the search beat its own starting knapsack (−5.6% pooled), but a one-shot M1 re-solve on the
+  extended menu beats the search's incumbents by −23% pooled. Where the menus are comparable (3.0–4.0, same "base"
+  embedding), the margin is −7%.
+
 ## Files
 
 | file | what |
@@ -112,7 +145,7 @@ initial). 95% CIs from 2,000 document bootstrap resamples stratified by part.
 | `hostd-driver-a8.patch` | hostd act lines + driver CONF act at rotation (against 98c231d) |
 | `test_hostd_act.py`, `test_driver_act.py` | the patch's tests |
 | `RESTART-a8.md` | the restart plan (not executed: search paused) |
-| `RULES-value.md`, `run-value.sh`, `docsums-value.py`, `value.py` | the search-value check → `data/searchv3/w132/value.{json,out}`, `run-value.log` |
+| `RULES-value.md`, `run-value.sh`, `docsums-value.py`, `value.py`, `mkm1mix.py` | the search-value check (+ amendment 1's M1 arm: `M1=1 run-value.sh`, `T7=1` for 7.0's initial pick) → `data/searchv3/w132/value.{json,out}`, `run-value.log`, `m1mix.json` |
 
 Data use: golden-ver3-8k (verify, the monitor golden: one more routine read of 4 mixes), s171b (the active search
 slice, already scored for these mixes) and s171c + s171d (search-pool slices, first use: the value check; they are

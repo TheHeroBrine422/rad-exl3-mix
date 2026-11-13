@@ -4,6 +4,24 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 12:40 PM CST · #172 · Value check, third arm (amendment 1): **w133's M1 re-solve picks beat the search's current incumbents −23% pooled [−25, −21]**; ~−7% where the menus are comparable (3.0–4.0), the rest mostly the l5 embedding at ≥ 4.5 that the search's menu lacked (w132)
+- **Status:** done · **Machine:** ds8 8 cards (11:33 AM–12:38 PM CST, card locks; ~2.6 card-h) · **Code:**
+  `search/v3/a8172/` (RULES-value amendment 1 **1e0f7cf**, committed alone before any M1 mix; `mkm1mix.py`,
+  `run-value.sh` M1=1 / T7=1, `value.py`) · **Data:** `data/searchv3/w132/value.{json,out}`, `m1mix.json`,
+  `run-value.log` · **Brief:** lead note 11-13 10:45 AM CST
+- **Arm M1:** `data/refit/w133/fin/picksT` (13 picks on menu133e: R16 heads + w135's embeddings), as A8 containers from
+  ds8's packs / donors, on s171c + s171d (372 docs, never seen by the search or M1's fit). Size-adjusted pmean, shared
+  doc bootstrap.
+- **M1 vs current incumbent:**
+  - 1.5 −0.046 (null; CI touches 0); 1.75 −0.094; 2.0 −0.059; 2.5 −0.055 (e2 embedding);
+  - 3.0 −0.070; 3.5 −0.070; 4.0 −0.076 (V2's l3 "base" embedding, as the search);
+  - 4.5 −0.100; 5.0 −0.275; 5.5 −0.481; 6.0 −0.643; 6.5 −0.799 (e5 = l5 embedding);
+  - 7.0 −0.720 (not pooled);
+  - **pooled −0.231 [−0.252, −0.206] (×0.794)**. M1 vs initial: pooled −0.286 [−0.308, −0.260].
+- **Reading:** the search's menu (menu129h) had one embedding, V2 3.00's l3, at every size; it is the KLD floor at high
+  bpw. The search beat its own starting knapsack (−5.6%), but a re-solve on the better model and menu beats it at
+  every size from 1.75 up. Not split: M1 model vs embedding (needs M1 on the old menu, or the incumbents with e5).
+
 ### 2026-11-13 12:05 PM CST · #171 plot · V3 search convergence in V2's layout + V2 / IQR-V4 references on ver3-8k and s171b, 1.5–7.4 bpw (w134)
 - **Status:** done (run ended at the 10:11 pause: 632 results, 527 decisions, f16 only, no A8 switch) · **Machine:** ds8 (refs: one card lock at a time), VM (plot) · **Code:** `search/convplot4.py`, `search/v3/ref134/` · **Data:** `data/searchv3/w134/refs134.jsonl` (49 rows), `/workspace/v3-convergence.png` · **Brief:** `rad-local/workers/instr3/w134.md` + lead notes · **Result:** held-out ver3 ÷ V2 at the same bpw, f16 picks at the end of the run: < 2.75 0.469, 2.75–4.5 0.774, 4.5–6 0.895, ≥ 6 1.694 (worse than V2), all 12 sizes 0.774 (training estimate 0.762, gap +1.6 %). IQR-V4 ÷ V2 on ver3: 0.46 (2.47), 0.79–0.83 (2.8–4.1), 0.73–0.92 (4.5–5.4), 0.93–1.36 (6.1–6.9). On s171b it is 0.89–0.98 up to 5.4, so ver3 favours IQR (V2 ≤ 2.5 degrades with depth on ver3: one slice, unverified). KL ≤ 0.0013 at ≥ 6 bpw on ver3 is near the floor (IQR 7.42 scores above 6.94), so the ≥ 6 ratios are noisy. Fixes vs V2's plot: a measured competitor line instead of a guessed one, held-out normalised by V2 measured on the same golden, the training-vs-held-out gap drawn, slice diamonds as the c / x parts' equal-weight ratio.
 

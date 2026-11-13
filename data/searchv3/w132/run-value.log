@@ -86,3 +86,63 @@
 11-13 11:24:44 CST worker 2 done
 11-13 11:25:13 CST score v3s171-5.5-thompson-00540 s171d card 5 rc 0 I kld: 184 documents in 332 s, 0 preemption(s)
 11-13 11:25:13 CST worker 5 done
+11-13 11:33:05 CST worker 7 start pid 4051013
+11-13 11:33:05 CST worker 0 start pid 4051006
+11-13 11:33:05 CST worker 6 start pid 4051012
+11-13 11:33:05 CST worker 2 start pid 4051008
+11-13 11:33:05 CST worker 3 start pid 4051009
+11-13 11:33:05 CST worker 5 start pid 4051011
+11-13 11:33:05 CST worker 1 start pid 4051007
+11-13 11:33:05 CST worker 4 start pid 4051010
+11-13 11:33:14 CST mix m1-1.5 bytes 7266836480 acts 336
+11-13 11:33:43 CST mix m1-4.5 bytes 17034977280 acts 336
+11-13 11:33:54 CST mix m1-2 bytes 8908103680 acts 336
+11-13 11:34:18 CST mix m1-4 bytes 15393710080 acts 336
+11-13 11:34:53 CST mix m1-3.5 bytes 13752442880 acts 336
+11-13 11:35:18 CST mix m1-2.5 bytes 10549370880 acts 336
+11-13 11:35:35 CST mix m1-1.75 bytes 8107335680 acts 336
+11-13 11:35:56 CST mix m1-3 bytes 12150906880 acts 336
+11-13 11:40:10 CST score m1-2 s171c card 2 rc 0 I kld: 188 documents in 353 s, 0 preemption(s)
+11-13 11:40:23 CST score m1-4.5 s171c card 7 rc 0 I kld: 188 documents in 345 s, 0 preemption(s)
+11-13 11:40:39 CST score m1-4 s171c card 6 rc 0 I kld: 188 documents in 347 s, 0 preemption(s)
+11-13 11:40:56 CST score m1-3.5 s171c card 5 rc 0 I kld: 188 documents in 347 s, 0 preemption(s)
+11-13 11:41:37 CST score m1-1.5 s171c card 0 rc 0 I kld: 188 documents in 339 s, 0 preemption(s)
+11-13 11:44:05 CST score m1-3 s171c card 4 rc 0 I kld: 188 documents in 346 s, 0 preemption(s)
+11-13 11:44:21 CST score m1-2.5 s171c card 3 rc 0 I kld: 188 documents in 344 s, 0 preemption(s)
+11-13 11:44:46 CST score m1-1.75 s171c card 1 rc 0 I kld: 188 documents in 342 s, 0 preemption(s)
+11-13 11:46:07 CST score m1-2 s171d card 2 rc 0 I kld: 184 documents in 351 s, 0 preemption(s)
+11-13 11:46:17 CST score m1-4.5 s171d card 7 rc 0 I kld: 184 documents in 347 s, 0 preemption(s)
+11-13 11:46:17 CST worker 7 done
+11-13 11:46:51 CST score m1-3.5 s171d card 5 rc 0 I kld: 184 documents in 349 s, 0 preemption(s)
+11-13 11:46:52 CST worker 5 done
+11-13 11:47:05 CST mix m1-6 bytes 21760040960 acts 336
+11-13 11:47:26 CST score m1-1.5 s171d card 0 rc 0 I kld: 184 documents in 345 s, 0 preemption(s)
+11-13 11:48:02 CST mix m1-5 bytes 18636513280 acts 336
+11-13 11:48:17 CST score m1-4 s171d card 6 rc 0 I kld: 184 documents in 347 s, 0 preemption(s)
+11-13 11:48:17 CST worker 6 done
+11-13 11:49:58 CST score m1-3 s171d card 4 rc 0 I kld: 184 documents in 347 s, 0 preemption(s)
+11-13 11:50:10 CST score m1-2.5 s171d card 3 rc 0 I kld: 184 documents in 344 s, 0 preemption(s)
+11-13 11:50:39 CST score m1-1.75 s171d card 1 rc 0 I kld: 184 documents in 348 s, 0 preemption(s)
+11-13 11:50:59 CST mix m1-7 bytes 24962949120 acts 336
+11-13 11:51:42 CST mix m1-6.5 bytes 23361576960 acts 336
+11-13 11:52:31 CST mix m1-5.5 bytes 20238049280 acts 336
+11-13 11:56:10 CST score m1-6 s171c card 2 rc 0 I kld: 188 documents in 350 s, 0 preemption(s)
+11-13 11:57:19 CST score m1-5 s171c card 0 rc 0 I kld: 188 documents in 341 s, 0 preemption(s)
+11-13 12:00:07 CST score m1-7 s171c card 4 rc 0 I kld: 188 documents in 349 s, 0 preemption(s)
+11-13 12:01:19 CST score m1-6.5 s171c card 3 rc 0 I kld: 188 documents in 358 s, 0 preemption(s)
+11-13 12:02:23 CST score m1-6 s171d card 2 rc 0 I kld: 184 documents in 363 s, 0 preemption(s)
+11-13 12:02:23 CST worker 2 done
+11-13 12:03:18 CST score m1-5 s171d card 0 rc 0 I kld: 184 documents in 351 s, 0 preemption(s)
+11-13 12:03:18 CST worker 0 done
+11-13 12:05:04 CST score m1-5.5 s171c card 1 rc 0 I kld: 188 documents in 350 s, 0 preemption(s)
+11-13 12:06:43 CST score m1-7 s171d card 4 rc 0 I kld: 184 documents in 360 s, 0 preemption(s)
+11-13 12:06:43 CST worker 4 done
+11-13 12:10:36 CST score m1-6.5 s171d card 3 rc 0 I kld: 184 documents in 347 s, 0 preemption(s)
+11-13 12:10:36 CST worker 3 done
+11-13 12:15:17 CST score m1-5.5 s171d card 1 rc 0 I kld: 184 documents in 341 s, 0 preemption(s)
+11-13 12:15:17 CST worker 1 done
+11-13 12:17:39 CST worker 0 start pid 163602
+11-13 12:19:46 CST mix v3s171-7-init-00012 bytes 24413757440 acts 336
+11-13 12:29:03 CST score v3s171-7-init-00012 s171c card 0 rc 0 I kld: 188 documents in 350 s, 0 preemption(s)
+11-13 12:37:37 CST score v3s171-7-init-00012 s171d card 0 rc 0 I kld: 184 documents in 356 s, 0 preemption(s)
+11-13 12:37:37 CST worker 0 done
