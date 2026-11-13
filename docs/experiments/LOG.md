@@ -6238,3 +6238,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - gold3 (9 night1105 b3 chunks, top-512, ds8) + gold4 (40 xq chunks, top-256: ds8 c00–23, box2 c24–39): all 49 chunks
   rc=0, **47.97M recorded positions** (ds8 32.27M incl. gold3, box2 15.69M); disk ds8 31 + 47 GB, box2 31 GB
   (`/data/q27/gold{3,4}/gold/`). Wall ~3 h on 10 cards. Ready for the QAD scale-up / LoRA-healing tests. **Runtime:** none.
+
+### 2026-11-13 5:25 PM CST · decision · embedding = bf16 in host RAM, excluded from size (user)
+- User: best user experience; ~2.5 GB host RAM is cheap vs VRAM; deadcode (11-13 11:56 AM): "perhaps we should exclude
+  it". So: bf16 embedding at every size, served from pinned host memory, not counted in the default size metric
+  (old container metric still reported). Shelved: #174 Lloyd per-size picks, #174-02 trellis embedding (w144, branch
+  kept unmerged-for-release; may still merge as an option), the dual-embedding loader. Knapsack / search / final-pick
+  menus drop every embedding option; M1's ≥ 4.5 gains that came from the l5 embedding are void (bf16 is better still).
+  To check: stock `embed_lookup` already serves a bf16 table from pinned host (w144) — then no new code.
+- **Runtime:** decode/prefill ~none (host row gather ~10 KB a token); VRAM −0.4…−0.6 GB vs a quantized embedding.
