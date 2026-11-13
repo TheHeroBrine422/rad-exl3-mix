@@ -335,5 +335,17 @@
   "line": "v3.1",
   "decisions": 2,
   "note": "#165 amendment 2 (w125, 2026-11-13): first scored use of agent-verify32 (rich + express as 18 <= 32k chunks, 275,375 gen rows; golden from gpubox /data/agent32): the long-context safety check of arms A and W vs the unhealed K2.5 mix (flag only, no selection)"
+ },
+ "ref134-ver3-8k": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#171 plot (w134, 2026-11-13): reference containers (V2 1.50-7.00 from our HF repo, deadcode's IQR-V4 2.47-7.42) scored once each on golden-ver3-8k (search/v3/ref134/ref134.py, ds8 rad10) to put the search's ver3 monitor reads on a V2 / IQR-V4 scale; fixed published containers, no selection or fit"
+ },
+ "ref134-s171b-c": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#171 plot (w134, 2026-11-13): the same reference containers scored once each on search slice s171b (calib part = golden-s171b-c; x part reads no calib) to normalise the search slice's own scores; no selection or fit"
  }
 }
