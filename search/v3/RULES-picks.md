@@ -31,3 +31,10 @@ CIs: paired bootstrap over documents (traces resampled as whole traces), 10,000 
 - Final picks: (a) is pooled over both parts (all documents of the slice).
 - The final (c) guard compares the pick with the runner-up and the default pick only (not every finalist).
 - Final-pick slice: the long trace enters as ≤ 32k chunks, capped near calib's trace share (w145 plan), not whole.
+
+## Finalists per size (user, 2026-11-13 1:10 PM CST, before any data)
+3–5 candidates per size go to the ~750k final slice, chosen for diversity (different sources, not the top of one
+noisy ranking): (1) the restarted search's incumbent; (2) the M1 re-solve on the final menu with no search moves;
+(3) the re-solve from the alternate fit (V2-prior-free, w143's ablation) if its picks differ; (4) the search's runner-up
+by (b) on its last slices; (5) a near-tie variant where the re-solve flags one (embedding / head choice). Identical
+candidates are merged. Cost ~0.35 card-h each (≈ 3–4 h on ds8 for all sizes).
