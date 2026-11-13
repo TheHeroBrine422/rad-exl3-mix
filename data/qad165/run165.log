@@ -1,0 +1,123 @@
+11-12 5:34:23 PM CST qad gateA: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-12 5:34:53 PM CST FAIL qad gateA rc 1 (/data/q27/w125/runs/gateA.log)
+11-12 5:36:53 PM CST qad gateA: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-12 5:37:20 PM CST FAIL qad gateA rc 1 (/data/q27/w125/runs/gateA.log)
+11-12 5:40:37 PM CST qad gateA: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-12 5:44:18 PM CST gate gateA: gate alloc GiB after the decode check: 25.35 / reserved 25.35 gate window 0: doc 319 2048 tokens 2048 rows, KL/row 0.06862, fwd 77.67 s, bwd 87.27 s, grad norm 6.376e-02, 720/720 params with grad gate window 1: doc 319 2048 tokens 2048 rows, KL/row 0.06862, fwd 2.07 s, bwd 5.26 s, grad norm 6.390e-02, 720/720 params with grad gate peak GiB: cuda:0: 28.76 
+11-12 5:45:31 PM CST qad gateB: arm B, level /data/q27/w125/k2.5/final, cards 0,1,3
+11-12 5:47:18 PM CST gate gateB: gate alloc GiB after the decode check: 23.51 / reserved 23.51, 22.43 / reserved 22.43, 24.77 / reserved 24.77 gate window 0: doc 319 2048 tokens 2048 rows, KL/row 0.06862, fwd 10.41 s, bwd 6.55 s, grad norm 7.378e-02, 720/720 params with grad gate window 1: doc 319 2048 tokens 2048 rows, KL/row 0.06862, fwd 3.55 s, bwd 5.25 s, grad norm 7.385e-02, 720/720 params with grad gate peak GiB: cuda:0: 26.53, cuda:1: 25.41, cuda:2: 28.08 
+11-12 5:48:34 PM CST FAIL a lane failed (see the log)
+11-12 5:48:57 PM CST ev control: pack + mix + score (card 3)
+11-12 5:48:57 PM CST d0 moments (card 2)
+11-12 5:48:57 PM CST qad A: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-12 5:48:57 PM CST qad C: arm C, level /data/q27/w125/k2.5/final, cards 1
+11-12 6:13:18 PM CST qad A: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-12 6:28:26 PM CST ev control: pack + mix + score (card 1)
+11-12 6:58:27 PM CST FAIL qad C rc 1 (/data/q27/w125/runs/C.log)
+11-12 7:02:46 PM CST qad A: QAD DONE arm A steps 128 (best 96) monitor KL 0.062777 -> 0.056372 (-10.20%), 975807 tokens, 3987 s train wall
+11-12 7:02:46 PM CST qad B: arm B, level /data/q27/w125/k2.5/final, cards 0,1,2
+11-12 7:03:17 PM CST ev control: c 0.04868 (94135 pos), x 0.17248 (181090 pos)
+11-12 7:03:17 PM CST ev A: pack + mix + score (card 1)
+11-12 7:05:22 PM CST qad C: arm C, level /data/q27/w125/k2.5/final, cards 0
+11-12 7:07:35 PM CST FAIL sibmom rc 3 (/data/q27/w125/d0/mom.log)
+11-12 7:10:49 PM CST ev A: c 0.04359 (94135 pos), x 0.15457 (181090 pos)
+11-12 7:14:15 PM CST qad C: QAD DONE arm C steps 128 (best 96) monitor KL 0.062843 -> 0.056430 (-10.21%), 975807 tokens, 3974 s train wall
+11-12 7:14:15 PM CST qad B: arm B, level /data/q27/w125/k2.5/final, cards 0,1,2
+11-12 7:14:49 PM CST ev C: pack + mix + score (card 1)
+11-12 8:38:42 PM CST qad B: QAD DONE arm B steps 128 (best 80) monitor KL 0.062843 -> 0.056613 (-9.91%), 975807 tokens, 4688 s train wall
+11-12 8:38:42 PM CST d0 moments (card 2)
+11-12 8:43:27 PM CST ev C: c 0.04370 (94135 pos), x 0.15589 (181090 pos)
+11-12 8:43:27 PM CST ev B: pack + mix + score (card 1)
+11-12 9:06:13 PM CST ev B: c 0.04387 (94135 pos), x 0.15123 (181090 pos)
+11-12 10:59:43 PM CST d0 moments done in 141 min
+11-12 10:59:43 PM CST d0 denoise
+11-12 11:15:51 PM CST FAIL denoise rc 143 (/data/q27/w125/d0/dn.log)
+11-12 11:17:15 PM CST d0 denoise
+11-13 1:22:46 AM CST d0 denoise done in 125 min
+11-13 1:22:46 AM CST d0 no-op gate
+11-13 1:24:36 AM CST d0 no-op gate PASS (L00 out_proj, L03 o_proj bit-identical to the level)
+11-13 1:24:36 AM CST d0 writer jobs
+11-13 1:51:19 AM CST d0 writer jobs done in 26 min
+11-13 1:51:30 AM CST d0 C9 on the asym writers
+11-13 1:53:41 AM CST d0 final-asym ready
+11-13 1:53:44 AM CST qad D: arm A, level /data/q27/w125/d0/final-asym, cards 0
+11-13 1:54:14 AM CST ev D0: pack + mix + score (card 1)
+11-13 2:04:00 AM CST ev D0: c 0.04785 (94135 pos), x 0.15200 (181090 pos)
+11-13 2:38:20 AM CST qad D: QAD DONE arm A steps 80 (best 32) monitor KL 0.061882 -> 0.057869 (-6.49%), 607570 tokens, 2428 s train wall
+11-13 2:39:00 AM CST ev D: pack + mix + score (card 1)
+11-13 2:45:54 AM CST ev D: c 0.04404 (94135 pos), x 0.15435 (181090 pos)
+11-13 2:45:54 AM CST cmp A / control: c 0.8955 [0.8792, 0.9102] better 71 worse 10; x 0.8962 [0.8504, 0.9378] better 126 worse 4
+11-13 2:45:55 AM CST cmp B / control: c 0.9012 [0.8837, 0.9179] better 71 worse 10; x 0.8768 [0.8261, 0.9210] better 128 worse 2
+11-13 2:45:55 AM CST cmp C / control: c 0.8977 [0.8820, 0.9114] better 71 worse 10; x 0.9038 [0.8544, 0.9486] better 126 worse 4
+11-13 2:45:55 AM CST cmp D0 / control: c 0.9831 [0.9635, 1.0047] better 50 worse 31; x 0.8812 [0.8380, 0.9151] better 82 worse 48
+11-13 2:45:55 AM CST cmp D / control: c 0.9048 [0.8832, 0.9263] better 67 worse 14; x 0.8949 [0.8379, 0.9436] better 109 worse 21
+11-13 2:45:55 AM CST cmp B / A: c 1.0065 [1.0007, 1.0164] better 38 worse 43; x 0.9783 [0.9631, 0.9895] better 64 worse 66
+11-13 2:45:55 AM CST cmp C / A: c 1.0025 [1.0001, 1.0048] better 29 worse 52; x 1.0085 [0.9976, 1.0191] better 55 worse 75
+11-13 2:45:55 AM CST cmp D / A: c 1.0104 [0.9917, 1.0306] better 35 worse 46; x 0.9986 [0.9448, 1.0447] better 50 worse 80
+11-13 3:46:50 AM CST qad gateL16: arm A, level /data/q27/ladder/q27v3-144dd6e1-k2.5-i8/final, cards 1
+11-13 3:46:50 AM CST qad gateW: arm A, level /data/q27/ladder/q27v3-144dd6e1-k2.5-i8/final, cards 2,3
+11-13 3:46:50 AM CST qad gateA16: arm A, level /data/q27/ladder/q27v3-144dd6e1-k2.5-i8/final, cards 0
+11-13 3:46:57 AM CST FAIL qad gateW rc 1 (/data/q27/w125/runs/gateW.log)
+11-13 3:46:57 AM CST FAIL qad gateL16 rc 1 (/data/q27/w125/runs/gateL16.log)
+11-13 3:46:57 AM CST FAIL qad gateA16 rc 1 (/data/q27/w125/runs/gateA16.log)
+11-13 3:48:02 AM CST qad gateW: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 3:48:02 AM CST qad gateL16: arm A, level /data/q27/w125/k2.5/final, cards 1
+11-13 3:48:02 AM CST qad gateA16: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-13 3:48:37 AM CST h16 ctl: /data/q27/w125/h16/donor-ctl.rad
+11-13 3:49:24 AM CST gate gateA16: gate alloc GiB after the decode check: 25.35 / reserved 25.53 gate window 0: doc 319 2048 tokens 2048 rows, KL/row 0.06912, fwd 5.02 s, bwd 5.87 s, grad norm 1.213e-01, 722/722 params with grad gate window 1: doc 319 2048 tokens 2048 rows, KL/row 0.06912, fwd 2.07 s, bwd 5.29 s, grad norm 1.213e-01, 722/722 params with grad gate peak GiB: cuda:0: 28.76 
+11-13 3:49:25 AM CST gate gateL16: gate alloc GiB after the decode check: 25.76 / reserved 25.93 gate window 0: doc 319 2048 tokens 2048 rows, KL/row 0.06912, fwd 4.66 s, bwd 6.26 s, grad norm 1.574e-01, 1122/1522 params with grad gate window 1: doc 319 2048 tokens 2048 rows, KL/row 0.06912, fwd 2.25 s, bwd 5.89 s, grad norm 1.574e-01, 1122/1522 params with grad gate peak GiB: cuda:0: 29.20 
+11-13 3:51:16 AM CST gate gateW: gate alloc GiB after the decode check: 11.49 / reserved 11.49, 13.86 / reserved 13.86 gate window 0: doc 4524 8192 tokens 8192 rows, KL/row 0.03221, fwd 60.08 s, bwd 41.57 s, grad norm 2.829e-02, 720/720 params with grad gate window 1: doc 4524 8192 tokens 8192 rows, KL/row 0.03221, fwd 8.40 s, bwd 22.63 s, grad norm 2.820e-02, 720/720 params with grad gate peak GiB: cuda:0: 19.39, cuda:1: 21.76 
+11-13 3:53:26 AM CST qad W: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 3:53:26 AM CST qad H: arm A, level /data/q27/w125/k2.5/final, cards 1
+11-13 3:53:26 AM CST qad A16: arm A, level /data/q27/w125/k2.5/final, cards 0
+11-13 4:40:52 AM CST FAIL qad W rc 143 (/data/q27/w125/runs/W.log)
+11-13 4:44:45 AM CST qad W: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 5:04:03 AM CST qad A16: QAD DONE arm A steps 128 (best 128) monitor KL 0.063401 -> 0.057087 (-9.96%), 975807 tokens, 3893 s train wall
+11-13 5:04:03 AM CST ev A16: pack + mix + score (card 0)
+11-13 5:04:47 AM CST qad H: QAD DONE arm A steps 128 (best 80) monitor KL 0.063401 -> 0.057418 (-9.44%), 975807 tokens, 3934 s train wall
+11-13 5:06:44 AM CST h16 H: /data/q27/w125/h16/donor-H.rad
+11-13 5:12:34 AM CST qad W: QAD DONE arm A steps 80 (best 32) monitor KL 0.064692 -> 0.058914 (-8.93%), 590466 tokens, 2489 s train wall
+11-13 5:15:13 AM CST ev A16: c 0.04212 (94135 pos), x 0.15341 (181090 pos)
+11-13 5:15:13 AM CST ev H: pack + mix + score (card 0)
+11-13 5:25:38 AM CST ev H: c 0.04265 (94135 pos), x 0.15687 (181090 pos)
+11-13 5:25:38 AM CST cmp H / A16: c 1.0125 [1.0088, 1.0168] better 20 worse 61; x 1.0226 [1.0125, 1.0352] better 17 worse 113
+11-13 5:25:38 AM CST lbase: A16 (H vs A16: the B / C rule)
+11-13 5:25:40 AM CST tscore A16 (card 0): --head /data/q27/w119/q/R16s003/K4 --head-perm /data/q27/w119/perms/R16.npy
+11-13 5:25:44 AM CST qad L8: arm A, level /data/q27/w125/k2.5/final, cards 1
+11-13 5:26:34 AM CST qad L16: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 5:28:27 AM CST FAIL tscore A16
+11-13 5:28:27 AM CST FAIL a lane failed (see the log)
+11-13 5:31:56 AM CST tscore A16 (card 0): --head /data/q27/w119/q/R16s003/K4 --head-perm /data/q27/w119/perms/R16.npy
+11-13 5:38:03 AM CST tscore A16: score c: KL/row 0.041209 over 94135 rows, 82 docs, 122 s score x: KL/row 0.152822 over 181090 rows, 130 docs, 207 s 
+11-13 5:38:03 AM CST ev control16: pack + mix + score (card 0)
+11-13 5:48:44 AM CST ev control16: c 0.04729 (94135 pos), x 0.17118 (181090 pos)
+11-13 5:48:44 AM CST evlong control (card 0)
+11-13 5:55:28 AM CST evlong control: l 0.04469 (275375 pos)
+11-13 5:55:28 AM CST evlong A (card 0)
+11-13 6:02:14 AM CST evlong A: l 0.04089 (275375 pos)
+11-13 6:02:14 AM CST ev W: pack + mix + score (card 0)
+11-13 6:08:00 AM CST FAIL qad L16 rc 143 (/data/q27/w125/runs/L16.log)
+11-13 6:08:15 AM CST qad L16: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 6:08:48 AM CST ev W: c 0.04428 (94135 pos), x 0.16145 (181090 pos)
+11-13 6:08:48 AM CST evlong W (card 0)
+11-13 6:10:42 AM CST FAIL qad L16 rc 134 (/data/q27/w125/runs/L16.log)
+11-13 6:15:33 AM CST evlong W: l 0.04123 (275375 pos)
+11-13 6:15:33 AM CST cmp A16 / control16: c 0.8908 [0.8731, 0.9059] better 74 worse 7; x 0.8962 [0.8488, 0.9387] better 126 worse 4
+11-13 6:15:33 AM CST cmp H / control16: c 0.9019 [0.8847, 0.9178] better 71 worse 10; x 0.9164 [0.8648, 0.9653] better 122 worse 8
+11-13 6:15:33 AM CST cmp H / A16: c 1.0125 [1.0088, 1.0168] better 20 worse 61; x 1.0226 [1.0125, 1.0352] better 17 worse 113
+11-13 6:15:33 AM CST cmp W / control: c 0.9098 [0.8924, 0.9259] better 75 worse 6; x 0.9360 [0.9079, 0.9624] better 129 worse 1
+11-13 6:15:34 AM CST cmp W / A: c 1.0160 [1.0080, 1.0259] better 30 worse 51; x 1.0445 [1.0168, 1.0790] better 43 worse 87
+11-13 6:15:34 AM CST cmp A16 / control: c 0.8654 [0.8450, 0.8830] better 75 worse 6; x 0.8895 [0.8399, 0.9329] better 125 worse 5
+11-13 6:15:34 AM CST cmp A / control-long: l 0.9149 [0.9100, 0.9191] better 18 worse 0
+11-13 6:15:34 AM CST cmp W / control-long: l 0.9226 [0.9180, 0.9270] better 18 worse 0
+11-13 6:15:34 AM CST cmp W / A-long: l 1.0085 [1.0055, 1.0115] better 1 worse 17
+11-13 6:23:11 AM CST qad L16: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 6:25:34 AM CST FAIL qad L16 rc 134 (/data/q27/w125/runs/L16.log)
+11-13 6:34:12 AM CST qad L8: QAD DONE arm A steps 112 (best 64) monitor KL 0.063401 -> 0.057753 (-8.91%), 865713 tokens, 3763 s train wall
+11-13 6:34:40 AM CST tscore L8 (card 0): --head /data/q27/w119/q/R16s003/K4 --head-perm /data/q27/w119/perms/R16.npy --lora 8
+11-13 6:36:34 AM CST qad L16: arm A, level /data/q27/w125/k2.5/final, cards 2,3
+11-13 6:38:57 AM CST FAIL qad L16 rc 134 (/data/q27/w125/runs/L16.log)
+11-13 6:41:11 AM CST tscore L8: score c: KL/row 0.041421 over 94135 rows, 82 docs, 133 s score x: KL/row 0.169535 over 181090 rows, 130 docs, 220 s 
+11-13 6:41:59 AM CST FAIL lcmp L8 c
+11-13 6:42:11 AM CST lcmp L8 / A16 c: raw 1.0052 [0.9998, 1.0127] better 35 worse 46; bf16 +0.0324 bpw adj 1.0545 [1.0488, 1.0624]; int8 +0.0185 bpw adj 1.0331 [1.0275, 1.0409]
+11-13 6:42:13 AM CST lcmp L8 / A16 x: raw 1.1094 [1.0537, 1.1802] better 44 worse 86; bf16 +0.0324 bpw adj 1.1638 [1.1054, 1.2381]; int8 +0.0185 bpw adj 1.1402 [1.0829, 1.2130]

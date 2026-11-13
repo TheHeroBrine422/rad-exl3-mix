@@ -1,0 +1,1 @@
+{"format": "ledger-uses", "corpus_fnv1a64": "f3fe4bf9488a5616", "corpus": "corpus/calib.jsonl", "note": "#165 agent-verify32 check (rich + express whole, as 32k chunks)", "docs": [{"orig": 905, "tokens": 250158, "score_from": 0}, {"orig": 2675, "tokens": 253163, "score_from": 0}]}

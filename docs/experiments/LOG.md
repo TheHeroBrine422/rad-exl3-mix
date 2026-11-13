@@ -4,6 +4,73 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 6:50 AM CST · #165 · QAD pilot complete: **A (scales only) is the method** — verify 0.895 / xcorp 0.896, holds at long context (agent-verify32 0.915, 8k+ bin 0.911); B / C / D / H / W / L8 do not beat it, D0 fails (sequential writers dropped for V3.1), L16 not run (GPU faults) (w125)
+- **Status:** done (pilot) · **Machine:** box2 cards 0–3 by `/data/q27/locks/card*.lock` (11-13 3:48–6:42 AM CST; before:
+  11-12 5:49 PM – 11-13 2:46 AM) · **Code:** `v3/qad/` (README; new: `headexport.py`, `posci.py`, `lcmp.py`,
+  `tests/convcheck.py`; qad.py `--head / --head-train / --lora / --score / --conv`), rules `v3/qad/RULES.md` (163ef05,
+  amendments bf2a886, **51bef6e** H / W / L / long check, 3547019 W conv, 2b83f62 + 1d10415 L16; each committed alone
+  before its data) · **Data:** `data/qad165/` (run165.log, eval/ results + paired cmp-*.json, pos/ bins, lcmp-*, runs/
+  curves + docs); box2 `/data/q27/w125` (runs with params / scales, control + A mixes kept) · **Brief:**
+  `rad-local/workers/instr3/w125.md`
+- **Setup (all arms):** K2.5 i8 pass-1 level (C9 writer scales, no swj), codes frozen, trainable suh / svh log
+  multipliers of the 400 trunk linears; 1,024 qad docs × first 2,048 tokens (975,807 tokens, 128 steps of 8 docs);
+  monitor 32 search docs. Judged once: c = golden-verify27-w114 (81 docs scored, 94,135 rows), x = golden-hd122-x (130
+  xcorp pieces, 181,090 rows); radiance, mixed over V2 3.00; paired per document, 95% doc bootstrap.
+
+  | arm | vs | c ratio [CI] (better / worse) | x ratio [CI] (better / worse) | verdict (rule) |
+  |---|---|---|---|---|
+  | **A** KL only | unhealed | **0.8955 [0.8792, 0.9102]** (71 / 10) | **0.8962 [0.8504, 0.9378]** (126 / 4) | **gains** |
+  | B + block MSE (bf16 teacher) | A | 1.0065 [1.0007, 1.0164] (38 / 43) | 0.9783 [0.9631, 0.9895] (64 / 66) | no (c worse) |
+  | C + q / k / final norms | A | 1.0025 [1.0001, 1.0048] (29 / 52) | 1.0085 [0.9976, 1.0191] | no |
+  | D0 asym writers per mix (#87, λ 1 ρ 0) | unhealed | 0.9831 [0.9635, 1.0047] (50 / 31) | 0.8812 [0.8380, 0.9151] (82 / 48) | **fails** (c CI spans 1) |
+  | D = D0 + A | A | 1.0104 [0.9917, 1.0306] (35 / 46) | 0.9986 [0.9448, 1.0447] | no |
+  | A16 = A, R16 u4 head frozen | unhealed + same head | 0.8908 [0.8731, 0.9059] (74 / 7) | 0.8962 [0.8488, 0.9387] (126 / 4) | gains (= A) |
+  | **H** = A16 + head suh / svh | A16 | **1.0125 [1.0088, 1.0168]** (20 / 61) | **1.0226 [1.0125, 1.0352]** (17 / 113) | **no: head scales hurt** |
+  | W = A, 8,192-token windows | A | 1.0160 [1.0080, 1.0259] (30 / 51) | 1.0445 [1.0168, 1.0790] (43 / 87) | no |
+  | L8 = A16 + rank-8 adapters (torch path) | A16 | 1.0052 [0.9998, 1.0127] (35 / 46) | 1.1094 [1.0537, 1.1802] (44 / 86) | no (size-adj. worse) |
+
+  - **D0 / sequential writers:** by the lead's rule (c CI below 1 and x below 1) D0 does not pay, so the sequential idea
+    is **dropped for V3.1** and arm S stays gated off. Caveat for the lead: x alone moved −12% (82 / 48 docs), c only
+    −1.7%; D on top of D0 adds nothing over A. Cost: moments 3.7 h + denoise 2.1 h (patched solve) + 128 writer jobs
+    0.4 h + C9 ≈ **6.2 card-h** a mix.
+  - **R16 head:** control16 (R16 u4 head instead of V2's) c 0.04729 vs 0.04868, x 0.17118 vs 0.17248; A16 / control
+    (V2 head) c 0.8654, x 0.8895. Training the head's suh / svh (5,120 + 248,320 values) overfits: monitor −9.44% vs
+    A16's −9.96%, and worse on both held-out parts. **Later arms keep the head frozen** (L ran on A16). Not run: H on
+    V2's head (time); embedding scales (the student embeds with bf16 rows; V3's trellis embedding has a per-row bf16
+    scale: scale-up).
+  - **W:** 668 docs, 5 a step; the monitor (8k windows) peaked at step 32 (213k tokens) and early-stopped at 80. Worse
+    than A on c, x and the long slice. Longer windows do not help at this budget.
+  - **L (adapters):** L8 = 54.4M values: +0.0324 bpw bf16 / +0.0185 int8 (over 26.90G params); size-adjusted
+    (b 1.48) c 1.0545 / 1.0331, x 1.1638 / 1.1402. The adapters fit calib-like text and hurt xcorp. Cost estimate if
+    it ever paid (r 16, 0.45% of trunk GEMM FLOPs): decode +1–3% fused, ~+10% as 800 separate launches a step;
+    prefill +0.5% fused, ~+8% unfused. **L16 not run:** both 2-card attempts ended in a GPU memory fault in a Tensile
+    bf16 GEMM (`Cijk_Ailk_Bjlk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64x32…`) on the second card (box2 card 3, ~98% VRAM),
+    also on rocBLAS (`TORCH_BLAS_PREFER_HIPBLASLT=0`); amendment 5 stopped it there. **For #168 (w128):** same kernel
+    family, in torch's GEMMs, on box2, not only ds8.
+- **Long-context check** (`posci.py`, bins of the predicting position): every healed arm vs its unhealed control is
+  below 1 in every bin on c and x (A: 0–2k 0.895, 2–4k 0.904, 4–8k 0.880 c / 0.901 x; nothing flagged). **agent-verify32**
+  (rich + express as 18 ≤ 32k chunks, 275,375 gen rows, first scored use): **A / unhealed 0.9149 [0.9100, 0.9191]**
+  (18 / 0 chunks); bins 0–2k 0.934, 2–4k 0.937, 4–8k 0.914, **8k+ 0.911 [0.908, 0.914]**, per trace 0.911 / 0.911.
+  W / unhealed 0.9226, W / A 1.0085. Scales trained on positions < 2,048 do not hurt (if anything they help slightly
+  more) at 8k–32k.
+- **Convergence / cost:** A best at step 96 (0.73M tokens; 87% of the gain by step 32); A16's best is its last step
+  (not converged at this budget: the scale-up should use more tokens); max |log| ≈ 0.041 (trust 0.3 never binds).
+  One R9700 per arm: 30–31 s a step, **~1.2 card-h per arm** (train 65 min + monitor evals); judging an arm ≈ 10 min
+  (pack + mix + score c / x on one card). B 3 cards × 1.3 h.
+- **Incidents:** W's first run stalled 28 min after step 32 in the GDN causal conv (transformers' F.conv1d → MIOpen;
+  likely its per-shape solver search on new 8k-window lengths, no fault message); resumed with `--conv shift` (f32
+  shifted adds, forward bit-identical, `tests/convcheck.py`), W's best state is from before the resume. The R16
+  head export (rxq.deq W) matches ourq's `wq` to f16 rounding (67.9% bit-equal, rel 4.6e-4); control16 / A16 / H all
+  use it. Amendment 2's header says 3:58 AM; it was committed at 3:52 AM, launch 3:53 AM (erratum in amendment 3).
+- **Ledger:** +702 lines: `qad165w-train` (668 qad docs, ≤ 8,192 tokens), `qad165w-monitor`, `agent-verify32-qad165`
+  (check, rich + express). A16 / H / L8 reuse `qad165-train`.
+- **For the lead:** (1) QAD = arm A as is (frozen head, 2,048-token windows, KL only) is ready for the shipped sizes
+  (V3.1); A16's curve says more tokens may help (xcorp / session data allowed for the scale-up). (2) Drop sequential
+  writers (D0 rule) unless you want to follow the x-only −12%. (3) Adapters: not worth a format change on this
+  evidence (L8 worse even before size adjustment); L16 only after #168's fault is understood or on a 1-card layout
+  (29.2 GiB gate peak + ~0.9 GiB Adam: tight). (4) Head scales: do not train (H loses on both parts).
+- **Runtime:** none (scales on fixed codes; the adapter estimate is for a format the pilot rejects).
+
 ### 2026-11-13 3:35 AM CST · #170 · box2 + ds8 radiance on ROCm 10.1 (radiance's own compiler setup): KLD rows byte-identical to the 7.14 build, FUSE no longer hangs, search running on it (w130)
 - **Status:** done · **Machine:** ds8 (install, builds, validation card 6 / 5 / 4), box2 (copy, identity, 374503f media
   build card 2) · **Code:** `pipeline/hosts/rad10/` (README: rocm10-get, llvm10-vopd, rad10build, ff10build, packhome,

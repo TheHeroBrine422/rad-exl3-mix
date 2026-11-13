@@ -1,0 +1,52 @@
+{
+ "golden": "/data/q27/w125/slices/golden-hd122-x",
+ "a": "/data/q27/w125/eval/control/score-x.json.rows",
+ "b": "/data/q27/w125/eval/W/score-x.json.rows",
+ "label": "W/control x",
+ "bins": {
+  "0-2k": {
+   "rows": 130076,
+   "docs": 130,
+   "kl_a": 0.20297557199431226,
+   "kl_b": 0.18983649168477823,
+   "ratio": 0.9352676768911768,
+   "ci95": [
+    0.9096827124469568,
+    0.964577224854705
+   ],
+   "docs_better": 127,
+   "docs_worse": 3,
+   "flag": false
+  },
+  "2-4k": {
+   "rows": 26768,
+   "docs": 20,
+   "kl_a": 0.1367310779518246,
+   "kl_b": 0.13012286671774578,
+   "ratio": 0.9516700128963576,
+   "ci95": [
+    0.8604716870935548,
+    0.9794878067075483
+   ],
+   "docs_better": 19,
+   "docs_worse": 1,
+   "flag": false
+  },
+  "4-8k": {
+   "rows": 24246,
+   "docs": 9,
+   "kl_a": 0.048338943351323674,
+   "kl_b": 0.04371884628993557,
+   "ratio": 0.9044228785099914,
+   "ci95": [
+    0.8653076506433263,
+    0.926883508525692
+   ],
+   "docs_better": 9,
+   "docs_worse": 0,
+   "flag": false
+  },
+  "8k+": null
+ },
+ "flag": false
+}

@@ -1,0 +1,52 @@
+{
+ "golden": "/data/q27/w125/slices/golden-verify27-w114",
+ "a": "/data/q27/w125/eval/control16/score-c.json.rows",
+ "b": "/data/q27/w125/eval/H/score-c.json.rows",
+ "label": "H/control16 c",
+ "bins": {
+  "0-2k": {
+   "rows": 62859,
+   "docs": 81,
+   "kl_a": 0.04880679028661826,
+   "kl_b": 0.044070090739356825,
+   "ratio": 0.9029499887322003,
+   "ci95": [
+    0.8865949206222741,
+    0.9182663497678641
+   ],
+   "docs_better": 71,
+   "docs_worse": 10,
+   "flag": false
+  },
+  "2-4k": {
+   "rows": 17483,
+   "docs": 11,
+   "kl_a": 0.05302984828240948,
+   "kl_b": 0.04811746431790825,
+   "ratio": 0.9073656794501764,
+   "ci95": [
+    0.8785242916640574,
+    0.92948621135071
+   ],
+   "docs_better": 11,
+   "docs_worse": 0,
+   "flag": false
+  },
+  "4-8k": {
+   "rows": 13793,
+   "docs": 6,
+   "kl_a": 0.033088041094029394,
+   "kl_b": 0.02925206431573505,
+   "ratio": 0.8840675769413702,
+   "ci95": [
+    0.8454626650895762,
+    0.9284256151057713
+   ],
+   "docs_better": 6,
+   "docs_worse": 0,
+   "flag": false
+  },
+  "8k+": null
+ },
+ "flag": false
+}

@@ -1,0 +1,24 @@
+{
+ "tag": "A16",
+ "level": "/data/q27/w125/k2.5/final",
+ "scales": "/data/q27/w125/runs/A16",
+ "base": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad",
+ "head_donor": "/data/q27/w125/h16/donor-ctl.rad",
+ "bytes": 10729840640,
+ "slices": {
+  "c": {
+   "golden": "/data/q27/w125/slices/golden-verify27-w114",
+   "rows": "/data/q27/w125/eval/A16/score-c.json.rows",
+   "kld": 0.04212312259792235,
+   "positions": 94135,
+   "docs": 82
+  },
+  "x": {
+   "golden": "/data/q27/w125/slices/golden-hd122-x",
+   "rows": "/data/q27/w125/eval/A16/score-x.json.rows",
+   "kld": 0.15341242338667452,
+   "positions": 181090,
+   "docs": 130
+  }
+ }
+}

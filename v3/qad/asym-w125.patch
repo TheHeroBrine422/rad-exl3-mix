@@ -1,0 +1,68 @@
+--- a/pipeline/rxq/asym.py
++++ b/pipeline/rxq/asym.py
+@@ -10,7 +10,13 @@
+   G  = H + lam^2 N + lam (C + C^T)  (control-variate form: H_calib + (G_sub - H_sub), negative eigenvalues clipped)
+   F  = (H_s + alpha I + lam C + rho C^T + rho lam N) G_s'^-1,  stored as Ft = F^T
+ 
+-python -m rxq.asym denoise CALIB MOM OUT --lam L --rho R [--sig 0.025] [--sig-in 0.005] [--ckpt MODEL]"""
++python -m rxq.asym denoise CALIB MOM OUT --lam L --rho R [--sig 0.025] [--sig-in 0.005] [--ckpt MODEL]
++
++w125 (#165, 11-12): mkdenoise-w78.patch ported to the lean path. On ROCm (R9700) torch.linalg.solve at k 17408 f64
++falls into rocBLAS's degraded TRSM (> 15 min a down group, ~20 h a level); F^T = G_s'^-1 A^T is a Cholesky factor +
++blocked triangular solves (as v3/yaqa/asym27/mkdenoise.py: hin unchanged, wpre within ~1e-13 relative), torch.linalg.solve
++if G_s' does not factor; stats "solve" (the route) and "solve_res" (relative residual on 256 sampled columns). A group
++whose hin (and wpre) files exist is skipped, its stats line kept, so a killed run resumes."""
+ import argparse, glob, json, os, re, struct
+ 
+ import torch
+@@ -107,6 +113,17 @@
+         p = f"{self.out}/wpre/{g}.safetensors"
+         save_file(t, p + ".part", metadata=m); os.replace(p + ".part", p)
+ 
++    @staticmethod
++    def _chol_solve_blocked(L, X, bs=1024):  # X <- L^-T L^-1 X in place (L lower), TRSM only on diagonal blocks
++        k = L.shape[0]; st = list(range(0, k, bs))
++        for i in st:
++            j = min(i + bs, k); X[i:j] = torch.linalg.solve_triangular(L[i:j, i:j], X[i:j], upper=False)
++            if j < k: X[j:].sub_(L[j:, i:j] @ X[i:j])
++        for i in reversed(st):
++            j = min(i + bs, k); X[i:j] = torch.linalg.solve_triangular(L[i:j, i:j].T, X[i:j], upper=True)
++            if i > 0: X[:i].sub_(L[i:j, :i].T @ X[i:j])
++        return X
++
+     def lean_group(self, mf, g):
+         dev, lam, rho = self.dev, self.lam, self.rho
+         H, rows, meta = self._load_up_lean(f"{self.calib}/{g}.safetensors")
+@@ -137,7 +154,12 @@
+             for i in range(0, k, BL):
+                 Hs[i:i + BL] = Hs[i:i + BL] + lam * C[i:i + BL] + rho * C[:, i:i + BL].T + rho * lam * N[i:i + BL]
+             A = Hs; del C, N; A.diagonal().add_(als)
+-            Ft = torch.linalg.solve(Gs, A.T); del Gs, A
++            L, info = torch.linalg.cholesky_ex(Gs)
++            if int(info) == 0: Ft = self._chol_solve_blocked(L, A.T.contiguous()); r["solve"] = "chol-blocked"
++            else: Ft = torch.linalg.solve(Gs, A.T); r["solve"] = "lu"
++            del L
++            cs = torch.randperm(k, generator=torch.Generator().manual_seed(0))[:256].to(dev)
++            r["solve_res"] = float((Gs @ Ft[:, cs] - A.T[:, cs]).norm() / A.T[:, cs].norm()); del Gs, A
+             self._save_wpre(g, Ft, als, sg)
+ 
+             def fmi(i, j):
+@@ -185,9 +207,17 @@
+         if self.lam != self.rho: os.makedirs(f"{self.out}/wpre", exist_ok=True)
+         files = sorted(glob.glob(f"{self.mom}/*.input.safetensors"))
+         assert files, f"no moment files in {self.mom}"
+-        with open(f"{self.out}/stats.jsonl", "w") as st:
++        sp, old = f"{self.out}/stats.jsonl", {}
++        if os.path.exists(sp):
++            for l in open(sp):
++                try: q = json.loads(l); old[q["group"]] = q
++                except ValueError: pass
++        with open(sp, "w") as st:
+             for mf in files:
+                 g = os.path.basename(mf)[:-len(".safetensors")]
++                if g in old and os.path.exists(f"{self.out}/hin/{g}.safetensors") and (
++                        self.lam == self.rho or os.path.exists(f"{self.out}/wpre/{g}.safetensors")):
++                    st.write(json.dumps(old[g]) + "\n"); st.flush(); continue
+                 with safe_open(mf, "pt", device="cpu") as f: kk = f.get_slice("H").get_shape()[0]
+                 lean = self.lean or kk > self.lean_k
+                 r = self.lean_group(mf, g) if lean else self.group(mf, g)

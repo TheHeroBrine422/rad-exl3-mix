@@ -1,0 +1,17 @@
+{
+ "tag": "W",
+ "level": "/data/q27/w125/k2.5/final",
+ "scales": "/data/q27/w125/runs/W",
+ "base": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad",
+ "head_donor": null,
+ "bytes": 8823250944,
+ "slices": {
+  "l": {
+   "golden": "/data/q27/w125/slices/golden-agent-verify32",
+   "rows": "/data/q27/w125/eval/W/score-l.json.rows",
+   "kld": 0.041232616365571885,
+   "positions": 275375,
+   "docs": 18
+  }
+ }
+}

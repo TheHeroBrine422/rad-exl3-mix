@@ -317,5 +317,23 @@
   "line": "v3",
   "decisions": null,
   "note": "#171 (w131, 2026-11-13): calib parts of the V3 search's first slices s171a-d (driver accept / reject, rotation after 25 decisions of a size): merged fit + search docs, least-used first (search/v3/run171/draw171.py seed 171), >= 45,000 scored positions at cap 4,096 each (57 / 43 / 58 / 54 docs); x parts = 130 pieces each of night1105 xc8k-b2-c0 (a, b) / c1 (c, d), pickx seeds 17101-17104, heavy cap 2,048, 27b-27f-x / hd122-x / s129-x and earlier s171 x docs excluded (read no calib). Decision counts per doc: the search registry (slices.py)"
+ },
+ "qad165w-train": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": null,
+  "note": "#165 amendment 2 arm W (w125, 2026-11-13): 668 qad-pool docs (seed 0 order, >= 16 scored rows in the first 8,192 tokens, taken until A's 975,807 tokens), document-start 8,192-token windows of the published calib golden (gen rows), one epoch (v3/qad/RULES.md 51bef6e); arms A16 / H / L8 / L16 reuse qad165-train's docs"
+ },
+ "qad165w-monitor": {
+  "role": "monitor",
+  "line": "v3.1",
+  "decisions": null,
+  "note": "#165 amendment 2 arm W (w125, 2026-11-13): the same 32 search-pool monitor docs as qad165-monitor, scored on their first 8,192 tokens; picks W's step only"
+ },
+ "agent-verify32-qad165": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 2,
+  "note": "#165 amendment 2 (w125, 2026-11-13): first scored use of agent-verify32 (rich + express as 18 <= 32k chunks, 275,375 gen rows; golden from gpubox /data/agent32): the long-context safety check of arms A and W vs the unhealed K2.5 mix (flag only, no selection)"
  }
 }
