@@ -57,3 +57,20 @@ first stage-3 job starts; amendments get a date and go at the end, never above.
 
 Quant: 2 levels × 256 jobs on box2's free cards (~1 h on 2 cards); packs 2 × ~3 min (conv.lock + ram.lock); scores
 4 mixes × 2 slices × ~4–5 min. Runtime cost of what it measures: decode −4 to −10 % (stage 1), A8 prefill none.
+
+## Amendment 1 (2026-11-13 ~1:25 PM CST; lead note 12:15 PM CST from the w141 overfit audit): a fresh xcorp part
+
+**Disclosure:** written AFTER the stage-3 rows on golden-search27c-c and golden-ver3-8k of both K were read (w139 saw
+the note late: stage-3 scoring began 12:45 PM CST). Those rows stay as reported; this amendment adds the part the two-part
+rule (`docs/design/eval-data.md`, 11-08) requires, and it is fixed before the x part is built or scored.
+- **x part:** `golden-h177-x` = `eval/slices/pickx.py` 130 pieces of night1105's `xc8k-b2-c2` (ds8
+  `/data/q27/goldens/xcorp/`), seed 17701, heavy categories (agentic, tools, long, reasoning) cut to 2,048 scored
+  positions, excluding the xcorp documents of every earlier x part on ds8 (`w129/excl/*.json` = 27b–27f-x,
+  `heads/slices/golden-hd122-x`, `w129/slices/golden-s129-x`, `w131/slices/golden-s171{a,b,c,d}-x`, both `golden-t-x`);
+  built as `search/v3/run171/mkslices171.sh` builds its x parts (CPU, ram.lock shared; model field = the calib golden's).
+- **Scoring:** the four existing A8 mixes (unchanged, checks passed), ds8, the same radiance command (s3score-ds8.sh).
+- **Readout per K:** R_x (document bootstrap, 2,000, seed 0), and the **pooled two-part ratio** over search27c-c (c) + h177-x
+  (x) scored positions, CI by bootstrap within each part. Labels on the pooled ratio as above ("at par": CI contains 1 and
+  R ≤ 1.01; "costs" / "better": CI excludes 1 **and both parts' R on that side of 1**, eval-data's same-sign rule;
+  otherwise "inconclusive"). ver3-8k stays a report-only check (spent for selection, w141 audit). No automatic adoption.
+- Ledger: `hash177-h177-x` (role select) on the xcorp documents; `hash177-search27c-c` as before.
