@@ -225,6 +225,7 @@ class Run:
                                             if self.cfg["post"]["swj"].get("numerics", "f32") != "f32" else [])
         for v in todo: args += ["--src", f"{v['name']}={self.D(v)}/level:level"]
         env = {"VRAM_CAP_GB": "30", "TORCH_ROCM_AOTRITON_ENABLE_EXPERIMENTAL": "1", "TOKENIZERS_PARALLELISM": "false",
+               **({"HIP_VISIBLE_DEVICES": str(dev["device"])} if isinstance(dev.get("device"), int) else {}),   # swjfit uses cuda:0
                **{k: str(v) for k, v in (dev.get("env") or {}).items()}, **{k: str(v) for k, v in (self.c.get("swj_env") or {}).items()}}
         self.cur = f"swj {tag}"; self.status(todo[0]); t = time.time()
         self.log(f"swj {tag}: start on {dev['name']}")
