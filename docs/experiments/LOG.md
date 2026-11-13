@@ -4,6 +4,29 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 1:35 AM CST · #169 · Trunk × head anchors (lead note 1:00 AM): 6 mixes K3 / K4 × R16 u3 / u4 / u5; the head was **unpriced** in fit.py (x0 bug) — fixed by a head-θ start (patch), refit **fit129h2** = the model for the R16-head search (w129)
+- **Status:** done · **Machine:** ds8 (6 evals, ~6 min), colo · **Code:** `search/refit/w129/th129.py`,
+  `fit-headinit.patch` (for the lead) · **Data:** `data/refit/w129/th129.json`, `fit129h2.*`, `specs129th.jsonl`
+- **Measured (fit129):** K3 trunk: V2 head 0.02238, u3 0.02174, u4 0.02111, u5 0.02094; K4: V2 0.00769, u3 0.00713,
+  u4 0.00638, u5 0.00621. The head deltas are ~0.43 × hcurve122's head-only KL deltas at both trunks. V2 3.00's 4-bit
+  head is worse than R16 u3: about R16 u2.75 (refit rows price it as u2.75). Interaction: log KL(K3) − log KL(K4) =
+  1.115 / 1.196 / 1.215 with u3 / u4 / u5 (the better the head, the more the trunk matters).
+- **Bug found:** fit.py's x0 starts the head's θ at the trunk's; with err = the plan's head-only KL (~1e-3) the head's
+  cost and gradient are ~0, so it never moves. The 84 rows alone (one head) predict no head effect at all (held-out
+  6: log-RMSE 0.126, all over-predicted by 3–21%), and even with the 6 rows fitted the head stayed unpriced (residuals
+  +3…+20%). Started at s_head 0.5: **s_head 0.425**, the 6 rows' residuals −0.4…+1.1%, interaction predicted 1.117 /
+  1.194 / 1.213, all 90 rows log-RMSE 0.0174, χ²/row 0.41. `fit-headinit.patch` (search/v3/fit.py: head θ start
+  log 0.5 when the menu prices heads; also `fit()` calls layout() first, since an x0 given before any layout() crashed
+  on self.N). With it, the driver's own fit path (`fit.py IN OUT`, no x0) reproduces fit129h2 exactly (colo check).
+  **Without the patch every driver refit on an R16-head menu leaves heads unpriced** (the knapsack would always take
+  the cheapest head).
+- **Slopes b with priced heads** (fit129h2, menu129h): 2 1.72, 2.5 1.48, 3 1.37, 3.5 1.26, 4 1.11, 4.5 0.93, 5 0.71,
+  5.5 0.48, 6 0.29, 6.5 0.13 (V2 board: 1.6 / 1.1 / 0.7). Above ~5.5 still low: rows above K4 trunks with R16 heads
+  are only the K6 + u6 smoke.
+- **Search start (recommended):** menu129h + prior_obs = `fit129h2.obs.jsonl` (90 rows) + a fit_done line pointing at
+  `fit129h2.out.json`, after merging fit-headinit.patch. (`fit129c` stays the V2-head-menu variant.)
+- **Runtime:** none.
+
 ### 2026-11-13 1:15 AM CST · #169 · Calibration swaps DONE (84 mixes, 92 + 2 scorings, ds8): H_out prior **FAIL** (β 0 in the refit); fit predicts held-out calib ratios to ~3% but xcorp ratios miss by ~14%; ladder clean; R16 head donors + head menu built (w129)
 - **Status:** done · **Machine:** ds8 (evals via rxrun.multi, ds8-only conf), colo (fits) · **Rule:**
   `search/refit/w129/RULES-prior.md` (f110f88, committed 10:21 PM CST before any slice / score; its in-text time "10:40"
