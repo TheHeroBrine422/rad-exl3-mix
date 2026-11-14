@@ -4,6 +4,48 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 6:10 PM CST · #178-03 · GDN a/b at 5.0 / 6.0 / 6.5 (s173f): rule picks **5.0 T4, 6.0 T5 (noise-level), 6.5 bf16**; every |d| > 3% is unverified (one calib doc holds 55–71% of the calib KL); post-hoc trimmed view says T4 costs ~+2.5–4.8% at 6.0 / 6.5, T5 / T6 ~0 (w149)
+- **Status:** done (rule read; second-slice check recommended before any switch away from T4) · **Machine:** ds8 (cards 0–2
+  under locks, 12 scores ~5 card-min each; radmix + census) · **Code:** `search/v3/ab17803/` (README; RULES-17803.md
+  committed alone as 264c3f4 before any score) · **Data:** `data/ab178/17803/` (README) · **Brief:**
+  `rad-local/workers/instr3/w149.md` · **Runtime:** none beyond #178-02 (a T5 / T6 a/b is the same exl3i launch with more bytes)
+- **Setup.**
+  - The #171 incumbents at 5.0 / 6.0 / 6.5 (`v3s171-5-pair-00449`, `-6-explore-00372`, `-6.5-pair-00588`), A8 trunk,
+    with the **bf16 embedding** added to every mix (the incumbent mixes name none and would otherwise inherit the V2
+    base's affine u3).
+  - Arms: B (bf16 a/b, scored fresh) and simulated T4 / T5 / T6 (w142's decoded a/b written over the planes).
+  - Slice golden-s173f: 35 calib + 130 xcorp docs, 203k positions. 3 decisions recorded in the registry.
+  - Price g = driver slope × bpw saved (incl. scales: 0.00918 / 0.00801 / 0.00684). Slopes 0.781 / 0.350 / 0.158, so T4's
+    bytes are worth 0.72 / 0.32 / 0.15% at the three sizes.
+  - **Census on every mix.** B: PASS (full byte check, A8 / mul1i8 / bf16 embedding / version). Arms: exactly the 96 a/b
+    weights differ, nothing else. The first attempt's arm check (`--base` alone) compared nothing, so the guard refused
+    all 9 arms and none was scored. Patch for the lead: `census-base-needs-mix.patch`.
+- **Result** (d = pmean log ratio vs B, 95% CI; N = d − g):
+
+  | size | T4 | T5 | T6 | choice |
+  |---|---|---|---|---|
+  | 5.0 | −2.1% [−4.7, +1.5] null | +7.8% [−0.3, +12.5] null | +1.1% [−2.5, +4.2] null | **T4** |
+  | 6.0 | +17.4% [+0.2, +22.7] null | −4.8% [−9.2, +1.7] null | −0.2% [−7.4, +7.8] null | **T5** (noise-level) |
+  | 6.5 | +19.5% [+1.4, +28.0] **rejected** | +3.0% [−11.3, +10.2] null | +6.6% [−12.7, +15.0] null | **bf16** |
+
+- **Noise.**
+  - Calib doc `c:3181` holds 55 / 71 / 67% of the calib part's KL and swings −2…+46% under any a/b change. Without it,
+    every calib change is within ±2.3%.
+  - 3–4 long chat / agentic xcorp docs swing ±20–75 nats each. The bootstrap understates this, and the arms are not
+    monotone in K.
+  - Every |d| > 3% is **unverified** (AGENTS: confounder check). The census identity holds, but no second slice has been
+    scored.
+- **Post-hoc** (descriptive, not the rule): with the 2 largest-change docs per part removed, or by the median per-doc
+  log ratio, T4 is −2.1 / −0.9% at 5.0, **+4.4 / +4.8% at 6.0, +2.5 / +2.3% at 6.5**; T5 and T6 are within ±3.4% (median
+  ±1.9%) everywhere. That is about 10× T4's byte price at 6.0 / 6.5, which fits the user's hypothesis (K4 a/b becomes the
+  coarsest tensor in a K6+ trunk).
+- **For the lead.**
+  - Whether to adopt the rule's picks now (cheap: being wrong costs ≤ 0.32% at 6.0 and ≤ 0.15% at 6.5), or first run a
+    second slice at 6.0 / 6.5 (B / T4 / T5, 6 scores ≈ 30 card-min).
+  - T5 needs a rate-5 ssm_ab donor (w147's recipe takes `rate=`).
+  - 5.5 and 7.0 were not tested.
+  - Merge `census-base-needs-mix.patch`.
+
 ### 2026-11-13 5:30 PM CST · #178-02 · GDN a/b served as one trellis K4 weight (T4): packed into the 2.5 incumbent (−0.00918 bpw), census PASS, wiring exact; KLD vs w142's arm −4.3e-4 (A8 + 1-ulp decode, within the slice's noise); prefill and decode time unchanged (the fused N 128 op costs about what the two bf16 ops did) (w147)
 - **Status:** done (served, packed, measured) · **Machine:** ds8 (build, donor, mixes, census; CPU), box2 (one card under
   locks: 5 scores, 2 perf rounds, 1 decode profile) · **Code:** radiance `qc-exl3-v3` 179220f (branch `qc-exl3-v3-ab147`,

@@ -1,0 +1,14 @@
+6.5-T4.rad: 787 weights, 7.5336 bpw (file), 7.5282 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i         7 mul1i8   a8g128     1 nat   171   11.515
+  exl3i       6.5 mul1i8   a8g128     1 nat   120    5.863
+  plain                                       451    5.138
+  exl3i         6 mul1i8   a8g128     1 nat    25    1.803
+  exl3i       5.5 mul1i8   a8g128     1 nat    12    0.549
+  exl3i         5 mul1i8   a8g128     1 nat     6    0.259
+  exl3i       4.5 mul1i8   a8g128     1 nat     1    0.100
+  exl3i      3.75 mul1i8   a8g128     1 nat     1    0.084
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  plain - bf16  2.543 GB
+CENSUS PASS [checked: base]
+ARMCENSUS FAIL 0

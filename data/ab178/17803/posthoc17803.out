@@ -1,0 +1,12 @@
+5.0 B: top-doc share c c:3181 55%, x x:swe-rebench-openhands:405 19%
+  T4: d without the 2 largest-change docs per part -0.0213; median per-doc log ratio -0.0085 (108 docs)
+  T5: d without the 2 largest-change docs per part -0.0012; median per-doc log ratio +0.0053 (108 docs)
+  T6: d without the 2 largest-change docs per part +0.0167; median per-doc log ratio +0.0018 (108 docs)
+6.0 B: top-doc share c c:3181 71%, x x:smoltalk2/longalign:243 18%
+  T4: d without the 2 largest-change docs per part +0.0435; median per-doc log ratio +0.0475 (60 docs)
+  T5: d without the 2 largest-change docs per part +0.0089; median per-doc log ratio -0.0013 (60 docs)
+  T6: d without the 2 largest-change docs per part -0.0103; median per-doc log ratio -0.0005 (60 docs)
+6.5 B: top-doc share c c:3181 67%, x x:smoltalk2/longalign:243 21%
+  T4: d without the 2 largest-change docs per part +0.0250; median per-doc log ratio +0.0229 (42 docs)
+  T5: d without the 2 largest-change docs per part -0.0344; median per-doc log ratio -0.0194 (42 docs)
+  T6: d without the 2 largest-change docs per part -0.0169; median per-doc log ratio -0.0008 (42 docs)

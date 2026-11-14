@@ -1,0 +1,55 @@
+6.5-T6.rad: 787 weights, 7.5336 bpw (file), 7.5282 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i         7 mul1i8   a8g128     1 nat   171   11.515
+  exl3i       6.5 mul1i8   a8g128     1 nat   120    5.863
+  plain                                       451    5.138
+  exl3i         6 mul1i8   a8g128     1 nat    25    1.803
+  exl3i       5.5 mul1i8   a8g128     1 nat    12    0.549
+  exl3i         5 mul1i8   a8g128     1 nat     6    0.259
+  exl3i       4.5 mul1i8   a8g128     1 nat     1    0.100
+  exl3i      3.75 mul1i8   a8g128     1 nat     1    0.084
+  output.weight      plain - bf16  2.543 GB
+  token_embd.weight  plain - bf16  2.543 GB
+MISMATCH blk.0.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.0.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.1.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.1.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.2.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.2.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.4.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.4.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.5.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.5.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.6.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.6.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.8.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.8.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.9.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.9.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.10.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.10.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.12.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.12.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.13.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.13.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.14.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.14.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.16.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.16.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.17.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.17.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.18.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.18.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.20.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.20.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.21.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.21.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.22.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.22.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.24.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.24.ssm_b.weight: not named by the mix and differs from base
+MISMATCH blk.25.ssm_a.weight: not named by the mix and differs from base
+MISMATCH blk.25.ssm_b.weight: not named by the mix and differs from base
+... 56 more
+CENSUS FAIL (96) [checked: mix base]
+ARMCENSUS PASS 96

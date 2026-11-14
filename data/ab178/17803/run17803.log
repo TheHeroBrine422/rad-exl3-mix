@@ -1,0 +1,61 @@
+11-13 17:25:07 CST start pid 1087324
+11-13 17:25:57 CST mix 5.0 v3s171-5-pair-00449 bytes 20603121664 acts 336 CENSUS PASS [checked: mix base act codebook emb version]
+11-13 17:25:57 CST card 0: score 5.0 B
+11-13 17:26:30 CST mix 6.0 v3s171-6-explore-00372 bytes 23806193664 acts 336 CENSUS PASS [checked: mix base act codebook emb version]
+11-13 17:26:30 CST card 1: score 6.0 B
+11-13 17:27:07 CST mix 6.5 v3s171-6.5-pair-00588 bytes 25328103424 acts 336 CENSUS PASS [checked: mix base act codebook emb version]
+11-13 17:27:07 CST card 2: score 6.5 B
+11-13 17:31:09 CST score 5.0 B rc 0 I kld: 165 documents in 298 s, 0 preemption(s)
+abpatch 5.0-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+11-13 17:31:30 CST census 5.0 T4 FAILED
+11-13 17:31:45 CST score 6.0 B rc 0 I kld: 165 documents in 300 s, 0 preemption(s)
+abpatch 5.0-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:31:50 CST census 5.0 T5 FAILED
+abpatch 5.0-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 17:32:08 CST census 5.0 T6 FAILED
+abpatch 6.0-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+11-13 17:32:12 CST census 6.0 T4 FAILED
+11-13 17:32:30 CST score 6.5 B rc 0 I kld: 165 documents in 308 s, 0 preemption(s)
+abpatch 6.0-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:32:32 CST census 6.0 T5 FAILED
+abpatch 6.0-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 17:32:54 CST census 6.0 T6 FAILED
+abpatch 6.5-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+11-13 17:32:58 CST census 6.5 T4 FAILED
+abpatch 6.5-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:33:21 CST census 6.5 T5 FAILED
+abpatch 6.5-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 17:33:42 CST census 6.5 T6 FAILED
+11-13 17:33:44 CST done
+11-13 17:38:31 CST start pid 1107858
+abpatch 5.0-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+abpatch 6.0-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+abpatch 6.5-T4.rad: 96 weights from ab-T4.safetensors, sha256 bc21929d012d872c
+11-13 17:39:18 CST card 0: score 5.0 T4
+11-13 17:39:41 CST card 1: score 6.0 T4
+11-13 17:39:44 CST card 2: score 6.5 T4
+11-13 17:44:29 CST score 5.0 T4 rc 0 I kld: 165 documents in 299 s, 0 preemption(s)
+abpatch 5.0-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:44:58 CST score 6.0 T4 rc 0 I kld: 165 documents in 300 s, 0 preemption(s)
+11-13 17:45:09 CST score 6.5 T4 rc 0 I kld: 165 documents in 307 s, 0 preemption(s)
+abpatch 6.0-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:45:17 CST card 0: score 5.0 T5
+abpatch 6.5-T5.rad: 96 weights from ab-T5.safetensors, sha256 c452b79a0cb7e36a
+11-13 17:45:56 CST card 1: score 6.0 T5
+11-13 17:46:07 CST card 2: score 6.5 T5
+11-13 17:50:30 CST score 5.0 T5 rc 0 I kld: 165 documents in 300 s, 0 preemption(s)
+abpatch 5.0-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 17:51:12 CST score 6.0 T5 rc 0 I kld: 165 documents in 303 s, 0 preemption(s)
+11-13 17:51:23 CST card 0: score 5.0 T6
+11-13 17:51:28 CST score 6.5 T5 rc 0 I kld: 165 documents in 309 s, 0 preemption(s)
+abpatch 6.0-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+abpatch 6.5-T6.rad: 96 weights from ab-T6.safetensors, sha256 cded82f35aa9699b
+11-13 17:52:38 CST card 1: score 6.0 T6
+11-13 17:53:01 CST card 2: score 6.5 T6
+11-13 17:56:39 CST score 5.0 T6 rc 0 I kld: 165 documents in 302 s, 0 preemption(s)
+11-13 17:56:39 CST size 5.0 done, B mix deleted
+11-13 17:57:51 CST score 6.0 T6 rc 0 I kld: 165 documents in 303 s, 0 preemption(s)
+11-13 17:57:52 CST size 6.0 done, B mix deleted
+11-13 17:58:21 CST score 6.5 T6 rc 0 I kld: 165 documents in 309 s, 0 preemption(s)
+11-13 17:58:22 CST size 6.5 done, B mix deleted
+11-13 17:58:22 CST done
