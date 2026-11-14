@@ -7404,3 +7404,17 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   gen-masked; monitor ver3-8k (alert only). rad10-e157b homes (qc-exl3-v3 120132a).
 - **Not yet:** decode term (driver has none; w159's table is ready), box2 hosts, the multi-start uniform lanes
   (the driver has one lane per size: needs a second driver instance), size 1.0 (sub-1 levels). **Runtime:** neither.
+
+### 2026-11-14 3:55 PM CST · #183 · Start picks vs V2 / IQR-V4; box2 joins the search
+- **References on s173a (board gen rows; ds8, rad10-e157b, bf16 KV):** V2 3.00 0.03046, 4.00 0.00779, 5.00 0.00225;
+  IQR-V4 iq4r-s (4.142) 0.00600. Our start picks (w158 M1m picks, A8) on s173a: 3.0 0.02890 (V2 ×0.95), 4.0 0.00716
+  (V2 ×0.92), 5.0 0.00219 (V2 ×0.97); 4.0 vs iq4r-s ≈ par after the size slope (pred ~0.0059 at 4.142).
+- **On ver3-8k (fixed panel, verify; w134's refs):** ours 1.25 0.545, 1.5 0.421, 1.75 0.269, 2.0 0.262, 2.5 0.0975,
+  3.0 0.0467, 3.5 0.0383, 4.0 0.00900, 4.5 0.00781, 5.0 0.00326, 6.0 0.00130, 7.0 0.00076 vs IQR-V4 iq2r 2.47 0.0630,
+  iq3r-s 3.16 0.0274, iq3r 3.47 0.0189, iq4r-s 4.14 0.00876, iq5r-s 5.07 0.00323, iq6r-s 6.06 0.00128; V2 2.49 0.132,
+  6.0 0.00149, 7.0 0.00060. **At ≤ 3.5 ours is 1.5-2× IQR on ver3-8k but not on s173a** — unverified; ver3-8k's few long
+  documents degrade with depth at low bpw (w134: 3 docs = 62% of V2 2.5's KL); non-monotone 3.0 → 3.5 (0.047 → 0.038)
+  points the same way. To check: position bins / per-doc on these rows; IQR iq2r on s173a. Data: `rad-local/multi/v3b`
+  (ref183-*), ds8 `/data/q27/srch183/refs/`.
+- box2 added as an eval host (packs K1-4.5 + DONE stubs replicated, heads u1-u5.875, coordinator `replicas`); w138's
+  mul1i8 packs deleted (181 GB, user's mul1i8 OK). **Runtime:** neither.
