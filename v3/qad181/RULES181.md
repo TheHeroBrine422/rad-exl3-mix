@@ -147,3 +147,21 @@ branches) with every trunk linear's GEMM input fake-quantized as the served A8 p
 stays f16 as served). Judged like the checkpoints. **Q beats A** if Q / ckpt-4M has a c CI below 1 and x below 1 (the
 B / C rule); else A stands. Runs on whatever cards are free after the 2b controls (never w151's / w156's). Arm T
 (DFlash2-tap MSE) is not run in #181 (it needs the bf16 teacher's tap states beside a one-card student; noted for later).
+
+### Amendment 4 — 2026-11-14 2:50 AM CST, before any screen run (lead notes 11-14 1:05–2:30 AM CST, user decisions)
+**Why.** User (via the lead): optimize convergence before scaling; at the 4 M read, stop the main run if calib is still
+rising or the gain is unclear. At 4 M the calib side is flat (monitor 2 M 0.0582 / 4 M 0.0585; the 4 M checkpoint vs
+1 M on verify c 0.996 [0.986, 1.010]; per-step calib training KL spiky, single hard documents). The main run is stopped
+at main step 247 (STOP file; its 1 M / 4 M checkpoints stand) and resumes later with the screen's winner. The 2b inc4.0
+run (1 step at lr 1e-3, no screen) is discarded.
+**2.5 screen (6 runs, 1 M each, inc2.5):** lr {1e-3, 3e-4, 1e-4} × data mix {A = the main mix (all corpora, gen rows),
+B = calib qad pool only (gen rows, cap 8,192)}; WSD to 1 M (constant, linear decay over 0.8 → 1 M), V 24 × Q 1,024, seed 0,
+everything else as the main recipe. **Fixed eval set** (`--fixed-eval 30000`): calib qad-pool documents (seeded shuffle,
+seed 2181, ≥ 200 gen rows in their first 2,048 tokens) up to ~30 k rows, removed from the training data of all six
+runs, scored (first 2,048 tokens, per document) every 10 steps and at the end; the 32-doc monitor as before.
+**Pick:** the run with the lowest fixed-eval KL at its decayed 1 M end replaces the main recipe (lr, mix) only if its
+paired per-document ratio vs (1e-3, A) on the fixed set has a 95 % document-bootstrap CI below 1 and its monitor ratio is
+below 1; otherwise (1e-3, A) stays. Verify / x181 are not used for the pick.
+**4.0 / 6.0 lr screens (lead note 1):** lr {1e-3, 3e-4, 1e-4} (6.0 also 3e-5), 1 M each, with the 2.5 screen's mix, the same
+fixed eval set and monitor; the lowest fixed-eval KL at the decayed end is the lr of that size's 2b arm (4 M, as above).
+**Cards:** box2's four cards (ds8 goes to the search after the ladder, lead 2:30 AM); single-card runs side by side.
