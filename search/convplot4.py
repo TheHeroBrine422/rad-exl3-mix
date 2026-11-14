@@ -157,6 +157,7 @@ def main(argv=None):
     ap.add_argument("--track", help="(#183) results.jsonl holding the tracking slice's trk183-<incumbent tag> rows: a middle panel")
     ap.add_argument("--track-refs", help="(#183) {name, bpw, kld} reference rows on the tracking slice (iq* / v2-*)")
     ap.add_argument("--track-name", default="t183")
+    ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     a = ap.parse_args(argv)
     R = load_refs(a.refs + ([a.results] if a.results else []))
@@ -202,7 +203,13 @@ def main(argv=None):
     sizes = sorted({s for s, _ in W["accepts"]})
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
-        ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax); ax2 = fig.add_subplot(gs[2], sharex=ax)
+        if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
+            fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1])
+            ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax)
+            ax2 = plt.figure().add_subplot()                # drawn into a throwaway figure, never saved
+            axT.set_xlabel("eval step (search results, in order)")
+        else:
+            ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax); ax2 = fig.add_subplot(gs[2], sharex=ax)
         track_panel(axT, W, a, sizes)
     else:
         fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1])
