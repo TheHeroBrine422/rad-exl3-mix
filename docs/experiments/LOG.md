@@ -7522,3 +7522,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   on the same card. Brief `instr3/w160.md`: read IQR-V4's kernels + docs and our exl3i PERF / TWOPASS history in full
   (user), gap analysis, then changes with KLD rows byte-identical. box2 removed from the #183 search (host slots 0,
   coordinator restarted 4:47 PM CST); the search runs on ds8 only. **Runtime:** prefill (scored) + eval speed.
+
+### 2026-11-14 4:55 PM CST · #185 · Eval overhead: mix serialization removed; w161 stopped (lead does it)
+- Per-step split of 164 #183 evals (ds8 unit / mix / score-log mtimes): early-stopped candidates 164 s = ~100 s mix +
+  census (55%), 7 s load, 30-55 s scoring; full evals 259 s = ~98 s mix + census (39%), 8 s load, 132 s scoring.
+- ds8 /data is ext4 (no reflink) but writes 1.7 GB/s (an 11 GB mix ≈ 7 s), so the ~100 s was mostly queueing on the
+  exclusive conv.lock (radmix one at a time for 9 slots). Every pack exists, so ds8 host.json eval.conv_lock = null:
+  mixes run in parallel (coordinator restarted 4:52 PM CST; conv.lock now idle). Re-measure after ~30 evals.
+- User: stop w161 (started 4:51 PM, no output); the lead does the rest of #185 (the no-mix-file loader if still worth
+  it after the re-measure). **Runtime:** neither (eval speed).
