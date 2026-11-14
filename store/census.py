@@ -110,6 +110,7 @@ def main():
     e_act, e_cb, e_head, e_emb, maxv = (opt("--expect-act"), opt("--expect-codebook"), opt("--expect-head"),
                                         opt("--expect-emb"), opt("--max-version"))
     fast = "--fast" in a
+    if base and not mix: sys.exit("census: --base is only checked together with --mix (w149: --base alone compared nothing and still printed [checked: base])")
     if fast: a.remove("--fast")
     R = Rad(a[0]); bad = []
     rows = []
