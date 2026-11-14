@@ -6957,3 +6957,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   interface 5; decode −1.7…−2.2%, KLD rows byte-identical). Corrected #177-02 e2e: mad ×0.781 / ×0.912 vs i8.
 - User decisions recorded in RUNBOOK-overnight-1113 (decode f16 above 3.0, below pending; rescoring on our own head;
   QAD stop rule at 16M, convergence screen first; ds8 to the search after the ladder). **Runtime:** D (fusions).
+
+### 2026-11-14 3:10 AM CST · #174-03 · Decision: the embedding counts (Deadcode), trellis embedding back in the budget
+- Deadcode (DM, 11-14 2:45 AM CST): treat the embedding as if in VRAM; one copy only; scoring stays as is. User: put
+  the embedding back in the budget now (supersedes df2594f's bf16-host-excluded plan); a bf16-host variant maybe later.
+- Menu: trellis embedding options (w144 embed_exl3i, mul1i8 half steps K1.5-7 + mul1 K6.5-8, plus eighth steps
+  K1.5-5.0 built by w157). Default size metric back to container bytes (trunk + head + embedding) = board. w157 rebases
+  emb144 onto qc-exl3-v3 and builds the menu block; search restart waits for it. **Runtime:** neither (same gather
+  kernel cost as w144 measured; re-timed by w157).
