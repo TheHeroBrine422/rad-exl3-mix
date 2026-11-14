@@ -16,6 +16,13 @@ esac
 mkdir -p $PB; exec >> $O/plugb.log 2>&1
 say() { echo "$(date -u +%T) $*"; }
 say "start TC $TC SRC $S"
+# OVL=1: build against an overlay of the install whose include/radiance/arch/rad_block_dflash2.h is the tree's (w155's
+# build155.sh: the block gained op_rr_ext on qc-exl3-v3 b83698d; the installed one predates it)
+if [ -n "${OVL:-}" ]; then
+  HD=include/radiance/arch/rad_block_dflash2.h
+  rm -rf $O/inst; cp -as $I $O/inst; rm $O/inst/$HD; cp $S/arch/common/rad_block_dflash2.h $O/inst/$HD; I0=$I; I=$O/inst
+  say "overlay install $I (rad_block_dflash2.h from the tree)"
+fi
 for p in ${PLUGS:-exl3quant qwen35_exl3 exl3dense exl3r4d exl3i}; do
   [ -f $S/plugin/$p/CMakeLists.txt ] || continue
   [ -f $PB/$p.ok ] && continue
@@ -26,6 +33,6 @@ for p in ${PLUGS:-exl3quant qwen35_exl3 exl3dense exl3r4d exl3i}; do
   ctest --test-dir $PB/$p -L host --output-on-failure >> $PB/$p.log 2>&1 || { say "$p: HOST TESTS FAIL"; exit 1; }
   say "$p: built, host tests $(grep -c 'Test #.*Passed' $PB/$p.log) passed"; touch $PB/$p.ok
 done
-rm -rf $H.part; cp -a ${BASEHOME:-$I/share/radiance} $H.part
+rm -rf $H.part; cp -a ${BASEHOME:-${I0:-$I}/share/radiance} $H.part
 for f in $(find $PB -path '*radiance_home/*' -name '*.so'); do d=$(basename $(dirname $f)); [ -d $H.part/$d ] && cp $f $H.part/$d/; done
 rm -rf $H; mv $H.part $H; say "HOME READY $H"

@@ -1,0 +1,11 @@
+07:43:10 q15 test_aq 10 rb: rc 0 TEST_AQ PASS (0 failures)
+07:43:41 q15 test_rerank 10 rb: rc 0 TEST_RERANK PASS (0 failures)
+07:45:58 q15 test_aq 714 rb: rc 0 TEST_AQ PASS (0 failures)
+07:46:29 q15 test_rerank 714 rb: rc 0 TEST_RERANK PASS (0 failures)
+07:53:48 q15 DONE
+KLD def mbase vs rb: IDENTICAL rows (67932 positions), mean KLD 0.681289
+gdec mord vs rb: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+07:41:07 exl3i: built, host tests 4 passed
+07:41:08 HOME READY /data/q27/w152/b10rb/home
+07:42:51 exl3i: built, host tests 4 passed
+07:42:51 HOME READY /data/q27/w152/b714rb/home

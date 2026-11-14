@@ -4,6 +4,18 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 1:55 AM CST · #179 · qc-exl3-v3-step rebased on qc-exl3-v3 b83698d (w155's exl3i_rerank): tests pass, KLD rows byte-identical, decode bit-exact (w152)
+- **Status:** done (lead note 11-14 12:20 AM CST) · **Code:** radiance-hero `qc-exl3-v3-step` f221bb0 (fusions), 440b1f5
+  (`Exl3Aq::takes`), def87e9 (exl3i interface 5: actq's residual add), 8726354 + 3bc8ad2 (PERF.md, exl3i PERF.md's
+  correction) on b83698d; clean rebase · **Data:** `data/step179/rebase-b83698d.txt`
+- **Checks on 708739c (= 3bc8ad2's code):** qwen35_exl3 / exl3i / exl3quant host tests (exl3i now 4: w155's rerank host
+  test) on ROCm 10.1 and 7.14; test_aq (incl. test_res) and w155's test_rerank PASS on both; whole-model KLD rows (mad
+  K2.5, def) byte-identical to the base build's; greedy decode (mad K2.5) bit-exact to the all-ordered build.
+- **Build note:** w155's `op_rr_ext` lives in the shared `arch/common/rad_block_dflash2.h`, which a standalone plugin build
+  reads from the install: build against an overlay with the tree's copy (`v3/bench/step179/plugb.sh` OVL=1, as w155's
+  `build155.sh`) until a core build carries it.
+- **Runtime:** none beyond #179's.
+
 ### 2026-11-14 1:25 AM CST · #177-02 correction / #179 · mad decode re-measured after the KS counter fix (fdd480c): e2e ×0.781 / ×0.912 vs the i8 twins (was ×0.770 / ×0.904 on the race); the decode-path KLD stands (a race-free build reproduces w150's rows byte for byte) (w152)
 - **Status:** done (lead note 11-13 11:00 PM CST) · **Machine:** box2 card 1 · **Code:** qc-exl3-v3 fdd480c (the counter
   fix, = `v3/bench/step179/kctr-key.patch`); `qc-exl3-v3-step` rebased on it (6fb093e, 3dbf3c4, 2a49430, cecfc64, c34d508:
