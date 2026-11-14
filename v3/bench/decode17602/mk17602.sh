@@ -10,6 +10,8 @@
 #   mix NAME FILE  m-NAME.rad: radmix of FILE (radmix lines; base = the K1 pack unless FILE's first line is "#base PATH")
 #   roll N PLAN..  heads in order, at most N built-but-unmeasured head packs on disk at once; a head pack is deleted once
 #                  its runner row is done (res/h-PLAN.jsonl)
+#   a8 K           a8-K.rad: the uniform level K's pack + "act <w> a8g128" on the 336 trunk linears (recipes/a8.mix), for
+#                  the int8-decode column (lead note 2:30 PM CST: QWEN35_EXL3_AQ_XB=1 EXL3I_MAD_GEMV=1 needs a8g128 weights)
 #   gc             delete every h- / e- / ab- pack whose row is done (m- packs are kept until the residual rounds end)
 # radmix = W/tools/radmix (w147's build of mix/radmix.cpp 243ebc26: add / drop lines; tools/radmix on ds8 predates them).
 # Every build waits while W/QUIET exists and holds W/quiet.lock shared (run17602.sh QUIET=1 rows hold it exclusive).
@@ -85,6 +87,7 @@ case $cmd in
   ab) ab $1;;
   mix) b=$(sed -n '1s/^#base //p' $2); radmix $P/m-$1.rad $2 ${b:-$B0};;
   gc) gc;;
+  a8) radmix $P/a8-$1.rad $W/recipes/a8.mix $(awk -v k=$1 '$1 == k {print $2}' $W/recipes/uniform.txt);;   # uniform level + act a8g128 on the 336 trunk linears
   roll)
     n=$1; shift; pend=("$@")
     while [ ${#pend[@]} -gt 0 ]; do

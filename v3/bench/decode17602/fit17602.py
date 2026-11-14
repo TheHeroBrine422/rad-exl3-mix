@@ -2,7 +2,9 @@
 """fit17602.py -- #176-02 (w159): decode prices per (tensor, option) from end-to-end server runs on ds8.
 
   python3 fit17602.py fit RES_DIR OUT.json [--report OUT.txt]
-  python3 fit17602.py annotate PRICES.json MENU.json OUT.json      every menu option gets "dec_us" (ctx 0) and "dec_us_8k"
+  python3 fit17602.py annotate PRICES.json MENU.json OUT.json [--suffix _i8]   every menu option gets "dec_us" (ctx 0) and
+                                                                    "dec_us_8k" (with --suffix _i8: dec_us_i8 / dec_us_i8_8k)
+  fit ... --prefix i8                                               the int8-decode column (rows i8u<K>-*, i8m-*)
   python3 fit17602.py predict PRICES.json ASSIGN.json               predicted ms / step (ctx 0, 8k) of an assignment
                                                                     ({w: option} as the search's / fin133's picks)
 
@@ -34,6 +36,7 @@ def ktag(k):
     return f"{float(k):g}"
 
 
+PREFIX = ""    # --prefix i8: the int8-decode column (rows i8u<K>-*, i8m-*; heads / embedding / a-b from the f16 rows)
 STAMPS = None  # --stamps DIR: the reduced stamp files from another directory (e.g. the card-7 round, a cross-card check)
 STAT = "min"   # RULES amendment 1 (decided 1:00 PM CST on the uniform fit: min): med (median of runs) | min (minimum of runs) | gap (median inter-chunk gap, median of runs)
 
@@ -79,12 +82,22 @@ def stamp(path):
             order.append(w.replace("ssm_qkv", "ssm_ab"))
     if has_head: order.append(MN.HEAD)
     out = {"tensors": {w: s["us"] for w, s in zip(order, gemv)}}
+    # int8 decode rows (EXL3I_MAD_GEMV=1): a GEMV without a producer's xb rows (ssm_out, at K <= 2) quantises its rows in
+    # an exl3i_mad_rows pre-pass launched right before it: that time is the tensor's own
+    pre, carry, gi = {}, 0.0, 0
+    gid = {id(s): w for w, s in zip(order, gemv)}
+    for s_ in S:
+        if "exl3i_mad_rows" in s_["kernel"]: carry += s_["us"]
+        elif id(s_) in gid:
+            if carry: out["tensors"][gid[id(s_)]] += carry; pre[gid[id(s_)]] = carry
+            carry = 0.0
+    pre_ids = {id(s_) for s_ in S if "exl3i_mad_rows" in s_["kernel"]}
     if has_ab:   # the a/b GEMV must be the smallest of its GDN layer
         for l in GDN:
             ab = out["tensors"][f"blk.{l}.ssm_ab.weight"]
             if any(out["tensors"][f"blk.{l}.{t}.weight"] <= ab for t in ("ssm_qkv", "ssm_z", "ssm_out")):
                 raise ValueError(f"{path}: layer {l} a/b GEMV is not the smallest: order wrong")
-    ids = {id(s) for s in gemv}
+    ids = {id(s) for s in gemv} | pre_ids
     other = [s for s in S if id(s) not in ids]
     lg = [s["us"] for s in other if "logits_gemm" in s["kernel"]]
     if not has_head:
@@ -119,7 +132,7 @@ def ols(x, y):
 
 def fit(res, out, report=None):
     R = rows(res)
-    lines0 = [f"e2e statistic: {STAT}"]
+    lines0 = [f"e2e statistic: {STAT}" + (f"; rows with prefix '{PREFIX}'" if PREFIX else "")]
     sdir = STAMPS or res
     ST = {os.path.basename(f)[3:-5]: stamp(f) for f in glob.glob(f"{sdir}/st-*.json")}
     lines = lines0
@@ -127,7 +140,7 @@ def fit(res, out, report=None):
     # trunk raw prices from the uniform stamped rounds (u<K>-s; u<K>-r1 if present too, averaged)
     uni = {}
     for tag, s in ST.items():
-        m = re.fullmatch(r"u([0-9.]+)-(s|r1)", tag)
+        m = re.fullmatch(PREFIX + r"u([0-9.]+)-(s|r1)", tag)
         if m: uni.setdefault(ktag(m.group(1)), []).append(s)
     raw = {t: {} for t in TYPES}
     base = {"head_bf16": [], "ab_bf16": [], "emb_bf16": [], "other": []}
@@ -145,7 +158,7 @@ def fit(res, out, report=None):
     # e2e of the uniform packs, unstamped rounds a / b (ABBA); stamped rows as a check
     E = {}
     for tag, r in R.items():
-        m = re.fullmatch(r"u([0-9.]+)-(a|b|c|s|r1)", tag)
+        m = re.fullmatch(PREFIX + r"u([0-9.]+)-(a|b|c|s|r1)", tag)
         if m: E.setdefault(ktag(m.group(1)), {})[m.group(2)] = r["ms"]
     fitp = {}
     for ctx in ("0", "8k"):
@@ -184,7 +197,7 @@ def fit(res, out, report=None):
     P(f"heads priced: {len(head) - 1}; embedding options: {sorted(emb)} ({extra}); a/b: {ab}")
     def scaled(v, c): return v * al[c]
     prices = {"about": __doc__.split("\n\n")[0].strip(), "unit": "us per batch-1 decode step (alpha x stamped device time)",
-              "stat": STAT, "fit": fitp, "levels": [LEVEL.format(k) for k in levels], "level_K": levels,
+              "stat": STAT, "prefix": PREFIX, "fit": fitp, "levels": [LEVEL.format(k) for k in levels], "level_K": levels,
               "raw": {"trunk": raw, "head": head, "emb": emb, "ab": ab}, "n_per_type": NT}
     for c in al:
         prices[f"ctx{c}"] = {"F_ms": fitp[c]["F_ms"], "alpha": al[c],
@@ -194,7 +207,7 @@ def fit(res, out, report=None):
     # held-out mixes and every other non-uniform row: predicted from the table vs measured
     hold = {}
     for tag, r in R.items():
-        m = re.fullmatch(r"m-(.+?)-([abcs])", tag)
+        m = re.fullmatch(PREFIX + r"m-(.+?)-([abcs])", tag)
         if not m or m.group(2) == "s": continue
         hold.setdefault(m.group(1), []).append(r)
     prices["heldout"] = {}
@@ -210,7 +223,7 @@ def fit(res, out, report=None):
             meas = st.median(r["ms"][c] for r in rs if c in r["ms"]) if any(c in r["ms"] for r in rs) else None
             row[c] = {"pred_ms": pred, "meas_ms": meas, "err": (pred - meas) / meas if meas else None,
                       "rounds": [r["ms"].get(c) for r in rs]}
-        sm = ST.get(f"m-{name}-s")
+        sm = ST.get(f"{PREFIX}m-{name}-s")
         if sm:   # additivity: the table's raw sum vs this mix's own stamps
             rt = raw_sum(prices, asg); own = sum(sm["tensors"].values()) + sm.get("head_bf16", 0) + (sm["ab_bf16"] or 0) + sm["emb"]
             row["stamp_additivity"] = {"table_raw_ms": rt / 1e3, "own_stamp_ms": own / 1e3, "err": (rt - own) / own}
@@ -273,7 +286,7 @@ def annotate(pp, mp, out):
     prices = json.load(open(pp)); m = json.load(open(mp)); miss = 0; n = 0; interp = 0
     for t in m["tensors"]:
         for o in t["opts"]:
-            for c, key in (("0", "dec_us"), ("8k", "dec_us_8k")):
+            for c, key in (("0", "dec_us" + SUF), ("8k", "dec_us" + SUF + "_8k")):
                 if f"ctx{c}" not in prices: continue
                 p = opt_price(prices, c, t["w"], o["o"])
                 if p is None: miss += c == "0"; o.pop(key, None)
@@ -287,6 +300,8 @@ def annotate(pp, mp, out):
 
 if __name__ == "__main__":
     cmd = sys.argv[1]
+    if "--prefix" in sys.argv: PREFIX = sys.argv[sys.argv.index("--prefix") + 1]
+    SUF = sys.argv[sys.argv.index("--suffix") + 1] if "--suffix" in sys.argv else ""
     if "--stamps" in sys.argv: STAMPS = sys.argv[sys.argv.index("--stamps") + 1]
     if "--stat" in sys.argv: STAT = sys.argv[sys.argv.index("--stat") + 1]
     if cmd == "fit":

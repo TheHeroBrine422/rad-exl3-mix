@@ -717,3 +717,10 @@ A8: scales trained without it may not hold under it) — the screen measures by 
 - [ ] **V4: trellis embedding on the mad codebook (user 11-14).** V3 ships the embedding on mul1i8 / mul1 (w144 donors,
   no new kernel). For V4: mad embedding donors + embed_exl3i mad decode (w150's byte-sum / madh), one codebook across
   trunk, head and embedding; check KL vs mul1i8 at equal K (proxy: mul1i8 ~0.8% better at L16) and gather speed.
+- [ ] **Ternary + local healing as knapsack options (user 11-14).** Per-tensor (or per-block) option: ternary codes
+  (~1.6 b packed + scales), then heal locally against the bf16 layer / block output (scales, maybe group scales; data:
+  qad pool / xcorp, never fit / search / verify), priced like any option (err + swap KL + kernel time). Healing is local,
+  so options stay independent (interaction test #173-03: pooled rho -0.022, additivity holds). Fair baseline: trellis
+  K1.5-1.75 + swj at equal bytes. Gate 1 (cheap, offline): ~6 tensors (ffn / attn / ssm, early / mid / late), ternary +
+  local heal vs trellis + swj, knapsack err + one swap KL. Only if ternary wins somewhere: kernel (prefill A8 + decode)
+  and menu entries. Format addition → V3.x / V4 unless gate 1 is dramatic.
