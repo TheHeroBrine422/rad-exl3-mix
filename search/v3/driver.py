@@ -98,6 +98,20 @@ class Driver:
         self.inc = {}            # size -> tag
         self.dec = collections.Counter(); self.kind_stats = collections.defaultdict(lambda: [0, 0])
         self.seen = set(); self.obs = {}; self.n_results = 0
+        # decode term (#183, user 11-13 "KL + lambda_d decode"; w159's #176-02 table): CONF "decode": {"menu": a menu with
+        # dec_us / dec_us_8k per option, "lambda_rel": log-KLD per log decode step (0.5 = a 1 % faster step is worth 0.5 % KL),
+        # "w8k": weight of the 8k column (0.5), "alpha": the e2e slope, "F_ms": the fixed part of a step}. Every decision /
+        # early-stop offset gets lambda_rel (dec_B - dec_A) / step_A beside b (bpw_B - bpw_A); move generation stays KL-model
+        # driven. Absent or lambda 0 = KL + size only.
+        dc = c.get("decode") or {}; self.lam_d = float(dc.get("lambda_rel", 0.0)); self.decus = {}; self.dec_F = float(dc.get("F_ms", 4.08))
+        if dc.get("menu"):
+            import gzip
+            mm = json.load(gzip.open(dc["menu"]) if dc["menu"].endswith(".gz") else open(dc["menu"])); w8 = float(dc.get("w8k", 0.5))
+            al = float(dc.get("alpha", 0.976))
+            for t in mm["tensors"]:
+                for o in t["opts"]:
+                    if o.get("dec_us") is not None:
+                        self.decus[(t["w"], o["o"])] = al * ((1 - w8) * o["dec_us"] + w8 * o.get("dec_us_8k", o["dec_us"])) / 1000.0
         # fit groups (TODO "Low sizes in parallel": a joint fit for the low sizes vs main-only for 2-7 is the lead's call):
         # [{"name", "sizes", "rows": "all" | "own"}]; default one group over every size and row
         self.groups = c.get("fit_groups") or [{"name": "all", "sizes": self.sizes, "rows": "all"}]
@@ -165,17 +179,38 @@ class Driver:
         line = {"tag": tag, "mix": self.M.eval_mix(a, self.c["base"]), "slices": [slice_entry or self.slice_entry(slice_name)]}
         if self.act != "f16": line["mix"]["act"] = self.act
         bs = self.b_of(size) if kind not in ("monitor", "incumbent") else 0.0
-        bpw = self.M.bpw(a)
+        bpw = self.M.bpw(a); dms = self.dec_ms(a)
         if early and ref_tag:
             r = self.res[ref_tag]; off = bs * (bpw - self.sub[ref_tag]["bpw"])
+            dr = self.dec_of(ref_tag)
+            if self.lam_d and dms is not None and dr is not None and kind not in ("monitor", "incumbent"):
+                off += self.lam_d * (dms - dr) / (self.dec_F + dr)
             line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name)), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
                                   "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
-             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
+             "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"dec": dms, "lam_d": self.lam_d} if dms is not None else {}), **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
         self.rec(e); self.sub[tag] = e
         if kind != "monitor": self.seen.add(h)
         return tag
+
+    def dec_ms(self, a):
+        """the predicted decode step (ms, without the fixed part) of assignment a; None without a decode table"""
+        if not self.decus: return None
+        return sum(self.decus.get((w, o), 0.0) for w, o in a.items())
+
+    def dec_of(self, t):
+        """a submitted tag's predicted decode (ms): its submit event's, else from its assignment file (tags submitted
+        before the decode table was configured)"""
+        e = self.sub.get(t) or {}
+        if e.get("dec") is None and self.decus and os.path.exists(f"{self.R}/assign/{t}.json"):
+            e["dec"] = self.dec_ms(json.load(open(f"{self.R}/assign/{t}.json")))
+        return e.get("dec")
+
+    def doff(self, t, rt):
+        """the decode part of a size-adjusted offset: lambda_rel (dec_t - dec_rt) / step_rt, 0 without the table / a recorded dec"""
+        x, y = self.dec_of(t), self.dec_of(rt)
+        return self.lam_d * (x - y) / (self.dec_F + y) if self.lam_d and x is not None and y is not None else 0.0
 
     def prule(self, rule, off, ref_docs, parts):
         """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice)"""
@@ -336,7 +371,7 @@ class Driver:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None}); return
         ref = self.res[cur]
         bs = s.get("b", 0.0) or 0.0                                       # the b recorded at submit (the hosts stopped on it)
-        off = lambda rt: bs * (s["bpw"] - self.sub[rt]["bpw"])
+        off = lambda rt: bs * (s["bpw"] - self.sub[rt]["bpw"]) + (self.doff(t, rt) if bs else 0.0)   # decode term with the size term
         if r.get("stopped"):
             rt = s["ref"] if s.get("ref") in self.res else cur
             P = self.paired(self.res[rt], r, parts, off=off(rt))

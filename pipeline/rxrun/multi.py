@@ -100,7 +100,7 @@ class Multi:
         self.q = queue.Queue(); self.conns = {h["name"]: Conn(h, self.q) for h in conf["hosts"]}
         self.ref = dict(conf.get("expect") or {})
         # state
-        self.inflight = {}; self.done = {}; self.fail = {}; self.lfail = {}; self.loc = {}; self.blocked = set()
+        self.inflight = {}; self.done = {}; self.fail = {}; self.lfail = {}; self.loc = {}; self.also = {}; self.blocked = set()
         sp = f"{self.R}/state.jsonl"
         if os.path.exists(sp):
             for l in open(sp):
@@ -164,6 +164,8 @@ class Multi:
             self.log(f"{cn.name}: REFUSED: {cn.refused}"); cn.close(); return
         for n in m.get("levels_done", []):
             if n in self.byname and self.loc.get(n) != cn.name:
+                if n in self.loc and self.c.get("replicas"):               # (#183) the same level's pack on several eval hosts
+                    self.also.setdefault(n, set()).add(cn.name); continue
                 if n in self.loc: self.log(f"WARN level {n} DONE on {cn.name} and on {self.loc[n]}: keeping {self.loc[n]}"); continue
                 self.loc[n] = cn.name; self.rec({"ev": "level_at", "level": n, "host": cn.name})
         self.log(f"{cn.name}: connected (pid {m['pid']}, settings {m['settings_stamp']}, tree {m['tree_stamp']} / {m.get('tree_files')} "
@@ -226,6 +228,9 @@ class Multi:
                     need = mix_levels(ev["mix"], self.trunk)
                     where = {self.loc.get(n) for n in need}
                     if None in where: continue                         # a level not built yet
+                    if self.c.get("replicas"):                         # (#183) any host that has every level of the mix
+                        ok = set.intersection(*[{self.loc[n]} | self.also.get(n, set()) for n in need]) if need else {cn.name}
+                        if cn.name in ok: where = {cn.name}
                     if len(where) > 1:
                         if i not in self.blocked:
                             self.blocked.add(i); self.log(f"eval {ev['tag']} BLOCKED: its levels are on {sorted(where)} (copy level dirs first)")
