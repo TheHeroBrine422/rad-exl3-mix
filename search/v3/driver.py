@@ -186,8 +186,9 @@ class Driver:
             dr = self.dec_of(ref_tag)
             if self.lam_d and dms is not None and dr is not None and kind not in ("monitor", "incumbent"):
                 off += self.lam_d * (dms - dr) / (self.dec_F + dr)
-            line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name)), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
-                                  "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
+            st = self.reg.strata_of(slice_name)
+            line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name), st), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
+                                  "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag, **({"strata": st} if st else {})}
         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
              "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"dec": dms, "lam_d": self.lam_d} if dms is not None else {}), **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
@@ -213,11 +214,13 @@ class Driver:
         x, y = self.dec_of(t), self.dec_of(rt)
         return self.lam_d * (x - y) / (self.dec_F + y) if self.lam_d and x is not None and y is not None else 0.0
 
-    def prule(self, rule, off, ref_docs, parts):
-        """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice)"""
+    def prule(self, rule, off, ref_docs, parts, strata=None):
+        """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice); strata
+        (RULES-strata §4, #186): the cap is within (part, stratum) and the rule says "strata": true"""
         r = dict(rule, off=off)
-        w = SR.cap_weights([x or 0.0 for x in ref_docs], parts, self.cap) if self.cap else None
+        w = SR.cap_weights([x or 0.0 for x in ref_docs], parts, self.cap, strata=strata) if self.cap else None
         if w is not None: r["w"] = w
+        if strata is not None: r["strata"] = True
         return r
 
     def mscore(self, size, kld, bpw):
@@ -337,12 +340,12 @@ class Driver:
         return n
 
     # ------------------------------------------------------------------------------------------------ decisions
-    def paired(self, ref, cand, parts, k=None, rule=None, off=0.0):
-        P = SR.Paired(len(parts), self.prule(dict(rule or {"kind": "full"}, guard=self.rule.get("guard")), off, ref["docs"], parts))
+    def paired(self, ref, cand, parts, k=None, rule=None, off=0.0, strata=None):
+        P = SR.Paired(len(parts), self.prule(dict(rule or {"kind": "full"}, guard=self.rule.get("guard")), off, ref["docs"], parts, strata))
         for i, (a, b, p) in enumerate(zip(ref["docs"], cand["docs"], parts)):
             if k is not None and i >= k: break
             if a is None or b is None: break
-            P.add(a, b, p)
+            P.add(a, b, p, strata[i] if strata else None)
             if rule is not None and P.check(): break
         return P
 
@@ -367,7 +370,7 @@ class Driver:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
             k = sum(x is not None for x in r["docs"])
             self.log(f"stale {t} ({s['kind']}) for {size}: scored on retired slice {r['slice']} ({'stopped after ' + str(k) + ' docs' if r.get('stopped') else 'whole slice'}): fit rows only"); return
-        cur = self.inc.get(size); parts = self.reg.parts_of(r["slice"])
+        cur = self.inc.get(size); parts = self.reg.parts_of(r["slice"]); st = self.reg.strata_of(r["slice"])
         if cur is None or cur not in self.res or self.res[cur].get("slice") != r["slice"]:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None}); return
         ref = self.res[cur]
@@ -375,17 +378,17 @@ class Driver:
         off = lambda rt: bs * (s["bpw"] - self.sub[rt]["bpw"]) + (self.doff(t, rt) if bs else 0.0)   # decode term with the size term
         if r.get("stopped"):
             rt = s["ref"] if s.get("ref") in self.res else cur
-            P = self.paired(self.res[rt], r, parts, off=off(rt))
+            P = self.paired(self.res[rt], r, parts, off=off(rt), strata=st)
             d = "reject"; ndocs = P.k
         else:
             if s.get("audit") and s.get("ref") in self.res:                       # the rule after the fact
-                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule, off=off(s["ref"]))
-                Pf = self.paired(self.res[s["ref"]], r, parts, off=off(s["ref"]))
+                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule, off=off(s["ref"]), strata=st)
+                Pf = self.paired(self.res[s["ref"]], r, parts, off=off(s["ref"]), strata=st)
                 if Pe.stopped:
                     self.rec({"ev": "bias", "tag": t, "k": Pe.k, "d_prefix": Pe.d(), "d_full": Pf.d(), "se_full": Pf.se(), "off": Pe.off})
                     self.bias.append({"d_prefix": Pe.d(), "d_full": Pf.d()})
                     self.decide(t, size, "reject", Pe, r["slice"], Pe.k); return
-            P = self.paired(ref, r, parts, off=off(cur)); d = P.final(); ndocs = P.k
+            P = self.paired(ref, r, parts, off=off(cur), strata=st); d = P.final(); ndocs = P.k
         self.decide(t, size, d, P, r["slice"], ndocs)
 
     def decide(self, t, size, d, P, sl, ndocs):
@@ -420,13 +423,18 @@ class Driver:
         kq = N if full else (k // g) * g
         if kq < 3: return
         parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * N
-        pset = sorted(set(parts)) if len(set(parts)) > 1 else [None]       # one row per part (w131, #171)
+        st = self.reg.strata_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else None
+        if st:                                                             # RULES-strata §6: one row per (part, stratum)
+            groups = sorted(set(zip(parts, st)))
+        else:
+            pset = sorted(set(parts)) if len(set(parts)) > 1 else [None]   # one row per part (w131, #171)
+            groups = [(p, None) for p in pset]
         ref = s.get("ref") if s.get("ref") in self.res else None
         rr = self.res[ref] if ref and ref != t else None
-        for p in pset:
-            ix = [i for i in range(kq) if p is None or parts[i] == p]
+        for p, sg in groups:
+            ix = [i for i in range(kq) if (p is None or parts[i] == p) and (sg is None or st[i] == sg)]
             if len(ix) < 3: continue
-            label = f"{r['slice']}|" + (f"{p}|" if p else "") + ("full" if full else f"pre{kq}")
+            label = f"{r['slice']}|" + (f"{p}|" if p else "") + (f"{sg}|" if sg else "") + ("full" if full else f"pre{kq}")
             kl = sum(docs[i] for i in ix) / max(sum(pos[i] for i in ix), 1)
             se = 0.0
             if rr is not None:
@@ -675,6 +683,19 @@ class Driver:
         un-compressed by the fit's lamx, then the parts' geometric mean (the accept statistic's equal weights)"""
         md = (self.fits[self.gname[self.sub[t]["size"]]] or {}).get("model", {}); soff = md.get("slices", {}); lam = md.get("lamx", 1.0) or 1.0
         parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * len(r["docs"])
+        st = self.reg.strata_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else None
+        if st:                                              # RULES-strata §6: the strata of a part weighted by w_s (seqrule §4)
+            lv = []
+            for p in sorted(set(parts)):
+                tm = []
+                for sg in sorted({st[i] for i, q in enumerate(parts) if q == p}):
+                    ix = [i for i, q in enumerate(parts) if q == p and st[i] == sg]
+                    kp = sum(r["docs"][i] for i in ix) / max(sum(r["pos"][i] for i in ix), 1)
+                    tm.append((SR.STRATUM_W[sg], math.log(kp) - soff.get(f"{r['slice']}|{p}|{sg}|full", 0.0)))
+                ln = sum(w * x for w, x in tm) / sum(w for w, _ in tm)
+                has = any(f"{r['slice']}|{p}|{sg}|full" in soff for sg in {st[i] for i, q in enumerate(parts) if q == p})
+                lv.append(ln / lam if p == "x" and has else ln)
+            return math.exp(sum(lv) / len(lv))
         if len(set(parts)) < 2: return r["kld"] / math.exp(soff.get(f"{r['slice']}|full", 0.0))
         lv = []
         for p in sorted(set(parts)):

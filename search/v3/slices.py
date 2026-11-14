@@ -127,7 +127,8 @@ class Registry:
 
     def add(self, name, mixdir, parts=None, man=None, host_dirs=None):
         man = man or json.load(open(f"{mixdir}/kld.json"))
-        docs = [{"part": d["part"], "src": d["src"], "id": doc_id(d), "tokens": d["tokens"], "rows": d["tokens"] - 1 - d["score_from"]} for d in man["docs"]]
+        docs = [dict({"part": d["part"], "src": d["src"], "id": doc_id(d), "tokens": d["tokens"], "rows": d["tokens"] - 1 - d["score_from"]},
+                     **({"stratum": d["stratum"]} if "stratum" in d else {})) for d in man["docs"]]     # RULES-strata §1 (absent: old slice)
         self.d["slices"][name] = {"parts": parts or man.get("goldmix", {}).get("parts", {}), "mix": mixdir, "host_dirs": host_dirs or {},
                                   "docs": docs, "status": "ready", "decisions": {}, "built": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         self.save(); return self.d["slices"][name]
@@ -166,6 +167,11 @@ class Registry:
 
     def parts_of(self, name):
         return [d["part"] for d in self.d["slices"][name]["docs"]]
+
+    def strata_of(self, name):
+        """one stratum per document (RULES-strata), or None for a slice without strata (every old slice)"""
+        st = [d.get("stratum") for d in self.d["slices"][name]["docs"]]
+        return st if any(x is not None for x in st) else None
 
 
 def main(argv):

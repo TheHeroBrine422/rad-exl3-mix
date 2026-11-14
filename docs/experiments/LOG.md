@@ -7558,7 +7558,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   IQR ≈ 0.057, uniform ≈ 0.064 → this is most of our 2.5 board gap. Suspected amplifier: RULES-picks cap 0.2 per
   document + docmean guard down-weight exactly these high-KL documents. Unverified; w163 swap test pending.
 
-### 2026-11-14 5:55 PM CST · #186-01 · RULES-strata step 1: stratum labels; ver3-8k and calib counts (w164)
+### 2026-11-14 5:27 PM CST · #186-01 · RULES-strata step 1: stratum labels; ver3-8k and calib counts (w164)
 - **Status:** done · **Machine:** ds8 (CPU, nice 19) · **Code:** `search/v3/strata186.py` (rule of `run183/ml186.py`,
   whole-document tokens), `search/v3/test_strata186.py` · **Rule:** `search/v3/RULES-strata.md` §1 (committed f0db8aa5, before data)
 - **Question:** does the §1 rule pick out the six non-Latin documents of ver3-8k, and how many calib documents are N?
@@ -7570,3 +7570,28 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   is that decode boundary). Table: `data/strata186/calib-labels.tsv` (index, pool, stratum, script, tokens, gen rows).
 - **Runtime:** neither (labels only; no model, no GPU).
 - **Files:** `search/v3/strata186.py`, `search/v3/test_strata186.py`, `data/strata186/`
+
+### 2026-11-14 5:40 PM CST · #186-02 · RULES-strata step 3: the stratified accept statistic (seqrule / pickstat / driver / hosts), tests 18/18 + hostd 15/15 (w164)
+- **Status:** done (code, tests, README; live search untouched) · **Machine:** VM (tests), ds8 (hosts test copy only) ·
+  **Code:** `search/v3/seqrule.py` (+ byte copy `pipeline/rxrun/earlystop.py`), `pickstat.py`, `driver.py`, `slices.py`,
+  `pipeline/rxrun/hostd.py` (strata in the early-stop block), tests `test_picks.py` (+9), `test_hostd_es.py` (+5 strata checks)
+- **Rule:** RULES-strata §4–6 as written (no change). Choices the rule left open, stated here: (i) a stratum absent from a
+  part: the other alone (weights normalised over the strata present); (ii) the part's se = sqrt(sum_s (w_s/W)^2 se_ps^2),
+  strata taken as independent documents; (iii) se stays infinite until each present (part, stratum) has 3 documents, so no
+  early reject before that; (iv) `d_pooled` of a stratified candidate is the weighted pooled ratio (diagnostic only; the
+  decision is pmean); (v) fit rows: one per (slice, part, stratum), label `S|p|s|full` (fit.py's `part_of` reads p).
+- **Result:** unstratified path unchanged: 36,132 document steps over 300 random sequences (cap, guard, pmean / pooled,
+  summaries): 0 mismatches vs HEAD seqrule; `old_slice_unchanged_recorded` pins HEAD's numbers. Stratified: formula,
+  absent-stratum, guard, se-rule and cap-within-stratum checked against a by-hand implementation (`manual_strat`).
+  Hosts: stratified early stop stops and matches the plain run's prefix sums; length check raises.
+- **Found and fixed:** (1) `pipeline/rxrun/earlystop.py` at HEAD was the older "parts" copy (hash c26d3c5b), not the picks
+  revision that seqrule.py and ds8 run (c86c9e4e): `test_hostd_es.py`'s copy check failed on HEAD; restaged. (2)
+  `pickstat.capped` returned nan for rows with fewer than 5 documents (all fixed by the cap, zero mass left); seqrule
+  left those uncapped. Now uncapped in both (3-document test case; pickstat vs seqrule agree on 3,000 random sets, n ≥ 5).
+  No live number changes: the (b) statistic on parts of 90+ documents (monitor, finalpick) is unaffected.
+- **Not yet:** the hosts patch against the ds8 tree (step 4). ds8's driver.py is older than HEAD (no #183 decode term,
+  no monitor-rotation); the driver change here is against HEAD and is merged on the lead's side.
+- **Runtime:** neither (statistic and labels; no eval, no GPU).
+- **Files:** `search/v3/seqrule.py`, `search/v3/pickstat.py`, `search/v3/driver.py`, `search/v3/slices.py`,
+  `search/v3/test_picks.py`, `search/v3/test_hostd_es.py`, `search/v3/README.md`, `pipeline/rxrun/earlystop.py`, `pipeline/rxrun/hostd.py`
+

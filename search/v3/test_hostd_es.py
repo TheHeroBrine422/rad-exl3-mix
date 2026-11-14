@@ -11,6 +11,8 @@ bad 1.15, good 0.9) x a small per-document jitter. Checks:
   good          not stopped: the result (kld, p99, top1, docs) equals the plain score_cmd run's; progress sums == the
                 rows file's sums
   copy          pipeline/rxrun/earlystop.py == search/v3/seqrule.py (byte for byte)
+  strata        (RULES-strata, #186) the same checks with a stratum per document in the early-stop block ("strata": [..],
+                rule "strata": true): bad stops early, good runs to the end, the scored prefix == the plain run's sums
 PIPELINE_DIR: a pipeline/ tree with the patch applied."""
 import hashlib, json, os, shutil, sys, tempfile, time
 
@@ -122,6 +124,22 @@ check("good: result == plain run", all(g[k] == gp[k] for k in ("kld", "p99", "to
 check("good: no progress-mismatch warning", "WARN progress" not in open(f"{W}/a/unit-good/eval.log").read())
 here = os.path.dirname(os.path.abspath(__file__))
 check("copy: rxrun/earlystop.py == search/v3/seqrule.py", open(f"{PIPE}/rxrun/earlystop.py", "rb").read() == open(f"{here}/seqrule.py", "rb").read())
+# RULES-strata (#186): one stratum per document (every 5th document N), the rule says "strata": true
+STR = ["N" if i % 5 == 0 else "L" for i in range(len(DOCS))]
+es_s = {"rule": dict(es["rule"], strata=True), "ref": ref, "parts": [d["part"] for d in DOCS], "strata": STR}
+bs_ = run("badS", f"{W}/a", es_s); sbs = bs_["slices"]["s"]; sts = sbs.get("stopped")
+check("strata bad: stopped early", bs_["rc"] == 0 and sts is not None and sts["k"] < len(DOCS), f"stopped {sts and sts['k']} of {len(DOCS)}")
+check("strata bad: stop record carries the strata flag and per-stratum parts", sts is not None and sts.get("strata") is True
+      and set(sts["parts"]["x"]["strata"]) == {"L", "N"}, f"strata parts {sts and sorted(sts['parts']['x']['strata'])}")
+dS = sbs["parts"]["m"]["docs"]
+badSp = run("badS", f"{W}/p", prog=False)["slices"]["s"]["parts"]["m"]["docs"]          # same tag: the stub's jitter is per tag
+check("strata bad: scored prefix == the plain run's per-document sums", dS[:sts["k"]] == badSp[:sts["k"]])
+gs_ = run("goodS", f"{W}/a", es_s)["slices"]["s"]; goodSp = run("goodS", f"{W}/p", prog=False)["slices"]["s"]
+check("strata good: not stopped, result == plain run", "stopped" not in gs_ and gs_["kld"] == goodSp["kld"] and gs_["parts"]["m"]["docs"] == goodSp["parts"]["m"]["docs"])
+try:
+    run("badX", f"{W}/a", dict(es_s, strata=STR[:-1])); check("strata length check raises", False)
+except ValueError as e:
+    check("strata length check raises", "strata" in str(e))
 print("ALL PASS" if ok else "FAILED", W)
 if ok: shutil.rmtree(W)
 sys.exit(0 if ok else 1)

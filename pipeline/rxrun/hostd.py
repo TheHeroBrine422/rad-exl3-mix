@@ -339,7 +339,9 @@ def score_watch(E, mix, g, o, es, log, poll=0.5):
     from rxrun import earlystop as ES
     m = json.load(open(f"{g}/kld.json")); N = len(m["docs"]); gen = np.fromfile(f"{g}/gen.u8", np.uint8).astype(bool)
     ref, parts = es["ref"], es.get("parts") or ["all"] * N
-    if len(ref) != N or len(parts) != N: raise ValueError(f"early_stop ref / parts for {N} documents: {len(ref)} / {len(parts)}")
+    strata = es.get("strata")                                       # RULES-strata (#186): one stratum per document, or absent
+    if len(ref) != N or len(parts) != N or (strata is not None and len(strata) != N):
+        raise ValueError(f"early_stop ref / parts / strata for {N} documents: {len(ref)} / {len(parts)} / {len(strata or [])}")
     prog = o + ".progress"
     for f in (prog, prog + ".kl"):
         if os.path.exists(f): os.remove(f)
@@ -355,7 +357,7 @@ def score_watch(E, mix, g, o, es, log, poll=0.5):
             new, seen = progress_docs(g, prog, seen, gen)
             for d, v in new.items(): docs[d] = v
             while ptr < N and docs[ptr] is not None and stopped is None:
-                P.add(ref[ptr][0], docs[ptr][0], parts[ptr]); ptr += 1
+                P.add(ref[ptr][0], docs[ptr][0], parts[ptr], strata[ptr] if strata else None); ptr += 1
                 if P.check():
                     stopped = dict(P.summary(), at_s=round(time.time() - t0, 1))
                     try: os.killpg(p.pid, signal.SIGTERM)

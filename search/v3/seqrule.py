@@ -24,6 +24,13 @@ hostd change). Absent = every weight 1 = the old statistic.
 Per-document guard (RULES-picks (c)): rule key "guard": "docmean" -- at the end of a whole slice, every part's
 c_p = mean_d log(B_d / A_d) (unweighted, documents with A_d, B_d > 0) must have the same sign as its d_p, both
 size-adjusted (c_p + off vs d_p + off); otherwise the candidate is rejected (Paired.why = "guard"). No CI requirement.
+Stratified slices (RULES-strata.md, #186, w164): a document may carry a stratum ("L" or "N"; add(a, b, part, stratum)).
+Then every sum above is kept per (part, stratum): the cap is within (part, stratum) (cap_weights(strata=...)), the part's
+log ratio is d_p = sum_s w_s d_ps / sum_s w_s over the strata present (w_L = 0.961, w_N = 0.039, STRATUM_W; a stratum
+absent from a part: the other alone), its se is sqrt(sum_s (w_s / W)^2 se_ps^2), the guard's c_p is the same weighted
+mean of the per-stratum document means, and d = mean_p d_p as before. The rule must say "strata": true (the driver and
+the hosts' early-stop block do); without it the code is the old one, number for number. d_pooled() of a stratified
+candidate is the weighted pooled ratio log(sum_{p,s} w_s B / sum_{p,s} w_s A) (a diagnostic only; the decision is "pmean").
 Rules (reject early only; accept only on the whole slice: d + off < 0 and d_p + off < 0 on every part, and the guard):
     {"kind": "curve", "p": P, "warmup": W, "b0": 2, "t0": 0.1}   reject once t >= W and z > b0 ((1 - t) / (1 - t0))^P,
                                                                  t = documents scored / documents in the slice
@@ -51,13 +58,15 @@ def capped_weights(a, cap):
     return w
 
 
-def cap_weights(ref, parts, cap=0.2):
+def cap_weights(ref, parts, cap=0.2, strata=None):
     """the capped statistic's per-document weights: per part, capped_weights of the incumbent's (ref's) KL sums over the
-    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). None = no cap"""
+    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). strata (RULES-strata §4): one
+    stratum per document -> the cap is per (part, stratum) instead. None = no cap"""
     if not cap: return None
     w = [1.0] * len(ref)
-    for p in dict.fromkeys(parts):
-        ix = [i for i, q in enumerate(parts) if q == p]
+    keys = parts if strata is None else [(p, s) for p, s in zip(parts, strata)]
+    for p in dict.fromkeys(keys):
+        ix = [i for i, q in enumerate(keys) if q == p]
         for i, x in zip(ix, capped_weights([max(float(ref[i]), 0.0) for i in ix], cap)): w[i] = x
     return w
 
@@ -71,6 +80,9 @@ def boundary(rule, t):
     return INF
 
 
+STRATUM_W = {"L": 0.961, "N": 0.039}          # RULES-strata §2 (fixed for V3; the rule may override it with "sw")
+
+
 class Paired:
     """running paired statistic of one candidate vs the incumbent over the documents scored so far"""
 
@@ -82,22 +94,49 @@ class Paired:
         self.stat = rule.get("stat", "pmean"); self.w = rule.get("w"); self.guard = rule.get("guard")
         self.lr = {}                                     # part -> [sum log(B / A), documents] (the (c) guard)
         self.raw = {}                                    # part -> [sum A, sum B] unweighted ((a), reported only)
+        self.strat = bool(rule.get("strata"))            # RULES-strata: the per-(part, stratum) sums below
+        self.sw = dict(STRATUM_W, **(rule.get("sw") or {}))
+        self.ps = {}                                     # (part, stratum) -> the part's six sums, as above
+        self.lps = {}                                    # (part, stratum) -> [sum log(B / A), documents]
 
-    def add(self, a, b, part="all"):
+    def add(self, a, b, part="all", stratum=None):
+        if self.strat != (stratum is not None):
+            raise ValueError("stratified rule: every document needs its stratum" if self.strat else "stratum given to an unstratified rule (no \"strata\": true)")
+        if stratum is not None and stratum not in self.sw: raise ValueError(f"unknown stratum {stratum!r}")
         if a > 0 and b > 0: q = self.lr.setdefault(part, [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
         r = self.raw.setdefault(part, [0.0, 0.0]); r[0] += a; r[1] += b
+        if self.strat and a > 0 and b > 0: q = self.lps.setdefault((part, stratum), [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
         if self.w is not None: wk = self.w[self.k]; a, b = a * wk, b * wk
         self.k += 1; self.SA += a; self.SB += b; self.SAA += a * a; self.SBB += b * b; self.SAB += a * b
         p = self.part.setdefault(part, [0.0, 0.0, 0, 0.0, 0.0, 0.0]); p[0] += a; p[1] += b; p[2] += 1
         p[3] += a * a; p[4] += b * b; p[5] += a * b
+        if self.strat:
+            x = self.ps.setdefault((part, stratum), [0.0, 0.0, 0, 0.0, 0.0, 0.0]); x[0] += a; x[1] += b; x[2] += 1
+            x[3] += a * a; x[4] += b * b; x[5] += a * b
 
     def d_pooled(self):
+        if self.strat:
+            SA = sum(self.sw[s] * v[0] for (_, s), v in self.ps.items()); SB = sum(self.sw[s] * v[1] for (_, s), v in self.ps.items())
+            return math.log(SB / SA) if SA > 0 and SB > 0 else 0.0
         return math.log(self.SB / self.SA) if self.SA > 0 and self.SB > 0 else 0.0
+
+    def part_logr(self, p):
+        """d_p: the part's log ratio, None without positive sums; stratified: sum_s w_s d_ps / sum_s w_s (the strata present)"""
+        if not self.strat:
+            v = self.part.get(p)
+            return math.log(v[1] / v[0]) if v and v[0] > 0 and v[1] > 0 else None
+        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
+        if not ks: return None
+        W = sum(self.sw[s] for s, _ in ks)
+        return sum(self.sw[s] * math.log(v[1] / v[0]) for s, v in ks) / W
 
     def d(self):
         """the statistic's log ratio: the mean of the parts' log ratios ("pmean") or the pooled one"""
         if self.stat == "pooled": return self.d_pooled()
-        lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
+        if self.strat:
+            lr = [x for x in (self.part_logr(p) for p in self.part) if x is not None]
+        else:
+            lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
         return sum(lr) / len(lr) if lr else 0.0
 
     def da(self):
@@ -111,9 +150,19 @@ class Paired:
         su2 = SBB / (mB * mB) - 2 * SAB / (mA * mB) + SAA / (mA * mA)                  # sum of u^2 (mean u is 0)
         return math.sqrt(max(su2, 0.0) / (k - 1)) / math.sqrt(k)
 
+    def _se_part(self, p):
+        """the stratified se of part p: sqrt(sum_s (w_s / W)^2 se_ps^2) over the strata present (independent documents)"""
+        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
+        if not ks: return INF
+        W = sum(self.sw[s] for s, _ in ks)
+        ss = [self._se(v[2], v[0], v[1], v[3], v[4], v[5]) for _, v in ks]
+        if any(x == INF for x in ss): return INF
+        return math.sqrt(sum((self.sw[s] / W * x) ** 2 for (s, _), x in zip(ks, ss)))
+
     def se(self):
         if self.stat == "pooled" or not self.part: return self._se(self.k, self.SA, self.SB, self.SAA, self.SBB, self.SAB)
-        ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
+        if self.strat: ss = [self._se_part(p) for p in self.part]
+        else: ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
         if any(x == INF for x in ss): return INF
         return math.sqrt(sum(x * x for x in ss)) / len(ss)
 
@@ -134,13 +183,24 @@ class Paired:
         return self.stopped
 
     def docmean(self, part):
-        """(c): the part's mean per-document log ratio (unweighted; None without documents)"""
+        """(c): the part's mean per-document log ratio (unweighted; None without documents). Stratified (RULES-strata §5):
+        the w_s-weighted mean of its strata's document means"""
+        if self.strat:
+            ks = [(s, v) for (q, s), v in self.lps.items() if q == part and v[1]]
+            if not ks: return None
+            W = sum(self.sw[s] for s, _ in ks)
+            return sum(self.sw[s] * v[0] / v[1] for s, v in ks) / W
         q = self.lr.get(part)
         return q[0] / q[1] if q and q[1] else None
 
     def guard_ok(self):
         """the (c) guard: every part's size-adjusted per-document mean has the sign of its size-adjusted (b) log ratio"""
         if self.guard != "docmean": return True
+        if self.strat:
+            for p in self.part:
+                c, dp = self.docmean(p), self.part_logr(p)
+                if c is None or dp is None or (c + self.off < 0) != (dp + self.off < 0): return False
+            return True
         for p, v in self.part.items():
             c = self.docmean(p)
             if c is None or v[0] <= 0 or v[1] <= 0: return False
@@ -151,17 +211,29 @@ class Paired:
         """after the whole slice: "accept" iff the pooled and every part's (size-adjusted) log ratio are < 0 and the
         guard holds (self.why = "guard" when only the guard rejects)"""
         if self.stopped: return self.stopped
-        parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
+        if self.strat: parts_ok = all(self.part_logr(p) is not None and self.part_logr(p) + self.off < 0 for p in self.part)
+        else: parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
         if not (self.da() < 0 and parts_ok): return "reject"
         if self.guard_ok(): return "accept"
         self.why = "guard"; return "reject"
 
     def summary(self):
-        return {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
-                "capped": self.w is not None, "guard": self.guard,
-                "parts": {p: {"logr": math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None, "docmean": self.docmean(p),
-                              "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
-                          for p, v in self.part.items()}}
+        parts = {}
+        for p, v in self.part.items():
+            e = {"logr": self.part_logr(p) if self.strat else (math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None), "docmean": self.docmean(p),
+                 "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
+            if self.strat:
+                e["strata"] = {s: {"logr": math.log(x[1] / x[0]) if x[0] > 0 and x[1] > 0 else None, "docmean": self.docmean_ps(p, s), "docs": x[2]}
+                               for (q, s), x in self.ps.items() if q == p}
+            parts[p] = e
+        out = {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
+               "capped": self.w is not None, "guard": self.guard, "parts": parts}
+        if self.strat: out["strata"] = True                # (absent for old slices: their summary is unchanged)
+        return out
+
+    def docmean_ps(self, part, s):
+        q = self.lps.get((part, s))
+        return q[0] / q[1] if q and q[1] else None
 
 
 def interleave(nx, nc):

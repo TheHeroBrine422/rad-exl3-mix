@@ -90,6 +90,23 @@ b_default, b_delta, b_range, warmup, bytes_offset0, topn (5), monitor {name, gol
 (`{in}` `{out}`), fit_opts (tau 0.02, beta, ...), prior_obs (rows of the calibration swaps, obs JSONL), init
 ({size: assignment JSON | "nearest"}), init_head / init_emb, size_weights, go / dry.
 
+## Stratified slices (RULES-strata, #186, w164)
+- Rule: `RULES-strata.md` (committed f0db8aa5, before data). A document's stratum: `strata186.py` (N when more than 50 %
+  of its letters are non-Latin; script = the commonest). Labels are written to a copy of a golden's kld.json, never in place.
+- Statistic (`seqrule.py`, `pickstat.py`, `driver.py`): per (part, stratum) sums; the cap inside (part, stratum);
+  d_p = sum_s w_s d_ps / sum_s w_s (w_L 0.961, w_N 0.039; a stratum absent from a part: the other alone); the guard's
+  c_p the same weighted mean; d = mean_p d_p. A rule says `"strata": true`; the driver writes it, with the stratum of
+  each document in the early-stop block (`"strata": [...]`), and `pipeline/rxrun/hostd.py` passes it to `Paired.add`.
+  Fit rows: one per (slice, part, stratum), labelled `S|p|s|full` / `S|p|s|pre<k>` (`fit.py`'s `part_of` still reads p).
+- Old slices (no stratum field): the same numbers as before (`test_picks.py` `old_slice_unchanged_recorded` pins them
+  to the HEAD values; an unstratified sequence of 36,132 steps gives identical decisions, z and summaries).
+- `pickstat.capped`: a row with fewer than 1 / cap copies, or whose copies are all over the cap, is uncapped (was nan).
+- Tests: `python3 -I search/v3/test_picks.py` (18 / 18), `test_strata186.py` (pure checks; with `STRATA_GOLD` and
+  `STRATA_TOK` the ver3-8k check), `python3 -I search/v3/test_hostd_es.py pipeline` (the stratified early stop too).
+- `pipeline/rxrun/earlystop.py` is the byte copy of `search/v3/seqrule.py` (the test checks it). At HEAD the copy was
+  the older "parts" revision: it is restaged here. The hosts patch for ds8: `earlystop-strata.patch` (see its README
+  section below).
+
 ## Tests (11-12)
 - radiance `kld_test` (12 cases, incl. `progress_lines_follow_documents_and_leave_the_rows_unchanged`) and
   `config_test` (68) PASS (host build, colo).
