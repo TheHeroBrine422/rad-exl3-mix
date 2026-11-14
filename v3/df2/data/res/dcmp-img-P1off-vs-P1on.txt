@@ -1,0 +1,10 @@
+hopper-describe: identical for 64 of 64 steps
+hopper-who: identical for 37 of 64 steps
+gull-describe: identical for 64 of 64 steps
+gull-what: identical for 12 of 64 steps
+lecture-describe: identical for 64 of 64 steps
+dashboard-read: identical for 45 of 64 steps
+dashboard-describe: identical for 64 of 64 steps
+quad-colors: identical for 64 of 64 steps
+red-wide: identical for 64 of 64 steps
+steps compared 478: per-step KL(A||B) mean 8.86e-05, median 1.06e-05, max 0.0024; identical tokens 478 / 576 (0.830); prompts identical to the end 6 / 9

@@ -1,0 +1,11 @@
+I drafter  /data/q27/w153/models/z-lab-Qwen3.8-27B-DFlash2 (DFlash2DraftModel)
+I source   models/qwen38-27b-bf16 (1280 tensors)
+I arch     qwen35, quant exl3
+I device: AQL backend, 8 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201 4:gfx1201 5:gfx1201 6:gfx1201 7:gfx1201]
+I recipe   12 rule(s)
+I declaring at max_spec 7, the only depth this drafter serves
+E declare: weight 'dflash.fc.weight' is declared fp8_e4m3, and 'dflash.fc.weight' holds codes as bf16: only an exact widening or narrowing is done at load; anything else is a quantisation, which a recipe does before the container is written (spec §4.4)
+E declare: weight 'dflash.fc.scale' takes plane 'scale' of 'dflash.fc.weight', which is bf16 and has no such plane
+E qwen35_exl3: rad_arch_declare returned invalid argument
+E     weight 'dflash.fc.weight' is declared fp8_e4m3, and 'dflash.fc.weight' holds codes as bf16: only an exact widening or narrowing is done at load; anything else is a quantisation, which a recipe does before the container is written (spec §4.4)
+E     weight 'dflash.fc.scale' takes plane 'scale' of 'dflash.fc.weight', which is bf16 and has no such plane

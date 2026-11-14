@@ -1,0 +1,9 @@
+hopper-describe 64 tokens, prompt 324
+hopper-who 64 tokens, prompt 336
+gull-describe 64 tokens, prompt 788
+gull-what 64 tokens, prompt 797
+lecture-describe 64 tokens, prompt 320
+dashboard-read 64 tokens, prompt 644
+dashboard-describe 64 tokens, prompt 628
+quad-colors 64 tokens, prompt 99
+red-wide 64 tokens, prompt 528

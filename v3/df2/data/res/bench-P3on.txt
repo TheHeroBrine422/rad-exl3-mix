@@ -1,0 +1,8 @@
+P3on ctx 0 run 0 (warm): prompt 103 ttft 131 ms, client 18.87 ms/tok, server 45.38 ms/step x 2.42 tok
+P3on ctx 0 run 1: prompt 102 ttft 132 ms, client 20.20 ms/tok, server 42.56 ms/step x 2.12 tok
+P3on ctx 0 run 2: prompt 104 ttft 132 ms, client 17.04 ms/tok, server 42.59 ms/step x 2.51 tok
+P3on ctx 0 run 3: prompt 102 ttft 133 ms, client 17.08 ms/tok, server 42.70 ms/step x 2.50 tok
+P3on ctx 8k run 0 (warm): prompt 8244 ttft 3385 ms, client 8.52 ms/tok, server 43.98 ms/step x 5.50 tok
+P3on ctx 8k run 1: prompt 8244 ttft 3390 ms, client 8.49 ms/tok, server 43.85 ms/step x 5.50 tok
+P3on ctx 8k run 2: prompt 8242 ttft 3394 ms, client 8.48 ms/tok, server 43.78 ms/step x 5.50 tok
+P3on ctx 8k run 3: prompt 8241 ttft 3399 ms, client 8.50 ms/tok, server 43.91 ms/step x 5.50 tok

@@ -1,0 +1,4 @@
+/data/q27/w153/packs/P1-mx-rr.rad: 411 weight(s); dflash. 2,946,625,536 B (2.744 GiB), v. 921,894,912 B (0.859 GiB)
+/data/q27/w153/ref/qwen3.8-27b-iq4r-s-v4.rad: 410 weight(s); dflash. 1,655,361,536 B (1.542 GiB), v. 921,894,912 B (0.859 GiB)
+common 410, byte-identical 410, differ 0, only A 1, only B 0
+  ONLY A dflash.rerank_head.weight

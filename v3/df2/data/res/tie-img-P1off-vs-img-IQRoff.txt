@@ -1,0 +1,9 @@
+hopper-describe: step 19: A ' likely' B ' identified'; top-1 - top-2 logprob margin A 0.8314 B 0.0656
+hopper-who: step 13: A ' officer' B ' uniform'; top-1 - top-2 logprob margin A 0.1059 B 0.0958
+gull-describe: step 22: A ' vivid' B ' vibrant'; top-1 - top-2 logprob margin A 0.2020 B 0.2499
+gull-what: step 10: A '**' B '**.'; top-1 - top-2 logprob margin A 0.6394 B 0.1000
+lecture-describe: step 8: A ' featuring' B ' depicting'; top-1 - top-2 logprob margin A 0.6346 B 0.1852
+dashboard-read: step 3: A ' screenshot' B ' provided'; top-1 - top-2 logprob margin A 1.0343 B 0.2321
+dashboard-describe: step 1: A ' image' B ' is'; top-1 - top-2 logprob margin A 0.6401 B 1.0194
+quad-colors: step 15: A "'s" B '’s'; top-1 - top-2 logprob margin A 1.1016 B 0.5100
+red-wide: step 8: A ' filled' B '.'; top-1 - top-2 logprob margin A 1.2061 B 0.9311

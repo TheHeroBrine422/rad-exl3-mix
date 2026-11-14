@@ -1,0 +1,2 @@
+d00: step 75: A 'sk' B 'legal'; top-1 - top-2 logprob margin A 0.0301 B 0.0253
+d04: step 2: A ' ' B ' reference'; top-1 - top-2 logprob margin A 0.0159 B 0.0169

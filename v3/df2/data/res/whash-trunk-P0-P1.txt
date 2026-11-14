@@ -1,0 +1,4 @@
+/data/q27/w153/packs/P0-text.rad: 787 weight(s); blk. 12,615,022,592 B (11.749 GiB), output 636,469,248 B (0.593 GiB), token_embd 2,542,796,800 B (2.368 GiB)
+/data/q27/w153/packs/P1-mx-rr.rad: 787 weight(s); blk. 12,615,024,640 B (11.749 GiB), output 636,469,248 B (0.593 GiB), token_embd 2,542,796,800 B (2.368 GiB)
+common 787, byte-identical 786, differ 1, only A 0, only B 0
+  DIFF blk.63.ffn_norm.weight A (10240, '19008b67d6ad56bd') B (12288, 'df44500d234c1682')

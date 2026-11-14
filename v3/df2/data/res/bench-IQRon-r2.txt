@@ -1,0 +1,8 @@
+IQRon-r2 ctx 0 run 0 (warm): prompt 107 ttft 213 ms, client 14.08 ms/tok, server 34.19 ms/step x 2.47 tok
+IQRon-r2 ctx 0 run 1: prompt 104 ttft 121 ms, client 13.48 ms/tok, server 34.02 ms/step x 2.53 tok
+IQRon-r2 ctx 0 run 2: prompt 103 ttft 121 ms, client 14.55 ms/tok, server 34.02 ms/step x 2.34 tok
+IQRon-r2 ctx 0 run 3: prompt 105 ttft 121 ms, client 13.66 ms/tok, server 34.14 ms/step x 2.50 tok
+IQRon-r2 ctx 8k run 0 (warm): prompt 8244 ttft 3198 ms, client 7.94 ms/tok, server 35.17 ms/step x 4.71 tok
+IQRon-r2 ctx 8k run 1: prompt 8244 ttft 3169 ms, client 7.95 ms/tok, server 35.20 ms/step x 4.86 tok
+IQRon-r2 ctx 8k run 2: prompt 8243 ttft 3788 ms, client 7.93 ms/tok, server 35.12 ms/step x 4.86 tok
+IQRon-r2 ctx 8k run 3: prompt 8247 ttft 3175 ms, client 7.95 ms/tok, server 35.21 ms/step x 4.71 tok

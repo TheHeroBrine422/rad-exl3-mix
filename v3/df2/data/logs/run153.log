@@ -1,0 +1,64 @@
+00:35:21 start pack (pid 1172247)
+00:36:24 pack P0-text: start
+00:39:02 pack P0-text: rc 0 15802677248 B
+00:45:33 pack P1-mx-rr: start
+00:45:52 start pack (pid 1175736)
+00:46:17 pack P1-mx-rr: start
+00:50:10 pack P1-mx-rr: rc 0 19671199744 B
+00:50:10 pack P2-fp8-rr: start
+00:53:59 pack P2-fp8-rr: rc 0 20482490368 B
+00:53:59 pack P3-mx: start
+00:57:56 pack P3-mx: rc 0 18379935744 B
+00:59:31 whash: /data/q27/w153/packs/P1-mx-rr.rad: 787 weight(s); blk. 12,615,024,640 B (11.749 GiB), output 636,469,248 B (0.593 GiB), token_embd 2,542,796,800 B (2.368 GiB) | common 410, byte-identical 410, differ 0, only A 1, only B 0
+00:59:31 END pack
+03:23:38 start pack kld serve cmp (pid 1250734)
+03:23:38 pack P4-bf16-rr: start
+03:23:39 pack P4-bf16-rr: rc 1  B
+03:23:39 whash: /data/q27/w153/packs/P1-mx-rr.rad: 787 weight(s); blk. 12,615,024,640 B (11.749 GiB), output 636,469,248 B (0.593 GiB), token_embd 2,542,796,800 B (2.368 GiB) | common 410, byte-identical 410, differ 0, only A 1, only B 0
+03:23:39 card 7 + ram (shared) held
+03:23:39 kld T-P0
+03:23:51 kld T-P0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:23:51 kld D-P0
+03:24:03 kld D-P0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:24:03 kld D-P1-s0
+03:24:16 kld D-P1-s0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:24:16 kld D-P1
+03:24:28 kld D-P1 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:24:28 card 7 released
+03:24:28 card 7 + ram (shared) held
+03:24:28 serve P1off
+03:26:28 serve P1off: 0 image errors, 0 text errors; P1off ctx 8k run 3: prompt 8245 ttft 3337 ms, client 32.75 ms/tok, server 32.77 ms/step x 1.00 tok
+03:26:29 serve P1on
+03:27:37 serve P1on: 0 image errors, 0 text errors; P1on ctx 8k run 3: prompt 8246 ttft 3385 ms, client 8.48 ms/tok, server 43.81 ms/step x 6.17 tok
+03:27:39 serve IQRoff
+03:29:06 serve IQRoff: 0 image errors,  text errors; IQRoff ctx 8k run 3: prompt 8244 ttft 3200 ms, client 26.67 ms/tok, server 26.68 ms/step x 1.00 tok
+03:29:07 serve IQRon
+03:30:25 serve IQRon: 0 image errors, 0 text errors; IQRon ctx 8k run 3: prompt 8246 ttft 3207 ms, client 7.97 ms/tok, server 35.28 ms/step x 4.86 tok
+03:30:26 serve P2on
+03:31:23 serve P2on:  image errors, 0 text errors; P2on ctx 8k run 3: prompt 8240 ttft 3401 ms, client 7.22 ms/tok, server 44.74 ms/step x 6.80 tok
+03:31:24 serve P3on
+03:32:24 serve P3on:  image errors, 0 text errors; P3on ctx 8k run 3: prompt 8241 ttft 3399 ms, client 8.50 ms/tok, server 43.91 ms/step x 5.50 tok
+03:32:25 serve P4on
+03:32:28 serve P4on: no health (E /data/q27/w153/packs/P4-bf16-rr.rad: No such file or directory)
+03:32:28 serve P1on-r2
+03:33:16 serve P1on-r2:  image errors,  text errors; P1on-r2 ctx 8k run 3: prompt 8242 ttft 3389 ms, client 8.48 ms/tok, server 43.85 ms/step x 5.50 tok
+03:33:17 serve IQRon-r2
+03:34:19 serve IQRon-r2:  image errors,  text errors; IQRon-r2 ctx 8k run 3: prompt 8247 ttft 3175 ms, client 7.95 ms/tok, server 35.21 ms/step x 4.71 tok
+03:34:20 card 7 released
+03:34:21 cmp done
+03:34:21 END pack kld serve cmp
+03:39:40 start reb cmp (pid 1275437)
+03:39:40 card 7 + ram (shared) held
+03:39:40 kld R-P0
+03:39:54 kld R-P0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:39:54 kld R-P1-s0
+03:40:08 kld R-P1-s0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:40:08 kld R-P1
+03:40:22 kld R-P1 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+03:40:22 serve R-P1off
+03:41:59 serve R-P1off:  image errors, 0 text errors; R-P1off ctx 8k run 3: prompt 8241 ttft 3302 ms, client 31.35 ms/tok, server 31.35 ms/step x 1.00 tok
+03:42:00 serve R-P1on
+03:43:08 serve R-P1on: 0 image errors, 0 text errors; R-P1on ctx 8k run 3: prompt 8243 ttft 3350 ms, client 8.35 ms/tok, server 43.15 ms/step x 5.50 tok
+03:43:09 card 7 released
+03:43:10 cmp done
+03:43:10 END reb cmp

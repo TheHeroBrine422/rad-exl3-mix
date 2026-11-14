@@ -1,0 +1,3 @@
+hopper-who: step 37: A ' with' B '\n'; top-1 - top-2 logprob margin A 0.0188 B 0.0204
+gull-what: step 12: A 'specific' B 'or'; top-1 - top-2 logprob margin A 0.0243 B 0.0229
+dashboard-read: step 45: A ' metrics' B ' summary'; top-1 - top-2 logprob margin A 0.0129 B 0.0228

@@ -4,6 +4,36 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 9:50 PM CST · #180 · DFlash2 drafter + vision tower in qwen35_exl3: on a V3 pack, KLD rows byte-identical with the drafter on or off, greedy splits only at near-ties (as IQR-V4 S), our drafter accepts +10–20 % over IQR's but e2e ctx 0 −5 to −12 % / 8k at par to −6 % (the trunk's decode); tower = IQR's bytes, images answer sensibly; bf16 drafter not servable (w153)
+- **Status:** done (fork commit for the lead to merge; not pushed) · **Machine:** ds8 HIP 7 · **Code:** radiance-hero
+  `qc-exl3-v3-df2` 9f0a059 (on qc-exl3-v3 e054e71; was 4b124c7 on 179220f); `v3/df2/` (`build153.sh`, `build153r.sh`,
+  `run153.sh`, `recipes/`, `whash.py`, `tiemargin.py`, `bsum.py`, `README.md`) · **Data:** `v3/df2/data/` · **Brief:**
+  `rad-local/workers/instr3/w153.md`
+- **What changed:** DFlash2 (taps 5/19/33/47/61 → dflash_src, drafter from the container's draft model) and the tower
+  were already declared since 8afc1fc. New: candidates rescored against a copy of the **original bf16 lm_head**
+  (`dflash.rerank_head.weight`, recipe line, int8 g128 or block fp8; absent = coarse head's own scores, as before);
+  the draft head maps the checkpoint's lm_head too; startup note names grid + rescoring; the "no MTP / vision" comment
+  lifted; host test (qwen35_exl3_test ALL PASSED on ds8, before and after the rebase; exl3i / exl3quant host tests too).
+- **Pack:** K4.125 mul1i8 trunk (a8g128) + R16s003 K4 head + bf16 embedding; P1 = + tower + z-lab DFlash2 with IQR-V4
+  S's drafter lines (MXFP4, u2 head) + int8 rerank head; P2 fp8 drafter; P3 no rerank head. Trunk / head / embedding
+  P0 vs P1 byte-identical (787 weights); tower and drafter byte-identical to IQR-V4 S's (410 weights). Bytes (not
+  size): tower 0.859 GiB, drafter 1.542 GiB + rerank head 1.203 GiB; VRAM +2.75 GiB (P1) → KV 17.51 → 14.65 GiB.
+- **(1) off = today:** golden-search27c-c-cut13 KLD rows sha bb6b5a8a8dd77831 identical across w147's home on P0, this
+  branch on P0 / P1 spec 0 / P1 depth 7, and the rebased build on the same three (KLD 0.07696, top-1 94.75 %).
+- **(2) exactness:** greedy spec on vs off: 6 / 8 text, 6 / 9 image prompts identical to the end; every split at a
+  near-tie on both sides (top-1 − top-2 0.013–0.030 nats: M = 8 verify vs M = 1 decode numerics); IQR-V4 S the same
+  (7 / 9, 0.013–0.077). P1 / P2 / P3 on give the same tokens (1024 / 1024): the drafter never changes output.
+- **Speed** (iqrcmp bench, 2 rounds): tok/step ctx 0 V3 2.75–2.99 vs IQR 2.46–2.49, 8k 5.7–5.9 vs 4.8; step on / off
+  V3 42.6 / 31.6 ms vs IQR 34.1 / 25.7 (verify ×1.35 both); e2e ctx 0 63.6–69.0 vs 72.0–72.8 tok/s, 8k 117.9–125.1 vs
+  125.5–125.9 (drafter ×2.0–2.2 at ctx 0, ×3.9–4.1 at 8k over our spec-off). Rerank P1 vs P3 +16–26 % tok/step at
+  ctx 0; fp8 drafter (P2) ≈ P1 at ctx 0, 6.37 tok/step at 8k (+0.8 GiB). Small samples: < ~10 % is noise.
+- **(3) vision:** 9 image prompts answer sensibly on the V3 pack (tower + projector bf16 = IQR's bytes); outputs vs
+  IQR differ as the trunks do (first splits at margins 0.07–1.2).
+- **bf16 drafter:** refused at declare: the stock block runs its linears fp8a8 / mxfp4a8 only; block fp8 (P2) is the
+  nearest. A bf16 path = a shared `arch/common/rad_block_dflash2.h` change (lead's call).
+- **Recipe / radmix:** `--draft-model` + the drafter lines (`v3/df2/README.md`) with a home carrying this
+  qwen35_exl3; radmix mixes inherit both from a BASE packed that way (metadata comes from BASE).
+
 ### 2026-11-13 6:50 PM CST · #177 · w139 close-out, stages 2–3 + search curve: hash / mad = mul1i8 in real 27B KL (trunk K2.625 ×1.006, K4.125 ×1.011 pooled, head 3-seed ×1.002–1.003); longer state / beam worth ≤ 1.4–2.3 % MSE (≤ 0.02 bpw) at ×4–150 encode; libquant (IQR-V4-form) heads ×2.6–3.9 our R16 head, mad ×1.03 mul1i8 inside libquant (w139)
 - **Status:** done (the user decided 7:05 PM CST: mad everywhere, #177-02 / #177-03; this entry records w139's data behind
   it and what finished after the lead took over) · **Machine:** ds8 (head donors, stage-3 scores, libquant heads cards

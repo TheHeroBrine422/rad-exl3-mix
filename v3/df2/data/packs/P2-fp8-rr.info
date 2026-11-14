@@ -1,0 +1,801 @@
+/data/q27/w153/packs/P2-fp8-rr.rad
+  format        RAD2, 19.08 GiB, little-endian
+  architecture  qwen35
+  model         qwen35
+  source quant  exl3
+  recipe        19 line(s) -- --recipe prints it
+  created by    rad-convert Nov 13 2026 from models/qwen38-27b-bf16
+
+  section          offset        bytes    count
+  strings            248     3.02 MiB        -
+  metadata       3165968    11.88 KiB      507
+  directory      3178136   159.11 KiB     1198
+  planes         3341064    36.05 KiB     2307
+  encodings      3377976     6.66 KiB       12
+  vocab          3384792     4.02 MiB        -
+  profile        7598440          0 B        0
+  data           8388608    19.07 GiB     1198
+
+metadata (507)
+  n_layers                                      64
+  n_embd                                        5120
+  n_head                                        24
+  n_head_kv                                     4
+  head_dim                                      256
+  n_ff                                          17408
+  n_vocab                                       248320
+  n_ctx_train                                   262144
+  n_expert                                      0
+  n_expert_used                                 0
+  n_expert_shared                               0
+  rms_eps                                       1e-06
+  rope_theta                                    1e+07
+  architectures                                 Qwen3_5ForConditionalGeneration
+  image_token_id                                248056
+  language_model_only                           0
+  model_type                                    qwen3_5
+  text_config.attention_bias                    0
+  text_config.attention_dropout                 0
+  text_config.attn_output_gate                  1
+  text_config.bos_token_id                      248044
+  text_config.dtype                             bfloat16
+  text_config.eos_token_id                      248044
+  text_config.full_attention_interval           4
+  text_config.head_dim                          256
+  text_config.hidden_act                        silu
+  text_config.hidden_size                       5120
+  text_config.initializer_range                 0.02
+  text_config.intermediate_size                 17408
+  text_config.layer_types                       linear_attention linear_attention linear_attention full_attention linear_attention linear_attention linear_attention ful...
+  text_config.linear_conv_kernel_dim            4
+  text_config.linear_key_head_dim               128
+  text_config.linear_num_key_heads              16
+  text_config.linear_num_value_heads            48
+  text_config.linear_value_head_dim             128
+  text_config.mamba_ssm_dtype                   float32
+  text_config.max_position_embeddings           262144
+  text_config.model_type                        qwen3_5_text
+  text_config.mtp_num_hidden_layers             1
+  text_config.mtp_use_dedicated_embeddings      0
+  text_config.num_attention_heads               24
+  text_config.num_hidden_layers                 64
+  text_config.num_key_value_heads               4
+  text_config.output_gate_type                  swish
+  text_config.partial_rotary_factor             0.25
+  text_config.rms_norm_eps                      9.9999999999999995e-07
+  text_config.rope_parameters.mrope_interleaved  1
+  text_config.rope_parameters.mrope_section     11 11 10
+  text_config.rope_parameters.partial_rotary_factor  0.25
+  text_config.rope_parameters.rope_theta        10000000
+  text_config.rope_parameters.rope_type         default
+  text_config.tie_word_embeddings               0
+  text_config.use_cache                         1
+  text_config.vocab_size                        248320
+  tie_word_embeddings                           0
+  transformers_version                          5.8.0.dev0
+  video_token_id                                248057
+  vision_config.deepstack_visual_indexes        
+  vision_config.depth                           27
+  vision_config.hidden_act                      gelu_pytorch_tanh
+  vision_config.hidden_size                     1152
+  vision_config.in_channels                     3
+  vision_config.initializer_range               0.02
+  vision_config.intermediate_size               4304
+  vision_config.model_type                      qwen3_5
+  vision_config.num_heads                       16
+  vision_config.num_position_embeddings         2304
+  vision_config.out_hidden_size                 5120
+  vision_config.patch_size                      16
+  vision_config.spatial_merge_size              2
+  vision_config.temporal_patch_size             2
+  vision_end_token_id                           248054
+  vision_start_token_id                         248053
+  attention_bias                                0
+  attention_dropout                             0
+  attn_output_gate                              1
+  bos_token_id                                  248044
+  dtype                                         bfloat16
+  eos_token_id                                  248044
+  full_attention_interval                       4
+  head_dim                                      256
+  hidden_act                                    silu
+  hidden_size                                   5120
+  initializer_range                             0.02
+  intermediate_size                             17408
+  layer_types                                   linear_attention linear_attention linear_attention full_attention linear_attention linear_attention linear_attention ful...
+  linear_conv_kernel_dim                        4
+  linear_key_head_dim                           128
+  linear_num_key_heads                          16
+  linear_num_value_heads                        48
+  linear_value_head_dim                         128
+  mamba_ssm_dtype                               float32
+  max_position_embeddings                       262144
+  mtp_num_hidden_layers                         1
+  mtp_use_dedicated_embeddings                  0
+  num_attention_heads                           24
+  num_hidden_layers                             64
+  num_key_value_heads                           4
+  output_gate_type                              swish
+  partial_rotary_factor                         0.25
+  rms_norm_eps                                  9.9999999999999995e-07
+  rope_parameters.mrope_interleaved             1
+  rope_parameters.mrope_section                 11 11 10
+  rope_parameters.partial_rotary_factor         0.25
+  rope_parameters.rope_theta                    10000000
+  rope_parameters.rope_type                     default
+  use_cache                                     1
+  vocab_size                                    248320
+  generation.bos_token_id                       248044
+  generation.do_sample                          1
+  generation.eos_token_id                       248046 248044
+  generation.pad_token_id                       248044
+  generation.temperature                        1
+  generation.top_k                              20
+  generation.top_p                              0.94999999999999996
+  preprocessor.image_mean                       0.5 0.5 0.5
+  preprocessor.image_processor_type             Qwen2VLImageProcessorFast
+  preprocessor.image_std                        0.5 0.5 0.5
+  preprocessor.merge_size                       2
+  preprocessor.patch_size                       16
+  preprocessor.processor_class                  Qwen3VLProcessor
+  preprocessor.size.longest_edge                16777216
+  preprocessor.size.shortest_edge               65536
+  preprocessor.temporal_patch_size              2
+  video_preprocessor.image_mean                 0.5 0.5 0.5
+  video_preprocessor.image_std                  0.5 0.5 0.5
+  video_preprocessor.merge_size                 2
+  video_preprocessor.patch_size                 16
+  video_preprocessor.processor_class            Qwen3VLProcessor
+  video_preprocessor.size.longest_edge          25165824
+  video_preprocessor.size.shortest_edge         4096
+  video_preprocessor.temporal_patch_size        2
+  video_preprocessor.video_processor_type       Qwen3VLVideoProcessor
+  draft.architectures                           DFlash2DraftModel
+  draft.attention_bias                          0
+  draft.attention_dropout                       0
+  draft.dflash_config.block_size                8
+  draft.dflash_config.conv_group_size           16
+  draft.dflash_config.conv_kernel_size          2
+  draft.dflash_config.mask_token_id             248070
+  draft.dflash_config.selector_rank             256
+  draft.dflash_config.selector_top_k            16
+  draft.dflash_config.target_layer_ids          5 19 33 47 61
+  draft.dtype                                   bfloat16
+  draft.eos_token_id                            248044
+  draft.head_dim                                128
+  draft.hidden_act                              silu
+  draft.hidden_size                             5120
+  draft.initializer_range                       0.02
+  draft.intermediate_size                       17408
+  draft.is_causal                               0
+  draft.layer_types                             sliding_attention sliding_attention sliding_attention sliding_attention sliding_attention
+  draft.max_position_embeddings                 262144
+  draft.max_window_layers                       5
+  draft.model_type                              qwen3
+  draft.num_attention_heads                     32
+  draft.num_hidden_layers                       5
+  draft.num_key_value_heads                     8
+  draft.num_target_layers                       64
+  draft.pad_token_id                            248044
+  draft.rms_norm_eps                            9.9999999999999995e-07
+  draft.rope_parameters.rope_theta              10000000
+  draft.rope_parameters.rope_type               default
+  draft.sliding_window                          2048
+  draft.tie_word_embeddings                     0
+  draft.transformers_version                    5.15.0
+  draft.use_cache                               1
+  draft.use_sliding_window                      1
+  draft.vocab_size                              248320
+  quantization_config.quant_method              exl3
+  exl3.act.blk.0.ssm_qkv.weight                 a8g128
+  exl3.act.blk.0.ssm_z.weight                   a8g128
+  exl3.act.blk.0.ssm_out.weight                 a8g128
+  exl3.act.blk.0.ffn_gate_up.weight             a8g128
+  exl3.act.blk.0.ffn_down.weight                a8g128
+  exl3.act.blk.1.ssm_qkv.weight                 a8g128
+  exl3.act.blk.1.ssm_z.weight                   a8g128
+  exl3.act.blk.1.ssm_out.weight                 a8g128
+  exl3.act.blk.1.ffn_gate_up.weight             a8g128
+  exl3.act.blk.1.ffn_down.weight                a8g128
+  exl3.act.blk.2.ssm_qkv.weight                 a8g128
+  exl3.act.blk.2.ssm_z.weight                   a8g128
+  exl3.act.blk.2.ssm_out.weight                 a8g128
+  exl3.act.blk.2.ffn_gate_up.weight             a8g128
+  exl3.act.blk.2.ffn_down.weight                a8g128
+  exl3.act.blk.3.attn_qg.weight                 a8g128
+  exl3.act.blk.3.attn_k.weight                  a8g128
+  exl3.act.blk.3.attn_v.weight                  a8g128
+  exl3.act.blk.3.attn_output.weight             a8g128
+  exl3.act.blk.3.ffn_gate_up.weight             a8g128
+  exl3.act.blk.3.ffn_down.weight                a8g128
+  exl3.act.blk.4.ssm_qkv.weight                 a8g128
+  exl3.act.blk.4.ssm_z.weight                   a8g128
+  exl3.act.blk.4.ssm_out.weight                 a8g128
+  exl3.act.blk.4.ffn_gate_up.weight             a8g128
+  exl3.act.blk.4.ffn_down.weight                a8g128
+  exl3.act.blk.5.ssm_qkv.weight                 a8g128
+  exl3.act.blk.5.ssm_z.weight                   a8g128
+  exl3.act.blk.5.ssm_out.weight                 a8g128
+  exl3.act.blk.5.ffn_gate_up.weight             a8g128
+  exl3.act.blk.5.ffn_down.weight                a8g128
+  exl3.act.blk.6.ssm_qkv.weight                 a8g128
+  exl3.act.blk.6.ssm_z.weight                   a8g128
+  exl3.act.blk.6.ssm_out.weight                 a8g128
+  exl3.act.blk.6.ffn_gate_up.weight             a8g128
+  exl3.act.blk.6.ffn_down.weight                a8g128
+  exl3.act.blk.7.attn_qg.weight                 a8g128
+  exl3.act.blk.7.attn_k.weight                  a8g128
+  exl3.act.blk.7.attn_v.weight                  a8g128
+  exl3.act.blk.7.attn_output.weight             a8g128
+  exl3.act.blk.7.ffn_gate_up.weight             a8g128
+  exl3.act.blk.7.ffn_down.weight                a8g128
+  exl3.act.blk.8.ssm_qkv.weight                 a8g128
+  exl3.act.blk.8.ssm_z.weight                   a8g128
+  exl3.act.blk.8.ssm_out.weight                 a8g128
+  exl3.act.blk.8.ffn_gate_up.weight             a8g128
+  exl3.act.blk.8.ffn_down.weight                a8g128
+  exl3.act.blk.9.ssm_qkv.weight                 a8g128
+  exl3.act.blk.9.ssm_z.weight                   a8g128
+  exl3.act.blk.9.ssm_out.weight                 a8g128
+  exl3.act.blk.9.ffn_gate_up.weight             a8g128
+  exl3.act.blk.9.ffn_down.weight                a8g128
+  exl3.act.blk.10.ssm_qkv.weight                a8g128
+  exl3.act.blk.10.ssm_z.weight                  a8g128
+  exl3.act.blk.10.ssm_out.weight                a8g128
+  exl3.act.blk.10.ffn_gate_up.weight            a8g128
+  exl3.act.blk.10.ffn_down.weight               a8g128
+  exl3.act.blk.11.attn_qg.weight                a8g128
+  exl3.act.blk.11.attn_k.weight                 a8g128
+  exl3.act.blk.11.attn_v.weight                 a8g128
+  exl3.act.blk.11.attn_output.weight            a8g128
+  exl3.act.blk.11.ffn_gate_up.weight            a8g128
+  exl3.act.blk.11.ffn_down.weight               a8g128
+  exl3.act.blk.12.ssm_qkv.weight                a8g128
+  exl3.act.blk.12.ssm_z.weight                  a8g128
+  exl3.act.blk.12.ssm_out.weight                a8g128
+  exl3.act.blk.12.ffn_gate_up.weight            a8g128
+  exl3.act.blk.12.ffn_down.weight               a8g128
+  exl3.act.blk.13.ssm_qkv.weight                a8g128
+  exl3.act.blk.13.ssm_z.weight                  a8g128
+  exl3.act.blk.13.ssm_out.weight                a8g128
+  exl3.act.blk.13.ffn_gate_up.weight            a8g128
+  exl3.act.blk.13.ffn_down.weight               a8g128
+  exl3.act.blk.14.ssm_qkv.weight                a8g128
+  exl3.act.blk.14.ssm_z.weight                  a8g128
+  exl3.act.blk.14.ssm_out.weight                a8g128
+  exl3.act.blk.14.ffn_gate_up.weight            a8g128
+  exl3.act.blk.14.ffn_down.weight               a8g128
+  exl3.act.blk.15.attn_qg.weight                a8g128
+  exl3.act.blk.15.attn_k.weight                 a8g128
+  exl3.act.blk.15.attn_v.weight                 a8g128
+  exl3.act.blk.15.attn_output.weight            a8g128
+  exl3.act.blk.15.ffn_gate_up.weight            a8g128
+  exl3.act.blk.15.ffn_down.weight               a8g128
+  exl3.act.blk.16.ssm_qkv.weight                a8g128
+  exl3.act.blk.16.ssm_z.weight                  a8g128
+  exl3.act.blk.16.ssm_out.weight                a8g128
+  exl3.act.blk.16.ffn_gate_up.weight            a8g128
+  exl3.act.blk.16.ffn_down.weight               a8g128
+  exl3.act.blk.17.ssm_qkv.weight                a8g128
+  exl3.act.blk.17.ssm_z.weight                  a8g128
+  exl3.act.blk.17.ssm_out.weight                a8g128
+  exl3.act.blk.17.ffn_gate_up.weight            a8g128
+  exl3.act.blk.17.ffn_down.weight               a8g128
+  exl3.act.blk.18.ssm_qkv.weight                a8g128
+  exl3.act.blk.18.ssm_z.weight                  a8g128
+  exl3.act.blk.18.ssm_out.weight                a8g128
+  exl3.act.blk.18.ffn_gate_up.weight            a8g128
+  exl3.act.blk.18.ffn_down.weight               a8g128
+  exl3.act.blk.19.attn_qg.weight                a8g128
+  exl3.act.blk.19.attn_k.weight                 a8g128
+  exl3.act.blk.19.attn_v.weight                 a8g128
+  exl3.act.blk.19.attn_output.weight            a8g128
+  exl3.act.blk.19.ffn_gate_up.weight            a8g128
+  exl3.act.blk.19.ffn_down.weight               a8g128
+  exl3.act.blk.20.ssm_qkv.weight                a8g128
+  exl3.act.blk.20.ssm_z.weight                  a8g128
+  exl3.act.blk.20.ssm_out.weight                a8g128
+  exl3.act.blk.20.ffn_gate_up.weight            a8g128
+  exl3.act.blk.20.ffn_down.weight               a8g128
+  exl3.act.blk.21.ssm_qkv.weight                a8g128
+  exl3.act.blk.21.ssm_z.weight                  a8g128
+  exl3.act.blk.21.ssm_out.weight                a8g128
+  exl3.act.blk.21.ffn_gate_up.weight            a8g128
+  exl3.act.blk.21.ffn_down.weight               a8g128
+  exl3.act.blk.22.ssm_qkv.weight                a8g128
+  exl3.act.blk.22.ssm_z.weight                  a8g128
+  exl3.act.blk.22.ssm_out.weight                a8g128
+  exl3.act.blk.22.ffn_gate_up.weight            a8g128
+  exl3.act.blk.22.ffn_down.weight               a8g128
+  exl3.act.blk.23.attn_qg.weight                a8g128
+  exl3.act.blk.23.attn_k.weight                 a8g128
+  exl3.act.blk.23.attn_v.weight                 a8g128
+  exl3.act.blk.23.attn_output.weight            a8g128
+  exl3.act.blk.23.ffn_gate_up.weight            a8g128
+  exl3.act.blk.23.ffn_down.weight               a8g128
+  exl3.act.blk.24.ssm_qkv.weight                a8g128
+  exl3.act.blk.24.ssm_z.weight                  a8g128
+  exl3.act.blk.24.ssm_out.weight                a8g128
+  exl3.act.blk.24.ffn_gate_up.weight            a8g128
+  exl3.act.blk.24.ffn_down.weight               a8g128
+  exl3.act.blk.25.ssm_qkv.weight                a8g128
+  exl3.act.blk.25.ssm_z.weight                  a8g128
+  exl3.act.blk.25.ssm_out.weight                a8g128
+  exl3.act.blk.25.ffn_gate_up.weight            a8g128
+  exl3.act.blk.25.ffn_down.weight               a8g128
+  exl3.act.blk.26.ssm_qkv.weight                a8g128
+  exl3.act.blk.26.ssm_z.weight                  a8g128
+  exl3.act.blk.26.ssm_out.weight                a8g128
+  exl3.act.blk.26.ffn_gate_up.weight            a8g128
+  exl3.act.blk.26.ffn_down.weight               a8g128
+  exl3.act.blk.27.attn_qg.weight                a8g128
+  exl3.act.blk.27.attn_k.weight                 a8g128
+  exl3.act.blk.27.attn_v.weight                 a8g128
+  exl3.act.blk.27.attn_output.weight            a8g128
+  exl3.act.blk.27.ffn_gate_up.weight            a8g128
+  exl3.act.blk.27.ffn_down.weight               a8g128
+  exl3.act.blk.28.ssm_qkv.weight                a8g128
+  exl3.act.blk.28.ssm_z.weight                  a8g128
+  exl3.act.blk.28.ssm_out.weight                a8g128
+  exl3.act.blk.28.ffn_gate_up.weight            a8g128
+  exl3.act.blk.28.ffn_down.weight               a8g128
+  exl3.act.blk.29.ssm_qkv.weight                a8g128
+  exl3.act.blk.29.ssm_z.weight                  a8g128
+  exl3.act.blk.29.ssm_out.weight                a8g128
+  exl3.act.blk.29.ffn_gate_up.weight            a8g128
+  exl3.act.blk.29.ffn_down.weight               a8g128
+  exl3.act.blk.30.ssm_qkv.weight                a8g128
+  exl3.act.blk.30.ssm_z.weight                  a8g128
+  exl3.act.blk.30.ssm_out.weight                a8g128
+  exl3.act.blk.30.ffn_gate_up.weight            a8g128
+  exl3.act.blk.30.ffn_down.weight               a8g128
+  exl3.act.blk.31.attn_qg.weight                a8g128
+  exl3.act.blk.31.attn_k.weight                 a8g128
+  exl3.act.blk.31.attn_v.weight                 a8g128
+  exl3.act.blk.31.attn_output.weight            a8g128
+  exl3.act.blk.31.ffn_gate_up.weight            a8g128
+  exl3.act.blk.31.ffn_down.weight               a8g128
+  exl3.act.blk.32.ssm_qkv.weight                a8g128
+  exl3.act.blk.32.ssm_z.weight                  a8g128
+  exl3.act.blk.32.ssm_out.weight                a8g128
+  exl3.act.blk.32.ffn_gate_up.weight            a8g128
+  exl3.act.blk.32.ffn_down.weight               a8g128
+  exl3.act.blk.33.ssm_qkv.weight                a8g128
+  exl3.act.blk.33.ssm_z.weight                  a8g128
+  exl3.act.blk.33.ssm_out.weight                a8g128
+  exl3.act.blk.33.ffn_gate_up.weight            a8g128
+  exl3.act.blk.33.ffn_down.weight               a8g128
+  exl3.act.blk.34.ssm_qkv.weight                a8g128
+  exl3.act.blk.34.ssm_z.weight                  a8g128
+  exl3.act.blk.34.ssm_out.weight                a8g128
+  exl3.act.blk.34.ffn_gate_up.weight            a8g128
+  exl3.act.blk.34.ffn_down.weight               a8g128
+  exl3.act.blk.35.attn_qg.weight                a8g128
+  exl3.act.blk.35.attn_k.weight                 a8g128
+  exl3.act.blk.35.attn_v.weight                 a8g128
+  exl3.act.blk.35.attn_output.weight            a8g128
+  exl3.act.blk.35.ffn_gate_up.weight            a8g128
+  exl3.act.blk.35.ffn_down.weight               a8g128
+  exl3.act.blk.36.ssm_qkv.weight                a8g128
+  exl3.act.blk.36.ssm_z.weight                  a8g128
+  exl3.act.blk.36.ssm_out.weight                a8g128
+  exl3.act.blk.36.ffn_gate_up.weight            a8g128
+  exl3.act.blk.36.ffn_down.weight               a8g128
+  exl3.act.blk.37.ssm_qkv.weight                a8g128
+  exl3.act.blk.37.ssm_z.weight                  a8g128
+  exl3.act.blk.37.ssm_out.weight                a8g128
+  exl3.act.blk.37.ffn_gate_up.weight            a8g128
+  exl3.act.blk.37.ffn_down.weight               a8g128
+  exl3.act.blk.38.ssm_qkv.weight                a8g128
+  exl3.act.blk.38.ssm_z.weight                  a8g128
+  exl3.act.blk.38.ssm_out.weight                a8g128
+  exl3.act.blk.38.ffn_gate_up.weight            a8g128
+  exl3.act.blk.38.ffn_down.weight               a8g128
+  exl3.act.blk.39.attn_qg.weight                a8g128
+  exl3.act.blk.39.attn_k.weight                 a8g128
+  exl3.act.blk.39.attn_v.weight                 a8g128
+  exl3.act.blk.39.attn_output.weight            a8g128
+  exl3.act.blk.39.ffn_gate_up.weight            a8g128
+  exl3.act.blk.39.ffn_down.weight               a8g128
+  exl3.act.blk.40.ssm_qkv.weight                a8g128
+  exl3.act.blk.40.ssm_z.weight                  a8g128
+  exl3.act.blk.40.ssm_out.weight                a8g128
+  exl3.act.blk.40.ffn_gate_up.weight            a8g128
+  exl3.act.blk.40.ffn_down.weight               a8g128
+  exl3.act.blk.41.ssm_qkv.weight                a8g128
+  exl3.act.blk.41.ssm_z.weight                  a8g128
+  exl3.act.blk.41.ssm_out.weight                a8g128
+  exl3.act.blk.41.ffn_gate_up.weight            a8g128
+  exl3.act.blk.41.ffn_down.weight               a8g128
+  exl3.act.blk.42.ssm_qkv.weight                a8g128
+  exl3.act.blk.42.ssm_z.weight                  a8g128
+  exl3.act.blk.42.ssm_out.weight                a8g128
+  exl3.act.blk.42.ffn_gate_up.weight            a8g128
+  exl3.act.blk.42.ffn_down.weight               a8g128
+  exl3.act.blk.43.attn_qg.weight                a8g128
+  exl3.act.blk.43.attn_k.weight                 a8g128
+  exl3.act.blk.43.attn_v.weight                 a8g128
+  exl3.act.blk.43.attn_output.weight            a8g128
+  exl3.act.blk.43.ffn_gate_up.weight            a8g128
+  exl3.act.blk.43.ffn_down.weight               a8g128
+  exl3.act.blk.44.ssm_qkv.weight                a8g128
+  exl3.act.blk.44.ssm_z.weight                  a8g128
+  exl3.act.blk.44.ssm_out.weight                a8g128
+  exl3.act.blk.44.ffn_gate_up.weight            a8g128
+  exl3.act.blk.44.ffn_down.weight               a8g128
+  exl3.act.blk.45.ssm_qkv.weight                a8g128
+  exl3.act.blk.45.ssm_z.weight                  a8g128
+  exl3.act.blk.45.ssm_out.weight                a8g128
+  exl3.act.blk.45.ffn_gate_up.weight            a8g128
+  exl3.act.blk.45.ffn_down.weight               a8g128
+  exl3.act.blk.46.ssm_qkv.weight                a8g128
+  exl3.act.blk.46.ssm_z.weight                  a8g128
+  exl3.act.blk.46.ssm_out.weight                a8g128
+  exl3.act.blk.46.ffn_gate_up.weight            a8g128
+  exl3.act.blk.46.ffn_down.weight               a8g128
+  exl3.act.blk.47.attn_qg.weight                a8g128
+  exl3.act.blk.47.attn_k.weight                 a8g128
+  exl3.act.blk.47.attn_v.weight                 a8g128
+  exl3.act.blk.47.attn_output.weight            a8g128
+  exl3.act.blk.47.ffn_gate_up.weight            a8g128
+  exl3.act.blk.47.ffn_down.weight               a8g128
+  exl3.act.blk.48.ssm_qkv.weight                a8g128
+  exl3.act.blk.48.ssm_z.weight                  a8g128
+  exl3.act.blk.48.ssm_out.weight                a8g128
+  exl3.act.blk.48.ffn_gate_up.weight            a8g128
+  exl3.act.blk.48.ffn_down.weight               a8g128
+  exl3.act.blk.49.ssm_qkv.weight                a8g128
+  exl3.act.blk.49.ssm_z.weight                  a8g128
+  exl3.act.blk.49.ssm_out.weight                a8g128
+  exl3.act.blk.49.ffn_gate_up.weight            a8g128
+  exl3.act.blk.49.ffn_down.weight               a8g128
+  exl3.act.blk.50.ssm_qkv.weight                a8g128
+  exl3.act.blk.50.ssm_z.weight                  a8g128
+  exl3.act.blk.50.ssm_out.weight                a8g128
+  exl3.act.blk.50.ffn_gate_up.weight            a8g128
+  exl3.act.blk.50.ffn_down.weight               a8g128
+  exl3.act.blk.51.attn_qg.weight                a8g128
+  exl3.act.blk.51.attn_k.weight                 a8g128
+  exl3.act.blk.51.attn_v.weight                 a8g128
+  exl3.act.blk.51.attn_output.weight            a8g128
+  exl3.act.blk.51.ffn_gate_up.weight            a8g128
+  exl3.act.blk.51.ffn_down.weight               a8g128
+  exl3.act.blk.52.ssm_qkv.weight                a8g128
+  exl3.act.blk.52.ssm_z.weight                  a8g128
+  exl3.act.blk.52.ssm_out.weight                a8g128
+  exl3.act.blk.52.ffn_gate_up.weight            a8g128
+  exl3.act.blk.52.ffn_down.weight               a8g128
+  exl3.act.blk.53.ssm_qkv.weight                a8g128
+  exl3.act.blk.53.ssm_z.weight                  a8g128
+  exl3.act.blk.53.ssm_out.weight                a8g128
+  exl3.act.blk.53.ffn_gate_up.weight            a8g128
+  exl3.act.blk.53.ffn_down.weight               a8g128
+  exl3.act.blk.54.ssm_qkv.weight                a8g128
+  exl3.act.blk.54.ssm_z.weight                  a8g128
+  exl3.act.blk.54.ssm_out.weight                a8g128
+  exl3.act.blk.54.ffn_gate_up.weight            a8g128
+  exl3.act.blk.54.ffn_down.weight               a8g128
+  exl3.act.blk.55.attn_qg.weight                a8g128
+  exl3.act.blk.55.attn_k.weight                 a8g128
+  exl3.act.blk.55.attn_v.weight                 a8g128
+  exl3.act.blk.55.attn_output.weight            a8g128
+  exl3.act.blk.55.ffn_gate_up.weight            a8g128
+  exl3.act.blk.55.ffn_down.weight               a8g128
+  exl3.act.blk.56.ssm_qkv.weight                a8g128
+  exl3.act.blk.56.ssm_z.weight                  a8g128
+  exl3.act.blk.56.ssm_out.weight                a8g128
+  exl3.act.blk.56.ffn_gate_up.weight            a8g128
+  exl3.act.blk.56.ffn_down.weight               a8g128
+  exl3.act.blk.57.ssm_qkv.weight                a8g128
+  exl3.act.blk.57.ssm_z.weight                  a8g128
+  exl3.act.blk.57.ssm_out.weight                a8g128
+  exl3.act.blk.57.ffn_gate_up.weight            a8g128
+  exl3.act.blk.57.ffn_down.weight               a8g128
+  exl3.act.blk.58.ssm_qkv.weight                a8g128
+  exl3.act.blk.58.ssm_z.weight                  a8g128
+  exl3.act.blk.58.ssm_out.weight                a8g128
+  exl3.act.blk.58.ffn_gate_up.weight            a8g128
+  exl3.act.blk.58.ffn_down.weight               a8g128
+  exl3.act.blk.59.attn_qg.weight                a8g128
+  exl3.act.blk.59.attn_k.weight                 a8g128
+  exl3.act.blk.59.attn_v.weight                 a8g128
+  exl3.act.blk.59.attn_output.weight            a8g128
+  exl3.act.blk.59.ffn_gate_up.weight            a8g128
+  exl3.act.blk.59.ffn_down.weight               a8g128
+  exl3.act.blk.60.ssm_qkv.weight                a8g128
+  exl3.act.blk.60.ssm_z.weight                  a8g128
+  exl3.act.blk.60.ssm_out.weight                a8g128
+  exl3.act.blk.60.ffn_gate_up.weight            a8g128
+  exl3.act.blk.60.ffn_down.weight               a8g128
+  exl3.act.blk.61.ssm_qkv.weight                a8g128
+  exl3.act.blk.61.ssm_z.weight                  a8g128
+  exl3.act.blk.61.ssm_out.weight                a8g128
+  exl3.act.blk.61.ffn_gate_up.weight            a8g128
+  exl3.act.blk.61.ffn_down.weight               a8g128
+  exl3.act.blk.62.ssm_qkv.weight                a8g128
+  exl3.act.blk.62.ssm_z.weight                  a8g128
+  exl3.act.blk.62.ssm_out.weight                a8g128
+  exl3.act.blk.62.ffn_gate_up.weight            a8g128
+  exl3.act.blk.62.ffn_down.weight               a8g128
+  exl3.act.blk.63.attn_qg.weight                a8g128
+  exl3.act.blk.63.attn_k.weight                 a8g128
+  exl3.act.blk.63.attn_v.weight                 a8g128
+  exl3.act.blk.63.attn_output.weight            a8g128
+  exl3.act.blk.63.ffn_gate_up.weight            a8g128
+  exl3.act.blk.63.ffn_down.weight               a8g128
+  radiance.encoder                              vision
+
+weight directory (1198 entries, grouped by layer and movement unit)
+
+  model                 20 tensor(s)       4.94 GiB   unit: one tensor
+
+  layer 0               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 1               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 2               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 3               10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 4               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 5               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 6               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 7               10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 8               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 9               13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 10              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 11              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 12              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 13              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 14              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 15              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 16              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 17              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 18              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 19              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 20              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 21              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 22              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 23              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 24              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 25              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 26              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 27              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 28              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 29              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 30              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 31              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 32              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 33              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 34              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 35              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 36              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 37              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 38              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 39              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 40              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 41              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 42              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 43              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 44              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 45              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 46              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 47              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 48              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 49              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 50              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 51              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 52              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 53              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 54              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 55              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 56              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 57              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 58              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 59              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 60              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 61              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 62              13 tensor(s)     189.50 MiB   unit: one tensor
+
+  layer 63              10 tensor(s)     183.33 MiB   unit: one tensor
+
+  layer 64              14 tensor(s)     330.14 MiB   unit: one tensor
+
+  layer 65              14 tensor(s)     330.14 MiB   unit: one tensor
+
+  layer 66              14 tensor(s)     330.14 MiB   unit: one tensor
+
+  layer 67              14 tensor(s)     330.14 MiB   unit: one tensor
+
+  layer 68              14 tensor(s)     330.14 MiB   unit: one tensor
+
+  layer 128             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 129             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 130             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 131             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 132             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 133             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 134             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 135             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 136             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 137             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 138             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 139             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 140             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 141             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 142             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 143             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 144             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 145             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 146             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 147             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 148             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 149             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 150             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 151             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 152             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 153             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  layer 154             12 tensor(s)      29.07 MiB   unit: one tensor
+
+  pool totals
+      planes              19.07 GiB
+      alignment pad        1.95 MiB   (4096 B per entry, 256 B per plane; the movement unit
+                                      never straddles a page needlessly)
+      data blob           19.07 GiB
+
+  by encoding
+      exl3i:codes=u1[1x5120],record=u32{2176x10560},suh=f16[*x1],svh=f16[1x*],suh.1=f16[*x1]/mul1i8/h128/k4.125      64       5.49 GiB    28.8%
+      bf16                                         828       3.64 GiB    19.1%
+      exl3i:codes=u1[1x17408],record=u32{320x35904},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      64       2.74 GiB    14.4%
+      fp8_e4m3*bf16[128x128]                        31       1.61 GiB     8.5%
+      exl3i:codes=u1[1x5120],record=u32{640x10560},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      48       1.21 GiB     6.3%
+      i8*bf16[1x128]                                 1       1.20 GiB     6.3%
+      exl3i:codes=u1[1x6144],record=u32{320x12672},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      64     991.69 MiB     5.1%
+      exl3i:codes=u1[1x5120],record=u32{384x10560},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      48     743.81 MiB     3.8%
+      exl3i:codes=u1[1x5120],record=u32{15520x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4/r16       1     606.97 MiB     3.1%
+      exl3i:codes=u1[1x5120],record=u32{768x10560},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      16     495.72 MiB     2.5%
+      u2*f16[1x128]-u8[1x128]                        1     331.54 MiB     1.7%
+      exl3i:codes=u1[1x5120],record=u32{64x10560},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4.125      32      82.91 MiB     0.4%
+
+  by what made it
+      exl3i codebook=mul1i8,rate=4.125,src=/data/q27/w153/levels/k4.125/final     336      11.70 GiB    61.4%
+      checkpoint                                   828       3.64 GiB    19.1%
+      rtn block=128x128,codes=fp8_e4m3,scale=bf16      31       1.61 GiB     8.5%
+      rtn clamp=sym,codes=i8,group=128,scale=bf16       1       1.20 GiB     6.3%
+      exl3i codebook=mul1i8,rate=4,rows=r16,src=/data/q27/heads/q/R16s003/K4       1     606.97 MiB     3.1%
+      rtn codes=u2,group=128,rule=search,scale=f16,zero=u8       1     331.54 MiB     1.7%
+
+vocab
+  kind          bpe
+  tokens        248077
+  merges        247587
+  specials      bos=-1 eos=248046 eot=248046 pad=248044 unk=-1 sep=-1  add_bos=0 add_eos=0
+  chat template 9004 bytes
+  chain (4 steps, in order)
+       0  norm.NFC             flags=0x0
+       1  pre.Split            flags=0x0  arg0="(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?[\p{L}\p{M}]+..."  i=1
+       2  pre.ByteLevel        flags=0x0
+       3  dec.ByteLevel        flags=0x0
+  token types   normal=248044 unknown=0 control=21 user=12 byte=0
+  control/user  (the tokens a turn can end on; eos/eot marked)
+      248044   control  "<|endoftext|>"
+      248045   control  "<|im_start|>"
+      248046   control  "<|im_end|>" <- eos
+      248047   control  "<|object_ref_start|>"
+      248048   control  "<|object_ref_end|>"
+      248049   control  "<|box_start|>"
+      248050   control  "<|box_end|>"
+      248051   control  "<|quad_start|>"
+      248052   control  "<|quad_end|>"
+      248053   control  "<|vision_start|>"
+      248054   control  "<|vision_end|>"
+      248055   control  "<|vision_pad|>"
+      248056   control  "<|image_pad|>"
+      248057   control  "<|video_pad|>"
+      248058   user     "<tool_call>"
+      248059   user     "</tool_call>"
+      248060   user     "<|fim_prefix|>"
+      248061   user     "<|fim_middle|>"
+      248062   user     "<|fim_suffix|>"
+      248063   user     "<|fim_pad|>"
+      248064   user     "<|repo_name|>"
+      248065   user     "<|file_sep|>"
+      248066   user     "<tool_response>"
+      248067   user     "</tool_response>"
+      248068   user     "<think>"
+      248069   user     "</think>"
+      248070   control  "<|audio_start|>"
+      248071   control  "<|audio_end|>"
+      248072   control  "<tts_pad>"
+      248073   control  "<tts_text_bos>"
+      248074   control  "<tts_text_eod>"
+      248075   control  "<tts_text_bos_single>"
+      248076   control  "<|audio_pad|>"
+  first 8       "!" """ "#" "$" "%" "&" "'" "("
+
+expert profile: none. The placement planner will start cold and the heat
+engine will rank from real routing within a few dispatches (spec §5.3).

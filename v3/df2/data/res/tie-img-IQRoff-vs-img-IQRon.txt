@@ -1,0 +1,2 @@
+hopper-who: step 20: A ' Blue' B ' Uniform'; top-1 - top-2 logprob margin A 0.0769 B 0.0174
+dashboard-read: step 16: A ' panel' B ' readable'; top-1 - top-2 logprob margin A 0.0194 B 0.0126

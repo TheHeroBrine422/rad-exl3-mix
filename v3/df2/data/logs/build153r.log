@@ -1,0 +1,5 @@
+03:37:46 start qc-exl3-v3-df2 9f0a059
+03:38:45 exl3i: built, host tests 3 passed
+03:38:51 exl3quant: built, host tests 1 passed
+03:39:05 qwen35_exl3: built, host tests 1 passed
+03:39:05 HOME READY /data/q27/w153/home-r (6cc95c5e6a984c77 2e660d54211776fa )

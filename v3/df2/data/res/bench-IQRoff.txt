@@ -1,0 +1,8 @@
+IQRoff ctx 0 run 0 (warm): prompt 103 ttft 120 ms, client 25.58 ms/tok, server 25.57 ms/step x 1.00 tok
+IQRoff ctx 0 run 1: prompt 103 ttft 121 ms, client 25.78 ms/tok, server 25.78 ms/step x 1.00 tok
+IQRoff ctx 0 run 2: prompt 106 ttft 120 ms, client 25.60 ms/tok, server 25.59 ms/step x 1.00 tok
+IQRoff ctx 0 run 3: prompt 105 ttft 120 ms, client 25.61 ms/tok, server 25.60 ms/step x 1.00 tok
+IQRoff ctx 8k run 0 (warm): prompt 8242 ttft 3184 ms, client 26.68 ms/tok, server 26.69 ms/step x 1.00 tok
+IQRoff ctx 8k run 1: prompt 8240 ttft 3187 ms, client 26.66 ms/tok, server 26.67 ms/step x 1.00 tok
+IQRoff ctx 8k run 2: prompt 8245 ttft 3195 ms, client 26.66 ms/tok, server 26.67 ms/step x 1.00 tok
+IQRoff ctx 8k run 3: prompt 8244 ttft 3200 ms, client 26.67 ms/tok, server 26.68 ms/step x 1.00 tok
