@@ -7537,3 +7537,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   ver3-8k reads during the search (no verify reuse); t183 is the only in-search progress readout. Long context is
   checked on the final picks (golden-final750, ver4, the whole verify traces). The status page's bottom panel stays
   at its last reads. **Runtime:** neither.
+
+### 2026-11-14 5:40 PM CST · #186 · ver3-8k gap to IQR = one Persian document; swap test started (w163)
+- Lead (`search/v3/run183/lc183.py`, gen rows of ver3-8k): our 2.5 start pick 0.0975 vs IQR iq2r 0.0630, but **doc 100
+  (wildchat orig 4681, 7,708 tokens, Persian chat about Pine Script) is 95% of the excess**; without the top-3 docs
+  ours 0.0532 vs IQR 0.0538 (level). Same doc: 84% of the excess at 3.0, >100% at 3.5. Position bins on it don't grow
+  monotonically (bad windows throughout): **not a long-context effect** (the earlier "low bpw degrades with depth"
+  reading was this document). Doc 100: ours 0.758, uniform K2.375 0.333, IQR 0.212, V2 2.50 1.267 → the allocation
+  causes it (searched / M1 allocations starve something this text needs; suspects: embedding t1.625, early layers at
+  K1-1.5, head). w163 (Haiku xhigh) runs the swap test on a multilingual diagnostic golden. **Runtime:** neither.
