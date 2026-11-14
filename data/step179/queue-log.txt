@@ -1,0 +1,32 @@
+00:52:59 q1 DONE
+01:08:56 q2 DONE
+01:13:17 q3 DONE
+03:54:30 q4 stamp base v3-k2.5-r16k2.5-a8
+03:55:16 q4 stamp step2 v3-k2.5-r16k2.5-a8
+03:56:20 q4 stamp base v3-k4.125-r16k4-a8
+03:57:22 q4 stamp step2 v3-k4.125-r16k4-a8
+03:58:22 q4 stamp mbase q27v3-635bac02-k2.5-mad-a8
+03:59:21 q4 stamp mstep q27v3-635bac02-k2.5-mad-a8
+04:00:24 q4 stamp mbase q27v3-144dd6e1-k4.125-mad-a8
+04:01:27 q4 stamp mstep q27v3-144dd6e1-k4.125-mad-a8
+04:21:41 q4 kld
+04:23:25 q4 gdec
+04:27:36 q8 DONE
+04:31:50 q5 ab v3-k2.5-r16k2.5-a8 base step2
+04:35:59 q5 ab q27v3-635bac02-k2.5-mad-a8 mbase mstep
+04:35:59 q5 DONE
+04:37:00 q6 DONE
+04:41:59 q7 DONE
+04:41:59 qnext DONE
+04:42:16 q9 ctall
+04:52:58 q9 kld
+04:55:06 q9 gdec
+04:56:23 q9 stamp
+05:12:52 q9 DONE
+05:24:37 q11 ctall 7 / 7 PASS
+05:31:06 q11 kld
+05:32:09 q11 gdec
+05:33:41 q11 stamp
+05:50:20 q11 DONE
+05:50:37 q12 test_aq 10 mres3: rc 0 TEST_AQ PASS (0 failures)
+05:51:09 q12 test_aq 714 mres3: rc 0 TEST_AQ PASS (0 failures)

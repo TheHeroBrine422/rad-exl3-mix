@@ -1,0 +1,312 @@
+{
+ "when": "2026-11-14 04:30:47",
+ "conc": null,
+ "gen": 1024,
+ "seconds": 48.00208234786987,
+ "window": 5,
+ "stalled": false,
+ "seed": null,
+ "t0": 1794630599.5274005,
+ "tok_s_windows": [],
+ "engine_windows": [
+  {
+   "tok_s": 0.0,
+   "dec_ms": 0.0,
+   "tok_step": 0.0,
+   "accept": null,
+   "busy": 0.0,
+   "gap_ms": 4004.75,
+   "steps_s": 0.2,
+   "mixed": 0
+  },
+  {
+   "tok_s": 17.5,
+   "dec_ms": 28.55,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 0.512,
+   "gap_ms": 27.53,
+   "steps_s": 17.7,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.6,
+   "dec_ms": 28.86,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 1.0,
+   "gap_ms": 0.01,
+   "steps_s": 34.6,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.7,
+   "dec_ms": 28.96,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 1.005,
+   "gap_ms": -0.16,
+   "steps_s": 34.7,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.3,
+   "dec_ms": 29.06,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 0.997,
+   "gap_ms": 0.09,
+   "steps_s": 34.3,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.5,
+   "dec_ms": 29.13,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 1.004,
+   "gap_ms": -0.11,
+   "steps_s": 34.5,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.1,
+   "dec_ms": 29.21,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 0.997,
+   "gap_ms": 0.09,
+   "steps_s": 34.1,
+   "mixed": 0
+  },
+  {
+   "tok_s": 34.2,
+   "dec_ms": 29.25,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 1.001,
+   "gap_ms": -0.02,
+   "steps_s": 34.2,
+   "mixed": 0
+  },
+  {
+   "tok_s": 16.0,
+   "dec_ms": 29.31,
+   "tok_step": 1.0,
+   "accept": null,
+   "busy": 0.468,
+   "gap_ms": 33.26,
+   "steps_s": 16.0,
+   "mixed": 0
+  }
+ ],
+ "requests": [],
+ "settings": {
+  "0000:63:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 100,
+   "dev": "/sys/class/drm/card1/device",
+   "hwmon": "/sys/class/drm/card1/device/hwmon/hwmon4"
+  },
+  "0000:43:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 100,
+   "dev": "/sys/class/drm/card2/device",
+   "hwmon": "/sys/class/drm/card2/device/hwmon/hwmon5"
+  },
+  "0000:27:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 100,
+   "dev": "/sys/class/drm/card3/device",
+   "hwmon": "/sys/class/drm/card3/device/hwmon/hwmon6"
+  },
+  "0000:03:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 100,
+   "dev": "/sys/class/drm/card4/device",
+   "hwmon": "/sys/class/drm/card4/device/hwmon/hwmon7"
+  },
+  "0000:e3:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 85,
+   "dev": "/sys/class/drm/card5/device",
+   "hwmon": "/sys/class/drm/card5/device/hwmon/hwmon8"
+  },
+  "0000:c3:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 85,
+   "dev": "/sys/class/drm/card6/device",
+   "hwmon": "/sys/class/drm/card6/device/hwmon/hwmon9"
+  },
+  "0000:a3:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 85,
+   "dev": "/sys/class/drm/card7/device",
+   "hwmon": "/sys/class/drm/card7/device/hwmon/hwmon10"
+  },
+  "0000:83:00.0": {
+   "cap": 210,
+   "cap_max": 330,
+   "cap_default": 300,
+   "vddgfx_offset_mv": 0,
+   "fan_target": 85,
+   "dev": "/sys/class/drm/card8/device",
+   "hwmon": "/sys/class/drm/card8/device/hwmon/hwmon11"
+  }
+ },
+ "cards": {
+  "0000:e3:00.0": {
+   "samples": 479,
+   "clk_p10": 2323,
+   "clk_p50": 2475,
+   "clk_p90": 2617,
+   "W_p50": 209,
+   "W_max": 231,
+   "hot_max": 67,
+   "mem_max": 70,
+   "vrgfx_max": 59,
+   "fan_max": 2620,
+   "mv_p50": 829,
+   "flags": {
+    "PPT0": {
+     "share": 1.0,
+     "clk_on": 2475,
+     "clk_off": null,
+     "idle_share": 0.0,
+     "status": "binding",
+     "binding": true
+    },
+    "PPT1": {
+     "share": 0.002,
+     "clk_on": 2790,
+     "clk_off": 2474,
+     "idle_share": 0.0,
+     "status": "no-effect",
+     "binding": false
+    },
+    "TEMP_HOTSPOT": {
+     "share": 1.0,
+     "clk_on": 2475,
+     "clk_off": null,
+     "idle_share": 0.0,
+     "status": "always",
+     "binding": false
+    }
+   }
+  },
+  "0000:c3:00.0": {
+   "samples": 349,
+   "clk_p10": 2361,
+   "clk_p50": 2373,
+   "clk_p90": 2392,
+   "W_p50": 209,
+   "W_max": 261,
+   "hot_max": 73,
+   "mem_max": 69,
+   "vrgfx_max": 58,
+   "fan_max": 3341,
+   "mv_p50": 801,
+   "flags": {
+    "PPT0": {
+     "share": 0.997,
+     "clk_on": 2373,
+     "clk_off": 2103,
+     "idle_share": 0.0,
+     "status": "binding",
+     "binding": true
+    },
+    "TEMP_HOTSPOT": {
+     "share": 1.0,
+     "clk_on": 2373,
+     "clk_off": null,
+     "idle_share": 0.94,
+     "status": "idle",
+     "binding": false
+    }
+   }
+  },
+  "0000:a3:00.0": {
+   "samples": 460,
+   "clk_p10": 2257,
+   "clk_p50": 2390,
+   "clk_p90": 2460,
+   "W_p50": 210,
+   "W_max": 274,
+   "hot_max": 77,
+   "mem_max": 74,
+   "vrgfx_max": 64,
+   "fan_max": 3898,
+   "mv_p50": 820,
+   "flags": {
+    "PPT0": {
+     "share": 0.998,
+     "clk_on": 2390,
+     "clk_off": 2532,
+     "idle_share": 0.0,
+     "status": "binding",
+     "binding": true
+    },
+    "TEMP_HOTSPOT": {
+     "share": 1.0,
+     "clk_on": 2390,
+     "clk_off": null,
+     "idle_share": 0.0,
+     "status": "always",
+     "binding": false
+    }
+   }
+  },
+  "0000:83:00.0": {
+   "samples": 476,
+   "clk_p10": 2276,
+   "clk_p50": 2419,
+   "clk_p90": 2515,
+   "W_p50": 209,
+   "W_max": 267,
+   "hot_max": 78,
+   "mem_max": 74,
+   "vrgfx_max": 65,
+   "fan_max": 4139,
+   "mv_p50": 814,
+   "flags": {
+    "PPT0": {
+     "share": 1.0,
+     "clk_on": 2419,
+     "clk_off": null,
+     "idle_share": 0.0,
+     "status": "binding",
+     "binding": true
+    },
+    "TEMP_HOTSPOT": {
+     "share": 1.0,
+     "clk_on": 2419,
+     "clk_off": null,
+     "idle_share": 0.0,
+     "status": "always",
+     "binding": false
+    }
+   }
+  }
+ }
+}

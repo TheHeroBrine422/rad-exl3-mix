@@ -4,6 +4,47 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 11:55 PM CST · #179 · Whole-step decode pass: the step's small ops fused (residual add into the next norm — also into AQ's actq, exl3i interface 5 —, GDN conv + recurrent, q / k norm + rope + kv_store, the attention gate): small ops 1.97 → 1.29 ms (= IQR's), 996 → 741 / 757 launches, decode e2e −1.7 to −2.2 %, every KLD row byte-identical; found: **mad decode on qc-exl3-v3 is NaN** (KS counters shared by overlapped GEMVs), fix patch for the lead (w152)
+- **Status:** done (fork commits for the lead to merge; not pushed) · **Machine:** box2 card 1 · **Code:** radiance-hero
+  `qc-exl3-v3-step` on qc-exl3-v3 9f0a059: 7359986 (fusions), b73675c (`Exl3Aq::takes`), 1f4ecbc (exl3i interface 5:
+  `exl3i_actq` res / xo), 027fd91 (`plugin/qwen35_exl3/PERF.md`, the write-up); `v3/bench/step179/` · **Data:**
+  `data/step179/` · **Brief:** `rad-local/workers/instr3/w152.md`
+- **Measured how:** `--profile-ops` syncs around each op (the residual add read 1.03 ms a step there); the engine's own
+  `RADIANCE_AQL_STAMP` times every dispatch of a recorded pass unsynchronised, so the decode tables are those (prefill
+  chunks are not recorded passes: `--profile-ops`). The 210 W cap gives back part of every saving: all GEMVs +1.5–2.3 %
+  after fusing, whatever precedes them; ABBA with cardclock: 209–210 W both, gfx 2405 → 2374 MHz.
+- **Fused (libr4d ops, each only where served; `QWEN35_EXL3_FUSE=0` / a list turns them off):** each block's residual add
+  into the next norm (`add_rmsnorm`, the final norm's too); `gdn_conv_recurrent_update` at decode; q / k norm + rope +
+  kv_store as `qk_norm_rope_gate_kv_store` (≤ 64 rows, one `rope_table` fill a step); sigmoid · attn as one `act_mul`.
+  Where AQ's actq does the norm (A8 prefill rows; on mad also the 1-row decode band, w150's xb) the add goes into actq
+  (`res` = 1: x = bf16(x + res) into xo, then the norm — add_rmsnorm's bytes; split rows: the row's last workgroup writes
+  xo / h). The merge with w150's xb band needed one predicate (`Exl3Aq::takes`), else the add was dropped at 1 row.
+- **Decode e2e** (w138's bench.py, server ms / step; mad rows interleaved, homes with the patch below): mad K2.5 24.94 →
+  24.74 → **24.51** (−1.7 %), K4.125 30.59 → 30.27 → **29.91** (−2.2 %), ctx 8k −1.7 / −1.9 %; mul1i8 K2.5 ABBA engine
+  counters 29.70 → **29.05** (−2.2 %), K4.125 30.53 → 30.00. **8k prefill:** unchanged within the rounds' drift (±0.5 %):
+  the A8 GEMMs at the cap; actq's res saves one pass over x a site (~0.3 %).
+- **Per op vs IQR-V4 iq2r** (stamped, K2.5, ctx 0): small ops 1.97 → 1.29 ms mul1i8 (IQR 1.29), 2.04 → 1.63 mad (+0.17
+  actq producers' quantisation, IQR's in its gated GEMV); launches 996 → 741 (mul1i8) / 757 (mad) vs 584; left: GEMVs
+  (mad trunk 18.4 vs 16.1 ms), the mad packs' bf16 head (4.0 vs 1.5 ms), ~170 launches IQR folds into GEMVs (qkv + z,
+  gated gate_up). A diagnostic skipping every non-GEMV op of the plugin: 28.78 → 27.17 ms — that was all fusing could take.
+- **Numerics:** whole-model KLD rows (golden-search27c-c) **byte-identical** to today's home for every build: mul1i8
+  K2.5 / K4.125, mad K2.5 / K4.125, def and c64, ROCm 10.1 and the frozen 7.14 install. Greedy decode with top-20
+  logprobs (8 × 96 tokens) bit-exact on mul1i8; on mad bit-exact against an all-ordered build. **Tests:** qwen35_exl3 /
+  exl3i host tests, exl3i device suites (gpu_test, twopass ×3, ks, r16, aq incl. the new test_res, a4): PASS on 10.1
+  and 7.14.
+- **Found — mad decode is NaN on qc-exl3-v3 (w150 e054e71):** exl3i promises `rad_kernel_concurrent`, so the engine starts
+  z's GEMV beside qkv's and k / v beside qg (80 unordered GEMVs a step on mad's xb rows, none on mul1i8), and KS's arrival
+  counters are one block a stream (`exl3i_kctr_for(stream)`): the overlapped launches count into each other's. Mad
+  decode emits non-finite logits after 3–4 tokens ("!!!!"), differently run to run (0 / 8 gdec requests finish, both mad
+  packs, base and fused alike); prefill KLD unaffected. `v3/bench/step179/kctr-key.patch` (exl3i_nt.hip.h,
+  exl3i_mad.hip.h; 13 lines) keys them by (device, stream, output): decode bit-exact to the all-ordered build, 768 / 768
+  steps. **Every mad decode / e2e number measured before it (#177-02's table, speed tables) ran on garbage.** Not applied
+  (exl3i's GEMV files); the FUSE prefill counters (`exl3i_a8d_ctl_for`) are keyed the same way: worth the same fix.
+- **Runtime:** D (decode −1.7 to −2.2 %), P ~0 (8k prefill within ±0.5 %); same bits.
+- **Left:** GEMV-side folds (exl3i: residual into the out-projections' epilogue, qkv + z as one GEMV, silu · mul in gate_up,
+  xb producers for ssm_out and the head); the packs' bf16 head; fakes that can refuse one param form (the no-interface-5
+  fallback is untested by a unit test). 4070 not used (off limits).
+
 ### 2026-11-13 10:40 PM CST · #181 · QAD scale-up launched: arm A on the #171 2.5 incumbent, one epoch over 48 M golden positions (xcorp + own traces + calib qad pool), data-parallel, WSD checkpoints at 1 / 4 / 16 / 48 M (w154)
 - **Status:** running (main run on box2 cards 0, 2, 3; moves to ds8's 8 cards when w151's ladder ends) · **Machine:** box2
   (training, packs), ds8 (fresh x slice, later training / scoring) · **Code:** `v3/qad181/` (`qad181.py`, `data181.py`,

@@ -1,0 +1,9 @@
+# smallops.py over the stamped ctx-0 decodes (ms a step, median over 39 complete passes; K2.5): GEMVs, head, GDN a/b bf16,
+# attention core, every other kernel (the small ops). mfix = mad base with kctr-key.patch; fstep = + the fusions; fres2 =
+# + actq's residual (1f4ecbc). (w152, #179)
+base-v3-k2.5-r16k2.5-a8-d0.csv               gemv 23.462  head  1.044  ab_bf16  0.333  attn  0.168  small  1.973  (passes 39)
+step2-v3-k2.5-r16k2.5-a8-d0.csv              gemv 23.960  head  1.068  ab_bf16  0.338  attn  0.168  small  1.290  (passes 39)
+mfix-q27v3-635bac02-k2.5-mad-a8-d0.csv       gemv 18.001  head  3.988  ab_bf16  1.669  attn  0.176  small  2.038  (passes 39)
+fstep-q27v3-635bac02-k2.5-mad-a8-d0.csv      gemv 18.115  head  3.983  ab_bf16  1.691  attn  0.174  small  1.791  (passes 39)
+fres2-q27v3-635bac02-k2.5-mad-a8-d0.csv      gemv 18.366  head  3.983  ab_bf16  1.705  attn  0.179  small  1.625  (passes 39)
+iqr-iq2r-d0.csv                              gemv 16.070  head  1.474  ab_bf16  2.396  attn  0.184  small  1.289  (passes 39)

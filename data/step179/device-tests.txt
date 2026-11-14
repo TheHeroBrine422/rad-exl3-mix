@@ -1,0 +1,38 @@
+/data/q27/w152/tools/gt.sh 1 10 mres test_aq /data/q27/rad10-perf/install/share/radiance/kernels/libr4d.so -> 
+/data/q27/w152/tools/gt.sh 1 10 mres exl3i_gpu_test -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_ks --codebooks mul1i8,mul1,mad -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_r16 -> 
+/data/q27/w152/tools/gt.sh 1 10 mres test_a4 -> 
+done
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_aq /data/q27/rad10-perf/install/share/radiance/kernels/libr4d.so -> rc 1 TEST_AQ FAIL (18 failures)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 exl3i_gpu_test -> rc 0 EXL3I GPU TEST PASS
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_ks --codebooks mul1i8,mul1,mad -> rc 0 TEST_KS PASS (0 failures)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_r16 -> rc 0 TEST_R16 PASS (0 failures)
+bash /data/q27/w152/tools/gt.sh 1 10 mres2 test_a4 -> rc 0 TEST_A4 PASS (1006 checks)
+done
+/data/q27/w152/tools/gt.sh 1 714 mres test_aq /data/q27/rad/install/share/radiance/kernels/libr4d.so -> 
+/data/q27/w152/tools/gt.sh 1 714 mres exl3i_gpu_test -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_twopass -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_ks --codebooks mul1i8,mul1,mad -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_r16 -> 
+/data/q27/w152/tools/gt.sh 1 714 mres test_a4 -> 
+done
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_aq /data/q27/rad/install/share/radiance/kernels/libr4d.so -> rc 1 TEST_AQ FAIL (18 failures)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 exl3i_gpu_test -> rc 0 EXL3I GPU TEST PASS
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_ks --codebooks mul1i8,mul1,mad -> rc 0 TEST_KS PASS (0 failures)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_r16 -> rc 0 TEST_R16 PASS (0 failures)
+bash /data/q27/w152/tools/gt.sh 1 714 mres2 test_a4 -> rc 0 TEST_A4 PASS (1006 checks)
+done
+05:50:37 q12 test_aq 10 mres3: rc 0 TEST_AQ PASS (0 failures)
+05:51:09 q12 test_aq 714 mres3: rc 0 TEST_AQ PASS (0 failures)

@@ -1,0 +1,28 @@
+run                                             -v3-k4.125-r16k4-a8-d8  -v3-k4.125-r16k4-a8-d8
+wall ms a pass                                                  33.363                  32.090
+busy ms (union)                                                 29.469                  29.126
+idle ms                                                          3.894                   2.963
+dispatches a pass                                                  996                     741
+complete passes used                                                39                      39
+
+kernel (µs a pass / launches)                
+_Z20exl3i_gemm_nt_kernelI8RateFracILi1ELi0EEL         24863.5 /    336        25169.0 /    336
+_Z22r4d_attn_decode_kernelILi1ELi16ELi256ELi6          1223.6 /     16         1220.4 /     16
+_Z20exl3i_gemm_nt_kernelI7RateIntILi4ELi1EELi          1011.9 /      1         1013.1 /      1
+_ZN12_GLOBAL__N_118add_rmsnorm_kernelILb1ELj1             0.0 /      0          606.0 /    128
+_ZN12_GLOBAL__N_114rmsnorm_kernelILb1ELj1024E           602.8 /    161            4.4 /      1
+_Z31r4d_gdn_recurrent_update_kernelILi1ELi1EL             0.0 /      0          593.0 /     48
+_ZN12_GLOBAL__N_113binary_kernelEPKtS1_Ptjjjj           501.6 /    144            0.0 /      0
+_Z31r4d_gdn_recurrent_update_kernelILi1ELi1EL           496.0 /     48            0.0 /      0
+_Z27r4d_gemm_bf16_nt_m64_kernelILi1EEvPKtS1_P           350.2 /     96          355.7 /     96
+_Z26r4d_gdn_conv_update_kernelILi1EtEvPKtlPKT           159.1 /     48            0.0 /      0
+_ZN12_GLOBAL__N_111rope_kernelEPtPKijjjjiiffj            96.3 /     32            0.0 /      0
+_ZN12_GLOBAL__N_115silu_mul_kernelEPKtPtjjj              89.2 /     64           93.6 /     64
+_ZN12_GLOBAL__N_114sigmoid_kernelEPKtPtjjj               84.8 /     16            0.0 /      0
+_Z31r4d_attn_splitkv_combine_kernelILi256ELi4            69.4 /     16           68.0 /     16
+_Z28r4d_qk_norm_rope_gate_kernelILi256ELi2EEv             0.0 /      0           36.4 /     16
+_ZN12_GLOBAL__N_115kv_store_kernelEPKtS1_PKiP            29.2 /     16            0.0 /      0
+_ZN12_GLOBAL__N_114act_mul_kernelILi3EEEvPKtS             0.0 /      0           19.9 /     16
+_Z24r4d_qk_rope_table_kernelPKvPvliiffii7RadY             0.0 /      0            7.2 /      1
+_ZN12_GLOBAL__N_119embed_lookup_kernelEPKiPKt             6.4 /      1            6.4 /      1
+_ZN12_GLOBAL__N_118gather_rows_kernelEPKtPKiP             1.9 /      1            2.0 /      1

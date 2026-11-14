@@ -1,0 +1,20 @@
+v3-k2.5-r16k2.5-a8 base vs base2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+v3-k2.5-r16k2.5-a8 base vs step: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+v3-k2.5-r16k2.5-a8 base vs step2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+v3-k4.125-r16k4-a8 base vs base2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+v3-k4.125-r16k4-a8 base vs step: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+v3-k4.125-r16k4-a8 base vs step2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-635bac02-k2.5-mad-a8 mord vs mfix: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-635bac02-k2.5-mad-a8 mord vs fstep: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-635bac02-k2.5-mad-a8 mord vs fres: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-635bac02-k2.5-mad-a8 mord vs fres2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-635bac02-k2.5-mad-a8 mbase: 2 non-finite-logit warnings, 0 of 8 requests finished
+q27v3-635bac02-k2.5-mad-a8 mbase2: 2 non-finite-logit warnings, 0 of 8 requests finished
+q27v3-635bac02-k2.5-mad-a8 mstep: 2 non-finite-logit warnings, 0 of 8 requests finished
+q27v3-144dd6e1-k4.125-mad-a8 mord vs mfix: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-144dd6e1-k4.125-mad-a8 mord vs fstep: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-144dd6e1-k4.125-mad-a8 mord vs fres: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-144dd6e1-k4.125-mad-a8 mord vs fres2: tokens 768 / 768 in common prefixes; bit-exact top-20 + chosen logprob at 768 / 768 steps; max |dlogprob| 0; top-20 KL median 0 max 0
+q27v3-144dd6e1-k4.125-mad-a8 mbase: 2 non-finite-logit warnings, 0 of 8 requests finished
+q27v3-144dd6e1-k4.125-mad-a8 mbase2: 2 non-finite-logit warnings, 0 of 8 requests finished
+q27v3-144dd6e1-k4.125-mad-a8 mstep: 2 non-finite-logit warnings, 0 of 8 requests finished

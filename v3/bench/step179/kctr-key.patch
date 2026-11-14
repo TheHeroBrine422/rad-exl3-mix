@@ -1,0 +1,62 @@
+diff --git a/plugin/exl3i/exl3i_mad.hip.h b/plugin/exl3i/exl3i_mad.hip.h
+index 0c9e02d..0af2e15 100644
+--- a/plugin/exl3i/exl3i_mad.hip.h
++++ b/plugin/exl3i/exl3i_mad.hip.h
+@@ -269,7 +269,7 @@ static int exl3i_mad_launch_t(const Exl3iGemm* qa, int npw, void* stream) {
+   if (a->cls[0].cols % 128 || a->y_cols % 128 || !a->xr) return RAD_E_SHAPE;
+   Exl3iGemm q = *qa;
+   bool ks = qa->ksn > 1 && qa->part && a->y_cols / 128 <= EXL3I_KCTR_N;
+-  if (ks && !(q.kctr = exl3i_kctr_for(stream))) ks = false;
++  if (ks && !(q.kctr = exl3i_kctr_for(stream, a->y))) ks = false;
+   if (!ks) q.ksn = 1;
+   const int TT = T <= 1 ? 1 : T <= 2 ? 2 : T <= 4 ? 4 : 8;
+   const void* fn = TT == 1 ? mad_fn<R, 1>(npw, ks) : TT == 2 ? mad_fn<R, 2>(npw, ks)
+diff --git a/plugin/exl3i/exl3i_nt.hip.h b/plugin/exl3i/exl3i_nt.hip.h
+index 2a9278e..5ff16d0 100644
+--- a/plugin/exl3i/exl3i_nt.hip.h
++++ b/plugin/exl3i/exl3i_nt.hip.h
+@@ -633,24 +633,27 @@ template <class R>
+ static const void* wdec_fn() { return (const void*)exl3i_wdec_kernel<R>; }
+ #endif
+ 
+-// KS's arrival counters: a block of EXL3I_KCTR_N a (device, stream), zero from module load, each launch's last
+-// arrivers reset theirs -- so launches in one stream reuse a block, and launches in two streams never share one.
+-#define EXL3I_KCTR_SLOTS 16
++// KS's arrival counters: a block of EXL3I_KCTR_N a (device, stream, output), zero from module load, each launch's last
++// arrivers reset theirs -- so launches in one stream writing one output reuse a block, and two launches that may run at
++// once never share one: the engine overlaps launches only where their operands do not overlap (rad_kernel_concurrent),
++// so two such launches write two outputs. (Keyed by the stream alone, a GEMV started beside the one before it -- z beside
++// qkv, k / v beside qg on mad's xb rows -- counted its arrivals into the other's counters.)
++#define EXL3I_KCTR_SLOTS 64
+ #define EXL3I_KCTR_N 4096
+ static __device__ unsigned exl3i_kctr[EXL3I_KCTR_SLOTS * EXL3I_KCTR_N];
+-static unsigned* exl3i_kctr_for(void* stream) {
++static unsigned* exl3i_kctr_for(void* stream, const void* key) {
+   static std::mutex mu;
+-  static struct { int dev; void* s; unsigned* p; } tab[64];
++  static struct { int dev; void* s; const void* k; unsigned* p; } tab[1024];
+   static int n = 0, used[64];   // used[dev]: slots handed out on that device
+   int dev = 0;
+   if (hipGetDevice(&dev) != hipSuccess || dev < 0 || dev >= 64) return nullptr;
+   std::lock_guard<std::mutex> g(mu);
+   for (int i = 0; i < n; i++)
+-    if (tab[i].dev == dev && tab[i].s == stream) return tab[i].p;
+-  if (n == 64 || used[dev] == EXL3I_KCTR_SLOTS) return nullptr;
++    if (tab[i].dev == dev && tab[i].s == stream && tab[i].k == key) return tab[i].p;
++  if (n == 1024 || used[dev] == EXL3I_KCTR_SLOTS) return nullptr;
+   void* base = nullptr;
+   if (hipGetSymbolAddress(&base, HIP_SYMBOL(exl3i_kctr)) != hipSuccess || !base) return nullptr;
+-  tab[n] = {dev, stream, (unsigned*)base + (size_t)used[dev]++ * EXL3I_KCTR_N};
++  tab[n] = {dev, stream, key, (unsigned*)base + (size_t)used[dev]++ * EXL3I_KCTR_N};
+   return tab[n++].p;
+ }
+ 
+@@ -707,7 +710,7 @@ static int exl3i_launch_t(const Exl3iGemm* qa, int npw, void* stream) {
+   void* qargs[] = {&q};   // the nt and wdec kernels: the block and the rate
+   // KS: the decode form's K split across workgroups (nt.c chose ksn and placed the partial sums)
+   bool ks = mt == 1 && a->T <= 16 && qa->ksn > 1 && qa->part && a->y_cols / 128 <= EXL3I_KCTR_N;
+-  if (ks && !(q.kctr = exl3i_kctr_for(stream))) ks = false;   // no counter block: the unsplit form
++  if (ks && !(q.kctr = exl3i_kctr_for(stream, a->y))) ks = false;   // no counter block: the unsplit form
+   // DOT: one row (EXL3I_DEC_DOT=0 in the environment: the WMMA form)
+   const char* dot_env = getenv("EXL3I_DEC_DOT");
+   const bool dot_on = !dot_env || atoi(dot_env) != 0;

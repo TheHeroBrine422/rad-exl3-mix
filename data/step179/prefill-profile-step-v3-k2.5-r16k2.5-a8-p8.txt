@@ -1,0 +1,19 @@
+family (µs / prefill)              .5-r16k2.5-a8-p8
+exl3i_dense                               2606670.0
+exl3i_actq                                 210347.0
+attn_paged                                 197497.0
+gdn_chunk_scan                              89871.0
+add                                         55777.0
+gdn_conv_prep                               28995.0
+gdn_gated_rmsnorm                           22203.0
+rmsnorm                                     18818.0
+gemm_nt                                     17295.0
+gdn_kkt_solve                               11931.0
+sigmoid                                      9970.0
+rope                                         5724.0
+kv_store                                     1859.0
+embed_lookup                                 1176.0
+add_rmsnorm                                   653.0
+TOTAL                                     3278794.0
+steps / launches a step                  1 /   4294
+wait µs a step (lane idle)                  16404.6

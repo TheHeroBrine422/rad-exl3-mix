@@ -1,0 +1,12 @@
+kernel before the GEMV (in B)     n     A us     B us   B-A us      %
+_GLOBAL__N_118add_rmsnorm       127   106.22   108.27     2.05    1.9
+_GLOBAL__N_115silu_mul           64    86.87    88.60     1.72    2.0
+r4d_gemm_bf16_nt_m64             48    34.33    34.95     0.62    1.8
+r4d_gdn_recurrent_update         48    36.19    36.78     0.59    1.6
+exl3i_gemm_nt                    32    12.39    12.58     0.19    1.5
+_GLOBAL__N_114act_mul            16    35.96    36.77     0.81    2.3
+_GLOBAL__N_114rmsnorm             1    53.04    53.96     0.92    1.7
+_GLOBAL__N_118gather_rows         1  1043.59  1068.00    24.40    2.3
+A in [0, 30) us: n 32, mean B-A +0.19 us, +1.5 %
+A in [30, 60) us: n 171, mean B-A +0.78 us, +1.9 %
+A in [60, 1000000) us: n 134, mean B-A +2.49 us, +2.0 %

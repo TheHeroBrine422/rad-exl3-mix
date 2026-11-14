@@ -1,0 +1,45 @@
+run                                             35bac02-k2.5-mad-a8-d0  35bac02-k2.5-mad-a8-d0  35bac02-k2.5-mad-a8-d0  35bac02-k2.5-mad-a8-d0             iqr-iq2r-d0
+wall ms a pass                                                  26.536                  26.132                  25.862                  25.640                  21.005
+busy ms (union)                                                 23.294                  23.164                  23.403                  23.223                  18.821
+idle ms                                                          3.243                   2.969                   2.459                   2.417                   2.184
+dispatches a pass                                                  996                     884                     757                     757                     584
+complete passes used                                                39                      39                      39                      39                      39
+
+kernel (µs a pass / launches)                
+_Z21exl3i_mad_gemv_kernelI8RateFracILi3ELi0EE         16569.4 /    288        16683.8 /    288        16673.8 /    288        16905.8 /    288            0.0 /      0
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0         5313.8 /     48
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0         4602.4 /    104
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0         4086.3 /     88
+_ZN12_GLOBAL__N_118logits_gemm_kernelEPKtS1_P          3987.9 /      1         3982.9 /      1         3983.3 /      1         3982.9 /      1            0.0 /      0
+_Z27r4d_gemm_bf16_nt_m64_kernelILi1EEvPKtS1_P          1669.0 /     96         1691.5 /     96         1689.2 /     96         1704.9 /     96         2395.6 /     48
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0         1794.1 /     15
+_Z20exl3i_gemm_nt_kernelI8RateFracILi3ELi0EEL          1431.0 /     48         1433.0 /     48         1435.0 /     48         1459.0 /     48            0.0 /      0
+_ZN12_GLOBAL__N_117vocab_tile_kernelILj1ELj8E             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0         1315.1 /      1
+_Z23exl3i_aq_rmsnorm_kernel11Exl3iAqArgs                497.8 /    128          500.9 /    128         1175.5 /    128          743.9 /    128            0.0 /      0
+_Z31r4d_gdn_recurrent_update_kernelILi1ELi3EL             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0          647.0 /     48
+_Z31r4d_gdn_recurrent_update_kernelILi1ELi1EL             0.0 /      0          581.6 /     48          583.2 /     48          586.5 /     48            0.0 /      0
+_ZN12_GLOBAL__N_124rmsnorm_quant_fp8_kernelIL             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0          550.4 /    127
+_Z31r4d_gdn_recurrent_update_kernelILi1ELi1EL           510.0 /     48            0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0
+_ZN12_GLOBAL__N_113binary_kernelEPKtS1_Ptjjjj           418.6 /    128          417.3 /    127            0.0 /      0            0.0 /      0            5.0 /      1
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0          212.9 /     24
+_Z26r4d_gdn_conv_update_kernelILi1EtEvPKtlPKT           151.2 /     48            0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0          147.4 /      1
+_Z20exl3i_aq_actq_kernelILi2EEv11Exl3iAqArgs            134.9 /     64          137.7 /     64          134.1 /     64          137.0 /     64            0.0 /      0
+_Z22r4d_attn_decode_kernelILi1ELi16ELi256ELi6           122.9 /     16          120.1 /     16          121.1 /     16          123.8 /     16          126.5 /     16
+_ZN12_GLOBAL__N_114rmsnorm_kernelILb1ELj1024E            97.3 /     33            0.0 /      0            0.0 /      0            0.0 /      0            4.0 /      1
+_ZN12_GLOBAL__N_111rope_kernelEPtPKijjjjiiffj            92.3 /     32            0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0
+_ZN12_GLOBAL__N_115iqr_gemv_kernelIN11r4d_iqr             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0           73.6 /      8
+_ZN12_GLOBAL__N_114sigmoid_kernelEPKtPtjjj               66.5 /     16           68.7 /     16           68.8 /     16           69.7 /     16            0.0 /      0
+_Z31r4d_attn_splitkv_combine_kernelILi256ELi4            53.5 /     16           53.8 /     16           53.9 /     16           55.1 /     16           57.2 /     16
+_Z28r4d_qk_norm_rope_gate_kernelILi256ELi2EEv             0.0 /      0           33.1 /     16           33.1 /     16           33.4 /     16           41.4 /     16
+_Z20exl3i_aq_actq_kernelILi3EEv11Exl3iAqArgs             32.3 /     16           32.4 /     16           32.2 /     16           32.8 /     16            0.0 /      0
+_ZN12_GLOBAL__N_115kv_store_kernelEPKtS1_PKiP            28.3 /     16            0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0
+_ZN12_GLOBAL__N_121gate_quant_fp8_kernelILi1E             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0           27.4 /     16
+_ZN12_GLOBAL__N_119vocab_gather_kernelENS_4He             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0           10.4 /      1
+_Z24r4d_qk_rope_table_kernelPKvPvliiffii7RadY             0.0 /      0            7.2 /      1            7.2 /      1            7.2 /      1            4.3 /      1
+_ZN12_GLOBAL__N_119embed_lookup_kernelEPKiPKt             6.4 /      1            6.5 /      1            6.5 /      1            6.4 /      1            0.0 /      0
+_ZN12_GLOBAL__N_118add_rmsnorm_kernelILb1ELj1             0.0 /      0            4.6 /      1            4.6 /      1            4.7 /      1            0.0 /      0
+_ZN12_GLOBAL__N_116iqr_embed_kernelILj5ELj2EL             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0            3.9 /      1
+_ZN12_GLOBAL__N_124rmsnorm_quant_fp8_kernelIL             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0            3.5 /      1
+_ZN12_GLOBAL__N_118gather_rows_kernelEPKtPKiP             1.9 /      1            1.8 /      1            1.9 /      1            1.8 /      1            2.1 /      1
+_ZN12_GLOBAL__N_118vocab_quant_kernelEPKtjPaS             0.0 /      0            0.0 /      0            0.0 /      0            0.0 /      0            1.2 /      1

@@ -1,0 +1,15 @@
+v3-k2.5-r16k2.5-a8-base-def vs v3-k2.5-r16k2.5-a8-step2-def: IDENTICAL rows (67932 positions), mean KLD 0.683311
+v3-k2.5-r16k2.5-a8-base-c64 vs v3-k2.5-r16k2.5-a8-step2-c64: IDENTICAL rows (67932 positions), mean KLD 0.679389
+v3-k4.125-r16k4-a8-base-def vs v3-k4.125-r16k4-a8-step2-def: IDENTICAL rows (67932 positions), mean KLD 0.285516
+v3-k4.125-r16k4-a8-base-c64 vs v3-k4.125-r16k4-a8-step2-c64: IDENTICAL rows (67932 positions), mean KLD 0.279008
+v3-k4.125-r16k4-a8-base-714-def vs v3-k4.125-r16k4-a8-step2-714-def: IDENTICAL rows (67932 positions), mean KLD 0.285516
+q27v3-635bac02-k2.5-mad-a8-mbase-def vs q27v3-635bac02-k2.5-mad-a8-mstep-def: IDENTICAL rows (67932 positions), mean KLD 0.681289
+q27v3-635bac02-k2.5-mad-a8-mbase-c64 vs q27v3-635bac02-k2.5-mad-a8-mstep-c64: IDENTICAL rows (67932 positions), mean KLD 0.680631
+q27v3-144dd6e1-k4.125-mad-a8-mbase-def vs q27v3-144dd6e1-k4.125-mad-a8-mstep-def: IDENTICAL rows (67932 positions), mean KLD 0.288852
+q27v3-144dd6e1-k4.125-mad-a8-mbase-c64 vs q27v3-144dd6e1-k4.125-mad-a8-mstep-c64: IDENTICAL rows (67932 positions), mean KLD 0.287784
+q27v3-635bac02-k2.5-mad-a8-mbase-def vs q27v3-635bac02-k2.5-mad-a8-mstep3-def: IDENTICAL rows (67932 positions), mean KLD 0.681289
+q27v3-635bac02-k2.5-mad-a8-mbase-714-def vs q27v3-635bac02-k2.5-mad-a8-mstep3-714-def: IDENTICAL rows (67932 positions), mean KLD 0.681289
+q27v3-635bac02-k2.5-mad-a8-mbase-def vs q27v3-635bac02-k2.5-mad-a8-fres2-def: IDENTICAL rows (67932 positions), mean KLD 0.681289
+q27v3-635bac02-k2.5-mad-a8-mbase-c64 vs q27v3-635bac02-k2.5-mad-a8-fres2-c64: IDENTICAL rows (67932 positions), mean KLD 0.680631
+v3-k2.5-r16k2.5-a8-base-def vs v3-k2.5-r16k2.5-a8-fres2-def: IDENTICAL rows (67932 positions), mean KLD 0.683311
+v3-k2.5-r16k2.5-a8-base-c64 vs v3-k2.5-r16k2.5-a8-fres2-c64: IDENTICAL rows (67932 positions), mean KLD 0.679389
