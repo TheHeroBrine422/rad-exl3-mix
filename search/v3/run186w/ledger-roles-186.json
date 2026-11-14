@@ -1,0 +1,5 @@
+{
+  "_doc": "#186 (w164, 2026-11-14): roles of the RULES-strata slices' calib parts (merge into eval/pools/ledger-roles.json; ledger_add.py reads a roles file). Built by run186w/build186.py.",
+  "golden-s186*-c": {"role": "select", "line": "v3", "decisions": 0, "note": "#186 RULES-strata slices s186a-f (w164, 2026-11-14): calib part of each slice, merged fit + search docs, least used first by ledger + registry decisions (draw186.py seed 186), N quota (15-20 % of gen positions, >= 6 scripts, <= 1/3 of N gen from one script), cut at 4,096 tokens; documents recur across the six parts once the less used are spent (reported in the plan). Staged, not ready."},
+  "golden-t186n-c": {"role": "monitor", "line": "v3", "decisions": 0, "note": "#186 t186n (w164, 2026-11-14): the non-Latin tracking golden's calib part (20 N documents of the merged pool that no s186 c part uses), cut at 4,096 tokens; never decides (RULES-strata §7)."}
+}
