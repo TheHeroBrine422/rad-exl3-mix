@@ -30,3 +30,10 @@ head) is written as an amendment here first and judged on new held-out mixes (ne
 
 **Not in scope:** sub-1 levels (w151 requant running; priced later with the same method, no new rule), int8 decode rows
 (user default is f16), drafter on.
+
+**Amendment 1 (2026-11-14 9:25 AM CST, before any held-out mix is built or measured).** ds8's host is saturated by
+other workers' jobs (load ~26 / 32 threads, rad-convert / radmix / quant lanes): some runs of a row are 10–15 % slower
+(spikes only add time; device-side stamps are unaffected). The e2e statistic per row is chosen on the **uniform fit
+only** — the one with the smallest residual rms among (a) median of the row's measured runs, (b) minimum of the row's
+runs, (c) median inter-chunk gap (bench.py field added at 9:20 AM; rows before that lack it) — and then applied
+unchanged to the held-out mixes; all reported. Rows whose runs spread > 3 % may be rerun once (same list order).
