@@ -1,0 +1,20 @@
+--- a/store/census.py	2026-11-14 14:42:53.540123569 +0000
++++ b/store/census.py	2026-11-14 14:42:53.538645213 +0000
+@@ -27,7 +27,7 @@
+   --expect-emb PATTERN     token_embd.weight's form, the same way; the keyword `trellis` (#174-03, w157) = the V3 menu's
+                            trellis embedding: exl3i, codebook mul1i8 or mul1, natural row order, K a multiple of 1/8 in
+                            1.5..8 (embed_exl3i serves it from the stored record)
+-  --max-version N          no exl3i weight needs a reader newer than encoding version N (exl3i_encoding.h: 1 base,
++  --max-version N          no exl3i weight needs a reader newer than encoding version N (exl3i_encoding.h: 1 base, 4 codebook mad,
+                            2 codebook mul1i4, 3 R16 row order)
+ A weight's form: "<scheme> <codebook> K<K> <r16|nat>" for exl3i, "<scheme> <codebook> K<K>" for exl3, otherwise
+ "<scheme> <transform or -> <dtype of the first plane>".
+@@ -97,7 +97,7 @@
+     if scheme == "exl3i":                      # "<codebook>/h128/k<rate>[/r16]" (exl3i_encoding.h)
+         r16 = tr.endswith("/r16")
+         cb, _, k = (tr[:-4] if r16 else tr).partition("/h128/k")
+-        rows = "r16" if r16 else "nat"; ver = 3 if r16 else 2 if cb == "mul1i4" else 1
++        rows = "r16" if r16 else "nat"; ver = 4 if cb == "mad" else 3 if r16 else 2 if cb == "mul1i4" else 1
+         return scheme, k, cb, "+".join(roles), rows, ver, f"{scheme} {cb} K{k} {rows}"
+     if scheme == "exl3":
+         ci = roles.index("codes") if "codes" in roles else 0

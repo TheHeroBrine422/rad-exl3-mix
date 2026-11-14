@@ -1,0 +1,9 @@
+menu173m-v1 (mkmenu173.py, ds8 /data/q27/w158/menus/menu173m-v1.json), built 11-14 ~8:51 AM CST
+trunk: 336 weights x 42 options; families {'v3mad': 14112}; non-mad option names: none
+  levels (K): 1 1.125 1.25 1.375 1.5 1.625 1.75 1.875 2 2.125 2.25 2.375 2.5 2.625 2.75 2.875 3 3.125 3.25 3.375 3.5 3.625 3.75 3.875 4 4.125 4.25 4.375 4.5 4.625 4.75 4.875 5 5.25 5.5 5.75 6 6.25 6.5 6.75 7 7.5
+  packs: /data/q27/packs-mad/ (42 packs-mad .rad); diag /data/q27/ladder-mad/q27v3-635bac02-k2.5-mad
+head: 62 plans {'v3head-mad': 45, 'v3head-mul1': 17} from /data/q27/mad/heads-rep/hcurve151.json; i8 plans not offered; served donors built so far: ['u1.5', 'u2.5', 'u4', 'u6.5']
+embedding: 37 options {'trellis-exl3i-mul1i8': 33, 'trellis-exl3i-mul1': 3, 'bf16': 1} from code/menu-emb17403.json (w157 block)
+a/b: T4 donor ssm_ab 16244736 B (sizes <= 5.0), T5 20176896 B (>= 5.5; +3932160 B)
+fixed_bytes 35668992 (from run/test/mix/w158-u-k4.rad: container minus trunk / head / embedding; vision tower dropped from every mix, 921,460,192 B in the packs; vision in fixed: 0)
+no mul1i8 trunk level, no i8 head plan, no Lloyd / base embedding in the menu: PASS

@@ -4,6 +4,19 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 9:10 AM CST · #173-03 · A8 calibration rows on the mad ladder started; menu dump (w158)
+- **Status:** wave 1 (88 rows) scoring on box2 HIP 1 (ds8 HIP 7 held by another job; ds8 0–6 after w151's sub-1 requant) ·
+  **Rules:** `search/refit/w158/RULES-173-03.md` (a91e446) and `RULES-173-03b.md` (ac05ee7, the interaction test), each committed
+  alone before its data · **Data:** `data/a8rows173/` · **Brief:** `rad-local/workers/instr3/w158.md`
+- **Menu dump** (`data/a8rows173/menu-dump.txt`; checked before the first row, logged here after the first mixes): trunk = the mad
+  ladder only, 42 levels K1–7.5 from ds8 packs-mad (336 × 42 options, all family v3mad, no mul1i8 name); head = hcurve151's 45 mad
+  R16 plans + 17 mul1 plans (i8 plans not offered), served exl3i R16 donors built by `hdonor173.sh` (w151's pack path); embedding =
+  w157's block (33 mul1i8 + 3 mul1 trellis + bf16); a/b = w151's mad T4 / T5 donors (T5 +3,932,160 B at ≥ 5.5); fixed 35,668,992 B.
+  The packs carry the vision tower (921 MB, 0.27 bpw): every mix drops it (serves; not in the menu, counted nowhere).
+- **Census:** `store/census.py` reports mad weights as encoding version 1 / 3 (it predates mad = v4): `census-mad-v4.patch` (one
+  line) for the lead; my runs use the patched copy (`--max-version 4`, the summary shows ver 4 for the mad trunk and head).
+- **Runtime:** none (pricing rows).
+
 ### 2026-11-14 7:30 AM CST · #174-03 · emb157 rebased on qc-exl3-v3 8a00735; cores rebuilt from 8a00735 and the rebased branch on box2 + ds8 (lead note 6:10 AM) (w157)
 - **Branch:** `qc-exl3-v3-emb157` rebased without conflicts onto 8a00735 (w156's KL-mode images, core `kld.*` only):
   **head 120132a** (d032bbb / 7585524 / 4e727a4 = w144's three, 120132a = the drafter commit). Supersedes 67cd2ce.
