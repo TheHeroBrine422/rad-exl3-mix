@@ -7385,3 +7385,22 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (as the Thor proxy said, ~0.8%); the codebook decision stands on decode speed (×0.78 / ×0.91 e2e) at equal quality.
 - Every earlier decision read on xcorp parts with all rows (stage B, a/b #178-03 on s173f, w157 spot checks, the #171
   search) is flagged for the next overfit audit (~11-15) to re-read on gen rows. **Runtime:** neither.
+
+### 2026-11-14 3:10 PM CST · #183 · V3 search restarted (lead) on the mad menu, board rows only
+- **Status:** running · **Machine:** ds8 (evals, 8 cards under locks; box2 not yet: needs packs-mad copies), colo (fits),
+  VM (driver, coordinator, guard) · **Code:** `search/v3/driver.py` (repo HEAD), hosts: ds8 `/data/q27/srch183/code`
+  (repo HEAD + `earlystop-picks.patch`) · **Run dir:** `rad-local/workers/lead-srch/run/` (driver.json, menu.json,
+  registry.json, init/, prior-obs-w1a8.jsonl), coordinator `rad-local/multi/v3b/`.
+- **Setup:** menu = w158's menu173m-v1b (42 mad levels K1-7.5, 62 served R16 heads (45 mad + 17 mul1), 37 trellis
+  embeddings incl. bf16). Fit = fit.py (kfit3 form, tau 0.02, xscale) with w158's 84 A8 fit129 rows as prior_obs (the
+  4 f16 twins left out: no mode term in fit.py); check fit on the prior alone: 80 params, log-RMSE 0.025. Bug fixed
+  first: kfit3 `elevel` took one-digit embedding labels only (37 options). Embedding moves to levels no row has seen
+  get the nearest lower seen level's offset (no predicted gain): the search measures them. Incumbents = w158's
+  picks-M1m-in at 1.25, 1.5, 1.75, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7 (half steps; eighth sizes from the frontier later).
+  Base `V3-T4` = the mad K1 pack + ssm_ab T4 (drop ssm_a / ssm_b, act a8g128), vision tower dropped; T5 at >= 5.5 is
+  swapped in at the final picks (~0.0012 bpw). act a8g128; census (w158's patched census: mad = v4) `--expect-act
+  a8g128 --expect-emb trellis --max-version 4` on every mix; rule pmean curve p2, cap 0.2 + docmean guard
+  (RULES-picks); rotate per slice after 25 decisions; slices s173a → f (e, f last: used for 11-13/14 decisions),
+  gen-masked; monitor ver3-8k (alert only). rad10-e157b homes (qc-exl3-v3 120132a).
+- **Not yet:** decode term (driver has none; w159's table is ready), box2 hosts, the multi-start uniform lanes
+  (the driver has one lane per size: needs a second driver instance), size 1.0 (sub-1 levels). **Runtime:** neither.
