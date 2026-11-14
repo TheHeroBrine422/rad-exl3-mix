@@ -1,0 +1,4 @@
+Q-ctl /data/q27/w156/packs/Q-ctl.rad
+Q-a1m /data/q27/w156/packs/Q-a1m.rad
+Q-a4m /data/q27/w156/packs/Q-a4m.rad
+Q-p1m /data/q27/w156/packs/Q-p1m.rad

@@ -1,0 +1,5 @@
+V2-2.50 /data/q27/w156/packs/V2-2.50.rad
+V2-4.00 /data/q27/w156/packs/V2-4.00.rad
+K2.5 /data/q27/w156/packs/K2.5.rad
+K4 /data/q27/w156/packs/K4.rad
+K6 /data/q27/w156/packs/K6.rad

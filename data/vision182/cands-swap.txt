@@ -1,0 +1,7 @@
+S-L0-15 /data/q27/w156/packs/S-L0-15.rad
+S-L16-31 /data/q27/w156/packs/S-L16-31.rad
+S-L32-47 /data/q27/w156/packs/S-L32-47.rad
+S-L48-63 /data/q27/w156/packs/S-L48-63.rad
+S-attn /data/q27/w156/packs/S-attn.rad
+S-gdn /data/q27/w156/packs/S-gdn.rad
+S-mlp /data/q27/w156/packs/S-mlp.rad

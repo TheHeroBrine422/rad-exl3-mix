@@ -4,6 +4,48 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 6:05 AM CST · #182 · Vision KLD eval: image answers degrade like text at 2.5 bpw, ×1.3 / ×1.6 text's at K4 / K6 (~0.2 / 0.4 bpw); a calibration-free perturbation (A8) shows the same ratio, so nothing singles out the text-only Hessians; text-only QAD does not hurt vision (w156)
+- **Status:** done (decision input, no decision) · **Machine:** ds8 HIP 7 (+ HIP 4 for the TP2 golden, 8 min), colo CPU
+  (set build) · **Code:** radiance-hero `qc-exl3-v3-kldmm` **5fa0b46** (one commit on qc-exl3-v3 b83698d, core only: the KL
+  mode takes pictures), `eval/vision182/` · **Data:** `data/vision182/` (README), ds8 `/data/q27/w156/` · **Rule:** none
+  (a measurement); the entropy-matched ratio, the A8 test, the swap test and the QAD rows were added after the V2 rows
+- **Set (non-calib, `docs/CORPORA.md`):** 450 public image chat items (558 images; photo 75, scenetext 45, document 75,
+  infographic 30, chart 75, screenshot / UI 75, multi-image 75) + 120 dolly-15k text items as a format-matched control;
+  answers written by IQR-V4 S (greedy, thinking off, ≤ 512 tokens); the checkpoint's chat template; scored: every token
+  after the last image (answer rows = the gen mask: 107,433 image, 34,742 text). bf16 golden TP2 (cards 7 + 4), bf16 KV,
+  top-512, 175,313 positions. No calib read (text side: golden-s173e-x, the xcorp part of s173e); no ledger rows.
+- **radiance KL mode with pictures:** corpus `"media"` + `"score_tail"`, manifest `media` / `media_at`, `--kld-ref`
+  re-processes and checks each run; text rows byte-identical to rad10-perf (V2 3.00 on cut13, sha 32ec2ac7); K4 against
+  its own reference 0 exactly, pictures flipped → 0.15 on the image docs, 0 on the text doc. bf16 `--placement
+  layer_offload` segfaults in libavx's CPU GDN (`avx_gdn_conv_prep_v2`, as w124's serving crash) → TP2 golden. Packs: mad
+  K2.5 / K4 / K6 (final.recipe, codebook=mad, a8g128) with the tower reproduce w151's stage-B s173e-x rows to 5 digits.
+- **Answer-row KL** (image / text control, 95 % document-bootstrap CI; entropy-matched = text reweighted to the image
+  rows' bf16-entropy bins):
+
+  | | image | text ctrl | image / text | entropy-matched |
+  |---|---|---|---|---|
+  | V2 2.50 / 4.00 | 0.0823 / 0.0102 | 0.0864 / 0.00751 | 0.95 [0.87, 1.05] / 1.36 [1.21, 1.54] | 1.39 / 2.03 |
+  | mad K2.5 / K4 / K6 | 0.0587 / 0.00891 / 0.00098 | 0.0584 / 0.00677 / 0.00063 | 1.01 [0.91, 1.11] / 1.32 [1.16, 1.50] / 1.57 [1.39, 1.77] | 1.47 / 1.97 / 2.33 |
+  | A8 alone (K6 a8g128 vs K6 f16) | 0.00034 | 0.00021 | 1.68 [1.45, 1.97] | 2.51 |
+
+  From K2.5 to K6 text falls ×93, images ×60: ~0.0 / 0.2 / 0.4 bpw-equivalent behind at K2.5 / K4 / K6 (tiny in
+  absolute terms at K6). Per kind: scenetext 1.6–2.7× and photo 1.3–1.5× at every rate; screenshot 1.0 → 2.3 and
+  multi-image 1.0 → 1.5 with rate; charts / documents ≤ ~1. Question rows right after an image: 3–6× text's.
+- **Reading:** the same ratio for A8 (int8 RTN of the activations, no Hessian anywhere) as for K6's weights says image
+  positions are more sensitive to *any* small trunk perturbation; the ratio grows with bpw because text's error shrinks
+  into that regime. **Nothing here singles out the text-only Hessians, so no case for a pre-freeze codes change.** It does
+  not rule out that image-aware Hessians help (only quantizing with them answers that: V4).
+- **Swap test** (K2.5 + one group from K6; share of the K2.5 → K6 gap closed, image − text): layers 32–47 **+0.06**
+  [+0.03, +0.08], attention +0.02 [+0.01, +0.04]; layers 48–63 −0.11, MLP −0.10, the rest ≈ 0. Images lean on layers
+  32–47 and attention, text on the last quartile and the MLPs; modest, and at K2.5 (a K4 → K6 swap would be sharper).
+- **QAD (#181, w154's containers + tower; paired vs ctl):** a1m image 0.942 [0.935, 0.949] / text 0.939 [0.930, 0.947];
+  a4m 0.978 / 0.988; p1m 0.936 / 0.961 (image / text 0.974 [0.960, 0.989]). **Text-only QAD lowers image KL as much as
+  text KL** (p1m slightly more); no kind gets worse beyond a4m photo ×1.015.
+- **V3 vs V2 (paired):** K2.5 / V2 2.50 image 0.713, text 0.676 (images gain a bit less, ×1.055 [1.011, 1.099]); K4 / V2
+  4.00 image 0.872, text 0.902.
+- **Card time:** ~4.6 card-h on HIP 7 (+ 8 min HIP 4). ds8 intermediates deleted after logging (`w156/DELETED.txt`).
+- **Runtime:** none (an eval; A8's own vision cost is 0.00034 at K6, ×1.7 text's, small next to the weights').
+
 ### 2026-11-14 3:05 AM CST · #181 · main run stopped at the 4 M read (user: converge first), 2.5 lr × data-mix screen at 1 M launched with a fixed held-out qad eval set; calib train-KL spikes = single hard documents streamed over steps (w154)
 - **Status:** screen running (box2 cards 0-3, single-card runs) · **Rules:** amendment 4 (fd26a53) · **Notes:** lead
   11-14 1:05–2:30 AM CST (read late: they were posted while I worked; the 2b inc4.0 run had started at lr 1e-3 without

@@ -1,0 +1,7 @@
+08:27:45 S-L0-15: 84 weights from K6; /data/q27/w156/packs/S-L0-15.rad.part: 1120 weights (84 from donors, 0 added, 0 dropped, 0 act keys), 15.231 GiB, 0 cloned, 1120 copied
+08:28:05 S-L16-31: 84 weights from K6; /data/q27/w156/packs/S-L16-31.rad.part: 1120 weights (84 from donors, 0 added, 0 dropped, 0 act keys), 15.231 GiB, 0 cloned, 1120 copied
+08:28:24 S-L32-47: 84 weights from K6; /data/q27/w156/packs/S-L32-47.rad.part: 1120 weights (84 from donors, 0 added, 0 dropped, 0 act keys), 15.231 GiB, 0 cloned, 1120 copied
+08:28:44 S-L48-63: 84 weights from K6; /data/q27/w156/packs/S-L48-63.rad.part: 1120 weights (84 from donors, 0 added, 0 dropped, 0 act keys), 15.231 GiB, 0 cloned, 1120 copied
+08:28:57 S-attn: 64 weights from K6; /data/q27/w156/packs/S-attn.rad.part: 1120 weights (64 from donors, 0 added, 0 dropped, 0 act keys), 13.437 GiB, 0 cloned, 1120 copied
+08:29:16 S-gdn: 144 weights from K6; /data/q27/w156/packs/S-gdn.rad.part: 1120 weights (144 from donors, 0 added, 0 dropped, 0 act keys), 15.009 GiB, 0 cloned, 1120 copied
+08:29:40 S-mlp: 128 weights from K6; /data/q27/w156/packs/S-mlp.rad.part: 1120 weights (128 from donors, 0 added, 0 dropped, 0 act keys), 19.726 GiB, 0 cloned, 1120 copied
