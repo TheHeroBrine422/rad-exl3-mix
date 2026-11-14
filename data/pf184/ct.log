@@ -1,0 +1,8 @@
+f1 test_twopass rc 0 23:27:00: TWOPASS GPU TEST PASS (2684 checks)
+f1 exl3i_gpu_test rc 0 23:30:39: EXL3I GPU TEST PASS
+f1 test_twopass rc 0 23:32:02: TWOPASS GPU TEST PASS (2684 checks)
+f1 test_aq rc 0 23:32:31: TEST_AQ PASS (0 failures)
+f1 test_r16 rc 0 23:32:37: TEST_R16 PASS (0 failures)
+f1 test_ks rc 0 23:32:41: TEST_KS PASS (0 failures)
+f1 test_a4 rc 0 23:33:28: TEST_A4 PASS (1006 checks)
+f1 test_rerank rc 0 23:35:46: TEST_RERANK PASS (0 failures)

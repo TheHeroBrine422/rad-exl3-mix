@@ -1,0 +1,13 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, one rank of two (the board's shapes), 9 rounds x burst 3, weights over 256 MB of copies, shared int8 activations
+gate_up   17408   5120  2048  exl3i k4           1881.7 us  (min   1877.1)   194.0 TOPS
+gate_up   17408   5120  2048  B k4               1862.1 us  (min   1857.6)   196.1 TOPS
+gate_up   17408   5120  2048  iqr k4             1843.5 us  (min   1839.3)   198.0 TOPS
+gate_up   17408   5120  2048  bare rb32          1772.8 us  (min   1770.3)   205.9 TOPS
+gate_up   17408   5120  2048  exl3i gemm         1783.2 us  (min   1776.8)   204.7 TOPS
+down       5120   8704  2048  exl3i k4            957.1 us  (min    889.4)   190.7 TOPS
+down       5120   8704  2048  B k4                953.2 us  (min    949.3)   191.5 TOPS
+down       5120   8704  2048  iqr k4              958.1 us  (min    953.5)   190.5 TOPS
+down       5120   8704  2048  bare rb32           910.4 us  (min    908.9)   200.5 TOPS
+down       5120   8704  2048  exl3i gemm          897.5 us  (min    896.3)   203.4 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)

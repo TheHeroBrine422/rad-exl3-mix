@@ -1,0 +1,73 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, one rank of two (the board's shapes), 7 rounds x burst 20, weights over 256 MB of copies, shared int8 activations
+gate_up   17408   5120  2048  exl3i k2.5         2488.4 us  (min   1855.7)   146.7 TOPS
+gate_up   17408   5120  2048  B k2.5             2502.8 us  (min   2471.0)   145.9 TOPS
+gate_up   17408   5120  2048  exl3i k4           2482.1 us  (min   2466.2)   147.1 TOPS
+gate_up   17408   5120  2048  B k4               2488.9 us  (min   2473.3)   146.7 TOPS
+gate_up   17408   5120  2048  exl3i k6           2496.7 us  (min   2487.6)   146.2 TOPS
+gate_up   17408   5120  2048  B k6               2512.3 us  (min   2485.9)   145.3 TOPS
+gate_up   17408   5120  2048  iqr k4             2447.2 us  (min   2431.4)   149.2 TOPS
+down       5120   8704  2048  exl3i k2.5         1231.5 us  (min    918.0)   148.2 TOPS
+down       5120   8704  2048  B k2.5             1240.0 us  (min    926.2)   147.2 TOPS
+down       5120   8704  2048  exl3i k4           1213.5 us  (min   1113.9)   150.4 TOPS
+down       5120   8704  2048  B k4               1233.5 us  (min   1226.0)   148.0 TOPS
+down       5120   8704  2048  exl3i k6           1236.0 us  (min   1228.1)   147.7 TOPS
+down       5120   8704  2048  B k6               1243.7 us  (min   1238.4)   146.8 TOPS
+down       5120   8704  2048  iqr k4             1222.2 us  (min   1217.4)   149.3 TOPS
+gdn_qkv    5120   5120  2048  exl3i k2.5          729.1 us  (min    537.7)   147.3 TOPS
+gdn_qkv    5120   5120  2048  B k2.5              728.6 us  (min    573.4)   147.4 TOPS
+gdn_qkv    5120   5120  2048  exl3i k4            724.0 us  (min    560.6)   148.3 TOPS
+gdn_qkv    5120   5120  2048  B k4                728.7 us  (min    568.7)   147.3 TOPS
+gdn_qkv    5120   5120  2048  exl3i k6            731.7 us  (min    657.1)   146.7 TOPS
+gdn_qkv    5120   5120  2048  B k6                743.4 us  (min    729.2)   144.4 TOPS
+gdn_qkv    5120   5120  2048  iqr k4              713.2 us  (min    704.2)   150.6 TOPS
+gdn_z      3072   5120  2048  exl3i k2.5          434.2 us  (min    310.3)   148.4 TOPS
+gdn_z      3072   5120  2048  B k2.5              435.9 us  (min    338.3)   147.8 TOPS
+gdn_z      3072   5120  2048  exl3i k4            432.9 us  (min    339.1)   148.8 TOPS
+gdn_z      3072   5120  2048  B k4                436.9 us  (min    348.8)   147.4 TOPS
+gdn_z      3072   5120  2048  exl3i k6            437.1 us  (min    339.4)   147.4 TOPS
+gdn_z      3072   5120  2048  B k6                444.2 us  (min    344.6)   145.0 TOPS
+gdn_z      3072   5120  2048  iqr k4              428.8 us  (min    322.8)   150.2 TOPS
+attn_qg    6144   5120  2048  exl3i k2.5          880.9 us  (min    655.9)   146.3 TOPS
+attn_qg    6144   5120  2048  B k2.5              879.8 us  (min    679.0)   146.5 TOPS
+attn_qg    6144   5120  2048  exl3i k4            865.3 us  (min    667.1)   148.9 TOPS
+attn_qg    6144   5120  2048  B k4                869.9 us  (min    768.9)   148.1 TOPS
+attn_qg    6144   5120  2048  exl3i k6            875.4 us  (min    865.3)   147.2 TOPS
+attn_qg    6144   5120  2048  B k6                887.6 us  (min    870.1)   145.2 TOPS
+attn_qg    6144   5120  2048  iqr k4              863.3 us  (min    846.3)   149.3 TOPS
+attn_k      512   5120  2048  exl3i k2.5           68.0 us  (min     65.4)   157.9 TOPS
+attn_k      512   5120  2048  B k2.5               68.2 us  (min     66.2)   157.4 TOPS
+attn_k      512   5120  2048  exl3i k4             67.8 us  (min     66.7)   158.4 TOPS
+attn_k      512   5120  2048  B k4                 67.6 us  (min     63.4)   158.9 TOPS
+attn_k      512   5120  2048  exl3i k6             67.6 us  (min     63.0)   158.9 TOPS
+attn_k      512   5120  2048  B k6                 69.1 us  (min     64.6)   155.3 TOPS
+attn_k      512   5120  2048  iqr k4               65.2 us  (min     61.0)   164.6 TOPS
+attn_v      512   5120  2048  exl3i k2.5           67.7 us  (min     66.1)   158.7 TOPS
+attn_v      512   5120  2048  B k2.5               67.8 us  (min     66.2)   158.5 TOPS
+attn_v      512   5120  2048  exl3i k4             67.2 us  (min     63.8)   159.9 TOPS
+attn_v      512   5120  2048  B k4                 67.4 us  (min     63.4)   159.2 TOPS
+attn_v      512   5120  2048  exl3i k6             68.8 us  (min     62.8)   156.2 TOPS
+attn_v      512   5120  2048  B k6                 69.4 us  (min     64.3)   154.7 TOPS
+attn_v      512   5120  2048  iqr k4               65.0 us  (min     62.9)   165.1 TOPS
+attn_o     5120   3072  2048  exl3i k2.5          459.1 us  (min    324.8)   140.3 TOPS
+attn_o     5120   3072  2048  B k2.5              463.5 us  (min    349.1)   139.0 TOPS
+attn_o     5120   3072  2048  exl3i k4            456.0 us  (min    355.3)   141.3 TOPS
+attn_o     5120   3072  2048  B k4                453.6 us  (min    353.5)   142.0 TOPS
+attn_o     5120   3072  2048  exl3i k6            458.6 us  (min    354.0)   140.5 TOPS
+attn_o     5120   3072  2048  B k6                461.9 us  (min    358.4)   139.5 TOPS
+attn_o     5120   3072  2048  iqr k4              435.4 us  (min    374.6)   148.0 TOPS
+ssm_out    5120   3072  2048  exl3i k2.5          459.8 us  (min    325.7)   140.1 TOPS
+ssm_out    5120   3072  2048  B k2.5              459.8 us  (min    351.7)   140.1 TOPS
+ssm_out    5120   3072  2048  exl3i k4            454.4 us  (min    351.4)   141.8 TOPS
+ssm_out    5120   3072  2048  B k4                453.9 us  (min    356.8)   141.9 TOPS
+ssm_out    5120   3072  2048  exl3i k6            458.9 us  (min    355.2)   140.4 TOPS
+ssm_out    5120   3072  2048  B k6                461.3 us  (min    355.6)   139.7 TOPS
+ssm_out    5120   3072  2048  iqr k4              436.6 us  (min    366.1)   147.6 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)
+  B k2.5          GDN   5367.0  attention   5222.1  mean   5330.8
+  B k4            GDN   5342.0  attention   5180.8  mean   5301.7
+  B k6            GDN   5404.9  attention   5244.1  mean   5364.7
+  exl3i k2.5      GDN   5342.9  attention   5195.6  mean   5306.1
+  exl3i k4        GDN   5306.9  attention   5151.9  mean   5268.2
+  exl3i k6        GDN   5360.4  attention   5203.1  mean   5321.1
+  iqr k4          GDN   5248.0  attention   5098.4  mean   5210.6

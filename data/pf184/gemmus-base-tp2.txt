@@ -1,0 +1,183 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, one rank of two (the board's shapes), 5 rounds x burst 20, weights over 256 MB of copies, shared int8 activations
+gate_up   17408   5120  2048  exl3i k2           2483.4 us  (min   1894.5)   147.0 TOPS
+gate_up   17408   5120  2048  exl3i-self k2      2590.9 us  (min   2577.5)   140.9 TOPS
+gate_up   17408   5120  2048  exl3i k2.5         2496.4 us  (min   2486.5)   146.2 TOPS
+gate_up   17408   5120  2048  exl3i-self k2.5    2617.1 us  (min   2591.9)   139.5 TOPS
+gate_up   17408   5120  2048  exl3i k3           2502.1 us  (min   2495.0)   145.9 TOPS
+gate_up   17408   5120  2048  exl3i-self k3      2609.0 us  (min   2601.3)   139.9 TOPS
+gate_up   17408   5120  2048  exl3i k4           2495.7 us  (min   2490.0)   146.3 TOPS
+gate_up   17408   5120  2048  exl3i-self k4      2605.4 us  (min   2587.9)   140.1 TOPS
+gate_up   17408   5120  2048  exl3i k5           2508.0 us  (min   2501.2)   145.6 TOPS
+gate_up   17408   5120  2048  exl3i-self k5      2631.9 us  (min   2618.8)   138.7 TOPS
+gate_up   17408   5120  2048  exl3i k6           2529.0 us  (min   2522.7)   144.4 TOPS
+gate_up   17408   5120  2048  exl3i-self k6      2637.4 us  (min   2621.2)   138.4 TOPS
+gate_up   17408   5120  2048  iqr k2             2433.8 us  (min   2423.4)   150.0 TOPS
+gate_up   17408   5120  2048  iqr k3             2436.2 us  (min   2417.8)   149.9 TOPS
+gate_up   17408   5120  2048  iqr k4             2449.0 us  (min   2439.6)   149.1 TOPS
+gate_up   17408   5120  2048  iqr k5             2458.7 us  (min   2437.7)   148.5 TOPS
+gate_up   17408   5120  2048  iqr k6             2461.9 us  (min   2457.5)   148.3 TOPS
+gate_up   17408   5120  2048  fp8                2443.6 us  (min   2429.7)   149.4 TOPS
+down       5120   8704  2048  exl3i k2           1229.2 us  (min    923.9)   148.5 TOPS
+down       5120   8704  2048  exl3i-self k2      1304.3 us  (min   1021.0)   140.0 TOPS
+down       5120   8704  2048  exl3i k2.5         1228.4 us  (min   1199.5)   148.6 TOPS
+down       5120   8704  2048  exl3i-self k2.5    1334.2 us  (min   1326.2)   136.8 TOPS
+down       5120   8704  2048  exl3i k3           1236.6 us  (min   1235.5)   147.6 TOPS
+down       5120   8704  2048  exl3i-self k3      1324.3 us  (min   1319.7)   137.8 TOPS
+down       5120   8704  2048  exl3i k4           1233.0 us  (min   1212.1)   148.0 TOPS
+down       5120   8704  2048  exl3i-self k4      1332.7 us  (min   1315.7)   137.0 TOPS
+down       5120   8704  2048  exl3i k5           1250.6 us  (min   1229.0)   146.0 TOPS
+down       5120   8704  2048  exl3i-self k5      1338.3 us  (min   1333.9)   136.4 TOPS
+down       5120   8704  2048  exl3i k6           1248.1 us  (min   1239.2)   146.3 TOPS
+down       5120   8704  2048  exl3i-self k6      1345.5 us  (min   1341.9)   135.7 TOPS
+down       5120   8704  2048  iqr k2             1221.8 us  (min   1214.1)   149.4 TOPS
+down       5120   8704  2048  iqr k3             1230.2 us  (min   1219.9)   148.4 TOPS
+down       5120   8704  2048  iqr k4             1235.2 us  (min   1221.3)   147.8 TOPS
+down       5120   8704  2048  iqr k5             1241.7 us  (min   1230.5)   147.0 TOPS
+down       5120   8704  2048  iqr k6             1248.0 us  (min   1234.7)   146.3 TOPS
+down       5120   8704  2048  fp8                1224.2 us  (min   1218.9)   149.1 TOPS
+gdn_qkv    5120   5120  2048  exl3i k2            731.8 us  (min    549.6)   146.7 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k2       790.2 us  (min    634.5)   135.9 TOPS
+gdn_qkv    5120   5120  2048  exl3i k2.5          724.0 us  (min    567.3)   148.3 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k2.5     790.9 us  (min    644.9)   135.8 TOPS
+gdn_qkv    5120   5120  2048  exl3i k3            714.4 us  (min    691.8)   150.3 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k3       806.2 us  (min    797.7)   133.2 TOPS
+gdn_qkv    5120   5120  2048  exl3i k4            726.4 us  (min    711.3)   147.8 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k4       796.3 us  (min    794.8)   134.8 TOPS
+gdn_qkv    5120   5120  2048  exl3i k5            727.0 us  (min    719.0)   147.7 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k5       811.4 us  (min    797.5)   132.3 TOPS
+gdn_qkv    5120   5120  2048  exl3i k6            730.2 us  (min    724.5)   147.0 TOPS
+gdn_qkv    5120   5120  2048  exl3i-self k6       807.6 us  (min    800.8)   133.0 TOPS
+gdn_qkv    5120   5120  2048  iqr k2              705.2 us  (min    695.7)   152.3 TOPS
+gdn_qkv    5120   5120  2048  iqr k3              716.7 us  (min    709.3)   149.8 TOPS
+gdn_qkv    5120   5120  2048  iqr k4              726.3 us  (min    721.0)   147.8 TOPS
+gdn_qkv    5120   5120  2048  iqr k5              729.1 us  (min    724.3)   147.3 TOPS
+gdn_qkv    5120   5120  2048  iqr k6              725.7 us  (min    720.5)   148.0 TOPS
+gdn_qkv    5120   5120  2048  fp8                 716.6 us  (min    706.5)   149.8 TOPS
+gdn_z      3072   5120  2048  exl3i k2            441.0 us  (min    320.5)   146.1 TOPS
+gdn_z      3072   5120  2048  exl3i-self k2       505.1 us  (min    413.2)   127.6 TOPS
+gdn_z      3072   5120  2048  exl3i k2.5          427.9 us  (min    344.4)   150.6 TOPS
+gdn_z      3072   5120  2048  exl3i-self k2.5     506.2 us  (min    410.5)   127.3 TOPS
+gdn_z      3072   5120  2048  exl3i k3            422.6 us  (min    334.4)   152.4 TOPS
+gdn_z      3072   5120  2048  exl3i-self k3       505.8 us  (min    408.0)   127.4 TOPS
+gdn_z      3072   5120  2048  exl3i k4            418.5 us  (min    357.8)   153.9 TOPS
+gdn_z      3072   5120  2048  exl3i-self k4       505.8 us  (min    491.4)   127.4 TOPS
+gdn_z      3072   5120  2048  exl3i k5            429.0 us  (min    422.4)   150.2 TOPS
+gdn_z      3072   5120  2048  exl3i-self k5       514.3 us  (min    509.9)   125.3 TOPS
+gdn_z      3072   5120  2048  exl3i k6            431.5 us  (min    426.5)   149.3 TOPS
+gdn_z      3072   5120  2048  exl3i-self k6       520.1 us  (min    516.6)   123.9 TOPS
+gdn_z      3072   5120  2048  iqr k2              416.6 us  (min    408.2)   154.6 TOPS
+gdn_z      3072   5120  2048  iqr k3              427.0 us  (min    426.9)   150.9 TOPS
+gdn_z      3072   5120  2048  iqr k4              436.2 us  (min    432.6)   147.7 TOPS
+gdn_z      3072   5120  2048  iqr k5              436.2 us  (min    426.8)   147.7 TOPS
+gdn_z      3072   5120  2048  iqr k6              439.3 us  (min    433.5)   146.7 TOPS
+gdn_z      3072   5120  2048  fp8                 420.9 us  (min    414.3)   153.0 TOPS
+attn_qg    6144   5120  2048  exl3i k2            876.6 us  (min    671.0)   147.0 TOPS
+attn_qg    6144   5120  2048  exl3i-self k2       936.4 us  (min    746.9)   137.6 TOPS
+attn_qg    6144   5120  2048  exl3i k2.5          877.7 us  (min    694.8)   146.8 TOPS
+attn_qg    6144   5120  2048  exl3i-self k2.5     940.1 us  (min    867.1)   137.1 TOPS
+attn_qg    6144   5120  2048  exl3i k3            884.2 us  (min    871.9)   145.7 TOPS
+attn_qg    6144   5120  2048  exl3i-self k3       947.8 us  (min    936.6)   135.9 TOPS
+attn_qg    6144   5120  2048  exl3i k4            875.5 us  (min    858.5)   147.2 TOPS
+attn_qg    6144   5120  2048  exl3i-self k4       943.6 us  (min    920.2)   136.5 TOPS
+attn_qg    6144   5120  2048  exl3i k5            888.4 us  (min    886.8)   145.0 TOPS
+attn_qg    6144   5120  2048  exl3i-self k5       953.3 us  (min    947.8)   135.2 TOPS
+attn_qg    6144   5120  2048  exl3i k6            883.5 us  (min    874.8)   145.8 TOPS
+attn_qg    6144   5120  2048  exl3i-self k6       954.4 us  (min    950.1)   135.0 TOPS
+attn_qg    6144   5120  2048  iqr k2              851.4 us  (min    847.0)   151.3 TOPS
+attn_qg    6144   5120  2048  iqr k3              866.7 us  (min    857.7)   148.7 TOPS
+attn_qg    6144   5120  2048  iqr k4              875.8 us  (min    861.3)   147.1 TOPS
+attn_qg    6144   5120  2048  iqr k5              874.9 us  (min    864.7)   147.3 TOPS
+attn_qg    6144   5120  2048  iqr k6              879.4 us  (min    871.5)   146.5 TOPS
+attn_qg    6144   5120  2048  fp8                 851.8 us  (min    841.9)   151.3 TOPS
+attn_k      512   5120  2048  exl3i k2             74.4 us  (min     65.3)   144.3 TOPS
+attn_k      512   5120  2048  exl3i-self k2       155.1 us  (min    129.6)    69.2 TOPS
+attn_k      512   5120  2048  exl3i k2.5           76.1 us  (min     63.8)   141.1 TOPS
+attn_k      512   5120  2048  exl3i-self k2.5     152.4 us  (min    127.6)    70.5 TOPS
+attn_k      512   5120  2048  exl3i k3             75.2 us  (min     65.6)   142.8 TOPS
+attn_k      512   5120  2048  exl3i-self k3       150.1 us  (min    134.5)    71.5 TOPS
+attn_k      512   5120  2048  exl3i k4             74.5 us  (min     65.7)   144.2 TOPS
+attn_k      512   5120  2048  exl3i-self k4       149.4 us  (min    134.2)    71.9 TOPS
+attn_k      512   5120  2048  exl3i k5             75.6 us  (min     67.2)   142.1 TOPS
+attn_k      512   5120  2048  exl3i-self k5       150.2 us  (min    134.1)    71.5 TOPS
+attn_k      512   5120  2048  exl3i k6             74.0 us  (min     65.4)   145.0 TOPS
+attn_k      512   5120  2048  exl3i-self k6       153.0 us  (min    136.4)    70.2 TOPS
+attn_k      512   5120  2048  iqr k2               70.1 us  (min     62.6)   153.2 TOPS
+attn_k      512   5120  2048  iqr k3               69.9 us  (min     64.1)   153.5 TOPS
+attn_k      512   5120  2048  iqr k4               71.2 us  (min     65.5)   150.8 TOPS
+attn_k      512   5120  2048  iqr k5               73.4 us  (min     66.1)   146.4 TOPS
+attn_k      512   5120  2048  iqr k6               73.3 us  (min     65.6)   146.5 TOPS
+attn_k      512   5120  2048  fp8                  67.8 us  (min     59.7)   158.3 TOPS
+attn_v      512   5120  2048  exl3i k2             76.6 us  (min     65.5)   140.2 TOPS
+attn_v      512   5120  2048  exl3i-self k2       154.8 us  (min    129.9)    69.4 TOPS
+attn_v      512   5120  2048  exl3i k2.5           77.5 us  (min     63.9)   138.5 TOPS
+attn_v      512   5120  2048  exl3i-self k2.5     152.3 us  (min    126.9)    70.5 TOPS
+attn_v      512   5120  2048  exl3i k3             75.0 us  (min     66.4)   143.2 TOPS
+attn_v      512   5120  2048  exl3i-self k3       152.1 us  (min    135.0)    70.6 TOPS
+attn_v      512   5120  2048  exl3i k4             73.9 us  (min     65.8)   145.4 TOPS
+attn_v      512   5120  2048  exl3i-self k4       151.0 us  (min    136.2)    71.1 TOPS
+attn_v      512   5120  2048  exl3i k5             74.0 us  (min     66.5)   145.0 TOPS
+attn_v      512   5120  2048  exl3i-self k5       150.6 us  (min    133.9)    71.3 TOPS
+attn_v      512   5120  2048  exl3i k6             76.4 us  (min     66.5)   140.5 TOPS
+attn_v      512   5120  2048  exl3i-self k6       150.6 us  (min    136.1)    71.3 TOPS
+attn_v      512   5120  2048  iqr k2               69.0 us  (min     61.7)   155.7 TOPS
+attn_v      512   5120  2048  iqr k3               70.2 us  (min     65.0)   152.9 TOPS
+attn_v      512   5120  2048  iqr k4               71.5 us  (min     64.6)   150.3 TOPS
+attn_v      512   5120  2048  iqr k5               72.8 us  (min     65.3)   147.6 TOPS
+attn_v      512   5120  2048  iqr k6               73.0 us  (min     66.0)   147.0 TOPS
+attn_v      512   5120  2048  fp8                  68.3 us  (min     61.3)   157.2 TOPS
+attn_o     5120   3072  2048  exl3i k2            456.9 us  (min    334.9)   141.0 TOPS
+attn_o     5120   3072  2048  exl3i-self k2       493.1 us  (min    392.4)   130.7 TOPS
+attn_o     5120   3072  2048  exl3i k2.5          450.3 us  (min    354.4)   143.1 TOPS
+attn_o     5120   3072  2048  exl3i-self k2.5     496.9 us  (min    398.0)   129.7 TOPS
+attn_o     5120   3072  2048  exl3i k3            438.8 us  (min    351.6)   146.8 TOPS
+attn_o     5120   3072  2048  exl3i-self k3       496.6 us  (min    393.4)   129.7 TOPS
+attn_o     5120   3072  2048  exl3i k4            447.0 us  (min    374.6)   144.1 TOPS
+attn_o     5120   3072  2048  exl3i-self k4       495.8 us  (min    475.5)   129.9 TOPS
+attn_o     5120   3072  2048  exl3i k5            456.3 us  (min    446.0)   141.2 TOPS
+attn_o     5120   3072  2048  exl3i-self k5       506.5 us  (min    497.6)   127.2 TOPS
+attn_o     5120   3072  2048  exl3i k6            454.3 us  (min    452.0)   141.8 TOPS
+attn_o     5120   3072  2048  exl3i-self k6       505.5 us  (min    504.4)   127.4 TOPS
+attn_o     5120   3072  2048  iqr k2              426.9 us  (min    423.9)   150.9 TOPS
+attn_o     5120   3072  2048  iqr k3              438.1 us  (min    433.5)   147.1 TOPS
+attn_o     5120   3072  2048  iqr k4              448.8 us  (min    438.2)   143.5 TOPS
+attn_o     5120   3072  2048  iqr k5h             517.9 us  (min    510.6)   124.4 TOPS
+attn_o     5120   3072  2048  iqr k6h             502.4 us  (min    499.6)   128.2 TOPS
+attn_o     5120   3072  2048  fp8                 417.9 us  (min    411.3)   154.1 TOPS
+ssm_out    5120   3072  2048  exl3i k2            456.4 us  (min    334.4)   141.2 TOPS
+ssm_out    5120   3072  2048  exl3i-self k2       490.8 us  (min    394.2)   131.3 TOPS
+ssm_out    5120   3072  2048  exl3i k2.5          441.9 us  (min    357.5)   145.8 TOPS
+ssm_out    5120   3072  2048  exl3i-self k2.5     495.6 us  (min    399.2)   130.0 TOPS
+ssm_out    5120   3072  2048  exl3i k3            450.0 us  (min    350.1)   143.2 TOPS
+ssm_out    5120   3072  2048  exl3i-self k3       496.6 us  (min    396.7)   129.7 TOPS
+ssm_out    5120   3072  2048  exl3i k4            451.4 us  (min    377.1)   142.7 TOPS
+ssm_out    5120   3072  2048  exl3i-self k4       500.0 us  (min    476.2)   128.9 TOPS
+ssm_out    5120   3072  2048  exl3i k5            451.0 us  (min    442.7)   142.9 TOPS
+ssm_out    5120   3072  2048  exl3i-self k5       504.1 us  (min    489.7)   127.8 TOPS
+ssm_out    5120   3072  2048  exl3i k6            457.5 us  (min    449.3)   140.8 TOPS
+ssm_out    5120   3072  2048  exl3i-self k6       505.1 us  (min    499.0)   127.5 TOPS
+ssm_out    5120   3072  2048  iqr k2              427.0 us  (min    421.4)   150.9 TOPS
+ssm_out    5120   3072  2048  iqr k3              436.0 us  (min    434.9)   147.8 TOPS
+ssm_out    5120   3072  2048  iqr k4              447.7 us  (min    440.5)   143.9 TOPS
+ssm_out    5120   3072  2048  iqr k5h             515.7 us  (min    511.7)   124.9 TOPS
+ssm_out    5120   3072  2048  iqr k6h             508.4 us  (min    506.9)   126.7 TOPS
+ssm_out    5120   3072  2048  fp8                 423.4 us  (min    419.8)   152.2 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)
+  exl3i k2        GDN   5341.7  attention   5197.1  mean   5305.6
+  exl3i k2.5      GDN   5318.5  attention   5206.4  mean   5290.5
+  exl3i k3        GDN   5325.8  attention   5211.8  mean   5297.3
+  exl3i k4        GDN   5325.0  attention   5199.6  mean   5293.7
+  exl3i k5        GDN   5365.6  attention   5252.9  mean   5337.4
+  exl3i k6        GDN   5396.4  attention   5265.4  mean   5363.6
+  exl3i-self k2   GDN   5681.2  attention   5634.5  mean   5669.5
+  exl3i-self k2.5 GDN   5744.1  attention   5693.0  mean   5731.3
+  exl3i-self k3   GDN   5741.9  attention   5679.9  mean   5726.4
+  exl3i-self k4   GDN   5740.2  attention   5678.0  mean   5724.7
+  exl3i-self k5   GDN   5799.9  attention   5730.8  mean   5782.6
+  exl3i-self k6   GDN   5815.8  attention   5746.4  mean   5798.5
+  fp8             GDN   5228.8  attention   5073.7  mean   5190.0
+  iqr k2          GDN   5204.3  attention   5073.0  mean   5171.5
+  iqr k3          GDN   5246.1  attention   5111.3  mean   5212.4
+  iqr k4          GDN   5294.4  attention   5151.6  mean   5258.7
+  iqr k5          GDN   5381.4  attention   5239.4  mean   5345.9
+  iqr k6          GDN   5383.3  attention   5238.1  mean   5347.0

@@ -1,0 +1,23 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, one rank of two (the board's shapes), 9 rounds x burst 3, weights over 256 MB of copies, shared int8 activations
+gate_up   17408   5120  2048  exl3i k4           1893.0 us  (min   1883.0)   192.9 TOPS
+gate_up   17408   5120  2048  iqr k4             1843.3 us  (min   1839.6)   198.1 TOPS
+gate_up   17408   5120  2048  bare rb32          1773.9 us  (min   1768.9)   205.8 TOPS
+gate_up   17408   5120  2048  exl3i gemm         1779.8 us  (min   1775.7)   205.1 TOPS
+gate_up   17408   5120  2048  fp8                1814.6 us  (min   1808.1)   201.2 TOPS
+down       5120   8704  2048  exl3i k4            966.0 us  (min    905.3)   189.0 TOPS
+down       5120   8704  2048  iqr k4              966.7 us  (min    954.0)   188.8 TOPS
+down       5120   8704  2048  bare rb32           910.4 us  (min    841.1)   200.5 TOPS
+down       5120   8704  2048  exl3i gemm          896.9 us  (min    828.2)   203.5 TOPS
+down       5120   8704  2048  fp8                 925.4 us  (min    856.7)   197.2 TOPS
+gdn_qkv    5120   5120  2048  exl3i k4           1061.3 us  (min    545.2)   101.2 TOPS
+gdn_qkv    5120   5120  2048  iqr k4             1061.9 us  (min    531.0)   101.1 TOPS
+gdn_qkv    5120   5120  2048  bare rb32           922.7 us  (min    497.0)   116.4 TOPS
+gdn_qkv    5120   5120  2048  exl3i gemm          968.8 us  (min    498.7)   110.8 TOPS
+gdn_qkv    5120   5120  2048  fp8                 978.2 us  (min    508.0)   109.8 TOPS
+attn_qg    6144   5120  2048  exl3i k4            727.5 us  (min    654.7)   177.1 TOPS
+attn_qg    6144   5120  2048  iqr k4              708.3 us  (min    639.3)   181.9 TOPS
+attn_qg    6144   5120  2048  bare rb32           674.3 us  (min    605.4)   191.1 TOPS
+attn_qg    6144   5120  2048  exl3i gemm          605.4 us  (min    604.0)   212.8 TOPS
+attn_qg    6144   5120  2048  fp8                 687.7 us  (min    615.9)   187.4 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)

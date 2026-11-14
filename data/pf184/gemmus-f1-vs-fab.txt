@@ -1,0 +1,53 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, one rank of two (the board's shapes), 7 rounds x burst 20, weights over 256 MB of copies, shared int8 activations
+gate_up   17408   5120  2048  exl3i k4           2486.1 us  (min   1849.5)   146.8 TOPS
+gate_up   17408   5120  2048  B k4               2454.4 us  (min   2442.6)   148.7 TOPS
+gate_up   17408   5120  2048  iqr k4             2437.0 us  (min   2430.0)   149.8 TOPS
+gate_up   17408   5120  2048  bare rb32          2329.3 us  (min   2320.5)   156.7 TOPS
+gate_up   17408   5120  2048  exl3i gemm         2340.7 us  (min   2326.4)   156.0 TOPS
+down       5120   8704  2048  exl3i k4           1217.5 us  (min    911.2)   149.9 TOPS
+down       5120   8704  2048  B k4               1200.7 us  (min    913.5)   152.0 TOPS
+down       5120   8704  2048  iqr k4             1224.3 us  (min   1053.0)   149.1 TOPS
+down       5120   8704  2048  bare rb32          1183.8 us  (min   1176.4)   154.2 TOPS
+down       5120   8704  2048  exl3i gemm         1173.2 us  (min   1159.9)   155.6 TOPS
+gdn_qkv    5120   5120  2048  exl3i k4            729.0 us  (min    530.0)   147.3 TOPS
+gdn_qkv    5120   5120  2048  B k4                718.8 us  (min    558.0)   149.4 TOPS
+gdn_qkv    5120   5120  2048  iqr k4              710.2 us  (min    544.6)   151.2 TOPS
+gdn_qkv    5120   5120  2048  bare rb32           687.8 us  (min    516.4)   156.1 TOPS
+gdn_qkv    5120   5120  2048  exl3i gemm          690.9 us  (min    593.4)   155.4 TOPS
+gdn_z      3072   5120  2048  exl3i k4            440.8 us  (min    310.8)   146.2 TOPS
+gdn_z      3072   5120  2048  B k4                431.0 us  (min    330.1)   149.5 TOPS
+gdn_z      3072   5120  2048  iqr k4              430.2 us  (min    329.3)   149.7 TOPS
+gdn_z      3072   5120  2048  bare rb32           408.2 us  (min    314.2)   157.8 TOPS
+gdn_z      3072   5120  2048  exl3i gemm          410.0 us  (min    312.3)   157.1 TOPS
+attn_qg    6144   5120  2048  exl3i k4            868.8 us  (min    652.2)   148.3 TOPS
+attn_qg    6144   5120  2048  B k4                861.4 us  (min    668.4)   149.6 TOPS
+attn_qg    6144   5120  2048  iqr k4              862.4 us  (min    653.4)   149.4 TOPS
+attn_qg    6144   5120  2048  bare rb32           827.5 us  (min    681.6)   155.7 TOPS
+attn_qg    6144   5120  2048  exl3i gemm          828.8 us  (min    820.6)   155.5 TOPS
+attn_k      512   5120  2048  exl3i k4             68.1 us  (min     64.2)   157.7 TOPS
+attn_k      512   5120  2048  B k4                 67.0 us  (min     63.0)   160.1 TOPS
+attn_k      512   5120  2048  iqr k4               64.5 us  (min     61.7)   166.5 TOPS
+attn_k      512   5120  2048  bare rb32            59.4 us  (min     55.7)   180.7 TOPS
+attn_k      512   5120  2048  exl3i gemm           60.4 us  (min     55.5)   177.7 TOPS
+attn_v      512   5120  2048  exl3i k4             68.1 us  (min     63.2)   157.6 TOPS
+attn_v      512   5120  2048  B k4                 66.0 us  (min     63.9)   162.6 TOPS
+attn_v      512   5120  2048  iqr k4               65.3 us  (min     61.3)   164.5 TOPS
+attn_v      512   5120  2048  bare rb32            59.6 us  (min     55.4)   180.3 TOPS
+attn_v      512   5120  2048  exl3i gemm           60.1 us  (min     55.2)   178.6 TOPS
+attn_o     5120   3072  2048  exl3i k4            454.3 us  (min    324.2)   141.8 TOPS
+attn_o     5120   3072  2048  B k4                448.3 us  (min    345.0)   143.7 TOPS
+attn_o     5120   3072  2048  iqr k4              435.0 us  (min    334.8)   148.1 TOPS
+attn_o     5120   3072  2048  bare rb32           415.2 us  (min    316.7)   155.2 TOPS
+attn_o     5120   3072  2048  exl3i gemm          428.8 us  (min    327.8)   150.3 TOPS
+ssm_out    5120   3072  2048  exl3i k4            458.5 us  (min    324.5)   140.5 TOPS
+ssm_out    5120   3072  2048  B k4                451.0 us  (min    339.5)   142.9 TOPS
+ssm_out    5120   3072  2048  iqr k4              436.5 us  (min    334.3)   147.6 TOPS
+ssm_out    5120   3072  2048  bare rb32           419.1 us  (min    319.1)   153.7 TOPS
+ssm_out    5120   3072  2048  exl3i gemm          429.9 us  (min    330.5)   149.9 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)
+  B k4            GDN   5255.9  attention   5097.9  mean   5216.4
+  bare rb32       GDN   5028.1  attention   4874.7  mean   4989.8
+  exl3i gemm      GDN   5044.8  attention   4892.1  mean   5006.6
+  exl3i k4        GDN   5331.9  attention   5162.9  mean   5289.6
+  iqr k4          GDN   5238.2  attention   5088.4  mean   5200.8

@@ -1,0 +1,21 @@
+fp8cal: gfx1201, M 2048, one rank of two, burst 20 x 5 reps, random operands, weight copies over 256 MB
+gate_up   17408   5120  2048  gemm_fp8a8_tiled     2416.0 us   151.1 TOPS
+gate_up   17408   5120  2048  gemm_i8a8_tiled      2595.9 us   140.6 TOPS
+down       5120   8704  2048  gemm_fp8a8_tiled     1208.1 us   151.1 TOPS
+down       5120   8704  2048  gemm_i8a8_tiled      1293.0 us   141.2 TOPS
+gdn_qkv    5120   5120  2048  gemm_fp8a8_tiled      641.0 us   167.5 TOPS
+gdn_qkv    5120   5120  2048  gemm_i8a8_tiled       746.6 us   143.8 TOPS
+gdn_z      3072   5120  2048  gemm_fp8a8_tiled      337.9 us   190.6 TOPS
+gdn_z      3072   5120  2048  gemm_i8a8_tiled       452.0 us   142.5 TOPS
+attn_qg    6144   5120  2048  gemm_fp8a8_tiled      823.1 us   156.5 TOPS
+attn_qg    6144   5120  2048  gemm_i8a8_tiled       898.9 us   143.3 TOPS
+attn_k      512   5120  2048  gemm_fp8a8_tiled       58.1 us   184.9 TOPS
+attn_k      512   5120  2048  gemm_i8a8_tiled        69.6 us   154.3 TOPS
+attn_v      512   5120  2048  gemm_fp8a8_tiled       58.1 us   184.7 TOPS
+attn_v      512   5120  2048  gemm_i8a8_tiled        70.7 us   151.9 TOPS
+attn_o     5120   3072  2048  gemm_fp8a8_tiled      347.6 us   185.4 TOPS
+attn_o     5120   3072  2048  gemm_i8a8_tiled       456.5 us   141.1 TOPS
+ssm_out    5120   3072  2048  gemm_fp8a8_tiled      381.0 us   169.1 TOPS
+ssm_out    5120   3072  2048  gemm_i8a8_tiled       455.8 us   141.4 TOPS
+layer gemm_fp8a8_tiled  GDN   4984.0  attention   4911.0  mean (48:16)   4965.8 us
+layer gemm_i8a8_tiled   GDN   5543.2  attention   5384.5  mean (48:16)   5503.5 us

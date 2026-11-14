@@ -1,0 +1,101 @@
+exl3i 0.3.0 -- test_aq
+gate_up  T  512 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T  512 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 17825792 outputs differ
+gate_up  T  512 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T  512 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 17825792 outputs differ
+gate_up  T  600 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T  600 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 20889600 outputs differ
+gate_up  T  600 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T  600 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 20889600 outputs differ
+gate_up  T 2048 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T 2048 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 71303168 outputs differ
+gate_up  T 2048 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T 2048 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 71303168 outputs differ
+gdn_qkv  T  512 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T  512 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 5242880 outputs differ
+gdn_qkv  T  512 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T  512 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 5242880 outputs differ
+gdn_qkv  T  600 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T  600 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 6144000 outputs differ
+gdn_qkv  T  600 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T  600 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 6144000 outputs differ
+gdn_qkv  T 2048 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T 2048 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 20971520 outputs differ
+gdn_qkv  T 2048 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T 2048 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 20971520 outputs differ
+attn_k   T  512 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T  512 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 524288 outputs differ
+attn_k   T  512 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T  512 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 524288 outputs differ
+attn_k   T  600 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T  600 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 614400 outputs differ
+attn_k   T  600 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T  600 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 614400 outputs differ
+attn_k   T 2048 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T 2048 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 2097152 outputs differ
+attn_k   T 2048 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T 2048 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 2097152 outputs differ
+down     T  512 x bf16 planes 1: actq rows differing from the reference 0
+down     T  512 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 2621440 outputs differ
+down     T  512 x f16  planes 1: actq rows differing from the reference 0
+down     T  512 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 2621440 outputs differ
+down     T  600 x bf16 planes 1: actq rows differing from the reference 0
+down     T  600 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 3072000 outputs differ
+down     T  600 x f16  planes 1: actq rows differing from the reference 0
+down     T  600 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 3072000 outputs differ
+down     T 2048 x bf16 planes 1: actq rows differing from the reference 0
+down     T 2048 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 10485760 outputs differ
+down     T 2048 x f16  planes 1: actq rows differing from the reference 0
+down     T 2048 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 10485760 outputs differ
+gate_up  T 1 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 1 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 34816 f32 outputs differ
+gate_up  T 1 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 1 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 34816 f32 outputs differ
+gate_up  T 3 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 3 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 104448 f32 outputs differ
+gate_up  T 3 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 3 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 104448 f32 outputs differ
+gate_up  T 8 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 8 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 278528 f32 outputs differ
+gate_up  T 8 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 8 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 278528 f32 outputs differ
+gdn_qkv  T 1 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 1 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 10240 f32 outputs differ
+gdn_qkv  T 1 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 1 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 10240 f32 outputs differ
+gdn_qkv  T 3 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 3 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 30720 f32 outputs differ
+gdn_qkv  T 3 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 3 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 30720 f32 outputs differ
+gdn_qkv  T 8 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 8 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 81920 f32 outputs differ
+gdn_qkv  T 8 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 8 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 81920 f32 outputs differ
+attn_k   T 1 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 1 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 1024 f32 outputs differ
+attn_k   T 1 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 1 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 1024 f32 outputs differ
+attn_k   T 3 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 3 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 3072 f32 outputs differ
+attn_k   T 3 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 3 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 3072 f32 outputs differ
+attn_k   T 8 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 8 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 8192 f32 outputs differ
+attn_k   T 8 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 8 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 8192 f32 outputs differ
+down     T 1 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 1 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 5120 f32 outputs differ
+down     T 1 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 1 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 5120 f32 outputs differ
+down     T 3 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 3 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 15360 f32 outputs differ
+down     T 3 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 3 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 15360 f32 outputs differ
+down     T 8 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 8 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 40960 f32 outputs differ
+down     T 8 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 8 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 40960 f32 outputs differ
+pre stages: SKIP (no libr4d.so given)
+residual: SKIP (no libr4d.so given)
+96 checks
+TEST_AQ PASS (0 failures)

@@ -1,0 +1,53 @@
+bench_gemmus: AMD Radeon AI PRO R9700 gfx1201, M 2048, TP1 shapes, 5 rounds x burst 20, weights over 256 MB of copies, shared int8 activations
+gate_up   34816   5120  2048  exl3i k2.5         5012.6 us  (min   4684.3)   145.7 TOPS
+gate_up   34816   5120  2048  exl3i k4           4994.8 us  (min   4970.6)   146.2 TOPS
+gate_up   34816   5120  2048  iqr k2             4888.2 us  (min   4868.1)   149.4 TOPS
+gate_up   34816   5120  2048  iqr k4             4913.5 us  (min   4905.6)   148.6 TOPS
+gate_up   34816   5120  2048  fp8                4887.6 us  (min   4878.5)   149.4 TOPS
+down       5120  17408  2048  exl3i k2.5         2427.5 us  (min   1832.2)   150.4 TOPS
+down       5120  17408  2048  exl3i k4           2440.9 us  (min   2409.4)   149.6 TOPS
+down       5120  17408  2048  iqr k2             2430.8 us  (min   2416.3)   150.2 TOPS
+down       5120  17408  2048  iqr k4             2453.1 us  (min   2428.5)   148.8 TOPS
+down       5120  17408  2048  fp8                2442.0 us  (min   2428.5)   149.5 TOPS
+gdn_qkv   10240   5120  2048  exl3i k2.5         1496.3 us  (min   1161.5)   143.5 TOPS
+gdn_qkv   10240   5120  2048  exl3i k4           1487.3 us  (min   1120.7)   144.4 TOPS
+gdn_qkv   10240   5120  2048  iqr k2             1455.8 us  (min   1431.3)   147.5 TOPS
+gdn_qkv   10240   5120  2048  iqr k4             1470.1 us  (min   1468.1)   146.1 TOPS
+gdn_qkv   10240   5120  2048  fp8                1439.0 us  (min   1417.1)   149.2 TOPS
+gdn_z      6144   5120  2048  exl3i k2.5          889.0 us  (min    673.6)   144.9 TOPS
+gdn_z      6144   5120  2048  exl3i k4            879.0 us  (min    691.0)   146.6 TOPS
+gdn_z      6144   5120  2048  iqr k2              860.6 us  (min    662.9)   149.7 TOPS
+gdn_z      6144   5120  2048  iqr k4              866.9 us  (min    670.1)   148.6 TOPS
+gdn_z      6144   5120  2048  fp8                 865.1 us  (min    849.2)   148.9 TOPS
+attn_qg   12288   5120  2048  exl3i k2.5         1794.9 us  (min   1380.8)   143.6 TOPS
+attn_qg   12288   5120  2048  exl3i k4           1775.1 us  (min   1374.8)   145.2 TOPS
+attn_qg   12288   5120  2048  iqr k2             1776.7 us  (min   1744.6)   145.0 TOPS
+attn_qg   12288   5120  2048  iqr k4             1777.4 us  (min   1758.6)   145.0 TOPS
+attn_qg   12288   5120  2048  fp8                1745.0 us  (min   1718.9)   147.7 TOPS
+attn_k     1024   5120  2048  exl3i k2.5          125.4 us  (min    124.3)   171.2 TOPS
+attn_k     1024   5120  2048  exl3i k4            125.2 us  (min    113.0)   171.5 TOPS
+attn_k     1024   5120  2048  iqr k2              117.1 us  (min    111.4)   183.4 TOPS
+attn_k     1024   5120  2048  iqr k4              121.6 us  (min    115.0)   176.7 TOPS
+attn_k     1024   5120  2048  fp8                 115.4 us  (min    113.2)   186.1 TOPS
+attn_v     1024   5120  2048  exl3i k2.5          127.5 us  (min    124.2)   168.5 TOPS
+attn_v     1024   5120  2048  exl3i k4            123.9 us  (min    113.8)   173.4 TOPS
+attn_v     1024   5120  2048  iqr k2              118.3 us  (min    109.6)   181.6 TOPS
+attn_v     1024   5120  2048  iqr k4              118.9 us  (min    114.7)   180.6 TOPS
+attn_v     1024   5120  2048  fp8                 115.3 us  (min    113.1)   186.2 TOPS
+attn_o     5120   6144  2048  exl3i k2.5          862.1 us  (min    663.8)   149.5 TOPS
+attn_o     5120   6144  2048  exl3i k4            858.6 us  (min    684.5)   150.1 TOPS
+attn_o     5120   6144  2048  iqr k2              845.6 us  (min    661.4)   152.4 TOPS
+attn_o     5120   6144  2048  iqr k4              854.8 us  (min    655.0)   150.7 TOPS
+attn_o     5120   6144  2048  fp8                 853.3 us  (min    810.8)   151.0 TOPS
+ssm_out    5120   6144  2048  exl3i k2.5          874.1 us  (min    663.3)   147.4 TOPS
+ssm_out    5120   6144  2048  exl3i k4            866.3 us  (min    686.1)   148.7 TOPS
+ssm_out    5120   6144  2048  iqr k2              842.8 us  (min    658.6)   152.9 TOPS
+ssm_out    5120   6144  2048  iqr k4              852.8 us  (min    671.7)   151.1 TOPS
+ssm_out    5120   6144  2048  fp8                 850.7 us  (min    831.0)   151.5 TOPS
+
+layer (us; GDN = qkv z ssm_out gate_up down, attention = qg k v o gate_up down; mean 48 : 16)
+  exl3i k2.5      GDN  10699.5  attention  10349.9  mean  10612.1
+  exl3i k4        GDN  10668.4  attention  10318.6  mean  10581.0
+  fp8             GDN  10484.4  attention  10158.7  mean  10403.0
+  iqr k2          GDN  10478.2  attention  10176.7  mean  10402.8
+  iqr k4          GDN  10556.3  attention  10239.1  mean  10477.0

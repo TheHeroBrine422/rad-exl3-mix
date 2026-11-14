@@ -7595,3 +7595,38 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Files:** `search/v3/seqrule.py`, `search/v3/pickstat.py`, `search/v3/driver.py`, `search/v3/slices.py`,
   `search/v3/test_picks.py`, `search/v3/test_hostd_es.py`, `search/v3/README.md`, `pipeline/rxrun/earlystop.py`, `pipeline/rxrun/hostd.py`
 
+
+### 2026-11-14 5:45 PM CST · #184-01 · gemm_us baseline: V3's A8 path is at IQR-V4's level, not 2×; gap analysis; FUSE strip decode −0.6 % (w160)
+- **Status:** done (step 1; the pass continues) · **Machine:** box2 (4 × R9700, 210 W cap) · **Code:** fork
+  `qc-exl3-v3-pf184` 3850b18 (bench_gemmus), d2fb61c (FUSE strip decode); `v3/bench/pf184/` (README: method)
+- **Question:** where does V3's prefill stand on the board's metric, and where does its time go against IQR-V4?
+- **Method:** the board's `gemm_us` = trunk GEMMs of one decoder layer at 2048 tokens, **one rank of two** (IQR-V4
+  report Table 3: FP8 3712, IQR-V4 k2..k6 3801–3990). `bench_gemmus` times ours (`exl3i_gemm_nt_a8`, mad, reading the
+  producer's int8 planes as served; `--self`: quantising itself), libr4d's `gemm_iqr_tiled` over IQR-V4's trunk form and
+  the FP8 tile on one card, **on the same int8 activation bytes**, interleaved rounds, weights over 256 MB of copies.
+  Same data matters: at box2's 210 W cap every GEMM is power-bound (FP8 gate_up 1431 µs on constant bytes, 2416 on
+  random). Board scale = ours / IQR (same run) × IQR's Table 3 value.
+- **Result (before, 120132a kernels; layer µs at 210 W, 48 GDN : 16 attention):** ours (AQ-fed) / IQR at equal k:
+  K2 5306 / 5172 (×1.026 → ~3,900 board), K3 5297 / 5212 (×1.016 → ~3,940), K4 5294 / 5259 (×1.007 → ~3,970), K5
+  5337 / 5346 (×0.998 → ~3,980), K6 5364 / 5347 (×1.003 → ~4,000); FP8 5190. `--self` (actq inside the op, as ssm_out
+  runs in serving) +8 % (K4 5725 → ~4,290). TP1 shapes the same picture (K4 10,581 vs IQR k4 10,477). **The "~2×" was
+  V2's f16 kernel (~8,050); the V3 A8 path was never on the board.**
+- **Gap analysis (gate_up 17408 × 5120 one rank, M 2048):** unthrottled (bursts after idle): libr4d's bare int8 RB 32
+  tile 1774 µs, our tile + EXL3's output-Hadamard epilogue (no decode) 1780 (+0.3 %: the epilogue is ~free), IQR k4
+  1843 (+3.9 %), ours K4 1893 (+6.7 %); sustained layer: bare 5009, ours w/o decode 5025, IQR 5224, ours 5309. **The
+  whole gap is the fused decode** (FUSE claim / decode / wait before the K loop, the K loop is the same instructions in
+  both kernels). Ablation (decode ALU removed, loads / plane writes kept): 1862 µs → the claim / wait / plane structure
+  costs ~79 µs (IQR's whole overhead ~69), our decode ALU ~20 µs. ISA of the K4 strip loop (a 64-K unit, 1024 values
+  a wave): 182 VALU (5.7 a value: 64-bit address adds 0.7, hash / byte sums 3.75, pack 0.5, lane-16 selects 0.4), the
+  8 code loads waited on at the top of each unit, the lane ^ 16 exchange as ds_bpermute.
+- **Step 1 (d2fb61c, bit-exact):** the strip decoded with the next unit's code words loaded while the current one
+  decodes, buffer loads (uniform tile offset in soffset), the exchange by v_permlanex16. Layer (A/B in one process):
+  K4 5302 → 5268 (−0.6 %), K2.5 −0.5 %, K6 −0.8 %; gate_up unthrottled 1897 → 1880. Now ours / IQR k4 = 1.011 (→
+  ~3,985 board scale at K4). Tried, worse: raster group 16 (half the blocks idle while 8 decode): +1.2 %.
+- **Checks:** exl3i device tests all PASS on the f1 build (test_twopass 2,684 checks, gpu_test, test_aq, test_r16,
+  test_ks, test_a4, test_rerank); whole-model KLD rows (golden-search27c-c, 67,932 pos, bf16 KV) **byte-identical** to
+  rad10-e157b's home at K2.5 (0.681289) and K4 (0.307438) on w151's mad a8 packs. e2e (8k prefill / decode) running.
+- **Next:** decode ALU trims; a producer for ssm_out (GDN gated norm + actq: removes the one self-quantising site);
+  the plane's DRAM traffic (a cache-resident plane ring) as the remaining structural lever.
+- **Runtime:** prefill (A8 path) only; decode kernels untouched.
+- **Files:** `data/pf184/` (gemmus-*.txt / csv, fp8cal, ct-*, kld/*.json), `v3/bench/pf184/`
