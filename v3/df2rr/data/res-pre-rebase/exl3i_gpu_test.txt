@@ -1,0 +1,8 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build nogit) (gfx1201); device AMD Radeon AI Pro R9700S gfx1201
+A decode: 8388608 values over 64 rates x 4 codebooks, 0 differ; mad's madh: 0 of 2097152 grid indices differ
+B every rate: 512 GEMMs (64 rates x 4 codebooks x M 1, 17), 0 failed, worst rel rms err 0.000483; MT 1 = MT 4 row bytes (else within 0.000877 of max |y|: the decode form's DOT / DQ)
+C shapes and dtypes: 48 GEMMs (M 1..952 across the T2 threshold, y bf16 / f16 / f32, a f16 / bf16, padded pitch, stacked, GDN 3-D), 0 failed
+D T2 vs nt_pass at M 600: 24 pairs, 0 not byte-identical
+E vs exl3r4d: skipped (no EXL3_R4D.so given)
+F refusals: 19, 0 wrong
+EXL3I GPU TEST PASS

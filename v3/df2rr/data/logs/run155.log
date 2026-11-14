@@ -1,0 +1,165 @@
+04:51:34 start gtest kld serve cmp (pid 1306194)
+04:51:34 card 7 + ram (shared) held
+04:51:34 gtest test_rerank
+04:54:16 gtest test_rerank rc 1 TEST_RERANK FAIL (6 failures)
+04:54:16 gtest test_r16
+04:54:24 gtest test_r16 rc 0 TEST_R16 PASS (0 failures)
+04:54:24 gtest exl3i_gpu_test
+04:54:43 gtest exl3i_gpu_test rc 0 EXL3I GPU TEST PASS
+04:54:43 card 7 released
+04:54:43 card 7 + ram (shared) held
+04:54:43 kld P3-s0
+04:54:59 kld P3-s0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+04:54:59 kld P3-main
+04:55:14 kld P3-main rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+04:55:14 kld P1-copy
+04:55:29 kld P1-copy rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+04:55:29 kld P3-none
+04:55:43 kld P3-none rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+04:55:43 card 7 released
+04:55:43 card 7 + ram (shared) held
+04:55:43 serve P3off
+05:08:06 start gtest kld serve cmp (pid 1313284)
+05:08:06 card 7 + ram (shared) held
+05:08:06 gtest test_rerank
+05:11:07 gtest test_rerank rc 0 TEST_RERANK PASS (0 failures)
+05:11:07 gtest test_r16
+05:11:16 gtest test_r16 rc 0 TEST_R16 PASS (0 failures)
+05:11:16 gtest exl3i_gpu_test
+05:11:34 gtest exl3i_gpu_test rc 0 EXL3I GPU TEST PASS
+05:11:34 card 7 released
+05:11:34 card 7 + ram (shared) held
+05:11:34 kld P3-s0
+05:11:49 kld P3-s0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:11:49 kld P3-main
+05:12:02 kld P3-main rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:12:02 kld P1-copy
+05:12:22 kld P1-copy rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:12:22 kld P3-none
+05:12:36 kld P3-none rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:12:36 card 7 released
+05:12:36 card 7 + ram (shared) held
+05:12:36 serve P3off
+05:13:28 serve P3off: 0 text errors; ;  vram_kv 17.46 GiB the cache's share
+05:13:29 serve main-r1
+05:14:43 serve main-r1: 0 text errors; ;  vram_kv 15.81 GiB the cache's share
+05:14:44 serve copy-r1
+05:15:55 serve copy-r1: 0 text errors; ;  vram_kv 14.61 GiB the cache's share
+05:15:56 serve none-r1
+05:17:15 serve none-r1: 0 text errors; ;  vram_kv 15.81 GiB the cache's share
+05:17:16 serve main-r2
+05:18:13 serve main-r2:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:18:14 serve copy-r2
+05:19:11 serve copy-r2:  text errors; ;  vram_kv 14.61 GiB the cache's share
+05:19:12 serve none-r2
+05:20:13 serve none-r2:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:20:14 serve main-r3
+05:21:13 serve main-r3:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:21:14 serve copy-r3
+05:22:12 serve copy-r3:  text errors; ;  vram_kv 14.61 GiB the cache's share
+05:22:13 serve none-r3
+05:23:15 serve none-r3:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:23:16 card 7 released
+05:23:17 cmp done
+05:23:17 END gtest kld serve cmp
+05:25:22 start gtest kld7 note serve2 (pid 1322621)
+05:25:22 card 7 + ram (shared) held
+05:25:22 gtest test_rerank
+05:25:57 start acc (pid 1324670)
+05:28:29 gtest test_rerank rc 0 TEST_RERANK PASS (0 failures)
+05:28:29 card 7 released
+05:28:29 card 7 + ram (shared) held
+05:28:29 serve acc-off
+05:31:00 serve acc-off: 1 errors; 0 0 
+05:31:01 serve acc-main
+05:32:05 serve acc-main: 2 errors; 7315 3083 
+05:32:06 serve acc-copy
+05:33:10 serve acc-copy: 2 errors; 6839 3152 
+05:33:11 serve acc-none
+05:34:16 serve acc-none: 2 errors; 7539 3038 
+05:34:18 card 7 released
+05:34:18 END acc
+05:34:18 card 7 + ram (shared) held
+05:34:18 kld P3-main-s7
+src/run155.sh: line 33: /data/q27/w155/res/kld-P3-main-s7.json.rows: No such file or directory
+05:34:19 kld P3-main-s7 rc 1  rows 
+05:34:19 kld P1-copy-s7
+src/run155.sh: line 33: /data/q27/w155/res/kld-P1-copy-s7.json.rows: No such file or directory
+05:34:20 kld P1-copy-s7 rc 1  rows 
+05:34:20 kld P3-none-s7
+src/run155.sh: line 33: /data/q27/w155/res/kld-P3-none-s7.json.rows: No such file or directory
+05:34:20 kld P3-none-s7 rc 1  rows 
+05:34:20 card 7 released
+05:35:40 card 7 + ram (shared) held
+05:35:56 note main: 
+05:36:13 note copy: 
+05:36:29 note none: 
+05:36:29 card 7 released
+05:36:29 card 7 + ram (shared) held
+05:36:29 serve mainopt-r1
+05:39:34 start gtest note serve2 (pid 1330207)
+05:39:35 card 7 + ram (shared) held
+05:39:35 gtest test_rerank
+05:42:36 gtest test_rerank rc 0 TEST_RERANK PASS (0 failures)
+05:42:36 card 7 released
+05:42:36 card 7 + ram (shared) held
+05:43:07 note main: head, its top 32 rescored against output.weight itself (exl3i_rerank, no copy) ops: {'exl3i_rerank': 1, 'logit_rerank': 0, 'row_topk': 1, 'dflash_select': 2}
+05:43:27 note copy: head, its top 32 rescored against dflash.rerank_head ops: {'exl3i_rerank': 0, 'logit_rerank': 1, 'row_topk': 1, 'dflash_select': 2}
+05:43:43 note none: head, its own scores (no rescoring head) ops: {'exl3i_rerank': 0, 'logit_rerank': 0, 'row_topk': 1, 'dflash_select': 2}
+05:43:43 card 7 released
+05:43:43 card 7 + ram (shared) held
+05:43:43 serve main-r4
+05:44:42 serve main-r4:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:44:43 serve copy-r4
+05:45:48 serve copy-r4:  text errors; ;  vram_kv 14.61 GiB the cache's share
+05:45:49 serve none-r4
+05:46:49 serve none-r4:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:46:50 serve main-r5
+05:47:48 serve main-r5:  text errors; ;  vram_kv 15.82 GiB the cache's share
+05:47:49 serve copy-r5
+05:48:47 serve copy-r5:  text errors; ;  vram_kv 14.61 GiB the cache's share
+05:48:48 serve none-r5
+05:49:44 serve none-r5:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:49:45 serve main-r6
+05:50:46 serve main-r6:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:50:47 serve copy-r6
+05:51:41 serve copy-r6:  text errors; ;  vram_kv 14.61 GiB the cache's share
+05:51:42 serve none-r6
+05:52:38 serve none-r6:  text errors; ;  vram_kv 15.81 GiB the cache's share
+05:52:39 card 7 released
+05:52:39 END gtest note serve2
+05:56:00 start gtest kld note acc (pid 1337670)
+05:56:00 card 7 + ram (shared) held
+05:56:00 gtest test_rerank
+05:59:08 gtest test_rerank rc 0 TEST_RERANK PASS (0 failures)
+05:59:08 gtest test_r16
+05:59:15 gtest test_r16 rc 0 TEST_R16 PASS (0 failures)
+05:59:15 gtest exl3i_gpu_test
+05:59:34 gtest exl3i_gpu_test rc 0 EXL3I GPU TEST PASS
+05:59:34 card 7 released
+05:59:34 card 7 + ram (shared) held
+05:59:34 kld P3-s0
+05:59:47 kld P3-s0 rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:59:47 kld P3-main
+05:59:59 kld P3-main rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+05:59:59 kld P1-copy
+06:00:12 kld P1-copy rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+06:00:12 kld P3-none
+06:00:25 kld P3-none rc 0 0.07696332587359611 0.9475238223057307 rows bb6b5a8a8dd77831
+06:00:25 card 7 released
+06:00:25 card 7 + ram (shared) held
+06:00:39 note main: head, its top 32 rescored against output.weight itself (exl3i_rerank, no copy) ops: {'exl3i_rerank': 1, 'logit_rerank': 0, 'row_topk': 1, 'dflash_select': 2}
+06:00:55 note copy: head, its top 32 rescored against dflash.rerank_head ops: {'exl3i_rerank': 0, 'logit_rerank': 1, 'row_topk': 1, 'dflash_select': 2}
+06:01:08 note none: head, its own scores (no rescoring head) ops: {'exl3i_rerank': 0, 'logit_rerank': 0, 'row_topk': 1, 'dflash_select': 2}
+06:01:08 card 7 released
+06:01:08 card 7 + ram (shared) held
+06:01:08 serve acc-off
+06:03:32 serve acc-off: 1 errors; 0 0 
+06:03:33 serve acc-main
+06:04:37 serve acc-main: 2 errors; 7315 3083 
+06:04:38 serve acc-copy
+06:05:37 serve acc-copy: 2 errors; 6839 3152 
+06:05:38 serve acc-none
+06:06:41 serve acc-none: 2 errors; 7539 3038 
+06:06:43 card 7 released
+06:06:43 END gtest kld note acc

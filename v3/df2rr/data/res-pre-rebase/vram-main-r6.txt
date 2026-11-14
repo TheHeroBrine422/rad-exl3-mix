@@ -1,0 +1,22 @@
+
+
+============================ ROCm System Management Interface ============================
+================================== Memory Usage (Bytes) ==================================
+GPU[0]		: VRAM Total Memory (B): 34208743424
+GPU[0]		: VRAM Total Used Memory (B): 29348012032
+GPU[1]		: VRAM Total Memory (B): 34208743424
+GPU[1]		: VRAM Total Used Memory (B): 34062843904
+GPU[2]		: VRAM Total Memory (B): 34208743424
+GPU[2]		: VRAM Total Used Memory (B): 19270619136
+GPU[3]		: VRAM Total Memory (B): 34208743424
+GPU[3]		: VRAM Total Used Memory (B): 26506854400
+GPU[4]		: VRAM Total Memory (B): 34208743424
+GPU[4]		: VRAM Total Used Memory (B): 27212427264
+GPU[5]		: VRAM Total Memory (B): 34208743424
+GPU[5]		: VRAM Total Used Memory (B): 25243856896
+GPU[6]		: VRAM Total Memory (B): 34208743424
+GPU[6]		: VRAM Total Used Memory (B): 26567245824
+GPU[7]		: VRAM Total Memory (B): 34208743424
+GPU[7]		: VRAM Total Used Memory (B): 24797630464
+==========================================================================================
+================================== End of ROCm SMI Log ===================================

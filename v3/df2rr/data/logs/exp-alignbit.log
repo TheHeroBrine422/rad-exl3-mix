@@ -1,0 +1,3 @@
+device == host; vs exl3i_dense 0.1 u L1 (bound 5120); 453.8 us a launch (full head exl3i_dense T 7: 1167.9 us incl. sync)
+device == host; vs exl3i_dense 0.1 u L1 (bound 5120); 430.5 us a launch (full head exl3i_dense T 7: 1330.3 us incl. sync)
+TEST_RERANK PASS (0 failures)

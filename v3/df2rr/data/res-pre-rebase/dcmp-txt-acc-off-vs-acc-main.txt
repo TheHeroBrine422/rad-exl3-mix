@@ -1,0 +1,17 @@
+d00: identical for 75 of 256 steps
+d01: identical for 256 of 256 steps
+d02: identical for 256 of 256 steps
+d03: identical for 181 of 256 steps
+d04: identical for 2 of 256 steps
+d05: identical for 256 of 256 steps
+d06: identical for 244 of 256 steps
+d07: identical for 212 of 256 steps
+d08: identical for 129 of 256 steps
+d09: identical for 256 of 256 steps
+d10: identical for 2 of 256 steps
+d11: identical for 109 of 256 steps
+d12: identical for 256 of 256 steps
+d13: identical for 214 of 256 steps
+d14: identical for 53 of 256 steps
+d15: identical for 256 of 256 steps
+steps compared 2757: per-step KL(A||B) mean 0.000853, median 4.71e-06, max 0.499; identical tokens 2757 / 4096 (0.673); prompts identical to the end 6 / 16

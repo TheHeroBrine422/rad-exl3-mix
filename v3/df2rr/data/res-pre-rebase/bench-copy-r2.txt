@@ -1,0 +1,10 @@
+copy-r2 ctx 0 run 0 (warm): prompt 105 ttft 194 ms, client 15.36 ms/tok, server 46.48 ms/step x 3.05 tok
+copy-r2 ctx 0 run 1: prompt 105 ttft 127 ms, client 13.98 ms/tok, server 41.93 ms/step x 3.04 tok
+copy-r2 ctx 0 run 2: prompt 105 ttft 130 ms, client 15.96 ms/tok, server 41.95 ms/step x 2.63 tok
+copy-r2 ctx 0 run 3: prompt 104 ttft 128 ms, client 14.99 ms/tok, server 41.99 ms/step x 2.82 tok
+copy-r2 ctx 0 run 4: prompt 106 ttft 128 ms, client 14.83 ms/tok, server 42.01 ms/step x 2.90 tok
+copy-r2 ctx 8k run 0 (warm): prompt 8241 ttft 3351 ms, client 8.38 ms/tok, server 43.29 ms/step x 5.50 tok
+copy-r2 ctx 8k run 1: prompt 8242 ttft 3340 ms, client 6.97 ms/tok, server 43.04 ms/step x 6.80 tok
+copy-r2 ctx 8k run 2: prompt 8244 ttft 3470 ms, client 8.39 ms/tok, server 43.27 ms/step x 5.50 tok
+copy-r2 ctx 8k run 3: prompt 8243 ttft 3356 ms, client 6.98 ms/tok, server 42.68 ms/step x 6.80 tok
+copy-r2 ctx 8k run 4: prompt 8244 ttft 3362 ms, client 6.90 ms/tok, server 43.00 ms/step x 6.80 tok

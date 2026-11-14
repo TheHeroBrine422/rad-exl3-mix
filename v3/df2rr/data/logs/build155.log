@@ -1,0 +1,36 @@
+04:42:29 start qc-exl3-v3-rr 9f0a059+wip-13db65715585
+04:43:38 exl3i: BUILD FAIL (/data/q27/w155/pb/exl3i.log)
+04:45:07 start qc-exl3-v3-rr 9f0a059+wip-97bb909a786a
+04:46:26 exl3i: built, host tests 4 passed
+04:46:32 exl3quant: built, host tests 1 passed
+04:46:48 qwen35_exl3: HOST TESTS FAIL
+04:48:13 start qc-exl3-v3-rr 9f0a059+wip-a639c97661d4
+04:49:26 exl3i: built, host tests 4 passed
+04:49:32 exl3quant: built, host tests 1 passed
+04:49:46 qwen35_exl3: built, host tests 1 passed
+04:49:46 qwen35_exl3 RADIANCE_INCLUDE_DIR: 
+04:49:46 HOME READY /data/q27/w155/home (eadfc77f4be038ff d54091c5bf3af30a )
+05:06:31 start qc-exl3-v3-rr 9f0a059+wip-a639c97661d4
+05:07:45 exl3i: built, host tests 4 passed
+05:07:51 exl3quant: built, host tests 1 passed
+05:08:05 qwen35_exl3: built, host tests 1 passed
+05:08:05 qwen35_exl3 RADIANCE_INCLUDE_DIR: 
+05:08:06 HOME READY /data/q27/w155/home (99b15ce72c7a74a8 d54091c5bf3af30a )
+05:23:48 start qc-exl3-v3-rr af37fb5+wip-80b0b06d1dea
+05:25:01 exl3i: built, host tests 4 passed
+05:25:08 exl3quant: built, host tests 1 passed
+05:25:22 qwen35_exl3: built, host tests 1 passed
+05:25:22 qwen35_exl3 RADIANCE_INCLUDE_DIR: 
+05:25:22 HOME READY /data/q27/w155/home (33a0770d778cfa77 d54091c5bf3af30a )
+05:38:01 start qc-exl3-v3-rr d202084+wip-a783891177d9
+05:39:13 exl3i: built, host tests 4 passed
+05:39:19 exl3quant: built, host tests 1 passed
+05:39:34 qwen35_exl3: built, host tests 1 passed
+05:39:34 qwen35_exl3 RADIANCE_INCLUDE_DIR: 
+05:39:34 HOME READY /data/q27/w155/home (b97f6ef4d0ebee9c d54091c5bf3af30a )
+05:54:28 start qc-exl3-v3-rr b83698d+wip-740a455c24af
+05:55:39 exl3i: built, host tests 4 passed
+05:55:46 exl3quant: built, host tests 1 passed
+05:56:00 qwen35_exl3: built, host tests 1 passed
+05:56:00 qwen35_exl3 RADIANCE_INCLUDE_DIR: 
+05:56:00 HOME READY /data/q27/w155/home (30c1a043594e9b8e d54091c5bf3af30a )

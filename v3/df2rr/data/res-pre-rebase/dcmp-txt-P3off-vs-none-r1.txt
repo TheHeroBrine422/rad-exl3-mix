@@ -1,0 +1,9 @@
+d00: identical for 75 of 128 steps
+d01: identical for 128 of 128 steps
+d02: identical for 128 of 128 steps
+d03: identical for 128 of 128 steps
+d04: identical for 2 of 128 steps
+d05: identical for 128 of 128 steps
+d06: identical for 128 of 128 steps
+d07: identical for 128 of 128 steps
+steps compared 845: per-step KL(A||B) mean 0.000306, median 3.57e-06, max 0.0976; identical tokens 845 / 1024 (0.825); prompts identical to the end 6 / 8

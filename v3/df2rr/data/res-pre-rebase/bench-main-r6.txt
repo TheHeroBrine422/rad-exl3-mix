@@ -1,0 +1,10 @@
+main-r6 ctx 0 run 0 (warm): prompt 105 ttft 165 ms, client 17.20 ms/tok, server 42.15 ms/step x 2.45 tok
+main-r6 ctx 0 run 1: prompt 107 ttft 127 ms, client 16.91 ms/tok, server 42.27 ms/step x 2.50 tok
+main-r6 ctx 0 run 2: prompt 105 ttft 128 ms, client 13.94 ms/tok, server 42.30 ms/step x 3.07 tok
+main-r6 ctx 0 run 3: prompt 105 ttft 128 ms, client 17.09 ms/tok, server 42.31 ms/step x 2.48 tok
+main-r6 ctx 0 run 4: prompt 101 ttft 128 ms, client 14.45 ms/tok, server 42.34 ms/step x 2.93 tok
+main-r6 ctx 8k run 0 (warm): prompt 8243 ttft 3337 ms, client 8.44 ms/tok, server 43.65 ms/step x 6.17 tok
+main-r6 ctx 8k run 1: prompt 8243 ttft 3336 ms, client 8.43 ms/tok, server 43.55 ms/step x 6.17 tok
+main-r6 ctx 8k run 2: prompt 8245 ttft 3382 ms, client 8.41 ms/tok, server 43.49 ms/step x 5.50 tok
+main-r6 ctx 8k run 3: prompt 8245 ttft 3341 ms, client 8.44 ms/tok, server 43.49 ms/step x 5.50 tok
+main-r6 ctx 8k run 4: prompt 8243 ttft 3351 ms, client 7.02 ms/tok, server 44.31 ms/step x 6.80 tok

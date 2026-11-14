@@ -1,0 +1,13 @@
+N 248320 K  5120 K4      mul1i8 r16 x bf16 M  7 R 32: device == host; vs exl3i_dense 0.1 u L1 (bound 5120); 453.8 us a launch (full head exl3i_dense T 7: 1167.9 us incl. sync)
+N 248320 K  5120 K4.125  mad    r16 x bf16 M  7 R 32: device == host; vs exl3i_dense 0.1 u L1 (bound 5120); 430.5 us a launch (full head exl3i_dense T 7: 1330.3 us incl. sync)
+N   4096 K  5120 K2.5    mad    nat x bf16 M  1 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 5120); vs a8g128 T 1 1.64e-09 L1
+N   4096 K  5120 K2.5    mad    nat x bf16 M  7 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 5120)
+N   2048 K  1024 K7      mul1   nat x f16 M  1 R 32: device == host; vs exl3i_dense 0.1 u L1 (bound 1024)
+N   2048 K  1024 K7      mul1   nat x f16 M  7 R 32: device == host; vs exl3i_dense 0.2 u L1 (bound 1024)
+N   4096 K  2048 K2.5    mul1i4 r16 x bf16 M  1 R 32: device == host; vs exl3i_dense 0.1 u L1 (bound 2048)
+N   4096 K  2048 K2.5    mul1i4 r16 x bf16 M  7 R 32: device == host; vs exl3i_dense 0.2 u L1 (bound 2048)
+N   4096 K  1024 K0.5    mad    r16 x bf16 M  1 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 1024); vs a8g128 T 1 6.67e-05 L1
+N   4096 K  1024 K0.5    mad    r16 x bf16 M  7 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 1024)
+N   2048 K  1024 K6.5    mul1i8 r16 x bf16 M  1 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 1024)
+N   2048 K  1024 K6.5    mul1i8 r16 x bf16 M  7 R 32: device == host; vs exl3i_dense 0.0 u L1 (bound 1024)
+TEST_RERANK PASS (0 failures)

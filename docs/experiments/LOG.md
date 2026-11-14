@@ -4,6 +4,62 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 12:10 AM CST · #180-02 · DFlash2 candidates rescored against our own exl3i head (`exl3i_rerank`, no 1.2 GiB copy): exact (device = host reference bit for bit, = exl3i_dense's logits at those rows to ≤ 0.1 u·L1), +1.20 GiB KV vs the copy; acceptance between none and the copy (fixed prompts 3.95 vs 4.23 vs 3.82 tok/step), e2e ctx 0 −2 % vs the copy / +7 % vs none, 8k −3 % / +1 %; the served K4 head is a noisier rescorer than an int8 copy of the original (w155)
+- **Status:** done (fork commits for the lead to merge; not pushed) · **Machine:** ds8 HIP 7 (11-13 10:51 PM – 11-14
+  12:07 AM CST) · **Code:** radiance-hero `qc-exl3-v3-rr` on qc-exl3-v3 fdd480c (rebased from 9f0a059 per the lead's
+  11:00 PM note): 158b1f8 (op, block hook, qwen35_exl3, tests), b83698d (ring window as one `v_alignbit`);
+  `v3/df2rr/` (`README.md`, `build155.sh`, `run155.sh`, `exp155.sh`, `gdbg155.sh`, `headprobe.py`, `bsum155.py`) ·
+  **Data:** `v3/df2rr/data/` · **Brief:** `rad-local/workers/instr3/w155.md`
+- **What:** `exl3i_rerank` (exl3i plugin, `include/exl3i_rerank.h`): logit_rerank's semantics over the head's record /
+  suh / svh at exl3i_dense's operand positions, so exl3i_dense's layout hooks serve it and the head is stored once (same
+  tags). A workgroup a (row, candidate): the row rotated as `rotate128` does, the candidate's 128-row output-Hadamard
+  block decoded from the ring (R16 rows from the record's dtype; mul1i8 / mad as grid indices × the step, nt_pass's
+  DQ), f32 dots, the cone of element j × RS × svh; then a per-row sort (larger first, ties to the lower id, pads last).
+  Shared `rad_block_dflash2.h`: a plugin-declared rescoring op (`op_rr_ext`, `rr_w[3]`), default off. qwen35_exl3: an
+  exl3i head and no `dflash.rerank_head` line → `exl3i_rerank` over output.weight's planes (the copy wins when present;
+  `QWEN35_EXL3_RERANK=0` = none); the drafter's plugin note (GET /graph) says which (checked for all three).
+- **Tests:** host — `exl3i_rerank_host_test`: the reference within 0.03–0.08 u·L1 of the decode form's value in double,
+  within 0.07 × 2⁻⁹ L1 of the oracle's weight (rows, scales, R16 order), sort / pairs / in place; qwen35_exl3_test
+  (declaration, the head's own handles, issued once in the query pass, lint clean; off / undeclared / no kernel / copy).
+  Device — `test_rerank` on real-size R16 heads (248320 × 5120, K4 mul1i8 = w153's head format, K4.125 mad; M 1 / 7 /
+  16 × 32 candidates) and small heads in every codebook (mul1 K7, mul1i4 K2.5, mad K0.5 / K2.5, mul1i8 K6.5): idx /
+  val / pairs = host bit for bit, in place too, the rotation alone too; vs exl3i_dense's logits at the candidates' rows
+  (same stored record, T = M) ≤ 0.1 u·L1 (bound K u·L1); mad vs its a8g128 GEMV at T 1 2.7e-5 L1 (int8 rows). One
+  finding on the way: the device compiler fuses rotate128's f16(v·RS) into `v_fma_mixlo_f16` (one rounding); a
+  double-rounded reference differs by 1 ulp on ~1 feature in 20,000 — the reference now rounds once. test_r16,
+  exl3i_gpu_test and the three plugins' host tests pass, before and after the rebase.
+- **KLD rows unchanged:** golden-search27c-c-cut13 rows bb6b5a8a8dd77831 (= w153's; KLD 0.07696, top-1 94.75 %) for P3
+  spec 0 / main / none and P1 copy, before and after the rebase. The KL mode refuses a drafter ("scores the trunk's own
+  rows and drafts nothing"), so no KLD run can have one; w153's "drafter on" rows were drafter-free too.
+- **Greedy (16 fixed prompts × 256 tokens, C 1):** main vs copy 15 / 16 identical to the end, main vs none 15 / 16
+  (splits at 0.003–0.07 nats). Spec on (any) vs off: 6 / 16, the same splits for all three drafters: near-ties
+  (0.004–0.06 nats), post-EOS stretches (empty-text specials), and two at 0.26 / 0.55 nats on one side (d11 step 109,
+  d13 step 214: verify-pass logits drift ~1 nat from decode's there — an engine property, not the drafter's). The
+  rebased build's text + top-20 logprobs are byte-identical to the pre-rebase build's (all four configurations).
+- **Acceptance / speed** (P3 main, P1 copy, P3 none; bench = w153's iqrcmp prompts, 6 interleaved rounds × 4 runs):
+
+  | | main | copy | none |
+  |---|---|---|---|
+  | fixed prompts tok/step (acceptance) | 3.95 (0.421) | 4.23 (0.461) | 3.82 (0.403) |
+  | ctx 0 tok/step · ms/step · tok/s (mean) | 2.71 · 42.47 · 61.9 | 2.77 · 41.99 · 63.4 | 2.48 · 41.93 · 58.0 |
+  | 8k tok/step · ms/step · tok/s (mean) | 5.80 · 43.60 · 120.6 | 5.85 · 43.06 · 124.7 | 5.47 · 43.11 · 119.0 |
+  | KV cache (spec 0: 17.46 GiB) | 15.81 GiB | 14.61 GiB | 15.81 GiB |
+
+  Main keeps 30 % (fixed prompts) to 80 % (bench ctx 0) of the copy's tok/step gain over none; its op costs +0.45–0.5
+  ms a step (test_rerank: 150 µs at M 1, 432–459 µs at M 7 = batch 1's draft pass, 841–980 µs at M 16; the full head at
+  T 7 1.1–1.3 ms; ~3.5× nt_pass's time a weight). Per-run noise is large (different prompts each run): treat < ~5 % as
+  noise.
+- **Why main < copy** (`headprobe.py`, CPU): the served R16s003 K4 head (fit with the calib Hessian + H_out) vs the
+  original lm_head on x ~ N(0, H_calib): logit error 4.8 %, the exact top-1 kept first among the exact top 32 in 94 %
+  of draws; on isotropic x 9.2 %, 80 %. An int8 g128 copy: 0.6 / 0.7 %, 100 / 97 %. The drafter's hidden is not the
+  trunk's, and the K4 head's error there does not track its error on the target's hidden: rescoring with it adds noise
+  the copy does not.
+- **Not covered:** mad end to end (no mad-quantized head and no mad pack with a drafter exist; the device test covers
+  mad numerics on real-size R16 heads). Disk: w153's unused P0-text / P2-fp8-rr packs deleted (ds8, 36 GB); P1 / P3
+  kept.
+- **Lead decides:** the merge (2 commits; the block hook touches shared `arch/common/rad_block_dflash2.h`); the default:
+  main-head rescoring (0 bytes, +1.2 GiB KV) or the copy (+1.2 GiB VRAM for +2–3 % e2e here).
+
 ### 2026-11-13 11:55 PM CST · #179 · Whole-step decode pass: the step's small ops fused (residual add into the next norm — also into AQ's actq, exl3i interface 5 —, GDN conv + recurrent, q / k norm + rope + kv_store, the attention gate): small ops 1.97 → 1.29 ms (= IQR's), 996 → 741 / 757 launches, decode e2e −1.7 to −2.2 %, every KLD row byte-identical; found: **mad decode on qc-exl3-v3 is NaN** (KS counters shared by overlapped GEMVs), fix patch for the lead (w152)
 - **Status:** done (fork commits for the lead to merge; not pushed) · **Machine:** box2 card 1 · **Code:** radiance-hero
   `qc-exl3-v3-step` on qc-exl3-v3 9f0a059: 7359986 (fusions), b73675c (`Exl3Aq::takes`), 1f4ecbc (exl3i interface 5:

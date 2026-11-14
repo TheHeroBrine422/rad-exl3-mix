@@ -1,0 +1,3 @@
+note: vision tower: 27 blocks of 1152 (16 heads x 72), ff 4304, patch 2 x 16 x 16, merge 2; 16384 patches a pass -> 4096 rows of 5120
+note: DFlash2 drafter: 5 layers at absolute 64..68, 32 heads / 8 kv x 128, ffn 17408, non-causal attention with a 2048-token window, 5 trunk tap(s); one forward proposes 7 tokens through the candidate selector; 2-bit head, its own scores (no rescoring head)
+ops: {'exl3i_rerank': 0, 'logit_rerank': 0, 'row_topk': 1, 'dflash_select': 2}

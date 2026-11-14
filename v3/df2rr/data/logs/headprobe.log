@@ -1,0 +1,52 @@
+{
+ "W": [
+  248320,
+  5120
+ ],
+ "Wq": [
+  248320,
+  5120
+ ],
+ "H": [
+  5120,
+  5120
+ ],
+ "H_keys": [
+  "hessian_upper"
+ ],
+ "row_cos_natural": 0.0516541562974453,
+ "row_cos_r16": 0.9958364367485046,
+ "wq_order": "r16",
+ "row_cos_median": 0.9958364367485046,
+ "row_cos_shift_median": 0.062380943447351456,
+ "H_trace_over_n": 35057715.61679689,
+ "H_eig_top_share": 0.41417503107638215,
+ "draws": 64,
+ "result": {
+  "trunk/served_K4": {
+   "rel_err_median": 0.04871031641960144,
+   "rel_err_mean": 0.04782544996123761,
+   "top1_kept": 0.9375,
+   "top8_overlap_mean": 7.609375
+  },
+  "trunk/int8_copy": {
+   "rel_err_median": 0.006347684655338526,
+   "rel_err_mean": 0.0062425623400486074,
+   "top1_kept": 1.0,
+   "top8_overlap_mean": 7.890625
+  },
+  "iso/served_K4": {
+   "rel_err_median": 0.09241261333227158,
+   "rel_err_mean": 0.09237153839785606,
+   "top1_kept": 0.796875,
+   "top8_overlap_mean": 6.859375
+  },
+  "iso/int8_copy": {
+   "rel_err_median": 0.00708725955337286,
+   "rel_err_mean": 0.007083279575454071,
+   "top1_kept": 0.96875,
+   "top8_overlap_mean": 7.859375
+  }
+ },
+ "seconds": 35.8
+}

@@ -1,0 +1,10 @@
+main-r2 ctx 0 run 0 (warm): prompt 102 ttft 192 ms, client 14.40 ms/tok, server 44.23 ms/step x 3.08 tok
+main-r2 ctx 0 run 1: prompt 101 ttft 127 ms, client 16.01 ms/tok, server 45.33 ms/step x 2.83 tok
+main-r2 ctx 0 run 2: prompt 105 ttft 128 ms, client 15.32 ms/tok, server 42.46 ms/step x 2.77 tok
+main-r2 ctx 0 run 3: prompt 105 ttft 375 ms, client 18.35 ms/tok, server 43.33 ms/step x 2.41 tok
+main-r2 ctx 0 run 4: prompt 103 ttft 129 ms, client 14.00 ms/tok, server 42.50 ms/step x 3.06 tok
+main-r2 ctx 8k run 0 (warm): prompt 8242 ttft 3350 ms, client 8.43 ms/tok, server 43.72 ms/step x 5.50 tok
+main-r2 ctx 8k run 1: prompt 8244 ttft 3345 ms, client 8.47 ms/tok, server 43.76 ms/step x 5.50 tok
+main-r2 ctx 8k run 2: prompt 8240 ttft 3345 ms, client 8.45 ms/tok, server 43.68 ms/step x 6.17 tok
+main-r2 ctx 8k run 3: prompt 8244 ttft 3378 ms, client 8.47 ms/tok, server 43.79 ms/step x 5.50 tok
+main-r2 ctx 8k run 4: prompt 8244 ttft 3362 ms, client 8.52 ms/tok, server 43.94 ms/step x 5.50 tok
