@@ -509,5 +509,17 @@
   "line": "v3.1",
   "decisions": null,
   "note": "#181 (w154, 2026-11-13): the same 32 search-pool monitor docs as qad165-monitor (seed 1000), first 2,048 tokens; report only (no early stop, never a pick)"
+ },
+ "golden-fit129-a8rows173": {
+  "role": "fit",
+  "line": "v3.1",
+  "decisions": 1,
+  "note": "#173-03 (w158, 2026-11-14): w129's fit129 slice (118 merged fit + search docs) re-read for the mad-ladder A8 calibration rows (88 wave-1 rows + 3 A3 pick rows + 2 uniform-start rows): the M1m refit the re-solve picks come from (search/refit/w158/RULES-173-03.md)"
+ },
+ "golden-i173c": {
+  "role": "fit",
+  "line": "v3.1",
+  "decisions": 1,
+  "note": "#173-03b (w158, 2026-11-14): interaction-test slice, 85 merged fit + search docs (draw173b.py seed 17303, least-used first: 3 prior uses each, fit129 and ready slices excluded), cap 4,096, 110,619 scored positions of the published calib golden; 77 scores (25 move pairs alone + joint at 2.5 / 4.0) set M1's interaction terms (RULES-173-03b.md)"
  }
 }

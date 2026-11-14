@@ -4,6 +4,58 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 11:55 AM CST · #173-03 · Mad-ladder A8 rows + M1m refit + re-solve: picks 1.25–7.0 (K ≥ 1), but **in-sample the picks miss their predictions by +27…+80 %** (they beat the uniform start by −6 % / −17 %, predicted −47 % / −40 %); interaction test: pairs add to −2 % (no M1 interaction term) (w158)
+- **Status:** wave 1 + A3 + interaction test done; wave 2 (sub-1 rows → sizes 1.0 / 1.25, sub-1 pricing, the final V2-prior call on
+  all rows) waits for w151's sub-1 requant (ETA ~3:30 PM CST) · **Machine:** ds8 HIP 7, box2 HIP 1, ds8 HIP 0–6 only while idle
+  after the 10:08 AM ds8 restart (guarded: never while a w151 process runs), ds8 CPU (mixes, head donors), colo (fits) ·
+  **Code:** `search/refit/w158/` (README) · **Rules:** `RULES-173-03.md` (a91e446), `RULES-173-03b.md` (ac05ee7), each alone
+  before its data · **Data:** `data/a8rows173/` (obs, docsums, fits, picks + `PICKS.md`, inter, a3, run logs) · **Brief:** `instr3/w158.md`
+- **Rows (fit129, A8, a/b T4 / T5, census-checked: mad trunk + head, trellis embedding, encoding v4; 88 / 88 scored, 0 census
+  failures):** uniform K1…7.5 with head u6.5 + embedding t8m: K1 0.719, 1.5 0.199, 2 0.0846, 2.5 0.0408, 3 0.0211, 3.5 0.0107,
+  4 0.00564, 5 0.00183, 6 0.00065, 7 0.00041, 7.5 0.00039 (gen-masked calib KL). Group × half swaps (48): late halves cost 1.5–2.8×
+  the early ones for FFN / ssm_out / attn_in (2.5 → 1.5: ffn_gate_up L0–31 +36 %, L32–63 +112 %; ffn_down +27 / +86 %; attention
+  ≤ +14 %). Head (7): u2.5 on U-2.5 +5.1 %, u4 +0.3 %; u4 on U-4 +3.6 %, on U-6 +32 %, u5 on U-6 +7.2 %. Embedding (7): t2.5 on U-2.5
+  +1.8 % (= w157's floor-model price), t1.5 +6.3 %; t3 on U-4 +4.4 %; t4.5 on U-6 +8.8 %, t6 +1.1 %. K7 → 7.5 on all ffn_gate_up /
+  ffn_down: −3.0 ± 2.4 % / −3.1 ± 2.0 % (noise level). **A8 vs f16 twins:** +0.1 % (K2.5), +1.9 % (K4), +3.7 % (K5), +12.5 % (K6).
+- **Fit (M1m = M1 + A8 mode term + embedding priced on w157's err, colo):** embedding form **in** (E-row weighted SSE 0.878 vs out
+  1.000: in wins by the 5 % rule); 79 parameters, 88 rows, log-RMSE 0.024. **Bug fixed after the first fit, before any pick:** m133's
+  mode term takes |c| (A8 ≥ f16 with an f16 reference); with A8 as my reference the f16 twins sit below it, so c is signed now (as the
+  rule's text says, c ~ N(0, 1)); the fit moved to another optimum (kappa ≈ 0 at L0 / L32, lower cost 21.4 vs 26.8; the no-F fit
+  lands there too, so it is the data's optimum, not the twins'). Both fits predict the picks alike (2.5: 0.0319 / 0.0316).
+  Uniform-level curve strictly decreasing over K ≥ 1.
+- **V2-prior ablation (lead note 11-13 12:45 PM; wave-1 rows only, the rule's final call on all rows waits for wave 2):** 5-fold CV
+  wMSE of log KLD M1m 0.000941 vs M1m-noV2 (prior sds × 4) 0.001099 → **× 1.17 > 1.10: keep the V2-era priors**; held-out clear-cut
+  swap signs 0.965 vs 1.000 (57); fresh-slice single moves (the interaction test's 50, prospective + other slice): RMSE 0.0142 vs
+  0.0171, corr 0.956 vs 0.917, pairwise rank 0.82 vs 0.82; picks move 3–8 % of the bytes (7.0: 0.6 %), predicted KL 4–7 % lower
+  with noV2. (Before the mode fix: 0.00075 vs 0.00094, the same call.) No V2 row and no old mul1i8-trunk row is in any fit.
+- **Picks** (`data/a8rows173/picks/PICKS.md`; container bpw incl. embedding; trunk + head bpw beside): 1.0 infeasible at K ≥ 1;
+  1.25 u2 t1.5 (pending wave 2), 1.5 u2.25 t1.5, 2.0 u2.5 t1.5, 2.5 u2.875 t1.625, 3.0 u3.125 t2.125, 3.5 u3.625 t2.625, 4.0 u4 t3.125,
+  4.5 u4.5 t3.625, 5.0 u4.875 t4.125, 6.0 u6m t5, 7.0 u7.625m t7m; trunk K ranges ~K1 to size + 1.9.
+  **A3 (in-sample, fit129):** measured / predicted 1.5 0.279 / 0.155 (+80 %), 2.5 0.0502 / 0.0319 (+58 %), 4.0 0.00576 / 0.00453
+  (+27 %). Exploratory (not in the rule): the solve's uniform starts (2.5: K2.375 u2.875 t2.875, 2.436 bpw; 4.0: K3.875 u4.375 t4.375,
+  3.935 bpw) measured 0.0535 (pred 0.0509) and 0.00683 (pred 0.00679): **M1m prices uniform-like mixes well but over-predicts the
+  reallocation gain 3–7×** (pick vs uniform start: 2.5 −6 % [−18, +3], 4.0 −17 % [−23, −11]; predicted −47 % / −40 %). The rows are
+  uniform levels + group × half swaps; the picks spread single tensors from K1 to size + 2, where the per-tensor split of a group's
+  price (proxy err × R inside a theta knot) is extrapolation. Old M1 had 632 search rows of candidate-vs-incumbent ratios; this fit
+  has none. → For the restart: the picks are starting points only; refit from the search's own rows early (refit_every small);
+  run the uniform-start lanes of the multi-start test; do not read predicted KLs as gains.
+- **Interaction test (RULES-173-03b, golden-i173c: 85 fresh-ish search-pool docs, 110,619 positions; 25 pairs alone + joint, 77
+  scores):** pooled ρ = I / (r_a + r_b) **−0.022 [−0.032, −0.011]** (2.5: −0.017, 4.0: −0.034): detectably sub-additive, but no
+  category reaches |ρ| 0.10: same-layer FFN pair −0.077 [−0.096, −0.056], GDN qkv + z +0.065 [+0.019, +0.124], adjacent +0.034
+  [+0.002, +0.067], far −0.010 [−0.022, +0.004], attention input −0.037 (wide), mixer × FFN −0.022 (wide). **Reading:** not
+  "additive within noise" (the CI excludes 0) but no interacting category → **no M1 interaction term**; the largest interactions
+  (late FFN pairs, I −0.017 / −0.032) are what M1m's compounding already predicts (−0.014 / −0.030). M1m's single-move error
+  (RMSE 0.014 log, slope meas / pred 0.88) is ~10× the interactions: reranker features should target per-tensor prices, not pairs.
+- **Infrastructure:** `menu173m-v1` (42 mad levels, 62 heads, 37 embeddings; dump in the 9:10 AM entry); served R16 head donors
+  `hdonor173.sh` → ds8 `/data/q27/w158/heads/hd-<plan>.rad` (31 / 62 built, the rest building; the search needs them);
+  `run173.py` scores on ds8 and box2 cards (containers copied over the 10 GbE link, ~100 s a row). The vision tower (921 MB) is
+  dropped from every mix and serves fine. Containers deleted after scoring (ds8 peak ~100 GB at 10:50 with 8 queued: max_ready 4 since).
+- **Calib use:** fit129 (118 docs) 93 more reads (fit role, ledger `golden-fit129-a8rows173`); golden-i173c (85 docs) 77 reads (fit
+  role, ledger `golden-i173c`). No verify, no public. ~5 card-h (170 scores).
+- **Runtime:** none (pricing; the picks' prefill / decode follow their levels' bytes, mad kernels).
+- **Lead decides:** merge `census-mad-v4.patch`; the restart's starts (M1m picks vs uniform starts, given A3); whether to spend card
+  time on a pick-shrinkage check (e.g. a pick re-solved with each tensor within ±1.25 K of the size) before the search does it anyway.
+
 ### 2026-11-14 9:10 AM CST · #173-03 · A8 calibration rows on the mad ladder started; menu dump (w158)
 - **Status:** wave 1 (88 rows) scoring on box2 HIP 1 (ds8 HIP 7 held by another job; ds8 0–6 after w151's sub-1 requant) ·
   **Rules:** `search/refit/w158/RULES-173-03.md` (a91e446) and `RULES-173-03b.md` (ac05ee7, the interaction test), each committed

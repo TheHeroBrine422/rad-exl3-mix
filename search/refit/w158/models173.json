@@ -1,0 +1,6 @@
+{"M1m-out":      {"ext": {"prof": true, "lam2": true, "mode": true, "embf": "out"}, "opts": {"tau": 0.02, "beta": "0"}},
+ "M1m-in":       {"ext": {"prof": true, "lam2": true, "mode": true, "embf": "in"},  "opts": {"tau": 0.02, "beta": "0"}},
+ "M1m-out-noV2": {"ext": {"prof": true, "lam2": true, "mode": true, "embf": "out"}, "opts": {"tau": 0.02, "beta": "0", "v2x": 4}},
+ "M1m-in-noV2":  {"ext": {"prof": true, "lam2": true, "mode": true, "embf": "in"},  "opts": {"tau": 0.02, "beta": "0", "v2x": 4}},
+ "M1m-plain":    {"ext": {"prof": true, "lam2": true}, "opts": {"tau": 0.02, "beta": "0"}}
+}

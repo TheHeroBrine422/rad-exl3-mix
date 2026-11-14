@@ -1,0 +1,25 @@
+size 1: no pick in the window
+size 1.25: 1.2500 bpw (no emb 1.2373) from uniform pred 0.28086 head u2 emb t1.5 | uniform 0.55604 ch 321 | K 1-3
+size 1.5: 1.5000 bpw (no emb 1.4997) from uniform pred 0.15470 head u2.25 emb t1.5 | uniform 0.29614 ch 309 | K 1-3.375
+size 1.75: 1.7500 bpw (no emb 1.7622) from prev pred 0.09747 head u2.375 emb t1.5 | uniform 0.17590 ch 310 | K 1-3.625
+size 2: 2.0000 bpw (no emb 2.0246) from uniform pred 0.06528 head u2.5 emb t1.5 | uniform 0.11139 ch 306 | K 1-3.875
+size 2.5: 2.5000 bpw (no emb 2.5432) from prev pred 0.03185 head u2.875 emb t1.625 | uniform 0.05086 ch 308 | K 1-4.25
+size 2.625: 2.6250 bpw (no emb 2.6682) from uniform pred 0.02687 head u3 emb t1.75 | uniform 0.04245 ch 311 | K 1-4.375
+size 2.75: 2.7500 bpw (no emb 2.7932) from uniform pred 0.02271 head u3 emb t1.875 | uniform 0.03552 ch 313 | K 1-4.5
+size 2.875: 2.8750 bpw (no emb 2.9182) from uniform pred 0.01922 head u3.125 emb t2 | uniform 0.02985 ch 314 | K 1-4.625
+size 3: 3.0000 bpw (no emb 3.0432) from uniform pred 0.01632 head u3.125 emb t2.125 | uniform 0.02513 ch 317 | K 1-4.75
+size 3.125: 3.1250 bpw (no emb 3.1682) from uniform pred 0.01385 head u3.375 emb t2.25 | uniform 0.02119 ch 310 | K 1-4.875
+size 3.25: 3.2500 bpw (no emb 3.2870) from uniform pred 0.01177 head u3.375 emb t2.5 | uniform 0.01795 ch 312 | K 1-5
+size 3.375: 3.3750 bpw (no emb 3.4120) from uniform pred 0.01002 head u3.5 emb t2.625 | uniform 0.01523 ch 314 | K 1.125-5.25
+size 3.5: 3.5000 bpw (no emb 3.5370) from uniform pred 0.00853 head u3.625 emb t2.75 | uniform 0.01293 ch 314 | K 1.25-5.25
+size 3.625: 3.6250 bpw (no emb 3.6620) from uniform pred 0.00727 head u3.75 emb t2.875 | uniform 0.01098 ch 313 | K 1.25-5.5
+size 3.75: 3.7500 bpw (no emb 3.7870) from uniform pred 0.00620 head u3.75 emb t3 | uniform 0.00934 ch 313 | K 1.375-5.5
+size 3.875: 3.8750 bpw (no emb 3.9120) from uniform pred 0.00531 head u4 emb t3.125 | uniform 0.00796 ch 313 | K 1.5-5.75
+size 4: 4.0000 bpw (no emb 4.0370) from uniform pred 0.00454 head u4 emb t3.25 | uniform 0.00679 ch 318 | K 1.625-5.75
+size 4.125: 4.1250 bpw (no emb 4.1620) from uniform pred 0.00389 head u4.125 emb t3.375 | uniform 0.00579 ch 310 | K 1.625-6
+size 4.25: 4.2500 bpw (no emb 4.2870) from uniform pred 0.00334 head u4.125 emb t3.5 | uniform 0.00496 ch 318 | K 1.75-6
+size 4.375: 4.3750 bpw (no emb 4.4120) from uniform pred 0.00288 head u4.375 emb t3.625 | uniform 0.00426 ch 315 | K 1.875-6.25
+size 4.5: 4.5000 bpw (no emb 4.5370) from uniform pred 0.00248 head u4.5 emb t3.75 | uniform 0.00365 ch 312 | K 2-6.25
+size 5: 5.0000 bpw (no emb 5.0370) from uniform pred 0.00141 head u4.875 emb t4.25 | uniform 0.00202 ch 319 | K 2.375-6.75
+size 6: 6.0000 bpw (no emb 6.0246) from uniform pred 0.00057 head u6m emb t5.5 | uniform 0.00082 ch 303 | K 3.375-7
+size 7: 7.0000 bpw (no emb 6.9998) from uniform pred 0.00040 head u7.625m emb t7m | uniform 0.00043 ch 319 | K 5.25-7.5
