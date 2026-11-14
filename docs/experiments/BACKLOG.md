@@ -482,6 +482,25 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
 - [ ] **Hidden-state matching at scale** (NVIDIA Flash-Next style, BACKLOG below): arm B again at the scale-up budget.
 - [ ] **Block-wise / alternating** (EfficientQAT-style, the V4 section below): only if end-to-end A saturates.
 - [ ] **QAD-aware search:** re-price sensitivities after healing (healed per-tensor gains differ?) — V3.2 question.
+  Inputs from w154: per-tensor scale-gradient norms during healing (post-healing sensitivity, ~free) and per-group
+  healing gains (attn / ssm / ffn × depth). If groups heal very differently: fewer pre-QAD bits on the ones QAD repairs.
+  Also: weight QAD's per-tensor lr / trust region by M1's sensitivity instead of training all scales uniformly.
+- [ ] **Free-then-requantize (user 11-13; QuIP#-style compensation across blocks):** keep the trunk quantized, make one
+  part bf16 and trainable, train it against the teacher, then quantize it with our quantizer on the quantized trunk's
+  real inputs (H_in from X̃, H_out from the quantized model). Prior art: QuIP# (unquantized layers in a block fine-tuned
+  to compensate the quantized ones, block inputs = ORIGINAL activations, so no cross-block compensation; then norms +
+  S_U / S_V + LM head end to end on CE with early stopping), EfficientQAT (Block-AP all params then E2E scales),
+  BRECQ / OmniQuant (block reconstruction). New here: cross-block, on quantized inputs, as a post-QAD add-on.
+  - **LQ:** layer 63 (~400M params) on head-Gram-weighted hidden-state MSE vs the teacher's final hidden state
+    ((h − h*)ᵀ Wᵀ W (h − h*), + small KL guard): dense target, less logit overfitting than arm H. Teacher states:
+    stored for a ~4M-token subset (~40 GB) or teacher run alongside. Then requant layer 63; vs A16.
+  - **HQ:** the head (1.27 B params) bf16 trainable on KL, early-stopped on a held-out split (QuIP# trains the head
+    end to end without reported overfitting), then R16 requant with H_in from the quantized trunk; vs A16. Contrast arm
+    for the overfitting question.
+  - If LQ works: extend forward (start → end, each layer on quantized inputs, later layers fix what earlier leave) =
+    the alternating / block-wise round below; ~400M trainable a layer fits one R9700 with Adam.
+  - **How many free params are enough:** fraction freed vs gain curve (top layer → top-k layers → all, block-wise).
+- [ ] **QAD idea pass (Opus xhigh, 2–3 lanes) after the V3 search**, with w154's curve + search data + this list.
 
 ### V4 QAD: alternating block-wise / end-to-end (user discussion 2026-11-08)
 - **This refines the 11-07 "QAD family as a cost ladder" entry below** (its steps (1) library closed-form fits,
