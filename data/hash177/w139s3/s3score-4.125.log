@@ -1,0 +1,7 @@
+18:46:29 pack q27v3-144dd6e1-k4.125-i8
+18:49:03 pack q27v3-144dd6e1-k4.125-i8: rc 0
+18:49:46 mix q27v3-144dd6e1-k4.125-i8: /data/q27/w139/s3/q27v3-144dd6e1-k4.125-i8/mix-a8.rad.part: 787 weights (0 from donors, 336 act keys), 16.497 GiB, 0 cloned, 787 copied
+18:49:58 pack q27v3-144dd6e1-k4.125-hash
+18:52:37 pack q27v3-144dd6e1-k4.125-hash: rc 0
+18:53:12 mix q27v3-144dd6e1-k4.125-hash: /data/q27/w139/s3/q27v3-144dd6e1-k4.125-hash/mix-a8.rad.part: 787 weights (0 from donors, 336 act keys), 16.497 GiB, 0 cloned, 787 copied
+18:53:21 check 4.125: {"entries": 787, "trunk": 336, "non_trunk": 451, "missing": [], "non_trunk_differ": [], "trunk_bytes_differ": [], "size_a": 17713213440, "size_b": 17713213440, "pass": true}

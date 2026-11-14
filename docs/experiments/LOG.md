@@ -6965,3 +6965,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   K1.5-5.0 built by w157). Default size metric back to container bytes (trunk + head + embedding) = board. w157 rebases
   emb144 onto qc-exl3-v3 and builds the menu block; search restart waits for it. **Runtime:** neither (same gather
   kernel cost as w144 measured; re-timed by w157).
+
+### 2026-11-14 3:50 AM CST · housekeeping · box2 disk 91% → 84%
+- Deleted box2 `/data/q27/w139/s3` level dirs (w139's #177 stage-3 per-tensor quants, k2.625 / k4.125 hash + i8, and
+  its old mul1i8 gate packs; 173 GB): superseded by the mad ladder, results logged (summaries copied to
+  `data/hash177/w139s3/`). w139's e2e reference packs kept. Other box2 candidates (w138 packs 181 GB, w119/q 115 GB,
+  w126 packs 83 GB) left for the user. **Runtime:** neither.
