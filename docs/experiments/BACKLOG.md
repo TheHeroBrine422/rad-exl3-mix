@@ -710,3 +710,7 @@ monitor with paired per-doc CIs; rules first). Factors: (S) scales — always on
 4M / 16M and at 4.0 to check the stack holds with more data and bpw. Q likely joins every final arm regardless (we ship
 A8: scales trained without it may not hold under it) — the screen measures by how much. Needs the #181 speed-ups first
 (~25 min a run on ds8 then).
+- Considered and dropped (user + lead 11-14): a trainable dense FFN corrector between the last layer and the head.
+  LoRA (esp. on the last layers' FFN) + scales + block-wise cover what it could fix, it can't recover information lost
+  upstream, and it is an architecture change (new radiance block, board acceptance unclear). Revisit only if the
+  combination screen leaves a large systematic final-hidden-state error.
