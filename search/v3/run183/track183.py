@@ -2,7 +2,8 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """track183.py DRIVER.json SLICE GOLDEN [--once] -- #183 tracking slice (user 11-14: a fixed slice the search never
 decides on, so progress reads as raw KL on the same documents). Every POLL s: each "incumbent" event in the driver's
-state.jsonl (the first and then every TRACK_EVERY-th (5) of each size: user 11-14) whose tag has no tracking eval yet gets one eval line (tag trk183-<tag>, the incumbent's assignment, the
+state.jsonl (the first and then every TRACK_EVERY-th (5) of each size, plus a size's latest incumbent once it has gone
+TRACK_STALE_H (2) hours untracked: user 11-14) whose tag has no tracking eval yet gets one eval line (tag trk183-<tag>, the incumbent's assignment, the
 driver's base and act mode, the whole SLICE golden, no early stop) appended to the coordinator's evals.jsonl. Results
 land in the coordinator's results.jsonl like any eval; nothing reads them back into the search."""
 import json, os, sys, time
@@ -10,21 +11,29 @@ import json, os, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, ".."))
 import menu as MN  # noqa: E402
 
-EVERY = int(os.environ.get("TRACK_EVERY", 5))
+EVERY = int(os.environ.get("TRACK_EVERY", 5)); STALE_H = float(os.environ.get("TRACK_STALE_H", 2.0))
 
 
 def main(conf, slice_name, golden, once=False):
     c = json.load(open(conf)); M = MN.Menu.load(c["menu"]); R = c["root"]; act = c.get("act") or "f16"
-    done = set()
+    done = set(); seen_at = {}                                          # tag -> first time seen as a size's latest
     if os.path.exists(c["evals"]):
         done = {json.loads(l)["tag"] for l in open(c["evals"]) if l.strip() and '"trk183-' in l}
     while True:
-        new = []; nth = {}
+        new = []; nth = {}; latest = {}; cand = []
         for l in open(f"{R}/state.jsonl"):
             e = json.loads(l)
             if e.get("ev") != "incumbent": continue
             k = nth[e["size"]] = nth.get(e["size"], -1) + 1           # (user 11-14: every EVERY-th incumbent of a size)
-            if k % EVERY: continue
+            latest[e["size"]] = e
+            if k % EVERY == 0: cand.append(e)
+        now = time.time()
+        for size, e in latest.items():                                 # catch-up: a size's latest incumbent untracked
+            t = f"trk183-{e['tag']}"                                   # for STALE_H hours (since it became incumbent)
+            if t in done or e in cand: continue
+            first = seen_at.setdefault(e["tag"], now)
+            if now - first >= STALE_H * 3600: cand.append(e)
+        for e in cand:
             t = f"trk183-{e['tag']}"
             if t in done or not os.path.exists(f"{R}/assign/{e['tag']}.json"): continue
             mx = M.eval_mix(json.load(open(f"{R}/assign/{e['tag']}.json")), c["base"])

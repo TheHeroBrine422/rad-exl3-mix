@@ -7505,3 +7505,5 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   rotation every ~2 decisions a size), t183 tracking on every accept, one-time refs. User 11-14: rotate_after 25 → 200
   (~17 decisions a size per slice); t183 scores each size's first incumbent and then every 5th (track183.py
   TRACK_EVERY). Both live 4:45 PM CST. **Runtime:** neither.
+- 5:00 PM CST: + catch-up: a size's latest incumbent is tracked once it has gone 2 h untracked (TRACK_STALE_H), so a
+  size that stalls between 5th accepts still gets its final state on t183 (timer in memory: a tracker restart resets it).
