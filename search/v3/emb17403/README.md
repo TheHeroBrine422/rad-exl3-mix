@@ -4,9 +4,10 @@ Deadcode (11-14) counts the embedding as VRAM, so the user put it back in the bu
 tables (w144's `embed_exl3i`, gathered from the stored record), and size = container bytes (trunk + head + embedding).
 Pre-registration: `RULES.md` (committed 5b6e57d before any run). Results: LOG #174-03.
 
-**Serving branch:** radiance-hero `qc-exl3-v3-emb157` = w144's three commits rebased onto `qc-exl3-v3` 3bc8ad2
-(7163603, dcadb35, 9dcd0cb; one comment conflict in exl3quant merged) + 67cd2ce (the DFlash2 drafter embeds through
-`embed_exl3i`: block hook `op_embed_ext` in `arch/common/rad_block_dflash2.h`, off by default; qwen35_exl3 declares
+**Serving branch:** radiance-hero `qc-exl3-v3-emb157` head **120132a**: w144's three commits rebased onto `qc-exl3-v3`
+plus one drafter commit. Rebased twice: onto 3bc8ad2 (7163603, dcadb35, 9dcd0cb + 67cd2ce; one comment conflict in
+exl3quant merged), then (lead note 11-14 6:10 AM CST) onto 8a00735 without conflicts (d032bbb, 7585524, 4e727a4 +
+120132a). The drafter commit: the DFlash2 drafter embeds through `embed_exl3i`: block hook `op_embed_ext` in `arch/common/rad_block_dflash2.h`, off by default; qwen35_exl3 declares
 it over `df_x` with the trunk's own record / suh / svh, so the mask token's row and the anchor rows are the trellis
 rows decoded exactly; host test). Worktree `/workspace/wt/w157-radiance`.
 

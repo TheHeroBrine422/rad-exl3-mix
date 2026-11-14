@@ -40,3 +40,5 @@
 11-14 06:34:01 CST df2 p3-off: 1 errors; 0 0 ; 
 11-14 06:34:01 CST df2 cmp done
 11-14 06:34:01 CST end df2
+11-14 07:17:14 CST kldalt B e157b: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s rows 3e8d1e4d3cfc5aa4 vs b10e1 3e8d1e4d3cfc5aa4
+11-14 07:22:08 CST kldalt T e157b: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s rows c86e9937e4d5d7b4 vs b10e1 c86e9937e4d5d7b4

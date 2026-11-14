@@ -4,6 +4,17 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 7:30 AM CST · #174-03 · emb157 rebased on qc-exl3-v3 8a00735; cores rebuilt from 8a00735 and the rebased branch on box2 + ds8 (lead note 6:10 AM) (w157)
+- **Branch:** `qc-exl3-v3-emb157` rebased without conflicts onto 8a00735 (w156's KL-mode images, core `kld.*` only):
+  **head 120132a** (d032bbb / 7585524 / 4e727a4 = w144's three, 120132a = the drafter commit). Supersedes 67cd2ce.
+- **Cores** (`radbuild-perf.sh`, #170 recipe), new dirs on **box2 and ds8**: **`/data/q27/rad10-v3c`** (qc-exl3-v3 8a00735)
+  and **`/data/q27/rad10-e157b`** (120132a), each `install/`, `home/`, `home-pack/`. All plugin host tests pass, incl.
+  `qwen35_exl3_test` run directly (ctest finds it under no `host` label). Serve check on box2 card 1: B and T (the #174-03
+  identity mixes) on rad10-e157b give rows **byte-identical** to the test build's (3e8d1e4d3cfc5aa4 / c86e9937e4d5d7b4).
+  The 3bc8ad2-based `rad10-v3b` / `rad10-emb157` from the entry below are superseded (nothing uses them; deletable).
+- box2 dmesg is not readable inside the container (no OOM check possible from here); my jobs there logged no failure
+  around the 4:58 AM sshd stall, and radmix ran under conv.lock + ram.lock (shared). **Runtime:** neither.
+
 ### 2026-11-14 6:55 AM CST · #174-03 · Trellis embedding back in the budget (w157): branch `qc-exl3-v3-emb157` (emb144 rebased on 3bc8ad2 + DFlash2 over a trellis table), identity holds on a mad pack (T rows == oracle-row R rows), ~0 time; drafter works with the exact trellis rows (4.04 vs 3.92 tok/step); 21 eighth-step donors K1.625–4.875, 3/3 spot checks agree with the floor-model prices; menu block (36 trellis options + bf16); census `--expect-emb trellis` patch; rad10 cores rebuilt from 3bc8ad2 / emb157 on box2 + ds8
 - **Status:** done (branch + donors + menu block + census patch for the lead to merge) · **Machine:** box2 card 1
   (quants, GPU tests, 9 KLD evals, perf, drafter), box2 + ds8 CPU (builds, donors, mixes) · **Code:** radiance-hero
