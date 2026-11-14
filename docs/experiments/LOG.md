@@ -6889,3 +6889,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (qad pool, disjoint from the monitor docs, ~30k positions) scored every ~10 steps, per source, beside train EMA; the
   decayed checkpoints on the monitor stay the decision read. Decision point for the main run at the 4M branch.
   **Runtime:** neither.
+
+### 2026-11-14 2:05 AM CST · #177-03 / #179 · mul1i8 packs deleted (user OK); w152 step fusions merged
+- User OK (11-14 ~1:45 AM CST): ds8 `/data/q27/packs/*.rad` (the 144dd6e1 mul1i8 ladder packs, 687 GB) deleted — no open
+  handles or links; pack logs kept. The mul1i8 per-tensor source stays on box2 `ladder-src` for now. Frees packs-mad.
+- qc-exl3-v3 fast-forwarded to w152's 3bc8ad2 (#179: decode small ops fused, residual add into the mad producer; exl3i
+  interface 5; decode −1.7…−2.2%, KLD rows byte-identical). Corrected #177-02 e2e: mad ×0.781 / ×0.912 vs i8.
+- User decisions recorded in RUNBOOK-overnight-1113 (decode f16 above 3.0, below pending; rescoring on our own head;
+  QAD stop rule at 16M, convergence screen first; ds8 to the search after the ladder). **Runtime:** D (fusions).
