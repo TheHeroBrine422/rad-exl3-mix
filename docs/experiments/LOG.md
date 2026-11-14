@@ -7546,3 +7546,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   reading was this document). Doc 100: ours 0.758, uniform K2.375 0.333, IQR 0.212, V2 2.50 1.267 → the allocation
   causes it (searched / M1 allocations starve something this text needs; suspects: embedding t1.625, early layers at
   K1-1.5, head). w163 (Haiku xhigh) runs the swap test on a multilingual diagnostic golden. **Runtime:** neither.
+- 5:50 PM CST (`ml186.py`, non-Latin letter share > 50%): ver3-8k Latin docs (98, 117,934 rows) ours 2.5 **0.0534**
+  vs IQR **0.0532**, uniform 0.0569; non-Latin docs (6: Persian chat, Korean wiki x2, Russian, Greek, a chat; 11,693
+  rows) ours **0.542** vs IQR **0.162**, uniform 0.250; excluding doc 100 still ours 0.137 / uniform 0.109 / IQR 0.093.
+  A non-Latin-script effect of our allocation (every one of the 6 docs: ours > uniform > IQR), small n. w163 told.
