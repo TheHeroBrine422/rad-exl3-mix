@@ -701,3 +701,12 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
   move-level labels (less noise), ~10–20 move features incl. neighbourhood K (interactions M1 lacks), ranking target.
   Test: offline replay on the restarted search's own decisions (train on the first N, predict the next; accept AUC vs
   M1 alone) at ~300–500 decisions; live only on a share of proposals if it clearly beats M1.
+
+### QAD combination screen (user 11-14): how the QAD options stack — after #181's scaling curve
+Fractional factorial 2^(5-1) = 16 short runs at 2.5 (1M tokens each, own decay, lr from the screen; judged on the qad
+monitor with paired per-doc CIs; rules first). Factors: (S) scales — always on, the base; (L) adapter on / off;
+(B) block-wise stage before end-to-end on / off; (T) DFlash2-tap hidden-state MSE on / off; (Q) A8 fake-quant on / off;
+(D) data mix calib/qad-heavy vs mixed xcorp. Resolution V: main effects + every 2-way interaction. Winner(s) re-run at
+4M / 16M and at 4.0 to check the stack holds with more data and bpw. Q likely joins every final arm regardless (we ship
+A8: scales trained without it may not hold under it) — the screen measures by how much. Needs the #181 speed-ups first
+(~25 min a run on ds8 then).

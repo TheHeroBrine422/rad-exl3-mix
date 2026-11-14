@@ -4,6 +4,27 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 1:05 AM CST · #181 · first curve point on the served path: 1 M checkpoint verify **0.937 [0.925, 0.950]**, fresh xcorp **0.884 [0.837, 0.920]**; calib-only data at 1 M (P1M) 0.948 / 0.930, **the xcorp-heavy mix beats it on both** (c 1.012 [1.002, 1.024], x 1.052 [1.011, 1.105]); identity gate PASS (w154)
+- **Status:** running (main run on box2 cards 0, 2, 3 at step ~120; 4 M branch next) · **Machine:** box2 (packs, mixes,
+  census), ds8 card 7 (scores, free while w155 had not taken it) · **Data:** `data/qad181/eval-inc2.5/`
+- **Identity gate (RULES181):** the inc2.5 control built from the virtual level (per-tensor recipe, base embedding)
+  scored on golden-s171d: rows **byte-identical** to w147's B rows of `v3s171-2.5-block-00626` (mix 10,509,639,680 B,
+  = w147's B). Census PASS on every mix (a8g128, mul1i8, bf16 embedding, version ≤ 3).
+- **Scores** (served path, A8, bf16 embedding, R16 u2.75 head; c = golden-verify27-w114 94,135 rows, 4th use; x =
+  golden-x181g 152,007 gen rows):
+
+  | arm | c KL | x KL | c ratio [95 % CI] (better / worse docs) | x ratio [95 % CI] (better / worse) |
+  |---|---|---|---|---|
+  | control | 0.04337 | 0.05619 | – | – |
+  | ckpt-1M (mixed: 80 % xq, gen rows) | 0.04063 | 0.04970 | 0.9369 [0.9245, 0.9502] (71 / 10) | 0.8844 [0.8370, 0.9202] (136 / 14) |
+  | P1M (calib qad pool only, first 2k) | 0.04114 | 0.05226 | 0.9484 [0.9331, 0.9670] (71 / 10) | 0.9300 [0.9045, 0.9506] (120 / 30) |
+  | P1M / ckpt-1M | | | 1.0124 [1.0015, 1.0235] (28 / 53) | 1.0516 [1.0105, 1.1046] (33 / 117) |
+
+  Both gain by the rule; position bins all < 1 (c 0.93–0.94 in every bin; x 0.87 / 0.92 / 0.95 for 0–2k / 2–4k /
+  4–8k). At equal budget the mixed data is better on both slices, calib verify included ("data matters" by amendment 2).
+- The monitor's +4.3 % at ckpt-1M (one wildchat doc) did not carry to verify (71 of 82 docs better).
+- **Runtime:** none.
+
 ### 2026-11-14 12:10 AM CST · #180-02 · DFlash2 candidates rescored against our own exl3i head (`exl3i_rerank`, no 1.2 GiB copy): exact (device = host reference bit for bit, = exl3i_dense's logits at those rows to ≤ 0.1 u·L1), +1.20 GiB KV vs the copy; acceptance between none and the copy (fixed prompts 3.95 vs 4.23 vs 3.82 tok/step), e2e ctx 0 −2 % vs the copy / +7 % vs none, 8k −3 % / +1 %; the served K4 head is a noisier rescorer than an int8 copy of the original (w155)
 - **Status:** done (fork commits for the lead to merge; not pushed) · **Machine:** ds8 HIP 7 (11-13 10:51 PM – 11-14
   12:07 AM CST) · **Code:** radiance-hero `qc-exl3-v3-rr` on qc-exl3-v3 fdd480c (rebased from 9f0a059 per the lead's
