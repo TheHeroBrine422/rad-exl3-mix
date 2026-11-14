@@ -123,6 +123,51 @@ versions of anything: git history.
 - **Card time:** ~4.6 card-h on HIP 7 (+ 8 min HIP 4). ds8 intermediates deleted after logging (`w156/DELETED.txt`).
 - **Runtime:** none (an eval; A8's own vision cost is 0.00034 at K6, ×1.7 text's, small next to the weights').
 
+### 2026-11-14 5:55 AM CST · #181 · 2.5 screen done (7 runs): **lr 1e-3 + mixed data (the main recipe) wins** — every other run worse with CI > 1 (3e-3 1.037, calib-only 1.010–1.040); main run resumed toward 16 M; 4.0 / 6.0 lr screens started (w154)
+- **Status:** main run resumed from step 247 on box2 cards 2-3 (`--build-group 1`); 4.0 lr screen on card 0 · **Data:**
+  `data/qad181/screen/pick-screen25.json`
+- Fixed eval (38 held-out qad docs, 31,151 rows) at the decayed 1 M end, ratio vs 1e-3 / A [95 % doc bootstrap] (better /
+  worse docs), monitor:
+
+  | run | fixed KL | vs 1e-3 / A | monitor |
+  |---|---|---|---|
+  | **1e-3 / A** | **0.05879** (base 0.06208: −5.3 %) | – | 0.05779 |
+  | 1e-3 / B | 0.05939 | 1.0102 [1.0030, 1.0185] (12 / 26) | 0.06207 |
+  | 3e-4 / A | 0.05944 | 1.0111 [1.0037, 1.0192] (15 / 23) | 0.05887 |
+  | 3e-4 / B | 0.06029 | 1.0256 [1.0171, 1.0344] (7 / 31) | 0.06093 |
+  | 1e-4 / A | 0.06074 | 1.0332 [1.0228, 1.0425] (6 / 32) | 0.06129 |
+  | 3e-3 / A | 0.06097 | 1.0370 [1.0226, 1.0516] (5 / 33) | 0.06037 |
+  | 1e-4 / B | 0.06113 | 1.0399 [1.0300, 1.0476] (7 / 31) | 0.06184 |
+
+- 3e-3's fixed-eval curve went up after step 10 (0.0600 → 0.0604 → 0.0606 at steps 10 / 20 / 30): past the optimum. The
+  data result holds at every lr: mixed (80 % xcorp) beats calib-only even on held-out calib.
+- **Pick (amendment 4):** (1e-3, A) stays; the main run continues with its own recipe (no restart); the 4.0 / 6.0 screens
+  run mix A at {1e-3, 3e-4, 1e-4} (+3e-5 at 6.0). **Runtime:** none.
+
+### 2026-11-14 4:20 AM CST · #181 · 2.5 screen, first four runs (1 M, fixed held-out qad eval): **lr 1e-3 / mixed data best** (0.05879, −5.3 % vs base 0.06208); calib-only 1.010 [1.003, 1.019], lr 3e-4 1.011 [1.004, 1.019], lr 1e-4 1.033 [1.023, 1.043]; best at the grid edge → lr 3e-3 added (amendment 5) (w154)
+- **Status:** screen running (3e-4 / B on card 0, 1e-4 / B on cards 2-3, then 3e-3 / A) · **Machine:** box2 cards 0, 2, 3 (card 1:
+  w157's quant since ~3:15 AM CST) · **Rules:** amendment 5 (aa42620) · **Data:** `data/qad181/screen/`
+- Fixed eval (38 held-out qad docs, 31,151 rows) at the decayed 1 M end, ratio vs 1e-3 / A [95 % doc bootstrap] (docs better / worse);
+  monitor (32 search docs):
+
+  | run | fixed KL | ratio vs 1e-3 / A | monitor |
+  |---|---|---|---|
+  | 1e-3 / A (mixed) | 0.05879 | – | 0.05779 (−9.5 % vs base) |
+  | 1e-3 / B (calib only) | 0.05939 | 1.0102 [1.0030, 1.0185] (12 / 26) | 0.06207 |
+  | 3e-4 / A | 0.05944 | 1.0111 [1.0037, 1.0192] (15 / 23) | 0.05887 |
+  | 1e-4 / A | 0.06074 | 1.0332 [1.0228, 1.0425] (6 / 32) | 0.06129 |
+
+- Curves every 10 steps (1e-3 / A: 0.06037, 0.05931, 0.05903 at steps 10 / 20 / 30, then the decay): lower lr is slower,
+  not better; the mixed data beats calib-only training on held-out calib.
+- 1e-3 / A repeats the main run's recipe (its order differs only by the 38 held-out docs): its monitor reads −9.5 % at
+  1 M, so the main run's +4.3 % (wildchat 1577 blowing up) was data-order luck, not the recipe.
+- box2 disk was at 107 GB free (floor 100; several workers): freed ~120 GB of my scored mixes / packs (rebuildable from
+  the virtual levels + scales); ds8: gate mix and 2b virtual levels deleted.
+- **Incident 2 (mine):** at 4:58 AM CST the 3e-3 run's two ranks built their students at once (~25 GB host RAM each)
+  beside w157's head quant (26 GB) and its compile jobs: box2's OOM killer took one of my ranks (cgroup oom_kill 3 → 4),
+  ssh stalled ~3 min; w157's processes survived. Relaunched with `--build-group 1` (ranks build one after another);
+  every later multi-rank launch on box2 uses it. **Runtime:** none.
+
 ### 2026-11-14 3:05 AM CST · #181 · main run stopped at the 4 M read (user: converge first), 2.5 lr × data-mix screen at 1 M launched with a fixed held-out qad eval set; calib train-KL spikes = single hard documents streamed over steps (w154)
 - **Status:** screen running (box2 cards 0-3, single-card runs) · **Rules:** amendment 4 (fd26a53) · **Notes:** lead
   11-14 1:05–2:30 AM CST (read late: they were posted while I worked; the 2b inc4.0 run had started at lr 1e-3 without
@@ -132,7 +177,10 @@ versions of anything: git history.
 - **Calib spikes (lead note 1:20 AM):** the per-step calib KL jumps are one or two documents streamed across consecutive
   steps: steps 76–81 = calib 16 (the-stack-smol-xl, 12,288 tokens) + 2857 (wikipedia/hi); step 49 = 3822 (wildchat); 119 =
   2601 (wildchat) + 10 (nemotron-swe); 124 = 4678 (wildchat). Wildchat recurs (the monitor's outlier 1577 is wildchat too).
-  Their base-model KL (before training) is checked on the next free card.
+  Base-model check (torch path, first 8,192 tokens; `data/qad181/diag/spike.log`): they were hard **before** training —
+  KL a row base → main ckpt-1M: calib 16 0.362 → 0.338, 2857 0.092 → 0.087, 2601 0.414 → 0.359, 3822 0.264 → 0.378,
+  4678 1.042 → 1.081, 1577 (the monitor outlier) 0.302 → 0.861 (vs ~0.05 for typical calib). Hard documents streamed over
+  steps, plus real damage on a few wildchat chats (1577 ×2.85, 3822 ×1.43) at the main run's 1 M checkpoint.
 - **Screen (6 × 1 M):** lr {1e-3, 3e-4, 1e-4} × mix {A all corpora, B calib qad pool only}; fixed eval = 38 held-out qad-pool
   docs, 31,151 rows (first 2,048 tokens), step 0 KL 0.06208, scored every 10 steps (1e-3 / A: 0.06037 at step 10).
 - **Throughput options (lead note 2:00 AM):** caching the bf16 weight across fwd / recompute / bwd = the whole 54 GB trunk
@@ -7090,3 +7138,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   its old mul1i8 gate packs; 173 GB): superseded by the mad ladder, results logged (summaries copied to
   `data/hash177/w139s3/`). w139's e2e reference packs kept. Other box2 candidates (w138 packs 181 GB, w119/q 115 GB,
   w126 packs 83 GB) left for the user. **Runtime:** neither.
+
+### 2026-11-14 7:45 AM CST · #174-03 · w157 merged: trellis embedding serves on qc-exl3-v3 120132a; menu block ready
+- Merged emb157 (ff to 120132a); census `--expect-emb trellis` applied; ds8 donor push started. t2.5 vs bf16 embedding
+  KL 1.012 [0.996, 1.029], times within noise, VRAM +0.37 GiB = the codes; DFlash2 works with the trellis table
+  (acceptance 4.04 vs 3.92 tok/step). Report `local/workers/out/w157.md`. **Runtime:** neither (measured within noise).
