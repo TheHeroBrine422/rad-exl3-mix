@@ -16,4 +16,4 @@ holds `/data/q27/locks/card<N>.lock` (+ `ram.lock` shared) and skips when its ou
 | `q1.sh` … `q12.sh`, `qnext.sh` | the card-1 queues as run (order and re-plans in their headers) |
 | `collect.sh` | the summaries -> `data/step179/` |
 | `kctr-key.patch` | **for the lead**: exl3i's KS counters keyed by (device, stream, output) — mad decode is NaN without it (PERF.md) |
-| `fbuilds.txt` | the stash commits the f* / mres* homes were built from |
+| `fbuilds.txt` | the stash commits the f* / mres* homes were built from (dangling objects: git may collect them). Rebuild instead from commits: mres3 = 1f4ecbc; fres2 = 1f4ecbc + kctr-key.patch; fstep = b73675c + the patch; mfix = 9f0a059 + the patch; mord = 9f0a059 with exl3i `rad_kernel_concurrent` returning 0; mstep = tag archive/w152-step-b02aa9a |
