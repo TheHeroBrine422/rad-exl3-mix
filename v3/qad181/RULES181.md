@@ -93,3 +93,37 @@ The curve (KL ratio vs control and adjacent ratios vs budget, CIs, both slices),
 monitor curves, positions/s and card-hours per budget, card-hours per size at the chosen budget, a V3.1 recommendation
 (budget per size; adapters yes / no). Ledger: training qad-pool docs (role train), monitor docs (monitor), the verify
 slice's 3rd use (check).
+
+## Amendments
+
+### Amendment 1 — 2026-11-13 11:30 PM CST, before any healed score (data: the board's rows only)
+**Why.** The first main run (box2, 10:13 PM, 41 steps) read its 1 M checkpoint's monitor at 0.0658 vs 0.0639 at step 0
+(+3 %, the pilot gained −10 % at this budget) and its running training KL climbed to 0.5–0.9 (xcorp) and 1–3 nats a row
+(traces) while calib stayed at 0.02–0.04. Checks (box2 / ds8 card 7, data in `data/qad181/diag/`):
+- served path = student: radiance on the inc2.5 control vs the torch student on the same rows, 2.4682 / 2.4724 (6 trace
+  starts), 3.7908 / 3.7912 (an agentic xq piece); the released V2 3.00 / 4.00 read 2.12 / 1.43 there (p99 24.8 / 23.2).
+- an independent bf16 reference (the checkpoint in torch, one layer at a time, `bf16ref.py`) reproduces the official calib
+  golden to ≤ 0.02 nats a row (3 calib docs), but differs from the trace / agentic goldens by > 1 nat on 2.6–12 % of
+  rows (max 36): ordinary pieces (arxiv, web, 10 xq-c30 docs) agree (≤ 2.7, 0.01 % of rows).
+- on the official calib golden's own agentic documents (swe-rebench, nemotron-swe, attrs / click traces, first 4,096
+  tokens) the same split holds: its gen rows (the board's) agree with the bf16 reference (929 rows, max 0.02) while its
+  non-gen rows do not (23,641 rows, 2.5 % > 1 nat, max 32). The challenge README says why: only the tokens the model writes
+  are scored (`gen.u8`); in system / user / tool-result turns the bf16 distribution is arbitrary and "would carry most of
+  the KL while saying little about a quant".
+- gold3 / gold4 (and night1105's goldens, and pickx's x parts: gen all ones) were recorded without a gen mask, so the
+  first run trained on those prompt-side rows. The goldens themselves are not corrupt.
+
+**Changes (everything else as above).**
+- Training rows = the board's rows: a gen mask per chunk rebuilt from its tokens with the README's rule
+  (`genmask181.py`: plain text all; chat = each assistant turn's body through its `<|im_end|>`; a piece starting inside a
+  turn: 0 until its first header). Check: rebuilt from calib's tokens it equals calib's official gen.u8 on all
+  10,254,542 rows (0 differ). Non-gen tokens stay in the windows as context (segments / streams unchanged).
+- Data: 30,747 documents, **42.10 M gen rows** (49.62 M tokens) at cap 8,192: xq 33.59 M, xc8k-b3 4.36 M, tr32k 0.84 M,
+  calib qad 3.31 M. **Budgets 1 / 4 / 16 / 40 M** gen rows (48 M no longer exists in the data); WSD branches and decay as
+  above (the main run decays over 32 → 40 M). Documents need ≥ 16 gen rows in their first 8,192 tokens.
+- Judging x part: golden-x181 scored over its gen rows (`golden-x181g`: the same rows, gen.u8 rebuilt by the rule:
+  152,007 of 174,257). c (verify27-w114, calib's official gen) unchanged; it is that slice's **4th** use (the rules'
+  "3rd" was a miscount: #165 used it twice).
+- The first run (`runs/inc2.5`, unmasked) is not a result: it is reported as the evidence above and deleted from the
+  plan; the new main run starts from step 0 (`runs/inc2.5g`, same seed and settings).
+- 2b runs and their judging use the same masks.
