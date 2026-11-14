@@ -530,6 +530,25 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-14 8:35 AM CST · #177-03 · **BUG: the 7 sub-1 mad levels were invalid** (the KA = 0 search read a byte-sum table that is exact only for mul1 / i8); fixed in exl3frac2 for hash builds, the 7 requantizing; the 42 K ≥ 1 levels unaffected (w151)
+- **Found by** item 4's per-level proxy MSE vs the mul1i8 twins (`v3/levels/mad/prox151.py`, `data/mad17703/prox151.json`):
+  K ≥ 1 mad / i8 ×0.988–1.049, but **K0.125–0.875 ×1.67 / 2.41 / 3.15 / 3.99 / 4.97 / 6.09 / 7.41** (worst family q_proj, up to ×13.7).
+- **Cause:** `v3/e3/exl3frac2/qtf2.cuh` `qtf2_forward0` (#142 v10, the KA = 0 forward pass with fused 0-bit steps) reads codebook
+  values from a 1,024-half LDS table indexed by the byte sum of the mul1 product (filled with decode_mul1_product_2). That holds
+  for mul1 / i8 (value = f(byte sum)), not for the hash, whose hook inverts the product to the state. The search ran on a wrong
+  codebook; the stored codes decode correctly (the final pass uses the hook), so levels were self-consistent but bad. #177's
+  stage 1 / 3 and hashcheck.py never ran K < 1. K ≥ 1 uses qtf2_step (per-product decode) and exl3cb.
+- **Fix (c751a1a):** under `EXL3_CB_HASH` only, the table read becomes `decode_mul1_product_2(p0, p1)` (the products are
+  exactly (s ^ salt) · C there). mul1 / i8 builds compile the same code (their code stamp moves with the file). **Tile check**
+  (`v3/levels/mad/submse.py`, ds8, 512 random tiles): broken mad MSE 1.994 / 2.016 / 2.002 at K0.25 / 0.5 / 0.875 (worse than
+  zeros), fixed mad 0.921 / 0.586 / 0.330, i8 0.922 / 0.585 / 0.332; K1 / K2 identical to the unfixed build (0.27536 / 0.06936),
+  so the K ≥ 1 levels stand.
+- **Actions:** ds8 restaged at c751a1a (code stamp **f3aa155c**; settings 635bac02 unchanged, level names unchanged); the 7 bad
+  levels moved to `ladder-mad-bad/` (deleted once replaced), their 7 packs and box2 copies deleted; rebuild running
+  (stageC3.sh, HIP 0–6, swj pairs on 5–6; ~2 h). The search menu must not use sub-1 mad levels until their packs reappear.
+  Unaffected: the 42 K ≥ 1 levels (code stamp c3ee8275), the 45 heads (K ≥ 1), the a/b donors (K4 / 5).
+- **Runtime:** none.
+
 ### 2026-11-14 3:15 AM CST · #177-03 · stage C, night: backlog trims (ds8 disk), a third quant lane on HIP 5–6 + menu-critical order (lead 2:10 AM), packs-mad started with a mad pack home (identity-checked vs w150) (w151)
 - **Disk (11:45 PM):** ds8 free fell ~150 GB / h (untrimmed levels waiting for swj: out/ + level/ + a C9-only final/ ≈ 3× a final). `trimloop.sh`
   (every 5 min): out/ t-files go once a level's phase-1 DONE and level/ exist; a swj level's C9-only final/ goes while no swj loop has
