@@ -4,6 +4,25 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 1:45 PM CST · #181 · 16 M checkpoint: verify **0.943 [0.918, 0.977]**, xcorp **0.808 [0.726, 0.878]**; vs 4 M: c 1.011 [0.9995, 1.0225], x 0.968 [0.930, 0.990] → **calib saturates at 1–4 M, xcorp keeps gaining**; main run stopped at 16 M (user rule: 4 M → 16 M monitor 0.995, < 3 %); adapter arm not triggered (w154)
+- **Status:** main run stopped (main step 612 saved; resumable toward 40 M); 2b u2.5 arm (card 2) and arm Q (card 3) at 4 M
+  started; 6.0 screen's last run (1e-5) on card 0 · **Data:** `data/qad181/eval-inc2.5/curve-a16m.json`, `data/qad181/run-inc2.5g/`
+- **The curve** (inc2.5, served path, ratio vs control [95 % doc bootstrap]; better / worse docs):
+
+  | budget | verify c | xcorp x181g | monitor (32 search docs) |
+  |---|---|---|---|
+  | 1 M | 0.9369 [0.9245, 0.9502] (71 / 10) | 0.8844 [0.8370, 0.9202] (136 / 14) | +4.3 % (one-doc outlier) |
+  | 4 M | 0.9332 [0.9139, 0.9567] (70 / 11) | 0.8348 [0.7635, 0.8909] (135 / 15) | −8.3 % |
+  | 16 M | 0.9432 [0.9175, 0.9765] (69 / 12) | 0.8076 [0.7263, 0.8777] (140 / 10) | −8.8 % |
+
+  Adjacent: 4 M / 1 M c 0.996 [0.986, 1.010], x 0.944 [0.908, 0.971]; 16 M / 4 M c 1.011 [0.9995, 1.0225], x 0.968
+  [0.930, 0.990] — neither gains by the rule (c CI below 1). Monitor per doc 4 M → 16 M: 0.9949 (12 better / 20 worse).
+  16 M position bins vs control: c 0.944 / 0.956 / 0.919 (0–2k / 2–4k / 4–8k), x 0.783 / 0.829 / 0.931.
+- **Reading:** with this mix (80 % xq) more data keeps buying xcorp, not calib-like text; the board's distribution (calib)
+  saturates by ~1–4 M positions. Recommended budget at 2.5 by the rule: **1 M** (4 M = 1 M on c; 4 M adds −5.6 % on x).
+- **Rules:** 3 (adapters) only if 16 M gains over 4 M → not run. The 40 M point (~19 h on two cards) not run (user rule).
+- **Runtime:** none.
+
 ### 2026-11-14 11:55 AM CST · #173-03 · Mad-ladder A8 rows + M1m refit + re-solve: picks 1.25–7.0 (K ≥ 1), but **in-sample the picks miss their predictions by +27…+80 %** (they beat the uniform start by −6 % / −17 %, predicted −47 % / −40 %); interaction test: pairs add to −2 % (no M1 interaction term) (w158)
 - **Status:** wave 1 + A3 + interaction test done; wave 2 (sub-1 rows → sizes 1.0 / 1.25, sub-1 pricing, the final V2-prior call on
   all rows) waits for w151's sub-1 requant (ETA ~3:30 PM CST) · **Machine:** ds8 HIP 7, box2 HIP 1, ds8 HIP 0–6 only while idle
@@ -7278,3 +7297,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Deleted box2 `w157/mix`, `w157/dtmp` (w157's B/T identity mixes, post-merge recheck not needed: rows already
   byte-identical on rad10-e157b) and `w144/mix/*.rad` (w144's mul1i8-trunk embedding test mixes, superseded by #174-03);
   92 GB + w154 churn. w154 told to delete eval mixes after scoring. **Runtime:** neither.
+
+### 2026-11-14 2:10 PM CST · housekeeping · box2 mul1i8 per-tensor ladder deleted (user OK)
+- box2 `/data/q27/ladder-src/q27v3-144dd6e1-*-i8` (49 levels, ~459 GB) deleted on the user's OK — the last copy of the
+  mul1i8 trunk ladder (trunk is mad-only; mul1 / i8 head plans and embedding donors live elsewhere, untouched). Logs
+  and swj fit kept. box2 72%, 667 GB free; w151 to finish the mad per-tensor copy. **Runtime:** neither.
