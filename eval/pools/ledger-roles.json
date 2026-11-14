@@ -533,5 +533,11 @@
   "line": "v3.1",
   "decisions": 1,
   "note": "#173-03b (w158, 2026-11-14): interaction-test slice, 85 merged fit + search docs (draw173b.py seed 17303, least-used first: 3 prior uses each, fit129 and ready slices excluded), cap 4,096, 110,619 scored positions of the published calib golden; 77 scores (25 move pairs alone + joint at 2.5 / 4.0) set M1's interaction terms (RULES-173-03b.md)"
+ },
+ "golden-t183-c": {
+  "role": "monitor",
+  "line": "v3",
+  "note": "#183 tracking slice (lead, 2026-11-14 4:10 PM CST): calib part of t183, merged fit + search docs, least-used first (draw171.py seed 1830, 48 docs, 52,015 positions at cap 4,096); x part 130 pieces of xc8k-b2-c2 (excluding final-x and every s17*-x). Every #183 incumbent is scored on it in full; never decides anything (progress readout only).",
+  "decisions": 0
  }
 }
