@@ -1,0 +1,509 @@
+{
+ "tensors": [
+  {
+   "w": "token_embd.weight",
+   "layer": -1,
+   "group": "emb",
+   "hbar": null,
+   "opts": [
+    {
+     "o": "t1.5",
+     "K": 1.504752,
+     "bytes": 239142400,
+     "err": 0.0036131657607117516,
+     "rel": 0.13735137872429248,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k1.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K1.5.rad"
+     }
+    },
+    {
+     "o": "t1.625",
+     "K": 1.629752,
+     "bytes": 259008000,
+     "err": 0.003073761474840494,
+     "rel": 0.11560150082450059,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k1.625",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K1.625.rad"
+     }
+    },
+    {
+     "o": "t1.75",
+     "K": 1.754752,
+     "bytes": 278873600,
+     "err": 0.0026148546974809365,
+     "rel": 0.09709744619164656,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k1.75",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K1.75.rad"
+     }
+    },
+    {
+     "o": "t1.875",
+     "K": 1.879752,
+     "bytes": 298739200,
+     "err": 0.0022300145546420786,
+     "rel": 0.08157990890666957,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k1.875",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K1.875.rad"
+     }
+    },
+    {
+     "o": "t2",
+     "K": 2.004752,
+     "bytes": 318604800,
+     "err": 0.0019039937691482055,
+     "rel": 0.06843408774243356,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.rad"
+     }
+    },
+    {
+     "o": "t2.125",
+     "K": 2.129752,
+     "bytes": 338470400,
+     "err": 0.0016374713314588302,
+     "rel": 0.05768736097526366,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.125",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.125.rad"
+     }
+    },
+    {
+     "o": "t2.25",
+     "K": 2.254752,
+     "bytes": 358336000,
+     "err": 0.001412273542960095,
+     "rel": 0.04860692811359433,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.25",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.25.rad"
+     }
+    },
+    {
+     "o": "t2.375",
+     "K": 2.379752,
+     "bytes": 378201600,
+     "err": 0.001223484475824138,
+     "rel": 0.04099456894890888,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.375",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.375.rad"
+     }
+    },
+    {
+     "o": "t2.5",
+     "K": 2.504752,
+     "bytes": 398067200,
+     "err": 0.0010642684107362351,
+     "rel": 0.03457465337527971,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.5.rad"
+     }
+    },
+    {
+     "o": "t2.625",
+     "K": 2.629752,
+     "bytes": 417932800,
+     "err": 0.0009307286853423268,
+     "rel": 0.029190060041176188,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.625",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.625.rad"
+     }
+    },
+    {
+     "o": "t2.75",
+     "K": 2.754752,
+     "bytes": 437798400,
+     "err": 0.0008167261764356885,
+     "rel": 0.024593247012550893,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.75",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.75.rad"
+     }
+    },
+    {
+     "o": "t2.875",
+     "K": 2.879752,
+     "bytes": 457664000,
+     "err": 0.0007201666934689336,
+     "rel": 0.020699772267162592,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k2.875",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K2.875.rad"
+     }
+    },
+    {
+     "o": "t3",
+     "K": 3.004752,
+     "bytes": 477529600,
+     "err": 0.0006384913118885138,
+     "rel": 0.0174064547624199,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.rad"
+     }
+    },
+    {
+     "o": "t3.125",
+     "K": 3.129752,
+     "bytes": 497395200,
+     "err": 0.0005711701163876598,
+     "rel": 0.014691927235360044,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.125",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.125.rad"
+     }
+    },
+    {
+     "o": "t3.25",
+     "K": 3.254752,
+     "bytes": 517260800,
+     "err": 0.0005140718269556024,
+     "rel": 0.012389608073345387,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.25",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.25.rad"
+     }
+    },
+    {
+     "o": "t3.375",
+     "K": 3.379752,
+     "bytes": 537126400,
+     "err": 0.00046587532204524153,
+     "rel": 0.010446226968569993,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.375",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.375.rad"
+     }
+    },
+    {
+     "o": "t3.5",
+     "K": 3.504752,
+     "bytes": 556992000,
+     "err": 0.0004253925920684308,
+     "rel": 0.0088138809581491,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.5.rad"
+     }
+    },
+    {
+     "o": "t3.625",
+     "K": 3.629752,
+     "bytes": 576857600,
+     "err": 0.0003914000593371677,
+     "rel": 0.007443232901069863,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.625",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.625.rad"
+     }
+    },
+    {
+     "o": "t3.75",
+     "K": 3.754752,
+     "bytes": 596723200,
+     "err": 0.0003624867513397508,
+     "rel": 0.006277389515885883,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.75",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.75.rad"
+     }
+    },
+    {
+     "o": "t3.875",
+     "K": 3.879752,
+     "bytes": 616588800,
+     "err": 0.0003380802857695165,
+     "rel": 0.005293271183825081,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k3.875",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K3.875.rad"
+     }
+    },
+    {
+     "o": "t4",
+     "K": 4.004752,
+     "bytes": 636454400,
+     "err": 0.0003174027163901999,
+     "rel": 0.004459509530377722,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.rad"
+     }
+    },
+    {
+     "o": "t4.125",
+     "K": 4.129752,
+     "bytes": 656320000,
+     "err": 0.0003001967881120716,
+     "rel": 0.003765731507095227,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.125",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.125.rad"
+     }
+    },
+    {
+     "o": "t4.25",
+     "K": 4.254752,
+     "bytes": 676185600,
+     "err": 0.0002855970848203422,
+     "rel": 0.003177041776060918,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.25",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.25.rad"
+     }
+    },
+    {
+     "o": "t4.375",
+     "K": 4.379752,
+     "bytes": 696051200,
+     "err": 0.000273318998623904,
+     "rel": 0.0026819643682418227,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.375",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.375.rad"
+     }
+    },
+    {
+     "o": "t4.5",
+     "K": 4.504752,
+     "bytes": 715916800,
+     "err": 0.00026294896940331033,
+     "rel": 0.002263823698482632,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.5.rad"
+     }
+    },
+    {
+     "o": "t4.625",
+     "K": 4.629752,
+     "bytes": 735782400,
+     "err": 0.00025429442561755657,
+     "rel": 0.0019148548905791023,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.625",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.625.rad"
+     }
+    },
+    {
+     "o": "t4.75",
+     "K": 4.754752,
+     "bytes": 755648000,
+     "err": 0.0002469807053569625,
+     "rel": 0.0016199508143087088,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.75",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.75.rad"
+     }
+    },
+    {
+     "o": "t4.875",
+     "K": 4.879752,
+     "bytes": 775513600,
+     "err": 0.0002407697617132052,
+     "rel": 0.0013695129341646643,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k4.875",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K4.875.rad"
+     }
+    },
+    {
+     "o": "t5",
+     "K": 5.004752,
+     "bytes": 795379200,
+     "err": 0.00023547999017768575,
+     "rel": 0.00115621858699516,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K5.rad"
+     }
+    },
+    {
+     "o": "t5.5",
+     "K": 5.504752,
+     "bytes": 874841600,
+     "err": 0.00022148990127062425,
+     "rel": 0.000592109747844324,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k5.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K5.5.rad"
+     }
+    },
+    {
+     "o": "t6",
+     "K": 6.004752,
+     "bytes": 954304000,
+     "err": 0.00021437719221809352,
+     "rel": 0.00030531085231939886,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k6",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K6.rad"
+     }
+    },
+    {
+     "o": "t6.5",
+     "K": 6.504752,
+     "bytes": 1033766400,
+     "err": 0.00021078247198122755,
+     "rel": 0.00016036442107356615,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k6.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K6.5.rad"
+     }
+    },
+    {
+     "o": "t6.5m",
+     "K": 6.504752,
+     "bytes": 1033766400,
+     "err": 0.00021075083424946625,
+     "rel": 0.00015908872338102068,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1-k6.5",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-m1-K6.5.rad"
+     }
+    },
+    {
+     "o": "t7",
+     "K": 7.004752,
+     "bytes": 1113228800,
+     "err": 0.00020933119483166048,
+     "rel": 0.00010184597465288716,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1i8-k7",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-i8-K7.rad"
+     }
+    },
+    {
+     "o": "t7m",
+     "K": 7.004752,
+     "bytes": 1113228800,
+     "err": 0.00020887837394202463,
+     "rel": 8.358731539112948e-05,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1-k7",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-m1-K7.rad"
+     }
+    },
+    {
+     "o": "t8m",
+     "K": 8.004752,
+     "bytes": 1272153600,
+     "err": 0.00020737701981498688,
+     "rel": 2.3049663387352584e-05,
+     "fam": "emb",
+     "enc": "trellis-exl3i-mul1-k8",
+     "src": {
+      "path": "/data/q27/emb/trellis/emb-t-m1-K8.rad"
+     }
+    },
+    {
+     "o": "bf16",
+     "K": 16.0,
+     "bytes": 2542796800,
+     "err": 0.00019,
+     "fam": "emb",
+     "enc": "bf16",
+     "src": {
+      "path": "/data/q27/emb/emb-bf16.rad"
+     }
+    }
+   ]
+  }
+ ],
+ "notes": [
+  "w157 #174-03: trellis embedding options (exl3dense embed_exl3i, from the stored record): t<K> mul1i8 K1.5-5.0 in eighths + K5.5-7 halves, t<K>m mul1 K6.5 / 7 / 8; bytes = the donor's entry; err = embprices174 floor model F 0.000206805 + a 0.0248003 x rel. Legacy kept (on the hull): ['bf16']; dropped: ['e2', 'base', 'e4', 'e5', 'e6', 'e7']. No 'base' option: every mix names its embedding donor.",
+  "bf16 is on the hull only through its menu174 err 0.00019, below the floor model's intercept F 0.0002068 (the model's price at rel 0); w144 measured t8m vs bf16 -0.31 % +- 0.32 (A8, s171b): equal. Its slope vs t7m is ~1.3e-14 err a byte, below any trunk move's; its src is ds8's /data/q27/emb/emb-bf16.rad",
+  "spot check (RULES \u00a75): {\"identity\": true, \"eighths_agree\": \"3/3\", \"flag_eighth_prices\": false}"
+ ],
+ "built": {
+  "by": "search/v3/emb17403/menu17403.py (w157)",
+  "rel": [
+   "data/emb17402/rel.jsonl",
+   "data/emb17403/rel.jsonl"
+  ],
+  "donors": [
+   "data/emb17403/logs/donors-half.jsonl",
+   "data/emb17403/logs/slim157.jsonl"
+  ],
+  "prices": "data/emb174/embprices174.json",
+  "legacy": "/workspace/rad-local/workers/w144/menu17402.json",
+  "hull": [
+   "t1.5",
+   "t1.625",
+   "t1.75",
+   "t1.875",
+   "t2",
+   "t2.125",
+   "t2.25",
+   "t2.375",
+   "t2.5",
+   "t2.625",
+   "t2.75",
+   "t2.875",
+   "t3",
+   "t3.125",
+   "t3.25",
+   "t3.375",
+   "t3.5",
+   "t3.625",
+   "t3.75",
+   "t3.875",
+   "t4",
+   "t4.125",
+   "t4.25",
+   "t4.375",
+   "t4.5",
+   "t4.625",
+   "t4.75",
+   "t4.875",
+   "t5",
+   "t5.5",
+   "t6",
+   "t6.5m",
+   "t7m",
+   "bf16"
+  ]
+ }
+}

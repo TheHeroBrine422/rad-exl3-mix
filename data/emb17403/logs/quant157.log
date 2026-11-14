@@ -1,0 +1,47 @@
+11-14 04:13:41 CST quant t-i8 K2.5 (i8) card 1 start
+11-14 04:17:46 CST quant t-i8 K2.5: code stamp '211924488ac0696e' != c816b607e7ee21c1 -- stopping
+11-14 04:24:09 CST quant t-i8 K1.625 (i8) card 1 start
+11-14 04:26:50 CST quant t-i8 K1.625: code stamp 'ccc643a9d768f29e' != 211924488ac0696e -- stopping
+11-14 04:28:11 CST quant t-i8 K1.625 (i8) card 1 start
+11-14 04:30:55 CST quant t-i8 K1.625 OK 164 s: {"level": "/data/q27/emb/trellis/t-i8/K1.625", "rel": 0.11560150082450059, "rows": 248320, "bytes_src": 258760228}
+11-14 04:31:00 CST quant t-i8 K1.75 (i8) card 1 start
+11-14 04:33:46 CST quant t-i8 K1.75 OK 166 s: {"level": "/data/q27/emb/trellis/t-i8/K1.75", "rel": 0.09709744619164656, "rows": 248320, "bytes_src": 278625828}
+11-14 04:33:49 CST quant t-i8 K1.875 (i8) card 1 start
+11-14 04:36:33 CST quant t-i8 K1.875 OK 164 s: {"level": "/data/q27/emb/trellis/t-i8/K1.875", "rel": 0.08157990890666957, "rows": 248320, "bytes_src": 298491428}
+11-14 04:42:13 CST quant t-i8 K2.125 (i8) card 1 start
+11-14 04:45:11 CST quant t-i8 K2.125 OK 178 s: {"level": "/data/q27/emb/trellis/t-i8/K2.125", "rel": 0.05768736097526366, "rows": 248320, "bytes_src": 338222628}
+11-14 04:47:08 CST quant t-i8 K2.25 (i8) card 1 start
+11-14 04:50:15 CST quant t-i8 K2.25 OK 187 s: {"level": "/data/q27/emb/trellis/t-i8/K2.25", "rel": 0.04860692811359433, "rows": 248320, "bytes_src": 358088228}
+11-14 04:58:08 CST quant t-i8 K2.375 (i8) card 1 start
+11-14 05:05:45 CST quant t-i8 K2.375 OK 457 s: {"level": "/data/q27/emb/trellis/t-i8/K2.375", "rel": 0.04099456894890888, "rows": 248320, "bytes_src": 377953828}
+11-14 05:06:15 CST quant t-i8 K2.625 (i8) card 1 start
+11-14 05:09:00 CST quant t-i8 K2.625 OK 165 s: {"level": "/data/q27/emb/trellis/t-i8/K2.625", "rel": 0.029190060041176188, "rows": 248320, "bytes_src": 417685028}
+11-14 05:09:14 CST quant t-i8 K2.75 (i8) card 1 start
+11-14 05:11:55 CST quant t-i8 K2.75 OK 161 s: {"level": "/data/q27/emb/trellis/t-i8/K2.75", "rel": 0.024593247012550893, "rows": 248320, "bytes_src": 437550628}
+11-14 05:13:14 CST quant t-i8 K2.875 (i8) card 1 start
+11-14 05:15:55 CST quant t-i8 K2.875 OK 161 s: {"level": "/data/q27/emb/trellis/t-i8/K2.875", "rel": 0.020699772267162592, "rows": 248320, "bytes_src": 457416228}
+11-14 05:17:15 CST quant t-i8 K3.125 (i8) card 1 start
+11-14 05:19:51 CST quant t-i8 K3.125 OK 156 s: {"level": "/data/q27/emb/trellis/t-i8/K3.125", "rel": 0.014691927235360044, "rows": 248320, "bytes_src": 497147428}
+11-14 05:21:11 CST quant t-i8 K3.25 (i8) card 1 start
+11-14 05:23:46 CST quant t-i8 K3.25 OK 154 s: {"level": "/data/q27/emb/trellis/t-i8/K3.25", "rel": 0.012389608073345387, "rows": 248320, "bytes_src": 517013028}
+11-14 05:23:50 CST quant t-i8 K3.375 (i8) card 1 start
+11-14 05:26:23 CST quant t-i8 K3.375 OK 153 s: {"level": "/data/q27/emb/trellis/t-i8/K3.375", "rel": 0.010446226968569993, "rows": 248320, "bytes_src": 536878628}
+11-14 05:26:26 CST quant t-i8 K3.625 (i8) card 1 start
+11-14 05:28:38 CST quant t-i8 K3.625 OK 133 s: {"level": "/data/q27/emb/trellis/t-i8/K3.625", "rel": 0.007443232901069863, "rows": 248320, "bytes_src": 576609828}
+11-14 05:29:23 CST quant t-i8 K3.75 (i8) card 1 start
+11-14 05:31:39 CST quant t-i8 K3.75 OK 136 s: {"level": "/data/q27/emb/trellis/t-i8/K3.75", "rel": 0.006277389515885883, "rows": 248320, "bytes_src": 596475428}
+11-14 05:36:31 CST quant t-i8 K3.875 (i8) card 1 start
+11-14 05:38:41 CST quant t-i8 K3.875 OK 130 s: {"level": "/data/q27/emb/trellis/t-i8/K3.875", "rel": 0.005293271183825081, "rows": 248320, "bytes_src": 616341028}
+11-14 05:48:29 CST quant t-i8 K4.125 (i8) card 1 start
+11-14 05:50:34 CST quant t-i8 K4.125 OK 125 s: {"level": "/data/q27/emb/trellis/t-i8/K4.125", "rel": 0.003765731507095227, "rows": 248320, "bytes_src": 656072228}
+11-14 06:00:24 CST quant t-i8 K4.25 (i8) card 1 start
+11-14 06:02:33 CST quant t-i8 K4.25 OK 129 s: {"level": "/data/q27/emb/trellis/t-i8/K4.25", "rel": 0.003177041776060918, "rows": 248320, "bytes_src": 675937828}
+11-14 06:08:49 CST quant t-i8 K4.375 (i8) card 1 start
+11-14 06:10:57 CST quant t-i8 K4.375 OK 128 s: {"level": "/data/q27/emb/trellis/t-i8/K4.375", "rel": 0.0026819643682418227, "rows": 248320, "bytes_src": 695803428}
+11-14 06:17:15 CST quant t-i8 K4.625 (i8) card 1 start
+11-14 06:19:42 CST quant t-i8 K4.625 OK 147 s: {"level": "/data/q27/emb/trellis/t-i8/K4.625", "rel": 0.0019148548905791023, "rows": 248320, "bytes_src": 735534628}
+11-14 06:21:04 CST quant t-i8 K4.75 (i8) card 1 start
+11-14 06:23:31 CST quant t-i8 K4.75 OK 147 s: {"level": "/data/q27/emb/trellis/t-i8/K4.75", "rel": 0.0016199508143087088, "rows": 248320, "bytes_src": 755400228}
+11-14 06:24:53 CST quant t-i8 K4.875 (i8) card 1 start
+11-14 06:27:29 CST quant t-i8 K4.875 OK 156 s: {"level": "/data/q27/emb/trellis/t-i8/K4.875", "rel": 0.0013695129341646643, "rows": 248320, "bytes_src": 775265828}
+11-14 06:27:29 CST queue q-eighths.txt done

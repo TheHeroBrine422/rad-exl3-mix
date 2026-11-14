@@ -1,0 +1,15 @@
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K1.5.rad", "bytes": 239142400, "sha256": "88e3c64ed9e097d53b7ab5bff33e96fcacaca41ce48ffad5c3397a7e4a65d847", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K2.5.rad", "bytes": 398067200, "sha256": "4ddd5a6214b3068cd1a59614f2f7bd8eb819d1d2e3afeb18f898b9502e35d4e2", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K2.rad", "bytes": 318604800, "sha256": "751175734ed3e248743339572798c7c713f00c18caac8db85cd93d991864f68f", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K3.5.rad", "bytes": 556992000, "sha256": "6d03c0fd60ea142ad2acf961f922d79bea9b70d8067aa3539dc4f8d7b1fbfa51", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K3.rad", "bytes": 477529600, "sha256": "5380cc5e654665d5b629ecacd3a3c7ef35f5b1df7ed9035abd490959a4d59a6c", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K4.5.rad", "bytes": 715916800, "sha256": "492e1ee41ef37f2d1a96fead0079f7bdbc22040cc3aca54016ae7cbd0994a0ea", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K4.rad", "bytes": 636454400, "sha256": "1a0d235c6c25f796e3221772b0085a46162c44632c0d7ec2040777c566e158af", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K5.5.rad", "bytes": 874841600, "sha256": "633792b0caca3c20112a56b8686173806f3ef9ba3918580a24af8aaaa6eb11a3", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K5.rad", "bytes": 795379200, "sha256": "9f4d3259987c9faa6827113a5323fe5875c69697dc83525244ba4c436b34e327", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K6.5.rad", "bytes": 1033766400, "sha256": "83609445f46ee430f695c995dfb8b738ee7c91d04d491b5738b21b93c4437a87", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K6.rad", "bytes": 954304000, "sha256": "0718da6afe215b807ce229570cd8373a00e83fc58973cf52ca85359248cd32fc", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-i8-K7.rad", "bytes": 1113228800, "sha256": "6717d4032d4ccebbac58a856485c22a6cbf241f19a304ff10cd2ec43a5496fcc", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-m1-K6.5.rad", "bytes": 1033766400, "sha256": "5e100abd11d702899cc5e360c8b818f0f7e1413ccebdf0efff15092abf3da1f4", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-m1-K7.rad", "bytes": 1113228800, "sha256": "7be81018e89b2ffff9e68bfaea6bcb613403a044df290eb8d75e98ba8b4b8f93", "weights": 1120}}
+{"a": {"file": "/data/q27/emb/trellis/emb-t-m1-K8.rad", "bytes": 1272153600, "sha256": "3fc65e13a4b8d6ba06df14722501cff636ad69c2b1fed4ee8b1414df844815e1", "weights": 1120}}

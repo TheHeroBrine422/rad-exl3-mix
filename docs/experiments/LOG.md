@@ -4,6 +4,72 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 6:55 AM CST · #174-03 · Trellis embedding back in the budget (w157): branch `qc-exl3-v3-emb157` (emb144 rebased on 3bc8ad2 + DFlash2 over a trellis table), identity holds on a mad pack (T rows == oracle-row R rows), ~0 time; drafter works with the exact trellis rows (4.04 vs 3.92 tok/step); 21 eighth-step donors K1.625–4.875, 3/3 spot checks agree with the floor-model prices; menu block (36 trellis options + bf16); census `--expect-emb trellis` patch; rad10 cores rebuilt from 3bc8ad2 / emb157 on box2 + ds8
+- **Status:** done (branch + donors + menu block + census patch for the lead to merge) · **Machine:** box2 card 1
+  (quants, GPU tests, 9 KLD evals, perf, drafter), box2 + ds8 CPU (builds, donors, mixes) · **Code:** radiance-hero
+  `qc-exl3-v3-emb157` **67cd2ce** (7163603 / dcadb35 / 9dcd0cb = w144's d9bbc7f / 5679e6f / 1deec9a on 3bc8ad2, one
+  comment conflict in exl3_quant.cpp merged; 67cd2ce the drafter), `search/v3/emb17403/` (README) · **Rule:** `RULES.md`
+  5b6e57d (before any run) + amendments 1 7941f9e / 2 cba0b5b (the quant stamp check, before any eighth level was used)
+  · **Data:** `data/emb17403/` (menu block `menu-emb17403.json`, `res/spot157.json`, logs), box2 `/data/q27/w157/` ·
+  **Brief:** `rad-local/workers/instr3/w157.md` + lead note 11-14 3:20 AM CST (core rebuild)
+- **Build / tests (pass):** all five plugins built together on ROCm 10.1 and 7.14 (exl3i interface 5); every host test on
+  both (qwen35_exl3 incl. a new drafter-over-exl3i-table case; exl3dense incl. `embed_exl3i` host == oracle). GPU, both
+  toolchains: `embed_exl3i` device == host bit-exact, also with the table in mapped pinned host memory (`--host`);
+  w152's ctall (test_aq, exl3i_gpu_test, twopass def / FUSE 1 / 0, test_ks mul1i8 / mul1 / mad, test_r16, test_a4) and
+  w155's test_rerank: all PASS.
+- **Identity on a mad pack (pass):** ds8 packs-mad K2.5 (mad trunk, bf16 head) + A8 act keys on the 336 trunk linears; B
+  (its bf16 embedding), T (+ w144's t2.5 donor), R (B with the oracle rows of t2.5). Confounder check: every weight entry
+  outside token_embd identical, metadata identical. golden-s173e (195,082 gen positions): **T's rows == R's rows byte
+  for byte** (sha256 c86e9937e4d5d7b4). T vs B, the embedding's own error: KL 0.13316 vs 0.13302, pooled ratio **1.012
+  [0.996, 1.029]** (c 1.025, x 0.999); floor model predicts +1.8 % (z −0.72).
+- **Time / VRAM** (B: bf16 table in the pinned host pool, the default; T: t2.5 in VRAM; 2 rounds, w144's protocol): 8k
+  prefill 3.473 vs 3.450 s, TTFT 8k 3456 vs 3463 ms, decode step 24.54 vs 24.58 ms (ctx 0) / 25.54 vs 25.62 (8k): all
+  noise. `embed_exl3i` ≈ 2.8 ms a 2k prefill chunk (~11 ms an 8k prompt, ~0.3 %) vs 0.25 ms for the host bf16 lookup.
+  Static VRAM 10.74 vs 10.37 GiB: **+0.37 GiB = the 398 MB of codes**, nothing else.
+- **DFlash2** (w153's P3-mx: K4.125 mul1i8 trunk, R16 K4 head, MXFP4 drafter, main-head rescoring; P3t4 = + t4 trellis
+  embedding). Built: the drafter embeds its block through `embed_exl3i` over the trunk's own record / suh / svh (block
+  hook `op_embed_ext` in `arch/common/rad_block_dflash2.h`, off by default, so other plugins are unchanged; no
+  all-reduce: every rank reads whole rows). The mask token's row (248070) and the anchor rows are the trellis rows,
+  **decoded exactly; no bf16 row is kept** (the refusal is gone, embed_tq still refused). Serves (drafter note: "block
+  embedded by embed_exl3i"); w155's 16 fixed prompts × 256 greedy tokens: **4.04 tok/step vs 3.92** with the bf16
+  embedding (accepted 3100 / 7091 drafted vs 3083 / 7315), so the RULES' > 5 % drop rule does not call for an exact
+  bf16 mask row. Spec on vs off on P3t4: 6/16 prompts identical to the end, the same as P3-mx (6/16) and w153 / w155;
+  splits at near-ties (verify-vs-decode drift).
+- **Eighth-step donors:** the 21 missing steps K1.625–4.875 (mul1i8), w144's tool and settings, run from the tree w144
+  used (`stage/code-old-c015001`); K2.5 rerun first: **all four tensors identical** to w144's (amendment 1: ourq's code
+  stamp hashes source paths, and K, so the stamp itself differs). ~2.5 min a level on card 1. Donors are **slim**: w144's
+  recipe (src paths at box2's `ladder-src`) with `--reuse`, then radmix `drop` of every weight but token_embd (0.27–0.79 GB
+  instead of ~4.3 GB; token_embd byte-identical to the full container's; a mix from a slim donor == one from the full
+  donor, byte for byte). `/data/q27/emb/trellis/emb-t-i8-K<k>.rad` on box2.
+- **Spot check (RULES §5, pricing, decides nothing):** arms vs B on s173e, log ratio measured vs floor-model prediction:
+  t1.625 1.048 [1.014, 1.082] (pred +5.9 %, z −0.73); t2.125 1.033 [1.011, 1.060] (pred +3.0 %, z +0.21); t3.375 1.003
+  [0.997, 1.009] (pred +0.55 %, z −0.76); t2.5 (above) z −0.72. **3/3 eighths agree**: the eighth prices stand.
+- **Menu block** (`data/emb17403/menu-emb17403.json`, also `rad-local/workers/w157/`; for `fin133.py menu --emb-menu`):
+  36 trellis options (t1.5–t5 in eighths, t5.5–t7 halves, t6.5m / t7m / t8m mul1), bytes = the donor entry exactly
+  (158,924,800 K + 755,200), err = F + a × rel. **Lloyd base / e2–e7 dropped** (each is dominated by the trellis step 0.125
+  below it). **bf16 kept** by the hull rule, but only because menu174 prices it at 1.9e-4, below the floor model's own
+  intercept (2.07e-4); measured t8m ≈ bf16 (w144); its slope is far below any trunk move's. No `base` option, so every
+  mix names its embedding donor. Tested: merged into menu133e by fin133, menu.py resolves the donors.
+- **Census** (`search/v3/emb17403/patches/census-expect-emb.patch`, `store/census.py`, not applied):
+  `--expect-emb trellis` (exl3i mul1i8 | mul1, nat, K a multiple of 1/8 in 1.5–8); `--expect-codebook` no longer applies
+  to token_embd (today a mad trunk with a mul1i8 trellis embedding FAILS `--expect-codebook mad`, checked on T); a donor
+  named `emb-t-<i8|m1>-K<k>.rad` must hold token_embd at that K / codebook. Checked on T (PASS) and B (FAIL, bf16).
+  Proposed hostd census_cmd: `store/census.py {mix} --mix {mixfile} --base {base} --fast --expect-act a8g128
+  --expect-codebook mad --expect-emb trellis`. radmix needs nothing: it takes token_embd from the donor.
+- **Core rebuild (lead note 3:20 AM):** `radbuild-perf.sh` (#170 recipe, ROCm 10.1 VOPD-repeatable, FFmpeg) on box2 and
+  ds8 into new dirs: **`/data/q27/rad10-v3b`** (qc-exl3-v3 3bc8ad2) and **`/data/q27/rad10-emb157`** (67cd2ce), each with
+  `install/`, `home/` (serve), `home-pack/` (1aa18de's qwen35_exl3, text-only packs); all plugin host tests pass on both
+  hosts. Serve check on box2: B on rad10-v3b and on rad10-emb157, and T on rad10-emb157, give rows byte-identical to the
+  test build's (rad10-perf core + the branch's plugins). Old homes untouched.
+- **Calib use:** golden-s173e read 6 more times (B, T, R, 3 eighths) + 3 core-check reads; pricing / identity only, no
+  decision. No verify, no public.
+- **Runtime:** neither for board KL (same gather cost as w144: ~0.3 % of an 8k prefill, decode unchanged); VRAM = the
+  embedding's codes, now counted in size (container bytes).
+- **Lead decides:** merge `qc-exl3-v3-emb157` (67cd2ce; touches the shared `rad_block_dflash2.h`, off by default) and
+  switch hostd homes to `rad10-emb157`; apply the census patch + census_cmd; `push-ds8.sh` (slim copies of all 36 donors
+  to ds8's `/data/q27/emb/trellis/`, ~22 GB) if the search mixes on ds8; fit rows that used Lloyd / `base` embeddings
+  (old search rows, cal174) do not resolve against this block: drop them or keep a fit-only menu with those options.
+
 ### 2026-11-14 6:05 AM CST · #182 · Vision KLD eval: image answers degrade like text at 2.5 bpw, ×1.3 / ×1.6 text's at K4 / K6 (~0.2 / 0.4 bpw); a calibration-free perturbation (A8) shows the same ratio, so nothing singles out the text-only Hessians; text-only QAD does not hurt vision (w156)
 - **Status:** done (decision input, no decision) · **Machine:** ds8 HIP 7 (+ HIP 4 for the TP2 golden, 8 min), colo CPU
   (set build) · **Code:** radiance-hero `qc-exl3-v3-kldmm` **5fa0b46** (one commit on qc-exl3-v3 b83698d, core only: the KL

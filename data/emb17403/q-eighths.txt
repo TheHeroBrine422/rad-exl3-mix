@@ -1,0 +1,24 @@
+# determinism: K2.5 rerun vs w144's t-i8/K2.5
+# done 11-14 4:17 AM CST: tensors identical to w144 (amendment 1); kept in W/rerun/t-i8/K2.5.badstamp
+# t-i8 2.5 i8 /data/q27/w157/rerun
+t-i8 1.625 i8
+t-i8 1.75 i8
+t-i8 1.875 i8
+t-i8 2.125 i8
+t-i8 2.25 i8
+t-i8 2.375 i8
+t-i8 2.625 i8
+t-i8 2.75 i8
+t-i8 2.875 i8
+t-i8 3.125 i8
+t-i8 3.25 i8
+t-i8 3.375 i8
+t-i8 3.625 i8
+t-i8 3.75 i8
+t-i8 3.875 i8
+t-i8 4.125 i8
+t-i8 4.25 i8
+t-i8 4.375 i8
+t-i8 4.625 i8
+t-i8 4.75 i8
+t-i8 4.875 i8

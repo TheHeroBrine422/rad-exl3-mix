@@ -1,0 +1,10 @@
+d00: step 55: A 'bm' B 'BL'; top-1 - top-2 logprob margin A 0.9460 B 0.0473
+d01: step 150: A '\n' B ' not'; top-1 - top-2 logprob margin A 1.3686 B 1.4602
+d03: step 139: A ' corresponds' B ' assigned'; top-1 - top-2 logprob margin A 0.0082 B 0.0611
+d04: step 172: A '' B '\n'; top-1 - top-2 logprob margin A 4.3396 B 16.2924
+d05: step 225: A ' structure' B ' content'; top-1 - top-2 logprob margin A 0.0106 B 0.0816
+d06: step 34: A ' times' B '/'; top-1 - top-2 logprob margin A 0.0101 B 0.0119
+d07: step 196: A ' for' B ' scales'; top-1 - top-2 logprob margin A 0.1397 B 0.0749
+d08: step 232: A ' paragraph' B ','; top-1 - top-2 logprob margin A 0.0115 B 0.0127
+d10: step 254: A ' older' B ' old'; top-1 - top-2 logprob margin A 0.0835 B 0.0299
+d15: step 14: A ' can' B ' runs'; top-1 - top-2 logprob margin A 0.0047 B 0.0134

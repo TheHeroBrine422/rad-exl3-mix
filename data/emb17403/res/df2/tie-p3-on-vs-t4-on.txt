@@ -1,0 +1,13 @@
+d00: step 55: A 'bm' B 'BL'; top-1 - top-2 logprob margin A 0.8312 B 0.0473
+d01: step 150: A '\n' B ' not'; top-1 - top-2 logprob margin A 0.6119 B 1.4602
+d03: step 203: A '' B '\n'; top-1 - top-2 logprob margin A 6.8575 B 16.6288
+d04: step 2: A ' reference' B ' '; top-1 - top-2 logprob margin A 0.0169 B 0.0704
+d05: step 225: A ' structure' B ' content'; top-1 - top-2 logprob margin A 0.0364 B 0.0816
+d06: step 1: A '-' B '1'; top-1 - top-2 logprob margin A 0.0343 B 0.0097
+d07: step 16: A ' affect' B '\n'; top-1 - top-2 logprob margin A 0.3995 B 0.0263
+d08: step 232: A ' paragraph' B ','; top-1 - top-2 logprob margin A 0.0214 B 0.0127
+d10: step 2: A ' second' B ' first'; top-1 - top-2 logprob margin A 0.0001 B 0.0846
+d11: step 109: A ' then' B ' dimensions'; top-1 - top-2 logprob margin A 0.0074 B 0.1377
+d13: step 254: A '\n\n' B ' technical'; top-1 - top-2 logprob margin A 1.7693 B 0.8304
+d14: step 2: A ' card' B ' quant'; top-1 - top-2 logprob margin A 0.0163 B 0.0228
+d15: step 14: A ' can' B ' runs'; top-1 - top-2 logprob margin A 0.0519 B 0.0134

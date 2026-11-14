@@ -1,0 +1,10 @@
+d00: step 75: A 'sk' B 'legal'; top-1 - top-2 logprob margin A 0.0301 B 0.0253
+d03: step 181: A '' B '\n'; top-1 - top-2 logprob margin A 5.8919 B 14.3584
+d04: step 2: A ' ' B ' reference'; top-1 - top-2 logprob margin A 0.0159 B 0.0169
+d06: step 244: A '' B '\n'; top-1 - top-2 logprob margin A 5.1458 B 13.7824
+d07: step 212: A ' continue' B ' start'; top-1 - top-2 logprob margin A 0.0274 B 0.0270
+d08: step 129: A '\n\n' B ' sampled'; top-1 - top-2 logprob margin A 0.0573 B 0.1554
+d10: step 2: A ' first' B ' second'; top-1 - top-2 logprob margin A 0.0127 B 0.0001
+d11: step 109: A ' dimensions' B ' then'; top-1 - top-2 logprob margin A 0.2551 B 0.0074
+d13: step 214: A '\n\n' B ' technical'; top-1 - top-2 logprob margin A 0.5534 B 1.1446
+d14: step 53: A ' planes' B ' card'; top-1 - top-2 logprob margin A 0.0052 B 0.0786

@@ -1,0 +1,39 @@
+   t1.5 K  1.5048 bytes   239,142,400 err 0.003613 rel 0.137351  hull  trellis-exl3i-mul1i8-k1.5
+ t1.625 K  1.6298 bytes   259,008,000 err 0.003074 rel 0.115602  hull  trellis-exl3i-mul1i8-k1.625
+  t1.75 K  1.7548 bytes   278,873,600 err 0.002615 rel 0.097097  hull  trellis-exl3i-mul1i8-k1.75
+ t1.875 K  1.8798 bytes   298,739,200 err 0.002230 rel 0.081580  hull  trellis-exl3i-mul1i8-k1.875
+     t2 K  2.0048 bytes   318,604,800 err 0.001904 rel 0.068434  hull  trellis-exl3i-mul1i8-k2
+ t2.125 K  2.1298 bytes   338,470,400 err 0.001637 rel 0.057687  hull  trellis-exl3i-mul1i8-k2.125
+  t2.25 K  2.2548 bytes   358,336,000 err 0.001412 rel 0.048607  hull  trellis-exl3i-mul1i8-k2.25
+ t2.375 K  2.3798 bytes   378,201,600 err 0.001223 rel 0.040995  hull  trellis-exl3i-mul1i8-k2.375
+   t2.5 K  2.5048 bytes   398,067,200 err 0.001064 rel 0.034575  hull  trellis-exl3i-mul1i8-k2.5
+ t2.625 K  2.6298 bytes   417,932,800 err 0.000931 rel 0.029190  hull  trellis-exl3i-mul1i8-k2.625
+  t2.75 K  2.7548 bytes   437,798,400 err 0.000817 rel 0.024593  hull  trellis-exl3i-mul1i8-k2.75
+ t2.875 K  2.8798 bytes   457,664,000 err 0.000720 rel 0.020700  hull  trellis-exl3i-mul1i8-k2.875
+     t3 K  3.0048 bytes   477,529,600 err 0.000638 rel 0.017406  hull  trellis-exl3i-mul1i8-k3
+ t3.125 K  3.1298 bytes   497,395,200 err 0.000571 rel 0.014692  hull  trellis-exl3i-mul1i8-k3.125
+  t3.25 K  3.2548 bytes   517,260,800 err 0.000514 rel 0.012390  hull  trellis-exl3i-mul1i8-k3.25
+ t3.375 K  3.3798 bytes   537,126,400 err 0.000466 rel 0.010446  hull  trellis-exl3i-mul1i8-k3.375
+   t3.5 K  3.5048 bytes   556,992,000 err 0.000425 rel 0.008814  hull  trellis-exl3i-mul1i8-k3.5
+ t3.625 K  3.6298 bytes   576,857,600 err 0.000391 rel 0.007443  hull  trellis-exl3i-mul1i8-k3.625
+  t3.75 K  3.7548 bytes   596,723,200 err 0.000362 rel 0.006277  hull  trellis-exl3i-mul1i8-k3.75
+ t3.875 K  3.8798 bytes   616,588,800 err 0.000338 rel 0.005293  hull  trellis-exl3i-mul1i8-k3.875
+     t4 K  4.0048 bytes   636,454,400 err 0.000317 rel 0.004460  hull  trellis-exl3i-mul1i8-k4
+ t4.125 K  4.1298 bytes   656,320,000 err 0.000300 rel 0.003766  hull  trellis-exl3i-mul1i8-k4.125
+  t4.25 K  4.2548 bytes   676,185,600 err 0.000286 rel 0.003177  hull  trellis-exl3i-mul1i8-k4.25
+ t4.375 K  4.3798 bytes   696,051,200 err 0.000273 rel 0.002682  hull  trellis-exl3i-mul1i8-k4.375
+   t4.5 K  4.5048 bytes   715,916,800 err 0.000263 rel 0.002264  hull  trellis-exl3i-mul1i8-k4.5
+ t4.625 K  4.6298 bytes   735,782,400 err 0.000254 rel 0.001915  hull  trellis-exl3i-mul1i8-k4.625
+  t4.75 K  4.7548 bytes   755,648,000 err 0.000247 rel 0.001620  hull  trellis-exl3i-mul1i8-k4.75
+ t4.875 K  4.8798 bytes   775,513,600 err 0.000241 rel 0.001370  hull  trellis-exl3i-mul1i8-k4.875
+     t5 K  5.0048 bytes   795,379,200 err 0.000235 rel 0.001156  hull  trellis-exl3i-mul1i8-k5
+   t5.5 K  5.5048 bytes   874,841,600 err 0.000221 rel 0.000592  hull  trellis-exl3i-mul1i8-k5.5
+     t6 K  6.0048 bytes   954,304,000 err 0.000214 rel 0.000305  hull  trellis-exl3i-mul1i8-k6
+   t6.5 K  6.5048 bytes 1,033,766,400 err 0.000211 rel 0.000160  trellis-exl3i-mul1i8-k6.5
+  t6.5m K  6.5048 bytes 1,033,766,400 err 0.000211 rel 0.000159  hull  trellis-exl3i-mul1-k6.5
+     t7 K  7.0048 bytes 1,113,228,800 err 0.000209 rel 0.000102  trellis-exl3i-mul1i8-k7
+    t7m K  7.0048 bytes 1,113,228,800 err 0.000209 rel 0.000084  hull  trellis-exl3i-mul1-k7
+    t8m K  8.0048 bytes 1,272,153,600 err 0.000207 rel 0.000023  trellis-exl3i-mul1-k8
+   bf16 K 16.0000 bytes 2,542,796,800 err 0.000190 rel nan  hull  bf16
+hull: t1.5 t1.625 t1.75 t1.875 t2 t2.125 t2.25 t2.375 t2.5 t2.625 t2.75 t2.875 t3 t3.125 t3.25 t3.375 t3.5 t3.625 t3.75 t3.875 t4 t4.125 t4.25 t4.375 t4.5 t4.625 t4.75 t4.875 t5 t5.5 t6 t6.5m t7m bf16
+dropped legacy: ['e2', 'base', 'e4', 'e5', 'e6', 'e7']

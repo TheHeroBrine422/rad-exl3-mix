@@ -1,0 +1,22 @@
+check B vs T: 26 weight-directory lines differ outside token_embd (1133 weights), 0 metadata lines differ
+/data/q27/w157/mix/B.rad.info: token_embd.weight bf16 248320x5120 2.37 GiB checkpoint
+--
+/data/q27/w157/mix/T.rad.info: token_embd.weight exl3i:codes=u1[1x5120],record=u32{15520x6400},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k2.5 248320x5120 379.63 MiB exl3i codebook=mul1i8,src=/data/q27/emb/trellis/t-i8/K2.5/src
+check B vs R: 0 weight-directory lines differ outside token_embd (1133 weights), 0 metadata lines differ
+/data/q27/w157/mix/B.rad.info: token_embd.weight bf16 248320x5120 2.37 GiB checkpoint
+--
+/data/q27/w157/mix/R.rad.info: token_embd.weight bf16 248320x5120 2.37 GiB checkpoint
+check P3 vs P3t4: 36 weight-directory lines differ outside token_embd (1216 weights), 0 metadata lines differ
+/data/q27/w157/mix/P3.rad.info: token_embd.weight bf16 248320x5120 2.37 GiB checkpoint
+--
+/data/q27/w157/mix/P3t4.rad.info: token_embd.weight exl3i:codes=u1[1x5120],record=u32{15520x10240},suh=f16[*x1],svh=f16[1x*]/mul1i8/h128/k4 248320x5120 606.97 MiB exl3i codebook=mul1i8,src=/data/q27/emb/trellis/t-i8/K4/src
+== B vs T: the differing lines (all in rad-info's trailing summary: planes / data blob / per-encoding totals; no weight entry)
+(end: lines above that are not summary lines)
+== P3 vs P3t4: the differing lines (all in rad-info's trailing summary: planes / data blob / per-encoding totals; no weight entry)
+<  u2*f16[1x128]-u8[1x128] 1 331.54 MiB 1.9%
+>  u2*f16[1x128]-u8[1x128] 1 331.54 MiB 2.1%
+<  rtn codes=fp4_e2m1,group=32,scale=e8m0 31 876.56 MiB 5.0%
+<  rtn codes=u2,group=128,rule=search,scale=f16,zero=u8 1 331.54 MiB 1.9%
+>  rtn codes=fp4_e2m1,group=32,scale=e8m0 31 876.56 MiB 5.6%
+>  rtn codes=u2,group=128,rule=search,scale=f16,zero=u8 1 331.54 MiB 2.1%
+(end: lines above that are not summary lines)

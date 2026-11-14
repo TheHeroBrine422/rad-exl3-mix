@@ -1,0 +1,42 @@
+11-14 03:38:51 CST start gtest (pid 2628519)
+11-14 04:13:41 CST gtest 10 embed dev: bench embed_exl3i mul1   K8    M= 8192:   39597.4 us  (4.834 us a token) rc 0 
+11-14 04:20:39 CST gtest 10 embed host: bench embed_exl3i mul1   K8    M= 8192:  190661.3 us  (23.274 us a token)  [host] rc 0 
+11-14 04:34:31 CST start kld t1.625 (pid 2638118)
+11-14 04:37:18 CST gtest 10 ctall: 8 PASS lines, 3 fail lines
+11-14 04:42:13 CST kld t1.625: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s |  static weights 9.75 GiB off the top: every rank's own shard, and not a share of anything | rows 446c9053b7a32537
+11-14 04:42:13 CST end t1.625
+11-14 04:47:08 CST gtest 714 embed dev: bench embed_exl3i mul1   K8    M= 8192:   39671.7 us  (4.843 us a token) rc 0 
+11-14 04:49:31 CST start kld t2.125 (pid 2656260)
+11-14 04:53:10 CST gtest 714 embed host: bench embed_exl3i mul1   K8    M= 8192:  190720.0 us  (23.281 us a token)  [host] rc 0 
+11-14 04:58:08 CST kld t2.125: I kld: 199050 / 203618 positions, 169 / 173 documents, 287 s |  static weights 9.83 GiB off the top: every rank's own shard, and not a share of anything | rows 0b139cd12edf3d6c
+11-14 04:58:08 CST end t2.125
+11-14 05:29:23 CST gtest 714 ctall: 8 PASS lines, 3 fail lines
+11-14 05:29:23 CST end gtest
+11-14 05:29:23 CST start kld B T R (pid 2681540)
+11-14 05:31:50 CST start kld t3.375 (pid 2682038)
+11-14 05:36:31 CST kld B: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s |  static weights 9.51 GiB off the top: every rank's own shard, and not a share of anything | rows 3e8d1e4d3cfc5aa4
+11-14 05:43:33 CST kld t3.375: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s |  static weights 10.01 GiB off the top: every rank's own shard, and not a share of anything | rows 30c1a7e187942cca
+11-14 05:43:33 CST end t3.375
+11-14 05:48:29 CST kld T: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s |  static weights 9.88 GiB off the top: every rank's own shard, and not a share of anything | rows c86e9937e4d5d7b4
+11-14 05:55:28 CST kld R: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s |  static weights 9.51 GiB off the top: every rank's own shard, and not a share of anything | rows c86e9937e4d5d7b4
+11-14 05:55:28 CST end B
+11-14 05:55:28 CST start perf (pid 2711952)
+11-14 06:00:24 CST kldalt B v3b: I kld: 201408 / 203618 positions, 171 / 173 documents, 287 s rows 3e8d1e4d3cfc5aa4 vs b10e1 3e8d1e4d3cfc5aa4
+11-14 06:03:36 CST perf e2e-B-r1:  static weights 10.37 GiB off the top: every rank's own shard, and not a share of anything | e2e-B-r1 ctx 0 run 3: prompt 102 ttft 102 ms, client 24.55 ms/tok, server 24.55 ms/step x 1.00 tok
+11-14 06:03:53 CST perf prof-B-r1:  static weights 10.37 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.731 s
+11-14 06:08:49 CST kldalt B e157: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s rows 3e8d1e4d3cfc5aa4 vs b10e1 3e8d1e4d3cfc5aa4
+11-14 06:12:02 CST perf e2e-T-r1:  static weights 10.74 GiB off the top: every rank's own shard, and not a share of anything | e2e-T-r1 ctx 0 run 3: prompt 105 ttft 102 ms, client 24.59 ms/tok, server 24.59 ms/step x 1.00 tok
+11-14 06:12:19 CST perf prof-T-r1:  static weights 10.74 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8198 tokens, 3.469 s
+11-14 06:17:15 CST kldalt T e157: I kld: 200301 / 203618 positions, 170 / 173 documents, 287 s rows c86e9937e4d5d7b4 vs b10e1 c86e9937e4d5d7b4
+11-14 06:20:47 CST perf e2e-T-r2:  static weights 10.74 GiB off the top: every rank's own shard, and not a share of anything | e2e-T-r2 ctx 0 run 3: prompt 105 ttft 103 ms, client 24.60 ms/tok, server 24.59 ms/step x 1.00 tok
+11-14 06:21:04 CST perf prof-T-r2:  static weights 10.74 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8200 tokens, 3.468 s
+11-14 06:24:36 CST perf e2e-B-r2:  static weights 10.37 GiB off the top: every rank's own shard, and not a share of anything | e2e-B-r2 ctx 0 run 3: prompt 102 ttft 101 ms, client 24.57 ms/tok, server 24.57 ms/step x 1.00 tok
+11-14 06:24:53 CST perf prof-B-r2:  static weights 10.37 GiB off the top: every rank's own shard, and not a share of anything | req 1: prompt 8202 tokens, 3.459 s
+11-14 06:24:53 CST end perf
+11-14 06:24:53 CST start df2 (pid 2736139)
+11-14 06:28:22 CST df2 p3-on: 2 errors; 7315 3083 ; 
+11-14 06:29:20 CST df2 t4-on: 1 errors; 7091 3100 ; 
+11-14 06:31:39 CST df2 t4-off: 2 errors; 0 0 ; 
+11-14 06:34:01 CST df2 p3-off: 1 errors; 0 0 ; 
+11-14 06:34:01 CST df2 cmp done
+11-14 06:34:01 CST end df2

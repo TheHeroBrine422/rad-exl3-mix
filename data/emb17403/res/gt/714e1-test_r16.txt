@@ -1,0 +1,102 @@
+exl3i 0.3.0 -- test_r16
+N   4096 K  5120 K4      mul1i8  f16    T    1 y f32 : 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T    1 y bf16: 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T    4 y f32 : 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T    4 y bf16: 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T   16 y f32 : 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T   16 y bf16: 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T   17 y f32 : 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T   17 y bf16: 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T  600 y f32 : 0 of 2457600 outputs not at their R16 row
+N   4096 K  5120 K4      mul1i8  f16    T  600 y bf16: 0 of 2457600 outputs not at their R16 row
+A8 row on an R16 record: rc -18 (want refused)
+N   4096 K  5120 K2.5    mul1i8  f16    T    1 y f32 : 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T    1 y bf16: 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T    4 y f32 : 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T    4 y bf16: 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T   16 y f32 : 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T   16 y bf16: 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T   17 y f32 : 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T   17 y bf16: 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T  600 y f32 : 0 of 2457600 outputs not at their R16 row
+N   4096 K  5120 K2.5    mul1i8  f16    T  600 y bf16: 0 of 2457600 outputs not at their R16 row
+A8 row on an R16 record: rc -18 (want refused)
+N   2048 K  5120 K7      mul1    f16    T    1 y f32 : 0 of 2048 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T    1 y bf16: 0 of 2048 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T    4 y f32 : 0 of 8192 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T    4 y bf16: 0 of 8192 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T   16 y f32 : 0 of 32768 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T   16 y bf16: 0 of 32768 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T   17 y f32 : 0 of 34816 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T   17 y bf16: 0 of 34816 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T  600 y f32 : 0 of 1228800 outputs not at their R16 row
+N   2048 K  5120 K7      mul1    f16    T  600 y bf16: 0 of 1228800 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T    1 y f32 : 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T    1 y bf16: 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T    4 y f32 : 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T    4 y bf16: 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T   16 y f32 : 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T   16 y bf16: 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T   17 y f32 : 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T   17 y bf16: 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T  600 y f32 : 0 of 148992000 outputs not at their R16 row
+N 248320 K  1024 K6.5    mul1i8  f16    T  600 y bf16: 0 of 148992000 outputs not at their R16 row
+A8 row on an R16 record: rc -18 (want refused)
+N   4096 K  5120 K2.5    mad     f16    T    1 y f32 : 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    1 y bf16: 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    3 y f32 : 0 of 12288 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    3 y bf16: 0 of 12288 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    4 y f32 : 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    4 y bf16: 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    8 y f32 : 0 of 32768 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T    8 y bf16: 0 of 32768 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T   16 y f32 : 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T   16 y bf16: 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T   17 y f32 : 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T   17 y bf16: 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T  600 y f32 : 0 of 2457600 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     f16    T  600 y bf16: 0 of 2457600 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    1 y f32 : 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    1 y bf16: 0 of 4096 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    3 y f32 : 0 of 12288 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    3 y bf16: 0 of 12288 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    4 y f32 : 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    4 y bf16: 0 of 16384 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    8 y f32 : 0 of 32768 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T    8 y bf16: 0 of 32768 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T   16 y f32 : 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T   16 y bf16: 0 of 65536 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T   17 y f32 : 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T   17 y bf16: 0 of 69632 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T  600 y f32 : 0 of 2457600 outputs not at their R16 row
+N   4096 K  5120 K2.5    mad     a8g128 T  600 y bf16: 0 of 2457600 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    1 y f32 : 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    1 y bf16: 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    3 y f32 : 0 of 744960 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    3 y bf16: 0 of 744960 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    4 y f32 : 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    4 y bf16: 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    8 y f32 : 0 of 1986560 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T    8 y bf16: 0 of 1986560 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T   16 y f32 : 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T   16 y bf16: 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T   17 y f32 : 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T   17 y bf16: 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T  600 y f32 : 0 of 148992000 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     f16    T  600 y bf16: 0 of 148992000 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    1 y f32 : 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    1 y bf16: 0 of 248320 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    3 y f32 : 0 of 744960 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    3 y bf16: 0 of 744960 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    4 y f32 : 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    4 y bf16: 0 of 993280 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    8 y f32 : 0 of 1986560 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T    8 y bf16: 0 of 1986560 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T   16 y f32 : 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T   16 y bf16: 0 of 3973120 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T   17 y f32 : 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T   17 y bf16: 0 of 4221440 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T  600 y f32 : 0 of 148992000 outputs not at their R16 row
+N 248320 K  1024 K4.125  mad     a8g128 T  600 y bf16: 0 of 148992000 outputs not at their R16 row
+96 comparisons
+TEST_R16 PASS (0 failures)

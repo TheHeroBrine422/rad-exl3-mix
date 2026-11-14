@@ -1,0 +1,9 @@
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_aq /data/q27/rad/install/share/radiance/kernels/libr4d.so -> rc 0 TEST_AQ PASS (0 failures)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 exl3i_gpu_test -> rc 0 EXL3I GPU TEST PASS
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_twopass -> rc 0 TWOPASS GPU TEST PASS (2684 checks)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_ks --codebooks mul1i8,mul1,mad -> rc 0 TEST_KS PASS (0 failures)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_r16 -> rc 0 TEST_R16 PASS (0 failures)
+bash /data/q27/w157/tools/gt.sh 1 714 e1 test_a4 -> rc 0 TEST_A4 PASS (1006 checks)
+done
