@@ -7454,3 +7454,14 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (ref183-*), ds8 `/data/q27/srch183/refs/`.
 - box2 added as an eval host (packs K1-4.5 + DONE stubs replicated, heads u1-u5.875, coordinator `replicas`); w138's
   mul1i8 packs deleted (181 GB, user's mul1i8 OK). **Runtime:** neither.
+
+### 2026-11-14 4:20 PM CST · #183 · Tracking slice t183 (decides nothing); xscale checked
+- User 11-14: progress should read as raw KL on fixed documents, not chained ratios. **t183** = 48 calib docs (merged fit +
+  search pool, least used, draw171 seed 1830, 52,015 positions at cap 4,096; ledger role monitor, 0 decisions) + 130
+  xcorp pieces of xc8k-b2-c2 (excluding final-x and every s17*-x; no agentic pieces left there), gen-masked: 157,572
+  board rows. `search/v3/run183/track183.py` queues every new incumbent on it in full (no early stop); results go to the
+  coordinator's results.jsonl and are never read by the driver. Plot `/workspace/v3-track-183.png` (trackplot183.py):
+  each size's incumbents ÷ IQR-V4 and ÷ V2 at the same bpw on t183 (log-linear interpolation between measured sizes).
+  References being scored on t183 (ds8 refs/refdl.sh: V2 1.5-7.0, IQR-V4 iq2r … iq7r; downloads ~30 MB/s, a few hours).
+- **xscale:** fitted λ on #183's gen-masked rows = **1.02** (old #171, unmasked: 0.68) — x and calib ratios now agree; the
+  fitted term stays on (self-correcting), no change. **Runtime:** neither.
