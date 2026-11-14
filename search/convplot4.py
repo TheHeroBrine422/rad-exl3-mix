@@ -97,8 +97,8 @@ def walk(state_path):
 
 def track_panel(axT, W, a, sizes):
     """(#183) the fixed tracking slice: each incumbent's full score there (one measurement each, no chaining), plotted
-    at the step it became incumbent, ÷ IQR-V4 at the same bpw on the same slice (log-linear between IQR's measured
-    sizes); raw KL until two IQR sizes are measured"""
+    at the step it became incumbent, ÷ V2 at the same bpw on the same slice (log-linear between V2's measured sizes, as
+    the other panels); IQR-V4 ÷ V2 there as dotted lines per size. Raw KL until two V2 sizes are measured."""
     step_of, step = {}, 0
     for e in W["st"]:
         if e["ev"] == "result": step += 1
@@ -107,35 +107,33 @@ def track_panel(axT, W, a, sizes):
     refs = [json.loads(l) for l in open(a.track_refs)] if a.track_refs and os.path.exists(a.track_refs) else []
     iq = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("iq"))
     v2 = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("v2"))
-    rel = len(iq) >= 2
+    rel = len(v2) >= 2
     ser = collections.defaultdict(list)
     for r in T:
         t = r["tag"][len("trk183-"):]
         if t not in step_of or r.get("kld") is None: continue
         st_, size = step_of[t]; y = r["kld"]
         if rel:
-            q = loglin(iq, r["bpw"], extrap=True)
+            q = loglin(v2, r["bpw"])
             if q is None: continue
             y = y / q
         ser[size].append((st_, y))
-    cm = plt.get_cmap("viridis")
-    allsz = sorted(set(sizes) | set(ser))
-    for i, size in enumerate(sorted(ser)):
+    cm = plt.get_cmap("viridis"); allsz = sorted(set(sizes) | set(ser))
+    col = lambda size: cm(allsz.index(size) / max(1, len(allsz) - 1))
+    for size in sorted(ser):
         p = sorted(ser[size]); xs = [x for x, _ in p] + [W["steps"]]; ys = [y for _, y in p] + [p[-1][1]]
-        axT.step(xs, ys, where="post", color=cm(allsz.index(size) / max(1, len(allsz) - 1)), marker="o", ms=3,
-                 label=f"{size:g}: {p[-1][1]:.3f}")
+        axT.step(xs, ys, where="post", color=col(size), marker="o", ms=3, label=f"{size:g}: {p[-1][1]:.3f}")
+        if rel and len(iq) >= 2:
+            q, v = loglin(iq, size), loglin(v2, size)
+            if q and v: axT.axhline(q / v, color=col(size), ls=":", lw=1)
     if rel:
-        axT.axhline(1.0, color="k", lw=1)
-        if len(v2) >= 2:                                    # V2 ÷ IQR at our sizes: where V2 sits on this scale
-            for i, size in enumerate(sorted(ser)):
-                b = size; q, v = loglin(iq, b, extrap=True), loglin(v2, b, extrap=True)
-                if q and v: axT.plot([W["steps"] + 0.5], [v / q], marker="_", ms=14, color=cm(allsz.index(size) / max(1, len(allsz) - 1)))
-        axT.set_ylabel(f"KL ÷ IQR-V4 at the same bpw ({a.track_name})")
+        axT.axhline(1.0, color="k", lw=1); axT.set_ylim(0.3, 2.0)
+        axT.set_ylabel(f"KLD ÷ V2 at the same bpw ({a.track_name})")
     else:
-        axT.set_ylabel(f"raw KL on {a.track_name} (IQR-V4 refs pending: {len(iq)} of 2+)")
+        axT.set_yscale("log"); axT.set_ylabel(f"raw KL on {a.track_name} (V2 refs pending: {len(v2)} of 2+)")
     axT.set_yscale("log"); axT.grid(alpha=.3); axT.legend(fontsize=7.5, ncol=6, title="size: latest", title_fontsize=8, loc="upper right")
-    axT.set_title(f"Fixed tracking slice {a.track_name}: every incumbent scored in full on the same documents (never decides); "
-                  f"no chaining{'; right ticks = V2 there' if rel and len(v2) >= 2 else ''} — refs IQR {len(iq)}, V2 {len(v2)}", fontsize=10)
+    axT.set_title(f"Fixed tracking slice {a.track_name}: every incumbent scored in full on the same documents (never decides; no chaining); "
+                  f"dotted = IQR-V4 at that size — refs V2 {len(v2)}, IQR {len(iq)}", fontsize=10)
 
 
 def main(argv=None):
