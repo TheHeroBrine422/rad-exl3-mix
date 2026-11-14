@@ -7634,3 +7634,5 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 ### 2026-11-14 5:55 PM CST · #183 · Size 7.0 stopped (user)
 - User: A8 (w8a8) puts an activation floor under K6-7 (A8 vs f16 +12.5% at K6, more at K7), so searching 7.0 buys little.
   `touch drv/STOP-7`: no more 7.0 candidates; its incumbent stays as the 7.0 pick. **Runtime:** neither.
+- 6:00 PM CST (user): 6.0 joins fit band b3 (4.5, 5.0, 6.0); b4 = 7.0 alone (stopped). On t183 6.0 is 0.00088 vs V2
+  0.00091; on ver3-8k Latin rows 0.83× IQR-V4 iq6r-s. Driver restarted.

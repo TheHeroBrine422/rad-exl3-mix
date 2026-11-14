@@ -150,49 +150,45 @@ def track_panel(axT, W, a, sizes):
     axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
                   f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
     if getattr(a, "track_strata", None) or getattr(a, "track_n", None):
-        strata_overlay(axT, a, rel)
+        strata_overlay(axT, a, step_of)
 
 
-def strata_overlay(axT, a, rel):
-    """(#186, RULES-strata §7, w164) the non-Latin supplement on the tracking panel: IQR-V4 references as ratios to V2 at
-    the same bpw, for t183's L documents (o), t186n's N documents (s) and the board-weighted 0.961 L + 0.039 N (^); and the
-    incumbents' t186n reads (trk186n-<tag> rows of --track-n; N only: their L part is not measured per eval). refs186.jsonl
-    holds the references' readings (name, bpw, t183_L, t186n_N, board)."""
+def strata_overlay(axT, a, step_of):
+    """(#186, RULES-strata §7, w164) the non-Latin supplement on the tracking panel, as ratios to V2 at the same bpw
+    (log-linear between V2's measured sizes, as above): IQR-V4 references on t183's L documents (o), on t186n's N documents
+    (s) and their board combination 0.961 L + 0.039 N (^) (--track-strata: refs186.jsonl); and the incumbents' t186n reads
+    (--track-n: the trk186n-<tag> eval rows; t186n is all N, so the eval's kld is the N-only KL). No V2 curve: nothing drawn
+    until two V2 sizes have t186n readings."""
     S = [json.loads(l) for l in open(a.track_strata)] if a.track_strata and os.path.exists(a.track_strata) else []
     S = [r for r in S if r.get("t186n_N") is not None and r.get("bpw")]
-    V2 = [r for r in S if r["name"].startswith("v2")]
-    IQ = [r for r in S if r["name"].startswith("iq")]
-    key = {"L": "t183_L", "N": "t186n_N", "B": "board"}
-    mk = {"L": "o", "N": "s", "B": "^"}
-    pts = []
-    for r in IQ:
-        for k in ("L", "N", "B"):
-            vs = sorted((x["bpw"], x[key[k]]) for x in V2)
-            q = loglin(vs, r["bpw"]) if len(vs) >= 2 else None
-            if q: pts.append((r["bpw"], r[key[k]] / q, k, r["name"]))
-    for k in ("L", "N", "B"):
-        xs = [(x, y) for x, y, kk, _ in pts if kk == k]
-        if xs: axT.scatter(*zip(*xs), marker=mk[k], s=30, facecolors="none", edgecolors="#444", lw=1.1, zorder=4,
-                           label={"L": "IQR-V4 t183 L (o)", "N": "IQR-V4 t186n N (s)", "B": "IQR-V4 board 0.961L+0.039N (^)"}[k])
-    if getattr(a, "track_n", None) and os.path.exists(a.track_n):
-        v2n = sorted((x["bpw"], x["t186n_N"]) for x in V2)
-        pass_ = []
+    V2 = [r for r in S if r["name"].startswith("v2")]; IQ = [r for r in S if r["name"].startswith("iq")]
+    if len(V2) < 2 and not (a.track_n and os.path.exists(a.track_n)): return
+    vs = {"L": sorted((r["bpw"], r["t183_L"]) for r in V2 if r.get("t183_L")),
+          "N": sorted((r["bpw"], r["t186n_N"]) for r in V2),
+          "B": sorted((r["bpw"], r["board"]) for r in V2 if r.get("board"))}
+    style = {"L": ("o", "IQR-V4 t183 L (o)"), "N": ("s", "IQR-V4 t186n N (s)"), "B": ("^", "IQR-V4 board 0.961L+0.039N (^)")}
+    ys = []
+    if len(vs["N"]) >= 2:
+        for k, (m_, lab) in style.items():
+            if len(vs[k]) < 2: continue
+            xs = [(r["bpw"], r[{"L": "t183_L", "N": "t186n_N", "B": "board"}[k]] / loglin(vs[k], r["bpw"])) for r in IQ
+                  if r.get(({"L": "t183_L", "N": "t186n_N", "B": "board"})[k]) is not None and loglin(vs[k], r["bpw"])]
+            if xs:
+                axT.scatter(*zip(*xs), marker=m_, s=34, facecolors="none", edgecolors="#333", lw=1.1, zorder=4, label=lab); ys += [y for _, y in xs]
+    if a.track_n and os.path.exists(a.track_n) and len(vs["N"]) >= 2:
+        pts = []
         for l in open(a.track_n):
             if '"trk186n-' not in l: continue
-            r = json.loads(l)
-            if r.get("kld") is None: continue
-            pass_.append(r)
-        if pass_ and len(v2n) >= 2:
-            # the incumbents' N reads: bpw from the driver's state (not in the eval line): plotted at the V2 ratio only when known
-            axT.text(0.01, 0.02, f"incumbent t186n reads: {len(pass_)} (ratio needs their bpw: see status)", transform=axT.transAxes, fontsize=7)
-    if rel_axis_ok(axT):
-        axT.set_ylim(0.2, 4.0)
-    if pts:
-        axT.legend(fontsize=7.5, loc="upper right")
-
-
-def rel_axis_ok(axT):
-    return True
+            r = json.loads(l); t = r["tag"][len("trk186n-"):]
+            if r.get("kld") is None or t not in step_of: continue
+            q = loglin(vs["N"], r["bpw"])
+            if q: pts.append((step_of[t][0], r["kld"] / q, step_of[t][1]))
+        if pts:
+            axT.scatter([x for x, _, _ in pts], [y for _, y, _ in pts], marker="s", s=16, color="#a33", alpha=0.7, lw=0, zorder=3,
+                        label="incumbents on t186n N (s)"); ys += [y for _, y, _ in pts]
+    if ys:                                                   # keep every N / board point on the panel (the default band is 0.3-2)
+        lo, hi = axT.get_ylim(); axT.set_ylim(min(lo, min(ys) * 0.9), max(hi, max(ys) * 1.1))
+    if axT.get_legend_handles_labels()[0]: axT.legend(fontsize=7.5, loc="upper right")
 
 
 def main(argv=None):
