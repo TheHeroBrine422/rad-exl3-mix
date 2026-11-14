@@ -43,15 +43,3 @@ R16s003mad 6.125 0.03 mad
 R16s003mad 6.25 0.03 mad
 R16s003mad 6.375 0.03 mad
 R16s003mad 6.5 0.03 mad
-R16s003mad 6.625 0.03 mad
-R16s003mad 6.75 0.03 mad
-R16s003mad 6.875 0.03 mad
-R16s003mad 7 0.03 mad
-R16s003mad 7.125 0.03 mad
-R16s003mad 7.25 0.03 mad
-R16s003mad 7.375 0.03 mad
-R16s003mad 7.5 0.03 mad
-R16s003mad 7.625 0.03 mad
-R16s003mad 7.75 0.03 mad
-R16s003mad 7.875 0.03 mad
-R16s003mad 8 0.03 mad

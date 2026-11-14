@@ -1,6 +1,6 @@
 #!/bin/bash
 # after.sh -- (ds8) #177-03 after stage C (lead note 11-13 7:30 PM CST: the ladder, then heads, then a/b donors): waits for
-# "STAGE C DONE" in mad/logs/stageC.log, then the 57 mad R16 head donors (run151h.sh build mad/tools/q-mad.txt on HIP 0-6),
+# "STAGE C DONE" in mad/logs/stageC.log, then the 45 mad R16 head donors (lead 8:50 PM CST: the i8 plans only; mul1 plans stay) (run151h.sh build mad/tools/q-mad.txt on HIP 0-6),
 # their head-only KL on the fit + search dumps (run151h.sh score), the price table (rep151h.py -> mad/heads-rep/hcurve151.json),
 # the wq drop, then the a/b T4 / T5 donors (ab151.sh). Every step is restartable and skips finished units; rerun after.sh
 # to resume. Stop: touch /data/q27/mad/STOP (and heads/STOP for the head workers). Process name `bash /data/q27/mad/tools/after.sh`.
