@@ -1,0 +1,62 @@
+PASS x pieces distinct across the six parts 780 pieces, 780 distinct
+PASS x pieces all unused by earlier x parts (xsupply flags) 
+PASS x parts: 130 pieces each 
+PASS s186a-x N gen share 0.1617 (N gen 23522 of 145448)
+PASS s186a-x >= 6 scripts 8 scripts
+PASS s186a-x max script <= 1/3 of N gen 0.270 {'CJK': 6362, 'ARABIC': 4833, 'CYRILLIC': 4747}
+PASS s186a-x N pieces are N 
+PASS s186b-x N gen share 0.1635 (N gen 21115 of 129145)
+PASS s186b-x >= 6 scripts 8 scripts
+PASS s186b-x max script <= 1/3 of N gen 0.239 {'ARABIC': 5041, 'CJK': 4733, 'CYRILLIC': 4266}
+PASS s186b-x N pieces are N 
+PASS s186c-x N gen share 0.1523 (N gen 25540 of 167642)
+PASS s186c-x >= 6 scripts 8 scripts
+PASS s186c-x max script <= 1/3 of N gen 0.311 {'CJK': 7946, 'CYRILLIC': 6066, 'ARABIC': 5841}
+PASS s186c-x N pieces are N 
+PASS s186d-x N gen share 0.1621 (N gen 31606 of 194991)
+PASS s186d-x >= 6 scripts 8 scripts
+PASS s186d-x max script <= 1/3 of N gen 0.259 {'DEVANAGARI': 8191, 'GREEK': 8191, 'CYRILLIC': 3301}
+PASS s186d-x N pieces are N 
+PASS s186e-x N gen share 0.1604 (N gen 24760 of 154349)
+PASS s186e-x >= 6 scripts 7 scripts
+PASS s186e-x max script <= 1/3 of N gen 0.325 {'ARABIC': 8045, 'CJK': 6305, 'CYRILLIC': 5745}
+PASS s186e-x N pieces are N 
+PASS s186f-x N gen share 0.1631 (N gen 25002 of 153283)
+PASS s186f-x >= 6 scripts 7 scripts
+PASS s186f-x max script <= 1/3 of N gen 0.246 {'THAI': 6145, 'CYRILLIC': 4585, 'ARABIC': 4462}
+PASS s186f-x N pieces are N 
+PASS c documents distinct within each part 
+INFO c documents: 280 uses, 205 distinct, 75 repeated uses (least used first)
+PASS c documents: fit or search pool 
+PASS c documents: not busy (ready / active slices), not t183 busy 146, t183 48
+PASS s186a-c N gen share 0.1893 (N gen 11691 of 61743)
+PASS s186a-c >= 6 scripts 6 scripts
+PASS s186a-c max script <= 1/3 of N gen 0.318 {'GREEK': 3716, 'BENGALI': 3261, 'CJK': 1653}
+PASS s186a-c N docs are N 
+PASS s186b-c N gen share 0.1885 (N gen 10086 of 53506)
+PASS s186b-c >= 6 scripts 6 scripts
+PASS s186b-c max script <= 1/3 of N gen 0.323 {'BENGALI': 3261, 'HIRAGANA': 2404, 'GREEK': 1732}
+PASS s186b-c N docs are N 
+PASS s186c-c N gen share 0.1898 (N gen 10043 of 52911)
+PASS s186c-c >= 6 scripts 6 scripts
+PASS s186c-c max script <= 1/3 of N gen 0.325 {'BENGALI': 3261, 'CYRILLIC': 2121, 'GREEK': 1984}
+PASS s186c-c N docs are N 
+PASS s186d-c N gen share 0.1896 (N gen 10959 of 57793)
+PASS s186d-c >= 6 scripts 7 scripts
+PASS s186d-c max script <= 1/3 of N gen 0.298 {'BENGALI': 3261, 'HANGUL': 2791, 'GREEK': 1732}
+PASS s186d-c N docs are N 
+PASS s186e-c N gen share 0.1824 (N gen 11029 of 60460)
+PASS s186e-c >= 6 scripts 6 scripts
+PASS s186e-c max script <= 1/3 of N gen 0.296 {'BENGALI': 3261, 'HIRAGANA': 2404, 'CYRILLIC': 2121}
+PASS s186e-c N docs are N 
+PASS s186f-c N gen share 0.1772 (N gen 9901 of 55872)
+PASS s186f-c >= 6 scripts 7 scripts
+PASS s186f-c max script <= 1/3 of N gen 0.329 {'BENGALI': 3261, 'HANGUL': 2791, 'GREEK': 1732}
+PASS s186f-c N docs are N 
+PASS t186n: >= 6 scripts {'ARABIC': 1, 'CJK': 4, 'CYRILLIC': 3, 'HEBREW': 2, 'GREEK': 3, 'THAI': 2, 'BENGALI': 2, 'HANGUL': 1, 'HIRAGANA': 3, 'DEVANAGARI': 1}
+PASS t186n: ~30k gen positions 32117
+PASS t186n: every document is N 
+PASS t186n: disjoint from every c part 
+PASS t186n: disjoint from x pieces 
+PASS t186n calib docs: not busy, not t183 
+ALL PASS

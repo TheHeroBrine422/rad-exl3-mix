@@ -1,0 +1,694 @@
+diff --git a/pipeline/rxrun/hostd.py b/pipeline/rxrun/hostd.py
+--- a/pipeline/rxrun/hostd.py
++++ b/pipeline/rxrun/hostd.py
+@@ -339,7 +339,9 @@
+     from rxrun import earlystop as ES
+     m = json.load(open(f"{g}/kld.json")); N = len(m["docs"]); gen = np.fromfile(f"{g}/gen.u8", np.uint8).astype(bool)
+     ref, parts = es["ref"], es.get("parts") or ["all"] * N
+-    if len(ref) != N or len(parts) != N: raise ValueError(f"early_stop ref / parts for {N} documents: {len(ref)} / {len(parts)}")
++    strata = es.get("strata")                                       # RULES-strata (#186): one stratum per document, or absent
++    if len(ref) != N or len(parts) != N or (strata is not None and len(strata) != N):
++        raise ValueError(f"early_stop ref / parts / strata for {N} documents: {len(ref)} / {len(parts)} / {len(strata or [])}")
+     prog = o + ".progress"
+     for f in (prog, prog + ".kl"):
+         if os.path.exists(f): os.remove(f)
+@@ -355,7 +357,7 @@
+             new, seen = progress_docs(g, prog, seen, gen)
+             for d, v in new.items(): docs[d] = v
+             while ptr < N and docs[ptr] is not None and stopped is None:
+-                P.add(ref[ptr][0], docs[ptr][0], parts[ptr]); ptr += 1
++                P.add(ref[ptr][0], docs[ptr][0], parts[ptr], strata[ptr] if strata else None); ptr += 1
+                 if P.check():
+                     stopped = dict(P.summary(), at_s=round(time.time() - t0, 1))
+                     try: os.killpg(p.pid, signal.SIGTERM)
+diff --git a/pipeline/rxrun/earlystop.py b/pipeline/rxrun/earlystop.py
+--- a/pipeline/rxrun/earlystop.py
++++ b/pipeline/rxrun/earlystop.py
+@@ -24,6 +24,13 @@
+ Per-document guard (RULES-picks (c)): rule key "guard": "docmean" -- at the end of a whole slice, every part's
+ c_p = mean_d log(B_d / A_d) (unweighted, documents with A_d, B_d > 0) must have the same sign as its d_p, both
+ size-adjusted (c_p + off vs d_p + off); otherwise the candidate is rejected (Paired.why = "guard"). No CI requirement.
++Stratified slices (RULES-strata.md, #186, w164): a document may carry a stratum ("L" or "N"; add(a, b, part, stratum)).
++Then every sum above is kept per (part, stratum): the cap is within (part, stratum) (cap_weights(strata=...)), the part's
++log ratio is d_p = sum_s w_s d_ps / sum_s w_s over the strata present (w_L = 0.961, w_N = 0.039, STRATUM_W; a stratum
++absent from a part: the other alone), its se is sqrt(sum_s (w_s / W)^2 se_ps^2), the guard's c_p is the same weighted
++mean of the per-stratum document means, and d = mean_p d_p as before. The rule must say "strata": true (the driver and
++the hosts' early-stop block do); without it the code is the old one, number for number. d_pooled() of a stratified
++candidate is the weighted pooled ratio log(sum_{p,s} w_s B / sum_{p,s} w_s A) (a diagnostic only; the decision is "pmean").
+ Rules (reject early only; accept only on the whole slice: d + off < 0 and d_p + off < 0 on every part, and the guard):
+     {"kind": "curve", "p": P, "warmup": W, "b0": 2, "t0": 0.1}   reject once t >= W and z > b0 ((1 - t) / (1 - t0))^P,
+                                                                  t = documents scored / documents in the slice
+@@ -51,13 +58,15 @@
+     return w
+ 
+ 
+-def cap_weights(ref, parts, cap=0.2):
++def cap_weights(ref, parts, cap=0.2, strata=None):
+     """the capped statistic's per-document weights: per part, capped_weights of the incumbent's (ref's) KL sums over the
+-    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). None = no cap"""
++    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). strata (RULES-strata §4): one
++    stratum per document -> the cap is per (part, stratum) instead. None = no cap"""
+     if not cap: return None
+     w = [1.0] * len(ref)
+-    for p in dict.fromkeys(parts):
+-        ix = [i for i, q in enumerate(parts) if q == p]
++    keys = parts if strata is None else [(p, s) for p, s in zip(parts, strata)]
++    for p in dict.fromkeys(keys):
++        ix = [i for i, q in enumerate(keys) if q == p]
+         for i, x in zip(ix, capped_weights([max(float(ref[i]), 0.0) for i in ix], cap)): w[i] = x
+     return w
+ 
+@@ -69,6 +78,9 @@
+         if t < rule.get("warmup", 0.1) or t >= 1.0: return INF
+         return rule.get("b0", 2.0) * ((1.0 - t) / (1.0 - rule.get("t0", 0.1))) ** rule["p"]
+     return INF
++
++
++STRATUM_W = {"L": 0.961, "N": 0.039}          # RULES-strata §2 (fixed for V3; the rule may override it with "sw")
+ 
+ 
+ class Paired:
+@@ -82,22 +94,49 @@
+         self.stat = rule.get("stat", "pmean"); self.w = rule.get("w"); self.guard = rule.get("guard")
+         self.lr = {}                                     # part -> [sum log(B / A), documents] (the (c) guard)
+         self.raw = {}                                    # part -> [sum A, sum B] unweighted ((a), reported only)
+-
+-    def add(self, a, b, part="all"):
++        self.strat = bool(rule.get("strata"))            # RULES-strata: the per-(part, stratum) sums below
++        self.sw = dict(STRATUM_W, **(rule.get("sw") or {}))
++        self.ps = {}                                     # (part, stratum) -> the part's six sums, as above
++        self.lps = {}                                    # (part, stratum) -> [sum log(B / A), documents]
++
++    def add(self, a, b, part="all", stratum=None):
++        if self.strat != (stratum is not None):
++            raise ValueError("stratified rule: every document needs its stratum" if self.strat else "stratum given to an unstratified rule (no \"strata\": true)")
++        if stratum is not None and stratum not in self.sw: raise ValueError(f"unknown stratum {stratum!r}")
+         if a > 0 and b > 0: q = self.lr.setdefault(part, [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
+         r = self.raw.setdefault(part, [0.0, 0.0]); r[0] += a; r[1] += b
++        if self.strat and a > 0 and b > 0: q = self.lps.setdefault((part, stratum), [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
+         if self.w is not None: wk = self.w[self.k]; a, b = a * wk, b * wk
+         self.k += 1; self.SA += a; self.SB += b; self.SAA += a * a; self.SBB += b * b; self.SAB += a * b
+         p = self.part.setdefault(part, [0.0, 0.0, 0, 0.0, 0.0, 0.0]); p[0] += a; p[1] += b; p[2] += 1
+         p[3] += a * a; p[4] += b * b; p[5] += a * b
++        if self.strat:
++            x = self.ps.setdefault((part, stratum), [0.0, 0.0, 0, 0.0, 0.0, 0.0]); x[0] += a; x[1] += b; x[2] += 1
++            x[3] += a * a; x[4] += b * b; x[5] += a * b
+ 
+     def d_pooled(self):
++        if self.strat:
++            SA = sum(self.sw[s] * v[0] for (_, s), v in self.ps.items()); SB = sum(self.sw[s] * v[1] for (_, s), v in self.ps.items())
++            return math.log(SB / SA) if SA > 0 and SB > 0 else 0.0
+         return math.log(self.SB / self.SA) if self.SA > 0 and self.SB > 0 else 0.0
++
++    def part_logr(self, p):
++        """d_p: the part's log ratio, None without positive sums; stratified: sum_s w_s d_ps / sum_s w_s (the strata present)"""
++        if not self.strat:
++            v = self.part.get(p)
++            return math.log(v[1] / v[0]) if v and v[0] > 0 and v[1] > 0 else None
++        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
++        if not ks: return None
++        W = sum(self.sw[s] for s, _ in ks)
++        return sum(self.sw[s] * math.log(v[1] / v[0]) for s, v in ks) / W
+ 
+     def d(self):
+         """the statistic's log ratio: the mean of the parts' log ratios ("pmean") or the pooled one"""
+         if self.stat == "pooled": return self.d_pooled()
+-        lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
++        if self.strat:
++            lr = [x for x in (self.part_logr(p) for p in self.part) if x is not None]
++        else:
++            lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
+         return sum(lr) / len(lr) if lr else 0.0
+ 
+     def da(self):
+@@ -111,9 +150,19 @@
+         su2 = SBB / (mB * mB) - 2 * SAB / (mA * mB) + SAA / (mA * mA)                  # sum of u^2 (mean u is 0)
+         return math.sqrt(max(su2, 0.0) / (k - 1)) / math.sqrt(k)
+ 
++    def _se_part(self, p):
++        """the stratified se of part p: sqrt(sum_s (w_s / W)^2 se_ps^2) over the strata present (independent documents)"""
++        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
++        if not ks: return INF
++        W = sum(self.sw[s] for s, _ in ks)
++        ss = [self._se(v[2], v[0], v[1], v[3], v[4], v[5]) for _, v in ks]
++        if any(x == INF for x in ss): return INF
++        return math.sqrt(sum((self.sw[s] / W * x) ** 2 for (s, _), x in zip(ks, ss)))
++
+     def se(self):
+         if self.stat == "pooled" or not self.part: return self._se(self.k, self.SA, self.SB, self.SAA, self.SBB, self.SAB)
+-        ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
++        if self.strat: ss = [self._se_part(p) for p in self.part]
++        else: ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
+         if any(x == INF for x in ss): return INF
+         return math.sqrt(sum(x * x for x in ss)) / len(ss)
+ 
+@@ -134,13 +183,24 @@
+         return self.stopped
+ 
+     def docmean(self, part):
+-        """(c): the part's mean per-document log ratio (unweighted; None without documents)"""
++        """(c): the part's mean per-document log ratio (unweighted; None without documents). Stratified (RULES-strata §5):
++        the w_s-weighted mean of its strata's document means"""
++        if self.strat:
++            ks = [(s, v) for (q, s), v in self.lps.items() if q == part and v[1]]
++            if not ks: return None
++            W = sum(self.sw[s] for s, _ in ks)
++            return sum(self.sw[s] * v[0] / v[1] for s, v in ks) / W
+         q = self.lr.get(part)
+         return q[0] / q[1] if q and q[1] else None
+ 
+     def guard_ok(self):
+         """the (c) guard: every part's size-adjusted per-document mean has the sign of its size-adjusted (b) log ratio"""
+         if self.guard != "docmean": return True
++        if self.strat:
++            for p in self.part:
++                c, dp = self.docmean(p), self.part_logr(p)
++                if c is None or dp is None or (c + self.off < 0) != (dp + self.off < 0): return False
++            return True
+         for p, v in self.part.items():
+             c = self.docmean(p)
+             if c is None or v[0] <= 0 or v[1] <= 0: return False
+@@ -151,17 +211,29 @@
+         """after the whole slice: "accept" iff the pooled and every part's (size-adjusted) log ratio are < 0 and the
+         guard holds (self.why = "guard" when only the guard rejects)"""
+         if self.stopped: return self.stopped
+-        parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
++        if self.strat: parts_ok = all(self.part_logr(p) is not None and self.part_logr(p) + self.off < 0 for p in self.part)
++        else: parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
+         if not (self.da() < 0 and parts_ok): return "reject"
+         if self.guard_ok(): return "accept"
+         self.why = "guard"; return "reject"
+ 
+     def summary(self):
+-        return {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
+-                "capped": self.w is not None, "guard": self.guard,
+-                "parts": {p: {"logr": math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None, "docmean": self.docmean(p),
+-                              "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
+-                          for p, v in self.part.items()}}
++        parts = {}
++        for p, v in self.part.items():
++            e = {"logr": self.part_logr(p) if self.strat else (math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None), "docmean": self.docmean(p),
++                 "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
++            if self.strat:
++                e["strata"] = {s: {"logr": math.log(x[1] / x[0]) if x[0] > 0 and x[1] > 0 else None, "docmean": self.docmean_ps(p, s), "docs": x[2]}
++                               for (q, s), x in self.ps.items() if q == p}
++            parts[p] = e
++        out = {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
++               "capped": self.w is not None, "guard": self.guard, "parts": parts}
++        if self.strat: out["strata"] = True                # (absent for old slices: their summary is unchanged)
++        return out
++
++    def docmean_ps(self, part, s):
++        q = self.lps.get((part, s))
++        return q[0] / q[1] if q and q[1] else None
+ 
+ 
+ def interleave(nx, nc):
+diff --git a/search/v3/seqrule.py b/search/v3/seqrule.py
+--- a/search/v3/seqrule.py
++++ b/search/v3/seqrule.py
+@@ -24,6 +24,13 @@
+ Per-document guard (RULES-picks (c)): rule key "guard": "docmean" -- at the end of a whole slice, every part's
+ c_p = mean_d log(B_d / A_d) (unweighted, documents with A_d, B_d > 0) must have the same sign as its d_p, both
+ size-adjusted (c_p + off vs d_p + off); otherwise the candidate is rejected (Paired.why = "guard"). No CI requirement.
++Stratified slices (RULES-strata.md, #186, w164): a document may carry a stratum ("L" or "N"; add(a, b, part, stratum)).
++Then every sum above is kept per (part, stratum): the cap is within (part, stratum) (cap_weights(strata=...)), the part's
++log ratio is d_p = sum_s w_s d_ps / sum_s w_s over the strata present (w_L = 0.961, w_N = 0.039, STRATUM_W; a stratum
++absent from a part: the other alone), its se is sqrt(sum_s (w_s / W)^2 se_ps^2), the guard's c_p is the same weighted
++mean of the per-stratum document means, and d = mean_p d_p as before. The rule must say "strata": true (the driver and
++the hosts' early-stop block do); without it the code is the old one, number for number. d_pooled() of a stratified
++candidate is the weighted pooled ratio log(sum_{p,s} w_s B / sum_{p,s} w_s A) (a diagnostic only; the decision is "pmean").
+ Rules (reject early only; accept only on the whole slice: d + off < 0 and d_p + off < 0 on every part, and the guard):
+     {"kind": "curve", "p": P, "warmup": W, "b0": 2, "t0": 0.1}   reject once t >= W and z > b0 ((1 - t) / (1 - t0))^P,
+                                                                  t = documents scored / documents in the slice
+@@ -51,13 +58,15 @@
+     return w
+ 
+ 
+-def cap_weights(ref, parts, cap=0.2):
++def cap_weights(ref, parts, cap=0.2, strata=None):
+     """the capped statistic's per-document weights: per part, capped_weights of the incumbent's (ref's) KL sums over the
+-    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). None = no cap"""
++    WHOLE slice (ref: one number per document, slice order; parts: the documents' parts). strata (RULES-strata §4): one
++    stratum per document -> the cap is per (part, stratum) instead. None = no cap"""
+     if not cap: return None
+     w = [1.0] * len(ref)
+-    for p in dict.fromkeys(parts):
+-        ix = [i for i, q in enumerate(parts) if q == p]
++    keys = parts if strata is None else [(p, s) for p, s in zip(parts, strata)]
++    for p in dict.fromkeys(keys):
++        ix = [i for i, q in enumerate(keys) if q == p]
+         for i, x in zip(ix, capped_weights([max(float(ref[i]), 0.0) for i in ix], cap)): w[i] = x
+     return w
+ 
+@@ -69,6 +78,9 @@
+         if t < rule.get("warmup", 0.1) or t >= 1.0: return INF
+         return rule.get("b0", 2.0) * ((1.0 - t) / (1.0 - rule.get("t0", 0.1))) ** rule["p"]
+     return INF
++
++
++STRATUM_W = {"L": 0.961, "N": 0.039}          # RULES-strata §2 (fixed for V3; the rule may override it with "sw")
+ 
+ 
+ class Paired:
+@@ -82,22 +94,49 @@
+         self.stat = rule.get("stat", "pmean"); self.w = rule.get("w"); self.guard = rule.get("guard")
+         self.lr = {}                                     # part -> [sum log(B / A), documents] (the (c) guard)
+         self.raw = {}                                    # part -> [sum A, sum B] unweighted ((a), reported only)
+-
+-    def add(self, a, b, part="all"):
++        self.strat = bool(rule.get("strata"))            # RULES-strata: the per-(part, stratum) sums below
++        self.sw = dict(STRATUM_W, **(rule.get("sw") or {}))
++        self.ps = {}                                     # (part, stratum) -> the part's six sums, as above
++        self.lps = {}                                    # (part, stratum) -> [sum log(B / A), documents]
++
++    def add(self, a, b, part="all", stratum=None):
++        if self.strat != (stratum is not None):
++            raise ValueError("stratified rule: every document needs its stratum" if self.strat else "stratum given to an unstratified rule (no \"strata\": true)")
++        if stratum is not None and stratum not in self.sw: raise ValueError(f"unknown stratum {stratum!r}")
+         if a > 0 and b > 0: q = self.lr.setdefault(part, [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
+         r = self.raw.setdefault(part, [0.0, 0.0]); r[0] += a; r[1] += b
++        if self.strat and a > 0 and b > 0: q = self.lps.setdefault((part, stratum), [0.0, 0]); q[0] += math.log(b / a); q[1] += 1
+         if self.w is not None: wk = self.w[self.k]; a, b = a * wk, b * wk
+         self.k += 1; self.SA += a; self.SB += b; self.SAA += a * a; self.SBB += b * b; self.SAB += a * b
+         p = self.part.setdefault(part, [0.0, 0.0, 0, 0.0, 0.0, 0.0]); p[0] += a; p[1] += b; p[2] += 1
+         p[3] += a * a; p[4] += b * b; p[5] += a * b
++        if self.strat:
++            x = self.ps.setdefault((part, stratum), [0.0, 0.0, 0, 0.0, 0.0, 0.0]); x[0] += a; x[1] += b; x[2] += 1
++            x[3] += a * a; x[4] += b * b; x[5] += a * b
+ 
+     def d_pooled(self):
++        if self.strat:
++            SA = sum(self.sw[s] * v[0] for (_, s), v in self.ps.items()); SB = sum(self.sw[s] * v[1] for (_, s), v in self.ps.items())
++            return math.log(SB / SA) if SA > 0 and SB > 0 else 0.0
+         return math.log(self.SB / self.SA) if self.SA > 0 and self.SB > 0 else 0.0
++
++    def part_logr(self, p):
++        """d_p: the part's log ratio, None without positive sums; stratified: sum_s w_s d_ps / sum_s w_s (the strata present)"""
++        if not self.strat:
++            v = self.part.get(p)
++            return math.log(v[1] / v[0]) if v and v[0] > 0 and v[1] > 0 else None
++        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
++        if not ks: return None
++        W = sum(self.sw[s] for s, _ in ks)
++        return sum(self.sw[s] * math.log(v[1] / v[0]) for s, v in ks) / W
+ 
+     def d(self):
+         """the statistic's log ratio: the mean of the parts' log ratios ("pmean") or the pooled one"""
+         if self.stat == "pooled": return self.d_pooled()
+-        lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
++        if self.strat:
++            lr = [x for x in (self.part_logr(p) for p in self.part) if x is not None]
++        else:
++            lr = [math.log(p[1] / p[0]) for p in self.part.values() if p[0] > 0 and p[1] > 0]
+         return sum(lr) / len(lr) if lr else 0.0
+ 
+     def da(self):
+@@ -111,9 +150,19 @@
+         su2 = SBB / (mB * mB) - 2 * SAB / (mA * mB) + SAA / (mA * mA)                  # sum of u^2 (mean u is 0)
+         return math.sqrt(max(su2, 0.0) / (k - 1)) / math.sqrt(k)
+ 
++    def _se_part(self, p):
++        """the stratified se of part p: sqrt(sum_s (w_s / W)^2 se_ps^2) over the strata present (independent documents)"""
++        ks = [(s, v) for (q, s), v in self.ps.items() if q == p and v[0] > 0 and v[1] > 0]
++        if not ks: return INF
++        W = sum(self.sw[s] for s, _ in ks)
++        ss = [self._se(v[2], v[0], v[1], v[3], v[4], v[5]) for _, v in ks]
++        if any(x == INF for x in ss): return INF
++        return math.sqrt(sum((self.sw[s] / W * x) ** 2 for (s, _), x in zip(ks, ss)))
++
+     def se(self):
+         if self.stat == "pooled" or not self.part: return self._se(self.k, self.SA, self.SB, self.SAA, self.SBB, self.SAB)
+-        ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
++        if self.strat: ss = [self._se_part(p) for p in self.part]
++        else: ss = [self._se(p[2], p[0], p[1], p[3], p[4], p[5]) for p in self.part.values()]
+         if any(x == INF for x in ss): return INF
+         return math.sqrt(sum(x * x for x in ss)) / len(ss)
+ 
+@@ -134,13 +183,24 @@
+         return self.stopped
+ 
+     def docmean(self, part):
+-        """(c): the part's mean per-document log ratio (unweighted; None without documents)"""
++        """(c): the part's mean per-document log ratio (unweighted; None without documents). Stratified (RULES-strata §5):
++        the w_s-weighted mean of its strata's document means"""
++        if self.strat:
++            ks = [(s, v) for (q, s), v in self.lps.items() if q == part and v[1]]
++            if not ks: return None
++            W = sum(self.sw[s] for s, _ in ks)
++            return sum(self.sw[s] * v[0] / v[1] for s, v in ks) / W
+         q = self.lr.get(part)
+         return q[0] / q[1] if q and q[1] else None
+ 
+     def guard_ok(self):
+         """the (c) guard: every part's size-adjusted per-document mean has the sign of its size-adjusted (b) log ratio"""
+         if self.guard != "docmean": return True
++        if self.strat:
++            for p in self.part:
++                c, dp = self.docmean(p), self.part_logr(p)
++                if c is None or dp is None or (c + self.off < 0) != (dp + self.off < 0): return False
++            return True
+         for p, v in self.part.items():
+             c = self.docmean(p)
+             if c is None or v[0] <= 0 or v[1] <= 0: return False
+@@ -151,17 +211,29 @@
+         """after the whole slice: "accept" iff the pooled and every part's (size-adjusted) log ratio are < 0 and the
+         guard holds (self.why = "guard" when only the guard rejects)"""
+         if self.stopped: return self.stopped
+-        parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
++        if self.strat: parts_ok = all(self.part_logr(p) is not None and self.part_logr(p) + self.off < 0 for p in self.part)
++        else: parts_ok = all(p[0] > 0 and p[1] > 0 and math.log(p[1] / p[0]) + self.off < 0 for p in self.part.values())
+         if not (self.da() < 0 and parts_ok): return "reject"
+         if self.guard_ok(): return "accept"
+         self.why = "guard"; return "reject"
+ 
+     def summary(self):
+-        return {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
+-                "capped": self.w is not None, "guard": self.guard,
+-                "parts": {p: {"logr": math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None, "docmean": self.docmean(p),
+-                              "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
+-                          for p, v in self.part.items()}}
++        parts = {}
++        for p, v in self.part.items():
++            e = {"logr": self.part_logr(p) if self.strat else (math.log(v[1] / v[0]) if v[0] > 0 and v[1] > 0 else None), "docmean": self.docmean(p),
++                 "pooled_a": math.log(self.raw[p][1] / self.raw[p][0]) if self.raw[p][0] > 0 and self.raw[p][1] > 0 else None, "docs": v[2]}
++            if self.strat:
++                e["strata"] = {s: {"logr": math.log(x[1] / x[0]) if x[0] > 0 and x[1] > 0 else None, "docmean": self.docmean_ps(p, s), "docs": x[2]}
++                               for (q, s), x in self.ps.items() if q == p}
++            parts[p] = e
++        out = {"k": self.k, "n": self.N, "stat": self.stat, "d": self.d(), "d_pooled": self.d_pooled(), "off": self.off, "se": self.se(), "z": self.z(),
++               "capped": self.w is not None, "guard": self.guard, "parts": parts}
++        if self.strat: out["strata"] = True                # (absent for old slices: their summary is unchanged)
++        return out
++
++    def docmean_ps(self, part, s):
++        q = self.lps.get((part, s))
++        return q[0] / q[1] if q and q[1] else None
+ 
+ 
+ def interleave(nx, nc):
+diff --git a/search/v3/pickstat.py b/search/v3/pickstat.py
+--- a/search/v3/pickstat.py
++++ b/search/v3/pickstat.py
+@@ -9,26 +9,34 @@
+ CIs: paired bootstrap over resampling UNITS (a document, or a whole long trace: all its chunks together), the same
+ draws for every pair of a part, 10,000 draws, 95 % percentile interval. Inside a draw a unit drawn m times counts m
+ times; the cap is recomputed on the drawn sample (each drawn copy is one document for the cap).
+-numpy only; used by finalpick.py (final picks) and driver.py (the held-out monitor)."""
++numpy only; used by finalpick.py (final picks) and driver.py (the held-out monitor).
++Stratified slices (RULES-strata §4-5, #186, w164): point_strat / compare_strat take one stratum per document. Each (part,
++stratum) gets its own (a), (b), (c) with the cap inside (part, stratum); a part's value is sum_s w_s x_ps / sum_s w_s over
++the strata present (seqrule.STRATUM_W), and the parts are averaged with equal weight (pmean) as seqrule does. The
++bootstrap draws (copy counts over the whole slice) are shared by every stratum."""
+ import numpy as np
+ 
+ CAP = 0.2
+ BOOT = 10000
++SW = {"L": 0.961, "N": 0.039}           # = seqrule.STRATUM_W (RULES-strata §2)
+ 
+ 
+ def capped(a, n=None, cap=CAP):
+     """weights w (same shape as a; rows = bootstrap draws or a single vector) so that every document copy holds at most
+     cap of sum(n w a); n = copy counts (default 1). Exact water-filling as seqrule.capped_weights (the fixed set only
+     grows; T = rest / (1 - copies fixed x cap)). A row where the cap cannot be met (copies fixed x cap >= 1, e.g. one
+-    document drawn 5 times at cap 0.2) stays uncapped."""
++    document drawn 5 times at cap 0.2) stays uncapped. So does a row with fewer than 1 / cap copies, or whose copies are
++    all over the cap (seqrule.capped_weights' rule for n cap < 1; before #186-02 such rows gave nan)."""
+     a = np.asarray(a, float); one = a.ndim == 1
+     A = a[None, :] if one else a
+     N = np.ones_like(A) if n is None else np.broadcast_to(np.asarray(n, float), A.shape)
+     fixed = np.zeros(A.shape, bool); live = (N * A).sum(1) > 0
++    live &= N.sum(1) * cap >= 1                    # fewer than 1 / cap copies: no cap (seqrule.capped_weights' rule)
+     T = (N * A).sum(1)
+     for _ in range(A.shape[1] + 1):
+         k = (N * fixed).sum(1); den = 1 - k * cap
+         live &= den > 1e-9
++        live &= (N * A * ~fixed).sum(1) > 0        # every copy over the cap (only fixed ones left): no cap either
+         T = np.where(live, (N * A * ~fixed).sum(1) / np.where(live, den, 1.0), T)
+         new = live[:, None] & ~fixed & (N > 0) & (A > (cap + 1e-12) * T[:, None])
+         if not new.any(): break
+@@ -92,3 +100,46 @@
+     """the largest document's share of the part's KL (S: 1-d per-document KL sums)"""
+     S = np.asarray(S, float); t = S.sum()
+     return float(S.max() / t) if t > 0 else 0.0
++
++
++def _combine(vals, parts, sw=SW):
++    """vals: {(part, stratum): (x, ok)}, x a float or an array over draws, ok the valid mask of x -> per part
++    sum_s w_s x / sum_s w_s over its valid strata, then the mean over the parts (nan where a value has no valid part)"""
++    per = []
++    for p in dict.fromkeys(parts):
++        num = den = 0.0
++        for (q, s), (x, ok) in vals.items():
++            if q != p: continue
++            num = num + sw[s] * np.where(ok, x, 0.0); den = den + sw[s] * np.asarray(ok, float)
++        per.append(np.where(den > 0, num / np.where(den > 0, den, 1.0), np.nan))
++    return np.nanmean(np.stack(per), axis=0)
++
++
++def point_strat(A, B, parts, strata, cap=CAP, sw=SW):
++    """(a), (b), (c) of B vs A over stratified documents (no bootstrap): {"a", "b", "c", "parts": {p: {"a", "b", "c"}}}"""
++    A = np.asarray(A, float); B = np.asarray(B, float); parts = list(parts); strata = list(strata)
++    keys = list(dict.fromkeys(zip(parts, strata))); per = {}
++    for key in keys:
++        ix = np.array([i for i, k in enumerate(zip(parts, strata)) if k == key])
++        q = point(A[ix], B[ix], cap); per[key] = {k: (q[k], bool(np.isfinite(q[k]))) for k in ("a", "b", "c")}
++    out = {k: float(_combine({key: per[key][k] for key in keys}, parts, sw)) for k in ("a", "b", "c")}
++    out["parts"] = {p: {k: float(_combine({key: per[key][k] for key in keys if key[0] == p}, [p], sw)) for k in ("a", "b", "c")}
++                    for p in dict.fromkeys(parts)}
++    return out
++
++
++def compare_strat(A, B, parts, strata, units=None, cap=CAP, boot=BOOT, seed=0, off=0.0, C=None, sw=SW):
++    """point_strat with 95 % paired bootstrap intervals over the same units as compare(): {k: {"d", "ci"}} for k in a, b, c"""
++    A = np.asarray(A, float); B = np.asarray(B, float); parts = list(parts); strata = list(strata)
++    C = draws(len(A), units, boot, seed) if C is None else C
++    keys = list(dict.fromkeys(zip(parts, strata))); bs = {}
++    for key in keys:
++        ix = np.array([i for i, k in enumerate(zip(parts, strata)) if k == key])
++        with np.errstate(divide="ignore", invalid="ignore"):          # a draw with no copies of the stratum: nan, masked below
++            r = boot_pair(A[ix], B[ix], C[:, ix], cap)
++        bs[key] = {k: (np.where(np.isfinite(r[k]), r[k], 0.0), np.isfinite(r[k]) & (C[:, ix].sum(1) > 0)) for k in ("a", "b", "c")}
++    pt = point_strat(A, B, parts, strata, cap, sw); out = {}
++    for k in ("a", "b", "c"):
++        v = _combine({key: bs[key][k] for key in keys}, parts, sw)
++        out[k] = {"d": pt[k] + off, "ci": [x + off for x in ci(v)]}
++    return out
+diff --git a/search/v3/test_picks.py b/search/v3/test_picks.py
+--- a/search/v3/test_picks.py
++++ b/search/v3/test_picks.py
+@@ -218,6 +218,179 @@
+         R.retire("s1", "test"); assert R.active() is None and R.activate_next() == "s2"
+ 
+ 
++# ---- RULES-strata (#186, w164): per-(part, stratum) statistic
++
++OLD_CASE = {   # seqrule.py at HEAD c86c9e4e (before #186): rule {"kind": "full", "off": 0.01, "w": cap 0.2, "guard": "docmean"}
++    "d": -0.008175587267912208, "se": 0.008748675081800527, "z": 0.208535888580779, "why": None, "docmean_x": -0.008415597147676597,
++    "docmean_c": -0.003559112483005812, "logr_x": -0.01063435808891513, "logr_c": -0.005716816446909287, "w7": 0.7699087443379068,
++    "d_pooled": -0.009090543199630366,
++    "d2": -0.010361730885858086, "se2": 0.010228122280696382, "z2": -1.5019111489163954}   # pooled, off -0.005, no cap / guard
++
++
++@test
++def old_slice_unchanged_recorded():
++    """RULES-strata: a rule without "strata" (every old slice) gives the pre-#186 numbers, recorded above, and no strata key"""
++    rng = np.random.default_rng(11); n = 60
++    A = rng.gamma(1.5, 1.0, n); A[7] *= 25.0; B = A * np.exp(rng.normal(-0.01, 0.08, n)); B[7] *= 0.9; parts = SR.interleave(40, 20)
++    P = run_paired(list(A), list(B), parts, cap=0.2, guard="docmean", off=0.01, rule={"kind": "full"})
++    S = P.summary()
++    assert math.isclose(P.d(), OLD_CASE["d"], rel_tol=1e-12) and math.isclose(P.se(), OLD_CASE["se"], rel_tol=1e-12), (P.d(), P.se())
++    assert math.isclose(P.z(), OLD_CASE["z"], rel_tol=1e-12) and P.why == OLD_CASE["why"] and P.final() == "reject"
++    assert math.isclose(P.docmean("x"), OLD_CASE["docmean_x"], rel_tol=1e-12) and math.isclose(P.docmean("c"), OLD_CASE["docmean_c"], rel_tol=1e-12)
++    assert math.isclose(S["parts"]["x"]["logr"], OLD_CASE["logr_x"], rel_tol=1e-12) and math.isclose(S["parts"]["c"]["logr"], OLD_CASE["logr_c"], rel_tol=1e-12)
++    assert math.isclose(P.w[7], OLD_CASE["w7"], rel_tol=1e-12) and math.isclose(P.d_pooled(), OLD_CASE["d_pooled"], rel_tol=1e-12)
++    assert "strata" not in S and all("strata" not in v for v in S["parts"].values())
++    P2 = run_paired(list(A), list(B), parts, cap=0, guard=None, off=-0.005, rule={"kind": "full", "stat": "pooled"})
++    assert math.isclose(P2.d(), OLD_CASE["d2"], rel_tol=1e-12) and math.isclose(P2.se(), OLD_CASE["se2"], rel_tol=1e-12)
++    assert math.isclose(P2.z(), OLD_CASE["z2"], rel_tol=1e-12) and P2.final() == "accept"
++
++
++def strat_case(seed=4, n=60):
++    """a two-part slice with N documents in both parts (about 15 %), the rest L"""
++    rng = np.random.default_rng(seed)
++    A = rng.gamma(2.0, 1.0, n); B = A * np.exp(rng.normal(-0.02, 0.1, n))
++    parts = SR.interleave(n // 2, n - n // 2); strata = ["N" if rng.random() < 0.15 else "L" for _ in range(n)]
++    return A, B, parts, strata
++
++
++def run_strat(A, B, parts, strata, cap=0.2, guard="docmean", off=0.0, rule=None):
++    r = dict(rule or {"kind": "full"}, off=off, strata=True)
++    if cap: r["w"] = SR.cap_weights(list(A), parts, cap, strata=strata)
++    if guard: r["guard"] = guard
++    P = SR.Paired(len(A), r)
++    for a, b, p, s in zip(A, B, parts, strata):
++        P.add(a, b, p, s)
++        if P.check(): break
++    return P
++
++
++def manual_strat(A, B, parts, strata, cap=0.2, off=0.0):
++    """RULES-strata §4-5 written out from the definitions, independent of Paired: per part d_p, se_p, docmean; d = mean d_p"""
++    w = SR.cap_weights(list(A), parts, cap, strata=strata); out = {"logr": {}, "se": {}, "docmean": {}}
++    for p in dict.fromkeys(parts):
++        st = [s for s in ("L", "N") if any(q == p and t == s for q, t in zip(parts, strata))]
++        W = sum(PS.SW[s] for s in st); lr = se2 = dm = 0.0
++        for s in st:
++            ix = [i for i in range(len(A)) if parts[i] == p and strata[i] == s]
++            a = np.array([w[i] * A[i] for i in ix]); b = np.array([w[i] * B[i] for i in ix]); k = len(ix)
++            lr += PS.SW[s] * math.log(b.sum() / a.sum()) / W
++            u = b / b.mean() - a / a.mean()
++            se_ps = math.sqrt((u * u).sum() / (k - 1)) / math.sqrt(k) if k >= 3 else float("inf")
++            se2 += (PS.SW[s] / W * se_ps) ** 2
++            dm += PS.SW[s] * float(np.mean([math.log(B[i] / A[i]) for i in ix if A[i] > 0 and B[i] > 0])) / W
++        out["logr"][p] = lr; out["se"][p] = math.sqrt(se2); out["docmean"][p] = dm
++    out["d"] = sum(out["logr"].values()) / len(out["logr"])
++    out["se_all"] = math.sqrt(sum(x * x for x in out["se"].values())) / len(out["se"])
++    return out
++
++
++@test
++def strata_cap_within_stratum():
++    """the cap is per (part, stratum): a dominant N document is capped against the N stratum's total only; the L
++    documents keep weight 1; the N weights are capped_weights of the N documents alone"""
++    A = [1.0] * 20 + [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 20.0]
++    parts = ["x"] * len(A); strata = ["L"] * 20 + ["N"] * 8
++    w = SR.cap_weights(A, parts, 0.2, strata=strata)
++    assert all(x == 1.0 for x in w[:20]), w[:20]
++    assert all(math.isclose(a, b) for a, b in zip(w[20:], SR.capped_weights(A[20:], 0.2))) and w[27] < 1.0
++    assert max(w[i] * A[i] for i in range(20, 28)) <= 0.2 * sum(w[i] * A[i] for i in range(20, 28)) + 1e-9
++    assert SR.cap_weights(A, parts, 0.2) != w                                  # unstratified: the L documents change too
++    assert SR.cap_weights(A, parts, 0.2, strata=None) == SR.cap_weights(A, parts, 0.2)
++
++
++@test
++def strata_formula_matches_definition():
++    """d, the per-part logs, se and docmean of the stratified Paired = the RULES-strata formulas written out by hand"""
++    A, B, parts, strata = strat_case(4, 60)
++    P = run_strat(A, B, parts, strata, cap=0.2, guard=None); M = manual_strat(A, B, parts, strata, 0.2)
++    assert math.isclose(P.d(), M["d"], rel_tol=1e-12, abs_tol=1e-15), (P.d(), M["d"])
++    for p in ("x", "c"):
++        assert math.isclose(P.part_logr(p), M["logr"][p], rel_tol=1e-12, abs_tol=1e-15), p
++    assert math.isclose(P.se(), M["se_all"], rel_tol=1e-9), (P.se(), M["se_all"])
++    P2 = run_strat(A, B, parts, strata, cap=0.2, guard="docmean", off=0.01)
++    for p in ("x", "c"):
++        assert math.isclose(P2.docmean(p), M["docmean"][p], rel_tol=1e-12, abs_tol=1e-15), p
++    S = P.summary()
++    assert S["strata"] is True and set(S["parts"]["x"]["strata"]) == {"L", "N"} and set(S["parts"]["c"]["strata"]) == {"L", "N"}
++
++
++@test
++def strata_absent_stratum():
++    """a stratum absent from a part: that part's value is the other stratum alone (no weighting); the other part unchanged"""
++    A, B, parts, strata = strat_case(7, 60)
++    strata = [s if p == "x" else "L" for p, s in zip(parts, strata)]              # part c: no N documents at all
++    P = run_strat(A, B, parts, strata, cap=0.2, guard=None); M = manual_strat(A, B, parts, strata, 0.2)
++    assert math.isclose(P.part_logr("c"), M["logr"]["c"], rel_tol=1e-12) and "N" not in P.summary()["parts"]["c"]["strata"]
++    assert math.isclose(P.d(), M["d"], rel_tol=1e-12)
++
++
++@test
++def strata_guard_matches_definition():
++    """the guard (RULES-strata §5): every part's size-adjusted stratified docmean has the sign of its size-adjusted
++    stratified log ratio; P.guard_ok() equals that rule on random slices (both outcomes occur)"""
++    outcomes = set()
++    for seed in range(40):
++        A, B, parts, strata = strat_case(100 + seed, 40)
++        M = manual_strat(A, B, parts, strata, 0.2, 0.005)
++        P = run_strat(A, B, parts, strata, cap=0.2, guard="docmean", off=0.005)
++        want = all((M["docmean"][p] + 0.005 < 0) == (M["logr"][p] + 0.005 < 0) for p in M["logr"])
++        assert P.guard_ok() == want, (seed, P.guard_ok(), want)
++        outcomes.add(want)
++    assert outcomes == {True, False}, outcomes
++
++
++@test
++def strata_se_needs_three_per_stratum():
++    """se is infinite until every (part, stratum) present has 3 documents (no early stop before that)"""
++    P = SR.Paired(10, {"strata": True})
++    for k, (p, s) in enumerate([("x", "N"), ("x", "L"), ("x", "L"), ("x", "L"), ("x", "N"), ("x", "N")]):
++        P.add(1.0, 0.9, p, s)
++        ready = all(v[2] >= 3 for v in P.ps.values())
++        assert (P.se() != SR.INF) == ready, (k, {key: v[2] for key, v in P.ps.items()}, P.se())
++
++
++@test
++def strata_require_a_stratum():
++    P = SR.Paired(3, {"strata": True})
++    for args in [(1.0, 1.0, "x", None), (1.0, 1.0, "x", "Z")]:
++        try: P.add(*args); raise AssertionError(f"no error for {args}")
++        except ValueError: pass
++    try: SR.Paired(3, {}).add(1.0, 1.0, "x", "N"); raise AssertionError("unstratified rule took a stratum")
++    except ValueError: pass
++
++
++@test
++def strata_registry():
++    """the registry keeps each document's stratum; a slice without strata has none (old slices unchanged)"""
++    with tempfile.TemporaryDirectory() as d:
++        R = SL.Registry(f"{d}/reg.json")
++        base = {"part": "x", "src": 0, "orig": 1, "source": "a", "tokens": 100, "score_from": 0}
++        R.add("sn", "/nonexistent", man={"docs": [dict(base, stratum="N", script="CJK"), dict(base, part="c", src=1, orig=2, stratum="L", script="Latin")]})
++        R.add("so", "/nonexistent", man={"docs": [dict(base)]})
++        assert R.strata_of("sn") == ["N", "L"] and R.strata_of("so") is None and "stratum" not in R.d["slices"]["so"]["docs"][0]
++
++
++@test
++def pickstat_strata_and_small_parts():
++    """pickstat's stratified point = the by-hand value (the (b) cap inside each stratum); the bootstrap interval brackets
++    the point; a stratum or part of 3 documents is uncapped (no nan), as seqrule does"""
++    A, B, parts, strata = strat_case(9, 60)
++    pt = PS.point_strat(A, B, parts, strata, 0.2)
++    for p in ("x", "c"):
++        present = [s for s in ("L", "N") if any(q == p and t == s for q, t in zip(parts, strata))]
++        wsum = sum(PS.SW[s] for s in present)
++        for k in ("a", "b", "c"):                                   # each statistic: the per-stratum point, weighted
++            want = sum(PS.SW[s] * PS.point([A[i] for i in range(len(A)) if parts[i] == p and strata[i] == s],
++                                           [B[i] for i in range(len(A)) if parts[i] == p and strata[i] == s], 0.2)[k]
++                       for s in present) / wsum
++            assert math.isclose(pt["parts"][p][k], want, rel_tol=1e-12), (p, k, pt["parts"][p][k], want)
++    assert math.isclose(pt["b"], (pt["parts"]["x"]["b"] + pt["parts"]["c"]["b"]) / 2, rel_tol=1e-12)
++    cb = PS.compare_strat(A, B, parts, strata, boot=400, seed=2)
++    assert all(v["ci"][0] <= v["d"] <= v["ci"][1] for v in cb.values()), cb
++    assert np.allclose(PS.capped(np.array([1.96, 0.96, 2.9])), 1.0)
++    assert math.isfinite(PS.point(np.array([1.96, 0.96, 2.9]), np.array([1.9, 0.9, 2.8]))["b"])
++
++
+ def main():
+     bad = 0
+     for f in T:
+diff --git a/search/v3/test_hostd_es.py b/search/v3/test_hostd_es.py
+--- a/search/v3/test_hostd_es.py
++++ b/search/v3/test_hostd_es.py
+@@ -11,6 +11,8 @@
+   good          not stopped: the result (kld, p99, top1, docs) equals the plain score_cmd run's; progress sums == the
+                 rows file's sums
+   copy          pipeline/rxrun/earlystop.py == search/v3/seqrule.py (byte for byte)
++  strata        (RULES-strata, #186) the same checks with a stratum per document in the early-stop block ("strata": [..],
++                rule "strata": true): bad stops early, good runs to the end, the scored prefix == the plain run's sums
+ PIPELINE_DIR: a pipeline/ tree with the patch applied."""
+ import hashlib, json, os, shutil, sys, tempfile, time
+ 
+@@ -122,6 +124,22 @@
+ check("good: no progress-mismatch warning", "WARN progress" not in open(f"{W}/a/unit-good/eval.log").read())
+ here = os.path.dirname(os.path.abspath(__file__))
+ check("copy: rxrun/earlystop.py == search/v3/seqrule.py", open(f"{PIPE}/rxrun/earlystop.py", "rb").read() == open(f"{here}/seqrule.py", "rb").read())
++# RULES-strata (#186): one stratum per document (every 5th document N), the rule says "strata": true
++STR = ["N" if i % 5 == 0 else "L" for i in range(len(DOCS))]
++es_s = {"rule": dict(es["rule"], strata=True), "ref": ref, "parts": [d["part"] for d in DOCS], "strata": STR}
++bs_ = run("badS", f"{W}/a", es_s); sbs = bs_["slices"]["s"]; sts = sbs.get("stopped")
++check("strata bad: stopped early", bs_["rc"] == 0 and sts is not None and sts["k"] < len(DOCS), f"stopped {sts and sts['k']} of {len(DOCS)}")
++check("strata bad: stop record carries the strata flag and per-stratum parts", sts is not None and sts.get("strata") is True
++      and set(sts["parts"]["x"]["strata"]) == {"L", "N"}, f"strata parts {sts and sorted(sts['parts']['x']['strata'])}")
++dS = sbs["parts"]["m"]["docs"]
++badSp = run("badS", f"{W}/p", prog=False)["slices"]["s"]["parts"]["m"]["docs"]          # same tag: the stub's jitter is per tag
++check("strata bad: scored prefix == the plain run's per-document sums", dS[:sts["k"]] == badSp[:sts["k"]])
++gs_ = run("goodS", f"{W}/a", es_s)["slices"]["s"]; goodSp = run("goodS", f"{W}/p", prog=False)["slices"]["s"]
++check("strata good: not stopped, result == plain run", "stopped" not in gs_ and gs_["kld"] == goodSp["kld"] and gs_["parts"]["m"]["docs"] == goodSp["parts"]["m"]["docs"])
++try:
++    run("badX", f"{W}/a", dict(es_s, strata=STR[:-1])); check("strata length check raises", False)
++except ValueError as e:
++    check("strata length check raises", "strata" in str(e))
+ print("ALL PASS" if ok else "FAILED", W)
+ if ok: shutil.rmtree(W)
+ sys.exit(0 if ok else 1)

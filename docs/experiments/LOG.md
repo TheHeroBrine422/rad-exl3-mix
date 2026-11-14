@@ -7571,7 +7571,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither (labels only; no model, no GPU).
 - **Files:** `search/v3/strata186.py`, `search/v3/test_strata186.py`, `data/strata186/`
 
-### 2026-11-14 5:40 PM CST · #186-02 · RULES-strata step 3: the stratified accept statistic (seqrule / pickstat / driver / hosts), tests 18/18 + hostd 15/15 (w164)
+### 2026-11-14 5:40 PM CST · #186-02 · RULES-strata step 3: the stratified accept statistic (seqrule / pickstat / driver / hosts), tests 18/18 + hostd 16/16 (w164)
 - **Status:** done (code, tests, README; live search untouched) · **Machine:** VM (tests), ds8 (hosts test copy only) ·
   **Code:** `search/v3/seqrule.py` (+ byte copy `pipeline/rxrun/earlystop.py`), `pickstat.py`, `driver.py`, `slices.py`,
   `pipeline/rxrun/hostd.py` (strata in the early-stop block), tests `test_picks.py` (+9), `test_hostd_es.py` (+5 strata checks)
@@ -7636,3 +7636,32 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   `touch drv/STOP-7`: no more 7.0 candidates; its incumbent stays as the 7.0 pick. **Runtime:** neither.
 - 6:00 PM CST (user): 6.0 joins fit band b3 (4.5, 5.0, 6.0); b4 = 7.0 alone (stopped). On t183 6.0 is 0.00088 vs V2
   0.00091; on ver3-8k Latin rows 0.83× IQR-V4 iq6r-s. Driver restarted.
+
+### 2026-11-14 5:55 PM CST · #186-03 · RULES-strata step 2: six staged slices s186a-f and t186n built (w164)
+- **Status:** built on ds8, **staged** (not ready: the lead flips it; the registry merge is the lead's, see `search/v3/SWITCH-strata.md`) · **Machine:** ds8 (CPU, nice) · **Code:** `search/v3/run186w/` (`draw186.py`, `check186.py`, `pickx186.py`, `build186.py`, `xsupply186.py`, `refs186.py`; README) · **Rule:** RULES-strata §3, §7 (f0db8aa5)
+- **Supply (the x parts' blocker, cleared):** after every earlier x part, xc8k-b2 has 41 / 135 / 76 unused pieces (c0 / c1 / c2; 1 + 9 + 1 non-Latin); xc8k-b1 has **3,324 unused, 181 non-Latin** (9 scripts, 206,763 gen positions). ds8's b1 has no meta; colo's copy (`/data/work/gold27/xc8k-b1.jsonl.meta.jsonl`) matches the golden line by line (tokens, source), so b1 is usable. The only b1 piece an excl file names is search27b's 65 (`orig` = b1 index, source-matched). gold3's b3 batches (QAD training chunks, #181) are not in the lead's list and are not used. Calib merged pool: 940 free documents, **58 non-Latin** (69,314 capped gen positions, 10 scripts) after the ready / active c parts (146 docs) and t183's c part (48) are excluded.
+- **Built** (gen positions as scored; `data/strata186/built-shares.json`):
+
+| slice | c docs (N) | c N share | c scripts | x pieces (N) | x N share | x scripts | rows (mixed) |
+|---|---|---|---|---|---|---|---|
+| s186a | 53 (11) | 18.9 % | 6 | 130 (33) | 16.2 % | 8 | 228,183 |
+| s186b | 44 (6) | 18.9 % | 6 | 130 (29) | 16.4 % | 8 | 211,282 |
+| s186c | 45 (9) | 19.0 % | 6 | 130 (22) | 15.2 % | 8 | 241,779 |
+| s186d | 49 (7) | 19.0 % | 7 | 130 (12) | 16.2 % | 8 | 276,077 |
+| s186e | 39 (7) | 18.2 % | 6 | 130 (27) | 16.0 % | 7 | 235,562 |
+| s186f | 50 (7) | 17.7 % | 7 | 130 (15) | 16.3 % | 7 | 226,790 |
+
+  Largest script of a part's N gen: c ≤ 0.33, x ≤ 0.33. t186n: 22 documents (20 calib N + 2 xcorp N), 32,117 gen positions, 10 scripts, all N (monitor).
+- **Checks** (`check186.out`, ALL PASS, run before the build): x pieces distinct and unused by every earlier x part; c documents fit + search, not busy, not t183; shares, scripts and per-script caps as written; t186n disjoint from the c parts.
+- **Ledger:** 300 rows (`eval/pools/ledger.jsonl`, commit 296222b7 as an index-only commit): 280 select rows for the six c parts, 20 monitor rows for t186n's calib part. Roles in `search/v3/run186w/ledger-roles-186.json` (to merge into `ledger-roles.json`, which has your uncommitted edits, so I did not touch it).
+- **Decisions the rule did not settle (stated for review):** (1) c parts recur documents: 75 repeated uses over 205 documents, least used first (the 58-document N pool cannot give six parts six scripts each without it; a document is in each part at most once). (2) x parts use xc8k-b1, the batch that w96 / #127 used as its H_out / Fisher collection (all of it but search27b's 65); xcorp is allowed for search, but the x pieces are not disjoint from that statistic. (3) The repair step makes c parts 39–55 documents, 40–70k positions (the 45k target is the start, not the end). (4) The registry is not written (the driver rewrites it on every decision); the six entries are staged in `/workspace/rad-local/workers/w164/registry-staged-186.json`.
+- **Runtime:** neither (data build; the slices' eval cost is the same kind as s173's: ~215–280k rows each, 40–60 % more than s173 for the N pieces).
+- **Files:** `search/v3/run186w/`, `data/strata186/` (plan186.json, draw186.out, check186.out, build.log, built-shares.json, xsupply-summary.json), `eval/pools/ledger.jsonl` (rows), `search/v3/run186w/ledger-roles-186.json`
+
+### 2026-11-14 5:57 PM CST · #186-04 · RULES-strata step 4: hosts patch (earlystop-strata.patch) and driver patch (driver-strata.patch) against the ds8 tree; switch procedure (w164)
+- **Status:** done (patches verified on a copy; NOT applied to the live search) · **Machine:** VM, ds8 (copy, tests) · **Code:** `search/v3/earlystop-strata.patch` (hostd.py, earlystop.py, seqrule.py, pickstat.py, test_picks.py, test_hostd_es.py), `search/v3/driver-strata.patch` (driver.py against ds8's copy, slices.py, README.md, strata186.py, test_strata186.py), `search/v3/SWITCH-strata.md`
+- **Result:** both patches apply cleanly (`git apply --check -p1`) to the ds8 tree (`/data/q27/srch183/code` files, checked on a copy). On the patched copy: `test_picks.py` 18 / 18, `test_hostd_es.py` ALL PASS (16 checks, the stratified early stop included), `test_strata186.py` pure checks ALL PASS. ds8's driver.py is older than HEAD (no #183 decode / monitor lines): the driver patch was applied to ds8's copy with its own lines kept (9 hunks).
+- **Switch:** hosts first (an old host ignores `strata` and stops stratified candidates on unstratified statistics), then the driver (an old driver ignores the registry's `stratum`), then the staged slices. The live driver (PID 370668) runs from `/workspace/rad-exl3-mix` and still has the pre-#186 modules in memory; a restart loads HEAD (behaviour unchanged for s173: 36k-step check). The live registry is rewritten by the driver on every decision, so the staged entries are merged while it is stopped. Procedure and rollback: `search/v3/SWITCH-strata.md`.
+- **Runtime:** neither.
+- **Files:** `search/v3/earlystop-strata.patch`, `search/v3/driver-strata.patch`, `search/v3/SWITCH-strata.md`, `/workspace/rad-local/workers/w164/registry-staged-186.json` (not in the repo)
+

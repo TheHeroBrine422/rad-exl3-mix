@@ -1,0 +1,323 @@
+diff --git a/search/v3/driver.py b/search/v3/driver.py
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -168,8 +168,9 @@
+         bpw = self.M.bpw(a)
+         if early and ref_tag:
+             r = self.res[ref_tag]; off = bs * (bpw - self.sub[ref_tag]["bpw"])
+-            line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name)), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
+-                                  "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag}
++            st = self.reg.strata_of(slice_name)
++            line["early_stop"] = {"rule": self.prule(self.rule, off, r["docs"], self.reg.parts_of(slice_name), st), "ref": [[b, n] for b, n in zip(r["docs"], r["pos"])],
++                                  "parts": self.reg.parts_of(slice_name), "ref_tag": ref_tag, **({"strata": st} if st else {})}
+         with open(self.c["evals"], "a") as f: f.write(json.dumps(line) + "\n")
+         e = {"ev": "submit", "tag": tag, "size": size, "kind": kind, "slice": slice_name or (slice_entry or {}).get("name"), "hash": h, "early": bool(early and ref_tag),
+              "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
+@@ -177,11 +178,13 @@
+         if kind != "monitor": self.seen.add(h)
+         return tag
+ 
+-    def prule(self, rule, off, ref_docs, parts):
+-        """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice)"""
++    def prule(self, rule, off, ref_docs, parts, strata=None):
++        """a seqrule rule with the size offset and the capped statistic's weights (from the incumbent's whole slice); strata
++        (RULES-strata §4, #186): the cap is within (part, stratum) and the rule says "strata": true"""
+         r = dict(rule, off=off)
+-        w = SR.cap_weights([x or 0.0 for x in ref_docs], parts, self.cap) if self.cap else None
++        w = SR.cap_weights([x or 0.0 for x in ref_docs], parts, self.cap, strata=strata) if self.cap else None
+         if w is not None: r["w"] = w
++        if strata is not None: r["strata"] = True
+         return r
+ 
+     def mscore(self, size, kld, bpw):
+@@ -301,12 +304,12 @@
+         return n
+ 
+     # ------------------------------------------------------------------------------------------------ decisions
+-    def paired(self, ref, cand, parts, k=None, rule=None, off=0.0):
+-        P = SR.Paired(len(parts), self.prule(dict(rule or {"kind": "full"}, guard=self.rule.get("guard")), off, ref["docs"], parts))
++    def paired(self, ref, cand, parts, k=None, rule=None, off=0.0, strata=None):
++        P = SR.Paired(len(parts), self.prule(dict(rule or {"kind": "full"}, guard=self.rule.get("guard")), off, ref["docs"], parts, strata))
+         for i, (a, b, p) in enumerate(zip(ref["docs"], cand["docs"], parts)):
+             if k is not None and i >= k: break
+             if a is None or b is None: break
+-            P.add(a, b, p)
++            P.add(a, b, p, strata[i] if strata else None)
+             if rule is not None and P.check(): break
+         return P
+ 
+@@ -331,7 +334,7 @@
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
+             k = sum(x is not None for x in r["docs"])
+             self.log(f"stale {t} ({s['kind']}) for {size}: scored on retired slice {r['slice']} ({'stopped after ' + str(k) + ' docs' if r.get('stopped') else 'whole slice'}): fit rows only"); return
+-        cur = self.inc.get(size); parts = self.reg.parts_of(r["slice"])
++        cur = self.inc.get(size); parts = self.reg.parts_of(r["slice"]); st = self.reg.strata_of(r["slice"])
+         if cur is None or cur not in self.res or self.res[cur].get("slice") != r["slice"]:
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None}); return
+         ref = self.res[cur]
+@@ -339,17 +342,17 @@
+         off = lambda rt: bs * (s["bpw"] - self.sub[rt]["bpw"])
+         if r.get("stopped"):
+             rt = s["ref"] if s.get("ref") in self.res else cur
+-            P = self.paired(self.res[rt], r, parts, off=off(rt))
++            P = self.paired(self.res[rt], r, parts, off=off(rt), strata=st)
+             d = "reject"; ndocs = P.k
+         else:
+             if s.get("audit") and s.get("ref") in self.res:                       # the rule after the fact
+-                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule, off=off(s["ref"]))
+-                Pf = self.paired(self.res[s["ref"]], r, parts, off=off(s["ref"]))
++                Pe = self.paired(self.res[s["ref"]], r, parts, rule=self.rule, off=off(s["ref"]), strata=st)
++                Pf = self.paired(self.res[s["ref"]], r, parts, off=off(s["ref"]), strata=st)
+                 if Pe.stopped:
+                     self.rec({"ev": "bias", "tag": t, "k": Pe.k, "d_prefix": Pe.d(), "d_full": Pf.d(), "se_full": Pf.se(), "off": Pe.off})
+                     self.bias.append({"d_prefix": Pe.d(), "d_full": Pf.d()})
+                     self.decide(t, size, "reject", Pe, r["slice"], Pe.k); return
+-            P = self.paired(ref, r, parts, off=off(cur)); d = P.final(); ndocs = P.k
++            P = self.paired(ref, r, parts, off=off(cur), strata=st); d = P.final(); ndocs = P.k
+         self.decide(t, size, d, P, r["slice"], ndocs)
+ 
+     def decide(self, t, size, d, P, sl, ndocs):
+@@ -384,13 +387,18 @@
+         kq = N if full else (k // g) * g
+         if kq < 3: return
+         parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * N
+-        pset = sorted(set(parts)) if len(set(parts)) > 1 else [None]       # one row per part (w131, #171)
++        st = self.reg.strata_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else None
++        if st:                                                             # RULES-strata §6: one row per (part, stratum)
++            groups = sorted(set(zip(parts, st)))
++        else:
++            pset = sorted(set(parts)) if len(set(parts)) > 1 else [None]   # one row per part (w131, #171)
++            groups = [(p, None) for p in pset]
+         ref = s.get("ref") if s.get("ref") in self.res else None
+         rr = self.res[ref] if ref and ref != t else None
+-        for p in pset:
+-            ix = [i for i in range(kq) if p is None or parts[i] == p]
++        for p, sg in groups:
++            ix = [i for i in range(kq) if (p is None or parts[i] == p) and (sg is None or st[i] == sg)]
+             if len(ix) < 3: continue
+-            label = f"{r['slice']}|" + (f"{p}|" if p else "") + ("full" if full else f"pre{kq}")
++            label = f"{r['slice']}|" + (f"{p}|" if p else "") + (f"{sg}|" if sg else "") + ("full" if full else f"pre{kq}")
+             kl = sum(docs[i] for i in ix) / max(sum(pos[i] for i in ix), 1)
+             se = 0.0
+             if rr is not None:
+@@ -626,6 +634,19 @@
+         un-compressed by the fit's lamx, then the parts' geometric mean (the accept statistic's equal weights)"""
+         md = (self.fits[self.gname[self.sub[t]["size"]]] or {}).get("model", {}); soff = md.get("slices", {}); lam = md.get("lamx", 1.0) or 1.0
+         parts = self.reg.parts_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else ["m"] * len(r["docs"])
++        st = self.reg.strata_of(r["slice"]) if r["slice"] in self.reg.d["slices"] else None
++        if st:                                              # RULES-strata §6: the strata of a part weighted by w_s (seqrule §4)
++            lv = []
++            for p in sorted(set(parts)):
++                tm = []
++                for sg in sorted({st[i] for i, q in enumerate(parts) if q == p}):
++                    ix = [i for i, q in enumerate(parts) if q == p and st[i] == sg]
++                    kp = sum(r["docs"][i] for i in ix) / max(sum(r["pos"][i] for i in ix), 1)
++                    tm.append((SR.STRATUM_W[sg], math.log(kp) - soff.get(f"{r['slice']}|{p}|{sg}|full", 0.0)))
++                ln = sum(w * x for w, x in tm) / sum(w for w, _ in tm)
++                has = any(f"{r['slice']}|{p}|{sg}|full" in soff for sg in {st[i] for i, q in enumerate(parts) if q == p})
++                lv.append(ln / lam if p == "x" and has else ln)
++            return math.exp(sum(lv) / len(lv))
+         if len(set(parts)) < 2: return r["kld"] / math.exp(soff.get(f"{r['slice']}|full", 0.0))
+         lv = []
+         for p in sorted(set(parts)):
+diff --git a/search/v3/slices.py b/search/v3/slices.py
+--- a/search/v3/slices.py
++++ b/search/v3/slices.py
+@@ -127,7 +127,8 @@
+ 
+     def add(self, name, mixdir, parts=None, man=None, host_dirs=None):
+         man = man or json.load(open(f"{mixdir}/kld.json"))
+-        docs = [{"part": d["part"], "src": d["src"], "id": doc_id(d), "tokens": d["tokens"], "rows": d["tokens"] - 1 - d["score_from"]} for d in man["docs"]]
++        docs = [dict({"part": d["part"], "src": d["src"], "id": doc_id(d), "tokens": d["tokens"], "rows": d["tokens"] - 1 - d["score_from"]},
++                     **({"stratum": d["stratum"]} if "stratum" in d else {})) for d in man["docs"]]     # RULES-strata §1 (absent: old slice)
+         self.d["slices"][name] = {"parts": parts or man.get("goldmix", {}).get("parts", {}), "mix": mixdir, "host_dirs": host_dirs or {},
+                                   "docs": docs, "status": "ready", "decisions": {}, "built": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+         self.save(); return self.d["slices"][name]
+@@ -166,6 +167,11 @@
+ 
+     def parts_of(self, name):
+         return [d["part"] for d in self.d["slices"][name]["docs"]]
++
++    def strata_of(self, name):
++        """one stratum per document (RULES-strata), or None for a slice without strata (every old slice)"""
++        st = [d.get("stratum") for d in self.d["slices"][name]["docs"]]
++        return st if any(x is not None for x in st) else None
+ 
+ 
+ def main(argv):
+diff --git a/search/v3/README.md b/search/v3/README.md
+--- a/search/v3/README.md
++++ b/search/v3/README.md
+@@ -90,6 +90,23 @@
+ (`{in}` `{out}`), fit_opts (tau 0.02, beta, ...), prior_obs (rows of the calibration swaps, obs JSONL), init
+ ({size: assignment JSON | "nearest"}), init_head / init_emb, size_weights, go / dry.
+ 
++## Stratified slices (RULES-strata, #186, w164)
++- Rule: `RULES-strata.md` (committed f0db8aa5, before data). A document's stratum: `strata186.py` (N when more than 50 %
++  of its letters are non-Latin; script = the commonest). Labels are written to a copy of a golden's kld.json, never in place.
++- Statistic (`seqrule.py`, `pickstat.py`, `driver.py`): per (part, stratum) sums; the cap inside (part, stratum);
++  d_p = sum_s w_s d_ps / sum_s w_s (w_L 0.961, w_N 0.039; a stratum absent from a part: the other alone); the guard's
++  c_p the same weighted mean; d = mean_p d_p. A rule says `"strata": true`; the driver writes it, with the stratum of
++  each document in the early-stop block (`"strata": [...]`), and `pipeline/rxrun/hostd.py` passes it to `Paired.add`.
++  Fit rows: one per (slice, part, stratum), labelled `S|p|s|full` / `S|p|s|pre<k>` (`fit.py`'s `part_of` still reads p).
++- Old slices (no stratum field): the same numbers as before (`test_picks.py` `old_slice_unchanged_recorded` pins them
++  to the HEAD values; an unstratified sequence of 36,132 steps gives identical decisions, z and summaries).
++- `pickstat.capped`: a row with fewer than 1 / cap copies, or whose copies are all over the cap, is uncapped (was nan).
++- Tests: `python3 -I search/v3/test_picks.py` (18 / 18), `test_strata186.py` (pure checks; with `STRATA_GOLD` and
++  `STRATA_TOK` the ver3-8k check), `python3 -I search/v3/test_hostd_es.py pipeline` (the stratified early stop too).
++- `pipeline/rxrun/earlystop.py` is the byte copy of `search/v3/seqrule.py` (the test checks it). At HEAD the copy was
++  the older "parts" revision: it is restaged here. The hosts patch for ds8: `earlystop-strata.patch` (see its README
++  section below).
++
+ ## Tests (11-12)
+ - radiance `kld_test` (12 cases, incl. `progress_lines_follow_documents_and_leave_the_rows_unchanged`) and
+   `config_test` (68) PASS (host build, colo).
+diff --git a/search/v3/strata186.py b/search/v3/strata186.py
+new file mode 100644
+--- /dev/null
++++ b/search/v3/strata186.py
+@@ -0,0 +1,76 @@
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""strata186.py -- the stratum of a search document (RULES-strata.md §1, #186, w164).
++
++N (non-Latin) when more than 50 % of the alphabetic characters of its decoded text are not Latin script
++(unicodedata.name without "LATIN"; the rule of run183/ml186.py), otherwise L. script = the commonest non-Latin script
++(the first word of unicodedata.name, as run186/classify186.py writes it), else "Latin". Computed once per document from
++its whole token sequence; the slice parts inherit it (a calib document keeps its calib label through golden_pick).
++
++  python3 -I search/v3/strata186.py label GOLDEN_DIR TOKENIZER OUT_KLD.json
++        a copy of GOLDEN_DIR/kld.json whose docs carry "stratum" and "script" (the golden itself is not touched)
++  python3 -I search/v3/strata186.py count OUT_KLD.json
++        N / L documents and gen rows (from kld.json's docs, row0 / tokens) and the N scripts
++Pure functions (label_text, label_docs) need no tokenizer: decode is any callable tokens -> str."""
++import collections, json, os, sys, unicodedata
++
++import numpy as np
++
++NONLATIN_MIN = 0.5                              # RULES-strata §1: more than 50 %
++
++
++def label_text(text):
++    """(stratum, script, nonlatin share) of one decoded document"""
++    letters = [c for c in text if c.isalpha()]
++    if not letters: return "L", "Latin", 0.0
++    names = [unicodedata.name(c, "") for c in letters]
++    non = [n for n in names if "LATIN" not in n]
++    share = len(non) / len(letters)
++    if share <= NONLATIN_MIN: return "L", "Latin", share
++    cnt = collections.Counter(n.split()[0] if n else "UNKNOWN" for n in non)
++    return "N", cnt.most_common(1)[0][0], share
++
++
++def label_docs(docs, tokens, decode):
++    """docs: kld.json docs (tokens, the golden's order); tokens: one flat int array; decode: tokens -> text.
++    Returns [(stratum, script, share)] per doc"""
++    off = np.concatenate([[0], np.cumsum([d["tokens"] for d in docs])]).astype(np.int64)
++    return [label_text(decode(np.asarray(tokens[off[i]:off[i + 1]]))) for i in range(len(docs))]
++
++
++def label_golden(gdir, tokenizer, out):
++    """write out (a kld.json copy) with stratum / script per doc; tokenizer: a HF tokenizer"""
++    m = json.load(open(f"{gdir}/kld.json"))
++    tok = np.memmap(f"{gdir}/tokens.i32", np.int32, "r")
++    lab = label_docs(m["docs"], tok, lambda t: tokenizer.decode(t))
++    for d, (s, sc, sh) in zip(m["docs"], lab):
++        d["stratum"], d["script"] = s, sc
++    m["strata"] = {"rule": "N if > 50 % of alphabetic characters are non-LATIN (RULES-strata §1)", "n_N": sum(s == "N" for s, _, _ in lab)}
++    tmp = out + ".part"; json.dump(m, open(tmp, "w"), indent=0); os.replace(tmp, out)
++    return m
++
++
++def count(out):
++    m = json.load(open(out)); D = m["docs"]
++    gen = np.fromfile(os.path.join(os.path.dirname(out), "gen.u8"), np.uint8) if os.path.exists(os.path.join(os.path.dirname(out), "gen.u8")) else None
++    res = collections.defaultdict(lambda: [0, 0, collections.Counter()])
++    for d in D:
++        s = d.get("stratum", "L"); n = d["tokens"] - 1 - d["score_from"]
++        g = int(gen[d["row0"]:d["row0"] + n].sum()) if gen is not None else n
++        res[s][0] += 1; res[s][1] += g
++        if s == "N": res[s][2][d.get("script", "?")] += g
++    return {k: {"docs": v[0], "gen_rows": v[1], "scripts": dict(v[2].most_common())} for k, v in res.items()}
++
++
++def main(argv):
++    if argv[0] == "label":
++        from transformers import AutoTokenizer
++        tk = AutoTokenizer.from_pretrained(argv[2]); m = label_golden(argv[1], tk, argv[3])
++        print(f"{argv[3]}: {len(m['docs'])} docs, N {m['strata']['n_N']}")
++    elif argv[0] == "count":
++        print(json.dumps(count(argv[1]), indent=1))
++    else:
++        raise SystemExit(__doc__)
++
++
++if __name__ == "__main__":
++    main(sys.argv[1:])
+diff --git a/search/v3/test_strata186.py b/search/v3/test_strata186.py
+new file mode 100644
+--- /dev/null
++++ b/search/v3/test_strata186.py
+@@ -0,0 +1,63 @@
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""test_strata186.py -- strata186.py's labels (RULES-strata §1). Pure checks always run; the golden check runs when
++STRATA_GOLD (the ver3-8k golden dir) and STRATA_TOK (the bf16 tokenizer dir) are set (ds8: the calib golden's sibling
++/data/q27/goldens/golden-ver3-8k, /data/q27/models/qwen38-27b-bf16), and must find exactly docs 5, 15, 18, 22, 97, 100
++as N (the six non-Latin documents of ver3-8k, LOG #186).
++python3 -I search/v3/test_strata186.py  (exit 0 iff every check passes)"""
++import hashlib, json, os, sys, tempfile
++
++import numpy as np
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++sys.path.insert(0, HERE)
++import strata186 as ST  # noqa: E402
++
++ok = True
++
++
++def check(name, cond, msg=""):
++    global ok
++    ok &= bool(cond); print(f"{'PASS' if cond else 'FAIL'} {name} {msg}")
++
++
++# pure rules
++check("latin text is L", ST.label_text("The quick brown fox jumps over the lazy dog.")[:2] == ("L", "Latin"))
++s, sc, sh = ST.label_text("Привет, как дела? Это длинный русский текст без латиницы.")
++check("cyrillic text is N, script CYRILLIC", (s, sc) == ("N", "CYRILLIC"), f"share {sh:.2f}")
++s, sc, sh = ST.label_text("这是一个中文句子，用来测试非拉丁文字的比例。 plus a little latin")
++check("chinese text is N (CJK)", s == "N" and sc == "CJK", f"script {sc} share {sh:.2f}")
++s, sc, sh = ST.label_text("Ich habe heute ein paar Bücher gekauft und Äpfel und ein Ähnliches Wort: Größe")
++check("German with umlauts is L (Latin script)", s == "L" and sc == "Latin", f"share {sh:.3f}")
++s, sc, sh = ST.label_text("abcd окок")                            # 4 Latin, 4 Cyrillic letters: exactly 50 % -> L
++check("exactly 50 % non-Latin is L (rule: more than 50 %)", s == "L" and abs(sh - 0.5) < 1e-9, f"share {sh}")
++s, sc, sh = ST.label_text("abc " + "ок" * 4)                       # 3 Latin, 8 Cyrillic
++check("73 % non-Latin is N", s == "N" and sc == "CYRILLIC", f"share {sh:.2f}")
++s, sc, sh = ST.label_text("12345 !!! ???")                         # no letters
++check("no letters is L", s == "L" and sc == "Latin")
++s, sc, sh = ST.label_text("مرحبا بك في العالم، هذا نص عربي")
++check("arabic is N, script ARABIC", (s, sc) == ("N", "ARABIC"), f"share {sh:.2f}")
++docs = [{"tokens": 3, "score_from": 0}, {"tokens": 2, "score_from": 0}]
++toks = np.arange(5, dtype=np.int32)
++lab = ST.label_docs(docs, toks, lambda t: "ок" if int(t[0]) >= 3 else "abc")
++check("label_docs splits by document offsets", lab[0][0] == "L" and lab[1][0] == "N", str([x[:2] for x in lab]))
++
++# the golden (ver3-8k): exactly the six N documents of LOG #186, labels written to a copy only
++G, TOK = os.environ.get("STRATA_GOLD"), os.environ.get("STRATA_TOK")
++if G and TOK:
++    from transformers import AutoTokenizer
++    tk = AutoTokenizer.from_pretrained(TOK)
++    before = hashlib.sha256(open(f"{G}/kld.json", "rb").read()).hexdigest()
++    tmp = tempfile.mkdtemp(prefix="w164-strata-")
++    out = f"{tmp}/kld.json"
++    m = ST.label_golden(G, tk, out)
++    nN = [i for i, d in enumerate(m["docs"]) if d["stratum"] == "N"]
++    check("ver3-8k: N docs == 5, 15, 18, 22, 97, 100", nN == [5, 15, 18, 22, 97, 100], f"got {nN}")
++    check("ver3-8k: every doc labelled", all(d.get("stratum") in ("L", "N") and d.get("script") for d in m["docs"]))
++    check("ver3-8k: golden's kld.json untouched", hashlib.sha256(open(f"{G}/kld.json", "rb").read()).hexdigest() == before)
++    check("ver3-8k: other fields unchanged", all({k: v for k, v in d.items() if k not in ("stratum", "script")} == json.load(open(f"{G}/kld.json"))["docs"][i] for i, d in enumerate(m["docs"])))
++    for i in nN: print(f"   doc {i:3d} {m['docs'][i]['source']:12} {m['docs'][i]['script']}")
++    print("   N docs by script:", {s: sum(1 for i in nN if m["docs"][i]["script"] == s) for s in sorted({m["docs"][i]["script"] for i in nN})})
++else:
++    print("SKIP golden check (set STRATA_GOLD and STRATA_TOK)")
++print("ALL PASS" if ok else "FAILED")
++sys.exit(0 if ok else 1)

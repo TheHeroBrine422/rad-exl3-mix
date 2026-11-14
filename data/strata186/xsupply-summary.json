@@ -1,0 +1,105 @@
+{
+ "_doc": "#186 xcorp supply (w164): unused pieces after every earlier x part (xsupply186.py; used = every golden-s17*-x, t183-x, final-x, s129-x and w129's search27 excl files). Counts only.",
+ "batches": {
+  "xc8k-b1": {
+   "pieces": 3389,
+   "unused": 3324,
+   "unused_N": 181,
+   "unused_N_by_script": {
+    "ARABIC": 51,
+    "CJK": 33,
+    "HIRAGANA": 23,
+    "HANGUL": 7,
+    "CYRILLIC": 38,
+    "HEBREW": 11,
+    "GREEK": 10,
+    "THAI": 7,
+    "DEVANAGARI": 1
+   },
+   "unused_by_category": {
+    "code": 548,
+    "multilingual": 460,
+    "tools": 330,
+    "web": 629,
+    "chat": 349,
+    "science": 71,
+    "reasoning": 69,
+    "books": 87,
+    "legal": 22,
+    "math": 226,
+    "qa": 265,
+    "encyclopedic": 245,
+    "agentic": 17,
+    "long": 6
+   }
+  },
+  "xc8k-b2-c0": {
+   "pieces": 683,
+   "unused": 41,
+   "unused_N": 1,
+   "unused_N_by_script": {
+    "CJK": 1
+   },
+   "unused_by_category": {
+    "science": 2,
+    "math": 3,
+    "multilingual": 5,
+    "qa": 4,
+    "web": 8,
+    "chat": 8,
+    "tools": 4,
+    "code": 4,
+    "encyclopedic": 2,
+    "books": 1
+   }
+  },
+  "xc8k-b2-c1": {
+   "pieces": 702,
+   "unused": 135,
+   "unused_N": 9,
+   "unused_N_by_script": {
+    "ARABIC": 2,
+    "HEBREW": 1,
+    "CYRILLIC": 5,
+    "GREEK": 1
+   },
+   "unused_by_category": {
+    "chat": 19,
+    "web": 22,
+    "code": 19,
+    "qa": 13,
+    "encyclopedic": 8,
+    "multilingual": 21,
+    "science": 3,
+    "math": 10,
+    "tools": 12,
+    "agentic": 2,
+    "books": 3,
+    "long": 1,
+    "reasoning": 2
+   }
+  },
+  "xc8k-b2-c2": {
+   "pieces": 741,
+   "unused": 76,
+   "unused_N": 1,
+   "unused_N_by_script": {
+    "HEBREW": 1
+   },
+   "unused_by_category": {
+    "multilingual": 9,
+    "math": 5,
+    "web": 14,
+    "chat": 10,
+    "tools": 7,
+    "qa": 7,
+    "code": 12,
+    "encyclopedic": 6,
+    "reasoning": 3,
+    "books": 3
+   }
+  }
+ },
+ "note_b1": "xc8k-b1 has no meta on ds8; colo's copy (/data/work/gold27/xc8k-b1.jsonl.meta.jsonl) matches the golden line by line (tokens, source)",
+ "note_b1_used": "search27b's 65 pieces (orig = the b1 index, source-matched); no other b1 piece is named by an excl file (all 27c-f xdocs are in meta-bearing batches)"
+}

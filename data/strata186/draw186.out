@@ -1,0 +1,14 @@
+s186a: c 53 docs (N 11, scripts 6, max script 0.32), N gen 11691 of 61743 = 0.189, pos 64863
+s186b: c 44 docs (N 6, scripts 6, max script 0.32), N gen 10086 of 53506 = 0.189, pos 64478
+s186c: c 45 docs (N 9, scripts 6, max script 0.32), N gen 10043 of 52911 = 0.190, pos 59841
+s186d: c 49 docs (N 7, scripts 7, max script 0.30), N gen 10959 of 57793 = 0.190, pos 63300
+s186e: c 39 docs (N 7, scripts 6, max script 0.30), N gen 11029 of 60460 = 0.182, pos 68633
+s186f: c 50 docs (N 7, scripts 7, max script 0.33), N gen 9901 of 55872 = 0.177, pos 59079
+s186a: x 130 pieces (N 33, scripts 8, max script 0.27), N gen 23522 of 145448 = 0.162
+s186b: x 130 pieces (N 29, scripts 8, max script 0.24), N gen 21115 of 129145 = 0.163
+s186c: x 130 pieces (N 22, scripts 8, max script 0.31), N gen 25540 of 167642 = 0.152
+s186d: x 130 pieces (N 12, scripts 8, max script 0.26), N gen 31606 of 194991 = 0.162
+s186e: x 130 pieces (N 27, scripts 7, max script 0.32), N gen 24760 of 154349 = 0.160
+s186f: x 130 pieces (N 15, scripts 7, max script 0.25), N gen 25002 of 153283 = 0.163
+t186n: 22 N documents (2 xcorp, 20 calib), gen 32117, scripts 10 {'ARABIC': 1, 'CJK': 4, 'CYRILLIC': 3, 'HEBREW': 2, 'GREEK': 3, 'THAI': 2, 'BENGALI': 2, 'HANGUL': 1, 'HIRAGANA': 3, 'DEVANAGARI': 1}
+{"calib": {"merged_free_docs": 940, "N_free": 58, "N_free_gen": 69314, "c_recurrences": {"744": 2, "764": 3, "770": 5, "1788": 3, "3017": 3, "300": 2, "899": 2, "2098": 2, "2986": 2, "3872": 2, "734": 1, "1134": 1, "2492": 1, "3755": 1, "3795": 1, "4061": 1, "4478": 1, "264": 1, "500": 1, "651": 1, "907": 1, "954": 1, "1085": 1, "1118": 1, "1204": 1, "1283": 1, "1353": 1, "1416": 1, "1516": 1, "2239": 1, "2283": 1, "2404": 1, "2508": 1, "2770": 1, "2786": 1, "2833": 1, "2987": 1, "3061": 1, "3154": 1, "3312": 1, "3321": 1, "3373": 1, "3378": 1, "3421": 1, "3566": 1, "3572": 1, "3645": 1, "3721": 1, "3857": 1, "3898": 1, "3962": 1, "4013": 1, "4064": 1, "4230": 1, "4306": 1, "4389": 1, "4533": 1, "4572": 1, "4626": 1}, "c_distinct_docs": 205, "t183c_excluded": 48, "busy_c": 146}, "x": {"unused_b1": 3324, "N": 181, "N_gen": 206763, "scripts_N": {"ARABIC": 51, "CJK": 33, "HIRAGANA": 23, "HANGUL": 7, "CYRILLIC": 38, "HEBREW": 11, "GREEK": 10, "THAI": 7, "DEVANAGARI": 1}, "minor_scripts": ["DEVANAGARI", "GREEK", "HANGUL", "HEBREW", "THAI"]}}
