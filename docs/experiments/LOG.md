@@ -4,6 +4,31 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 10:40 PM CST · #181 · QAD scale-up launched: arm A on the #171 2.5 incumbent, one epoch over 48 M golden positions (xcorp + own traces + calib qad pool), data-parallel, WSD checkpoints at 1 / 4 / 16 / 48 M (w154)
+- **Status:** running (main run on box2 cards 0, 2, 3; moves to ds8's 8 cards when w151's ladder ends) · **Machine:** box2
+  (training, packs), ds8 (fresh x slice, later training / scoring) · **Code:** `v3/qad181/` (`qad181.py`, `data181.py`,
+  `vlevel.py`, `eval181.py`, `run181.sh`, `mkx181.sh`) · **Rules:** `v3/qad181/RULES181.md` (a623415, committed alone before
+  the run) · **Data:** `data/qad181/` · **Brief:** `rad-local/workers/instr3/w154.md`
+- **Student / mix:** the searched 2.5 incumbent `v3s171-2.5-block-00626` (15 i8 levels, swj) as one virtual level
+  (`vlevel.py`: each tensor copied byte for byte from the level the search picked; a per-tensor rad-convert recipe for
+  the judgement), R16 u2.75 head frozen, bf16 embedding (= served). Step-0 monitor 0.0639 (pilot's unhealed K2.5 on the
+  same 32 docs: 0.0634).
+- **Data:** 30,800 documents, 49.6 M scored positions: xq 39.98 M (24,370 pieces, top-256), xc8k-b3 5.0 M, tr32k 1.32 M
+  (first 8k of each 32k trace chunk), calib qad pool 3.31 M (2,793 docs). All 49 chunks on both hosts
+  (`/data/q27/w154/gold/`, rsync over the 10 GbE link). Tail cell at K 256 checked (p over the K ids + tail = 1.00000).
+- **Window policy:** every document from its start to 8,192 tokens, 24 virtual streams × 1,024 positions a step, the
+  student's KV / GDN / conv state carried across segments (detached). Gate: carried segments = one window to bf16 shape
+  noise (xcorp doc: carried half median |Δ| 4e-5 a row vs 3e-4 for the uncarried half). Plan independent of card count.
+- **Throughput:** one 1,024-token segment fwd + bwd 3.9 s on an R9700 (264 positions/s; GPU-bound: GEMMs 46 % of device
+  time at ~96 TFLOP/s, int8→bf16 / f32↔bf16 copies 21 %, f32 scale multiplies 13 %, GDN 8 %; python not a bound). The
+  student fits one card (25.35 GiB + ≤ 4 GiB at an 8k prefix), so the speed-up is data parallelism: 3 cards 675
+  positions/s (225 a card: gloo sync + state offload ~15 %). torch.compile of the scale / cast ops: −14 % on a linear's
+  fwd + bwd but not bit-identical (not used).
+- **Fresh x slice:** `golden-x181` (ds8 + box2 `/data/q27/w154/slices/`): 150 xc8k-b2-c2 pieces, 174,257 scored
+  positions, excluding every earlier slice's x documents and every document with a piece in the training chunks.
+- **Ledger:** qad181-train (2,793 qad-pool docs) + qad181-monitor (32 search-pool docs): 2,825 rows.
+- **Runtime:** none (scales on fixed codes).
+
 ### 2026-11-13 9:50 PM CST · #180 · DFlash2 drafter + vision tower in qwen35_exl3: on a V3 pack, KLD rows byte-identical with the drafter on or off, greedy splits only at near-ties (as IQR-V4 S), our drafter accepts +10–20 % over IQR's but e2e ctx 0 −5 to −12 % / 8k at par to −6 % (the trunk's decode); tower = IQR's bytes, images answer sensibly; bf16 drafter not servable (w153)
 - **Status:** done (fork commit for the lead to merge; not pushed) · **Machine:** ds8 HIP 7 · **Code:** radiance-hero
   `qc-exl3-v3-df2` 9f0a059 (on qc-exl3-v3 e054e71; was 4b124c7 on 179220f); `v3/df2/` (`build153.sh`, `build153r.sh`,
@@ -6645,3 +6670,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (2) merge `qc-exl3-v3-mad` into `qc-exl3-v3` (interface 4, encoding 4; qwen35_exl3 edits overlap w152's scope:
   coordinated in `notes/w150.md`). (3) Left: a 3–16-row int8-WMMA decode tile, xb producers for ssm_out / head, the
   asm decode in the old codebooks, w152's step fusions. **Runtime:** D (−23% / −10% decode step), P (+1–2% 8k prefill).
+
+### 2026-11-13 11:00 PM CST · #177-02 · CORRECTION: mad decode produced NaN after ~4 tokens (KS counter sharing); fixed
+- w152 found that on qc-exl3-v3 (w150 e054e71) decode with the mad byte-sum GEMV emits NaN logits after ~4 tokens: the
+  K-split arrival counters were keyed by stream only, and overlapped GEMVs (z beside qkv, k / v beside qg) shared a
+  block. Fix (`local/workers/w152/kctr-key.patch`, keyed by (device, stream, output); verified bit-exact 768 / 768 steps
+  on both packs) applied to qc-exl3-v3 by the lead. **w150's e2e decode ms and decode-path KLD numbers are unverified**
+  until re-measured (w152); prefill KLD (byte-identical rows) and the ladder are unaffected. **Runtime:** D (fix).

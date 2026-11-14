@@ -497,5 +497,17 @@
   "line": "v3",
   "decisions": null,
   "note": "V3 final-pick slice final750 (lead, 2026-11-13 1:29 PM CST; RULES-picks, w145 plan c3): 123 reused verify docs with no 27B use (plan145.py seed 145, cap 8,192), scored with golden-ver4 (c1) and 210 fresh xcorp pieces (xc8k-b2-c2, seed 7501) as golden-final750 (553k scored positions). Read only for final picks."
+ },
+ "qad181-train": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": null,
+  "note": "#181 (w154, 2026-11-13): QAD scale-up training data, the calib part: all 2,793 qad-pool docs with >= 16 scored rows (pools-v3), each from its start to 8,192 tokens of the published calib golden (gen rows), segments with the state carried, one epoch, mixed with ~46 M xcorp / own-trace positions (v3/qad181/RULES181.md a623415); runs inc2.5 and 2b reuse these docs"
+ },
+ "qad181-monitor": {
+  "role": "monitor",
+  "line": "v3.1",
+  "decisions": null,
+  "note": "#181 (w154, 2026-11-13): the same 32 search-pool monitor docs as qad165-monitor (seed 1000), first 2,048 tokens; report only (no early stop, never a pick)"
  }
 }
