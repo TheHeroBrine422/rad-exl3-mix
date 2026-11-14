@@ -16,10 +16,17 @@ for l in os.environ["SZ"].splitlines():
     if l.strip().startswith("["):
         for f in json.loads(l):
             if f["path"].endswith(".rad"): size[f["path"]] = f["size"]
+IQBPW = {}
+for l in open("/workspace/rad-local/workers/w134/refs134.jsonl"):
+    r = json.loads(l)
+    if r["tag"].startswith("ref-IQR4-"): IQBPW[r["tag"][len("ref-IQR4-"):]] = r["bpw"]
 out = []
 for l in open(sys.argv[1] + ".k"):
     r = json.loads(l); n = r["name"]
     f = f"qwen3.8-27b-exl3-v2-{n[3:]}bpw.rad" if n.startswith("v2-") else f"qwen3.8-27b-{n}-v4.rad"
-    if f in size: out.append({"name": n, "bpw": size[f] * 8 / 26895998464, "kld": r["kld"]})
+    # IQR-V4's HF files carry the vision tower + DFlash2 drafter: use the board bpw from w134's rows / the model card
+    if n.startswith("iq"):
+        if n in IQBPW: out.append({"name": n, "bpw": IQBPW[n], "kld": r["kld"]})
+    elif f in size: out.append({"name": n, "bpw": size[f] * 8 / 26895998464, "kld": r["kld"]})
 open(sys.argv[1], "w").write("".join(json.dumps(x) + "\n" for x in out)); print(len(out), "refs")
 PY
