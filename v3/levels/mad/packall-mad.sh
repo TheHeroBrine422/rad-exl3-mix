@@ -17,7 +17,7 @@ one() {
   local need=$(( $(du -sBG $L/final | cut -f1 | tr -dc 0-9) * 13 / 10 + 150 ))
   [ $(df -BG --output=avail /data | tail -n 1 | tr -dc 0-9) -ge $need ] || { echo "$(date -u +%T) DISK: K$1 needs $need GB free: not packed" >> $LG; return; }
   ( flock -s 6; while [ $(awk '/MemAvailable/ {print int($2/1048576)}' /proc/meminfo) -lt 16 ]; do sleep 20; done; t=$(date +%s)
-    cd $Q && RADIANCE_HOME=$H RADIANCE_HOST_DEVICES=1 nice -n 10 $Q/rad10/install/bin/rad-convert --no-error models/qwen38-27b-bf16 \
+    cd $Q && RADIANCE_HOME=$H RADIANCE_HOST_DEVICES=1 nice -n 10 $Q/rad10-perf/install/bin/rad-convert --no-error models/qwen38-27b-bf16 \
       --recipe $L/final.recipe --set quantization_config.quant_method=exl3 -o $out.part > $out.log 2>&1 \
       && mv $out.part $out && echo "$(date -u +%T) $out $(( $(date +%s) - t ))s" >> $LG || { rm -f $out.part; echo "$(date -u +%T) FAIL $out ($out.log)" >> $LG; } ) 6>$Q/locks/ram.lock
 }
