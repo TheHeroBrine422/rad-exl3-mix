@@ -7557,3 +7557,16 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   at 2.5 (ver3-8k per-script means, small n): ours 0.961·0.0534 + 0.039·0.542 ≈ 0.072 (non-Latin ≈ 29% of it) vs
   IQR ≈ 0.057, uniform ≈ 0.064 → this is most of our 2.5 board gap. Suspected amplifier: RULES-picks cap 0.2 per
   document + docmean guard down-weight exactly these high-KL documents. Unverified; w163 swap test pending.
+
+### 2026-11-14 5:55 PM CST · #186-01 · RULES-strata step 1: stratum labels; ver3-8k and calib counts (w164)
+- **Status:** done · **Machine:** ds8 (CPU, nice 19) · **Code:** `search/v3/strata186.py` (rule of `run183/ml186.py`,
+  whole-document tokens), `search/v3/test_strata186.py` · **Rule:** `search/v3/RULES-strata.md` §1 (committed f0db8aa5, before data)
+- **Question:** does the §1 rule pick out the six non-Latin documents of ver3-8k, and how many calib documents are N?
+- **Result:** ver3-8k (104 docs): N = docs **5, 15, 18, 22, 97, 100** (wikipedia/ko HANGUL ×2, fineweb2 ell_Grek GREEK,
+  wildchat ARABIC ×2, fineweb2 rus_Cyrl CYRILLIC); the golden's kld.json is untouched (labels go to a copy). Pure-rule
+  checks 9/9 (50 % non-Latin = L; 73 % = N). Raw: `data/strata186/test_strata186.out`.
+- **Calib** (full documents, 4,789): **223 N docs** (fit 27, search 37, qad 117, verify 42), N gen rows 311,503 of
+  7,725,290 = **4.03 %** (the lead's `calibnl` decodes the first 3,000 tokens: 222 docs / 3.9 %; the one-document gap
+  is that decode boundary). Table: `data/strata186/calib-labels.tsv` (index, pool, stratum, script, tokens, gen rows).
+- **Runtime:** neither (labels only; no model, no GPU).
+- **Files:** `search/v3/strata186.py`, `search/v3/test_strata186.py`, `data/strata186/`

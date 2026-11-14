@@ -1,0 +1,22 @@
+PASS latin text is L 
+PASS cyrillic text is N, script CYRILLIC share 1.00
+PASS chinese text is N (CJK) script CJK share 0.56
+PASS German with umlauts is L (Latin script) share 0.000
+PASS exactly 50 % non-Latin is L (rule: more than 50 %) share 0.5
+PASS 73 % non-Latin is N share 0.73
+PASS no letters is L 
+PASS arabic is N, script ARABIC share 1.00
+PASS label_docs splits by document offsets [('L', 'Latin'), ('N', 'CYRILLIC')]
+PASS ver3-8k: N docs == 5, 15, 18, 22, 97, 100 got [5, 15, 18, 22, 97, 100]
+PASS ver3-8k: every doc labelled 
+PASS ver3-8k: golden's kld.json untouched 
+PASS ver3-8k: other fields unchanged 
+   doc   5 wikipedia/ko HANGUL
+   doc  15 wikipedia/ko HANGUL
+   doc  18 fineweb2-hq/ell_Grek GREEK
+   doc  22 wildchat     ARABIC
+   doc  97 fineweb2-hq/rus_Cyrl CYRILLIC
+   doc 100 wildchat     ARABIC
+   N docs by script: {'ARABIC': 2, 'CYRILLIC': 1, 'GREEK': 1, 'HANGUL': 2}
+ALL PASS
+rc=0
