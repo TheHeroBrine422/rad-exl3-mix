@@ -1,0 +1,98 @@
+19:37:02 start: 48 jobs, 48 to do; max 12, maxdown 0, anoncap 60.0 GiB
+19:37:02 start 10-ssm_z-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 1, anon 19 GiB)
+19:37:04 start 19-attn_qg-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 2, anon 19 GiB)
+19:37:06 start 35-attn_k-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 3, anon 20 GiB)
+19:37:08 start 30-ssm_out-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 4, anon 20 GiB)
+19:37:10 start 43-attn_output-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 5, anon 21 GiB)
+19:37:12 start 30-ssm_qkv-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 6, anon 23 GiB)
+19:37:14 start 43-ffn_gate_up-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 7, anon 23 GiB)
+19:37:16 start 7-attn_v-K2-s0-md V16,V18,B20-16384,B19-16384 (ours 8, anon 24 GiB)
+19:37:18 start 10-ssm_z-K2-s0-mb V16,B20-16384 (ours 9, anon 24 GiB)
+19:37:20 start 19-attn_qg-K2-s0-mb V16,B20-16384 (ours 10, anon 25 GiB)
+19:37:22 start 35-attn_k-K2-s0-mb V16,B20-16384 (ours 11, anon 25 GiB)
+19:37:24 start 30-ssm_out-K2-s0-mb V16,B20-16384 (ours 12, anon 27 GiB)
+19:51:26 done 10-ssm_z-K2-s0-mb 848s
+19:51:26 start 43-attn_output-K2-s0-mb V16,B20-16384 (ours 12, anon 33 GiB)
+19:51:48 done 35-attn_k-K2-s0-mb 866s
+19:51:48 start 30-ssm_qkv-K2-s0-mb V16,B20-16384 (ours 12, anon 31 GiB)
+19:52:30 done 19-attn_qg-K2-s0-mb 910s
+19:52:30 start 43-ffn_gate_up-K2-s0-mb V16,B20-16384 (ours 12, anon 31 GiB)
+19:55:12 done 30-ssm_out-K2-s0-mb 1068s
+19:55:12 start 7-attn_v-K2-s0-mb V16,B20-16384 (ours 12, anon 31 GiB)
+20:06:34 done 30-ssm_qkv-K2-s0-mb 886s
+20:06:34 start 10-ssm_z-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 12, anon 22 GiB)
+20:06:36 start 19-attn_qg-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 13, anon 22 GiB)
+20:06:58 done 43-ffn_gate_up-K2-s0-mb 868s
+20:08:18 done 10-ssm_z-K2-s0-md 1876s
+20:08:18 done 43-attn_output-K2-s0-mb 1012s
+20:08:18 start 35-attn_k-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 11, anon 19 GiB)
+20:08:20 start 30-ssm_out-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 12, anon 20 GiB)
+20:08:42 done 7-attn_v-K2-s0-md 1886s
+20:08:42 done 7-attn_v-K2-s0-mb 810s
+20:08:42 start 43-attn_output-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 11, anon 19 GiB)
+20:08:44 start 30-ssm_qkv-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 12, anon 20 GiB)
+20:09:06 done 35-attn_k-K2-s0-md 1920s
+20:09:06 start 43-ffn_gate_up-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 12, anon 19 GiB)
+20:11:08 done 30-ssm_qkv-K2-s0-md 2036s
+20:11:08 start 7-attn_v-K4-s0-md V16,V18,B20-16384,B19-16384 (ours 12, anon 19 GiB)
+20:11:30 done 43-ffn_gate_up-K2-s0-md 2056s
+20:11:30 start 10-ssm_z-K4-s0-mb V16,B20-16384 (ours 12, anon 20 GiB)
+20:11:52 done 19-attn_qg-K2-s0-md 2088s
+20:11:52 start 19-attn_qg-K4-s0-mb V16,B20-16384 (ours 12, anon 20 GiB)
+20:13:54 done 43-attn_output-K2-s0-md 2204s
+20:13:54 start 35-attn_k-K4-s0-mb V16,B20-16384 (ours 12, anon 21 GiB)
+20:14:36 done 30-ssm_out-K2-s0-md 2248s
+20:14:36 start 30-ssm_out-K4-s0-mb V16,B20-16384 (ours 12, anon 21 GiB)
+20:40:18 done 10-ssm_z-K4-s0-mb 1728s
+20:40:18 start 43-attn_output-K4-s0-mb V16,B20-16384 (ours 12, anon 12 GiB)
+20:40:40 done 19-attn_qg-K4-s0-mb 1728s
+20:40:40 start 30-ssm_qkv-K4-s0-mb V16,B20-16384 (ours 12, anon 13 GiB)
+20:42:22 done 35-attn_k-K4-s0-mb 1708s
+20:42:22 start 43-ffn_gate_up-K4-s0-mb V16,B20-16384 (ours 12, anon 13 GiB)
+20:49:04 done 30-ssm_out-K4-s0-mb 2068s
+20:49:04 start 7-attn_v-K4-s0-mb V16,B20-16384 (ours 12, anon 12 GiB)
+21:09:06 done 30-ssm_qkv-K4-s0-mb 1706s
+21:09:06 start 10-ssm_z-K2-s0-mx B20-65536,V20 (ours 12, anon 12 GiB)
+21:10:48 done 43-ffn_gate_up-K4-s0-mb 1706s
+21:10:48 start 19-attn_qg-K2-s0-mx B20-65536,V20 (ours 12, anon 12 GiB)
+21:14:30 done 43-attn_output-K4-s0-mb 2052s
+21:14:30 start 35-attn_k-K2-s0-mx B20-65536,V20 (ours 12, anon 12 GiB)
+21:17:12 done 7-attn_v-K4-s0-mb 1688s
+21:17:12 start 30-ssm_out-K2-s0-mx B20-65536,V20 (ours 12, anon 12 GiB)
+21:18:14 done 10-ssm_z-K4-s0-md 4301s
+21:18:14 start 43-attn_output-K2-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+21:19:56 done 35-attn_k-K4-s0-md 4299s
+21:19:56 start 30-ssm_qkv-K2-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+21:21:38 done 19-attn_qg-K4-s0-md 4503s
+21:21:38 start 43-ffn_gate_up-K2-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+21:23:00 done 30-ssm_qkv-K4-s0-md 4457s
+21:23:00 done 43-ffn_gate_up-K4-s0-md 4435s
+21:23:00 done 7-attn_v-K4-s0-md 4313s
+21:23:00 start 7-attn_v-K2-s0-mx B20-65536,V20 (ours 10, anon 11 GiB)
+21:23:02 start 10-ssm_z-K4-s0-mx B20-65536,V20 (ours 11, anon 12 GiB)
+21:23:04 start 19-attn_qg-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+21:36:06 done 43-attn_output-K4-s0-md 5245s
+21:36:06 start 35-attn_k-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+21:36:08 start 30-ssm_out-K4-s0-mx B20-65536,V20 (ours 13, anon 12 GiB)
+21:36:30 done 30-ssm_out-K4-s0-md 5291s
+22:14:11 done 10-ssm_z-K2-s0-mx 3904s
+22:14:11 start 43-attn_output-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+22:17:13 done 19-attn_qg-K2-s0-mx 3984s
+22:17:13 start 30-ssm_qkv-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+22:21:55 done 35-attn_k-K2-s0-mx 4044s
+22:21:55 start 43-ffn_gate_up-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+22:29:57 done 30-ssm_qkv-K2-s0-mx 4200s
+22:29:57 start 7-attn_v-K4-s0-mx B20-65536,V20 (ours 12, anon 13 GiB)
+22:30:19 done 43-ffn_gate_up-K2-s0-mx 4120s
+22:34:19 done 7-attn_v-K2-s0-mx 4278s
+22:40:19 done 30-ssm_out-K2-s0-mx 4987s
+22:43:59 done 43-attn_output-K2-s0-mx 5145s
+23:26:39 done 10-ssm_z-K4-s0-mx 7417s
+23:27:39 done 19-attn_qg-K4-s0-mx 7475s
+23:38:59 done 35-attn_k-K4-s0-mx 7373s
+00:00:39 done 30-ssm_out-K4-s0-mx 8671s
+00:17:39 done 30-ssm_qkv-K4-s0-mx 7227s
+00:21:59 done 43-ffn_gate_up-K4-s0-mx 7205s
+00:29:20 done 7-attn_v-K4-s0-mx 7163s
+00:40:20 done 43-attn_output-K4-s0-mx 8769s
+00:40:20 QS QUEUE DONE ok=48 fail=0

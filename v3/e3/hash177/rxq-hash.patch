@@ -1,0 +1,68 @@
+diff --git a/pipeline/rxq/deq.py b/pipeline/rxq/deq.py
+index 843f205..2f4fb1b 100644
+--- a/pipeline/rxq/deq.py
++++ b/pipeline/rxq/deq.py
+@@ -17,7 +17,7 @@ import torch
+ from safetensors import safe_open
+ 
+ MUL1 = 0x83DCD12D
+-CODEBOOKS = ("mul1", "i8", "i8c", "i4")
++CODEBOOKS = ("mul1", "i8", "i8c", "i4", "hash")   # hash: #177 (w139), exl3hash.values (env EXL3HASH_A / _B)
+ 
+ 
+ def frac_mask(n):
+@@ -60,6 +60,9 @@ def codebook_lut(cb):
+         st, iv = np.float32(2.6) / np.float32(7.5), np.float32(7.5) / np.float32(2.6)
+         q = np.clip(np.rint(v.astype(np.float32) * iv - np.float32(0.5)), -8, 7) + np.float32(0.5)
+         return (q * st).astype(np.float16).astype(np.float32)
++    if cb == "hash":                                        # #177 (w139): q = bytesum((s A + B) & 0x3F3F3F3F) - 126, x 4 k_inv
++        import sys; sys.path.insert(0, os.path.join(os.environ.get("RXQ_RXM", ""), "v3", "e3", "exl3hash")); import exl3hash
++        return exl3hash.values()
+     raise ValueError(f"codebook {cb!r}: not one of {CODEBOOKS}")
+ 
+ 
+diff --git a/pipeline/rxq/engine.py b/pipeline/rxq/engine.py
+index 1d5fe74..319ad22 100644
+--- a/pipeline/rxq/engine.py
++++ b/pipeline/rxq/engine.py
+@@ -47,7 +47,7 @@ def _warm_refit(dev_):
+ 
+ def _kernel_dirs():
+     e3 = os.path.join(rxm_root(), "v3", "e3")
+-    return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2")}
++    return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2", "exl3hash")}   # exl3hash: #177 (w139)
+ 
+ 
+ MEASURED_DRIFT = {0.125: 1.348, 0.25: 1.342, 0.375: 1.245, 0.5: 1.184, 0.625: 1.142, 0.75: 1.114, 0.875: 1.092, 1: 1.089}
+@@ -105,11 +105,15 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
+     if frac:
+         sys.path.insert(0, kd["exl3frac"]); import exl3frac
+         exl3frac.install(exl3_src())
+-    if codebook != "mul1" and not cpu:
++    if codebook == "hash" and not cpu:                 # #177 (w139): IQR-style hash codebook, v3/e3/exl3hash (exl3cb i8 +
++        assert frac and qtf2, "the hash codebook: exl3hash's exl3cb + exl3frac2 builds (frac + qtf2)"   # exl3frac2 mul1, EXL3_CB_HASH)
++        sys.path.insert(0, kd["exl3hash"]); import exl3hash
++        exl3hash.install(exl3_src(), qtf2)
++    elif codebook != "mul1" and not cpu:
+         assert frac, "a rounded codebook needs the frac kernels (ourq: --codebook needs --frac-ext)"
+         sys.path.insert(0, kd["exl3cb"]); import exl3cb
+         exl3cb.install(exl3_src(), codebook)
+-    if qtf2 and not cpu:                                 # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
++    if qtf2 and not cpu and codebook != "hash":          # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
+         assert frac and codebook in ("mul1", "i8", "i8c", "i4"), "qtf2 needs the frac kernels and the mul1, i8, i8c or i4 codebook"
+         sys.path.insert(0, kd["exl3frac2"]); import exl3frac2
+         exl3frac2.install(exl3_src(), codebook)
+diff --git a/pipeline/rxq/mix.py b/pipeline/rxq/mix.py
+index d29973b..67c256d 100644
+--- a/pipeline/rxq/mix.py
++++ b/pipeline/rxq/mix.py
+@@ -19,7 +19,8 @@ import argparse, json, os, sys
+ 
+ from . import qwen35
+ 
+-CB = {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1"}         # level codebook -> the exl3i importer's codebook=
++CB = {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1",          # level codebook -> the exl3i importer's codebook=
++      "hash": "mul1i8"}   # #177 (w139): hash codes in mul1i8's slot, read right only by the hash bench build (EXL3I_BENCH_IQRH 1)
+ 
+ 
+ def trunk_names(n_layers=64):

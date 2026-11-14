@@ -1,0 +1,1 @@
+{"sec": 644.1757440567017, "opts": ["codes=u2", "tcq=15", "tcq_code=mad", "tcq_rows=256", "block=1x*", "scale=f32", "transform=fwht128", "tcq_gain=1.04", "damp=0.01", "calib=/data/q27/w139h/iq/calib", "tcq_order=1"], "rows": 248320}

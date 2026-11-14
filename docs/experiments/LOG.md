@@ -4,6 +4,66 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 6:50 PM CST · #177 · w139 close-out, stages 2–3 + search curve: hash / mad = mul1i8 in real 27B KL (trunk K2.625 ×1.006, K4.125 ×1.011 pooled, head 3-seed ×1.002–1.003); longer state / beam worth ≤ 1.4–2.3 % MSE (≤ 0.02 bpw) at ×4–150 encode; libquant (IQR-V4-form) heads ×2.6–3.9 our R16 head, mad ×1.03 mul1i8 inside libquant (w139)
+- **Status:** done (the user decided 7:05 PM CST: mad everywhere, #177-02 / #177-03; this entry records w139's data behind
+  it and what finished after the lead took over) · **Machine:** ds8 (head donors, stage-3 scores, libquant heads cards
+  0 / 1 / 6 / 7), box2 (stage-3 levels, per-op profile), colo (iid screen + search curve), Thor (real-tensor proxy) ·
+  **Code:** `v3/e3/hash177/` (`RULES-177.md`, `RULES-177h.md` amendments 1–3, all committed before their data;
+  `ourq-hash.patch`, `rxq-hash.patch`, `exl3hashm/`, `run177h.sh`, `rep177h.py`, `s3level.sh`, `s3score*.sh`, `s3rep.py`,
+  `eprof.sh`, `eprofsum.py`, `whatif177.py`, `settle177.py`, `hscreen.py`; `beam/`: `bcurve.py` + `beamS.c` (seeded beam /
+  segment refine on w71's `beamL.c`), `settleS.py` + `qS.py` (Thor), `iqh.py` + `abqg.cpp` + `iqrun.sh` (libquant heads),
+  `rep177q.py`, `sumS.py`); fork `qc-exl3-v3-hash` 8d7ac3a · **Data:** `data/hash177/{s2,l177,lS,bc,g2,e2,eprof-p1,head,
+  iq,s3}` · **Brief:** `rad-local/workers/instr3/w139.md` + `notes/w139.md`
+- **Stage 3, real 27B KL of the trunk** (RULES-177 + amendment 1; ladder levels re-quantized with the hash A 0xd0474b,
+  same 256 job specs, codes stamp 144dd6e1; gate: patched rxq tree's i8 jobs byte-identical to the ladder; confounder
+  check PASS: 451 non-trunk entries byte-identical; `data/hash177/s3/s3rep.json`), ratio hash / i8, per-doc bootstrap:
+
+  | K | search27c-c (deciding) | xcorp h177-x | pooled c + x | label | Δbpw (c) | ver3-8k (check) |
+  |---|---|---|---|---|---|---|
+  | 2.625 | 1.001 [0.979, 1.031] | 1.007 [0.965, 1.048] | 1.006 [0.968, 1.043] | at par | +0.001 | 0.878 [0.785, 1.016] |
+  | 4.125 | 1.037 [0.998, 1.075] | 1.010 [0.938, 1.089] | 1.011 [0.943, 1.084] | inconclusive | +0.027 | 1.296 [0.962, 1.665] |
+
+  ver3-8k is heavy-tailed at K4.125 (CI 0.96–1.67): one read, not a decision; worth a look on the mad ladder's verify.
+- **Head bench** (RULES-177h, w122's R16 σ0.03 recipe, only the codebook changed; calib-weighted head-only KL vs mul1i8):
+  3-seed H / i8 1.003 [0.985, 1.024] / 1.038 [1.009, 1.063] (K2.5, fit / search), 1.002 [0.981, 1.022] / 0.993
+  [0.978, 1.014] (K4); one donor carries ±2–4.5 % seed noise. HG (Gaussian remap) / HC (cubic) at K4 / K6 within it:
+  shaping dropped. HYB LUT and per-K constants no better than the hash on the screen: dropped.
+- **libquant IQR-V4-form heads** (amendment 3: upstream q38-27b-iq*r-v4 head line, GPTQ over trellis, fwht128, f32 row
+  scale, input Hessian only; K2 L15 g1.04, K4 L16 g1.12; 11–16 min a donor on one card; `data/hash177/iq/rep/rep177q.json`):
+  mad / mul1i8-table inside libquant **1.029 / 1.034 (K2), 1.025 / 1.024 (K4)** (fit / search; CIs exclude 1, within the
+  ±4.5 % floor → "within noise"; the gain was tuned for mad); libquant heads / our R16 head at equal K **×2.6–2.8 (K2),
+  ×3.7–4.0 (K4)** = K_eq 1.56 / 3.12: the encoder (H_out, R16) is the lever, not the code.
+- **Search curve, longer state and beam** (lead notes 1:40–2:00 PM). MSE vs mul1i8 exact L16, encode time vs the same
+  code's L16:
+
+  | arm | synthetic iid (256 tiles) K2 / K3 / K4 | real tensors (8 a K, LDLQ, output rel. error) K2 / K4 | encode × |
+  |---|---|---|---|
+  | mad L16 exact | 1.011 / 1.008 / 1.027 | 1.011 / 1.028 | 1 |
+  | hash L16 exact | 1.008 / 1.006 / 1.011 | (l177: ×1.007 at K4) | 1 |
+  | mad L18 exact | 0.998 / 0.994 / 0.989 | 0.998 / 0.991 | 3.6–3.8 |
+  | mad L19 beam M16384 | 0.993 / 0.987 / 0.978 | 0.995 / 0.984 | 14–40 |
+  | mad L20 beam M16384 | 0.994 / 0.987 / 0.975 | 0.994 / 0.981 | 18–48 |
+  | mad L20 beam M65536 | 0.988 / 0.984 / 0.972 | 0.986 / 0.976 | 70–150 |
+  | **mad L20 exact** | 0.988 / 0.984 / 0.972 | **0.986 / 0.977** | **15–18** |
+  | mul1i8 L20 beam M16384 | 0.993 / 0.990 / 0.992 | 0.991 / 0.990 | 17–36 |
+  | mul1i8 L18 / L20 exact | 0.995 / 0.997 / 0.993 · 0.989 / 0.990 / 0.991 | (l177: L18 ×0.991 at K4) | 4 / 20 |
+
+  **Keep A 0xd0474b (as decided), not IQR's 0xB5297B:** same ops, and IQR's constant costs +1.6 % (synthetic) / +2 %
+  (real tensors) MSE at K4 vs 0xd0474b.
+  Beam M ≤ 4096 loses the gain (#113's finding); M 65536 reaches exact L20 but costs more than exact (×15–18 on CPU).
+  Segment refine after a beam adds nothing; seeding from an exact L16 / L18 path is moot for computed codes (a lower-L
+  path decodes to ~random values under the L20 table). So the coworker's "mad L20 beam" holds against mad L16 (IQR-V4's
+  encoder): −1.4 % (K2) / −2.4 % (K4) MSE ≈ **0.01 / 0.02 bpw** by the 1 bit ≈ ×0.25 rule; most of it is just mad L16's
+  own 1–3 % deficit to mul1i8 recovered. Decode of hash / mad at L18–L20 = L16's (the 24-bit mad reads any L ≤ 24;
+  e2e K2.5 30.3 vs 30.5 ms); mul1i8 at L18 +14–16 % e2e (dominated). Not adopted (the 7:05 PM decision: V3.1 option;
+  needs a GPU Viterbi above L16).
+- **Decode (in situ, `eprof.sh`, trunk GEMV sum hash / mul1i8):** K2.5 ×0.876, K4.125 ×0.985, K6 ×1.016; e2e C 1 K2.5
+  33.6 → 30.5 ms, K4.125 34.3 → 32.8; A8 prefill ±0, f16 prefill +5 %. On today's KS / DQ / DOT form; the lead's
+  byte-sum `sudot4` form (madgemv.hip) is the real lever (LOG 7:05 PM).
+- **What-if (`whatif177.py`):** at equal bytes with w133's M1 picks fixed, hash below K ≈ 4 saves 2.6–2.9 ms a step at
+  sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
+  today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
+- **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
 ### 2026-11-13 6:40 PM CST · #177-03 · mad ladder requant, stage A: mad merged into rxq / ourq (stamped config), gate PASS — K4.125 layers 2–3 byte-identical to w139's hash level; stage B (K2.5 / K4 / K6) started (w151)
 - **Status:** running (stage B) · **Machine:** ds8 HIP 6 (gate; HIP 7 is w153's) / HIP 0–6 (stage B), the VM (CPU checks)
   · **Code:** rad-exl3-mix 0ce451c (staged on ds8 `stage/code`, the old tree kept as `stage/code-old-c015001`), scripts

@@ -1,0 +1,6 @@
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 1, "L": 16, "mse": 0.25329428911209106, "f": 0.9, "ntiles": 512, "tileseed": 12, "sec": 31.8}
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 2, "L": 16, "mse": 0.06554332758082851, "f": 1.0236154156781616, "ntiles": 512, "tileseed": 12, "sec": 32.7}
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 3, "L": 16, "mse": 0.016708791898630483, "f": 1.0727617729861174, "ntiles": 512, "tileseed": 12, "sec": 30.9}
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 4, "L": 16, "mse": 0.004284869879484177, "f": 1.1, "ntiles": 512, "tileseed": 12, "sec": 24.5}
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 5, "L": 16, "mse": 0.001116436324082315, "f": 1.1, "ntiles": 512, "tileseed": 12, "sec": 23.0}
+{"spec": "h:0xbc379b:0x2545F491:0xFCFCFCFC", "K": 6, "L": 16, "mse": 0.00031407835194841027, "f": 1.1, "ntiles": 512, "tileseed": 12, "sec": 22.0}

@@ -1,0 +1,1 @@
+{"sec": 725.8181910514832, "opts": ["codes=u2", "tcq=15", "tcq_lut=/data/q27/w139h/iq/mul1i8-L15.txt", "tcq_rows=256", "block=1x*", "scale=f32", "transform=fwht128", "tcq_gain=1.04", "damp=0.01", "calib=/data/q27/w139h/iq/calib", "tcq_order=1"], "rows": 248320}

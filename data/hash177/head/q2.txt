@@ -1,0 +1,11 @@
+i8s1 4 i8 - 1
+Hs1 4 hash - 1
+i8s1 2.5 i8 - 1
+Hs1 2.5 hash - 1
+H 6 hash -
+HG 6 hash hg
+HC 6 hash hc02
+i8s2 4 i8 - 2
+Hs2 4 hash - 2
+i8s2 2.5 i8 - 2
+Hs2 2.5 hash - 2

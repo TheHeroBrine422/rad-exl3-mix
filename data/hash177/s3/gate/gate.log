@@ -1,0 +1,7 @@
+16:39:24 card 1
+t-model.language_model.layers.0.linear_attn.in_proj_qkv.safetensors code 43e08d796b6bcfbf -> e9fe108b09357f88
+t-model.language_model.layers.0.linear_attn.in_proj_z.safetensors code 43e08d796b6bcfbf -> e9fe108b09357f88
+GATE q27v3-144dd6e1-k4.125-i8 L00-g0: 8 tensors, 0 differ -> SAME
+t-model.language_model.layers.5.linear_attn.out_proj.safetensors code 43e08d796b6bcfbf -> e9fe108b09357f88
+GATE q27v3-144dd6e1-k2.625-i8 L05-g1: 4 tensors, 0 differ -> SAME
+16:41:35 gate done (card 1 released)

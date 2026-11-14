@@ -1,0 +1,4 @@
+19:45:14 t K4: abq gptqsim 8192 x 5120 codes=u4 tcq=16 tcq_code=mad tcq_rows=256 block=1x* scale=f32 transform=fwht128 tcq_gain=1.12 damp=0.01 calib=/data/q27/w139h/iq/calib tcq_order=1
+libquant: GPTQ quantises 'output' against 1 calibration file(s), K=5120
+19:56:29 t K4: 675 s
+19:56:30 t K4: plain rel. error 5.8532e-03

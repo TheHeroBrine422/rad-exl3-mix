@@ -1,0 +1,5 @@
+16:29:05 card 3 (rocm-smi 0) locked, rounds 3, builds base h24 h24L18 m8L18 abl, M 1,8, rates 1.5 2 2.5 3 4 4.125 5 6, modes f16
+16:29:44 round 1 done
+16:30:19 round 2 done
+16:30:53 round 3 done
+16:30:53 unlock card 3

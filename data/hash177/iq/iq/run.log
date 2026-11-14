@@ -1,0 +1,25 @@
+19:45:12 t K4 mad 8192 card 7
+19:56:30 t K4 rc 0
+19:56:30 worker (7 6) done
+22:23:22 Qmad K4 mad all card 0
+22:23:25 Qi8 K4 i8 all card 1
+22:23:28 Qmad K2 mad all card 6
+22:23:31 Qi8 K2 i8 all card 7
+22:34:49 Qmad K2 rc 0
+22:34:49 worker (0 1 6 7) done
+22:36:16 Qi8 K2 rc 0
+22:36:16 worker (0 1 6 7) done
+22:38:53 Qi8 K4 rc 0
+22:38:53 Qmad K2 mad all card 1
+22:39:04 Qmad K2 rc 0
+22:39:04 Qi8 K2 i8 all card 1
+22:39:14 Qi8 K2 rc 0
+22:39:14 worker (0 1 6 7) done
+22:39:49 Qmad K4 rc 0
+22:39:49 Qi8 K4 i8 all card 0
+22:39:59 Qi8 K4 rc 0
+22:39:59 Qmad K2 mad all card 0
+22:40:08 Qmad K2 rc 0
+22:40:08 Qi8 K2 i8 all card 0
+22:40:19 Qi8 K2 rc 0
+22:40:19 worker (0 1 6 7) done

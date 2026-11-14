@@ -1,0 +1,35 @@
+17:27:21 setup done
+17:27:30 quant gate-i8 K4 (i8, map -) card 1 start
+17:29:53 quant H K4 (hash, map -) card 3 start
+17:34:11 quant H K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0010632621984862413, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+17:34:11 quant HG K4 (hash, map hg) card 3 start
+17:34:25 quant gate-i8 K4 (i8, map -) card 4 start
+17:38:13 quant gate-i8 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00105515179889807, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hou
+17:38:30 quant HG K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00104970793925261, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hou
+GATE tensors 5, differ 0 -> SAME
+17:46:49 score fit rc 0 (3 options)
+17:49:58 quant H K2.5 (hash, map -) card 4 start
+17:50:10 quant HC K4 (hash, map hc02) card 3 start
+17:51:21 score search rc 0 (3 options)
+17:54:07 quant H K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008336812262392811, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "
+17:55:08 quant HC K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0010500993570446173, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:00:07 quant Hs1 K4 (hash, map -) card 4 start
+18:01:19 quant i8s1 K4 (i8, map -) card 3 start
+18:04:09 quant i8s1 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0010558259126879261, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:06:43 quant Hs1 K4 (hash, map -) card 4 start
+18:09:39 quant Hs1 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.00106403017939182, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "hou
+18:13:47 quant i8s1 K2.5 (i8, map -) card 3 start
+18:14:49 quant Hs1 K2.5 (hash, map -) card 4 start
+18:17:26 quant i8s1 K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008267962626006148, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "
+18:17:26 worker cards 3: queue q2a.txt done
+18:18:30 quant Hs1 K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008344292882231923, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "
+18:18:30 worker cards 4: queue q2a.txt done
+18:24:53 quant Hs2 K2.5 (hash, map -) card 4 start
+18:28:45 quant Hs2 K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008347766169675155, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "
+18:28:46 worker cards 4: queue q2c.txt done
+18:31:49 quant Hs2 K4 (hash, map -) card 4 start
+18:34:17 quant i8s2 K2.5 (i8, map -) card 3 start
+18:35:06 quant Hs2 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0010645767217333272, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:35:06 worker cards 4: queue q2d.txt done
+18:38:31 quant i8s2 K2.5 OK: {"key": "lm_head", "K": 2.5, "proxy_err": 0.008270659672974323, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "
+18:38:31 worker cards 3: queue q2c.txt done

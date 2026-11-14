@@ -1,0 +1,5 @@
+rsync: [sender] link_stat "/data/q27/w139/s3/q27v3-144dd6e1-k4.125-i8/score-golden-search27c-c.json.rows" failed: No such file or directory (2)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1874) [generator=3.4.1]
+rsync: [sender] link_stat "/data/q27/w139/s3/q27v3-144dd6e1-k4.125-hash/score-golden-search27c-c.json.rows" failed: No such file or directory (2)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1874) [generator=3.4.1]
+PULL DONE

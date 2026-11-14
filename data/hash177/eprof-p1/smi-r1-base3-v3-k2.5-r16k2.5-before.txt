@@ -1,0 +1,15 @@
+GPU[3]		: Temperature (Sensor edge) (C): 40.0
+GPU[3]		: Temperature (Sensor junction) (C): 43.0
+GPU[3]		: Temperature (Sensor memory) (C): 48.0
+GPU[3]		: dcefclk clock level: 1: (219Mhz)
+GPU[3]		: fclk clock level: 1: (582Mhz)
+GPU[3]		: mclk clock level: 0: (96Mhz)
+GPU[3]		: sclk clock level: S: (0Mhz)
+GPU[3]		: socclk clock level: 0: (417Mhz)
+GPU[3]		: pcie clock level: 1 (16.0GT/s x16)
+GPU[3]		: Average Graphics Package Power (W): 10.0
+GPU[3]		: GPU use (%): 0
+GPU[3]		: GPU Memory Allocated (VRAM%): 0
+GPU[3]		: GPU Memory Read/Write Activity (%): 0
+GPU[3]		: Memory Activity: N/A
+GPU[3]		: Avg. Memory Bandwidth: 0

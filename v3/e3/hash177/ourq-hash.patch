@@ -1,0 +1,54 @@
+--- a/quantize/ourq.py
++++ b/quantize/ourq.py
+@@ -98,8 +98,9 @@
+ ap = argparse.ArgumentParser()
+ ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
+                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
+-ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c"), default="mul1", help="search with the int8- or int4-"
+-                "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
++ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c", "hash"), default="mul1", help="search with the int8- or int4-"
++                "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply; "
++                "hash: #177's IQR-style hash (v3/e3/hash177/exl3hashm, env EXL3HASH_A / _B / _MAP; needs --frac-ext and --qtf2)")
+ ap.add_argument("-K", required=True,
+                 help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8); "
+                 "a comma list quantizes several levels in one pass, layer by layer, reusing each tensor's K-independent work "
+@@ -165,12 +166,17 @@
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
+     import exl3frac
+     exl3frac.install(a.frac_ext)
+-if a.codebook != "mul1":
++if a.codebook == "hash":                                   # #177 (w139): exl3hashm's exl3cb + exl3frac2 builds
++    assert a.frac_ext and a.qtf2, "--codebook hash needs --frac-ext SRC and --qtf2"
++    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3hashm"), os.path.join(_h, "../v3/e3/hash177/exl3hashm")) if os.path.isdir(d)))
++    import exl3hashm
++    exl3hashm.install(a.frac_ext, True)
++elif a.codebook != "mul1":
+     assert a.frac_ext, "--codebook needs --frac-ext SRC (the fork's exllamav3_ext sources)"
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3cb"), os.path.join(_h, "../v3/e3/exl3cb")) if os.path.isdir(d)))
+     import exl3cb
+     exl3cb.install(a.frac_ext, a.codebook)
+-if a.qtf2:
++if a.qtf2 and a.codebook != "hash":
+     assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c", "i4"), "--qtf2 needs --frac-ext SRC and the mul1, i8, i8c or i4 codebook"
+     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
+     import exl3frac2
+@@ -346,7 +352,7 @@
+                               **({"proxy_err_2s": qa["proxy_err_2s"]} if "proxy_err_2s" in qa else {}),
+                               "hin_key": bool(qa.get("hin_key")),
+                               "hout_diag_scales": bool(qa.get("out_scales_hessian")), "sigma_reg": qa.get("sigma_reg"), "sweep_rel": qa.get("sweep_rel"), "sweep_all": qa.get("sweep_all"),
+-                              "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook,
++                              "g_scale": None if qa.get("g_scale") is None else float(qa["g_scale"]), "drift": _Q.ldlq_drift(a.K), "scaled_hessian": bool(a.scaled_hessian), "gain": GAIN[0], "codebook": a.codebook if a.codebook != "hash" else "hash-" + exl3hashm.tag(),
+                               "out_scales": qa.get("apply_out_scales"), "head_mean_row": bool(a.head_mean_row and key == "lm_head"),
+                               "s": round(time.time() - t0, 1)}) + "\n"); log.flush()
+         print(f"  {key:60s} K{a.K} proxy {float(perr):.3e} {time.time() - t0:.1f}s", flush=True)
+@@ -391,6 +397,10 @@
+ #io-was:        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+         if os.path.isfile(f): h.update(f.encode()); h.update(_io_canon(f)); src.append(f)  # +io
+     keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
++    if a.codebook == "hash":                               # #177 (w139): the hash variant (A, B, map) and its sources
++        keep["hash"] = exl3hashm.tag()
++        for f in sorted(glob.glob(os.path.join(os.path.dirname(exl3hashm.__file__), "*.*"))):
++            if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
+     h.update(json.dumps(keep, sort_keys=True).encode())
+     return h.hexdigest()[:16], src, keep
+ _LOGS, _STAMPS = {}, {}

@@ -1,0 +1,6 @@
+22:23:24 Qmad K4: abq gptqsim 248320 x 5120 codes=u4 tcq=16 tcq_code=mad tcq_rows=256 block=1x* scale=f32 transform=fwht128 tcq_gain=1.12 damp=0.01 calib=/data/q27/w139h/iq/calib tcq_order=1
+libquant: GPTQ quantises 'output' against 1 calibration file(s), K=5120
+22:39:10 Qmad K4: 947 s
+22:39:21 Qmad K4: plain rel. error 5.9163e-03
+22:39:37 Qmad K4: scored fit
+22:39:49 Qmad K4: scored search

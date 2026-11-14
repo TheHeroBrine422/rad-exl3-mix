@@ -1,0 +1,4 @@
+i8s1 4 i8 - 1
+Hs1 4 hash - 1
+i8s1 2.5 i8 - 1
+Hs1 2.5 hash - 1

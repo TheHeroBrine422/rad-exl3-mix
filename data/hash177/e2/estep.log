@@ -1,0 +1,8 @@
+16:31:07 card 3 (rocm-smi 0) locked; homes base h24L18 m8L18; packs /data/q27/w139/packs/q27v3-144dd6e1-k4.125-i8-s6c57a3d1.rad /data/q27/w139/packs/q27v3-144dd6e1-k2.5-i8-s6c57a3d1.rad; rounds 1
+16:31:19 serve r1-base-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:33:25 serve r1-h24L18-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:35:25 serve r1-m8L18-q27v3-144dd6e1-k4.125-i8-s6c57a3d1 up
+16:37:38 serve r1-base-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:39:39 serve r1-h24L18-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:41:32 serve r1-m8L18-q27v3-144dd6e1-k2.5-i8-s6c57a3d1 up
+16:43:36 ALL DONE (card 3 released)

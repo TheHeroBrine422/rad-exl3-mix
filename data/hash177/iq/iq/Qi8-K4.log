@@ -1,0 +1,7 @@
+22:23:27 Qi8 K4: abq gptqsim 248320 x 5120 codes=u4 tcq=16 tcq_lut=/data/q27/w139h/iq/mul1i8-L16.txt tcq_rows=256 block=1x* scale=f32 transform=fwht128 tcq_gain=1.12 damp=0.01 calib=/data/q27/w139h/iq/calib tcq_order=1
+libquant: GPTQ quantises 'output' against 1 calibration file(s), K=5120
+22:38:16 Qi8 K4: 889 s
+22:38:26 Qi8 K4: plain rel. error 5.7539e-03
+22:38:41 Qi8 K4: scored fit
+22:38:53 Qi8 K4: scored search
+22:39:58 Qi8 K4: plain rel. error 5.7539e-03

@@ -1,0 +1,10 @@
+18:00:00 setup done
+18:00:37 quant H K6 (hash, map -) card 1 start
+18:04:49 quant H K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 7.302982923118882e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:05:58 quant HG K6 (hash, map hg) card 1 start
+18:16:26 quant HG K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 7.197699109037168e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:20:19 quant HC K6 (hash, map hc02) card 1 start
+18:31:17 quant HC K6 OK: {"key": "lm_head", "K": 6, "proxy_err": 7.209631262316302e-05, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:34:29 quant i8s2 K4 (i8, map -) card 1 start
+18:38:00 quant i8s2 K4 OK: {"key": "lm_head", "K": 4, "proxy_err": 0.0010564305004772145, "fallback": false, "hout": true, "hout_blocks": "group", "hin_key": false, "h
+18:38:00 worker cards 1: queue q2b.txt done

@@ -1,0 +1,11 @@
+18:22:18 pack q27v3-144dd6e1-k2.625-i8
+18:24:42 pack q27v3-144dd6e1-k2.625-i8: rc 0
+18:24:58 mix q27v3-144dd6e1-k2.625-i8: /data/q27/w139/s3/q27v3-144dd6e1-k2.625-i8/mix-a8.rad.part: 787 weights (0 from donors, 336 act keys), 12.249 GiB, 0 cloned, 787 copied
+18:24:58 pack q27v3-144dd6e1-k2.625-hash
+18:27:19 pack q27v3-144dd6e1-k2.625-hash: rc 0
+18:27:40 mix q27v3-144dd6e1-k2.625-hash: /data/q27/w139/s3/q27v3-144dd6e1-k2.625-hash/mix-a8.rad.part: 787 weights (0 from donors, 336 act keys), 12.249 GiB, 0 cloned, 787 copied
+18:27:49 check 2.625: {"entries": 787, "trunk": 688, "non_trunk": 99, "missing": [], "non_trunk_differ": [], "trunk_bytes_differ": [], "size_a": 13151907840, "size_b": 13151907840, "pass": true}
+18:45:49 score q27v3-144dd6e1-k2.625-i8 golden-search27c-c card 3
+18:47:39 score q27v3-144dd6e1-k2.625-i8 golden-search27c-c rc 0
+18:47:39 score q27v3-144dd6e1-k2.625-hash golden-search27c-c card 3
+18:49:21 score q27v3-144dd6e1-k2.625-hash golden-search27c-c rc 0
