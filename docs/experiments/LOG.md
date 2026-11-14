@@ -7373,3 +7373,15 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - box2 `/data/q27/ladder-src/q27v3-144dd6e1-*-i8` (49 levels, ~459 GB) deleted on the user's OK — the last copy of the
   mul1i8 trunk ladder (trunk is mad-only; mul1 / i8 head plans and embedding donors live elsewhere, untouched). Logs
   and swj fit kept. box2 72%, 667 GB free; w151 to finish the mad per-tensor copy. **Runtime:** neither.
+
+### 2026-11-14 3:05 PM CST · eval rule · Gen masks on every search / final slice; mad vs mul1i8 re-read on board rows
+- Per the 11-14 amendment (eval-data.md, committed first), `genmask181.py make` wrote the board's gen mask into
+  s173a-f (whole + x) and golden-final750 (+ x) on ds8 (old all-ones masks kept as `gen.u8.all`). Check: rebuilt masks
+  = official on s173a-c and final-c3 (0 disagreements). Gen share 86-90% of rows; chat docs 34-35 of 130 per x part.
+- **How much it mattered** (w151 stage-B scores on s173e): the dropped prompt-side rows held **62-66% of the KL at
+  K2.5, 80-82% at K4, 91% at K6**. Board-row KL: K2.5 0.053, K4 0.0066, K6 0.0008 (vs 0.14 / 0.033 / 0.008 all-rows).
+- **mad vs mul1i8 re-read on gen rows** (paired, per-doc SE; was 0.948 / 0.902 / 0.907 on all rows): K2.5 **+7.0%
+  ± 8.2%** (z 0.85), K4 **−1.9% ± 1.8%**, K6 **−4.1% ± 3.5%**: all within noise. mad ≈ mul1i8 on what the board scores
+  (as the Thor proxy said, ~0.8%); the codebook decision stands on decode speed (×0.78 / ×0.91 e2e) at equal quality.
+- Every earlier decision read on xcorp parts with all rows (stage B, a/b #178-03 on s173f, w157 spot checks, the #171
+  search) is flagged for the next overfit audit (~11-15) to re-read on gen rows. **Runtime:** neither.
