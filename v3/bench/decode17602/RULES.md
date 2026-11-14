@@ -50,3 +50,12 @@ held-out packs.
 output and not read).** Card-6 stamps, rounds a / b / c (median of rounds): residual rms ctx 0 / 8k — median of runs
 0.281 / 1.436 %, **minimum of runs 0.264 / 0.247 %**, median inter-chunk gap 0.264 / 0.254 %. The e2e statistic is the
 **minimum of a row's measured runs**, for the uniform fit and the held-out check alike.
+
+**Amendment 3 (2026-11-14 2:30 PM CST, lead note 2:11 PM: int8-decode column; written before any int8 held-out row).**
+Same fit form for `QWEN35_EXL3_AQ_XB=1 EXL3I_MAD_GEMV=1` (int8 rows at decode; needs a8g128 weights, so every uniform level
+is re-mixed with act lines on the 336 trunk linears): per level one unstamped e2e row (ctx 0 + 8k) and one stamped row
+(ctx 0), levels in an order interleaved from both ends of K (one round: < ~2 h card budget; no ABBA), statistic = min of
+runs (as decided). The `exl3i_mad_rows` pre-pass launched before a GEMV is that tensor's time. Heads, embedding and a/b
+keep their f16-row prices (the head carries no act line, so its path does not change; a/b's int8 form not measured).
+Held-out: the four act-line mixes h1 / h2 / h3 / h5 (same files), rounds a / b; pass rule unchanged (< 2 % each, ctx 0
+and 8k). h4 has no act lines (int8 rows cannot run there) and is left out.
