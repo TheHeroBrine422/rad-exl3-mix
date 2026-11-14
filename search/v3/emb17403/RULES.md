@@ -77,3 +77,12 @@ are kept only if on the lower convex hull of (bytes, err) of all options togethe
 golden-s173e: a two-part search slice (43 calib + 130 xcorp docs, 195,082 gen positions) already read 6 times by
 #177-03's stage-B spot check. These reads (B, T, R, 3 eighths: 6 scores) are an identity check and pricing rows; they
 make no accept / reject decision and select nothing. No verify, no public.
+
+## Amendment 1 (11-14 4:35 AM CST, after the K2.5 determinism rerun, before any eighth level)
+
+The K2.5 rerun stopped on its stamp check: `211924488ac0696e`, not w144's `c816b607e7ee21c1`. ourq's code stamp hashes
+each source file's **path** with its contents (`_stamp`: `h.update(f.encode())`), and the same tree now lives at
+`stage/code-old-c015001` instead of `stage/code`; the 421 source files are the same list but for that one path. The
+rerun's four tensors (`lm_head.trellis / suh / svh / mul1`) are **identical** to w144's K2.5 (torch.equal on each) and the
+safetensors metadata differs only in `ourq_stamp`. So: the determinism check is read on the tensors and the metadata
+other than `ourq_stamp` (PASS), and `quant157.sh` checks for this path's stamp `211924488ac0696e` from here on.
