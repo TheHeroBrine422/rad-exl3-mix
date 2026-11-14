@@ -165,3 +165,9 @@ below 1; otherwise (1e-3, A) stays. Verify / x181 are not used for the pick.
 **4.0 / 6.0 lr screens (lead note 1):** lr {1e-3, 3e-4, 1e-4} (6.0 also 3e-5), 1 M each, with the 2.5 screen's mix, the same
 fixed eval set and monitor; the lowest fixed-eval KL at the decayed end is the lr of that size's 2b arm (4 M, as above).
 **Cards:** box2's four cards (ds8 goes to the search after the ladder, lead 2:30 AM); single-card runs side by side.
+
+### Amendment 5 — 2026-11-14 4:20 AM CST, after the screen's first four runs, before any 3e-3 data
+The first four screen ends (fixed eval, decayed 1 M): 1e-3 / A 0.05879 (best), 1e-3 / B 1.010 [1.003, 1.019], 3e-4 / A 1.011
+[1.004, 1.019], 1e-4 / A 1.033 [1.023, 1.043] (ratios vs 1e-3 / A). The best lr is the grid's top edge, so one run is added:
+**lr 3e-3, mix A** (same settings, same fixed eval and monitor), judged by amendment 4's pick rule as a seventh screen
+run. The two remaining runs (3e-4 / B, 1e-4 / B) run as planned. If 3e-3 wins, the 4.0 / 6.0 lr screens add 3e-3 too.
