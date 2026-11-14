@@ -1,7 +1,8 @@
 # #179 whole-step decode / prefill pass (w152, 2026-11-13 / 14) — results
 
 Box2 card 1 (R9700, 210 W cap), rad10-perf core (ROCm 10.1) unless a name says 714 (the frozen 7.14 install). Scripts:
-`v3/bench/step179/` (README there). Fork branch radiance-hero `qc-exl3-v3-step` (7359986, b73675c, 1f4ecbc, 027fd91);
+`v3/bench/step179/` (README there). Fork branch radiance-hero `qc-exl3-v3-step` (measured as 7359986, b73675c, 1f4ecbc; rebased on fdd480c as 6fb093e, 3dbf3c4,
+2a49430, cecfc64, c34d508);
 write-up `plugin/qwen35_exl3/PERF.md` on that branch.
 
 Homes (row names): `base` = qc-exl3-v3 179220f; `step` / `step2` = the fusions (step2 = 7359986's content); `mbase` =
@@ -25,3 +26,4 @@ w150's pack), `q27v3-144dd6e1-k4.125-mad-a8` (w150); IQR-V4 iq2r drafter off.
 | `gdec.txt` | greedy decode with top-20 logprobs (gdec.py): bit-exact comparisons; the mad builds without the patch finish 0 / 8 requests |
 | `device-tests.txt` | exl3i device suites (ctall.sh) on 10.1 and 7.14 for mres2 (test_aq's 18 xb cases failed on unwritten plane padding in the test: fixed, mres3 test_aq PASS on both) |
 | `queue-log.txt` | the card-1 queue's log (UTC) |
+| `remeasure177/` | #177-02's mad decode re-measured after fdd480c: `e2e.txt` (+ jsonl), KLD reports, `kld-paired.txt` (cmp115.py pairs and row identity vs w150's) |

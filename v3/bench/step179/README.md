@@ -15,5 +15,6 @@ holds `/data/q27/locks/card<N>.lock` (+ `ram.lock` shared) and skips when its ou
 | `diag/` | the timing diagnostic (QWEN35_EXL3_DIAG_SKIP=nongemv; never a served build) |
 | `q1.sh` … `q12.sh`, `qnext.sh` | the card-1 queues as run (order and re-plans in their headers) |
 | `collect.sh` | the summaries -> `data/step179/` |
-| `kctr-key.patch` | **for the lead**: exl3i's KS counters keyed by (device, stream, output) — mad decode is NaN without it (PERF.md) |
+| `kctr-key.patch` | exl3i's KS counters keyed by (device, stream, output) — mad decode is NaN without it (PERF.md); applied by the lead as qc-exl3-v3 fdd480c |
+| `e2b.sh`, `kldenv.sh`, `q13.sh`, `q14.sh` | the #177-02 re-measure after fdd480c (lead note 11-13 11:00 PM): w150's e2e rows and the decode-path KLD (EXL3I_MAD_SPLIT) per K, the race-free reference on the all-ordered build |
 | `fbuilds.txt` | the stash commits the f* / mres* homes were built from (dangling objects: git may collect them). Rebuild instead from commits: mres3 = 1f4ecbc; fres2 = 1f4ecbc + kctr-key.patch; fstep = b73675c + the patch; mfix = 9f0a059 + the patch; mord = 9f0a059 with exl3i `rad_kernel_concurrent` returning 0; mstep = tag archive/w152-step-b02aa9a |
