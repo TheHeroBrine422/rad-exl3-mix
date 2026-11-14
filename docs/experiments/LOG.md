@@ -6392,3 +6392,19 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Next (lead):** standalone HIP microbench of an exl3i-layout GEMV with IQR's byte-sum `sudot4` decode for mad vs
   today's mul1i8 path (gate_up / down shapes, K2 / 2.5 / 4, T 1) — the ceiling before any plugin or requant work.
 - **Runtime:** D (measurement only).
+
+### 2026-11-13 7:05 PM CST · #177 DECISION (user) · mad codebook everywhere (replaces mul1i8), requant of all levels
+- **Evidence:** KL at par in our quantizer — 27B trunk stage 3 (w139, `data/hash177/s3/s3rep.json`): K2.625 calib
+  ×1.001, pooled with xcorp ×1.006 [0.968, 1.043]; K4.125 calib ×1.037 [0.998, 1.075], xcorp ~×1.01 (inconclusive,
+  ≤ a few %). Head bench 3-seed ×1.002–1.003 (K2.5 / K4), single seeds 0.98–1.04 at K2.5 / 4 / 6 (seed floor ±3 %).
+  Decode: lead's microbench `v3/bench/mad177/madgemv.hip` (exl3-style 16×16 tiles, IQR's byte-sum `sudot4` decode, no
+  WMMA; matches a CPU reference): gate_up K2 106 µs (420 GB/s), K3 127 µs (527), K4 155 µs (574 = the bandwidth
+  cap) vs ours today ~143 µs (K2, profiled) / 173 µs (K4.125); IQR u2 110 µs. down (N 5120) 76 µs at K2: needs more
+  K split.
+- **Code:** w139's form (q = bytesum((s·A + B) & 0x3F3F3F3F) − 126, A 0xd0474b, B 0x2545F491, L16), already in ourq /
+  rxq (`v3/e3/hash177/ourq-hash.patch`, `rxq-hash.patch`, `exl3hashm`); stage-3 levels exist (ds8 packs `*-hash`).
+- **L17 / L18 mad: not now** — ~0.5–1 % MSE (Thor proxy) and no GPU Viterbi above L16 (~4× quant time); V3.1 option.
+- **Plan:** kernels (w150: decode GEMV T 1–8 + A8 prefill decode + fractional K, mad in the existing tile scan) and
+  the ladder requant with codebook hash (w151: all levels + R16 heads + a/b T4 / T5 donors) in parallel; then the
+  search restart on mad levels (speed tables re-measured on mad kernels). mul1i8 packs deleted once the mad ladder is
+  verified (user OK at that point). **Runtime:** D (decode ×0.70–0.9 at K2–K4 projected), P (to measure).
