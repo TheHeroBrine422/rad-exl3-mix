@@ -7531,3 +7531,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   mixes run in parallel (coordinator restarted 4:52 PM CST; conv.lock now idle). Re-measure after ~30 evals.
 - User: stop w161 (started 4:51 PM, no output); the lead does the rest of #185 (the no-mix-file loader if still worth
   it after the re-measure). **Runtime:** neither (eval speed).
+
+### 2026-11-14 5:10 PM CST · #183 · ver3-8k monitor off during the search (user)
+- User: long-context checks at the end, as in V2 (it was mostly fine there). Driver CONF monitor "when": "never": no
+  ver3-8k reads during the search (no verify reuse); t183 is the only in-search progress readout. Long context is
+  checked on the final picks (golden-final750, ver4, the whole verify traces). The status page's bottom panel stays
+  at its last reads. **Runtime:** neither.
