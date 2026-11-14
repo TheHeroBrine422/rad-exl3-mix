@@ -704,6 +704,42 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-14 4:05 PM CST · #177-03 · **DONE: the mad ladder (49 levels) + 49 packs + 45 R16 mad heads + a/b T4 / T5 mad donors**; proxy MSE vs the i8 twins ×0.986–1.049 every level; per-tensor copy on box2 (w151)
+- **Status:** done · **Machine:** ds8 HIP 0–6 (never 7), box2 (per-tensor store) · **Code:** rad-exl3-mix 0ce451c (merge) → c751a1a
+  (KA = 0 fix) staged on ds8; scripts `v3/levels/mad/` · **Rule:** RULES-17703 (stage B) · **Data:** `data/mad17703/` (`prox151.json`
+  per-level proxy + stamps, `stamps151.json`, `spotB/`, `run/` logs, lanes / swj times, `run/heads-rep/hcurve151.json`)
+- **Levels (ds8 `ladder-mad`, box2 `/data/q27/ladder-src-mad/` = the per-tensor copy, all 49 checksum-verified):** settings stamp
+  635bac026792784c everywhere, codebook mad (a 0xd0474b, b 0x2545f491), swj scales 6c57a3d1 at K ≤ 4.5 (36 levels), C9 everywhere;
+  code stamp **c3ee8275** for the 42 K ≥ 1 levels, **f3aa155c** for the 7 rebuilt sub-1 levels (KA = 0 fix; earlier entries).
+- **Proxy MSE mad / mul1i8 twin (item 4, `prox151.py`, 400 trunk tensors a level, geometric mean):** K0.125–0.875 0.986–0.999,
+  K1–1.75 0.988–1.000, K1.875–4.0 1.003–1.009, K4.125–6.75 1.010–1.023, K7 1.037, K7.5 1.049; all 49: geo 1.008, range
+  0.986–1.049. ≈ as expected; mad's error grows a little at the top (K ≥ 6.75: +2–5 %, int8-grid like i8 but with 238 values).
+- **Packs (ds8 `/data/q27/packs-mad/`, 49, `<level>[-s6c57a3d1].rad`):** rad10-perf rad-convert + w150's e054e71 plugin set built on
+  ds8 (`/data/q27/mad/rade05/home`; = 3bc8ad2's importer; 3bc8ad2's qwen35_exl3 needs the newer core); K2.5 identical to w150's box2
+  pack entry for entry; all 49 checked after ds8's crash (1,120 entries, extents inside, `packchk.py`). Size 6.5 GB (K0.125) …
+  23 GB (K7.5); 1,120 weights (this qwen35_exl3 declares the vision tower; not in the menu). The old mul1i8 packs were deleted
+  by the user's OK (687 GB).
+- **R16 heads (lead: the 45 i8 plans re-made with mad):** `R16s003mad/K1 … K6.5` (ds8 `/data/q27/heads/q/`), w122's recipe with the
+  staged ourq `--codebook mad`; gate: the staged ourq rebuilds w122's R16s003 K4 i8 head byte for byte (7 tensors / arrays). Head-only
+  KL (score119, calib-weighted) mad / i8 per K: fit dump geo **0.999** (0.966–1.050), search dump geo 1.012 (0.965–1.062) → at par
+  within the head bench's ±3 % seed floor. Price table `hcurve151.json` (62 plans: `u<K>` = mad at the 45 K, the 17 mul1 `u<K>m`
+  unchanged, the i8 rows in `i8_plans`; no monotonicity flags). wq files dropped after scoring.
+- **a/b donors:** `abtrellis-mad.py` (w142's script, codebook mad) K4 / K5 → `donor151.sh` → ds8 `/data/q27/mad/ab/donor-ab-K{4,5}.rad`
+  (1,072 weights: the K1.375 mad pack re-converted + 48 `ssm_ab` exl3i codebook=mad; `--reuse`). Checks: planes byte-equal to the
+  rxq outputs in all 48 layers (abcheck147); rxq.deq's mad decode of the planes = the quantizer's own decode to 1.55e-3 rel (bf16
+  rounding). abcheck147's oracle decode (exl3import/common's exl3i_decode.c) reads them as mul1i8 (rel ×1.5): that reference
+  decoder does not know mad — a tooling gap, not the donors.
+- **Card time (ds8 R9700S, 210 W):** ≈ 100 card-h: quant 63 (55 lane builds, 26 of them sub-1 incl. the broken pass and rebuilds) +
+  3 (stage B) + ~8 (stageC.sh incl. the 9 PM stall), swj 20 (24 passes), heads ~3, spot checks / gates / a/b ~1, crash losses ~5.
+  A clean ladder at these settings ≈ 75 card-h (3.1 card-days); the brief's 2.5 assumed the pre-fix sub-1 speed.
+- **Incidents (entries above):** HIP 7 briefly taken by the first gate launch; the card-5 stall; ds8 disk (backlog trims); the
+  sub-1 KA = 0 codebook bug (fixed, rebuilt); stale swj scales reused on 3 rebuilt levels (requantized again; rxrun patch
+  `v3/levels/mad/rxrun-swjstale.patch` for the lead, logic test 5 / 5); box2 thrash outage; ds8 crash (resumed, damage cleaned).
+- **For the lead:** merge `rqah-mad.patch` (rad-quant-at-home schema) and `rxrun-swjstale.patch` if wanted; box2 `/data/q27/mad-packs/`
+  (47 GB: w150's stage-B hand-off, shim packs) is superseded by packs-mad and can go; ds8 `ladder-mad/` (14 GB) holds only small
+  records (the finals are on box2).
+- **Runtime:** none by itself (D / P come from #177-02's kernels).
+
 ### 2026-11-14 1:10 PM CST · #177-03 · ds8 crash (~10:00 AM CST, rebooted ~10:08): sub-1 rebuild resumed on the free cards; crash damage found and cleaned; 42 K ≥ 1 packs + a/b donors intact (w151)
 - **State at the crash:** K ≥ 1 (42 levels, packs, heads, a/b donors) finished before; the sub-1 rebuild had K0.5 / 0.875 / 0.625 /
   0.75 quantized (the last three then quarantined for stale swj scales, entry below), K0.375 / 0.25 / 0.125 mid-quant, K0.5's swj

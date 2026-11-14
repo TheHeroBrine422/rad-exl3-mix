@@ -1,0 +1,6 @@
+20:08:17 start on card 3
+20:08:17 swj 0.125+0.25 start
+21:02:03 swj 0.125+0.25 OK
+21:02:04 trimmed q27v3-635bac02-k0.125-mad: {"t": "2026-11-14T21:02:04Z", "mb_before": 1283, "mb_after": 530}
+21:02:04 trimmed q27v3-635bac02-k0.25-mad: {"t": "2026-11-14T21:02:04Z", "mb_before": 2374, "mb_after": 896}
+21:02:04 exit (QUANT-DONE yes, STOP no)

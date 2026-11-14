@@ -18,3 +18,7 @@
 {"levels": ["q27v3-635bac02-k1.75-mad", "q27v3-635bac02-k1.625-mad"], "wall": 3086.7}
 {"levels": ["q27v3-635bac02-k1.5-mad", "q27v3-635bac02-k1.375-mad"], "wall": 3122.0}
 {"levels": ["q27v3-635bac02-k1.25-mad", "q27v3-635bac02-k1.125-mad"], "wall": 3081.6}
+{"levels": ["q27v3-635bac02-k0.5-mad", "q27v3-635bac02-k0.375-mad"], "wall": 3108.1}
+{"levels": ["q27v3-635bac02-k0.75-mad", "q27v3-635bac02-k0.625-mad"], "wall": 3152.1}
+{"levels": ["q27v3-635bac02-k0.25-mad", "q27v3-635bac02-k0.125-mad"], "wall": 3218.0}
+{"levels": ["q27v3-635bac02-k0.875-mad"], "wall": 2323.1}

@@ -1,0 +1,52 @@
+02:30:31 start on card 5
+02:49:35 swj 3.25+3.5 start
+03:46:16 swj 3.25+3.5 OK
+03:46:17 trimmed q27v3-635bac02-k3.25-mad: {"t": "2026-11-14T03:46:17Z", "mb_before": 28610, "mb_after": 9733}
+03:46:18 trimmed q27v3-635bac02-k3.5-mad: {"t": "2026-11-14T03:46:18Z", "mb_before": 30761, "mb_after": 10433}
+04:06:23 swj 2.625 start
+04:43:25 swj 2.625 OK
+04:43:26 trimmed q27v3-635bac02-k2.625-mad: {"t": "2026-11-14T04:43:26Z", "mb_before": 23106, "mb_after": 7853}
+04:43:26 swj 2.875+3 start
+05:36:40 swj 2.875+3 OK
+05:36:41 trimmed q27v3-635bac02-k2.875-mad: {"t": "2026-11-14T05:36:41Z", "mb_before": 25337, "mb_after": 8634}
+05:36:41 trimmed q27v3-635bac02-k3-mad: {"t": "2026-11-14T05:36:41Z", "mb_before": 26421, "mb_after": 8993}
+05:36:42 swj 3.375+3.75 start
+06:29:35 swj 3.375+3.75 OK
+06:29:36 trimmed q27v3-635bac02-k3.375-mad: {"t": "2026-11-14T06:29:36Z", "mb_before": 29669, "mb_after": 10066}
+06:29:37 trimmed q27v3-635bac02-k3.75-mad: {"t": "2026-11-14T06:29:37Z", "mb_before": 32983, "mb_after": 11205}
+06:29:37 swj 0.125+0.25 start
+07:21:17 swj 0.125+0.25 OK
+07:21:17 trimmed q27v3-635bac02-k0.125-mad: {"t": "2026-11-14T07:21:17Z", "mb_before": 906, "mb_after": 530}
+07:21:17 trimmed q27v3-635bac02-k0.25-mad: {"t": "2026-11-14T07:21:17Z", "mb_before": 2374, "mb_after": 896}
+07:21:17 swj 0.5+0.625 start
+08:13:48 swj 0.5+0.625 OK
+08:13:48 trimmed q27v3-635bac02-k0.5-mad: {"t": "2026-11-14T08:13:48Z", "mb_before": 3097, "mb_after": 1633}
+08:13:49 trimmed q27v3-635bac02-k0.625-mad: {"t": "2026-11-14T08:13:48Z", "mb_before": 3832, "mb_after": 2007}
+08:15:20 swj 0.875+1 start
+09:09:14 swj 0.875+1 OK
+09:09:14 trimmed q27v3-635bac02-k0.875-mad: {"t": "2026-11-14T09:09:14Z", "mb_before": 5292, "mb_after": 2741}
+09:09:14 trimmed q27v3-635bac02-k1-mad: {"t": "2026-11-14T09:09:14Z", "mb_before": 8915, "mb_after": 3087}
+09:09:15 swj 2.125+2.25 start
+10:02:48 swj 2.125+2.25 OK
+10:02:48 trimmed q27v3-635bac02-k2.125-mad: {"t": "2026-11-14T10:02:48Z", "mb_before": 12575, "mb_after": 6399}
+10:02:48 trimmed q27v3-635bac02-k2.25-mad: {"t": "2026-11-14T10:02:48Z", "mb_before": 13289, "mb_after": 6750}
+12:06:05 swj 1.625+1.75 start
+12:57:52 swj 1.625+1.75 OK
+12:57:52 trimmed q27v3-635bac02-k1.625-mad: {"t": "2026-11-14T12:57:52Z", "mb_before": 14405, "mb_after": 4952}
+12:57:52 trimmed q27v3-635bac02-k1.75-mad: {"t": "2026-11-14T12:57:52Z", "mb_before": 10403, "mb_after": 5315}
+13:03:00 swj 1.125+1.25 start
+13:54:36 swj 1.125+1.25 OK
+13:54:37 trimmed q27v3-635bac02-k1.125-mad: {"t": "2026-11-14T13:54:37Z", "mb_before": 10009, "mb_after": 3456}
+13:54:38 trimmed q27v3-635bac02-k1.25-mad: {"t": "2026-11-14T13:54:38Z", "mb_before": 7464, "mb_after": 3826}
+13:55:09 exit (QUANT-DONE yes, STOP no)
+14:15:10 start on card 5
+15:37:41 swj 0.75 start
+15:37:54 swj 0.75 OK
+15:37:55 trimmed q27v3-635bac02-k0.75-mad: {"t": "2026-11-14T15:37:55Z", "mb_before": 6750, "mb_after": 2372}
+15:42:46 start on card 5
+20:08:17 start on card 5
+20:08:18 swj 0.375+0.5 start
+21:00:19 swj 0.375+0.5 OK
+21:00:19 trimmed q27v3-635bac02-k0.375-mad: {"t": "2026-11-14T21:00:19Z", "mb_before": 3466, "mb_after": 1263}
+21:00:20 trimmed q27v3-635bac02-k0.5-mad: {"t": "2026-11-14T21:00:20Z", "mb_before": 4561, "mb_after": 1633}
+21:00:20 exit (QUANT-DONE yes, STOP no)

@@ -120,3 +120,47 @@
 14:15:11 lane 0,1,2: q27v3-635bac02-k0.875-mad start
 14:15:11 lane 3,4: q27v3-635bac02-k0.75-mad start
 14:15:11 lane 5,6: q27v3-635bac02-k0.625-mad start
+15:01:19 lane 0,1,2: q27v3-635bac02-k0.875-mad DONE in 46 min
+15:01:19 lane 0,1,2: q27v3-635bac02-k0.5-mad start
+15:17:13 lane 5,6: q27v3-635bac02-k0.625-mad DONE in 62 min
+15:18:14 lane 5,6: q27v3-635bac02-k0.375-mad start
+15:21:34 lane 3,4: q27v3-635bac02-k0.75-mad DONE in 66 min
+15:21:34 lane 3,4: q27v3-635bac02-k0.25-mad start
+15:40:33 lane 0,1,2: q27v3-635bac02-k0.5-mad DONE in 39 min
+15:40:33 lane 0,1,2: q27v3-635bac02-k0.125-mad start
+17:18:02 stageD: stale swj claim + partial swj of q27v3-635bac02-k0.5-mad cleared
+17:18:02 stageD: quant lanes 3,4 5, then swj on 3 4 5
+17:18:02 lane 5: q27v3-635bac02-k0.5-mad start
+17:18:02 lane 3,4: q27v3-635bac02-k0.375-mad start
+17:18:16 lane 5: q27v3-635bac02-k0.5-mad DONE in 0 min
+17:18:16 lane 5: q27v3-635bac02-k0.25-mad start
+17:30:33 lane 3,4: q27v3-635bac02-k0.375-mad DONE in 12 min
+17:30:33 lane 3,4: q27v3-635bac02-k0.125-mad start
+17:31:49 lane 3,4: q27v3-635bac02-k0.125-mad attempt 1 failed
+17:32:21 lane 3,4: q27v3-635bac02-k0.125-mad attempt 2 failed
+17:32:53 lane 3,4: q27v3-635bac02-k0.125-mad attempt 3 failed
+17:33:26 lane 3,4: q27v3-635bac02-k0.125-mad attempt 4 failed
+17:33:56 lane 3,4: q27v3-635bac02-k0.125-mad NOT DONE after 4 attempts (claim kept)
+17:33:56 lane 3,4: q27v3-635bac02-k0.875-mad start
+17:43:47 lane 5: q27v3-635bac02-k0.25-mad attempt 1 failed
+17:44:22 lane 5: q27v3-635bac02-k0.25-mad attempt 2 failed
+17:44:58 lane 5: q27v3-635bac02-k0.25-mad attempt 3 failed
+17:45:34 lane 5: q27v3-635bac02-k0.25-mad attempt 4 failed
+17:46:04 lane 5: q27v3-635bac02-k0.25-mad NOT DONE after 4 attempts (claim kept)
+17:46:04 lane 5: q27v3-635bac02-k0.75-mad start
+18:42:46 lane 3,4: q27v3-635bac02-k0.875-mad DONE in 68 min
+18:42:46 lane 3,4: q27v3-635bac02-k0.25-mad start
+18:44:14 lane 3,4: q27v3-635bac02-k0.25-mad DONE in 1 min
+18:44:15 lane 3,4: q27v3-635bac02-k0.125-mad start
+18:44:17 lane 3,4: q27v3-635bac02-k0.125-mad attempt 1 failed
+18:44:49 lane 3,4: q27v3-635bac02-k0.125-mad attempt 2 failed
+18:45:21 lane 3,4: q27v3-635bac02-k0.125-mad attempt 3 failed
+18:45:54 lane 3,4: q27v3-635bac02-k0.125-mad attempt 4 failed
+18:46:24 lane 3,4: q27v3-635bac02-k0.125-mad NOT DONE after 4 attempts (claim kept)
+18:46:24 lane 3,4: q27v3-635bac02-k0.625-mad start
+19:48:43 lane 3,4: q27v3-635bac02-k0.625-mad DONE in 62 min
+19:48:43 lane 3,4: q27v3-635bac02-k0.125-mad start
+19:55:44 lane 5: q27v3-635bac02-k0.75-mad DONE in 129 min
+20:08:16 lane 3,4: q27v3-635bac02-k0.125-mad DONE in 19 min
+20:08:17 stageD: QUANT-DONE
+21:02:47 STAGE D DONE

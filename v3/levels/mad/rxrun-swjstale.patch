@@ -1,0 +1,38 @@
+--- a/pipeline/rxrun/run.py	2026-11-14 21:52:21.482242202 +0000
++++ b/pipeline/rxrun/run.py	2026-11-14 21:52:21.492398303 +0000
+@@ -210,8 +210,26 @@
+ 
+     def is_done(self, lv): return level_current(self.D(lv), self.cfg, lv, self.steps)
+ 
++    def level_stamp(self, lv):
++        p = f"{self.D(lv)}/level/stamp.json"
++        return json.load(open(p))[-1].get("stamp") if os.path.exists(p) else None
++
++    def swj_done(self, lv):
++        """the level's swj pass is done FOR ITS CURRENT ASSEMBLY (w151, #177-03: a requantized level reused the old level's
++        scales because .done was keyed by the level name only). The pass writes level/stamp.json's stamp beside .done; an
++        older .done without it counts only if it is newer than the level's stamp.json. A stale pass dir is removed."""
++        d = f"{self.swjdir()}/{lv['name']}"
++        if not os.path.exists(f"{d}/.done"): return False
++        ls, sp = f"{d}/level_stamp", f"{self.D(lv)}/level/stamp.json"
++        ok = (open(ls).read().strip() == (self.level_stamp(lv) or "")) if os.path.exists(ls) else \
++             (not os.path.exists(sp) or os.path.getmtime(f"{d}/.done") >= os.path.getmtime(sp))
++        if not ok:
++            self.log(f"{lv['name']}: swj pass {d} was fitted on another assembly of this level: redo")
++            shutil.rmtree(d, ignore_errors=True)
++        return ok
++
+     def swj(self, lvs):
+-        S = self.swjdir(); todo = [v for v in lvs if not os.path.exists(f"{S}/{v['name']}/.done")]
++        S = self.swjdir(); todo = [v for v in lvs if not self.swj_done(v)]
+         if not todo: return
+         sw = [d for d in self.devs if "swj" in d.get("kinds", [])]
+         if not sw: raise SystemExit("no device of kind swj")
+@@ -233,6 +251,7 @@
+             rc = self.sh(args, f"{self.root}/swj-{tag}.log", env=env, nice=dev.get("nice", 5))
+         bad = [v["name"] for v in todo if not os.path.exists(f"{S}/{v['name']}/.done")]
+         if rc or bad: raise RuntimeError(f"swj {tag} rc {rc}, not done {bad} ({self.root}/swj-{tag}.log; a rerun resumes)")
++        for v in todo: open(f"{S}/{v['name']}/level_stamp", "w").write((self.level_stamp(v) or "") + "\n")
+         dt = time.time() - t
+         with open(f"{self.root}/swj-times.jsonl", "a") as f: f.write(json.dumps({"levels": [v["name"] for v in todo], "wall": round(dt, 1)}) + "\n")
+         shutil.rmtree(f"{self.root}/swjscr/{tag}", ignore_errors=True)
