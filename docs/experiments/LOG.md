@@ -7550,3 +7550,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   vs IQR **0.0532**, uniform 0.0569; non-Latin docs (6: Persian chat, Korean wiki x2, Russian, Greek, a chat; 11,693
   rows) ours **0.542** vs IQR **0.162**, uniform 0.250; excluding doc 100 still ours 0.137 / uniform 0.109 / IQR 0.093.
   A non-Latin-script effect of our allocation (every one of the 6 docs: ours > uniform > IQR), small n. w163 told.
+- 6:05 PM CST: **V2 has it too** (ver3-8k non-Latin ÷ Latin KL): IQR iq2r 3.0×, our uniform K2.375 4.4×, our 2.5 pick
+  10×, V2 2.50 14×, V2 6.00 10×, ours 6.0 10×. Common factor = our allocation (M1 knapsack / V2 search), not mad /
+  kernels / embedding work. **Calib (board-like) is 3.9% non-Latin by gen rows** (222 docs, 304k rows: Arabic, Persian,
+  Greek, Japanese, Chinese, Hindi, Hebrew, Korean, Bengali, Ukrainian, Thai, ...; `calibnl186.py`). Rough board share
+  at 2.5 (ver3-8k per-script means, small n): ours 0.961·0.0534 + 0.039·0.542 ≈ 0.072 (non-Latin ≈ 29% of it) vs
+  IQR ≈ 0.057, uniform ≈ 0.064 → this is most of our 2.5 board gap. Suspected amplifier: RULES-picks cap 0.2 per
+  document + docmean guard down-weight exactly these high-KL documents. Unverified; w163 swap test pending.
