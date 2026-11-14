@@ -171,3 +171,10 @@ The first four screen ends (fixed eval, decayed 1 M): 1e-3 / A 0.05879 (best), 1
 [1.004, 1.019], 1e-4 / A 1.033 [1.023, 1.043] (ratios vs 1e-3 / A). The best lr is the grid's top edge, so one run is added:
 **lr 3e-3, mix A** (same settings, same fixed eval and monitor), judged by amendment 4's pick rule as a seventh screen
 run. The two remaining runs (3e-4 / B, 1e-4 / B) run as planned. If 3e-3 wins, the 4.0 / 6.0 lr screens add 3e-3 too.
+
+### Amendment 6 — 2026-11-14 7:55 AM CST, before any 6.0 screen run (the 6.0 lr grid)
+At 4.0, lr 1e-3 ended its 1 M screen run **worse** than base on the fixed eval (0.00846 vs 0.00827, +2.3 %; monitor 0.0137 vs
+0.0080) and lr 3e-4 sits at base at step 20 (0.00828). 6.0's KL is ~10× smaller again (control c 0.00057), so the 6.0 grid
+moves down: **{1e-4, 3e-5, 1e-5}** instead of {1e-3, 3e-4, 1e-4, 3e-5}. Pick rule unchanged (lowest fixed-eval KL at the
+decayed 1 M end); if no 6.0 run beats base on the fixed eval, the 6.0 arm is reported as "no gain at 1 M" and not run at 4 M
+(likewise 4.0).
