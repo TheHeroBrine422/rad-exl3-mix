@@ -127,3 +127,15 @@ slice's 3rd use (check).
 - The first run (`runs/inc2.5`, unmasked) is not a result: it is reported as the evidence above and deleted from the
   plan; the new main run starts from step 0 (`runs/inc2.5g`, same seed and settings).
 - 2b runs and their judging use the same masks.
+
+### Amendment 2 — 2026-11-14 12:05 AM CST, before any #181 score (an extra arm: calib-only data at 1 M)
+**Why.** The gen-masked main run's 1 M checkpoint reads +4.3 % on the monitor, all of it one document (calib 1577,
+wildchat, 313 gen rows, 0.30 → 0.86 a row; 30 of 32 monitor docs better, the rest −5.7 %), while on 60 unseen xq-c39
+documents (gen rows) it gains −8.7 %. A 1 M replication of the pilot's data with this trainer (`runs/pilotrep`: calib qad
+pool only, first 2,048 tokens, 8 streams × 1,024 a step, WSD to 1 M, box2 cards 2-3, launched 11:40 PM CST as a trainer
+check) reads −6.5 % on the monitor at 254 k rows. Whether the xcorp-heavy mix or calib-only data serves the board's
+distribution better at equal budget is a V3.1 design question the curve alone cannot answer.
+**Change.** Arm **P1M** = `runs/pilotrep`'s 1 M result, judged exactly like the checkpoints (served path, c + x181g,
+paired vs the same control). Readouts: P1M / control (the rule) and P1M / ckpt-1M (descriptive: same budget, different
+data; "data matters" only if the c CI excludes 1 and x has the same sign). The main run's checkpoints, rules and
+budgets are unchanged; the main run continues (resumed at step 40 on card 0, 3 cards after P1M).
