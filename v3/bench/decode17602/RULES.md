@@ -45,3 +45,8 @@ pre-reboot card-7 rows are kept in `res/c7/` as a cross-card check, not fitted).
 spread rule cannot see. Rule: a pack (uniform or held-out) whose round-a and round-b values differ by > 3 % gets a third
 round (c, after round b, same card); its value is the median of the three rounds. Applied identically to uniform and
 held-out packs.
+
+**Decision under amendment 1 (2026-11-14 1:00 PM CST, uniform fit only; held-out lines were filtered out of the fit's
+output and not read).** Card-6 stamps, rounds a / b / c (median of rounds): residual rms ctx 0 / 8k — median of runs
+0.281 / 1.436 %, **minimum of runs 0.264 / 0.247 %**, median inter-chunk gap 0.264 / 0.254 %. The e2e statistic is the
+**minimum of a row's measured runs**, for the uniform fit and the held-out check alike.
