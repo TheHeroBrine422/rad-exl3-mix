@@ -56,6 +56,17 @@ versions of anything: git history.
 - **Lead decides:** merge `census-mad-v4.patch`; the restart's starts (M1m picks vs uniform starts, given A3); whether to spend card
   time on a pick-shrinkage check (e.g. a pick re-solved with each tensor within ±1.25 K of the size) before the search does it anyway.
 
+### 2026-11-14 10:10 AM CST · #181 · 4.0 lr screen done: **no lr gains at 1 M** (vs unhealed on the fixed eval: 1e-3 1.023 [0.937, 1.085], 3e-4 0.998 [0.977, 1.016], 1e-4 0.993 [0.980, 1.008]) → 4.0 arm not run at 4 M (amendment 6); 2.5 for comparison 0.947 [0.939, 0.958]; 6.0 screen started (w154)
+- **Status:** 6.0 screen on box2 card 0 ({1e-4, 3e-5, 1e-5}), main 2.5 run on cards 2-3 (10.9 M rows) · **Data:**
+  `data/qad181/screen/vsbase.txt`
+- Paired vs the unhealed step-0 read of the same 38 held-out qad docs (95 % doc bootstrap; better / worse docs):
+  2.5: 1e-3 / A 0.9469 [0.9390, 0.9575] (32 / 6), 3e-4 / A 0.9574, 1e-3 / B 0.9566, 3e-3 / A, 1e-4 / A, 3e-4 / B, 1e-4 / B in
+  `vsbase.txt`; 4.0: 1e-3 1.0229 [0.9374, 1.0853] (6 / 32), 3e-4 0.9981 [0.9765, 1.0160] (17 / 21), 1e-4 0.9930
+  [0.9802, 1.0076] (17 / 21).
+- Reading: at 4.0 (KL ~8× below 2.5, swj-refit scales) scale-only QAD at 1 M finds nothing the fixed eval can see; the
+  per-step gradient noise moves the scales around the start (4.0 / 1e-4's curve: −0.7 %, +0.8 %, −0.1 %, −0.1 %, −0.7 %).
+- **Runtime:** none.
+
 ### 2026-11-14 9:10 AM CST · #173-03 · A8 calibration rows on the mad ladder started; menu dump (w158)
 - **Status:** wave 1 (88 rows) scoring on box2 HIP 1 (ds8 HIP 7 held by another job; ds8 0–6 after w151's sub-1 requant) ·
   **Rules:** `search/refit/w158/RULES-173-03.md` (a91e446) and `RULES-173-03b.md` (ac05ee7, the interaction test), each committed
@@ -603,6 +614,22 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-14 1:10 PM CST · #177-03 · ds8 crash (~10:00 AM CST, rebooted ~10:08): sub-1 rebuild resumed on the free cards; crash damage found and cleaned; 42 K ≥ 1 packs + a/b donors intact (w151)
+- **State at the crash:** K ≥ 1 (42 levels, packs, heads, a/b donors) finished before; the sub-1 rebuild had K0.5 / 0.875 / 0.625 /
+  0.75 quantized (the last three then quarantined for stale swj scales, entry below), K0.375 / 0.25 / 0.125 mid-quant, K0.5's swj
+  pass running. Every process of mine died with the machine; after the reboot the menu work (w158 / w159 / the lead) holds HIP 0 /
+  1 / 2 / 6 / 7.
+- **Resume (`stageD.sh`, 11:18 AM CST):** quant lanes on the free HIP 3–4 and 5 (stageC3's lane code), then swj pairs on HIP 3–5
+  after the quant (no card shared between a blocking pass and a lane). Stale claims cleared; K0.5's partial swj dir deleted.
+- **Crash damage (non-fsynced appends):** 11 job dirs with torn `log.jsonl` (K0.125: 7, K0.25: 4; `jobchk.py`) made their levels'
+  assembly fail 4× → those job dirs deleted (rerun) and the claims released; K0.125's `logs/jobs.jsonl` had a torn last line (rxrun
+  reads it at start) → valid lines kept (`.torn` copy beside). Tensor / c9 / diag files are fsync'd by rxq and job.json is written
+  last, so a parsing job.json means a whole job. **Packs:** all 42 intact (1,120 entries, extents inside the file; `packchk.py`);
+  both a/b donors intact (1,072 entries, 48 ssm_ab).
+- **Progress 1:00 PM CST:** sub-1 DONE (phase 1): K0.5, 0.375, 0.875, 0.25; running K0.75 (HIP 5), K0.625 (HIP 3–4); K0.125 next;
+  then the 7 swj passes (~1.7 h on 3 cards). ETA ~4:20 PM CST.
+- **Runtime:** none.
+
 ### 2026-11-14 9:55 AM CST · #177-03 · sub-1 rebuild incident: stale swj scales reused for K0.625 / 0.75 / 0.875 → requantized again (w151)
 - The rebuilt K0.625 + K0.875 swj pass ended in 19 s: rxrun's swj step skips a level whose `ROOT/swj-<scales[:8]>/<level>/.done`
   exists, and the broken levels' swj outputs (07:21–09:25 UTC) were still there (I quarantined the level dirs, not their swj
