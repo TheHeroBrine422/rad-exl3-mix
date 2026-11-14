@@ -37,7 +37,7 @@ class Guard:
                 self.off = f.tell()
                 try: t = json.loads(l).get("tag", "")
                 except ValueError: continue
-                if t.startswith(self.prefix): self.done.add(t)
+                if any(t.startswith(x) for x in self.prefix.split(",")): self.done.add(t)
 
     def coord_alive(self):
         try: pid = int(open(self.pidf).read())
@@ -54,7 +54,7 @@ class Guard:
 
     def step(self):
         self.scan_results()
-        out = subprocess.run([SSH, f"df -BG --output=avail /data | tail -1; ls {MIXES}/ | grep '^{self.prefix}.*\\.rad$' || true"],
+        out = subprocess.run([SSH, f"df -BG --output=avail /data | tail -1; ls {MIXES}/ | grep -E '^({"|".join(self.prefix.split(","))}).*\\.rad$' || true"],
                              capture_output=True, text=True, timeout=60, stdin=subprocess.DEVNULL).stdout.split()
         if not out: self.log("ds8 unreachable"); return
         df = int(out[0].rstrip("G")); rads = out[1:]
