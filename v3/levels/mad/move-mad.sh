@@ -15,7 +15,7 @@ for L in $R/q27v3-*-mad; do
   free=$($BOX root@10.29.6.6 "df -BG --output=avail /data | tail -n 1 | tr -dc 0-9")
   need=$(( $(du -sBG $L | cut -f1 | tr -dc 0-9) + 100 ))
   [ "$free" -ge "$need" ] || { say "box2 has $free GB free, $n needs $need (incl. the 100 GB floor): stop"; exit 1; }
-  nice -n 10 rsync -a --whole-file -e "$BOX" $L/ root@10.29.6.6:$D/$n/ || { say "$n: copy FAIL"; continue; }
+  nice -n 10 rsync -a --whole-file --bwlimit=150000 --rsync-path="ionice -c3 nice -n 19 rsync" -e "$BOX" $L/ root@10.29.6.6:$D/$n/ || { say "$n: copy FAIL"; continue; }   # gentle on box2 (lead 11-14 5:15 AM)
   c=$(nice -n 10 rsync -a --checksum --dry-run --itemize-changes -e "$BOX" $L/ root@10.29.6.6:$D/$n/ | grep -c '^[<>c]')
   [ "$c" = 0 ] && { touch $L/MOVED; say "$n: moved + verified ($(du -sh $L/final | cut -f1))"; } || say "$n: verify FAIL ($c files differ)"
 done

@@ -407,6 +407,9 @@ __device__ __forceinline__ void qtf2_forward0
     // codebook pair of products (p0, p1): the byte sum x 2 is the table's byte offset
     auto decp = [&](uint32_t p0, uint32_t p1) -> half2
     {
+#ifdef EXL3_CB_HASH                           // #177-03 (w151): the mad / hash value is a function of the state (the hook
+        return decode_mul1_product_2(p0, p1); // inverts the product), not of the product's byte sum: no table (KA = 0 only)
+#endif
         const uint8_t* t8 = reinterpret_cast<const uint8_t*>(tab);
 #ifdef QTF2_F0NOTAB                           // timing-only build (output invalid): no table read
         return __halves2half2(__ushort_as_half((uint16_t) __dp4a(p0, 0x02020202u, 0u)), __ushort_as_half((uint16_t) __dp4a(p1, 0x02020202u, 0u)));
