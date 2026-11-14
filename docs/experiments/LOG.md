@@ -7514,3 +7514,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   25.70 / 24.52 (3.5), 27.33 / 26.49 (4.0): ~0.5-4 %, while size moves it 17 % from 2.5 to 4.0. User: drop both λ; no
   λ lanes, no speed frontier. The search runs on KL + size; decode is reported per release pick. Driver decode term
   kept at λ 0; no prefill table built. **Runtime:** neither.
+
+### 2026-11-14 4:50 PM CST · #184 · Prefill optimization pass started (w160, Opus high); box2 taken off the search
+- User: urgent prefill pass. Board gemm_us (trunk GEMMs per layer at 2048 tokens): V2 ~8,050, IQR-V4 ~3,970-4,040
+  (int8), v3.md target ~4,000-4,300. **Correction to the lead's 4:45 PM statement:** ~8,050 is V2's f16 kernel; the V3
+  A8 two-pass path's current gemm_us has not been measured on the mad build: w160 measures it first, ours and IQR's
+  on the same card. Brief `instr3/w160.md`: read IQR-V4's kernels + docs and our exl3i PERF / TWOPASS history in full
+  (user), gap analysis, then changes with KLD rows byte-identical. box2 removed from the #183 search (host slots 0,
+  coordinator restarted 4:47 PM CST); the search runs on ds8 only. **Runtime:** prefill (scored) + eval speed.
