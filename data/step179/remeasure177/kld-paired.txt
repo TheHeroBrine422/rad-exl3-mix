@@ -1,0 +1,18 @@
+K2625 a8 -> gemv-ord: {"mean_a": 0.03901902317096915, "mean_b": 0.03902213730624375, "rel_b_vs_a": 7.981069287543718e-05, "se": 0.0012960821903804977, "rows_scored": 51773, "max_abs_row_diff": 0.6324214935302734}
+K2625 a8 -> f16: {"mean_a": 0.03901902317096915, "mean_b": 0.03890457838333141, "rel_b_vs_a": -0.0029330510693790224, "se": 0.0013675113159803578, "rows_scored": 51773, "max_abs_row_diff": 0.7908077239990234}
+K2625 f16 -> gemv-ord: {"mean_a": 0.03890457838333141, "mean_b": 0.03902213730624375, "rel_b_vs_a": 0.003021724634926226, "se": 0.0012461956938171746, "rows_scored": 51773, "max_abs_row_diff": 0.838129997253418}
+K2625 a8 -> gemv: {"mean_a": 0.03901902317096915, "mean_b": 0.03904453124039324, "rel_b_vs_a": 0.0006537341878682934, "se": 0.0029282064427089867, "rows_scored": 51773, "max_abs_row_diff": 2.7067079544067383}
+K2625 f16 -> gemv: {"mean_a": 0.03890457838333141, "mean_b": 0.03904453124039324, "rel_b_vs_a": 0.0035973364287065213, "se": 0.0023625755516003184, "rows_scored": 51773, "max_abs_row_diff": 1.9159002304077148}
+K2625 a8 (now) vs w150's mad rows: IDENTICAL rows (67932 positions), mean KLD 0.641632
+K2625 gemv-ord (now) vs w150's mad-gemv rows: IDENTICAL rows (67932 positions), mean KLD 0.637723
+K2625 f16 (now) vs w150's mad-f16 rows: IDENTICAL rows (67932 positions), mean KLD 0.639355
+K2625 gemv (now) vs w150's mad-gemv rows: DIFFER: 67932 / 67932 positions; mean KLD 0.637723 -> 0.642935 (delta +0.00521); paired mean dKL +0.00521, max |dKL| 27.8
+K4125 a8 -> gemv-ord: {"mean_a": 0.005259164945258927, "mean_b": 0.005251867492259774, "rel_b_vs_a": -0.0013875687633132516, "se": 0.004017241134567743, "rows_scored": 51773, "max_abs_row_diff": 0.3027993142604828}
+K4125 a8 -> f16: {"mean_a": 0.005259164945258927, "mean_b": 0.005157922059280129, "rel_b_vs_a": -0.019250753120049424, "se": 0.008072802161306012, "rows_scored": 51773, "max_abs_row_diff": 0.6018305199686438}
+K4125 f16 -> gemv-ord: {"mean_a": 0.005157922059280129, "mean_b": 0.005251867492259774, "rel_b_vs_a": 0.01821381399329569, "se": 0.006778129777263915, "rows_scored": 51773, "max_abs_row_diff": 0.37312817573547363}
+K4125 a8 -> gemv: {"mean_a": 0.005259164945258927, "mean_b": 0.005247494733261091, "rel_b_vs_a": -0.0022190237650479006, "se": 0.0055452526402364356, "rows_scored": 51773, "max_abs_row_diff": 0.9344711899757385}
+K4125 f16 -> gemv: {"mean_a": 0.005157922059280129, "mean_b": 0.005247494733261091, "rel_b_vs_a": 0.017366038678270135, "se": 0.010547337958891486, "rows_scored": 51773, "max_abs_row_diff": 1.5363017099443823}
+K4125 a8 (now) vs w150's mad rows: IDENTICAL rows (67932 positions), mean KLD 0.288852
+K4125 gemv-ord (now) vs w150's mad-gemv rows: IDENTICAL rows (67932 positions), mean KLD 0.294928
+K4125 f16 (now) vs w150's mad-f16 rows: IDENTICAL rows (67932 positions), mean KLD 0.286568
+K4125 gemv (now) vs w150's mad-gemv rows: DIFFER: 67932 / 67932 positions; mean KLD 0.294928 -> 0.291095 (delta -0.00383); paired mean dKL -0.00383, max |dKL| 37.7

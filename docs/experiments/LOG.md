@@ -4,6 +4,31 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 1:25 AM CST · #177-02 correction / #179 · mad decode re-measured after the KS counter fix (fdd480c): e2e ×0.781 / ×0.912 vs the i8 twins (was ×0.770 / ×0.904 on the race); the decode-path KLD stands (a race-free build reproduces w150's rows byte for byte) (w152)
+- **Status:** done (lead note 11-13 11:00 PM CST) · **Machine:** box2 card 1 · **Code:** qc-exl3-v3 fdd480c (the counter
+  fix, = `v3/bench/step179/kctr-key.patch`); `qc-exl3-v3-step` rebased on it (6fb093e, 3dbf3c4, 2a49430, cecfc64, c34d508:
+  the correction is also under exl3i PERF.md's e2e table); scripts `v3/bench/step179/` (`e2b.sh`, `kldenv.sh`, `q13.sh`,
+  `q14.sh`) · **Data:** `data/step179/remeasure177/` (e2e jsonl + `e2e.txt`, KLD reports, `kld-paired.txt`)
+- **What ran on the race:** every mad decode number before fdd480c — #177-02's e2e table (b7 / b8 rows), w150's per-op
+  decode profile, and anything else that decoded on mad's xb rows (the overlapped z / qkv and k / v / qg GEMVs shared
+  KS's per-stream counters: non-finite logits after a few tokens). Prefill (A8) and mul1i8 were never affected.
+- **e2e decode** (w150's e2b settings: ctx 0 gen 256, 3 runs a round, 2 rounds interleaved; server ms / step; home =
+  fdd480c's tree; i8 = w139's twins): K2.625 i8 32.53, mad nt_pass (f16 rows) 27.27 (×0.838), GEMV + own pre-pass 27.17,
+  **GEMV on xb rows 25.39 (×0.781; was 24.96)**, + #179's step 24.82 (×0.763); K4.125 i8 33.58, nt_pass 31.44 (×0.936),
+  pre-pass 31.44, **xb rows 30.61 (×0.912; was 30.36)**, + #179 29.95 (×0.892). The int8-row GEMV's gain over f16 rows:
+  −6.9 % / −2.6 % (was −8 % / −3 %). 8k prefill as before (mad 2,407–2,421 / 2,369–2,379 vs i8 2,369 / 2,365 tok/s).
+- **Decode-path KLD** (EXL3I_MAD_SPLIT=1 + EXL3I_A8_MIN_ROWS=1e6: every prefill launch as 8-row GEMV pieces; paired,
+  gen-masked, cmp115.py): **unchanged**. A race-free build (fdd480c's parent with exl3i's `rad_kernel_concurrent` 0: every
+  launch ordered) gives w150's GEMV rows byte for byte at K2.625 and K4.125, and the A8 / f16 arms are byte-identical too:
+  A8 → GEMV +0.008 % (SE 0.13 %) / −0.14 % (SE 0.40 %), f16 → GEMV **+0.30 % (SE 0.12 %) / +1.8 % (SE 0.68 %)** — the
+  overlapped prefill launches did not collide in those passes. On fdd480c itself the SPLIT knob is no longer faithful: its
+  pieces key their own counters (distinct y offsets), use up the 64 slots, and later pieces run unsplit (deterministic,
+  another f32 order: A8 → GEMV +0.065 % ± 0.29 % / −0.22 % ± 0.55 %, same conclusion). Serving keys only buffer bases
+  (< 20 keys). Before using the knob again: key its pieces by the op's output base (nt.c).
+- **For the int8-decode decision:** int8 rows at decode = the A8 path's numerics (+0.3 % / +1.8 % KL vs f16 rows at K2.625 /
+  K4.125) for −6.9 % / −2.6 % decode time (was quoted −8 % / −3 %).
+- **Runtime:** D (measurement only).
+
 ### 2026-11-14 1:05 AM CST · #181 · first curve point on the served path: 1 M checkpoint verify **0.937 [0.925, 0.950]**, fresh xcorp **0.884 [0.837, 0.920]**; calib-only data at 1 M (P1M) 0.948 / 0.930, **the xcorp-heavy mix beats it on both** (c 1.012 [1.002, 1.024], x 1.052 [1.011, 1.105]); identity gate PASS (w154)
 - **Status:** running (main run on box2 cards 0, 2, 3 at step ~120; 4 M branch next) · **Machine:** box2 (packs, mixes,
   census), ds8 card 7 (scores, free while w155 had not taken it) · **Data:** `data/qad181/eval-inc2.5/`
