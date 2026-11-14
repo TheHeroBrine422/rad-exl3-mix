@@ -6498,3 +6498,20 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   the ladder requant with codebook hash (w151: all levels + R16 heads + a/b T4 / T5 donors) in parallel; then the
   search restart on mad levels (speed tables re-measured on mad kernels). mul1i8 packs deleted once the mad ladder is
   verified (user OK at that point). **Runtime:** D (decode ×0.70–0.9 at K2–K4 projected), P (to measure).
+
+### 2026-11-13 7:15 PM CST · #177 · Thor proxy array (w139's l177, 48 jobs, done): longer trellis state L17–L20 per codebook
+- CPU proxy (#113's harness, Hessian-weighted relative weight error after LDLQ + refit; 8 tensors × K2 / K4 for the
+  IQR-A arms, 27 tensor-K jobs for w139's A; `data/hash177/l177/`, `cmp.py`). Normalized to IQR's mad (A 0xB5297B) L16:
+  | arm | K2 | K4 |
+  |---|---|---|
+  | mad, IQR's A (0xB5297B), L16 | 1.000 | 1.000 |
+  | **mad, w139's A (0xd0474b), L16 (our choice)** | 0.993–1.004 | **0.978–0.982** |
+  | mul1i8 L16 (today) | 0.985–0.991 | 0.970–0.977 |
+  | mad 0xd0474b L18 | 0.982–0.989 | 0.964–0.973 |
+  | mul1i8 L18 / beam L20 | ~0.985 / 0.975–0.983 | ~0.962–0.965 |
+  | mad 0xB5297B L20 exact / beam 64k | 0.973–0.978 | 0.947–0.955 |
+  w139's A beats IQR's by ~2 % at K4 (equal at K2); mul1i8 L16 is ~0.8 % better than mad L16 at K4 in proxy (consistent
+  with stage 3's K4.125 calib ×1.037 being within noise). L18 = −1.0…−1.6 % vs L16 of the same code; L20 = −2…−3 % vs our
+  mad L16. Cost: L20 exact 690 s vs 47 s LDLQ a tensor on CPU (beam 64k 6,500 s); no GPU Viterbi above L16.
+- **Decision (lead, per the 7:05 PM plan):** mad L16 (A 0xd0474b) for the requant tonight. A GPU L18 / L20 encoder is a
+  V3.1 candidate (≈ 2–3 % KL ≈ 0.02–0.03 bpw; same decode in the byte-sum form, state < 2^24). **Runtime:** none.
