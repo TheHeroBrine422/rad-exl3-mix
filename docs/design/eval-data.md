@@ -89,3 +89,12 @@ selection (~100 scorings, the #171 monitor). What V3.1 / V4 judge on is open (us
   the ≤ 0.98 rule) and the user dropped it (2026-11-06; the remaining arms were cancelled). Broader corpora for
   statistics are a question for future models (BACKLOG).
 - So xcorp's roles in V3 are evaluation (search slices) and training data (healing), not quantizer statistics.
+
+## Amendment 2026-11-14 (user + lead, after #181's finding): every slice scores the board's gen rows only
+The board scores a row only if its next token is one the model writes itself (challenge README "The score"; calib's
+official `gen.u8`). Our 27B xcorp / trace goldens were recorded with an all-ones mask, and on the x parts the prompt-side
+rows carried 73-83% of the KL (#181, w154). From now on every golden that decides or reports anything carries the
+board's mask, rebuilt from tokens by `v3/qad181/genmask181.py make` (verified identical to calib's official mask on all
+10.25M rows; intersected with any mask the golden already has). Applies to the search slices s173a-f (whole + x), the
+final-pick slice golden-final750 and its x part, and every new slice. The old all-ones masks are kept as `gen.u8.all`.
+Decisions taken before this on x parts (the paused #171 search) are superseded by the restart, not re-read.
