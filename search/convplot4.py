@@ -95,12 +95,58 @@ def walk(state_path):
                 incbpw=incbpw, inc_hist=[e for e in st if e["ev"] == "incumbent"])
 
 
+def track_panel(axT, W, a, sizes):
+    """(#183) the fixed tracking slice: each incumbent's full score there (one measurement each, no chaining), plotted
+    at the step it became incumbent, ÷ IQR-V4 at the same bpw on the same slice (log-linear between IQR's measured
+    sizes); raw KL until two IQR sizes are measured"""
+    step_of, step = {}, 0
+    for e in W["st"]:
+        if e["ev"] == "result": step += 1
+        elif e["ev"] == "incumbent": step_of.setdefault(e["tag"], (step, float(e["size"])))
+    T = [json.loads(l) for l in open(a.track) if l.strip() and '"trk183-' in l]
+    refs = [json.loads(l) for l in open(a.track_refs)] if a.track_refs and os.path.exists(a.track_refs) else []
+    iq = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("iq"))
+    v2 = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("v2"))
+    rel = len(iq) >= 2
+    ser = collections.defaultdict(list)
+    for r in T:
+        t = r["tag"][len("trk183-"):]
+        if t not in step_of or r.get("kld") is None: continue
+        st_, size = step_of[t]; y = r["kld"]
+        if rel:
+            q = loglin(iq, r["bpw"], extrap=True)
+            if q is None: continue
+            y = y / q
+        ser[size].append((st_, y))
+    cm = plt.get_cmap("viridis")
+    allsz = sorted(set(sizes) | set(ser))
+    for i, size in enumerate(sorted(ser)):
+        p = sorted(ser[size]); xs = [x for x, _ in p] + [W["steps"]]; ys = [y for _, y in p] + [p[-1][1]]
+        axT.step(xs, ys, where="post", color=cm(allsz.index(size) / max(1, len(allsz) - 1)), marker="o", ms=3,
+                 label=f"{size:g}: {p[-1][1]:.3f}")
+    if rel:
+        axT.axhline(1.0, color="k", lw=1)
+        if len(v2) >= 2:                                    # V2 ÷ IQR at our sizes: where V2 sits on this scale
+            for i, size in enumerate(sorted(ser)):
+                b = size; q, v = loglin(iq, b, extrap=True), loglin(v2, b, extrap=True)
+                if q and v: axT.plot([W["steps"] + 0.5], [v / q], marker="_", ms=14, color=cm(allsz.index(size) / max(1, len(allsz) - 1)))
+        axT.set_ylabel(f"KL ÷ IQR-V4 at the same bpw ({a.track_name})")
+    else:
+        axT.set_ylabel(f"raw KL on {a.track_name} (IQR-V4 refs pending: {len(iq)} of 2+)")
+    axT.set_yscale("log"); axT.grid(alpha=.3); axT.legend(fontsize=7.5, ncol=6, title="size: latest", title_fontsize=8, loc="upper right")
+    axT.set_title(f"Fixed tracking slice {a.track_name}: every incumbent scored in full on the same documents (never decides); "
+                  f"no chaining{'; right ticks = V2 there' if rel and len(v2) >= 2 else ''} — refs IQR {len(iq)}, V2 {len(v2)}", fontsize=10)
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="convplot4.py")
     ap.add_argument("state"); ap.add_argument("out")
     ap.add_argument("--refs", action="append", default=[]); ap.add_argument("--results")
     ap.add_argument("--monitor", default="ver3-8k"); ap.add_argument("--docs", help="the coordinator's per-document sums dir")
     ap.add_argument("--slice-kld", action="append", default=[], help="SLICE=kld.json: the slice's documents' parts (c / x)")
+    ap.add_argument("--track", help="(#183) results.jsonl holding the tracking slice's trk183-<incumbent tag> rows: a middle panel")
+    ap.add_argument("--track-refs", help="(#183) {name, bpw, kld} reference rows on the tracking slice (iq* / v2-*)")
+    ap.add_argument("--track-name", default="t183")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     a = ap.parse_args(argv)
     R = load_refs(a.refs + ([a.results] if a.results else []))
@@ -144,8 +190,13 @@ def main(argv=None):
     act = [s for s, kind, _ in W["events"] if kind == "act"]
     segs = [("f16", 0, act[0] if act else W["steps"] + 1)] + ([("A8", act[0], W["steps"] + 1)] if act else [])
     sizes = sorted({s for s, _ in W["accepts"]})
-    fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1])
-    ax = fig.add_subplot(gs[0]); ax2 = fig.add_subplot(gs[1], sharex=ax)
+    if a.track:
+        fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
+        ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax); ax2 = fig.add_subplot(gs[2], sharex=ax)
+        track_panel(axT, W, a, sizes)
+    else:
+        fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1])
+        ax = fig.add_subplot(gs[0]); ax2 = fig.add_subplot(gs[1], sharex=ax)
     skipped = set(); summary = []
     for m, s0, s1 in segs:
         ks = [(s, m) for s in sizes if (s, m) in anchor and v2(bpw_at(s, s0)) is not None]
