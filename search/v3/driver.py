@@ -32,7 +32,8 @@ Loop (one pass a few seconds; never waits on one eval):
                done, a move kind by share (moves.kind_shares: V2's kind rewards), moves.generate inside the size's byte
                window [target - size_tol, target]; appended to the queue with the early-stop block (rule + the
                incumbent's per-document sums on the slice, in the golden's order)
-  monitor      (CONF "monitor": {"name", "golden", "alert_min", "alert_frac"}): every accept (a band's new best) is also
+  monitor      (CONF "monitor": {"name", "golden", "alert_min", "alert_frac", "when"}): every accept ("when": "accept", default;
+               "rotate" = each size's incumbent once per slice rotation, #183) (a band's new best) is also
                scored on the held-out monitor golden (ver3-8k: verify pool, whole, no early stop; never a fit row, never a
                decision). Each read vs the size's best so far: (b) capped and (c) per-document mean with paired
                bootstrap CIs (pickstat.py; the "monitor" event's "stats", pooled (a) beside, never alone); "best" =
@@ -399,7 +400,7 @@ class Driver:
             self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old})
             self.log(f"ACCEPT {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) vs {old}; {s['bpw']:.4f} bpw")
             mc = self.c.get("monitor")
-            if mc:                                                          # the band's new best -> the held-out monitor
+            if mc and mc.get("when", "accept") == "accept":                 # the band's new best -> the held-out monitor
                 self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
                             slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
         else:
@@ -634,9 +635,22 @@ class Driver:
             nxt = [n for n, s in self.reg.d["slices"].items() if s["status"] == "ready"]
             if nxt:
                 new = self.reg.activate_next(); self.rec({"ev": "rotate", "to": new, "from": act})
-                self.log(f"ROTATE {act} -> {new}"); self.set_act(new); return new
+                self.log(f"ROTATE {act} -> {new}"); self.set_act(new); self.monitor_at_rotation(); return new
             if not getattr(self, "_warned", False): self.log(f"rotation due on {act} but no ready slice: build one (slices.py)"); self._warned = True
         return act
+
+    def monitor_at_rotation(self):
+        """CONF monitor "when": "rotate" (#183, user 11-14: the fixed tracking slice is the per-accept curve; the verify
+        monitor is a slower long-context check): at each rotation every size's incumbent without a monitor read yet is
+        scored on the monitor once"""
+        mc = self.c.get("monitor")
+        if not mc or mc.get("when", "accept") != "rotate": return
+        read = {m.get("of") for v in self.mon.values() for m in v} | {e.get("of") for e in self.sub.values() if e.get("kind") == "monitor"}
+        for size in self.sizes:
+            t = self.inc.get(size)
+            if t is None or t in read or size in self.stopped_sizes: continue
+            self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
+                        slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
 
     def set_act(self, slice_name):
         """at a rotation: CONF "act" takes effect (w132, #172); the incumbents' monitor reads are redone in the new mode"""

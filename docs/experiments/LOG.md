@@ -7465,3 +7465,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   References being scored on t183 (ds8 refs/refdl.sh: V2 1.5-7.0, IQR-V4 iq2r … iq7r; downloads ~30 MB/s, a few hours).
 - **xscale:** fitted λ on #183's gen-masked rows = **1.02** (old #171, unmasked: 0.68) — x and calib ratios now agree; the
   fitted term stays on (self-correcting), no change. **Runtime:** neither.
+
+### 2026-11-14 4:45 PM CST · #183 · Status page; ver3-8k monitor once per rotation
+- `/workspace/v3-status.png` (convplot4 `--track`, every 15 min): training estimate / t183 tracking slice (÷ IQR-V4 at
+  the same bpw once its refs land; raw KL until then) / ver3-8k validation, one x-axis.
+- User 11-14: t183 is the per-accept progress curve; the verify monitor ver3-8k (long docs up to 8k) becomes a slower
+  long-context check: driver CONF monitor "when": "rotate" scores each size's incumbent there once per slice rotation
+  (if not read yet), not on every accept. Saves ~1 full eval per accept and verify reuse. Alerts (alert_min 50) now
+  see fewer reads. **Runtime:** neither.
