@@ -64,6 +64,24 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-13 9:45 PM CST · #177-03 · stage C rescheduled after a stall (lead note 9:40 PM): quant on HIP 0–4 in two lanes, swj alone on HIP 5–6; ETA ~7:40 AM CST 11-14 (w151)
+- **Stall:** stageC.sh (8:30 PM) ran quant on HIP 0–6 and the swj loops on HIP 5 / 6 through the same card locks. rxrun's pool had
+  queued K3.75's last (duplicate-seed) jobs on card 5's workers, which waited for card5.lock while the swj pass K3.25 + K3.5
+  (~50 min) held it; quant runs one level at a time, so ~8:57–9:38 PM the other cards idled. My scheduling error (cards shared
+  between a blocking pass and a one-level-at-a-time queue).
+- **Fix (`v3/levels/mad/stageC2.sh`):** quant and swj never share a card. Two quant lanes (HIP 0–2 and 3–4), each claims
+  the next level in the stage-C order (K2.625–4.5, then 0.125–2.375, then 4.625–7.5; `ladder-mad/qclaim/`) and builds it
+  with its own rxrun.run, so two levels run at once and a level's tail idles one lane at most; swjC.sh keeps HIP 5 and 6
+  (pairs, lowest K first, claims `ladder-mad/swjclaim/`). Lanes skip swj-claimed levels, so a quant rerun never redoes a level's
+  post during its swj redo. HIP 7 stays w153's. The stalled run was stopped 9:37 PM; K3.75 resumes in a lane (dups + assembly).
+- **Progress:** done = K3.25, K3.5 quant (swj running on HIP 5); K3.75 jobs done. **ETA ~7:40 AM CST (11-14)**: quant
+  46 levels × ~3,600 card-s / 5 cards ≈ 9.2 h; swj 34 levels in pairs × 0.85 h / 2 cards ≈ 7.2 h + the last pass. Live:
+  ds8 `/data/q27/ladder-mad/status-c.txt` (rewritten after every level; rxrun's own status.txt shows one run only).
+- **Lead answers (8:50 PM):** stage B accepted (K4 stays unverified, no second slice); heads = the 45 i8 plans re-made with mad
+  (`u<K>`), mul1 plans unchanged. Head gate PASS (staged ourq rebuilds w122's R16s003 K4 i8 head byte for byte: 7 tensors /
+  arrays). `after.sh` starts the heads, then the a/b donors, when stage C logs "STAGE C DONE".
+- **Runtime:** none.
+
 ### 2026-11-13 8:35 PM CST · #177-03 · stage B: mad K2.5 / K4 / K6 built (swj at K2.5 / K4), spot check vs the i8 twins on s173e — **nothing off: mad ≈ i8** (pooled R 0.948 / 0.902 / 0.907; K4 "better" by the rule, unverified, tail-driven); proxy MSE ×1.009 / 1.008 / 1.017; K2.5 / K4 handed to w150 (w151)
 - **Status:** stage B done → stage C (rest of the ladder) next · **Machine:** ds8 HIP 0–6 (quant), HIP 0 (swj), HIP 6
   (scores) · **Code:** rad-exl3-mix 0ce451c staged (codes stamp 635bac02, code stamp c3ee8275), `v3/levels/mad/`
