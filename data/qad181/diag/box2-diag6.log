@@ -1,0 +1,13 @@
+doc 0: no scored rows
+doc 1: 2047 rows, KL(golden || torch bf16) mean 0.00047 median 0.000384 p99 0.002 max 0.01, rows > 1 nat 0 (4 s)
+doc 2: 2047 rows, KL(golden || torch bf16) mean 0.00044 median 0.000257 p99 0.003 max 0.02, rows > 1 nat 0 (4 s)
+doc 3: 2047 rows, KL(golden || torch bf16) mean 0.00030 median 0.000088 p99 0.002 max 0.01, rows > 1 nat 0 (3 s)
+calib docs with gen-dense first 2k: 364
+slices/sub-calib6: 4 docs, 8188 rows
+    t0 = time.time(); n = min(a.cap, g.ntok(i))
+                                     ~~~~~~^^^
+  File "/data/q27/w154/code/v3/qad181/data181.py", line 39, in ntok
+    def ntok(self, i): return self.docs[i]["tokens"]
+                              ~~~~~~~~~^^^
+IndexError: list index out of range
+DIAG6 DONE

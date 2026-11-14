@@ -1,0 +1,7 @@
+11-14 12:37 AM CST GATE PASS inc2.5: control rows on s171d byte-identical to w147's B rows
+11-14 12:37 AM CST inc2.5 ctl (card 7) 
+11-14 12:45 AM CST inc2.5 ctl: c 0.04337 (94135 pos), x 0.05619 (152007 pos)
+11-14 12:46 AM CST inc2.5 a1m (card 7) scales inc2.5g/ckpt-1e+06
+11-14 12:54 AM CST inc2.5 a1m: c 0.04063 (94135 pos), x 0.04970 (152007 pos)
+11-14 12:54 AM CST inc2.5 p1m (card 7) scales pilotrep/ckpt-1e+06
+11-14 1:02 AM CST inc2.5 p1m: c 0.04114 (94135 pos), x 0.05226 (152007 pos)

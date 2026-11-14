@@ -1,0 +1,4 @@
+v2-3.00: I kld:   pi-sessions               12282 pos  mean 2.11926  median 0.045340  p99 24.8110  p99.9 30.9042  top-1 72.46%
+v2-4.00: I kld:   pi-sessions               12282 pos  mean 1.43467  median 0.010470  p99 23.2317  p99.9 32.7222  top-1 79.93%
+diag/stu-u2.5-tr6.npz: KL/row 2.190030 over 12282 rows, 6 docs, 15 s
+DIAG2 DONE

@@ -1,0 +1,11 @@
+slices/sub-calag-all: 6 docs, 24570 rows
+doc 0: 4095 rows, KL(golden || torch bf16) mean 0.01763 median 0.000823 p99 0.211 max 3.45, rows > 1 nat 4 (24 s)
+doc 1: 4095 rows, KL(golden || torch bf16) mean 0.01763 median 0.000823 p99 0.211 max 3.45, rows > 1 nat 4 (5 s)
+doc 2: 4095 rows, KL(golden || torch bf16) mean 0.40768 median 0.003916 p99 12.350 max 32.38, rows > 1 nat 232 (5 s)
+doc 3: 4095 rows, KL(golden || torch bf16) mean 0.31909 median 0.002153 p99 9.462 max 24.85, rows > 1 nat 185 (5 s)
+doc 4: 4095 rows, KL(golden || torch bf16) mean 0.01475 median 0.000954 p99 0.187 max 0.59, rows > 1 nat 0 (5 s)
+doc 5: 4095 rows, KL(golden || torch bf16) mean 0.27954 median 0.001288 p99 8.335 max 28.48, rows > 1 nat 172 (5 s)
+ref-calag-all.npz docs 6 rows 24570: KL(golden||bf16) mean 0.1761 median 0.001466; rows > 1 nat 2.43% holding 0.1487 nats/row; max 32.4
+gen rows (scored by the board): 929 rows, mean 0.0003, rows > 1 nat 0.00%, max 0.0
+non-gen rows (unscored): 23641 rows, mean 0.1830, rows > 1 nat 2.53%, max 32.4
+DIAG10 DONE

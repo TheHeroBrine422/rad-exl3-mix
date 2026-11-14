@@ -1,0 +1,8 @@
+diag/spike-base.npz: KL/row 0.333381 over 15334 rows, 6 docs, 19 s
+diag/spike-ck1m.npz: KL/row 0.334429 over 15334 rows, 6 docs, 19 s
+calib 16: rows 8192, base KL/row 0.3624, ckpt-1M 0.3379
+calib 2857: rows 3191, base KL/row 0.0923, ckpt-1M 0.0873
+calib 3822: rows 1156, base KL/row 0.2644, ckpt-1M 0.3780
+calib 4678: rows 670, base KL/row 1.0422, ckpt-1M 1.0812
+calib 2601: rows 1812, base KL/row 0.4140, ckpt-1M 0.3590
+calib 1577: rows 313, base KL/row 0.3017, ckpt-1M 0.8608

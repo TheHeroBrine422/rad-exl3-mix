@@ -1,0 +1,11 @@
+diag/mon-ck4e+06.npz: KL/row 0.058543 over 27631 rows, 32 docs, 36 s
+diag/mon-ck2e+07.npz: KL/row 0.058245 over 27631 rows, 32 docs, 35 s
+total 0.05854 -> 0.05824 ratio 0.9949; docs better 12 worse 20 of 32
+largest increases (doc idx in list, rows, base KL/row, ck KL/row, delta sum):
+  17 rows 2005 0.1222 -> 0.1246 delta +4.7
+  11 rows 285 0.1140 -> 0.1245 delta +3.0
+  29 rows 2048 0.0562 -> 0.0575 delta +2.8
+  14 rows 1947 0.0363 -> 0.0376 delta +2.5
+  8 rows 1699 0.0762 -> 0.0771 delta +1.6
+  2 rows 1631 0.0260 -> 0.0268 delta +1.3
+sum of deltas -8.2; without the top 2: -15.9 -> ratio 0.9902

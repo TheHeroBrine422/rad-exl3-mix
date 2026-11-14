@@ -1,0 +1,5 @@
+doc 0: 2047 rows, KL(golden || torch bf16) mean 0.24787 median 0.000379 p99 9.479 max 36.26, rows > 1 nat 54; student rows > 10 nats 184: bf16-ref KL there mean 1.917, student KL elsewhere 0.6107 (59 s)
+doc 1: 2047 rows, KL(golden || torch bf16) mean 0.34292 median 0.000633 p99 8.862 max 25.82, rows > 1 nat 109; student rows > 10 nats 198: bf16-ref KL there mean 1.717, student KL elsewhere 0.8456 (4 s)
+doc 0: 2047 rows, KL(golden || torch bf16) mean 0.04353 median 0.000466 p99 0.222 max 26.25, rows > 1 nat 9; student rows > 10 nats 21: bf16-ref KL there mean 3.084, student KL elsewhere 0.1499 (47 s)
+doc 1: 2047 rows, KL(golden || torch bf16) mean 0.04555 median 0.000443 p99 0.256 max 23.14, rows > 1 nat 11; student rows > 10 nats 36: bf16-ref KL there mean 1.656, student KL elsewhere 0.2119 (3 s)
+DIAG4 DONE

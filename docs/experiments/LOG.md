@@ -4,7 +4,39 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
-### 2026-11-14 2:45 PM CST · #176-02 · Decode speed table from e2e on the mad kernels (f16 decode): prices for every K ≥ 1 trunk level × tensor type, the 62 R16 head plans, trellis embeddings and a/b; held-out check **PASS** (5 / 5 mixes within 2 %, worst −1.37 %) (w159)
+### 2026-11-14 2:55 PM CST · #181 · **stopped by the user (cards to the search)**: 2b u2.5 arm and arm Q stopped unfinished (state saved); summary, resume points, next steps (w154)
+- **Status:** stopped (user via lead, 2:50 PM CST). u2.5g saved at main step 37 of ~190 (4 M budget), q2.5g (arm Q) at step 11:
+  no results from either. No QAD process left on box2 / ds8; box2 card locks released; eval mixes deleted (rows / results
+  kept). Rules and amendments 1–6 committed before their data (a623415 … fef0486; amendment header times run a few minutes
+  ahead of their commits — the commit times are the record).
+- **Results:** 2.5 curve (served path, healed / control): verify c −6.3 / −6.7 / −5.7 % (0.937 / 0.933 / 0.943) at 1 / 4 / 16 M
+  gen rows, xcorp x −11.6 / −16.5 / −19.2 % (0.884 / 0.835 / 0.808); adjacent steps do not gain by the rule (calib flat
+  past 1 M). Screen at 1 M (held-out qad eval): lr 1e-3 + mixed data best (0.947 vs base), calib-only / lr 3e-4 / 1e-4 / 3e-3
+  worse. 4.0: no gain at 1 M (best 1e-4 0.993 [0.980, 1.008]); 6.0: none (best 1e-5 1.009 [0.980, 1.045]).
+- **Throughput / cost:** one R9700 264 tokens/s alone (GPU-bound: GEMMs 46 %, int8 → bf16 / f32 casts 21 %, scale muls 13 %);
+  data-parallel ~225 tokens/s a card (~1.18 tokens a gen row); budgets 1 / 4 / 16 M gen rows ≈ 1.5 / 6 / 23 R9700-h of
+  training; a served-path judgement ≈ 0.2 card-h + ~10 min CPU.
+- **Resume points:** box2 `/data/q27/w154/runs/` (inc2.5g: state at main step 612 = 12.8 M rows, branches 1 / 4 / 16 M
+  done, resumable toward 40 M; u2.5g / q2.5g: state.pt, resumable; all screen runs' ckpts); backups of the checkpoints'
+  params and the three states in `rad-local/workers/w154/ckpts/`; data on box2 + ds8 `/data/q27/w154/{gold,genmask,vl,slices}`
+  (box2 78 + 14 GB, ds8 31 + 7 GB). Relaunch any run with the same `run181.sh` line (README); `--build-group 1` on box2.
+- **Next (not run):** data-mix screen with more calib / qad share (e.g. 25 / 50 % calib rows) at 1 M, judged on the fixed eval;
+  the 2b u2.5 arm and arm Q at 4 M; at 4.0 / 6.0 a calib-weighted mix (the xcorp-heavy mix may pull calib-like text the
+  wrong way there); the search's x parts re-read on gen rows.
+- **Runtime:** none.
+
+### 2026-11-14 2:30 PM CST · #181 · 6.0 lr screen done: **no lr gains at 1 M** (vs unhealed on the fixed eval: 1e-4 1.016 [0.989, 1.043], 3e-5 1.013 [0.980, 1.048], 1e-5 1.009 [0.980, 1.045]) → no 6.0 arm at 4 M; arm Q relaunched; box2 limits applied (w154)
+- **Status:** 2b u2.5 arm (card 2) and arm Q (card 0, relaunched 2:25 PM CST) at 4 M; ≤ 2 QAD runs on box2 (lead 5:15 AM / 1:55 PM
+  CST notes, read at 1:50 PM); eval mixes deleted once scored · **Data:** `data/qad181/screen/vsbase.txt`
+- 6.0 base on the fixed eval 0.001086; every lr drifts above it early (+1.3 … +2.6 % at steps 10–30) and ends within noise.
+- **Size summary at 1 M (fixed held-out qad eval, best lr):** 2.5 0.947 [0.939, 0.958] (lr 1e-3); 4.0 0.993 [0.980, 1.008]
+  (1e-4); 6.0 1.009 [0.980, 1.045] (1e-5). Scale-only QAD gains where the quantization error is large and finds nothing
+  measurable at ≥ 4.0 (swj-refit scales, KL 8–60× smaller). Hypothesis, not tested: at high bpw the remaining error is
+  distribution-specific and the 80 %-xcorp mix pulls calib-like text the wrong way; a calib-weighted mix may differ there.
+- Arm Q was stopped at step 4 at 1:50 PM CST (3 concurrent QAD runs > the lead's limit of 2) and restarted from scratch.
+- **Runtime:** none.
+
+### 2026-11-14 2:15 PM CST · #176-02 · Decode speed table from e2e on the mad kernels (f16 decode): prices for every K ≥ 1 trunk level × tensor type, the 62 R16 head plans, trellis embeddings and a/b; held-out check **PASS** (5 / 5 mixes within 2 %, worst −1.37 %) (w159)
 - **Status:** done for f16 decode (int8-decode column running, lead note 2:30 PM; sub-1 levels not priced: no packs since
   the ds8 reboot) · **Machine:** ds8 HIP 6 (all fitted rows), HIP 7 (pilot + pre-reboot rows: cross-card check) · **Code:**
   `v3/bench/decode17602/` (rules ed41023; amendments 9576452, 215158d, decision 84b9ab0) · **Data:** `data/decode17602/`

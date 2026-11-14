@@ -1,0 +1,9 @@
+10:2048 956:2048 2005:2048 3201:2048
+slices/sub-calib4: 4 docs, 8188 rows
+slices/sub-xqa2k: 1 docs, 2047 rows
+  File "/data/q27/w154/code/v3/qad181/data181.py", line 59, in targets
+    t = np.asarray(self.top[r[0]:r[-1] + 1])[r - r[0]]
+                            ~^^^
+IndexError: index 0 is out of bounds for axis 0 with size 0
+doc 0: 2047 rows, KL(golden || torch bf16) mean 0.77729 median 0.001379 p99 16.132 max 29.63, rows > 1 nat 251 (34 s)
+DIAG5 DONE

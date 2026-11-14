@@ -1,0 +1,30 @@
+{
+ "tag": "a16m",
+ "vlevel": "/data/q27/w154/vl/inc2.5",
+ "scales": "/data/q27/w154/runs/inc2.5g/ckpt-2e+07",
+ "served": {
+  "mix": "/data/q27/w154/served/v3s171-2.5-block-00626.mix",
+  "base": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad",
+  "head": "/data/q27/w154/donors/hd-u2.75.rad",
+  "emb": "/data/q27/w154/donors/emb-bf16.rad",
+  "act": "a8g128"
+ },
+ "emb": "bf16",
+ "bytes": 12555792384,
+ "slices": {
+  "c": {
+   "golden": "/data/q27/w125/slices/golden-verify27-w114",
+   "rows": "/data/q27/w154/eval/inc2.5/a16m/score-c.json.rows",
+   "kld": 0.04090697945851978,
+   "positions": 94135,
+   "docs": 82
+  },
+  "x": {
+   "golden": "/data/q27/w154/slices/golden-x181g",
+   "rows": "/data/q27/w154/eval/inc2.5/a16m/score-x.json.rows",
+   "kld": 0.04538483408750505,
+   "positions": 152007,
+   "docs": 150
+  }
+ }
+}

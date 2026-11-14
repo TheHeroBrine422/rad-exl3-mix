@@ -1,0 +1,9 @@
+slices/sub-calag: 6 docs, 24570 rows
+doc 0: no scored rows
+doc 1: no scored rows
+doc 2: 222 rows, KL(golden || torch bf16) mean 0.00017 median 0.000001 p99 0.002 max 0.01, rows > 1 nat 0 (5 s)
+doc 3: 525 rows, KL(golden || torch bf16) mean 0.00038 median 0.000001 p99 0.005 max 0.02, rows > 1 nat 0 (5 s)
+doc 4: no scored rows
+doc 5: 182 rows, KL(golden || torch bf16) mean 0.00023 median 0.000003 p99 0.003 max 0.00, rows > 1 nat 0 (5 s)
+ref-calag.npz docs 3 rows 929: KL(golden||bf16) mean 0.0003 median 0.000002; rows > 1 nat 0.00% holding 0.0000 nats/row; max 0.0
+DIAG9 DONE

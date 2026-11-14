@@ -1,0 +1,23 @@
+{
+ "tag": "ctl-gate",
+ "vlevel": "vl/inc2.5",
+ "scales": null,
+ "served": {
+  "mix": "/data/q27/w154/served/v3s171-2.5-block-00626.mix",
+  "base": "/data/q27/mixes/qwen3.8-27b-exl3-v2-3.00bpw.rad",
+  "head": "/data/q27/w154/donors/hd-u2.75.rad",
+  "emb": "/data/q27/w154/donors/emb-bf16.rad",
+  "act": "a8g128"
+ },
+ "emb": "base",
+ "bytes": 10509639680,
+ "slices": {
+  "s171d": {
+   "golden": "/data/q27/w154/slices/golden-s171d",
+   "rows": "eval/inc2.5/ctl-gate/score-s171d.json.rows",
+   "kld": 0.20442967823784658,
+   "positions": 201570,
+   "docs": 184
+  }
+ }
+}

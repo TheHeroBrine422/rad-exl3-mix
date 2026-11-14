@@ -1,0 +1,7 @@
+I kld:   pi-sessions               12282 pos  mean 2.46818  median 0.063686  p99 24.5941  p99.9 34.1922  top-1 69.55%
+I kld: report in diag/rad-sub-tr6.json.part, every position in diag/rad-sub-tr6.json.part.rows
+I kld:   swe-rebench-openhands      8191 pos  mean 3.79079  median 0.093180  p99 25.3862  p99.9 33.8411  top-1 63.39%
+I kld: report in diag/rad-sub-xq-agentic.json.part, every position in diag/rad-sub-xq-agentic.json.part.rows
+diag/stu-tr6.npz: KL/row 2.472413 over 12282 rows, 6 docs, 119 s
+diag/stu-xqa.npz: KL/row 3.791174 over 8191 rows, 1 docs, 18 s
+DIAG DONE

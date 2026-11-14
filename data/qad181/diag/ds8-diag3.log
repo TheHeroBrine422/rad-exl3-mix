@@ -1,0 +1,5 @@
+slices/sub-b2c0: 6 docs, 12282 rows
+slices/sub-b2c2: 6 docs, 12282 rows
+diag/stu-b2c0.npz: KL/row 0.695903 over 12282 rows, 6 docs, 15 s
+diag/stu-b2c2.npz: KL/row 1.537823 over 12282 rows, 6 docs, 15 s
+DIAG3 DONE

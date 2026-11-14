@@ -1,0 +1,13 @@
+s25-1e-3-A: base 0.062083 -> end 0.058788  ratio 0.9469 [0.9390, 0.9575]  better 32 worse 6
+s25-3e-3-A: base 0.062083 -> end 0.060966  ratio 0.9820 [0.9627, 1.0027]  better 15 worse 23
+s25-3e-4-A: base 0.062083 -> end 0.059441  ratio 0.9574 [0.9513, 0.9652]  better 36 worse 2
+s25-1e-4-A: base 0.062083 -> end 0.060742  ratio 0.9784 [0.9753, 0.9820]  better 35 worse 3
+s25-1e-3-B: base 0.062083 -> end 0.059390  ratio 0.9566 [0.9493, 0.9667]  better 33 worse 5
+s25-3e-4-B: base 0.062083 -> end 0.060292  ratio 0.9712 [0.9670, 0.9767]  better 35 worse 3
+s25-1e-4-B: base 0.062083 -> end 0.061133  ratio 0.9847 [0.9823, 0.9879]  better 33 worse 5
+s40-1e-3: base 0.008271 -> end 0.008461  ratio 1.0229 [0.9374, 1.0853]  better 6 worse 32
+s40-3e-4: base 0.008271 -> end 0.008256  ratio 0.9981 [0.9765, 1.0160]  better 17 worse 21
+s40-1e-4: base 0.008271 -> end 0.008214  ratio 0.9930 [0.9802, 1.0076]  better 17 worse 21
+s60-1e-4: base 0.001086 -> end 0.001103  ratio 1.0157 [0.9890, 1.0431]  better 16 worse 22
+s60-3e-5: base 0.001086 -> end 0.001100  ratio 1.0131 [0.9801, 1.0481]  better 16 worse 22
+s60-1e-5: base 0.001086 -> end 0.001095  ratio 1.0088 [0.9799, 1.0452]  better 18 worse 20
