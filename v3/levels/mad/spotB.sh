@@ -35,7 +35,7 @@ pack() {   # pack DIR: DIR/final.recipe -> DIR/pack.rad -> DIR/mix-a8.rad
   fi
   [ -f $D/mix-a8.rad ]
 }
-for K in 2.5 4 6; do
+for K in ${KS:-6 2.5 4}; do
   ML=$Q/ladder-mad/q27v3-635bac02-k$K-mad; IN=q27v3-144dd6e1-k$K-i8; M=$S/M-$K; I=$S/I-$K
   until current $ML $K; do [ -f $Q/mad/STOP ] && exit 2; sleep 60; done
   if [ ! -f $M/final.recipe ]; then

@@ -657,3 +657,8 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
   repack, no requant. Gain: head GEMV 576 → ~629 GB/s at K4.125 ≈ 90 µs ≈ 0.3% e2e decode, only if heads go fractional.
   **Decide after w139 (#177):** do it if the codebook decision changes the container anyway, or if the speed-table redo
   shows the knapsack picking fractional heads. Runtime: decode only.
+
+- **GPU L18 (/ L20) mad encoder → V3.1 requant with QAD (user + lead 11-13):** mad decode is free at any L < 24
+  (byte-sum form); proxy L18 −1.0…−1.6 %, L20 −2…−3 % vs mad L16 (LOG 11-13 7:15 PM CST). Needs a GPU Viterbi above
+  exllamav3's 16-bit limit (exact or seeded beam), checked against a CPU reference; measure encode time a tensor and
+  27B KL at K2.5 / K4 before a requant (~2.5–3× ladder time). Also as a per-tensor option for sensitive tensors.
