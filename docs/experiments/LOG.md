@@ -6373,3 +6373,22 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (30.5 vs 25.7). V3 is compute-bound at low K (K4.125 → K2.5: −40 % bytes, −6 % time); IQR scales with bytes (floor
   ~18 ms). IQR's code is also a trellis (mad L16), so the gap is the decode kernel's form. With its drafter on: 6.43 ms a
   token (5.33 tokens / 33.2 ms step). Fed to w139's checkpoint (codebook + kernel pair for low K). **Runtime:** D (measurement).
+
+### 2026-11-13 6:30 PM CST · #177 (lead takes over from w139) · mad = mul1i8 in KL in our quantizer; our GEMVs ×1.3 slower than IQR's at equal bits
+- **User (6:00 PM CST): the lead takes over #177;** w139 stopped (its Thor l177 array and ds8 `w139h` jobs left running).
+- **KL (w139's head bench, RULES-177h amendment 2, data `data/hash177/head/rep/rep177h.json`):** arm H = IQR's mad code
+  (q = byte sum − 126) as an R16 head donor in OUR quantizer (LDLQ, two-sided scales, H_out): 3-seed ratio vs mul1i8
+  i8 **1.003 [0.985, 1.024] at K2.5, 1.002 [0.981, 1.022] at K4** (fit-gen). The codebook costs nothing; the
+  libquant (IQR-encoder) heads are ×2.6–3.9 worse than our R16 head at both codes — the encoder is what matters.
+- **Decode per-op profile** (box2 card 3, rad10-perf + w137's kernels, `--profile-ops`, 320 decode steps; profiled =
+  shares; `v3/bench/iqrcmp/dprof.{sh,py}`, `data/hash177/iqrprof/`): IQR iq2r's trunk is mostly mad **u2** (recipe in
+  the same dir), so compare at equal bits with V3 uniform K2: gate_up 9.13 ms / step vs IQR 7.04 (×1.30), down 5.21 vs
+  3.89 (×1.34), GDN qkv + z 4.15 vs fused inz 2.65 (×1.56), attn_qg 0.92 vs 0.69. V3 K2.5 → K2 saves 20 % bytes but
+  only ~6 % GEMV time: compute-bound. IQR reaches ~405 GB/s on gate_up at 2 bits (cap ~580), we ~312.
+  Non-GEMV: ~2.5 ms / step of unfused small ops in V3 (residual add 1.03 ms vs 0.01, separate rmsnorm, silu_mul, rope,
+  q/k norm, sigmoid, mul, kv_store) that IQR fuses into its norm + act-quant and gated GEMMs.
+- **Correction to the 5:45 PM entry:** the ×1.43 e2e gap was at equal *container* bytes; IQR's container spends ~5 GB
+  on a bf16 embedding + vocab-tiered bf16 head, so its trunk is ~2.1 bits vs our 2.5. Equal-bits GEMV gap ×1.3 + fusions.
+- **Next (lead):** standalone HIP microbench of an exl3i-layout GEMV with IQR's byte-sum `sudot4` decode for mad vs
+  today's mul1i8 path (gate_up / down shapes, K2 / 2.5 / 4, T 1) — the ceiling before any plugin or requant work.
+- **Runtime:** D (measurement only).
