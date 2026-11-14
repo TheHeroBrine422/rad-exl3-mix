@@ -101,6 +101,54 @@ versions of anything: git history.
   xb producers for ssm_out and the head); the packs' bf16 head; fakes that can refuse one param form (the no-interface-5
   fallback is untested by a unit test). 4070 not used (off limits).
 
+### 2026-11-13 11:55 PM CST · #181 · gen-masked run, 1 M checkpoint: −8.7 % on unseen xcorp, monitor +4.3 % from one wildchat doc (30 / 32 docs better); calib-only replication with the same trainer −6.5 % at 254 k (w154)
+- **Status:** running (main run resumed at step 40) · **Machine:** box2 · **Data:** `data/qad181/diag/` · **Rules:**
+  amendment 2 (5746a3f, arm P1M; header time 12:05 AM, the commit time 11:53 PM CST is the record)
+- **1 M checkpoint (gen rows, branch decayed 0.8 → 1 M):** monitor 0.06387 → 0.06661 (+4.3 %), all from calib 1577
+  (wildchat, 313 gen rows, 0.30 → 0.86 a row); 30 of 32 docs better, the others −5.7 %. On 60 unseen xq-c39 documents
+  (gen rows, torch path) 0.04086 → 0.03730 (**−8.7 %**, 58 of 60 better). The method works on the masked data; the
+  32-doc monitor is fragile (report only; judgement = c 82 docs + x181g 150 pieces, paired CIs).
+- **Trainer check (P1M, amendment 2):** the pilot's data (calib qad pool, first 2,048 tokens) with this trainer, 8 × 1,024
+  a step: monitor −6.5 % at 254 k rows (constant lr). Judged with the checkpoints: same budget, different data.
+- **Runtime:** none.
+
+### 2026-11-13 11:25 PM CST · #181 finding · xcorp / trace goldens score prompt-side rows the board never scores: they hold **73–83 % of every x part's KL** and broke QAD's first run; gen masks rebuilt from tokens (exact on calib), run restarted on the board's rows (w154)
+- **Status:** finding + fix for #181 (amendment 1, 359de69); the search's slices are the lead's call · **Machine:** box2
+  (cards 0, 2, 3 between runs; CPU), ds8 (card 7 ~25 min while w155 had not started on it; CPU) · **Code:**
+  `v3/qad181/genmask181.py`, `bf16ref.py`, `mksub.py`, `tscore181.py` · **Data:** `data/qad181/diag/`
+- **What happened:** #181's first main run (unmasked goldens) read its 1 M checkpoint's monitor at +3 % (pilot: −10 %);
+  its training KL climbed to 1–3 nats a row on traces / agentic pieces.
+- **Checks.** (1) Served path = student (radiance vs torch on the same rows: 2.4682 / 2.4724, 3.7908 / 3.7912); V2 3.00 /
+  4.00 show the same tail (p99 24.8 / 23.2 nats on 6 trace starts, median 0.045 / 0.010). (2) An independent bf16
+  reference (the checkpoint in torch, layer-streamed on one card) reproduces the official calib golden to ≤ 0.02 nats a
+  row, but differs from agentic / trace goldens by > 1 nat on 2.6–12 % of rows (max 36); ordinary pieces agree.
+  (3) On the official calib golden's own agentic docs: gen rows agree (929 rows, max 0.02), non-gen rows do not (23,641,
+  2.5 % > 1 nat, max 32). The challenge README: only tokens the model writes are scored (`gen.u8`); in system / user /
+  tool-result turns the bf16 distribution is arbitrary. Our goldens are not corrupt; they lack the mask (gold3 / gold4 /
+  night1105 record every row; pickx's x parts set gen = 1 everywhere).
+- **Gen mask from tokens** (`genmask181.py`, the README rule: plain text all; chat = assistant bodies through
+  `<|im_end|>`; a piece starting inside a turn: 0 until its first header): rebuilt from calib's tokens it equals calib's
+  official gen.u8 on all 10,254,542 rows. xcorp chunks keep 74–90 % of rows, traces 49–59 %.
+- **Effect on judging slices** (existing rows, KL per row):
+
+  | slice (rows of) | x part as scored | x on the board's rows | prompt-side share of x KL | c part |
+  |---|---|---|---|---|
+  | s171d (w147, 2.5 incumbent A8) | 0.2385 | 0.0528 | 81.6 % (17 % of rows) | 0.0541 |
+  | s171b (w132, 2.5 block-00413 A8) | 0.2328 | 0.0475 | 82.8 % | 0.0541 |
+  | hd122-x (#165 control) | 0.1725 | 0.0524 | 73.0 % | – |
+
+  On the board's rows the x parts read like calib. Every search x part (s171a–d, s173a–f), final750's x and #165's x
+  read mostly arbitrary prompt-side rows: plausibly w149's ±20–75-nat agentic swings, the fit's x-label compression
+  (#169 "xcorp ratios miss by ~14 %") and the x ratio scale λ_x. **For the lead:** apply the mask to the x parts before
+  the search restart / final picks (`genmask181.py make GOLDEN OUT.u8 TOKENIZER`, seconds a slice; a slice dir with the
+  new gen.u8, as `golden-x181g`); re-read anything decided on x (#165's x ratio 0.896 included prompt-side rows).
+- **#181:** training and judging on gen rows only (42.10 M rows, budgets 1 / 4 / 16 / 40 M); the main run restarted
+  from step 0 at 11:07 PM CST (`runs/inc2.5g`).
+- **Incident:** three parallel bf16-reference jobs on box2 (52 GB file-backed RSS each, the mmapped checkpoint) hit
+  the container's OOM killer at ~10:50 PM CST (3 kills, all mine); box2 stopped answering ssh for ~2 min; w152's
+  concurrent KLD job finished (rc 0, slower). Since then one such job at a time.
+- **Runtime:** none.
+
 ### 2026-11-13 10:40 PM CST · #181 · QAD scale-up launched: arm A on the #171 2.5 incumbent, one epoch over 48 M golden positions (xcorp + own traces + calib qad pool), data-parallel, WSD checkpoints at 1 / 4 / 16 / 48 M (w154)
 - **Status:** running (main run on box2 cards 0, 2, 3; moves to ds8's 8 cards when w151's ladder ends) · **Machine:** box2
   (training, packs), ds8 (fresh x slice, later training / scoring) · **Code:** `v3/qad181/` (`qad181.py`, `data181.py`,
@@ -6774,3 +6822,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   block. Fix (`local/workers/w152/kctr-key.patch`, keyed by (device, stream, output); verified bit-exact 768 / 768 steps
   on both packs) applied to qc-exl3-v3 by the lead. **w150's e2e decode ms and decode-path KLD numbers are unverified**
   until re-measured (w152); prefill KLD (byte-identical rows) and the ladder are unaffected. **Runtime:** D (fix).
+
+### 2026-11-14 1:35 AM CST · #181 · Monitoring lesson: fresh-batch train KL can't show QAD convergence
+- The lead's w154 brief used the fresh-batch training KL as the "still learning?" signal. On mixed corpora the batch
+  difficulty swings it more (step SD ~0.008) than the trend (~0.005 over 1.5M tokens), and the source mix per step
+  hides per-source damage (calib by-source KL rose 0.03 → 0.25 at ~1.55M while xcorp stayed flat). Plot:
+  `/workspace/qad181-loss.png` (local). Fix from now on, for every QAD / healing run: a **fixed held-out eval set**
+  (qad pool, disjoint from the monitor docs, ~30k positions) scored every ~10 steps, per source, beside train EMA; the
+  decayed checkpoints on the monitor stay the decision read. Decision point for the main run at the 4M branch.
+  **Runtime:** neither.
