@@ -15,13 +15,18 @@ container must be what the mix says before a KLD means anything.
 --fast: with --mix / --base, compare each weight's encoding struct and plane sizes only, not its bytes (seconds instead of
        reading every weight; radmix clones by reference, so a wrong donor shows in the encoding). The default hashes.
 Donor names: with --mix, a donor named like a level pack (q27v3-<stamp>-k<K>-<i8|i4|mul1>[-s<scales>].rad) must hold
-       that K and codebook (catches a mis-built donor pack, which the byte check against the same donor cannot).
+       that K and codebook (catches a mis-built donor pack, which the byte check against the same donor cannot); an
+       embedding donor (emb-t-<i8|m1>-K<K>.rad, #174-02 / #174-03) must hold token_embd.weight at that K and codebook.
 Expectations (what the caller intends, beyond the mix; each mismatch is a MISMATCH line, w142 #178 / mining B2):
   --expect-act MODE        every trunk trellis weight (blk.*, exl3 / exl3i) has activation mode MODE (e.g. a8g128)
-  --expect-codebook CB     every trellis weight (trunk and head) is in codebook CB (mul1i8, mul1i4, mul1)
+  --expect-codebook CB     every trellis weight of the trunk and head is in codebook CB (mul1i8, mul1i4, mul1, mad);
+                           the token table is checked by --expect-emb only (#174-03: a mad trunk with a mul1i8 trellis
+                           embedding is the V3 menu's normal case)
   --expect-head PATTERN    output.weight's form matches PATTERN (fnmatch), e.g. 'exl3i mul1i8 K* r16' for a release,
                            'plain - bf16' for the search's dequantized head donors
-  --expect-emb PATTERN     token_embd.weight's form, the same way
+  --expect-emb PATTERN     token_embd.weight's form, the same way; the keyword `trellis` (#174-03, w157) = the V3 menu's
+                           trellis embedding: exl3i, codebook mul1i8 or mul1, natural row order, K a multiple of 1/8 in
+                           1.5..8 (embed_exl3i serves it from the stored record)
   --max-version N          no exl3i weight needs a reader newer than encoding version N (exl3i_encoding.h: 1 base,
                            2 codebook mul1i4, 3 R16 row order)
 A weight's form: "<scheme> <codebook> K<K> <r16|nat>" for exl3i, "<scheme> <codebook> K<K>" for exl3, otherwise
@@ -150,6 +155,14 @@ def main():
                 if n not in R.w: bad.append(f"{n}: named by the mix, not in the container"); continue
                 if n not in D_.w: bad.append(f"{n}: not in donor {d}"); continue
                 if R.ident(n, fast) != D_.ident(n, fast): bad.append(f"{n}: differs from donor {os.path.basename(d)}")
+            m = re.search(r"^emb-t-(i8|m1)-K([0-9.]+)\.rad$", os.path.basename(d))
+            if m:                          # an embedding donor: its name says K and codebook of token_embd
+                wcb, wk = {"i8": "mul1i8", "m1": "mul1"}[m.group(1)], m.group(2)
+                for n in names:
+                    r = by.get(n)
+                    if n != "token_embd.weight": bad.append(f"{n}: taken from embedding donor {os.path.basename(d)}")
+                    elif r and (r["scheme"] != "exl3i" or float(r["K"]) != float(wk) or r["codebook"] != wcb):
+                        bad.append(f"{n}: {r['form']}, donor named K{wk} {wcb} ({os.path.basename(d)})")
             m = re.search(r"-k([0-9.]+)-(i8|i4|mul1)(-s[0-9a-f]+)?\.rad$", os.path.basename(d))
             if m:                          # a level pack: its name says K and codebook
                 wk, wcb = m.group(1), {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1"}[m.group(2)]
@@ -177,8 +190,19 @@ def main():
             if r["name"].startswith("blk.") and r["act"] != e_act: bad.append(f"{r['name']}: act {r['act']}, expected {e_act}")
     if e_cb:
         for r in trel:
-            if r["codebook"] != e_cb: bad.append(f"{r['name']}: codebook {r['codebook']}, expected {e_cb}")
-    for n, pat in (("output.weight", e_head), ("token_embd.weight", e_emb)):
+            if r["name"] != "token_embd.weight" and r["codebook"] != e_cb:
+                bad.append(f"{r['name']}: codebook {r['codebook']}, expected {e_cb}")
+    if e_emb == "trellis":                 # #174-03: the menu's trellis embedding (embed_exl3i)
+        r = by.get("token_embd.weight")
+        ok = bool(r) and r["scheme"] == "exl3i" and r["codebook"] in ("mul1i8", "mul1") and r["rows"] == "nat"
+        if ok:
+            try: k8 = float(r["K"]) * 8; ok = abs(k8 - round(k8)) < 1e-9 and 12 <= round(k8) <= 64
+            except ValueError: ok = False
+        if not ok: bad.append(f"token_embd.weight: form {r['form'] if r else 'absent'}, expected trellis "
+                              "(exl3i mul1i8 | mul1, K a multiple of 1/8 in 1.5..8, nat)")
+        e_emb_pat = None
+    else: e_emb_pat = e_emb
+    for n, pat in (("output.weight", e_head), ("token_embd.weight", e_emb_pat)):
         if pat and (n not in by or not fnmatch.fnmatchcase(by[n]["form"], pat)):
             bad.append(f"{n}: form {by[n]['form'] if n in by else 'absent'}, expected {pat}")
     if maxv:
