@@ -86,3 +86,10 @@ each source file's **path** with its contents (`_stamp`: `h.update(f.encode())`)
 rerun's four tensors (`lm_head.trellis / suh / svh / mul1`) are **identical** to w144's K2.5 (torch.equal on each) and the
 safetensors metadata differs only in `ourq_stamp`. So: the determinism check is read on the tensors and the metadata
 other than `ourq_stamp` (PASS), and `quant157.sh` checks for this path's stamp `211924488ac0696e` from here on.
+
+## Amendment 2 (11-14 4:40 AM CST, after K1.625's quant, before any eighth level is used)
+
+Amendment 1's fixed-stamp check was wrong: the stamp also hashes every argument, K included, so it differs at every
+level (K1.625 stopped on `ccc643a9d768f29e`). The per-level check is now on the stamp's inputs: the level's stamp.json
+lists exactly the K2.5 rerun's 421 sources and has w144's K2.5 arguments but K. K1.625 is re-quantized under the
+corrected check (its first output, renamed `.badstamp`, is deleted).
