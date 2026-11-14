@@ -149,6 +149,50 @@ def track_panel(axT, W, a, sizes):
         axT.set_ylim(0.3, 2.0); axT.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
                   f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
+    if getattr(a, "track_strata", None) or getattr(a, "track_n", None):
+        strata_overlay(axT, a, rel)
+
+
+def strata_overlay(axT, a, rel):
+    """(#186, RULES-strata §7, w164) the non-Latin supplement on the tracking panel: IQR-V4 references as ratios to V2 at
+    the same bpw, for t183's L documents (o), t186n's N documents (s) and the board-weighted 0.961 L + 0.039 N (^); and the
+    incumbents' t186n reads (trk186n-<tag> rows of --track-n; N only: their L part is not measured per eval). refs186.jsonl
+    holds the references' readings (name, bpw, t183_L, t186n_N, board)."""
+    S = [json.loads(l) for l in open(a.track_strata)] if a.track_strata and os.path.exists(a.track_strata) else []
+    S = [r for r in S if r.get("t186n_N") is not None and r.get("bpw")]
+    V2 = [r for r in S if r["name"].startswith("v2")]
+    IQ = [r for r in S if r["name"].startswith("iq")]
+    key = {"L": "t183_L", "N": "t186n_N", "B": "board"}
+    mk = {"L": "o", "N": "s", "B": "^"}
+    pts = []
+    for r in IQ:
+        for k in ("L", "N", "B"):
+            vs = sorted((x["bpw"], x[key[k]]) for x in V2)
+            q = loglin(vs, r["bpw"]) if len(vs) >= 2 else None
+            if q: pts.append((r["bpw"], r[key[k]] / q, k, r["name"]))
+    for k in ("L", "N", "B"):
+        xs = [(x, y) for x, y, kk, _ in pts if kk == k]
+        if xs: axT.scatter(*zip(*xs), marker=mk[k], s=30, facecolors="none", edgecolors="#444", lw=1.1, zorder=4,
+                           label={"L": "IQR-V4 t183 L (o)", "N": "IQR-V4 t186n N (s)", "B": "IQR-V4 board 0.961L+0.039N (^)"}[k])
+    if getattr(a, "track_n", None) and os.path.exists(a.track_n):
+        v2n = sorted((x["bpw"], x["t186n_N"]) for x in V2)
+        pass_ = []
+        for l in open(a.track_n):
+            if '"trk186n-' not in l: continue
+            r = json.loads(l)
+            if r.get("kld") is None: continue
+            pass_.append(r)
+        if pass_ and len(v2n) >= 2:
+            # the incumbents' N reads: bpw from the driver's state (not in the eval line): plotted at the V2 ratio only when known
+            axT.text(0.01, 0.02, f"incumbent t186n reads: {len(pass_)} (ratio needs their bpw: see status)", transform=axT.transAxes, fontsize=7)
+    if rel_axis_ok(axT):
+        axT.set_ylim(0.2, 4.0)
+    if pts:
+        axT.legend(fontsize=7.5, loc="upper right")
+
+
+def rel_axis_ok(axT):
+    return True
 
 
 def main(argv=None):
@@ -160,6 +204,8 @@ def main(argv=None):
     ap.add_argument("--track", help="(#183) results.jsonl holding the tracking slice's trk183-<incumbent tag> rows: a middle panel")
     ap.add_argument("--track-refs", help="(#183) {name, bpw, kld} reference rows on the tracking slice (iq* / v2-*)")
     ap.add_argument("--track-name", default="t183")
+    ap.add_argument("--track-strata", help="(#186) refs186.jsonl: the references' L (t183) / N (t186n) / board readings")
+    ap.add_argument("--track-n", help="(#186) results.jsonl with trk186n-<incumbent tag> rows (the N supplement's incumbent reads)")
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     a = ap.parse_args(argv)

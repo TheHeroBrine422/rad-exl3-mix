@@ -7630,3 +7630,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   the plane's DRAM traffic (a cache-resident plane ring) as the remaining structural lever.
 - **Runtime:** prefill (A8 path) only; decode kernels untouched.
 - **Files:** `data/pf184/` (gemmus-*.txt / csv, fp8cal, ct-*, kld/*.json), `v3/bench/pf184/`
+
+### 2026-11-14 5:55 PM CST · #183 · Size 7.0 stopped (user)
+- User: A8 (w8a8) puts an activation floor under K6-7 (A8 vs f16 +12.5% at K6, more at K7), so searching 7.0 buys little.
+  `touch drv/STOP-7`: no more 7.0 candidates; its incumbent stays as the 7.0 pick. **Runtime:** neither.
