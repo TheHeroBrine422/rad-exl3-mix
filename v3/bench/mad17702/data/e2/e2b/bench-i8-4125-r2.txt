@@ -1,0 +1,8 @@
+i8-4125-r2 ctx 8k run 0 (warm): prompt 8243 ttft 3471 ms, client 34.46 ms/tok, server 34.48 ms/step x 1.00 tok
+i8-4125-r2 ctx 8k run 1: prompt 8243 ttft 3510 ms, client 34.63 ms/tok, server 34.65 ms/step x 1.00 tok
+i8-4125-r2 ctx 8k run 2: prompt 8241 ttft 3517 ms, client 34.64 ms/tok, server 34.65 ms/step x 1.00 tok
+i8-4125-r2 ctx 8k run 3: prompt 8245 ttft 3519 ms, client 34.67 ms/tok, server 34.69 ms/step x 1.00 tok
+i8-4125-r2 ctx 0 run 0 (warm): prompt 102 ttft 132 ms, client 33.60 ms/tok, server 33.59 ms/step x 1.00 tok
+i8-4125-r2 ctx 0 run 1: prompt 105 ttft 132 ms, client 33.63 ms/tok, server 33.63 ms/step x 1.00 tok
+i8-4125-r2 ctx 0 run 2: prompt 104 ttft 133 ms, client 33.66 ms/tok, server 33.65 ms/step x 1.00 tok
+i8-4125-r2 ctx 0 run 3: prompt 104 ttft 132 ms, client 33.66 ms/tok, server 33.65 ms/step x 1.00 tok

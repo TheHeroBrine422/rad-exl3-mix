@@ -1,0 +1,9 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w150-mad-rule) (gfx1201); device AMD Radeon AI PRO R9700 gfx1201
+M1 mad GEMV: 64 rates ([512, 1024], stacked [512, 512] every third; T 1..8): 0 failed (rows byte for byte; worst max |d| / max |y| 1.81e-07 vs the exact GEMM of the quantised operands)
+M2 mad GEMV, trunk shapes + head x 11 rates x T: 317 cases, 0 failed (worst max |d| / max |y| 2.12e-07 vs the exact GEMM on 3 blocks; 0.000779 vs the A8 path's y)
+  M3 N 34816 K 5120: GEMV vs the f16 path (f16 activations) rel rms 0.0062
+  M3 N 5120 K 17408: GEMV vs the f16 path (f16 activations) rel rms 0.00613
+  M3 N 1024 K 5120: GEMV vs the f16 path (f16 activations) rel rms 0.0062
+M3 mad GEMV: 3 shapes, 0 failed (rows independent bit for bit, KS repeatable, the f16 path within the int8 activations' error)
+M4 mad dispatch by rows: 0 wrong
+TWOPASS GPU TEST PASS (1332 checks)

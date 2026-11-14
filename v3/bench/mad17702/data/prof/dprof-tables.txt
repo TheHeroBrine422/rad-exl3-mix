@@ -1,0 +1,81 @@
+family                       mad2625-b7.log mad2625-nt.log    i8-2625.log
+gemm ffn_gate_up                     7787.7         7680.5         9866.5
+gemm ffn_down                        4248.1         4291.2         5600.1
+logits_gemm output                   3955.1         3954.4         3955.5
+gemm ssm_qkv                         2007.5         2065.4         2626.6
+gemm ssm_out                         1721.0         1567.3         1891.7
+gemm ssm_z                           1478.0         1458.6         1810.9
+other add                            1023.9         1038.3         1048.9
+gemm attn_qg                          748.9          767.1          989.2
+gdn_recurrent_update ssm_a_l          743.2          740.1          751.7
+gemm attn_output                      500.2          501.7          626.9
+rmsnorm ffn_norm                        0.0          563.3          568.8
+rmsnorm attn_norm                       0.0          564.3          568.5
+exl3i_actq ffn_gate_up                546.4            0.0            0.0
+exl3i_actq ffn_down                   450.9            0.0            0.0
+exl3i_actq ssm_qkv                    407.9            0.0            0.0
+other silu_mul                          0.0          406.7          407.9
+gdn_conv_update ssm_conv              378.9          383.4          386.4
+gemm_nt ssm_a                         375.3          380.4          383.7
+gemm_nt ssm_b                         372.6          377.0          379.0
+other attn_paged                      270.8          273.3          276.8
+gemm attn_v                           231.7          246.0          269.9
+gemm attn_k                           231.6          245.4          269.3
+other rope                            208.2          210.2          211.1
+exl3i_actq attn_qg                    144.4            0.0            0.0
+other mul                               0.0          137.2          138.6
+exl3i_actq attn_output                112.2            0.0            0.0
+other kv_store                        106.8          107.9          108.2
+rmsnorm attn_q_norm                   108.1          106.5          107.0
+rmsnorm attn_k_norm                   105.6          106.7          107.2
+other sigmoid                          96.9           98.0           98.6
+TOTAL µs/step                       28388.5        28297.4        33475.8
+
+family                       mad2625-b5.log    i8-2625.log mad4125-b5.log    i8-4125.log       iq2r.log
+gemm ffn_gate_up                     7785.3         9866.5        10467.5        10949.4            0.0
+gemm_nt_q_gated ffn_gate_up             0.0            0.0            0.0            0.0         7075.6
+gemm ffn_down                        4248.3         5600.1         5629.6         5899.0            0.0
+logits_gemm output                   3955.2         3955.5         3954.6         3954.2            0.0
+gemm_nt_q ffn_down                      0.0            0.0            0.0            0.0         3910.8
+gemm ssm_qkv                         2010.0         2626.6         2615.9         2781.5            0.0
+gemm_nt_q ssm_inz                       0.0            0.0            0.0            0.0         2677.0
+gemm_nt ssm_ab                          0.0            0.0            0.0            0.0         2536.5
+gemm ssm_out                         1722.3         1891.7         2069.7         2065.2            0.0
+gemm ssm_z                           1478.4         1810.9         1853.2         1944.2            0.0
+gemm_nt_q ssm_out                       0.0            0.0            0.0            0.0         1440.0
+logits_gemm_vocab output                0.0            0.0            0.0            0.0         1280.1
+other add                            1024.8         1048.9         1025.5         1062.3           10.2
+gemm attn_qg                          749.3          989.2          983.9         1036.4            0.0
+gdn_conv_recurrent_update_ha            0.0            0.0            0.0            0.0          879.6
+gdn_recurrent_update ssm_a_l          744.3          751.7          736.3          729.8            0.0
+gemm_nt_q attn_qg                       0.0            0.0            0.0            0.0          690.5
+gemm attn_output                      500.7          626.9          622.7          664.6            0.0
+rmsnorm_had_quant_i8g attn_n            0.0            0.0            0.0            0.0          583.0
+rmsnorm_had_quant_i8g ffn_no            0.0            0.0            0.0            0.0          575.7
+rmsnorm ffn_norm                        0.0          568.8            0.0          575.2            0.0
+rmsnorm attn_norm                       0.0          568.5            0.0          574.3            0.0
+exl3i_actq ffn_gate_up                545.7            0.0          546.1            0.0            0.0
+gemm_nt_q attn_output                   0.0            0.0            0.0            0.0          469.3
+exl3i_actq ffn_down                   451.0            0.0          451.6            0.0            0.0
+other silu_mul                          0.0          407.9            0.0          413.8            0.0
+exl3i_actq ssm_qkv                    408.2            0.0          408.5            0.0            0.0
+gdn_conv_update ssm_conv              379.2          386.4          380.2          392.1            0.0
+gemm_nt ssm_a                         375.6          383.7          377.9          389.1            0.0
+gemm_nt ssm_b                         373.2          379.0          374.0          384.3            0.0
+other attn_paged                      269.7          276.8          270.2          281.3          287.6
+gemm attn_v                           232.2          269.9          248.7          273.5            0.0
+gemm attn_k                           231.7          269.3          247.4          273.1            0.0
+other rope                            208.1          211.1          208.2          214.0            0.0
+gemm_nt_q attn_k                        0.0            0.0            0.0            0.0          176.1
+gemm_nt_q attn_v                        0.0            0.0            0.0            0.0          171.3
+exl3i_actq attn_qg                    144.4            0.0          144.6            0.0            0.0
+other mul                               0.0          138.6            0.0          139.7            0.0
+qk_norm_rope_gate_kv_store a            0.0            0.0            0.0            0.0          119.9
+exl3i_actq attn_output                112.0            0.0          112.0            0.0            0.0
+other kv_store                        107.1          108.2          107.1          110.1            0.0
+other gate_had_quant_i8g                0.0            0.0            0.0            0.0          108.6
+rmsnorm attn_k_norm                   105.7          107.2          106.5          108.4            0.0
+rmsnorm attn_q_norm                   108.0          107.0          108.2          108.4            0.0
+other sigmoid                          97.6           98.6           97.6           99.8            0.0
+TOTAL µs/step                       28394.6        33475.8        34174.2        35450.8        23024.0
+

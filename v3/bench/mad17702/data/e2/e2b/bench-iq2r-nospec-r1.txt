@@ -1,0 +1,8 @@
+iq2r-nospec-r1 ctx 8k run 0 (warm): prompt 8244 ttft 3153 ms, client 21.05 ms/tok, server 21.07 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 8k run 1: prompt 8239 ttft 3135 ms, client 21.11 ms/tok, server 21.12 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 8k run 2: prompt 8245 ttft 3148 ms, client 21.12 ms/tok, server 21.13 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 8k run 3: prompt 8246 ttft 3158 ms, client 21.15 ms/tok, server 21.16 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 0 run 0 (warm): prompt 105 ttft 103 ms, client 20.18 ms/tok, server 20.17 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 0 run 1: prompt 106 ttft 102 ms, client 20.19 ms/tok, server 20.18 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 0 run 2: prompt 106 ttft 101 ms, client 20.23 ms/tok, server 20.22 ms/step x 1.00 tok
+iq2r-nospec-r1 ctx 0 run 3: prompt 102 ttft 103 ms, client 20.25 ms/tok, server 20.24 ms/step x 1.00 tok

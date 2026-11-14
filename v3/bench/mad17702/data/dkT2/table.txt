@@ -1,0 +1,8 @@
+M 2: us (median over rounds); layer = 48 GDN : 16 attention mean; GB/s = the layer's trellis bytes / time
+     K row                    gate_up    down gdn_qkv   gdn_z attn_qg  attn_k  attn_v  attn_o ssm_out   layer    head   GB/s
+M 3: us (median over rounds); layer = 48 GDN : 16 attention mean; GB/s = the layer's trellis bytes / time
+     K row                    gate_up    down gdn_qkv   gdn_z attn_qg  attn_k  attn_v  attn_o ssm_out   layer    head   GB/s
+M 4: us (median over rounds); layer = 48 GDN : 16 attention mean; GB/s = the layer's trellis bytes / time
+     K row                    gate_up    down gdn_qkv   gdn_z attn_qg  attn_k  attn_v  attn_o ssm_out   layer    head   GB/s
+M 8: us (median over rounds); layer = 48 GDN : 16 attention mean; GB/s = the layer's trellis bytes / time
+     K row                    gate_up    down gdn_qkv   gdn_z attn_qg  attn_k  attn_v  attn_o ssm_out   layer    head   GB/s

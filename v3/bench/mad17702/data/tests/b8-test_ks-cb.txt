@@ -1,0 +1,976 @@
+exl3i 0.3.0 -- test_ks
+shape     rate cb        T  ksn      max_abs        rel    ndiff
+gate_up    0.5 mul1i8    1    2         0.25   0.000576       16
+gate_up    0.5 mul1i8    4    2            1    0.00189       79
+gate_up    0.5 mul1i8    8    2            1    0.00179      177
+gate_up    0.5 mul1i8   16    2            1    0.00179      331
+gate_up    0.5 mul1i8    1    1          0.5    0.00115       27  (DOT vs WMMA, KS off)
+gate_up    0.5 mul1i8    1 auto          0.5    0.00115       17  (DOT vs WMMA, KS on)
+down       0.5 mul1i8    1   13      0.01562   1.97e-05        4
+down       0.5 mul1i8    4   13            1    0.00112       38
+down       0.5 mul1i8    8   13            1    0.00112       74
+down       0.5 mul1i8   16   13            1    0.00094      129
+down       0.5 mul1i8    1    1       0.0625   7.89e-05       10  (DOT vs WMMA, KS off)
+down       0.5 mul1i8    1 auto     0.007812   9.86e-06        1  (DOT vs WMMA, KS on)
+gdn_qkv    0.5 mul1i8    1    7         0.25   0.000581        7
+gdn_qkv    0.5 mul1i8    4    7          0.5    0.00116       27
+gdn_qkv    0.5 mul1i8    8    7            1    0.00221       56
+gdn_qkv    0.5 mul1i8   16    7            1     0.0018      111
+gdn_qkv    0.5 mul1i8    1    1         0.25   0.000581        9  (DOT vs WMMA, KS off)
+gdn_qkv    0.5 mul1i8    1 auto     0.003906   9.08e-06        2  (DOT vs WMMA, KS on)
+gdn_z      0.5 mul1i8    1   11      0.03125   6.62e-05        6
+gdn_z      0.5 mul1i8    4   11          0.5   0.000977       21
+gdn_z      0.5 mul1i8    8   11          0.5   0.000969       35
+gdn_z      0.5 mul1i8   16   11          0.5   0.000969       70
+gdn_z      0.5 mul1i8    1    1      0.01562   3.31e-05        2  (DOT vs WMMA, KS off)
+gdn_z      0.5 mul1i8    1 auto         0.25    0.00053        1  (DOT vs WMMA, KS on)
+attn_qg    0.5 mul1i8    1    6      0.01562   3.62e-05        5
+attn_qg    0.5 mul1i8    4    6          0.5    0.00114       24
+attn_qg    0.5 mul1i8    8    6          0.5    0.00102       66
+attn_qg    0.5 mul1i8   16    6          0.5   0.000806      138
+attn_qg    0.5 mul1i8    1    1      0.03125   7.23e-05        8  (DOT vs WMMA, KS off)
+attn_qg    0.5 mul1i8    1 auto          0.5    0.00116        4  (DOT vs WMMA, KS on)
+attn_k     0.5 mul1i8    1   20            0          0        0
+attn_k     0.5 mul1i8    4   20          0.5    0.00126        4
+attn_k     0.5 mul1i8    8   20          0.5    0.00125        7
+attn_k     0.5 mul1i8   16   20          0.5    0.00112       12
+attn_k     0.5 mul1i8    1    1    0.0002441   6.17e-07        2  (DOT vs WMMA, KS off)
+attn_k     0.5 mul1i8    1 auto          0.5    0.00126        1  (DOT vs WMMA, KS on)
+attn_v     0.5 mul1i8    1   20            0          0        0
+attn_v     0.5 mul1i8    4   20       0.0625   0.000169        3
+attn_v     0.5 mul1i8    8   20         0.25   0.000628        5
+attn_v     0.5 mul1i8   16   20          0.5    0.00115       13
+attn_v     0.5 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_v     0.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     0.5 mul1i8    1   13         0.25   0.000558        6
+attn_o     0.5 mul1i8    4   13          0.5   0.000919       11
+attn_o     0.5 mul1i8    8   13          0.5   0.000919       26
+attn_o     0.5 mul1i8   16   13            1     0.0018       73
+attn_o     0.5 mul1i8    1    1         0.25   0.000558        3  (DOT vs WMMA, KS off)
+attn_o     0.5 mul1i8    1 auto     0.001953   4.36e-06        1  (DOT vs WMMA, KS on)
+ssm_out    0.5 mul1i8    1   13          0.5    0.00104        1
+ssm_out    0.5 mul1i8    4   13          0.5    0.00104       14
+ssm_out    0.5 mul1i8    8   13          0.5    0.00104       27
+ssm_out    0.5 mul1i8   16   13            2    0.00357       54
+ssm_out    0.5 mul1i8    1    1       0.0625    0.00013        3  (DOT vs WMMA, KS off)
+ssm_out    0.5 mul1i8    1 auto     0.007812   1.63e-05        1  (DOT vs WMMA, KS on)
+gate_up      1 mul1i8    1    2         0.25   0.000546       12
+gate_up      1 mul1i8    4    2            1    0.00182       79
+gate_up      1 mul1i8    8    2            1    0.00182      174
+gate_up      1 mul1i8   16    2            1    0.00177      353
+gate_up      1 mul1i8    1    1          0.5    0.00109       24  (DOT vs WMMA, KS off)
+gate_up      1 mul1i8    1 auto          0.5    0.00109       16  (DOT vs WMMA, KS on)
+down         1 mul1i8    1   13          0.5   0.000731        5
+down         1 mul1i8    4   13            2    0.00239       41
+down         1 mul1i8    8   13            2    0.00239       85
+down         1 mul1i8   16   13            2    0.00233      165
+down         1 mul1i8    1    1          0.5   0.000731        8  (DOT vs WMMA, KS off)
+down         1 mul1i8    1 auto        0.125   0.000183        2  (DOT vs WMMA, KS on)
+gdn_qkv      1 mul1i8    1    7      0.03125   7.58e-05        3
+gdn_qkv      1 mul1i8    4    7         0.25   0.000551       22
+gdn_qkv      1 mul1i8    8    7            1     0.0022       47
+gdn_qkv      1 mul1i8   16    7            1      0.002       99
+gdn_qkv      1 mul1i8    1    1       0.0625   0.000152       10  (DOT vs WMMA, KS off)
+gdn_qkv      1 mul1i8    1 auto    1.526e-05    3.7e-08        1  (DOT vs WMMA, KS on)
+gdn_z        1 mul1i8    1   11        0.125   0.000296        5
+gdn_z        1 mul1i8    4   11         0.25   0.000536       18
+gdn_z        1 mul1i8    8   11          0.5    0.00107       31
+gdn_z        1 mul1i8   16   11          0.5    0.00107       56
+gdn_z        1 mul1i8    1    1        0.125   0.000296        6  (DOT vs WMMA, KS off)
+gdn_z        1 mul1i8    1 auto     0.007812   1.85e-05        3  (DOT vs WMMA, KS on)
+attn_qg      1 mul1i8    1    6     0.003906   9.57e-06        4
+attn_qg      1 mul1i8    4    6         0.25   0.000463       37
+attn_qg      1 mul1i8    8    6            1    0.00185       75
+attn_qg      1 mul1i8   16    6            1    0.00185      147
+attn_qg      1 mul1i8    1    1        0.125   0.000306        8  (DOT vs WMMA, KS off)
+attn_qg      1 mul1i8    1 auto     0.007812   1.91e-05        5  (DOT vs WMMA, KS on)
+attn_k       1 mul1i8    1   20    0.0009766   3.21e-06        1
+attn_k       1 mul1i8    4   20    0.0002441   5.76e-07        2
+attn_k       1 mul1i8    8   20      0.01562   3.46e-05        4
+attn_k       1 mul1i8   16   20        0.125   0.000277       12
+attn_k       1 mul1i8    1    1    0.0009766   3.21e-06        1  (DOT vs WMMA, KS off)
+attn_k       1 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v       1 mul1i8    1   20       0.0625   0.000138        1
+attn_v       1 mul1i8    4   20       0.0625   0.000138        3
+attn_v       1 mul1i8    8   20       0.0625   0.000138        4
+attn_v       1 mul1i8   16   20       0.0625   0.000129        7
+attn_v       1 mul1i8    1    1      0.03125   6.91e-05        1  (DOT vs WMMA, KS off)
+attn_v       1 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       1 mul1i8    1   13     0.003906   9.26e-06        2
+attn_o       1 mul1i8    4   13          0.5   0.000969       15
+attn_o       1 mul1i8    8   13          0.5   0.000969       37
+attn_o       1 mul1i8   16   13          0.5   0.000833       63
+attn_o       1 mul1i8    1    1          0.5    0.00118        7  (DOT vs WMMA, KS off)
+attn_o       1 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+ssm_out      1 mul1i8    1   13      0.01562   3.35e-05        3
+ssm_out      1 mul1i8    4   13         0.25   0.000517       14
+ssm_out      1 mul1i8    8   13          0.5    0.00103       26
+ssm_out      1 mul1i8   16   13          0.5      0.001       46
+ssm_out      1 mul1i8    1    1    4.578e-05   9.82e-08        1  (DOT vs WMMA, KS off)
+ssm_out      1 mul1i8    1 auto    0.0001221   2.62e-07        1  (DOT vs WMMA, KS on)
+gate_up    1.5 mul1i8    1    2          0.5    0.00105       17
+gate_up    1.5 mul1i8    4    2          0.5   0.000996       84
+gate_up    1.5 mul1i8    8    2          0.5   0.000996      157
+gate_up    1.5 mul1i8   16    2            1    0.00195      296
+gate_up    1.5 mul1i8    1    1         0.25   0.000525       22  (DOT vs WMMA, KS off)
+gate_up    1.5 mul1i8    1 auto         0.25   0.000525       15  (DOT vs WMMA, KS on)
+down       1.5 mul1i8    1   13         0.25   0.000334        4
+down       1.5 mul1i8    4   13            2    0.00181       29
+down       1.5 mul1i8    8   13            2    0.00181       59
+down       1.5 mul1i8   16   13            2    0.00181      121
+down       1.5 mul1i8    1    1        0.125   0.000167        3  (DOT vs WMMA, KS off)
+down       1.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+gdn_qkv    1.5 mul1i8    1    7      0.03125   6.85e-05        5
+gdn_qkv    1.5 mul1i8    4    7          0.5     0.0011       28
+gdn_qkv    1.5 mul1i8    8    7          0.5   0.000984       54
+gdn_qkv    1.5 mul1i8   16    7          0.5   0.000984       96
+gdn_qkv    1.5 mul1i8    1    1          0.5     0.0011       12  (DOT vs WMMA, KS off)
+gdn_qkv    1.5 mul1i8    1 auto      0.03125   6.85e-05        2  (DOT vs WMMA, KS on)
+gdn_z      1.5 mul1i8    1   11    1.526e-05   3.48e-08        1
+gdn_z      1.5 mul1i8    4   11        0.125   0.000285       18
+gdn_z      1.5 mul1i8    8   11         0.25   0.000568       34
+gdn_z      1.5 mul1i8   16   11          0.5    0.00106       71
+gdn_z      1.5 mul1i8    1    1      0.03125   7.13e-05        4  (DOT vs WMMA, KS off)
+gdn_z      1.5 mul1i8    1 auto     0.001953   4.46e-06        1  (DOT vs WMMA, KS on)
+attn_qg    1.5 mul1i8    1    6         0.25   0.000543        5
+attn_qg    1.5 mul1i8    4    6          0.5    0.00105       34
+attn_qg    1.5 mul1i8    8    6          0.5    0.00105       66
+attn_qg    1.5 mul1i8   16    6            1    0.00194      121
+attn_qg    1.5 mul1i8    1    1         0.25   0.000543        8  (DOT vs WMMA, KS off)
+attn_qg    1.5 mul1i8    1 auto         0.25   0.000543        2  (DOT vs WMMA, KS on)
+attn_k     1.5 mul1i8    1   20            0          0        0
+attn_k     1.5 mul1i8    4   20     0.003906   9.77e-06        2
+attn_k     1.5 mul1i8    8   20      0.03125   7.41e-05        6
+attn_k     1.5 mul1i8   16   20          0.5    0.00113       14
+attn_k     1.5 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     1.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     1.5 mul1i8    1   20            0          0        0
+attn_v     1.5 mul1i8    4   20        0.125   0.000305        2
+attn_v     1.5 mul1i8    8   20        0.125   0.000305        3
+attn_v     1.5 mul1i8   16   20        0.125   0.000284       13
+attn_v     1.5 mul1i8    1    1    0.0009766   2.74e-06        1  (DOT vs WMMA, KS off)
+attn_v     1.5 mul1i8    1 auto    0.0009766   2.74e-06        1  (DOT vs WMMA, KS on)
+attn_o     1.5 mul1i8    1   13        0.125   0.000296        7
+attn_o     1.5 mul1i8    4   13         0.25   0.000453       15
+attn_o     1.5 mul1i8    8   13          0.5   0.000828       22
+attn_o     1.5 mul1i8   16   13          0.5   0.000828       51
+attn_o     1.5 mul1i8    1    1         0.25   0.000592        7  (DOT vs WMMA, KS off)
+attn_o     1.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+ssm_out    1.5 mul1i8    1   13         0.25   0.000525        4
+ssm_out    1.5 mul1i8    4   13            1    0.00207       26
+ssm_out    1.5 mul1i8    8   13            1    0.00174       40
+ssm_out    1.5 mul1i8   16   13            1    0.00174       71
+ssm_out    1.5 mul1i8    1    1            1     0.0021       10  (DOT vs WMMA, KS off)
+ssm_out    1.5 mul1i8    1 auto            1     0.0021        2  (DOT vs WMMA, KS on)
+gate_up    2.5 mul1i8    1    2         0.25    0.00053       15
+gate_up    2.5 mul1i8    4    2            1    0.00195       93
+gate_up    2.5 mul1i8    8    2            1    0.00181      186
+gate_up    2.5 mul1i8   16    2            1    0.00181      350
+gate_up    2.5 mul1i8    1    1          0.5    0.00106       25  (DOT vs WMMA, KS off)
+gate_up    2.5 mul1i8    1 auto            1    0.00212       21  (DOT vs WMMA, KS on)
+down       2.5 mul1i8    1   13        0.125    0.00016        4
+down       2.5 mul1i8    4   13         0.25   0.000321       22
+down       2.5 mul1i8    8   13          0.5   0.000579       58
+down       2.5 mul1i8   16   13            2    0.00168      133
+down       2.5 mul1i8    1    1        0.125    0.00016        5  (DOT vs WMMA, KS off)
+down       2.5 mul1i8    1 auto        0.125    0.00016        1  (DOT vs WMMA, KS on)
+gdn_qkv    2.5 mul1i8    1    7          0.5    0.00113        6
+gdn_qkv    2.5 mul1i8    4    7          0.5    0.00109       28
+gdn_qkv    2.5 mul1i8    8    7          0.5    0.00109       57
+gdn_qkv    2.5 mul1i8   16    7            1    0.00176      110
+gdn_qkv    2.5 mul1i8    1    1          0.5    0.00113       10  (DOT vs WMMA, KS off)
+gdn_qkv    2.5 mul1i8    1 auto          0.5    0.00113        4  (DOT vs WMMA, KS on)
+gdn_z      2.5 mul1i8    1   11     0.007812   1.61e-05        2
+gdn_z      2.5 mul1i8    4   11          0.5    0.00103       17
+gdn_z      2.5 mul1i8    8   11          0.5    0.00102       34
+gdn_z      2.5 mul1i8   16   11          0.5    0.00102       68
+gdn_z      2.5 mul1i8    1    1     0.007812   1.61e-05        4  (DOT vs WMMA, KS off)
+gdn_z      2.5 mul1i8    1 auto     0.007812   1.61e-05        3  (DOT vs WMMA, KS on)
+attn_qg    2.5 mul1i8    1    6          0.5    0.00107        8
+attn_qg    2.5 mul1i8    4    6         0.25   0.000536       48
+attn_qg    2.5 mul1i8    8    6          0.5    0.00105       87
+attn_qg    2.5 mul1i8   16    6            1    0.00179      157
+attn_qg    2.5 mul1i8    1    1          0.5    0.00107       11  (DOT vs WMMA, KS off)
+attn_qg    2.5 mul1i8    1 auto       0.0625   0.000134        2  (DOT vs WMMA, KS on)
+attn_k     2.5 mul1i8    1   20            0          0        0
+attn_k     2.5 mul1i8    4   20    0.0009766   2.43e-06        2
+attn_k     2.5 mul1i8    8   20         0.25   0.000622        5
+attn_k     2.5 mul1i8   16   20         0.25   0.000622        9
+attn_k     2.5 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     2.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     2.5 mul1i8    1   20          0.5    0.00117        2
+attn_v     2.5 mul1i8    4   20    6.104e-05   1.41e-07        1
+attn_v     2.5 mul1i8    8   20       0.0625   0.000145        3
+attn_v     2.5 mul1i8   16   20       0.0625   0.000145       10
+attn_v     2.5 mul1i8    1    1          0.5    0.00117        2  (DOT vs WMMA, KS off)
+attn_v     2.5 mul1i8    1 auto    6.104e-05   1.43e-07        1  (DOT vs WMMA, KS on)
+attn_o     2.5 mul1i8    1   13          0.5    0.00112        2
+attn_o     2.5 mul1i8    4   13          0.5   0.000801       14
+attn_o     2.5 mul1i8    8   13            1     0.0016       32
+attn_o     2.5 mul1i8   16   13            1     0.0016       57
+attn_o     2.5 mul1i8    1    1          0.5    0.00112        5  (DOT vs WMMA, KS off)
+attn_o     2.5 mul1i8    1 auto     0.007812   1.75e-05        1  (DOT vs WMMA, KS on)
+ssm_out    2.5 mul1i8    1   13      0.03125   7.34e-05        1
+ssm_out    2.5 mul1i8    4   13          0.5   0.000817       16
+ssm_out    2.5 mul1i8    8   13            1    0.00163       26
+ssm_out    2.5 mul1i8   16   13            1    0.00163       50
+ssm_out    2.5 mul1i8    1    1     0.003906   9.17e-06        2  (DOT vs WMMA, KS off)
+ssm_out    2.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+gate_up      4 mul1i8    1    2         0.25    0.00059       20
+gate_up      4 mul1i8    4    2            1    0.00199       83
+gate_up      4 mul1i8    8    2            1    0.00197      169
+gate_up      4 mul1i8   16    2            1    0.00197      344
+gate_up      4 mul1i8    1    1          0.5    0.00118       27  (DOT vs WMMA, KS off)
+gate_up      4 mul1i8    1 auto         0.25    0.00059       21  (DOT vs WMMA, KS on)
+down         4 mul1i8    1   13          0.5   0.000672        9
+down         4 mul1i8    4   13          0.5   0.000595       33
+down         4 mul1i8    8   13            2    0.00238       68
+down         4 mul1i8   16   13            2    0.00238      139
+down         4 mul1i8    1    1          0.5   0.000672       12  (DOT vs WMMA, KS off)
+down         4 mul1i8    1 auto        0.125   0.000168        4  (DOT vs WMMA, KS on)
+gdn_qkv      4 mul1i8    1    7       0.0625    0.00014        3
+gdn_qkv      4 mul1i8    4    7          0.5    0.00112       24
+gdn_qkv      4 mul1i8    8    7          0.5    0.00111       54
+gdn_qkv      4 mul1i8   16    7          0.5    0.00101      109
+gdn_qkv      4 mul1i8    1    1          0.5    0.00112       13  (DOT vs WMMA, KS off)
+gdn_qkv      4 mul1i8    1 auto          0.5    0.00112        5  (DOT vs WMMA, KS on)
+gdn_z        4 mul1i8    1   11    0.0009766   2.35e-06        4
+gdn_z        4 mul1i8    4   11         0.25   0.000601       24
+gdn_z        4 mul1i8    8   11         0.25    0.00059       49
+gdn_z        4 mul1i8   16   11          0.5     0.0011       83
+gdn_z        4 mul1i8    1    1         0.25   0.000601        9  (DOT vs WMMA, KS off)
+gdn_z        4 mul1i8    1 auto     0.003906   9.39e-06        2  (DOT vs WMMA, KS on)
+attn_qg      4 mul1i8    1    6       0.0625    0.00012        5
+attn_qg      4 mul1i8    4    6          0.5   0.000962       38
+attn_qg      4 mul1i8    8    6          0.5   0.000962       69
+attn_qg      4 mul1i8   16    6          0.5   0.000912      129
+attn_qg      4 mul1i8    1    1       0.0625    0.00012        7  (DOT vs WMMA, KS off)
+attn_qg      4 mul1i8    1 auto       0.0625    0.00012        4  (DOT vs WMMA, KS on)
+attn_k       4 mul1i8    1   20            0          0        0
+attn_k       4 mul1i8    4   20       0.0625   0.000143        1
+attn_k       4 mul1i8    8   20       0.0625   0.000143        4
+attn_k       4 mul1i8   16   20          0.5    0.00114       12
+attn_k       4 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k       4 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v       4 mul1i8    1   20            0          0        0
+attn_v       4 mul1i8    4   20          0.5    0.00107        4
+attn_v       4 mul1i8    8   20          0.5    0.00107        5
+attn_v       4 mul1i8   16   20          0.5    0.00107        9
+attn_v       4 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_v       4 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       4 mul1i8    1   13         0.25   0.000434        4
+attn_o       4 mul1i8    4   13         0.25   0.000434       20
+attn_o       4 mul1i8    8   13         0.25   0.000434       34
+attn_o       4 mul1i8   16   13         0.25   0.000434       73
+attn_o       4 mul1i8    1    1      0.03125   5.43e-05        6  (DOT vs WMMA, KS off)
+attn_o       4 mul1i8    1 auto      0.03125   5.43e-05        4  (DOT vs WMMA, KS on)
+ssm_out      4 mul1i8    1   13     0.007812   2.01e-05        4
+ssm_out      4 mul1i8    4   13            1    0.00189       12
+ssm_out      4 mul1i8    8   13            1    0.00188       22
+ssm_out      4 mul1i8   16   13            1    0.00144       58
+ssm_out      4 mul1i8    1    1            1    0.00258        6  (DOT vs WMMA, KS off)
+ssm_out      4 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+gate_up    6.5 mul1i8    1    2            1    0.00197       13
+gate_up    6.5 mul1i8    4    2          0.5   0.000984       73
+gate_up    6.5 mul1i8    8    2            1    0.00179      158
+gate_up    6.5 mul1i8   16    2            1    0.00179      303
+gate_up    6.5 mul1i8    1    1            1    0.00197       19  (DOT vs WMMA, KS off)
+gate_up    6.5 mul1i8    1 auto       0.0625   0.000123        8  (DOT vs WMMA, KS on)
+down       6.5 mul1i8    1   13       0.0625   5.54e-05        2
+down       6.5 mul1i8    4   13            1   0.000887       33
+down       6.5 mul1i8    8   13            1   0.000887       62
+down       6.5 mul1i8   16   13            1   0.000887      123
+down       6.5 mul1i8    1    1          0.5   0.000443        7  (DOT vs WMMA, KS off)
+down       6.5 mul1i8    1 auto     0.007812   6.93e-06        1  (DOT vs WMMA, KS on)
+gdn_qkv    6.5 mul1i8    1    7         0.25   0.000525        7
+gdn_qkv    6.5 mul1i8    4    7            1    0.00205       28
+gdn_qkv    6.5 mul1i8    8    7            1    0.00205       55
+gdn_qkv    6.5 mul1i8   16    7            1    0.00205      111
+gdn_qkv    6.5 mul1i8    1    1            1     0.0021        9  (DOT vs WMMA, KS off)
+gdn_qkv    6.5 mul1i8    1 auto         0.25   0.000525        2  (DOT vs WMMA, KS on)
+gdn_z      6.5 mul1i8    1   11       0.0625   0.000143        3
+gdn_z      6.5 mul1i8    4   11            1    0.00225       15
+gdn_z      6.5 mul1i8    8   11            1    0.00189       37
+gdn_z      6.5 mul1i8   16   11            1    0.00189       70
+gdn_z      6.5 mul1i8    1    1     0.007812   1.78e-05        2  (DOT vs WMMA, KS off)
+gdn_z      6.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_qg    6.5 mul1i8    1    6     0.007812   1.91e-05        5
+attn_qg    6.5 mul1i8    4    6            1    0.00197       31
+attn_qg    6.5 mul1i8    8    6            1    0.00197       66
+attn_qg    6.5 mul1i8   16    6            1    0.00191      135
+attn_qg    6.5 mul1i8    1    1      0.03125   7.62e-05        6  (DOT vs WMMA, KS off)
+attn_qg    6.5 mul1i8    1 auto         0.25    0.00061        5  (DOT vs WMMA, KS on)
+attn_k     6.5 mul1i8    1   20            0          0        0
+attn_k     6.5 mul1i8    4   20      0.03125   7.62e-05        4
+attn_k     6.5 mul1i8    8   20      0.03125    7.2e-05        7
+attn_k     6.5 mul1i8   16   20         0.25    0.00051       13
+attn_k     6.5 mul1i8    1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     6.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     6.5 mul1i8    1   20     0.003906    1.2e-05        1
+attn_v     6.5 mul1i8    4   20            0          0        0
+attn_v     6.5 mul1i8    8   20      0.01562   2.79e-05        3
+attn_v     6.5 mul1i8   16   20      0.01562   2.79e-05        8
+attn_v     6.5 mul1i8    1    1     0.003906    1.2e-05        1  (DOT vs WMMA, KS off)
+attn_v     6.5 mul1i8    1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     6.5 mul1i8    1   13      0.01562   3.03e-05        1
+attn_o     6.5 mul1i8    4   13          0.5   0.000969       16
+attn_o     6.5 mul1i8    8   13          0.5   0.000919       31
+attn_o     6.5 mul1i8   16   13            1    0.00184       61
+attn_o     6.5 mul1i8    1    1          0.5   0.000969        1  (DOT vs WMMA, KS off)
+attn_o     6.5 mul1i8    1 auto      0.01562   3.03e-05        2  (DOT vs WMMA, KS on)
+ssm_out    6.5 mul1i8    1   13      0.03125   6.48e-05        6
+ssm_out    6.5 mul1i8    4   13          0.5    0.00104       15
+ssm_out    6.5 mul1i8    8   13          0.5   0.000947       33
+ssm_out    6.5 mul1i8   16   13          0.5   0.000947       68
+ssm_out    6.5 mul1i8    1    1      0.03125   6.48e-05        5  (DOT vs WMMA, KS off)
+ssm_out    6.5 mul1i8    1 auto       0.0625    0.00013        1  (DOT vs WMMA, KS on)
+gate_up    0.5 mul1      1    2            1    0.00234       61
+gate_up    0.5 mul1      4    2            1    0.00198      368
+gate_up    0.5 mul1      8    2            1    0.00176      781
+gate_up    0.5 mul1     16    2            1    0.00175     1591
+gate_up    0.5 mul1      1    1          0.5    0.00117       97  (DOT vs WMMA, KS off)
+gate_up    0.5 mul1      1 auto          0.5    0.00117       57  (DOT vs WMMA, KS on)
+down       0.5 mul1      1   13            1    0.00116       32
+down       0.5 mul1      4   13            2    0.00231      247
+down       0.5 mul1      8   13            2    0.00222      499
+down       0.5 mul1     16   13            2    0.00222     1006
+down       0.5 mul1      1    1            1    0.00116       45  (DOT vs WMMA, KS off)
+down       0.5 mul1      1 auto       0.0625   7.23e-05        5  (DOT vs WMMA, KS on)
+gdn_qkv    0.5 mul1      1    7        0.125   0.000306       22
+gdn_qkv    0.5 mul1      4    7            1    0.00151      156
+gdn_qkv    0.5 mul1      8    7            1    0.00151      311
+gdn_qkv    0.5 mul1     16    7            1    0.00151      602
+gdn_qkv    0.5 mul1      1    1          0.5    0.00123       34  (DOT vs WMMA, KS off)
+gdn_qkv    0.5 mul1      1 auto         0.25   0.000613        9  (DOT vs WMMA, KS on)
+gdn_z      0.5 mul1      1   11         0.25   0.000568       17
+gdn_z      0.5 mul1      4   11          0.5    0.00105      104
+gdn_z      0.5 mul1      8   11          0.5      0.001      200
+gdn_z      0.5 mul1     16   11            1    0.00177      388
+gdn_z      0.5 mul1      1    1         0.25   0.000568       20  (DOT vs WMMA, KS off)
+gdn_z      0.5 mul1      1 auto       0.0625   0.000142        4  (DOT vs WMMA, KS on)
+attn_qg    0.5 mul1      1    6          0.5   0.000962       18
+attn_qg    0.5 mul1      4    6          0.5   0.000962      185
+attn_qg    0.5 mul1      8    6          0.5   0.000962      365
+attn_qg    0.5 mul1     16    6            1    0.00192      728
+attn_qg    0.5 mul1      1    1          0.5   0.000962       29  (DOT vs WMMA, KS off)
+attn_qg    0.5 mul1      1 auto         0.25   0.000481        7  (DOT vs WMMA, KS on)
+attn_k     0.5 mul1      1   20      0.03125   9.47e-05        2
+attn_k     0.5 mul1      4   20          0.5    0.00134       16
+attn_k     0.5 mul1      8   20            1    0.00266       33
+attn_k     0.5 mul1     16   20            1    0.00235       61
+attn_k     0.5 mul1      1    1       0.0625   0.000189        3  (DOT vs WMMA, KS off)
+attn_k     0.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     0.5 mul1      1   20          0.5    0.00145        2
+attn_v     0.5 mul1      4   20          0.5    0.00129       16
+attn_v     0.5 mul1      8   20          0.5    0.00113       33
+attn_v     0.5 mul1     16   20          0.5    0.00113       65
+attn_v     0.5 mul1      1    1         0.25   0.000723        1  (DOT vs WMMA, KS off)
+attn_v     0.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     0.5 mul1      1   13        0.125   0.000306       13
+attn_o     0.5 mul1      4   13            1     0.0018       92
+attn_o     0.5 mul1      8   13            1     0.0018      196
+attn_o     0.5 mul1     16   13            1     0.0018      394
+attn_o     0.5 mul1      1    1          0.5    0.00123       20  (DOT vs WMMA, KS off)
+attn_o     0.5 mul1      1 auto        0.125   0.000306        3  (DOT vs WMMA, KS on)
+ssm_out    0.5 mul1      1   13       0.0625   0.000137       11
+ssm_out    0.5 mul1      4   13          0.5   0.000893       87
+ssm_out    0.5 mul1      8   13            1    0.00179      177
+ssm_out    0.5 mul1     16   13            1     0.0017      353
+ssm_out    0.5 mul1      1    1          0.5     0.0011       24  (DOT vs WMMA, KS off)
+ssm_out    0.5 mul1      1 auto       0.0625   0.000137        7  (DOT vs WMMA, KS on)
+gate_up      1 mul1      1    2          0.5    0.00114       50
+gate_up      1 mul1      4    2            1    0.00205      430
+gate_up      1 mul1      8    2            1    0.00185      852
+gate_up      1 mul1     16    2            1    0.00185     1646
+gate_up      1 mul1      1    1            1    0.00228      103  (DOT vs WMMA, KS off)
+gate_up      1 mul1      1 auto          0.5    0.00114       55  (DOT vs WMMA, KS on)
+down         1 mul1      1   13            1    0.00129       32
+down         1 mul1      4   13            2    0.00258      231
+down         1 mul1      8   13            2    0.00191      463
+down         1 mul1     16   13            2    0.00191      957
+down         1 mul1      1    1            1    0.00129       48  (DOT vs WMMA, KS off)
+down         1 mul1      1 auto         0.25   0.000322        5  (DOT vs WMMA, KS on)
+gdn_qkv      1 mul1      1    7        0.125   0.000287       20
+gdn_qkv      1 mul1      4    7            1    0.00221      148
+gdn_qkv      1 mul1      8    7            1    0.00199      294
+gdn_qkv      1 mul1     16    7            1    0.00182      568
+gdn_qkv      1 mul1      1    1          0.5    0.00115       30  (DOT vs WMMA, KS off)
+gdn_qkv      1 mul1      1 auto         0.25   0.000573        6  (DOT vs WMMA, KS on)
+gdn_z        1 mul1      1   11         0.25   0.000523       10
+gdn_z        1 mul1      4   11            1    0.00209      100
+gdn_z        1 mul1      8   11            1    0.00209      201
+gdn_z        1 mul1     16   11            1    0.00209      391
+gdn_z        1 mul1      1    1          0.5    0.00105       25  (DOT vs WMMA, KS off)
+gdn_z        1 mul1      1 auto         0.25   0.000523        5  (DOT vs WMMA, KS on)
+attn_qg      1 mul1      1    6          0.5    0.00108       25
+attn_qg      1 mul1      4    6            1    0.00207      184
+attn_qg      1 mul1      8    6            1    0.00202      370
+attn_qg      1 mul1     16    6            1    0.00177      737
+attn_qg      1 mul1      1    1            1    0.00216       33  (DOT vs WMMA, KS off)
+attn_qg      1 mul1      1 auto         0.25   0.000539       10  (DOT vs WMMA, KS on)
+attn_k       1 mul1      1   20        0.125   0.000327        5
+attn_k       1 mul1      4   20         0.25   0.000641       26
+attn_k       1 mul1      8   20          0.5    0.00107       47
+attn_k       1 mul1     16   20          0.5    0.00107       92
+attn_k       1 mul1      1    1        0.125   0.000327        5  (DOT vs WMMA, KS off)
+attn_k       1 mul1      1 auto        0.125   0.000327        2  (DOT vs WMMA, KS on)
+attn_v       1 mul1      1   20            0          0        0
+attn_v       1 mul1      4   20         0.25   0.000638       16
+attn_v       1 mul1      8   20            1     0.0023       30
+attn_v       1 mul1     16   20            1     0.0023       56
+attn_v       1 mul1      1    1        0.125   0.000319        2  (DOT vs WMMA, KS off)
+attn_v       1 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       1 mul1      1   13         0.25   0.000571       15
+attn_o       1 mul1      4   13            1    0.00222       94
+attn_o       1 mul1      8   13            1    0.00187      177
+attn_o       1 mul1     16   13            1    0.00187      336
+attn_o       1 mul1      1    1        0.125   0.000285       16  (DOT vs WMMA, KS off)
+attn_o       1 mul1      1 auto          0.5    0.00114        5  (DOT vs WMMA, KS on)
+ssm_out      1 mul1      1   13            1    0.00179       12
+ssm_out      1 mul1      4   13            1    0.00171       94
+ssm_out      1 mul1      8   13            2    0.00342      193
+ssm_out      1 mul1     16   13            2    0.00342      365
+ssm_out      1 mul1      1    1            1    0.00179       21  (DOT vs WMMA, KS off)
+ssm_out      1 mul1      1 auto    2.289e-05   4.09e-08        1  (DOT vs WMMA, KS on)
+gate_up    1.5 mul1      1    2            1    0.00225       53
+gate_up    1.5 mul1      4    2            1    0.00213      414
+gate_up    1.5 mul1      8    2            1    0.00198      805
+gate_up    1.5 mul1     16    2            1    0.00158     1612
+gate_up    1.5 mul1      1    1            1    0.00225      109  (DOT vs WMMA, KS off)
+gate_up    1.5 mul1      1 auto            1    0.00225       53  (DOT vs WMMA, KS on)
+down       1.5 mul1      1   13            1     0.0014       38
+down       1.5 mul1      4   13            2    0.00251      267
+down       1.5 mul1      8   13            2    0.00243      540
+down       1.5 mul1     16   13            2    0.00215      999
+down       1.5 mul1      1    1          0.5   0.000702       59  (DOT vs WMMA, KS off)
+down       1.5 mul1      1 auto          0.5   0.000702        6  (DOT vs WMMA, KS on)
+gdn_qkv    1.5 mul1      1    7         0.25   0.000546       19
+gdn_qkv    1.5 mul1      4    7            1    0.00214      151
+gdn_qkv    1.5 mul1      8    7            1    0.00214      304
+gdn_qkv    1.5 mul1     16    7            1    0.00189      611
+gdn_qkv    1.5 mul1      1    1          0.5    0.00109       22  (DOT vs WMMA, KS off)
+gdn_qkv    1.5 mul1      1 auto      0.03125   6.82e-05        8  (DOT vs WMMA, KS on)
+gdn_z      1.5 mul1      1   11          0.5    0.00106       22
+gdn_z      1.5 mul1      4   11            1    0.00212      100
+gdn_z      1.5 mul1      8   11            1    0.00196      183
+gdn_z      1.5 mul1     16   11            1    0.00196      349
+gdn_z      1.5 mul1      1    1         0.25    0.00053       20  (DOT vs WMMA, KS off)
+gdn_z      1.5 mul1      1 auto         0.25    0.00053        5  (DOT vs WMMA, KS on)
+attn_qg    1.5 mul1      1    6          0.5    0.00115       32
+attn_qg    1.5 mul1      4    6            1    0.00228      157
+attn_qg    1.5 mul1      8    6            2    0.00417      325
+attn_qg    1.5 mul1     16    6            2    0.00385      679
+attn_qg    1.5 mul1      1    1          0.5    0.00115       39  (DOT vs WMMA, KS off)
+attn_qg    1.5 mul1      1 auto         0.25   0.000576       10  (DOT vs WMMA, KS on)
+attn_k     1.5 mul1      1   20            0          0        0
+attn_k     1.5 mul1      4   20       0.0625   0.000184       12
+attn_k     1.5 mul1      8   20          0.5    0.00133       28
+attn_k     1.5 mul1     16   20          0.5    0.00121       65
+attn_k     1.5 mul1      1    1     0.003906   1.15e-05        3  (DOT vs WMMA, KS off)
+attn_k     1.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     1.5 mul1      1   20         0.25   0.000767        4
+attn_v     1.5 mul1      4   20         0.25   0.000598       15
+attn_v     1.5 mul1      8   20         0.25   0.000598       27
+attn_v     1.5 mul1     16   20          0.5    0.00114       54
+attn_v     1.5 mul1      1    1         0.25   0.000767        4  (DOT vs WMMA, KS off)
+attn_v     1.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     1.5 mul1      1   13          0.5    0.00117       12
+attn_o     1.5 mul1      4   13            1    0.00169       91
+attn_o     1.5 mul1      8   13            2    0.00338      165
+attn_o     1.5 mul1     16   13            2    0.00338      348
+attn_o     1.5 mul1      1    1            1    0.00234       14  (DOT vs WMMA, KS off)
+attn_o     1.5 mul1      1 auto    0.0009766   2.28e-06        2  (DOT vs WMMA, KS on)
+ssm_out    1.5 mul1      1   13            1    0.00198       14
+ssm_out    1.5 mul1      4   13            1    0.00194       93
+ssm_out    1.5 mul1      8   13            1    0.00187      187
+ssm_out    1.5 mul1     16   13            1    0.00168      377
+ssm_out    1.5 mul1      1    1            1    0.00198       24  (DOT vs WMMA, KS off)
+ssm_out    1.5 mul1      1 auto     0.007812   1.54e-05        4  (DOT vs WMMA, KS on)
+gate_up    2.5 mul1      1    2            1    0.00215       57
+gate_up    2.5 mul1      4    2            1    0.00204      412
+gate_up    2.5 mul1      8    2            2    0.00368      808
+gate_up    2.5 mul1     16    2            2    0.00365     1663
+gate_up    2.5 mul1      1    1          0.5    0.00107      111  (DOT vs WMMA, KS off)
+gate_up    2.5 mul1      1 auto            1    0.00215       61  (DOT vs WMMA, KS on)
+down       2.5 mul1      1   13            1    0.00148       32
+down       2.5 mul1      4   13            2    0.00234      228
+down       2.5 mul1      8   13            2    0.00211      474
+down       2.5 mul1     16   13            2      0.002      923
+down       2.5 mul1      1    1            1    0.00148       41  (DOT vs WMMA, KS off)
+down       2.5 mul1      1 auto        0.125   0.000185        3  (DOT vs WMMA, KS on)
+gdn_qkv    2.5 mul1      1    7            1    0.00243       24
+gdn_qkv    2.5 mul1      4    7          0.5     0.0011      152
+gdn_qkv    2.5 mul1      8    7          0.5    0.00105      299
+gdn_qkv    2.5 mul1     16    7            1    0.00194      612
+gdn_qkv    2.5 mul1      1    1            1    0.00243       38  (DOT vs WMMA, KS off)
+gdn_qkv    2.5 mul1      1 auto         0.25   0.000607       11  (DOT vs WMMA, KS on)
+gdn_z      2.5 mul1      1   11      0.01562    3.7e-05        9
+gdn_z      2.5 mul1      4   11            1    0.00237       94
+gdn_z      2.5 mul1      8   11            1      0.002      176
+gdn_z      2.5 mul1     16   11            1      0.002      376
+gdn_z      2.5 mul1      1    1        0.125   0.000296       30  (DOT vs WMMA, KS off)
+gdn_z      2.5 mul1      1 auto     0.007812   1.85e-05        2  (DOT vs WMMA, KS on)
+attn_qg    2.5 mul1      1    6          0.5    0.00116       21
+attn_qg    2.5 mul1      4    6          0.5    0.00111      205
+attn_qg    2.5 mul1      8    6            2    0.00435      365
+attn_qg    2.5 mul1     16    6            2    0.00385      745
+attn_qg    2.5 mul1      1    1          0.5    0.00116       45  (DOT vs WMMA, KS off)
+attn_qg    2.5 mul1      1 auto         0.25   0.000579        8  (DOT vs WMMA, KS on)
+attn_k     2.5 mul1      1   20      0.03125   9.36e-05        3
+attn_k     2.5 mul1      4   20          0.5    0.00109       20
+attn_k     2.5 mul1      8   20          0.5    0.00108       33
+attn_k     2.5 mul1     16   20            1    0.00196       63
+attn_k     2.5 mul1      1    1         0.25   0.000749        3  (DOT vs WMMA, KS off)
+attn_k     2.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     2.5 mul1      1   20     0.001953   6.03e-06        4
+attn_v     2.5 mul1      4   20          0.5    0.00134       16
+attn_v     2.5 mul1      8   20          0.5    0.00102       30
+attn_v     2.5 mul1     16   20          0.5    0.00102       60
+attn_v     2.5 mul1      1    1     0.003906   1.21e-05        4  (DOT vs WMMA, KS off)
+attn_v     2.5 mul1      1 auto    0.0001221   3.77e-07        1  (DOT vs WMMA, KS on)
+attn_o     2.5 mul1      1   13          0.5    0.00124       14
+attn_o     2.5 mul1      4   13            1    0.00202       93
+attn_o     2.5 mul1      8   13            1    0.00202      185
+attn_o     2.5 mul1     16   13            1    0.00195      364
+attn_o     2.5 mul1      1    1          0.5    0.00124       21  (DOT vs WMMA, KS off)
+attn_o     2.5 mul1      1 auto    0.0009766   2.43e-06        1  (DOT vs WMMA, KS on)
+ssm_out    2.5 mul1      1   13          0.5    0.00121       15
+ssm_out    2.5 mul1      4   13            1    0.00215      101
+ssm_out    2.5 mul1      8   13            1    0.00203      204
+ssm_out    2.5 mul1     16   13            1    0.00176      384
+ssm_out    2.5 mul1      1    1            1    0.00242       22  (DOT vs WMMA, KS off)
+ssm_out    2.5 mul1      1 auto      0.03125   7.55e-05        5  (DOT vs WMMA, KS on)
+gate_up      4 mul1      1    2            1    0.00214       54
+gate_up      4 mul1      4    2            1    0.00197      416
+gate_up      4 mul1      8    2            1    0.00197      821
+gate_up      4 mul1     16    2            1    0.00197     1622
+gate_up      4 mul1      1    1            1    0.00214      107  (DOT vs WMMA, KS off)
+gate_up      4 mul1      1 auto            1    0.00214       64  (DOT vs WMMA, KS on)
+down         4 mul1      1   13            1    0.00107       20
+down         4 mul1      4   13            2    0.00214      213
+down         4 mul1      8   13            2    0.00214      484
+down         4 mul1     16   13            2    0.00214      970
+down         4 mul1      1    1            2    0.00214       47  (DOT vs WMMA, KS off)
+down         4 mul1      1 auto      0.03125   3.34e-05        3  (DOT vs WMMA, KS on)
+gdn_qkv      4 mul1      1    7          0.5   0.000954       14
+gdn_qkv      4 mul1      4    7            1    0.00191      148
+gdn_qkv      4 mul1      8    7            1    0.00191      299
+gdn_qkv      4 mul1     16    7            2     0.0037      585
+gdn_qkv      4 mul1      1    1          0.5   0.000954       37  (DOT vs WMMA, KS off)
+gdn_qkv      4 mul1      1 auto     0.007812   1.49e-05        3  (DOT vs WMMA, KS on)
+gdn_z        4 mul1      1   11            1    0.00238       13
+gdn_z        4 mul1      4   11          0.5    0.00106       82
+gdn_z        4 mul1      8   11            1    0.00194      185
+gdn_z        4 mul1     16   11            1    0.00194      367
+gdn_z        4 mul1      1    1            1    0.00238       21  (DOT vs WMMA, KS off)
+gdn_z        4 mul1      1 auto        0.125   0.000298        2  (DOT vs WMMA, KS on)
+attn_qg      4 mul1      1    6         0.25   0.000514       20
+attn_qg      4 mul1      4    6          0.5    0.00103      141
+attn_qg      4 mul1      8    6            1    0.00162      317
+attn_qg      4 mul1     16    6            1    0.00162      655
+attn_qg      4 mul1      1    1          0.5    0.00103       32  (DOT vs WMMA, KS off)
+attn_qg      4 mul1      1 auto        0.125   0.000257        7  (DOT vs WMMA, KS on)
+attn_k       4 mul1      1   20            0          0        0
+attn_k       4 mul1      4   20          0.5    0.00124       18
+attn_k       4 mul1      8   20          0.5    0.00107       35
+attn_k       4 mul1     16   20          0.5    0.00107       63
+attn_k       4 mul1      1    1      0.01562   3.87e-05        1  (DOT vs WMMA, KS off)
+attn_k       4 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v       4 mul1      1   20      0.03125   9.41e-05        4
+attn_v       4 mul1      4   20          0.5    0.00115       20
+attn_v       4 mul1      8   20          0.5    0.00115       35
+attn_v       4 mul1     16   20            1    0.00202       70
+attn_v       4 mul1      1    1        0.125   0.000377        5  (DOT vs WMMA, KS off)
+attn_v       4 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       4 mul1      1   13            1    0.00217       15
+attn_o       4 mul1      4   13            2    0.00429       96
+attn_o       4 mul1      8   13            2     0.0036      196
+attn_o       4 mul1     16   13            2     0.0036      384
+attn_o       4 mul1      1    1            1    0.00217       20  (DOT vs WMMA, KS off)
+attn_o       4 mul1      1 auto            1    0.00217        3  (DOT vs WMMA, KS on)
+ssm_out      4 mul1      1   13          0.5     0.0011       10
+ssm_out      4 mul1      4   13            1    0.00198      107
+ssm_out      4 mul1      8   13            1    0.00198      209
+ssm_out      4 mul1     16   13            1    0.00179      376
+ssm_out      4 mul1      1    1          0.5     0.0011       15  (DOT vs WMMA, KS off)
+ssm_out      4 mul1      1 auto          0.5     0.0011        2  (DOT vs WMMA, KS on)
+gate_up    6.5 mul1      1    2          0.5   0.000984       61
+gate_up    6.5 mul1      4    2            1    0.00197      389
+gate_up    6.5 mul1      8    2            1    0.00187      801
+gate_up    6.5 mul1     16    2            1    0.00187     1588
+gate_up    6.5 mul1      1    1            1    0.00197      105  (DOT vs WMMA, KS off)
+gate_up    6.5 mul1      1 auto            1    0.00197       58  (DOT vs WMMA, KS on)
+down       6.5 mul1      1   13          0.5   0.000658       36
+down       6.5 mul1      4   13            2    0.00231      282
+down       6.5 mul1      8   13            2    0.00228      514
+down       6.5 mul1     16   13            2    0.00218     1014
+down       6.5 mul1      1    1            2    0.00263       59  (DOT vs WMMA, KS off)
+down       6.5 mul1      1 auto         0.25   0.000329        7  (DOT vs WMMA, KS on)
+gdn_qkv    6.5 mul1      1    7          0.5    0.00108       21
+gdn_qkv    6.5 mul1      4    7            1    0.00216      155
+gdn_qkv    6.5 mul1      8    7            1    0.00202      306
+gdn_qkv    6.5 mul1     16    7            2    0.00403      584
+gdn_qkv    6.5 mul1      1    1          0.5    0.00108       33  (DOT vs WMMA, KS off)
+gdn_qkv    6.5 mul1      1 auto         0.25   0.000539        9  (DOT vs WMMA, KS on)
+gdn_z      6.5 mul1      1   11          0.5   0.000969        8
+gdn_z      6.5 mul1      4   11          0.5   0.000969       79
+gdn_z      6.5 mul1      8   11            2    0.00388      169
+gdn_z      6.5 mul1     16   11            2    0.00388      350
+gdn_z      6.5 mul1      1    1          0.5   0.000969       16  (DOT vs WMMA, KS off)
+gdn_z      6.5 mul1      1 auto    6.104e-05   1.18e-07        1  (DOT vs WMMA, KS on)
+attn_qg    6.5 mul1      1    6            1    0.00215       33
+attn_qg    6.5 mul1      4    6            1    0.00215      202
+attn_qg    6.5 mul1      8    6            1    0.00179      399
+attn_qg    6.5 mul1     16    6            1    0.00179      758
+attn_qg    6.5 mul1      1    1            1    0.00215       49  (DOT vs WMMA, KS off)
+attn_qg    6.5 mul1      1 auto            1    0.00215       10  (DOT vs WMMA, KS on)
+attn_k     6.5 mul1      1   20          0.5    0.00145        3
+attn_k     6.5 mul1      4   20          0.5    0.00128        7
+attn_k     6.5 mul1      8   20          0.5     0.0012       27
+attn_k     6.5 mul1     16   20          0.5    0.00112       49
+attn_k     6.5 mul1      1    1    0.0001221   3.53e-07        1  (DOT vs WMMA, KS off)
+attn_k     6.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     6.5 mul1      1   20          0.5    0.00147        4
+attn_v     6.5 mul1      4   20        0.125   0.000332       13
+attn_v     6.5 mul1      8   20          0.5    0.00108       27
+attn_v     6.5 mul1     16   20          0.5   0.000839       60
+attn_v     6.5 mul1      1    1          0.5    0.00147        5  (DOT vs WMMA, KS off)
+attn_v     6.5 mul1      1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     6.5 mul1      1   13          0.5    0.00109       19
+attn_o     6.5 mul1      4   13          0.5   0.000954      100
+attn_o     6.5 mul1      8   13            1    0.00191      183
+attn_o     6.5 mul1     16   13            1    0.00185      358
+attn_o     6.5 mul1      1    1          0.5    0.00109       20  (DOT vs WMMA, KS off)
+attn_o     6.5 mul1      1 auto         0.25   0.000546        7  (DOT vs WMMA, KS on)
+ssm_out    6.5 mul1      1   13            1    0.00226       10
+ssm_out    6.5 mul1      4   13            1    0.00185       91
+ssm_out    6.5 mul1      8   13            2    0.00336      173
+ssm_out    6.5 mul1     16   13            2    0.00336      378
+ssm_out    6.5 mul1      1    1          0.5    0.00113       13  (DOT vs WMMA, KS off)
+ssm_out    6.5 mul1      1 auto      0.01562   3.54e-05        3  (DOT vs WMMA, KS on)
+gate_up    0.5 mad       1    2         0.25   0.000558       16
+gate_up    0.5 mad       4    2          0.5    0.00101       78
+gate_up    0.5 mad       8    2          0.5   0.000962      170
+gate_up    0.5 mad      16    2          0.5   0.000962      322
+gate_up    0.5 mad       1    1          0.5    0.00112       22  (DOT vs WMMA, KS off)
+gate_up    0.5 mad       1 auto         0.25   0.000558       21  (DOT vs WMMA, KS on)
+down       0.5 mad       1   13            2    0.00249        5
+down       0.5 mad       4   13            2    0.00244       38
+down       0.5 mad       8   13            2    0.00244       68
+down       0.5 mad      16   13            2    0.00243      136
+down       0.5 mad       1    1       0.0625   7.77e-05        6  (DOT vs WMMA, KS off)
+down       0.5 mad       1 auto         0.25   0.000311        1  (DOT vs WMMA, KS on)
+gdn_qkv    0.5 mad       1    7       0.0625   0.000129        1
+gdn_qkv    0.5 mad       4    7          0.5   0.000906       26
+gdn_qkv    0.5 mad       8    7          0.5   0.000906       58
+gdn_qkv    0.5 mad      16    7            1    0.00181      105
+gdn_qkv    0.5 mad       1    1       0.0625   0.000129        4  (DOT vs WMMA, KS off)
+gdn_qkv    0.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+gdn_z      0.5 mad       1   11     0.001953   3.76e-06        2
+gdn_z      0.5 mad       4   11            1    0.00192       12
+gdn_z      0.5 mad       8   11            1    0.00192       27
+gdn_z      0.5 mad      16   11            1    0.00192       54
+gdn_z      0.5 mad       1    1      0.03125   6.01e-05        3  (DOT vs WMMA, KS off)
+gdn_z      0.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_qg    0.5 mad       1    6    0.0002441    5.6e-07        2
+attn_qg    0.5 mad       4    6          0.5   0.000996       37
+attn_qg    0.5 mad       8    6          0.5   0.000969       76
+attn_qg    0.5 mad      16    6          0.5   0.000969      135
+attn_qg    0.5 mad       1    1        0.125   0.000287        6  (DOT vs WMMA, KS off)
+attn_qg    0.5 mad       1 auto    3.433e-05   7.87e-08        1  (DOT vs WMMA, KS on)
+attn_k     0.5 mad       1   20      0.03125   9.77e-05        1
+attn_k     0.5 mad       4   20      0.03125   7.48e-05        2
+attn_k     0.5 mad       8   20      0.03125   7.48e-05        5
+attn_k     0.5 mad      16   20            1    0.00215       11
+attn_k     0.5 mad       1    1      0.03125   9.77e-05        2  (DOT vs WMMA, KS off)
+attn_k     0.5 mad       1 auto      0.03125   9.77e-05        2  (DOT vs WMMA, KS on)
+attn_v     0.5 mad       1   20     0.001953   5.19e-06        1
+attn_v     0.5 mad       4   20       0.0625   0.000165        2
+attn_v     0.5 mad       8   20        0.125   0.000259        4
+attn_v     0.5 mad      16   20        0.125   0.000259        6
+attn_v     0.5 mad       1    1     0.001953   5.19e-06        1  (DOT vs WMMA, KS off)
+attn_v     0.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     0.5 mad       1   13          0.5    0.00116        6
+attn_o     0.5 mad       4   13          0.5    0.00104       18
+attn_o     0.5 mad       8   13          0.5    0.00102       38
+attn_o     0.5 mad      16   13            1    0.00203       75
+attn_o     0.5 mad       1    1          0.5    0.00116        7  (DOT vs WMMA, KS off)
+attn_o     0.5 mad       1 auto          0.5    0.00116        5  (DOT vs WMMA, KS on)
+ssm_out    0.5 mad       1   13       0.0625   0.000131        2
+ssm_out    0.5 mad       4   13          0.5   0.000919       12
+ssm_out    0.5 mad       8   13          0.5   0.000919       25
+ssm_out    0.5 mad      16   13          0.5    0.00088       55
+ssm_out    0.5 mad       1    1         0.25   0.000523        3  (DOT vs WMMA, KS off)
+ssm_out    0.5 mad       1 auto         0.25   0.000523        2  (DOT vs WMMA, KS on)
+gate_up      1 mad       1    2          0.5      0.001       21
+gate_up      1 mad       4    2          0.5      0.001       85
+gate_up      1 mad       8    2            1     0.0016      181
+gate_up      1 mad      16    2            1     0.0016      348
+gate_up      1 mad       1    1          0.5      0.001       35  (DOT vs WMMA, KS off)
+gate_up      1 mad       1 auto          0.5      0.001       28  (DOT vs WMMA, KS on)
+down         1 mad       1   13          0.5   0.000579        4
+down         1 mad       4   13            1    0.00116       31
+down         1 mad       8   13            1    0.00116       64
+down         1 mad      16   13            1    0.00103      129
+down         1 mad       1    1          0.5   0.000579        8  (DOT vs WMMA, KS off)
+down         1 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+gdn_qkv      1 mad       1    7      0.01562   3.32e-05        4
+gdn_qkv      1 mad       4    7        0.125   0.000266       28
+gdn_qkv      1 mad       8    7         0.25   0.000532       46
+gdn_qkv      1 mad      16    7          0.5    0.00106       83
+gdn_qkv      1 mad       1    1      0.03125   6.65e-05        4  (DOT vs WMMA, KS off)
+gdn_qkv      1 mad       1 auto      0.01562   3.32e-05        3  (DOT vs WMMA, KS on)
+gdn_z        1 mad       1   11    0.0004883   1.16e-06        2
+gdn_z        1 mad       4   11         0.25   0.000573       15
+gdn_z        1 mad       8   11          0.5    0.00112       29
+gdn_z        1 mad      16   11            1    0.00216       52
+gdn_z        1 mad       1    1    0.0004883   1.16e-06        2  (DOT vs WMMA, KS off)
+gdn_z        1 mad       1 auto     0.003906    9.3e-06        1  (DOT vs WMMA, KS on)
+attn_qg      1 mad       1    6         0.25    0.00059        5
+attn_qg      1 mad       4    6         0.25   0.000411       29
+attn_qg      1 mad       8    6          0.5   0.000822       63
+attn_qg      1 mad      16    6          0.5   0.000822      134
+attn_qg      1 mad       1    1         0.25    0.00059       10  (DOT vs WMMA, KS off)
+attn_qg      1 mad       1 auto         0.25    0.00059        4  (DOT vs WMMA, KS on)
+attn_k       1 mad       1   20            0          0        0
+attn_k       1 mad       4   20          0.5    0.00142        6
+attn_k       1 mad       8   20          0.5    0.00116       10
+attn_k       1 mad      16   20            2    0.00465       18
+attn_k       1 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k       1 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v       1 mad       1   20            0          0        0
+attn_v       1 mad       4   20      0.01562   4.29e-05        4
+attn_v       1 mad       8   20         0.25   0.000625        9
+attn_v       1 mad      16   20         0.25   0.000604       16
+attn_v       1 mad       1    1    0.0009766   2.79e-06        1  (DOT vs WMMA, KS off)
+attn_v       1 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       1 mad       1   13     0.003906   8.57e-06        5
+attn_o       1 mad       4   13      0.03125   6.59e-05        8
+attn_o       1 mad       8   13            1    0.00211       25
+attn_o       1 mad      16   13            2    0.00365       58
+attn_o       1 mad       1    1     0.003906   8.57e-06        6  (DOT vs WMMA, KS off)
+attn_o       1 mad       1 auto    0.0002441   5.35e-07        1  (DOT vs WMMA, KS on)
+ssm_out      1 mad       1   13         0.25    0.00061        4
+ssm_out      1 mad       4   13         0.25   0.000519       12
+ssm_out      1 mad       8   13            1    0.00189       23
+ssm_out      1 mad      16   13            1    0.00189       61
+ssm_out      1 mad       1    1         0.25    0.00061        5  (DOT vs WMMA, KS off)
+ssm_out      1 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+gate_up    1.5 mad       1    2         0.25   0.000512       20
+gate_up    1.5 mad       4    2          0.5    0.00102       76
+gate_up    1.5 mad       8    2            1    0.00189      151
+gate_up    1.5 mad      16    2            1    0.00189      332
+gate_up    1.5 mad       1    1          0.5    0.00102       31  (DOT vs WMMA, KS off)
+gate_up    1.5 mad       1 auto          0.5    0.00102       21  (DOT vs WMMA, KS on)
+down       1.5 mad       1   13          0.5   0.000694        5
+down       1.5 mad       4   13            1    0.00124       36
+down       1.5 mad       8   13            1    0.00124       65
+down       1.5 mad      16   13            2    0.00231      139
+down       1.5 mad       1    1          0.5   0.000694       11  (DOT vs WMMA, KS off)
+down       1.5 mad       1 auto         0.25   0.000347        2  (DOT vs WMMA, KS on)
+gdn_qkv    1.5 mad       1    7          0.5    0.00125        5
+gdn_qkv    1.5 mad       4    7         0.25   0.000561       24
+gdn_qkv    1.5 mad       8    7         0.25   0.000508       66
+gdn_qkv    1.5 mad      16    7          0.5    0.00102      120
+gdn_qkv    1.5 mad       1    1          0.5    0.00125        8  (DOT vs WMMA, KS off)
+gdn_qkv    1.5 mad       1 auto        0.125   0.000313        3  (DOT vs WMMA, KS on)
+gdn_z      1.5 mad       1   11        0.125   0.000279        4
+gdn_z      1.5 mad       4   11         0.25   0.000556       22
+gdn_z      1.5 mad       8   11            1    0.00222       36
+gdn_z      1.5 mad      16   11            1    0.00212       68
+gdn_z      1.5 mad       1    1        0.125   0.000279        4  (DOT vs WMMA, KS off)
+gdn_z      1.5 mad       1 auto        0.125   0.000279        1  (DOT vs WMMA, KS on)
+attn_qg    1.5 mad       1    6       0.0625   0.000132        5
+attn_qg    1.5 mad       4    6            1    0.00207       31
+attn_qg    1.5 mad       8    6            1    0.00207       62
+attn_qg    1.5 mad      16    6            1    0.00207      128
+attn_qg    1.5 mad       1    1            1    0.00212       10  (DOT vs WMMA, KS off)
+attn_qg    1.5 mad       1 auto       0.0625   0.000132        3  (DOT vs WMMA, KS on)
+attn_k     1.5 mad       1   20       0.0625   0.000147        1
+attn_k     1.5 mad       4   20      0.01562   3.67e-05        1
+attn_k     1.5 mad       8   20       0.0625   0.000147        3
+attn_k     1.5 mad      16   20       0.0625   0.000147        7
+attn_k     1.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     1.5 mad       1 auto       0.0625   0.000147        1  (DOT vs WMMA, KS on)
+attn_v     1.5 mad       1   20            0          0        0
+attn_v     1.5 mad       4   20    6.104e-05   1.45e-07        1
+attn_v     1.5 mad       8   20    6.104e-05   1.27e-07        2
+attn_v     1.5 mad      16   20          0.5      0.001        7
+attn_v     1.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_v     1.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     1.5 mad       1   13            0          0        0
+attn_o     1.5 mad       4   13       0.0625   0.000125       13
+attn_o     1.5 mad       8   13          0.5      0.001       26
+attn_o     1.5 mad      16   13          0.5    0.00094       50
+attn_o     1.5 mad       1    1       0.0625    0.00014        2  (DOT vs WMMA, KS off)
+attn_o     1.5 mad       1 auto     0.001953   4.36e-06        1  (DOT vs WMMA, KS on)
+ssm_out    1.5 mad       1   13       0.0625   0.000129        5
+ssm_out    1.5 mad       4   13          0.5      0.001       15
+ssm_out    1.5 mad       8   13          0.5      0.001       27
+ssm_out    1.5 mad      16   13          0.5   0.000933       52
+ssm_out    1.5 mad       1    1         0.25   0.000514        9  (DOT vs WMMA, KS off)
+ssm_out    1.5 mad       1 auto    1.526e-05   3.14e-08        1  (DOT vs WMMA, KS on)
+gate_up    2.5 mad       1    2      0.03125   6.38e-05        7
+gate_up    2.5 mad       4    2            1    0.00192       87
+gate_up    2.5 mad       8    2            1    0.00189      171
+gate_up    2.5 mad      16    2            1    0.00184      341
+gate_up    2.5 mad       1    1          0.5    0.00102       25  (DOT vs WMMA, KS off)
+gate_up    2.5 mad       1 auto            1    0.00204       16  (DOT vs WMMA, KS on)
+down       2.5 mad       1   13      0.01562   2.05e-05        2
+down       2.5 mad       4   13            1    0.00117       30
+down       2.5 mad       8   13            1    0.00107       73
+down       2.5 mad      16   13            2    0.00195      135
+down       2.5 mad       1    1         0.25   0.000327        7  (DOT vs WMMA, KS off)
+down       2.5 mad       1 auto      0.01562   2.05e-05        1  (DOT vs WMMA, KS on)
+gdn_qkv    2.5 mad       1    7            1    0.00231        3
+gdn_qkv    2.5 mad       4    7            1    0.00207       25
+gdn_qkv    2.5 mad       8    7            1    0.00207       61
+gdn_qkv    2.5 mad      16    7            1    0.00203      117
+gdn_qkv    2.5 mad       1    1     0.003906   9.04e-06        2  (DOT vs WMMA, KS off)
+gdn_qkv    2.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+gdn_z      2.5 mad       1   11         0.25   0.000601        3
+gdn_z      2.5 mad       4   11            2    0.00429       19
+gdn_z      2.5 mad       8   11            2    0.00429       38
+gdn_z      2.5 mad      16   11            2    0.00429       75
+gdn_z      2.5 mad       1    1            2    0.00481        7  (DOT vs WMMA, KS off)
+gdn_z      2.5 mad       1 auto    6.104e-05   1.47e-07        1  (DOT vs WMMA, KS on)
+attn_qg    2.5 mad       1    6         0.25   0.000584       10
+attn_qg    2.5 mad       4    6          0.5    0.00088       29
+attn_qg    2.5 mad       8    6          0.5    0.00088       70
+attn_qg    2.5 mad      16    6            1    0.00176      140
+attn_qg    2.5 mad       1    1         0.25   0.000584        8  (DOT vs WMMA, KS off)
+attn_qg    2.5 mad       1 auto     0.007812   1.83e-05        4  (DOT vs WMMA, KS on)
+attn_k     2.5 mad       1   20            0          0        0
+attn_k     2.5 mad       4   20      0.03125   6.94e-05        1
+attn_k     2.5 mad       8   20      0.03125   6.94e-05        1
+attn_k     2.5 mad      16   20          0.5    0.00107        6
+attn_k     2.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     2.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     2.5 mad       1   20            0          0        0
+attn_v     2.5 mad       4   20        0.125   0.000235        4
+attn_v     2.5 mad       8   20        0.125   0.000235        7
+attn_v     2.5 mad      16   20        0.125   0.000235        9
+attn_v     2.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_v     2.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     2.5 mad       1   13        0.125   0.000271        5
+attn_o     2.5 mad       4   13          0.5      0.001       18
+attn_o     2.5 mad       8   13          0.5      0.001       25
+attn_o     2.5 mad      16   13          0.5      0.001       65
+attn_o     2.5 mad       1    1        0.125   0.000271        7  (DOT vs WMMA, KS off)
+attn_o     2.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+ssm_out    2.5 mad       1   13     0.001953   4.56e-06        4
+ssm_out    2.5 mad       4   13            1    0.00202       23
+ssm_out    2.5 mad       8   13            1    0.00201       34
+ssm_out    2.5 mad      16   13            1     0.0018       65
+ssm_out    2.5 mad       1    1            1    0.00234        7  (DOT vs WMMA, KS off)
+ssm_out    2.5 mad       1 auto    0.0002441    5.7e-07        3  (DOT vs WMMA, KS on)
+gate_up      4 mad       1    2          0.5   0.000988       19
+gate_up      4 mad       4    2            1    0.00198       90
+gate_up      4 mad       8    2            1    0.00179      163
+gate_up      4 mad      16    2            1    0.00179      336
+gate_up      4 mad       1    1            1    0.00198       30  (DOT vs WMMA, KS off)
+gate_up      4 mad       1 auto         0.25   0.000494       22  (DOT vs WMMA, KS on)
+down         4 mad       1   13     0.007812   1.03e-05        1
+down         4 mad       4   13            1      0.001       27
+down         4 mad       8   13            1      0.001       63
+down         4 mad      16   13            1      0.001      128
+down         4 mad       1    1          0.5   0.000661        6  (DOT vs WMMA, KS off)
+down         4 mad       1 auto     0.001953   2.58e-06        1  (DOT vs WMMA, KS on)
+gdn_qkv      4 mad       1    7          0.5    0.00105        4
+gdn_qkv      4 mad       4    7          0.5   0.000977       33
+gdn_qkv      4 mad       8    7          0.5   0.000977       59
+gdn_qkv      4 mad      16    7            1    0.00164      113
+gdn_qkv      4 mad       1    1          0.5    0.00105        8  (DOT vs WMMA, KS off)
+gdn_qkv      4 mad       1 auto    0.0009766   2.04e-06        2  (DOT vs WMMA, KS on)
+gdn_z        4 mad       1   11    0.0004883   1.04e-06        3
+gdn_z        4 mad       4   11            1    0.00213       16
+gdn_z        4 mad       8   11            1    0.00213       32
+gdn_z        4 mad      16   11            1    0.00201       53
+gdn_z        4 mad       1    1      0.03125   6.65e-05        6  (DOT vs WMMA, KS off)
+gdn_z        4 mad       1 auto    3.052e-05   6.49e-08        1  (DOT vs WMMA, KS on)
+attn_qg      4 mad       1    6          0.5    0.00111        6
+attn_qg      4 mad       4    6         0.25   0.000484       33
+attn_qg      4 mad       8    6         0.25   0.000484       66
+attn_qg      4 mad      16    6            1    0.00194      133
+attn_qg      4 mad       1    1          0.5    0.00111        8  (DOT vs WMMA, KS off)
+attn_qg      4 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_k       4 mad       1   20            0          0        0
+attn_k       4 mad       4   20     0.007812   2.15e-05        4
+attn_k       4 mad       8   20          0.5    0.00134        8
+attn_k       4 mad      16   20          0.5    0.00112       15
+attn_k       4 mad       1    1    0.0001221   3.72e-07        2  (DOT vs WMMA, KS off)
+attn_k       4 mad       1 auto    3.052e-05    9.3e-08        1  (DOT vs WMMA, KS on)
+attn_v       4 mad       1   20    3.052e-05   9.48e-08        1
+attn_v       4 mad       4   20        0.125   0.000324        6
+attn_v       4 mad       8   20        0.125   0.000316        8
+attn_v       4 mad      16   20        0.125   0.000309       12
+attn_v       4 mad       1    1    0.0001221   3.79e-07        2  (DOT vs WMMA, KS off)
+attn_v       4 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o       4 mad       1   13    1.526e-05   3.52e-08        1
+attn_o       4 mad       4   13          0.5    0.00103       11
+attn_o       4 mad       8   13            1    0.00185       33
+attn_o       4 mad      16   13            1    0.00185       65
+attn_o       4 mad       1    1       0.0625   0.000144        4  (DOT vs WMMA, KS off)
+attn_o       4 mad       1 auto    0.0009766   2.25e-06        1  (DOT vs WMMA, KS on)
+ssm_out      4 mad       1   13      0.01562   3.76e-05        3
+ssm_out      4 mad       4   13      0.01562   3.18e-05       19
+ssm_out      4 mad       8   13        0.125   0.000252       33
+ssm_out      4 mad      16   13         0.25   0.000488       60
+ssm_out      4 mad       1    1      0.01562   3.76e-05        6  (DOT vs WMMA, KS off)
+ssm_out      4 mad       1 auto      0.01562   3.76e-05        2  (DOT vs WMMA, KS on)
+gate_up    6.5 mad       1    2       0.0625   0.000143       20
+gate_up    6.5 mad       4    2            1    0.00199       91
+gate_up    6.5 mad       8    2            1    0.00175      180
+gate_up    6.5 mad      16    2            1    0.00175      360
+gate_up    6.5 mad       1    1         0.25   0.000571       34  (DOT vs WMMA, KS off)
+gate_up    6.5 mad       1 auto      0.01562   3.57e-05       18  (DOT vs WMMA, KS on)
+down       6.5 mad       1   13         0.25   0.000332        6
+down       6.5 mad       4   13            1    0.00133       36
+down       6.5 mad       8   13            1    0.00111       62
+down       6.5 mad      16   13            2    0.00222      131
+down       6.5 mad       1    1          0.5   0.000665       11  (DOT vs WMMA, KS off)
+down       6.5 mad       1 auto        0.125   0.000166        2  (DOT vs WMMA, KS on)
+gdn_qkv    6.5 mad       1    7      0.01562   3.41e-05        3
+gdn_qkv    6.5 mad       4    7          0.5    0.00102       25
+gdn_qkv    6.5 mad       8    7          0.5    0.00102       47
+gdn_qkv    6.5 mad      16    7          0.5   0.000962      107
+gdn_qkv    6.5 mad       1    1          0.5    0.00109        9  (DOT vs WMMA, KS off)
+gdn_qkv    6.5 mad       1 auto         0.25   0.000546        3  (DOT vs WMMA, KS on)
+gdn_z      6.5 mad       1   11        0.125   0.000274        2
+gdn_z      6.5 mad       4   11            1    0.00217       21
+gdn_z      6.5 mad       8   11            1    0.00217       42
+gdn_z      6.5 mad      16   11            1    0.00204       82
+gdn_z      6.5 mad       1    1          0.5     0.0011        4  (DOT vs WMMA, KS off)
+gdn_z      6.5 mad       1 auto     0.007812   1.71e-05        1  (DOT vs WMMA, KS on)
+attn_qg    6.5 mad       1    6          0.5   0.000992        6
+attn_qg    6.5 mad       4    6            1    0.00182       42
+attn_qg    6.5 mad       8    6            1    0.00182       77
+attn_qg    6.5 mad      16    6            1    0.00182      160
+attn_qg    6.5 mad       1    1      0.03125    6.2e-05        6  (DOT vs WMMA, KS off)
+attn_qg    6.5 mad       1 auto    0.0009766   1.94e-06        5  (DOT vs WMMA, KS on)
+attn_k     6.5 mad       1   20            0          0        0
+attn_k     6.5 mad       4   20    3.052e-05   7.79e-08        1
+attn_k     6.5 mad       8   20    0.0009766   2.49e-06        2
+attn_k     6.5 mad      16   20          0.5    0.00112        6
+attn_k     6.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_k     6.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_v     6.5 mad       1   20            0          0        0
+attn_v     6.5 mad       4   20       0.0625   0.000146        4
+attn_v     6.5 mad       8   20       0.0625   0.000146        8
+attn_v     6.5 mad      16   20       0.0625   0.000146       12
+attn_v     6.5 mad       1    1            0          0        0  (DOT vs WMMA, KS off)
+attn_v     6.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+attn_o     6.5 mad       1   13     0.003906   7.51e-06        2
+attn_o     6.5 mad       4   13          0.5   0.000962       14
+attn_o     6.5 mad       8   13          0.5   0.000856       27
+attn_o     6.5 mad      16   13          0.5   0.000856       53
+attn_o     6.5 mad       1    1          0.5   0.000962        6  (DOT vs WMMA, KS off)
+attn_o     6.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+ssm_out    6.5 mad       1   13            0          0        0
+ssm_out    6.5 mad       4   13            1    0.00189       18
+ssm_out    6.5 mad       8   13            1    0.00187       29
+ssm_out    6.5 mad      16   13            1    0.00187       64
+ssm_out    6.5 mad       1    1     0.001953   4.96e-06        3  (DOT vs WMMA, KS off)
+ssm_out    6.5 mad       1 auto            0          0        0  (DOT vs WMMA, KS on)
+worst rel 0.00481
+TEST_KS PASS (0 failures)

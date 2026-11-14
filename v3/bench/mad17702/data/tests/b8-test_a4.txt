@@ -1,0 +1,7 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w150-mad-rule); device AMD Radeon AI PRO R9700 gfx1201; A4 bias flush 1
+A A4 planes: 80 cases (rates x g64 / g128), [256, 512], M 512, bias flush 1: 0 failed (int4 weight plane, int4 activations, scales, half-step terms byte for byte; y byte for byte; worst rel rms 0.00516 vs quantised operands, 0.114 vs x . W^T)
+B mul1i4 on the f16 and A8 rows: 30 cases, 0 failed (T2's f16 plane byte for byte, worst rel rms vs x . W^T: T2 0.000297, nt_pass 0.0017; A8's 2q + 1 plane and y byte for byte)
+C selftest matrix: 36 cases, 0 failed
+D refusals: 8 checks, 0 failed
+R real weights: none (EXL3I_REAL unset)
+TEST_A4 PASS (1006 checks)

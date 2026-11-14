@@ -1,0 +1,135 @@
+exl3i 0.3.0 -- test_aq
+gate_up  T  512 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T  512 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 17825792 outputs differ
+gate_up  T  512 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T  512 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 17825792 outputs differ
+gate_up  T  600 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T  600 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 20889600 outputs differ
+gate_up  T  600 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T  600 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 20889600 outputs differ
+gate_up  T 2048 x bf16 planes 3: actq rows differing from the reference 0
+gate_up  T 2048 x bf16 plane 1 of 3: dense with aq vs quantising itself: 0 of 71303168 outputs differ
+gate_up  T 2048 x f16  planes 3: actq rows differing from the reference 0
+gate_up  T 2048 x f16  plane 1 of 3: dense with aq vs quantising itself: 0 of 71303168 outputs differ
+gdn_qkv  T  512 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T  512 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 5242880 outputs differ
+gdn_qkv  T  512 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T  512 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 5242880 outputs differ
+gdn_qkv  T  600 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T  600 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 6144000 outputs differ
+gdn_qkv  T  600 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T  600 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 6144000 outputs differ
+gdn_qkv  T 2048 x bf16 planes 2: actq rows differing from the reference 0
+gdn_qkv  T 2048 x bf16 plane 0 of 2: dense with aq vs quantising itself: 0 of 20971520 outputs differ
+gdn_qkv  T 2048 x f16  planes 2: actq rows differing from the reference 0
+gdn_qkv  T 2048 x f16  plane 0 of 2: dense with aq vs quantising itself: 0 of 20971520 outputs differ
+attn_k   T  512 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T  512 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 524288 outputs differ
+attn_k   T  512 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T  512 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 524288 outputs differ
+attn_k   T  600 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T  600 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 614400 outputs differ
+attn_k   T  600 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T  600 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 614400 outputs differ
+attn_k   T 2048 x bf16 planes 3: actq rows differing from the reference 0
+attn_k   T 2048 x bf16 plane 2 of 3: dense with aq vs quantising itself: 0 of 2097152 outputs differ
+attn_k   T 2048 x f16  planes 3: actq rows differing from the reference 0
+attn_k   T 2048 x f16  plane 2 of 3: dense with aq vs quantising itself: 0 of 2097152 outputs differ
+down     T  512 x bf16 planes 1: actq rows differing from the reference 0
+down     T  512 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 2621440 outputs differ
+down     T  512 x f16  planes 1: actq rows differing from the reference 0
+down     T  512 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 2621440 outputs differ
+down     T  600 x bf16 planes 1: actq rows differing from the reference 0
+down     T  600 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 3072000 outputs differ
+down     T  600 x f16  planes 1: actq rows differing from the reference 0
+down     T  600 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 3072000 outputs differ
+down     T 2048 x bf16 planes 1: actq rows differing from the reference 0
+down     T 2048 x bf16 plane 0 of 1: dense with aq vs quantising itself: 0 of 10485760 outputs differ
+down     T 2048 x f16  planes 1: actq rows differing from the reference 0
+down     T 2048 x f16  plane 0 of 1: dense with aq vs quantising itself: 0 of 10485760 outputs differ
+gate_up  T 1 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 1 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 34816 f32 outputs differ
+gate_up  T 1 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 1 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 34816 f32 outputs differ
+gate_up  T 3 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 3 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 104448 f32 outputs differ
+gate_up  T 3 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 3 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 104448 f32 outputs differ
+gate_up  T 8 x bf16 planes 3: actq xb rows differing from the reference 0
+gate_up  T 8 x bf16 plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 278528 f32 outputs differ
+gate_up  T 8 x f16  planes 3: actq xb rows differing from the reference 0
+gate_up  T 8 x f16  plane 1 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 278528 f32 outputs differ
+gdn_qkv  T 1 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 1 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 10240 f32 outputs differ
+gdn_qkv  T 1 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 1 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 10240 f32 outputs differ
+gdn_qkv  T 3 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 3 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 30720 f32 outputs differ
+gdn_qkv  T 3 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 3 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 30720 f32 outputs differ
+gdn_qkv  T 8 x bf16 planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 8 x bf16 plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 81920 f32 outputs differ
+gdn_qkv  T 8 x f16  planes 2: actq xb rows differing from the reference 0
+gdn_qkv  T 8 x f16  plane 0 of 2: mad GEMV with aq (xb) vs quantising itself: 0 of 81920 f32 outputs differ
+attn_k   T 1 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 1 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 1024 f32 outputs differ
+attn_k   T 1 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 1 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 1024 f32 outputs differ
+attn_k   T 3 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 3 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 3072 f32 outputs differ
+attn_k   T 3 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 3 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 3072 f32 outputs differ
+attn_k   T 8 x bf16 planes 3: actq xb rows differing from the reference 0
+attn_k   T 8 x bf16 plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 8192 f32 outputs differ
+attn_k   T 8 x f16  planes 3: actq xb rows differing from the reference 0
+attn_k   T 8 x f16  plane 2 of 3: mad GEMV with aq (xb) vs quantising itself: 0 of 8192 f32 outputs differ
+down     T 1 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 1 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 5120 f32 outputs differ
+down     T 1 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 1 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 5120 f32 outputs differ
+down     T 3 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 3 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 15360 f32 outputs differ
+down     T 3 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 3 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 15360 f32 outputs differ
+down     T 8 x bf16 planes 1: actq xb rows differing from the reference 0
+down     T 8 x bf16 plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 40960 f32 outputs differ
+down     T 8 x f16  planes 1: actq xb rows differing from the reference 0
+down     T 8 x f16  plane 0 of 1: mad GEMV with aq (xb) vs quantising itself: 0 of 40960 f32 outputs differ
+pre rmsnorm  K  5120 T    1 planes 3 h 0: libr4d row + actq vs fused: 0 of 15840 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    3 planes 3 h 0: libr4d row + actq vs fused: 0 of 47520 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    8 planes 3 h 0: libr4d row + actq vs fused: 0 of 126720 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  512 planes 3 h 0: libr4d row + actq vs fused: 0 of 8110080 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  600 planes 3 h 0: libr4d row + actq vs fused: 0 of 9504000 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T 2048 planes 3 h 0: libr4d row + actq vs fused: 0 of 32440320 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    1 planes 2 h 1: libr4d row + actq vs fused: 0 of 10560 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    3 planes 2 h 1: libr4d row + actq vs fused: 0 of 31680 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    8 planes 2 h 1: libr4d row + actq vs fused: 0 of 84480 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  512 planes 2 h 1: libr4d row + actq vs fused: 0 of 5406720 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  600 planes 2 h 1: libr4d row + actq vs fused: 0 of 6336000 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T 2048 planes 2 h 1: libr4d row + actq vs fused: 0 of 21626880 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    1 planes 2 h 0: libr4d row + actq vs fused: 0 of 10560 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    3 planes 2 h 0: libr4d row + actq vs fused: 0 of 31680 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T    8 planes 2 h 0: libr4d row + actq vs fused: 0 of 84480 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  512 planes 2 h 0: libr4d row + actq vs fused: 0 of 5406720 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T  600 planes 2 h 0: libr4d row + actq vs fused: 0 of 6336000 plane bytes differ, h 0 differ
+pre rmsnorm  K  5120 T 2048 planes 2 h 0: libr4d row + actq vs fused: 0 of 21626880 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T    1 planes 1 h 0: libr4d row + actq vs fused: 0 of 17952 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T    3 planes 1 h 0: libr4d row + actq vs fused: 0 of 53856 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T    8 planes 1 h 0: libr4d row + actq vs fused: 0 of 143616 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T  512 planes 1 h 0: libr4d row + actq vs fused: 0 of 9191424 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T  600 planes 1 h 0: libr4d row + actq vs fused: 0 of 10771200 plane bytes differ, h 0 differ
+pre silu_mul K 17408 T 2048 planes 1 h 0: libr4d row + actq vs fused: 0 of 36765696 plane bytes differ, h 0 differ
+pre mul      K  6144 T    1 planes 1 h 0: libr4d row + actq vs fused: 0 of 6336 plane bytes differ, h 0 differ
+pre mul      K  6144 T    3 planes 1 h 0: libr4d row + actq vs fused: 0 of 19008 plane bytes differ, h 0 differ
+pre mul      K  6144 T    8 planes 1 h 0: libr4d row + actq vs fused: 0 of 50688 plane bytes differ, h 0 differ
+pre mul      K  6144 T  512 planes 1 h 0: libr4d row + actq vs fused: 0 of 3244032 plane bytes differ, h 0 differ
+pre mul      K  6144 T  600 planes 1 h 0: libr4d row + actq vs fused: 0 of 3801600 plane bytes differ, h 0 differ
+pre mul      K  6144 T 2048 planes 1 h 0: libr4d row + actq vs fused: 0 of 12976128 plane bytes differ, h 0 differ
+pre mul      K  6144 T    1 planes 1 h 1: libr4d row + actq vs fused: 0 of 6336 plane bytes differ, h 0 differ
+pre mul      K  6144 T    3 planes 1 h 1: libr4d row + actq vs fused: 0 of 19008 plane bytes differ, h 0 differ
+pre mul      K  6144 T    8 planes 1 h 1: libr4d row + actq vs fused: 0 of 50688 plane bytes differ, h 0 differ
+pre mul      K  6144 T  512 planes 1 h 1: libr4d row + actq vs fused: 0 of 3244032 plane bytes differ, h 0 differ
+pre mul      K  6144 T  600 planes 1 h 1: libr4d row + actq vs fused: 0 of 3801600 plane bytes differ, h 0 differ
+pre mul      K  6144 T 2048 planes 1 h 1: libr4d row + actq vs fused: 0 of 12976128 plane bytes differ, h 0 differ
+132 checks
+TEST_AQ PASS (0 failures)

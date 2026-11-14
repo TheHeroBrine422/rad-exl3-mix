@@ -1,0 +1,8 @@
+mad2625-r1 ctx 8k run 0 (warm): prompt 8245 ttft 3286 ms, client 26.07 ms/tok, server 26.09 ms/step x 1.00 tok
+mad2625-r1 ctx 8k run 1: prompt 8242 ttft 3292 ms, client 26.01 ms/tok, server 26.02 ms/step x 1.00 tok
+mad2625-r1 ctx 8k run 2: prompt 8244 ttft 3303 ms, client 26.06 ms/tok, server 26.07 ms/step x 1.00 tok
+mad2625-r1 ctx 8k run 3: prompt 8242 ttft 3312 ms, client 26.04 ms/tok, server 26.06 ms/step x 1.00 tok
+mad2625-r1 ctx 0 run 0 (warm): prompt 99 ttft 106 ms, client 25.07 ms/tok, server 25.07 ms/step x 1.00 tok
+mad2625-r1 ctx 0 run 1: prompt 104 ttft 105 ms, client 25.09 ms/tok, server 25.08 ms/step x 1.00 tok
+mad2625-r1 ctx 0 run 2: prompt 100 ttft 105 ms, client 25.10 ms/tok, server 25.10 ms/step x 1.00 tok
+mad2625-r1 ctx 0 run 3: prompt 106 ttft 106 ms, client 25.13 ms/tok, server 25.12 ms/step x 1.00 tok

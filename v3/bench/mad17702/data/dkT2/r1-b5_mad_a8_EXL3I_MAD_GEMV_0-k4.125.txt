@@ -1,0 +1,27 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w150-mad-aqsplit); device AMD Radeon AI PRO R9700 gfx1201; rate K4.125 mad, a / y bf16, 12 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120     2  a8           158.9      157.1     4.5  y 164f6507847a58e5
+gate_up   34816   5120     3  a8           161.2      161.0     6.6  y 8c1b70d38f143093
+gate_up   34816   5120     4  a8           164.4      163.0     8.7  y c065c7b67f2a5801
+down       5120  17408     2  a8            87.0       85.9     4.1  y 4a41444e708a2acb
+down       5120  17408     3  a8            88.0       87.5     6.1  y 3298918d81ce3df3
+down       5120  17408     4  a8            89.4       88.8     8.0  y 72beec7f4331cb7a
+gdn_qkv   10240   5120     2  a8            53.5       53.2     3.9  y b450091576f835ff
+gdn_qkv   10240   5120     3  a8            54.0       53.8     5.8  y 3cb5e703cabbb47a
+gdn_qkv   10240   5120     4  a8            54.7       54.5     7.7  y 7021f09e4ddfce72
+gdn_z      6144   5120     2  a8            36.6       36.4     3.4  y 8a149325748e539d
+gdn_z      6144   5120     3  a8            37.1       36.8     5.1  y c59c7c84e59cffd0
+gdn_z      6144   5120     4  a8            37.3       37.0     6.7  y 07843ea42c4cdccb
+attn_qg   12288   5120     2  a8            61.2       61.0     4.1  y f09d17926ddcf89f
+attn_qg   12288   5120     3  a8            61.8       61.6     6.1  y ea4e6b2dfc1ea9dc
+attn_qg   12288   5120     4  a8            61.8       61.4     8.1  y ac50f520144e6e77
+attn_k     1024   5120     2  a8            14.3       14.1     1.5  y 20b565337153c9d7
+attn_k     1024   5120     3  a8            14.4       14.3     2.2  y 19407bfe2c9d2633
+attn_k     1024   5120     4  a8            14.4       14.4     2.9  y 4bb578a876cec411
+attn_o     5120   6144     2  a8            37.0       36.7     3.4  y 450bb01f16795e45
+attn_o     5120   6144     3  a8            37.2       37.1     5.1  y a25f49daaf700e91
+attn_o     5120   6144     4  a8            37.5       37.3     6.7  y c61c04b23baf3e57
+ssm_out    5120   6144     2  a8            37.0       36.8     3.4  y 4042405e5bb14142
+ssm_out    5120   6144     3  a8            37.2       37.1     5.1  y 3227e8f8c9f52f13
+ssm_out    5120   6144     4  a8            37.4       36.4     6.7  y 620029d5b63bd3d9

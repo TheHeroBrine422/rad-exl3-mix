@@ -1,0 +1,8 @@
+mad4125-r2 ctx 8k run 0 (warm): prompt 8246 ttft 3424 ms, client 31.68 ms/tok, server 31.69 ms/step x 1.00 tok
+mad4125-r2 ctx 8k run 1: prompt 8243 ttft 3452 ms, client 31.61 ms/tok, server 31.63 ms/step x 1.00 tok
+mad4125-r2 ctx 8k run 2: prompt 8243 ttft 3461 ms, client 31.67 ms/tok, server 31.69 ms/step x 1.00 tok
+mad4125-r2 ctx 8k run 3: prompt 8243 ttft 3463 ms, client 31.65 ms/tok, server 31.66 ms/step x 1.00 tok
+mad4125-r2 ctx 0 run 0 (warm): prompt 103 ttft 108 ms, client 30.58 ms/tok, server 30.58 ms/step x 1.00 tok
+mad4125-r2 ctx 0 run 1: prompt 104 ttft 107 ms, client 30.58 ms/tok, server 30.58 ms/step x 1.00 tok
+mad4125-r2 ctx 0 run 2: prompt 105 ttft 107 ms, client 30.58 ms/tok, server 30.58 ms/step x 1.00 tok
+mad4125-r2 ctx 0 run 3: prompt 103 ttft 107 ms, client 30.59 ms/tok, server 30.58 ms/step x 1.00 tok

@@ -1,0 +1,18 @@
+exl3i 0.3.0 -- EXL3-V3's dense linear (exl3i_dense) on gfx1201: any rate in 1/8 steps, mul1 / mul1i8 / mul1i4, f16 WMMA, A8 two-pass prefill on mul1i8 / mul1i4, A4 (W4A4) on mul1i4 (build w150-mad-aqsplit); device AMD Radeon AI PRO R9700 gfx1201; rate K2.5 mul1i8, a / y bf16, 12 reps
+decode build: EXL3I_I8_CLOSED 1, EXL3I_BENCH_IQRH 0, EXL3I_ABLATE_DECODE 0
+shape         N      K     M  mode        us_med     us_min TFLOP/s
+gate_up   34816   5120     2  a8           169.0      156.1     4.2  y 22b50969d8b1291d
+gate_up   34816   5120     4  a8           178.3      174.8     8.0  y 9a006e87563d1e24
+gate_up   34816   5120     8  a8           189.9      186.6    15.0  y f5c297bc4cfb49d8
+down       5120  17408     2  a8            90.4       87.5     3.9  y 55ade7743c4e2404
+down       5120  17408     4  a8            95.4       94.3     7.5  y 2a32f73bf97455cf
+down       5120  17408     8  a8           110.7      102.5    12.9  y 9ad9cdf4505b630f
+gdn_qkv   10240   5120     2  a8            54.9       53.4     3.8  y 62a3a81ef4373cff
+gdn_qkv   10240   5120     4  a8            55.4       54.8     7.6  y 71d0ad9b89235301
+gdn_qkv   10240   5120     8  a8            63.8       61.3    13.2  y 19c709969b42ea89
+attn_k     1024   5120     2  a8            14.4       13.9     1.5  y 945a29f3d03444d2
+attn_k     1024   5120     4  a8            14.4       14.3     2.9  y 8a9388a7fda30384
+attn_k     1024   5120     8  a8            16.1       16.0     5.2  y 92cb664420bf2065
+attn_o     5120   6144     2  a8            38.8       38.2     3.2  y 82dccac4a88ab466
+attn_o     5120   6144     4  a8            38.9       36.4     6.5  y 4df943e818716913
+attn_o     5120   6144     8  a8            42.2       39.8    11.9  y 6ba03abab15a5a0d

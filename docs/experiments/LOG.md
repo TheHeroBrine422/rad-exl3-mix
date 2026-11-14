@@ -6553,3 +6553,47 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Stage B (#177-03) shows mad ≈ or better than mul1i8 at K2.5 / 4 / 6 on whole-model KL, so the per-tensor
   mad-vs-mul1i8 knapsack option (discussed 11-13 evening) is dropped: the trunk menu is mad only. The head keeps its
   existing mul1 plans at the top (no requant) next to the mad plans. **Runtime:** none.
+
+### 2026-11-13 9:05 PM CST · #177-02 (w150) · mad in exl3i: codebook, byte-sum decode GEMV, A8 prefill; e2e decode ×0.77 (K2.625) / ×0.90 (K4.125)
+- **Built** (radiance fork `qc-exl3-v3-mad` off `qc-exl3-v3` 179220f: 2bdd5ca, 92dcef4, 593473b; details + tables:
+  `plugin/exl3i/PERF.md` "Codebook mad and its byte-sum decode GEMV"; scripts / data `v3/bench/mad17702/`):
+  codebook `mad` in exl3i (oracle = exl3hashm's values on all 65,536 states; encoding version 4 `mad/h128/k<rate>[/r16]`,
+  interface 4; every path: nt_pass DQ, T2, A8 wdec8 / FUSE (int8 index S + 2), the GEMV); the exl3i importer takes
+  `codebook=mad` (stamp forms of rxq `mad {a, b}`, ourq `mad_a / mad_b`, w139's `hash`); the **byte-sum GEMV**
+  (`sudot4(h, x · 0x01010101)` a weight a row, −126 x summed by the row's quantiser, KS + nt_pass's epilogue, any rate,
+  T 1–8, R16 heads at a8g128 too); its rows from the producer (`exl3i_actq` form **xb**; qwen35_exl3 issues an xb site
+  at 1 row when all of a site's consumers are mad: norm → qkv / z / qg / k / v / gate_up, silu_mul → down, mul → o) or a
+  one-launch pre-pass (ssm_out, head) where that pays.
+- **What made the GEMV fast:** the hash in plain C instead of inline asm (gate_up K2 138 → 101 µs: same instructions,
+  LLVM can't schedule an asm statement — the same asm pattern is in mul1i8 / i4 / exl3r4d's decode: a likely free gain
+  there); no quantise prologue in the workgroup (registers at high K: K6.5 gate_up 314 → 238 µs); 2 load stages.
+- **Decode µs, T 1** (box2, cold weights, burst; layer = 48 GDN : 16 attn; the GEMV on producer rows vs mul1i8 today):
+  K2 229 vs 344 (×0.66, 416 GB/s), K2.5 275 vs 358 (×0.77), K2.625 283 vs 358, K3 297 vs 351, K4 354 vs 368 (537 GB/s),
+  K4.125 375 vs 388, K4.5 399 vs 413, K5 451 vs 452, K6 518 vs 519, K6.5 540 vs 555 (572 GB/s), K8 657 vs 649 (579 GB/s;
+  card ~585). At or near bytes ÷ bandwidth from K4; ALU-bound below (4.3 VALU a weight). T 2–8: the GEMV is linear in
+  T, so by itself it takes T 1 (2 below K4); nt_pass (DQ) takes the rest — on mad already ×0.85 of mul1i8 there.
+- **e2e** (w139's stage-3 packs vs their i8 twins, bf16 head, box2 card 2, 2 interleaved rounds): decode **K2.625
+  24.96 vs 32.43 ms / step (×0.770)**, **K4.125 30.36 vs 33.58 (×0.904)**; 8k prefill +1.7% / +0.9% (2,447 / 2,390
+  tok/s). IQR iq2r (drafter off) 20.29 ms on the same card. **Decomposition:** mad on today's decode form (nt_pass, f16
+  rows) 27.29 / 31.40 (×0.84 / ×0.94) — most of the gain is the codebook's cheaper decode; the GEMV on xb rows adds
+  −8% / −3%, which shows only unprofiled (profiled per op the two are equal: the GEMV draws less energy at the 210 W
+  cap). Per-op profile `data/prof/dprof-tables.txt`: IQR still folds the residual add (1.0 ms / step here), q/k norm +
+  rope + gate + kv_store, GDN qkv + z, and has a tiered head (3.96 ms bf16 head here vs 1.28).
+- **Numerics:** prefill (A8) = the reference dequant path **byte for byte**: whole-model KLD rows (golden-search27c-c,
+  67,932 positions) of w139's stage-3 packs relabelled `mad` on this branch = w139's `home-hq` on the shimmed ones at
+  K2.625 (0.641632) and K4.125 (0.288852); **w151's stage-B levels** (`/data/q27/mad-packs`, codes stamp 635bac02)
+  packed with this branch's importer (`codebook=mad`, rad10-perf rad-convert + build b8's plugins; + a8g128 act keys) =
+  their shim packs on home-hq, rows identical at K2.5 (0.681289) and K4 (0.307438) — the kernels serve the new ladder;
+  the i8 twins' rows = the base build's (mul1i8 device code instruction for
+  instruction unchanged). Decode: whole-model KLD **through the GEMV** (EXL3I_MAD_SPLIT=1) vs the A8 path, paired:
+  K2.625 +0.008% (SE 0.13%), K4.125 −0.14% (SE 0.40%) — the same; vs f16 rows (nt_pass, today's decode numerics):
+  **+0.30% (SE 0.12%) / +1.8% (SE 0.7%)** — the int8-activation trade of the byte-sum form (IQR's too).
+- **Tests:** host (codebook closed forms, encodings, dispatch), exl3quant_test (mad stamps), exl3i_gpu_test (decode bit
+  for bit, 64 rates × 4 codebooks), test_twopass (A8 planes + y byte for byte at every rate with mad; the GEMV vs the
+  exact GEMM ≤ 2.8e-7 of max |y| at every rate + the trunk shapes / head × T 1–8), test_aq (xb rows, GEMV with / without
+  aq byte-identical, pre stages at 1 / 3 / 8 rows vs libr4d), test_r16, test_ks, test_a4: all PASS (build b8).
+- **For the lead:** (1) decide decode numerics: int8 rows at decode (the GEMV: −8% / −3% e2e for +0.3% / +1.8% KL) or
+  f16 rows (`QWEN35_EXL3_AQ_XB=0 EXL3I_MAD_GEMV=0`); a per-weight split of prefill A8 / decode would need an act mode.
+  (2) merge `qc-exl3-v3-mad` into `qc-exl3-v3` (interface 4, encoding 4; qwen35_exl3 edits overlap w152's scope:
+  coordinated in `notes/w150.md`). (3) Left: a 3–16-row int8-WMMA decode tile, xb producers for ssm_out / head, the
+  asm decode in the old codebooks, w152's step fusions. **Runtime:** D (−23% / −10% decode step), P (+1–2% 8k prefill).

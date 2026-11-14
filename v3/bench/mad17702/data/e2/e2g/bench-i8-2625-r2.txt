@@ -1,0 +1,8 @@
+i8-2625-r2 ctx 8k run 0 (warm): prompt 8242 ttft 3432 ms, client 33.46 ms/tok, server 33.48 ms/step x 1.00 tok
+i8-2625-r2 ctx 8k run 1: prompt 8244 ttft 3460 ms, client 33.58 ms/tok, server 33.59 ms/step x 1.00 tok
+i8-2625-r2 ctx 8k run 2: prompt 8246 ttft 3471 ms, client 33.57 ms/tok, server 33.59 ms/step x 1.00 tok
+i8-2625-r2 ctx 8k run 3: prompt 8237 ttft 3470 ms, client 33.65 ms/tok, server 33.67 ms/step x 1.00 tok
+i8-2625-r2 ctx 0 run 0 (warm): prompt 102 ttft 132 ms, client 32.48 ms/tok, server 32.47 ms/step x 1.00 tok
+i8-2625-r2 ctx 0 run 1: prompt 106 ttft 132 ms, client 32.53 ms/tok, server 32.52 ms/step x 1.00 tok
+i8-2625-r2 ctx 0 run 2: prompt 103 ttft 131 ms, client 32.57 ms/tok, server 32.57 ms/step x 1.00 tok
+i8-2625-r2 ctx 0 run 3: prompt 105 ttft 132 ms, client 32.58 ms/tok, server 32.58 ms/step x 1.00 tok
