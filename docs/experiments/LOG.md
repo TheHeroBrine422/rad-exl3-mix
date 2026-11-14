@@ -7499,3 +7499,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   b3 = 4.5-5, b4 = 6-7 (the plot's bands); each fits its own sizes' search rows + the shared w158 prior rows (84, all K).
   First per-band fits (117 results): see driver.log `fit b* done`. Watch: thin bands (b3, b4) lean on the prior.
   **Runtime:** neither.
+
+### 2026-11-14 4:50 PM CST · #183 · Eval budget: rotate after 200 decisions; t183 every 5th incumbent
+- Card time so far: ~37% candidates; the rest incumbent rescores at rotation (rotate_after 25 across 12 sizes = a
+  rotation every ~2 decisions a size), t183 tracking on every accept, one-time refs. User 11-14: rotate_after 25 → 200
+  (~17 decisions a size per slice); t183 scores each size's first incumbent and then every 5th (track183.py
+  TRACK_EVERY). Both live 4:45 PM CST. **Runtime:** neither.
