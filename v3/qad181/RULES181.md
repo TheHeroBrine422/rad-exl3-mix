@@ -139,3 +139,11 @@ distribution better at equal budget is a V3.1 design question the curve alone ca
 paired vs the same control). Readouts: P1M / control (the rule) and P1M / ckpt-1M (descriptive: same budget, different
 data; "data matters" only if the c CI excludes 1 and x has the same sign). The main run's checkpoints, rules and
 budgets are unchanged; the main run continues (resumed at step 40 on card 0, 3 cards after P1M).
+
+### Amendment 3 — 2026-11-14 2:25 AM CST, before arm Q runs (lead note 11-13 9:25 PM: arm Q, A8 in the loop)
+**Arm Q** = the main recipe (same data, order, seed, settings, gen rows) on inc2.5 at a **4 M** budget (WSD to 4 M, no
+branches) with every trunk linear's GEMM input fake-quantized as the served A8 path does (`qad181.py --a8`: per row and
+128-group absmax / 127 int8 rounding of the suh-scaled, hadamard-rotated input, straight-through gradient; the head
+stays f16 as served). Judged like the checkpoints. **Q beats A** if Q / ckpt-4M has a c CI below 1 and x below 1 (the
+B / C rule); else A stands. Runs on whatever cards are free after the 2b controls (never w151's / w156's). Arm T
+(DFlash2-tap MSE) is not run in #181 (it needs the bf16 teacher's tap states beside a one-card student; noted for later).
