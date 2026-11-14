@@ -1,0 +1,107 @@
+13:37:36 card 1
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/build/exl3hash-d0474b-2545f491
+block order: installed (LDLQ first visits natural block 31, last 6)
+  model.language_model.layers.0.linear_attn.in_proj_ab         K4 proxy 1.587e-04 4.5s
+  model.language_model.layers.1.linear_attn.in_proj_ab         K4 proxy 7.068e-05 0.8s
+  model.language_model.layers.2.linear_attn.in_proj_ab         K4 proxy 1.138e-04 0.8s
+  model.language_model.layers.4.linear_attn.in_proj_ab         K4 proxy 1.903e-04 0.8s
+  model.language_model.layers.5.linear_attn.in_proj_ab         K4 proxy 1.944e-04 0.8s
+  model.language_model.layers.6.linear_attn.in_proj_ab         K4 proxy 1.775e-04 0.8s
+  model.language_model.layers.8.linear_attn.in_proj_ab         K4 proxy 2.206e-04 0.9s
+  model.language_model.layers.9.linear_attn.in_proj_ab         K4 proxy 1.991e-04 0.9s
+  model.language_model.layers.10.linear_attn.in_proj_ab        K4 proxy 1.839e-04 0.8s
+  model.language_model.layers.12.linear_attn.in_proj_ab        K4 proxy 1.479e-04 0.8s
+  model.language_model.layers.13.linear_attn.in_proj_ab        K4 proxy 1.684e-04 0.9s
+  model.language_model.layers.14.linear_attn.in_proj_ab        K4 proxy 1.872e-04 0.9s
+  model.language_model.layers.16.linear_attn.in_proj_ab        K4 proxy 1.754e-04 0.8s
+  model.language_model.layers.17.linear_attn.in_proj_ab        K4 proxy 2.267e-04 0.8s
+  model.language_model.layers.18.linear_attn.in_proj_ab        K4 proxy 2.074e-04 0.8s
+  model.language_model.layers.20.linear_attn.in_proj_ab        K4 proxy 2.582e-04 0.9s
+  model.language_model.layers.21.linear_attn.in_proj_ab        K4 proxy 2.983e-04 1.7s
+  model.language_model.layers.22.linear_attn.in_proj_ab        K4 proxy 3.314e-04 0.8s
+  model.language_model.layers.24.linear_attn.in_proj_ab        K4 proxy 2.458e-04 0.9s
+  model.language_model.layers.25.linear_attn.in_proj_ab        K4 proxy 1.838e-04 0.9s
+  model.language_model.layers.26.linear_attn.in_proj_ab        K4 proxy 1.557e-04 0.9s
+  model.language_model.layers.28.linear_attn.in_proj_ab        K4 proxy 1.525e-04 0.9s
+  model.language_model.layers.29.linear_attn.in_proj_ab        K4 proxy 1.774e-04 0.8s
+  model.language_model.layers.30.linear_attn.in_proj_ab        K4 proxy 1.847e-04 0.8s
+  model.language_model.layers.32.linear_attn.in_proj_ab        K4 proxy 1.618e-04 0.9s
+  model.language_model.layers.33.linear_attn.in_proj_ab        K4 proxy 2.190e-04 0.8s
+  model.language_model.layers.34.linear_attn.in_proj_ab        K4 proxy 2.152e-04 0.9s
+  model.language_model.layers.36.linear_attn.in_proj_ab        K4 proxy 2.138e-04 0.9s
+  model.language_model.layers.37.linear_attn.in_proj_ab        K4 proxy 2.554e-04 0.8s
+  model.language_model.layers.38.linear_attn.in_proj_ab        K4 proxy 3.004e-04 0.9s
+  model.language_model.layers.40.linear_attn.in_proj_ab        K4 proxy 2.582e-04 0.8s
+  model.language_model.layers.41.linear_attn.in_proj_ab        K4 proxy 2.253e-04 0.8s
+  model.language_model.layers.42.linear_attn.in_proj_ab        K4 proxy 2.082e-04 0.9s
+  model.language_model.layers.44.linear_attn.in_proj_ab        K4 proxy 2.102e-04 0.9s
+  model.language_model.layers.45.linear_attn.in_proj_ab        K4 proxy 1.979e-04 0.9s
+  model.language_model.layers.46.linear_attn.in_proj_ab        K4 proxy 2.270e-04 0.9s
+  model.language_model.layers.48.linear_attn.in_proj_ab        K4 proxy 2.111e-04 0.9s
+  model.language_model.layers.49.linear_attn.in_proj_ab        K4 proxy 2.449e-04 0.9s
+  model.language_model.layers.50.linear_attn.in_proj_ab        K4 proxy 2.657e-04 0.9s
+  model.language_model.layers.52.linear_attn.in_proj_ab        K4 proxy 2.716e-04 0.9s
+  model.language_model.layers.53.linear_attn.in_proj_ab        K4 proxy 3.052e-04 0.8s
+  model.language_model.layers.54.linear_attn.in_proj_ab        K4 proxy 3.837e-04 0.8s
+  model.language_model.layers.56.linear_attn.in_proj_ab        K4 proxy 3.515e-04 0.8s
+  model.language_model.layers.57.linear_attn.in_proj_ab        K4 proxy 3.435e-04 0.8s
+  model.language_model.layers.58.linear_attn.in_proj_ab        K4 proxy 3.637e-04 0.8s
+  model.language_model.layers.60.linear_attn.in_proj_ab        K4 proxy 2.173e-04 0.8s
+  model.language_model.layers.61.linear_attn.in_proj_ab        K4 proxy 2.204e-04 0.8s
+  model.language_model.layers.62.linear_attn.in_proj_ab        K4 proxy 2.619e-04 0.8s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K4", "K": 4, "codebook": "mad", "seed_offset": 0, "keys": ["model.language_model.layers.0.linear_attn.in_proj_ab", "model.language_model.layers.1.linear_attn.in_proj_ab", "model.language_model.layers.2.linear_attn.in_proj_ab", "model.language_model.layers.4.linear_attn.in_proj_ab", "model.language_model.layers.5.linear_attn.in_proj_ab", "model.language_model.layers.6.linear_attn.in_proj_ab", "model.language_model.layers.8.linear_attn.in_proj_ab", "model.language_model.layers.9.linear_attn.in_proj_ab", "model.language_model.layers.10.linear_attn.in_proj_ab", "model.language_model.layers.12.linear_attn.in_proj_ab", "model.language_model.layers.13.linear_attn.in_proj_ab", "model.language_model.layers.14.linear_attn.in_proj_ab", "model.language_model.layers.16.linear_attn.in_proj_ab", "model.language_model.layers.17.linear_attn.in_proj_ab", "model.language_model.layers.18.linear_attn.in_proj_ab", "model.language_model.layers.20.linear_attn.in_proj_ab", "model.language_model.layers.21.linear_attn.in_proj_ab", "model.language_model.layers.22.linear_attn.in_proj_ab", "model.language_model.layers.24.linear_attn.in_proj_ab", "model.language_model.layers.25.linear_attn.in_proj_ab", "model.language_model.layers.26.linear_attn.in_proj_ab", "model.language_model.layers.28.linear_attn.in_proj_ab", "model.language_model.layers.29.linear_attn.in_proj_ab", "model.language_model.layers.30.linear_attn.in_proj_ab", "model.language_model.layers.32.linear_attn.in_proj_ab", "model.language_model.layers.33.linear_attn.in_proj_ab", "model.language_model.layers.34.linear_attn.in_proj_ab", "model.language_model.layers.36.linear_attn.in_proj_ab", "model.language_model.layers.37.linear_attn.in_proj_ab", "model.language_model.layers.38.linear_attn.in_proj_ab", "model.language_model.layers.40.linear_attn.in_proj_ab", "model.language_model.layers.41.linear_attn.in_proj_ab", "model.language_model.layers.42.linear_attn.in_proj_ab", "model.language_model.layers.44.linear_attn.in_proj_ab", "model.language_model.layers.45.linear_attn.in_proj_ab", "model.language_model.layers.46.linear_attn.in_proj_ab", "model.language_model.layers.48.linear_attn.in_proj_ab", "model.language_model.layers.49.linear_attn.in_proj_ab", "model.language_model.layers.50.linear_attn.in_proj_ab", "model.language_model.layers.52.linear_attn.in_proj_ab", "model.language_model.layers.53.linear_attn.in_proj_ab", "model.language_model.layers.54.linear_attn.in_proj_ab", "model.language_model.layers.56.linear_attn.in_proj_ab", "model.language_model.layers.57.linear_attn.in_proj_ab", "model.language_model.layers.58.linear_attn.in_proj_ab", "model.language_model.layers.60.linear_attn.in_proj_ab", "model.language_model.layers.61.linear_attn.in_proj_ab", "model.language_model.layers.62.linear_attn.in_proj_ab"], "settings_stamp": "da27e2d192d590f1", "inputs": {"ckpt": "/data/q27/mad/ab/ckpt", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": null}}, "settings_stamp": "da27e2d192d590f1", "code_stamp": "c3ee827526c5fb60", "kernels": "gpu", "device": "AMD Radeon AI Pro R9700S", "host": null, "tensors": 48, "seconds": 45.3}
+  model.language_model.layers.0.linear_attn.in_proj_ab         K5 proxy 4.179e-05 1.1s
+  model.language_model.layers.1.linear_attn.in_proj_ab         K5 proxy 1.862e-05 1.1s
+  model.language_model.layers.2.linear_attn.in_proj_ab         K5 proxy 2.968e-05 1.1s
+  model.language_model.layers.4.linear_attn.in_proj_ab         K5 proxy 5.036e-05 1.1s
+  model.language_model.layers.5.linear_attn.in_proj_ab         K5 proxy 5.132e-05 1.1s
+  model.language_model.layers.6.linear_attn.in_proj_ab         K5 proxy 4.749e-05 1.1s
+  model.language_model.layers.8.linear_attn.in_proj_ab         K5 proxy 5.805e-05 1.1s
+  model.language_model.layers.9.linear_attn.in_proj_ab         K5 proxy 5.455e-05 1.1s
+  model.language_model.layers.10.linear_attn.in_proj_ab        K5 proxy 4.900e-05 1.1s
+  model.language_model.layers.12.linear_attn.in_proj_ab        K5 proxy 3.871e-05 1.1s
+  model.language_model.layers.13.linear_attn.in_proj_ab        K5 proxy 4.466e-05 1.1s
+  model.language_model.layers.14.linear_attn.in_proj_ab        K5 proxy 5.015e-05 1.1s
+  model.language_model.layers.16.linear_attn.in_proj_ab        K5 proxy 4.621e-05 1.1s
+  model.language_model.layers.17.linear_attn.in_proj_ab        K5 proxy 5.991e-05 1.1s
+  model.language_model.layers.18.linear_attn.in_proj_ab        K5 proxy 5.494e-05 1.1s
+  model.language_model.layers.20.linear_attn.in_proj_ab        K5 proxy 6.831e-05 1.1s
+  model.language_model.layers.21.linear_attn.in_proj_ab        K5 proxy 7.854e-05 1.1s
+  model.language_model.layers.22.linear_attn.in_proj_ab        K5 proxy 8.684e-05 1.1s
+  model.language_model.layers.24.linear_attn.in_proj_ab        K5 proxy 6.547e-05 1.1s
+  model.language_model.layers.25.linear_attn.in_proj_ab        K5 proxy 4.928e-05 1.1s
+  model.language_model.layers.26.linear_attn.in_proj_ab        K5 proxy 4.130e-05 1.1s
+  model.language_model.layers.28.linear_attn.in_proj_ab        K5 proxy 4.088e-05 1.1s
+  model.language_model.layers.29.linear_attn.in_proj_ab        K5 proxy 4.671e-05 1.1s
+  model.language_model.layers.30.linear_attn.in_proj_ab        K5 proxy 4.949e-05 1.1s
+  model.language_model.layers.32.linear_attn.in_proj_ab        K5 proxy 4.284e-05 1.1s
+  model.language_model.layers.33.linear_attn.in_proj_ab        K5 proxy 5.862e-05 1.1s
+  model.language_model.layers.34.linear_attn.in_proj_ab        K5 proxy 5.656e-05 1.1s
+  model.language_model.layers.36.linear_attn.in_proj_ab        K5 proxy 5.648e-05 1.1s
+  model.language_model.layers.37.linear_attn.in_proj_ab        K5 proxy 6.709e-05 1.1s
+  model.language_model.layers.38.linear_attn.in_proj_ab        K5 proxy 7.880e-05 1.1s
+  model.language_model.layers.40.linear_attn.in_proj_ab        K5 proxy 6.789e-05 1.1s
+  model.language_model.layers.41.linear_attn.in_proj_ab        K5 proxy 5.992e-05 1.1s
+  model.language_model.layers.42.linear_attn.in_proj_ab        K5 proxy 5.555e-05 1.1s
+  model.language_model.layers.44.linear_attn.in_proj_ab        K5 proxy 5.493e-05 1.1s
+  model.language_model.layers.45.linear_attn.in_proj_ab        K5 proxy 5.199e-05 1.1s
+  model.language_model.layers.46.linear_attn.in_proj_ab        K5 proxy 6.045e-05 1.1s
+  model.language_model.layers.48.linear_attn.in_proj_ab        K5 proxy 5.592e-05 1.1s
+  model.language_model.layers.49.linear_attn.in_proj_ab        K5 proxy 6.509e-05 1.1s
+  model.language_model.layers.50.linear_attn.in_proj_ab        K5 proxy 6.941e-05 1.1s
+  model.language_model.layers.52.linear_attn.in_proj_ab        K5 proxy 7.208e-05 1.1s
+  model.language_model.layers.53.linear_attn.in_proj_ab        K5 proxy 8.105e-05 1.1s
+  model.language_model.layers.54.linear_attn.in_proj_ab        K5 proxy 1.018e-04 1.1s
+  model.language_model.layers.56.linear_attn.in_proj_ab        K5 proxy 9.313e-05 1.1s
+  model.language_model.layers.57.linear_attn.in_proj_ab        K5 proxy 9.001e-05 1.1s
+  model.language_model.layers.58.linear_attn.in_proj_ab        K5 proxy 9.646e-05 1.1s
+  model.language_model.layers.60.linear_attn.in_proj_ab        K5 proxy 5.733e-05 1.1s
+  model.language_model.layers.61.linear_attn.in_proj_ab        K5 proxy 5.764e-05 1.1s
+  model.language_model.layers.62.linear_attn.in_proj_ab        K5 proxy 6.985e-05 1.1s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K5", "K": 5, "codebook": "mad", "seed_offset": 0, "keys": ["model.language_model.layers.0.linear_attn.in_proj_ab", "model.language_model.layers.1.linear_attn.in_proj_ab", "model.language_model.layers.2.linear_attn.in_proj_ab", "model.language_model.layers.4.linear_attn.in_proj_ab", "model.language_model.layers.5.linear_attn.in_proj_ab", "model.language_model.layers.6.linear_attn.in_proj_ab", "model.language_model.layers.8.linear_attn.in_proj_ab", "model.language_model.layers.9.linear_attn.in_proj_ab", "model.language_model.layers.10.linear_attn.in_proj_ab", "model.language_model.layers.12.linear_attn.in_proj_ab", "model.language_model.layers.13.linear_attn.in_proj_ab", "model.language_model.layers.14.linear_attn.in_proj_ab", "model.language_model.layers.16.linear_attn.in_proj_ab", "model.language_model.layers.17.linear_attn.in_proj_ab", "model.language_model.layers.18.linear_attn.in_proj_ab", "model.language_model.layers.20.linear_attn.in_proj_ab", "model.language_model.layers.21.linear_attn.in_proj_ab", "model.language_model.layers.22.linear_attn.in_proj_ab", "model.language_model.layers.24.linear_attn.in_proj_ab", "model.language_model.layers.25.linear_attn.in_proj_ab", "model.language_model.layers.26.linear_attn.in_proj_ab", "model.language_model.layers.28.linear_attn.in_proj_ab", "model.language_model.layers.29.linear_attn.in_proj_ab", "model.language_model.layers.30.linear_attn.in_proj_ab", "model.language_model.layers.32.linear_attn.in_proj_ab", "model.language_model.layers.33.linear_attn.in_proj_ab", "model.language_model.layers.34.linear_attn.in_proj_ab", "model.language_model.layers.36.linear_attn.in_proj_ab", "model.language_model.layers.37.linear_attn.in_proj_ab", "model.language_model.layers.38.linear_attn.in_proj_ab", "model.language_model.layers.40.linear_attn.in_proj_ab", "model.language_model.layers.41.linear_attn.in_proj_ab", "model.language_model.layers.42.linear_attn.in_proj_ab", "model.language_model.layers.44.linear_attn.in_proj_ab", "model.language_model.layers.45.linear_attn.in_proj_ab", "model.language_model.layers.46.linear_attn.in_proj_ab", "model.language_model.layers.48.linear_attn.in_proj_ab", "model.language_model.layers.49.linear_attn.in_proj_ab", "model.language_model.layers.50.linear_attn.in_proj_ab", "model.language_model.layers.52.linear_attn.in_proj_ab", "model.language_model.layers.53.linear_attn.in_proj_ab", "model.language_model.layers.54.linear_attn.in_proj_ab", "model.language_model.layers.56.linear_attn.in_proj_ab", "model.language_model.layers.57.linear_attn.in_proj_ab", "model.language_model.layers.58.linear_attn.in_proj_ab", "model.language_model.layers.60.linear_attn.in_proj_ab", "model.language_model.layers.61.linear_attn.in_proj_ab", "model.language_model.layers.62.linear_attn.in_proj_ab"], "settings_stamp": "da27e2d192d590f1", "inputs": {"ckpt": "/data/q27/mad/ab/ckpt", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": null}}, "settings_stamp": "da27e2d192d590f1", "code_stamp": "c3ee827526c5fb60", "kernels": "gpu", "device": "AMD Radeon AI Pro R9700S", "host": null, "tensors": 48, "seconds": 54.2}
+wrote /data/q27/mad/ab/ab-T4.safetensors
+wrote /data/q27/mad/ab/ab-T5.safetensors
+13:39:24 AB151 DONE: 48 + 48 tensors

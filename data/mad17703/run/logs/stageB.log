@@ -1,0 +1,5 @@
+/data/q27/mad/conf/qB.json /data/q27/ladder-mad ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'] ['jobs', 'assemble', 'post', 'recipe'] ['2.5-mad', '4-mad', '6-mad']
+00:37:47 quant start
+/data/q27/mad/conf/sB.json /data/q27/ladder-mad ['c0'] ['assemble', 'swj', 'post', 'recipe'] ['2.5-mad', '4-mad']
+01:02:46 swj start (card 0)
+01:52:59 STAGE B LEVELS DONE

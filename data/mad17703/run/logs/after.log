@@ -1,0 +1,6 @@
+13:37:36 heads: score
+13:43:05 score fit rc 0 (45 options)
+13:47:28 score search rc 0 (45 options)
+13:47:29 table: price table: /data/q27/mad/heads-rep/hcurve151.json (62 plans: 45 mad); mad / i8 fit KL geo 0.9990 over 45 K; flags: none
+13:47:33 wq dropped for 45 mad donor(s); 469G free
+13:47:33 AFTER2 DONE

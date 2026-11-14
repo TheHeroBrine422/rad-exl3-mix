@@ -1,0 +1,10 @@
+blk.*.attn_k.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.attn_output.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.attn_qg.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.attn_v.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ffn_down.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ffn_gate_up.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ssm_out.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ssm_qkv.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ssm_z.weight exl3i src=/data/q27/mad/ab/base-q27v3-635bac02-k1.375-mad/final codebook=mad rate=1.375
+blk.*.ssm_ab.weight exl3i src=/data/q27/mad/ab/absrc-K5 codebook=mad rate=5

@@ -17,6 +17,14 @@ versions of anything: git history.
   line) for the lead; my runs use the patched copy (`--max-version 4`, the summary shows ver 4 for the mad trunk and head).
 - **Runtime:** none (pricing rows).
 
+### 2026-11-14 8:45 AM CST · #181 · 4.0 lr screen (1 M, fixed held-out qad eval, base 0.008271): lr 1e-3 **+2.3 % worse** (0.00846; monitor 0.0137 vs 0.0080), lr 3e-4 −0.2 % (0.008256; monitor +4.9 %); 1e-4 running; 6.0 grid moved down (amendment 6) (w154)
+- **Status:** 4.0 screen on box2 card 0 (1e-4 next), main 2.5 run on cards 2-3 at 9.1 M rows · **Rules:** amendment 6
+  (fef0486: 6.0 grid {1e-4, 3e-5, 1e-5}; an arm without a 1 M fixed-eval gain is not run at 4 M)
+- Fixed-eval curves (steps 10 / 20 / 30 / 40 / decayed end): 1e-3 0.00834 / 0.00834 / 0.00833 / 0.00855 / 0.00846;
+  3e-4 0.00839 / 0.00828 / 0.00820 / 0.00823 / 0.008256. The 4.0 incumbent's KL is ~8× smaller than 2.5's; the
+  2.5 recipe's lr damages it (as #89-06's K4 healing history said: K4 best at 3e-4, K5 ≤ 1e-4).
+- **Runtime:** none.
+
 ### 2026-11-14 7:30 AM CST · #174-03 · emb157 rebased on qc-exl3-v3 8a00735; cores rebuilt from 8a00735 and the rebased branch on box2 + ds8 (lead note 6:10 AM) (w157)
 - **Branch:** `qc-exl3-v3-emb157` rebased without conflicts onto 8a00735 (w156's KL-mode images, core `kld.*` only):
   **head 120132a** (d032bbb / 7585524 / 4e727a4 = w144's three, 120132a = the drafter commit). Supersedes 67cd2ce.
@@ -543,6 +551,17 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-14 9:55 AM CST · #177-03 · sub-1 rebuild incident: stale swj scales reused for K0.625 / 0.75 / 0.875 → requantized again (w151)
+- The rebuilt K0.625 + K0.875 swj pass ended in 19 s: rxrun's swj step skips a level whose `ROOT/swj-<scales[:8]>/<level>/.done`
+  exists, and the broken levels' swj outputs (07:21–09:25 UTC) were still there (I quarantined the level dirs, not their swj
+  dirs). So K0.625 / 0.75 / 0.875 were post-applied with scales fitted on the old codes, and trimmed (level/ shards gone), so
+  they cannot be re-posted: moved to `ladder-mad-bad2/` and requantized; every sub-1 swj dir deleted; K0.125–0.5 were not yet at
+  swj (unaffected). No pack of them was kept (packs-mad holds the 42 K ≥ 1 packs only).
+- **rxrun weakness (proposal for the lead, no shared-code edit):** a swj `.done` is keyed by level name + scales stamp only,
+  so a requantized level silently reuses old scales. Fix: write the level's assembly stamp (level/stamp.json `stamp`) into
+  the swj dir and treat a mismatch as not done (or delete `swj-*/<level>` whenever a level's out/ or level/ is rebuilt).
+- **Runtime:** none.
+
 ### 2026-11-14 8:35 AM CST · #177-03 · **BUG: the 7 sub-1 mad levels were invalid** (the KA = 0 search read a byte-sum table that is exact only for mul1 / i8); fixed in exl3frac2 for hash builds, the 7 requantizing; the 42 K ≥ 1 levels unaffected (w151)
 - **Found by** item 4's per-level proxy MSE vs the mul1i8 twins (`v3/levels/mad/prox151.py`, `data/mad17703/prox151.json`):
   K ≥ 1 mad / i8 ×0.988–1.049, but **K0.125–0.875 ×1.67 / 2.41 / 3.15 / 3.99 / 4.97 / 6.09 / 7.41** (worst family q_proj, up to ×13.7).
