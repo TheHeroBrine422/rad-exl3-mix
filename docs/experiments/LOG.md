@@ -4,6 +4,36 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-13 6:40 PM CST · #177-03 · mad ladder requant, stage A: mad merged into rxq / ourq (stamped config), gate PASS — K4.125 layers 2–3 byte-identical to w139's hash level; stage B (K2.5 / K4 / K6) started (w151)
+- **Status:** running (stage B) · **Machine:** ds8 HIP 6 (gate; HIP 7 is w153's) / HIP 0–6 (stage B), the VM (CPU checks)
+  · **Code:** rad-exl3-mix 0ce451c (staged on ds8 `stage/code`, the old tree kept as `stage/code-old-c015001`), scripts
+  `v3/levels/mad/` · **Brief:** `rad-local/workers/instr3/w151.md` + lead note 11-13 7:30 PM (staged ladder: A / B / C)
+- **Merge (no env-only config):** `pipeline/config/v3.toml` `[quant.codebook]` by_level codebook **mad** (was i8), new
+  `[quant.codebook.mad]` a = 0xd0474b, b = 0x2545F491, mask 0x3F3F3F3F, L 16, bias 126 (`validate()` refuses another
+  mask / L / bias: those are the kernels'; the retired `hash_codebook` switch is gone). **Codes stamp 635bac026792784c**
+  (levels `q27v3-635bac02-k<K>-mad`), scales stamp unchanged (6c57a3d1). rxq: `config.mad_params`; `engine.setup(...,
+  mad=(a, b))` installs `v3/e3/exl3hash` (exl3cb i8 + exl3frac2 mul1 with EXL3_CB_HASH) with explicit A / B
+  (`exl3hash.set_ab`: an env that disagrees is an error), exl3hash in the code stamp's kernel dirs; tensor metadata
+  `mad`; assembly writes `mad` into `stamp.json` (top level + args); `deq` has the mad table (`MAD_AB`, `mad_lut`, read
+  from the level's stamp) for C9 / swj / sibmom; recipe `codebook=mad` (= the exl3i importer name w150 adds, #177-02);
+  knap maps mad into the i8 option slot (one trunk codebook). ourq `--codebook mad` (+ `--mad-a / --mad-b`, stamped with
+  mad only). rad-quant-at-home's rxq_quant schema needs `v3/levels/mad/rqah-mad.patch` (not applied: other repo).
+- **Checks (VM, CPU stand-in):** new `pipeline/tests/check_mad.py` 6/6 (deq table = exl3hash = w139's exl3hashm over 65,536
+  states; config / stamp / name; env guard; a K2.5 mad job decodes to its wq at 3.8e-4 while the i8 table on the same
+  codes is off by 1.57; stamp.json / Level / recipe carry mad), check_cpujob 25/25 (i8 unchanged), check_ladder 5/5
+  (with the rqah patch), check_split all, check_rxrun 21/21 (its run / multi parts now build mad levels).
+- **Gate (A):** ds8 prebuild of the mad kernels (CPU, 116 s; code stamp c3ee827526c5fb60), then `gate.sh`: rxrun.run of
+  K4.125 mad, layers 2–3 (one GDN, one attention layer: 8 group jobs with H_out, tile CD, C9) vs w139's
+  `q27v3-144dd6e1-k4.125-hash` jobs (box2): `rxrun.cmp --tensors` **CMP SAME 28 files**; metadata differs only in
+  settings / code stamp, level name, codebook (hash → mad) and the new `mad` field. 1.8 min on one card.
+- **Incident:** the first gate launch ran from the staged tree's gate.sh, whose default card order still began with HIP 7
+  (w153's card, lead note 7:45 PM); it held card 7 for ~15 s before I killed it (lock free at the time). Scripts now run
+  from `/data/q27/mad/tools/` and never list HIP 7.
+- **Stage B (started 6:37 PM CST):** full levels K2.5 / K4 / K6 in ds8 `/data/q27/ladder-mad` on HIP 0–6
+  (`stageB.sh`: quant jobs / assemble / post / recipe, then one swj pass over K2.5 + K4). Then: proxy MSE vs the i8 twins,
+  packs, the s173e spot check (rule file first), K2.5 / K4 packs to w150 (box2 `/data/q27/mad-packs/`).
+- **Runtime:** none by itself (the codes change; D / P come from #177-02's kernels).
+
 ### 2026-11-13 6:10 PM CST · #178-03 · GDN a/b at 5.0 / 6.0 / 6.5 (s173f): rule picks **5.0 T4, 6.0 T5 (noise-level), 6.5 bf16**; every |d| > 3% is unverified (one calib doc holds 55–71% of the calib KL); post-hoc trimmed view says T4 costs ~+2.5–4.8% at 6.0 / 6.5, T5 / T6 ~0 (w149)
 - **Status:** done (rule read; second-slice check recommended before any switch away from T4) · **Machine:** ds8 (cards 0–2
   under locks, 12 scores ~5 card-min each; radmix + census) · **Code:** `search/v3/ab17803/` (README; RULES-17803.md
