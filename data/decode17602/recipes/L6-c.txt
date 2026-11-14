@@ -1,0 +1,9 @@
+u4.25-c /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad
+u4.375-c /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad
+u4.5-c /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad
+u4.625-c /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad
+u4.75-c /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad
+u4.875-c /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad
+u5-c /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad
+u5.25-c /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad
+u5.5-c /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad

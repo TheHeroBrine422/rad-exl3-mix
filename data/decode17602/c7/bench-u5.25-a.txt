@@ -1,0 +1,7 @@
+u5.25-a ctx 0 run 0 (warm): prompt 102 ttft 143 ms, client 36.51 ms/tok, server 36.50 ms/step x 1.00 tok
+u5.25-a ctx 0 run 1: prompt 106 ttft 113 ms, client 35.46 ms/tok, server 35.45 ms/step x 1.00 tok
+u5.25-a ctx 0 run 2: prompt 105 ttft 114 ms, client 35.47 ms/tok, server 35.47 ms/step x 1.00 tok
+u5.25-a ctx 0 run 3: prompt 104 ttft 114 ms, client 35.50 ms/tok, server 35.49 ms/step x 1.00 tok
+u5.25-a ctx 8k run 0 (warm): prompt 8242 ttft 5036 ms, client 36.67 ms/tok, server 36.67 ms/step x 1.00 tok
+u5.25-a ctx 8k run 1: prompt 8242 ttft 5026 ms, client 36.66 ms/tok, server 36.66 ms/step x 1.00 tok
+u5.25-a ctx 8k run 2: prompt 8244 ttft 5043 ms, client 36.68 ms/tok, server 36.69 ms/step x 1.00 tok

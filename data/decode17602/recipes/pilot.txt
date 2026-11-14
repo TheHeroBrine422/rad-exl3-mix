@@ -1,0 +1,4 @@
+pil-k2.5-st /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad stamp
+pil-k2.5-ns /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad
+pil-k4.125-ns /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad
+pil-k4.125-st /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad stamp

@@ -4,6 +4,45 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 2:45 PM CST · #176-02 · Decode speed table from e2e on the mad kernels (f16 decode): prices for every K ≥ 1 trunk level × tensor type, the 62 R16 head plans, trellis embeddings and a/b; held-out check **PASS** (5 / 5 mixes within 2 %, worst −1.37 %) (w159)
+- **Status:** done for f16 decode (int8-decode column running, lead note 2:30 PM; sub-1 levels not priced: no packs since
+  the ds8 reboot) · **Machine:** ds8 HIP 6 (all fitted rows), HIP 7 (pilot + pre-reboot rows: cross-card check) · **Code:**
+  `v3/bench/decode17602/` (rules ed41023; amendments 9576452, 215158d, decision 84b9ab0) · **Data:** `data/decode17602/`
+- **Question:** per-(tensor, option) decode prices for the knapsack's λ_d term that add up to a mix's measured e2e step.
+- **Setup:** radiance qc-exl3-v3 120132a (`rad10-e157b`), `QWEN35_EXL3_AQ_XB=0 EXL3I_MAD_GEMV=0` (f16 rows, user default),
+  bf16 KV, `--tp 1 --max-num-seqs 8`, w138's bench.py (chat API, batch 1, greedy), ctx 0 (3 × 256 tokens) and 8k (2 × 128);
+  R9700S at the 210 W cap. 42 uniform mad packs (packs-mad); 62 head packs (K1.125 + w158's slim donors), 5 trellis
+  embeddings, a/b T4 / T5 (K1 pack); 5 held-out mixes (mkheld.py, seed 17602).
+- **Method:** batch-1 decode runs its 741 dispatches in order on one queue, so RADIANCE_AQL_STAMP's device times of a served
+  pass give each tensor's GEMV time (the k-th exl3i launch = `menu.trunk_names()[k]`, then the head). Step = F + α ·
+  Σ stamped menu time, fitted on the uniform packs' unstamped rounds (a: K descending, b: ascending, c: reruns);
+  price = α × stamped µs. e2e statistic = minimum of a row's runs (amendment 1, chosen on the uniform fit only: rms
+  0.273 / 0.257 % vs gap 0.279 / 0.255 %, median 0.297 / 1.443 %).
+- **Fit:** ctx 0: F 3.557 ms, α 0.974 (se 0.002); 8k: F 4.597 ms, α 0.979; residual rms 0.27 / 0.26 % (max 0.59 %), 42 levels.
+- **Held-out (pred vs measured, ms / step, ctx 0 | 8k):** h1 (K2–3.5, u2.75, T4, t2.5, A8) 23.77 vs 24.09 −1.35 % | −1.37 %;
+  h2 (K3.5–5, u4.5, T4, t4) 28.97 vs 28.93 +0.13 % | −0.28 %; h3 (K5–7.5, u6.5m, T5, t6.5m) 37.49 vs 37.64 −0.40 % | −0.54 %;
+  h4 (per type 2.25 / 3 / 4, u3, T4, bf16 emb, no act lines) 23.69 vs 23.89 −0.82 % | −1.17 %; h5 (K1–7.5, u5.5, T5, t8m)
+  28.96 vs 29.11 −0.54 % | −0.92 % → **PASS**. Bias: the table under-predicts by 0.6 / 0.9 % on average; the mixes' own
+  stamps are 0.25–1.4 % above the table's (gate_up / down +1–1.8 %, not tied to a K change between launches): a mixed
+  pack's large GEMVs run slightly slower than in a uniform one. Same verdict with the other two statistics (max |err| 1.41 / 1.38 %).
+- **What the table says:** whole-trunk GEMV time (ctx 0, µs a step) is flat below K3: K1 17.1 ms, K2 17.4, K2.5 18.6, K3 18.8;
+  then ~+4.4 ms a bit: K4 22.0, K5 26.4, K6 30.6, K7 35.8, K7.5 38.4. Integer K beats its fractional neighbours (K2 17.37 vs
+  K1.875 18.26; K4 22.02 vs K4.125 22.71; K5 26.45 vs K4.875 26.57). Heads: u1–u2.5 ~0.71–0.75 ms, u3 0.88, u4 1.00 vs
+  u3.875 1.16 / u4.125 1.23 (fractional heads +16–23 %), u5 1.37, u6 1.48 (= u6m 1.49), u7 1.89, u8m 1.96; bf16 head 3.88.
+  Trellis embedding +3–6 µs over bf16's lookup (≈ 0, confirmed); a/b T4 / T5 +29 / +31 µs over bf16 a/b (48 GEMVs vs 96).
+- **Checks:** card 6 vs card 7 trunk stamps ×1.007 mean (max ×1.029 at K1); stamping itself costs ~1–1.5 % e2e (the stamped
+  rows' own e2e; prices use device times scaled by α from unstamped rows, so it does not enter).
+- **Incidents:** host contention from other workers' builds spikes whole runs (10–15 %): e2e rounds ran QUIET (no builds of
+  ours beside them) + min of runs; ds8 reboot 10:08 AM CST (restarted on HIP 6, amendment 2); a host-wide slowdown
+  10:47–11:00 AM CST made 9 round-a rows ~40 % slow (round c, median of 3); 4 held-out mixes first lacked `act` lines on
+  the added ssm_ab (qwen35_exl3 refuses mixed modes in the qkv / z / ab group: rebuilt, same assignments); the statistic
+  decision first ran on a local copy that still held some card-7 stamps — rerun on clean data, same choice.
+- **Format for the lead:** `decprice17602.json` (`ctx0` / `ctx8k`: F_ms, alpha, trunk[type][level], head[plan], emb,
+  ab, µs a step) and `fit17602.py annotate PRICES MENU OUT` → every menu option gets `dec_us` / `dec_us_8k` (done for w158's
+  `menu173m-v1b`: `menu173m-v1b-dec.json.gz`, 0 options unpriced, 31 embedding levels interpolated); `fit17602.py predict`
+  gives a pick's ms / step. Neither driver.py nor fin133.py reads a decode term yet (the λ_d hook is the lead's).
+- **Runtime:** n/a (measurement).
+
 ### 2026-11-14 1:45 PM CST · #181 · 16 M checkpoint: verify **0.943 [0.918, 0.977]**, xcorp **0.808 [0.726, 0.878]**; vs 4 M: c 1.011 [0.9995, 1.0225], x 0.968 [0.930, 0.990] → **calib saturates at 1–4 M, xcorp keeps gaining**; main run stopped at 16 M (user rule: 4 M → 16 M monitor 0.995, < 3 %); adapter arm not triggered (w154)
 - **Status:** main run stopped (main step 612 saved; resumable toward 40 M); 2b u2.5 arm (card 2) and arm Q (card 3) at 4 M
   started; 6.0 screen's last run (1e-5) on card 0 · **Data:** `data/qad181/eval-inc2.5/curve-a16m.json`, `data/qad181/run-inc2.5g/`

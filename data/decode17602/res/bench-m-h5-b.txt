@@ -1,0 +1,7 @@
+m-h5-b ctx 0 run 0 (warm): prompt 104 ttft 142 ms, client 29.07 ms/tok, server 29.06 ms/step x 1.00 tok
+m-h5-b ctx 0 run 1: prompt 101 ttft 105 ms, client 29.12 ms/tok, server 29.12 ms/step x 1.00 tok
+m-h5-b ctx 0 run 2: prompt 103 ttft 106 ms, client 29.15 ms/tok, server 29.13 ms/step x 1.00 tok
+m-h5-b ctx 0 run 3: prompt 103 ttft 107 ms, client 29.17 ms/tok, server 29.16 ms/step x 1.00 tok
+m-h5-b ctx 8k run 0 (warm): prompt 8242 ttft 3426 ms, client 30.38 ms/tok, server 30.38 ms/step x 1.00 tok
+m-h5-b ctx 8k run 1: prompt 8243 ttft 3435 ms, client 30.42 ms/tok, server 30.42 ms/step x 1.00 tok
+m-h5-b ctx 8k run 2: prompt 8241 ttft 3428 ms, client 30.43 ms/tok, server 30.43 ms/step x 1.00 tok

@@ -1,0 +1,168 @@
+11-14 08:47:08 [mk] mix ab-T4.rad FAILED (/data/q27/w159/packs/ab-T4.rad.mixlog)
+11-14 08:47:16 [mk] mix e-t4.rad: 7226048512 B (/data/q27/w159/packs/e-t4.rad.part: 1120 weights (1 from donors, 0 act keys), 6.730 GiB, 0 cloned, 1120 copied)
+11-14 08:48:17 [mk] head u4 FAILED (/data/q27/w159/logs/h-u4.convert.log)
+11-14 08:48:21 [mk] mix ab-T4.rad: 9101520896 B (/data/q27/w159/packs/ab-T4.rad.part: 1072 weights (0 from donors, 48 added, 96 dropped, 0 act keys), 8.476 GiB, 0 cloned, 1072 copied)
+11-14 08:48:30 [mk] mix ab-T5.rad: 9105453056 B (/data/q27/w159/packs/ab-T5.rad.part: 1072 weights (0 from donors, 48 added, 96 dropped, 0 act keys), 8.480 GiB, 0 cloned, 1072 copied)
+11-14 08:51:22 [mk] head u4 FAILED (/data/q27/w159/logs/h-u4.convert.log)
+11-14 08:56:29 [mk] head u4 (mad K4): 235 s, 7601963008 B
+11-14 08:58:18 [mk] mix e-t1.5.rad: 6828736512 B (/data/q27/w159/packs/e-t1.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.360 GiB, 0 cloned, 1120 copied)
+11-14 08:58:24 [mk] mix e-t2.5.rad: 6987661312 B (/data/q27/w159/packs/e-t2.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.508 GiB, 0 cloned, 1120 copied)
+11-14 08:58:32 [mk] mix e-t6.5m.rad: 7623360512 B (/data/q27/w159/packs/e-t6.5m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.100 GiB, 0 cloned, 1120 copied)
+11-14 08:58:41 [mk] mix e-t8m.rad: 7861747712 B (/data/q27/w159/packs/e-t8m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.322 GiB, 0 cloned, 1120 copied)
+11-14 09:01:03 [mk] gc ab-T4
+11-14 09:01:03 [mk] gc ab-T5
+11-14 09:20:28 [mk] gc e-t1.5
+11-14 09:20:28 [mk] gc e-t2.5
+11-14 09:20:28 [mk] gc e-t4
+11-14 09:20:28 [mk] gc e-t6.5m
+11-14 09:20:28 [mk] gc e-t8m
+11-14 10:28:38 [mk] head u6.5m (mul1 K6.5): 173 s, 7999275008 B
+11-14 10:31:05 [mk] head u5.5 (mad K5.5): 147 s, 7840350208 B
+11-14 10:31:14 [mk] mix m-h1.rad: 10199044096 B (/data/q27/w159/packs/m-h1.rad.part: 1072 weights (307 from donors, 48 added, 96 dropped, 336 act keys), 9.499 GiB, 0 cloned, 1072 copied)
+11-14 10:31:54 [mk] mix m-h2.rad: 15372292096 B (/data/q27/w159/packs/m-h2.rad.part: 1072 weights (312 from donors, 48 added, 96 dropped, 336 act keys), 14.317 GiB, 0 cloned, 1072 copied)
+11-14 10:32:55 [mk] mix m-h3.rad: 21731659776 B (/data/q27/w159/packs/m-h3.rad.part: 1072 weights (304 from donors, 48 added, 96 dropped, 336 act keys), 20.239 GiB, 0 cloned, 1072 copied)
+11-14 10:33:22 [mk] mix m-h4.rad: 11723390976 B (/data/q27/w159/packs/m-h4.rad.part: 1072 weights (193 from donors, 48 added, 96 dropped, 0 act keys), 10.918 GiB, 0 cloned, 1072 copied)
+11-14 10:33:54 [mk] mix m-h5.rad: 14795329536 B (/data/q27/w159/packs/m-h5.rad.part: 1072 weights (330 from donors, 48 added, 96 dropped, 336 act keys), 13.779 GiB, 0 cloned, 1072 copied)
+11-14 10:34:22 [mk] mix ab-T4.rad: 9101520896 B (/data/q27/w159/packs/ab-T4.rad.part: 1072 weights (0 from donors, 48 added, 96 dropped, 0 act keys), 8.476 GiB, 0 cloned, 1072 copied)
+11-14 12:29:16 [mk] mix ab-T5.rad: 9105453056 B (/data/q27/w159/packs/ab-T5.rad.part: 1072 weights (0 from donors, 48 added, 96 dropped, 0 act keys), 8.480 GiB, 0 cloned, 1072 copied)
+11-14 12:29:25 [mk] mix m-h1.rad: 10199044096 B (/data/q27/w159/packs/m-h1.rad.part: 1072 weights (307 from donors, 48 added, 96 dropped, 384 act keys), 9.499 GiB, 0 cloned, 1072 copied)
+11-14 12:29:26 [mk] mix e-t4.rad: 7226048512 B (/data/q27/w159/packs/e-t4.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.730 GiB, 0 cloned, 1120 copied)
+11-14 12:29:34 [mk] mix e-t1.5.rad: 6828736512 B (/data/q27/w159/packs/e-t1.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.360 GiB, 0 cloned, 1120 copied)
+11-14 12:29:39 [mk] mix e-t2.5.rad: 6987661312 B (/data/q27/w159/packs/e-t2.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.508 GiB, 0 cloned, 1120 copied)
+11-14 12:29:51 [mk] mix e-t6.5m.rad: 7623360512 B (/data/q27/w159/packs/e-t6.5m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.100 GiB, 0 cloned, 1120 copied)
+11-14 12:30:02 [mk] mix e-t8m.rad: 7861747712 B (/data/q27/w159/packs/e-t8m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.322 GiB, 0 cloned, 1120 copied)
+11-14 12:30:10 [mk] mix m-h2.rad: 15372292096 B (/data/q27/w159/packs/m-h2.rad.part: 1072 weights (312 from donors, 48 added, 96 dropped, 384 act keys), 14.317 GiB, 0 cloned, 1072 copied)
+11-14 12:30:13 [mk] mix h-u1.rad: 7129382912 B (/data/q27/w159/packs/h-u1.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.640 GiB, 0 cloned, 1120 copied)
+11-14 12:30:20 [mk] mix h-u1.125.rad: 7149248512 B (/data/q27/w159/packs/h-u1.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.658 GiB, 0 cloned, 1120 copied)
+11-14 12:30:52 [mk] mix m-h3.rad: 21731659776 B (/data/q27/w159/packs/m-h3.rad.part: 1072 weights (304 from donors, 48 added, 96 dropped, 384 act keys), 20.239 GiB, 0 cloned, 1072 copied)
+11-14 12:49:12 [mk] mix m-h5.rad: 14795329536 B (/data/q27/w159/packs/m-h5.rad.part: 1072 weights (330 from donors, 48 added, 96 dropped, 384 act keys), 13.779 GiB, 0 cloned, 1072 copied)
+11-14 13:29:24 [mk] gc ab-T4
+11-14 13:29:54 [mk] gc ab-T5
+11-14 13:30:24 [mk] gc e-t4
+11-14 13:31:24 [mk] gc e-t1.5
+11-14 13:31:54 [mk] gc e-t2.5
+11-14 13:32:24 [mk] gc e-t6.5m
+11-14 13:32:54 [mk] gc e-t8m
+11-14 13:33:24 [mk] gc h-u1
+11-14 13:33:29 [mk] mix h-u1.25.rad: 7169114112 B (/data/q27/w159/packs/h-u1.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.677 GiB, 0 cloned, 1120 copied)
+11-14 13:33:59 [mk] gc h-u1.125
+11-14 13:34:04 [mk] mix h-u1.375.rad: 7188979712 B (/data/q27/w159/packs/h-u1.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.695 GiB, 0 cloned, 1120 copied)
+11-14 13:34:35 [mk] gc h-u1.25
+11-14 13:34:40 [mk] mix h-u1.5.rad: 7208845312 B (/data/q27/w159/packs/h-u1.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.714 GiB, 0 cloned, 1120 copied)
+11-14 13:35:10 [mk] gc h-u1.375
+11-14 13:35:18 [mk] mix h-u1.625.rad: 7228710912 B (/data/q27/w159/packs/h-u1.625.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.732 GiB, 0 cloned, 1120 copied)
+11-14 13:35:48 [mk] gc h-u1.5
+11-14 13:35:54 [mk] mix h-u1.75.rad: 7248576512 B (/data/q27/w159/packs/h-u1.75.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.751 GiB, 0 cloned, 1120 copied)
+11-14 13:36:24 [mk] gc h-u1.625
+11-14 13:36:30 [mk] mix h-u1.875.rad: 7268442112 B (/data/q27/w159/packs/h-u1.875.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.769 GiB, 0 cloned, 1120 copied)
+11-14 13:37:00 [mk] gc h-u1.75
+11-14 13:37:08 [mk] mix h-u2.rad: 7288307712 B (/data/q27/w159/packs/h-u2.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.788 GiB, 0 cloned, 1120 copied)
+11-14 13:37:38 [mk] gc h-u1.875
+11-14 13:37:45 [mk] mix h-u2.125.rad: 7308173312 B (/data/q27/w159/packs/h-u2.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.806 GiB, 0 cloned, 1120 copied)
+11-14 13:38:15 [mk] gc h-u2
+11-14 13:38:23 [mk] mix h-u2.25.rad: 7328038912 B (/data/q27/w159/packs/h-u2.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.825 GiB, 0 cloned, 1120 copied)
+11-14 13:38:53 [mk] gc h-u2.125
+11-14 13:38:59 [mk] mix h-u2.375.rad: 7347904512 B (/data/q27/w159/packs/h-u2.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.843 GiB, 0 cloned, 1120 copied)
+11-14 13:39:29 [mk] gc h-u2.25
+11-14 13:39:35 [mk] mix h-u2.5.rad: 7367770112 B (/data/q27/w159/packs/h-u2.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.862 GiB, 0 cloned, 1120 copied)
+11-14 13:40:05 [mk] gc h-u2.375
+11-14 13:40:13 [mk] mix h-u2.625.rad: 7387635712 B (/data/q27/w159/packs/h-u2.625.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.880 GiB, 0 cloned, 1120 copied)
+11-14 13:40:43 [mk] gc h-u2.5
+11-14 13:40:48 [mk] mix h-u2.75.rad: 7407501312 B (/data/q27/w159/packs/h-u2.75.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.899 GiB, 0 cloned, 1120 copied)
+11-14 13:41:18 [mk] gc h-u2.625
+11-14 13:41:28 [mk] mix h-u2.875.rad: 7427366912 B (/data/q27/w159/packs/h-u2.875.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.917 GiB, 0 cloned, 1120 copied)
+11-14 13:41:58 [mk] gc h-u2.75
+11-14 13:42:04 [mk] mix h-u3.rad: 7447232512 B (/data/q27/w159/packs/h-u3.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.936 GiB, 0 cloned, 1120 copied)
+11-14 13:42:34 [mk] gc h-u2.875
+11-14 13:42:42 [mk] mix h-u3.125.rad: 7467098112 B (/data/q27/w159/packs/h-u3.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.954 GiB, 0 cloned, 1120 copied)
+11-14 13:43:12 [mk] gc h-u3
+11-14 13:43:18 [mk] mix h-u3.25.rad: 7486963712 B (/data/q27/w159/packs/h-u3.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.973 GiB, 0 cloned, 1120 copied)
+11-14 13:44:18 [mk] gc h-u3.125
+11-14 13:44:24 [mk] mix h-u3.375.rad: 7506829312 B (/data/q27/w159/packs/h-u3.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 6.991 GiB, 0 cloned, 1120 copied)
+11-14 13:44:54 [mk] gc h-u3.25
+11-14 13:44:59 [mk] mix h-u3.5.rad: 7526694912 B (/data/q27/w159/packs/h-u3.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.010 GiB, 0 cloned, 1120 copied)
+11-14 13:45:29 [mk] gc h-u3.375
+11-14 13:45:34 [mk] mix h-u3.625.rad: 7546560512 B (/data/q27/w159/packs/h-u3.625.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.028 GiB, 0 cloned, 1120 copied)
+11-14 13:46:04 [mk] gc h-u3.5
+11-14 13:46:10 [mk] mix h-u3.75.rad: 7566426112 B (/data/q27/w159/packs/h-u3.75.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.047 GiB, 0 cloned, 1120 copied)
+11-14 13:46:40 [mk] gc h-u3.625
+11-14 13:46:45 [mk] mix h-u3.875.rad: 7586291712 B (/data/q27/w159/packs/h-u3.875.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.065 GiB, 0 cloned, 1120 copied)
+11-14 13:47:15 [mk] gc h-u3.75
+11-14 13:47:21 [mk] mix h-u4.125.rad: 7626022912 B (/data/q27/w159/packs/h-u4.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.102 GiB, 0 cloned, 1120 copied)
+11-14 13:47:51 [mk] gc h-u3.875
+11-14 13:47:56 [mk] mix h-u4.25.rad: 7645888512 B (/data/q27/w159/packs/h-u4.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.121 GiB, 0 cloned, 1120 copied)
+11-14 13:48:26 [mk] gc h-u4
+11-14 13:48:32 [mk] mix h-u4.375.rad: 7665754112 B (/data/q27/w159/packs/h-u4.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.139 GiB, 0 cloned, 1120 copied)
+11-14 13:49:02 [mk] gc h-u4.125
+11-14 13:49:07 [mk] mix h-u4.5.rad: 7685619712 B (/data/q27/w159/packs/h-u4.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.158 GiB, 0 cloned, 1120 copied)
+11-14 13:49:37 [mk] gc h-u4.25
+11-14 13:49:43 [mk] mix h-u4.625.rad: 7705485312 B (/data/q27/w159/packs/h-u4.625.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.176 GiB, 0 cloned, 1120 copied)
+11-14 13:50:13 [mk] gc h-u4.375
+11-14 13:50:19 [mk] mix h-u4.75.rad: 7725350912 B (/data/q27/w159/packs/h-u4.75.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.195 GiB, 0 cloned, 1120 copied)
+11-14 13:50:49 [mk] gc h-u4.5
+11-14 13:50:54 [mk] mix h-u4.875.rad: 7745216512 B (/data/q27/w159/packs/h-u4.875.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.213 GiB, 0 cloned, 1120 copied)
+11-14 13:51:24 [mk] gc h-u4.625
+11-14 13:51:30 [mk] mix h-u5.rad: 7765082112 B (/data/q27/w159/packs/h-u5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.232 GiB, 0 cloned, 1120 copied)
+11-14 13:52:00 [mk] gc h-u4.75
+11-14 13:52:06 [mk] mix h-u5.125.rad: 7784947712 B (/data/q27/w159/packs/h-u5.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.250 GiB, 0 cloned, 1120 copied)
+11-14 13:52:36 [mk] gc h-u4.875
+11-14 13:52:41 [mk] mix h-u5.25.rad: 7804813312 B (/data/q27/w159/packs/h-u5.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.269 GiB, 0 cloned, 1120 copied)
+11-14 13:53:11 [mk] gc h-u5
+11-14 13:53:17 [mk] mix h-u5.375.rad: 7824678912 B (/data/q27/w159/packs/h-u5.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.287 GiB, 0 cloned, 1120 copied)
+11-14 13:53:47 [mk] gc h-u5.125
+11-14 13:53:53 [mk] mix h-u5.5.rad: 7844544512 B (/data/q27/w159/packs/h-u5.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.306 GiB, 0 cloned, 1120 copied)
+11-14 13:54:23 [mk] gc h-u5.25
+11-14 13:54:30 [mk] mix h-u5.625.rad: 7864410112 B (/data/q27/w159/packs/h-u5.625.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.324 GiB, 0 cloned, 1120 copied)
+11-14 13:55:00 [mk] gc h-u5.375
+11-14 13:55:05 [mk] mix h-u5.75.rad: 7884275712 B (/data/q27/w159/packs/h-u5.75.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.343 GiB, 0 cloned, 1120 copied)
+11-14 13:55:35 [mk] gc h-u5.5
+11-14 13:55:41 [mk] mix h-u5.875.rad: 7904141312 B (/data/q27/w159/packs/h-u5.875.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.361 GiB, 0 cloned, 1120 copied)
+11-14 13:56:12 [mk] gc h-u5.625
+11-14 13:56:17 [mk] mix h-u6.rad: 7924006912 B (/data/q27/w159/packs/h-u6.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.380 GiB, 0 cloned, 1120 copied)
+11-14 13:56:47 [mk] gc h-u5.75
+11-14 13:56:53 [mk] mix h-u6m.rad: 7924006912 B (/data/q27/w159/packs/h-u6m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.380 GiB, 0 cloned, 1120 copied)
+11-14 13:57:23 [mk] gc h-u5.875
+11-14 13:57:29 [mk] mix h-u6.125.rad: 7943872512 B (/data/q27/w159/packs/h-u6.125.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.398 GiB, 0 cloned, 1120 copied)
+11-14 13:57:59 [mk] gc h-u6
+11-14 13:58:05 [mk] mix h-u6.125m.rad: 7943872512 B (/data/q27/w159/packs/h-u6.125m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.398 GiB, 0 cloned, 1120 copied)
+11-14 13:58:35 [mk] gc h-u6m
+11-14 13:58:44 [mk] mix h-u6.25.rad: 7963738112 B (/data/q27/w159/packs/h-u6.25.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.417 GiB, 0 cloned, 1120 copied)
+11-14 13:59:14 [mk] gc h-u6.125
+11-14 13:59:21 [mk] mix h-u6.25m.rad: 7963738112 B (/data/q27/w159/packs/h-u6.25m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.417 GiB, 0 cloned, 1120 copied)
+11-14 14:00:21 [mk] gc h-u6.125m
+11-14 14:00:27 [mk] mix h-u6.375.rad: 7983603712 B (/data/q27/w159/packs/h-u6.375.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.435 GiB, 0 cloned, 1120 copied)
+11-14 14:00:57 [mk] gc h-u6.25
+11-14 14:01:03 [mk] mix h-u6.375m.rad: 7983603712 B (/data/q27/w159/packs/h-u6.375m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.435 GiB, 0 cloned, 1120 copied)
+11-14 14:01:33 [mk] gc h-u6.25m
+11-14 14:01:39 [mk] mix h-u6.5.rad: 8003469312 B (/data/q27/w159/packs/h-u6.5.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.454 GiB, 0 cloned, 1120 copied)
+11-14 14:02:09 [mk] gc h-u6.375
+11-14 14:02:15 [mk] mix h-u6.5m.rad: 8003469312 B (/data/q27/w159/packs/h-u6.5m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.454 GiB, 0 cloned, 1120 copied)
+11-14 14:02:45 [mk] gc h-u6.375m
+11-14 14:02:50 [mk] mix h-u6.625m.rad: 8023334912 B (/data/q27/w159/packs/h-u6.625m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.472 GiB, 0 cloned, 1120 copied)
+11-14 14:03:20 [mk] gc h-u6.5
+11-14 14:03:26 [mk] mix h-u6.75m.rad: 8043200512 B (/data/q27/w159/packs/h-u6.75m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.491 GiB, 0 cloned, 1120 copied)
+11-14 14:03:56 [mk] gc h-u6.5m
+11-14 14:04:02 [mk] mix h-u6.875m.rad: 8063066112 B (/data/q27/w159/packs/h-u6.875m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.509 GiB, 0 cloned, 1120 copied)
+11-14 14:04:32 [mk] gc h-u6.625m
+11-14 14:04:38 [mk] mix h-u7.rad: 8082931712 B (/data/q27/w159/packs/h-u7.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.528 GiB, 0 cloned, 1120 copied)
+11-14 14:05:08 [mk] gc h-u6.75m
+11-14 14:05:15 [mk] mix h-u7.125m.rad: 8102797312 B (/data/q27/w159/packs/h-u7.125m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.546 GiB, 0 cloned, 1120 copied)
+11-14 14:05:45 [mk] gc h-u6.875m
+11-14 14:05:51 [mk] mix h-u7.25m.rad: 8122662912 B (/data/q27/w159/packs/h-u7.25m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.565 GiB, 0 cloned, 1120 copied)
+11-14 14:06:21 [mk] gc h-u7
+11-14 14:06:27 [mk] mix h-u7.375m.rad: 8142528512 B (/data/q27/w159/packs/h-u7.375m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.583 GiB, 0 cloned, 1120 copied)
+11-14 14:06:57 [mk] gc h-u7.125m
+11-14 14:07:04 [mk] mix h-u7.5m.rad: 8162394112 B (/data/q27/w159/packs/h-u7.5m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.602 GiB, 0 cloned, 1120 copied)
+11-14 14:07:34 [mk] gc h-u7.25m
+11-14 14:07:40 [mk] mix h-u7.625m.rad: 8182259712 B (/data/q27/w159/packs/h-u7.625m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.620 GiB, 0 cloned, 1120 copied)
+11-14 14:08:10 [mk] gc h-u7.375m
+11-14 14:08:16 [mk] mix h-u7.75m.rad: 8202125312 B (/data/q27/w159/packs/h-u7.75m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.639 GiB, 0 cloned, 1120 copied)
+11-14 14:08:46 [mk] gc h-u7.5m
+11-14 14:08:52 [mk] mix h-u7.875m.rad: 8221990912 B (/data/q27/w159/packs/h-u7.875m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.657 GiB, 0 cloned, 1120 copied)
+11-14 14:09:22 [mk] gc h-u7.625m
+11-14 14:09:29 [mk] mix h-u8m.rad: 8241856512 B (/data/q27/w159/packs/h-u8m.rad.part: 1120 weights (1 from donors, 0 added, 0 dropped, 0 act keys), 7.676 GiB, 0 cloned, 1120 copied)
+11-14 14:09:29 [mk] roll: all built
+11-14 14:10:29 [mk] gc h-u7.75m
+11-14 14:10:29 [mk] gc h-u7.875m
+11-14 14:11:29 [mk] gc h-u8m
+11-14 14:11:29 [mk] roll: done

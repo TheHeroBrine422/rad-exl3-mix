@@ -1,0 +1,110 @@
+e2e statistic: min
+uniform levels with stamps: 42 (1..7.5); bf16 head 3981.1 us, bf16 a/b 410.7 us (96 GEMMs), bf16 embedding 7.9 us, other kernels 1.50 ms
+ctx 0: e2e = 3.557 ms + 0.9741 (se 0.0021) x stamped menu time; n 42, residual rms 0.27 %, max +0.59 %
+   K     1: stamped menu  21.947 ms  e2e  24.809 (rounds 24.871 / 24.747)  fit  24.935  res -0.51 %  stamped-run e2e 25.195
+   K 1.125: stamped menu  22.590 ms  e2e  25.689 (rounds 25.684 / 25.694)  fit  25.561  res +0.50 %  stamped-run e2e 25.877
+   K  1.25: stamped menu  22.707 ms  e2e  25.784 (rounds 25.757 / 25.811)  fit  25.675  res +0.42 %  stamped-run e2e 25.960
+   K 1.375: stamped menu  22.871 ms  e2e  25.923 (rounds 25.909 / 25.938)  fit  25.835  res +0.34 %  stamped-run e2e 26.085
+   K   1.5: stamped menu  22.905 ms  e2e  25.962 (rounds 25.913 / 26.011)  fit  25.868  res +0.36 %  stamped-run e2e 26.164
+   K 1.625: stamped menu  23.030 ms  e2e  26.070 (rounds 26.043 / 26.097)  fit  25.990  res +0.31 %  stamped-run e2e 26.282
+   K  1.75: stamped menu  23.010 ms  e2e  26.124 (rounds 26.108 / 26.140)  fit  25.970  res +0.59 %  stamped-run e2e 26.335
+   K 1.875: stamped menu  23.143 ms  e2e  26.184 (rounds 26.142 / 26.226)  fit  26.100  res +0.32 %  stamped-run e2e 26.415
+   K     2: stamped menu  22.230 ms  e2e  25.241 (rounds 25.210 / 25.272)  fit  25.210  res +0.12 %  stamped-run e2e 25.460
+   K 2.125: stamped menu  23.355 ms  e2e  26.296 (rounds 26.202 / 26.390)  fit  26.307  res -0.04 %  stamped-run e2e 26.631
+   K  2.25: stamped menu  23.413 ms  e2e  26.309 (rounds 26.178 / 26.440)  fit  26.363  res -0.21 %  stamped-run e2e 26.725
+   K 2.375: stamped menu  23.482 ms  e2e  26.425 (rounds 26.269 / 26.580)  fit  26.430  res -0.02 %  stamped-run e2e 26.823
+   K   2.5: stamped menu  23.543 ms  e2e  26.496 (rounds 26.337 / 26.655)  fit  26.489  res +0.03 %  stamped-run e2e 26.840
+   K 2.625: stamped menu  23.698 ms  e2e  26.620 (rounds 26.454 / 26.785)  fit  26.640  res -0.08 %  stamped-run e2e 26.961
+   K  2.75: stamped menu  23.630 ms  e2e  26.684 (rounds 26.522 / 26.847)  fit  26.574  res +0.41 %  stamped-run e2e 26.969
+   K 2.875: stamped menu  23.860 ms  e2e  26.789 (rounds 26.635 / 26.943)  fit  26.798  res -0.03 %  stamped-run e2e 27.097
+   K     3: stamped menu  23.661 ms  e2e  26.576 (rounds 26.467 / 26.685)  fit  26.604  res -0.11 %  stamped-run e2e 26.886
+   K 3.125: stamped menu  24.209 ms  e2e  27.183 (rounds 27.106 / 27.259)  fit  27.139  res +0.16 %  stamped-run e2e 27.474
+   K  3.25: stamped menu  24.497 ms  e2e  27.438 (rounds 27.409 / 27.468)  fit  27.419  res +0.07 %  stamped-run e2e 27.697
+   K 3.375: stamped menu  24.938 ms  e2e  27.781 (rounds 27.776 / 27.786)  fit  27.849  res -0.24 %  stamped-run e2e 28.036
+   K   3.5: stamped menu  25.396 ms  e2e  28.141 (rounds 28.148 / 28.134)  fit  28.295  res -0.55 %  stamped-run e2e 28.442
+   K 3.625: stamped menu  26.015 ms  e2e  28.749 (rounds 28.754 / 28.744)  fit  28.898  res -0.52 %  stamped-run e2e 29.046
+   K  3.75: stamped menu  26.551 ms  e2e  29.348 (rounds 29.359 / 29.337)  fit  29.419  res -0.24 %  stamped-run e2e 29.607
+   K 3.875: stamped menu  27.035 ms  e2e  29.833 (rounds 29.840 / 29.825)  fit  29.891  res -0.20 %  stamped-run e2e 30.069
+   K     4: stamped menu  27.006 ms  e2e  29.720 (rounds 29.745 / 29.694)  fit  29.863  res -0.48 %  stamped-run e2e 29.967
+   K 4.125: stamped menu  27.718 ms  e2e  30.606 (rounds 30.644 / 30.568)  fit  30.557  res +0.16 %  stamped-run e2e 30.833
+   K  4.25: stamped menu  28.208 ms  e2e  30.997 (rounds 35.529 / 30.997 / 30.911)  fit  31.034  res -0.12 %  stamped-run e2e 31.262
+   K 4.375: stamped menu  29.469 ms  e2e  32.194 (rounds 43.980 / 32.194 / 32.134)  fit  32.262  res -0.21 %  stamped-run e2e 32.478
+   K   4.5: stamped menu  29.243 ms  e2e  32.015 (rounds 45.290 / 32.015 / 31.931)  fit  32.042  res -0.08 %  stamped-run e2e 32.260
+   K 4.625: stamped menu  30.891 ms  e2e  33.592 (rounds 47.507 / 33.592 / 33.529)  fit  33.647  res -0.16 %  stamped-run e2e 33.847
+   K  4.75: stamped menu  31.116 ms  e2e  33.817 (rounds 47.316 / 33.817 / 33.760)  fit  33.866  res -0.15 %  stamped-run e2e 34.069
+   K 4.875: stamped menu  31.675 ms  e2e  34.336 (rounds 48.203 / 34.336 / 34.315)  fit  34.411  res -0.22 %  stamped-run e2e 34.612
+   K     5: stamped menu  31.548 ms  e2e  34.209 (rounds 47.614 / 34.209 / 34.174)  fit  34.287  res -0.23 %  stamped-run e2e 34.486
+   K  5.25: stamped menu  32.807 ms  e2e  35.579 (rounds 50.254 / 35.579 / 35.559)  fit  35.513  res +0.19 %  stamped-run e2e 35.849
+   K   5.5: stamped menu  33.636 ms  e2e  36.337 (rounds 39.185 / 36.337 / 36.312)  fit  36.321  res +0.04 %  stamped-run e2e 36.637
+   K  5.75: stamped menu  34.900 ms  e2e  37.594 (rounds 37.577 / 37.610)  fit  37.552  res +0.11 %  stamped-run e2e 37.906
+   K     6: stamped menu  35.784 ms  e2e  38.354 (rounds 38.302 / 38.406)  fit  38.413  res -0.15 %  stamped-run e2e 38.702
+   K  6.25: stamped menu  37.247 ms  e2e  39.891 (rounds 39.843 / 39.939)  fit  39.838  res +0.13 %  stamped-run e2e 40.226
+   K   6.5: stamped menu  38.603 ms  e2e  41.180 (rounds 41.138 / 41.222)  fit  41.159  res +0.05 %  stamped-run e2e 41.519
+   K  6.75: stamped menu  39.980 ms  e2e  42.532 (rounds 42.471 / 42.592)  fit  42.501  res +0.07 %  stamped-run e2e 42.891
+   K     7: stamped menu  41.151 ms  e2e  43.634 (rounds 43.590 / 43.677)  fit  43.641  res -0.02 %  stamped-run e2e 43.993
+   K   7.5: stamped menu  43.801 ms  e2e  46.346 (rounds 46.288 / 46.405)  fit  46.223  res +0.27 %  stamped-run e2e 46.701
+ctx 8k: e2e = 4.597 ms + 0.9785 (se 0.0020) x stamped menu time; n 42, residual rms 0.26 %, max +0.57 %
+   K     1: stamped menu  21.947 ms  e2e  25.988 (rounds 26.022 / 25.955)  fit  26.073  res -0.33 %
+   K 1.125: stamped menu  22.590 ms  e2e  26.836 (rounds 26.843 / 26.829)  fit  26.702  res +0.50 %
+   K  1.25: stamped menu  22.707 ms  e2e  26.937 (rounds 26.942 / 26.931)  fit  26.816  res +0.45 %
+   K 1.375: stamped menu  22.871 ms  e2e  27.063 (rounds 27.035 / 27.090)  fit  26.977  res +0.32 %
+   K   1.5: stamped menu  22.905 ms  e2e  27.152 (rounds 27.153 / 27.151)  fit  27.010  res +0.52 %
+   K 1.625: stamped menu  23.030 ms  e2e  27.189 (rounds 27.167 / 27.211)  fit  27.132  res +0.21 %
+   K  1.75: stamped menu  23.010 ms  e2e  27.267 (rounds 27.271 / 27.263)  fit  27.113  res +0.57 %
+   K 1.875: stamped menu  23.143 ms  e2e  27.333 (rounds 27.296 / 27.370)  fit  27.243  res +0.33 %
+   K     2: stamped menu  22.230 ms  e2e  26.371 (rounds 26.337 / 26.406)  fit  26.349  res +0.08 %
+   K 2.125: stamped menu  23.355 ms  e2e  27.465 (rounds 27.397 / 27.533)  fit  27.451  res +0.05 %
+   K  2.25: stamped menu  23.413 ms  e2e  27.445 (rounds 27.307 / 27.583)  fit  27.507  res -0.23 %
+   K 2.375: stamped menu  23.482 ms  e2e  27.548 (rounds 27.416 / 27.681)  fit  27.575  res -0.10 %
+   K   2.5: stamped menu  23.543 ms  e2e  27.580 (rounds 27.450 / 27.710)  fit  27.634  res -0.20 %
+   K 2.625: stamped menu  23.698 ms  e2e  27.739 (rounds 27.582 / 27.896)  fit  27.786  res -0.17 %
+   K  2.75: stamped menu  23.630 ms  e2e  27.828 (rounds 27.647 / 28.010)  fit  27.719  res +0.39 %
+   K 2.875: stamped menu  23.860 ms  e2e  27.926 (rounds 27.722 / 28.131)  fit  27.944  res -0.06 %
+   K     3: stamped menu  23.661 ms  e2e  27.687 (rounds 27.580 / 27.794)  fit  27.750  res -0.23 %
+   K 3.125: stamped menu  24.209 ms  e2e  28.265 (rounds 28.170 / 28.360)  fit  28.286  res -0.08 %
+   K  3.25: stamped menu  24.497 ms  e2e  28.579 (rounds 28.545 / 28.613)  fit  28.568  res +0.04 %
+   K 3.375: stamped menu  24.938 ms  e2e  28.910 (rounds 28.902 / 28.917)  fit  29.000  res -0.31 %
+   K   3.5: stamped menu  25.396 ms  e2e  29.316 (rounds 29.323 / 29.309)  fit  29.448  res -0.45 %
+   K 3.625: stamped menu  26.015 ms  e2e  29.928 (rounds 29.938 / 29.918)  fit  30.053  res -0.42 %
+   K  3.75: stamped menu  26.551 ms  e2e  30.536 (rounds 30.549 / 30.523)  fit  30.577  res -0.14 %
+   K 3.875: stamped menu  27.035 ms  e2e  31.003 (rounds 31.014 / 30.993)  fit  31.052  res -0.16 %
+   K     4: stamped menu  27.006 ms  e2e  30.903 (rounds 30.926 / 30.881)  fit  31.023  res -0.39 %
+   K 4.125: stamped menu  27.718 ms  e2e  31.751 (rounds 31.785 / 31.718)  fit  31.720  res +0.10 %
+   K  4.25: stamped menu  28.208 ms  e2e  32.122 (rounds 32.274 / 32.122 / 32.065)  fit  32.199  res -0.24 %
+   K 4.375: stamped menu  29.469 ms  e2e  33.427 (rounds 33.541 / 33.427 / 33.341)  fit  33.433  res -0.02 %
+   K   4.5: stamped menu  29.243 ms  e2e  33.185 (rounds 49.662 / 33.185 / 33.150)  fit  33.212  res -0.08 %
+   K 4.625: stamped menu  30.891 ms  e2e  34.778 (rounds 48.086 / 34.778 / 34.747)  fit  34.824  res -0.13 %
+   K  4.75: stamped menu  31.116 ms  e2e  34.996 (rounds 48.611 / 34.996 / 34.963)  fit  35.045  res -0.14 %
+   K 4.875: stamped menu  31.675 ms  e2e  35.508 (rounds 51.080 / 35.508 / 35.492)  fit  35.592  res -0.24 %
+   K     5: stamped menu  31.548 ms  e2e  35.409 (rounds 51.002 / 35.409 / 35.363)  fit  35.467  res -0.16 %
+   K  5.25: stamped menu  32.807 ms  e2e  36.776 (rounds 52.634 / 36.776 / 36.776)  fit  36.699  res +0.21 %
+   K   5.5: stamped menu  33.636 ms  e2e  37.587 (rounds 46.563 / 37.586 / 37.587)  fit  37.510  res +0.21 %
+   K  5.75: stamped menu  34.900 ms  e2e  38.788 (rounds 38.775 / 38.800)  fit  38.747  res +0.11 %
+   K     6: stamped menu  35.784 ms  e2e  39.588 (rounds 39.573 / 39.602)  fit  39.612  res -0.06 %
+   K  6.25: stamped menu  37.247 ms  e2e  41.089 (rounds 41.012 / 41.166)  fit  41.043  res +0.11 %
+   K   6.5: stamped menu  38.603 ms  e2e  42.372 (rounds 42.339 / 42.405)  fit  42.370  res +0.00 %
+   K  6.75: stamped menu  39.980 ms  e2e  43.725 (rounds 43.677 / 43.772)  fit  43.718  res +0.02 %
+   K     7: stamped menu  41.151 ms  e2e  44.839 (rounds 44.753 / 44.925)  fit  44.864  res -0.06 %
+   K   7.5: stamped menu  43.801 ms  e2e  47.560 (rounds 47.500 / 47.619)  fit  47.457  res +0.22 %
+   a/b disagree > 3 %: u4.25-0 a 35.529 b 30.997 (c present)
+   a/b disagree > 3 %: u4.375-0 a 43.980 b 32.194 (c present)
+   a/b disagree > 3 %: u4.5-0 a 45.290 b 32.015 (c present)
+   a/b disagree > 3 %: u4.5-8k a 49.662 b 33.185 (c present)
+   a/b disagree > 3 %: u4.625-0 a 47.507 b 33.592 (c present)
+   a/b disagree > 3 %: u4.625-8k a 48.086 b 34.778 (c present)
+   a/b disagree > 3 %: u4.75-0 a 47.316 b 33.817 (c present)
+   a/b disagree > 3 %: u4.75-8k a 48.611 b 34.996 (c present)
+   a/b disagree > 3 %: u4.875-0 a 48.203 b 34.336 (c present)
+   a/b disagree > 3 %: u4.875-8k a 51.080 b 35.508 (c present)
+   a/b disagree > 3 %: u5-0 a 47.614 b 34.209 (c present)
+   a/b disagree > 3 %: u5-8k a 51.002 b 35.409 (c present)
+   a/b disagree > 3 %: u5.25-0 a 50.254 b 35.579 (c present)
+   a/b disagree > 3 %: u5.25-8k a 52.634 b 36.776 (c present)
+   a/b disagree > 3 %: u5.5-0 a 39.185 b 36.337 (c present)
+   a/b disagree > 3 %: u5.5-8k a 46.563 b 37.586 (c present)
+heads priced: 62; embedding options: ['bf16', 't1.5', 't2.5', 't4', 't6.5m', 't8m'] ({'e-t1.5': ['_ZN12_GLOBAL__N_116embed_exl3i_colsILi1EEEv14EmbedExl3iCall'], 'e-t2.5': ['_ZN12_GLOBAL__N_116embed_exl3i_colsILi1EEEv14EmbedExl3iCall'], 'e-t4': ['_ZN12_GLOBAL__N_116embed_exl3i_colsILi1EEEv14EmbedExl3iCall'], 'e-t6.5m': ['_ZN12_GLOBAL__N_116embed_exl3i_colsILi0EEEv14EmbedExl3iCall'], 'e-t8m': ['_ZN12_GLOBAL__N_116embed_exl3i_colsILi0EEEv14EmbedExl3iCall']}); a/b: {'bf16': 410.724, 'T4': 440.284, 'T5': 442.604}
+held-out h1: ctx 0: pred 23.768 meas 24.093 (-1.35 %)  ctx 8k: pred 24.901 meas 25.245 (-1.37 %)  | stamps: table 20.749 vs own 21.049 ms (-1.43 %)
+held-out h2: ctx 0: pred 28.969 meas 28.931 (+0.13 %)  ctx 8k: pred 30.125 meas 30.210 (-0.28 %)  | stamps: table 26.088 vs own 26.155 ms (-0.25 %)
+held-out h3: ctx 0: pred 37.488 meas 37.639 (-0.40 %)  ctx 8k: pred 38.683 meas 38.893 (-0.54 %)  | stamps: table 34.834 vs own 34.930 ms (-0.27 %)
+held-out h4: ctx 0: pred 23.692 meas 23.887 (-0.82 %)  ctx 8k: pred 24.824 meas 25.117 (-1.17 %)  | stamps: table 20.671 vs own 20.794 ms (-0.59 %)
+held-out h5: ctx 0: pred 28.956 meas 29.112 (-0.54 %)  ctx 8k: pred 30.112 meas 30.392 (-0.92 %)  | stamps: table 26.075 vs own 26.277 ms (-0.77 %)

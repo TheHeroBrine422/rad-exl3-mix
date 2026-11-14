@@ -1,0 +1,8 @@
+e2e statistic: med
+ctx 0: e2e = 3.527 ms + 0.9761 (se 0.0024) x stamped menu time; n 42, residual rms 0.30 %, max +0.58 %
+ctx 8k: e2e = 4.441 ms + 0.9885 (se 0.0142) x stamped menu time; n 42, residual rms 1.44 %, max +8.83 %
+held-out h1: ctx 0: pred 23.780 meas 24.119 (-1.41 %)  ctx 8k: pred 24.952 meas 25.258 (-1.21 %)  | stamps: table 20.749 vs own 21.049 ms (-1.43 %)
+held-out h2: ctx 0: pred 28.992 meas 28.939 (+0.18 %)  ctx 8k: pred 30.230 meas 30.210 (+0.06 %)  | stamps: table 26.088 vs own 26.155 ms (-0.25 %)
+held-out h3: ctx 0: pred 37.528 meas 37.650 (-0.32 %)  ctx 8k: pred 38.875 meas 39.080 (-0.53 %)  | stamps: table 34.834 vs own 34.930 ms (-0.27 %)
+held-out h4: ctx 0: pred 23.704 meas 23.910 (-0.86 %)  ctx 8k: pred 24.875 meas 25.137 (-1.04 %)  | stamps: table 20.671 vs own 20.794 ms (-0.59 %)
+held-out h5: ctx 0: pred 28.979 meas 29.136 (-0.54 %)  ctx 8k: pred 30.216 meas 30.400 (-0.60 %)  | stamps: table 26.075 vs own 26.277 ms (-0.77 %)

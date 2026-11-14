@@ -1,0 +1,7 @@
+m-h2-a ctx 0 run 0 (warm): prompt 103 ttft 152 ms, client 28.98 ms/tok, server 28.98 ms/step x 1.00 tok
+m-h2-a ctx 0 run 1: prompt 105 ttft 105 ms, client 28.93 ms/tok, server 28.92 ms/step x 1.00 tok
+m-h2-a ctx 0 run 2: prompt 102 ttft 106 ms, client 28.93 ms/tok, server 28.93 ms/step x 1.00 tok
+m-h2-a ctx 0 run 3: prompt 105 ttft 104 ms, client 29.09 ms/tok, server 29.08 ms/step x 1.00 tok
+m-h2-a ctx 8k run 0 (warm): prompt 8243 ttft 3421 ms, client 30.31 ms/tok, server 30.31 ms/step x 1.00 tok
+m-h2-a ctx 8k run 1: prompt 8247 ttft 3424 ms, client 30.21 ms/tok, server 30.21 ms/step x 1.00 tok
+m-h2-a ctx 8k run 2: prompt 8241 ttft 3431 ms, client 30.21 ms/tok, server 30.21 ms/step x 1.00 tok

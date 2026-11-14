@@ -1,0 +1,4 @@
+h-u6.875m ctx 0 run 0 (warm): prompt 102 ttft 113 ms, client 23.97 ms/tok, server 23.97 ms/step x 1.00 tok
+h-u6.875m ctx 0 run 1: prompt 106 ttft 101 ms, client 24.05 ms/tok, server 24.04 ms/step x 1.00 tok
+h-u6.875m ctx 0 run 2: prompt 106 ttft 102 ms, client 24.07 ms/tok, server 24.07 ms/step x 1.00 tok
+h-u6.875m ctx 0 run 3: prompt 103 ttft 102 ms, client 24.10 ms/tok, server 24.10 ms/step x 1.00 tok

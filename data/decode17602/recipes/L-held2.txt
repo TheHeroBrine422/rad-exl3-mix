@@ -1,0 +1,15 @@
+u2.5-c3 /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad
+m-h1-a /data/q27/w159/packs/m-h1.rad wait
+m-h2-a /data/q27/w159/packs/m-h2.rad wait
+m-h3-a /data/q27/w159/packs/m-h3.rad wait
+m-h5-a /data/q27/w159/packs/m-h5.rad wait
+u4-c2 /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad
+m-h5-b /data/q27/w159/packs/m-h5.rad wait
+m-h3-b /data/q27/w159/packs/m-h3.rad wait
+m-h2-b /data/q27/w159/packs/m-h2.rad wait
+m-h1-b /data/q27/w159/packs/m-h1.rad wait
+u2.5-c4 /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad
+m-h1-s /data/q27/w159/packs/m-h1.rad stamp ctx=0 wait
+m-h2-s /data/q27/w159/packs/m-h2.rad stamp ctx=0 wait
+m-h3-s /data/q27/w159/packs/m-h3.rad stamp ctx=0 wait
+m-h5-s /data/q27/w159/packs/m-h5.rad stamp ctx=0 wait

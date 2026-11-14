@@ -1,0 +1,654 @@
+11-14 08:39:07 [hip 7] pil-k2.5-st: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 1, ctx 0,8k, env '')
+11-14 08:40:16 [hip 7] pil-k2.5-st: done in 69 s (load 13 s): server 26.04 ms/step server 27.11 ms/step server 27.16 ms/step server 27.22 ms/step 
+11-14 08:40:16 [hip 7] pil-k2.5-ns: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 08:41:21 [hip 7] pil-k2.5-ns: done in 65 s (load 10 s): server 26.04 ms/step server 27.17 ms/step server 27.21 ms/step server 27.26 ms/step 
+11-14 08:41:22 [hip 7] pil-k4.125-ns: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 08:42:36 [hip 7] pil-k4.125-ns: done in 74 s (load 12 s): server 30.35 ms/step server 31.48 ms/step server 31.51 ms/step server 31.51 ms/step 
+11-14 08:42:36 [hip 7] pil-k4.125-st: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 1, ctx 0,8k, env '')
+11-14 08:43:49 [hip 7] pil-k4.125-st: done in 73 s (load 10 s): server 30.69 ms/step server 31.79 ms/step server 31.84 ms/step server 31.85 ms/step 
+11-14 08:43:49 [hip 7] LISTS DONE: recipes/pilot.txt
+11-14 08:44:23 [hip 7] u1-r1: serve /data/q27/packs-mad/q27v3-635bac02-k1-mad-s6c57a3d1.rad (stamp 1, ctx 0,8k, env '')
+11-14 08:45:26 [hip 7] u1-r1: done in 63 s (load 8 s): server 24.74 ms/step server 25.87 ms/step server 25.89 ms/step server 25.93 ms/step 
+11-14 08:45:26 [hip 7] STOP
+11-14 08:46:04 [hip 7] u1-s: serve /data/q27/packs-mad/q27v3-635bac02-k1-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:46:40 [hip 7] u1-s: done in 36 s (load 8 s): server 24.54 ms/step server 24.61 ms/step server 24.63 ms/step server 24.69 ms/step 
+11-14 08:46:41 [hip 7] u1.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:47:19 [hip 7] u1.125-s: done in 38 s (load 8 s): server 25.47 ms/step server 25.52 ms/step server 25.56 ms/step server 25.71 ms/step 
+11-14 08:47:19 [hip 7] u1.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:47:57 [hip 7] u1.25-s: done in 38 s (load 8 s): server 25.62 ms/step server 25.69 ms/step server 25.70 ms/step server 25.73 ms/step 
+11-14 08:47:57 [hip 7] u1.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:48:35 [hip 7] u1.375-s: done in 38 s (load 8 s): server 26.43 ms/step server 25.82 ms/step server 25.86 ms/step server 25.87 ms/step 
+11-14 08:48:35 [hip 7] u1.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:49:14 [hip 7] u1.5-s: done in 39 s (load 9 s): server 25.85 ms/step server 25.89 ms/step server 25.91 ms/step server 25.95 ms/step 
+11-14 08:49:14 [hip 7] u1.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:49:52 [hip 7] u1.625-s: done in 38 s (load 8 s): server 25.98 ms/step server 26.00 ms/step server 26.05 ms/step server 26.04 ms/step 
+11-14 08:49:52 [hip 7] u1.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:50:31 [hip 7] u1.75-s: done in 39 s (load 8 s): server 26.01 ms/step server 26.09 ms/step server 28.28 ms/step server 26.14 ms/step 
+11-14 08:50:32 [hip 7] u1.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:51:10 [hip 7] u1.875-s: done in 38 s (load 8 s): server 26.11 ms/step server 26.17 ms/step server 26.19 ms/step server 26.38 ms/step 
+11-14 08:51:10 [hip 7] u2-s: serve /data/q27/packs-mad/q27v3-635bac02-k2-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:51:52 [hip 7] u2-s: done in 42 s (load 12 s): server 25.14 ms/step server 25.20 ms/step server 25.24 ms/step server 25.26 ms/step 
+11-14 08:51:52 [hip 7] u2.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:52:31 [hip 7] u2.125-s: done in 38 s (load 8 s): server 26.73 ms/step server 26.34 ms/step server 26.37 ms/step server 26.42 ms/step 
+11-14 08:52:31 [hip 7] u2.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:53:11 [hip 7] u2.25-s: done in 39 s (load 8 s): server 30.61 ms/step server 26.44 ms/step server 26.46 ms/step server 26.49 ms/step 
+11-14 08:53:11 [hip 7] u2.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:53:50 [hip 7] u2.375-s: done in 39 s (load 8 s): server 26.47 ms/step server 28.35 ms/step server 26.58 ms/step server 26.59 ms/step 
+11-14 08:53:50 [hip 7] u2.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:54:33 [hip 7] u2.5-s: done in 43 s (load 10 s): server 28.19 ms/step server 28.06 ms/step server 26.59 ms/step server 26.63 ms/step 
+11-14 08:54:34 [hip 7] u2.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:55:15 [hip 7] u2.625-s: done in 41 s (load 10 s): server 26.62 ms/step server 26.70 ms/step server 26.74 ms/step server 26.88 ms/step 
+11-14 08:55:15 [hip 7] u2.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:55:54 [hip 7] u2.75-s: done in 39 s (load 8 s): server 26.70 ms/step server 26.80 ms/step server 26.95 ms/step server 26.86 ms/step 
+11-14 08:55:54 [hip 7] u2.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:56:35 [hip 7] u2.875-s: done in 41 s (load 10 s): server 26.79 ms/step server 26.90 ms/step server 27.00 ms/step server 26.94 ms/step 
+11-14 08:56:36 [hip 7] u3-s: serve /data/q27/packs-mad/q27v3-635bac02-k3-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:57:19 [hip 7] u3-s: done in 43 s (load 12 s): server 26.58 ms/step server 27.13 ms/step server 28.01 ms/step server 26.72 ms/step 
+11-14 08:57:19 [hip 7] u3.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:58:01 [hip 7] u3.125-s: done in 42 s (load 10 s): server 27.13 ms/step server 27.21 ms/step server 27.22 ms/step server 27.27 ms/step 
+11-14 08:58:01 [hip 7] u3.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 08:58:43 [hip 7] u3.25-s: done in 42 s (load 10 s): server 27.51 ms/step server 27.47 ms/step server 28.07 ms/step server 27.51 ms/step 
+11-14 08:58:43 [hip 7] ab-T4: serve /data/q27/w159/packs/ab-T4.rad (stamp 1, ctx 0, env '')
+11-14 08:59:25 [hip 7] ab-T4: done in 42 s (load 10 s): server 24.96 ms/step server 30.68 ms/step server 27.33 ms/step server 25.79 ms/step 
+11-14 08:59:25 [hip 7] u3.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:00:08 [hip 7] u3.375-s: done in 43 s (load 10 s): server 30.51 ms/step server 29.93 ms/step server 27.86 ms/step server 27.90 ms/step 
+11-14 09:00:08 [hip 7] ab-T5: serve /data/q27/w159/packs/ab-T5.rad (stamp 1, ctx 0, env '')
+11-14 09:00:46 [hip 7] ab-T5: done in 38 s (load 9 s): server 24.90 ms/step server 25.04 ms/step server 26.16 ms/step server 25.96 ms/step 
+11-14 09:00:47 [hip 7] u3.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:01:29 [hip 7] u3.5-s: done in 42 s (load 10 s): server 28.25 ms/step server 28.29 ms/step server 28.31 ms/step server 28.34 ms/step 
+11-14 09:01:29 [hip 7] e-t4: serve /data/q27/w159/packs/e-t4.rad (stamp 1, ctx 0, env '')
+11-14 09:02:05 [hip 7] e-t4: done in 36 s (load 6 s): server 27.38 ms/step server 24.84 ms/step server 24.90 ms/step server 24.91 ms/step 
+11-14 09:02:05 [hip 7] u7.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k7.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:03:47 [hip 7] u7.5-a: done in 102 s (load 16 s): server 46.56 ms/step server 47.49 ms/step server 47.50 ms/step server 47.50 ms/step 
+11-14 09:03:47 [hip 7] u3.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:04:43 [hip 7] u3.625-s: done in 56 s (load 20 s): server 36.15 ms/step server 28.96 ms/step server 28.92 ms/step server 28.93 ms/step 
+11-14 09:04:43 [hip 7] e-t1.5: serve /data/q27/w159/packs/e-t1.5.rad (stamp 1, ctx 0, env '')
+11-14 09:05:20 [hip 7] e-t1.5: done in 37 s (load 8 s): server 24.86 ms/step server 24.87 ms/step server 24.91 ms/step server 24.93 ms/step 
+11-14 09:05:20 [hip 7] u7-a: serve /data/q27/packs-mad/q27v3-635bac02-k7-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:06:58 [hip 7] u7-a: done in 98 s (load 16 s): server 43.62 ms/step server 44.77 ms/step server 46.79 ms/step server 44.80 ms/step 
+11-14 09:06:58 [hip 7] u3.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:07:49 [hip 7] u3.75-s: done in 51 s (load 16 s): server 31.19 ms/step server 29.44 ms/step server 31.09 ms/step server 31.55 ms/step 
+11-14 09:07:49 [hip 7] e-t2.5: serve /data/q27/w159/packs/e-t2.5.rad (stamp 1, ctx 0, env '')
+11-14 09:08:29 [hip 7] e-t2.5: done in 39 s (load 11 s): server 24.79 ms/step server 24.85 ms/step server 24.87 ms/step server 24.92 ms/step 
+11-14 09:08:29 [hip 7] u6.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:10:05 [hip 7] u6.75-a: done in 96 s (load 16 s): server 42.52 ms/step server 43.68 ms/step server 45.26 ms/step server 44.59 ms/step 
+11-14 09:10:06 [hip 7] u3.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:11:09 [hip 7] u3.875-s: done in 63 s (load 29 s): server 29.86 ms/step server 30.13 ms/step server 30.32 ms/step server 30.09 ms/step 
+11-14 09:11:09 [hip 7] e-t6.5m: serve /data/q27/w159/packs/e-t6.5m.rad (stamp 1, ctx 0, env '')
+11-14 09:11:49 [hip 7] e-t6.5m: done in 40 s (load 10 s): server 24.78 ms/step server 24.84 ms/step server 24.84 ms/step server 26.84 ms/step 
+11-14 09:11:49 [hip 7] u6.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:13:24 [hip 7] u6.5-a: done in 94 s (load 16 s): server 44.42 ms/step server 42.42 ms/step server 42.30 ms/step server 42.33 ms/step 
+11-14 09:13:24 [hip 7] u4-s: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:14:12 [hip 7] u4-s: done in 48 s (load 12 s): server 30.00 ms/step server 30.21 ms/step server 30.58 ms/step server 34.61 ms/step 
+11-14 09:14:12 [hip 7] e-t8m: serve /data/q27/w159/packs/e-t8m.rad (stamp 1, ctx 0, env '')
+11-14 09:14:51 [hip 7] e-t8m: done in 39 s (load 10 s): server 24.82 ms/step server 24.93 ms/step server 24.97 ms/step server 24.93 ms/step 
+11-14 09:14:51 [hip 7] u6.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:16:29 [hip 7] u6.25-a: done in 98 s (load 20 s): server 43.45 ms/step server 41.02 ms/step server 41.02 ms/step server 41.15 ms/step 
+11-14 09:16:29 [hip 7] u4.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:17:20 [hip 7] u4.125-s: done in 51 s (load 14 s): server 30.61 ms/step server 34.68 ms/step server 30.68 ms/step server 32.67 ms/step 
+11-14 09:17:20 [hip 7] u6-a: serve /data/q27/packs-mad/q27v3-635bac02-k6-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:18:50 [hip 7] u6-a: done in 90 s (load 16 s): server 39.69 ms/step server 43.80 ms/step server 39.52 ms/step server 39.53 ms/step 
+11-14 09:18:51 [hip 7] u4.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:19:39 [hip 7] u4.25-s: done in 48 s (load 12 s): server 32.50 ms/step server 32.52 ms/step server 31.74 ms/step server 31.15 ms/step 
+11-14 09:19:39 [hip 7] u5.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:21:04 [hip 7] u5.75-a: done in 85 s (load 13 s): server 37.54 ms/step server 38.69 ms/step server 38.71 ms/step server 38.70 ms/step 
+11-14 09:21:04 [hip 7] u4.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:21:53 [hip 7] u4.375-s: done in 49 s (load 12 s): server 32.51 ms/step server 32.37 ms/step server 32.42 ms/step server 32.43 ms/step 
+11-14 09:21:53 [hip 7] u5.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:23:17 [hip 7] u5.5-a: done in 84 s (load 12 s): server 36.32 ms/step server 37.45 ms/step server 37.46 ms/step server 37.50 ms/step 
+11-14 09:23:17 [hip 7] u4.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 09:24:06 [hip 7] u4.5-s: done in 49 s (load 12 s): server 32.16 ms/step server 32.87 ms/step server 32.22 ms/step server 32.23 ms/step 
+11-14 09:24:06 [hip 7] u5.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:25:30 [hip 7] u5.25-a: done in 84 s (load 14 s): server 35.49 ms/step server 36.67 ms/step server 36.66 ms/step server 36.69 ms/step 
+11-14 09:25:30 [hip 7] u4.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:26:22 [hip 7] u4.625-s: done in 52 s (load 14 s): server 33.74 ms/step server 33.76 ms/step server 33.80 ms/step server 34.60 ms/step 
+11-14 09:26:23 [hip 7] u5-a: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:27:45 [hip 7] u5-a: done in 82 s (load 14 s): server 34.11 ms/step server 35.30 ms/step server 35.29 ms/step server 35.31 ms/step 
+11-14 09:27:45 [hip 7] u4.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:28:38 [hip 7] u4.75-s: done in 53 s (load 14 s): server 34.18 ms/step server 37.56 ms/step server 34.12 ms/step server 34.05 ms/step 
+11-14 09:28:39 [hip 7] u4.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:30:00 [hip 7] u4.875-a: done in 81 s (load 12 s): server 34.27 ms/step server 36.97 ms/step server 35.44 ms/step server 40.08 ms/step 
+11-14 09:30:00 [hip 7] u4.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:30:53 [hip 7] u4.875-s: done in 53 s (load 14 s): server 34.96 ms/step server 35.02 ms/step server 34.55 ms/step server 34.59 ms/step 
+11-14 09:30:54 [hip 7] u4.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:32:14 [hip 7] u4.75-a: done in 80 s (load 12 s): server 35.04 ms/step server 34.90 ms/step server 36.56 ms/step server 34.91 ms/step 
+11-14 09:32:14 [hip 7] u5-s: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:33:05 [hip 7] u5-s: done in 51 s (load 12 s): server 34.64 ms/step server 34.42 ms/step server 35.04 ms/step server 34.98 ms/step 
+11-14 09:33:05 [hip 7] u4.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:34:29 [hip 7] u4.625-a: done in 84 s (load 14 s): server 33.49 ms/step server 34.64 ms/step server 34.66 ms/step server 34.67 ms/step 
+11-14 09:34:29 [hip 7] u5.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:35:23 [hip 7] u5.25-s: done in 54 s (load 12 s): server 35.71 ms/step server 36.89 ms/step server 35.78 ms/step server 42.01 ms/step 
+11-14 09:35:24 [hip 7] u4.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:36:42 [hip 7] u4.5-a: done in 78 s (load 14 s): server 31.90 ms/step server 33.09 ms/step server 33.07 ms/step server 33.38 ms/step 
+11-14 09:36:42 [hip 7] u5.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:37:44 [hip 7] u5.5-s: done in 62 s (load 20 s): server 36.55 ms/step server 36.59 ms/step server 36.60 ms/step server 36.65 ms/step 
+11-14 09:37:44 [hip 7] u4.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:39:01 [hip 7] u4.375-a: done in 77 s (load 12 s): server 32.09 ms/step server 33.24 ms/step server 35.83 ms/step server 33.25 ms/step 
+11-14 09:39:01 [hip 7] u5.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:39:56 [hip 7] u5.75-s: done in 55 s (load 12 s): server 37.79 ms/step server 37.83 ms/step server 37.85 ms/step server 38.64 ms/step 
+11-14 09:39:56 [hip 7] u4.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:41:10 [hip 7] u4.25-a: done in 74 s (load 10 s): server 30.91 ms/step server 32.05 ms/step server 32.06 ms/step server 32.12 ms/step 
+11-14 09:41:10 [hip 7] u6-s: serve /data/q27/packs-mad/q27v3-635bac02-k6-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:42:06 [hip 7] u6-s: done in 55 s (load 12 s): server 39.63 ms/step server 38.65 ms/step server 38.72 ms/step server 38.67 ms/step 
+11-14 09:42:06 [hip 7] u4.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:43:20 [hip 7] u4.125-a: done in 74 s (load 12 s): server 30.42 ms/step server 31.56 ms/step server 31.58 ms/step server 31.61 ms/step 
+11-14 09:43:20 [hip 7] u6.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.25-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:44:20 [hip 7] u6.25-s: done in 60 s (load 13 s): server 52.09 ms/step server 40.17 ms/step server 40.21 ms/step server 40.19 ms/step 
+11-14 09:44:20 [hip 7] u4-a: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:45:32 [hip 7] u4-a: done in 72 s (load 11 s): server 29.61 ms/step server 30.76 ms/step server 30.77 ms/step server 30.78 ms/step 
+11-14 09:45:32 [hip 7] u6.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:46:30 [hip 7] u6.5-s: done in 58 s (load 12 s): server 41.44 ms/step server 41.47 ms/step server 41.48 ms/step server 41.51 ms/step 
+11-14 09:46:30 [hip 7] u3.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:47:42 [hip 7] u3.875-a: done in 72 s (load 10 s): server 29.69 ms/step server 30.83 ms/step server 30.85 ms/step server 31.79 ms/step 
+11-14 09:47:42 [hip 7] u6.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:48:43 [hip 7] u6.75-s: done in 61 s (load 12 s): server 45.68 ms/step server 45.41 ms/step server 42.84 ms/step server 44.03 ms/step 
+11-14 09:48:43 [hip 7] u3.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:49:55 [hip 7] u3.75-a: done in 72 s (load 10 s): server 29.24 ms/step server 31.53 ms/step server 30.40 ms/step server 30.42 ms/step 
+11-14 09:49:55 [hip 7] u7-s: serve /data/q27/packs-mad/q27v3-635bac02-k7-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:50:58 [hip 7] u7-s: done in 63 s (load 14 s): server 44.21 ms/step server 44.24 ms/step server 43.95 ms/step server 43.97 ms/step 
+11-14 09:50:58 [hip 7] u3.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:52:14 [hip 7] u3.625-a: done in 76 s (load 14 s): server 28.74 ms/step server 31.32 ms/step server 30.83 ms/step server 29.83 ms/step 
+11-14 09:52:14 [hip 7] u7.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k7.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 09:53:22 [hip 7] u7.5-s: done in 68 s (load 14 s): server 46.62 ms/step server 46.65 ms/step server 53.56 ms/step server 48.02 ms/step 
+11-14 09:53:22 [hip 7] LISTS DONE: recipes/L-uni-s.txt recipes/L-uni-a.txt recipes/L-uni-b.txt
+11-14 09:53:22 [hip 7] u3.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:54:36 [hip 7] u3.5-a: done in 74 s (load 14 s): server 30.13 ms/step server 29.58 ms/step server 29.24 ms/step server 29.23 ms/step 
+11-14 09:54:36 [hip 7] u3.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:55:45 [hip 7] u3.375-a: done in 69 s (load 10 s): server 27.65 ms/step server 28.78 ms/step server 28.79 ms/step server 28.80 ms/step 
+11-14 09:55:46 [hip 7] u3.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:56:54 [hip 7] u3.25-a: done in 68 s (load 10 s): server 27.29 ms/step server 28.38 ms/step server 28.42 ms/step server 28.44 ms/step 
+11-14 09:56:54 [hip 7] u3.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:58:03 [hip 7] u3.125-a: done in 69 s (load 10 s): server 28.15 ms/step server 28.17 ms/step server 28.21 ms/step server 28.20 ms/step 
+11-14 09:58:03 [hip 7] u3-a: serve /data/q27/packs-mad/q27v3-635bac02-k3-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 09:59:11 [hip 7] u3-a: done in 68 s (load 10 s): server 26.48 ms/step server 33.49 ms/step server 27.59 ms/step server 27.60 ms/step 
+11-14 09:59:11 [hip 7] u2.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:00:18 [hip 7] u2.875-a: done in 67 s (load 10 s): server 26.76 ms/step server 27.80 ms/step server 27.83 ms/step server 27.86 ms/step 
+11-14 10:00:19 [hip 7] u2.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:01:28 [hip 7] u2.75-a: done in 69 s (load 12 s): server 26.58 ms/step server 27.67 ms/step server 27.68 ms/step server 27.72 ms/step 
+11-14 10:01:28 [hip 7] u2.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:02:38 [hip 7] u2.625-a: done in 70 s (load 10 s): server 26.57 ms/step server 27.65 ms/step server 27.54 ms/step server 27.68 ms/step 
+11-14 10:02:38 [hip 7] u2.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+                                                                                                                                                                                                                                                                             11-14 10:34:22 [hip 6] u7.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k7.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:36:10 [hip 6] u7.5-a: done in 107 s (load 22 s): server 46.29 ms/step server 47.48 ms/step server 47.78 ms/step server 47.50 ms/step 
+11-14 10:36:12 [hip 6] u7-a: serve /data/q27/packs-mad/q27v3-635bac02-k7-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:37:51 [hip 6] u7-a: done in 99 s (load 18 s): server 43.61 ms/step server 44.74 ms/step server 44.75 ms/step server 44.77 ms/step 
+11-14 10:37:51 [hip 6] u6.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:39:57 [hip 6] u6.75-a: done in 126 s (load 47 s): server 42.58 ms/step server 43.66 ms/step server 43.68 ms/step server 43.68 ms/step 
+11-14 10:39:57 [hip 6] u6.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:41:36 [hip 6] u6.5-a: done in 99 s (load 22 s): server 41.16 ms/step server 42.36 ms/step server 42.36 ms/step server 42.34 ms/step 
+11-14 10:41:37 [hip 6] u6.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k6.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:43:34 [hip 6] u6.25-a: done in 117 s (load 42 s): server 39.85 ms/step server 41.01 ms/step server 41.01 ms/step server 41.03 ms/step 
+11-14 10:43:34 [hip 6] u6-a: serve /data/q27/packs-mad/q27v3-635bac02-k6-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:45:00 [hip 6] u6-a: done in 86 s (load 13 s): server 38.34 ms/step server 39.53 ms/step server 39.62 ms/step server 39.57 ms/step 
+11-14 10:45:00 [hip 6] u5.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:46:25 [hip 6] u5.75-a: done in 85 s (load 12 s): server 37.59 ms/step server 38.76 ms/step server 38.78 ms/step server 40.70 ms/step 
+11-14 10:46:25 [hip 6] u5.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:47:53 [hip 6] u5.5-a: done in 88 s (load 10 s): server 39.54 ms/step server 46.32 ms/step server 46.56 ms/step server 47.31 ms/step 
+11-14 10:47:53 [hip 6] u5.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:49:35 [hip 6] u5.25-a: done in 102 s (load 10 s): server 50.29 ms/step server 54.25 ms/step server 54.90 ms/step server 52.63 ms/step 
+11-14 10:49:35 [hip 6] u5-a: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:51:13 [hip 6] u5-a: done in 98 s (load 10 s): server 48.28 ms/step server 49.82 ms/step server 51.00 ms/step server 51.39 ms/step 
+11-14 10:51:13 [hip 6] u4.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:52:52 [hip 6] u4.875-a: done in 99 s (load 10 s): server 48.20 ms/step server 49.97 ms/step server 51.08 ms/step server 51.74 ms/step 
+11-14 10:52:52 [hip 6] u4.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:54:29 [hip 6] u4.75-a: done in 97 s (load 10 s): server 47.53 ms/step server 49.26 ms/step server 48.61 ms/step server 49.83 ms/step 
+11-14 10:54:29 [hip 6] u4.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:56:07 [hip 6] u4.625-a: done in 98 s (load 10 s): server 47.51 ms/step server 49.99 ms/step server 49.81 ms/step server 48.09 ms/step 
+11-14 10:56:07 [hip 6] u4.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:57:43 [hip 6] u4.5-a: done in 96 s (load 10 s): server 46.45 ms/step server 48.03 ms/step server 49.66 ms/step server 49.68 ms/step 
+11-14 10:57:43 [hip 6] u4.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:58:54 [hip 7] x-u4.5-c7: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 0, ctx 0, env '')
+11-14 10:59:15 [hip 6] u4.375-a: done in 92 s (load 10 s): server 43.98 ms/step server 48.98 ms/step server 33.54 ms/step server 44.32 ms/step 
+11-14 10:59:16 [hip 6] u4.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 10:59:50 [hip 7] x-u4.5-c7: done in 56 s (load 12 s): server 39.83 ms/step server 32.41 ms/step server 43.07 ms/step server 43.76 ms/step 
+11-14 10:59:50 [hip 7] LISTS DONE: recipes/L-x7.txt
+11-14 11:00:40 [hip 6] u4.25-a: done in 84 s (load 10 s): server 35.53 ms/step server 32.27 ms/step server 32.28 ms/step server 32.27 ms/step 
+11-14 11:00:40 [hip 6] u4.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:00:56 [hip 7] x-u4.5-c7st: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 11:01:42 [hip 7] x-u4.5-c7st: done in 46 s (load 10 s): server 31.92 ms/step server 31.97 ms/step server 31.99 ms/step server 32.02 ms/step 
+11-14 11:01:42 [hip 7] LISTS DONE: recipes/L-x7.txt
+11-14 11:01:55 [hip 6] u4.125-a: done in 75 s (load 12 s): server 30.66 ms/step server 31.79 ms/step server 31.78 ms/step server 31.81 ms/step 
+11-14 11:01:55 [hip 6] u4-a: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:03:07 [hip 6] u4-a: done in 72 s (load 10 s): server 29.76 ms/step server 30.91 ms/step server 30.93 ms/step server 30.94 ms/step 
+11-14 11:03:07 [hip 6] u3.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:04:19 [hip 6] u3.875-a: done in 72 s (load 10 s): server 29.86 ms/step server 30.99 ms/step server 31.01 ms/step server 31.02 ms/step 
+11-14 11:04:19 [hip 6] u3.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:05:30 [hip 6] u3.75-a: done in 71 s (load 10 s): server 29.37 ms/step server 30.53 ms/step server 30.55 ms/step server 30.56 ms/step 
+11-14 11:05:30 [hip 6] u3.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:06:40 [hip 6] u3.625-a: done in 70 s (load 10 s): server 28.77 ms/step server 29.93 ms/step server 29.94 ms/step server 29.95 ms/step 
+11-14 11:06:40 [hip 6] u3.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:07:50 [hip 6] u3.5-a: done in 70 s (load 11 s): server 28.17 ms/step server 29.31 ms/step server 29.38 ms/step server 29.32 ms/step 
+11-14 11:07:50 [hip 6] u3.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:08:59 [hip 6] u3.375-a: done in 69 s (load 10 s): server 27.78 ms/step server 28.88 ms/step server 28.91 ms/step server 28.90 ms/step 
+11-14 11:08:59 [hip 6] u3.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:10:11 [hip 6] u3.25-a: done in 72 s (load 14 s): server 27.46 ms/step server 28.55 ms/step server 28.54 ms/step server 28.58 ms/step 
+11-14 11:10:11 [hip 6] u3.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k3.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:11:19 [hip 6] u3.125-a: done in 68 s (load 10 s): server 27.11 ms/step server 28.19 ms/step server 28.17 ms/step server 28.18 ms/step 
+11-14 11:11:19 [hip 6] u3-a: serve /data/q27/packs-mad/q27v3-635bac02-k3-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:12:32 [hip 6] u3-a: done in 73 s (load 17 s): server 26.49 ms/step server 27.57 ms/step server 27.58 ms/step server 27.60 ms/step 
+11-14 11:12:32 [hip 6] u2.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:13:47 [hip 6] u2.875-a: done in 75 s (load 18 s): server 26.69 ms/step server 27.75 ms/step server 27.72 ms/step server 27.75 ms/step 
+11-14 11:13:47 [hip 6] u2.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:14:58 [hip 6] u2.75-a: done in 71 s (load 15 s): server 26.55 ms/step server 27.62 ms/step server 27.65 ms/step server 27.66 ms/step 
+11-14 11:14:58 [hip 6] u2.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:16:11 [hip 6] u2.625-a: done in 73 s (load 16 s): server 26.47 ms/step server 27.54 ms/step server 27.58 ms/step server 27.60 ms/step 
+11-14 11:16:11 [hip 6] u2.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:17:19 [hip 6] u2.5-a: done in 68 s (load 12 s): server 26.40 ms/step server 27.42 ms/step server 27.45 ms/step server 27.47 ms/step 
+11-14 11:17:20 [hip 6] u2.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:18:38 [hip 6] u2.375-a: done in 78 s (load 22 s): server 26.33 ms/step server 27.39 ms/step server 27.42 ms/step server 27.43 ms/step 
+11-14 11:18:38 [hip 6] u2.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:19:51 [hip 6] u2.25-a: done in 72 s (load 16 s): server 26.22 ms/step server 27.28 ms/step server 27.31 ms/step server 27.40 ms/step 
+11-14 11:19:51 [hip 6] u2.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k2.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:20:57 [hip 6] u2.125-a: done in 66 s (load 10 s): server 26.27 ms/step server 27.34 ms/step server 27.40 ms/step server 27.40 ms/step 
+11-14 11:20:57 [hip 6] u2-a: serve /data/q27/packs-mad/q27v3-635bac02-k2-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:22:00 [hip 6] u2-a: done in 63 s (load 8 s): server 25.22 ms/step server 26.31 ms/step server 26.34 ms/step server 26.34 ms/step 
+11-14 11:22:00 [hip 6] u1.875-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:23:10 [hip 6] u1.875-a: done in 70 s (load 14 s): server 26.18 ms/step server 27.27 ms/step server 27.30 ms/step server 27.31 ms/step 
+11-14 11:23:11 [hip 6] u1.75-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:24:15 [hip 6] u1.75-a: done in 64 s (load 8 s): server 26.13 ms/step server 27.21 ms/step server 27.28 ms/step server 27.27 ms/step 
+11-14 11:24:15 [hip 6] u1.625-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:25:21 [hip 6] u1.625-a: done in 66 s (load 10 s): server 26.06 ms/step server 27.16 ms/step server 27.17 ms/step server 27.17 ms/step 
+11-14 11:25:22 [hip 6] u1.5-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:26:28 [hip 6] u1.5-a: done in 66 s (load 10 s): server 25.97 ms/step server 27.04 ms/step server 27.17 ms/step server 27.15 ms/step 
+11-14 11:26:28 [hip 6] u1.375-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:27:34 [hip 6] u1.375-a: done in 66 s (load 10 s): server 25.92 ms/step server 27.02 ms/step server 27.04 ms/step server 27.05 ms/step 
+11-14 11:27:34 [hip 6] u1.25-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:28:44 [hip 6] u1.25-a: done in 70 s (load 14 s): server 25.80 ms/step server 26.86 ms/step server 27.37 ms/step server 26.94 ms/step 
+11-14 11:28:44 [hip 6] u1.125-a: serve /data/q27/packs-mad/q27v3-635bac02-k1.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:29:50 [hip 6] u1.125-a: done in 66 s (load 10 s): server 25.75 ms/step server 27.35 ms/step server 26.84 ms/step server 26.85 ms/step 
+11-14 11:29:50 [hip 6] u1-a: serve /data/q27/packs-mad/q27v3-635bac02-k1-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:30:53 [hip 6] u1-a: done in 63 s (load 8 s): server 24.87 ms/step server 25.99 ms/step server 26.02 ms/step server 26.06 ms/step 
+11-14 11:30:53 [hip 6] u2.5-c1: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:32:00 [hip 6] u2.5-c1: done in 67 s (load 10 s): server 26.69 ms/step server 28.91 ms/step server 27.73 ms/step server 27.74 ms/step 
+11-14 11:32:00 [hip 6] m-h1-a: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:32:02 [hip 6] m-h1-a: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:32:03 [hip 6] m-h2-a: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:32:05 [hip 6] m-h2-a: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:32:05 [hip 6] m-h3-a: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:32:07 [hip 6] m-h3-a: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:32:07 [hip 6] m-h4-a: serve /data/q27/w159/packs/m-h4.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:33:08 [hip 6] m-h4-a: done in 61 s (load 8 s): server 23.92 ms/step server 25.10 ms/step server 25.10 ms/step server 25.14 ms/step 
+11-14 11:33:08 [hip 6] m-h5-a: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:33:10 [hip 6] m-h5-a: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:33:11 [hip 6] u4-c1: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:34:22 [hip 6] u4-c1: done in 71 s (load 10 s): server 29.70 ms/step server 30.87 ms/step server 30.87 ms/step server 30.86 ms/step 
+11-14 11:34:22 [hip 6] m-h5-b: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:34:24 [hip 6] m-h5-b: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:34:24 [hip 6] m-h4-b: serve /data/q27/w159/packs/m-h4.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:35:26 [hip 6] m-h4-b: done in 62 s (load 8 s): server 23.95 ms/step server 25.12 ms/step server 25.14 ms/step server 25.17 ms/step 
+11-14 11:35:26 [hip 6] m-h3-b: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:35:28 [hip 6] m-h3-b: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:35:28 [hip 6] m-h2-b: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:35:30 [hip 6] m-h2-b: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:35:30 [hip 6] m-h1-b: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:35:32 [hip 6] m-h1-b: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:35:33 [hip 6] u2.5-c2: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:36:43 [hip 6] u2.5-c2: done in 70 s (load 14 s): server 26.55 ms/step server 27.64 ms/step server 27.65 ms/step server 27.69 ms/step 
+11-14 11:36:44 [hip 6] m-h1-s: serve /data/q27/w159/packs/m-h1.rad (stamp 1, ctx 0, env '')
+11-14 11:36:46 [hip 6] m-h1-s: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:36:46 [hip 6] m-h2-s: serve /data/q27/w159/packs/m-h2.rad (stamp 1, ctx 0, env '')
+11-14 11:36:48 [hip 6] m-h2-s: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:36:48 [hip 6] m-h3-s: serve /data/q27/w159/packs/m-h3.rad (stamp 1, ctx 0, env '')
+11-14 11:36:50 [hip 6] m-h3-s: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:36:50 [hip 6] m-h4-s: serve /data/q27/w159/packs/m-h4.rad (stamp 1, ctx 0, env '')
+11-14 11:37:29 [hip 6] m-h4-s: done in 39 s (load 10 s): server 24.00 ms/step server 24.07 ms/step server 24.09 ms/step server 24.83 ms/step 
+11-14 11:37:29 [hip 6] m-h5-s: serve /data/q27/w159/packs/m-h5.rad (stamp 1, ctx 0, env '')
+11-14 11:37:31 [hip 6] m-h5-s: no health (E qwen35_exl3: rad_arch_declare returned container format error)
+11-14 11:37:31 [hip 6] u1-b: serve /data/q27/packs-mad/q27v3-635bac02-k1-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:38:33 [hip 6] u1-b: done in 62 s (load 8 s): server 24.81 ms/step server 25.91 ms/step server 25.95 ms/step server 25.97 ms/step 
+11-14 11:38:34 [hip 6] u1.125-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:39:37 [hip 6] u1.125-b: done in 63 s (load 8 s): server 25.74 ms/step server 26.80 ms/step server 26.83 ms/step server 26.89 ms/step 
+11-14 11:39:37 [hip 6] u1.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:40:41 [hip 6] u1.25-b: done in 64 s (load 8 s): server 25.84 ms/step server 26.94 ms/step server 26.93 ms/step server 26.95 ms/step 
+11-14 11:40:41 [hip 6] u1.375-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:41:45 [hip 6] u1.375-b: done in 64 s (load 8 s): server 25.98 ms/step server 27.08 ms/step server 27.09 ms/step server 27.10 ms/step 
+11-14 11:41:46 [hip 6] u1.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:42:50 [hip 6] u1.5-b: done in 64 s (load 8 s): server 26.04 ms/step server 27.12 ms/step server 27.15 ms/step server 27.17 ms/step 
+11-14 11:42:50 [hip 6] u1.625-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:43:54 [hip 6] u1.625-b: done in 64 s (load 8 s): server 26.15 ms/step server 27.22 ms/step server 27.21 ms/step server 27.25 ms/step 
+11-14 11:43:54 [hip 6] u1.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:44:59 [hip 6] u1.75-b: done in 65 s (load 9 s): server 26.18 ms/step server 27.27 ms/step server 27.30 ms/step server 27.26 ms/step 
+11-14 11:44:59 [hip 6] u1.875-b: serve /data/q27/packs-mad/q27v3-635bac02-k1.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:46:04 [hip 6] u1.875-b: done in 65 s (load 8 s): server 26.23 ms/step server 27.35 ms/step server 27.37 ms/step server 27.38 ms/step 
+11-14 11:46:04 [hip 6] u2-b: serve /data/q27/packs-mad/q27v3-635bac02-k2-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:47:07 [hip 6] u2-b: done in 63 s (load 8 s): server 25.30 ms/step server 26.39 ms/step server 26.41 ms/step server 26.41 ms/step 
+11-14 11:47:07 [hip 6] u2.125-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:48:12 [hip 6] u2.125-b: done in 65 s (load 8 s): server 26.41 ms/step server 27.51 ms/step server 27.53 ms/step server 27.54 ms/step 
+11-14 11:48:12 [hip 6] u2.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:49:19 [hip 6] u2.25-b: done in 67 s (load 10 s): server 26.48 ms/step server 27.53 ms/step server 27.58 ms/step server 27.62 ms/step 
+11-14 11:49:19 [hip 6] u2.375-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:50:24 [hip 6] u2.375-b: done in 65 s (load 8 s): server 26.62 ms/step server 27.65 ms/step server 27.68 ms/step server 27.71 ms/step 
+11-14 11:50:25 [hip 6] u2.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:51:33 [hip 6] u2.5-b: done in 68 s (load 8 s): server 29.02 ms/step server 27.70 ms/step server 27.73 ms/step server 27.71 ms/step 
+11-14 11:51:33 [hip 6] u2.625-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:52:38 [hip 6] u2.625-b: done in 65 s (load 8 s): server 26.84 ms/step server 27.86 ms/step server 27.90 ms/step server 27.92 ms/step 
+11-14 11:52:39 [hip 6] u2.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:53:44 [hip 6] u2.75-b: done in 65 s (load 8 s): server 26.90 ms/step server 27.93 ms/step server 28.01 ms/step server 28.01 ms/step 
+11-14 11:53:44 [hip 6] u2.875-b: serve /data/q27/packs-mad/q27v3-635bac02-k2.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:54:52 [hip 6] u2.875-b: done in 68 s (load 10 s): server 27.00 ms/step server 28.04 ms/step server 28.13 ms/step server 28.13 ms/step 
+11-14 11:54:52 [hip 6] u3-b: serve /data/q27/packs-mad/q27v3-635bac02-k3-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:55:59 [hip 6] u3-b: done in 67 s (load 10 s): server 26.73 ms/step server 27.75 ms/step server 27.81 ms/step server 27.79 ms/step 
+11-14 11:55:59 [hip 6] u3.125-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:57:07 [hip 6] u3.125-b: done in 68 s (load 10 s): server 27.29 ms/step server 28.28 ms/step server 28.36 ms/step server 28.37 ms/step 
+11-14 11:57:07 [hip 6] u3.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:58:16 [hip 6] u3.25-b: done in 68 s (load 10 s): server 27.49 ms/step server 28.59 ms/step server 28.61 ms/step server 28.62 ms/step 
+11-14 11:58:16 [hip 6] u3.375-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 11:59:25 [hip 6] u3.375-b: done in 69 s (load 10 s): server 27.84 ms/step server 28.90 ms/step server 28.92 ms/step server 28.94 ms/step 
+11-14 11:59:25 [hip 6] u3.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:00:34 [hip 6] u3.5-b: done in 69 s (load 10 s): server 28.18 ms/step server 29.31 ms/step server 29.31 ms/step server 29.32 ms/step 
+11-14 12:00:34 [hip 6] u3.625-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.625-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:01:45 [hip 6] u3.625-b: done in 71 s (load 11 s): server 28.76 ms/step server 29.96 ms/step server 29.92 ms/step server 29.93 ms/step 
+11-14 12:01:45 [hip 6] u3.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.75-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:02:56 [hip 6] u3.75-b: done in 71 s (load 10 s): server 29.35 ms/step server 30.51 ms/step server 30.52 ms/step server 30.54 ms/step 
+11-14 12:02:56 [hip 6] u3.875-b: serve /data/q27/packs-mad/q27v3-635bac02-k3.875-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:04:07 [hip 6] u3.875-b: done in 71 s (load 10 s): server 29.84 ms/step server 30.99 ms/step server 30.99 ms/step server 31.00 ms/step 
+11-14 12:04:08 [hip 6] u4-b: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:05:19 [hip 6] u4-b: done in 71 s (load 10 s): server 29.72 ms/step server 30.87 ms/step server 30.88 ms/step server 30.89 ms/step 
+11-14 12:05:19 [hip 6] u4.125-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:06:32 [hip 6] u4.125-b: done in 73 s (load 10 s): server 30.59 ms/step server 31.72 ms/step server 31.73 ms/step server 31.72 ms/step 
+11-14 12:06:32 [hip 6] u4.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:07:45 [hip 6] u4.25-b: done in 73 s (load 10 s): server 31.01 ms/step server 32.15 ms/step server 32.12 ms/step server 32.15 ms/step 
+11-14 12:07:46 [hip 6] u4.375-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:09:01 [hip 6] u4.375-b: done in 75 s (load 10 s): server 32.21 ms/step server 33.37 ms/step server 40.22 ms/step server 33.43 ms/step 
+11-14 12:09:02 [hip 6] u4.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:10:16 [hip 6] u4.5-b: done in 74 s (load 10 s): server 32.03 ms/step server 33.19 ms/step server 33.19 ms/step server 33.18 ms/step 
+11-14 12:10:17 [hip 6] u4.625-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:11:34 [hip 6] u4.625-b: done in 77 s (load 10 s): server 33.62 ms/step server 34.76 ms/step server 34.78 ms/step server 34.78 ms/step 
+11-14 12:11:34 [hip 6] u4.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:12:51 [hip 6] u4.75-b: done in 77 s (load 10 s): server 33.85 ms/step server 34.98 ms/step server 35.00 ms/step server 35.02 ms/step 
+11-14 12:12:51 [hip 6] u4.875-b: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:14:09 [hip 6] u4.875-b: done in 78 s (load 10 s): server 34.37 ms/step server 35.51 ms/step server 35.51 ms/step server 35.53 ms/step 
+11-14 12:14:09 [hip 6] u5-b: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:15:29 [hip 6] u5-b: done in 80 s (load 13 s): server 34.23 ms/step server 35.40 ms/step server 35.41 ms/step server 35.42 ms/step 
+11-14 12:15:30 [hip 6] u5.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:16:51 [hip 6] u5.25-b: done in 81 s (load 12 s): server 35.61 ms/step server 36.75 ms/step server 36.78 ms/step server 36.78 ms/step 
+11-14 12:16:52 [hip 6] u5.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:18:15 [hip 6] u5.5-b: done in 83 s (load 12 s): server 36.37 ms/step server 37.58 ms/step server 37.59 ms/step server 37.60 ms/step 
+11-14 12:18:15 [hip 6] u5.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k5.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:19:44 [hip 6] u5.75-b: done in 89 s (load 12 s): server 37.63 ms/step server 38.79 ms/step server 38.80 ms/step server 38.94 ms/step 
+11-14 12:19:44 [hip 6] u6-b: serve /data/q27/packs-mad/q27v3-635bac02-k6-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:21:10 [hip 6] u6-b: done in 86 s (load 12 s): server 38.43 ms/step server 39.61 ms/step server 39.60 ms/step server 39.61 ms/step 
+11-14 12:21:10 [hip 6] u6.25-b: serve /data/q27/packs-mad/q27v3-635bac02-k6.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:22:38 [hip 6] u6.25-b: done in 88 s (load 12 s): server 39.96 ms/step server 41.15 ms/step server 41.17 ms/step server 41.17 ms/step 
+11-14 12:22:38 [hip 6] u6.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k6.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:24:08 [hip 6] u6.5-b: done in 90 s (load 12 s): server 42.26 ms/step server 42.40 ms/step server 42.41 ms/step server 42.41 ms/step 
+11-14 12:24:09 [hip 6] u6.75-b: serve /data/q27/packs-mad/q27v3-635bac02-k6.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:25:40 [hip 6] u6.75-b: done in 91 s (load 12 s): server 42.62 ms/step server 43.75 ms/step server 43.77 ms/step server 43.77 ms/step 
+11-14 12:25:41 [hip 6] u7-b: serve /data/q27/packs-mad/q27v3-635bac02-k7-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:27:16 [hip 6] u7-b: done in 95 s (load 14 s): server 43.82 ms/step server 45.17 ms/step server 44.92 ms/step server 45.76 ms/step 
+11-14 12:27:16 [hip 6] u7.5-b: serve /data/q27/packs-mad/q27v3-635bac02-k7.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:28:56 [hip 6] u7.5-b: done in 100 s (load 14 s): server 46.44 ms/step server 47.60 ms/step server 47.62 ms/step server 47.62 ms/step 
+11-14 12:28:56 [hip 6] LISTS DONE: recipes/L6-a.txt recipes/L-held.txt recipes/L6-b.txt
+11-14 12:28:56 [hip 6] u1-s: serve /data/q27/packs-mad/q27v3-635bac02-k1-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:29:35 [hip 6] u1-s: done in 39 s (load 8 s): server 29.17 ms/step server 25.26 ms/step server 25.20 ms/step server 25.21 ms/step 
+11-14 12:29:35 [hip 6] u1.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:30:26 [hip 6] u1.125-s: done in 51 s (load 21 s): server 25.80 ms/step server 25.88 ms/step server 25.91 ms/step server 27.35 ms/step 
+11-14 12:30:26 [hip 6] u1.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:31:08 [hip 6] u1.25-s: done in 42 s (load 12 s): server 25.87 ms/step server 25.99 ms/step server 25.96 ms/step server 25.99 ms/step 
+11-14 12:31:09 [hip 6] u4.25-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:32:28 [hip 6] u4.25-c: done in 79 s (load 16 s): server 30.92 ms/step server 32.05 ms/step server 32.07 ms/step server 32.08 ms/step 
+11-14 12:32:28 [hip 6] u1.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:33:08 [hip 6] u1.375-s: done in 40 s (load 10 s): server 26.06 ms/step server 26.08 ms/step server 26.11 ms/step server 26.13 ms/step 
+11-14 12:33:08 [hip 6] u4.375-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:34:27 [hip 6] u4.375-c: done in 79 s (load 14 s): server 32.57 ms/step server 33.32 ms/step server 33.34 ms/step server 33.35 ms/step 
+11-14 12:34:27 [hip 6] u1.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:35:10 [hip 6] u1.5-s: done in 43 s (load 12 s): server 26.07 ms/step server 26.16 ms/step server 26.19 ms/step server 27.15 ms/step 
+11-14 12:35:10 [hip 6] u4.5-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:36:27 [hip 6] u4.5-c: done in 77 s (load 12 s): server 32.17 ms/step server 33.50 ms/step server 33.15 ms/step server 33.15 ms/step 
+11-14 12:36:27 [hip 6] u1.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:37:07 [hip 6] u1.625-s: done in 40 s (load 10 s): server 26.29 ms/step server 26.28 ms/step server 26.32 ms/step server 26.34 ms/step 
+11-14 12:37:07 [hip 6] u4.625-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:38:26 [hip 6] u4.625-c: done in 79 s (load 13 s): server 33.78 ms/step server 34.72 ms/step server 34.75 ms/step server 34.75 ms/step 
+11-14 12:38:26 [hip 6] u1.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:39:07 [hip 6] u1.75-s: done in 41 s (load 11 s): server 26.28 ms/step server 26.34 ms/step server 26.36 ms/step server 26.36 ms/step 
+11-14 12:39:07 [hip 6] u4.75-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:40:28 [hip 6] u4.75-c: done in 81 s (load 14 s): server 33.79 ms/step server 34.95 ms/step server 34.96 ms/step server 34.97 ms/step 
+11-14 12:40:29 [hip 6] u1.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k1.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:41:09 [hip 6] u1.875-s: done in 40 s (load 10 s): server 26.36 ms/step server 26.42 ms/step server 26.45 ms/step server 26.46 ms/step 
+11-14 12:41:09 [hip 6] u4.875-c: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:42:29 [hip 6] u4.875-c: done in 80 s (load 12 s): server 34.34 ms/step server 35.47 ms/step server 35.49 ms/step server 35.50 ms/step 
+11-14 12:42:30 [hip 6] u2-s: serve /data/q27/packs-mad/q27v3-635bac02-k2-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:43:09 [hip 6] u2-s: done in 39 s (load 10 s): server 25.40 ms/step server 25.46 ms/step server 25.51 ms/step server 25.53 ms/step 
+11-14 12:43:09 [hip 6] u5-c: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:44:31 [hip 6] u5-c: done in 82 s (load 14 s): server 34.18 ms/step server 35.36 ms/step server 35.36 ms/step server 35.37 ms/step 
+11-14 12:44:31 [hip 6] u2.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:45:10 [hip 6] u2.125-s: done in 39 s (load 8 s): server 26.56 ms/step server 26.63 ms/step server 26.71 ms/step server 26.69 ms/step 
+11-14 12:45:10 [hip 6] u5.25-c: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:46:32 [hip 6] u5.25-c: done in 82 s (load 12 s): server 35.58 ms/step server 36.73 ms/step server 37.12 ms/step server 36.78 ms/step 
+11-14 12:46:33 [hip 6] u2.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:47:13 [hip 6] u2.25-s: done in 40 s (load 10 s): server 26.68 ms/step server 27.13 ms/step server 26.73 ms/step server 26.76 ms/step 
+11-14 12:47:14 [hip 6] u5.5-c: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:48:37 [hip 6] u5.5-c: done in 83 s (load 12 s): server 36.35 ms/step server 37.55 ms/step server 38.42 ms/step server 37.59 ms/step 
+11-14 12:48:37 [hip 6] LISTS DONE: recipes/L6-c.txt
+11-14 12:48:38 [hip 6] u2.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:49:19 [hip 6] u2.375-s: done in 41 s (load 10 s): server 26.70 ms/step server 26.85 ms/step server 28.28 ms/step server 26.82 ms/step 
+11-14 12:49:19 [hip 6] u2.5-c3: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:50:26 [hip 6] u2.5-c3: done in 67 s (load 10 s): server 26.60 ms/step server 27.66 ms/step server 27.71 ms/step server 27.75 ms/step 
+11-14 12:50:26 [hip 6] u2.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:51:08 [hip 6] u2.5-s: done in 42 s (load 11 s): server 27.13 ms/step server 27.39 ms/step server 26.84 ms/step server 26.87 ms/step 
+11-14 12:51:08 [hip 6] m-h1-a: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:52:04 [hip 6] m-h1-a: done in 56 s (load 8 s): server 24.13 ms/step server 25.23 ms/step server 25.25 ms/step server 25.26 ms/step 
+11-14 12:52:05 [hip 6] u2.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:52:46 [hip 6] u2.625-s: done in 41 s (load 10 s): server 26.87 ms/step server 26.96 ms/step server 26.99 ms/step server 27.00 ms/step 
+11-14 12:52:46 [hip 6] m-h2-a: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:53:51 [hip 6] m-h2-a: done in 65 s (load 10 s): server 29.08 ms/step server 30.31 ms/step server 30.21 ms/step server 30.21 ms/step 
+11-14 12:53:51 [hip 6] u2.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:54:33 [hip 6] u2.75-s: done in 42 s (load 11 s): server 28.94 ms/step server 26.97 ms/step server 26.99 ms/step server 27.03 ms/step 
+11-14 12:54:33 [hip 6] m-h3-a: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:55:53 [hip 6] m-h3-a: done in 80 s (load 12 s): server 37.67 ms/step server 39.09 ms/step server 39.66 ms/step server 38.93 ms/step 
+11-14 12:55:53 [hip 6] u2.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k2.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:56:37 [hip 6] u2.875-s: done in 44 s (load 12 s): server 27.04 ms/step server 27.10 ms/step server 27.42 ms/step server 27.18 ms/step 
+11-14 12:56:37 [hip 6] m-h5-a: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:57:45 [hip 6] m-h5-a: done in 68 s (load 12 s): server 29.59 ms/step server 30.36 ms/step server 30.37 ms/step server 30.39 ms/step 
+11-14 12:57:45 [hip 6] u3-s: serve /data/q27/packs-mad/q27v3-635bac02-k3-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 12:58:26 [hip 6] u3-s: done in 41 s (load 10 s): server 26.81 ms/step server 26.89 ms/step server 26.91 ms/step server 26.93 ms/step 
+11-14 12:58:26 [hip 6] u4-c2: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 12:59:37 [hip 6] u4-c2: done in 71 s (load 10 s): server 29.70 ms/step server 30.85 ms/step server 30.86 ms/step server 30.87 ms/step 
+11-14 12:59:38 [hip 6] u3.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:00:19 [hip 6] u3.125-s: done in 41 s (load 10 s): server 27.39 ms/step server 27.47 ms/step server 27.50 ms/step server 27.54 ms/step 
+11-14 13:00:19 [hip 6] m-h5-b: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env '')
+11-14 13:01:23 [hip 6] m-h5-b: done in 64 s (load 8 s): server 29.16 ms/step server 30.38 ms/step server 30.42 ms/step server 30.43 ms/step 
+11-14 13:01:23 [hip 6] u3.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:02:05 [hip 6] u3.25-s: done in 42 s (load 10 s): server 27.63 ms/step server 27.70 ms/step server 27.71 ms/step server 27.73 ms/step 
+11-14 13:02:05 [hip 6] m-h3-b: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env '')
+11-14 13:03:24 [hip 6] m-h3-b: done in 79 s (load 10 s): server 37.65 ms/step server 38.84 ms/step server 38.86 ms/step server 38.87 ms/step 
+11-14 13:03:24 [hip 6] u3.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:04:07 [hip 6] u3.375-s: done in 43 s (load 11 s): server 27.98 ms/step server 28.04 ms/step server 28.05 ms/step server 28.09 ms/step 
+11-14 13:04:07 [hip 6] m-h2-b: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env '')
+11-14 13:05:10 [hip 6] m-h2-b: done in 63 s (load 8 s): server 28.96 ms/step server 30.22 ms/step server 30.21 ms/step server 30.21 ms/step 
+11-14 13:05:10 [hip 6] u3.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:05:53 [hip 6] u3.5-s: done in 43 s (load 10 s): server 28.40 ms/step server 28.44 ms/step server 28.46 ms/step server 28.46 ms/step 
+11-14 13:05:53 [hip 6] m-h1-b: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env '')
+11-14 13:06:50 [hip 6] m-h1-b: done in 57 s (load 8 s): server 24.16 ms/step server 25.24 ms/step server 25.24 ms/step server 25.28 ms/step 
+11-14 13:06:50 [hip 6] u3.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.625-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:07:33 [hip 6] u3.625-s: done in 43 s (load 10 s): server 28.99 ms/step server 29.05 ms/step server 29.05 ms/step server 29.06 ms/step 
+11-14 13:07:33 [hip 6] u2.5-c4: serve /data/q27/packs-mad/q27v3-635bac02-k2.5-mad-s6c57a3d1.rad (stamp 0, ctx 0,8k, env '')
+11-14 13:08:38 [hip 6] u2.5-c4: done in 65 s (load 8 s): server 26.60 ms/step server 27.64 ms/step server 27.68 ms/step server 27.71 ms/step 
+11-14 13:08:38 [hip 6] u3.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.75-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:09:22 [hip 6] u3.75-s: done in 44 s (load 10 s): server 29.57 ms/step server 29.61 ms/step server 29.63 ms/step server 29.64 ms/step 
+11-14 13:09:22 [hip 6] m-h1-s: serve /data/q27/w159/packs/m-h1.rad (stamp 1, ctx 0, env '')
+11-14 13:09:58 [hip 6] m-h1-s: done in 36 s (load 8 s): server 24.26 ms/step server 24.34 ms/step server 24.37 ms/step server 24.41 ms/step 
+11-14 13:09:59 [hip 6] u3.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k3.875-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:10:43 [hip 6] u3.875-s: done in 44 s (load 10 s): server 30.00 ms/step server 30.07 ms/step server 30.08 ms/step server 30.11 ms/step 
+11-14 13:10:43 [hip 6] m-h2-s: serve /data/q27/w159/packs/m-h2.rad (stamp 1, ctx 0, env '')
+11-14 13:11:24 [hip 6] m-h2-s: done in 41 s (load 8 s): server 29.17 ms/step server 29.21 ms/step server 29.22 ms/step server 29.23 ms/step 
+11-14 13:11:25 [hip 6] u4-s: serve /data/q27/packs-mad/q27v3-635bac02-k4-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:12:09 [hip 6] u4-s: done in 44 s (load 10 s): server 29.92 ms/step server 29.97 ms/step server 29.98 ms/step server 30.00 ms/step 
+11-14 13:12:09 [hip 6] m-h3-s: serve /data/q27/w159/packs/m-h3.rad (stamp 1, ctx 0, env '')
+11-14 13:13:01 [hip 6] m-h3-s: done in 52 s (load 10 s): server 37.89 ms/step server 37.94 ms/step server 37.96 ms/step server 37.97 ms/step 
+11-14 13:13:01 [hip 6] u4.125-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.125-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:13:46 [hip 6] u4.125-s: done in 45 s (load 11 s): server 30.77 ms/step server 30.83 ms/step server 30.85 ms/step server 30.86 ms/step 
+11-14 13:13:47 [hip 6] m-h5-s: serve /data/q27/w159/packs/m-h5.rad (stamp 1, ctx 0, env '')
+11-14 13:14:28 [hip 6] m-h5-s: done in 41 s (load 8 s): server 29.33 ms/step server 29.39 ms/step server 29.41 ms/step server 29.44 ms/step 
+11-14 13:14:28 [hip 6] LISTS DONE: recipes/L-held2.txt
+11-14 13:14:28 [hip 6] u4.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:15:14 [hip 6] u4.25-s: done in 46 s (load 10 s): server 31.20 ms/step server 31.26 ms/step server 31.28 ms/step server 31.29 ms/step 
+11-14 13:15:14 [hip 6] u4.375-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.375-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:16:01 [hip 6] u4.375-s: done in 47 s (load 10 s): server 32.43 ms/step server 32.48 ms/step server 32.49 ms/step server 32.50 ms/step 
+11-14 13:16:01 [hip 6] u4.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.5-mad-s6c57a3d1.rad (stamp 1, ctx 0, env '')
+11-14 13:16:47 [hip 6] u4.5-s: done in 46 s (load 10 s): server 32.22 ms/step server 32.26 ms/step server 32.28 ms/step server 32.29 ms/step 
+11-14 13:16:48 [hip 6] u4.625-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.625-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:17:36 [hip 6] u4.625-s: done in 48 s (load 10 s): server 33.80 ms/step server 33.85 ms/step server 33.87 ms/step server 33.87 ms/step 
+11-14 13:17:36 [hip 6] u4.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:18:24 [hip 6] u4.75-s: done in 48 s (load 10 s): server 34.03 ms/step server 34.07 ms/step server 34.09 ms/step server 34.11 ms/step 
+11-14 13:18:24 [hip 6] u4.875-s: serve /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:19:13 [hip 6] u4.875-s: done in 49 s (load 10 s): server 34.58 ms/step server 34.61 ms/step server 34.63 ms/step server 34.64 ms/step 
+11-14 13:19:13 [hip 6] u5-s: serve /data/q27/packs-mad/q27v3-635bac02-k5-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:20:02 [hip 6] u5-s: done in 49 s (load 10 s): server 34.44 ms/step server 34.49 ms/step server 34.50 ms/step server 34.50 ms/step 
+11-14 13:20:02 [hip 6] u5.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.25-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:20:52 [hip 6] u5.25-s: done in 50 s (load 10 s): server 35.80 ms/step server 35.85 ms/step server 35.87 ms/step server 35.88 ms/step 
+11-14 13:20:53 [hip 6] u5.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:21:44 [hip 6] u5.5-s: done in 51 s (load 10 s): server 36.58 ms/step server 36.64 ms/step server 36.64 ms/step server 36.66 ms/step 
+11-14 13:21:44 [hip 6] u5.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k5.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:22:38 [hip 6] u5.75-s: done in 54 s (load 12 s): server 37.85 ms/step server 37.91 ms/step server 37.92 ms/step server 37.94 ms/step 
+11-14 13:22:38 [hip 6] u6-s: serve /data/q27/packs-mad/q27v3-635bac02-k6-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:23:33 [hip 6] u6-s: done in 55 s (load 12 s): server 38.65 ms/step server 38.70 ms/step server 38.71 ms/step server 38.72 ms/step 
+11-14 13:23:34 [hip 6] u6.25-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.25-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:24:30 [hip 6] u6.25-s: done in 56 s (load 12 s): server 40.18 ms/step server 40.23 ms/step server 40.24 ms/step server 40.26 ms/step 
+11-14 13:24:30 [hip 6] u6.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:25:28 [hip 6] u6.5-s: done in 58 s (load 12 s): server 41.49 ms/step server 41.52 ms/step server 41.54 ms/step server 41.56 ms/step 
+11-14 13:25:29 [hip 6] u6.75-s: serve /data/q27/packs-mad/q27v3-635bac02-k6.75-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:26:28 [hip 6] u6.75-s: done in 59 s (load 12 s): server 42.86 ms/step server 42.89 ms/step server 42.90 ms/step server 42.92 ms/step 
+11-14 13:26:28 [hip 6] u7-s: serve /data/q27/packs-mad/q27v3-635bac02-k7-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:27:29 [hip 6] u7-s: done in 61 s (load 12 s): server 43.96 ms/step server 43.99 ms/step server 44.01 ms/step server 44.02 ms/step 
+11-14 13:27:29 [hip 6] u7.5-s: serve /data/q27/packs-mad/q27v3-635bac02-k7.5-mad.rad (stamp 1, ctx 0, env '')
+11-14 13:28:32 [hip 6] u7.5-s: done in 63 s (load 12 s): server 46.66 ms/step server 46.70 ms/step server 46.72 ms/step server 46.73 ms/step 
+11-14 13:28:32 [hip 6] ab-T4: serve /data/q27/w159/packs/ab-T4.rad (stamp 1, ctx 0, env '')
+11-14 13:29:10 [hip 6] ab-T4: done in 37 s (load 8 s): server 25.20 ms/step server 25.25 ms/step server 25.31 ms/step server 25.33 ms/step 
+11-14 13:29:10 [hip 6] ab-T5: serve /data/q27/w159/packs/ab-T5.rad (stamp 1, ctx 0, env '')
+11-14 13:29:47 [hip 6] ab-T5: done in 37 s (load 8 s): server 25.18 ms/step server 25.23 ms/step server 25.28 ms/step server 25.29 ms/step 
+11-14 13:29:47 [hip 6] e-t4: serve /data/q27/w159/packs/e-t4.rad (stamp 1, ctx 0, env '')
+11-14 13:30:22 [hip 6] e-t4: done in 35 s (load 6 s): server 25.02 ms/step server 25.10 ms/step server 25.12 ms/step server 25.15 ms/step 
+11-14 13:30:23 [hip 6] e-t1.5: serve /data/q27/w159/packs/e-t1.5.rad (stamp 1, ctx 0, env '')
+11-14 13:30:58 [hip 6] e-t1.5: done in 35 s (load 6 s): server 25.08 ms/step server 25.12 ms/step server 25.14 ms/step server 25.15 ms/step 
+11-14 13:30:58 [hip 6] e-t2.5: serve /data/q27/w159/packs/e-t2.5.rad (stamp 1, ctx 0, env '')
+11-14 13:31:33 [hip 6] e-t2.5: done in 35 s (load 6 s): server 25.07 ms/step server 25.11 ms/step server 25.13 ms/step server 25.17 ms/step 
+11-14 13:31:33 [hip 6] e-t6.5m: serve /data/q27/w159/packs/e-t6.5m.rad (stamp 1, ctx 0, env '')
+11-14 13:32:08 [hip 6] e-t6.5m: done in 35 s (load 6 s): server 25.05 ms/step server 25.11 ms/step server 25.13 ms/step server 25.15 ms/step 
+11-14 13:32:09 [hip 6] e-t8m: serve /data/q27/w159/packs/e-t8m.rad (stamp 1, ctx 0, env '')
+11-14 13:32:46 [hip 6] e-t8m: done in 37 s (load 8 s): server 25.02 ms/step server 25.07 ms/step server 25.10 ms/step server 25.14 ms/step 
+11-14 13:32:46 [hip 6] h-u1: serve /data/q27/w159/packs/h-u1.rad (stamp 1, ctx 0, env '')
+11-14 13:33:19 [hip 6] h-u1: done in 33 s (load 6 s): server 22.77 ms/step server 22.82 ms/step server 22.85 ms/step server 22.89 ms/step 
+11-14 13:33:19 [hip 6] h-u1.125: serve /data/q27/w159/packs/h-u1.125.rad (stamp 1, ctx 0, env '')
+11-14 13:33:52 [hip 6] h-u1.125: done in 33 s (load 6 s): server 22.90 ms/step server 22.91 ms/step server 22.96 ms/step server 22.95 ms/step 
+11-14 13:33:52 [hip 6] h-u1.25: serve /data/q27/w159/packs/h-u1.25.rad (stamp 1, ctx 0, env '')
+11-14 13:34:31 [hip 6] h-u1.25: done in 39 s (load 12 s): server 22.78 ms/step server 22.81 ms/step server 22.85 ms/step server 22.88 ms/step 
+11-14 13:34:31 [hip 6] h-u1.375: serve /data/q27/w159/packs/h-u1.375.rad (stamp 1, ctx 0, env '')
+11-14 13:35:06 [hip 6] h-u1.375: done in 35 s (load 8 s): server 22.79 ms/step server 22.83 ms/step server 22.88 ms/step server 22.92 ms/step 
+11-14 13:35:06 [hip 6] h-u1.5: serve /data/q27/w159/packs/h-u1.5.rad (stamp 1, ctx 0, env '')
+11-14 13:35:45 [hip 6] h-u1.5: done in 39 s (load 12 s): server 22.76 ms/step server 22.77 ms/step server 22.83 ms/step server 22.84 ms/step 
+11-14 13:35:45 [hip 6] h-u1.625: serve /data/q27/w159/packs/h-u1.625.rad (stamp 1, ctx 0, env '')
+11-14 13:36:22 [hip 6] h-u1.625: done in 37 s (load 10 s): server 22.79 ms/step server 22.83 ms/step server 22.85 ms/step server 23.16 ms/step 
+11-14 13:36:22 [hip 6] h-u1.75: serve /data/q27/w159/packs/h-u1.75.rad (stamp 1, ctx 0, env '')
+11-14 13:36:57 [hip 6] h-u1.75: done in 35 s (load 8 s): server 22.73 ms/step server 22.82 ms/step server 22.77 ms/step server 22.81 ms/step 
+11-14 13:36:57 [hip 6] h-u1.875: serve /data/q27/w159/packs/h-u1.875.rad (stamp 1, ctx 0, env '')
+11-14 13:37:36 [hip 6] h-u1.875: done in 39 s (load 12 s): server 22.71 ms/step server 22.76 ms/step server 22.81 ms/step server 22.81 ms/step 
+11-14 13:37:36 [hip 6] h-u2: serve /data/q27/w159/packs/h-u2.rad (stamp 1, ctx 0, env '')
+11-14 13:38:11 [hip 6] h-u2: done in 35 s (load 8 s): server 22.68 ms/step server 22.74 ms/step server 22.77 ms/step server 22.84 ms/step 
+11-14 13:38:11 [hip 6] h-u2.125: serve /data/q27/w159/packs/h-u2.125.rad (stamp 1, ctx 0, env '')
+11-14 13:38:50 [hip 6] h-u2.125: done in 39 s (load 12 s): server 22.80 ms/step server 22.84 ms/step server 22.86 ms/step server 22.90 ms/step 
+11-14 13:38:50 [hip 6] h-u2.25: serve /data/q27/w159/packs/h-u2.25.rad (stamp 1, ctx 0, env '')
+11-14 13:39:27 [hip 6] h-u2.25: done in 37 s (load 10 s): server 22.80 ms/step server 22.85 ms/step server 22.88 ms/step server 22.90 ms/step 
+11-14 13:39:27 [hip 6] h-u2.375: serve /data/q27/w159/packs/h-u2.375.rad (stamp 1, ctx 0, env '')
+11-14 13:40:02 [hip 6] h-u2.375: done in 35 s (load 8 s): server 22.79 ms/step server 22.82 ms/step server 22.84 ms/step server 22.88 ms/step 
+11-14 13:40:02 [hip 6] h-u2.5: serve /data/q27/w159/packs/h-u2.5.rad (stamp 1, ctx 0, env '')
+11-14 13:40:39 [hip 6] h-u2.5: done in 37 s (load 10 s): server 22.80 ms/step server 22.85 ms/step server 22.89 ms/step server 22.91 ms/step 
+11-14 13:40:39 [hip 6] h-u2.625: serve /data/q27/w159/packs/h-u2.625.rad (stamp 1, ctx 0, env '')
+11-14 13:41:16 [hip 6] h-u2.625: done in 37 s (load 10 s): server 22.82 ms/step server 22.89 ms/step server 22.90 ms/step server 22.92 ms/step 
+11-14 13:41:16 [hip 6] h-u2.75: serve /data/q27/w159/packs/h-u2.75.rad (stamp 1, ctx 0, env '')
+11-14 13:41:55 [hip 6] h-u2.75: done in 39 s (load 12 s): server 22.86 ms/step server 22.92 ms/step server 22.96 ms/step server 23.78 ms/step 
+11-14 13:41:55 [hip 6] h-u2.875: serve /data/q27/w159/packs/h-u2.875.rad (stamp 1, ctx 0, env '')
+11-14 13:42:30 [hip 6] h-u2.875: done in 35 s (load 8 s): server 22.87 ms/step server 22.94 ms/step server 22.94 ms/step server 22.96 ms/step 
+11-14 13:42:30 [hip 6] h-u3: serve /data/q27/w159/packs/h-u3.rad (stamp 1, ctx 0, env '')
+11-14 13:43:09 [hip 6] h-u3: done in 39 s (load 13 s): server 22.89 ms/step server 22.90 ms/step server 22.94 ms/step server 22.97 ms/step 
+11-14 13:43:10 [hip 6] h-u3.125: serve /data/q27/w159/packs/h-u3.125.rad (stamp 1, ctx 0, env '')
+11-14 13:43:51 [hip 6] h-u3.125: done in 41 s (load 14 s): server 22.97 ms/step server 23.06 ms/step server 23.08 ms/step server 24.40 ms/step 
+11-14 13:43:51 [hip 6] h-u3.25: serve /data/q27/w159/packs/h-u3.25.rad (stamp 1, ctx 0, env '')
+11-14 13:44:26 [hip 6] h-u3.25: done in 35 s (load 8 s): server 22.96 ms/step server 23.01 ms/step server 23.09 ms/step server 23.07 ms/step 
+11-14 13:44:26 [hip 6] h-u3.375: serve /data/q27/w159/packs/h-u3.375.rad (stamp 1, ctx 0, env '')
+11-14 13:45:05 [hip 6] h-u3.375: done in 39 s (load 12 s): server 22.95 ms/step server 23.08 ms/step server 23.06 ms/step server 23.10 ms/step 
+11-14 13:45:05 [hip 6] h-u3.5: serve /data/q27/w159/packs/h-u3.5.rad (stamp 1, ctx 0, env '')
+11-14 13:45:45 [hip 6] h-u3.5: done in 40 s (load 13 s): server 23.19 ms/step server 23.09 ms/step server 23.13 ms/step server 23.14 ms/step 
+11-14 13:45:45 [hip 6] h-u3.625: serve /data/q27/w159/packs/h-u3.625.rad (stamp 1, ctx 0, env '')
+11-14 13:46:24 [hip 6] h-u3.625: done in 39 s (load 12 s): server 23.08 ms/step server 23.14 ms/step server 23.18 ms/step server 23.19 ms/step 
+11-14 13:46:24 [hip 6] h-u3.75: serve /data/q27/w159/packs/h-u3.75.rad (stamp 1, ctx 0, env '')
+11-14 13:47:03 [hip 6] h-u3.75: done in 39 s (load 12 s): server 23.07 ms/step server 23.13 ms/step server 23.14 ms/step server 23.23 ms/step 
+11-14 13:47:03 [hip 6] h-u3.875: serve /data/q27/w159/packs/h-u3.875.rad (stamp 1, ctx 0, env '')
+11-14 13:47:43 [hip 6] h-u3.875: done in 40 s (load 13 s): server 23.07 ms/step server 23.18 ms/step server 23.18 ms/step server 23.26 ms/step 
+11-14 13:47:43 [hip 6] h-u4: serve /data/q27/w159/packs/h-u4.rad (stamp 1, ctx 0, env '')
+11-14 13:48:16 [hip 6] h-u4: done in 33 s (load 6 s): server 22.99 ms/step server 23.04 ms/step server 23.08 ms/step server 23.10 ms/step 
+11-14 13:48:16 [hip 6] h-u4.125: serve /data/q27/w159/packs/h-u4.125.rad (stamp 1, ctx 0, env '')
+11-14 13:48:51 [hip 6] h-u4.125: done in 35 s (load 8 s): server 23.21 ms/step server 23.27 ms/step server 23.30 ms/step server 23.33 ms/step 
+11-14 13:48:51 [hip 6] h-u4.25: serve /data/q27/w159/packs/h-u4.25.rad (stamp 1, ctx 0, env '')
+11-14 13:49:27 [hip 6] h-u4.25: done in 36 s (load 9 s): server 23.22 ms/step server 23.30 ms/step server 23.32 ms/step server 23.39 ms/step 
+11-14 13:49:27 [hip 6] h-u4.375: serve /data/q27/w159/packs/h-u4.375.rad (stamp 1, ctx 0, env '')
+11-14 13:50:04 [hip 6] h-u4.375: done in 37 s (load 10 s): server 23.28 ms/step server 23.32 ms/step server 23.36 ms/step server 23.45 ms/step 
+11-14 13:50:05 [hip 6] h-u4.5: serve /data/q27/w159/packs/h-u4.5.rad (stamp 1, ctx 0, env '')
+11-14 13:50:40 [hip 6] h-u4.5: done in 35 s (load 8 s): server 23.31 ms/step server 23.36 ms/step server 23.41 ms/step server 23.42 ms/step 
+11-14 13:50:40 [hip 6] h-u4.625: serve /data/q27/w159/packs/h-u4.625.rad (stamp 1, ctx 0, env '')
+11-14 13:51:16 [hip 6] h-u4.625: done in 36 s (load 8 s): server 23.43 ms/step server 23.50 ms/step server 23.53 ms/step server 23.55 ms/step 
+11-14 13:51:16 [hip 6] h-u4.75: serve /data/q27/w159/packs/h-u4.75.rad (stamp 1, ctx 0, env '')
+11-14 13:51:51 [hip 6] h-u4.75: done in 35 s (load 8 s): server 23.39 ms/step server 23.47 ms/step server 23.50 ms/step server 23.58 ms/step 
+11-14 13:51:51 [hip 6] h-u4.875: serve /data/q27/w159/packs/h-u4.875.rad (stamp 1, ctx 0, env '')
+11-14 13:52:27 [hip 6] h-u4.875: done in 36 s (load 8 s): server 23.48 ms/step server 23.54 ms/step server 23.56 ms/step server 23.57 ms/step 
+11-14 13:52:27 [hip 6] h-u5: serve /data/q27/w159/packs/h-u5.rad (stamp 1, ctx 0, env '')
+11-14 13:53:03 [hip 6] h-u5: done in 36 s (load 8 s): server 23.37 ms/step server 23.43 ms/step server 23.49 ms/step server 23.51 ms/step 
+11-14 13:53:03 [hip 6] h-u5.125: serve /data/q27/w159/packs/h-u5.125.rad (stamp 1, ctx 0, env '')
+11-14 13:53:38 [hip 6] h-u5.125: done in 35 s (load 8 s): server 23.51 ms/step server 23.59 ms/step server 23.63 ms/step server 23.67 ms/step 
+11-14 13:53:39 [hip 6] h-u5.25: serve /data/q27/w159/packs/h-u5.25.rad (stamp 1, ctx 0, env '')
+11-14 13:54:14 [hip 6] h-u5.25: done in 35 s (load 8 s): server 23.50 ms/step server 23.62 ms/step server 23.62 ms/step server 23.67 ms/step 
+11-14 13:54:14 [hip 6] h-u5.375: serve /data/q27/w159/packs/h-u5.375.rad (stamp 1, ctx 0, env '')
+11-14 13:54:50 [hip 6] h-u5.375: done in 36 s (load 8 s): server 23.63 ms/step server 24.20 ms/step server 23.73 ms/step server 23.76 ms/step 
+11-14 13:54:50 [hip 6] h-u5.5: serve /data/q27/w159/packs/h-u5.5.rad (stamp 1, ctx 0, env '')
+11-14 13:55:26 [hip 6] h-u5.5: done in 36 s (load 8 s): server 23.51 ms/step server 23.58 ms/step server 23.62 ms/step server 23.71 ms/step 
+11-14 13:55:26 [hip 6] h-u5.625: serve /data/q27/w159/packs/h-u5.625.rad (stamp 1, ctx 0, env '')
+11-14 13:56:02 [hip 6] h-u5.625: done in 36 s (load 8 s): server 25.58 ms/step server 23.70 ms/step server 23.70 ms/step server 23.79 ms/step 
+11-14 13:56:03 [hip 6] h-u5.75: serve /data/q27/w159/packs/h-u5.75.rad (stamp 1, ctx 0, env '')
+11-14 13:56:38 [hip 6] h-u5.75: done in 35 s (load 8 s): server 23.66 ms/step server 23.73 ms/step server 23.78 ms/step server 23.81 ms/step 
+11-14 13:56:38 [hip 6] h-u5.875: serve /data/q27/w159/packs/h-u5.875.rad (stamp 1, ctx 0, env '')
+11-14 13:57:16 [hip 6] h-u5.875: done in 38 s (load 11 s): server 24.19 ms/step server 23.80 ms/step server 23.80 ms/step server 23.84 ms/step 
+11-14 13:57:17 [hip 6] h-u6: serve /data/q27/w159/packs/h-u6.rad (stamp 1, ctx 0, env '')
+11-14 13:57:54 [hip 6] h-u6: done in 37 s (load 10 s): server 23.86 ms/step server 23.46 ms/step server 23.50 ms/step server 23.59 ms/step 
+11-14 13:57:54 [hip 6] h-u6m: serve /data/q27/w159/packs/h-u6m.rad (stamp 1, ctx 0, env '')
+11-14 13:58:32 [hip 6] h-u6m: done in 38 s (load 10 s): server 23.39 ms/step server 23.49 ms/step server 23.52 ms/step server 23.58 ms/step 
+11-14 13:58:32 [hip 6] h-u6.125: serve /data/q27/w159/packs/h-u6.125.rad (stamp 1, ctx 0, env '')
+11-14 13:59:14 [hip 6] h-u6.125: done in 42 s (load 14 s): server 23.78 ms/step server 23.82 ms/step server 23.85 ms/step server 23.88 ms/step 
+11-14 13:59:14 [hip 6] h-u6.125m: serve /data/q27/w159/packs/h-u6.125m.rad (stamp 1, ctx 0, env '')
+11-14 13:59:52 [hip 6] h-u6.125m: done in 38 s (load 10 s): server 23.75 ms/step server 23.79 ms/step server 23.81 ms/step server 23.85 ms/step 
+11-14 13:59:52 [hip 6] h-u6.25: serve /data/q27/w159/packs/h-u6.25.rad (stamp 1, ctx 0, env '')
+11-14 14:00:28 [hip 6] h-u6.25: done in 36 s (load 8 s): server 23.83 ms/step server 23.90 ms/step server 23.93 ms/step server 23.96 ms/step 
+11-14 14:00:28 [hip 6] h-u6.25m: serve /data/q27/w159/packs/h-u6.25m.rad (stamp 1, ctx 0, env '')
+11-14 14:01:06 [hip 6] h-u6.25m: done in 38 s (load 10 s): server 23.76 ms/step server 23.85 ms/step server 23.85 ms/step server 23.89 ms/step 
+11-14 14:01:06 [hip 6] h-u6.375: serve /data/q27/w159/packs/h-u6.375.rad (stamp 1, ctx 0, env '')
+11-14 14:01:42 [hip 6] h-u6.375: done in 36 s (load 8 s): server 23.83 ms/step server 23.92 ms/step server 23.95 ms/step server 24.26 ms/step 
+11-14 14:01:43 [hip 6] h-u6.375m: serve /data/q27/w159/packs/h-u6.375m.rad (stamp 1, ctx 0, env '')
+11-14 14:02:20 [hip 6] h-u6.375m: done in 37 s (load 10 s): server 23.77 ms/step server 23.86 ms/step server 23.89 ms/step server 23.91 ms/step 
+11-14 14:02:21 [hip 6] h-u6.5: serve /data/q27/w159/packs/h-u6.5.rad (stamp 1, ctx 0, env '')
+11-14 14:02:56 [hip 6] h-u6.5: done in 35 s (load 8 s): server 23.78 ms/step server 23.84 ms/step server 23.89 ms/step server 23.96 ms/step 
+11-14 14:02:57 [hip 6] h-u6.5m: serve /data/q27/w159/packs/h-u6.5m.rad (stamp 1, ctx 0, env '')
+11-14 14:03:32 [hip 6] h-u6.5m: done in 35 s (load 8 s): server 23.83 ms/step server 23.89 ms/step server 23.92 ms/step server 23.95 ms/step 
+11-14 14:03:33 [hip 6] h-u6.625m: serve /data/q27/w159/packs/h-u6.625m.rad (stamp 1, ctx 0, env '')
+11-14 14:04:11 [hip 6] h-u6.625m: done in 38 s (load 10 s): server 23.81 ms/step server 23.89 ms/step server 23.89 ms/step server 23.92 ms/step 
+11-14 14:04:11 [hip 6] h-u6.75m: serve /data/q27/w159/packs/h-u6.75m.rad (stamp 1, ctx 0, env '')
+11-14 14:04:47 [hip 6] h-u6.75m: done in 36 s (load 8 s): server 23.93 ms/step server 23.99 ms/step server 24.03 ms/step server 24.25 ms/step 
+11-14 14:04:47 [hip 6] h-u6.875m: serve /data/q27/w159/packs/h-u6.875m.rad (stamp 1, ctx 0, env '')
+11-14 14:05:23 [hip 6] h-u6.875m: done in 36 s (load 8 s): server 23.97 ms/step server 24.04 ms/step server 24.07 ms/step server 24.10 ms/step 
+11-14 14:05:23 [hip 6] h-u7: serve /data/q27/w159/packs/h-u7.rad (stamp 1, ctx 0, env '')
+11-14 14:05:59 [hip 6] h-u7: done in 36 s (load 8 s): server 23.92 ms/step server 24.31 ms/step server 24.03 ms/step server 24.05 ms/step 
+11-14 14:05:59 [hip 6] h-u7.125m: serve /data/q27/w159/packs/h-u7.125m.rad (stamp 1, ctx 0, env '')
+11-14 14:06:36 [hip 6] h-u7.125m: done in 37 s (load 9 s): server 23.99 ms/step server 24.87 ms/step server 24.13 ms/step server 24.11 ms/step 
+11-14 14:06:36 [hip 6] h-u7.25m: serve /data/q27/w159/packs/h-u7.25m.rad (stamp 1, ctx 0, env '')
+11-14 14:07:12 [hip 6] h-u7.25m: done in 36 s (load 8 s): server 24.03 ms/step server 24.67 ms/step server 24.16 ms/step server 24.63 ms/step 
+11-14 14:07:12 [hip 6] h-u7.375m: serve /data/q27/w159/packs/h-u7.375m.rad (stamp 1, ctx 0, env '')
+11-14 14:07:49 [hip 6] h-u7.375m: done in 37 s (load 9 s): server 24.57 ms/step server 24.20 ms/step server 24.23 ms/step server 24.24 ms/step 
+11-14 14:07:49 [hip 6] h-u7.5m: serve /data/q27/w159/packs/h-u7.5m.rad (stamp 1, ctx 0, env '')
+11-14 14:08:27 [hip 6] h-u7.5m: done in 38 s (load 10 s): server 24.55 ms/step server 24.09 ms/step server 24.16 ms/step server 24.70 ms/step 
+11-14 14:08:28 [hip 6] h-u7.625m: serve /data/q27/w159/packs/h-u7.625m.rad (stamp 1, ctx 0, env '')
+11-14 14:09:04 [hip 6] h-u7.625m: done in 36 s (load 8 s): server 24.14 ms/step server 24.19 ms/step server 24.52 ms/step server 24.25 ms/step 
+11-14 14:09:04 [hip 6] h-u7.75m: serve /data/q27/w159/packs/h-u7.75m.rad (stamp 1, ctx 0, env '')
+11-14 14:09:41 [hip 6] h-u7.75m: done in 37 s (load 8 s): server 24.11 ms/step server 24.20 ms/step server 26.80 ms/step server 24.24 ms/step 
+11-14 14:09:41 [hip 6] h-u7.875m: serve /data/q27/w159/packs/h-u7.875m.rad (stamp 1, ctx 0, env '')
+11-14 14:10:18 [hip 6] h-u7.875m: done in 37 s (load 8 s): server 24.30 ms/step server 24.23 ms/step server 24.58 ms/step server 24.30 ms/step 
+11-14 14:10:18 [hip 6] h-u8m: serve /data/q27/w159/packs/h-u8m.rad (stamp 1, ctx 0, env '')
+11-14 14:10:58 [hip 6] h-u8m: done in 40 s (load 12 s): server 23.82 ms/step server 23.88 ms/step server 23.88 ms/step server 23.94 ms/step 
+11-14 14:10:58 [hip 6] LISTS DONE: recipes/L6-s.txt recipes/L-parts.txt

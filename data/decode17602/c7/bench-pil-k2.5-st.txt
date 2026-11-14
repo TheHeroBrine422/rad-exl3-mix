@@ -1,0 +1,7 @@
+pil-k2.5-st ctx 0 run 0 (warm): prompt 103 ttft 122 ms, client 25.83 ms/tok, server 25.83 ms/step x 1.00 tok
+pil-k2.5-st ctx 0 run 1: prompt 105 ttft 101 ms, client 25.92 ms/tok, server 25.92 ms/step x 1.00 tok
+pil-k2.5-st ctx 0 run 2: prompt 106 ttft 103 ms, client 25.97 ms/tok, server 25.97 ms/step x 1.00 tok
+pil-k2.5-st ctx 0 run 3: prompt 103 ttft 102 ms, client 26.04 ms/tok, server 26.04 ms/step x 1.00 tok
+pil-k2.5-st ctx 8k run 0 (warm): prompt 8245 ttft 4765 ms, client 27.11 ms/tok, server 27.11 ms/step x 1.00 tok
+pil-k2.5-st ctx 8k run 1: prompt 8243 ttft 4795 ms, client 27.16 ms/tok, server 27.16 ms/step x 1.00 tok
+pil-k2.5-st ctx 8k run 2: prompt 8245 ttft 4933 ms, client 27.21 ms/tok, server 27.22 ms/step x 1.00 tok

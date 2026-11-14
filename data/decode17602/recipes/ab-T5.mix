@@ -1,0 +1,144 @@
+drop blk.0.ssm_a.weight
+drop blk.0.ssm_b.weight
+add blk.0.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.1.ssm_a.weight
+drop blk.1.ssm_b.weight
+add blk.1.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.2.ssm_a.weight
+drop blk.2.ssm_b.weight
+add blk.2.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.4.ssm_a.weight
+drop blk.4.ssm_b.weight
+add blk.4.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.5.ssm_a.weight
+drop blk.5.ssm_b.weight
+add blk.5.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.6.ssm_a.weight
+drop blk.6.ssm_b.weight
+add blk.6.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.8.ssm_a.weight
+drop blk.8.ssm_b.weight
+add blk.8.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.9.ssm_a.weight
+drop blk.9.ssm_b.weight
+add blk.9.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.10.ssm_a.weight
+drop blk.10.ssm_b.weight
+add blk.10.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.12.ssm_a.weight
+drop blk.12.ssm_b.weight
+add blk.12.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.13.ssm_a.weight
+drop blk.13.ssm_b.weight
+add blk.13.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.14.ssm_a.weight
+drop blk.14.ssm_b.weight
+add blk.14.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.16.ssm_a.weight
+drop blk.16.ssm_b.weight
+add blk.16.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.17.ssm_a.weight
+drop blk.17.ssm_b.weight
+add blk.17.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.18.ssm_a.weight
+drop blk.18.ssm_b.weight
+add blk.18.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.20.ssm_a.weight
+drop blk.20.ssm_b.weight
+add blk.20.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.21.ssm_a.weight
+drop blk.21.ssm_b.weight
+add blk.21.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.22.ssm_a.weight
+drop blk.22.ssm_b.weight
+add blk.22.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.24.ssm_a.weight
+drop blk.24.ssm_b.weight
+add blk.24.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.25.ssm_a.weight
+drop blk.25.ssm_b.weight
+add blk.25.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.26.ssm_a.weight
+drop blk.26.ssm_b.weight
+add blk.26.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.28.ssm_a.weight
+drop blk.28.ssm_b.weight
+add blk.28.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.29.ssm_a.weight
+drop blk.29.ssm_b.weight
+add blk.29.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.30.ssm_a.weight
+drop blk.30.ssm_b.weight
+add blk.30.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.32.ssm_a.weight
+drop blk.32.ssm_b.weight
+add blk.32.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.33.ssm_a.weight
+drop blk.33.ssm_b.weight
+add blk.33.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.34.ssm_a.weight
+drop blk.34.ssm_b.weight
+add blk.34.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.36.ssm_a.weight
+drop blk.36.ssm_b.weight
+add blk.36.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.37.ssm_a.weight
+drop blk.37.ssm_b.weight
+add blk.37.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.38.ssm_a.weight
+drop blk.38.ssm_b.weight
+add blk.38.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.40.ssm_a.weight
+drop blk.40.ssm_b.weight
+add blk.40.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.41.ssm_a.weight
+drop blk.41.ssm_b.weight
+add blk.41.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.42.ssm_a.weight
+drop blk.42.ssm_b.weight
+add blk.42.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.44.ssm_a.weight
+drop blk.44.ssm_b.weight
+add blk.44.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.45.ssm_a.weight
+drop blk.45.ssm_b.weight
+add blk.45.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.46.ssm_a.weight
+drop blk.46.ssm_b.weight
+add blk.46.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.48.ssm_a.weight
+drop blk.48.ssm_b.weight
+add blk.48.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.49.ssm_a.weight
+drop blk.49.ssm_b.weight
+add blk.49.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.50.ssm_a.weight
+drop blk.50.ssm_b.weight
+add blk.50.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.52.ssm_a.weight
+drop blk.52.ssm_b.weight
+add blk.52.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.53.ssm_a.weight
+drop blk.53.ssm_b.weight
+add blk.53.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.54.ssm_a.weight
+drop blk.54.ssm_b.weight
+add blk.54.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.56.ssm_a.weight
+drop blk.56.ssm_b.weight
+add blk.56.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.57.ssm_a.weight
+drop blk.57.ssm_b.weight
+add blk.57.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.58.ssm_a.weight
+drop blk.58.ssm_b.weight
+add blk.58.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.60.ssm_a.weight
+drop blk.60.ssm_b.weight
+add blk.60.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.61.ssm_a.weight
+drop blk.61.ssm_b.weight
+add blk.61.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
+drop blk.62.ssm_a.weight
+drop blk.62.ssm_b.weight
+add blk.62.ssm_ab.weight /data/q27/mad/ab/donor-ab-K5.rad
