@@ -692,3 +692,9 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
   (byte-sum form); proxy L18 −1.0…−1.6 %, L20 −2…−3 % vs mad L16 (LOG 11-13 7:15 PM CST). Needs a GPU Viterbi above
   exllamav3's 16-bit limit (exact or seeded beam), checked against a CPU reference; measure encode time a tensor and
   27B KL at K2.5 / K4 before a requant (~2.5–3× ladder time). Also as a per-tensor option for sensitive tensors.
+
+- [ ] **Learned move reranker for the search (user 11-13, later):** a model trained on the search's own evals (every
+  proposed / evaluated swap: tensor, family, depth, K from → to, size, M1's predicted ΔKL, mix context → measured ΔKL per
+  byte / accept) that ranks the driver's candidate moves before any eval, so evals go to the likeliest accepts; M1 stays
+  the cost model, the reranker learns its residuals. Train once the restarted search has a few hundred decisions; A/B
+  on the CPU stand-in first (standin.py), then live with a share of the proposals.
