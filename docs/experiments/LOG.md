@@ -7507,3 +7507,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   TRACK_EVERY). Both live 4:45 PM CST. **Runtime:** neither.
 - 5:00 PM CST: + catch-up: a size's latest incumbent is tracked once it has gone 2 h untracked (TRACK_STALE_H), so a
   size that stalls between 5th accepts still gets its final state on t183 (timer in memory: a tracker restart resets it).
+
+### 2026-11-14 5:15 PM CST · #183 · Decision: no prefill / decode λ (user)
+- Prefill: A8 on every trunk tensor makes it flat across the menu (w150: 8k prefill 2,447 vs 2,390 tok/s at K2.625 vs
+  K4.125). Decode at a fixed size (w159 table): M1 pick vs uniform-K mixes 23.26 / 23.13 ms (2.5), 24.30 / 23.30 (3.0),
+  25.70 / 24.52 (3.5), 27.33 / 26.49 (4.0): ~0.5-4 %, while size moves it 17 % from 2.5 to 4.0. User: drop both λ; no
+  λ lanes, no speed frontier. The search runs on KL + size; decode is reported per release pick. Driver decode term
+  kept at λ 0; no prefill table built. **Runtime:** neither.
