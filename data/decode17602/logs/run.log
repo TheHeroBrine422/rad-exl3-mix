@@ -652,3 +652,235 @@
 11-14 14:10:18 [hip 6] h-u8m: serve /data/q27/w159/packs/h-u8m.rad (stamp 1, ctx 0, env '')
 11-14 14:10:58 [hip 6] h-u8m: done in 40 s (load 12 s): server 23.82 ms/step server 23.88 ms/step server 23.88 ms/step server 23.94 ms/step 
 11-14 14:10:58 [hip 6] LISTS DONE: recipes/L6-s.txt recipes/L-parts.txt
+11-14 14:16:09 [hip 6] i8u1-a: serve /data/q27/w159/packs/a8-1.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:17:05 [hip 6] i8u1-a: done in 56 s (load 13 s): server 21.22 ms/step server 22.27 ms/step server 22.27 ms/step server 22.31 ms/step 
+11-14 14:17:06 [hip 6] i8u1-s: serve /data/q27/w159/packs/a8-1.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:17:37 [hip 6] i8u1-s: done in 31 s (load 6 s): server 21.49 ms/step server 21.87 ms/step server 21.57 ms/step server 21.59 ms/step 
+11-14 14:17:37 [hip 6] LISTS DONE: recipes/L-i8-1.txt
+11-14 14:18:16 [hip 6] i8u7.5-a: serve /data/q27/w159/packs/a8-7.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:20:01 [hip 6] i8u7.5-a: done in 105 s (load 26 s): server 45.95 ms/step server 46.80 ms/step server 46.80 ms/step server 46.81 ms/step 
+11-14 14:20:01 [hip 6] i8u7.5-s: serve /data/q27/w159/packs/a8-7.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:21:04 [hip 6] i8u7.5-s: done in 63 s (load 12 s): server 46.89 ms/step server 46.13 ms/step server 46.19 ms/step server 46.15 ms/step 
+11-14 14:21:04 [hip 6] LISTS DONE: recipes/L-i8-7.5.txt
+11-14 14:21:12 [hip 6] i8u1.125-a: serve /data/q27/w159/packs/a8-1.125.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:22:11 [hip 6] i8u1.125-a: done in 59 s (load 12 s): server 23.37 ms/step server 24.33 ms/step server 24.35 ms/step server 24.38 ms/step 
+11-14 14:22:12 [hip 6] i8u1.125-s: serve /data/q27/w159/packs/a8-1.125.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:22:47 [hip 6] i8u1.125-s: done in 35 s (load 8 s): server 23.45 ms/step server 23.49 ms/step server 23.52 ms/step server 23.52 ms/step 
+11-14 14:22:47 [hip 6] LISTS DONE: recipes/L-i8-1.125.txt
+11-14 14:23:23 [hip 6] i8u7-a: serve /data/q27/w159/packs/a8-7.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:25:00 [hip 6] i8u7-a: done in 97 s (load 22 s): server 42.68 ms/step server 43.64 ms/step server 43.64 ms/step server 43.65 ms/step 
+11-14 14:25:00 [hip 6] i8u7-s: serve /data/q27/w159/packs/a8-7.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:26:03 [hip 6] i8u7-s: done in 63 s (load 16 s): server 43.08 ms/step server 43.00 ms/step server 43.01 ms/step server 43.00 ms/step 
+11-14 14:26:03 [hip 6] LISTS DONE: recipes/L-i8-7.txt
+11-14 14:26:16 [hip 6] i8u1.25-a: serve /data/q27/w159/packs/a8-1.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:27:14 [hip 6] i8u1.25-a: done in 58 s (load 10 s): server 23.38 ms/step server 24.51 ms/step server 24.51 ms/step server 24.49 ms/step 
+11-14 14:27:14 [hip 6] i8u1.25-s: serve /data/q27/w159/packs/a8-1.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:27:49 [hip 6] i8u1.25-s: done in 35 s (load 8 s): server 23.59 ms/step server 23.62 ms/step server 23.64 ms/step server 23.67 ms/step 
+11-14 14:27:49 [hip 6] LISTS DONE: recipes/L-i8-1.25.txt
+11-14 14:28:25 [hip 6] i8u6.75-a: serve /data/q27/w159/packs/a8-6.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:30:00 [hip 6] i8u6.75-a: done in 95 s (load 22 s): server 41.55 ms/step server 42.65 ms/step server 42.66 ms/step server 42.64 ms/step 
+11-14 14:30:00 [hip 6] i8u6.75-s: serve /data/q27/w159/packs/a8-6.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:31:02 [hip 6] i8u6.75-s: done in 62 s (load 16 s): server 41.89 ms/step server 41.85 ms/step server 41.90 ms/step server 41.87 ms/step 
+11-14 14:31:02 [hip 6] LISTS DONE: recipes/L-i8-6.75.txt
+11-14 14:31:12 [hip 6] i8u1.375-a: serve /data/q27/w159/packs/a8-1.375.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:32:21 [hip 6] i8u1.375-a: done in 69 s (load 22 s): server 23.42 ms/step server 24.51 ms/step server 24.51 ms/step server 24.56 ms/step 
+11-14 14:32:21 [hip 6] i8u1.375-s: serve /data/q27/w159/packs/a8-1.375.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:33:01 [hip 6] i8u1.375-s: done in 40 s (load 12 s): server 23.62 ms/step server 23.83 ms/step server 23.67 ms/step server 23.69 ms/step 
+11-14 14:33:01 [hip 6] LISTS DONE: recipes/L-i8-1.375.txt
+11-14 14:33:30 [hip 6] i8u6.5-a: serve /data/q27/w159/packs/a8-6.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:35:10 [hip 6] i8u6.5-a: done in 100 s (load 29 s): server 40.48 ms/step server 41.53 ms/step server 41.53 ms/step server 41.54 ms/step 
+11-14 14:35:10 [hip 6] i8u6.5-s: serve /data/q27/w159/packs/a8-6.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:36:11 [hip 6] i8u6.5-s: done in 61 s (load 16 s): server 40.72 ms/step server 40.73 ms/step server 40.73 ms/step server 40.75 ms/step 
+11-14 14:36:11 [hip 6] LISTS DONE: recipes/L-i8-6.5.txt
+11-14 14:36:21 [hip 6] i8u1.5-a: serve /data/q27/w159/packs/a8-1.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:37:29 [hip 6] i8u1.5-a: done in 68 s (load 20 s): server 23.61 ms/step server 24.58 ms/step server 24.58 ms/step server 24.61 ms/step 
+11-14 14:37:29 [hip 6] i8u1.5-s: serve /data/q27/w159/packs/a8-1.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:38:07 [hip 6] i8u1.5-s: done in 38 s (load 10 s): server 23.70 ms/step server 23.72 ms/step server 23.75 ms/step server 23.78 ms/step 
+11-14 14:38:07 [hip 6] LISTS DONE: recipes/L-i8-1.5.txt
+11-14 14:38:39 [hip 6] i8u6.25-a: serve /data/q27/w159/packs/a8-6.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:40:11 [hip 6] i8u6.25-a: done in 92 s (load 22 s): server 39.37 ms/step server 40.45 ms/step server 40.45 ms/step server 40.46 ms/step 
+11-14 14:40:11 [hip 6] i8u6.25-s: serve /data/q27/w159/packs/a8-6.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:41:11 [hip 6] i8u6.25-s: done in 60 s (load 16 s): server 39.70 ms/step server 39.68 ms/step server 39.68 ms/step server 39.76 ms/step 
+11-14 14:41:11 [hip 6] LISTS DONE: recipes/L-i8-6.25.txt
+11-14 14:41:22 [hip 6] i8u1.625-a: serve /data/q27/w159/packs/a8-1.625.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:42:29 [hip 6] i8u1.625-a: done in 67 s (load 20 s): server 23.60 ms/step server 24.72 ms/step server 24.69 ms/step server 24.71 ms/step 
+11-14 14:42:30 [hip 6] i8u1.625-s: serve /data/q27/w159/packs/a8-1.625.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:43:07 [hip 6] i8u1.625-s: done in 37 s (load 10 s): server 23.82 ms/step server 23.83 ms/step server 23.86 ms/step server 23.88 ms/step 
+11-14 14:43:07 [hip 6] LISTS DONE: recipes/L-i8-1.625.txt
+11-14 14:43:36 [hip 6] i8u6-a: serve /data/q27/w159/packs/a8-6.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:45:14 [hip 6] i8u6-a: done in 98 s (load 28 s): server 39.27 ms/step server 40.36 ms/step server 40.37 ms/step server 40.38 ms/step 
+11-14 14:45:14 [hip 6] i8u6-s: serve /data/q27/w159/packs/a8-6.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:46:14 [hip 6] i8u6-s: done in 60 s (load 16 s): server 39.55 ms/step server 39.72 ms/step server 39.54 ms/step server 39.55 ms/step 
+11-14 14:46:14 [hip 6] LISTS DONE: recipes/L-i8-6.txt
+11-14 14:46:24 [hip 6] i8u1.75-a: serve /data/q27/w159/packs/a8-1.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:47:34 [hip 6] i8u1.75-a: done in 70 s (load 23 s): server 23.63 ms/step server 24.79 ms/step server 24.74 ms/step server 24.76 ms/step 
+11-14 14:47:34 [hip 6] i8u1.75-s: serve /data/q27/w159/packs/a8-1.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:48:14 [hip 6] i8u1.75-s: done in 40 s (load 12 s): server 23.85 ms/step server 23.88 ms/step server 23.90 ms/step server 23.97 ms/step 
+11-14 14:48:14 [hip 6] LISTS DONE: recipes/L-i8-1.75.txt
+11-14 14:48:49 [hip 6] i8u5.75-a: serve /data/q27/w159/packs/a8-5.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:50:16 [hip 6] i8u5.75-a: done in 87 s (load 20 s): server 37.27 ms/step server 38.31 ms/step server 38.34 ms/step server 38.33 ms/step 
+11-14 14:50:16 [hip 6] i8u5.75-s: serve /data/q27/w159/packs/a8-5.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:51:14 [hip 6] i8u5.75-s: done in 58 s (load 16 s): server 37.54 ms/step server 37.54 ms/step server 37.55 ms/step server 37.74 ms/step 
+11-14 14:51:14 [hip 6] LISTS DONE: recipes/L-i8-5.75.txt
+11-14 14:51:26 [hip 6] i8u1.875-a: serve /data/q27/w159/packs/a8-1.875.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:52:37 [hip 6] i8u1.875-a: done in 71 s (load 23 s): server 23.73 ms/step server 24.80 ms/step server 24.82 ms/step server 24.86 ms/step 
+11-14 14:52:37 [hip 6] i8u1.875-s: serve /data/q27/w159/packs/a8-1.875.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:53:17 [hip 6] i8u1.875-s: done in 40 s (load 12 s): server 24.02 ms/step server 23.97 ms/step server 24.00 ms/step server 24.01 ms/step 
+11-14 14:53:17 [hip 6] LISTS DONE: recipes/L-i8-1.875.txt
+11-14 14:53:45 [hip 6] i8u5.5-a: serve /data/q27/w159/packs/a8-5.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:55:16 [hip 6] i8u5.5-a: done in 91 s (load 26 s): server 36.14 ms/step server 37.17 ms/step server 37.17 ms/step server 37.19 ms/step 
+11-14 14:55:16 [hip 6] i8u5.5-s: serve /data/q27/w159/packs/a8-5.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:56:11 [hip 6] i8u5.5-s: done in 55 s (load 14 s): server 36.37 ms/step server 36.38 ms/step server 36.42 ms/step server 36.43 ms/step 
+11-14 14:56:11 [hip 6] LISTS DONE: recipes/L-i8-5.5.txt
+11-14 14:56:23 [hip 6] i8u2-a: serve /data/q27/w159/packs/a8-2.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:57:32 [hip 6] i8u2-a: done in 69 s (load 24 s): server 22.11 ms/step server 23.18 ms/step server 23.17 ms/step server 23.48 ms/step 
+11-14 14:57:33 [hip 6] i8u2-s: serve /data/q27/w159/packs/a8-2.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 14:58:09 [hip 6] i8u2-s: done in 36 s (load 10 s): server 22.42 ms/step server 22.35 ms/step server 22.38 ms/step server 22.53 ms/step 
+11-14 14:58:09 [hip 6] LISTS DONE: recipes/L-i8-2.txt
+11-14 14:58:40 [hip 6] i8u5.25-a: serve /data/q27/w159/packs/a8-5.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:00:04 [hip 6] i8u5.25-a: done in 84 s (load 20 s): server 35.34 ms/step server 36.38 ms/step server 36.36 ms/step server 36.39 ms/step 
+11-14 15:00:05 [hip 6] i8u5.25-s: serve /data/q27/w159/packs/a8-5.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:00:58 [hip 6] i8u5.25-s: done in 53 s (load 14 s): server 35.61 ms/step server 35.59 ms/step server 35.60 ms/step server 35.72 ms/step 
+11-14 15:00:58 [hip 6] LISTS DONE: recipes/L-i8-5.25.txt
+11-14 15:01:13 [hip 6] i8u2.125-a: serve /data/q27/w159/packs/a8-2.125.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:02:19 [hip 6] i8u2.125-a: done in 66 s (load 18 s): server 24.04 ms/step server 24.96 ms/step server 25.06 ms/step server 25.05 ms/step 
+11-14 15:02:19 [hip 6] i8u2.125-s: serve /data/q27/w159/packs/a8-2.125.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:02:55 [hip 6] i8u2.125-s: done in 36 s (load 8 s): server 24.11 ms/step server 24.18 ms/step server 24.19 ms/step server 24.22 ms/step 
+11-14 15:02:55 [hip 6] LISTS DONE: recipes/L-i8-2.125.txt
+11-14 15:03:17 [hip 6] i8u5-a: serve /data/q27/w159/packs/a8-5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:04:51 [hip 6] i8u5-a: done in 94 s (load 30 s): server 35.23 ms/step server 36.31 ms/step server 36.31 ms/step server 36.31 ms/step 
+11-14 15:04:51 [hip 6] i8u5-s: serve /data/q27/w159/packs/a8-5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:05:41 [hip 6] i8u5-s: done in 50 s (load 10 s): server 35.48 ms/step server 35.50 ms/step server 35.72 ms/step server 35.52 ms/step 
+11-14 15:05:41 [hip 6] LISTS DONE: recipes/L-i8-5.txt
+11-14 15:05:53 [hip 6] i8u2.25-a: serve /data/q27/w159/packs/a8-2.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:07:01 [hip 6] i8u2.25-a: done in 68 s (load 20 s): server 24.09 ms/step server 25.19 ms/step server 25.19 ms/step server 25.18 ms/step 
+11-14 15:07:01 [hip 6] i8u2.25-s: serve /data/q27/w159/packs/a8-2.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:07:40 [hip 6] i8u2.25-s: done in 39 s (load 10 s): server 24.96 ms/step server 24.31 ms/step server 24.37 ms/step server 25.18 ms/step 
+11-14 15:07:40 [hip 6] LISTS DONE: recipes/L-i8-2.25.txt
+11-14 15:08:24 [hip 6] i8u4.875-a: serve /data/q27/w159/packs/a8-4.875.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:09:49 [hip 6] i8u4.875-a: done in 85 s (load 24 s): server 33.14 ms/step server 34.10 ms/step server 34.10 ms/step server 34.10 ms/step 
+11-14 15:09:49 [hip 6] i8u4.875-s: serve /data/q27/w159/packs/a8-4.875.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:10:41 [hip 6] i8u4.875-s: done in 52 s (load 14 s): server 33.19 ms/step server 33.21 ms/step server 33.24 ms/step server 33.64 ms/step 
+11-14 15:10:41 [hip 6] LISTS DONE: recipes/L-i8-4.875.txt
+11-14 15:11:11 [hip 6] i8u2.375-a: serve /data/q27/w159/packs/a8-2.375.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:12:17 [hip 6] i8u2.375-a: done in 66 s (load 18 s): server 24.16 ms/step server 25.68 ms/step server 25.20 ms/step server 25.24 ms/step 
+11-14 15:12:17 [hip 6] i8u2.375-s: serve /data/q27/w159/packs/a8-2.375.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:12:59 [hip 6] i8u2.375-s: done in 42 s (load 13 s): server 24.30 ms/step server 24.36 ms/step server 24.57 ms/step server 24.91 ms/step 
+11-14 15:12:59 [hip 6] LISTS DONE: recipes/L-i8-2.375.txt
+11-14 15:13:34 [hip 6] i8u4.75-a: serve /data/q27/w159/packs/a8-4.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:14:58 [hip 6] i8u4.75-a: done in 84 s (load 25 s): server 32.43 ms/step server 33.49 ms/step server 33.53 ms/step server 34.11 ms/step 
+11-14 15:14:59 [hip 6] i8u4.75-s: serve /data/q27/w159/packs/a8-4.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:15:48 [hip 6] i8u4.75-s: done in 49 s (load 12 s): server 33.15 ms/step server 32.67 ms/step server 32.67 ms/step server 32.70 ms/step 
+11-14 15:15:48 [hip 6] LISTS DONE: recipes/L-i8-4.75.txt
+11-14 15:16:07 [hip 6] i8u2.5-a: serve /data/q27/w159/packs/a8-2.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:17:18 [hip 6] i8u2.5-a: done in 71 s (load 23 s): server 24.32 ms/step server 25.44 ms/step server 25.43 ms/step server 25.47 ms/step 
+11-14 15:17:18 [hip 6] i8u2.5-s: serve /data/q27/w159/packs/a8-2.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:18:00 [hip 6] i8u2.5-s: done in 42 s (load 13 s): server 24.58 ms/step server 24.68 ms/step server 24.85 ms/step server 25.69 ms/step 
+11-14 15:18:00 [hip 6] LISTS DONE: recipes/L-i8-2.5.txt
+11-14 15:18:47 [hip 6] i8u4.625-a: serve /data/q27/w159/packs/a8-4.625.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:20:14 [hip 6] i8u4.625-a: done in 87 s (load 28 s): server 31.94 ms/step server 33.15 ms/step server 33.00 ms/step server 33.02 ms/step 
+11-14 15:20:15 [hip 6] i8u4.625-s: serve /data/q27/w159/packs/a8-4.625.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:21:14 [hip 6] i8u4.625-s: done in 59 s (load 22 s): server 32.13 ms/step server 32.44 ms/step server 32.49 ms/step server 32.25 ms/step 
+11-14 15:21:14 [hip 6] LISTS DONE: recipes/L-i8-4.625.txt
+11-14 15:24:58 [hip 6] i8u2.625-a: serve /data/q27/w159/packs/a8-2.625.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:26:08 [hip 6] i8u2.625-a: done in 70 s (load 20 s): server 24.71 ms/step server 25.79 ms/step server 25.74 ms/step server 25.97 ms/step 
+11-14 15:26:09 [hip 6] i8u2.625-s: serve /data/q27/w159/packs/a8-2.625.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:26:56 [hip 6] i8u2.625-s: done in 47 s (load 18 s): server 24.86 ms/step server 25.09 ms/step server 25.49 ms/step server 24.92 ms/step 
+11-14 15:26:56 [hip 6] LISTS DONE: recipes/L-i8-2.625.txt
+11-14 15:28:59 [hip 6] i8u4.5-a: serve /data/q27/w159/packs/a8-4.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:30:20 [hip 6] i8u4.5-a: done in 81 s (load 22 s): server 31.40 ms/step server 33.21 ms/step server 32.47 ms/step server 32.54 ms/step 
+11-14 15:30:20 [hip 6] i8u4.5-s: serve /data/q27/w159/packs/a8-4.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:31:18 [hip 6] i8u4.5-s: done in 58 s (load 22 s): server 31.62 ms/step server 32.04 ms/step server 32.86 ms/step server 31.65 ms/step 
+11-14 15:31:18 [hip 6] LISTS DONE: recipes/L-i8-4.5.txt
+11-14 15:31:54 [hip 6] i8u2.75-a: serve /data/q27/w159/packs/a8-2.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:33:09 [hip 6] i8u2.75-a: done in 75 s (load 26 s): server 24.85 ms/step server 26.04 ms/step server 25.95 ms/step server 25.96 ms/step 
+11-14 15:33:09 [hip 6] i8u2.75-s: serve /data/q27/w159/packs/a8-2.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:33:55 [hip 6] i8u2.75-s: done in 46 s (load 16 s): server 25.78 ms/step server 25.76 ms/step server 25.11 ms/step server 25.11 ms/step 
+11-14 15:33:55 [hip 6] LISTS DONE: recipes/L-i8-2.75.txt
+11-14 15:34:32 [hip 6] i8u4.375-a: serve /data/q27/w159/packs/a8-4.375.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:35:52 [hip 6] i8u4.375-a: done in 80 s (load 22 s): server 30.82 ms/step server 32.27 ms/step server 31.94 ms/step server 32.00 ms/step 
+11-14 15:35:53 [hip 6] i8u4.375-s: serve /data/q27/w159/packs/a8-4.375.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:36:42 [hip 6] i8u4.375-s: done in 49 s (load 14 s): server 31.53 ms/step server 31.14 ms/step server 31.25 ms/step server 31.12 ms/step 
+11-14 15:36:42 [hip 6] LISTS DONE: recipes/L-i8-4.375.txt
+11-14 15:37:02 [hip 6] i8u2.875-a: serve /data/q27/w159/packs/a8-2.875.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:38:10 [hip 6] i8u2.875-a: done in 68 s (load 18 s): server 25.30 ms/step server 27.00 ms/step server 26.41 ms/step server 26.43 ms/step 
+11-14 15:38:10 [hip 6] i8u2.875-s: serve /data/q27/w159/packs/a8-2.875.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:38:52 [hip 6] i8u2.875-s: done in 42 s (load 13 s): server 25.84 ms/step server 25.58 ms/step server 25.62 ms/step server 25.64 ms/step 
+11-14 15:38:52 [hip 6] LISTS DONE: recipes/L-i8-2.875.txt
+11-14 15:39:10 [hip 6] i8u4.25-a: serve /data/q27/w159/packs/a8-4.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:40:27 [hip 6] i8u4.25-a: done in 77 s (load 20 s): server 30.33 ms/step server 31.45 ms/step server 31.43 ms/step server 31.43 ms/step 
+11-14 15:40:27 [hip 6] i8u4.25-s: serve /data/q27/w159/packs/a8-4.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:41:14 [hip 6] i8u4.25-s: done in 47 s (load 12 s): server 31.01 ms/step server 30.99 ms/step server 31.26 ms/step server 31.35 ms/step 
+11-14 15:41:14 [hip 6] LISTS DONE: recipes/L-i8-4.25.txt
+11-14 15:41:36 [hip 6] i8u3-a: serve /data/q27/w159/packs/a8-3.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:42:45 [hip 6] i8u3-a: done in 69 s (load 18 s): server 25.85 ms/step server 27.63 ms/step server 27.64 ms/step server 26.77 ms/step 
+11-14 15:42:45 [hip 6] i8u3-s: serve /data/q27/w159/packs/a8-3.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:43:25 [hip 6] i8u3-s: done in 40 s (load 10 s): server 26.13 ms/step server 25.91 ms/step server 25.91 ms/step server 25.94 ms/step 
+11-14 15:43:25 [hip 6] LISTS DONE: recipes/L-i8-3.txt
+11-14 15:44:06 [hip 6] i8u4.125-a: serve /data/q27/w159/packs/a8-4.125.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:45:27 [hip 6] i8u4.125-a: done in 81 s (load 24 s): server 30.40 ms/step server 31.59 ms/step server 31.61 ms/step server 30.93 ms/step 
+11-14 15:45:27 [hip 6] i8u4.125-s: serve /data/q27/w159/packs/a8-4.125.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:46:18 [hip 6] i8u4.125-s: done in 51 s (load 16 s): server 30.55 ms/step server 30.31 ms/step server 30.12 ms/step server 30.13 ms/step 
+11-14 15:46:18 [hip 6] LISTS DONE: recipes/L-i8-4.125.txt
+11-14 15:46:45 [hip 6] i8u3.125-a: serve /data/q27/w159/packs/a8-3.125.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:48:05 [hip 6] i8u3.125-a: done in 80 s (load 28 s): server 26.33 ms/step server 27.30 ms/step server 27.29 ms/step server 27.31 ms/step 
+11-14 15:48:05 [hip 6] i8u3.125-s: serve /data/q27/w159/packs/a8-3.125.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:48:48 [hip 6] i8u3.125-s: done in 43 s (load 12 s): server 26.73 ms/step server 26.53 ms/step server 26.51 ms/step server 26.52 ms/step 
+11-14 15:48:48 [hip 6] LISTS DONE: recipes/L-i8-3.125.txt
+11-14 15:51:12 [hip 6] i8u4-a: serve /data/q27/w159/packs/a8-4.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:52:31 [hip 6] i8u4-a: done in 79 s (load 24 s): server 28.53 ms/step server 29.63 ms/step server 29.62 ms/step server 29.71 ms/step 
+11-14 15:52:31 [hip 6] i8u4-s: serve /data/q27/w159/packs/a8-4.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:53:16 [hip 6] i8u4-s: done in 45 s (load 12 s): server 29.75 ms/step server 28.84 ms/step server 28.79 ms/step server 28.88 ms/step 
+11-14 15:53:16 [hip 6] LISTS DONE: recipes/L-i8-4.txt
+11-14 15:53:54 [hip 6] i8u3.25-a: serve /data/q27/w159/packs/a8-3.25.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:55:12 [hip 6] i8u3.25-a: done in 78 s (load 26 s): server 26.60 ms/step server 27.64 ms/step server 27.81 ms/step server 27.65 ms/step 
+11-14 15:55:12 [hip 6] i8u3.25-s: serve /data/q27/w159/packs/a8-3.25.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:55:57 [hip 6] i8u3.25-s: done in 45 s (load 14 s): server 27.41 ms/step server 26.96 ms/step server 26.93 ms/step server 26.90 ms/step 
+11-14 15:55:57 [hip 6] LISTS DONE: recipes/L-i8-3.25.txt
+11-14 15:56:35 [hip 6] i8u3.875-a: serve /data/q27/w159/packs/a8-3.875.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:57:55 [hip 6] i8u3.875-a: done in 80 s (load 24 s): server 29.29 ms/step server 30.10 ms/step server 30.09 ms/step server 30.12 ms/step 
+11-14 15:57:55 [hip 6] i8u3.875-s: serve /data/q27/w159/packs/a8-3.875.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 15:58:41 [hip 6] i8u3.875-s: done in 46 s (load 12 s): server 29.57 ms/step server 30.42 ms/step server 29.51 ms/step server 29.34 ms/step 
+11-14 15:58:41 [hip 6] LISTS DONE: recipes/L-i8-3.875.txt
+11-14 16:00:47 [hip 6] i8u3.375-a: serve /data/q27/w159/packs/a8-3.375.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:01:56 [hip 6] i8u3.375-a: done in 69 s (load 16 s): server 27.05 ms/step server 28.10 ms/step server 28.09 ms/step server 28.10 ms/step 
+11-14 16:01:57 [hip 6] i8u3.375-s: serve /data/q27/w159/packs/a8-3.375.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:02:39 [hip 6] i8u3.375-s: done in 42 s (load 10 s): server 27.27 ms/step server 27.34 ms/step server 30.13 ms/step server 27.39 ms/step 
+11-14 16:02:39 [hip 6] LISTS DONE: recipes/L-i8-3.375.txt
+11-14 16:03:18 [hip 6] i8u3.75-a: serve /data/q27/w159/packs/a8-3.75.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:04:39 [hip 6] i8u3.75-a: done in 81 s (load 27 s): server 28.66 ms/step server 29.56 ms/step server 29.57 ms/step server 29.59 ms/step 
+11-14 16:04:39 [hip 6] i8u3.75-s: serve /data/q27/w159/packs/a8-3.75.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:05:25 [hip 6] i8u3.75-s: done in 46 s (load 12 s): server 28.88 ms/step server 28.98 ms/step server 28.82 ms/step server 28.96 ms/step 
+11-14 16:05:25 [hip 6] LISTS DONE: recipes/L-i8-3.75.txt
+11-14 16:06:01 [hip 6] i8u3.5-a: serve /data/q27/w159/packs/a8-3.5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:07:19 [hip 6] i8u3.5-a: done in 78 s (load 26 s): server 27.53 ms/step server 28.41 ms/step server 28.42 ms/step server 28.43 ms/step 
+11-14 16:07:20 [hip 6] i8u3.5-s: serve /data/q27/w159/packs/a8-3.5.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:08:18 [hip 6] i8u3.5-s: done in 58 s (load 26 s): server 27.51 ms/step server 27.55 ms/step server 27.56 ms/step server 27.59 ms/step 
+11-14 16:08:18 [hip 6] LISTS DONE: recipes/L-i8-3.5.txt
+11-14 16:08:43 [hip 6] i8u3.625-a: serve /data/q27/w159/packs/a8-3.625.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:10:02 [hip 6] i8u3.625-a: done in 79 s (load 22 s): server 31.91 ms/step server 32.64 ms/step server 33.24 ms/step server 33.63 ms/step 
+11-14 16:10:02 [hip 6] i8u3.625-s: serve /data/q27/w159/packs/a8-3.625.rad (stamp 1, ctx 0, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:10:46 [hip 6] i8u3.625-s: done in 44 s (load 10 s): server 31.67 ms/step server 28.19 ms/step server 28.89 ms/step server 28.39 ms/step 
+11-14 16:10:46 [hip 6] LISTS DONE: recipes/L-i8-3.625.txt
+11-14 16:11:37 [hip 6] i8m-h1-a: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:12:41 [hip 6] i8m-h1-a: done in 64 s (load 19 s): server 22.01 ms/step server 23.23 ms/step server 23.18 ms/step server 23.51 ms/step 
+11-14 16:12:41 [hip 6] i8m-h2-a: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:13:53 [hip 6] i8m-h2-a: done in 72 s (load 18 s): server 27.89 ms/step server 29.14 ms/step server 29.13 ms/step server 29.13 ms/step 
+11-14 16:13:53 [hip 6] i8m-h3-a: no pack /data/q27/w159/packs/m-h3.rad (skipped)
+11-14 16:13:53 [hip 6] i8m-h5-a: no pack /data/q27/w159/packs/m-h5.rad (skipped)
+11-14 16:13:53 [hip 6] i8m-h5-b: no pack /data/q27/w159/packs/m-h5.rad (skipped)
+11-14 16:13:53 [hip 6] i8m-h3-b: no pack /data/q27/w159/packs/m-h3.rad (skipped)
+11-14 16:13:53 [hip 6] i8m-h2-b: serve /data/q27/w159/packs/m-h2.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:14:57 [hip 6] i8m-h2-b: done in 64 s (load 10 s): server 27.92 ms/step server 29.13 ms/step server 29.12 ms/step server 29.13 ms/step 
+11-14 16:14:58 [hip 6] i8m-h1-b: serve /data/q27/w159/packs/m-h1.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:15:51 [hip 6] i8m-h1-b: done in 53 s (load 8 s): server 22.07 ms/step server 23.25 ms/step server 23.23 ms/step server 23.23 ms/step 
+11-14 16:15:51 [hip 6] LISTS DONE: recipes/L-i8-held.txt
+11-14 16:25:00 [hip 6] i8m-h3-a: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:26:41 [hip 6] i8m-h3-a: done in 100 s (load 33 s): server 36.98 ms/step server 38.05 ms/step server 38.03 ms/step server 38.02 ms/step 
+11-14 16:26:42 [hip 6] i8m-h5-a: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:27:51 [hip 6] i8m-h5-a: done in 69 s (load 16 s): server 27.46 ms/step server 28.63 ms/step server 28.63 ms/step server 28.62 ms/step 
+11-14 16:27:51 [hip 6] i8m-h5-b: serve /data/q27/w159/packs/m-h5.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:28:55 [hip 6] i8m-h5-b: done in 64 s (load 10 s): server 27.71 ms/step server 28.66 ms/step server 28.82 ms/step server 28.66 ms/step 
+11-14 16:28:55 [hip 6] i8m-h3-b: serve /data/q27/w159/packs/m-h3.rad (stamp 0, ctx 0,8k, env 'QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1')
+11-14 16:30:16 [hip 6] i8m-h3-b: done in 81 s (load 14 s): server 37.40 ms/step server 38.06 ms/step server 38.04 ms/step server 38.04 ms/step 
+11-14 16:30:16 [hip 6] LISTS DONE: recipes/L-i8-held2.txt

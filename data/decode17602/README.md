@@ -9,11 +9,14 @@ bf16 KV, batch 1, greedy, chat API. Card HIP 6 (R9700S, 210 W cap) for everythin
 |---|---|
 | `decprice17602.json` | **the price table** (`fit17602.py fit`): `ctx0` / `ctx8k` → `F_ms`, `alpha`, `trunk[type][level]`, `head[plan]`, `emb[option]`, `ab[bf16/T4/T5]` in µs a decode step; `raw` = stamped device µs; `fit` = uniform fit; `heldout` = the check |
 | `menu173m-v1b-dec.json.gz` | w158's menu `menu173m-v1b.json` (ds8 `/data/q27/w158/menus/`) with `dec_us` / `dec_us_8k` on every option (`fit17602.py annotate`); 31 trellis embedding options interpolated (`dec_interp`) |
+| `decprice17602-i8.json`, `report-i8.txt` | the int8-decode column (`--prefix i8`, amendment 3): **held-out FAIL — do not use for λ_d** (int8 decode overlaps dispatches; stamps not additive) |
+| `int8-vs-f16.txt` | per level: int8 vs f16 e2e step (ctx 0 / 8k) and the int8 passes' dispatch overlap |
 | `report.txt` | the fit's report (min of runs): uniform rows K by K, components, held-out |
 | `report-stat-med.txt`, `report-stat-gap.txt` | the same with the other two e2e statistics (RULES amendment 1: all reported) |
 | `res/u<K>-{a,b,c}.jsonl` | uniform e2e rounds (a: K descending, b: ascending, c: amendment 2 reruns of the 9 disturbed packs) |
 | `res/u<K>-s.jsonl`, `res/st-u<K>-s.json` | stamped round (ctx 0) and its reduced stamps (st17602.py) |
 | `res/h-<plan>*`, `res/e-<opt>*`, `res/ab-T*` | head / trellis embedding / a-b rows (stamped, ctx 0) |
+| `res/i8u<K>-{a,s}*`, `res/i8m-h<n>-{a,b}*` | int8-decode rows (a8g128 packs, `QWEN35_EXL3_AQ_XB=1 EXL3I_MAD_GEMV=1`) |
 | `res/m-h<n>-{a,b,s}*`, `res/u2.5-c*`, `res/u4-c*` | held-out mixes (a, b, stamped s) and the drift reference rows |
 | `recipes/` | runner lists, held-out radmix files + assignments (`m-h<n>.assign.json`) |
 | `logs/run.log`, `logs/mk.log` | runner / builder logs (HIP 7 lines = pre-reboot / tests) |

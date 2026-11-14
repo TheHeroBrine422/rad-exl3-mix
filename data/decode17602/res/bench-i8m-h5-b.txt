@@ -1,0 +1,7 @@
+i8m-h5-b ctx 0 run 0 (warm): prompt 104 ttft 149 ms, client 27.54 ms/tok, server 27.53 ms/step x 1.00 tok
+i8m-h5-b ctx 0 run 1: prompt 105 ttft 104 ms, client 27.49 ms/tok, server 27.49 ms/step x 1.00 tok
+i8m-h5-b ctx 0 run 2: prompt 107 ttft 104 ms, client 27.49 ms/tok, server 27.49 ms/step x 1.00 tok
+i8m-h5-b ctx 0 run 3: prompt 104 ttft 105 ms, client 27.71 ms/tok, server 27.71 ms/step x 1.00 tok
+i8m-h5-b ctx 8k run 0 (warm): prompt 8242 ttft 3418 ms, client 28.66 ms/tok, server 28.66 ms/step x 1.00 tok
+i8m-h5-b ctx 8k run 1: prompt 8243 ttft 3361 ms, client 28.82 ms/tok, server 28.82 ms/step x 1.00 tok
+i8m-h5-b ctx 8k run 2: prompt 8242 ttft 3361 ms, client 28.66 ms/tok, server 28.66 ms/step x 1.00 tok

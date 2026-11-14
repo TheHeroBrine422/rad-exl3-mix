@@ -1,0 +1,2 @@
+i8u4.875-a /data/q27/w159/packs/a8-4.875.rad env=QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1
+i8u4.875-s /data/q27/w159/packs/a8-4.875.rad stamp ctx=0 env=QWEN35_EXL3_AQ_XB=1,EXL3I_MAD_GEMV=1

@@ -1,0 +1,7 @@
+i8u1.625-a ctx 0 run 0 (warm): prompt 104 ttft 113 ms, client 23.62 ms/tok, server 23.61 ms/step x 1.00 tok
+i8u1.625-a ctx 0 run 1: prompt 105 ttft 101 ms, client 23.55 ms/tok, server 23.54 ms/step x 1.00 tok
+i8u1.625-a ctx 0 run 2: prompt 107 ttft 101 ms, client 23.58 ms/tok, server 23.57 ms/step x 1.00 tok
+i8u1.625-a ctx 0 run 3: prompt 107 ttft 101 ms, client 23.61 ms/tok, server 23.60 ms/step x 1.00 tok
+i8u1.625-a ctx 8k run 0 (warm): prompt 8242 ttft 3325 ms, client 24.72 ms/tok, server 24.72 ms/step x 1.00 tok
+i8u1.625-a ctx 8k run 1: prompt 8243 ttft 3333 ms, client 24.69 ms/tok, server 24.69 ms/step x 1.00 tok
+i8u1.625-a ctx 8k run 2: prompt 8244 ttft 3335 ms, client 24.71 ms/tok, server 24.71 ms/step x 1.00 tok

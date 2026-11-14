@@ -1,0 +1,4 @@
+i8u1.25-s ctx 0 run 0 (warm): prompt 102 ttft 112 ms, client 23.60 ms/tok, server 23.59 ms/step x 1.00 tok
+i8u1.25-s ctx 0 run 1: prompt 107 ttft 103 ms, client 23.62 ms/tok, server 23.62 ms/step x 1.00 tok
+i8u1.25-s ctx 0 run 2: prompt 104 ttft 103 ms, client 23.65 ms/tok, server 23.64 ms/step x 1.00 tok
+i8u1.25-s ctx 0 run 3: prompt 104 ttft 103 ms, client 23.68 ms/tok, server 23.67 ms/step x 1.00 tok

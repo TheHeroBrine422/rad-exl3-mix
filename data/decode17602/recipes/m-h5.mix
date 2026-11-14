@@ -327,7 +327,7 @@ blk.63.attn_v.weight /data/q27/packs-mad/q27v3-635bac02-k3.5-mad-s6c57a3d1.rad
 blk.63.attn_output.weight /data/q27/packs-mad/q27v3-635bac02-k4.875-mad.rad
 blk.63.ffn_gate_up.weight /data/q27/packs-mad/q27v3-635bac02-k1.25-mad-s6c57a3d1.rad
 blk.63.ffn_down.weight /data/q27/packs-mad/q27v3-635bac02-k4.25-mad-s6c57a3d1.rad
-output.weight /data/q27/w159/packs/hd-u5.5.rad
+output.weight /data/q27/w158/heads/hd-u5.5.rad
 token_embd.weight /data/q27/emb/trellis/emb-t-m1-K8.rad
 drop blk.0.ssm_a.weight
 drop blk.0.ssm_b.weight

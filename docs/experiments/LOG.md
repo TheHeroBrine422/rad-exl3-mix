@@ -4,6 +4,24 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 4:33 PM CST · #176-02 · int8-decode column (lead note 2:11 PM): held-out **FAIL** (−3 to −6 %) — int8 decode overlaps dispatches, so per-op stamped times are not additive there; the per-level e2e says int8 rows gain 8–15 % at K ≤ 2.625 and ≤ ~4 % from K3, and lose 2–3 % at K5 / K6 (w159)
+- **Status:** done (f16 table stands; int8 table **not usable** for λ_d) · **Machine:** ds8 HIP 6 (~1.9 card-h incl. builds) ·
+  **Code:** `v3/bench/decode17602/int8.sh`, `fit17602.py --prefix i8` · rule: amendment 3 (ed1185d) · **Data:**
+  `data/decode17602/int8-vs-f16.txt`, `decprice17602-i8.json`, `report-i8.txt`, `res/i8*`
+- **Setup:** every uniform level re-mixed with `act a8g128` on the 336 trunk linears, `QWEN35_EXL3_AQ_XB=1 EXL3I_MAD_GEMV=1`;
+  one unstamped e2e row + one stamped row a level (K order interleaved from both ends; one round), then the act-line
+  held-out mixes h1 / h2 / h3 / h5 (rounds a / b; h3 / h5 with w158's slim donors of the same head plans — mine were deleted).
+- **Result:** uniform fit ctx 0 F 1.46 ms, α 0.943, rms 0.47 % (8k rms 1.95 %: one row +12 %, no second round). Held-out
+  pred vs measured: h1 −5.94 / −5.32 %, h2 −3.92 / −3.83 %, h3 −3.11 / −2.95 %, h5 −4.27 / −3.99 % → **FAIL**.
+- **Why:** the method's premise (one dispatch at a time) holds on f16 rows (overlap 0.07 ms a pass) but not on int8 rows:
+  dispatches overlap 2.5 ms (K1) to 5.2 ms (K7.5) a pass (e.g. the bf16 ssm_a / ssm_b GEMMs run beside the qkv / z GEMVs:
+  3.4 / 5.3 µs serial → ~21 µs each, overlapped), so the sum of stamped durations exceeds the busy time and depends on the
+  mix. Fix options (not done): price int8 by each op's exclusive (non-overlapped) time, or by e2e differences, then new held-out mixes.
+- **What the e2e says (uniform, i8 / f16 step, ctx 0):** K1 0.852, K2 0.875, K2.5 0.916, K2.625 0.926, K3 0.964, K4 0.960,
+  K4.125 0.989, K4.5 0.980, K5 **1.029**, K5.5 0.994, K6 **1.023**, K6.5 0.982, K7 0.978 (8k alike). For a per-size decode-mode
+  choice after the search, measure both modes on the final picks (two e2e rows each) rather than this table.
+- **Runtime:** n/a (measurement); the int8 rows' numerics are #177-02's (+0.3 % / +1.8 % KL at K2.625 / K4.125).
+
 ### 2026-11-14 2:55 PM CST · #181 · **stopped by the user (cards to the search)**: 2b u2.5 arm and arm Q stopped unfinished (state saved); summary, resume points, next steps (w154)
 - **Status:** stopped (user via lead, 2:50 PM CST). u2.5g saved at main step 37 of ~190 (4 M budget), q2.5g (arm Q) at step 11:
   no results from either. No QAD process left on box2 / ds8; box2 card locks released; eval mixes deleted (rows / results
