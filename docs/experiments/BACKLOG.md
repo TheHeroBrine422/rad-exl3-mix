@@ -472,6 +472,17 @@ under-tested). Add a row when a proxy test fails for a reason on this list.
   sampling settings (match deployment), how many responses per context, which turns (all vs the deduped ones), tool
   calls the logged environment never answered (stop at the first tool call, or splice the logged tool result).
 
+### QAD additions (user + lead 11-13 evening; after w154's #181 scaling curve)
+- [ ] **DFlash2-tap matching (user idea):** the drafter reads hidden states at layers 5 / 19 / 33 / 47 / 61 and was trained
+  on bf16 ones; quantization drift there lowers acceptance. Arm = A + a hidden-state MSE (teacher-norm normalized) only at
+  the 5 taps; judged on KL (must not lose) AND drafter acceptance length / e2e tok/s (needs w153's DFlash2 port). Pilot
+  arm B (block MSE at every layer, ~1.3 M tokens) was ≈ A (1.0065 / 0.978): taps-only is cheaper and has a target.
+- [ ] **A8 in the loop:** the student runs with the shipped int8 activations (a8g128 fake-quant, STE) so the scales
+  learn to absorb A8's error (A8 costs +5–7 % at 5–6 bpw, #172); pilot students were f16-activation.
+- [ ] **Hidden-state matching at scale** (NVIDIA Flash-Next style, BACKLOG below): arm B again at the scale-up budget.
+- [ ] **Block-wise / alternating** (EfficientQAT-style, the V4 section below): only if end-to-end A saturates.
+- [ ] **QAD-aware search:** re-price sensitivities after healing (healed per-tensor gains differ?) — V3.2 question.
+
 ### V4 QAD: alternating block-wise / end-to-end (user discussion 2026-11-08)
 - **This refines the 11-07 "QAD family as a cost ladder" entry below** (its steps (1) library closed-form fits,
   (2) per-level library healing / block QAD *before the knapsack*, (3) per-mix end-to-end): the notes here are its
