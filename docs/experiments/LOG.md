@@ -4,6 +4,47 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-14 3:05 AM CST · #181 · main run stopped at the 4 M read (user: converge first), 2.5 lr × data-mix screen at 1 M launched with a fixed held-out qad eval set; calib train-KL spikes = single hard documents streamed over steps (w154)
+- **Status:** screen running (box2 cards 0-3, single-card runs) · **Rules:** amendment 4 (fd26a53) · **Notes:** lead
+  11-14 1:05–2:30 AM CST (read late: they were posted while I worked; the 2b inc4.0 run had started at lr 1e-3 without
+  the lr screen and was stopped after 1 step)
+- **Stop:** main run (gen rows) STOP at main step 247 (5.2 M rows seen, constant lr; its decayed 1 M / 4 M checkpoints
+  stand). Reason (user rule): 1 M → 4 M flat on calib (monitor 0.0582 at 2 M, 0.0585 at 4 M; verify 0.996).
+- **Calib spikes (lead note 1:20 AM):** the per-step calib KL jumps are one or two documents streamed across consecutive
+  steps: steps 76–81 = calib 16 (the-stack-smol-xl, 12,288 tokens) + 2857 (wikipedia/hi); step 49 = 3822 (wildchat); 119 =
+  2601 (wildchat) + 10 (nemotron-swe); 124 = 4678 (wildchat). Wildchat recurs (the monitor's outlier 1577 is wildchat too).
+  Their base-model KL (before training) is checked on the next free card.
+- **Screen (6 × 1 M):** lr {1e-3, 3e-4, 1e-4} × mix {A all corpora, B calib qad pool only}; fixed eval = 38 held-out qad-pool
+  docs, 31,151 rows (first 2,048 tokens), step 0 KL 0.06208, scored every 10 steps (1e-3 / A: 0.06037 at step 10).
+- **Throughput options (lead note 2:00 AM):** caching the bf16 weight across fwd / recompute / bwd = the whole 54 GB trunk
+  (autograd already keeps each layer's copy from recompute to backward); `--compile-scales` (torch.compile of the scale /
+  cast chain, dynamic shapes) added, −14 % a linear in the earlier micro-bench, to be timed in-model on a free card.
+- **w156 (#182):** ds8 `/data/q27/w154/eval/inc2.5/{ctl,a1m,a4m,p1m}/mix.rad` handed over (notes/w154.md).
+- **Runtime:** none.
+
+### 2026-11-14 2:40 AM CST · #181 · 2b controls scored (served path, board rows): inc4.0 c 0.00543 / x 0.00690, inc6.0 0.00057 / 0.00074, uniform K2.5 0.04454 / 0.05724 (the searched 2.5 incumbent: 0.04337 / 0.05619, only −2.6 % / −1.8 % vs uniform); 2b runs started (inc4.0 on box2 card 1); arm Q pre-registered (w154)
+- **Status:** running · **Machine:** box2 · **Rules:** amendment 3 (96c6132, arm Q: a8g128 fake-quant in the student,
+  4 M; header time 2:25 AM, commit 2:14 AM CST is the record) · **Data:** `data/qad181/eval-2b/`
+- Controls (served form: hostd .mix + a8g128 + bf16 embedding + the mix's R16 head; census PASS): inc4.0
+  (`v3s171-4-block-00420`, head u4) c 0.00543, x 0.00690; inc6.0 (`v3s171-6-explore-00372`, u6) c 0.00057, x 0.00074;
+  u2.5 (K2.5 everywhere, inc2.5's head) c 0.04454, x 0.05724.
+- Side note for the lead: on the board's rows the searched 2.5 incumbent vs a uniform K2.5 trunk (same head, embedding,
+  A8; about the same size), paired: **c 0.974 [0.919, 1.026] (36 docs better / 45 worse), x 0.982 [0.941, 1.018]**:
+  not measurably better on these slices (the search's x-part reads were mostly prompt-side rows, finding above).
+- 2b runs (4 M, the main recipe): inc4.0 on box2 card 1 from 2:37 AM CST, then inc6.0, u2.5; they move to more cards
+  when ds8 frees. **Runtime:** none.
+
+### 2026-11-14 2:05 AM CST · #181 · 4 M checkpoint: verify **0.933 [0.914, 0.957]**, xcorp **0.835 [0.764, 0.891]**; vs 1 M: c 0.996 [0.986, 1.010] (flat), x 0.944 [0.908, 0.971] → **4 M does not beat 1 M by the rule** (calib saturates, xcorp keeps gaining) (w154)
+- **Status:** running (main run at step ~250 on box2 cards 0, 2, 3; 16 M branch forks at step 612) · **Machine:** box2 (card 1
+  for packs / scores since w152 left; ds8 card 7 is w156's now) · **Data:** `data/qad181/eval-inc2.5/curve-a4m.json`
+- **Scores:** a4m c 0.04047 / x 0.04691 (control 0.04337 / 0.05619). a4m / control: c 0.9332 [0.9139, 0.9567] (70 / 11 docs),
+  x 0.8348 [0.7635, 0.8909] (135 / 15). a4m / a1m: c 0.9961 [0.9856, 1.0103] (52 / 29), x 0.9439 [0.9077, 0.9712] (94 / 56).
+- Position bins vs control: c 0-2048 0.935, 2048-4096 0.935, 4096-8192 0.923; x 0-2048 0.809, 2048-4096 0.880, 4096-8192 0.934.
+- Monitor (32 search docs): 0.06387 → 0.06661 (1 M, one-doc outlier) → 0.05821 (2 M, main) → 0.05854 (4 M).
+- **Reading:** on the calib-like slice the healing is near its plateau at 1 M; the xcorp part (the training mix is 80 %
+  xq) keeps improving. 2b launches at 4 M unless 16 M vs 4 M gains before then (rule).
+- **Runtime:** none.
+
 ### 2026-11-14 1:55 AM CST · #179 · qc-exl3-v3-step rebased on qc-exl3-v3 b83698d (w155's exl3i_rerank): tests pass, KLD rows byte-identical, decode bit-exact (w152)
 - **Status:** done (lead note 11-14 12:20 AM CST) · **Code:** radiance-hero `qc-exl3-v3-step` f221bb0 (fusions), 440b1f5
   (`Exl3Aq::takes`), def87e9 (exl3i interface 5: actq's residual add), 8726354 + 3bc8ad2 (PERF.md, exl3i PERF.md's
@@ -322,6 +363,25 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-14 3:15 AM CST · #177-03 · stage C, night: backlog trims (ds8 disk), a third quant lane on HIP 5–6 + menu-critical order (lead 2:10 AM), packs-mad started with a mad pack home (identity-checked vs w150) (w151)
+- **Disk (11:45 PM):** ds8 free fell ~150 GB / h (untrimmed levels waiting for swj: out/ + level/ + a C9-only final/ ≈ 3× a final). `trimloop.sh`
+  (every 5 min): out/ t-files go once a level's phase-1 DONE and level/ exist; a swj level's C9-only final/ goes while no swj loop has
+  claimed it (the swj redo deletes and rebuilds it anyway). A waiting level drops to ~1× (e.g. K4.125 36 → 12 GB).
+- **Schedule (lead 2:10 AM: quant is the bottleneck):** `stageC3.sh` replaced stageC2 at 2:04 AM CST: levels already started first,
+  then menu-critical (K2–5, 5.25–7.5, 1–1.875, sub-1); lanes HIP 0–2 / 3–4 + an opportunistic lane on HIP 5–6 that takes a level only
+  when no swj pass runs or waits and nothing is queued for swj, holding card5 / card6 locks for that whole level (its pool uses private
+  lock files). Overnight swj never idled, so the third lane has not run yet. Sub-1 levels took 28–45 min a lane (vs 18–27 at K2.6–3);
+  one K0.75 down_proj job OOMed beside others on HIP 4, rxrun requeued it alone and the retry finished the level.
+- **packs-mad (lead 2:05 AM: user OK, the 687 GB of mul1i8 packs deleted; pack all mad levels):** qc-exl3-v3 3bc8ad2's qwen35_exl3 does
+  not build against ds8's rad10-perf core (`rad::arch::Dflash2` lacks `op_rr_ext` / `rr_w`: the newer core of the lead's step 2).
+  exl3quant (the importer) is identical e054e71..3bc8ad2 and qwen35_exl3's later changes are serve-time fusions + DFlash2 declares, so
+  the pack home is w150's e054e71 plugin set built on ds8 (`plugb150.sh`, host tests pass): `/data/q27/mad/rade05/home`, rad-convert from
+  rad10-perf. **Check:** ds8's K2.5 pack, A8-mixed, equals w150's box2 mix of the same level entry for entry (1,120 entries: sizes and
+  digests, `digests.py`). `packloop.sh` packs one level at a time at nice 19 (beside the CPU-bound quant lanes) as levels become current,
+  menu-critical first: 16 packs by 3:08 AM. Packs hold 1,120 weights (the vision tower is declared by this qwen35_exl3; not in the menu).
+- **Progress 2:52 AM CST:** quant 22 / 46, swj 20 / 34; ETA ~8:20 AM CST (`ladder-mad/status-c.txt`).
+- **Runtime:** none.
+
 ### 2026-11-13 9:45 PM CST · #177-03 · stage C rescheduled after a stall (lead note 9:40 PM): quant on HIP 0–4 in two lanes, swj alone on HIP 5–6; ETA ~7:40 AM CST 11-14 (w151)
 - **Stall:** stageC.sh (8:30 PM) ran quant on HIP 0–6 and the swj loops on HIP 5 / 6 through the same card locks. rxrun's pool had
   queued K3.75's last (duplicate-seed) jobs on card 5's workers, which waited for card5.lock while the swj pass K3.25 + K3.5
