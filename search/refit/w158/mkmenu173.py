@@ -35,7 +35,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog="mkmenu173.py")
     ap.add_argument("out"); ap.add_argument("--levels", nargs="+", required=True); ap.add_argument("--packs", required=True)
     ap.add_argument("--diag", required=True); ap.add_argument("--heads", required=True); ap.add_argument("--head-dir", required=True)
-    ap.add_argument("--emb-menu", required=True); ap.add_argument("--fixed-from", required=True)
+    ap.add_argument("--emb-menu", required=True); ap.add_argument("--fixed-from", required=True,
+                    help="a census-checked mix .rad, or a previous menu173m JSON whose fixed_bytes / ab_t5_extra are kept")
     ap.add_argument("--ab-t4"); ap.add_argument("--ab-t5"); ap.add_argument("--vocab", type=int, default=248320)
     a = ap.parse_args(argv)
     trunk = MN.trunk_names(64)
@@ -78,12 +79,15 @@ def main(argv=None):
     tens.append({"w": MN.HEAD, "layer": 64, "group": "head", "hbar": None, "opts": hopts})
     eb = [t for t in json.load(open(a.emb_menu))["tensors"] if t["w"] == MN.EMB][0]
     tens.append(eb)
-    tot, ent, byw = wbytes(a.fixed_from)
-    vis = sum(b for e, b in ent.items() if e.startswith("v."))
-    fixed = tot - sum(byw.get(w, 0) for w in trunk) - byw.get(MN.HEAD, 0) - byw.get(MN.EMB, 0)
-    ab = {}
-    for k, p in (("t4", a.ab_t4), ("t5", a.ab_t5)):
-        if p: ab[k] = sum(b for e, b in MK.rad_entries(p)[1].items() if ".ssm_ab." in e)
+    if a.fixed_from.endswith(".json"):
+        pm = json.load(open(a.fixed_from)); fixed, vis, ab = pm["fixed_bytes"], pm["built"]["fixed_vision_bytes"], pm["built"]["ab_bytes"]
+    else:
+        tot, ent, byw = wbytes(a.fixed_from)
+        vis = sum(b for e, b in ent.items() if e.startswith("v."))
+        fixed = tot - sum(byw.get(w, 0) for w in trunk) - byw.get(MN.HEAD, 0) - byw.get(MN.EMB, 0)
+        ab = {}
+        for k, p in (("t4", a.ab_t4), ("t5", a.ab_t5)):
+            if p: ab[k] = sum(b for e, b in MK.rad_entries(p)[1].items() if ".ssm_ab." in e)
     out = {"params": MN.PARAMS, "fixed_bytes": fixed, "n_layers": 64, "groups": MN.GROUPS, "tensors": tens,
            "ab_t5_extra": (ab["t5"] - ab["t4"]) if len(ab) == 2 else None,
            "built": {"by": "mkmenu173.py (w158, #173-03)", **src, "diag": a.diag, "heads": a.heads, "head_dir": a.head_dir,

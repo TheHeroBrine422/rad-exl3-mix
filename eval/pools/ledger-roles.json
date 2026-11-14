@@ -510,6 +510,18 @@
   "decisions": null,
   "note": "#181 (w154, 2026-11-13): the same 32 search-pool monitor docs as qad165-monitor (seed 1000), first 2,048 tokens; report only (no early stop, never a pick)"
  },
+ "qad181-fixed": {
+  "role": "monitor",
+  "line": "v3.1",
+  "decisions": 7,
+  "note": "#181 amendment 4 (w154, 2026-11-14): the lr x data-mix screen's fixed eval set: 38 qad-pool docs (seed 2181, >= 200 gen rows in the first 2,048 tokens), held out of the screen runs' training, scored every 10 steps; picked the screen's recipe (7 runs, 2.5) and the 4.0 / 6.0 lrs. The main run (inc2.5g) did train on them"
+ },
+ "golden-verify27-w114-qad181": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#181 (w154, 2026-11-14): 4th use of golden-verify27-w114 (82 verify docs): #181's served-path judgement of the 2.5 / 4.0 / 6.0 incumbents' QAD checkpoints vs their controls (report, never a pick: picks use the qad-pool fixed eval / search-pool monitor)"
+ },
  "golden-fit129-a8rows173": {
   "role": "fit",
   "line": "v3.1",

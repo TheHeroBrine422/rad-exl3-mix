@@ -7273,3 +7273,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Merged emb157 (ff to 120132a); census `--expect-emb trellis` applied; ds8 donor push started. t2.5 vs bf16 embedding
   KL 1.012 [0.996, 1.029], times within noise, VRAM +0.37 GiB = the codes; DFlash2 works with the trellis table
   (acceptance 4.04 vs 3.92 tok/step). Report `local/workers/out/w157.md`. **Runtime:** neither (measured within noise).
+
+### 2026-11-14 1:55 PM CST · housekeeping · box2 87 GB → 197 GB free
+- Deleted box2 `w157/mix`, `w157/dtmp` (w157's B/T identity mixes, post-merge recheck not needed: rows already
+  byte-identical on rad10-e157b) and `w144/mix/*.rad` (w144's mul1i8-trunk embedding test mixes, superseded by #174-03);
+  92 GB + w154 churn. w154 told to delete eval mixes after scoring. **Runtime:** neither.
