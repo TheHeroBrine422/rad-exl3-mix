@@ -65,8 +65,9 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
                          f"(inputs.hout enable / apply_k_min / apply_k_max)")
     dev = torch.device("cpu") if device == "cpu" else torch.device("cuda", device)
     cuda = dev.type == "cuda"
+    mad = C.mad_params(cfg) if cb == "mad" else None
     Q = engine.setup(dev, codebook=cb, qtf2=s0["qtf2"], drift=s0["drift"], block_trace=s0["block_trace"], tile_cd=tcd,
-                     block_order=C.block_order(cfg))
+                     block_order=C.block_order(cfg), mad=mad)
     code = engine.code_stamp(Q); kern = engine.kernels(Q)
     prof = Prof(dev).install(Q) if profile else None
     ck = quant.Ckpt(inp["ckpt"])
@@ -85,6 +86,7 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
                                                          save_wq=save_wq, prof=prof, diag_out=dg)
         meta = {"rxq_settings": st, "rxq_code": code, "K": str(K), "codebook": cb, "level": spec.get("level", ""),
                 "key": key}
+        if mad: meta["mad"] = f"{mad[0]:#x},{mad[1]:#x}"       # the code's (a, b) (#177-03): assembly carries it to stamp.json
         if kern != "gpu": meta["rxq_kernels"] = kern     # cpu-standin: test only, assemble refuses it without allow_standin
         al = C.c9_injob(cfg, key, inp.get("hin"), inp.get("wpre"))
         c9s = None
@@ -94,7 +96,7 @@ def run_quant(spec, out, device=0, cfg=None, profile=True, save_wq=False):
             tc = time.perf_counter()
             _, _, _, hname, _ = qwen35.locate(key)
             c, c9rec = post.c9_tensor(tensors, key, cb, ck.get(key + ".weight"), f"{inp['hessians']}/{hname}.safetensors",
-                                      al, cfg["post"]["c9"]["e_clip"], dev)
+                                      al, cfg["post"]["c9"]["e_clip"], dev, mad=mad)
             c9rec = {"key": key, "fam": post.c9_family(key), "layer": int(key.split(".")[3]), "alpha": al, **c9rec,
                      "target": "W/H"}
             if "e1" in dg and "diag" in rec:          # the trajectory's post-C9 point: e1 rescaled by c (x1 / d1)
@@ -174,12 +176,12 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False, partial=Fals
     if miss: raise SystemExit(f"{len(miss)} tensors missing (first {miss[0]})")
     stamps, c9want = set(), []
     for k in want:
-        with safe_open(files[k], "pt") as f: m = f.metadata(); stamps.add((m["rxq_settings"], m["rxq_code"], m["K"], m["codebook"]))
+        with safe_open(files[k], "pt") as f: m = f.metadata(); stamps.add((m["rxq_settings"], m["rxq_code"], m["K"], m["codebook"], m.get("mad")))
         if m.get("rxq_kernels", "gpu") != "gpu" and not allow_standin:
             raise SystemExit(f"{k}: made with the {m['rxq_kernels']} kernels (test only), not for a level")
         if "c9" in m: c9want.append(k)
     if len(stamps) != 1: raise SystemExit(f"mixed stamps in one level: {sorted(stamps)[:3]}")
-    (st, code, K, cb), = stamps
+    (st, code, K, cb, mad), = stamps
     stamp = f"{st[:8]}{code[:8]}"
     os.makedirs(dst, exist_ok=True)
     plan = [(f"q-L{l:02d}.safetensors", [k for _, ks in qwen35.layer_plan(l) for k in ks if k in want]) for l in range(n_layers)]
@@ -218,8 +220,9 @@ def assemble(job_dirs, dst, template=None, n_layers=64, head=False, partial=Fals
     # absent, so an i8 / i4 level without it is refused, and a recipe saying mul1 would be accepted). rxq_settings in
     # args also makes `rxq levelargs` refuse the level (it is not an ourq level; S3 note)
     Kn = int(float(K)) if float(K).is_integer() else float(K)
-    json.dump([{"stamp": stamp, "rxq_settings": st, "rxq_code": code, "K": K, "codebook": cb,
-                "args": {"K": Kn, "codebook": cb, "rxq_settings": st},
+    madd = {} if mad is None else {"mad": {"a": mad.split(",")[0], "b": mad.split(",")[1]}}   # #177-03: rxq.deq reads it
+    json.dump([{"stamp": stamp, "rxq_settings": st, "rxq_code": code, "K": K, "codebook": cb, **madd,
+                "args": {"K": Kn, "codebook": cb, "rxq_settings": st, **madd},
                 "time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}], open(os.path.join(dst, "stamp.json"), "w"), indent=1)
     return stamp
 

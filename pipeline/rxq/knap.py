@@ -26,7 +26,8 @@ import argparse, json, os, subprocess, sys
 from . import qwen35
 from .mix import mix_text, trunk_names, level_info
 
-CBN = {"i8": "i8", "i4": "i4", "mul1": "m1"}                  # level codebook -> knap5's option prefix
+CBN = {"i8": "i8", "i4": "i4", "mul1": "m1",                  # level codebook -> knap5's option prefix
+       "mad": "i8"}   # #177-03: mad replaces mul1i8 as the one int8 trunk codebook (knap5's KN_I8 slot; never both in one library)
 
 
 def level_name(codebook, K):

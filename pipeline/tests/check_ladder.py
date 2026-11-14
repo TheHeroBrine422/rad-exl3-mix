@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """check_ladder.py [RQAH_CHECKOUT] -- rxq/ladder.py, the ladder's job generation (CPU, seconds):
-  levels   49 levels from the settings file (int8-only 11-09: mul1 out, i8 K7.5 in; K8 dropped 11-12): pass 1 20 (i8 quarter steps
+  levels   49 levels from the settings file (int8-only 11-09: mul1 out, i8 K7.5 in; K8 dropped 11-12; mad replaces i8 11-13): pass 1 20 (i8 quarter steps
            K1.25-5, half steps K5.5-7), pass 2 23, no i4 twins (A4 out, w93 11-08), pass 3 7 (sub-1, i8 since #126;
            no i4 level at all); every (K, codebook) agrees with
            [quant.codebook]; pass 1 first, K2.5-4.5 first inside a pass; names unique and carry the settings stamp
@@ -32,12 +32,13 @@ cfg = C.load(); st = C.settings_stamp(cfg)
 L = LD.levels(cfg)
 cnt = {p: sum(1 for v in L if v["pass"] == p) for p in ("1", "2", "2b", "3")}
 p1 = sorted((float(v["K"]), v["codebook"]) for v in L if v["pass"] == "1")
-want1 = sorted([(k / 4, "i8") for k in range(5, 21)] + [(5.5, "i8"), (6.0, "i8"), (6.5, "i8"), (7.0, "i8")])
+CB = C.codebook_for(cfg, 2.5)      # the one codebook: mad since 11-13 (#177-03; i8 11-09 .. 11-13)
+want1 = sorted([(k / 4, CB) for k in range(5, 21)] + [(5.5, CB), (6.0, CB), (6.5, CB), (7.0, CB)])
 order_ok = [v["pass"] for v in L] == sorted([v["pass"] for v in L], key=["1", "2", "2b", "3"].index) and \
     all(2.5 <= float(L[i]["K"]) <= 4.5 for i in range(9))
 names = [v["name"] for v in L]
 report("levels", len(L) == 49 and cnt == {"1": 20, "2": 22, "2b": 0, "3": 7} and p1 == want1 and order_ok and
-       len(set(names)) == 49 and not any(v["codebook"] in ("i4", "mul1") for v in L) and all(v["codebook"] == "i8" for v in L if float(v["K"]) <= 1) and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
+       len(set(names)) == 49 and not any(v["codebook"] in ("i4", "mul1") for v in L) and all(v["codebook"] == CB for v in L) and all(f"-{st[:8]}-" in n for n in names) and all(float(v["K"]) < 1 for v in L if v["pass"] == "3"),
        f"{len(L)} levels {cnt}; pass 1 = the coarse subset {p1 == want1}; order {order_ok}; first {names[:3]}")
 
 for mode in ("dense", "blocks"):

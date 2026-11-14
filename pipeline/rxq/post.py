@@ -81,7 +81,7 @@ def c9_family(key):
     return C9FAM.get(qwen35.family(key))
 
 
-def c9_tensor(tensors, key, codebook, w, hess_path, al, e_clip, dev):
+def c9_tensor(tensors, key, codebook, w, hess_path, al, e_clip, dev, mad=None):
     """C9 inside the per-tensor quant job (S2, rxq.job): the writer's job outputs (tensors: {<key>.trellis / .suh / .svh},
     as the job saves them), its bf16 weight w (out, in) and its group's calib H_in file -> (c, statistics). The same
     decode (rxq.deq.weight with the codebook's table, f16 suh / svh) and c9_rows as c9_scales on the assembled level, so
@@ -90,7 +90,7 @@ def c9_tensor(tensors, key, codebook, w, hess_path, al, e_clip, dev):
     dev = torch.device(dev)
     tr = tensors[f"{key}.trellis"]
     Q = deq.weight(tr.to(dev), tensors[f"{key}.suh"].to(dev), tensors[f"{key}.svh"].to(dev), tr.shape[2] / 16,
-                   torch.from_numpy(deq.lut(codebook)).to(dev)).T.double()
+                   torch.from_numpy(deq.lut(codebook, mad)).to(dev)).T.double()
     W = w.to(dev).double()
     assert Q.shape == W.shape, (key, Q.shape, W.shape)
     M = hessian(hess_path, dev)

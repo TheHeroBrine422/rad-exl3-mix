@@ -39,8 +39,9 @@ def want(u): return not only or u in only
 
 X = load("exl3dec", f"{RXM}/volunteer/checker/exl3dec.py")
 if want("lut"):
-    bad = [cb for cb in R.CODEBOOKS if not (R.lut(cb) == X.lut(cb)).all()]
-    report("lut", not bad, f"{len(R.CODEBOOKS)} codebooks x 65,536 states, differing: {bad}")
+    cbs = [cb for cb in R.CODEBOOKS if cb != "mad"]         # mad (#177-03): not in exl3dec; tests/check_mad.py checks it
+    bad = [cb for cb in cbs if not (R.lut(cb) == X.lut(cb)).all()]
+    report("lut", not bad, f"{len(cbs)} codebooks x 65,536 states, differing: {bad}")
 
 if want("deq"):
     A = load("exl3deq", f"{RXM}/v3/yaqa/swj27/exl3deq.py")

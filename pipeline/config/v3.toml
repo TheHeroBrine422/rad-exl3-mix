@@ -104,12 +104,26 @@ stored_order = [6, 7, 38, 4, 39, 35, 3, 36, 0, 5, 37, 34, 32, 26, 17, 14, 29, 11
 # anywhere (A4, i4's only reason, is out). #126 held-out two-sided proxy: see v3/e3/settle/w95.md. The settings stamp
 # changes with this edit (user: fine).]
 # A level's codebook is part of its job spec; this table is only the default the ladder planner uses.
+# [11-13 (user, 7:05 PM CST; #177, LOG + v3.md item 0): mad replaces i8 (mul1i8) everywhere: KL at par in our
+# quantizer (#177 stage 3 + head bench), decode in IQR's byte-sum form. #177-03 (w151): the ladder requant with it.
+# The settings stamp changes with this edit (144dd6e1 = the i8 ladder).]
 by_level = [
-  { k_min = 0.125, k_max = 8.0,  codebook = "i8" },   # one codebook everywhere (11-09): i8 to K8
+  { k_min = 0.125, k_max = 8.0,  codebook = "mad" },  # one codebook everywhere (11-13): mad to K8 (was i8, 11-09)
 ]
 mul1_levels = []                 # retired 11-09 (int8-only; user + deadcode; the codebook and the f16-path levels are out)
 i4_twins = []                  # none (A4 out, user 11-08; was [2.0, 3.0], inert since w93's twin drop)
-hash_codebook = false          # #100 DROPPED (user 2026-11-06; real 0.8B run KL x1.016-1.040, decode +13-18%): mul1i8 stays
+
+[quant.codebook.mad]
+# The mad code (IQR-V4's byte-sum hash, w139's form): value(s) = (bytesum(((s * a + b) mod 2^32) & mask) - bias) * 4 k_inv,
+# s the trellis state (L bits), 4 k_inv = mul1i8's int8 step. Built by v3/e3/exl3hash (exl3cb i8 + exl3frac2 mul1 with
+# EXL3_CB_HASH, A / B baked in); rxq passes a / b to the build from here (no env). mask / L / bias are fixed by the
+# kernels (validate() refuses others); a / b are free. a = w27's searched global A (r100.md), b = IQR's.
+# (#100 hash, dropped 11-06 on the 0.8B real run x1.016-1.040, was reopened as #177 and adopted 11-13.)
+a = 0xd0474b
+b = 0x2545F491
+mask = 0x3F3F3F3F
+L = 16
+bias = 126
 
 [quant.tile_cd]
 # #77 ADOPTED for attn_qg only (user 11-06; the CPU proxy's cd3 / LDLQ 0.963-0.978 was ~3x too optimistic, its LDLQ
@@ -227,7 +241,6 @@ act_order_down = "#103 negative (0.994-0.998)"
 chained_tail_biting = "#102 negative"
 best_of_n_seeds = "#41 null (spread 0.5%)"
 group_scales = "#40 negative"
-# Also closed, with no switch here (comment only, outside the stamp): xcorp H_in blend (#101, above), hash codebook (#100,
-# above), A1 down-from-up (#81-04, user 11-07), joint refits beyond the MLP (#108 fail), clipped i8 (#109 negative),
+# Also closed, with no switch here (comment only, outside the stamp): xcorp H_in blend (#101, above), A1 down-from-up (#81-04, user 11-07), joint refits beyond the MLP (#108 fail), clipped i8 (#109 negative),
 # bf16 (row, 128) scales (#110 fail), and the A16 / bf16 serving options + mul1 codebook (int8-only decision,
 # user + deadcode 11-09: A8-g128 everywhere; KLD cost of A8 measured x1.0014 at K2.5 full stack, #122).

@@ -64,6 +64,7 @@ if not os.path.exists(f"{ck}/model.safetensors"):
     save_file(tens, f"{ck}/model.safetensors.part"); os.replace(f"{ck}/model.safetensors.part", f"{ck}/model.safetensors")
 CFG = os.path.join(PIPE, "config", "v3.toml")
 cfg = C.load(CFG); ST = C.settings_stamp(cfg)
+CB = C.codebook_for(cfg, 3.5)      # the ladder's codebook: mad since 11-13 (#177-03); the pool jobs below stay i8
 
 
 def specs(K, tag, seed=0):
@@ -167,7 +168,7 @@ if a.part in ("pool", "all"):
 
 if a.part in ("run", "all"):
     R = f"{W}/ladder"
-    conf = {"root": R, "settings": CFG, "python": sys.executable, "layers": "2-3", "passes": ["1"], "levels": ["3.5-i8", "3.25-i8"],
+    conf = {"root": R, "settings": CFG, "python": sys.executable, "layers": "2-3", "passes": ["1"], "levels": [f"3.5-{CB}", f"3.25-{CB}"],
             "steps": ["jobs", "assemble"], "allow_standin": True, "dup_frac": 0.12, "template": None,
             "inputs": {"ckpt": ck, "hessians": hs, "hin": None, "hout": ho},
             "env": ENV, "devices": [{"name": "cpu0", "device": "cpu", "lock": f"{W}/card.lock", "ram_lock": f"{W}/ram.lock",
@@ -201,7 +202,7 @@ if a.part in ("multi", "all"):
     from rxq import ladder
     MW = f"{W}/multi"; shutil.rmtree(MW, ignore_errors=True); os.makedirs(MW)
     names = {f"{ladder.fmt_k(v['K'])}-{v['codebook']}": v["name"] for v in ladder.levels(cfg)}
-    LV = [names[k] for k in ("3.5-i8", "3.25-i8", "3.75-i8", "3-i8")]
+    LV = [names[k] for k in (f"3.5-{CB}", f"3.25-{CB}", f"3.75-{CB}", f"3-{CB}")]
     stub = f"{MW}/stub.py"
     open(stub, "w").write(r"""import hashlib, json, sys
 import numpy as np
@@ -292,7 +293,7 @@ else:
     report("multi-rerun", p2.returncode == 0 and len([e for e in st2 if e["ev"] == "assign"]) == n_assign, f"rc {p2.returncode}, {time.time() - t:.1f} s, "
            f"assignments {n_assign} -> {len([e for e in st2 if e['ev'] == 'assign'])}")
     # the coordinator killed while a level unit runs: the unit goes on (own process), the restart picks up its result
-    LV2 = [names["4-i8"]]
+    LV2 = [names[f"4-{CB}"]]
     CO2 = dict(CO, root=f"{MW}/coord2", levels=LV2, hosts=[hB], evals=None)
     json.dump(CO2, open(f"{MW}/multi2.json", "w"), indent=1)
     pk = subprocess.Popen([sys.executable, "-m", "rxrun.multi", f"{MW}/multi2.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -321,7 +322,7 @@ if a.part in ("evalstall", "all"):
     from rxrun import hostd
     PACK_S = 20
     names = {f"{ladder.fmt_k(v['K'])}-{v['codebook']}": v["name"] for v in ladder.levels(cfg)}
-    LVS = [names["3-i8"], names["3.25-i8"]]
+    LVS = [names[f"3-{CB}"], names[f"3.25-{CB}"]]
     out = {}
     for mode in ("exclusive", "shared"):
         SW = f"{W}/evalstall-{mode}"; shutil.rmtree(SW, ignore_errors=True); os.makedirs(SW)

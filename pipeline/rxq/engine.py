@@ -5,8 +5,9 @@
 2. refit_scales wrapped: empty the cache and warm the refit kernels first; with RXQ_REFIT_CPU_FALLBACK=1 (or ourq's
    OURQ_REFIT_CPU_FALLBACK=1) an out-of-memory refit runs on the CPU in fp32 (small cards, 27B down_proj)
 3. LDLQ drift interpolated log-linearly between exllamav3's table points (drift = "interp"; "exact" = the lookup)
-4. kernel swaps: exl3frac (fractional rates), exl3cb (rounded codebooks), exl3frac2 (qtf2), all from rad-exl3-mix
-   v3/e3/ built at run time against the fork's exllamav3_ext sources
+4. kernel swaps: exl3frac (fractional rates), exl3cb (rounded codebooks), exl3frac2 (qtf2), exl3hash (the mad codebook:
+   exl3cb + exl3frac2 with the hash decode, #177-03), all from rad-exl3-mix v3/e3/ built at run time against the fork's
+   exllamav3_ext sources
 5. optional: tile coordinate descent (rxq/tilecd.py: w50's module merged, plus the H_out objective), the gain wrapper
 6. optional (#117, quant.block_order): the residual readers' LDLQ visits their input 128-blocks in a stored order
    (rxq/blkorder.py, route B of w84), installed after tile CD so it wraps tile CD's wrappers too
@@ -47,18 +48,21 @@ def _warm_refit(dev_):
 
 def _kernel_dirs():
     e3 = os.path.join(rxm_root(), "v3", "e3")
-    return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2")}
+    return {m: os.path.join(e3, m) for m in ("exl3frac", "exl3cb", "exl3frac2", "exl3hash")}   # exl3hash: mad (#177-03)
 
 
 MEASURED_DRIFT = {0.125: 1.348, 0.25: 1.342, 0.375: 1.245, 0.5: 1.184, 0.625: 1.142, 0.75: 1.114, 0.875: 1.092, 1: 1.089}
 
 
-def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True, block_order=None):
+def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, tile_cd=None, frac=True, block_order=None,
+          mad=None):
     """returns the exllamav3 quantize module, patched. tile_cd: None or (sweeps, families list[, module path]);
-    block_order: None or the stored order of the 40 residual 128-blocks (#117)"""
+    block_order: None or the stored order of the 40 residual 128-blocks (#117); mad: (a, b) of the mad codebook
+    (config.mad_params; required with codebook "mad", #177-03)"""
+    assert (codebook == "mad") == (mad is not None), f"codebook {codebook}: mad (a, b) {mad} (needed with mad, only with mad)"
     cpu = torch.device(device).type == "cpu" and os.environ.get("RXQ_CPU_STANDIN") == "1"   # the stand-in: opt-in only
     key = (codebook, bool(qtf2), drift, bool(block_trace), None if tile_cd is None else (tile_cd[0], tuple(tile_cd[1]), *tile_cd[2:]),
-           bool(frac), None if block_order is None else tuple(block_order), cpu)
+           bool(frac), None if block_order is None else tuple(block_order), cpu, None if mad is None else tuple(mad))
     if _STATE.get("key") is not None:
         if _STATE["key"] != key: raise RuntimeError(f"engine already set up as {_STATE['key']}, asked for {key}: one setup a process")
         _STATE["dev"][0] = device
@@ -99,17 +103,21 @@ def setup(device, codebook="i8", qtf2=True, drift="interp", block_trace=False, t
     kd = _kernel_dirs()
     if cpu:
         from . import cpukern
-        assert codebook in ("mul1", "i8", "i4") and (qtf2 or codebook == "mul1"), f"cpu stand-in: codebook {codebook} qtf2 {qtf2}"
+        assert codebook in ("mul1", "i8", "i4", "mad") and (qtf2 or codebook == "mul1"), f"cpu stand-in: codebook {codebook} qtf2 {qtf2}"
         cpukern.install(Q, codebook)
         frac = False                                     # no run-time builds
     if frac:
         sys.path.insert(0, kd["exl3frac"]); import exl3frac
         exl3frac.install(exl3_src())
-    if codebook != "mul1" and not cpu:
+    if codebook == "mad" and not cpu:                    # #177-03: exl3hash (exl3cb i8 + exl3frac2 mul1, EXL3_CB_HASH), A / B
+        assert frac and qtf2, "the mad codebook: exl3hash's exl3cb + exl3frac2 builds (frac + qtf2)"   # from the settings
+        sys.path.insert(0, kd["exl3hash"]); import exl3hash
+        exl3hash.install(exl3_src(), qtf2, a=mad[0], b=mad[1])
+    elif codebook != "mul1" and not cpu:
         assert frac, "a rounded codebook needs the frac kernels (ourq: --codebook needs --frac-ext)"
         sys.path.insert(0, kd["exl3cb"]); import exl3cb
         exl3cb.install(exl3_src(), codebook)
-    if qtf2 and not cpu:                                 # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
+    if qtf2 and not cpu and codebook != "mad":           # i4: w53's qtf2-i4.patch (exl3frac2 "i4" variant, 11-07)
         assert frac and codebook in ("mul1", "i8", "i8c", "i4"), "qtf2 needs the frac kernels and the mul1, i8, i8c or i4 codebook"
         sys.path.insert(0, kd["exl3frac2"]); import exl3frac2
         exl3frac2.install(exl3_src(), codebook)

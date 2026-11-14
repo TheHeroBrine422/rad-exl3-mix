@@ -1,0 +1,20 @@
+--- a/jobs/rxq_quant.py	2026-11-14 00:20:33.448392815 +0000
++++ b/jobs/rxq_quant.py	2026-11-14 00:20:33.454319766 +0000
+@@ -5,7 +5,7 @@
+ C9 alpha on the writers, ...). The jobs are generated from the settings file by `python -m rxq.ladder jobs` (rad-exl3-mix) and enqueued
+ with `admin.py enqueue-jobs`; this module only checks and runs them.
+ 
+-Parameters: model, revision, arch, level, K, codebook (i8 / i4 / mul1), layer, group, keys (the tensors: the group's,
++Parameters: model, revision, arch, level, K, codebook (i8 / i4 / mul1 / mad), layer, group, keys (the tensors: the group's,
+ or one of them, in the group's order), settings {rxq: the settings stamp (rxq stamp), seed_offset}, stamp (this
+ queue's settings stamp of the params, as quant_*), config (the settings file's datapack relpath:
+ models/M@R/rxq/<settings stamp>.toml), hout (H_out snapshot id, or null where H_out does not apply), c9 (the keys whose
+@@ -38,7 +38,7 @@
+               "model": {"type": "string", "pattern": Q.ID}, "revision": {"type": "string", "pattern": Q.ID},
+               "arch": {"type": "string", "enum": ["qwen3_5"]}, "level": {"type": "string", "pattern": Q.ID},
+               "K": {"type": "number", "minimum": 0.125, "maximum": 8, "multipleOf": 0.125},
+-              "codebook": {"type": "string", "enum": ["mul1", "i8", "i4"]},
++              "codebook": {"type": "string", "enum": ["mul1", "i8", "i4", "mad"]},   # mad: rad-exl3-mix #177-03 (11-13)
+               "layer": {"type": "integer", "minimum": 0, "maximum": 255}, "group": {"type": "integer", "minimum": 0, "maximum": 7},
+               "keys": {"type": "array", "items": KEY, "minItems": 1, "maxItems": 4},
+               "settings": {"type": "object", "required": ["rxq", "seed_offset"], "properties": {

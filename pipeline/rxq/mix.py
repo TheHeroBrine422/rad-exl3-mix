@@ -19,7 +19,8 @@ import argparse, json, os, sys
 
 from . import qwen35
 
-CB = {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1"}         # level codebook -> the exl3i importer's codebook=
+CB = {"i8": "mul1i8", "i4": "mul1i4", "mul1": "mul1",          # level codebook -> the exl3i importer's codebook=
+      "mad": "mad"}      # #177-03: the exl3i importer's mad codebook (radiance qc-exl3-v3-mad, w150's #177-02)
 
 
 def trunk_names(n_layers=64):

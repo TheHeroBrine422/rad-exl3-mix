@@ -1,7 +1,7 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """An ourq-layout level back to the weights it holds, in torch (CPU or GPU, no exllamav3 import): what the level passes
 (S4 swj, S5 sibling moments) and the writers' C9 pass read. Port of rad-exl3-mix v3/yaqa/swj27/exl3deq.py (decode) with
-rad-quant-at-home checker/exl3dec.py's codebook tables and ring plan (mul1 / i8 / i8c / i4, every rate in 1/8 steps,
+rad-quant-at-home checker/exl3dec.py's codebook tables and ring plan (mul1 / i8 / i8c / i4, + mad #177-03; every rate in 1/8 steps,
 the sub-1 salt), vendored here so rxq needs no other checkout (tests/check_deq.py: bit-identical to exl3deq.py and to
 v3/yaqa/asym27/deq.py on a real 27B level).
 
@@ -17,7 +17,8 @@ import torch
 from safetensors import safe_open
 
 MUL1 = 0x83DCD12D
-CODEBOOKS = ("mul1", "i8", "i8c", "i4")
+CODEBOOKS = ("mul1", "i8", "i8c", "i4", "mad")
+MAD_AB = (0xD0474B, 0x2545F491)    # mad (#177-03): config/v3.toml [quant.codebook.mad]'s a / b; mask 0x3F3F3F3F, bias 126
 
 
 def frac_mask(n):
@@ -35,8 +36,18 @@ def ka_mask(K):
 def _f16(bits): return np.array([bits], dtype=np.uint16).view(np.float16)[0]
 
 
-def codebook_lut(cb):
-    """the fp16 value of every 16-bit state, as float32 [65536] (exl3dec.codebook_lut)"""
+def mad_lut(a, b):
+    """mad: q(s) = bytesum(((s a + b) mod 2^32) & 0x3F3F3F3F) - 126, value q * 4 k_inv (= v3/e3/exl3hash values())"""
+    s = np.arange(65536, dtype=np.uint64)
+    h = ((s * np.uint64(a) + np.uint64(b)) & np.uint64(0xFFFFFFFF)) & np.uint64(0x3F3F3F3F)
+    q = sum(((h >> np.uint64(8 * i)) & np.uint64(0xFF)).astype(np.int64) for i in range(4)) - 126
+    s4 = np.float32(4.0) * np.float32(_f16(0x1EEE))
+    return (q.astype(np.float32) * s4).astype(np.float16).astype(np.float32)
+
+
+def codebook_lut(cb, mad=None):
+    """the fp16 value of every 16-bit state, as float32 [65536] (exl3dec.codebook_lut); mad: (a, b), default MAD_AB"""
+    if cb == "mad": return mad_lut(*(mad or MAD_AB))
     s = np.arange(65536, dtype=np.uint64)
     x = (s * MUL1) & 0xFFFFFFFF
     bs = sum(((x >> (8 * i)) & 0xFF) for i in range(4)).astype(np.float64)
@@ -66,9 +77,17 @@ def codebook_lut(cb):
 _LUT = {}
 
 
-def lut(cb):
-    if cb not in _LUT: _LUT[cb] = codebook_lut(cb)
-    return _LUT[cb]
+def lut(cb, mad=None):
+    k = (cb, tuple(mad) if cb == "mad" and mad else None)
+    if k not in _LUT: _LUT[k] = codebook_lut(cb, mad)
+    return _LUT[k]
+
+
+def level_mad(d):
+    """a mad level's (a, b) from its stamp.json (rxq assemble writes "mad"; #177-03), else MAD_AB"""
+    st = os.path.join(d, "stamp.json")
+    m = json.load(open(st))[-1].get("mad") if os.path.exists(st) else None
+    return (int(m["a"], 16), int(m["b"], 16)) if m else MAD_AB
 
 
 def ring_plan(K):
@@ -152,7 +171,8 @@ class Level:
         self.ix = json.load(open(os.path.join(d, "model.safetensors.index.json")))["weight_map"]
         self.codebook = codebook or level_codebook(d)
         if self.codebook not in CODEBOOKS: raise SystemExit(f"{d}: codebook {self.codebook!r} not decodable ({CODEBOOKS})")
-        self.table = torch.from_numpy(lut(self.codebook)).to(self.dev)
+        self.mad = level_mad(d) if self.codebook == "mad" else None
+        self.table = torch.from_numpy(lut(self.codebook, self.mad)).to(self.dev)
         self.h = {}
 
     def keys(self): return sorted(k[:-len(".trellis")] for k in self.ix if k.endswith(".trellis"))

@@ -170,7 +170,7 @@ class _Ext:
 
 def install(Q, codebook):
     """the stand-ins into quantize module Q (after rxq.engine's own patches); codebook i8 / i4 / mul1"""
-    assert codebook in ("mul1", "i8", "i4"), f"cpukern: codebook {codebook}"
+    assert codebook in ("mul1", "i8", "i4", "mad"), f"cpukern: codebook {codebook}"   # mad: deq.MAD_AB's table (#177-03)
     if _STATE["installed"] is not None:
         assert _STATE["installed"] == codebook, "cpukern: one codebook a process"
         return Q

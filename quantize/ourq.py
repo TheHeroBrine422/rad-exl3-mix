@@ -98,8 +98,12 @@ L = "model.language_model.layers"
 ap = argparse.ArgumentParser()
 ap.add_argument("--frac-ext", metavar="SRC", help="quarter-step / K5-8 half-step rates: build+install v3/e3/exl3frac from "
                 "the rxm-frac-quarter exllamav3_ext sources SRC (needs PYTORCH_ROCM_ARCH)")
-ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c"), default="mul1", help="search with the int8- or int4-"
-                "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply")
+ap.add_argument("--codebook", choices=("mul1", "i8", "i4", "i8c", "mad"), default="mul1", help="search with the int8- or int4-"
+                "rounded mul1 codebook (v3/e3/exl3cb, needs --frac-ext SRC for the sources): what V3's int kernels multiply; "
+                "mad: the V3 codebook since 11-13 (#177-03; v3/e3/exl3hash, needs --frac-ext and --qtf2; --mad-a / --mad-b)")
+ap.add_argument("--mad-a", type=lambda x: int(x, 0), default=0xD0474B, help="mad multiplier a (= pipeline/config/v3.toml "
+                "[quant.codebook.mad]); stamped with --codebook mad only")
+ap.add_argument("--mad-b", type=lambda x: int(x, 0), default=0x2545F491, help="mad offset b (as --mad-a)")
 ap.add_argument("-K", required=True,
                 help="bitrate: integer 1-8, or fractional (K = KA + n/16, n even; needs the rxm-frac-quarter exllamav3 for n != 8); "
                 "a comma list quantizes several levels in one pass, layer by layer, reusing each tensor's K-independent work "
@@ -165,12 +169,17 @@ if a.frac_ext:
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac"), os.path.join(_h, "../v3/e3/exl3frac")) if os.path.isdir(d)))
     import exl3frac
     exl3frac.install(a.frac_ext)
-if a.codebook != "mul1":
+if a.codebook == "mad":                                    # #177-03: exl3hash (exl3cb i8 + exl3frac2 mul1, EXL3_CB_HASH)
+    assert a.frac_ext and a.qtf2, "--codebook mad needs --frac-ext SRC and --qtf2"
+    sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3hash"), os.path.join(_h, "../v3/e3/exl3hash")) if os.path.isdir(d)))
+    import exl3hash
+    exl3hash.install(a.frac_ext, True, a=a.mad_a, b=a.mad_b)
+elif a.codebook != "mul1":
     assert a.frac_ext, "--codebook needs --frac-ext SRC (the fork's exllamav3_ext sources)"
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3cb"), os.path.join(_h, "../v3/e3/exl3cb")) if os.path.isdir(d)))
     import exl3cb
     exl3cb.install(a.frac_ext, a.codebook)
-if a.qtf2:
+if a.qtf2 and a.codebook != "mad":
     assert a.frac_ext and a.codebook in ("mul1", "i8", "i8c", "i4"), "--qtf2 needs --frac-ext SRC and the mul1, i8, i8c or i4 codebook"
     sys.path.insert(0, next(d for d in (os.path.join(_h, "exl3frac2"), os.path.join(_h, "../v3/e3/exl3frac2")) if os.path.isdir(d)))
     import exl3frac2
@@ -385,12 +394,14 @@ def _stamp():
         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac", "*.py")))
         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3cb", "*")))
         files += sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "exl3frac2", "*.*")))
+        if a.codebook == "mad": files += sorted(glob.glob(os.path.join(os.path.dirname(exl3hash.__file__), "*.*")))   # #177-03
     if a.out_scales_off: files.append(os.path.abspath(a.out_scales_off))      # its contents, not just the path
     if a.only: files.append(os.path.abspath(a.only))
     for f in files:
 #io-was:        if os.path.isfile(f): h.update(f.encode()); h.update(open(f, "rb").read()); src.append(f)
         if os.path.isfile(f): h.update(f.encode()); h.update(_io_canon(f)); src.append(f)  # +io
-    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")}
+    keep = {k: v for k, v in vars(a).items() if k not in ("o", "layers", "head", "only_head", "device", "save_wq")
+            and not (k in ("mad_a", "mad_b") and a.codebook != "mad")}
     h.update(json.dumps(keep, sort_keys=True).encode())
     return h.hexdigest()[:16], src, keep
 _LOGS, _STAMPS = {}, {}

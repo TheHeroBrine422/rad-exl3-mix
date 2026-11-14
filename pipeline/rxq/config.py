@@ -50,7 +50,10 @@ def validate(cfg):
     if bo is not None:
         from . import blkorder
         blkorder.check_order(bo["stored_order"])
-    if q["codebook"]["hash_codebook"]: raise ValueError("#100 hash codebook: not implemented")
+    if q["codebook"].get("hash_codebook"): raise ValueError("#100 hash codebook switch: retired, the mad codebook is [quant.codebook.mad] (#177-03)")
+    cbs = {r["codebook"] for r in q["codebook"]["by_level"]}
+    assert cbs <= {"i8", "i4", "mul1", "mad"}, f"quant.codebook.by_level: unknown codebook in {sorted(cbs)}"
+    if "mad" in cbs: mad_params(cfg)
     if cfg["post"]["healing"]["enable"]: raise ValueError("healing: not part of the pipeline yet (deferred, #89)")
     a = cfg["post"]["asym"]
     assert a["scope"] in ("per-mix", "per-level"), "post.asym.scope: per-mix | per-level"
@@ -82,6 +85,21 @@ def codebook_for(cfg, K):
     for r in cfg["quant"]["codebook"]["by_level"]:
         if r["k_min"] <= K <= r["k_max"]: return r["codebook"]
     raise SystemExit(f"no [quant.codebook] range covers K{K} (mul1 levels retired 11-09: int8-only)")
+
+
+MAD_FIXED = {"mask": 0x3F3F3F3F, "L": 16, "bias": 126}   # what v3/e3/exl3hash's kernels (cb_hash.cuh) and rxq/deq.py compute
+
+
+def mad_params(cfg):
+    """[quant.codebook.mad]'s (a, b): the mad code's multiplier and offset (#177-03). mask / L / bias must equal the
+    kernels' fixed values (MAD_FIXED): another mask, state length or bias needs new kernels, not a settings edit."""
+    m = cfg["quant"]["codebook"].get("mad")
+    if m is None: raise SystemExit("codebook mad: the settings file has no [quant.codebook.mad] (a, b, mask, L, bias)")
+    for k, v in MAD_FIXED.items():
+        if m.get(k) != v: raise SystemExit(f"[quant.codebook.mad] {k} = {m.get(k)!r}: the kernels implement {v:#x} only")
+    a, b = int(m["a"]), int(m["b"])
+    if not (0 < a < 1 << 24 and 0 <= b < 1 << 32): raise SystemExit(f"[quant.codebook.mad] a / b out of range: {a:#x} {b:#x}")
+    return a, b
 
 
 def hout_applies(cfg, K):

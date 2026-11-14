@@ -11,7 +11,9 @@ decode_mul1_product_2: every value the search, the traceback, the LUTs and the L
 through exl3cb (integer K; its i8 variant plus EXL3_CB_HASH, which bypasses the int8 rounding) and exl3frac2 (qtf2:
 fractional K and integer K1-4 / 6 / 7; its mul1 variant plus EXL3_CB_HASH). The shared loaders and SRC are not
 edited, so the code stamps of the other codebooks don't change. The builds go to TORCH_EXTENSIONS_DIR/exl3hash-A-B.
-Use: import exl3hash; exl3hash.install(SRC, qtf2=True)   (after exl3frac.install(SRC), as ourq does)."""
+Use: import exl3hash; exl3hash.install(SRC, qtf2=True)   (after exl3frac.install(SRC), as ourq does).
+#177-03 (w151): the ladder's mad codebook = this build with A / B passed explicitly (install(..., a=A, b=B) / set_ab:
+rxq reads them from config/v3.toml [quant.codebook.mad], ourq from --mad-a / --mad-b); the env stays for old scripts."""
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +22,21 @@ for _d in ("exl3frac", "exl3cb", "exl3frac2"):
 A_DEFAULT, B_DEFAULT = 0xD0474B, 0x2545F491
 
 
+_AB = [None]                 # set_ab(): explicit (A, B) from the caller (rxq: [quant.codebook.mad]; ourq: --mad-a / -b)
+
+
+def set_ab(a, b):
+    """fix (A, B) for this process: explicit values win over the env; an env that disagrees is an error (#177-03)"""
+    a, b = int(a), int(b)
+    for k, v in (("EXL3HASH_A", a), ("EXL3HASH_B", b)):
+        if os.environ.get(k) is not None and int(os.environ[k], 16) != v:
+            raise SystemExit(f"exl3hash: env {k}={os.environ[k]} disagrees with the explicit 0x{v:x}")
+    assert 0 < a < 1 << 24 and 0 <= b < 1 << 32, (a, b)
+    _AB[0] = (a, b)
+
+
 def ab():
+    if _AB[0] is not None: return _AB[0]
     a = int(os.environ.get("EXL3HASH_A", hex(A_DEFAULT)), 16)
     b = int(os.environ.get("EXL3HASH_B", hex(B_DEFAULT)), 16)
     assert 0 < a < 1 << 24 and 0 <= b < 1 << 32, (a, b)
@@ -101,17 +117,20 @@ class _Env:
             else: os.environ[k] = v
 
 
-def build(src: str, qtf2: bool = True, verbose: bool = False):
-    """compile (and load) both extensions without installing them (a CPU-only prebuild)"""
+def build(src: str, qtf2: bool = True, verbose: bool = False, a=None, b=None):
+    """compile (and load) both extensions without installing them (a CPU-only prebuild); a, b: set_ab first"""
     import exl3cb, exl3frac2
+    if a is not None: set_ab(a, b)
     with _Env(src) as e:
         exl3cb.load(e.src, "i8", verbose)
         if qtf2: exl3frac2.load(e.src, "mul1", verbose)
     return e.root
 
 
-def install(src: str, qtf2: bool = True, verbose: bool = False):
+def install(src: str, qtf2: bool = True, verbose: bool = False, a=None, b=None):
+    """a, b: set_ab first (else the env / the defaults, the pre-#177-03 behaviour)"""
     import exl3cb, exl3frac2
+    if a is not None: set_ab(a, b)
     with _Env(src) as e:
         Q = exl3cb.install(e.src, "i8", verbose)
         if qtf2: Q = exl3frac2.install(e.src, "mul1", verbose)
