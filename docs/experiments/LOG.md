@@ -7473,3 +7473,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   long-context check: driver CONF monitor "when": "rotate" scores each size's incumbent there once per slice rotation
   (if not read yet), not on every accept. Saves ~1 full eval per accept and verify reuse. Alerts (alert_min 50) now
   see fewer reads. **Runtime:** neither.
+
+### 2026-11-14 4:30 PM CST · #183 · Per-band KLD models (fit_groups)
+- User 11-14: one model per bpw band instead of one joint fit. The joint fit's misfit grew as rows from all sizes
+  accumulated (chi2/row 1.3 → 2.2 → 4.2 → 5.2 over fits 0002-0005, log-RMSE 0.033 → 0.067): one set of per-tensor
+  prices can't serve K1 and K7 mixes at once. Driver CONF fit_groups (existing support): b1 = 1.25-2.5, b2 = 3-4,
+  b3 = 4.5-5, b4 = 6-7 (the plot's bands); each fits its own sizes' search rows + the shared w158 prior rows (84, all K).
+  First per-band fits (117 results): see driver.log `fit b* done`. Watch: thin bands (b3, b4) lean on the prior.
+  **Runtime:** neither.
