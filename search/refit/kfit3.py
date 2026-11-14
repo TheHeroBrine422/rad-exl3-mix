@@ -60,7 +60,7 @@ def v2fam(c, w):
 def elevel(c):
     if c == "bf16": return "bf16"
     if c.startswith("ours-"): return "e4"
-    m = re.search(r"-e(\d)$", c)
+    m = re.search(r"-e(\d+)$", c)
     return f"e{m.group(1)}" if m else None
 
 
