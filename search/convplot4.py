@@ -143,7 +143,10 @@ def track_panel(axT, W, a, sizes):
         axT.set_ylabel(f"KLD ÷ V2 at the same bpw ({a.track_name})")
     else:
         axT.set_yscale("log"); axT.set_ylabel(f"raw KL on {a.track_name} (V2 refs pending: {len(v2)} of 2+)")
-    axT.set_yscale("log"); axT.grid(alpha=.3); axT.legend(fontsize=7.5, loc="upper right")
+    axT.set_yscale("log"); axT.grid(alpha=.3, which="both"); axT.legend(fontsize=7.5, loc="upper right")
+    axT.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); axT.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+    if rel:                                                     # the same scale and ticks as the other panels
+        axT.set_ylim(0.3, 2.0); axT.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
                   f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
 

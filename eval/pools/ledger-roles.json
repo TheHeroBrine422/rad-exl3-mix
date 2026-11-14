@@ -539,5 +539,11 @@
   "line": "v3",
   "note": "#183 tracking slice (lead, 2026-11-14 4:10 PM CST): calib part of t183, merged fit + search docs, least-used first (draw171.py seed 1830, 48 docs, 52,015 positions at cap 4,096); x part 130 pieces of xc8k-b2-c2 (excluding final-x and every s17*-x). Every #183 incumbent is scored on it in full; never decides anything (progress readout only).",
   "decisions": 0
+ },
+ "diag186-calib": {
+  "role": "check",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#186 (w163, 2026-11-14): diagnostic golden's calib documents (32): 16 golden-ver3-8k monitor docs (6 non-Latin script, 10 English prose controls) + 14 search-pool and 2 fit-pool documents from the search goldens' calib parts (non-Latin script); diagnosis of the 2.5 pick's doc-100 gap, no search decision"
  }
 }
