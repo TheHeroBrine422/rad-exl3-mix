@@ -37,3 +37,11 @@ other workers' jobs (load ~26 / 32 threads, rad-convert / radmix / quant lanes):
 only** — the one with the smallest residual rms among (a) median of the row's measured runs, (b) minimum of the row's
 runs, (c) median inter-chunk gap (bench.py field added at 9:20 AM; rows before that lack it) — and then applied
 unchanged to the held-out mixes; all reported. Rows whose runs spread > 3 % may be rerun once (same list order).
+
+**Amendment 2 (2026-11-14 11:05 AM CST, before any held-out row has run).** ds8 rebooted at ~10:08 AM CST (every
+process lost). The e2e rounds were restarted on **HIP 6** (one card for all e2e, stamped, part and held-out rows; the
+pre-reboot card-7 rows are kept in `res/c7/` as a cross-card check, not fitted). On HIP 6 a host-wide disturbance
+10:47–11:00 AM CST made whole rows ~40 % slower with small in-row spread (card 7 was slow at the same time), which the
+spread rule cannot see. Rule: a pack (uniform or held-out) whose round-a and round-b values differ by > 3 % gets a third
+round (c, after round b, same card); its value is the median of the three rounds. Applied identically to uniform and
+held-out packs.
