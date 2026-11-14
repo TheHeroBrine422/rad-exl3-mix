@@ -64,6 +64,39 @@ versions of anything: git history.
   sizes 1.5–2.5, 2.1 at 3.0, ~0 at ≥ 5 (KL ≈ 0.01 bpw at the proxy's ×1.009): a threshold, not a per-tensor mix, on
   today's kernels. Superseded by the decision (mad everywhere) and the new kernel form.
 - **Runtime:** D (via #177-02's kernels); format change (codes) via #177-03's requant.
+### 2026-11-13 8:35 PM CST · #177-03 · stage B: mad K2.5 / K4 / K6 built (swj at K2.5 / K4), spot check vs the i8 twins on s173e — **nothing off: mad ≈ i8** (pooled R 0.948 / 0.902 / 0.907; K4 "better" by the rule, unverified, tail-driven); proxy MSE ×1.009 / 1.008 / 1.017; K2.5 / K4 handed to w150 (w151)
+- **Status:** stage B done → stage C (rest of the ladder) next · **Machine:** ds8 HIP 0–6 (quant), HIP 0 (swj), HIP 6
+  (scores) · **Code:** rad-exl3-mix 0ce451c staged (codes stamp 635bac02, code stamp c3ee8275), `v3/levels/mad/`
+  (`stageB.sh`, `spotB.sh`, `rep17703.py`) · **Rule:** `v3/levels/mad/RULES-17703.md` (5c0c92f, before any stage-B score)
+  · **Data:** `data/mad17703/spotB/` (`rep17703.json`, docsums, checks, proxy logs, score summaries)
+- **Build:** ds8 `/data/q27/ladder-mad/q27v3-635bac02-k{2.5,4,6}-mad`: quant 3 levels in 25 min on 7 cards (6:37–7:02 PM
+  CST; 262 jobs a level incl. 6 duplicate-seed), swj pass K4 + K2.5 on HIP 0 in 50 min (as the i8 ladder's ~3,100 s pairs),
+  C9 post, recipes. ≈ 3.8 card-h (2.9 quant + 0.84 swj).
+- **Packs / mixes:** both arms from their final.recipe with hostd's pack_cmd (rad10 home-pack, --no-error), mad through
+  the RULES shim (hard-link copy of final/, importer stamp i8, recipe mul1i8); radmix + w138's a8.mix (A8). **Confounder
+  checks PASS at all three K** (787 entries, 451 non-trunk byte-identical, trunk bytes and container sizes equal).
+- **Scores** (rad10-perf radiance, home-base3 / home-hq, bf16 KV; golden-s173e 173 docs, gen-masked 195,082 positions;
+  pooled = geometric mean of the c / x part ratios, 2,000 part-stratified paired document bootstraps):
+
+  | K | KLD i8 → mad | pooled R [95 % CI] | c (43 docs) | x (130 docs) | top-1 i8 / mad | label | proxy MSE M / I |
+  |---|---|---|---|---|---|---|---|
+  | 2.5 | 0.1403 → 0.1330 | **0.948** [0.879, 1.016] | 0.948 [0.834, 1.053] | 0.948 [0.873, 1.026] | 90.14 / 90.42 % | ≈ | 1.0093 |
+  | 4 | 0.0335 → 0.0303 | **0.902** [0.857, 0.958] | 0.898 [0.821, 0.972] | 0.906 [0.860, 0.986] | 96.12 / 96.27 % | better (unverified) | 1.0077 |
+  | 6 | 0.0083 → 0.0081 | **0.907** [0.796, 1.013] | 0.837 [0.668, 1.021] | 0.982 [0.857, 1.064] | 98.54 / 98.54 % | ≈ | 1.0167 |
+
+  Stop rule: no level off (no R > 1.08, no CI above 1.05, checks and sanity pass) → **continue to stage C**. Δbpw-equivalent
+  (i8 twins' slope 0.80 / bit): −0.07 / −0.13 / −0.12.
+- **Reading (descriptive, post hoc, not the rule's):** the means are tail-driven. In each part 1–3 documents hold 10–30 % of
+  the i8 KL, and mad's ratio on them swings (K6 c:355, 19 % of c's KL, ×0.37; K2.5 / K4 c:1505 ×0.62; x:libretexts:404 ×1.69
+  at K2.5). Without the 2 largest-change documents per part: K2.5 c 1.009 / x 0.923, K4 0.943 / 0.957, K6 0.998 / 0.961;
+  median per-document ratios 0.95–1.03. radiance's all-position means (no gen mask) give ×0.951 / ×0.944 / ×1.025.
+  The proxy (per-tensor error, +0.8–1.7 %) does not predict a gain, so **mad ≈ i8 is the safe reading**; K4's −10 % is
+  **unverified** (AGENTS: surprising result, one slice) — it would need a second fresh slice (lead decides).
+- **Hand-off to w150 (lead note):** box2 `/data/q27/mad-packs/` K2.5 + K4: real `final/` + `codebook=mad` recipe (for its
+  importer) + the shim packs (README there; w150's notes).
+- **Calib use:** s173e read 6 times (3 levels × 2 arms; 3 paired reads); no new ledger rows (golden-s173e-c's rows exist).
+- **Runtime:** none by itself (codes; D / P from #177-02).
+
 ### 2026-11-13 6:40 PM CST · #177-03 · mad ladder requant, stage A: mad merged into rxq / ourq (stamped config), gate PASS — K4.125 layers 2–3 byte-identical to w139's hash level; stage B (K2.5 / K4 / K6) started (w151)
 - **Status:** running (stage B) · **Machine:** ds8 HIP 6 (gate; HIP 7 is w153's) / HIP 0–6 (stage B), the VM (CPU checks)
   · **Code:** rad-exl3-mix 0ce451c (staged on ds8 `stage/code`, the old tree kept as `stage/code-old-c015001`), scripts

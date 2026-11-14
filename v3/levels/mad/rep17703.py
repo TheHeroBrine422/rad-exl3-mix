@@ -23,10 +23,9 @@ def fam(key):
     return ".".join(k[k.index("layers") + 2:]) if "layers" in k else key
 
 
-def top1(sc):
-    for k in ("top1", "top_1", "top1_agree", "top1_pct"):
-        if k in sc: return float(sc[k])
-    return None
+def top1(e):
+    v = (e.get("all") or {}).get("top1_agreement")       # radiance --kld-out: all.top1_agreement (fraction)
+    return None if v is None else 100.0 * float(v)
 
 
 out = {"slice": "golden-s173e", "parts": {p: int((parts == p).sum()) for p in P}, "levels": {}}
@@ -43,7 +42,7 @@ for K in ("2.5", "4", "6"):
                   "per_part": {p: {"R": pr(full)[p], "ci95": [float(np.percentile([x[p] for x in bs], 2.5)), float(np.percentile([x[p] for x in bs], 97.5))],
                                    "kld_I": float(A[parts == p].sum() / N[parts == p].sum()), "kld_M": float(B[parts == p].sum() / N[parts == p].sum())} for p in P},
                   "R": pooled(full), "ci95": [float(np.percentile(bp, 2.5)), float(np.percentile(bp, 97.5))],
-                  "top1_I": top1(a["score"]), "top1_M": top1(b["score"])})
+                  "top1_I": top1(a), "top1_M": top1(b)})
         sane = 1 / 1.5 <= b["kld"] / a["kld"] <= 1.5 and (r["top1_I"] is None or r["top1_M"] is None or abs(r["top1_M"] - r["top1_I"]) <= 2)
         lo, hi = r["ci95"]
         r["sanity"] = bool(sane)

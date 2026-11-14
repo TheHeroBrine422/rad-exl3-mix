@@ -89,7 +89,7 @@ from rxrun.hostd import doc_sums
 G, S = sys.argv[1:3]; out = {}
 for r in sorted(glob.glob(f"{S}/[IM]-*/score-s173e.json.rows")):
     arm = os.path.basename(os.path.dirname(r)); d, kl = doc_sums(G, r); sc = json.load(open(r[:-5]))
-    out[arm] = {"docs": d, "kld": float(kl.mean()), "positions": int(len(kl)), "score": {k: v for k, v in sc.items() if not isinstance(v, (list, dict))}}
+    out[arm] = {"docs": d, "kld": float(kl.mean()), "positions": int(len(kl)), "score": {k: v for k, v in sc.items() if not isinstance(v, (list, dict))}, "all": sc.get("all")}
 json.dump(out, sys.stdout)
 EOF3
 say "SPOTB DONE"
