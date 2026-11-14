@@ -12,7 +12,7 @@ cur=$($S "cat /data/q27/stage/code/COMMIT 2>/dev/null || echo none")
 if [ "$cur" != "$c" ]; then
   # ssh-box2.sh does not pass stdin: box2 gets the archive from ds8 over the 10 GbE link
   git -C $R archive $c | $B/ssh-ds8.sh "cat > /data/q27/code-$c.tar"
-  [ $H = box2 ] && $B/ssh-ds8.sh "scp -q -i /root/.ssh/dbox -o StrictHostKeyChecking=no /data/q27/code-$c.tar root@10.29.6.6:/data/q27/code-$c.tar"
+  [ $H = box2 ] && $B/ssh-ds8.sh "source /data/q27/mad/box2link.sh; scp -q -o StrictHostKeyChecking=no \$BOXKEY /data/q27/code-$c.tar \$BOXH:/data/q27/code-$c.tar"
   $S "set -e; cd /data/q27/stage; rm -rf code.new; mkdir code.new; tar -xf /data/q27/code-$c.tar -C code.new; echo $c > code.new/COMMIT
       old=\$(cat code/COMMIT); [ -e code-old-\$old ] && rm -rf code || mv code code-old-\$old; mv code.new code
       mkdir -p /data/q27/mad; echo \"\$(date -u +%FT%TZ) staged $c (old \$old)\" >> /data/q27/mad/stage.log"

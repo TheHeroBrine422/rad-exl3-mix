@@ -4,17 +4,17 @@
 # real recipe, codebook=mad, src rewritten to the box2 copy), <level>-shim.rad (spotB's pack: the same codes in mul1i8's slot,
 # importer stamp shimmed to i8; serves only through EXL3I_BENCH_IQRH 1). A README says which is which. Restartable (rsync).
 set -u; Q=/data/q27; S=$Q/mad/spotB; D=/data/q27/mad-packs
-BOX="ssh -i /root/.ssh/dbox -o StrictHostKeyChecking=no -o Compression=no -c aes128-gcm@openssh.com"
-$BOX root@10.29.6.6 "mkdir -p $D"
+source /data/q27/mad/box2link.sh       # BOX (ssh to box2 over the 10 GbE link) + BOXH (user@host): host-local, not in the repo
+$BOX $BOXH "mkdir -p $D"
 for K in "$@"; do
   n=q27v3-635bac02-k$K-mad; L=$Q/ladder-mad/$n
   [ -f $S/M-$K/pack.rad ] || { echo "no shim pack for K$K yet"; exit 1; }
-  $BOX root@10.29.6.6 "mkdir -p $D/$n"; rsync -a --whole-file -e "$BOX" $L/final/ root@10.29.6.6:$D/$n/final/ || exit 1
-  sed "s|src=$L/final|src=$D/$n/final|" $L/final.recipe | $BOX root@10.29.6.6 "cat > $D/$n.recipe"
-  rsync -a --whole-file -e "$BOX" $S/M-$K/pack.rad root@10.29.6.6:$D/$n-shim.rad || exit 1
+  $BOX $BOXH "mkdir -p $D/$n"; rsync -a --whole-file -e "$BOX" $L/final/ $BOXH:$D/$n/final/ || exit 1
+  sed "s|src=$L/final|src=$D/$n/final|" $L/final.recipe | $BOX $BOXH "cat > $D/$n.recipe"
+  rsync -a --whole-file -e "$BOX" $S/M-$K/pack.rad $BOXH:$D/$n-shim.rad || exit 1
   echo "$(date -u +%T) K$K handed off"
 done
-$BOX root@10.29.6.6 "cat > $D/README.txt" <<EOF
+$BOX $BOXH "cat > $D/README.txt" <<EOF
 #177-03 (w151) stage-B mad ladder levels for #177-02 (w150), $(date -u +%FT%TZ). rad-exl3-mix 0ce451c, codes stamp 635bac02,
 code stamp c3ee8275, mad a 0xd0474b b 0x2545f491 mask 0x3F3F3F3F L16 bias 126 (v3.toml [quant.codebook.mad]).
 Per level q27v3-635bac02-k<K>-mad:

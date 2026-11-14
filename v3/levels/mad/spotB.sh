@@ -13,7 +13,7 @@
 # Out /data/q27/mad/spotB. Process name: `bash /data/q27/mad/tools/spotB.sh`. (#177-03, w151)
 set -u; Q=/data/q27; S=$Q/mad/spotB; T=$Q/mad/tools; L=$Q/locks; RP=$Q/rad10-perf/install/bin/radiance; W=$Q/w139s3
 G=$Q/w131/slices/golden-s173e; PY=$Q/venv/bin/python; CARDS=${1:-6 5 4 3 2 1 0}
-BOX="ssh -i /root/.ssh/dbox -o StrictHostKeyChecking=no -o Compression=no"
+source /data/q27/mad/box2link.sh       # BOX (ssh to box2 over the 10 GbE link) + BOXH (user@host): host-local, not in the repo
 mkdir -p $S/proxy; exec >> $S/spotB.log 2>&1
 say() { echo "$(date -u +%T) $*"; }
 current() {   # DONE at the current scales stamp (rxrun.run.level_current semantics for this level)
@@ -47,8 +47,8 @@ for K in ${KS:-6 2.5 4}; do
     cp $ML/level/proxy.jsonl $S/proxy/M-$K.jsonl; say "arm M $K ready"
   fi
   if [ ! -f $I/final.recipe ]; then
-    mkdir -p $I/stage; rsync -a -e "$BOX" root@10.29.6.6:/data/q27/ladder-src/$IN/final root@10.29.6.6:/data/q27/ladder-src/$IN/final.recipe $I/stage/ \
-      && rsync -a -e "$BOX" root@10.29.6.6:/data/q27/ladder-src/$IN/level/proxy.jsonl $S/proxy/I-$K.jsonl || { say "pull $IN FAIL"; exit 1; }
+    mkdir -p $I/stage; rsync -a -e "$BOX" $BOXH:/data/q27/ladder-src/$IN/final $BOXH:/data/q27/ladder-src/$IN/final.recipe $I/stage/ \
+      && rsync -a -e "$BOX" $BOXH:/data/q27/ladder-src/$IN/level/proxy.jsonl $S/proxy/I-$K.jsonl || { say "pull $IN FAIL"; exit 1; }
     rm -rf $I/final; mv $I/stage/final $I/final
     sed -E "s|src=[^ ]*/$IN/final|src=$I/final|" $I/stage/final.recipe > $I/final.recipe.part && mv $I/final.recipe.part $I/final.recipe; say "arm I $K ready"
   fi

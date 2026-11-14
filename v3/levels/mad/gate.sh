@@ -10,7 +10,7 @@ REF=/data/q27/w139/s3/q27v3-144dd6e1-k4.125-hash/out
 if [ ! -d $G/ref ]; then
   mkdir -p $G/ref.part
   for j in L02-g0 L02-g1 L02-g2 L02-g3 L03-g0 L03-g1 L03-g2 L03-g3; do
-    rsync -a -e "ssh -i /root/.ssh/dbox -o StrictHostKeyChecking=no" root@10.29.6.6:$REF/$j $G/ref.part/ || { say "pull $j FAIL"; exit 1; }
+    source /data/q27/mad/box2link.sh; rsync -a -e "$BOX" $BOXH:$REF/$j $G/ref.part/ || { say "pull $j FAIL"; exit 1; }
   done; mv $G/ref.part $G/ref; say "ref pulled: $(ls $G/ref | wc -l) jobs"
 fi
 for c in ${1:-6 5 4}; do flock -n $Q/locks/card$c.lock true && { CARD=$c; break; }; done
