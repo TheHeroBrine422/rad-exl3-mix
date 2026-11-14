@@ -696,5 +696,8 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
 - [ ] **Learned move reranker for the search (user 11-13, later):** a model trained on the search's own evals (every
   proposed / evaluated swap: tensor, family, depth, K from → to, size, M1's predicted ΔKL, mix context → measured ΔKL per
   byte / accept) that ranks the driver's candidate moves before any eval, so evals go to the likeliest accepts; M1 stays
-  the cost model, the reranker learns its residuals. Train once the restarted search has a few hundred decisions; A/B
-  on the CPU stand-in first (standin.py), then live with a share of the proposals.
+  the cost model, the reranker learns its residuals. History: V2 #20 (`search/rr/rr.py`, 10-31) negative — 102
+  mix-level features, 519 absolute-KL mixes, XGBoost 80.5 % pair ranking vs kfit2 79.9 %. V3 differences: paired
+  move-level labels (less noise), ~10–20 move features incl. neighbourhood K (interactions M1 lacks), ranking target.
+  Test: offline replay on the restarted search's own decisions (train on the first N, predict the next; accept AUC vs
+  M1 alone) at ~300–500 decisions; live only on a share of proposals if it clearly beats M1.
