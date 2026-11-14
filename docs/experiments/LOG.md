@@ -6548,3 +6548,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   mad L16. Cost: L20 exact 690 s vs 47 s LDLQ a tensor on CPU (beam 64k 6,500 s); no GPU Viterbi above L16.
 - **Decision (lead, per the 7:05 PM plan):** mad L16 (A 0xd0474b) for the requant tonight. A GPU L18 / L20 encoder is a
   V3.1 candidate (≈ 2–3 % KL ≈ 0.02–0.03 bpw; same decode in the byte-sum form, state < 2^24). **Runtime:** none.
+
+### 2026-11-13 8:55 PM CST · #177 · decision (user): mad only in the trunk — no per-tensor mul1i8 option
+- Stage B (#177-03) shows mad ≈ or better than mul1i8 at K2.5 / 4 / 6 on whole-model KL, so the per-tensor
+  mad-vs-mul1i8 knapsack option (discussed 11-13 evening) is dropped: the trunk menu is mad only. The head keeps its
+  existing mul1 plans at the top (no requant) next to the mad plans. **Runtime:** none.
