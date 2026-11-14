@@ -714,3 +714,6 @@ A8: scales trained without it may not hold under it) — the screen measures by 
   LoRA (esp. on the last layers' FFN) + scales + block-wise cover what it could fix, it can't recover information lost
   upstream, and it is an architecture change (new radiance block, board acceptance unclear). Revisit only if the
   combination screen leaves a large systematic final-hidden-state error.
+- [ ] **V4: trellis embedding on the mad codebook (user 11-14).** V3 ships the embedding on mul1i8 / mul1 (w144 donors,
+  no new kernel). For V4: mad embedding donors + embed_exl3i mad decode (w150's byte-sum / madh), one codebook across
+  trunk, head and embedding; check KL vs mul1i8 at equal K (proxy: mul1i8 ~0.8% better at L16) and gather speed.
