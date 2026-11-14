@@ -118,22 +118,34 @@ def track_panel(axT, W, a, sizes):
             if q is None: continue
             y = y / q
         ser[size].append((st_, y))
-    cm = plt.get_cmap("viridis"); allsz = sorted(set(sizes) | set(ser))
-    col = lambda size: cm(allsz.index(size) / max(1, len(allsz) - 1))
+    # scatter: every tracking point, coloured by band; lines: per band the geo-mean of each size's latest point, from
+    # the step every size of the band has one (as the validation panel); IQR-V4 ÷ V2 per band dotted
     for size in sorted(ser):
-        p = sorted(ser[size]); xs = [x for x, _ in p] + [W["steps"]]; ys = [y for _, y in p] + [p[-1][1]]
-        axT.step(xs, ys, where="post", color=col(size), marker="o", ms=3, label=f"{size:g}: {p[-1][1]:.3f}")
+        for x, y in ser[size]: axT.scatter([x], [y], s=16, color=COL[band(size)], alpha=0.55, lw=0, zorder=3)
+    ev = sorted({x for v in ser.values() for x, _ in v})
+    for bd in range(4):
+        bs = [z for z in ser if band(z) == bd]
+        if not bs: continue
+        pts = []
+        for x in ev:
+            last = [max((p for p in ser[z] if p[0] <= x), default=None) for z in bs]
+            if any(l is None for l in last): continue
+            pts.append((x, math.exp(sum(math.log(l[1]) for l in last) / len(last))))
+        if pts:
+            pts.append((W["steps"], pts[-1][1]))
+            axT.step(*zip(*pts), where="post", color=COL[bd], lw=2.2, label=f"{BN[bd]} {sorted(bs)}: {pts[-1][1]:.3f}")
         if rel and len(iq) >= 2:
-            q, v = loglin(iq, size), loglin(v2, size)
-            if q and v: axT.axhline(q / v, color=col(size), ls=":", lw=1)
+            r = [loglin(iq, z) / loglin(v2, z) for z in bs if loglin(iq, z) and loglin(v2, z)]
+            if r: axT.axhline(math.exp(sum(map(math.log, r)) / len(r)), color=COL[bd], ls=":", lw=1.5,
+                              label=f"IQR-V4 {BN[bd]}: {math.exp(sum(map(math.log, r)) / len(r)):.3f}")
     if rel:
         axT.axhline(1.0, color="k", lw=1); axT.set_ylim(0.3, 2.0)
         axT.set_ylabel(f"KLD ÷ V2 at the same bpw ({a.track_name})")
     else:
         axT.set_yscale("log"); axT.set_ylabel(f"raw KL on {a.track_name} (V2 refs pending: {len(v2)} of 2+)")
-    axT.set_yscale("log"); axT.grid(alpha=.3); axT.legend(fontsize=7.5, ncol=6, title="size: latest", title_fontsize=8, loc="upper right")
-    axT.set_title(f"Fixed tracking slice {a.track_name}: every incumbent scored in full on the same documents (never decides; no chaining); "
-                  f"dotted = IQR-V4 at that size — refs V2 {len(v2)}, IQR {len(iq)}", fontsize=10)
+    axT.set_yscale("log"); axT.grid(alpha=.3); axT.legend(fontsize=7.5, loc="upper right")
+    axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
+                  f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
 
 
 def main(argv=None):
