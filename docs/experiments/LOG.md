@@ -4,6 +4,23 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-15 12:10 PM CST · #190-02 · Pair s190c / s190d built under the 5:40 AM option-A amendment: checks 41/41, verify clean, md5 identical on ds8 and box2, 175 ledger rows, staged not live (w176, Haiku xhigh)
+- **Status:** built (staged, not ready) · **Machine:** ds8 CPU only (`nice -n 19`, `flock -s` on ram.lock for the build); copies on box2 (same path) · **Code:** `search/v3/run190/` (`draw190cd.py`, `check190cd.py`, `pickx190cd.py`, `build190cd.py`, `verify190cd.py`, `stage190cd.py`; new files, uncommitted) · **Data:** `data/strata190cd/` (README). Supersedes the blocked 5:19 AM entry (run 1).
+- **Question:** RULES-cooldown 1'' (5:15 AM, "rotate") and its 5:40 AM amendment (user "c", option A): the pair s190c (search) / s190d (confirm), Latin 2× s186a / s186b, calib N from the retired s173a–e, s186a, s186c and the retired s186b, s186d, s186e, s186f, never from s190a/b, s173f, s171, t183, t186n, final750, verify; the xcorp N from the 5:15 rule.
+- **Result:** the pair is built and checks pass.
+  - **c:** s190c 112 calib docs (N 5, 5 scripts; N gen 6,368 = 6.0 %; L gen 100,564 = 2.01× s186a); s190d 63 (N 5, 4 scripts; N gen 6,693 = 7.2 %; L gen 86,941 = 2.00× s186b). N supply: 18 eligible documents in the pool, 17 with N gen (the strict 5:15 rule had 2 — the run-1 block).
+  - **x:** unchanged from run 1 (s190c 201 pieces, N 24 = 5 fresh + 19 reused, N gen 10.3 %, 7 scripts; s190d 193, N 24 = 6 + 18, N gen 9.3 %, 8 scripts; L 2.01× each).
+  - **Correction to run 1's candidate:** calib doc 520 (4,095 rows, 0 N gen) is out: a N unit needs N gen > 0, and scripts count only with N gen.
+  - **Checks** (`check190cd.out`): 41 PASS, 0 FAIL: within-pair distinct (c 175 uses / 175 distinct; x 394 / 394), Latin fresh (0 held), N only from retired-ok slices (0 not allowed), ≥ 4 scripts with gen, no script > 1/2 of N gen, L ≥ 1.9× s186.
+  - **Verify** (`verify190cd.json`): x, c and mix match the sources per piece / document (tokens, top-k bytes, rows.f32, gen = plan, labels). The c check first matched w169's built s190a-c / s190b-c (0 mismatches).
+  - **Copies:** 36 files (2 mixes, 2 c, 2 x dirs + siblings) md5-identical on ds8 and box2 (`data/strata190cd/md5-golden-s190cd.txt`).
+  - **Ledger:** 175 rows (`ledger_add.py`, role select, line v3, 2026-11-15; `ledger-roles-190cd.json`); 27,930 → 28,105 lines, prefix unchanged.
+  - **Staged:** `workers/w176/registry-staged.json` (live registry md5 fa61256a + s190c staged + s190d staged, role confirm) and `workers/w176/driver-staged.json` (confirm.pairs + [s190c, s190d]). Live registry and driver were only read.
+- **Registry premise (for the lead):** s186b / d / e / f are `staged` in the registry, not `retired`, and still listed as confirm pairs in the live config (`[s186a,s186b]`, `[s186c,s186d]`). The driver log shows no pending confirmation on them (last on s186b 11-14 21:51 CST, on s186d 11-15 00:20 CST), so the "pairs finished" premise holds in practice.
+- **Decision / next:** the lead switches (`search/v3/run190/SWITCH-190cd.md`): merge the keys, config, set s190c ready for the rotation (RULES-cooldown 2''), restart the driver. Not done by w176.
+- **Runtime:** neither (search infrastructure; the quantizer, kernels and format are untouched).
+- **Files:** `data/strata190cd/`, `workers/out/w176.md`, `workers/w176/` (staged), the ledger rows.
+
 ### 2026-11-15 11:45 AM CST · #191 · QAD combination screen done: **scales-only stays the recipe.** B (block-wise first) **+4.1 %** KL and D (calib-heavy mix) **+3.4 %** hurt; T (DFlash2 taps) −0.2 % and Q (A8 in training) +0.1 % do nothing; L (rank-16 adapters) **−0.7 % [−1.1, −0.2]**, far below its size cost (w170)
 - **Status:** done · **Machine:** box2 cards 0–3 (11-15 1:05 AM → 11:25 AM CST) · **Rules:** `v3/qad191/RULES191.md`
   (800dd1e4) · **Plan:** `v3/qad191/plan191.json` (5992bbde, committed before any arm ran) · **Code:** `v3/qad191/`
@@ -8301,3 +8318,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   - **Move kinds, confirmed / stage-2 decisions (live state):** pair 15/65, manual 6/16, partial 2/12, cross 2/15, block 1/16, thompson 2/6, explore 1/3, solve 0/2 (solve 3/67 at stage 1). 37 of 135 confirmations had a changed reference (rule 3 works; the mined "RULES-confirm silent" claim is false).
 - **Decisions for the lead / user:** run the audit; the usable-KLD floor (user); box2 as a second search host; move-kind shares; small patches for items 1, 3, 10 of the report.
 - **Runtime:** neither (review only).
+- 12:10 PM CST: rotation to **s190c** done (w176's pair reviewed: 41/41 checks, md5 on both hosts; s190d confirm), inbox_share 0.85 / inbox_max 22. The coordinator had hung AGAIN after the 11:51 fd-fix restart (units finished on ds8, results uncollected 11:51–12:05): restarted with the driver; results flowing. Third silent coordinator hang in 16 h → the srchmultiout watch rule (15 min silent → restart) must stay on; fixing the hang itself in rxrun.multi is a TODO.
