@@ -1,0 +1,160 @@
+  ok   write_and_read_back
+  ok   an_encoding_is_stored_once_however_many_weights_share_it
+  ok   alignment_invariants
+  ok   fixed_stride_expert_addressing
+  ok   a_table_copied_into_locked_memory_is_the_mapping_byte_for_byte
+  ok   a_table_file_on_another_disk_is_filled_once_and_mapped_in_place_of_the_container
+  ok   a_shared_table_file_is_filled_once_and_deleted_by_the_last_holder (0.90 s)
+  ok   a_table_is_shared_only_where_the_file_costs_little_beside_it
+  ok   a_shared_table_file_goes_when_its_holders_leave_together (0.40 s)
+E weight 0 plane 0: 100 bytes at 1100 do not fit its 1152
+E weight 0 plane 0: 1 bytes at -1 do not fit its 1152
+E weight 0 plane 0: 1 bytes at 0 do not fit its 1152
+  ok   a_weight_is_written_in_pieces_in_any_order
+E /tmp/radtest-format_test-hYAoVP/seal-late: a table changed after seal() fixed the layout
+  ok   a_sealed_writer_writes_the_same_file_with_no_spill
+E 'w' plane 1: 142 of its 144 bytes were written
+E 'w' plane 0: 0 of its 1152 bytes were written
+  ok   a_plane_left_short_is_refused_at_finish
+E 'a': its encoding is not one the core can read
+E 'b': its encoding is not one the core can read
+E 'd': extent 0 in dim 0
+  ok   a_weight_the_writer_cannot_place_is_refused_and_leaves_no_trace
+E the vocab section's arrays do not fit inside its 152 bytes, or one its count names is absent. Its offsets must be SECTION-RELATIVE -- serialise with a section_file_off of 0 and let finish() rebase them.
+E the vocab section is 16 bytes, shorter than its own header (128)
+  ok   the_vocab_section_is_rebased_to_where_it_lands
+  ok   a_container_extended_in_place_keeps_every_old_weight_where_it_was
+E 'blk.1.ffn_gate.4' is layer 1's expert 4, and a container extended in place cannot take a new expert: a layer's experts sit at a fixed stride from each other, and one written past the end joins no layer. Convert to a new file instead.
+E /tmp/radtest-format_test-hYAoVP/append_fail is open in 1 other process(es), pid 3400152 first -- a running engine reads its header through its mapping, and extending the file rewrites that header. Stop it first.
+  ok   an_in_place_extension_that_fails_leaves_the_container_as_it_was (0.10 s)
+E /tmp/radtest-format_test-hYAoVP/trunc.cut: 16 bytes is shorter than a .rad header (248)
+E /tmp/radtest-format_test-hYAoVP/trunc.cut: header claims 2244608 bytes, the file is 748202 -- truncated
+E /tmp/radtest-format_test-hYAoVP/trunc.cut: header claims 2244608 bytes, the file is 2240512 -- truncated
+E /tmp/radtest-format_test-hYAoVP/trunc.junk: not a .rad container (magic 72746f6e, expected 31444152)
+E /tmp/radtest-format_test-hYAoVP/trunc.absent: No such file or directory
+  ok   truncated_file_is_refused_not_crashed
+  ok   a_container_of_another_version_is_refused_with_the_way_out
+E /tmp/radtest-format_test-hYAoVP/ovf.ovf: the metadata table lies outside the 2244608-byte file
+E /tmp/radtest-format_test-hYAoVP/ovf.ovf: the weight directory lies outside the 2244608-byte file
+E /tmp/radtest-format_test-hYAoVP/ovf.ovf: the plane table lies outside the 2244608-byte file
+E /tmp/radtest-format_test-hYAoVP/ovf.ovf: the encoding table lies outside the 2244608-byte file
+E /tmp/radtest-format_test-hYAoVP/ovf.ovf: the expert profile lies outside the 2244608-byte file
+  ok   a_table_count_that_overflows_its_span_is_refused
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'token_embd.weight' names encoding 2 of 2
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'token_embd.weight' names 2 planes from 0 of 44 for an encoding of 1
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'blk.0.ffn_gate.0' names 2 planes from 43 of 44 for an encoding of 2
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'token_embd.weight' names 1 planes from 18446744073709551615 of 44 for an encoding of 1
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'token_embd.weight' plane 0 ('codes') is 16382 bytes at 2097152; its encoding over [128, 64] makes it 16384, 256-aligned inside [2097152, 2113536)
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'blk.0.ffn_gate.0' plane 1 ('scale') is 144 bytes at 2139376; its encoding over [36, 64] makes it 144, 256-aligned inside [2138112, 2139536)
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'output.weight' plane 0 ('codes') is 16384 bytes at 2097152; its encoding over [128, 64] makes it 16384, 256-aligned inside [2113536, 2129920)
+E /tmp/radtest-format_test-hYAoVP/planes.planes: encoding 0 is not one the core can read
+E /tmp/radtest-format_test-hYAoVP/planes.planes: encoding 0 is not one the core can read
+E /tmp/radtest-format_test-hYAoVP/planes.planes: encoding 0 is not one the core can read
+E /tmp/radtest-format_test-hYAoVP/planes.planes: 'output.weight' starts at 2113280, not 4096-aligned -- a transfer of it would straddle a page boundary needlessly
+  ok   an_entry_whose_planes_are_not_its_encodings_is_refused
+E 'e1': layer 0 expert 1 slot 0 is 16384 bytes where expert 0's is 4096. The experts in a layer differ in size, so the layer has no fixed stride.
+E 'e1': layer 0's experts start at 1. A layer's experts must be written 0..n-1 consecutively or the layer has no fixed stride.
+E /tmp/radtest-format_test-hYAoVP/nostride.moved: layer 0 expert 2 starts at 2105344, but base + 2*8192 is 2113536 -- the layer has no fixed stride and cannot be addressed by arithmetic
+  ok   a_layer_with_no_fixed_stride_is_refused
+  ok   every_table_and_string_check_refuses_its_own_corruption
+  ok   every_directory_row_check_refuses_its_own_corruption
+E 'e0.8': layer 0 expert 0 has more than 8 slots, which the directory cannot address
+  ok   every_expert_layout_check_refuses_its_own_corruption
+E 'blk.0.attn_q.weight': the container already holds a weight of this name
+E 'blk.0.attn_q.weight': the container already holds a weight of this name
+E 'blk.0.attn_q.weight': the container already holds a weight of this name
+  ok   a_container_holds_each_name_once
+  ok   empty_container_still_opens
+  ok   tune_cache_round_trip
+  ok   a_tune_cache_line_of_blanks_is_a_blank_line
+  ok   the_machine_key_names_the_card_or_the_cpu
+  ok   a_tune_cache_row_is_read_whole_and_a_timing_must_be_finite
+  ok   safetensors_decodes_a_surrogate_pair_as_one_codepoint
+  ok   safetensors_decodes_the_escape_widths_either_side_of_it
+E /tmp/radtest-format_test-hYAoVP/st.safetensors: 't' is F32 [2], which is not the 4 bytes its data_offsets span. The header disagrees with its own data; the file is damaged or was written by a tool that does not follow the format -- fetch or export it again.
+E /tmp/radtest-format_test-hYAoVP/st.safetensors: 't' is U8 [4611686018427387904, 4], which is not the 0 bytes its data_offsets span. The header disagrees with its own data; the file is damaged or was written by a tool that does not follow the format -- fetch or export it again.
+E /tmp/radtest-format_test-hYAoVP/st.safetensors: 't' is F32 [-1, -1], which is not the 4 bytes its data_offsets span. The header disagrees with its own data; the file is damaged or was written by a tool that does not follow the format -- fetch or export it again.
+E /tmp/radtest-format_test-hYAoVP/st.safetensors: 't' is BF16 [1], which is not the 4 bytes its data_offsets span. The header disagrees with its own data; the file is damaged or was written by a tool that does not follow the format -- fetch or export it again.
+  ok   safetensors_refuses_a_shape_that_is_not_its_span
+  ok   the_shard_index_reads_every_entry_of_a_real_weight_map
+E /tmp/radtest-format_test-hYAoVP/index_nomap: no "weight_map" object
+E /tmp/radtest-format_test-hYAoVP/index_notobj: weight_map is not an object
+E /tmp/radtest-format_test-hYAoVP/index_trunc: expected a string at byte 19 of the header
+E /tmp/radtest-format_test-hYAoVP/index_empty_file: no "weight_map" object
+  ok   a_missing_index_is_not_found_and_a_broken_one_is_a_format_error
+  ok   the_shard_index_decodes_escaped_names
+W /tmp/radtest-format_test-hYAoVP/legacy.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/legacy.imatrix: legacy, 2 tensor(s)
+  ok   a_legacy_imatrix_reads_every_entry_it_declares
+W /tmp/radtest-format_test-hYAoVP/norm.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/norm.imatrix: legacy, 1 tensor(s)
+  ok   importance_is_normalised_to_mean_one
+W /tmp/radtest-format_test-hYAoVP/scale_a.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/scale_a.imatrix: legacy, 1 tensor(s)
+W /tmp/radtest-format_test-hYAoVP/scale_b.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/scale_b.imatrix: legacy, 1 tensor(s)
+  ok   importance_is_invariant_to_a_uniform_scale_of_the_row
+W /tmp/radtest-format_test-hYAoVP/zero.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/zero.imatrix: legacy, 1 tensor(s)
+  ok   a_degenerate_row_falls_back_to_uniform_weights
+W /tmp/radtest-format_test-hYAoVP/absent.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/absent.imatrix: legacy, 1 tensor(s)
+  ok   importance_declines_a_tensor_or_an_expert_it_does_not_have
+I imatrix /tmp/radtest-format_test-hYAoVP/moe.imatrix: gguf, 2 tensor(s), 128 chunks of 512
+  ok   a_gguf_imatrix_joins_the_sums_with_the_counts
+I imatrix /tmp/radtest-format_test-hYAoVP/expert.imatrix: gguf, 1 tensor(s)
+  ok   a_per_expert_importance_comes_from_that_experts_own_row
+I imatrix /tmp/radtest-format_test-hYAoVP/names.imatrix: gguf, 2 tensor(s)
+  ok   a_converter_weight_name_finds_its_imatrix_row
+I imatrix /tmp/radtest-format_test-hYAoVP/names-llama.imatrix: gguf, 2 tensor(s)
+  ok   a_converter_weight_name_finds_llama_cpps_spelling
+I imatrix /tmp/radtest-format_test-hYAoVP/odd.imatrix: gguf, 2 tensor(s)
+  ok   an_importance_at_an_odd_offset_reads_the_values_the_file_holds
+I imatrix /tmp/radtest-format_test-hYAoVP/count.imatrix: gguf, 1 tensor(s)
+  ok   the_activation_count_is_reported_unnormalised
+W /tmp/radtest-format_test-hYAoVP/orphan.imatrix: 'orphan' has counts but no .in_sum2 -- dropped
+I imatrix /tmp/radtest-format_test-hYAoVP/orphan.imatrix: gguf, 1 tensor(s)
+  ok   a_gguf_entry_with_counts_and_no_sums_is_dropped
+I imatrix /tmp/radtest-format_test-hYAoVP/align.imatrix: gguf, 1 tensor(s)
+I imatrix /tmp/radtest-format_test-hYAoVP/align.imatrix: gguf, 1 tensor(s)
+I imatrix /tmp/radtest-format_test-hYAoVP/align.imatrix: gguf, 1 tensor(s)
+  ok   the_declared_alignment_places_the_data_section
+I imatrix /tmp/radtest-format_test-hYAoVP/kv.imatrix: gguf, 1 tensor(s), 9 chunks of 0
+  ok   an_unrelated_kv_is_stepped_over_rather_than_read
+E /nonexistent/radiance/imatrix.dat: No such file or directory
+  ok   a_file_that_is_not_there_is_an_io_error
+E /tmp/radtest-format_test-hYAoVP/short.imatrix: 4 bytes -- too short to be an imatrix
+  ok   a_file_too_short_to_be_an_imatrix_is_refused
+E /tmp/radtest-format_test-hYAoVP/trunc.imatrix: entry 't' claims 3 values, which run past the end of the file
+  ok   a_legacy_entry_that_runs_past_the_end_is_refused
+E /tmp/radtest-format_test-hYAoVP/zeroentries.imatrix: not a legacy imatrix (entry count 0)
+  ok   a_legacy_entry_count_that_is_not_one_is_refused
+E the GGUF sets llama.rope.scaling.attn_factor = 2; that modifier of the rotary's scaling is not implemented
+  ok   a_gguf_rotary_scaling_becomes_the_config_keys_with_its_type
+E /tmp/radtest-format_test-hYAoVP/v2.imatrix: GGUF version 2; this reader handles 3
+  ok   a_gguf_version_this_reader_does_not_know_is_refused
+E /tmp/radtest-format_test-hYAoVP/over.imatrix: 't.in_sum2' runs past the end of the file
+  ok   a_gguf_tensor_that_runs_past_the_end_is_refused
+E gguf: /tmp/radtest-format_test-hYAoVP/twice.gguf: tensor 't.weight' is listed twice
+  ok   a_gguf_that_lists_a_tensor_twice_is_refused
+E /tmp/radtest-format_test-hYAoVP/wrap.imatrix: 't.in_sum2' runs past the end of the file
+  ok   a_gguf_tensor_whose_dims_wrap_is_refused
+E /tmp/radtest-format_test-hYAoVP/manytensors.imatrix: the header declares 1152921504606846976 tensors, and the 8 bytes after the KV block cannot hold that many tensor infos
+  ok   a_gguf_tensor_count_the_file_cannot_hold_is_refused
+W /tmp/radtest-format_test-hYAoVP/shortcounts.imatrix: 't.counts' holds 2 value(s) for 3 expert(s) -- ignored, so this tensor contributes no expert profile
+I imatrix /tmp/radtest-format_test-hYAoVP/shortcounts.imatrix: gguf, 1 tensor(s)
+  ok   a_gguf_counts_shorter_than_the_expert_count_is_ignored
+W /tmp/radtest-format_test-hYAoVP/emptysums.imatrix: 't.in_sum2' claims 4 column(s) for 2 expert(s) and holds 0 value(s) -- dropped
+I imatrix /tmp/radtest-format_test-hYAoVP/emptysums.imatrix: gguf, 1 tensor(s)
+  ok   a_gguf_sums_smaller_than_their_claimed_extent_are_dropped
+E /tmp/radtest-format_test-hYAoVP/badalign.imatrix: general.alignment is 24, which is not a power of two
+  ok   an_alignment_that_is_not_a_power_of_two_is_refused
+W /tmp/radtest-format_test-hYAoVP/first.imatrix is the legacy imatrix format: it has no per-expert dimension, so every expert in a layer will be weighted by the layer's aggregate activations. Re-collect with a current llama.cpp for per-expert importance.
+I imatrix /tmp/radtest-format_test-hYAoVP/first.imatrix: legacy, 1 tensor(s)
+I imatrix /tmp/radtest-format_test-hYAoVP/second.imatrix: gguf, 1 tensor(s), 5 chunks of 0
+  ok   reopening_replaces_everything_the_previous_file_left
+E /tmp/radtest-format_test-hYAoVP/mfnodrop: drop: base has no weight nosuch.weight
+E /tmp/radtest-format_test-hYAoVP/mfbadact: act a.weight a9: not an activation mode (f16, a8t, a8g<N>)
+  ok   a_manifest_serves_each_weight_from_its_donor_in_radmixs_layout
+2271 check(s) over 65 case(s) in 1.66 s, 0.37 s of CPU
+slowest: a_shared_table_file_is_filled_once_and_deleted_by_the_last_holder 0.90 s, a_shared_table_file_goes_when_its_holders_leave_together 0.40 s, an_in_place_extension_that_fails_leaves_the_container_as_it_was 0.10 s

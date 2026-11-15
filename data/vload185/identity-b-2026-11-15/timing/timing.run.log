@@ -1,0 +1,10 @@
+2026-11-15T00:54:47Z radmix: /data/q27/w162/timing/k25.rad: 739 weights (338 from donors, 0 added, 0 dropped, 336 act keys), 8.060 GiB, 0 cloned, 739 copied
+2026-11-15T00:54:47Z mix: open (rad-info --bytes) 0.03 s
+2026-11-15T00:57:32Z mix: scored in 165.45 s
+2026-11-15T00:57:33Z packs: open (rad-info --bytes) 0.96 s
+2026-11-15T01:00:11Z packs: scored in 157.90 s
+2026-11-15T01:00:15Z final: open (rad-info --bytes) 3.66 s
+2026-11-15T01:02:56Z final: scored in 161.68 s
+2026-11-15T01:02:56Z packs: KLD rows SAME as mix (3491568 bytes)
+2026-11-15T01:02:57Z final: KLD rows SAME as mix (3491568 bytes)
+2026-11-15T01:02:57Z done

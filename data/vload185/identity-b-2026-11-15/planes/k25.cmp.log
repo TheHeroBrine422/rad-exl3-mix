@@ -1,0 +1,4 @@
+A ref.dump: 336 weights; B b.dump: 336 weights; both 336
+only in A: 0 []; only in B: 0 []
+planes compared: 1408; identical weights: 336 of 336
+IDENTICAL

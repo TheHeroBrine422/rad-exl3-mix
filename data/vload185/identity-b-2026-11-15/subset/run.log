@@ -1,0 +1,15 @@
+/data/q27/w162/idb/pair158.final.mix: 40 trunk lines from final/ (k1, k3.75, k7)
+2026-11-15T00:37:00Z pair158 final: scored in 155.56 s
+2026-11-15T00:37:00Z pair158: KLD ROWS SAME as the mix path (3491568 bytes)
+/data/q27/w162/idb/thompson86.final.mix: 251 trunk lines from final/ (k1, k3.75, k7)
+2026-11-15T00:39:32Z thompson86 final: scored in 151.49 s
+2026-11-15T00:39:32Z thompson86: KLD ROWS SAME as the mix path (3491568 bytes)
+/data/q27/w162/idb/block13.final.mix: 231 trunk lines from final/ (k1, k3.75, k7)
+2026-11-15T00:42:03Z block13 final: scored in 150.86 s
+2026-11-15T00:42:03Z block13: KLD ROWS SAME as the mix path (3491568 bytes)
+/data/q27/w162/idb/pairact.final.mix: 40 trunk lines from final/ (k1, k3.75, k7)
+2026-11-15T00:44:34Z pairact final: scored in 150.90 s
+2026-11-15T00:44:34Z pairact: KLD ROWS SAME as the mix path (3491568 bytes)
+2026-11-15T00:50:03Z pair158 ctl: scored in 170.77 s
+2026-11-15T00:50:03Z pair158 control: KLD ROWS SAME as the mix path
+2026-11-15T00:50:03Z done

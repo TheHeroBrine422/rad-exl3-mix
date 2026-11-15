@@ -7775,3 +7775,45 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   3. The registry entries for s186a-f are still staged in `workers/w164/registry-staged-186.json` (step 2, not written to the live registry).
 - **Runtime:** neither (quality readings of existing containers; no prefill or decode change).
 - **Files:** `data/strata186/` (`refs186.jsonl`, `refs186ci.jsonl`, `refs186-tails-t186n.tsv`, `rows-t186n/` (15 rows + report files, 8.5 MB), `track186.png`, `refs-lane-ds8.log`, `refs-lane-box2.log`, `equiv-iq2r-t183.txt`), `search/v3/run186w/` (scripts, README), `search/convplot4.py`
+
+### 2026-11-14 6:16 PM CST · #185 · Steps 1–2 (w162): mix path profiled; (A) manifest serves a candidate with identical KLD rows
+- Times: the VM clock is UTC, shown here as CST (UTC−6). Host ds8 with the search running.
+- Mix path (step 1): radmix writes an 11.8 GB mix in 25.4 s; census `--fast` 0.2 s; radiance open 0.08 s; load 7–8 s. So a
+  candidate's mix overhead is ~25 s and 11.8 GB of writes (the ~100 s above was the conv.lock queue). rad-convert's weights stage
+  is 127–208 s per level (mean 169 s). Choice then: (A), a virtual container over the packs (stopgap); (B) is the end state now (below).
+- (A) identity (card 7, golden-s173a): pair158, thompson86, block13, pairact (ssm_ab donor + act lines): KLD rows byte-identical
+  to the mix path (3,491,568 bytes each); image == radmix's file (`rad-info --image-dump`); census equivalence on the three mixes
+  (CENSUS PASS both) and the negative expectation (384 mismatches both). Served size = the radmix file's.
+- Fork `qc-exl3-v3-vload` 719dae65, 64e4487c; `search/v3/run183/vload/`; `data/vload185/step1-profile.md`. **Runtime:** neither (eval speed).
+
+### 2026-11-14 6:35 PM CST · #185 · Step 3 (w162): the exl3i import from a level's final/ takes 2.3 s per model: (B) chosen
+- Profile (ds8, CPU only): one stacked gate_up (56 MB of trellis): read 54 ms cold (1.0 GB/s), reorder 12–34 ms. Whole k2.5 level
+  (336 weights, 7.6 GB): 13.8 s on one thread, 2.3 s on eight. The lead's bar is ≤ 15 s, so (B): the planes are filled at open
+  from the trellises, by the exl3_quant plugin's own encoding and record loop; no level pack.
+- Footprint: the 49 levels' finals total 451 GiB (box2); the packs on ds8 are 729 GB. Numbers: `data/vload185/b-profile.md`.
+- **Runtime:** neither (eval speed; the served bytes are the pack's).
+
+### 2026-11-14 6:35 PM CST · #185 · Step 4 (w162): (B) built; planes and KLD rows identical; a full candidate without its pack or mix file
+- Fork `qc-exl3-v3-vload` e29c765b (`core/format/final_trunk.{h,cpp}`, `radfile.{h,cpp}`: a manifest line `<weight> final DIR
+  codebook=mad`) and 64735054 (`rad-info --weights-dump`). format_test on the build: 2271 checks, 65 cases, pass.
+- Planes: all 336 trunk weights, every header and plane sha256 vs the pack: k0.125 (m = 2), k2.5, k7.5: 336/336 each.
+- KLD rows (card 7, golden-s173a): pair158, thompson86, block13, pairact, each with 40–251 trunk lines from k1, k3.75, k7 `final/`
+  and the rest from packs: byte-identical to the mix path (control: pair158's .rad through the same build SAME; the installed
+  build re-checked on pairact SAME). The exact four mixes need 41 levels' finals at once (456 GB): not run (floor 150 GB).
+- Full k2.5 candidate, three ways (same rows, sha256 `e16e7303…`): mix (radmix file, loader 8.7 s, score 165.5 s); packs
+  (manifest: open 0.96 s, loader 8.9 s, score 157.9 s); final/ (no pack: open 3.7 s with the fill, loader 4.4 s, score 161.7 s).
+  Per candidate the (B) path saves radmix (~25 s) and 11.8 GB of writes.
+- hostd: `hostd-final.patch` (contains (A)): `eval.final_root`, no pack step; `test_hostd_final.py` and `test_hostd_virtual.py` ALL PASS;
+  the live `hostd.py` is not changed. census_manifest.py refuses a `final` line; (B)'s census is the weights-dump check.
+- Open for the lead: roll-out (hostd patch, a new radiance build for the search); finals on ds8 (451 GiB; the packs can then go);
+  the synthesized planes stay resident (~7.6 GB per process, a follow-up releases them); plane check of the other 46 levels
+  (`plane_level.sh`, ready). **Runtime:** neither (eval speed).
+
+### 2026-11-14 7:25 PM CST · #185 · Lead review of w162: (B) works
+- Reviewed out/w162.md + `data/vload185/identity-b-2026-11-15/` (four #183 mixes: KLD rows SAME as the mix path,
+  3,491,568 bytes each; plane sha256 per weight at k0.125 / 2.5 / 7.5). (B) = manifest lines `<weight> final DIR
+  codebook=mad`, exl3i planes filled at open from the trellises: import 2.3 s per model on 8 threads, no pack, no
+  mix file; per-candidate saving ≈ radmix (~25 s, 11.8 GB writes). Finals 451 GiB vs packs 729 GB (−280 GB net).
+- Not yet: rollout (fork `qc-exl3-v3-vload` build on ds8 + `hostd-final.patch` + finals copied to ds8), plane checks of
+  the other 46 levels, releasing synthesized pages after the load. Rollout planned with the s186 switch (one restart),
+  the 46-level plane check first. **Runtime:** neither.
