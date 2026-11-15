@@ -45,7 +45,24 @@ def main(out_md, out_js):
                 r.update({"kld": rr["kld"], "inc": it, "logr_vs_inc": math.log(rr["kld"] / kl[ih]) if ih in kl else None})
         rows.append(r)
     json.dump(rows, open(out_js, "w"), indent=1)
-    L = ["| file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |", "|---|---|---|---|---|---|"]
+    # per-allocator tally (lead note 5:00 AM CST): tried / stage-1 decided / tentative / confirmed accept, join / stage-2 reject
+    T = {}
+    for r in rows:
+        if r["mode"] != "decide": continue
+        t = T.setdefault(r["alloc"], {"files": 0, "s1": 0, "tent": 0, "accept": 0, "join": 0, "s2rej": 0, "s2pend": 0, "sizes": []})
+        t["files"] += 1
+        if "s1" in r: t["s1"] += 1
+        if r.get("s1") == "tentative":
+            t["tent"] += 1
+            if "s2" not in r: t["s2pend"] += 1
+            elif r["s2"] == "accept": t["accept"] += 1; t["sizes"].append(f"{r['size']:g}A")
+            elif r["s2"] == "join": t["join"] += 1; t["sizes"].append(f"{r['size']:g}j")
+            else: t["s2rej"] += 1
+    L = ["| allocator | files | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |",
+         "|---|---|---|---|---|---|---|---|---|"]
+    for a, t in sorted(T.items(), key=lambda kv: -(kv[1]["accept"] + kv[1]["join"])):
+        L.append(f"| {a} | {t['files']} | {t['s1']} | {t['tent']} | {t['accept']} | {t['join']} | {t['s2rej']} | {t['s2pend']} | {' '.join(t['sizes'])} |")
+    L += ["", "| file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |", "|---|---|---|---|---|---|"]
     for r in rows:
         if r["mode"] == "decide":
             s1 = f"{r.get('s1', 'pending')} {r['s1_logr']:+.4f} z {r['s1_z']:+.2f} k {r['s1_k']}{' stopped' if r.get('stopped') else ''}" if "s1_logr" in r else "pending"
@@ -54,7 +71,7 @@ def main(out_md, out_js):
             s1 = f"probe KLD {r['kld']:.5f}, log r vs incumbent {r['logr_vs_inc']:+.4f}" if r.get("logr_vs_inc") is not None else "probe pending"
             s2 = "-"
         L.append(f"| {r['file']} | {r['alloc']} | {r['size']:g} | {r['tag'].split('-', 2)[2]} | {s1} | {s2} |")
-    open(out_md, "w").write("\n".join(L) + "\n"); print("\n".join(L))
+    open(out_md, "w").write("\n".join(L) + "\n"); print("\n".join(L[:len(T) + 2]))
 
 
 if __name__ == "__main__":
