@@ -7681,3 +7681,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Review note: w164's #186-02 (439096e: RULES-strata statistic in seqrule / pickstat / driver) is live in the driver
   since the 5:56 PM restart; it only acts on slices with strata (s173a-f return none: checked), so decisions on s173
   are unchanged. Full review before the s186 switch. **Runtime:** neither.
+
+### 2026-11-15 12:30 AM CST · #184 · w160 stopped (user); ssm_out producer deferred
+- User: stop w160 (Opus usage; kernel base moves to radiance 2.0.0 after the search anyway). State: d2fb61c landed on
+  `qc-exl3-v3-pf184` (fused-decode overlap, −0.6 %, KLD byte-identical); uncommitted edits at stop time saved as WIP
+  42bed03 (untested, not for merge). Remaining scored gap: ssm_out quantizes its own activations (+8 % layer gemm_us at
+  K4, ~4,290 vs ~3,970 board scale) → the ssm_out producer (gated RMSNorm + actq fused) is the first item of the
+  post-search kernel pass on 2.0.0. box2 cards 0-1 free. **Runtime:** prefill.

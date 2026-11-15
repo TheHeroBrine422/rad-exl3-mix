@@ -1,2 +1,24 @@
 23:36:29 [card 0] base-k4-r1: serve home /data/q27/rad10-e157b/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
 23:36:29 [card 1] f1-k2.5-r1: serve home /data/q27/w160/b/f1/home pack /data/q27/w150/packs/q27v3-635bac02-k2.5-mad-a8.rad env ''
+23:37:50 [card 1] f1-k2.5-r1: done (f1-k2.5-r1 ctx 0 run 3: prompt 105 ttft 109 ms, client 26.27 ms/tok, server 26.27 ms/step x 1.00 tok)
+23:37:50 [card 1] base-k2.5-r1: serve home /data/q27/rad10-e157b/home pack /data/q27/w150/packs/q27v3-635bac02-k2.5-mad-a8.rad env ''
+23:37:55 [card 0] base-k4-r1: done (base-k4-r1 ctx 0 run 3: prompt 101 ttft 103 ms, client 29.62 ms/tok, server 29.62 ms/step x 1.00 tok)
+23:37:55 [card 0] f1-k4-r1: serve home /data/q27/w160/b/f1/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
+23:38:45 [card 1] base-k2.5-r1: done (base-k2.5-r1 ctx 0 run 3: prompt 100 ttft 101 ms, client 25.25 ms/tok, server 25.24 ms/step x 1.00 tok)
+23:38:45 [card 1] base-k2.5-r2: serve home /data/q27/rad10-e157b/home pack /data/q27/w150/packs/q27v3-635bac02-k2.5-mad-a8.rad env ''
+23:39:06 [card 0] f1-k4-r1: done (f1-k4-r1 ctx 0 run 3: prompt 106 ttft 107 ms, client 29.23 ms/tok, server 29.22 ms/step x 1.00 tok)
+23:39:06 [card 0] f1-k4-r2: serve home /data/q27/w160/b/f1/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
+23:39:40 [card 1] base-k2.5-r2: done (base-k2.5-r2 ctx 0 run 3: prompt 101 ttft 102 ms, client 24.42 ms/tok, server 24.42 ms/step x 1.00 tok)
+23:39:40 [card 1] f1-k2.5-r2: serve home /data/q27/w160/b/f1/home pack /data/q27/w150/packs/q27v3-635bac02-k2.5-mad-a8.rad env ''
+23:40:18 [card 0] f1-k4-r2: done (f1-k4-r2 ctx 0 run 3: prompt 107 ttft 101 ms, client 28.48 ms/tok, server 28.48 ms/step x 1.00 tok)
+23:40:18 [card 0] base-k4-r2: serve home /data/q27/rad10-e157b/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
+23:40:36 [card 1] f1-k2.5-r2: done (f1-k2.5-r2 ctx 0 run 3: prompt 105 ttft 114 ms, client 24.42 ms/tok, server 24.41 ms/step x 1.00 tok)
+23:41:24 [card 0] base-k4-r2: done (base-k4-r2 ctx 0 run 3: prompt 107 ttft 103 ms, client 28.52 ms/tok, server 28.51 ms/step x 1.00 tok)
+23:57:16 [card 0] iqr4s-r1: serve home /data/q27/rad10-e157b/home pack /data/q27/w138/hf/iqr-v4/qwen3.8-27b-iq4r-s-v4.rad env ''
+23:58:20 [card 0] iqr4s-r1: done (iqr4s-r1 ctx 0 run 3: prompt 107 ttft 120 ms, client 26.31 ms/tok, server 26.31 ms/step x 1.00 tok)
+23:58:20 [card 0] f3-k4-r1: serve home /data/q27/w160/b/f3/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
+23:59:22 [card 0] f3-k4-r1: done (f3-k4-r1 ctx 0 run 3: prompt 105 ttft 102 ms, client 28.98 ms/tok, server 28.97 ms/step x 1.00 tok)
+23:59:22 [card 0] f3-k4-r2: serve home /data/q27/w160/b/f3/home pack /data/q27/w150/packs/q27v3-635bac02-k4-mad-a8.rad env ''
+00:00:31 [card 0] f3-k4-r2: done (f3-k4-r2 ctx 0 run 3: prompt 102 ttft 101 ms, client 29.58 ms/tok, server 29.58 ms/step x 1.00 tok)
+00:00:31 [card 0] iqr4s-r2: serve home /data/q27/rad10-e157b/home pack /data/q27/w138/hf/iqr-v4/qwen3.8-27b-iq4r-s-v4.rad env ''
+00:01:36 [card 0] iqr4s-r2: done (iqr4s-r2 ctx 0 run 3: prompt 103 ttft 120 ms, client 25.57 ms/tok, server 25.56 ms/step x 1.00 tok)
