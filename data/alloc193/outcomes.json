@@ -469,7 +469,10 @@
   "s1_z": -0.8020421122258693,
   "s1_k": 299,
   "s1_vs": "v3s183-2-pair-01629",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.006031709208368849,
+  "s2_z": 0.9391501393436281
  },
  {
   "file": "w172-curve-3.125.json",
@@ -547,7 +550,10 @@
   "s1_z": -1.0696844504702898,
   "s1_k": 299,
   "s1_vs": "v3s183-4-block-01379",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.011351260774537797,
+  "s2_z": 0.7933867685173044
  },
  {
   "file": "w172-ens-4.5-w0.5-R0.25.json",
@@ -697,13 +703,418 @@
   "alloc": "rankreg",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-01765"
+  "tag": "v3s183-3-manual-01765",
+  "s1": "tentative",
+  "s1_logr": -0.015750600930201683,
+  "s1_z": -1.861698156644919,
+  "s1_k": 313,
+  "s1_vs": "v3s183-3-inc-01751",
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.011376905328952464,
+  "s2_z": 1.3649954700629454
  },
  {
   "file": "w172-rankreg-3.5-1.json",
   "alloc": "rankreg",
   "mode": "decide",
   "size": 3.5,
-  "tag": "v3s183-3.5-manual-01780"
+  "tag": "v3s183-3.5-manual-01780",
+  "s1": "reject",
+  "s1_logr": 0.007893485806742769,
+  "s1_z": 1.0408592896435627,
+  "s1_k": 110,
+  "s1_vs": "v3s183-3.5-inc-01753",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-4-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-01784",
+  "s1": "reject",
+  "s1_logr": 0.1097773344383044,
+  "s1_z": 2.8058000708760473,
+  "s1_k": 17,
+  "s1_vs": "v3s183-4-inc-01742",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-4.5-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01785",
+  "s1": "reject",
+  "s1_logr": 0.009904345673282512,
+  "s1_z": 1.2493471154635258,
+  "s1_k": 213,
+  "s1_vs": "v3s183-4.5-inc-01743",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-2.5-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-01794",
+  "s1": "tentative",
+  "s1_logr": -0.026338789857661322,
+  "s1_z": -2.407063460289555,
+  "s1_k": 313,
+  "s1_vs": "v3s183-2.5-inc-01749",
+  "stopped": false,
+  "s2": "join",
+  "s2_logr": -0.019262976644728147,
+  "s2_z": -2.4962419117399657
+ },
+ {
+  "file": "w172-rankreg-5-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-01795",
+  "s1": "tentative",
+  "s1_logr": -0.025561542269316985,
+  "s1_z": -2.2161943198498553,
+  "s1_k": 313,
+  "s1_vs": "v3s183-5-inc-01759",
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": -0.002759394073753786,
+  "s2_z": -0.17111909416551627
+ },
+ {
+  "file": "w172-rankreg-2-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01796",
+  "s1": "tentative",
+  "s1_logr": -0.006734967161103243,
+  "s1_z": -0.8091097641411279,
+  "s1_k": 313,
+  "s1_vs": "v3s183-2-inc-01763",
+  "stopped": false,
+  "s2": "accept",
+  "s2_logr": -0.017214218602746162,
+  "s2_z": -2.9364027481619424
+ },
+ {
+  "file": "w172-rankreg-6-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 6.0,
+  "tag": "v3s183-6-manual-01799",
+  "s1": "reject",
+  "s1_logr": 0.02199274482676888,
+  "s1_z": 1.239256156338056,
+  "s1_k": 313,
+  "s1_vs": "v3s183-6-inc-01745",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-3-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-01804",
+  "s1": "reject",
+  "s1_logr": 0.012543184659711434,
+  "s1_z": 2.0804022367201176,
+  "s1_k": 313,
+  "s1_vs": "v3s183-3-inc-01751",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-3.5-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-01805",
+  "s1": "reject",
+  "s1_logr": 0.05783184950395623,
+  "s1_z": 1.5274423098869996,
+  "s1_k": 67,
+  "s1_vs": "v3s183-3.5-inc-01753",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-4-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-01806",
+  "s1": "reject",
+  "s1_logr": 0.01698388235792863,
+  "s1_z": 0.7567345919234064,
+  "s1_k": 213,
+  "s1_vs": "v3s183-4-inc-01742",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-4.5-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01812",
+  "s1": "tentative",
+  "s1_logr": -0.004582886392400846,
+  "s1_z": -0.5358215727735424,
+  "s1_k": 313,
+  "s1_vs": "v3s183-4.5-inc-01743",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-2.5-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-01815",
+  "s1": "reject",
+  "s1_logr": 0.022897593181770405,
+  "s1_z": 3.166951859895103,
+  "s1_k": 313,
+  "s1_vs": "v3s183-2.5-inc-01749",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-5-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-01820",
+  "s1": "tentative",
+  "s1_logr": -0.014016758839012164,
+  "s1_z": -0.9797008560795274,
+  "s1_k": 313,
+  "s1_vs": "v3s183-5-inc-01759",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-2-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01821",
+  "s1": "reject",
+  "s1_logr": 0.01062501265680066,
+  "s1_z": 1.2936691501632316,
+  "s1_k": 109,
+  "s1_vs": "v3s183-2-inc-01748",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-6-2.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 6.0,
+  "tag": "v3s183-6-manual-01824",
+  "s1": "reject",
+  "s1_logr": 0.03635241092725167,
+  "s1_z": 2.0405310341172167,
+  "s1_k": 43,
+  "s1_vs": "v3s183-6-inc-01745",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-3-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-01825",
+  "s1": "tentative",
+  "s1_logr": -0.008926303152111879,
+  "s1_z": -1.256172888637354,
+  "s1_k": 313,
+  "s1_vs": "v3s183-3-inc-01751",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-3.5-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-01826",
+  "s1": "reject",
+  "s1_logr": 0.0017239110983310632,
+  "s1_z": 0.3406567711360343,
+  "s1_k": 213,
+  "s1_vs": "v3s183-3.5-inc-01753",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-4-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-01827",
+  "s1": "reject",
+  "s1_logr": 0.031688779497814956,
+  "s1_z": 1.0446603034196542,
+  "s1_k": 111,
+  "s1_vs": "v3s183-4-inc-01742",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-4.5-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01828",
+  "s1": "reject",
+  "s1_logr": 0.054751992835410906,
+  "s1_z": 1.507002409107244,
+  "s1_k": 69,
+  "s1_vs": "v3s183-4.5-inc-01743",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-2.5-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-01829"
+ },
+ {
+  "file": "w172-rankreg-5-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-01830"
+ },
+ {
+  "file": "w172-rankreg-2-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01831"
+ },
+ {
+  "file": "w172-rankreg-6-3.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 6.0,
+  "tag": "v3s183-6-manual-01832"
+ },
+ {
+  "file": "w172-ens-6-w0.75-R0.25.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 6.0,
+  "tag": "v3s183-6-manual-01833"
+ },
+ {
+  "file": "w172-ens-2.5-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-01834"
+ },
+ {
+  "file": "w172-ens-3.5-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-01835"
+ },
+ {
+  "file": "w172-ens-4-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-01836"
+ },
+ {
+  "file": "w172-ens-5-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-01837"
+ },
+ {
+  "file": "w172-ens-6-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 6.0,
+  "tag": "v3s183-6-manual-01838"
+ },
+ {
+  "file": "w172-ens-2-w0.5-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01841"
+ },
+ {
+  "file": "w172-ens-4.5-w0.5-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01842"
+ },
+ {
+  "file": "w172-ens-2-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01843"
+ },
+ {
+  "file": "w172-ens-3-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-01844"
+ },
+ {
+  "file": "w172-ens-4.5-w0.75-R0.5.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01845"
+ },
+ {
+  "file": "w172-anom-lateffndown-2.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01846"
+ },
+ {
+  "file": "w172-anom-attn_outputd6-4.5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-01848"
+ },
+ {
+  "file": "w172-tr-2-R0.125.json",
+  "alloc": "tr",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01849"
+ },
+ {
+  "file": "w172-anom-lateffndown-3.5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-01851"
+ },
+ {
+  "file": "w172-anom-ffn_gate_upd3-2.5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-01853"
+ },
+ {
+  "file": "w172-tr-2-R0.25.json",
+  "alloc": "tr",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-01854"
  }
 ]
