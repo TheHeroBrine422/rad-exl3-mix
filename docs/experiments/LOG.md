@@ -8008,3 +8008,14 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   confirm mode logs them as `join`); the lead decides on a convplot4 change.
 - **Files:** `search/v3/confirm189/` (patch, tests, tests.txt, README), `local/workers/w167/` (candidate config, scratch tree, snapshot
   of the live state, dry run).
+- 9:30 PM CST · #189 live: w167's patch reviewed and committed (15/15 confirm, 13/13 pool, 18/18 picks; identity with
+  `confirm` absent on the #183 replay and the live K=3 state). Registry: s186b/d/f role confirm, s186c ready; config =
+  w167's candidate (confirm z −1, pairs a/b c/d e/f, sizes 2.0–6.0, go-live from line 3271). The driver rotated to s186c at
+  once (s186a had reached 200); GO-LIVE check on s186b: 6 sizes (3–6) to confirm, 2.0 / 2.5 unchanged.
+  **Incident:** the old driver did not exit on `drv/STOP` within 60 s (blocked in a fit) and the new one started beside it
+  for ~1 min; both killed, state checked (no duplicate submit / decision / tentative events), one driver restarted, it
+  resumed the go-live plan. Lesson: wait for the old PID to exit (or kill it) before starting. Also: the 2.0 / 2.5 re-seed
+  on s186a never completed (its box2 evals failed, then the slice rotated: "re-seed abandoned"); 2.0 / 2.5 run with pools
+  of 1, filled by joins.
+- convplot4: only accepts whose tag became incumbent are chained (pool joins vs the worst member no longer inflate the
+  training line; w167 found 11 of 21 post-switch accepts were such joins). b2 line 0.586 → 0.598 with the fix.
