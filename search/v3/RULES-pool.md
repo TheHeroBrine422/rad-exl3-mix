@@ -103,3 +103,12 @@ stratified pmean if the slice is stratified) < 0 and every part < 0, and the (c)
   re-seed set, about 30 full evals on s186a) and the same number of candidate evals per decision. The lead decides K
   and the switch after the replay; this rule does not start a run.
 - Not decided here: whether the pool is kept for the final picks (RULES-picks' finalists are unchanged).
+
+## Amendment (w166, 11-14 7:25 PM CST, before any pool code ran on data): the statistic is the driver's, in force
+
+The user's amendment to RULES-picks (11-14 7:20 PM CST, `008933b1`): from the s186 switch the in-search statistic is
+uncapped (CONF `cap: null`; RULES-strata §4 then sums each (part, stratum) without weights); the (c) guard stays.
+Sections 3 and 6 therefore read "accept(·, ·)" as **the driver's in-search accept rule in force on the slice**: the
+size-adjusted statistic with the CONF `cap` in force (0.2 before the switch, null from it), the stratified pmean on a
+stratified slice, plus the (c) guard. Nothing else in the rule changes. The pre-switch replay (section 7) uses the
+capped statistic recorded in the snapshot; the post-switch tests use `cap: null`.
