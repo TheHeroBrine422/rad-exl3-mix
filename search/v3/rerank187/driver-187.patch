@@ -1,0 +1,82 @@
+--- a/search/v3/moves.py
++++ b/search/v3/moves.py
+@@ -173,8 +173,12 @@
+     return repair(pred, pred.assign(J, a), lo, hi)
+ 
+ 
+-def generate(kind, pred, draws, a, lo, hi, seen, rng, tries=6):
+-    """one candidate of `kind` (None if none new); draws: list of Pred for posterior samples"""
++def generate(kind, pred, draws, a, lo, hi, seen, rng, tries=6, rerank=None, rerank_k=8):
++    """one candidate of `kind` (None if none new); draws: list of Pred for posterior samples.
++    rerank (#187, CONF "rerank"; None = off, the body below runs unchanged): a callable (c, kind) -> predicted
++    log r; draws up to rerank_k distinct new candidates of this kind and returns the one it scores lowest (not for solve)"""
++    if rerank is not None and kind != "solve":                # solve is one deterministic mix: never reranked
++        return _generate_reranked(kind, pred, draws, a, lo, hi, seen, rng, rerank, rerank_k, tries)
+     inc = ahash(a)
+     for t in range(tries):
+         c = _gen(kind, pred, draws, a, lo, hi, rng)
+@@ -184,6 +188,22 @@
+     return None
+ 
+ 
++def _generate_reranked(kind, pred, draws, a, lo, hi, seen, rng, rerank, k, tries):
++    """#187: up to k distinct new candidates of one kind, the one the reranker scores lowest (None if none).
++    Stops after `tries` misses in a row (or 2k draws): a stochastic kind rarely repeats, a deterministic one would not fill the pool."""
++    inc = ahash(a); pool = {}; repeats = 0; n = 0
++    while len(pool) < k and repeats < tries and n < 2 * k:
++        n += 1
++        c = _gen(kind, pred, draws, a, lo, hi, rng)
++        h = ahash(c) if c is not None else None
++        if c is not None and h != inc and h not in seen and h not in pool and lo <= pred.M.bytes(c) <= hi:
++            pool[h] = c; repeats = 0
++        else:
++            repeats += 1
++    if not pool: return None
++    return min(pool.values(), key=lambda c: rerank(c, kind))
++
++
+ def _gen(kind, pred, draws, a, lo, hi, rng):
+     D = pred.D
+     if kind == "solve": return mckp(pred, a, hi, lo)
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -122,6 +122,12 @@
+         self.res_off = 0; self.bias = []; self.nogen = {}; self.fixed0 = self.M.fixed; self.bytes_off = None; self.bytes_src = None
+         self.mon = collections.defaultdict(list); self.stopped_sizes = set()
+         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
++        # RULES-187 arm d (#187, default off): CONF "rerank": {"model": static reranker JSON (rerank187/rerank_static.py), "k": proposals
++        # per move (8)}; the model's predicted log r ranks each move's proposals (moves.generate(rerank=...)). Absent = off.
++        rk = c.get("rerank") or {}; self.rerank_model = None; self.rerank_k = int(rk.get("k", 8))
++        if rk.get("model"):
++            import rerank187.rerank_hook as RH
++            self.rerank_mod = RH; self.rerank_model = RH.Booster(rk["model"])
+         self.replay()
+ 
+     # ------------------------------------------------------------------------------------------------ state
+@@ -597,6 +603,11 @@
+         n = len(self.sub)
+         return f"{self.c.get('tag_prefix', 'v3s')}-{size:g}-{kind}-{n:05d}"
+ 
++    def rerank_for(self, size, a, pr):
++        """#187: the reranker scorer for one size's moves (None when CONF "rerank" is off)"""
++        if self.rerank_model is None: return None
++        return self.rerank_mod.scorer(self.M, self.rerank_model, size, self.gname[size], a, pr)
++
+     def generate(self, act):
+         if all(f is None for f in self.fits.values()): return 0
+         out = self.outstanding(); depth = int(self.c.get("queue_depth", 6)); made = 0
+@@ -614,11 +625,12 @@
+             a = self.assign(self.inc[size]); lo, hi = self.window(size)
+             kind = MV.pick_kind(shares, kcount, self.rng)
+             F = self.fits[self.gname[size]]
+-            c = MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
++            rr = self.rerank_for(size, a, F["pred"])                  # #187 (CONF "rerank"; None = off)
++            c = MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng, rerank=rr, rerank_k=self.rerank_k)
+             if c is None:
+                 for k2 in sorted(shares, key=lambda k: -shares[k]):
+                     if k2 == kind: continue
+-                    c = MV.generate(k2, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
++                    c = MV.generate(k2, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng, rerank=rr, rerank_k=self.rerank_k)
+                     if c is not None: kind = k2; break
+             if c is None:
+                 failed.add(size)

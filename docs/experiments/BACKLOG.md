@@ -701,6 +701,8 @@ without FT already beat QuIP# / AQLM *with* FT ("fine-tuning is not a silver bul
   move-level labels (less noise), ~10–20 move features incl. neighbourhood K (interactions M1 lacks), ranking target.
   Test: offline replay on the restarted search's own decisions (train on the first N, predict the next; accept AUC vs
   M1 alone) at ~300–500 decisions; live only on a share of proposals if it clearly beats M1.
+  **#187 (11-15, offline replay, 104 whole-slice rows): no arm passes RULES-187.** Joint fit and reranker add +0.15 / +0.18
+  to mean ρ(b2, b3) (80 % CI spans 0) and lower b1; partial pooling does not help. Data `data/rerank187/`; LOG 11-14 7:30 PM CST.
 
 ### QAD combination screen (user 11-14): how the QAD options stack — after #181's scaling curve
 Fractional factorial 2^(5-1) = 16 short runs at 2.5 (1M tokens each, own decay, lr from the screen; judged on the qad

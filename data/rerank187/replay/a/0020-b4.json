@@ -1,0 +1,1 @@
+{"N": 20, "arm": "a", "group": "b4", "n_obs": 88, "n_cand": 1, "rows": 88, "labels": 3, "params": 91, "rmse_log": 0.024618493794588702, "cost": 24.60179806876099, "nfev": 45, "n_nonfinite": 0, "secs": 6.35, "preds": {"v3s183-7-solve-00029": -0.1837016297367044}}

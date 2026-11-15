@@ -1,0 +1,30 @@
+FAIL capped_weights_agree: FileNotFoundError(2, 'No such file or directory')
+FAIL old_rule_unchanged: FileNotFoundError(2, 'No such file or directory')
+PASS one_dominant_document
+PASS guard_catches_a_heavy_tail
+PASS short_document_noise
+band 3: b 1.000 (spec); c 90 docs / 90 units / 180000 pos (max doc share 5.6%), x 200 docs / 200 units / 800000 pos (max doc share 35.4%)
+ # tag                                    bpw      KLD c      KLD x KLD pooled        dS pooled (a) vs pick                (a) c vs pick                (b) c vs pick                (c) c vs pick                (a) x vs pick                (b) x vs pick                (c) x vs pick
+ 1 D                                   3.0000    0.00094    0.00063    0.00069   -0.0541 [-0.1366, +0.0232]   +0.0085 [+0.0054, +0.0115]   +0.0085 [+0.0054, +0.0115]   +0.0087 [+0.0061, +0.0112]   -0.0744 [-0.1652, +0.0299]   -0.0286 [-0.1529, +0.0299]   +0.0264 [+0.0222, +0.0295]  GUARD: (c) worse than base (x), E (c), E (x)
+ 2 E                                   3.0000    0.00094    0.00068    0.00072                       (pick)
+ 3 base                                3.0000    0.00094    0.00068    0.00073   +0.0061 [+0.0013, +0.0117]   +0.0098 [+0.0071, +0.0124]   +0.0098 [+0.0071, +0.0124]   +0.0094 [+0.0072, +0.0115]   +0.0049 [-0.0001, +0.0123]   +0.0076 [+0.0004, +0.0123]   +0.0102 [+0.0087, +0.0116]
+pick vs runner_up D: pooled (a) +0.0541 [-0.0232, +0.1366]; c: (a) -0.0085 [-0.0115, -0.0054] (b) -0.0085 [-0.0115, -0.0054] (c) -0.0087 [-0.0112, -0.0061]; x: (a) +0.0744 [-0.0299, +0.1652] (b) +0.0451 [-0.0299, +0.1652] (c) -0.0264 [-0.0295, -0.0222]
+pick vs default base: pooled (a) -0.0061 [-0.0117, -0.0013]; c: (a) -0.0098 [-0.0124, -0.0071] (b) -0.0098 [-0.0124, -0.0071] (c) -0.0094 [-0.0115, -0.0072]; x: (a) -0.0049 [-0.0123, +0.0001] (b) -0.0075 [-0.0123, -0.0003] (c) -0.0102 [-0.0116, -0.0087]
+FLAG: part x doc 0 (unit None) holds 35.0% of base's KL: look before trusting the pick
+FLAG: part x doc 0 (unit None) holds 28.4% of D's KL: look before trusting the pick
+FLAG: part x doc 0 (unit None) holds 35.4% of E's KL: look before trusting the pick
+best (a) D; PICK E
+PASS finalpick_flag_guard_default
+PASS traces_resample_as_units
+PASS early_stop_matches_the_hosts
+PASS rotation_per_slice
+PASS old_slice_unchanged_recorded
+PASS strata_cap_within_stratum
+PASS strata_formula_matches_definition
+PASS strata_absent_stratum
+PASS strata_guard_matches_definition
+PASS strata_se_needs_three_per_stratum
+PASS strata_require_a_stratum
+PASS strata_registry
+PASS pickstat_strata_and_small_parts
+16 / 18 PASS

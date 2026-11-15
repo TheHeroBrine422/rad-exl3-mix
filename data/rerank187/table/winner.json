@@ -1,0 +1,48 @@
+{
+ "winner": "a",
+ "gates": {
+  "b": {
+   "dS": 0.14890282131661442,
+   "b1_ok": false,
+   "ci_ok": false,
+   "dS_ok": true,
+   "pass": false
+  },
+  "c0.1": {
+   "dS": 0.09102104791759957,
+   "b1_ok": false,
+   "ci_ok": false,
+   "dS_ok": false,
+   "pass": false
+  },
+  "c0.3": {
+   "dS": -0.05729959695476938,
+   "b1_ok": false,
+   "ci_ok": false,
+   "dS_ok": false,
+   "pass": false
+  },
+  "c1.0": {
+   "dS": -0.15120913569189431,
+   "b1_ok": false,
+   "ci_ok": false,
+   "dS_ok": false,
+   "pass": false
+  },
+  "d": {
+   "dS": 0.1827810120913569,
+   "b1_ok": false,
+   "ci_ok": false,
+   "dS_ok": true,
+   "pass": false
+  }
+ },
+ "S": {
+  "a": 0.2382221227048813,
+  "b": 0.3871249440214957,
+  "c0.1": 0.3292431706224809,
+  "c0.3": 0.18092252575011192,
+  "c1.0": 0.08701298701298697,
+  "d": 0.4210031347962382
+ }
+}

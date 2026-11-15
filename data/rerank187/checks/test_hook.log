@@ -1,0 +1,5 @@
+PASS features equal rerank.py on every candidate  max |diff| 0.0e+00
+PASS Booster == xgboost predictions  max |diff| 2.5e-08 over 250
+PASS default path (rerank=None) == original moves.generate  every kind x 3 seeds
+PASS reranked path returns valid new candidates in the window  9 candidates returned
+all checks passed

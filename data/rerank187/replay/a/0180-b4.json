@@ -1,0 +1,1 @@
+{"N": 180, "arm": "a", "group": "b4", "n_obs": 118, "n_cand": 1, "rows": 118, "labels": 16, "params": 105, "rmse_log": 0.034558022521687, "cost": 30.66072122760399, "nfev": 39, "n_nonfinite": 0, "secs": 7.97, "preds": {"v3s183-7-thompson-00190": 0.0173985671262188}}
