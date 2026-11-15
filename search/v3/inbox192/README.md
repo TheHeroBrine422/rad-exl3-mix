@@ -109,3 +109,48 @@ decisions. A file still in `inbox/` is left there (the old code never reads it).
 - Not applied to the live run; the lead switches (above). No commit.
 - Probe rows carry se 0 (no incumbent anchor), as an incumbent's own rows do.
 - A read on a golden a host cannot load fails like any eval (a `fail` result, logged); the driver does not check that the golden exists.
+
+## Round-robin and pending cap (#192-02, w174, 11-15)
+
+Patch: `driver-inbox-rr.patch` (driver.py only, against HEAD `30448bb0`; the #192 inbox is already in HEAD). Candidate keys
+(**not set anywhere**; the lead decides):
+
+| CONF key | meaning | candidate |
+|---|---|---|
+| `inbox_share` | 0 < x ≤ 1. With inbox files waiting, the free slots (`queue_depth` − outstanding) are shared so the inbox holds about this share of the outstanding evals (1 = inbox first) | `0.5` |
+| `inbox_pending_max` | N ≥ 1. Files beyond the first N waiting in `inbox/` (oldest first) move to `inbox/overflow/` with a driver.log line; a file under 30 s old waits for a later pass | `200` |
+
+`inbox_max` (6) is still the hard cap on inbox evals outstanding. **Both keys absent = the #192 behaviour** (events, queue, log,
+status, folders identical to HEAD; `test_inbox192b.py` checks this on a scenario with inbox files and on a pinned live copy).
+
+**Choices (for review):**
+1. Slot rule: each free slot goes to the side further below its share (inbox: inbox evals / share; own moves: the rest / (1 − share)).
+   A tie goes to the side that did not get the previous slot (round robin; the inbox first). 0.5, depth 26, 100 probes: 13 inbox / 13 own.
+2. A side that cannot use a slot (inbox at its cap, a decide waiting for its incumbent, no own candidate) passes it on.
+3. Hold: if the oldest inbox file fits the cap but needs more free slots than are free (a probe with an extra read takes two), the slot
+   is held: no own move takes it until enough evals answer. Without the hold, a stream of one-eval moves would starve the two-eval file.
+4. One free slot: a waiting decide goes before an older one-eval probe, once. The probe is remembered in memory (`inbox_passed`) and goes
+   at the next one-slot turn, so decides cannot starve it. A restart resets the memory: one probe may be passed over once more; nothing is
+   lost or repeated.
+5. Otherwise oldest first. A decide waiting for its incumbent holds back the later inbox files (as in #192) but takes no slot.
+6. The share path runs only while inbox files wait. With none, `generate()` fills the queue as before (`room` is None: the same loop bound).
+7. Status: with either new key, the segment is `| inbox waiting n, outstanding k / max` (only while non-zero); absent keys keep `| inbox n (k outstanding)`.
+8. Restart: nothing new is persisted; the `inbox` events replay as before. Overflow is an atomic file move (no state).
+9. Validation at start: `inbox_share` outside (0, 1] and `inbox_pending_max` < 1 raise ValueError.
+
+**Tests:** `test_inbox192b.py` 13 / 13 (share 0.5 of 26 with 100 waiting; keys absent = inbox first; own moves when the inbox is full; share 1;
+odd depth; a decide waiting for its incumbent holds no slot; the two-eval hold; decide before probe once; overflow + young file; restart in
+the share path; key validation; identity on `scenario192b.py` (HEAD vs tree); identity on a pinned live copy with the 15 consensus files).
+Mutants (deliberately broken copies) are each caught by the tests named in `tests-192b.txt`.
+
+**Limits:**
+- The own-move side is a stand-in in the share tests (the fake hosts give no fits). The real `generate()` changed only by its `room` cap.
+  `dryrun192.py` drops `fit_done` on purpose (generation off), so the live-copy identity does not exercise the real generator.
+- `test_inbox192.py::empty_inbox_identity_live` copies the live run separately for each tree. While the live driver moves it can fail
+  (one run at about 8:04 UTC: events differed, 8 / 9; the same state pinned once gave identical events). Fix: pin one copy, as `test_inbox192b` does.
+- The pinned live copy's coverage depends on the live state at run time (at about 2:05 AM CST one of the 15 files went out: the oldest decide's
+  size was not scored on the active slice, and the existing rule holds the later files back).
+
+**Procedure (lead):** `git apply -p1 search/v3/inbox192/driver-inbox-rr.patch`; run `python3 -I search/v3/inbox192/test_inbox192b.py` **before
+committing** (its identity tests compare against `git archive HEAD`); commit `search/v3/driver.py`. Turning it on = a restart with
+`"inbox_share"` / `"inbox_pending_max"` added to the CONF (the same stop / start as the #192 switch).
