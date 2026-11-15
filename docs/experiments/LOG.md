@@ -7936,3 +7936,18 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   rule, not the raw rank-1 (a guard-failing rank-1 is kept in the pool, not as incumbent; RULES-pool §6); (4) K = 3 is untested on data.
 - **Files:** `search/v3/RULES-pool.md`, `search/v3/pool188/` (patch, tests, replay, dry run, README), `search/v3/SWITCH-186-188.md`,
   `data/pool188/` (sanity, smoke, tests), `local/workers/w166/` (candidate config, scratch).
+
+### 2026-11-14 8:05 PM CST · #183 / #186 / #188 · Switch: stratified slices, cap off, elite pool live
+- w166's patch reviewed and applied (commit above; pool188 13/13, test_picks 18/18 on the VM). Hosts: w164's
+  `earlystop-strata.patch` (copy `search/v3/run186w/earlystop-strata.patch`) applied to `/data/q27/srch183/code` on ds8 and
+  box2 (backup `code.pre186/`), `test_hostd_es` ALL PASS on both (test_picks 17/18 there: the host tree's slices.py lacks
+  the driver-side `strata_of`, not used by the hosts). Daemons restarted with the coordinator (10 in-flight ds8 units
+  orphaned, restartable).
+- Registry: s186a–f merged from w164's staged file; s186a ready, s173f set to staged (unused). Config = w166's candidate
+  (cap null, pool 3, cross_share0 0.15, re-seed on s186a for 2.0–6.0 top 3) + **rotate_after 58 TEMPORARY** (= s173e's
+  decisions, to rotate now); restore 200 at the next restart (loader rollout). Driver log: `ROTATE s173e -> s186a`,
+  `RE-SEED on s186a: 24 candidates for 8 sizes`.
+- Tracking: second tracker for t186n (`track183.py` with `TRACK_PREFIX=trk186 TRACK_FROM_LINE=3271`, no backfill; log
+  `/workspace/logs/track186.log`); guard prefixes + trk186. w165's reranker not applied (no arm passed).
+- Pending: verify the first early-stopped s186a eval (strata true, no `w`), the re-seed's pool events; direct loader (#185)
+  as its own restart after the 46-level plane check (byte-identical path, no re-seed). **Runtime:** neither.
