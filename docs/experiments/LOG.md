@@ -8191,3 +8191,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Open:** RAM of hybrid units (planes held per process; ds8 55 GB used of 235 at 8 cards, fine so far); the stale w131 coordinator process on the VM (pid 107398, root `multi/v3`, no hostd behind it) left alone.
 - **Runtime:** neither.
 - 5:00 AM CST · #190 cooldown check (rule 4; 5 h after the s190a switch). Confirmed accepts / joins since the switch and the incumbent's t183 change: 2.0 3 confirmed, t183 0.1085 → 0.1089 (pair-01517; pair-01629 unread); 2.5 3, 0.05322 → 0.05239 (−1.6%; manual-01628 unread); 3.0 7, 0.02582 → 0.02547 (−1.4%); 3.5 **0 of 8 tentatives**; 4.0 1 join, incumbent unchanged (0.00708); 4.5 5, 0.00398 → 0.00393 (−1.3%); 5.0 2, 0.00210 → 0.00210; 6.0 1 join, incumbent unchanged. By rule 4: 2.5 / 3.0 / 4.5 continue; 3.5, 4.0, 5.0, 6.0 qualify for STOP; 2.0 waits for its t183 read. **Not applied yet (lead's assumption):** a size stop is recorded in the driver state and makes the inbox refuse that size, and the user's later directive (3:25 AM) has w172's #193 allocators on trial at all active sizes; freed ds8 cards have no other job now (QAD is on box2). Apply the stops when w172's inbox budget is spent, or at the user's word.
+- 5:02 AM CST · #192 high-bpw consensus probes (t183): see the lines below; 6.5 bar = iq6r 0.00080, current 7.0 incumbent 0.000509.
+  - 11-15 04:11:55 CST ds8: eval ibx-t183-v3s183-7-probe-01620 done: t183 0.00051
+  - 11-15 04:15:06 CST ds8: eval ibx-t183-v3s183-6.5-probe-01625 done: t183 0.00062
+  - 11-15 04:27:56 CST ds8: eval ibx-t183-v3s183-6.5-probe-01642 done: t183 0.00062
+  - 11-15 04:28:29 CST ds8: eval ibx-t183-v3s183-7-probe-01646 done: t183 0.00050
