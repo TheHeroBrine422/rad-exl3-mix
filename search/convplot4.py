@@ -257,6 +257,7 @@ def main(argv=None):
     ap.add_argument("--track-name", default="t183")
     ap.add_argument("--track-strata", help="(#186) refs186.jsonl: the references' L (t183) / N (t186n) / board readings")
     ap.add_argument("--track-n", help="(#186) results.jsonl with trk186n-<incumbent tag> rows (the N supplement's incumbent reads)")
+    ap.add_argument("--dpi", type=int, default=100, help="output resolution (the status loop uses 160)")
     ap.add_argument("--anchor-track", action="store_true", help="(#186, user 11-14) training lines anchored on each size's first --track read, ÷ V2 on the tracking slice; IQR lines there; no monitor circles")
     ap.add_argument("--track-top", action="store_true", help="(#186) the tracking panel on top, the training estimate below")
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
@@ -510,7 +511,7 @@ def main(argv=None):
         fig.subplots_adjust(left=0.065, right=0.985, top=0.95, bottom=0.045 + 0.011 * nl)
     else:
         fig.tight_layout(rect=(0, 0.012 * nl, 1, 1))
-    fig.savefig(a.out, dpi=100)
+    fig.savefig(a.out, dpi=a.dpi)
     print("\n".join(summary)); print(note); print(f"{W['steps']} results, {len(W['decs'])} decisions, {len(W['reads'])} held-out reads, {nd} slice diamonds")
     return 0
 
