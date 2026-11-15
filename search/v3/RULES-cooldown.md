@@ -56,3 +56,12 @@ w176: under 1'' only one calib N document was eligible (s186a/c's N documents al
 reused documents across the s186 parts). 1'' is widened: N documents may also come from the **retired** s186b, s186d,
 s186e and s186f (their pairs / the re-selection are finished). Still excluded: s190b (live confirm), t183, t186n,
 golden-final750, final-x, verify. Everything else in 1'' / 2'' unchanged.
+
+## Amendment 2026-11-15 4:25 PM CST (user: rotate): pair s190e / s190f
+s190c reached rotate_after (266 decisions; due since 3:27 PM CST). Same as 1'' (amended 5:40 AM): Latin fresh and 2×
+s186's L, distinct from every earlier slice; N reused from **retired** search / confirm / reselect slices, now also
+s190a and s190b (s190b only once it has no pending confirmation, else leave its documents out). Still excluded: the
+live pair s190c / s190d, t183, t186n, golden-final750, final-x, verify. If the free calib Latin supply cannot give 2× in
+the c parts, fill the shortfall with more xcorp Latin pieces in the x parts (same total L gen positions per slice) and
+say so; never shrink a slice. Pair (s190e search, s190f confirm). The N-rich xcorp batch (TODO 11-15) replaces N reuse
+once it exists.
