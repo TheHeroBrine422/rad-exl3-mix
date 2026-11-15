@@ -18,7 +18,8 @@ import curv193 as CV  # noqa: E402
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("snap"); ap.add_argument("rdir"); ap.add_argument("anom"); ap.add_argument("pairs")
     ap.add_argument("out"); ap.add_argument("--nflags", type=int, default=6); ap.add_argument("--two", type=int, default=2)
-    ap.add_argument("--commit", default="?")
+    ap.add_argument("--commit", default="?"); ap.add_argument("--start", type=int, default=0)
+    ap.add_argument("--min-bits", type=float, default=0.0, help="skip flags whose one-step move shifts < this many bpw")
     a = ap.parse_args()
     M = C.load_menu(a.snap); km = C.KM(M); st = C.load_state(a.snap); inc = {}
     for e in st:
@@ -27,7 +28,7 @@ def main():
     for f in A.flags(res):
         if (f["g"], f["band"]) in seen: continue
         seen.add((f["g"], f["band"])); F.append(f)
-    F = F[:a.nflags]
+    F = F[a.start:a.start + a.nflags]
     cnt = collections.Counter(json.loads(l)["size"] for l in open(a.pairs))
     os.makedirs(a.out, exist_ok=True); cache = {}; plan = []
     for k, f in enumerate(F):
@@ -38,6 +39,8 @@ def main():
             pred = cache[g]; ia = C.assign(a.snap, inc[s])
             G = [w for w in km.W if C.gname(w) == f["g"]]
             b = dict(ia)
+            moved_bpw = abs(M.bytes({**ia, **{w: BL.shift(M, ia, w, f["dir"]) for w in G}}) - M.bytes(ia)) * 8 / M.P
+            if moved_bpw < a.min_bits: print(f"{f['g']} {f['band']}: one step moves {moved_bpw:.5f} bpw < {a.min_bits}: skipped"); break
             for w in G: b[w] = BL.shift(M, b, w, f["dir"])
             moved = sum(b[w] != ia[w] for w in G)
             bb = BL.balance(pred, M, b, set(G), s)
