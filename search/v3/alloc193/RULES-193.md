@@ -113,3 +113,24 @@ committed before the data they affect.
   (curvature at sub-2 sizes from those sizes' incumbents, constant beyond the end sizes); 7.0 rows dropped.
 - §3 anom: the CV grid for (λ, λ_dev) is {0.1 … 1e3} × {0.01 … 1e4} (the committed values were on the wrong scale for
   x in bpw units; seen on the first CV run, no flag or candidate made from it).
+
+## Amendment 2 — 2026-11-15 2:03 AM CST by the system clock (UTC−6) (before any fit.py-optimizer candidate exists)
+- **Time correction:** the times written above ("~2:05 AM", "2:35 AM") are wrong; by the system clock the rules were
+  committed 1:51 AM CST (2bf24b03) and amendment 1 at 1:55 AM CST (d2e13776). Git times are the record.
+- **Lead note 2:25 AM CST (agenda item 5): cautious optimizers on fit.py.** Four allocators, all on **my** fit.py refit on
+  the allowed rows (never the live fit), all starting from the size's current incumbent, all at the sizes 2.5, 3.0, 4.0,
+  5.0 (one decide per allocator per size), bytes in the window as usual:
+  - `tr` (trust region): fit.py's mckp optimum with each tensor restricted to options within ±0.25 K of the incumbent
+    (head / embedding: ±0.25 too). Hypothesis: the `solve` move's few accepts are the optimizer's curse; a bounded step
+    keeps fit.py's direction and drops its extrapolation.
+  - `rob` (robust quantile): from a candidate set (trust-region optima at radius 0.125 / 0.25 / 0.5 under the posterior
+    mean and under each of 16 posterior draws of the refit), pick the one with the best 80th percentile of predicted
+    log r vs the incumbent over the draws. Hypothesis: the pessimistic quantile avoids directions the model is unsure of.
+  - `recal` (recalibrated): objective = s_band · fit.py log r + Σ_g β_g x_g with s_band and β_g from §3's version-(ii)
+    regression (the slope of measured on fit.py-predicted log r per band, then the per-group residual coefficients),
+    trained on the allowed paired outcomes (stage-2 rows only from s186b / s186d; never s190b), optimized in the same
+    ±0.25 trust region (linearized, mckp). Hypothesis: correcting fit.py's known group biases makes its optimum real.
+  - `ens` (ensemble): objective = mean of fit.py's log r and the §1 curve model's log r (κ_band Σ c (K − C)² difference),
+    ±0.25 trust region. Hypothesis: two models with different errors cancel part of each other's exploitation.
+- **Budget re-split (total unchanged: 40 decide, 15 probe):** `cons` 5 (all used), `curve` 10, `anom` 8, `boot` 1,
+  `tr` 4, `rob` 4, `recal` 4, `ens` 4. Probes: `curve` 3, `boot` 12.
