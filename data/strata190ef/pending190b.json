@@ -1,0 +1,11 @@
+{
+ "state": "in/state-190b.jsonl",
+ "rows": 15533,
+ "s190a_tentatives": 90,
+ "s190b_confirms": 90,
+ "s190b_confirm_submits": 90,
+ "pending": 0,
+ "pending_tags": [],
+ "submitted_without_result": 0,
+ "submitted_without_result_tags": []
+}

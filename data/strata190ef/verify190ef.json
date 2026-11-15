@@ -1,0 +1,128 @@
+{
+ "parts": {
+  "s190e-x": {
+   "pieces": 237,
+   "rows": 339980,
+   "N_pieces": 15,
+   "gen_N": 26509,
+   "gen_L": 283423,
+   "N_share": 0.0855,
+   "N_scripts": 7,
+   "max_script_share_of_N": 0.2616,
+   "N_gen_by_script": {
+    "ARABIC": 6934,
+    "THAI": 6145,
+    "CJK": 4014,
+    "CYRILLIC": 3051,
+    "GREEK": 2916,
+    "HEBREW": 2784,
+    "HANGUL": 665
+   },
+   "plan_gen_total": 309932,
+   "built_gen_total": 309932,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s190f-x": {
+   "pieces": 313,
+   "rows": 427531,
+   "N_pieces": 19,
+   "gen_N": 23778,
+   "gen_L": 355168,
+   "N_share": 0.0627,
+   "N_scripts": 8,
+   "max_script_share_of_N": 0.3445,
+   "N_gen_by_script": {
+    "GREEK": 8191,
+    "ARABIC": 7026,
+    "CJK": 3839,
+    "CYRILLIC": 2593,
+    "HEBREW": 795,
+    "HIRAGANA": 604,
+    "HANGUL": 481,
+    "THAI": 249
+   },
+   "plan_gen_total": 378946,
+   "built_gen_total": 378946,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s190e-c": {
+   "docs": 104,
+   "rows": 110296,
+   "N_docs": 9,
+   "gen_N": 7255,
+   "gen_L": 89791,
+   "N_share": 0.0748,
+   "N_scripts_with_gen": 4,
+   "max_script_share_of_N": 0.4495,
+   "N_gen_by_script": {
+    "BENGALI": 3261,
+    "ARABIC": 2031,
+    "CJK": 1794,
+    "CYRILLIC": 169
+   },
+   "mismatch_counts": {}
+  },
+  "s190f-c": {
+   "docs": 60,
+   "rows": 86120,
+   "N_docs": 7,
+   "gen_N": 7581,
+   "gen_L": 65290,
+   "N_share": 0.104,
+   "N_scripts_with_gen": 4,
+   "max_script_share_of_N": 0.2798,
+   "N_gen_by_script": {
+    "CYRILLIC": 2121,
+    "CJK": 1862,
+    "ARABIC": 1857,
+    "GREEK": 1741
+   },
+   "mismatch_counts": {}
+  },
+  "s190e": {
+   "docs": 341,
+   "rows": 450276,
+   "gen_rows": 406978,
+   "planned_gen": 406978,
+   "parts": {
+    "x": "/data/q27/w179/slices/golden-s190e-x",
+    "c": "/data/q27/w179/slices/golden-s190e-c"
+   }
+  },
+  "s190f": {
+   "docs": 373,
+   "rows": 513651,
+   "gen_rows": 451817,
+   "planned_gen": 451817,
+   "parts": {
+    "x": "/data/q27/w179/slices/golden-s190f-x",
+    "c": "/data/q27/w179/slices/golden-s190f-c"
+   }
+  }
+ },
+ "bad": []
+}

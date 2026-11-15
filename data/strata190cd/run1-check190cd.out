@@ -1,0 +1,40 @@
+PASS c parts: s190c, s190d ['s190c', 's190d']
+PASS x parts: s190c, s190d ['s190c', 's190d']
+FAIL c part not blocked (N supply) calib N supply (strict): 2 documents, gen 2136, scripts {'HEBREW': 1, 'CYRILLIC': 1}: two c parts of ~6388 N gen with >= 4 scripts each cannot be drawn. No c N part is drawn; the Latin c parts and the x parts are still drawn.
+PASS x pieces distinct within each part and across the pair 394 pieces, 394 distinct
+PASS s190c-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190c-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190c-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190c-x reused pieces held only by retired slices 0 bad
+PASS s190c-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190c-x N pieces are N in xsupply 24 N pieces
+PASS s190c-x >= 4 non-Latin scripts 7 scripts {'BENGALI': 8191, 'CYRILLIC': 6301, 'CJK': 4701, 'HEBREW': 3435, 'ARABIC': 3018, 'HIRAGANA': 1940, 'GREEK': 566}
+PASS s190c-x max script <= 1/2 of N gen 0.291
+INFO s190c-x N gen share 0.1032 (N gen 28152 of 272738; 24 N units)
+PASS s190c-x L gen >= 1.9 x s186a 244586 vs 121926 (2.006 x)
+INFO s190c-x pieces 201 (N 24 = fresh 5 + reused 19; L 177); cats L {'agentic': 1, 'books': 5, 'chat': 19, 'code': 31, 'encyclopedic': 14, 'legal': 1, 'math': 13, 'multilingual': 17, 'qa': 15, 'reasoning': 4, 'science': 4, 'tools': 18, 'web': 35}
+PASS s190d-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190d-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190d-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190d-x reused pieces held only by retired slices 0 bad
+PASS s190d-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190d-x N pieces are N in xsupply 24 N pieces
+PASS s190d-x >= 4 non-Latin scripts 8 scripts {'CYRILLIC': 6286, 'CJK': 4032, 'GREEK': 3629, 'ARABIC': 3259, 'HEBREW': 2244, 'HIRAGANA': 1986, 'HANGUL': 462, 'THAI': 293}
+PASS s190d-x max script <= 1/2 of N gen 0.283
+INFO s190d-x N gen share 0.0929 (N gen 22191 of 238863; 24 N units)
+PASS s190d-x L gen >= 1.9 x s186b 216672 vs 108030 (2.006 x)
+INFO s190d-x pieces 193 (N 24 = fresh 6 + reused 18; L 169); cats L {'agentic': 1, 'books': 5, 'chat': 18, 'code': 29, 'encyclopedic': 13, 'legal': 1, 'math': 12, 'multilingual': 16, 'qa': 14, 'reasoning': 4, 'science': 4, 'tools': 18, 'web': 34}
+PASS every unused non-Latin b2 piece (1'' N source) is in a pair part 11 unused N b2 pieces, 11 used fresh
+PASS c documents distinct within each part 
+PASS c documents distinct across the pair 165 uses, 165 distinct
+PASS c documents: fit or search pool 
+PASS c documents outside every earlier / non-retired slice (Latin fresh, N only from retired) 0 held
+PASS s190c-c Latin documents fresh (not in any retired slice either) 0 from retired slices
+PASS s190c-c N documents reused from retired slices only 0 N documents
+PASS s190c-c L gen >= 1.9 x s186a 100564 vs 50052 (2.009 x)
+INFO s190c-c docs 107 (N 0, L 107), scored positions 118861
+PASS s190d-c Latin documents fresh (not in any retired slice either) 0 from retired slices
+PASS s190d-c N documents reused from retired slices only 0 N documents
+PASS s190d-c L gen >= 1.9 x s186b 86941 vs 43420 (2.002 x)
+INFO s190d-c docs 58 (N 0, L 58), scored positions 91314
+FAILED: ['c part not blocked (N supply)']

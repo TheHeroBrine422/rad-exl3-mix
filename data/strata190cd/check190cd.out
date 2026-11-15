@@ -1,0 +1,51 @@
+PASS c parts: s190c, s190d ['s190c', 's190d']
+PASS x parts: s190c, s190d ['s190c', 's190d']
+PASS c part not blocked (N supply) None
+PASS c N policy is the 5:40 amendment (amend540) amend540
+PASS x pieces distinct within each part and across the pair 394 pieces, 394 distinct
+PASS s190c-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190c-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190c-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190c-x reused pieces held only by retired slices (5:15 rule) 0 bad
+PASS s190c-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190c-x N pieces are N in xsupply 24 N pieces
+PASS s190c-x >= 4 non-Latin scripts 7 scripts {'BENGALI': 8191, 'CYRILLIC': 6301, 'CJK': 4701, 'HEBREW': 3435, 'ARABIC': 3018, 'HIRAGANA': 1940, 'GREEK': 566}
+PASS s190c-x max script <= 1/2 of N gen 0.291
+INFO s190c-x N gen share 0.1032 (N gen 28152 of 272738; 24 N units)
+PASS s190c-x L gen >= 1.9 x s186a 244586 vs 121926 (2.006 x)
+INFO s190c-x pieces 201 (N 24 = fresh 5 + reused 19; L 177); cats L {'agentic': 1, 'books': 5, 'chat': 19, 'code': 31, 'encyclopedic': 14, 'legal': 1, 'math': 13, 'multilingual': 17, 'qa': 15, 'reasoning': 4, 'science': 4, 'tools': 18, 'web': 35}
+PASS s190d-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190d-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190d-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190d-x reused pieces held only by retired slices (5:15 rule) 0 bad
+PASS s190d-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190d-x N pieces are N in xsupply 24 N pieces
+PASS s190d-x >= 4 non-Latin scripts 8 scripts {'CYRILLIC': 6286, 'CJK': 4032, 'GREEK': 3629, 'ARABIC': 3259, 'HEBREW': 2244, 'HIRAGANA': 1986, 'HANGUL': 462, 'THAI': 293}
+PASS s190d-x max script <= 1/2 of N gen 0.283
+INFO s190d-x N gen share 0.0929 (N gen 22191 of 238863; 24 N units)
+PASS s190d-x L gen >= 1.9 x s186b 216672 vs 108030 (2.006 x)
+INFO s190d-x pieces 193 (N 24 = fresh 6 + reused 18; L 169); cats L {'agentic': 1, 'books': 5, 'chat': 18, 'code': 29, 'encyclopedic': 13, 'legal': 1, 'math': 12, 'multilingual': 16, 'qa': 14, 'reasoning': 4, 'science': 4, 'tools': 18, 'web': 34}
+PASS every unused non-Latin b2 piece (N source) is in a pair part 11 unused N b2 pieces, 11 used fresh
+PASS c documents distinct within each part 
+PASS c documents distinct across the pair 175 uses, 175 distinct
+PASS c documents: fit or search pool 
+PASS c Latin documents outside every earlier / non-retired slice (fresh) 0 held
+PASS c N documents held only by retired-ok slices (5:40 amendment), by no other slice 0 not allowed
+PASS c N documents: no stratum mismatch (N in calib strata) 
+PASS c N documents carry N gen (gen > 0) 0 with 0 gen
+INFO c N holders (slices holding each N document, counts): {'s186a': 5, 's186b': 4, 's186d': 5, 's173d': 1, 's186e': 2, 's186f': 5, 's186c': 2}
+PASS s190c-c Latin documents fresh (not in any retired slice either) 0 from retired slices
+PASS s190c-c N documents reused from retired-ok slices only 5 N documents
+PASS s190c-c >= 4 non-Latin scripts 5 scripts {'HIRAGANA': 2404, 'HEBREW': 2136, 'CJK': 1047, 'ARABIC': 538, 'GREEK': 243}
+PASS s190c-c max script <= 1/2 of N gen 0.378
+INFO s190c-c N gen share 0.0596 (N gen 6368 of 106932; 5 N units)
+PASS s190c-c L gen >= 1.9 x s186a 100564 vs 50052 (2.009 x)
+INFO s190c-c docs 112 (N 5, L 107), scored positions 125229
+PASS s190d-c Latin documents fresh (not in any retired slice either) 0 from retired slices
+PASS s190d-c N documents reused from retired-ok slices only 5 N documents
+PASS s190d-c >= 4 non-Latin scripts 4 scripts {'HANGUL': 2791, 'GREEK': 1732, 'HIRAGANA': 1461, 'CYRILLIC': 709}
+PASS s190d-c max script <= 1/2 of N gen 0.417
+INFO s190d-c N gen share 0.0715 (N gen 6693 of 93634; 5 N units)
+PASS s190d-c L gen >= 1.9 x s186b 86941 vs 43420 (2.002 x)
+INFO s190d-c docs 63 (N 5, L 58), scored positions 98675
+ALL PASS

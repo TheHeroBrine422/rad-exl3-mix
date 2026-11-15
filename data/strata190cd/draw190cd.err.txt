@@ -1,0 +1,79 @@
+{
+ "calib": {
+  "fit_search_docs": 1134,
+  "nonretired_c_docs": 902,
+  "registry_nonretired_c": 411,
+  "retired_c_docs": 283,
+  "L_fresh_docs": 218,
+  "L_fresh_gen": 252795,
+  "N_fit_search_docs": 64,
+  "N_fit_search_docs_held_by_excluded": 46,
+  "N_pool_strict": {
+   "docs": 2,
+   "scripts": {
+    "HEBREW": 1,
+    "CYRILLIC": 1
+   },
+   "gen": 2136
+  },
+  "N_pool_540": {
+   "docs": 17,
+   "scripts": {
+    "HEBREW": 1,
+    "ARABIC": 3,
+    "HIRAGANA": 3,
+    "CJK": 3,
+    "BENGALI": 1,
+    "GREEK": 3,
+    "CYRILLIC": 2,
+    "HANGUL": 1
+   },
+   "gen": 22271,
+   "holders": {
+    "s173d": 1,
+    "s186a": 11,
+    "s186c": 9,
+    "s186d": 7,
+    "s186b": 6,
+    "s186e": 7,
+    "s186f": 7
+   }
+  }
+ },
+ "xcorp": {
+  "fresh_L_b1": 2133,
+  "fresh_N": 11,
+  "fresh_N_by_batch": {
+   "xc8k-b2-c0": 1,
+   "xc8k-b2-c1": 9,
+   "xc8k-b2-c2": 1
+  },
+  "fresh_N_gen": 14113,
+  "reuse_N_retired_pieces": 73,
+  "reuse_N_by_batch": {
+   "xc8k-b1": 55,
+   "xc8k-b2-c0": 17,
+   "xc8k-b2-c1": 1
+  },
+  "reuse_N_gen": 75141,
+  "reuse_N_scripts": {
+   "HIRAGANA": 15,
+   "HANGUL": 2,
+   "HEBREW": 2,
+   "CJK": 13,
+   "CYRILLIC": 19,
+   "ARABIC": 15,
+   "GREEK": 4,
+   "THAI": 2,
+   "BENGALI": 1
+  },
+  "retired_x_docs": 679,
+  "retired_x_docs_without_xsupply_row": 0,
+  "xdoc_in_two_batches": 0,
+  "L_fresh_gen": 2689890
+ }
+}
+s190c: c 112 docs (N 5, L 107, scripts 5), N gen 6368 of 106932 = 0.060, L gen 100564 (target 100104), pos 125229
+s190d: c 63 docs (N 5, L 58, scripts 4), N gen 6693 of 93634 = 0.071, L gen 86941 (target 86840), pos 98675
+s190c: x 201 pieces (N 24 [fresh 5, reused 19], L 177, scripts 7), N gen 28152 of 272738 = 0.103, L gen 244586 (target 243852)
+s190d: x 193 pieces (N 24 [fresh 6, reused 18], L 169, scripts 8), N gen 22191 of 238863 = 0.093, L gen 216672 (target 216060)

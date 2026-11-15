@@ -1,0 +1,56 @@
+PASS c parts: s190e, s190f ['s190e', 's190f']
+PASS x parts: s190e, s190f ['s190e', 's190f']
+PASS c part not blocked (N supply) None
+PASS c N policy is the 4:25 PM amendment (amend425) amend425
+PASS x pieces distinct within each part and across the pair 550 pieces, 550 distinct
+PASS s190e-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190e-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190e-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190e-x reused pieces held only by retired slices (5:15 rule) 0 bad
+PASS s190e-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190e-x N pieces are N in xsupply 15 N pieces
+PASS s190e-x >= 4 non-Latin scripts 7 scripts {'ARABIC': 6934, 'THAI': 6145, 'CJK': 4014, 'CYRILLIC': 3051, 'GREEK': 2916, 'HEBREW': 2784, 'HANGUL': 665}
+PASS s190e-x max script <= 1/2 of N gen 0.262
+INFO s190e-x N gen share 0.0855 (N gen 26509 of 309932; 15 N units)
+INFO s190e-x L gen 283423 (own 2x target 284204; the slice total is checked below)
+INFO s190e-x pieces 237 (N 15 = fresh 0 + reused 15; L 222); cats L {'agentic': 1, 'books': 6, 'chat': 23, 'code': 39, 'encyclopedic': 17, 'legal': 2, 'long': 1, 'math': 16, 'multilingual': 21, 'qa': 19, 'reasoning': 5, 'science': 5, 'tools': 23, 'web': 44}
+PASS s190f-x pieces are xsupply rows (batch, idx, doc) 0 missing
+PASS s190f-x fresh pieces unused (not in any earlier x part) 0 used
+PASS s190f-x no piece of a non-retired slice / final / t183 / t186n / s171 / s190a-b 0 held
+PASS s190f-x reused pieces held only by retired slices (5:15 rule) 0 bad
+PASS s190f-x L pieces: fresh xc8k-b1 only 0 bad
+PASS s190f-x N pieces are N in xsupply 19 N pieces
+PASS s190f-x >= 4 non-Latin scripts 8 scripts {'GREEK': 8191, 'ARABIC': 7026, 'CJK': 3839, 'CYRILLIC': 2593, 'HEBREW': 795, 'HIRAGANA': 604, 'HANGUL': 481, 'THAI': 249}
+PASS s190f-x max script <= 1/2 of N gen 0.344
+INFO s190f-x N gen share 0.0627 (N gen 23778 of 378946; 19 N units)
+INFO s190f-x L gen 355168 (own 2x target 326770; the slice total is checked below)
+INFO s190f-x pieces 313 (N 19 = fresh 0 + reused 19; L 294); cats L {'agentic': 1, 'books': 8, 'chat': 31, 'code': 51, 'encyclopedic': 23, 'legal': 2, 'math': 21, 'multilingual': 28, 'qa': 25, 'reasoning': 7, 'science': 7, 'tools': 31, 'web': 59}
+PASS every unused non-Latin b2 piece (N source) is in a pair part 0 unused N b2 pieces, 0 used fresh
+PASS c documents distinct within each part 
+PASS c documents distinct across the pair 164 uses, 164 distinct
+PASS c documents: fit or search pool 
+PASS c Latin documents never from a non-retired / excluded slice (ex_n, the live pair, t183, t186n, final750, s171, s173f) 0 excluded
+PASS c N documents held only by retired-ok slices (4:25 PM amendment), by no other slice 0 not allowed
+PASS c N documents: no stratum mismatch (N in calib strata) 
+PASS c N documents carry N gen (gen > 0) 0 with 0 gen
+INFO c N holders (slices holding each N document, counts): {'s186a': 5, 's186b': 2, 's186c': 6, 's186d': 1, 's186e': 5, 's186f': 2, 's190b': 7, 's190a': 3}
+PASS s190e-c Latin documents fresh, retired search or V2-era (4:40 PM) 0 other
+PASS s190e-c Latin reused documents: none held by a non-retired or confirm / reselect slice unless retired-search or V2 
+PASS s190e-c N documents reused from retired-ok slices only 9 N documents
+PASS s190e-c >= 4 non-Latin scripts 4 scripts {'BENGALI': 3261, 'ARABIC': 2031, 'CJK': 1794, 'CYRILLIC': 169}
+PASS s190e-c max script <= 1/2 of N gen 0.449
+INFO s190e-c N gen share 0.0748 (N gen 7255 of 97046; 9 N units)
+INFO s190e-c L gen 89791 vs own 2x target 85736 (2.095 x s186; the calib Latin pool is short)
+INFO s190e-c docs 104 (N 9, L 95), scored positions 110296
+PASS s190f-c Latin documents fresh (not in any slice) 0 not fresh
+PASS s190f-c N documents reused from retired-ok slices only 7 N documents
+PASS s190f-c >= 4 non-Latin scripts 4 scripts {'CYRILLIC': 2121, 'CJK': 1862, 'ARABIC': 1857, 'GREEK': 1741}
+PASS s190f-c max script <= 1/2 of N gen 0.280
+INFO s190f-c N gen share 0.1040 (N gen 7581 of 72871; 7 N units)
+INFO s190f-c L gen 65290 vs own 2x target 93668 (1.394 x s186; the calib Latin pool is short)
+INFO s190f-c docs 60 (N 7, L 53), scored positions 86120
+PASS s190e slice L gen (c + x) >= 1.9 x s186c (c + x) 373214 vs 184970 (2.018 x)
+PASS s190f slice L gen (c + x) >= 1.9 x s186d (c + x) 420458 vs 210219 (2.000 x)
+PASS s190f holds the freshest Latin: all free documents are used by the pair, or s190f has its 2x 53 of 53 free used; s190f c L 65290, s190e c L 89791
+PASS calib Latin: s190e reaches its 2x, or every reuse document is in use s190e c L 89791 vs 2x 85736; reuse pool 493
+ALL PASS

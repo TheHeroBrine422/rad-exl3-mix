@@ -1,0 +1,14 @@
+9f0cec10910f46132232dcdb5e9f2df8  golden-s190c-x/gen.u8
+35b4a3d4cd3b6b9e91a76a78525440d2  golden-s190c-x/kld.json
+201ab0cf4ea208c42ea96586546a3ddb  golden-s190c-x/rows.f32
+1bb16d73f4cf7682e0a1c41c4974a7db  golden-s190c-x/tokens.i32
+2ef1ba783cd435e51768c36b0974c471  golden-s190c-x/top.bin
+a5385db858194153bce2b7e8e93b9ae3  golden-s190d-x/gen.u8
+af1568f825f99dbcae7f0a7e9b66f400  golden-s190d-x/kld.json
+ab6d8072e124cdb313685dc41963a254  golden-s190d-x/rows.f32
+7f011a21c7ddc52afefd3c09e1379083  golden-s190d-x/tokens.i32
+b9dc701ef91276ea1a1c700e89234ddd  golden-s190d-x/top.bin
+8464017285d2b6e4fa2697a9e70896df  golden-s190c-x.jsonl
+cf92742705767c50d8e9b45578e31dd0  golden-s190d-x.jsonl
+4dbb3a75f4dfaae4d0bf29da954fc496  golden-s190c-x.docs
+5e8c8a15b2f3d73e1f261e57ae10aa33  golden-s190d-x.docs

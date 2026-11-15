@@ -1,0 +1,129 @@
+{
+ "parts": {
+  "s190c-x": {
+   "pieces": 201,
+   "rows": 296271,
+   "N_pieces": 24,
+   "gen_N": 28152,
+   "gen_L": 244586,
+   "N_share": 0.1032,
+   "N_scripts": 7,
+   "max_script_share_of_N": 0.291,
+   "N_gen_by_script": {
+    "BENGALI": 8191,
+    "CYRILLIC": 6301,
+    "CJK": 4701,
+    "HEBREW": 3435,
+    "ARABIC": 3018,
+    "HIRAGANA": 1940,
+    "GREEK": 566
+   },
+   "plan_gen_total": 272738,
+   "built_gen_total": 272738,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s190d-x": {
+   "pieces": 193,
+   "rows": 268694,
+   "N_pieces": 24,
+   "gen_N": 22191,
+   "gen_L": 216672,
+   "N_share": 0.0929,
+   "N_scripts": 8,
+   "max_script_share_of_N": 0.2833,
+   "N_gen_by_script": {
+    "CYRILLIC": 6286,
+    "CJK": 4032,
+    "GREEK": 3629,
+    "ARABIC": 3259,
+    "HEBREW": 2244,
+    "HIRAGANA": 1986,
+    "HANGUL": 462,
+    "THAI": 293
+   },
+   "plan_gen_total": 238863,
+   "built_gen_total": 238863,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s190c-c": {
+   "docs": 112,
+   "rows": 125229,
+   "N_docs": 5,
+   "gen_N": 6368,
+   "gen_L": 100564,
+   "N_share": 0.0596,
+   "N_scripts_with_gen": 5,
+   "max_script_share_of_N": 0.3775,
+   "N_gen_by_script": {
+    "HIRAGANA": 2404,
+    "HEBREW": 2136,
+    "CJK": 1047,
+    "ARABIC": 538,
+    "GREEK": 243
+   },
+   "mismatch_counts": {}
+  },
+  "s190d-c": {
+   "docs": 63,
+   "rows": 98675,
+   "N_docs": 5,
+   "gen_N": 6693,
+   "gen_L": 86941,
+   "N_share": 0.0715,
+   "N_scripts_with_gen": 4,
+   "max_script_share_of_N": 0.417,
+   "N_gen_by_script": {
+    "HANGUL": 2791,
+    "GREEK": 1732,
+    "HIRAGANA": 1461,
+    "CYRILLIC": 709
+   },
+   "mismatch_counts": {}
+  },
+  "s190c": {
+   "docs": 313,
+   "rows": 421500,
+   "gen_rows": 379670,
+   "planned_gen": 379670,
+   "parts": {
+    "x": "/data/q27/w176/slices/golden-s190c-x",
+    "c": "/data/q27/w176/slices/golden-s190c-c"
+   }
+  },
+  "s190d": {
+   "docs": 256,
+   "rows": 367369,
+   "gen_rows": 332497,
+   "planned_gen": 332497,
+   "parts": {
+    "x": "/data/q27/w176/slices/golden-s190d-x",
+    "c": "/data/q27/w176/slices/golden-s190d-c"
+   }
+  }
+ },
+ "bad": []
+}

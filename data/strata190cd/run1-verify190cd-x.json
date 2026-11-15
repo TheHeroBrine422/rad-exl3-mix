@@ -1,0 +1,74 @@
+{
+ "parts": {
+  "s190c": {
+   "pieces": 201,
+   "rows": 296271,
+   "N_pieces": 24,
+   "gen_N": 28152,
+   "gen_L": 244586,
+   "N_share": 0.1032,
+   "N_scripts": 7,
+   "max_script_share_of_N": 0.291,
+   "N_gen_by_script": {
+    "BENGALI": 8191,
+    "CYRILLIC": 6301,
+    "CJK": 4701,
+    "HEBREW": 3435,
+    "ARABIC": 3018,
+    "HIRAGANA": 1940,
+    "GREEK": 566
+   },
+   "plan_gen_total": 272738,
+   "built_gen_total": 272738,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s190d": {
+   "pieces": 193,
+   "rows": 268694,
+   "N_pieces": 24,
+   "gen_N": 22191,
+   "gen_L": 216672,
+   "N_share": 0.0929,
+   "N_scripts": 8,
+   "max_script_share_of_N": 0.2833,
+   "N_gen_by_script": {
+    "CYRILLIC": 6286,
+    "CJK": 4032,
+    "GREEK": 3629,
+    "ARABIC": 3259,
+    "HEBREW": 2244,
+    "HIRAGANA": 1986,
+    "HANGUL": 462,
+    "THAI": 293
+   },
+   "plan_gen_total": 238863,
+   "built_gen_total": 238863,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  }
+ },
+ "bad": []
+}

@@ -1,0 +1,7 @@
+$ /data/q27/venv/bin/python3 -I /data/q27/w176/code/search/v3/run190/pickx190cd.py /data/q27/w176/strata/plan190cd.json s190c /data/q27/w164/xview /data/q27/w176/slices/golden-s190c-x.part /data/q27/w176/slices/golden-s190c-x.part.jsonl /data/q27/challenge/golden/calib/kld.json
+$ /data/q27/venv/bin/python3 -I /data/q27/w131/genmask181.py make /data/q27/w176/slices/golden-s190c-x.part /data/q27/w176/slices/golden-s190c-x.part/gen.u8.new /data/q27/models/qwen38-27b-bf16
+/data/q27/w176/slices/golden-s190c-x: 201 pieces, N 24
+$ /data/q27/venv/bin/python3 -I /data/q27/w176/code/search/v3/run190/pickx190cd.py /data/q27/w176/strata/plan190cd.json s190d /data/q27/w164/xview /data/q27/w176/slices/golden-s190d-x.part /data/q27/w176/slices/golden-s190d-x.part.jsonl /data/q27/challenge/golden/calib/kld.json
+$ /data/q27/venv/bin/python3 -I /data/q27/w131/genmask181.py make /data/q27/w176/slices/golden-s190d-x.part /data/q27/w176/slices/golden-s190d-x.part/gen.u8.new /data/q27/models/qwen38-27b-bf16
+/data/q27/w176/slices/golden-s190d-x: 193 pieces, N 24
+BUILD DONE (x only)

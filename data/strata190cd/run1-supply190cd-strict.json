@@ -1,0 +1,49 @@
+{
+ "calib": {
+  "fit_search_docs": 1134,
+  "nonretired_c_docs": 902,
+  "registry_nonretired_c": 411,
+  "retired_c_docs": 283,
+  "retired_c_N_reusable": 2,
+  "retired_c_N_reusable_scripts": {
+   "HEBREW": 1,
+   "CYRILLIC": 1
+  },
+  "retired_c_N_reusable_gen": 2136,
+  "L_fresh_docs": 218,
+  "L_fresh_gen": 252795,
+  "N_reuse_scripts_count": 2
+ },
+ "xcorp": {
+  "fresh_L_b1": 2133,
+  "fresh_N": 11,
+  "fresh_N_by_batch": {
+   "xc8k-b2-c0": 1,
+   "xc8k-b2-c1": 9,
+   "xc8k-b2-c2": 1
+  },
+  "fresh_N_gen": 14113,
+  "reuse_N_retired_pieces": 73,
+  "reuse_N_by_batch": {
+   "xc8k-b1": 55,
+   "xc8k-b2-c0": 17,
+   "xc8k-b2-c1": 1
+  },
+  "reuse_N_gen": 75141,
+  "reuse_N_scripts": {
+   "HIRAGANA": 15,
+   "HANGUL": 2,
+   "HEBREW": 2,
+   "CJK": 13,
+   "CYRILLIC": 19,
+   "ARABIC": 15,
+   "GREEK": 4,
+   "THAI": 2,
+   "BENGALI": 1
+  },
+  "retired_x_docs": 679,
+  "retired_x_docs_without_xsupply_row": 0,
+  "xdoc_in_two_batches": 0,
+  "L_fresh_gen": 2689890
+ }
+}
