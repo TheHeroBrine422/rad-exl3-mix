@@ -8366,3 +8366,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither (measures other containers and one reference pack; no kernel, format or quantizer change of ours)
 - **Files:** `data/kliqr194/speed.md`, `speed.json`, `speed_table.py`, `raw/speed/` (per-request jsonl, rocm-smi snapshots, bench logs); box2 `/data/q27/w177/speed/`
 - 4:20 PM CST (user): w178 (Haiku xhigh, box2) re-scores the KL-IQR entries with two-pass activations OFF: t183 KL + decode / prefill speed, to separate act_two's speed cost from its quality gain.
+- 4:45 PM CST (user): slice program #195 (RULES-slices195): fresh non-Latin xcorp batch first, then 15 × 2× slices at ~10 % N (5 cycling search, 10 one-use confirm). w180 (Fable low) builds both; w179 continues s190e/f for the immediate rotation (Latin reuse allowed on s190e). t183 stays the fixed monitor (never a selector).
