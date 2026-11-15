@@ -33,3 +33,8 @@ w169's supply check: 15 free non-Latin calib documents, 52 unused non-Latin xcor
     positions ≥ 1.9× the matching s186 part's.
 2'. Pair (s190a, s190b), s190b role confirm. Rules 3–5 unchanged. A later cooldown step (4×, or more pairs) needs a new
     N-rich xcorp golden batch first.
+
+## Amendment 2026-11-15 5:00 AM CST (user): rule 4's stops suspended
+At the 5 h check 3.5, 4.0, 5.0 and 6.0 qualified for STOP (LOG 11-15 5:00 AM). The user keeps every active size
+running: the #193 alternative allocators (the xgboost regressor above all) are on live trial through the inbox at all
+sizes, and a stop makes the inbox refuse a size. Rule 4 is not applied until the user says so.
