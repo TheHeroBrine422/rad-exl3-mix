@@ -294,7 +294,10 @@
   "s1_z": -1.4675501415552101,
   "s1_k": 299,
   "s1_vs": "v3s183-2-pair-01517",
-  "stopped": false
+  "stopped": false,
+  "s2": "accept",
+  "s2_logr": -0.005507819506661928,
+  "s2_z": -1.6366283179759895
  },
  {
   "file": "w172-recal-3.json",
@@ -388,7 +391,10 @@
   "s1_z": -0.7667834713739327,
   "s1_k": 299,
   "s1_vs": "v3s183-2.5-manual-01628",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.022528659771956255,
+  "s2_z": 2.343341654983962
  },
  {
   "file": "w172-tr-5.json",
@@ -486,7 +492,10 @@
   "s1_z": -3.1322786390765174,
   "s1_k": 299,
   "s1_vs": "v3s183-2.5-manual-01628",
-  "stopped": false
+  "stopped": false,
+  "s2": "accept",
+  "s2_logr": -0.010391778071064773,
+  "s2_z": -1.4401533256940988
  },
  {
   "file": "w172-curve-4.375.json",
@@ -522,7 +531,10 @@
   "s1_z": -1.7047815147275305,
   "s1_k": 299,
   "s1_vs": "v3s183-3.5-inc-01349",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.01365701950845201,
+  "s2_z": 0.7143102793560768
  },
  {
   "file": "w172-ens-4-w0.5-R0.25.json",
@@ -581,90 +593,117 @@
   "alloc": "ens",
   "mode": "decide",
   "size": 2.5,
-  "tag": "v3s183-2.5-manual-01710"
+  "tag": "v3s183-2.5-manual-01710",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-3-w0.5-R0.5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-01712"
+  "tag": "v3s183-3-manual-01712",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-3.5-w0.5-R0.5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 3.5,
-  "tag": "v3s183-3.5-manual-01716"
+  "tag": "v3s183-3.5-manual-01716",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-4-w0.5-R0.5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 4.0,
-  "tag": "v3s183-4-manual-01717"
+  "tag": "v3s183-4-manual-01717",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-5-w0.5-R0.5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-01720"
+  "tag": "v3s183-5-manual-01720",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-6-w0.5-R0.5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 6.0,
-  "tag": "v3s183-6-manual-01721"
+  "tag": "v3s183-6-manual-01721",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-2-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-01722"
+  "tag": "v3s183-2-manual-01722",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-2.5-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 2.5,
-  "tag": "v3s183-2.5-manual-01723"
+  "tag": "v3s183-2.5-manual-01723",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-3-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-01726"
+  "tag": "v3s183-3-manual-01726",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-3.5-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 3.5,
-  "tag": "v3s183-3.5-manual-01728"
+  "tag": "v3s183-3.5-manual-01728",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-4-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 4.0,
-  "tag": "v3s183-4-manual-01729"
+  "tag": "v3s183-4-manual-01729",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-4.5-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 4.5,
-  "tag": "v3s183-4.5-manual-01730"
+  "tag": "v3s183-4.5-manual-01730",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-5-w0.75-R0.25.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-01731"
+  "tag": "v3s183-5-manual-01731",
+  "s1": "stale"
+ },
+ {
+  "file": "w172-rankreg-3-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-01765"
+ },
+ {
+  "file": "w172-rankreg-3.5-1.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-01780"
  }
 ]

@@ -1,12 +1,13 @@
-| allocator | files | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |
-|---|---|---|---|---|---|---|---|---|
-| anom | 7 | 7 | 7 | 0 | 2 | 4 | 1 | 4.5j 2.5j |
-| cons | 5 | 5 | 2 | 0 | 1 | 1 | 0 | 4.5j |
-| tr | 4 | 4 | 2 | 1 | 0 | 1 | 0 | 2.5A |
-| recal | 4 | 4 | 3 | 0 | 1 | 1 | 1 | 3j |
-| curve | 5 | 5 | 1 | 0 | 0 | 1 | 0 |  |
-| rob | 3 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| ens | 21 | 8 | 4 | 0 | 0 | 0 | 4 |  |
+| allocator | files | stale (slice rotated) | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |
+|---|---|---|---|---|---|---|---|---|---|
+| anom | 7 | 0 | 7 | 7 | 1 | 2 | 4 | 0 | 4.5j 2.5j 2A |
+| cons | 5 | 0 | 5 | 2 | 0 | 1 | 1 | 0 | 4.5j |
+| tr | 4 | 0 | 4 | 2 | 1 | 0 | 1 | 0 | 2.5A |
+| recal | 4 | 0 | 4 | 3 | 0 | 1 | 2 | 0 | 3j |
+| ens | 21 | 13 | 8 | 4 | 1 | 0 | 1 | 2 | 2.5A |
+| curve | 5 | 0 | 5 | 1 | 0 | 0 | 1 | 0 |  |
+| rob | 3 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| rankreg | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 
 | file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |
 |---|---|---|---|---|---|
@@ -30,14 +31,14 @@
 | w172-tr-2.5.json | tr | 2.5 | manual-01628 | tentative -0.0071 z -1.10 k 299 | accept -0.0194 z -2.38 |
 | w172-rob-3.json | rob | 3 | manual-01635 | reject +0.0134 z +1.32 k 162 stopped | - |
 | w172-curve-3.5.json | curve | 3.5 | manual-01641 | reject +0.0079 z +0.53 k 164 stopped | - |
-| w172-anom-ffn_gate_upd0-2.json | anom | 2 | manual-01645 | tentative -0.0040 z -1.47 k 299 | pending |
+| w172-anom-ffn_gate_upd0-2.json | anom | 2 | manual-01645 | tentative -0.0040 z -1.47 k 299 | accept -0.0055 z -1.64 |
 | w172-recal-3.json | recal | 3 | manual-01648 | tentative -0.0242 z -2.98 k 299 | join -0.0103 z -1.21 |
 | w172-bootm-3.json | bootm | 3 | probe-01652 | probe KLD 0.02262, log r vs incumbent +0.0002 | - |
 | w172-curve-4.5.json | curve | 4.5 | manual-01658 | reject +0.0498 z +1.86 k 47 stopped | - |
 | w172-anom-ffn_downd6-3.json | anom | 3 | manual-01662 | tentative -0.0015 z -0.53 k 299 | reject +0.0050 z +1.71 |
 | w172-tr-4.json | tr | 4 | manual-01663 | tentative -0.0051 z -0.47 k 299 | reject +0.0064 z +0.40 |
 | w172-bootp-3.5.json | bootp | 3.5 | probe-01674 | probe KLD 0.01182, log r vs incumbent -0.0012 | - |
-| w172-recal-2.5.json | recal | 2.5 | manual-01676 | tentative -0.0059 z -0.77 k 299 | pending |
+| w172-recal-2.5.json | recal | 2.5 | manual-01676 | tentative -0.0059 z -0.77 k 299 | reject +0.0225 z +2.34 |
 | w172-tr-5.json | tr | 5 | manual-01681 | reject +0.0047 z +0.32 k 201 | - |
 | w172-rob-4.json | rob | 4 | manual-01683 | reject +0.0131 z +0.69 k 162 | - |
 | w172-recal-5.json | recal | 5 | manual-01684 | reject +0.0006 z +0.05 k 274 stopped | - |
@@ -45,24 +46,26 @@
 | w172-bootm-4.json | bootm | 4 | probe-01689 | probe KLD 0.00624, log r vs incumbent +0.0027 | - |
 | w172-ens-2-w0.5-R0.25.json | ens | 2 | manual-01691 | tentative -0.0038 z -0.80 k 299 | pending |
 | w172-curve-3.125.json | curve | 3.125 | probe-01694 | probe pending | - |
-| w172-ens-2.5-w0.5-R0.25.json | ens | 2.5 | manual-01695 | tentative -0.0188 z -3.13 k 299 | pending |
+| w172-ens-2.5-w0.5-R0.25.json | ens | 2.5 | manual-01695 | tentative -0.0188 z -3.13 k 299 | accept -0.0104 z -1.44 |
 | w172-curve-4.375.json | curve | 4.375 | probe-01696 | probe pending | - |
 | w172-ens-3-w0.5-R0.25.json | ens | 3 | manual-01699 | reject +0.0016 z +0.15 k 226 stopped | - |
-| w172-ens-3.5-w0.5-R0.25.json | ens | 3.5 | manual-01700 | tentative -0.0184 z -1.70 k 299 | pending |
+| w172-ens-3.5-w0.5-R0.25.json | ens | 3.5 | manual-01700 | tentative -0.0184 z -1.70 k 299 | reject +0.0137 z +0.71 |
 | w172-ens-4-w0.5-R0.25.json | ens | 4 | manual-01701 | tentative -0.0176 z -1.07 k 299 | pending |
 | w172-ens-4.5-w0.5-R0.25.json | ens | 4.5 | manual-01706 | reject +0.0754 z +1.91 k 54 stopped | - |
 | w172-ens-5-w0.5-R0.25.json | ens | 5 | manual-01707 | reject +0.0043 z +0.32 k 201 stopped | - |
 | w172-ens-6-w0.5-R0.25.json | ens | 6 | manual-01708 | reject +0.0180 z +0.92 k 299 | - |
-| w172-ens-2.5-w0.5-R0.5.json | ens | 2.5 | manual-01710 | pending | - |
-| w172-ens-3-w0.5-R0.5.json | ens | 3 | manual-01712 | pending | - |
-| w172-ens-3.5-w0.5-R0.5.json | ens | 3.5 | manual-01716 | pending | - |
-| w172-ens-4-w0.5-R0.5.json | ens | 4 | manual-01717 | pending | - |
-| w172-ens-5-w0.5-R0.5.json | ens | 5 | manual-01720 | pending | - |
-| w172-ens-6-w0.5-R0.5.json | ens | 6 | manual-01721 | pending | - |
-| w172-ens-2-w0.75-R0.25.json | ens | 2 | manual-01722 | pending | - |
-| w172-ens-2.5-w0.75-R0.25.json | ens | 2.5 | manual-01723 | pending | - |
-| w172-ens-3-w0.75-R0.25.json | ens | 3 | manual-01726 | pending | - |
-| w172-ens-3.5-w0.75-R0.25.json | ens | 3.5 | manual-01728 | pending | - |
-| w172-ens-4-w0.75-R0.25.json | ens | 4 | manual-01729 | pending | - |
-| w172-ens-4.5-w0.75-R0.25.json | ens | 4.5 | manual-01730 | pending | - |
-| w172-ens-5-w0.75-R0.25.json | ens | 5 | manual-01731 | pending | - |
+| w172-ens-2.5-w0.5-R0.5.json | ens | 2.5 | manual-01710 | stale | - |
+| w172-ens-3-w0.5-R0.5.json | ens | 3 | manual-01712 | stale | - |
+| w172-ens-3.5-w0.5-R0.5.json | ens | 3.5 | manual-01716 | stale | - |
+| w172-ens-4-w0.5-R0.5.json | ens | 4 | manual-01717 | stale | - |
+| w172-ens-5-w0.5-R0.5.json | ens | 5 | manual-01720 | stale | - |
+| w172-ens-6-w0.5-R0.5.json | ens | 6 | manual-01721 | stale | - |
+| w172-ens-2-w0.75-R0.25.json | ens | 2 | manual-01722 | stale | - |
+| w172-ens-2.5-w0.75-R0.25.json | ens | 2.5 | manual-01723 | stale | - |
+| w172-ens-3-w0.75-R0.25.json | ens | 3 | manual-01726 | stale | - |
+| w172-ens-3.5-w0.75-R0.25.json | ens | 3.5 | manual-01728 | stale | - |
+| w172-ens-4-w0.75-R0.25.json | ens | 4 | manual-01729 | stale | - |
+| w172-ens-4.5-w0.75-R0.25.json | ens | 4.5 | manual-01730 | stale | - |
+| w172-ens-5-w0.75-R0.25.json | ens | 5 | manual-01731 | stale | - |
+| w172-rankreg-3-1.json | rankreg | 3 | manual-01765 | pending | - |
+| w172-rankreg-3.5-1.json | rankreg | 3.5 | manual-01780 | pending | - |
