@@ -7688,3 +7688,45 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   42bed03 (untested, not for merge). Remaining scored gap: ssm_out quantizes its own activations (+8 % layer gemm_us at
   K4, ~4,290 vs ~3,970 board scale) → the ssm_out producer (gated RMSNorm + actq fused) is the first item of the
   post-search kernel pass on 2.0.0. box2 cards 0-1 free. **Runtime:** prefill.
+
+### 2026-11-15 12:40 AM CST · #186 · swap test result: doc 100 = late attention; the other non-Latin excess = early FFN (w163)
+- Diagnostic golden `data/lc186/golden` (97 docs, 155,950 gen rows: doc 100 + 5 more non-Latin of ver3-8k, 86 non-Latin docs
+  across 11 scripts, 10 English controls). 21 radmix arms on the 2.5 pick, one change each, scored with radiance KLD (`search/v3/run186/README.md`).
+- **Doc 100 (gen-masked KL; pick 0.782, uniform 0.334):** caused by the attention tensors of layers 19–63. Those 44 tensors → K2.5
+  (`ATT-19+`) give 0.307 (106% of the gap), −0.047 GiB. Not caused by: embedding (E-t2875 closes 4%, E-bf16 −13%), head (−3%), a/b (−5%),
+  GDN ssm_qkv/ssm_z (11%), layers 8–15 all trunk (0%), attention of layers 3/7/11/15 (5% or less, or −10 / −15%).
+- Direction: the pick gives 36 of the 48 late attention tensors K2.625–4.375 and 8 K2.125–2.375. Lowering the 36 to 2.5 (`ATT-19+-down`) → 0.443
+  (76%); raising the 8 (`ATT-19+-up`) → 0.558 (50%); both → 0.307. Doc 100 is better with fewer bits there: suspect a pack / quantizer effect
+  at K > 2.5, not a bit shortage. Open (see README).
+- **Non-Latin docs other than 100 (86, gen KL; pick 0.147, uniform 0.107):** the early FFN, layers 0–7 ffn_gate_up / ffn_down at K1–1.875.
+  `FFN-early` → 0.086 (149%), +0.29 GiB; early ssm_out 52%; all of layers 0–7 183%. The late-attention arm does nothing there (+0.002,
+  slightly worse). Every script improves under `FFN-early`; the English control also improves (0.055 → 0.041).
+- Not size-matched: late-attention arms shrink the model, the early-FFN / L0 arms grow it. Read the recoveries as KL at fixed K.
+- Equivalence (bar: KLD within 1e-5): box2 rows byte-identical to ds8 for pick and ATT-late (169,026 rows, max |ΔKL| 0). ds8 cross-check of
+  the three late-attention arms queued on card 7 (busy, w162).
+- Ledger: 32 calib docs of the golden logged (`diag186-calib`, role check, decisions 0). 65 xcorp docs not logged (ledger is calib-only).
+  Follow-up arms: 11 (brief: ~8; the 3 extra are the late-attention split, which decides the direction question).
+- Runtime: neither (box2 cards 2 and 3; ds8 card 7 queued). Searching: none decided.
+
+### 2026-11-14 6:41 PM CST · #187 · Replay of the #183 search's move predictions: rules and start (w165)
+- Rules first: `search/v3/RULES-187.md` (committed alone, a5b3d4e2, before any arm was fitted). Replay in time order on a
+  frozen snapshot of the live run at 6:22 PM CST (state.jsonl 1915 lines, sha256 `ec82d3cecc5892d0…`; kept under
+  `/workspace/rad-local/workers/w165/snap/`, not in the repo). Refit every 20 results; each arm predicts the next 20.
+- Candidates: 258 with a decision (107 whole-slice: b1 52, b2 29, b3 21; 27 audit). Arms: (a) the driver's per-band
+  fits, (b) joint, (c1/c2/c3) partial pooling at shrinkage sd 0.1 / 0.3 / 1.0; (d) an xgboost reranker on the best of a–c,
+  run after them. Winner: S = mean ρ(b2, b3), margin 0.10, b1 tolerance 0.05, 80 % bootstrap CI of ΔS > 0.
+- Pipeline check: the replay's rows reproduce the driver's first fit input exactly (fits/fit0000-all, n_results 6: 12 rows,
+  tags / labels / KLD / SE / assignments). Lead's 6:25 PM CST numbers do not reproduce exactly: whole-slice ρ here is
+  b1 0.53 (n 52), b2 0.31 (29), b3 0.17 (21). Dropping the audit rows gives b1 0.74 (44), b2 0.61 (20), b3 0.49 (14);
+  dropping guard rejects gives b3 −0.09 (15). The correlations move a lot with the row filter, so the bootstrap CI, not
+  the point ρ, has to gate any change.
+- Code: `search/v3/rerank187/` (replay, pool187, metrics, rerank, tests 4/4 on the VM and colo). Jobs run on colo
+  (`/data/work/w165`), 121 fits, six at a time, nice 19. Results: `data/rerank187/` once metrics.py has run.
+- **Runtime:** neither (offline analysis of the search's own records; no change to the search, to kernels or to the format).
+
+### 2026-11-15 12:50 AM CST · #183 / #188 · queue depth 14; elite pool + crossover queued after w164
+- 450-result trigger reached (457 v3s183 results); w165 already running. Driver queue_depth 10 → 14 (11 eval slots + tracking:
+  cards were idling at 10 outstanding); restarted 6:46 PM CST.
+- User: re-seed at the s186 switch (incumbent + frontier top ~3 per size, ~30 full evals on s186a) and an elite pool of 3
+  per size with a crossover move (evolutionary); w166 (Haiku xhigh, brief instr3/w166.md) starts when w164 finishes and
+  builds on its strata code; one restart for both. **Runtime:** neither.
