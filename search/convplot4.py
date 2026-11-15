@@ -148,8 +148,11 @@ def track_panel(axT, W, a, sizes):
         axT.set_yscale("log"); axT.set_ylabel(f"raw KL on {a.track_name} (V2 refs pending: {len(v2)} of 2+)")
     axT.set_yscale("log"); axT.grid(alpha=.3, which="both"); axT.legend(fontsize=7.5, loc="upper right")
     axT.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); axT.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    if rel:                                                     # the same scale and ticks as the other panels
-        axT.set_ylim(0.3, 2.0); axT.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
+    if rel:                                                     # log scale, range fitted to the data (user 11-14)
+        ys = [y for v in ser.values() for _, y in v] + [1.0]
+        lo, hi = max(0.2, min(ys) * 0.9), min(3.0, max(max(ys) * 1.1, 1.05))
+        axT.set_ylim(lo, hi)
+        axT.set_yticks([t for t in [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2, 1.4, 1.6, 2.0, 2.5, 3.0] if lo <= t <= hi])
     axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
                   f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
     if getattr(a, "track_strata", None) or getattr(a, "track_n", None):
