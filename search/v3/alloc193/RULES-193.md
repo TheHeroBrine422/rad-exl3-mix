@@ -134,3 +134,11 @@ committed before the data they affect.
     ±0.25 trust region. Hypothesis: two models with different errors cancel part of each other's exploitation.
 - **Budget re-split (total unchanged: 40 decide, 15 probe):** `cons` 5 (all used), `curve` 10, `anom` 8, `boot` 1,
   `tr` 4, `rob` 4, `recal` 4, `ens` 4. Probes: `curve` 3, `boot` 12.
+
+## Amendment 3 — 2026-11-15 2:16 AM CST (system clock; before any `recal` file is submitted, before any anom result)
+- `recal`: β_g enters the objective only where its version-(ii) |β / se| ≥ 2 (else 0). Seen before submitting: with all
+  222 group × band coefficients the optimum moved ~310 tensors to the trust-region edge on noise (fit.py itself
+  predicted +2.6…+4.7 %); with |z| ≥ 2 (14–20 groups per band) 223–280 tensors move. Env `RECAL_ZMIN=2`.
+- `anom`: direction of a test = −sign(β) of the flagging version (ii: fit.py overvalues the group → fewer bits). The flag
+  attn_output@5 b3 is not tested: its group is 2 small tensors (a one-step move shifts ~0.0002 bpw; expected effect
+  ~0.03 %, far below the stage-1 SE). 7 anom decides instead of 8; the spare one is not reassigned.

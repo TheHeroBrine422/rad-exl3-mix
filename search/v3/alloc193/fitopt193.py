@@ -106,7 +106,8 @@ def main():
             for t in M.T:
                 o = sorted(t["opts"], key=lambda x: x["bytes"]); n[t["w"]] = 8 * (o[-1]["bytes"] - o[0]["bytes"]) / max(o[-1]["K"] - o[0]["K"], 1e-9)
             tot = sum(n.values()); wf = sl
-            beta = {w: co[C.gname(w)][g]["beta"] for w in W}
+            zmin = float(os.environ.get("RECAL_ZMIN", "0"))      # amendment 3: only |z| >= 2 coefficients
+            beta = {w: (co[C.gname(w)][g]["beta"] if abs(co[C.gname(w)][g]["beta"]) >= zmin * co[C.gname(w)][g]["se"] else 0.0) for w in W}
             extra = lambda i, w, K, K0: beta[w] * n[w] * (K - K0) / tot
         elif a.alloc == "ens":
             F = json.load(open(a.curve)); cp = np.array(F["cp"]); cu = json.load(open(a.curv)); kb = F["kappa"][[0, 1, 2][0 if s0 < 2.75 else (1 if s0 <= 4.25 else 2)]]
