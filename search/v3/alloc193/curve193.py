@@ -35,15 +35,19 @@ def hbasis(s):
 class Data:
     def __init__(self, snap, curv, km):
         rows = [r for r in C.fit_rows(snap) if r.get("size") and 1.2 <= r["size"] <= 6.2]
+        for r in rows: r["gl"] = f"{r['label']}@{min(KN, key=lambda z: abs(z - r['size'])):g}"
+        cnt = {}
+        for r in rows: cnt[r["gl"]] = cnt.get(r["gl"], 0) + 1
+        rows = [r for r in rows if cnt[r["gl"]] >= 2]                        # amendment 4
         self.rows = rows; self.km = km; W = km.W; self.W = W
         self.K = np.array([[km.Kof[w][r["assign"][w]] for w in W] for r in rows])
         self.s = np.array([r["size"] for r in rows]); self.y = np.log([r["kld"] for r in rows])
         self.sig = np.sqrt(np.array([r.get("se") or 0.0 for r in rows]) ** 2 + TAU ** 2)
-        labs = sorted({r["label"] for r in rows}); self.labs = labs; li = {l: i for i, l in enumerate(labs)}
-        self.li = np.array([li[r["label"]] for r in rows])
+        labs = sorted({r["gl"] for r in rows}); self.labs = labs; li = {l: i for i, l in enumerate(labs)}
+        self.li = np.array([li[r["gl"]] for r in rows])
         self.isx = np.array([("|x|" in r["label"]) for r in rows])
         self.b = np.array([band(s) for s in self.s])
-        self.H = np.array([hbasis(s) for s in self.s])                     # n x (len(KN)-1)
+        self.H = np.zeros((len(rows), 0))                                   # amendment 4: no h(s)
         cs = sorted(float(k) for k in curv["curv"]); cmat = np.array([[curv["curv"][f"{s:g}"][w][1] for w in W] for s in cs])
         self.cs, self.cmat = cs, cmat
         self.c = self.cint(self.s)
@@ -63,7 +67,7 @@ def basis(s):
 class Model:
     def __init__(self, D, prior, sigma):
         self.D = D; self.p0 = prior; self.sig = sigma
-        self.nT = len(D.W); self.nL = len(D.labs); self.nH = len(KN) - 1
+        self.nT = len(D.W); self.nL = len(D.labs); self.nH = 0
         self.sl = {"curve": slice(0, 3 * self.nT)}
         o = 3 * self.nT
         self.sl["off"] = slice(o, o + self.nL); o += self.nL
@@ -120,7 +124,7 @@ class Model:
     def fit(self, idx=None, x0=None):
         idx = np.arange(len(self.D.y)) if idx is None else idx
         r = least_squares(lambda x: self.res(x, idx), self.x0() if x0 is None else x0, jac=lambda x: self.jac(x, idx),
-                          method="trf", x_scale="jac", max_nfev=200)
+                          method="trf", x_scale="jac", max_nfev=200, loss="soft_l1", f_scale=3.0)
         return r.x, r
 
 
