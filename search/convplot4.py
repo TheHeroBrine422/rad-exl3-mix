@@ -151,7 +151,7 @@ def track_panel(axT, W, a, sizes):
     if rel:                                                     # log scale, range fitted to the data (user 11-14)
         ys = [y for v in ser.values() for _, y in v] + [1.0]
         lo, hi = max(0.2, min(ys) * 0.9), min(3.0, max(max(ys) * 1.1, 1.05))
-        axT.set_ylim(lo, hi)
+        axT._fit_ylim = (lo, hi); axT.set_ylim(lo, hi)
         axT.set_yticks([t for t in [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2, 1.4, 1.6, 2.0, 2.5, 3.0] if lo <= t <= hi])
     axT.set_title(f"Fixed tracking slice {a.track_name} (never decides): dots = incumbents' full scores, lines = band geo-means, "
                   f"dotted = IQR-V4 (refs: V2 {len(v2)}, IQR {len(iq)})", fontsize=10)
@@ -380,6 +380,8 @@ def main(argv=None):
         + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)"
     note = "\n".join(w for n in [note] + a.note for w in textwrap.wrap(n, 230)); nl = note.count("\n") + 1
     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
+    if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)
+        axT.set_ylim(*axT._fit_ylim)
     fig.tight_layout(rect=(0, 0.012 * nl, 1, 1)); fig.savefig(a.out, dpi=100)
     print("\n".join(summary)); print(note); print(f"{W['steps']} results, {len(W['decs'])} decisions, {len(W['reads'])} held-out reads, {nd} slice diamonds")
     return 0
