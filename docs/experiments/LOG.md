@@ -7956,3 +7956,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 8:15 PM CST (user correction): reverted the panel swap (training estimate on top again, t183 tracking below); the training lines are now anchored on each size's first t183 read and scaled ÷ V2 on t183, IQR lines on t183, no ver3-8k circles (convplot4 `--anchor-track`; `--track-top` kept but unused).
 - 8:20 PM CST (user): status plot shows t183 globally only (N / board overlay removed from the loop; t186n tracker keeps running for data); top panel's y range fitted to the lines (0.5–1.05 now) instead of 0.3–2.
 - 8:30 PM CST (user): sizes below 2 bpw (1.25 / 1.5 / 1.75) are paused because they are not useful for a real release; V3 release targets are 2.0–6.0 (v3.md updated).
+- 8:35 PM CST: **box2 had no s186 goldens** (w164 staged them on ds8 only): the three s186a evals placed on box2 at the
+  switch (2.0 / 2.5 incumbent rescores, one 2.0 re-seed) failed, and their retries' results were never recorded, so the
+  2.0 / 2.5 re-seed hung. Fix: rsync of golden-s186a–f (+ parts) ds8 → box2; coord `retries` 1 → 3; driver + coordinator
+  restarted (the three rescheduled). Same restart: **guard null** (RULES-picks amendment) and **rotate_after back to 200**.
+  Re-seed results so far (3.0–6.0): every size kept its incumbent (0 accepted under the guard); cross moves are joining
+  pools (3.0 ×2, 4.0, 6.0).
