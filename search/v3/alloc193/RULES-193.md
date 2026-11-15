@@ -211,3 +211,13 @@ committed before the data they affect.
     way (a drift the small moves follow slowly); one extrapolated step gets there sooner.
 - First round: every allocator above at every active size (≈ 10 files per size), interleaved in the queue with rankreg
   (top 3 per size), the queued `tr` chain and the waiting `ens` files.
+
+## Amendment 8 — 2026-11-15 5:26 AM CST (system clock; before any rankreg or amendment-7 file is in the inbox)
+- **Time correction:** amendment 7 was committed 5:14 AM CST (5dc88091), not 5:25; git is the record.
+- **Outstanding cap:** ≤ 80 files of mine waiting or running (was 40; the driver lets 200 wait). Reason: the lead's
+  "rank-reg NOW" (5:00 AM) while 40 earlier files of mine (ens, anom, tr) still wait or run.
+- **Order among my own waiting files:** the driver takes inbox files oldest-mtime first. I may set the mtime of my own
+  waiting files (no one else's; content untouched) so that a batch the lead asked for first (rankreg now) goes ahead of
+  my older ones.
+- rankreg round 1 (data cut, not a rule change): training rows = the snap2 state (1110 stage-1 candidates on allowed
+  slices, 564 whole rows), 24 generated candidates per size on the snap2 refit, top 3 per size.
