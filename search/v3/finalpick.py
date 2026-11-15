@@ -11,8 +11,9 @@ pair, 10,000 draws, 95 %.
 Score (the decision, RULES-picks "Final picks"): (a), size-adjusted with the band's frozen b:
     S = log KLD + b (bpw - T),  KLD = sum of per-document KL sums / positions over BOTH parts' documents together
 (the board's mean over positions; b from driver.py --freeze-b, T the release size, bpw = VRAM bytes x 8 / 26,895,998,464).
-The best S wins, unless the GUARD fails: the winner's (c) must not be significantly worse than any other finalist's in
-either part (95 % CI of its size-adjusted (c) difference wholly > 0); a guarded-out candidate is passed over and the
+The best S wins, unless the GUARD fails: the winner's (c) must not be significantly worse than the runner-up's (the best
+other S) or the default pick's in either part (95 % CI of its size-adjusted (c) difference wholly > 0; RULES-picks
+clarification 11-13: not every finalist); a guarded-out candidate is passed over and the
 next best S is checked the same way. CHECK: any document holding > 20 % of a part's KL (any candidate) is flagged:
 look at it before trusting the pick (expected never).
 Reported: per candidate S pooled and per part; for the pick vs the runner-up and vs the default pick (SPEC "default",
@@ -97,8 +98,11 @@ def pick(spec, boot=PS.BOOT, seed=0):
 
     order = [int(i) for i in np.argsort(pt)]
     guard = {}
-    for i in order:                                                               # the guard: (c) not significantly worse than any other finalist
-        bad = [f"{tags[j]} ({p})" for j in range(nc) if j != i for p in parts if pair(i, j)[p]["c"]["ci"][0] > 0]
+    dflt = spec.get("default")
+    if dflt is not None and dflt not in tags: raise SystemExit(f"default {dflt} is not a candidate")
+    for i in order:                                                               # the guard: (c) not significantly worse than the runner-up
+        refs = {next((j for j in order if j != i), None)} | ({tags.index(dflt)} if dflt is not None else set())   # (best other S) or the default pick
+        bad = [f"{tags[j]} ({p})" for j in sorted(refs - {i, None}) for p in parts if pair(i, j)[p]["c"]["ci"][0] > 0]
         guard[tags[i]] = bad
         if not bad: break
     chosen = next((i for i in order if tags[i] in guard and not guard[tags[i]]), None)
