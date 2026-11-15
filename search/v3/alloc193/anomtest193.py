@@ -23,6 +23,8 @@ def main():
     ap.add_argument("--multi", action="store_true", help="amendment 6: up to 4 steps to reach --min-bits")
     ap.add_argument("--groups", help="combined test: comma list of groups (dir -1), sizes from --sizes")
     ap.add_argument("--sizes")
+    ap.add_argument("--every", action="store_true", help="amendment 11: every size of the flag's band")
+    ap.add_argument("--all", action="store_true", help="amendment 11 (anomall): all flags of the size's band at once (+ t3)")
     a = ap.parse_args()
     M = C.load_menu(a.snap); km = C.KM(M); st = C.load_state(a.snap); inc = {}
     for e in st:
@@ -49,10 +51,30 @@ def main():
             print(f"{name}: {len(G)} moved, {sum(bb[w] != ia[w] for w in km.W)} changed, fit.py log r {math.log(pred.kl(bb) / pred.kl(ia)):+.4f} {why or 'OK'}")
             if why is None: json.dump(d, open(f"{a.out}/{name}.json", "w"))
         return
+    if a.all:                                                          # amendment 11: anomall
+        os.makedirs(a.out, exist_ok=True); cache = {}
+        for s in C.SIZES:
+            g = CV.band(s)
+            if g not in cache: cache[g] = FO.load(M, a.rdir, g)[0]
+            pred = cache[g]; ia = C.assign(a.snap, inc[s]); Fb = sorted([f for f in F if f["band"] == C.BAND[s]], key=lambda f: -abs(f["z"]))
+            for var, fl in (("", Fb), ("-t3", Fb[:3])):
+                if not fl or (var and len(Fb) <= 3): continue
+                b = dict(ia); G = set()
+                for f in fl:
+                    for w in km.W:
+                        if C.gname(w) == f["g"] and w not in G: b[w] = BL.shift(M, b, w, f["dir"]); G.add(w)
+                bb = BL.balance(pred, M, b, G, s)
+                if bb is None: print(f"anomall {s:g}{var}: no balance"); continue
+                d = {"size": s, "mode": "decide", "assign": bb, "note": f"#193 anomall | the flagged effects are additive: "
+                     f"{len(fl)} flagged groups ({', '.join(f['g'] + ('+' if f['dir'] > 0 else '-') for f in fl)}) one step each at once beat the incumbent | code {a.commit}"}
+                why = C.check_file(M, d)
+                print(f"anomall-{s:g}{var}: {len(fl)} flags, {len(G)} moved, {sum(bb[w] != ia[w] for w in km.W)} changed, fit.py log r {math.log(pred.kl(bb) / pred.kl(ia)):+.4f} {why or 'OK'}")
+                if why is None: json.dump(d, open(f"{a.out}/anomall-{s:g}{var}.json", "w"))
+        return
     cnt = collections.Counter(json.loads(l)["size"] for l in open(a.pairs))
     os.makedirs(a.out, exist_ok=True); cache = {}; plan = []
     for k, f in enumerate(F):
-        sizes = sorted([s for s in C.SIZES if C.BAND[s] == f["band"]], key=lambda s: -cnt[s])[:2 if k < a.two else 1]
+        sizes = sorted([s for s in C.SIZES if C.BAND[s] == f["band"]], key=lambda s: -cnt[s])[:99 if a.every else (2 if k < a.two else 1)]
         for s in sizes:
             g = CV.band(s)
             if g not in cache: cache[g] = FO.load(M, a.rdir, g)[0]

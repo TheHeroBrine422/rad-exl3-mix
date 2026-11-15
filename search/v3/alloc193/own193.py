@@ -118,6 +118,10 @@ def targets(L, alloc, s, sizes):
         Ks = {z: L.K(L.asg(L.inc[z])) for z in sizes}
         for var, f in (("", lambda z: 1.0), ("w", lambda z: math.exp(-abs(z - s)))):
             tot = sum(f(z) for z in sizes); out.append((var, {w: sum(f(z) * (Ks[z][w] - z) for z in sizes) / tot + s for w in L.W}))
+        out.append(("h", {w: (K[w] + out[-1][1][w]) / 2 for w in L.W}))                                    # amendment 11
+        mem = [(z, L.K(L.asg(m))) for z in sizes for m in L.pool.get(z, [L.inc[z]])]
+        tot = sum(math.exp(-abs(z - s)) for z, _ in mem)
+        out.append(("p", {w: sum(math.exp(-abs(z - s)) * (k[w] - z) for z, k in mem) / tot + s for w in L.W}))
     elif alloc == "pavg":
         f = L.s190a(); mem = L.pool.get(s, [L.inc[s]]); ks = [f(m) for m in mem]
         if len(mem) < 2: return []
