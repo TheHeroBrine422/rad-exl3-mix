@@ -38,3 +38,15 @@ w169's supply check: 15 free non-Latin calib documents, 52 unused non-Latin xcor
 At the 5 h check 3.5, 4.0, 5.0 and 6.0 qualified for STOP (LOG 11-15 5:00 AM). The user keeps every active size
 running: the #193 alternative allocators (the xgboost regressor above all) are on live trial through the inbox at all
 sizes, and a stop makes the inbox refuse a size. Rule 4 is not applied until the user says so.
+
+## Amendment 2026-11-15 5:15 AM CST (user: "rotate, that's important"): next pair s190c / s190d with reused N
+s190a reached rotate_after (209 decisions) at 4:53 AM CST with no ready slice; the free non-Latin supply is spent
+(w169: 0 free N calib documents, 0 unused N b1 pieces). Until the N-rich xcorp batch exists (TODO 11-15):
+1''. **Pair s190c (search) / s190d (confirm)**, built like s190a/b: Latin fresh and 2× s186's (free calib L documents of
+    the merged fit + search pool, least used first; unused xc8k-b1 L pieces), distinct within the pair and from every
+    earlier slice. **N part reused:** the 11 unused N pieces of the b2 batches (gen masks built first, genmask181) plus N
+    documents / pieces taken from **retired search slices only** (s173a–e, s186a, s186c), distinct within the pair, ≥ 4
+    scripts per slice, about s190a/b's N amount. Never from a confirm / reselect / tracking / final slice (s186b/d/e/f,
+    s190b, t183, t186n, golden-final750, final-x) or verify. The N stratum is "fuzzy" (documents the search has seen);
+    its weight is 0.039, and t186n remains the held-out N check.
+2''. Rotation to s190c as soon as it is built and checked; s190b keeps confirming s190a's pending tentatives.
