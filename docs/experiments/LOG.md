@@ -7730,3 +7730,6 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - User: re-seed at the s186 switch (incumbent + frontier top ~3 per size, ~30 full evals on s186a) and an elite pool of 3
   per size with a crossover move (evolutionary); w166 (Haiku xhigh, brief instr3/w166.md) starts when w164 finishes and
   builds on its strata code; one restart for both. **Runtime:** neither.
+- 12:55 AM CST: build / score overlap: hostd eval slots = cards + 3 (ds8 10 for 7 cards, box2 4 for 2): mixes build
+  outside the card lock, so the extra units build while all cards score (mix ~30-40 s vs scoring 90-170 s); driver
+  queue_depth 18. Not tried: two scorers on one card (scoring is GPU-bound, load only ~7 s; VRAM tight above ~3 bpw).
