@@ -36,6 +36,7 @@ BN = ["b1 ≤ 2.5 bpw", "b2 3–4 bpw", "b3 4.5–6 bpw", "b4 (unused)"]; COL = 
 DROP = {7.0}                                                    # (#183, user 11-14: 7.0 stopped, not plotted)
 band = lambda b: 0 if b < 2.75 else 1 if b < 4.25 else 2 if b < 6.5 else 3
 gmean = lambda v: math.exp(sum(map(math.log, v)) / len(v))
+AMARK = ["*", "P", "D", "^", "v", "s", "p", "h", "<", ">", "X", "8"]   # inbox allocators
 
 
 def loglin(pts, b, extrap=False):
@@ -90,7 +91,7 @@ def walk(state_path):
         elif ev == "decision" and e.get("decision") in ("accept", "reject") and e.get("logr") is not None:
             s = float(e["size"]); m = mode(e["tag"]); acc = e["decision"] == "accept" and e["tag"] in became
             ref = (sub.get(e["tag"]) or {}).get("ref")
-            decs.append(dict(step=step, size=s, mode=m, logr=e["logr"], acc=acc, C=C[(s, m)], kind=e.get("kind"),
+            decs.append(dict(step=step, size=s, mode=m, logr=e["logr"], acc=acc, C=C[(s, m)], kind=e.get("kind"), tag=e["tag"], stage=e.get("stage"),
                              early=(sub.get(e["tag"]) or {}).get("early"), ref=ref))
             if acc:
                 C[(s, m)] += e["logr"]; cat[e["tag"]] = C[(s, m)]; accepts[(s, m)].append((step, C[(s, m)]))
@@ -313,6 +314,12 @@ def main(argv=None):
     act = [s for s, kind, _ in W["events"] if kind == "act"]
     segs = [("f16", 0, act[0] if act else W["steps"] + 1)] + ([("A8", act[0], W["steps"] + 1)] if act else [])
     sizes = sorted({s for s, _ in W["accepts"]})
+    alloc_of = {}                                       # inbox candidate tag -> allocator label (file name / note)
+    for e in W["st"]:
+        if e["ev"] == "inbox" and e.get("mode") == "decide":
+            f = e.get("file", ""); parts = f.split("-")
+            lab = parts[1] if f.startswith("w172-") and len(parts) > 2 else ("cons192" if "consensus" in (e.get("note") or "") else parts[0])
+            for t in e.get("tags") or [e.get("tag")]: alloc_of[t] = lab
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
         if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
@@ -346,14 +353,27 @@ def main(argv=None):
                 lab = f"{BN[bd]} [{', '.join(f'{k[0]:g}' for k in kb)}]: training est. ({m}) {ys[-1][1]:.3f}"
                 ax.step(*zip(*ys), where="post", color=COL[bd], lw=2.2, ls="-" if m == "f16" else (0, (6, 1.5)), label=lab)
                 summary.append(f"{m} {BN[bd]}: training est. {ys[0][1]:.3f} -> {ys[-1][1]:.3f}")
-        # evals
+        # evals (inbox candidates drawn separately below, by allocator)
         for d in W["decs"]:
-            if d["mode"] != m or not (s0 <= d["step"] < s1): continue
+            if d["mode"] != m or not (s0 <= d["step"] < s1) or d["tag"] in alloc_of: continue
             k = (d["size"], m); e0 = est(k, d["step"])
             if e0 is None: continue
             y = e0 * math.exp(d["logr"]); c = COL[band(d["size"])]
             if d["acc"]: ax.scatter([d["step"]], [y], marker="x", s=30, color=c, lw=1.4, zorder=3)
             else: ax.scatter([d["step"]], [y], s=7 if d["early"] else 10, alpha=0.25, color=c, lw=0)
+        # (#192/#193, user 11-15) inbox candidates: marker shape = allocator, fill = outcome (hollow: rejected at stage 1;
+        # grey: failed confirmation; band colour + black edge: confirmed accept); one legend entry per allocator with counts
+        last = {}
+        for d in W["decs"]:
+            if d["tag"] in alloc_of and d["mode"] == m and s0 <= d["step"] < s1: last[d["tag"]] = d
+        for t, d in last.items():
+            k = (d["size"], m); e0 = est(k, d["step"])
+            if e0 is None: continue
+            al = alloc_of[t]; mk = AMARK[sorted(set(alloc_of.values())).index(al) % len(AMARK)]
+            y = e0 * math.exp(d["logr"]); c = COL[band(d["size"])]
+            if d["acc"]: ax.scatter([d["step"]], [y], marker=mk, s=70, color=c, edgecolors="k", lw=1.2, zorder=5)
+            elif d["stage"] == 2: ax.scatter([d["step"]], [y], marker=mk, s=45, color="0.6", edgecolors=c, lw=1.0, zorder=4)
+            else: ax.scatter([d["step"]], [y], marker=mk, s=45, facecolors="none", edgecolors=c, lw=1.0, zorder=4)
         # held-out reads
         for r in W["reads"]:
             if r["mode"] != m or a.anchor_track: continue   # (anchor-track: the reads are the anchors, drawn on the track panel)
@@ -408,6 +428,14 @@ def main(argv=None):
     else:
         ax.set_ylim(0.3, 2.0); ax.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     ax.set_ylabel(f"KLD ÷ V2 at the same bpw (V2 measured on {ylab_sl})")
+    if alloc_of:
+        res = {}
+        for d in W["decs"]:
+            if d["tag"] in alloc_of: res[d["tag"]] = d
+        for i, al in enumerate(sorted(set(alloc_of.values()))):
+            ts = [t for t, v in alloc_of.items() if v == al]; dn = [res[t] for t in ts if t in res]
+            ax.scatter([], [], marker=AMARK[i % len(AMARK)], s=45, facecolors="none", edgecolors="k",
+                       label=f"inbox {al}: {len(ts)} tried, {len(dn)} decided, {sum(1 for d in dn if d['acc'])} confirmed")
     ax.legend(loc="upper right", fontsize=7.5)
     ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; " + (f"each size anchored on its first "
                  f"{ylab_sl} read" if a.anchor_track else f"open circles: held-out {a.monitor} reads") + ";\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
