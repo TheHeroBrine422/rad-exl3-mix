@@ -1,0 +1,21 @@
+v3-k4-uniform-proxy ctx 0 run 0 (warm): prompt 103 ttft 124 ms, client 30.26 ms/tok, server 30.26 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 1 (warm): prompt 105 ttft 101 ms, client 30.43 ms/tok, server 30.43 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 2: prompt 105 ttft 115 ms, client 29.91 ms/tok, server 29.91 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 3: prompt 104 ttft 105 ms, client 28.88 ms/tok, server 28.87 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 4: prompt 105 ttft 101 ms, client 29.45 ms/tok, server 29.45 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 5: prompt 107 ttft 101 ms, client 29.20 ms/tok, server 29.19 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 0 run 6: prompt 106 ttft 102 ms, client 29.21 ms/tok, server 29.20 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 0 (warm): prompt 4150 ttft 1678 ms, client 29.81 ms/tok, server 29.80 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 1 (warm): prompt 4146 ttft 1686 ms, client 30.29 ms/tok, server 30.28 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 2: prompt 4146 ttft 1687 ms, client 29.66 ms/tok, server 29.66 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 3: prompt 4148 ttft 1690 ms, client 30.75 ms/tok, server 30.75 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 4: prompt 4141 ttft 1688 ms, client 30.86 ms/tok, server 30.85 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 5: prompt 4148 ttft 1696 ms, client 29.81 ms/tok, server 29.80 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 4k run 6: prompt 4146 ttft 1694 ms, client 30.13 ms/tok, server 30.13 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 0 (warm): prompt 16431 ttft 7063 ms, client 31.75 ms/tok, server 31.75 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 1 (warm): prompt 16438 ttft 7054 ms, client 31.69 ms/tok, server 31.69 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 2: prompt 16434 ttft 7065 ms, client 31.87 ms/tok, server 31.86 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 3: prompt 16434 ttft 7059 ms, client 32.43 ms/tok, server 32.43 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 4: prompt 16439 ttft 7062 ms, client 31.23 ms/tok, server 31.22 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 5: prompt 16433 ttft 7060 ms, client 31.89 ms/tok, server 31.88 ms/step x 1.00 tok
+v3-k4-uniform-proxy ctx 16k run 6: prompt 16434 ttft 7057 ms, client 31.81 ms/tok, server 31.80 ms/step x 1.00 tok

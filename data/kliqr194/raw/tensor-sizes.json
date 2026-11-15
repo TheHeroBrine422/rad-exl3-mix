@@ -1,0 +1,72 @@
+{
+ "qwen3.8-27b-kl-nano": {
+  "file": "/data/q27/w177/out/rad-info-qwen3.8-27b-kl-nano-v.txt",
+  "single": {
+   "output_norm.weight": 10240.0,
+   "token_embd.weight": 327784857.6
+  },
+  "sums": {
+   "vision_v": 921489459,
+   "mtp_draft": 0,
+   "trunk_blk": 9112887828,
+   "head_output": 638692147,
+   "other": 327784858
+  }
+ },
+ "qwen3.8-27b-kl-tiny": {
+  "file": "/data/q27/w177/out/rad-info-qwen3.8-27b-kl-tiny-v.txt",
+  "single": {
+   "output_norm.weight": 10240.0,
+   "token_embd.weight": 486707036.16
+  },
+  "sums": {
+   "vision_v": 921489459,
+   "mtp_draft": 0,
+   "trunk_blk": 12316682035,
+   "head_output": 638692147,
+   "other": 486707036
+  }
+ },
+ "qwen3.8-27b-kl-small": {
+  "file": "/data/q27/w177/out/rad-info-qwen3.8-27b-kl-small-v.txt",
+  "single": {
+   "output_norm.weight": 10240.0,
+   "token_embd.weight": 804561879.04
+  },
+  "sums": {
+   "vision_v": 921489459,
+   "mtp_draft": 0,
+   "trunk_blk": 16885068472,
+   "head_output": 797614326,
+   "other": 804561879
+  }
+ },
+ "qwen3.8-27b-iq3r-v4": {
+  "file": "/data/q27/w177/out/rad-info-qwen3.8-27b-iq3r-v4-v.txt",
+  "single": {
+   "output_norm.weight": 10240.0,
+   "token_embd.weight": 486707036.16
+  },
+  "sums": {
+   "vision_v": 921489459,
+   "mtp_draft": 347644887,
+   "trunk_blk": 10548261560,
+   "head_output": 638943805,
+   "other": 1794354975
+  }
+ },
+ "ours-v2-3.00-text-only-check": {
+  "file": "/data/q27/w177/out/rad-info-v2-3.00-v.txt",
+  "single": {
+   "output_norm.weight": 10240.0,
+   "token_embd.weight": 496637050.88
+  },
+  "sums": {
+   "vision_v": 0,
+   "mtp_draft": 0,
+   "trunk_blk": 8936526848,
+   "head_output": 636212756,
+   "other": 496637051
+  }
+ }
+}

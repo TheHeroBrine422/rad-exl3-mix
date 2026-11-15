@@ -1,0 +1,262 @@
+{
+ "rows": {
+  "iq3r-s": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 26.996666322910606,
+    "decode_tok_s": 37.041610546979065,
+    "ttft_ms": 108.52415300905704,
+    "prompt_tokens": 103,
+    "prefill_tok_s": 949.097478709684
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 27.528216792389006,
+    "decode_tok_s": 36.326363147375375,
+    "ttft_ms": 1606.5856480272487,
+    "prompt_tokens": 4148,
+    "prefill_tok_s": 2581.8729335055327
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 28.81021946559272,
+    "decode_tok_s": 34.709905670599746,
+    "ttft_ms": 6755.38961100392,
+    "prompt_tokens": 16435,
+    "prefill_tok_s": 2432.872261464959
+   }
+  },
+  "iq3r": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 27.527669855209393,
+    "decode_tok_s": 36.327084902566064,
+    "ttft_ms": 111.07186099980026,
+    "prompt_tokens": 106,
+    "prefill_tok_s": 954.3371205438848
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 28.091771393483995,
+    "decode_tok_s": 35.59761276684582,
+    "ttft_ms": 1609.7051369724795,
+    "prompt_tokens": 4148,
+    "prefill_tok_s": 2576.8694556082023
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 29.366622657520576,
+    "decode_tok_s": 34.05226442489489,
+    "ttft_ms": 6759.6373750129715,
+    "prompt_tokens": 16436,
+    "prefill_tok_s": 2431.4913786286443
+   }
+  },
+  "iq4r-s": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 28.989138070278877,
+    "decode_tok_s": 34.4956789531197,
+    "ttft_ms": 118.51661500986665,
+    "prompt_tokens": 103,
+    "prefill_tok_s": 869.0764581103259
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 29.55807482759029,
+    "decode_tok_s": 33.83170270164461,
+    "ttft_ms": 1621.1355259874836,
+    "prompt_tokens": 4145,
+    "prefill_tok_s": 2556.8497719986444
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 30.85938605084403,
+    "decode_tok_s": 32.40505168678329,
+    "ttft_ms": 6802.462211926468,
+    "prompt_tokens": 16435,
+    "prefill_tok_s": 2416.03694191571
+   }
+  },
+  "iq5r": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 34.876244931587486,
+    "decode_tok_s": 28.67281159315113,
+    "ttft_ms": 129.25452506169677,
+    "prompt_tokens": 104,
+    "prefill_tok_s": 804.6139966887652
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 35.39662944620435,
+    "decode_tok_s": 28.25127747035338,
+    "ttft_ms": 1635.3786500403658,
+    "prompt_tokens": 4145,
+    "prefill_tok_s": 2534.5812114507485
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 36.74616168504635,
+    "decode_tok_s": 27.213726662693713,
+    "ttft_ms": 6859.590410953388,
+    "prompt_tokens": 16434,
+    "prefill_tok_s": 2395.769866048883
+   }
+  },
+  "nano": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 34.79269173596813,
+    "decode_tok_s": 28.741668152286593,
+    "ttft_ms": 153.49993796553463,
+    "prompt_tokens": 104,
+    "prefill_tok_s": 677.524703777738
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 35.51558390603293,
+    "decode_tok_s": 28.156653784597722,
+    "ttft_ms": 3350.081452052109,
+    "prompt_tokens": 4145,
+    "prefill_tok_s": 1237.2833494722822
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 36.79630569061137,
+    "decode_tok_s": 27.17664127502755,
+    "ttft_ms": 13592.870624968782,
+    "prompt_tokens": 16436,
+    "prefill_tok_s": 1209.1632778295311
+   }
+  },
+  "small": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 39.7373848121318,
+    "decode_tok_s": 25.165219219325692,
+    "ttft_ms": 170.44265591539443,
+    "prompt_tokens": 105,
+    "prefill_tok_s": 616.0429702064762
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 40.32381902742264,
+    "decode_tok_s": 24.79923836876511,
+    "ttft_ms": 3000.8981849532574,
+    "prompt_tokens": 4146,
+    "prefill_tok_s": 1381.586359973282
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 41.58621407232435,
+    "decode_tok_s": 24.046430344942134,
+    "ttft_ms": 12141.180892009288,
+    "prompt_tokens": 16435,
+    "prefill_tok_s": 1353.6574527784762
+   }
+  },
+  "tiny": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 36.129790996137544,
+    "decode_tok_s": 27.677990169024365,
+    "ttft_ms": 157.94663701672107,
+    "prompt_tokens": 104,
+    "prefill_tok_s": 658.4502333467854
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 36.72086803535083,
+    "decode_tok_s": 27.232471711652064,
+    "ttft_ms": 2983.995354967192,
+    "prompt_tokens": 4146,
+    "prefill_tok_s": 1389.412350491271
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 37.94709241487917,
+    "decode_tok_s": 26.352480160190005,
+    "ttft_ms": 12097.836405038834,
+    "prompt_tokens": 16435,
+    "prefill_tok_s": 1358.5073768359694
+   }
+  },
+  "v3-k4-uniform-proxy": {
+   "0": {
+    "n": 5,
+    "decode_ms_per_token": 29.205539051002283,
+    "decode_tok_s": 34.24008022086761,
+    "ttft_ms": 101.82390094269067,
+    "prompt_tokens": 105,
+    "prefill_tok_s": 1031.1920779689724
+   },
+   "4k": {
+    "n": 5,
+    "decode_ms_per_token": 30.130212590938577,
+    "decode_tok_s": 33.1892779376121,
+    "ttft_ms": 1690.33059803769,
+    "prompt_tokens": 4146,
+    "prefill_tok_s": 2452.7746257525623
+   },
+   "16k": {
+    "n": 5,
+    "decode_ms_per_token": 31.865512612530935,
+    "decode_tok_s": 31.381889635968246,
+    "ttft_ms": 7060.427170014009,
+    "prompt_tokens": 16434,
+    "prefill_tok_s": 2327.6212053848567
+   }
+  }
+ },
+ "meta": {
+  "iq3r-s": {
+   "power_cap_w": 210.0,
+   "load_s": 17.3,
+   "bench_file": "iq3r-s.jsonl",
+   "build": null
+  },
+  "iq3r": {
+   "power_cap_w": 210.0,
+   "load_s": 17.5,
+   "bench_file": "iq3r.jsonl",
+   "build": null
+  },
+  "iq4r-s": {
+   "power_cap_w": 210.0,
+   "load_s": 16.4,
+   "bench_file": "iq4r-s.jsonl",
+   "build": null
+  },
+  "iq5r": {
+   "power_cap_w": 210.0,
+   "load_s": 20.6,
+   "bench_file": "iq5r.jsonl",
+   "build": null
+  },
+  "nano": {
+   "power_cap_w": 210.0,
+   "load_s": 19.6,
+   "bench_file": "nano.jsonl",
+   "build": null
+  },
+  "small": {
+   "power_cap_w": 210.0,
+   "load_s": 23.6,
+   "bench_file": "small.jsonl",
+   "build": null
+  },
+  "tiny": {
+   "power_cap_w": 210.0,
+   "load_s": 20.6,
+   "bench_file": "tiny.jsonl",
+   "build": null
+  },
+  "v3-k4-uniform-proxy": {
+   "power_cap_w": 210.0,
+   "load_s": 9.1,
+   "bench_file": "v3-k4-uniform-proxy.jsonl",
+   "build": null
+  }
+ }
+}

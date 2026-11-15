@@ -1,0 +1,21 @@
+iq3r-s ctx 0 run 0 (warm): prompt 102 ttft 129 ms, client 26.87 ms/tok, server 26.87 ms/step x 1.00 tok
+iq3r-s ctx 0 run 1 (warm): prompt 102 ttft 110 ms, client 26.95 ms/tok, server 26.95 ms/step x 1.00 tok
+iq3r-s ctx 0 run 2: prompt 102 ttft 109 ms, client 26.99 ms/tok, server 26.99 ms/step x 1.00 tok
+iq3r-s ctx 0 run 3: prompt 105 ttft 109 ms, client 26.99 ms/tok, server 26.98 ms/step x 1.00 tok
+iq3r-s ctx 0 run 4: prompt 103 ttft 108 ms, client 27.00 ms/tok, server 26.99 ms/step x 1.00 tok
+iq3r-s ctx 0 run 5: prompt 103 ttft 109 ms, client 27.00 ms/tok, server 27.00 ms/step x 1.00 tok
+iq3r-s ctx 0 run 6: prompt 108 ttft 108 ms, client 27.01 ms/tok, server 27.01 ms/step x 1.00 tok
+iq3r-s ctx 4k run 0 (warm): prompt 4147 ttft 1610 ms, client 27.54 ms/tok, server 27.54 ms/step x 1.00 tok
+iq3r-s ctx 4k run 1 (warm): prompt 4146 ttft 1608 ms, client 27.54 ms/tok, server 27.53 ms/step x 1.00 tok
+iq3r-s ctx 4k run 2: prompt 4148 ttft 1607 ms, client 27.53 ms/tok, server 27.52 ms/step x 1.00 tok
+iq3r-s ctx 4k run 3: prompt 4149 ttft 1607 ms, client 27.54 ms/tok, server 27.53 ms/step x 1.00 tok
+iq3r-s ctx 4k run 4: prompt 4149 ttft 1607 ms, client 27.54 ms/tok, server 27.54 ms/step x 1.00 tok
+iq3r-s ctx 4k run 5: prompt 4146 ttft 1606 ms, client 27.50 ms/tok, server 27.50 ms/step x 1.00 tok
+iq3r-s ctx 4k run 6: prompt 4144 ttft 1601 ms, client 27.52 ms/tok, server 27.52 ms/step x 1.00 tok
+iq3r-s ctx 16k run 0 (warm): prompt 16438 ttft 6768 ms, client 28.81 ms/tok, server 28.80 ms/step x 1.00 tok
+iq3r-s ctx 16k run 1 (warm): prompt 16436 ttft 6763 ms, client 28.80 ms/tok, server 28.80 ms/step x 1.00 tok
+iq3r-s ctx 16k run 2: prompt 16435 ttft 6750 ms, client 28.81 ms/tok, server 28.81 ms/step x 1.00 tok
+iq3r-s ctx 16k run 3: prompt 16431 ttft 6757 ms, client 28.79 ms/tok, server 28.79 ms/step x 1.00 tok
+iq3r-s ctx 16k run 4: prompt 16439 ttft 6755 ms, client 28.83 ms/tok, server 28.83 ms/step x 1.00 tok
+iq3r-s ctx 16k run 5: prompt 16435 ttft 6740 ms, client 28.77 ms/tok, server 28.77 ms/step x 1.00 tok
+iq3r-s ctx 16k run 6: prompt 16435 ttft 6761 ms, client 28.81 ms/tok, server 28.81 ms/step x 1.00 tok

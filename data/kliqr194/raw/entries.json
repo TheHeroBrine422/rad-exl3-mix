@@ -1,0 +1,14 @@
+[
+  {"key": "nano", "label": "KL-IQR-V1-3.00 (Nano)", "repo": "Ashlyn4202025/qwen3.8-27b-kl-iqr-nano",
+   "file": "qwen3.8-27b-kl-nano.rad", "bytes": 11011899392,
+   "sha256": "8e5f87015e0dac59ca4c8a4914a3b8373043f0a211dd6814afd2a76095bb39b9", "stated_bits": 2.9980,
+   "stated_source": "docs/QC-QWEN38-KL.md (branch) and the Nano README: 2.9980 bits a weight over the text plane"},
+  {"key": "tiny", "label": "KL-IQR-V1-4.00 (Tiny)", "repo": "Ashlyn4202025/qwen3.8-27b-kl-iqr-tiny",
+   "file": "qwen3.8-27b-kl-tiny.rad", "bytes": 14374330368,
+   "sha256": "e8a6815113892d7fdcd09d32e8dbdb4a54269cd688cfd24fe524e95ff791c4f3", "stated_bits": 3.9980,
+   "stated_source": "docs/QC-QWEN38-KL.md (branch): 3.9980 bits a weight over the text plane"},
+  {"key": "small", "label": "KL-IQR-V1-5.50 (Small)", "repo": "Ashlyn4202025/qwen3.8-27b-kl-iqr-small",
+   "file": "qwen3.8-27b-kl-small.rad", "bytes": 19420073984,
+   "sha256": "cd7db855096c53fcae99a1a1ad8cc8cf4e01a9711855c335ec0ddfd078f7defa", "stated_bits": 5.4988,
+   "stated_source": "docs/QC-QWEN38-KL.md (branch): 5.4988 bits a weight over the text plane"}
+]

@@ -1,0 +1,21 @@
+tiny ctx 0 run 0 (warm): prompt 106 ttft 187 ms, client 35.95 ms/tok, server 35.95 ms/step x 1.00 tok
+tiny ctx 0 run 1 (warm): prompt 105 ttft 159 ms, client 36.07 ms/tok, server 36.06 ms/step x 1.00 tok
+tiny ctx 0 run 2: prompt 103 ttft 158 ms, client 36.09 ms/tok, server 36.09 ms/step x 1.00 tok
+tiny ctx 0 run 3: prompt 106 ttft 158 ms, client 36.12 ms/tok, server 36.11 ms/step x 1.00 tok
+tiny ctx 0 run 4: prompt 103 ttft 158 ms, client 36.13 ms/tok, server 36.13 ms/step x 1.00 tok
+tiny ctx 0 run 5: prompt 106 ttft 158 ms, client 36.13 ms/tok, server 36.13 ms/step x 1.00 tok
+tiny ctx 0 run 6: prompt 104 ttft 158 ms, client 36.13 ms/tok, server 36.12 ms/step x 1.00 tok
+tiny ctx 4k run 0 (warm): prompt 4146 ttft 2982 ms, client 36.71 ms/tok, server 36.71 ms/step x 1.00 tok
+tiny ctx 4k run 1 (warm): prompt 4150 ttft 2989 ms, client 36.71 ms/tok, server 36.71 ms/step x 1.00 tok
+tiny ctx 4k run 2: prompt 4148 ttft 2984 ms, client 36.72 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny ctx 4k run 3: prompt 4146 ttft 2981 ms, client 36.72 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny ctx 4k run 4: prompt 4149 ttft 2987 ms, client 36.68 ms/tok, server 36.67 ms/step x 1.00 tok
+tiny ctx 4k run 5: prompt 4145 ttft 2986 ms, client 36.71 ms/tok, server 36.71 ms/step x 1.00 tok
+tiny ctx 4k run 6: prompt 4145 ttft 2983 ms, client 36.72 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny ctx 16k run 0 (warm): prompt 16432 ttft 12100 ms, client 37.96 ms/tok, server 37.96 ms/step x 1.00 tok
+tiny ctx 16k run 1 (warm): prompt 16437 ttft 12102 ms, client 37.91 ms/tok, server 37.91 ms/step x 1.00 tok
+tiny ctx 16k run 2: prompt 16435 ttft 12112 ms, client 37.94 ms/tok, server 37.94 ms/step x 1.00 tok
+tiny ctx 16k run 3: prompt 16436 ttft 12100 ms, client 37.95 ms/tok, server 37.94 ms/step x 1.00 tok
+tiny ctx 16k run 4: prompt 16435 ttft 12098 ms, client 37.97 ms/tok, server 37.97 ms/step x 1.00 tok
+tiny ctx 16k run 5: prompt 16434 ttft 12096 ms, client 37.96 ms/tok, server 37.95 ms/step x 1.00 tok
+tiny ctx 16k run 6: prompt 16432 ttft 12074 ms, client 37.93 ms/tok, server 37.93 ms/step x 1.00 tok

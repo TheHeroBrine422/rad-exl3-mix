@@ -1,0 +1,5 @@
+{"rows_file": "iq2r-t186n.json.rows", "golden": "/data/q27/w164/slices/golden-t186n", "n_rows": 36457, "gen_positions": 32117, "kl_mean_gen": 0.13130807876586914, "kl_nonfinite": 0}
+{"rows_file": "iq3r-t186n.json.rows", "golden": "/data/q27/w164/slices/golden-t186n", "n_rows": 36457, "gen_positions": 32117, "kl_mean_gen": 0.03467177599668503, "kl_nonfinite": 0}
+{"rows_file": "iq4r-t186n.json.rows", "golden": "/data/q27/w164/slices/golden-t186n", "n_rows": 36457, "gen_positions": 32117, "kl_mean_gen": 0.009223668836057186, "kl_nonfinite": 0}
+{"rows_file": "iq5r-t186n.json.rows", "golden": "/data/q27/w164/slices/golden-t186n", "n_rows": 36457, "gen_positions": 32117, "kl_mean_gen": 0.0036325922701507807, "kl_nonfinite": 0}
+{"rows_file": "iq6r-t186n.json.rows", "golden": "/data/q27/w164/slices/golden-t186n", "n_rows": 36457, "gen_positions": 32117, "kl_mean_gen": 0.0012369346804916859, "kl_nonfinite": 0}

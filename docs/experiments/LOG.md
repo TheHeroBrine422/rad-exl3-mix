@@ -8342,3 +8342,26 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither (a KL read of other containers; no kernel, format or quantizer change)
 - **Files:** `data/kliqr194/` (table.md, table.json, make_table.py, extract_incumbents.py, check_extract.py, raw/: gate, kl-all, boot, tensor sizes, incumbents snapshot, summaries and logs); box2 `/data/q27/w177/` (rows, logs, the three entries' .rad under models/, not in the repo)
 - 3:15 PM CST (user): w172's 6 PM time box cancelled — runs overnight until stopped or its RULES-193 budget is spent; interim reports every ~3 h (out/w172-interim.md).
+
+### 2026-11-15 4:00 PM CST · #194-02 · KL-IQR-V1 entries: decode and prefill of the same containers, next to IQR-V4 (w177, Haiku xhigh)
+- **Status:** done for decode and prefill (end to end); gemm_us not measured (no bench on their build) · **Machine:** box2 card 0 (rocm-smi GPU[3]), power cap 210 W, one serve at a time · **Code:** `data/kliqr194/speed_table.py` (summary), the w138 decode176 harness (`bench.py`, its row function copied into `speed.sh`) on their build (3eec7eb6); raw in `data/kliqr194/raw/speed/`
+- **Question:** how fast are the three entries at batch 1 (decode ms per token, TTFT, prefill tok/s) on the same card and cap as IQR-V4 at the nearest sizes? (lead note, 11-15 2:40 PM CST)
+- **Pass rule:** none
+- **Setup:** `bench.py`: greedy, ignore_eos, 512 generated tokens, contexts 0 / 4k / 16k, 2 warm-ups and 5 runs per context (medians). Server: `--tp 1 --kv-cache-dtype bf16 --max-model-len 40960 --max-num-seqs 8` (the decode176 line; the KLD reads used 16). Speculative decoding off (IQR-V4's drafter off; the entries have none). Each row loads its own serve; card lock per row.
+- **Result** (decode ms/token client side; prefill = prompt tokens / TTFT):
+
+  | row | size (text-plane bpw) | decode ms/tok ctx 0 | decode ms/tok ctx 16k | prefill tok/s 4k | prefill tok/s 16k |
+  |---|---:|---:|---:|---:|---:|
+  | KL-IQR-V1-3.00 Nano | 2.998 | 34.8 | 36.8 | 1,237 | 1,209 |
+  | IQR-V4 iq3r-s | 3.157 | 27.0 | 28.8 | 2,582 | 2,433 |
+  | IQR-V4 iq3r | 3.472 | 27.5 | 29.4 | 2,577 | 2,431 |
+  | KL-IQR-V1-4.00 Tiny | 3.998 | 36.1 | 38.0 | 1,389 | 1,359 |
+  | IQR-V4 iq4r-s | 4.142 | 29.0 | 30.9 | 2,557 | 2,416 |
+  | KL-IQR-V1-5.50 Small | 5.499 | 39.7 | 41.6 | 1,382 | 1,354 |
+  | IQR-V4 iq5r | 5.433 | 34.9 | 36.8 | 2,535 | 2,396 |
+  | V3 uniform-K4 pack (proxy, not the incumbent, not size-matched) | 5.15 | 29.2 | 31.9 | 2,453 | 2,328 |
+
+- **Reading:** at the nearest IQR-V4 size the entries decode 14–29 % slower and prefill at about half the rate (1.8–2.1× slower), on the same card, cap and build. That is end to end only: the cost is not split between GEMM, activations and attention, so the two-pass int8 activations (`act_two`, which their doc calls out) are the likely source of the prefill cost, not shown.
+- **Not done / caveats:** (1) gemm_us: `rad-kbench` on their build declines every `gemm_nt_q` case ("no operand recipe for that op"), so there is no bench for their GEMM; only end-to-end is reported, as the lead allowed. (2) Our V3 incumbents at 3.0 / 4.0 / 5.0 / 6.0 are not built (their levels K4.625–K7.5 exist only as finals, and box2 has packs only to K4.5); the only V3 row is a uniform-K4 pack from w150 (18.25 GB: 2.54 GB bf16 head, 2.54 GB bf16 embedding, 0.92 GB vision), so its decode and prefill are confounded and it is a kernel reference, not a comparison. (3) One batch-1 serve per row; no repeat on another day, so differences under ~5 % are not settled.
+- **Runtime:** neither (measures other containers and one reference pack; no kernel, format or quantizer change of ours)
+- **Files:** `data/kliqr194/speed.md`, `speed.json`, `speed_table.py`, `raw/speed/` (per-request jsonl, rocm-smi snapshots, bench logs); box2 `/data/q27/w177/speed/`
