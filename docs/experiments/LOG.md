@@ -8132,3 +8132,30 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 2:14 AM CST: donor VPN down (user). box2 still answered at 2:11:57 AM CST (uptime, ping test to ds8 failed from it), no answer from 2:13 AM CST; ds8 since ~1:50 AM CST. Nothing reaches either box now; box2's QAD processes (w170) keep running locally if the box is up. Resume after the user restores the VPN + forwards (2241 box2, 2240 ds8): restart the v3b coordinator if it doesn't reconnect, then check w170 / w173 / the search.
 - 2:20 AM CST: w174's round-robin inbox committed (13/13 + all suites); config keys inbox_share 0.5 / inbox_pending_max 200 go in at the next driver restart (after the VPN is back).
 - 2:17 AM CST: VPN back without action (user: temporary outage). box2 reachable again, w170's QAD runs survived (arms L0B0T1Q0D0 etc. running), coordinator reconnected box2. ds8 still unreachable (also from box2 over 10 GbE): a separate ds8 outage since ~1:50 AM CST.
+
+### 2026-11-15 2:27 AM CST · #185 · w173: finals to ds8 level by level (K7.5 READY); ds8 unreachable from the VM since 2:08 AM CST
+- Rollout (ds8 `/data/q27/w173/bin/rollout.sh`; source in `data/vload185/w173/`): each level's `final/` rsynced from box2 to `/data/q27/finals-mad/LEVEL/final.part`, md5 of every file on both ends, renamed to `final/`; then the planes against its pack: w162's `final_mix.py`, `rad-info --weights-dump` of the pack and of the manifest through two FIFOs (no dump on disk), w162's `cmp_dumps.py`. READY only on `IDENTICAL 336/336`. The pack is the file the live mixes name (13 levels, K 4.625 and up, have no `-s6c57a3d1` suffix).
+- K7.5: 22.8 GB, 68 files, copy verified; planes **IDENTICAL 336/336** (100 s). READY. K7 was copying at 2:07 AM CST.
+- Order (`order.txt`): K ≥ 6 first (least used in the newest 300 live mixes first), then sub-1 (zero uses in those mixes and in all of `srch183/mixes`), then the middle (least used first).
+- Floor: ds8 had 504 GB free at the start; floor 150 GiB (161 GB, the conservative reading). The 49 finals total 484 GB (451 GiB) on box2; packs 729 GB. The copy budget (~343 GB) covers part of the levels; the rest needs the packs gone first (`data/vload185/w173/SWITCH.md`, gate 1).
+- Driver fix: the first run ended after one level (ssh inside the level script read the rest of the order list from stdin). Now the order list is on fd 3 and the level script gets /dev/null. K7.5's own run was unaffected (its copy and check finished before the driver read on).
+- Candidate hostd: `hostd-final.patch` applies cleanly to the live `pipeline` (copied at 7:57 AM CST; live `hostd.py` md5 84d0bab8…, not touched). Candidate tree `/data/q27/w173/code` (live + patch on a copy): `test_hostd_final.py` ALL PASS, `test_hostd_virtual.py` ALL PASS. Candidate host.json (`make_candidate_host.py`, not applied): differs from the live file only in `eval.final_root`, `final_codebook`, `virtual_bytes_cmd`, the candidate build in `score_cmd` / `score_cmd_progress`, `tree`, and w173's root / mixes / scores.
+- Build: fresh `/data/q27/w173/rad10` from `git archive 64735054` (the vload branch; the live `qc-exl3-v3` HEAD is still 120132ab, so no rebase). w162's build script, unchanged, ROCm 10.1, VOPD toolchain by symlink. At 2:07 AM CST it was at step 296 of 1025; not seen since.
+- Not done (ds8 unreachable from the VM: the forward on the VM's port 2240 accepts connections but returns no SSH banner): the dry identity run (one live mix, mix path vs final path, card 7 under its lock), the plane checks of the other levels, and the final numbers for this entry. The copy driver runs on ds8 by itself and stops at the floor; I will stop it and the build once ds8 answers.
+- **Runtime:** neither (loader / eval plumbing; same format and kernels; prefill and decode unchanged).
+
+### 2026-11-15 3:02 AM CST · #185 · w173: ds8 unreachable from the VM (since 2:08 AM CST); rollout and build running there, dry run not run
+- Status at 3:02 AM CST: no SSH banner from ds8 through the VM's port 2240 forward for 50+ minutes (TCP accepts; the far end does not
+  answer); box2 answers. The copy driver and the candidate build run on ds8 and do not need the VM; the driver stops at the floor
+  (or when its order is done). Not seen since 2:07 AM CST: K7 copying, build at step 296 of 1025.
+- Done without ds8: candidate host.json (`data/vload185/w173/host.final.candidate.json`, generated from the live file: only the
+  keys listed in the 2:27 AM entry differ); `SWITCH.md` (gates: coverage, census for final candidates, build identity; steps;
+  rollback); `README.md` with the commands; `collect.py` (pulls results into the repo once ds8 answers); `planes/…k7.5-mad.txt`
+  and a K7.5 row in `rollout.tsv` from the 2:06 AM read.
+- Not done: the dry identity run (`dryrun.sh`: radmix + two scorings on card 7 under its lock; needs ~14 GB above the floor for the
+  .rad, so it may have to wait for the search to free space); the plane checks of the other levels; the per-level md5 lists in the repo;
+  stopping the driver and the build (both started by w173 on ds8; the driver ends by itself at the floor).
+- The reverse forward to ds8 needs the user (from thanos: `ssh -NR 2240:…:22 …`, the reconnect steps in `AGENTS.md`). I did not go
+  around it.
+- **Runtime:** neither.
+- 3:09 AM CST: **ds8 back** (container up ~3:06 AM CST after a reboot by the donor; ~1 h 15 min down). Coordinator reconnected on its own, the in-flight units were retried ("unit process gone" → restart), 7 cards scoring within 2 min. 220 GB of built mixes in srch183/mixes (incl. pre-crash leftovers: box2clean / the guard prune them). watch.conf ds8 rules restored. Suggested to the donor: BMC / kernel log of the previous boot (GPU reset, NIC, thermal, PSU).
