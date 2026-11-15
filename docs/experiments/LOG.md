@@ -8162,3 +8162,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 3:15 AM CST (user): round-robin inbox live: inbox_share 0.5, inbox_max 13, inbox_pending_max 200 (driver restarted after the old PID exited; no traceback). w172 told to keep the inbox stocked.
 - 3:25 AM CST (user): w172 to submit fit.py + curve ensemble candidates live now (~25–30 decide files, all active sizes), despite missing the replay winner rule by a hair: inbox candidates are judged by the live rule, so the downside is only evals.
 - 3:30 AM CST (user): low bar for inbox submissions — offline evidence is not a gate; the live rule filters. Told w172.
+- 3:50 AM CST (user): principle added to eval-data.md — offline gates decide adoption, not trials; w172 told to run the xgboost regressor ranker live (generate with moves.generate, submit the reg model's top picks per size).

@@ -98,3 +98,9 @@ board's mask, rebuilt from tokens by `v3/qad181/genmask181.py make` (verified id
 10.25M rows; intersected with any mask the golden already has). Applies to the search slices s173a-f (whole + x), the
 final-pick slice golden-final750 and its x part, and every new slice. The old all-ones masks are kept as `gen.u8.all`.
 Decisions taken before this on x parts (the paused #171 search) are superseded by the restart, not re-read.
+
+## Principle (user, 2026-11-15): offline gates decide adoption, not trials
+Any allocator, ranker or predictive model with a decent rank correlation on any size band (a CI that excludes zero,
+time-ordered / out-of-sample, not overfit) is worth a live trial through the search inbox, even if it fails a
+pre-committed adoption rule. Inbox candidates are judged by the live stage-1 + confirmation rule, so a weak model costs
+only evals. Pre-committed winner rules (e.g. RULES-187 §5) still govern making something a built-in driver move.
