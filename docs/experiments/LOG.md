@@ -8196,3 +8196,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   - 11-15 04:15:06 CST ds8: eval ibx-t183-v3s183-6.5-probe-01625 done: t183 0.00062
   - 11-15 04:27:56 CST ds8: eval ibx-t183-v3s183-6.5-probe-01642 done: t183 0.00062
   - 11-15 04:28:29 CST ds8: eval ibx-t183-v3s183-7-probe-01646 done: t183 0.00050
+- 5:00 AM CST (user): no size stops; search continues at all active sizes for the #193 allocator trials (RULES-cooldown amendment). w172 told: rank-reg now at every size, budget 600 decide / 100 probes.
