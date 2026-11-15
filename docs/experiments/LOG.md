@@ -7682,7 +7682,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   since the 5:56 PM restart; it only acts on slices with strata (s173a-f return none: checked), so decisions on s173
   are unchanged. Full review before the s186 switch. **Runtime:** neither.
 
-### 2026-11-15 12:30 AM CST · #184 · w160 stopped (user); ssm_out producer deferred
+### 2026-11-14 6:30 PM CST · #184 · w160 stopped (user); ssm_out producer deferred
 - User: stop w160 (Opus usage; kernel base moves to radiance 2.0.0 after the search anyway). State: d2fb61c landed on
   `qc-exl3-v3-pf184` (fused-decode overlap, −0.6 %, KLD byte-identical); uncommitted edits at stop time saved as WIP
   42bed03 (untested, not for merge). Remaining scored gap: ssm_out quantizes its own activations (+8 % layer gemm_us at
@@ -7724,17 +7724,17 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (`/data/work/w165`), 121 fits, six at a time, nice 19. Results: `data/rerank187/` once metrics.py has run.
 - **Runtime:** neither (offline analysis of the search's own records; no change to the search, to kernels or to the format).
 
-### 2026-11-15 12:50 AM CST · #183 / #188 · queue depth 14; elite pool + crossover queued after w164
+### 2026-11-14 6:50 PM CST · #183 / #188 · queue depth 14; elite pool + crossover queued after w164
 - 450-result trigger reached (457 v3s183 results); w165 already running. Driver queue_depth 10 → 14 (11 eval slots + tracking:
   cards were idling at 10 outstanding); restarted 6:46 PM CST.
 - User: re-seed at the s186 switch (incumbent + frontier top ~3 per size, ~30 full evals on s186a) and an elite pool of 3
   per size with a crossover move (evolutionary); w166 (Haiku xhigh, brief instr3/w166.md) starts when w164 finishes and
   builds on its strata code; one restart for both. **Runtime:** neither.
-- 12:55 AM CST: build / score overlap: hostd eval slots = cards + 3 (ds8 10 for 7 cards, box2 4 for 2): mixes build
+- 6:55 PM CST: build / score overlap: hostd eval slots = cards + 3 (ds8 10 for 7 cards, box2 4 for 2): mixes build
   outside the card lock, so the extra units build while all cards score (mix ~30-40 s vs scoring 90-170 s); driver
   queue_depth 18. Not tried: two scorers on one card (scoring is GPU-bound, load only ~7 s; VRAM tight above ~3 bpw).
 
-### 2026-11-15 1:05 AM CST · #186 · Lead review of w163's swap test
+### 2026-11-14 7:05 PM CST · #186 · Lead review of w163's swap test
 - Reviewed out/w163.md + `data/lc186/results/all21-gen.txt` (spot-checked ATT-19+ / FFN-early lines; per-doc bootstrap
   CIs; box2 vs ds8 rows byte-identical on 5 arms). Two separate causes in the 2.5 pick: (1) doc 100 (Persian) = late
   attention (layers 19-63), and it improves when those tensors get FEWER bits (unexpected: pack / quantizer effect at
