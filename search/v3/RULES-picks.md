@@ -46,3 +46,12 @@ Why: since the board gen mask (11-14) the prompt-side rows that made single docu
 weighting now controls the non-Latin share explicitly, and the cap was down-weighting exactly the high-KL (non-Latin)
 documents (#186). The per-document guard (c) stays for now (re-checked after ~200 s186 decisions: how often it alone
 rejects). Final picks are unchanged ((a) with the guard, finalpick.py). Decisions on s173 stand.
+
+## Amendment 2026-11-14 8:25 PM CST: per-document guard (c) dropped from the search
+Test stated to the user before its data (11-14 ~7:30 PM CST): score the 20 largest guard-only rejects of #183 and their
+incumbents on t183 (never decides); mostly better on t183 → drop the guard; mostly not → keep; mixed → log-only.
+Result (`search/v3/run183/guardtest183.py`, size-adjusted with V2's t183 curve, per-document bootstrap): 13 / 20 better
+pooled, 7 with the 95 % interval below 0, none above; mean −1.4 % pooled (active sizes 2–6: 9 / 13, −2.5 %), and the
+per-document mean on t183 also improves (−2.4 %). The guard mostly blocked real held-out gains → driver CONF
+`guard: null` from the next restart. The per-document mean stays in the decision events (logged, not used). Final picks
+keep their own checks (finalpick.py, golden-final750).
