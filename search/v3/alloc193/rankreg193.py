@@ -48,7 +48,7 @@ def gen(a):
                 oth = C.assign(a.snap, rng.choice([m for m in mem if m != par]))
                 c = MV.generate_cross(pred, pa, oth, lo, hi, seen, rng); kind = "cross"
             else:
-                kind = KINDS[n % len(KINDS)]; c = MV.generate(kind, pred, draws, pa, lo, hi, seen, rng)
+                kind = KINDS[tries % len(KINDS)]; c = MV.generate(kind, pred, draws, pa, lo, hi, seen, rng)
             if c is None: continue
             seen.add(MV.ahash(c)); tag = f"rr-{s:g}-{kind}-{n:03d}"
             json.dump(c, open(f"{a.work}/assign/{tag}.json", "w"))
