@@ -1061,6 +1061,8 @@ class Driver:
             st, sha, sp = self.inbox_check(f)
             if st == "young": break
             if st == "moved": continue
+            if sp["mode"] == "decide" and not self.inbox_ready(sp, act): continue   # (11-15) no head-of-line block: a decide
+                                                                                      # waiting for its size's incumbent is skipped
             if head is None:
                 head = pick = (f, sha, sp)
                 if room != 1 or sp["mode"] == "decide" or self.inbox_passed == f: break
