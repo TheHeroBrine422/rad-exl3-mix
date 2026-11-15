@@ -104,3 +104,12 @@ committed before the data they affect.
   ranker are also compared against fit.py in the replay of §4 (ρ per band).
 - Report per allocator: files submitted, stage-1 / stage-2 outcomes from `drv/driver.log`, replay metrics, and a
   recommendation (adopt as a driver move kind / keep as a tool / drop).
+
+## Amendment 1 — 2026-11-15 2:35 AM CST (before any curve fit, curvature computation or curve candidate)
+- §1 curve: the bowl scale is fitted, not fixed: κ_{band} (b1 = sizes < 2.75, b2 = 2.75–4.25, b3 > 4.25), log κ ~ N(0, 1),
+  times κ_x for x-part rows. Reason: fit.py's predicted gains are overstated 1.5–7× by band (RULES-187), so its
+  curvature cannot set the scale. The size level is a piecewise-linear h(s) (knots at the menu's sizes 1.25 … 6 plus
+  the label offsets), since one label holds several sizes. Rows: the fit rows of every allowed label, all sizes 1.25–6
+  (curvature at sub-2 sizes from those sizes' incumbents, constant beyond the end sizes); 7.0 rows dropped.
+- §3 anom: the CV grid for (λ, λ_dev) is {0.1 … 1e3} × {0.01 … 1e4} (the committed values were on the wrong scale for
+  x in bpw units; seen on the first CV run, no flag or candidate made from it).
