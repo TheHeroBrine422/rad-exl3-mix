@@ -318,7 +318,9 @@ def main(argv=None):
     for e in W["st"]:
         if e["ev"] == "inbox" and e.get("mode") == "decide":
             f = e.get("file", ""); parts = f.split("-")
-            lab = parts[1] if f.startswith("w172-") and len(parts) > 2 else ("cons192" if "consensus" in (e.get("note") or "") else parts[0])
+            lab = parts[1] if f.startswith("w172-") and len(parts) > 2 else ("consensus (first)" if "consensus" in (e.get("note") or "") else parts[0])
+            lab = {"cons": "consensus refresh", "anom": "anomaly flags", "tr": "fit trust-region", "rob": "fit robust",
+                   "recal": "fit recalibrated", "ens": "fit+curve ensemble", "rankreg": "xgb ranker", "boot": "uncertainty probes"}.get(lab, lab)
             for t in e.get("tags") or [e.get("tag")]: alloc_of[t] = lab
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
@@ -437,6 +439,10 @@ def main(argv=None):
             ax.scatter([], [], marker=AMARK[i % len(AMARK)], s=45, facecolors="none", edgecolors="k",
                        label=f"inbox {al}: {len(ts)} tried, {len(dn)} decided, {sum(1 for d in dn if d['acc'])} confirmed")
     ax.legend(loc="upper right", fontsize=7.5)
+    if alloc_of:
+        ax.text(0.005, 0.01, "inbox candidates (shape = allocator): hollow = rejected at stage 1 · grey = passed stage 1, failed "
+                "confirmation · filled with black edge = confirmed accept", transform=ax.transAxes, fontsize=8, va="bottom",
+                bbox=dict(facecolor="white", alpha=0.85, edgecolor="0.7", boxstyle="round,pad=0.25"))
     ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; " + (f"each size anchored on its first "
                  f"{ylab_sl} read" if a.anchor_track else f"open circles: held-out {a.monitor} reads") + ";\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
 
