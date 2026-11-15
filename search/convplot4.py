@@ -29,7 +29,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-BN = ["b1 ≤ 2.5 bpw", "b2 3–4 bpw", "b3 4.5–6 bpw", "b4 7 bpw"]; COL = ["tab:blue", "tab:orange", "tab:green", "tab:purple"]   # = the #183 fit bands (user 11-14)
+BN = ["b1 ≤ 2.5 bpw", "b2 3–4 bpw", "b3 4.5–6 bpw", "b4 (unused)"]; COL = ["tab:blue", "tab:orange", "tab:green", "tab:purple"]   # = the #183 fit bands (user 11-14)
+DROP = {7.0}                                                    # (#183, user 11-14: 7.0 stopped, not plotted)
 band = lambda b: 0 if b < 2.75 else 1 if b < 4.25 else 2 if b < 6.5 else 3
 gmean = lambda v: math.exp(sum(map(math.log, v)) / len(v))
 
@@ -64,6 +65,7 @@ def load_refs(paths):
 def walk(state_path):
     """replay the state -> per (size, mode) chains, monitor reads, decisions, events"""
     st = [json.loads(l) for l in open(state_path) if l.strip()]
+    st = [e for e in st if e.get("size") is None or float(e["size"]) not in DROP]     # (#183) sizes left off the plot
     sub = {e["tag"]: e for e in st if e["ev"] == "submit"}
     mode = lambda tag: "A8" if (sub.get(tag) or {}).get("act") else "f16"
     step = 0; C = collections.defaultdict(float); inc = {}; cat = {}
@@ -113,6 +115,7 @@ def track_panel(axT, W, a, sizes):
         t = r["tag"][len("trk183-"):]
         if t not in step_of or r.get("kld") is None: continue
         st_, size = step_of[t]; y = r["kld"]
+        if size in DROP: continue
         if rel:
             q = loglin(v2, r["bpw"])
             if q is None: continue
