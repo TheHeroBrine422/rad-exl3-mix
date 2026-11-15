@@ -740,3 +740,8 @@ structure holds. Then one research worker (Opus high, CPU on colo), both parts, 
    size (kinks). #186's early-FFN starvation is the kind of case it should catch. Each flag → an inbox test at fixed
    size (shift bits toward / away from the group), judged by the normal rule + confirmation.
 Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not a per-tensor map.
+3. **Learn-to-rank reranker (user 11-15).** w165's arm d was an XGBRegressor (reg:squarederror on whole-slice log r,
+   early-stopped rows dropped), judged on ranking ρ; never a ranking objective. Try XGBRanker (rank:pairwise / ndcg)
+   with groups = (size, slice, incumbent), labels = paired outcomes incl. early-stopped candidates (weaker labels) and
+   stage-2 confirmations; same features + deviation from the consensus curve. Judged in w165's RULES-187 time-ordered
+   replay against the current fit. Expect most value in a fresh search (V3.1 after QAD), little near the optimum.
