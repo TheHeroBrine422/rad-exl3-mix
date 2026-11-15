@@ -161,10 +161,12 @@ def track_panel(axT, W, a, sizes):
 
 def strata_overlay(axT, a, step_of):
     """(#186, RULES-strata §7, w164) the non-Latin supplement on the tracking panel, as ratios to V2 at the same bpw
-    (log-linear between V2's measured sizes, as above): IQR-V4 references on t183's L documents (o), on t186n's N documents
-    (s) and their board combination 0.961 L + 0.039 N (^) (--track-strata: refs186.jsonl); and the incumbents' t186n reads
-    (--track-n: the trk186n-<tag> eval rows; t186n is all N, so the eval's kld is the N-only KL). No V2 curve: nothing drawn
-    until two V2 sizes have t186n readings."""
+    (log-linear between V2's measured sizes, as above): IQR-V4 references on t186n's N documents and their board
+    combination 0.961 L + 0.039 N, per band (geo-mean over the band's sizes, dotted N / dash-dot board, as the band lines
+    above; --track-strata: refs186.jsonl, whose board uses t183's L-only reads); the incumbents' t186n reads (--track-n:
+    the trk186n-<tag> eval rows at their step; t186n is all N, so the eval's kld is the N-only KL). The t183 band lines
+    above are the full t183 score (3.8 % of its positions are N). No V2 curve: nothing drawn until two V2 sizes have t186n
+    readings."""
     S = [json.loads(l) for l in open(a.track_strata)] if a.track_strata and os.path.exists(a.track_strata) else []
     S = [r for r in S if r.get("t186n_N") is not None and r.get("bpw")]
     V2 = [r for r in S if r["name"].startswith("v2")]; IQ = [r for r in S if r["name"].startswith("iq")]
@@ -172,15 +174,16 @@ def strata_overlay(axT, a, step_of):
     vs = {"L": sorted((r["bpw"], r["t183_L"]) for r in V2 if r.get("t183_L")),
           "N": sorted((r["bpw"], r["t186n_N"]) for r in V2),
           "B": sorted((r["bpw"], r["board"]) for r in V2 if r.get("board"))}
-    style = {"L": ("o", "IQR-V4 t183 L (o)"), "N": ("s", "IQR-V4 t186n N (s)"), "B": ("^", "IQR-V4 board 0.961L+0.039N (^)")}
     ys = []
     if len(vs["N"]) >= 2:
-        for k, (m_, lab) in style.items():
-            if len(vs[k]) < 2: continue
-            xs = [(r["bpw"], r[{"L": "t183_L", "N": "t186n_N", "B": "board"}[k]] / loglin(vs[k], r["bpw"])) for r in IQ
-                  if r.get(({"L": "t183_L", "N": "t186n_N", "B": "board"})[k]) is not None and loglin(vs[k], r["bpw"])]
-            if xs:
-                axT.scatter(*zip(*xs), marker=m_, s=34, facecolors="none", edgecolors="#333", lw=1.1, zorder=4, label=lab); ys += [y for _, y in xs]
+        for bd in range(4):
+            for k, key, ls, lab in (("N", "t186n_N", ":", "N"), ("B", "board", "-.", "board")):
+                if len(vs[k]) < 2: continue
+                rs = [r[key] / loglin(vs[k], r["bpw"]) for r in IQ if band(r["bpw"]) == bd and r.get(key) is not None
+                      and loglin(vs[k], r["bpw"])]
+                if rs:
+                    g = math.exp(sum(map(math.log, rs)) / len(rs)); ys.append(g)
+                    axT.axhline(g, color=COL[bd], ls=ls, lw=1.3, alpha=.9, label=f"IQR-V4 {lab} {BN[bd]}: {g:.3f}")
     if a.track_n and os.path.exists(a.track_n) and len(vs["N"]) >= 2:
         pts = []
         for l in open(a.track_n):
@@ -192,8 +195,8 @@ def strata_overlay(axT, a, step_of):
         if pts:
             axT.scatter([x for x, _, _ in pts], [y for _, y, _ in pts], marker="s", s=16, color="#a33", alpha=0.7, lw=0, zorder=3,
                         label="incumbents on t186n N (s)"); ys += [y for _, y, _ in pts]
-    if ys:                                                   # keep every N / board point on the panel (the default band is 0.3-2)
-        lo, hi = axT.get_ylim(); axT.set_ylim(min(lo, min(ys) * 0.9), max(hi, max(ys) * 1.1))
+    if ys and getattr(axT, "_fit_ylim", None):              # keep every N / board line on the panel (the fitted range is applied last)
+        lo, hi = axT._fit_ylim; axT._fit_ylim = (min(lo, min(ys) * 0.95), max(hi, max(ys) * 1.05)); axT.set_ylim(*axT._fit_ylim)
     if axT.get_legend_handles_labels()[0]: axT.legend(fontsize=7.5, loc="upper right")
 
 
