@@ -8289,3 +8289,15 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   adapter-free runs gives the same verdicts). Report out/w170.md, code v3/qad191/.
 - Restarted w172 (Fable low; time box ~6 PM CST); started w175 (mining review, Fable low) on merged-q-20261115-1251.md.
   w176 building s190c/d calib parts (option A). box2 idle since w170 finished (proposal pending).
+
+### 2026-11-15 11:59 AM CST · #— · Mining review: the three merged lists vs today's state (w175, Fable 5.2 low; read-only)
+- **Status:** done · **Machine:** VM (reads only; one read-only grep of the fit logs on colo) · **Report:** `local/mine/review-2026-11-15.md`
+- **Inputs:** `merged-q-20261115-1251.md` (11-14 → 11-15, weighted most), `merged-q-20261115-1020.md`, `merged-q-20261113-0740.md`; judged against TODO, INDEX / LOG #170–#193, v3.md, BACKLOG, the repo at ba7b9d25 and the live search files.
+- **Result:** ~110 merged items → 15 still worth doing, the rest closed (table in the report), 7 mined claims false or outdated.
+  - **Open, checked in the repo:** `finalpack.sh:15` still expects mul1i8 / version ≤ 3 and nothing pins the tokenizer or chat template; the 11-15 overfit audit and the gen-row re-reads (#177-03 stage B, #178-03, w157, #165 x ratio) are not done; `driver.py` has no result sanity guard; `census_hybrid.py` is not in `store/`; `rxrun-swjstale.patch` is not applied; INDEX rows #188 / #189 / #189-02 / #192 / #192-02 still say "not deployed" (all live); w160's negative kernel variants (a8g256, FUSE_PF, kGroupM, SPLIT, FOLD_BLOCKS, SB256, ring) are in no LOG entry.
+  - **Fit overflow confirmed in the live fit:** 226 of 307 per-band fit logs on colo (`/data/work/srch183/fits/*.log`) carry numeric warnings (b3 80/80, b4 76/76, b2 42/74, b1 28/77), mainly `kfit3.py:286` overflow in the compounding product; fits finish finite, effect on prices unmeasured. The VM copies of these logs are empty.
+  - **Fit calibration by band (last fits before the stall):** b1 rmse 0.066 / chi² per row 4.6, b2 0.088 / 12.5, b3 0.065 / 5.5: b2 (3.0–4.0) is the worst.
+  - **Early FFN (layers 0–7), mined as "starved at K1–1.5":** outdated. Mean K start → now: 2.0 1.06 → 2.04, 2.5 1.37 → 2.64 (at or above layers 8+); 3.0 1.78 → 2.66, 3.5 2.25 → 3.00, 4.0 2.72 → 3.78 (still 0.35–0.65 below layers 8+). The size-matched GPU arm is not needed; w172's queued `floor` trials at 3.0–4.0 test the rest.
+  - **Move kinds, confirmed / stage-2 decisions (live state):** pair 15/65, manual 6/16, partial 2/12, cross 2/15, block 1/16, thompson 2/6, explore 1/3, solve 0/2 (solve 3/67 at stage 1). 37 of 135 confirmations had a changed reference (rule 3 works; the mined "RULES-confirm silent" claim is false).
+- **Decisions for the lead / user:** run the audit; the usable-KLD floor (user); box2 as a second search host; move-kind shares; small patches for items 1, 3, 10 of the report.
+- **Runtime:** neither (review only).
