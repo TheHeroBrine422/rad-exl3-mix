@@ -20,6 +20,7 @@ HYP = {"xplant": "a neighbouring size's incumbent shape, shifted to this size, b
        "cap": "the top tensors sit on the flat part of the error curve: K clipped at the 90th percentile beats the incumbent",
        "floor": "the lowest tensors sit on the steep part: K raised to the 10th percentile beats the incumbent",
        "dxp": "a step that confirmed at a neighbouring size (its latest incumbent change) also helps this size",
+       "xavg": "the incumbents of all sizes are noisy searches of one size-free shape: their shifted mean beats the incumbent",
        "mom": "accepted moves keep pointing the same way: one extrapolated step along the incumbent chain beats the incumbent"}
 
 
@@ -110,6 +111,13 @@ def targets(L, alloc, s, sizes):
         if Kl: out.append(("lo", Kl))
         if Kh: out.append(("hi", Kh))
         if Kl and Kh: out.append(("mid", {w: (Kl[w] - lo + Kh[w] - hi) / 2 + s for w in L.W}))
+        if Kl and Kh: out.append(("half", {w: (K[w] + (Kl[w] - lo + Kh[w] - hi) / 2 + s) / 2 for w in L.W}))   # amendment 10
+        for var, j in (("lo2", i - 2), ("hi2", i + 2)):
+            if 0 <= j < len(sizes): out.append((var, L.K(L.asg(L.inc[sizes[j]]))))
+    elif alloc == "xavg":                                       # amendment 10
+        Ks = {z: L.K(L.asg(L.inc[z])) for z in sizes}
+        for var, f in (("", lambda z: 1.0), ("w", lambda z: math.exp(-abs(z - s)))):
+            tot = sum(f(z) for z in sizes); out.append((var, {w: sum(f(z) * (Ks[z][w] - z) for z in sizes) / tot + s for w in L.W}))
     elif alloc == "pavg":
         f = L.s190a(); mem = L.pool.get(s, [L.inc[s]]); ks = [f(m) for m in mem]
         if len(mem) < 2: return []
