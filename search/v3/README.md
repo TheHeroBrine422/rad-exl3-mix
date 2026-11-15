@@ -104,8 +104,8 @@ b_default, b_delta, b_range, warmup, bytes_offset0, topn (5), monitor {name, gol
 - Tests: `python3 -I search/v3/test_picks.py` (18 / 18), `test_strata186.py` (pure checks; with `STRATA_GOLD` and
   `STRATA_TOK` the ver3-8k check), `python3 -I search/v3/test_hostd_es.py pipeline` (the stratified early stop too).
 - `pipeline/rxrun/earlystop.py` is the byte copy of `search/v3/seqrule.py` (the test checks it). At HEAD the copy was
-  the older "parts" revision: it is restaged here. The hosts patch for ds8: `earlystop-strata.patch` (see its README
-  section below).
+  the older "parts" revision: it is restaged here. The hosts patch for ds8 is `earlystop-strata.patch`, the driver patch
+  `driver-strata.patch`; the order of the switch and the rollback are in `SWITCH-strata.md`.
 
 ## Tests (11-12)
 - radiance `kld_test` (12 cases, incl. `progress_lines_follow_documents_and_leave_the_rows_unchanged`) and

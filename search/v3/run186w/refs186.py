@@ -51,6 +51,12 @@ Lm, Nm = gen & ~row_N, gen & row_N
 m2, gen2 = golden(T186G)
 assert all(d.get("stratum") == "N" for d in m2["docs"]), "t186n: every document must be N"
 bpw = {r["name"]: r["bpw"] for r in map(json.loads, open(REFS))}
+# a reference without a bpw in REFS: an IQR-V4 name takes the board value of w134's rows (as refs183t.sh does; the HF
+# files carry the vision tower and drafter, so their sizes are not the board's bpw)
+IQR_BPW = os.environ.get("IQR_BPW_JSONL", "/workspace/rad-local/workers/w134/refs134.jsonl")
+if os.path.exists(IQR_BPW):
+    for r in map(json.loads, open(IQR_BPW)):
+        if r["tag"].startswith("ref-IQR4-"): bpw.setdefault(r["tag"][len("ref-IQR4-"):], r["bpw"])
 out = []
 names = sorted({f[:-len("-t183.json.rows")] for f in os.listdir(T183R) if f.endswith("-t183.json.rows")})
 for n in names:

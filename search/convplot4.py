@@ -29,8 +29,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-BN = ["< 2.75 bpw", "2.75–4.5 bpw", "4.5–6 bpw", "≥ 6 bpw"]; COL = ["tab:blue", "tab:orange", "tab:green", "tab:purple"]
-band = lambda b: 0 if b < 2.75 else 1 if b < 4.5 else 2 if b < 6 else 3
+BN = ["b1 ≤ 2.5 bpw", "b2 3–4 bpw", "b3 4.5–6 bpw", "b4 7 bpw"]   # = the #183 fit bands (user 11-14); COL = ["tab:blue", "tab:orange", "tab:green", "tab:purple"]
+band = lambda b: 0 if b < 2.75 else 1 if b < 4.25 else 2 if b < 6.5 else 3
 gmean = lambda v: math.exp(sum(map(math.log, v)) / len(v))
 
 
