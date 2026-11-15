@@ -8019,3 +8019,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   of 1, filled by joins.
 - convplot4: only accepts whose tag became incumbent are chained (pool joins vs the worst member no longer inflate the
   training line; w167 found 11 of 21 post-switch accepts were such joins). b2 line 0.586 → 0.598 with the fix.
+- 9:45 PM CST (user): one-shot re-selection of all past incumbents / pool members on a fresh slice. RULES-confirm amendment (rule 9, s186e, z < −1, top 3) committed first; w168 (Opus high) implements it in the driver (CONF-gated, after the go-live check). Confirm pairs become a/b, c/d; a new pair is built later.
