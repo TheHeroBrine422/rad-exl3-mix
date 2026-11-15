@@ -1,0 +1,9 @@
+# #185 w173 plane check, level q27v3-635bac02-k1.375-mad (ds8, no GPU)
+# pack: q27v3-635bac02-k1.375-mad-s6c57a3d1.rad (live mixes' name); final/: the box2 ladder-src-mad copy, md5 checked at copy time
+# manifest: final_mix.py (336 trunk names, `<weight> final DIR codebook=mad`); reference: rad-info
+# --weights-dump of the pack; compared by cmp_dumps.py; build: w162 e29c765b + 64735054 (rad-info)
+# result: IDENTICAL 336/336; status READY; finished 2026-11-15T09:56:41Z UTC
+A /data/q27/w173/tmp/q27v3-635bac02-k1.375-mad.ref: 336 weights; B /data/q27/w173/tmp/q27v3-635bac02-k1.375-mad.fin: 336 weights; both 336
+only in A: 0 []; only in B: 0 []
+planes compared: 1408; identical weights: 336 of 336
+IDENTICAL

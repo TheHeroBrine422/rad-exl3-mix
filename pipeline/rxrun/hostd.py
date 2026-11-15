@@ -29,6 +29,16 @@ Command templates: lists of strings with {recipe} {out} {reuse} {base} {mixfile}
 Census (w142, #178; HOSTCONF eval.census_cmd, optional): run on every mix before it is scored ({mix} {mixfile} {base}, e.g.
 store/census.py {mix} --mix {mixfile} --base {base} --fast [--expect-act a8g128 ...]); a non-zero exit fails the unit
 unscored. A pass is remembered in <mix>.census (newer than the mix: not run again).
+Virtual candidates (w162, #185; HOSTCONF eval.virtual = true): no mix file. The unit writes the manifest <tag>.mix (a
+`base BASE` line, then the mixfile lines, which go to <tag>.mixfile), radiance reads it in place (rad-convert's packs are
+the donors), and the scorer gets the manifest as its model. eval.virtual_bytes_cmd (e.g. [RAD_INFO, "--bytes", "{mix}"])
+gives the served size; eval.census_virtual_cmd (optional; search/v3/run183/vload/census_manifest.py with
+{mix} {mixfile} {base}) runs in place of census_cmd.
+Hybrid candidates (w162 #185 B; w173 #185 hybrid: HOSTCONF eval.final_root = DIR, eval.final_codebook = mad by default,
+eval.census_virtual_cmd REQUIRED): a level with DIR/LEVEL/READY (the rollout's marker) is served from its final/, so its trunk
+lines are `<weight> final DIR/LEVEL/final codebook=CB` and no pack is built or read for it; every other level's trunk lines are
+its pack, built as before. The manifest is served as a virtual one. The census is data/vload185/w173/census_hybrid.py: the
+final lines against DIR/LEVEL/final.md5 (fail closed on any mismatch), the pack lines as census_manifest.py checks them.
 Eval speed-ups (w123, #161; HOSTCONF eval): "cards": [{"card", "lock"}, ...] scores on the first free card (slots.eval
 = cards + 1 lets the next unit's pack / mix run while the others score); "goldcat": true scores a slice's parts in one
 radiance run (rxrun/goldcat.py: combined golden cached under "goldcat_dir", rows split back per part, byte-identical);
@@ -388,13 +398,21 @@ def run_eval(H, u, req):
     elif "trunk" in mx: lv = {w: mx["trunk"] for w in trunk}
     else: lv = {w: mx["parity"]["even" if int(w.split(".")[1]) % 2 == 0 else "odd"] for w in trunk}
     need = sorted(set(lv.values()))
-    miss = [n for n in need if not H.current(n)]
+    # w162 (#185, B) and w173 (hybrid): with eval.final_root, a level whose final_root/LEVEL/READY marker exists is served from its
+    # final/ (the rollout writes the marker only after the level's planes matched its pack); every other level from its pack, as before.
+    fr = E.get("final_root")
+    if fr and not E.get("census_virtual_cmd"): return {"rc": 1, "err": "eval.final_root needs eval.census_virtual_cmd (census_hybrid.py): not scored"}
+    fin_lv = [n for n in need if fr and os.path.exists(f"{fr}/{n}/READY")]
+    pk_lv = [n for n in need if n not in fin_lv]
+    miss = [n for n in fin_lv if not os.path.exists(f"{fr}/{n}/final/model.safetensors.index.json")]
+    if miss: return {"rc": 1, "err": f"final/ not on this host under {fr} (READY, so no pack): {miss}"}
+    miss = [n for n in pk_lv if not H.current(n)]
     if miss: return {"rc": 1, "err": f"levels not built on this host: {miss}"}
 
     def pkn(n):                                                   # a pack per level and scales stamp (split, 11-12)
         s = json.load(open(f"{R}/{n}/DONE")).get("scales")
         return f"{P}/{n}" + (f"-s{s[:8]}" if s else "") + ".rad"
-    for n in need:                                                # packs (kept, reused by later evals)
+    for n in pk_lv:                                                              # packs (kept, reused by later evals)
         pk = pkn(n)
         if os.path.exists(pk): continue
         with Lock(E.get("conv_lock"), True), RamGate(E, "pack", log):
@@ -403,27 +421,42 @@ def run_eval(H, u, req):
                 rc = sh(fill(E["pack_cmd"], recipe=f"{R}/{n}/final.recipe", out=pk + ".part", reuse="", model=E.get("model", "")), log)
                 if rc or not os.path.exists(pk + ".part"): return {"rc": 1, "err": f"pack {n} rc {rc} ({log})"}
                 os.replace(pk + ".part", pk)
-    mf = f"{MX}/{tag}.mix"; mrad = f"{MX}/{tag}.rad"
-    lines = [f"{w} {pkn(lv[w])}" for w in trunk] + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
+    virt = bool(E.get("virtual")) or bool(fr)                                 # w162 (#185): a manifest, not a mix file
+    mf = f"{MX}/{tag}.mixfile" if virt else f"{MX}/{tag}.mix"
+    mrad = f"{MX}/{tag}.mix" if virt else f"{MX}/{tag}.rad"
+    cb = E.get("final_codebook", "mad")                           # w162 (#185, B): the codebook the levels' stamps record
+    trunk_lines = [f"{w} final {fr}/{lv[w]}/final codebook={cb}" if lv[w] in fin_lv else f"{w} {pkn(lv[w])}" for w in trunk]
+    lines = trunk_lines + [f"{w} {rp(p)}" for w, p in (mx.get("donors") or {}).items()]
     act = mx.get("act") or {}                                     # activation modes (w132): metadata only, same bytes
     if isinstance(act, str): act = {w: act for w in trunk}
     for w, m in act.items():
         if not (m in ("f16", "a8t") or (m.startswith("a8g") and m[3:].isdigit())): return {"rc": 1, "err": f"act {w} {m}: radmix sets f16 / a8t / a8g<N> only"}
     lines += [f"act {w} {m}" for w, m in act.items()]
     open(mf, "w").write("\n".join(lines) + "\n")
-    if not os.path.exists(mrad):
+    if virt:
+        if not E.get("virtual_bytes_cmd"): return {"rc": 1, "err": "virtual: HOSTCONF eval.virtual_bytes_cmd (rad-info --bytes) is needed"}
+        open(mrad, "w").write(f"base {rp(mx['base'])}\n" + open(mf).read())
+    elif not os.path.exists(mrad):
         with Lock(E.get("conv_lock"), True), RamGate(E, "mix", log):
             rc = sh(fill(E["mix_cmd"], out=mrad + ".part", base=rp(mx["base"]), mixfile=mf), log)
             if rc or not os.path.exists(mrad + ".part"): return {"rc": 1, "err": f"mix {tag} rc {rc} ({log})"}
             os.replace(mrad + ".part", mrad)
-    if E.get("census_cmd"):                                       # w142 (#178, mining B2): the container must be what the mix
+    cen = E.get("census_virtual_cmd") if virt else E.get("census_cmd")
+    if cen:                                                       # w142 (#178, mining B2): the container must be what the mix
         ok = mrad + ".census"                                     # says before a KLD means anything (store/census.py)
-        if not (os.path.exists(ok) and os.path.getmtime(ok) >= os.path.getmtime(mrad)):
-            rc = sh(fill(E["census_cmd"], mix=mrad, mixfile=mf, base=rp(mx["base"])), log)
+        if virt or not (os.path.exists(ok) and os.path.getmtime(ok) >= os.path.getmtime(mrad)):   # a manifest is rewritten each time
+            rc = sh(fill(cen, mix=mrad, mixfile=mf, base=rp(mx["base"])), log)
             if rc: return {"rc": 1, "err": f"census {tag} rc {rc}: the container differs from its mix / expectations ({log}); not scored"}
             open(ok, "w").write("CENSUS PASS\n")
     import numpy as np
-    nbytes = os.path.getsize(mrad); res = {"rc": 0, "kind": "eval", "tag": tag, "host": H.name, "bytes": nbytes,
+    if virt:                                                      # the served size, from radiance (rad-info --bytes)
+        p = subprocess.run(fill(E["virtual_bytes_cmd"], mix=mrad), stdin=subprocess.DEVNULL, capture_output=True, text=True)
+        if p.returncode or not p.stdout.strip().isdigit():
+            return {"rc": 1, "err": f"virtual bytes {tag}: rc {p.returncode} {p.stderr.strip()[-200:]}"}
+        nbytes = int(p.stdout)
+    else:
+        nbytes = os.path.getsize(mrad)
+    res = {"rc": 0, "kind": "eval", "tag": tag, "host": H.name, "bytes": nbytes,
                                           "bpw": nbytes * 8 / PARAMS, "slices": {}}
     def score(g, o):
         with CardLock(E) as cl, Lock(E.get("ram_lock"), False):

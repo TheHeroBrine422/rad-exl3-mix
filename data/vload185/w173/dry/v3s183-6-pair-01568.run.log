@@ -1,0 +1,14 @@
+2026-11-15T09:52:07Z v3s183-6-pair-01568 READY levels: 5
+/data/q27/w173/dry/v3s183-6-pair-01568/C.final.mix: 145 trunk lines from final/ (k6.5, k6.25, k6.75, k7, k7.5)
+2026-11-15T09:53:33Z v3s183-6-pair-01568 C: CENSUS HYBRID PASS: 4 final levels (145 trunk lines; 272 files: 2 levels by stat signature, 2 by md5), 193 pack/donor lines (census_manifest rc 0)
+2026-11-15T09:53:33Z v3s183-6-pair-01568 trunk lines 336, served from final/ 145, from packs 191
+2026-11-15T09:53:33Z v3s183-6-pair-01568 B: radmix (mix path)
+2026-11-15T10:01:44Z v3s183-6-pair-01568 B: scored in 466 s
+2026-11-15T10:01:44Z v3s183-6-pair-01568 C: final path (manifest)
+2026-11-15T10:06:55Z v3s183-6-pair-01568 C: scored in 311 s
+2026-11-15T10:06:55Z v3s183-6-pair-01568 A.live rows 6756448 bytes sha256 d1275e338f561772632cbdfb46cc6926de166ec031b7d5b537d3092ef7816c10
+2026-11-15T10:06:55Z v3s183-6-pair-01568 B rows 6756448 bytes sha256 d1275e338f561772632cbdfb46cc6926de166ec031b7d5b537d3092ef7816c10
+2026-11-15T10:06:55Z v3s183-6-pair-01568 C rows 6756448 bytes sha256 d1275e338f561772632cbdfb46cc6926de166ec031b7d5b537d3092ef7816c10
+2026-11-15T10:06:55Z v3s183-6-pair-01568 A == B: SAME (the candidate build's .rad path is the live rows)
+2026-11-15T10:06:55Z v3s183-6-pair-01568 B == C: SAME (final/ path rows are byte-identical to the mix path)
+2026-11-15T10:06:55Z v3s183-6-pair-01568 done
