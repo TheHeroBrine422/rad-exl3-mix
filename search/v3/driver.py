@@ -68,6 +68,20 @@ registry (never rotated to; the driver refuses to start without it). Go-live (ru
 listed size's incumbent vs its incumbent at that state line, on the first pair's confirmation slice, same test; not
 confirmed -> the size reverts to the switch-time model and its pool to that model alone ("golive" / "golive_size" events);
 a size's tentatives wait until its go-live check is resolved.
+One-shot re-selection (#189-02, RULES-confirm rule 9; CONF "reselect": {"slice", "from_line", "sizes", "top", "z", "tries"}; absent =
+the driver above, event for event): after the go-live check is done, every distinct model (assignment hash) that was a listed
+size's incumbent or pool member at or after state line from_line (plus the size's current incumbent and members) is scored
+whole on the re-selection slice (kind "reselect", no early stop, cached per (hash, slice) like the confirmation evals). Per
+size, when its set is scored: each model vs the CURRENT incumbent there (driver.paired, strata, size offset with the b recorded
+at the start, guard / cap in force); the ranking is PR.reseed_pick's: new incumbent = the best-ranked model with z < CONF z
+(-1), else the current one; pool = the top min(top, K) with the new incumbent kept. The new models are then rescored on the
+active slice by ensure_pool / ensure_incumbents (a rotation rescore), and the active slice's RULES-pool §5 re-selection is
+taken as done (the one-shot supersedes it). While a size's re-selection is pending (from the CONF until its result), its
+tentatives wait and §5 does not run for it. Events "reselect_start" (the plan), "reselect_size" (ranking + verdict),
+"reselect_done"; the incumbent event of a switch carries "why": "reselect9". NO decision event: the plot re-anchors the size
+on the new model's own read (a level reset, convplot4) instead of chaining anything. The slice carries "role": "reselect" in
+the registry (never rotated to, never a confirmation slice; the driver refuses to start unless it has that role and was never
+active, decided or confirmed).
 State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
 Restart = the same command (state replayed; outstanding evals stay in the queue)."""
 import argparse, collections, json, math, os, random, subprocess, sys, time
@@ -149,6 +163,12 @@ class Driver:
             self.cf_z = float(self.cf.get("z", -1.0)); self.cf_pairs = {a: b for a, b in self.cf["pairs"]}
             self.cf_sizes = {float(z) for z in self.cf.get("sizes", self.sizes)}; self.cf_tries = int(self.cf.get("tries", 2))
             self.check_confirm_registry()
+        # one-shot re-selection (#189-02, RULES-confirm rule 9): CONF "reselect" absent = None (no new events)
+        self.rs = c.get("reselect") or None; self.rs_plan = None; self.rs_res = {}; self.rs_end = False
+        if self.rs:
+            self.rs_sl = self.rs["slice"]; self.rs_z = float(self.rs.get("z", -1.0)); self.rs_top = int(self.rs.get("top", 3))
+            self.rs_sizes = {float(z) for z in self.rs.get("sizes", self.sizes)}; self.rs_tries = int(self.rs.get("tries", 2))
+            self.check_reselect_registry()
         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
         self.replay()
 
@@ -170,7 +190,7 @@ class Driver:
             ev = e["ev"]
             if ev == "submit":
                 self.sub[e["tag"]] = e; self.seen.add(e["hash"])
-                if e.get("kind") == "confirm": self.cfx.setdefault((e["hash"], e["slice"]), []).append(e["tag"])
+                if e.get("kind") in ("confirm", "reselect"): self.cfx.setdefault((e["hash"], e["slice"]), []).append(e["tag"])
             elif ev == "result": self.res[e["tag"]] = e["r"]; self.n_results += 1
             elif ev == "incumbent": self.inc[e["size"]] = e["tag"]
             elif ev == "decision" and e.get("stage") == 2:                  # (#189) counted at its tentative; the accept here
@@ -201,6 +221,9 @@ class Driver:
             elif ev == "reseed_abandon": self.reseed_on = None; self.reseed_plan = None
             elif ev == "reseed": self.reseed_done.add(e["size"]); self.reselected[e["size"]] = e["slice"]
             elif ev == "reselect": self.reselected[e["size"]] = e["slice"]
+            elif ev == "reselect_start": self.rs_plan = e
+            elif ev == "reselect_size": self.rs_res[e["size"]] = e; self.reselected[e["size"]] = e["act"]
+            elif ev == "reselect_done": self.rs_end = True
         for t, r in self.res.items(): self.add_obs(t, r)
         for gn, out in getattr(self, "_lastfit", {}).items():          # the last fit of each group, on the rows it was fitted on
             try:
@@ -239,7 +262,7 @@ class Driver:
              "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"dec": dms, "lam_d": self.lam_d} if dms is not None else {}), **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
         self.rec(e); self.sub[tag] = e
         if kind != "monitor": self.seen.add(h)
-        if kind == "confirm": self.cfx.setdefault((h, e["slice"]), []).append(tag)
+        if kind in ("confirm", "reselect"): self.cfx.setdefault((h, e["slice"]), []).append(tag)
         return tag
 
     def dec_ms(self, a):
@@ -395,9 +418,9 @@ class Driver:
         if kind == "cross": return MV.generate_cross(F["pred"], a, other, lo, hi, self.seen, self.rng) if other is not None else None
         return MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
 
-    def set_incumbent(self, size, t):
+    def set_incumbent(self, size, t, why=None):
         old = self.inc.get(size); self.inc[size] = t
-        self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old}); return old
+        self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old, **({"why": why} if why else {})}); return old
 
     def pool_judge(self, t, s, r, parts, st, off):
         """RULES-pool §3: a whole-slice candidate against the reference (the worst member once the pool is full, else the
@@ -509,6 +532,7 @@ class Driver:
         parts = self.reg.parts_of(act); st = self.reg.strata_of(act)
         for size in self.sizes:
             if self.reselected.get(size) == act or self.inc.get(size) is None or not self.scored_on(size, act) or self.reseed_wait(size, act): continue
+            if self.rs_wait(size): continue                                # (#189-02) the one-shot decides this size first
             inc = self.inc[size]; bs = self.b_of(size); scored = []
             for m in self.members(size):
                 if m == inc: continue
@@ -583,6 +607,8 @@ class Driver:
             self.log(f"{t}: re-seed candidate of {size} scored on {r['slice']}: KLD {r['kld']:.5f}"); return
         if s["kind"] == "confirm":                                         # (#189) decided in confirm_step (a fit row above)
             self.log(f"{t}: confirmation eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+        if s["kind"] == "reselect":                                        # (#189-02) decided in reselect_step (a fit row above)
+            self.log(f"{t}: re-selection eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
         act = self.reg.active()
         if r["slice"] != act:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
@@ -640,7 +666,7 @@ class Driver:
         S = self.reg.d["slices"]; bad = []
         for a, b in self.cf["pairs"]:
             if a not in S or b not in S: bad.append(f"pair ({a}, {b}): slice not in the registry"); continue
-            if S[a].get("role") == "confirm": bad.append(f"{a}: a search slice with role confirm")
+            if S[a].get("role") in ("confirm", "reselect"): bad.append(f"{a}: a search slice with role {S[a]['role']}")
             if S[b].get("role") != "confirm": bad.append(f"{b}: no \"role\": \"confirm\" (slices.py role REG {b} confirm, with the driver stopped)")
             if S[b]["status"] == "active" or sum(S[b].get("decisions", {}).values()):
                 bad.append(f"{b}: was a search slice (status {S[b]['status']}, decisions {S[b].get('decisions')})")
@@ -666,18 +692,20 @@ class Driver:
                  + (f" (pool {pool['join']}{', would be incumbent' if pool['inc'] else ''})" if pool else "") + f"; confirmation on {e['cslice']}")
         self.cslice(sl)
 
-    def cf_eval(self, mt, cs, size, why, owner):
+    def cf_eval(self, mt, cs, size, why, owner, kind="confirm", tries=None):
         """the whole-slice confirmation eval of model `mt` (a tag) on cs, cached per (assignment hash, slice) -> ("ok", eval tag) |
-        ("wait", eval tag) | ("fail", None) once CONF tries (2) evals failed; submits one (kind "confirm") when none is usable"""
+        ("wait", eval tag) | ("fail", None) once CONF tries (2) evals failed; submits one (kind "confirm") when none is usable.
+        (#189-02) kind "reselect": the same for the re-selection slice (its own tries, no confirm_submit event)"""
         h = self.sub[mt]["hash"]; tags = self.cfx.get((h, cs), [])
+        if tries is None: tries = self.cf_tries
         for x in reversed(tags):
             if x not in self.res: return "wait", x
             r = self.res[x]
             if not r.get("fail") and r.get("docs") and all(v is not None for v in r["docs"]): return "ok", x
-        if len(tags) >= self.cf_tries: return "fail", None
-        x = self.newtag(size, "confirm")
-        self.submit(x, self.assign(mt), size, "confirm", cs, early=False, extra={"of": mt, "for": owner})
-        self.rec({"ev": "confirm_submit", "tag": owner, "eval": x, "of": mt, "slice": cs, "why": why, "try": len(tags) + 1})
+        if len(tags) >= tries: return "fail", None
+        x = self.newtag(size, kind)
+        self.submit(x, self.assign(mt), size, kind, cs, early=False, extra={"of": mt, "for": owner})
+        if kind == "confirm": self.rec({"ev": "confirm_submit", "tag": owner, "eval": x, "of": mt, "slice": cs, "why": why, "try": len(tags) + 1})
         return "wait", x
 
     def cf_stat(self, ref_t, ref_x, t, x, cs, bs):
@@ -695,7 +723,7 @@ class Driver:
         e = self.tent[t]; size = e["size"]; cs = e.get("cslice") or self.cslice(e["slice"])
         if cs is None: return
         sc, xc = self.cf_eval(t, cs, size, "candidate", t)
-        if self.golive_wait(size): return                                  # rule 7 first
+        if self.golive_wait(size) or self.rs_wait(size): return            # rule 7 first, then rule 9
         inc = self.inc.get(size)
         if inc is None: return
         if self.K > 1 and not (self.scored_on(size, act) and not self.reseed_wait(size, act)): return   # the worst needs the pool on act
@@ -797,6 +825,115 @@ class Driver:
             self.golive_end = True
             self.rec({"ev": "golive", "phase": "done", "verdicts": {f"{z:g}": g["verdict"] for z, g in sorted(self.golive_res.items())}})
             self.log("GO-LIVE done: " + " ".join(f"{z:g}:{g['verdict']}" for z, g in sorted(self.golive_res.items())))
+
+    # ------------------------------------------------------------------------------------------------ one-shot re-selection (#189-02, RULES-confirm rule 9)
+    def check_reselect_registry(self):
+        """CONF reselect: the slice exists, has "role": "reselect", was never active, decided or confirmed, and is in no confirm pair"""
+        S = self.reg.d["slices"]; n = self.rs_sl; bad = []
+        if self.rs.get("from_line") is None: bad.append("CONF reselect.from_line missing (the A8 'act' event's line in drv/state.jsonl)")
+        if n not in S: bad.append(f"{n}: not in the registry")
+        else:
+            s = S[n]
+            if s.get("role") != "reselect": bad.append(f"{n}: no \"role\": \"reselect\" (slices.py role REG {n} reselect, with the driver stopped)")
+            if s["status"] in ("active", "retired") or s.get("activated"): bad.append(f"{n}: was active (status {s['status']})")
+            if sum(s.get("decisions", {}).values()) or sum(s.get("confirm_decisions", {}).values()):
+                bad.append(f"{n}: has decided or confirmed (decisions {s.get('decisions')}, confirm_decisions {s.get('confirm_decisions')})")
+            if self.cf and any(n in p for p in self.cf["pairs"]): bad.append(f"{n}: in CONF confirm.pairs")
+        if bad: raise SystemExit("CONF reselect: registry not ready:\n  " + "\n  ".join(bad))
+
+    def golive_pending(self):
+        """rule 7's go-live check is configured and not done yet"""
+        return bool(self.cf) and self.cf.get("golive_from_line") is not None and not self.golive_end
+
+    def rs_wait(self, size):
+        """rule 9: a listed size's re-selection is pending (configured, not resolved): its tentatives and §5 wait"""
+        if not self.rs or self.rs_end or size in self.rs_res: return False
+        if self.rs_plan is None: return size in self.rs_sizes
+        return any(p["size"] == size for p in self.rs_plan["plan"])
+
+    def reselect_step(self, act):
+        """rule 9 (once): starts when the go-live check is done; submits what each size's set needs (cached); a size is decided
+        once every one of its models (and its current incumbent / members) has a whole score on the slice or failed CONF tries"""
+        if self.rs_end or self.golive_pending(): return
+        if self.rs_plan is None: self.reselect_start(act)
+        sl = self.rs_sl
+        for p in self.rs_plan["plan"]:
+            size = p["size"]
+            if size in self.rs_res: continue
+            inc = self.inc.get(size)
+            if inc is None: continue
+            todo = [c["of"] for c in p["cands"]]
+            have = {c["hash"] for c in p["cands"]}
+            for m in [inc] + self.members(size):                            # models joined since the start (rule 9: "plus any since")
+                if self.sub[m]["hash"] not in have: have.add(self.sub[m]["hash"]); todo.append(m)
+            st = {self.sub[m]["hash"]: self.cf_eval(m, sl, size, "reselect", "reselect", kind="reselect", tries=self.rs_tries) for m in todo}
+            if any(v[0] == "wait" for v in st.values()): continue
+            self.reselect_apply(size, act, p, st)
+        if all(p["size"] in self.rs_res for p in self.rs_plan["plan"]):
+            self.rs_end = True
+            self.rec({"ev": "reselect_done", "slice": sl, "verdicts": {f"{z:g}": g["verdict"] for z, g in sorted(self.rs_res.items())}})
+            self.log(f"RESELECT done on {sl}: " + " ".join(f"{z:g}:{g['verdict']}" for z, g in sorted(self.rs_res.items())))
+
+    def reselect_start(self, act):
+        """the candidate set per size: distinct assignment hashes (drv/assign/<tag>.json) of every incumbent tag and pool member at or
+        after state line from_line, plus the current incumbent and members; the size's b is fixed here"""
+        n = int(self.rs["from_line"]); seen = {}; i = 0
+        with open(f"{self.R}/state.jsonl") as f:
+            for i, l in enumerate(f, 1):
+                if i < n: continue
+                try: x = json.loads(l)
+                except ValueError: continue
+                if x.get("size") not in self.rs_sizes: continue
+                if x.get("ev") == "incumbent": seen.setdefault(x["size"], []).append(x["tag"])
+                elif x.get("ev") == "pool": seen.setdefault(x["size"], []).extend(x["members"])
+        if i < n: raise SystemExit(f"CONF reselect.from_line {n}: the state has only {i} lines")
+        plan = []; hc = {}
+        for size in sorted(self.rs_sizes):
+            if self.inc.get(size) is None or size in self.stopped_sizes or not self.feasible(size): continue
+            cands = {}
+            for t in seen.get(size, []) + [self.inc[size]] + self.members(size):
+                if t not in hc: hc[t] = MV.ahash(self.assign(t))
+                c = cands.setdefault(hc[t], {"hash": hc[t], "of": t, "tags": []})
+                if t not in c["tags"]: c["tags"].append(t)
+            plan.append({"size": size, "b": self.b_of(size), "inc": self.inc[size], "cands": list(cands.values())})
+        cached = sum(1 for p in plan for c in p["cands"] if self.cfx.get((c["hash"], self.rs_sl)))
+        self.rs_plan = {"ev": "reselect_start", "slice": self.rs_sl, "from_line": n, "act": act, "z_thr": self.rs_z, "top": self.rs_top, "plan": plan}
+        self.rec(self.rs_plan)
+        self.log(f"RESELECT on {self.rs_sl} (models since state line {n}): " + " ".join(f"{p['size']:g}:{len(p['cands'])}" for p in plan) +
+                 f" = {sum(len(p['cands']) for p in plan)} models, {sum(len(p['cands']) for p in plan) - cached} evals to submit")
+
+    def reselect_apply(self, size, act, p, st):
+        """one size: every model vs the current incumbent on the slice; PR.reseed_pick with the z rule; incumbent + pool set (rescored
+        on the active slice by ensure_pool / ensure_incumbents in the next step)"""
+        sl = self.rs_sl; inc = self.inc[size]; hi = self.sub[inc]["hash"]; bs = p["b"]
+        parts = self.reg.parts_of(sl); strata = self.reg.strata_of(sl); tag_of = {}
+        for c in p["cands"]: tag_of.setdefault(c["hash"], c["of"])
+        for m in [inc] + self.members(size): tag_of[self.sub[m]["hash"]] = m      # a current model keeps its tag (scored on act)
+        g = {"ev": "reselect_size", "size": size, "slice": sl, "act": act, "prev": inc, "b": bs, "z_thr": self.rs_z}
+        if st[hi][0] != "ok":
+            g.update(verdict="error", inc=inc, why=f"the incumbent's eval failed {self.rs_tries}x: kept")
+            self.rec(g); self.rs_res[size] = g; self.reselected[size] = act; self.reg.reselected(sl, str(size), 0)
+            self.log(f"RESELECT {size:g}: the incumbent's eval on {sl} failed {self.rs_tries}x: incumbent and pool kept (check by hand)"); return
+        xr = st[hi][1]; rows = []; scored = []
+        for h, (sc, x) in st.items():
+            if h == hi: continue
+            if sc != "ok": rows.append({"hash": h, "of": tag_of[h], "eval": None, "failed": True}); continue
+            off = bs * (self.sub[x]["bpw"] - self.sub[xr]["bpw"]) + (self.doff(x, xr) if bs else 0.0)
+            P = self.paired(self.res[xr], self.res[x], parts, off=off, strata=strata)
+            ok = P.z() < self.rs_z; scored.append((h, P.da(), ok))
+            rows.append({"hash": h, "of": tag_of[h], "eval": x, "da": P.da(), "z": P.z(), "logr": P.d(), "se": P.se(), "off": P.off, "k": P.k, "pass": ok})
+        new_h, pool_h = PR.reseed_pick(hi, scored, max(1, min(self.rs_top, self.K)))
+        tag = lambda h: tag_of[h] if tag_of[h] in (inc, *self.members(size)) else st[h][1]   # else the s186e eval (a whole score)
+        new = tag(new_h); pool = [tag(h) for h in pool_h]
+        rows.sort(key=lambda r: (r.get("da", math.inf), r["of"]))
+        g.update(verdict="switched" if new != inc else "kept", inc=new, pool=pool, ref_eval=xr, ranking=rows,
+                 n_scored=len(scored), n_failed=sum(1 for r in rows if r.get("failed")))
+        self.rec(g); self.rs_res[size] = g; self.reselected[size] = act; self.reg.reselected(sl, str(size), len(parts))
+        if self.K > 1: self.pool[size] = pool; self.rec({"ev": "pool", "size": size, "members": pool, "why": "reselect9"})
+        if new != inc: self.set_incumbent(size, new, why="reselect9"); self.monitor_on_change(size, new)
+        rk = ", ".join(f"{r['of']} {r['da']:+.4f} (z {r['z']:+.2f}){'*' if r['pass'] else ''}" for r in rows if not r.get("failed"))
+        self.log(f"RESELECT {size:g}: on {sl} vs {inc} ({len(scored)} scored, {g['n_failed']} failed, b {bs:.3f}): incumbent "
+                 + (f"-> {new} (of {tag_of[new_h]})" if new != inc else "kept") + f"; pool {pool}; ranking (size-adjusted, * = z < {self.rs_z:g}): {rk}")
 
     # ------------------------------------------------------------------------------------------------ fit rows
     def add_obs(self, t, r):
@@ -1135,6 +1272,8 @@ class Driver:
             pend = collections.Counter(e["size"] for e in self.tent.values())
             line += f" | confirm pending {len(self.tent)}" + (" (" + " ".join(f"{z:g}:{n}" for z, n in sorted(pend.items())) + ")" if pend else "")
             if self.golive is not None and not self.golive_end: line += f" | go-live {len(self.golive_res)}/{len(self.golive['plan']) + len(self.golive.get('same', []))}"
+        if self.rs and not self.rs_end:
+            line += (f" | reselect {len(self.rs_res)}/{len(self.rs_plan['plan'])} on {self.rs_sl}" if self.rs_plan else f" | reselect {self.rs_sl} waits for go-live")
         open(f"{self.R}/status.txt", "w").write(line + "\n")
         return line
 
@@ -1152,7 +1291,9 @@ class Driver:
         if not go: return "no go (CONF go / dry)"
         if self.K > 1: self.ensure_pool(act); self.reseed_step(act); self.reselect(act)
         else: self.ensure_incumbents(act)
-        if self.cf: self.golive_step(); self.confirm_step(act)
+        if self.cf: self.golive_step()
+        if self.rs: self.reselect_step(act)
+        if self.cf: self.confirm_step(act)
         self.monitor_refs()
         self.generate(act)
         return self.report()

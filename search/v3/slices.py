@@ -28,10 +28,13 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
   python3 slices.py retire REG NAME [WHY]                       retire a slice by hand (w145: s171b after w141's audit)
   python3 slices.py role REG NAME ROLE                          set a slice's role (#189, RULES-confirm §5: "confirm" = a
           confirmation slice: never rotated to as a search slice, its documents never drawn for a new slice; "search" or
-          "-" = remove the role). Edit the registry only while the driver is stopped (it rewrites the file)
+          "-" = remove the role; "reselect" (#189-02, RULES-confirm rule 9) = the one-shot re-selection slice: never rotated
+          to, never a confirmation slice, its documents never drawn). Edit the registry only while the driver is stopped (it
+          rewrites the file)
 Rotation (driver): a slice is retired once it has decided `rotate_after` candidates (default 25), all sizes together
 (driver CONF rotate_unit "slice", w145; "size" = any one size reaching it, the #171 run's rule); the next "ready" slice
-becomes active (its incumbents are scored first, no early stop). A slice with "role": "confirm" (#189) is never activated."""
+becomes active (its incumbents are scored first, no early stop). A slice with a role ("confirm", #189; "reselect", #189-02) is
+never activated."""
 import json, os, random, shutil, sys, time
 
 import numpy as np
@@ -108,8 +111,8 @@ def ledger_use(led, mine=()):
 def draw_merged(R, led, pool, n, seed):
     """N fit + search docs, least-used first (ledger decisions + this registry's own decisions), ties random"""
     mine = {f"golden-{k}-c" for k in R.d["slices"]}; lu = ledger_use(led, mine); dd = R.d["doc_decisions"]
-    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") == "confirm"
-            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189) a confirmation slice's docs are in use too
+    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") in ("confirm", "reselect")
+            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189 / #189-02) a confirmation / re-selection slice's docs too
     cand = [i for i, p in enumerate(pool) if p in MERGED and i not in busy]
     use = {i: lu.get(i, 0) + dd.get(f"c:{i}", 0) for i in cand}
     rng = random.Random(seed); cand.sort(key=lambda i: (use[i], rng.random()))
@@ -142,8 +145,9 @@ class Registry:
         return a[0] if a else None
 
     def ready(self):
-        """the slices a rotation may activate: status "ready", never a confirmation slice (#189, RULES-confirm §5)"""
-        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role") != "confirm"]
+        """the slices a rotation may activate: status "ready", never a slice with a role (#189 "confirm", RULES-confirm §5; #189-02
+        "reselect", rule 9)"""
+        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role", "search") == "search"]
 
     def activate_next(self):
         r = self.ready()
@@ -164,6 +168,13 @@ class Registry:
         """one stage-2 decision on confirmation slice `name` (#189): counted per size under "confirm_decisions" (never
         "decisions": confirmation does not count towards rotate_after) and in doc_decisions (the documents were used)"""
         s = self.d["slices"][name]; cd = s.setdefault("confirm_decisions", {}); cd[size] = cd.get(size, 0) + 1
+        for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
+        self.save()
+
+    def reselected(self, name, size, ndocs):
+        """one size's one-shot re-selection on slice `name` (#189-02): counted under "reselect_decisions" (never "decisions" or
+        "confirm_decisions") and in doc_decisions (the documents were used)"""
+        s = self.d["slices"][name]; cd = s.setdefault("reselect_decisions", {}); cd[size] = cd.get(size, 0) + 1
         for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
         self.save()
 
@@ -208,7 +219,7 @@ def main(argv):
     elif argv[0] == "show":
         R = Registry(argv[1])
         for n, s in R.d["slices"].items():
-            print(f"{n:24s} {s['status']:8s}{' confirm' if s.get('role') == 'confirm' else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
+            print(f"{n:24s} {s['status']:8s}{' ' + s['role'] if s.get('role') else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
                   f" decisions {s['decisions']}")
         dd = R.d["doc_decisions"]
         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")

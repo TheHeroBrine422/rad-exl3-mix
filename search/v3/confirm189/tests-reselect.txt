@@ -1,0 +1,114 @@
+== test_reselect189 (fresh HEAD 6d0ec11d archive + driver-reselect.patch; baseline = HEAD archive; live snapshot 11-14 9:47 PM CST; 11-14 21:52 CST)
+PASS candidate_set_dedupe_and_from_line
+PASS pool_members_count_and_left_members_stay
+PASS switch_pool_top3_and_rescore_on_active
+PASS ranking_rule_matches_the_event
+PASS rotation_during_reselection_holds_section5
+PASS waits_for_golive_then_tentatives_wait
+PASS restart_mid_reselection
+PASS failed_evals
+PASS registry_role_rotation_and_refusals
+PASS plot_level_reset_nothing_chained
+   915 events identical (678 decisions, 92 tentatives; state sha256 df17ad450947193d)
+PASS identity_reselect_absent_live_on_result
+   10 events, 1 queued identical over 3 steps
+PASS identity_reselect_absent_live_steps
+12 / 12 PASS
+== confirm189/test_confirm189.py
+PASS tentative_then_confirmed_accept
+PASS tentative_then_rejected
+PASS k1_accept_and_reject
+PASS pool_join_confirmed_as_join
+PASS incumbent_changed_mid_confirmation
+PASS rotation_mid_confirmation_uses_the_cached_retag
+PASS restart_mid_confirmation
+PASS failed_confirmation_eval
+PASS paused_size_untouched
+PASS golive_revert_and_keep
+PASS golive_restart_mid_check
+PASS rotation_skips_confirm_slices
+PASS plot_chains_stage2_logr
+   346 events identical (275 decisions; state sha256 ec82d3cecc5892d0)
+PASS identity_confirm_absent_183
+   792 events identical (713 decisions; state sha256 898fb6ad1f5c4d8b)
+PASS identity_confirm_absent_live_k3
+15 / 15 PASS
+== pool188/test_pool188.py
+PASS join_table
+PASS worst_reseed_reselect_rules
+PASS parent_draws
+PASS cross_units_and_byte_window
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+11-14 21:53:32 CST reject B (pair) for 2.0: log r +0.2877, size-adjusted +0.2877 (z +49168570.88) after 12 docs
+11-14 21:53:32 CST reject C (solve) for 2.0: log r +0.0541, size-adjusted +0.0541 (z +0.00) after 12 docs
+11-14 21:53:32 CST ACCEPT E (pair) for 2.0: log r -0.1178, size-adjusted -0.1178 (z -20130637.57) vs A; 3.0120 bpw
+11-14 21:53:32 CST reject F (block) for 2.0: log r +0.2719, size-adjusted +0.2719 (z +0.00) after 12 docs
+PASS pool_add_then_reject_then_add
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+11-14 21:53:32 CST ACCEPT E (pair) for 2.0: log r -0.1178, size-adjusted -0.1178 (z -20130637.57) vs A; 2.1067 bpw
+11-14 21:53:32 CST JOIN Y (block) for 2.0: replace I (pool 3/3): log r -0.0513, size-adjusted -0.0513, vs I
+11-14 21:53:32 CST ACCEPT Z (explore) for 2.0: log r -0.1335, size-adjusted -0.1335 (z -22822234.58) vs E; 3.0120 bpw
+PASS pool_full_replace_worst_then_incumbent
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+PASS early_stop_reference_is_the_worst_member
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+11-14 21:53:32 CST t188-2-inc-00002: incumbent of 2.0 scored on s186b: KLD 0.90000 at 1.6540 bpw (container 1.6540)
+11-14 21:53:32 CST t188-2-inc-00004: incumbent of 2.0 scored on s186b: KLD 0.80000 at 1.2013 bpw (container 1.2013)
+11-14 21:53:32 CST RESELECT 2 on s186b: incumbent t188-2-inc-00002 -> t188-2-inc-00004
+PASS rotation_rescore_then_reselect
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+11-14 21:53:32 CST replayed: 5 submitted, 1 results, incumbents 2, fits []
+PASS rotation_incumbent_rescore_survives_restart
+11-14 21:53:32 CST RE-SEED on s186a: 2 candidates for 1 sizes (frontier top 2, incumbent rescored)
+11-14 21:53:32 CST t188-3-reseed-00004: re-seed candidate of 3.0 scored on s186a: KLD 0.97000
+11-14 21:53:32 CST t188-3-reseed-00005: re-seed candidate of 3.0 scored on s186a: KLD 1.02000
+11-14 21:53:32 CST RE-SEED 3 on s186a: incumbent -> t188-3-reseed-00004; pool ['t188-3-reseed-00004', 'I', 't188-3-reseed-00005'] (2 scored, 1 accepted)
+PASS reseed_set_ranking_and_pool
+PASS cap_null_with_strata_is_plain_pooled_sums
+11-14 21:53:32 CST ACCEPT A (partial) for 2.0: log r -0.1054, size-adjusted -0.1054 (z +0.00) vs I; 1.6540 bpw
+11-14 21:53:32 CST ACCEPT Bq (pair) for 2.0: log r -0.0572, size-adjusted -0.0572 (z +0.00) vs A; 2.1067 bpw
+11-14 21:53:32 CST replayed: 3 submitted, 2 results, incumbents 1, fits []
+PASS pool_state_roundtrip
+PASS k1_identity_on_the_recorded_replay
+13 / 13 PASS
+== test_picks.py
+PASS capped_weights_agree
+PASS old_rule_unchanged
+PASS one_dominant_document
+PASS guard_catches_a_heavy_tail
+PASS short_document_noise
+band 3: b 1.000 (spec); c 90 docs / 90 units / 180000 pos (max doc share 5.6%), x 200 docs / 200 units / 800000 pos (max doc share 35.4%)
+ # tag                                    bpw      KLD c      KLD x KLD pooled        dS pooled (a) vs pick                (a) c vs pick                (b) c vs pick                (c) c vs pick                (a) x vs pick                (b) x vs pick                (c) x vs pick
+ 1 D                                   3.0000    0.00094    0.00063    0.00069   -0.0541 [-0.1366, +0.0232]   +0.0085 [+0.0054, +0.0115]   +0.0085 [+0.0054, +0.0115]   +0.0087 [+0.0061, +0.0112]   -0.0744 [-0.1652, +0.0299]   -0.0286 [-0.1529, +0.0299]   +0.0264 [+0.0222, +0.0295]  GUARD: (c) worse than base (x), E (c), E (x)
+ 2 E                                   3.0000    0.00094    0.00068    0.00072                       (pick)
+ 3 base                                3.0000    0.00094    0.00068    0.00073   +0.0061 [+0.0013, +0.0117]   +0.0098 [+0.0071, +0.0124]   +0.0098 [+0.0071, +0.0124]   +0.0094 [+0.0072, +0.0115]   +0.0049 [-0.0001, +0.0123]   +0.0076 [+0.0004, +0.0123]   +0.0102 [+0.0087, +0.0116]
+pick vs runner_up D: pooled (a) +0.0541 [-0.0232, +0.1366]; c: (a) -0.0085 [-0.0115, -0.0054] (b) -0.0085 [-0.0115, -0.0054] (c) -0.0087 [-0.0112, -0.0061]; x: (a) +0.0744 [-0.0299, +0.1652] (b) +0.0451 [-0.0299, +0.1652] (c) -0.0264 [-0.0295, -0.0222]
+pick vs default base: pooled (a) -0.0061 [-0.0117, -0.0013]; c: (a) -0.0098 [-0.0124, -0.0071] (b) -0.0098 [-0.0124, -0.0071] (c) -0.0094 [-0.0115, -0.0072]; x: (a) -0.0049 [-0.0123, +0.0001] (b) -0.0075 [-0.0123, -0.0003] (c) -0.0102 [-0.0116, -0.0087]
+FLAG: part x doc 0 (unit None) holds 35.0% of base's KL: look before trusting the pick
+FLAG: part x doc 0 (unit None) holds 28.4% of D's KL: look before trusting the pick
+FLAG: part x doc 0 (unit None) holds 35.4% of E's KL: look before trusting the pick
+best (a) D; PICK E
+PASS finalpick_flag_guard_default
+PASS traces_resample_as_units
+PASS early_stop_matches_the_hosts
+PASS rotation_per_slice
+PASS old_slice_unchanged_recorded
+PASS strata_cap_within_stratum
+PASS strata_formula_matches_definition
+PASS strata_absent_stratum
+PASS strata_guard_matches_definition
+PASS strata_se_needs_three_per_stratum
+PASS strata_require_a_stratum
+PASS strata_registry
+PASS pickstat_strata_and_small_parts
+18 / 18 PASS
+== mutation check (each a one-line change to the patched tree; test_reselect189 without the snapshot tests)
+section 5 not held           -> 1 failing: rotation_during_reselection_holds_section5
+from_line off by one         -> 1 failing: candidate_set_dedupe_and_from_line
+no z rule                    -> 3 failing: switch_pool_top3_and_rescore_on_active, rotation_during_reselection_holds_section5, plot_level_reset_nothing_chained
+no go-live wait              -> 1 failing: waits_for_golive_then_tentatives_wait
+tentatives do not wait       -> 1 failing: waits_for_golive_then_tentatives_wait
+a decision event             -> 2 failing: switch_pool_top3_and_rescore_on_active, plot_level_reset_nothing_chained
+no cache on replay           -> 1 failing: restart_mid_reselection
+rotation ignores the role    -> 1 failing: registry_role_rotation_and_refusals
+section 5 re-run             -> 1 failing: rotation_during_reselection_holds_section5

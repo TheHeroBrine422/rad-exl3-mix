@@ -1,0 +1,501 @@
+#189-02 one-shot re-selection of past incumbents on a fresh slice (RULES-confirm.md rule 9, amendment ddfaced8) -- w168, 11-14 CST.
+Against HEAD 6d0ec11d (driver.py = a677294e's: w167's two-stage accept on top of strata + pool K=3 + cross). Touches
+search/v3/driver.py, search/v3/slices.py, search/convplot4.py. CONF "reselect" absent = today's driver event for event
+(test_reselect189: on_result replay AND Driver.step replay of the live state, HEAD vs patched; convplot4 output and PNG
+byte-identical on the live state of 9:47 PM CST).
+
+Choices the rule leaves open (each pinned by a test in search/v3/confirm189/test_reselect189.py):
+ 1 Events. "reselect_start" (the plan: per size b, incumbent, candidates {hash, of, tags}), "reselect_size" (ranking rows
+   {hash, of, eval, da, z, logr, se, off, k, pass}, verdict switched | kept | error, inc, pool, prev, act), "reselect_done".
+   NOT "reselect" per size as the task text said: "reselect" is already RULES-pool §5's per-rotation event and replay sets
+   reselected[size] = its slice, so a one-shot event under that name would make a restart (and the old code on a rollback)
+   run §5 again on the active slice. The switch's incumbent event carries "why": "reselect9"; pool event why "reselect9".
+ 2 Candidates per listed size: every "incumbent" tag and every "pool" member at or after state line from_line (inclusive),
+   plus the current incumbent and members; deduplicated by MV.ahash(drv/assign/<tag>.json) (a rotation retag is the same
+   model; all its tags listed, the first seen is "of"). Models that join before the size is decided are added (rule 9 "plus
+   any since"; in confirm mode nothing joins while pending). from_line for the live run = 2 (the only "act" event: a8g128 at
+   s173a) -> 89 models at 9:15 PM CST as the rule says, 92 at 9:47 PM.
+ 3 Evals: kind "reselect", whole slice, no early-stop block, the registry alias; cached per (hash, slice) in the confirm
+   cache (cfx; the slices are disjoint by role). A failed eval is resubmitted (CONF reselect.tries, 2); a candidate failing
+   twice is listed "failed" and left out; the incumbent's failing twice -> verdict "error", incumbent and pool kept.
+   Reselect results are fit rows (labels s186e|...) like confirmation rows; never a decision on the search slice.
+ 4 Statistic: driver.paired(current incumbent's s186e eval, candidate's) with the slice's strata, CONF cap / guard as in force
+   (both null live), offset = the size's b x (bpw_cand - bpw_inc) + decode term; b fixed at the start (recorded, like
+   go-live). z = Paired.z() = da / se. Reference = the incumbent when the size's set is complete.
+ 5 Pick: PR.reseed_pick(incumbent, [(hash, da, z < CONF z)], min(top, K)): ranking by da with the incumbent at 0 (ties to it);
+   new incumbent = the best-ranked model with z < -1, else the current one; pool = the top 3 with the new incumbent kept.
+   Tags: a model that is a current member keeps its tag (already scored on the active slice); the others get their s186e
+   eval tag (assignment written at submit), which ensure_incumbents / ensure_pool rescore whole on the active slice in the
+   next step, as at a rotation; no stage-1 decision or tentative of the size is judged before that (scored_on).
+   2.0 / 2.5 (pools of 1 since the abandoned re-seed) get pools of up to 3.
+ 6 RULES-pool §5 (re-selection at a rotation) does not run for a size while its one-shot is pending, and is taken as done on
+   the active slice once the one-shot decided the size (reselected[size] = active): the fresh-slice pick stands.
+ 7 Order: starts in the step rule 7's go-live check completes (CONF confirm.golive_from_line set and no "golive done" =
+   wait). A listed size's tentatives wait from the CONF until its "reselect_size" (then rule 3: confirmed against the NEW
+   incumbent). Stage-1 decisions and generation go on, but the ~92 queued evals exceed queue_depth (22), so in effect the
+   search pauses until the s186e evals drain (~45-60 min at ~120 whole evals / h).
+ 8 Registry: role "reselect" (slices.py role REG s186e reselect). Registry.ready() skips any slice with a role (confirm,
+   reselect); draw_merged treats a reselect slice's calib docs as busy; one "reselect_decisions" count per size (never
+   "decisions" / "confirm_decisions"; status stays staged) + doc_decisions. The driver refuses CONF reselect unless the slice
+   has the role, was never active (status active / retired or "activated"), never decided or confirmed, is in no confirm
+   pair, and from_line is set; the confirm check also refuses a pair slice with role reselect. Pairs a/b, c/d without e/f are
+   accepted while s186f keeps role confirm (unused until a new pair is built).
+ 9 Plot: NO decision event. The s186e log r of the chosen model vs the old incumbent is the best of N measured models on
+   the same numbers that pick it (the winner's curse rule 4 avoids), and the old incumbent's chained level already holds
+   the pre-#189 stage-1 gains rule 9 doubts; chaining one on the other would not be honest. A decision event would also
+   count as a search decision in the driver's replay (dec counts, generation balance) and in offline readers
+   (rerank187/replay.py, a8172/a8gap.py). Instead convplot4 treats an incumbent event with why "reselect9" as a LEVEL RESET:
+   from that step the size's line is anchored on the new model's own read (--anchor-track: its t183 read; else its monitor
+   read; any tag with the same assignment hash), with later accepts chained on it; with no read yet the level is held and
+   the footnote names the size. Without such events convplot4's output is unchanged.
+10 Rollback: the old code ignores reselect_* events; incumbent / pool / submit events are standard, so its replay lands on
+   the same incumbents and pools; it may run §5 once on the active slice for re-selected sizes (item 6 is not in its state).
+Not handled: go-live reverts are incumbent changes without a decision too, and convplot4 keeps the reverted accepts' chained
+log r (live: 3.0-5.0 reverted 9:40-9:44 PM CST; the b2 line stayed 0.598). Passing why="golive" in golive_step's
+set_incumbent and accepting it in convplot4's reset test would give them the same level reset: the lead's call.
+
+diff --git a/search/convplot4.py b/search/convplot4.py
+index 9ad102f..ec2efd3 100644
+--- a/search/convplot4.py
++++ b/search/convplot4.py
+@@ -22,7 +22,10 @@ Top, per bpw band (< 2.75, 2.75-4.5, 4.5-6, >= 6), geo-mean over the band's size
+ Bottom: validation loss V2-style: per band the geo-mean of each size's latest held-out read (from the step every
+ size of the band has one), black = all sizes, dashed = the same picks' training estimates.
+ Modes: submits with "act" (A8, w132) and without (f16) are separate series: anchors, chains and lines restart at the
+-"act" state event (red line); f16 and A8 numbers are never in one line."""
++"act" state event (red line); f16 and A8 numbers are never in one line.
++Re-selection (#189-02, RULES-confirm rule 9; incumbent events with "why": "reselect9"): a level reset, nothing chained. From
++that step the size's line is anchored on the new incumbent's own read (a monitor / --anchor-track read of the same assignment
++hash, any step); without such a read the level is held (the chain goes on from where it was) until the plot is redrawn with one."""
+ import argparse, collections, json, math, os, re, sys, textwrap
+ 
+ import matplotlib
+@@ -72,7 +75,7 @@ def walk(state_path):
+     became = {e["tag"] for e in st if e["ev"] == "incumbent"}   # (#188/#189) a pool join that never became incumbent was
+                                                                  # paired against the worst member: not chained (w167)
+     accepts = collections.defaultdict(list)            # (size, mode) -> [(step, C)]
+-    reads, decs, events, incbpw = [], [], [], {}
++    reads, decs, events, incbpw, resets = [], [], [], {}, []
+     for e in st:
+         ev = e["ev"]
+         if ev == "result": step += 1
+@@ -80,6 +83,8 @@ def walk(state_path):
+             s = float(e["size"]); m = mode(e["tag"]); inc[s] = e["tag"]
+             if e["tag"] not in cat: cat[e["tag"]] = C[(s, m)]
+             if not accepts[(s, m)]: accepts[(s, m)].append((step, C[(s, m)]))
++            elif e.get("why") == "reselect9":            # (#189-02) a level reset: no log r, a grid point for the re-anchor
++                resets.append(dict(step=step, size=s, mode=m, tag=e["tag"], C=C[(s, m)])); accepts[(s, m)].append((step, C[(s, m)]))
+         elif ev == "decision" and e.get("decision") in ("accept", "reject") and e.get("logr") is not None:
+             s = float(e["size"]); m = mode(e["tag"]); acc = e["decision"] == "accept" and e["tag"] in became
+             ref = (sub.get(e["tag"]) or {}).get("ref")
+@@ -96,7 +101,30 @@ def walk(state_path):
+     for t, e in sub.items():
+         incbpw[t] = e.get("bpw")
+     return dict(st=st, sub=sub, accepts=accepts, reads=reads, decs=decs, events=events, steps=step, cat=cat,
+-                incbpw=incbpw, inc_hist=[e for e in st if e["ev"] == "incumbent"])
++                incbpw=incbpw, inc_hist=[e for e in st if e["ev"] == "incumbent"], resets=resets)
++
++
++def reanchor(W, anchor):
++    """(#189-02) per (size, mode) the anchors in step order: [(from step, {"kld", "cof"})], the first one = `anchor`; a re-selection
++    reset adds the new incumbent's own read (same assignment hash, same mode) with cof = the chain value at the reset. -> (segments,
++    the resets held for want of a read)"""
++    hof = lambda t: (W["sub"].get(t) or {}).get("hash")
++    segs = {k: [(-1, r)] for k, r in anchor.items()}; held = []
++    for x in W.get("resets", []):
++        k = (x["size"], x["mode"]); h = hof(x["tag"])
++        rd = [r for r in W["reads"] if r["mode"] == x["mode"] and h is not None and hof(r["of"]) == h]
++        if k not in segs or not rd: held.append(x); continue
++        segs[k].append((x["step"], {"kld": rd[0]["kld"], "cof": x["C"], "reset": x["tag"]}))
++    return segs, held
++
++
++def anchor_at(segs, k, step):
++    """the anchor in force for (size, mode) at `step` (None before the size's first anchor)"""
++    an = None
++    for s0, r in segs.get(k, []):
++        if s0 <= step: an = r
++        else: break
++    return an
+ 
+ 
+ def track_panel(axT, W, a, sizes):
+@@ -267,8 +295,9 @@ def main(argv=None):
+         for s_, b_ in incb.get(s, []):
+             if s_ <= step: b = b_
+         return b
++    segs_a, held = reanchor(W, anchor)                 # (#189-02) re-selection = level reset on the new incumbent's own read
+     def est(k, step, extra=0.0, b=None):               # training estimate ÷ V2 for (size, mode) at step
+-        an = anchor.get(k); c = chain_at(k, step)
++        an = anchor_at(segs_a, k, step); c = chain_at(k, step)
+         if an is None or c is None: return None
+         b = b or bpw_at(k[0], step); v = vA(b)
+         return None if v is None else an["kld"] * math.exp(c - an["cof"] + extra) / v
+@@ -387,7 +416,7 @@ def main(argv=None):
+                 if not kb or not all(s in last for s in kb): continue
+                 hv = gmean([last[s]["kld"] / v2(last[s]["bpw"]) for s in kb])
+                 tv = [None if last[s]["cof"] is None or (s, m) not in anchor else
+-                      anchor[(s, m)]["kld"] * math.exp(last[s]["cof"] - anchor[(s, m)]["cof"]) / v2(last[s]["bpw"]) for s in kb]
++                      anchor_at(segs_a, (s, m), r["step"])["kld"] * math.exp(last[s]["cof"] - anchor_at(segs_a, (s, m), r["step"])["cof"]) / v2(last[s]["bpw"]) for s in kb]
+                 series[bd].append((r["step"], hv, gmean(tv) if all(x is not None for x in tv) else None))
+         for bd in range(4):
+             if series[bd]:
+@@ -408,12 +437,14 @@ def main(argv=None):
+     ax2.set_xlabel("eval step (search results, in order)"); ax2.set_ylabel(f"score of the current picks ÷ V2 ({a.monitor})")
+     ax2.set_title(f"Validation loss: the search's current picks scored on held-out {a.monitor}; stop when it stops falling", fontsize=10)
+     ax2.legend(loc="upper right", fontsize=7.5)
+-    v2r = sorted(b for b, _ in V2m); iqr = sorted(b for b, _ in IQm)
++    v2r = sorted(b for b, _ in V2m); iqr = sorted(b for b, _ in IQm); held_s = ", ".join(f"{x['size']:g}" for x in held)
+     if a.anchor_track: v2r = sorted(b for b, _ in V2t)
+     note = (f"V2 on {ylab_sl}: {len(v2r)} sizes ({v2r[0]:.2f}–{v2r[-1]:.2f} bpw)" if v2r else "no V2 refs") \
+         + (f"; IQR-V4: {len(iqr)} ({iqr[0]:.2f}–{iqr[-1]:.2f})" if iqr else "; IQR-V4: none yet") \
+         + f"; sizes without a {ylab_sl} read (not in lines): {', '.join(f'{s:g}' for s in sorted(skipped)) or 'none'}" \
+-        + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)"
++        + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)" \
++        + (f"; re-selection (rule 9) level resets: {sum(len(v) - 1 for v in segs_a.values())} re-anchored"
++           + (f", {len(held)} held (no read of the new incumbent yet: {held_s})" if held else "") if W["resets"] else "")
+     note = "\n".join(w for n in [note] + a.note for w in textwrap.wrap(n, 230)); nl = note.count("\n") + 1
+     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
+     if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)
+diff --git a/search/v3/driver.py b/search/v3/driver.py
+index b1500ba..0dfddf6 100644
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -68,6 +68,20 @@ registry (never rotated to; the driver refuses to start without it). Go-live (ru
+ listed size's incumbent vs its incumbent at that state line, on the first pair's confirmation slice, same test; not
+ confirmed -> the size reverts to the switch-time model and its pool to that model alone ("golive" / "golive_size" events);
+ a size's tentatives wait until its go-live check is resolved.
++One-shot re-selection (#189-02, RULES-confirm rule 9; CONF "reselect": {"slice", "from_line", "sizes", "top", "z", "tries"}; absent =
++the driver above, event for event): after the go-live check is done, every distinct model (assignment hash) that was a listed
++size's incumbent or pool member at or after state line from_line (plus the size's current incumbent and members) is scored
++whole on the re-selection slice (kind "reselect", no early stop, cached per (hash, slice) like the confirmation evals). Per
++size, when its set is scored: each model vs the CURRENT incumbent there (driver.paired, strata, size offset with the b recorded
++at the start, guard / cap in force); the ranking is PR.reseed_pick's: new incumbent = the best-ranked model with z < CONF z
++(-1), else the current one; pool = the top min(top, K) with the new incumbent kept. The new models are then rescored on the
++active slice by ensure_pool / ensure_incumbents (a rotation rescore), and the active slice's RULES-pool §5 re-selection is
++taken as done (the one-shot supersedes it). While a size's re-selection is pending (from the CONF until its result), its
++tentatives wait and §5 does not run for it. Events "reselect_start" (the plan), "reselect_size" (ranking + verdict),
++"reselect_done"; the incumbent event of a switch carries "why": "reselect9". NO decision event: the plot re-anchors the size
++on the new model's own read (a level reset, convplot4) instead of chaining anything. The slice carries "role": "reselect" in
++the registry (never rotated to, never a confirmation slice; the driver refuses to start unless it has that role and was never
++active, decided or confirmed).
+ State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
+ Restart = the same command (state replayed; outstanding evals stay in the queue)."""
+ import argparse, collections, json, math, os, random, subprocess, sys, time
+@@ -149,6 +163,12 @@ class Driver:
+             self.cf_z = float(self.cf.get("z", -1.0)); self.cf_pairs = {a: b for a, b in self.cf["pairs"]}
+             self.cf_sizes = {float(z) for z in self.cf.get("sizes", self.sizes)}; self.cf_tries = int(self.cf.get("tries", 2))
+             self.check_confirm_registry()
++        # one-shot re-selection (#189-02, RULES-confirm rule 9): CONF "reselect" absent = None (no new events)
++        self.rs = c.get("reselect") or None; self.rs_plan = None; self.rs_res = {}; self.rs_end = False
++        if self.rs:
++            self.rs_sl = self.rs["slice"]; self.rs_z = float(self.rs.get("z", -1.0)); self.rs_top = int(self.rs.get("top", 3))
++            self.rs_sizes = {float(z) for z in self.rs.get("sizes", self.sizes)}; self.rs_tries = int(self.rs.get("tries", 2))
++            self.check_reselect_registry()
+         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+         self.replay()
+ 
+@@ -170,7 +190,7 @@ class Driver:
+             ev = e["ev"]
+             if ev == "submit":
+                 self.sub[e["tag"]] = e; self.seen.add(e["hash"])
+-                if e.get("kind") == "confirm": self.cfx.setdefault((e["hash"], e["slice"]), []).append(e["tag"])
++                if e.get("kind") in ("confirm", "reselect"): self.cfx.setdefault((e["hash"], e["slice"]), []).append(e["tag"])
+             elif ev == "result": self.res[e["tag"]] = e["r"]; self.n_results += 1
+             elif ev == "incumbent": self.inc[e["size"]] = e["tag"]
+             elif ev == "decision" and e.get("stage") == 2:                  # (#189) counted at its tentative; the accept here
+@@ -201,6 +221,9 @@ class Driver:
+             elif ev == "reseed_abandon": self.reseed_on = None; self.reseed_plan = None
+             elif ev == "reseed": self.reseed_done.add(e["size"]); self.reselected[e["size"]] = e["slice"]
+             elif ev == "reselect": self.reselected[e["size"]] = e["slice"]
++            elif ev == "reselect_start": self.rs_plan = e
++            elif ev == "reselect_size": self.rs_res[e["size"]] = e; self.reselected[e["size"]] = e["act"]
++            elif ev == "reselect_done": self.rs_end = True
+         for t, r in self.res.items(): self.add_obs(t, r)
+         for gn, out in getattr(self, "_lastfit", {}).items():          # the last fit of each group, on the rows it was fitted on
+             try:
+@@ -239,7 +262,7 @@ class Driver:
+              "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"dec": dms, "lam_d": self.lam_d} if dms is not None else {}), **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
+         self.rec(e); self.sub[tag] = e
+         if kind != "monitor": self.seen.add(h)
+-        if kind == "confirm": self.cfx.setdefault((h, e["slice"]), []).append(tag)
++        if kind in ("confirm", "reselect"): self.cfx.setdefault((h, e["slice"]), []).append(tag)
+         return tag
+ 
+     def dec_ms(self, a):
+@@ -395,9 +418,9 @@ class Driver:
+         if kind == "cross": return MV.generate_cross(F["pred"], a, other, lo, hi, self.seen, self.rng) if other is not None else None
+         return MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
+ 
+-    def set_incumbent(self, size, t):
++    def set_incumbent(self, size, t, why=None):
+         old = self.inc.get(size); self.inc[size] = t
+-        self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old}); return old
++        self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old, **({"why": why} if why else {})}); return old
+ 
+     def pool_judge(self, t, s, r, parts, st, off):
+         """RULES-pool §3: a whole-slice candidate against the reference (the worst member once the pool is full, else the
+@@ -509,6 +532,7 @@ class Driver:
+         parts = self.reg.parts_of(act); st = self.reg.strata_of(act)
+         for size in self.sizes:
+             if self.reselected.get(size) == act or self.inc.get(size) is None or not self.scored_on(size, act) or self.reseed_wait(size, act): continue
++            if self.rs_wait(size): continue                                # (#189-02) the one-shot decides this size first
+             inc = self.inc[size]; bs = self.b_of(size); scored = []
+             for m in self.members(size):
+                 if m == inc: continue
+@@ -583,6 +607,8 @@ class Driver:
+             self.log(f"{t}: re-seed candidate of {size} scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+         if s["kind"] == "confirm":                                         # (#189) decided in confirm_step (a fit row above)
+             self.log(f"{t}: confirmation eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
++        if s["kind"] == "reselect":                                        # (#189-02) decided in reselect_step (a fit row above)
++            self.log(f"{t}: re-selection eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+         act = self.reg.active()
+         if r["slice"] != act:
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
+@@ -640,7 +666,7 @@ class Driver:
+         S = self.reg.d["slices"]; bad = []
+         for a, b in self.cf["pairs"]:
+             if a not in S or b not in S: bad.append(f"pair ({a}, {b}): slice not in the registry"); continue
+-            if S[a].get("role") == "confirm": bad.append(f"{a}: a search slice with role confirm")
++            if S[a].get("role") in ("confirm", "reselect"): bad.append(f"{a}: a search slice with role {S[a]['role']}")
+             if S[b].get("role") != "confirm": bad.append(f"{b}: no \"role\": \"confirm\" (slices.py role REG {b} confirm, with the driver stopped)")
+             if S[b]["status"] == "active" or sum(S[b].get("decisions", {}).values()):
+                 bad.append(f"{b}: was a search slice (status {S[b]['status']}, decisions {S[b].get('decisions')})")
+@@ -666,18 +692,20 @@ class Driver:
+                  + (f" (pool {pool['join']}{', would be incumbent' if pool['inc'] else ''})" if pool else "") + f"; confirmation on {e['cslice']}")
+         self.cslice(sl)
+ 
+-    def cf_eval(self, mt, cs, size, why, owner):
++    def cf_eval(self, mt, cs, size, why, owner, kind="confirm", tries=None):
+         """the whole-slice confirmation eval of model `mt` (a tag) on cs, cached per (assignment hash, slice) -> ("ok", eval tag) |
+-        ("wait", eval tag) | ("fail", None) once CONF tries (2) evals failed; submits one (kind "confirm") when none is usable"""
++        ("wait", eval tag) | ("fail", None) once CONF tries (2) evals failed; submits one (kind "confirm") when none is usable.
++        (#189-02) kind "reselect": the same for the re-selection slice (its own tries, no confirm_submit event)"""
+         h = self.sub[mt]["hash"]; tags = self.cfx.get((h, cs), [])
++        if tries is None: tries = self.cf_tries
+         for x in reversed(tags):
+             if x not in self.res: return "wait", x
+             r = self.res[x]
+             if not r.get("fail") and r.get("docs") and all(v is not None for v in r["docs"]): return "ok", x
+-        if len(tags) >= self.cf_tries: return "fail", None
+-        x = self.newtag(size, "confirm")
+-        self.submit(x, self.assign(mt), size, "confirm", cs, early=False, extra={"of": mt, "for": owner})
+-        self.rec({"ev": "confirm_submit", "tag": owner, "eval": x, "of": mt, "slice": cs, "why": why, "try": len(tags) + 1})
++        if len(tags) >= tries: return "fail", None
++        x = self.newtag(size, kind)
++        self.submit(x, self.assign(mt), size, kind, cs, early=False, extra={"of": mt, "for": owner})
++        if kind == "confirm": self.rec({"ev": "confirm_submit", "tag": owner, "eval": x, "of": mt, "slice": cs, "why": why, "try": len(tags) + 1})
+         return "wait", x
+ 
+     def cf_stat(self, ref_t, ref_x, t, x, cs, bs):
+@@ -695,7 +723,7 @@ class Driver:
+         e = self.tent[t]; size = e["size"]; cs = e.get("cslice") or self.cslice(e["slice"])
+         if cs is None: return
+         sc, xc = self.cf_eval(t, cs, size, "candidate", t)
+-        if self.golive_wait(size): return                                  # rule 7 first
++        if self.golive_wait(size) or self.rs_wait(size): return            # rule 7 first, then rule 9
+         inc = self.inc.get(size)
+         if inc is None: return
+         if self.K > 1 and not (self.scored_on(size, act) and not self.reseed_wait(size, act)): return   # the worst needs the pool on act
+@@ -798,6 +826,115 @@ class Driver:
+             self.rec({"ev": "golive", "phase": "done", "verdicts": {f"{z:g}": g["verdict"] for z, g in sorted(self.golive_res.items())}})
+             self.log("GO-LIVE done: " + " ".join(f"{z:g}:{g['verdict']}" for z, g in sorted(self.golive_res.items())))
+ 
++    # ------------------------------------------------------------------------------------------------ one-shot re-selection (#189-02, RULES-confirm rule 9)
++    def check_reselect_registry(self):
++        """CONF reselect: the slice exists, has "role": "reselect", was never active, decided or confirmed, and is in no confirm pair"""
++        S = self.reg.d["slices"]; n = self.rs_sl; bad = []
++        if self.rs.get("from_line") is None: bad.append("CONF reselect.from_line missing (the A8 'act' event's line in drv/state.jsonl)")
++        if n not in S: bad.append(f"{n}: not in the registry")
++        else:
++            s = S[n]
++            if s.get("role") != "reselect": bad.append(f"{n}: no \"role\": \"reselect\" (slices.py role REG {n} reselect, with the driver stopped)")
++            if s["status"] in ("active", "retired") or s.get("activated"): bad.append(f"{n}: was active (status {s['status']})")
++            if sum(s.get("decisions", {}).values()) or sum(s.get("confirm_decisions", {}).values()):
++                bad.append(f"{n}: has decided or confirmed (decisions {s.get('decisions')}, confirm_decisions {s.get('confirm_decisions')})")
++            if self.cf and any(n in p for p in self.cf["pairs"]): bad.append(f"{n}: in CONF confirm.pairs")
++        if bad: raise SystemExit("CONF reselect: registry not ready:\n  " + "\n  ".join(bad))
++
++    def golive_pending(self):
++        """rule 7's go-live check is configured and not done yet"""
++        return bool(self.cf) and self.cf.get("golive_from_line") is not None and not self.golive_end
++
++    def rs_wait(self, size):
++        """rule 9: a listed size's re-selection is pending (configured, not resolved): its tentatives and §5 wait"""
++        if not self.rs or self.rs_end or size in self.rs_res: return False
++        if self.rs_plan is None: return size in self.rs_sizes
++        return any(p["size"] == size for p in self.rs_plan["plan"])
++
++    def reselect_step(self, act):
++        """rule 9 (once): starts when the go-live check is done; submits what each size's set needs (cached); a size is decided
++        once every one of its models (and its current incumbent / members) has a whole score on the slice or failed CONF tries"""
++        if self.rs_end or self.golive_pending(): return
++        if self.rs_plan is None: self.reselect_start(act)
++        sl = self.rs_sl
++        for p in self.rs_plan["plan"]:
++            size = p["size"]
++            if size in self.rs_res: continue
++            inc = self.inc.get(size)
++            if inc is None: continue
++            todo = [c["of"] for c in p["cands"]]
++            have = {c["hash"] for c in p["cands"]}
++            for m in [inc] + self.members(size):                            # models joined since the start (rule 9: "plus any since")
++                if self.sub[m]["hash"] not in have: have.add(self.sub[m]["hash"]); todo.append(m)
++            st = {self.sub[m]["hash"]: self.cf_eval(m, sl, size, "reselect", "reselect", kind="reselect", tries=self.rs_tries) for m in todo}
++            if any(v[0] == "wait" for v in st.values()): continue
++            self.reselect_apply(size, act, p, st)
++        if all(p["size"] in self.rs_res for p in self.rs_plan["plan"]):
++            self.rs_end = True
++            self.rec({"ev": "reselect_done", "slice": sl, "verdicts": {f"{z:g}": g["verdict"] for z, g in sorted(self.rs_res.items())}})
++            self.log(f"RESELECT done on {sl}: " + " ".join(f"{z:g}:{g['verdict']}" for z, g in sorted(self.rs_res.items())))
++
++    def reselect_start(self, act):
++        """the candidate set per size: distinct assignment hashes (drv/assign/<tag>.json) of every incumbent tag and pool member at or
++        after state line from_line, plus the current incumbent and members; the size's b is fixed here"""
++        n = int(self.rs["from_line"]); seen = {}; i = 0
++        with open(f"{self.R}/state.jsonl") as f:
++            for i, l in enumerate(f, 1):
++                if i < n: continue
++                try: x = json.loads(l)
++                except ValueError: continue
++                if x.get("size") not in self.rs_sizes: continue
++                if x.get("ev") == "incumbent": seen.setdefault(x["size"], []).append(x["tag"])
++                elif x.get("ev") == "pool": seen.setdefault(x["size"], []).extend(x["members"])
++        if i < n: raise SystemExit(f"CONF reselect.from_line {n}: the state has only {i} lines")
++        plan = []; hc = {}
++        for size in sorted(self.rs_sizes):
++            if self.inc.get(size) is None or size in self.stopped_sizes or not self.feasible(size): continue
++            cands = {}
++            for t in seen.get(size, []) + [self.inc[size]] + self.members(size):
++                if t not in hc: hc[t] = MV.ahash(self.assign(t))
++                c = cands.setdefault(hc[t], {"hash": hc[t], "of": t, "tags": []})
++                if t not in c["tags"]: c["tags"].append(t)
++            plan.append({"size": size, "b": self.b_of(size), "inc": self.inc[size], "cands": list(cands.values())})
++        cached = sum(1 for p in plan for c in p["cands"] if self.cfx.get((c["hash"], self.rs_sl)))
++        self.rs_plan = {"ev": "reselect_start", "slice": self.rs_sl, "from_line": n, "act": act, "z_thr": self.rs_z, "top": self.rs_top, "plan": plan}
++        self.rec(self.rs_plan)
++        self.log(f"RESELECT on {self.rs_sl} (models since state line {n}): " + " ".join(f"{p['size']:g}:{len(p['cands'])}" for p in plan) +
++                 f" = {sum(len(p['cands']) for p in plan)} models, {sum(len(p['cands']) for p in plan) - cached} evals to submit")
++
++    def reselect_apply(self, size, act, p, st):
++        """one size: every model vs the current incumbent on the slice; PR.reseed_pick with the z rule; incumbent + pool set (rescored
++        on the active slice by ensure_pool / ensure_incumbents in the next step)"""
++        sl = self.rs_sl; inc = self.inc[size]; hi = self.sub[inc]["hash"]; bs = p["b"]
++        parts = self.reg.parts_of(sl); strata = self.reg.strata_of(sl); tag_of = {}
++        for c in p["cands"]: tag_of.setdefault(c["hash"], c["of"])
++        for m in [inc] + self.members(size): tag_of[self.sub[m]["hash"]] = m      # a current model keeps its tag (scored on act)
++        g = {"ev": "reselect_size", "size": size, "slice": sl, "act": act, "prev": inc, "b": bs, "z_thr": self.rs_z}
++        if st[hi][0] != "ok":
++            g.update(verdict="error", inc=inc, why=f"the incumbent's eval failed {self.rs_tries}x: kept")
++            self.rec(g); self.rs_res[size] = g; self.reselected[size] = act; self.reg.reselected(sl, str(size), 0)
++            self.log(f"RESELECT {size:g}: the incumbent's eval on {sl} failed {self.rs_tries}x: incumbent and pool kept (check by hand)"); return
++        xr = st[hi][1]; rows = []; scored = []
++        for h, (sc, x) in st.items():
++            if h == hi: continue
++            if sc != "ok": rows.append({"hash": h, "of": tag_of[h], "eval": None, "failed": True}); continue
++            off = bs * (self.sub[x]["bpw"] - self.sub[xr]["bpw"]) + (self.doff(x, xr) if bs else 0.0)
++            P = self.paired(self.res[xr], self.res[x], parts, off=off, strata=strata)
++            ok = P.z() < self.rs_z; scored.append((h, P.da(), ok))
++            rows.append({"hash": h, "of": tag_of[h], "eval": x, "da": P.da(), "z": P.z(), "logr": P.d(), "se": P.se(), "off": P.off, "k": P.k, "pass": ok})
++        new_h, pool_h = PR.reseed_pick(hi, scored, max(1, min(self.rs_top, self.K)))
++        tag = lambda h: tag_of[h] if tag_of[h] in (inc, *self.members(size)) else st[h][1]   # else the s186e eval (a whole score)
++        new = tag(new_h); pool = [tag(h) for h in pool_h]
++        rows.sort(key=lambda r: (r.get("da", math.inf), r["of"]))
++        g.update(verdict="switched" if new != inc else "kept", inc=new, pool=pool, ref_eval=xr, ranking=rows,
++                 n_scored=len(scored), n_failed=sum(1 for r in rows if r.get("failed")))
++        self.rec(g); self.rs_res[size] = g; self.reselected[size] = act; self.reg.reselected(sl, str(size), len(parts))
++        if self.K > 1: self.pool[size] = pool; self.rec({"ev": "pool", "size": size, "members": pool, "why": "reselect9"})
++        if new != inc: self.set_incumbent(size, new, why="reselect9"); self.monitor_on_change(size, new)
++        rk = ", ".join(f"{r['of']} {r['da']:+.4f} (z {r['z']:+.2f}){'*' if r['pass'] else ''}" for r in rows if not r.get("failed"))
++        self.log(f"RESELECT {size:g}: on {sl} vs {inc} ({len(scored)} scored, {g['n_failed']} failed, b {bs:.3f}): incumbent "
++                 + (f"-> {new} (of {tag_of[new_h]})" if new != inc else "kept") + f"; pool {pool}; ranking (size-adjusted, * = z < {self.rs_z:g}): {rk}")
++
+     # ------------------------------------------------------------------------------------------------ fit rows
+     def add_obs(self, t, r):
+         if r.get("fail") or not r.get("docs"): return
+@@ -1135,6 +1272,8 @@ class Driver:
+             pend = collections.Counter(e["size"] for e in self.tent.values())
+             line += f" | confirm pending {len(self.tent)}" + (" (" + " ".join(f"{z:g}:{n}" for z, n in sorted(pend.items())) + ")" if pend else "")
+             if self.golive is not None and not self.golive_end: line += f" | go-live {len(self.golive_res)}/{len(self.golive['plan']) + len(self.golive.get('same', []))}"
++        if self.rs and not self.rs_end:
++            line += (f" | reselect {len(self.rs_res)}/{len(self.rs_plan['plan'])} on {self.rs_sl}" if self.rs_plan else f" | reselect {self.rs_sl} waits for go-live")
+         open(f"{self.R}/status.txt", "w").write(line + "\n")
+         return line
+ 
+@@ -1152,7 +1291,9 @@ class Driver:
+         if not go: return "no go (CONF go / dry)"
+         if self.K > 1: self.ensure_pool(act); self.reseed_step(act); self.reselect(act)
+         else: self.ensure_incumbents(act)
+-        if self.cf: self.golive_step(); self.confirm_step(act)
++        if self.cf: self.golive_step()
++        if self.rs: self.reselect_step(act)
++        if self.cf: self.confirm_step(act)
+         self.monitor_refs()
+         self.generate(act)
+         return self.report()
+diff --git a/search/v3/slices.py b/search/v3/slices.py
+index cbaffd8..d91c808 100644
+--- a/search/v3/slices.py
++++ b/search/v3/slices.py
+@@ -28,10 +28,13 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
+   python3 slices.py retire REG NAME [WHY]                       retire a slice by hand (w145: s171b after w141's audit)
+   python3 slices.py role REG NAME ROLE                          set a slice's role (#189, RULES-confirm §5: "confirm" = a
+           confirmation slice: never rotated to as a search slice, its documents never drawn for a new slice; "search" or
+-          "-" = remove the role). Edit the registry only while the driver is stopped (it rewrites the file)
++          "-" = remove the role; "reselect" (#189-02, RULES-confirm rule 9) = the one-shot re-selection slice: never rotated
++          to, never a confirmation slice, its documents never drawn). Edit the registry only while the driver is stopped (it
++          rewrites the file)
+ Rotation (driver): a slice is retired once it has decided `rotate_after` candidates (default 25), all sizes together
+ (driver CONF rotate_unit "slice", w145; "size" = any one size reaching it, the #171 run's rule); the next "ready" slice
+-becomes active (its incumbents are scored first, no early stop). A slice with "role": "confirm" (#189) is never activated."""
++becomes active (its incumbents are scored first, no early stop). A slice with a role ("confirm", #189; "reselect", #189-02) is
++never activated."""
+ import json, os, random, shutil, sys, time
+ 
+ import numpy as np
+@@ -108,8 +111,8 @@ def ledger_use(led, mine=()):
+ def draw_merged(R, led, pool, n, seed):
+     """N fit + search docs, least-used first (ledger decisions + this registry's own decisions), ties random"""
+     mine = {f"golden-{k}-c" for k in R.d["slices"]}; lu = ledger_use(led, mine); dd = R.d["doc_decisions"]
+-    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") == "confirm"
+-            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189) a confirmation slice's docs are in use too
++    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") in ("confirm", "reselect")
++            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189 / #189-02) a confirmation / re-selection slice's docs too
+     cand = [i for i, p in enumerate(pool) if p in MERGED and i not in busy]
+     use = {i: lu.get(i, 0) + dd.get(f"c:{i}", 0) for i in cand}
+     rng = random.Random(seed); cand.sort(key=lambda i: (use[i], rng.random()))
+@@ -142,8 +145,9 @@ class Registry:
+         return a[0] if a else None
+ 
+     def ready(self):
+-        """the slices a rotation may activate: status "ready", never a confirmation slice (#189, RULES-confirm §5)"""
+-        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role") != "confirm"]
++        """the slices a rotation may activate: status "ready", never a slice with a role (#189 "confirm", RULES-confirm §5; #189-02
++        "reselect", rule 9)"""
++        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role", "search") == "search"]
+ 
+     def activate_next(self):
+         r = self.ready()
+@@ -167,6 +171,13 @@ class Registry:
+         for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
+         self.save()
+ 
++    def reselected(self, name, size, ndocs):
++        """one size's one-shot re-selection on slice `name` (#189-02): counted under "reselect_decisions" (never "decisions" or
++        "confirm_decisions") and in doc_decisions (the documents were used)"""
++        s = self.d["slices"][name]; cd = s.setdefault("reselect_decisions", {}); cd[size] = cd.get(size, 0) + 1
++        for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
++        self.save()
++
+     def role(self, name):
+         return self.d["slices"][name].get("role", "search")
+ 
+@@ -208,7 +219,7 @@ def main(argv):
+     elif argv[0] == "show":
+         R = Registry(argv[1])
+         for n, s in R.d["slices"].items():
+-            print(f"{n:24s} {s['status']:8s}{' confirm' if s.get('role') == 'confirm' else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
++            print(f"{n:24s} {s['status']:8s}{' ' + s['role'] if s.get('role') else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
+                   f" decisions {s['decisions']}")
+         dd = R.d["doc_decisions"]
+         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")

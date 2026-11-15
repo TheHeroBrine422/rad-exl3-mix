@@ -22,7 +22,10 @@ Top, per bpw band (< 2.75, 2.75-4.5, 4.5-6, >= 6), geo-mean over the band's size
 Bottom: validation loss V2-style: per band the geo-mean of each size's latest held-out read (from the step every
 size of the band has one), black = all sizes, dashed = the same picks' training estimates.
 Modes: submits with "act" (A8, w132) and without (f16) are separate series: anchors, chains and lines restart at the
-"act" state event (red line); f16 and A8 numbers are never in one line."""
+"act" state event (red line); f16 and A8 numbers are never in one line.
+Re-selection (#189-02, RULES-confirm rule 9; incumbent events with "why": "reselect9"): a level reset, nothing chained. From
+that step the size's line is anchored on the new incumbent's own read (a monitor / --anchor-track read of the same assignment
+hash, any step); without such a read the level is held (the chain goes on from where it was) until the plot is redrawn with one."""
 import argparse, collections, json, math, os, re, sys, textwrap
 
 import matplotlib
@@ -72,7 +75,7 @@ def walk(state_path):
     became = {e["tag"] for e in st if e["ev"] == "incumbent"}   # (#188/#189) a pool join that never became incumbent was
                                                                  # paired against the worst member: not chained (w167)
     accepts = collections.defaultdict(list)            # (size, mode) -> [(step, C)]
-    reads, decs, events, incbpw = [], [], [], {}
+    reads, decs, events, incbpw, resets = [], [], [], {}, []
     for e in st:
         ev = e["ev"]
         if ev == "result": step += 1
@@ -80,6 +83,10 @@ def walk(state_path):
             s = float(e["size"]); m = mode(e["tag"]); inc[s] = e["tag"]
             if e["tag"] not in cat: cat[e["tag"]] = C[(s, m)]
             if not accepts[(s, m)]: accepts[(s, m)].append((step, C[(s, m)]))
+            elif e["tag"] in cat and cat[e["tag"]] != C[(s, m)] and e.get("why") != "reselect9":   # (#189 go-live revert, lead
+                C[(s, m)] = cat[e["tag"]]; accepts[(s, m)].append((step, C[(s, m)]))      # 11-14) back to an earlier model's chain value
+            elif e.get("why") == "reselect9":            # (#189-02) a level reset: no log r, a grid point for the re-anchor
+                resets.append(dict(step=step, size=s, mode=m, tag=e["tag"], C=C[(s, m)])); accepts[(s, m)].append((step, C[(s, m)]))
         elif ev == "decision" and e.get("decision") in ("accept", "reject") and e.get("logr") is not None:
             s = float(e["size"]); m = mode(e["tag"]); acc = e["decision"] == "accept" and e["tag"] in became
             ref = (sub.get(e["tag"]) or {}).get("ref")
@@ -96,7 +103,30 @@ def walk(state_path):
     for t, e in sub.items():
         incbpw[t] = e.get("bpw")
     return dict(st=st, sub=sub, accepts=accepts, reads=reads, decs=decs, events=events, steps=step, cat=cat,
-                incbpw=incbpw, inc_hist=[e for e in st if e["ev"] == "incumbent"])
+                incbpw=incbpw, inc_hist=[e for e in st if e["ev"] == "incumbent"], resets=resets)
+
+
+def reanchor(W, anchor):
+    """(#189-02) per (size, mode) the anchors in step order: [(from step, {"kld", "cof"})], the first one = `anchor`; a re-selection
+    reset adds the new incumbent's own read (same assignment hash, same mode) with cof = the chain value at the reset. -> (segments,
+    the resets held for want of a read)"""
+    hof = lambda t: (W["sub"].get(t) or {}).get("hash")
+    segs = {k: [(-1, r)] for k, r in anchor.items()}; held = []
+    for x in W.get("resets", []):
+        k = (x["size"], x["mode"]); h = hof(x["tag"])
+        rd = [r for r in W["reads"] if r["mode"] == x["mode"] and h is not None and hof(r["of"]) == h]
+        if k not in segs or not rd: held.append(x); continue
+        segs[k].append((x["step"], {"kld": rd[0]["kld"], "cof": x["C"], "reset": x["tag"]}))
+    return segs, held
+
+
+def anchor_at(segs, k, step):
+    """the anchor in force for (size, mode) at `step` (None before the size's first anchor)"""
+    an = None
+    for s0, r in segs.get(k, []):
+        if s0 <= step: an = r
+        else: break
+    return an
 
 
 def track_panel(axT, W, a, sizes):
@@ -267,8 +297,9 @@ def main(argv=None):
         for s_, b_ in incb.get(s, []):
             if s_ <= step: b = b_
         return b
+    segs_a, held = reanchor(W, anchor)                 # (#189-02) re-selection = level reset on the new incumbent's own read
     def est(k, step, extra=0.0, b=None):               # training estimate ÷ V2 for (size, mode) at step
-        an = anchor.get(k); c = chain_at(k, step)
+        an = anchor_at(segs_a, k, step); c = chain_at(k, step)
         if an is None or c is None: return None
         b = b or bpw_at(k[0], step); v = vA(b)
         return None if v is None else an["kld"] * math.exp(c - an["cof"] + extra) / v
@@ -387,7 +418,7 @@ def main(argv=None):
                 if not kb or not all(s in last for s in kb): continue
                 hv = gmean([last[s]["kld"] / v2(last[s]["bpw"]) for s in kb])
                 tv = [None if last[s]["cof"] is None or (s, m) not in anchor else
-                      anchor[(s, m)]["kld"] * math.exp(last[s]["cof"] - anchor[(s, m)]["cof"]) / v2(last[s]["bpw"]) for s in kb]
+                      anchor_at(segs_a, (s, m), r["step"])["kld"] * math.exp(last[s]["cof"] - anchor_at(segs_a, (s, m), r["step"])["cof"]) / v2(last[s]["bpw"]) for s in kb]
                 series[bd].append((r["step"], hv, gmean(tv) if all(x is not None for x in tv) else None))
         for bd in range(4):
             if series[bd]:
@@ -408,12 +439,14 @@ def main(argv=None):
     ax2.set_xlabel("eval step (search results, in order)"); ax2.set_ylabel(f"score of the current picks ÷ V2 ({a.monitor})")
     ax2.set_title(f"Validation loss: the search's current picks scored on held-out {a.monitor}; stop when it stops falling", fontsize=10)
     ax2.legend(loc="upper right", fontsize=7.5)
-    v2r = sorted(b for b, _ in V2m); iqr = sorted(b for b, _ in IQm)
+    v2r = sorted(b for b, _ in V2m); iqr = sorted(b for b, _ in IQm); held_s = ", ".join(f"{x['size']:g}" for x in held)
     if a.anchor_track: v2r = sorted(b for b, _ in V2t)
     note = (f"V2 on {ylab_sl}: {len(v2r)} sizes ({v2r[0]:.2f}–{v2r[-1]:.2f} bpw)" if v2r else "no V2 refs") \
         + (f"; IQR-V4: {len(iqr)} ({iqr[0]:.2f}–{iqr[-1]:.2f})" if iqr else "; IQR-V4: none yet") \
         + f"; sizes without a {ylab_sl} read (not in lines): {', '.join(f'{s:g}' for s in sorted(skipped)) or 'none'}" \
-        + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)"
+        + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)" \
+        + (f"; re-selection (rule 9) level resets: {sum(len(v) - 1 for v in segs_a.values())} re-anchored"
+           + (f", {len(held)} held (no read of the new incumbent yet: {held_s})" if held else "") if W["resets"] else "")
     note = "\n".join(w for n in [note] + a.note for w in textwrap.wrap(n, 230)); nl = note.count("\n") + 1
     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
     if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)

@@ -8021,3 +8021,43 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   training line; w167 found 11 of 21 post-switch accepts were such joins). b2 line 0.586 → 0.598 with the fix.
 - 9:45 PM CST (user): one-shot re-selection of all past incumbents / pool members on a fresh slice. RULES-confirm amendment (rule 9, s186e, z < −1, top 3) committed first; w168 (Opus high) implements it in the driver (CONF-gated, after the go-live check). Confirm pairs become a/b, c/d; a new pair is built later.
 - 9:45 PM CST · go-live results on s186b (current vs switch-time incumbent): 3.0 −0.4 % (z −0.48), 3.5 −0.6 % (z −0.92), 4.0 +0.8 % (z +0.43), 4.5 −0.4 % (z −0.95), 5.0 −0.2 % (z −0.08): all reverted to the switch-time incumbents (6.0 pending). The post-switch s186a accepts (claimed −1.5…−7.4 %) do not reproduce on fresh documents beyond noise; consistent with t183. usagepause armed for w168 at 0.95.
+
+### 2026-11-14 9:55 PM CST · #189-02 · One-shot re-selection of past incumbents on s186e: driver patch, tests, dry run (w168)
+- **Status:** built, not deployed. The lead reviews and applies `search/v3/confirm189/driver-reselect.patch` (driver.py + slices.py +
+  convplot4.py, against HEAD `6d0ec11d`; applies to `a6ce9094`); switch procedure and rollback in
+  `search/v3/confirm189/README-reselect.md`; candidate config `local/workers/w168/driver-189-02.candidate.json` (live `driver.json` of
+  9:47 PM + `reselect` + `confirm.pairs` a/b, c/d + `about`). **Machines:** VM only (tests, replays, dry run, smoke), ds8 / box2
+  read-only checks. **Runtime:** neither.
+- **Rule:** RULES-confirm rule 9 (`ddfaced8`) as written. CONF `reselect: {slice s186e, from_line 2, sizes 2.0–6.0, top 3, z −1}`;
+  absent = today's driver. from_line 2 = the only `act` event (a8g128 at s173a): 89 models at 9:15 PM CST as the rule says, 92 at
+  9:47 PM. Choices it leaves open, each in the patch header and pinned by a test: candidates = distinct `MV.ahash(assign/<tag>.json)`
+  of `incumbent` tags and `pool` members at or after from_line (inclusive) + current incumbent / members (+ joins before the size
+  is decided); evals kind `reselect`, whole, cached per (hash, slice) (confirm cache), 2 tries, a failed candidate left out, a
+  failed incumbent → `error`, kept; statistic = `driver.paired` vs the current incumbent on s186e (strata, b fixed at the start,
+  cap / guard as in force), z = `Paired.z()`; pick = `PR.reseed_pick` with pass = z < −1, pool = top min(3, K) with the new
+  incumbent kept; current members keep their tags, other picks get their s186e eval tag and are rescored on the active slice by
+  the usual rotation rescore; RULES-pool §5 held for pending sizes and taken as done on the active slice after the one-shot.
+  Starts in the step go-live completes; a size's tentatives wait until its result (then rule 3 vs the new incumbent). Events
+  `reselect_start` / `reselect_size` / `reselect_done` (not `reselect`: that name is §5's and its replay would re-run §5),
+  incumbent `why: "reselect9"`. Registry role `reselect`: never rotated to (`ready()` skips any role), calib docs busy for draws,
+  `reselect_decisions` + doc_decisions; refusal unless role set and never active / decided / confirmed / paired. Pairs a/b, c/d
+  accepted with s186f still role confirm.
+- **Plot:** no `decision` event (the winner's s186e log r is the best of N on the numbers that pick it, i.e. the winner's curse rule 4
+  avoids, stacked on a chain rule 9 doubts; it would also count as a search decision in replays). convplot4 treats
+  `why: "reselect9"` as a level reset: the size is re-anchored on the new model's own t183 / monitor read (matched by assignment
+  hash), held (footnote) until one exists. No such events → convplot4 output and PNG byte-identical on the live state.
+- **Tests** (fresh `git archive HEAD` + patch; `search/v3/confirm189/tests-reselect.txt`): `test_reselect189.py` **12 / 12**,
+  `test_confirm189` **15 / 15**, `pool188` **13 / 13**, `test_picks` **18 / 18**. Identity with CONF `reselect` absent on the live state
+  (9:47 PM copy): on_result replay 915 events, `Driver.step` replay (new `step_events.py`) events / queue / log / pools identical.
+  9 driver mutations, each caught by ≥ 1 test (one §5 test added after its mutation first survived).
+- **Dry run** (copy of the 9:47 PM state, candidate config): go-live finishes (6.0) and `RESELECT on s186e` starts in the same step:
+  2.0: 8, 2.5: 9, 3.0: 18, 3.5: 13, 4.0: 16, 4.5: 9, 5.0: 8, 6.0: 11 = **92 models = 92 whole s186e evals** (none cached), no early
+  stop, alias path. Smoke (same copy, fake host numbers): all 8 sizes decided, rescores on s186c, waiting tentatives then confirmed,
+  3 plot resets. Cost: 92 evals + ≤ ~24 rescores; the search pauses ~45–60 min while they drain (queue > queue_depth).
+- **Hosts:** golden-s186e is on ds8 and box2 at `/data/q27/w164/slices/golden-s186e`: md5 identical on both for kld.json, top.bin,
+  rows.f32, tokens.i32, gen.u8; 169 docs, order / parts / strata = the registry's.
+- **Found:** go-live reverts are incumbent changes without a decision: convplot4 keeps the reverted accepts' chained log r (the b2 line
+  stayed 0.598 after 3.0–5.0 reverted). Same level reset possible with `why="golive"` in golive_step + convplot4 (one line each):
+  lead's call.
+- **Files:** `search/v3/confirm189/` (driver-reselect.patch, test_reselect189.py, step_events.py, tests-reselect.txt, README-reselect.md),
+  `local/workers/w168/` (candidate config, base / patched trees, live snapshot `snap2`, dry run, smoke, mutation script).
