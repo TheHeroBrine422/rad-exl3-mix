@@ -50,3 +50,9 @@ s190a reached rotate_after (209 decisions) at 4:53 AM CST with no ready slice; t
     s190b, t183, t186n, golden-final750, final-x) or verify. The N stratum is "fuzzy" (documents the search has seen);
     its weight is 0.039, and t186n remains the held-out N check.
 2''. Rotation to s190c as soon as it is built and checked; s190b keeps confirming s190a's pending tentatives.
+
+## Amendment 2026-11-15 5:40 AM CST (user "c" on the lead's recommendation A): N for s190c / s190d
+w176: under 1'' only one calib N document was eligible (s186a/c's N documents also sit in s186b/d/e/f, because w164
+reused documents across the s186 parts). 1'' is widened: N documents may also come from the **retired** s186b, s186d,
+s186e and s186f (their pairs / the re-selection are finished). Still excluded: s190b (live confirm), t183, t186n,
+golden-final750, final-x, verify. Everything else in 1'' / 2'' unchanged.
