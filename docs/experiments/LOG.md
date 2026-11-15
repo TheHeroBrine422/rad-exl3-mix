@@ -7702,11 +7702,11 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   `FFN-early` → 0.086 (149%), +0.29 GiB; early ssm_out 52%; all of layers 0–7 183%. The late-attention arm does nothing there (+0.002,
   slightly worse). Every script improves under `FFN-early`; the English control also improves (0.055 → 0.041).
 - Not size-matched: late-attention arms shrink the model, the early-FFN / L0 arms grow it. Read the recoveries as KL at fixed K.
-- Equivalence (bar: KLD within 1e-5): box2 rows byte-identical to ds8 for pick and ATT-late (169,026 rows, max |ΔKL| 0). ds8 cross-check of
-  the three late-attention arms queued on card 7 (busy, w162).
+- Equivalence (bar: KLD within 1e-5): box2 rows byte-identical to ds8 for all five arms run on both (pick, ATT-late, ATT-19+,
+  ATT-19+-down, ATT-19+-up; 169,026 rows each, max |ΔKL| 0). `search/v3/run186/eqcheck186.py`, `data/lc186/results/equivalence-box2.txt`.
 - Ledger: 32 calib docs of the golden logged (`diag186-calib`, role check, decisions 0). 65 xcorp docs not logged (ledger is calib-only).
   Follow-up arms: 11 (brief: ~8; the 3 extra are the late-attention split, which decides the direction question).
-- Runtime: neither (box2 cards 2 and 3; ds8 card 7 queued). Searching: none decided.
+- Runtime: neither (box2 cards 2 and 3; ds8 card 7 for the cross-check). Search: none decided.
 
 ### 2026-11-14 6:41 PM CST · #187 · Replay of the #183 search's move predictions: rules and start (w165)
 - Rules first: `search/v3/RULES-187.md` (committed alone, a5b3d4e2, before any arm was fitted). Replay in time order on a
@@ -7733,3 +7733,13 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 12:55 AM CST: build / score overlap: hostd eval slots = cards + 3 (ds8 10 for 7 cards, box2 4 for 2): mixes build
   outside the card lock, so the extra units build while all cards score (mix ~30-40 s vs scoring 90-170 s); driver
   queue_depth 18. Not tried: two scorers on one card (scoring is GPU-bound, load only ~7 s; VRAM tight above ~3 bpw).
+
+### 2026-11-15 1:05 AM CST · #186 · Lead review of w163's swap test
+- Reviewed out/w163.md + `data/lc186/results/all21-gen.txt` (spot-checked ATT-19+ / FFN-early lines; per-doc bootstrap
+  CIs; box2 vs ds8 rows byte-identical on 5 arms). Two separate causes in the 2.5 pick: (1) doc 100 (Persian) = late
+  attention (layers 19-63), and it improves when those tensors get FEWER bits (unexpected: pack / quantizer effect at
+  K > 2.5 suspected, unverified); (2) non-Latin in general (86 docs, 10 scripts) = early FFN (layers 0-7 at K1-1.875):
+  FFN-early to K2.5 0.147 → 0.086 (uniform 0.107), English control 0.055 → 0.041, +0.29 GiB (not size-matched).
+- Lead read: (2) is the actionable one and is what RULES-strata should let the search see (it starved early FFN on
+  English-dominated, capped statistics); (1) needs the pack check. Rows (70 MB) kept on ds8 / box2, not in the repo.
+  Xcorp diagnostic documents: no ledger rows (the ledger is for calib documents). VM clock is UTC; times in notes CST.

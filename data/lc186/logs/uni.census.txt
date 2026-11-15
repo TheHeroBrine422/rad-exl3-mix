@@ -1,0 +1,10 @@
+w163-uni.rad.part: 739 weights, 2.4375 bpw (file), 2.4320 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i     2.375 mad      a8g128     4 nat   336    7.240
+  exl3i     2.875 mad      f16        4 r16     1    0.458
+  exl3i     2.875 mul1i8   f16        1 nat     1    0.458
+  exl3i         4 mad      a8g128     4 nat    48    0.016
+  plain                                       353    0.005
+  output.weight      exl3i mad K2.875 r16  0.458 GB  act f16
+  token_embd.weight  exl3i mul1i8 K2.875 nat  0.458 GB  act f16
+CENSUS PASS [checked: mix base act emb version (fast)]

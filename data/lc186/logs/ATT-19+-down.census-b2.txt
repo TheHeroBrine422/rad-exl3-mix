@@ -1,0 +1,33 @@
+w163-ATT-19+-down.rad.part: 739 weights, 2.4849 bpw (file), 2.4794 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i     2.625 mad      a8g128     4 nat    36    1.438
+  exl3i      2.75 mad      a8g128     4 nat    26    0.813
+  exl3i       2.5 mad      a8g128     4 nat    58    0.746
+  exl3i      3.25 mad      a8g128     4 nat    17    0.632
+  exl3i     2.875 mad      a8g128     4 nat    18    0.540
+  exl3i         3 mad      a8g128     4 nat    22    0.477
+  exl3i     2.875 mad      f16        4 r16     1    0.458
+  exl3i     2.375 mad      a8g128     4 nat    28    0.451
+  exl3i         2 mad      a8g128     4 nat    25    0.384
+  exl3i     3.125 mad      a8g128     4 nat     9    0.283
+  exl3i     1.875 mad      a8g128     4 nat    17    0.271
+  exl3i     1.625 mul1i8   f16        1 nat     1    0.259
+  exl3i     3.375 mad      a8g128     4 nat     7    0.253
+  exl3i      1.75 mad      a8g128     4 nat     8    0.234
+  exl3i     2.125 mad      a8g128     4 nat    13    0.176
+  exl3i      2.25 mad      a8g128     4 nat    14    0.148
+  exl3i       3.5 mad      a8g128     4 nat     5    0.145
+  exl3i         1 mad      a8g128     4 nat     6    0.094
+  exl3i     1.625 mad      a8g128     4 nat     4    0.086
+  exl3i      3.75 mad      a8g128     4 nat     3    0.081
+  exl3i     1.375 mad      a8g128     4 nat     6    0.071
+  exl3i     4.125 mad      a8g128     4 nat     2    0.062
+  exl3i         4 mad      a8g128     4 nat    49    0.061
+  exl3i     3.625 mad      a8g128     4 nat     2    0.055
+  exl3i       1.5 mad      a8g128     4 nat     2    0.050
+  exl3i     1.125 mad      a8g128     4 nat     4    0.039
+  exl3i      1.25 mad      a8g128     4 nat     3    0.027
+  plain                                       353    0.005
+  output.weight      exl3i mad K2.875 r16  0.458 GB  act f16
+  token_embd.weight  exl3i mul1i8 K1.625 nat  0.259 GB  act f16
+CENSUS PASS [checked: mix base act emb version (fast)]

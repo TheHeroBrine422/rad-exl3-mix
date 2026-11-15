@@ -1,0 +1,264 @@
+{
+ "corpus": "corpus/calib.jsonl",
+ "corpus_fnv1a64": "f3fe4bf9488a5616",
+ "created": "2026-11-14",
+ "note": "#186 diagnostic golden (w163): the calib documents of data/lc186/golden/kld.json (parent, pidx, set), score_from 0",
+ "docs": [
+  {
+   "orig": 253,
+   "score_from": 0,
+   "tokens": 1148,
+   "parent": "golden-ver3-8k",
+   "pidx": 5,
+   "set": "N"
+  },
+  {
+   "orig": 607,
+   "score_from": 0,
+   "tokens": 2202,
+   "parent": "golden-ver3-8k",
+   "pidx": 15,
+   "set": "N"
+  },
+  {
+   "orig": 701,
+   "score_from": 0,
+   "tokens": 261,
+   "parent": "golden-ver3-8k",
+   "pidx": 18,
+   "set": "N"
+  },
+  {
+   "orig": 933,
+   "score_from": 0,
+   "tokens": 1194,
+   "parent": "golden-ver3-8k",
+   "pidx": 22,
+   "set": "N"
+  },
+  {
+   "orig": 4417,
+   "score_from": 0,
+   "tokens": 374,
+   "parent": "golden-ver3-8k",
+   "pidx": 97,
+   "set": "N"
+  },
+  {
+   "orig": 4681,
+   "score_from": 0,
+   "tokens": 7708,
+   "parent": "golden-ver3-8k",
+   "pidx": 100,
+   "set": "N"
+  },
+  {
+   "orig": 709,
+   "score_from": 0,
+   "tokens": 4066,
+   "parent": "golden-t183",
+   "pidx": 174,
+   "set": "N"
+  },
+  {
+   "orig": 1917,
+   "score_from": 0,
+   "tokens": 1670,
+   "parent": "golden-s173b",
+   "pidx": 38,
+   "set": "N"
+  },
+  {
+   "orig": 846,
+   "score_from": 0,
+   "tokens": 2137,
+   "parent": "golden-s173d",
+   "pidx": 43,
+   "set": "N"
+  },
+  {
+   "orig": 520,
+   "score_from": 0,
+   "tokens": 4096,
+   "parent": "golden-s173e",
+   "pidx": 52,
+   "set": "N"
+  },
+  {
+   "orig": 405,
+   "score_from": 0,
+   "tokens": 2535,
+   "parent": "golden-s173f",
+   "pidx": 99,
+   "set": "N"
+  },
+  {
+   "orig": 460,
+   "score_from": 0,
+   "tokens": 568,
+   "parent": "golden-s173f",
+   "pidx": 132,
+   "set": "N"
+  },
+  {
+   "orig": 508,
+   "score_from": 0,
+   "tokens": 640,
+   "parent": "golden-s173f",
+   "pidx": 136,
+   "set": "N"
+  },
+  {
+   "orig": 147,
+   "score_from": 0,
+   "tokens": 902,
+   "parent": "golden-s171a",
+   "pidx": 68,
+   "set": "N"
+  },
+  {
+   "orig": 3849,
+   "score_from": 0,
+   "tokens": 1454,
+   "parent": "golden-s171a",
+   "pidx": 91,
+   "set": "N"
+  },
+  {
+   "orig": 4661,
+   "score_from": 0,
+   "tokens": 1887,
+   "parent": "golden-s171b",
+   "pidx": 32,
+   "set": "N"
+  },
+  {
+   "orig": 1038,
+   "score_from": 0,
+   "tokens": 260,
+   "parent": "golden-s171b",
+   "pidx": 72,
+   "set": "N"
+  },
+  {
+   "orig": 3648,
+   "score_from": 0,
+   "tokens": 196,
+   "parent": "golden-s171b",
+   "pidx": 136,
+   "set": "N"
+  },
+  {
+   "orig": 1430,
+   "score_from": 0,
+   "tokens": 343,
+   "parent": "golden-s171c",
+   "pidx": 3,
+   "set": "N"
+  },
+  {
+   "orig": 1709,
+   "score_from": 0,
+   "tokens": 1956,
+   "parent": "golden-s171c",
+   "pidx": 139,
+   "set": "N"
+  },
+  {
+   "orig": 2924,
+   "score_from": 0,
+   "tokens": 3830,
+   "parent": "golden-s171d",
+   "pidx": 61,
+   "set": "N"
+  },
+  {
+   "orig": 974,
+   "score_from": 0,
+   "tokens": 1700,
+   "parent": "golden-s171d",
+   "pidx": 139,
+   "set": "N"
+  },
+  {
+   "orig": 78,
+   "score_from": 0,
+   "tokens": 2168,
+   "parent": "golden-ver3-8k",
+   "pidx": 1,
+   "set": "E"
+  },
+  {
+   "orig": 399,
+   "score_from": 0,
+   "tokens": 4192,
+   "parent": "golden-ver3-8k",
+   "pidx": 10,
+   "set": "E"
+  },
+  {
+   "orig": 1485,
+   "score_from": 0,
+   "tokens": 2196,
+   "parent": "golden-ver3-8k",
+   "pidx": 31,
+   "set": "E"
+  },
+  {
+   "orig": 1639,
+   "score_from": 0,
+   "tokens": 1675,
+   "parent": "golden-ver3-8k",
+   "pidx": 36,
+   "set": "E"
+  },
+  {
+   "orig": 2479,
+   "score_from": 0,
+   "tokens": 2349,
+   "parent": "golden-ver3-8k",
+   "pidx": 51,
+   "set": "E"
+  },
+  {
+   "orig": 2539,
+   "score_from": 0,
+   "tokens": 4260,
+   "parent": "golden-ver3-8k",
+   "pidx": 53,
+   "set": "E"
+  },
+  {
+   "orig": 3907,
+   "score_from": 0,
+   "tokens": 6433,
+   "parent": "golden-ver3-8k",
+   "pidx": 83,
+   "set": "E"
+  },
+  {
+   "orig": 4329,
+   "score_from": 0,
+   "tokens": 3568,
+   "parent": "golden-ver3-8k",
+   "pidx": 94,
+   "set": "E"
+  },
+  {
+   "orig": 4349,
+   "score_from": 0,
+   "tokens": 3690,
+   "parent": "golden-ver3-8k",
+   "pidx": 95,
+   "set": "E"
+  },
+  {
+   "orig": 4739,
+   "score_from": 0,
+   "tokens": 8048,
+   "parent": "golden-ver3-8k",
+   "pidx": 102,
+   "set": "E"
+  }
+ ]
+}

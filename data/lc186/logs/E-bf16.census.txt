@@ -1,0 +1,34 @@
+w163-E-bf16.rad.part: 739 weights, 3.1805 bpw (file), 3.1751 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  plain                                       354    2.548
+  exl3i     2.625 mad      a8g128     4 nat    44    1.507
+  exl3i      2.75 mad      a8g128     4 nat    31    0.870
+  exl3i      3.25 mad      a8g128     4 nat    21    0.698
+  exl3i     2.875 mad      a8g128     4 nat    21    0.555
+  exl3i         3 mad      a8g128     4 nat    26    0.516
+  exl3i       2.5 mad      a8g128     4 nat    22    0.460
+  exl3i     2.875 mad      f16        4 r16     1    0.458
+  exl3i     2.375 mad      a8g128     4 nat    28    0.451
+  exl3i         2 mad      a8g128     4 nat    25    0.384
+  exl3i     3.125 mad      a8g128     4 nat    15    0.339
+  exl3i     1.875 mad      a8g128     4 nat    17    0.271
+  exl3i     3.375 mad      a8g128     4 nat     7    0.253
+  exl3i      1.75 mad      a8g128     4 nat     8    0.234
+  exl3i     2.125 mad      a8g128     4 nat    13    0.176
+  exl3i       3.5 mad      a8g128     4 nat     8    0.175
+  exl3i      2.25 mad      a8g128     4 nat    14    0.148
+  exl3i         1 mad      a8g128     4 nat     6    0.094
+  exl3i     1.625 mad      a8g128     4 nat     4    0.086
+  exl3i      3.75 mad      a8g128     4 nat     4    0.084
+  exl3i     1.375 mad      a8g128     4 nat     6    0.071
+  exl3i     4.125 mad      a8g128     4 nat     2    0.062
+  exl3i         4 mad      a8g128     4 nat    49    0.061
+  exl3i     3.625 mad      a8g128     4 nat     2    0.055
+  exl3i       1.5 mad      a8g128     4 nat     2    0.050
+  exl3i     1.125 mad      a8g128     4 nat     4    0.039
+  exl3i      1.25 mad      a8g128     4 nat     3    0.027
+  exl3i     4.375 mad      a8g128     4 nat     1    0.003
+  exl3i      4.25 mad      a8g128     4 nat     1    0.003
+  output.weight      exl3i mad K2.875 r16  0.458 GB  act f16
+  token_embd.weight  plain - bf16  2.543 GB
+CENSUS PASS [checked: mix base act emb version (fast)]

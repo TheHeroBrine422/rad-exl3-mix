@@ -1,0 +1,47 @@
+# box2 (cards 2/3, run186-box2.sh, ref-b2.sh) vs ds8 (run186.sh, card 7 / search cards): radiance rows, eqcheck186.py
+# bar: whole-model KLD within 1e-5 per row (column 0 = KL; all four columns reported)
+
+## pick (rows-b2/pick.rows vs rows/pick.rows)
+byte-identical: True | sizes 2704416 2704416
+col 0 (KL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 1 (cand NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 2 (ref NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 3 (top1): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+max per-row |dKL| = 0 (row 0); mean KL 0.238228 vs 0.238228
+PASS (<= 1e-5)
+
+## ATT-late (rows-b2/ATT-late.rows vs rows/ATT-late.rows)
+byte-identical: True | sizes 2704416 2704416
+col 0 (KL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 1 (cand NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 2 (ref NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 3 (top1): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+max per-row |dKL| = 0 (row 0); mean KL 0.220039 vs 0.220039
+PASS (<= 1e-5)
+
+## ATT-19+ (rows-b2/ATT-19+.rows vs rows/ATT-19+.rows)
+byte-identical: True | sizes 2704416 2704416
+col 0 (KL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 1 (cand NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 2 (ref NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 3 (top1): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+max per-row |dKL| = 0 (row 0); mean KL 0.222725 vs 0.222725
+PASS (<= 1e-5)
+
+## ATT-19+-down (rows-b2/ATT-19+-down.rows vs rows/ATT-19+-down.rows)
+byte-identical: True | sizes 2704416 2704416
+col 0 (KL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 1 (cand NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 2 (ref NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 3 (top1): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+max per-row |dKL| = 0 (row 0); mean KL 0.231429 vs 0.231429
+PASS (<= 1e-5)
+
+## ATT-19+-up (rows-b2/ATT-19+-up.rows vs rows/ATT-19+-up.rows)
+byte-identical: True | sizes 2704416 2704416
+col 0 (KL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 1 (cand NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 2 (ref NLL): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+col 3 (top1): max |d| 0  rows with |d| > 1e-5: 0 of 169026
+max per-row |dKL| = 0 (row 0); mean KL 0.226027 vs 0.226027
+PASS (<= 1e-5)

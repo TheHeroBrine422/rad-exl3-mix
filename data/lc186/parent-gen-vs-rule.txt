@@ -1,0 +1,12 @@
+golden-ver3-8k rows 156030 parent gen 129627 rule 129627 parent-only(not in rule) 0 rule-only 0
+golden-t183 rows 181488 parent gen 157572 rule 157572 parent-only(not in rule) 0 rule-only 0
+golden-s171a rows 217040 parent gen 213981 rule 187998 parent-only(not in rule) 25983 rule-only 0
+golden-s171b rows 223891 parent gen 218631 rule 190139 parent-only(not in rule) 28492 rule-only 0
+golden-s171c rows 209007 parent gen 203335 rule 182024 parent-only(not in rule) 21311 rule-only 0
+golden-s171d rows 210258 parent gen 201570 rule 174010 parent-only(not in rule) 27560 rule-only 0
+golden-s173a rows 218223 parent gen 195513 rule 195513 parent-only(not in rule) 0 rule-only 0
+golden-s173b rows 202916 parent gen 176345 rule 176345 parent-only(not in rule) 0 rule-only 0
+golden-s173c rows 229045 parent gen 206816 rule 206816 parent-only(not in rule) 0 rule-only 0
+golden-s173d rows 204644 parent gen 179715 rule 179715 parent-only(not in rule) 0 rule-only 0
+golden-s173e rows 203618 parent gen 177939 rule 177939 parent-only(not in rule) 0 rule-only 0
+golden-s173f rows 203251 parent gen 182028 rule 182028 parent-only(not in rule) 0 rule-only 0
