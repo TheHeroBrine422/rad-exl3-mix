@@ -7817,3 +7817,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Not yet: rollout (fork `qc-exl3-v3-vload` build on ds8 + `hostd-final.patch` + finals copied to ds8), plane checks of
   the other 46 levels, releasing synthesized pages after the load. Rollout planned with the s186 switch (one restart),
   the 46-level plane check first. **Runtime:** neither.
+- 7:35 PM CST (lead): uniform mad K2.5 / 3 / 3.5 / 4 on the diag186 golden (head u4, emb t3, A8): doc 100 0.478 / 0.146 /
+  0.156 / 0.093, other non-Latin 0.089 / 0.045 / 0.023 / 0.016, English 0.049 / 0.025 / 0.013 / 0.007: monotone within
+  noise, so no defective level. Doc 100 = a hypersensitive outlier (Pine Script in a Persian chat), not a target. The pick's
+  blowup comes from mixing levels (hypothesis: swj scales fitted per level; QAD re-fits scales on the final mix, so no
+  separate test). The early-FFN non-Latin effect stands and is the s186 / RULES-strata target. Guard test queued: 20
+  guard-only rejects + their incumbents on t183 (36 evals, grd183-*).
