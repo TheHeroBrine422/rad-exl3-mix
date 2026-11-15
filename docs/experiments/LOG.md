@@ -7947,8 +7947,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (cap null, pool 3, cross_share0 0.15, re-seed on s186a for 2.0–6.0 top 3) + **rotate_after 58 TEMPORARY** (= s173e's
   decisions, to rotate now); restore 200 at the next restart (loader rollout). Driver log: `ROTATE s173e -> s186a`,
   `RE-SEED on s186a: 24 candidates for 8 sizes`.
-- Tracking: second tracker for t186n (`track183.py` with `TRACK_PREFIX=trk186 TRACK_FROM_LINE=3271`, no backfill; log
+- Tracking: second tracker for t186n (`track183.py` with `TRACK_PREFIX=trk186n TRACK_FROM_LINE=3271`, no backfill; log
   `/workspace/logs/track186.log`); guard prefixes + trk186. w165's reranker not applied (no arm passed).
 - Pending: verify the first early-stopped s186a eval (strata true, no `w`), the re-seed's pool events; direct loader (#185)
   as its own restart after the 46-level plane check (byte-identical path, no re-seed). **Runtime:** neither.
 - 8:20 PM CST: fit 0107 (b1) rmse_log 0.56 / chi2 161 (was 0.05 / 2.4) = ONE row: prior row w158-e-b6-t6 (emb t6, 0.00066) predicted e^-13.4 low (deterministic on rerun; next residual 0.39). The t6 embedding is never used at 2.0–2.5, so the moves are unaffected; noted, watch the next b1 fits (`/tmp/fitdbg.py` on colo lists residuals).
+- 8:10 PM CST (user): status plot now puts the held-out t183 panel on top (convplot4 `--track-top`) with w164's t186n overlay (IQR N / board lines, incumbents' t186n reads as squares, tag prefix trk186n); the training-estimate panel moves below.

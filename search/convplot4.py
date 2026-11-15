@@ -211,6 +211,7 @@ def main(argv=None):
     ap.add_argument("--track-name", default="t183")
     ap.add_argument("--track-strata", help="(#186) refs186.jsonl: the references' L (t183) / N (t186n) / board readings")
     ap.add_argument("--track-n", help="(#186) results.jsonl with trk186n-<incumbent tag> rows (the N supplement's incumbent reads)")
+    ap.add_argument("--track-top", action="store_true", help="(#186) the tracking panel on top, the training estimate below")
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     a = ap.parse_args(argv)
@@ -259,9 +260,13 @@ def main(argv=None):
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
         if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
             fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1])
-            ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax)
+            if a.track_top:                                 # (user 11-14) held-out tracking on top, training estimate below
+                axT = fig.add_subplot(gs[0]); ax = fig.add_subplot(gs[1], sharex=axT)
+                ax.set_xlabel("eval step (search results, in order)")
+            else:
+                ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax)
+                axT.set_xlabel("eval step (search results, in order)")
             ax2 = plt.figure().add_subplot()                # drawn into a throwaway figure, never saved
-            axT.set_xlabel("eval step (search results, in order)")
         else:
             ax = fig.add_subplot(gs[0]); axT = fig.add_subplot(gs[1], sharex=ax); ax2 = fig.add_subplot(gs[2], sharex=ax)
         track_panel(axT, W, a, sizes)
