@@ -1,9 +1,9 @@
 | allocator | files | stale (slice rotated) | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |
 |---|---|---|---|---|---|---|---|---|---|
-| anom | 41 | 0 | 40 | 24 | 2 | 5 | 14 | 3 | 4.5j 2.5j 2A 4A 5j 2.5j 2j |
+| anom | 41 | 0 | 41 | 25 | 2 | 5 | 15 | 3 | 4.5j 2.5j 2A 4A 5j 2.5j 2j |
 | rankreg | 56 | 0 | 56 | 18 | 1 | 5 | 12 | 0 | 2.5j 2A 2j 6j 2j 4.5j |
-| ens | 76 | 13 | 59 | 22 | 3 | 1 | 18 | 0 | 2.5A 2.5A 3.5A 5j |
-| xplant | 41 | 0 | 28 | 11 | 2 | 1 | 8 | 0 | 3.5A 2.5j 2A |
+| ens | 76 | 14 | 62 | 24 | 3 | 1 | 18 | 2 | 2.5A 2.5A 3.5A 5j |
+| xplant | 44 | 8 | 36 | 13 | 2 | 1 | 8 | 2 | 3.5A 2.5j 2A |
 | xavg | 16 | 0 | 16 | 9 | 2 | 0 | 7 | 0 | 2.5A 5A |
 | cons | 5 | 0 | 5 | 2 | 0 | 1 | 1 | 0 | 4.5j |
 | tr | 18 | 0 | 18 | 7 | 1 | 0 | 6 | 0 | 2.5A |
@@ -15,7 +15,8 @@
 | pavg | 6 | 0 | 6 | 3 | 0 | 0 | 3 | 0 |  |
 | dxp | 11 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | mom | 8 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| floor | 6 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| floor | 8 | 4 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| smooth | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 
 | file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |
 |---|---|---|---|---|---|
@@ -312,7 +313,7 @@
 | w172-rankreg-5-4-i2.json | rankreg | 5 | manual-02130 | tentative -0.0149 z -1.07 k 313 | reject +0.0023 z +0.49 |
 | w172-xplant-3.5-mid-i3.json | xplant | 3.5 | manual-02131 | reject +0.0193 z +1.18 k 99 | - |
 | w172-ens-6-w0.5-R0.25-i3.json | ens | 6 | manual-02133 | reject +0.0065 z +0.24 k 221 stopped | - |
-| w172-anom-ssm_outd4-3-i3.json | anom | 3 | manual-02134 | tentative -0.0042 z -1.08 k 313 | pending |
+| w172-anom-ssm_outd4-3-i3.json | anom | 3 | manual-02134 | tentative -0.0042 z -1.08 k 313 | reject -0.0017 z -0.53 |
 | w172-ens-5w0.5-R0.5.json | ens | 5 | manual-02136 | reject +0.0364 z +1.19 k 109 | - |
 | w172-xplant-4-half.json | xplant | 4 | manual-02137 | reject +0.0004 z +0.03 k 297 stopped | - |
 | w172-ens-6-w0.75-R0.25-i3.json | ens | 6 | manual-02141 | reject +0.0128 z +0.69 k 313 | - |
@@ -323,26 +324,35 @@
 | w172-floor-4.json | floor | 4 | manual-02150 | reject +0.0387 z +1.67 k 60 stopped | - |
 | w172-xplant-4-hi2.json | xplant | 4 | manual-02152 | reject -0.0010 z -0.07 k 313 | - |
 | w172-anom-ssm_outd5-2.json | anom | 2 | manual-02153 | tentative -0.0018 z -1.63 k 313 | pending |
-| w172-xplant-4-lo-i3.json | xplant | 4 | manual-02154 | pending | - |
+| w172-xplant-4-lo-i3.json | xplant | 4 | manual-02154 | reject +0.0009 z +0.06 k 313 | - |
 | w172-anom-ssm_zd6-2.5-i3.json | anom | 2.5 | manual-02156 | reject +0.0009 z +0.34 k 213 stopped | - |
-| w172-ens-4.5-w0.75-R0.25-re.json | ens | 4.5 | manual-02158 | pending | - |
-| w172-xplant-4-lo2.json | xplant | 4 | manual-02160 | pending | - |
-| w172-anom-ssm_zd6-2.json | anom | 2 | manual-02161 | pending | - |
-| w172-ens-6w0.5-R0.25.json | ens | 6 | manual-02162 | pending | - |
-| w172-xplant-4-mid-i3.json | xplant | 4 | manual-02163 | pending | - |
-| w172-floor-5.json | floor | 5 | manual-02164 | pending | - |
-| w172-xplant-4.5-half.json | xplant | 4.5 | manual-02165 | pending | - |
-| w172-xplant-4.5-hi-i3.json | xplant | 4.5 | manual-02167 | pending | - |
-| w172-ens-5-w0.75-R0.25-re.json | ens | 5 | manual-02168 | pending | - |
-| w172-xplant-4.5-hi2.json | xplant | 4.5 | manual-02169 | pending | - |
-| w172-ens-6w0.5-R0.5.json | ens | 6 | manual-02170 | pending | - |
-| w172-xplant-4.5-lo-i3.json | xplant | 4.5 | manual-02171 | pending | - |
-| w172-floor-6.json | floor | 6 | manual-02172 | pending | - |
-| w172-xplant-4.5-lo2.json | xplant | 4.5 | manual-02173 | pending | - |
-| w172-xplant-4.5-mid-i3.json | xplant | 4.5 | manual-02174 | pending | - |
-| w172-floor-3.json | floor | 3 | manual-02175 | pending | - |
-| w172-xplant-5-half.json | xplant | 5 | manual-02176 | pending | - |
-| w172-xplant-5-hi-i3.json | xplant | 5 | manual-02177 | pending | - |
-| w172-floor-4.5.json | floor | 4.5 | manual-02178 | pending | - |
-| w172-xplant-5-lo-i3.json | xplant | 5 | manual-02180 | pending | - |
-| w172-xplant-5-lo2.json | xplant | 5 | manual-02182 | pending | - |
+| w172-ens-4.5-w0.75-R0.25-re.json | ens | 4.5 | manual-02158 | tentative -0.0062 z -0.60 k 313 | pending |
+| w172-xplant-4-lo2.json | xplant | 4 | manual-02160 | reject +0.0179 z +0.67 k 213 stopped | - |
+| w172-anom-ssm_zd6-2.json | anom | 2 | manual-02161 | tentative -0.0052 z -1.05 k 313 | pending |
+| w172-ens-6w0.5-R0.25.json | ens | 6 | manual-02162 | tentative -0.0133 z -1.33 k 313 | pending |
+| w172-xplant-4-mid-i3.json | xplant | 4 | manual-02163 | tentative -0.0069 z -0.43 k 313 | pending |
+| w172-floor-5.json | floor | 5 | manual-02164 | reject +0.0577 z +3.13 k 43 stopped | - |
+| w172-xplant-4.5-half.json | xplant | 4.5 | manual-02165 | tentative -0.0119 z -1.43 k 313 | pending |
+| w172-xplant-4.5-hi-i3.json | xplant | 4.5 | manual-02167 | reject +0.0060 z +0.36 k 213 stopped | - |
+| w172-ens-5-w0.75-R0.25-re.json | ens | 5 | manual-02168 | reject +0.0030 z +0.23 k 263 stopped | - |
+| w172-xplant-4.5-hi2.json | xplant | 4.5 | manual-02169 | stale | - |
+| w172-ens-6w0.5-R0.5.json | ens | 6 | manual-02170 | stale | - |
+| w172-xplant-4.5-lo-i3.json | xplant | 4.5 | manual-02171 | stale | - |
+| w172-floor-6.json | floor | 6 | manual-02172 | reject +0.0553 z +1.06 k 109 stopped | - |
+| w172-xplant-4.5-lo2.json | xplant | 4.5 | manual-02173 | reject +0.0232 z +1.26 k 99 stopped | - |
+| w172-xplant-4.5-mid-i3.json | xplant | 4.5 | manual-02174 | reject +0.0513 z +1.47 k 72 stopped | - |
+| w172-floor-3.json | floor | 3 | manual-02175 | stale | - |
+| w172-xplant-5-half.json | xplant | 5 | manual-02176 | stale | - |
+| w172-xplant-5-hi-i3.json | xplant | 5 | manual-02177 | reject +0.0981 z +1.49 k 70 stopped | - |
+| w172-floor-4.5.json | floor | 4.5 | manual-02178 | stale | - |
+| w172-xplant-5-lo-i3.json | xplant | 5 | manual-02180 | stale | - |
+| w172-xplant-5-lo2.json | xplant | 5 | manual-02182 | stale | - |
+| w172-floor-2.5.json | floor | 2.5 | manual-02184 | stale | - |
+| w172-xplant-5-mid-i3.json | xplant | 5 | manual-02185 | stale | - |
+| w172-xplant-6-lo-i3.json | xplant | 6 | manual-02187 | stale | - |
+| w172-floor-2.json | floor | 2 | manual-02191 | stale | - |
+| w172-xplant-6-lo2.json | xplant | 6 | manual-02192 | stale | - |
+| w172-smooth-3.5.json | smooth | 3.5 | manual-02193 | stale | - |
+| w172-smooth-4.json | smooth | 4 | manual-02194 | stale | - |
+| w172-smooth-5.json | smooth | 5 | manual-02195 | stale | - |
+| w172-smooth-6.json | smooth | 6 | manual-02197 | stale | - |
