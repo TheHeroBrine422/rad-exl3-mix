@@ -254,3 +254,21 @@ committed before the data they affect.
   eight incumbents are eight noisy searches of one size-free shape; their mean is a better shape than any one of them.
   (This is #192's consensus idea on live incumbents only, without the local-linear size trend.)
 - Rounds vs new incumbents continue for ens, anom, rankreg, tr (amendment 9).
+
+## Amendment 11 — 2026-11-15 3:55 PM CST (system clock; before any file below is in the inbox)
+- **Time box (lead note 3:15 PM CST, user):** no 6 PM stop; the run continues until the decide / probe budget
+  (600 / 100, amendment 7) is spent or the lead / user stops it. Interim reports: `out/w172-interim.md` every ~3 h.
+- **Automatic rounds:** about every 45 min `round193.sh` regenerates, from the then-current incumbents (snap1 refit and
+  anomaly table unchanged; no new training data), the allocators that have confirmed: `anom`, `xplant`, `xavg`,
+  `rankreg` (top 3 per size, training rows as round 1), `ens`. Files identical to an assignment already in the run or
+  in my queue are dropped, so a round only adds files where an incumbent or pool changed. Queue order = confirmed /
+  decided so far (anom, xplant, xavg, rankreg, ens). Dropped (0 confirmed in ≥ 8 decided): dxp, mom, spread, cap; and
+  not regenerated: curve, rob, pavg, tr, recal (their waiting files stay).
+- **`anom` at every size of the flag's band** (was: the 1–2 sizes with most paired rows), top 12 flags, same prefix.
+- **New allocator `anomall`, prefix `w172-anomall-…`:** every flagged group of the size's band (top 12 distinct flags,
+  |z| ≥ 3) moved one own-family menu step in its flag's direction at once, bytes rebalanced outside those groups by my
+  fit.py refit (bal193); variant `t3` = only the three largest-|z| flags. Hypothesis: the flagged effects are
+  additive, so applying all of them at once gains more than each alone (anom: 6 confirmed of 26 single-group tests).
+- **`xavg` variants** (same prefix): `h` = half way from the incumbent to the `w` target; `p` = `w` over the pool
+  members of all sizes instead of the incumbents only. Hypotheses: `h` keeps the size's own structure where the full
+  step lost at stage 1; `p` averages more independent searches, so less noise.
