@@ -65,15 +65,24 @@ def main():
         for arm, p in (("a", c["pred_live"]), ("curve", pred[c["tag"]])):
             rows[arm].append({"tag": c["tag"], "band": c["band"], "stopped": c["stopped"], "audit": c["audit"], "meas": c["logr"],
                               "pred": p, "chunk": a.step * ((c["result_idx"] - 1) // a.step)})
+    # ensemble in prediction space: per band, the mean of the two arms' within-band ranks
+    rows["ens"] = []
+    for b in ("b1", "b2", "b3", "b4"):
+        ia = [i for i, r in enumerate(rows["a"]) if r["band"] == b]
+        if not ia: continue
+        from scipy.stats import rankdata
+        ra = rankdata([rows["a"][i]["pred"] for i in ia]); rc = rankdata([rows["curve"][i]["pred"] for i in ia])
+        for k, i in enumerate(ia):
+            r = dict(rows["a"][i]); r["pred"] = float((ra[k] + rc[k]) / 2 / len(ia) - 0.5); rows["ens"].append(r)
     tab = {arm: MT.band_metrics(rows[arm], arm) for arm in rows}
-    boot = MT.boot_draws(rows, "curve", "a")
-    res = {"table": tab, "boot": boot, "n": len(rows["a"]), "step": a.step}
+    boot = MT.boot_draws(rows, "curve", "a"); boot_ens = MT.boot_draws(rows, "ens", "a")
+    res = {"table": tab, "boot": boot, "boot_ens": boot_ens, "n": len(rows["a"]), "step": a.step}
     json.dump(res, open(a.out, "w"), indent=1, default=float)
     for arm in rows:
         t = tab[arm]
         print(f"{arm}: S {t['S']:.3f} rho b1 {t['b1']['rho']:.3f} b2 {t['b2']['rho']:.3f} b3 {t['b3']['rho']:.3f} "
               f"(whole {t['b1']['n_whole']}/{t['b2']['n_whole']}/{t['b3']['n_whole']}) hit b1/b2/b3 {t['b1']['hit']:.2f}/{t['b2']['hit']:.2f}/{t['b3']['hit']:.2f}")
-    print("dS curve - a:", boot)
+    print("dS curve - a:", boot); print("dS ens - a:", boot_ens)
 
 
 if __name__ == "__main__":
