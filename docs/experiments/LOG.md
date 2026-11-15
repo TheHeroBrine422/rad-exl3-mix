@@ -7665,3 +7665,8 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither.
 - **Files:** `search/v3/earlystop-strata.patch`, `search/v3/driver-strata.patch`, `search/v3/SWITCH-strata.md`, `/workspace/rad-local/workers/w164/registry-staged-186.json` (not in the repo)
 
+
+### 2026-11-14 6:25 PM CST · #183 · Sizes below 2.0 paused (user)
+- User: focus on the target range; 1.25 / 1.5 / 1.75 stopped (`STOP-<size>`; incumbents kept), 2.0 stays; 7.0 already
+  stopped. Size 1.0 not added. Search effort now goes to 2.0-6.0 (b1 = 2.0 / 2.5 only). The sub-1 calibration rows
+  (w158 wave 2) still finish: the K < 1 options may help 2.0 on insensitive tensors. **Runtime:** neither.
