@@ -1,44 +1,62 @@
-# data/strata190 — #190 supply check for the 2× cooldown slices (w169, 2026-11-14 night)
+# data/strata190 — #190 cooldown pair s190a (search) / s190b (confirm), built (w169, 2026-11-14 11:40 PM CST restart)
 
-Question (RULES-cooldown §1): can the calib c side and the xcorp x side give six 2× slices s190a–f (c ~90k scored positions,
-x 260 pieces, N share 15.5–19 % c / 15–20 % x, ≥ 6 scripts, ≥ 1.9× the matching s186 part)? Answer: **no. The x side gives
-one x part, so no pair can be built, and nothing was built** (RULES-cooldown: "build as many full pairs as possible (≥ 2)
-and report"; never shrink a slice).
+RULES-cooldown amendment (11-14 11:40 PM CST): one 2×-Latin pair matched to s186a / s186b. Built on ds8 (CPU, nice), copied to
+box2, staged (not ready, not live). Nothing was registered in the live registry, no driver was touched.
 
-## Files
-| file | what |
-|---|---|
-| `supply190.json` | counts only: the exclusion sizes per source, the c pool (free docs, N docs by script, N gen), the x pool (unused pieces by batch, N pieces, N gen, mean gen per piece) and the per-2× x part arithmetic |
-| `draw190.err.txt` | the dry draw's summary (stderr): the six c parts, the one x part, x_short, calib stats |
-| `plan190-dryrun.json` | the dry draw's plan (indices only: calib documents and xc8k-b1 pieces); **not built, not for use** |
-| `check190.out` | check190 on the dry plan: 37 PASS, 8 FAIL (the x count / x_short, and the six size checks) |
+## Pair (from `plan190.json`; indices only, no text)
+| part | docs / pieces | N | L | N gen | L gen (match) | N share of gen | scripts (N) | max script / N gen | scored positions |
+|---|---|---|---|---|---|---|---|---|---|
+| s190a-c | 104 calib | 7 | 97 | 6,488 | 101,174 (s186a 50,052: 2.02×) | 6.0 % | 5 | 30.6 % | 125,174 (s186a 64,863) |
+| s190b-c | 103 calib | 8 | 95 | 6,287 | 87,588 (s186b 43,420: 2.02×) | 6.7 % | 4 | 39.2 % | 111,031 (s186b 64,478) |
+| s190a-x | 195 xc8k-b1 | 24 | 171 | 25,526 | 245,112 (s186a 121,926: 2.01×) | 9.4 % | 6 | 22.2 % | — |
+| s190b-x | 214 xc8k-b1 | 17 | 197 | 24,714 | 216,502 (s186b 108,030: 2.00×) | 10.2 % | 6 | 33.1 % | — |
 
-Code: `search/v3/run190/` (`supply190.py`, `draw190.py` = draw186 with the 2× targets, the exclusion set and a stop on x
-shortage, `check190.py` = check186 with the 2× sizes). Run on ds8 with `/data/q27/venv/bin/python3 -I`.
+Mixes (goldmix, x / c interleaved): s190a 299 docs / 422,278 rows (378,300 gen rows); s190b 317 docs / 375,453 rows (335,091 gen rows).
+c and x are distinct within each part and across the pair (207 calib docs, 409 pieces). N sizes: c 15 free N documents split 7 + 8
+(12,775 N gen in all, the whole free pool); x 41 unused b1 N pieces split 24 + 17 (50,240 N gen in all).
 
-## Supply (ds8; snapshots of the live registry and the ledger taken 11-14 11:19 PM CST)
-- **Exclusion (c):** 922 calib documents (s171a–d, s173a–f, s186a–f, t183, t186n, golden-final750 c1/c3, and every
-  ready / active / staged registry c doc). Exclusion (x): the xsupply186 used flags + s186a–f x (780 pieces) + t186n x (2).
-- **c side:** 1,134 fit + search documents, 425 free. Non-Latin (N) in the merged pool: 64 documents, of which **49 are already
-  used** (t186n monitor 17, s186 c parts 16, s17x c parts 15, t183 1). **15 free N documents** (12,775 scored N gen positions,
-  6 scripts; ARABIC 6 docs; largest script share 32 %). Calib has 223 N documents in all; 159 sit in verify / qad (not
-  search pools).
-- **c arithmetic:** a 2× c part needs ~13.2k N gen positions at 17 % (or 12.8k at the 15.5 % floor). The free N pool is
-  exhausted, so the six parts can only be built by **reusing the same 15 N documents in every part** (dry run: 127 distinct
-  c documents, 341 repeated uses). A part then tops out near 94k scored positions at the 15.5 % floor.
-- **x side:** xc8k batches with a golden and metadata (b1, b2-c0/c1/c2): 2,794 unused pieces, of which 52 N (b1 41 with
-  50,240 N gen, exact; b2 11 with ~14k, scored-position upper bound). A 2× x part at 15–16 % needs ~40 N pieces (~49k N
-  gen) because the L pieces average ~1,270 gen. **Only one x part fits** (dry run: s190a, 260 pieces, 39 N, N share 15.7 %,
-  7 scripts; s190b would have 2 N pieces left).
-- **Not used:** tr32k batches (= our pi-sessions, never for selection), xc8k pieces outside the exclusion set's flags.
+## Supply (`supply190.json`; the restart's run gives the same numbers as the 11:25 PM run, every field)
+- Calib: 1,134 fit + search documents, 922 excluded (s171a–d, s173a–f, s186a–f, t183, t186n, final750 c1/c3, every ready /
+  active / staged registry c document), 425 free: 15 N (ARABIC 6, CJK 4, CYRILLIC 2, HEBREW, HANGUL, BENGALI), 410 L.
+- xcorp: xc8k-b1 2,542 unused pieces, 41 of them N (CYRILLIC 9, HEBREW 5, ARABIC 15, CJK 8, GREEK 2, THAI, HANGUL); 2,501 L.
+  The 11 unused N pieces in the b2 batches are not used (no gen mask / pickx path on ds8 for them yet).
+- Exclusion: calib from every earlier golden's `orig` (s171, s173, s186, t183, t186n, final750 c1/c3) and the registry; xcorp from
+  xsupply186's used flags and every earlier x golden's `xdoc` (global identity).
 
-## Size check (≥ 1.9× the matching s186 part)
-s186 c parts built at 59–69k scored positions (`data/strata186/check186.out`), so 1.9× needs 112–130k. The N band caps a c
-part near 94k (above). The RULES-cooldown "~90k" target and the 1.9× check cannot both hold with this N pool.
+## Checks (`check190.out`, final run on the current registry: ALL PASS)
+- Two c parts, two x parts; c and x distinct within and across the pair; every c document fit or search, outside the exclusion set;
+  every x piece xc8k-b1, outside the exclusion set (xdoc); the N documents / pieces of the pair are exactly the free / unused N ones,
+  each once.
+- ≥ 4 non-Latin scripts per part (5, 4, 6, 6); no script above half of a part's N gen (max 39 %).
+- L gen of each part ≥ 1.9× the matching s186 part's (2.02, 2.02, 2.01, 2.00).
+- N share: printed, not banded (amendment); 6.0 / 6.7 % (c), 9.4 / 10.2 % (x).
+- `verify190.json` (after the build): every built golden holds exactly the plan's documents; every document carries stratum and
+  script; gen.u8 sizes match the rows; the mixes hold each part's documents once. bad = [].
 
-## Re-run (when new N supply exists)
-1. Draw: `nice -n 19 /data/q27/venv/bin/python3 -I /data/q27/w169/code/search/v3/run190/draw190.py PLAN.json 190` (ds8; reads the
-   snapshots in `/data/q27/w169/in/`; refresh them from the live registry and `eval/pools/ledger.jsonl` first, and only with
-   the driver stopped or between writes).
-2. Check: `check190.py PLAN.json calib-kld-strata.json xsupply.jsonl gm-b1.u8` (all six parts, x_short null, sizes).
-3. Build (not written yet): a `build190.py` from `build186.py` (its t186n block and the 130-piece assumptions removed).
+## Build and copies
+- Build: `build190.py` (w164's `build186.py` without the t186n monitor; `pickx186.py` from run186w, unchanged). Built on ds8 with
+  `/data/q27/venv/bin/python3` (the system python has no transformers; the first attempt failed on that, its c part was kept).
+- Copies: `/data/q27/w169/slices/golden-s190{a,b}{,-c,-x}` on ds8 and box2 (same path, rsync from ds8, `dbox` key). md5 of every
+  file (36 per side) identical on both: `md5-golden-s190.txt`. Disk after the copy: ds8 488 GB free, box2 329 GB free (6.2 GB copied).
+- `build.log`: the build log (the first failed run and the rerun, both shown).
+
+## Ledger and registry (staged)
+- Ledger: 207 rows added to `eval/pools/ledger.jsonl` (`ledger_add.py`, roles `ledger-roles-190.json`, date 2026-11-14): golden-s190a-c
+  104 rows, golden-s190b-c 103, role `select` (the ledger's search role; the slice's search / confirm role is in the note).
+  `ledger-roles-190.json` is not merged into `eval/pools/ledger-roles.json` (lead's call: needed only for a mkledger rebuild).
+- Registry: `/workspace/rad-local/workers/w169/registry-staged-190.json` = the live registry (md5 8366d096…, 11:46 PM CST) +
+  s190a (status staged) + s190b (status staged, `"role": "confirm"`); live slices and doc_decisions unchanged. Calib doc ids
+  checked against every other slice (none). x doc ids are `x:<source>:<orig>`; five of them also occur as strings in s173c / s173d /
+  s173e / s173f for DIFFERENT pieces (xdoc differs, e.g. `x:fineweb-edu:474`: 41799 in s173c, 2281 in s190a). The x identity is the
+  xdoc (checked above); the registry's doc_decisions for x ids are counts only (no draw reads them).
+- Candidate config: `/workspace/rad-local/workers/w169/driver-190.json` = the live driver.json (md5 4a87755c…) with
+  `confirm.pairs` + `["s190a", "s190b"]` (now `[s186a,s186b], [s186c,s186d], [s190a,s190b]`); nothing else changed.
+- Switch procedure: `search/v3/run190/SWITCH-190.md`.
+
+## Reruns
+`run190/README.md` (rerun order, paths). Plan inputs as of 11:46 PM CST; `draw190.py` re-run on the newer registry gives the
+same plan (the s186c decision counts moved; no c or x selection changed).
+
+## attempt1/ (the first run, superseded)
+The six-pair dry run of 11:25 PM CST (supply check, draw, check, README): `attempt1/`. Its checks failed (x parts: 1 of 6; the size
+checks); nothing from it was built or registered.

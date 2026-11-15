@@ -1,47 +1,35 @@
-PASS six c parts 6
-FAIL six x parts (the supply gives all six) 1 built; x_short = {'from_part': 's190b', 'built': 1, 'N_left': 2, 'N_gen_left': 1039, 'best_share': None, 'best_N_pieces': None}
-FAIL x_short is null {'from_part': 's190b', 'built': 1, 'N_left': 2, 'N_gen_left': 1039, 'best_share': None, 'best_N_pieces': None}
-PASS x parts: 260 pieces each 
-PASS x pieces distinct across the parts 260 pieces, 260 distinct
-PASS x pieces outside the exclusion set (earlier x parts, s186, t186n, final-x, golden-final750) 
+PASS c parts: s190a, s190b ['s190a', 's190b']
+PASS x parts: s190a, s190b ['s190a', 's190b']
+PASS x_short absent or null None
+PASS x pieces distinct within each part and across the pair 409 pieces, 409 distinct
 PASS x pieces are xc8k-b1 
-PASS s190a-x N gen share in [0.15, 0.2] 0.1569 (N gen 49201 of 313573)
-PASS s190a-x >= 6 scripts 7 scripts
-PASS s190a-x max script <= 1/3 of N gen 0.260 {'CYRILLIC': 12807, 'ARABIC': 8781, 'HEBREW': 8744}
-PASS s190a-x N pieces are N 
-PASS s190a-x size >= 1.9 x 130 pieces 
+PASS x pieces outside the exclusion set (earlier x parts, s186, t186n, final-x, golden-final750) 
+PASS x N pieces: each unused non-Latin b1 piece once (the two parts together) 41 used, 41 unused N in b1
+PASS x N pieces are N 
+PASS s190a-x >= 4 non-Latin scripts 6 scripts {'CYRILLIC': 5655, 'HEBREW': 5565, 'THAI': 5304, 'ARABIC': 4401, 'CJK': 3414, 'GREEK': 1187}
+PASS s190a-x max script <= 1/2 of N gen 0.222
+INFO s190a-x N gen share 0.0943 (N gen 25526 of 270638; 24 N units)
+PASS s190a-x L gen >= 1.9 x s186a 245112 vs 121926 (2.010 x)
+INFO s190a-x pieces 195 (N 24, L 171); s186 s186a: 130 pieces
+PASS s190b-x >= 4 non-Latin scripts 6 scripts {'CYRILLIC': 8191, 'HANGUL': 5861, 'ARABIC': 4380, 'HEBREW': 3179, 'GREEK': 2106, 'CJK': 997}
+PASS s190b-x max script <= 1/2 of N gen 0.331
+INFO s190b-x N gen share 0.1025 (N gen 24714 of 241216; 17 N units)
+PASS s190b-x L gen >= 1.9 x s186b 216502 vs 108030 (2.004 x)
+INFO s190b-x pieces 214 (N 17, L 197); s186 s186b: 130 pieces
 PASS c documents distinct within each part 
-INFO c documents: 468 uses, 127 distinct, 341 repeated uses (reuse across parts)
+PASS c documents distinct across the pair 207 uses, 207 distinct
 PASS c documents: fit or search pool 
 PASS c documents outside the exclusion set (s17*, s186a-f, t183, t186n, golden-final750, registry) 
-PASS s190a-c N gen share in [0.155, 0.19] 0.1624 (N gen 12775 of 78664)
-PASS s190a-c >= 6 scripts 6 scripts
-PASS s190a-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190a-c N docs are N 
-FAIL s190a-c size >= 1.9 x s186a scored positions 88154 vs 64863
-PASS s190b-c N gen share in [0.155, 0.19] 0.1666 (N gen 12775 of 76690)
-PASS s190b-c >= 6 scripts 6 scripts
-PASS s190b-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190b-c N docs are N 
-FAIL s190b-c size >= 1.9 x s186b scored positions 87660 vs 64478
-PASS s190c-c N gen share in [0.155, 0.19] 0.1609 (N gen 12775 of 79412)
-PASS s190c-c >= 6 scripts 6 scripts
-PASS s190c-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190c-c N docs are N 
-FAIL s190c-c size >= 1.9 x s186c scored positions 88070 vs 59841
-PASS s190d-c N gen share in [0.155, 0.19] 0.1709 (N gen 12775 of 74769)
-PASS s190d-c >= 6 scripts 6 scripts
-PASS s190d-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190d-c N docs are N 
-FAIL s190d-c size >= 1.9 x s186d scored positions 88820 vs 63300
-PASS s190e-c N gen share in [0.155, 0.19] 0.1555 (N gen 12775 of 82180)
-PASS s190e-c >= 6 scripts 6 scripts
-PASS s190e-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190e-c N docs are N 
-FAIL s190e-c size >= 1.9 x s186e scored positions 88555 vs 68633
-PASS s190f-c N gen share in [0.155, 0.19] 0.1590 (N gen 12775 of 80370)
-PASS s190f-c >= 6 scripts 6 scripts
-PASS s190f-c max script <= 1/3 of N gen 0.323 {'ARABIC': 4123, 'CJK': 3050, 'HANGUL': 2465}
-PASS s190f-c N docs are N 
-FAIL s190f-c size >= 1.9 x s186f scored positions 87073 vs 59079
-FAILED: ['six x parts (the supply gives all six)', 'x_short is null', 's190a-c size >= 1.9 x s186a scored positions', 's190b-c size >= 1.9 x s186b scored positions', 's190c-c size >= 1.9 x s186c scored positions', 's190d-c size >= 1.9 x s186d scored positions', 's190e-c size >= 1.9 x s186e scored positions', 's190f-c size >= 1.9 x s186f scored positions']
+PASS c N documents: each free non-Latin calib document once (the two parts together) 15 used, 15 free N
+PASS c N documents are N 
+PASS s190a-c >= 4 non-Latin scripts 5 scripts {'ARABIC': 1984, 'BENGALI': 1777, 'CJK': 1536, 'HEBREW': 969, 'CYRILLIC': 222}
+PASS s190a-c max script <= 1/2 of N gen 0.306
+INFO s190a-c N gen share 0.0603 (N gen 6488 of 107662; 7 N units)
+PASS s190a-c L gen >= 1.9 x s186a 101174 vs 50052 (2.021 x)
+INFO s190a-c docs 104 (N 7, L 97), scored positions 125174; s186 s186a: 53 docs, 64863 positions
+PASS s190b-c >= 4 non-Latin scripts 4 scripts {'HANGUL': 2465, 'ARABIC': 2139, 'CJK': 1514, 'CYRILLIC': 169}
+PASS s190b-c max script <= 1/2 of N gen 0.392
+INFO s190b-c N gen share 0.0670 (N gen 6287 of 93875; 8 N units)
+PASS s190b-c L gen >= 1.9 x s186b 87588 vs 43420 (2.017 x)
+INFO s190b-c docs 103 (N 8, L 95), scored positions 111031; s186 s186b: 44 docs, 64478 positions
+ALL PASS

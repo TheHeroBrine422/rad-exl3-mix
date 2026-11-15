@@ -1,0 +1,109 @@
+{
+ "c_excl_sources": {
+  "golden-s171a-c": 57,
+  "golden-s171b-c": 43,
+  "golden-s171c-c": 58,
+  "golden-s171d-c": 54,
+  "golden-s173a-c": 36,
+  "golden-s173b-c": 45,
+  "golden-s173c-c": 34,
+  "golden-s173d-c": 34,
+  "golden-s173e-c": 43,
+  "golden-s173f-c": 35,
+  "golden-s186a-c": 53,
+  "golden-s186b-c": 44,
+  "golden-s186c-c": 45,
+  "golden-s186d-c": 49,
+  "golden-s186e-c": 39,
+  "golden-s186f-c": 50,
+  "golden-t183-c": 48,
+  "golden-t186n-c": 20,
+  "golden-final750-c": 213,
+  "registry-c (ready/active/staged)": 240
+ },
+ "c_excl_total": 922,
+ "c": {
+  "merged_pool_docs": 1134,
+  "free_docs": 425,
+  "N_free_docs": 15,
+  "N_free_gen": 12775,
+  "N_scripts": {
+   "HEBREW": 1,
+   "ARABIC": 6,
+   "CYRILLIC": 2,
+   "CJK": 4,
+   "HANGUL": 1,
+   "BENGALI": 1
+  },
+  "N_gen_by_script": {
+   "HEBREW": 969,
+   "ARABIC": 4123,
+   "CYRILLIC": 391,
+   "CJK": 3050,
+   "HANGUL": 2465,
+   "BENGALI": 1777
+  },
+  "L_free_docs": 410,
+  "L_free_gen": 441557,
+  "L_gen_per_scored_pos": 0.863,
+  "N_gen_per_scored_pos": 1.0,
+  "N_pos_per_part_needed_at_17pct": 13205,
+  "N_positions_available_if_no_reuse": 12775,
+  "N_docs_available_for_a_part_with_6_scripts": true
+ },
+ "x_added_used_by_built_or_final_parts": {
+  "golden-s186a-x": 130,
+  "golden-s186b-x": 130,
+  "golden-s186c-x": 130,
+  "golden-s186d-x": 130,
+  "golden-s186e-x": 130,
+  "golden-s186f-x": 130,
+  "golden-t186n-x": 2
+ },
+ "x_sensitivity_docs_in_other_xgoldens": {
+  "golden-x181": 150,
+  "golden-x181g": 150,
+  "golden-hd122-x": 130,
+  "golden-h177-x": 130
+ },
+ "x": {
+  "unused_docs": 2794,
+  "unused_by_batch": {
+   "xc8k-b1": 2542,
+   "xc8k-b2-c0": 41,
+   "xc8k-b2-c1": 135,
+   "xc8k-b2-c2": 76
+  },
+  "N_docs": 52,
+  "N_by_batch": {
+   "xc8k-b1": 41,
+   "xc8k-b2-c0": 1,
+   "xc8k-b2-c1": 9,
+   "xc8k-b2-c2": 1
+  },
+  "N_gen": 64421,
+  "N_scripts": {
+   "CYRILLIC": 14,
+   "HEBREW": 7,
+   "ARABIC": 17,
+   "CJK": 9,
+   "GREEK": 3,
+   "THAI": 1,
+   "HANGUL": 1
+  },
+  "N_gen_exact_b1": 50240,
+  "L_docs": 2742,
+  "L_gen": 3479942,
+  "L_gen_per_piece": 1269.1,
+  "N_gen_per_piece": 1238.9,
+  "per_2x_part_N_pieces_and_gen_at_0.15": [
+   39.8,
+   49315
+  ],
+  "per_2x_part_N_pieces_and_gen_at_0.175": [
+   46.4,
+   57499
+  ],
+  "max_2x_parts_by_N_gen_at_15pct": 1
+ }
+}
