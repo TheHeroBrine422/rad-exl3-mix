@@ -1,0 +1,411 @@
+#189 two-stage accept (RULES-confirm.md, committed 29e7398e) for the #183 search driver -- w167, 11-14 CST.
+Against HEAD 5f4225e7 (driver.py = 4e089db2's: strata + pool K=3 + cross). Touches search/v3/driver.py and search/v3/slices.py.
+CONF "confirm" absent = today's driver event for event (test_confirm189: identity on the #183 replay and on the live K=3 state).
+
+Choices the rule leaves open (each pinned by a test in search/v3/confirm189/test_confirm189.py):
+ 1 State. Stage 1 accept / join of a listed size -> "tentative" event (the stage-1 numbers, the target "inc" | "worst",
+   the stage-1 reference "vs", the pool join info). It counts as the search slice's decision at once (reg.decided,
+   dec, kind total), as a decision does today. Confirm evals -> "submit" (kind "confirm", "of" = the model's tag,
+   "for" = the tentative or "golive") + "confirm_submit". Verdict -> "confirm" (both stages' numbers, ref, evals,
+   ref_changed) then "decision" with "stage": 2, then the usual pool / incumbent events. Replay rebuilds the pending
+   tentatives (tentative minus confirm), the eval cache (from the submits) and the go-live progress.
+ 2 Confirm evals: whole slice, no early-stop block, the slice's registry alias (hosts unchanged). Cache key (assignment
+   hash, slice), so a rotation's "inc" retag is the same model. A failed eval is resubmitted; CONF tries (2) failures
+   -> reject "confirm (eval failed)" (go-live: the size is kept and logged "error").
+ 3 Stage 2 = driver.paired(ref eval, cand eval) on the confirmation slice: per-(part, stratum) sums, stratum weights,
+   CONF cap / guard as in force (both null live), offset = the candidate's recorded b x (bpw_cand - bpw_ref) + decode
+   term (as on_result). z = Paired.z() = da / se (the delta-method SE behind every "z" in the log). Confirmed iff
+   z < CONF z (-1.0). P.final() is recorded, not used.
+ 4 Reference = the size's current incumbent at the end of the confirmation (rule 3). For a join that would only
+   replace the worst member: the CURRENT worst member (= "that member" unless the pool changed; if the worst is now
+   the incumbent, the candidate is treated as an incumbent candidate). K > 1 waits until the pool is scored on the
+   active slice (rotation rescore), since the worst is defined there.
+ 5 Apply against the current state: incumbent candidate -> joins (add, or replaces the current worst) and becomes
+   incumbent; worst candidate -> joins without becoming incumbent, decision "join" (not "accept"), so convplot4 does
+   not chain it. Kind shares count an accept only when confirmed.
+ 6 Plot: stage-2 decision "logr" = stage 2's P.d(), "logr1" / "z1" = stage 1's; tentatives are not decision events.
+   convplot4.walk unchanged (test plot_chains_stage2_logr).
+ 7 Go-live: one-shot in the first step after start when CONF golive_from_line is set and no "golive" event exists:
+   switch-time incumbent = the last "incumbent" event at or before that line; sizes whose current model is the same
+   are "same" (no eval); others: current vs switch-time on the first pair's confirmation slice, same test; not
+   confirmed -> set_incumbent(switch-time tag), pool = [it] ("pool" why "golive"). A size's tentatives wait until its
+   check is resolved. b = the size's b at the start (recorded in the plan).
+ 8 Registry: confirmation slices carry "role": "confirm" (slices.py role REG NAME confirm). Registry.ready() /
+   activate_next() / the driver's rotate() skip them; draw_merged treats their calib docs as busy; stage-2 decisions go
+   to the slice's "confirm_decisions" and doc_decisions, never "decisions" (rotate_after). The driver refuses to start
+   with CONF confirm unless every pair's confirmation slice has the role and was never active / decided.
+ 9 A tentative from a search slice with no pair waits (WARN logged once) until CONF gets a pair.
+Not handled: a reselect at rotation promoting another member while a go-live check is pending is not blocked (the
+check compares the planned models; a revert replaces whatever is incumbent).
+
+diff --git a/search/v3/driver.py b/search/v3/driver.py
+index 43ec21f..b1500ba 100644
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -52,6 +52,22 @@ the new slice in the new mode before any candidate is compared with it; results
+ stale (fit rows only). Monitor reads are compared within one mode; at a change every incumbent is rescored on the
+ monitor golden in the new mode (CONF "act_monitor_rescore", default true). Submits and monitor reads in a non-f16 mode
+ carry "act" (absent = f16; convplot4 splits the series on it and marks the "act" event).
++Two-stage accept (#189, RULES-confirm.md; CONF "confirm": {"z", "pairs": [[search, confirm], ..], "sizes", "golive_from_line",
++"tries"}; absent = the driver above, event for event): a stage-1 accept or pool join of a listed size is TENTATIVE ("tentative"
++event; it counts as the search slice's decision, nothing else changes). The candidate and its reference (the size's current
++incumbent; for a join that would only replace the pool's worst member: the current worst member) are scored whole on the
++confirmation slice paired with the stage-1 slice (kind "confirm", no early stop; one eval per (assignment hash, slice), cached:
++a rotation's incumbent retag is the same model; "confirm_submit" events). Stage 2 = the stage-1 statistic (driver.paired on
++the confirmation slice's per-document sums, strata, size offset with the candidate's recorded b, CONF guard) with z = da / se
++(Paired.z); confirmed iff z < CONF z (-1). Confirmed -> applied against the CURRENT state (rule 3: the incumbent / worst at the
++end of the confirmation; K > 1 waits until the pool is scored on the active slice); else rejected. The verdict is a "confirm"
++event and a "decision" event with "stage": 2 ("accept" | "join" (joined the pool, not incumbent) | "reject" with "why":
++"confirm"; "logr" = stage 2's log r, "logr1" = stage 1's), so convplot4 chains the stage-2 log r with no change. Stage-2
++decisions never count towards rotate_after (registry "confirm_decisions"). Confirmation slices carry "role": "confirm" in the
++registry (never rotated to; the driver refuses to start without it). Go-live (rule 7, once, CONF golive_from_line): each
++listed size's incumbent vs its incumbent at that state line, on the first pair's confirmation slice, same test; not
++confirmed -> the size reverts to the switch-time model and its pool to that model alone ("golive" / "golive_size" events);
++a size's tentatives wait until its go-live check is resolved.
+ State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
+ Restart = the same command (state replayed; outstanding evals stay in the queue)."""
+ import argparse, collections, json, math, os, random, subprocess, sys, time
+@@ -126,6 +142,13 @@ class Driver:
+         self.K = int(c.get("pool", 1)); self.pool = {}; self.cross_share0 = float(c.get("cross_share0", 0.15))
+         self.reseed_c = c.get("reseed"); self.reseed_seen = False; self.reseed_on = None; self.reseed_plan = None
+         self.reseed_done = set(); self.reselected = {}
++        # two-stage accept (#189, RULES-confirm): CONF "confirm" absent = None = today's driver (no new events, no draws)
++        self.cf = c.get("confirm") or None; self.tent = {}; self.cfx = {}; self.golive = None; self.golive_res = {}; self.golive_end = False
++        self.cf_warned = set()
++        if self.cf:
++            self.cf_z = float(self.cf.get("z", -1.0)); self.cf_pairs = {a: b for a, b in self.cf["pairs"]}
++            self.cf_sizes = {float(z) for z in self.cf.get("sizes", self.sizes)}; self.cf_tries = int(self.cf.get("tries", 2))
++            self.check_confirm_registry()
+         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+         self.replay()
+ 
+@@ -145,12 +168,24 @@ class Driver:
+             try: e = json.loads(l)
+             except ValueError: continue
+             ev = e["ev"]
+-            if ev == "submit": self.sub[e["tag"]] = e; self.seen.add(e["hash"])
++            if ev == "submit":
++                self.sub[e["tag"]] = e; self.seen.add(e["hash"])
++                if e.get("kind") == "confirm": self.cfx.setdefault((e["hash"], e["slice"]), []).append(e["tag"])
+             elif ev == "result": self.res[e["tag"]] = e["r"]; self.n_results += 1
+             elif ev == "incumbent": self.inc[e["size"]] = e["tag"]
++            elif ev == "decision" and e.get("stage") == 2:                  # (#189) counted at its tentative; the accept here
++                if e.get("kind"): self.kind_stats[e["kind"]][0] += e["decision"] in ("accept", "join")
+             elif ev == "decision":
+                 self.dec[e["size"]] += 1
+                 if e.get("kind"): self.kind_stats[e["kind"]][1] += 1; self.kind_stats[e["kind"]][0] += e["decision"] == "accept"
++            elif ev == "tentative":
++                self.tent[e["tag"]] = e; self.dec[e["size"]] += 1
++                if e.get("kind"): self.kind_stats[e["kind"]][1] += 1
++            elif ev == "confirm": self.tent.pop(e["tag"], None)
++            elif ev == "golive":
++                if e["phase"] == "start": self.golive = e
++                else: self.golive_end = True
++            elif ev == "golive_size": self.golive_res[e["size"]] = e
+             elif ev == "results_offset": self.res_off = e["off"]; self.res_lines = e.get("lines", self.res_lines)
+             elif ev == "b": self.b[e["size"]] = e["b"]
+             elif ev == "alert": self.alerts[e["size"]] = e["on"]
+@@ -204,6 +239,7 @@ class Driver:
+              "ref": ref_tag, "bytes": self.M.bytes(a), "bpw": bpw, "b": bs, **({"dec": dms, "lam_d": self.lam_d} if dms is not None else {}), **({"act": self.act} if self.act != "f16" else {}), **(extra or {})}
+         self.rec(e); self.sub[tag] = e
+         if kind != "monitor": self.seen.add(h)
++        if kind == "confirm": self.cfx.setdefault((h, e["slice"]), []).append(tag)
+         return tag
+ 
+     def dec_ms(self, a):
+@@ -545,6 +581,8 @@ class Driver:
+             self.log(f"{t}: incumbent of {size} scored on {r['slice']}: KLD {r['kld']:.5f} at {s['bpw']:.4f} bpw (container {r['bpw']:.4f})"); return
+         if s["kind"] == "reseed":                                          # RULES-pool §6: decided when the size's set is complete
+             self.log(f"{t}: re-seed candidate of {size} scored on {r['slice']}: KLD {r['kld']:.5f}"); return
++        if s["kind"] == "confirm":                                         # (#189) decided in confirm_step (a fit row above)
++            self.log(f"{t}: confirmation eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+         act = self.reg.active()
+         if r["slice"] != act:
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
+@@ -575,6 +613,7 @@ class Driver:
+ 
+     def decide(self, t, size, d, P, sl, ndocs, pool=None):
+         s = self.sub[t]
++        if d == "accept" and self.cf and size in self.cf_sizes: return self.tentative(t, size, P, sl, ndocs, pool)   # (#189)
+         self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1
+         self.kind_stats[s["kind"]][1] += 1; self.kind_stats[s["kind"]][0] += d == "accept"
+         self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(),
+@@ -595,6 +634,170 @@ class Driver:
+             self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else "") +
+                      (" [guard: per-document mean " + ", ".join(f"{p} {P.docmean(p) + P.off:+.4f}" for p in P.part if P.docmean(p) is not None) + "]" if P.why == "guard" else ""))
+ 
++    # ------------------------------------------------------------------------------------------------ two-stage accept (#189, RULES-confirm)
++    def check_confirm_registry(self):
++        """CONF confirm: every pair's slices exist, each confirmation slice has "role": "confirm" and was never a search slice"""
++        S = self.reg.d["slices"]; bad = []
++        for a, b in self.cf["pairs"]:
++            if a not in S or b not in S: bad.append(f"pair ({a}, {b}): slice not in the registry"); continue
++            if S[a].get("role") == "confirm": bad.append(f"{a}: a search slice with role confirm")
++            if S[b].get("role") != "confirm": bad.append(f"{b}: no \"role\": \"confirm\" (slices.py role REG {b} confirm, with the driver stopped)")
++            if S[b]["status"] == "active" or sum(S[b].get("decisions", {}).values()):
++                bad.append(f"{b}: was a search slice (status {S[b]['status']}, decisions {S[b].get('decisions')})")
++        if bad: raise SystemExit("CONF confirm: registry not ready:\n  " + "\n  ".join(bad))
++
++    def cslice(self, sl):
++        """the confirmation slice paired with search slice sl; None (logged once): its tentatives wait for a pair in CONF"""
++        cs = self.cf_pairs.get(sl)
++        if cs is None and sl not in self.cf_warned:
++            self.cf_warned.add(sl); self.log(f"WARN no confirmation slice paired with {sl}: its tentatives wait (add a pair to CONF confirm.pairs)")
++        return cs
++
++    def tentative(self, t, size, P, sl, ndocs, pool):
++        """RULES-confirm §1: a stage-1 accept / join is recorded and counted as the search slice's decision; nothing else changes"""
++        s = self.sub[t]
++        self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1; self.kind_stats[s["kind"]][1] += 1
++        target = "inc" if pool is None or pool["inc"] else "worst"
++        e = {"ev": "tentative", "tag": t, "size": size, "kind": s["kind"], "slice": sl, "cslice": self.cf_pairs.get(sl), "target": target,
++             "vs": self.inc.get(size) if target == "inc" else pool["vs"], "k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(),
++             "off": P.off, "se": P.se(), "parts": P.summary()["parts"], **({"pool": pool} if pool is not None else {})}
++        self.rec(e); self.tent[t] = e
++        self.log(f"TENTATIVE {t} ({s['kind']}) for {size}: stage 1 log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) vs {e['vs']}"
++                 + (f" (pool {pool['join']}{', would be incumbent' if pool['inc'] else ''})" if pool else "") + f"; confirmation on {e['cslice']}")
++        self.cslice(sl)
++
++    def cf_eval(self, mt, cs, size, why, owner):
++        """the whole-slice confirmation eval of model `mt` (a tag) on cs, cached per (assignment hash, slice) -> ("ok", eval tag) |
++        ("wait", eval tag) | ("fail", None) once CONF tries (2) evals failed; submits one (kind "confirm") when none is usable"""
++        h = self.sub[mt]["hash"]; tags = self.cfx.get((h, cs), [])
++        for x in reversed(tags):
++            if x not in self.res: return "wait", x
++            r = self.res[x]
++            if not r.get("fail") and r.get("docs") and all(v is not None for v in r["docs"]): return "ok", x
++        if len(tags) >= self.cf_tries: return "fail", None
++        x = self.newtag(size, "confirm")
++        self.submit(x, self.assign(mt), size, "confirm", cs, early=False, extra={"of": mt, "for": owner})
++        self.rec({"ev": "confirm_submit", "tag": owner, "eval": x, "of": mt, "slice": cs, "why": why, "try": len(tags) + 1})
++        return "wait", x
++
++    def cf_stat(self, ref_t, ref_x, t, x, cs, bs):
++        """stage 2 = the stage-1 statistic (paired, strata, CONF guard) on the confirmation slice: eval x (model t) vs eval ref_x
++        (model ref_t); size offset bs (bpw_t - bpw_ref) plus the decode term, as on_result"""
++        off = bs * (self.sub[t]["bpw"] - self.sub[ref_t]["bpw"]) + (self.doff(t, ref_t) if bs else 0.0)
++        return self.paired(self.res[ref_x], self.res[x], self.reg.parts_of(cs), off=off, strata=self.reg.strata_of(cs))
++
++    def confirm_step(self, act):
++        """every pending tentative, in tentative order: submit what its confirmation needs; decide it once everything is scored"""
++        for t in list(self.tent):
++            if t in self.tent: self.confirm_try(t, act)
++
++    def confirm_try(self, t, act):
++        e = self.tent[t]; size = e["size"]; cs = e.get("cslice") or self.cslice(e["slice"])
++        if cs is None: return
++        sc, xc = self.cf_eval(t, cs, size, "candidate", t)
++        if self.golive_wait(size): return                                  # rule 7 first
++        inc = self.inc.get(size)
++        if inc is None: return
++        if self.K > 1 and not (self.scored_on(size, act) and not self.reseed_wait(size, act)): return   # the worst needs the pool on act
++        target = e["target"]; ref = inc
++        if self.K > 1 and target == "worst":                                # the CURRENT worst member (rule 3); the incumbent -> target inc
++            ref = self.worst(size)
++            if ref == inc: target = "inc"
++        why = "reference" if self.sub[ref]["hash"] == self.sub[e["vs"]]["hash"] else "reference changed"
++        sr, xr = self.cf_eval(ref, cs, size, why, t)
++        if "fail" in (sc, sr): return self.confirm_verdict(t, e, "reject", None, cs, xc, ref, xr, target, why="eval failed")
++        if "wait" in (sc, sr): return
++        P = self.cf_stat(ref, xr, t, xc, cs, self.sub[t].get("b", 0.0) or 0.0)
++        ok = P.z() < self.cf_z
++        self.confirm_verdict(t, e, ("accept" if target == "inc" else "join") if ok else "reject", P, cs, xc, ref, xr, target)
++
++    def confirm_verdict(self, t, e, verdict, P, cs, xc, ref, xr, target, why=None):
++        """RULES-confirm §2: the stage-2 verdict ("confirm" + stage-2 "decision" events), applied against the current state"""
++        size = e["size"]; s = self.sub[t]
++        st = ({"k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(), "off": P.off, "se": P.se(), "parts": P.summary()["parts"],
++               "stat_b": P.w is not None} if P is not None else {"logr": None})
++        info = None
++        if verdict != "reject" and self.K > 1:
++            full = len(self.members(size)) >= self.K
++            info = {"join": "replace" if full else "add", "inc": verdict == "accept", "vs": ref, **({"replaced": self.worst(size)} if full else {})}
++        self.reg.confirmed(cs, str(size), P.k if P is not None else 0)
++        changed = self.sub[ref]["hash"] != self.sub[e["vs"]]["hash"]
++        self.rec({"ev": "confirm", "tag": t, "size": size, "verdict": verdict, **({"why": why} if why else {}), "slice": cs, "eval": xc, "ref": ref,
++                  "ref_eval": xr, "target": target, "ref_changed": changed, "z_thr": self.cf_z, **st,
++                  **({"da": P.da(), "final": P.final()} if P is not None else {}), "logr1": e["logr"], "z1": e["z"], "slice1": e["slice"],
++                  **({"pool": info} if info else {})})
++        self.rec({"ev": "decision", "stage": 2, "tag": t, "size": size, "decision": verdict, "kind": s["kind"], **st, "logr1": e["logr"], "z1": e["z"],
++                  "slice": cs, "slice1": e["slice"], "vs": ref, **({"why": "confirm" + (f" ({why})" if why else "")} if verdict == "reject" else {})})
++        self.tent.pop(t, None); self.kind_stats[s["kind"]][0] += verdict in ("accept", "join")
++        nums = (f"stage 2 on {cs}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}); " if P is not None else f"stage 2 on {cs}: {why}; ") + \
++               f"stage 1 on {e['slice']}: log r {e['logr']:+.4f} (z {e['z']:+.2f}); vs {ref}{' (changed)' if changed else ''}"
++        if info is not None: self.pool_join(t, size, info)
++        if verdict == "accept":
++            old = self.set_incumbent(size, t); self.monitor_on_change(size, t)
++            self.log(f"ACCEPT (confirmed) {t} ({s['kind']}) for {size}: {nums}; was {old}; {s['bpw']:.4f} bpw")
++        elif verdict == "join":
++            self.log(f"JOIN (confirmed) {t} ({s['kind']}) for {size}: {info['join']}{' ' + info['replaced'] if info.get('replaced') else ''} (pool {len(self.members(size))}/{self.K}): {nums}")
++        else:
++            self.log(f"reject (confirm) {t} ({s['kind']}) for {size}: {nums}")
++
++    def golive_wait(self, size):
++        """rule 7: a size's tentatives wait until its go-live check is resolved"""
++        if self.golive_end or self.golive is None: return False
++        return any(p["size"] == size for p in self.golive["plan"]) and size not in self.golive_res
++
++    def golive_step(self):
++        """RULES-confirm §7 (once; CONF golive_from_line): each listed size's incumbent vs its incumbent at that state line, on the first
++        pair's confirmation slice, under rule 2. Not confirmed -> back to the switch-time model, the pool to that model alone"""
++        n = self.cf.get("golive_from_line")
++        if n is None or self.golive_end: return
++        cs = self.cf["pairs"][0][1]
++        if self.golive is None:
++            sw = {}; i = 0
++            with open(f"{self.R}/state.jsonl") as f:
++                for i, l in enumerate(f, 1):
++                    if i > n: break
++                    try: x = json.loads(l)
++                    except ValueError: continue
++                    if x.get("ev") == "incumbent": sw[x["size"]] = x["tag"]
++            if i < n: raise SystemExit(f"CONF confirm.golive_from_line {n}: the state has only {i} lines")
++            plan, same = [], []
++            for size in sorted(self.cf_sizes):
++                cur, old = self.inc.get(size), sw.get(size)
++                if cur is None or old is None or size in self.stopped_sizes or not self.feasible(size): continue
++                if self.sub[cur]["hash"] == self.sub[old]["hash"]: same.append({"size": size, "cur": cur, "sw": old}); continue
++                plan.append({"size": size, "cur": cur, "sw": old, "b": self.b_of(size)})
++            self.golive = {"ev": "golive", "phase": "start", "from_line": n, "slice": cs, "plan": plan, "same": same}
++            self.rec(self.golive)
++            names = " ".join(f"{x['size']:g}" for x in plan)
++            self.log(f"GO-LIVE check on {cs} (incumbents at state line {n}): {len(plan)} sizes to confirm ({names}), {len(same)} unchanged")
++            for x in same:
++                g = {"ev": "golive_size", "size": x["size"], "verdict": "same", "cur": x["cur"], "sw": x["sw"]}
++                self.rec(g); self.golive_res[x["size"]] = g
++        for p in self.golive["plan"]:
++            size = p["size"]
++            if size in self.golive_res: continue
++            sc, xc = self.cf_eval(p["cur"], cs, size, "golive", "golive")
++            ss, xs = self.cf_eval(p["sw"], cs, size, "golive", "golive")
++            if "fail" in (sc, ss):
++                g = {"ev": "golive_size", "size": size, "verdict": "error", "cur": p["cur"], "sw": p["sw"], "why": "eval failed: kept"}
++                self.rec(g); self.golive_res[size] = g; self.log(f"GO-LIVE {size:g}: confirmation eval failed {self.cf_tries}x: incumbent kept (check by hand)"); continue
++            if "wait" in (sc, ss): continue
++            P = self.cf_stat(p["sw"], xs, p["cur"], xc, cs, p["b"])
++            verdict = "kept" if P.z() < self.cf_z else "reverted"
++            self.reg.confirmed(cs, str(size), P.k)
++            g = {"ev": "golive_size", "size": size, "verdict": verdict, "cur": p["cur"], "sw": p["sw"], "eval": xc, "ref_eval": xs, "slice": cs,
++                 "k": P.k, "z": P.z(), "logr": P.d(), "da": P.da(), "off": P.off, "se": P.se(), "parts": P.summary()["parts"], "inc_now": self.inc.get(size)}
++            self.rec(g); self.golive_res[size] = g
++            self.log(f"GO-LIVE {size:g}: {p['cur']} vs switch-time {p['sw']} on {cs}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) -> {verdict}")
++            if verdict == "reverted":
++                self.set_incumbent(size, p["sw"])
++                if self.K > 1: self.pool[size] = [p["sw"]]; self.rec({"ev": "pool", "size": size, "members": [p["sw"]], "why": "golive"})
++                self.monitor_on_change(size, p["sw"])
++        if all(p["size"] in self.golive_res for p in self.golive["plan"]):
++            self.golive_end = True
++            self.rec({"ev": "golive", "phase": "done", "verdicts": {f"{z:g}": g["verdict"] for z, g in sorted(self.golive_res.items())}})
++            self.log("GO-LIVE done: " + " ".join(f"{z:g}:{g['verdict']}" for z, g in sorted(self.golive_res.items())))
++
+     # ------------------------------------------------------------------------------------------------ fit rows
+     def add_obs(self, t, r):
+         if r.get("fail") or not r.get("docs"): return
+@@ -829,7 +1032,7 @@ class Driver:
+             if act: self.rec({"ev": "rotate", "to": act, "from": None}); self.log(f"slice {act} active"); self.set_act(act)
+             return act
+         if self.reg.due(act, int(self.c.get("rotate_after", 25)), self.c.get("rotate_unit", "slice")):
+-            nxt = [n for n, s in self.reg.d["slices"].items() if s["status"] == "ready"]
++            nxt = self.reg.ready()                                        # (#189) never a confirmation slice
+             if nxt:
+                 new = self.reg.activate_next(); self.rec({"ev": "rotate", "to": new, "from": act})
+                 self.log(f"ROTATE {act} -> {new}"); self.set_act(new); self.monitor_at_rotation(); return new
+@@ -928,6 +1131,10 @@ class Driver:
+                 (" | ALERT " + " ".join(f"{z:g}" for z, v in sorted(self.alerts.items()) if v) if any(self.alerts.values()) else "") +
+                 " | fits " + " ".join(f"{g}:{'none' if not f else f['report'].get('rows')}" + ("*" if self.fitprocs[g] else "") for g, f in self.fits.items()))
+         if self.K > 1: line += " | pool " + " ".join(f"{z:g}:{len(self.members(z))}" for z in self.sizes if self.inc.get(z) is not None)
++        if self.cf:
++            pend = collections.Counter(e["size"] for e in self.tent.values())
++            line += f" | confirm pending {len(self.tent)}" + (" (" + " ".join(f"{z:g}:{n}" for z, n in sorted(pend.items())) + ")" if pend else "")
++            if self.golive is not None and not self.golive_end: line += f" | go-live {len(self.golive_res)}/{len(self.golive['plan']) + len(self.golive.get('same', []))}"
+         open(f"{self.R}/status.txt", "w").write(line + "\n")
+         return line
+ 
+@@ -945,6 +1152,7 @@ class Driver:
+         if not go: return "no go (CONF go / dry)"
+         if self.K > 1: self.ensure_pool(act); self.reseed_step(act); self.reselect(act)
+         else: self.ensure_incumbents(act)
++        if self.cf: self.golive_step(); self.confirm_step(act)
+         self.monitor_refs()
+         self.generate(act)
+         return self.report()
+diff --git a/search/v3/slices.py b/search/v3/slices.py
+index 0dbc0e5..cbaffd8 100644
+--- a/search/v3/slices.py
++++ b/search/v3/slices.py
+@@ -26,9 +26,12 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
+   python3 slices.py poolcheck POOLS GOLDEN [GOLDEN ..]           the pools of each golden's calib docs ("orig"); exit 1
+           if any is outside fit + search (a search slice / prior_obs golden must come from the merged pool)
+   python3 slices.py retire REG NAME [WHY]                       retire a slice by hand (w145: s171b after w141's audit)
++  python3 slices.py role REG NAME ROLE                          set a slice's role (#189, RULES-confirm §5: "confirm" = a
++          confirmation slice: never rotated to as a search slice, its documents never drawn for a new slice; "search" or
++          "-" = remove the role). Edit the registry only while the driver is stopped (it rewrites the file)
+ Rotation (driver): a slice is retired once it has decided `rotate_after` candidates (default 25), all sizes together
+ (driver CONF rotate_unit "slice", w145; "size" = any one size reaching it, the #171 run's rule); the next "ready" slice
+-becomes active (its incumbents are scored first, no early stop)."""
++becomes active (its incumbents are scored first, no early stop). A slice with "role": "confirm" (#189) is never activated."""
+ import json, os, random, shutil, sys, time
+ 
+ import numpy as np
+@@ -105,7 +108,8 @@ def ledger_use(led, mine=()):
+ def draw_merged(R, led, pool, n, seed):
+     """N fit + search docs, least-used first (ledger decisions + this registry's own decisions), ties random"""
+     mine = {f"golden-{k}-c" for k in R.d["slices"]}; lu = ledger_use(led, mine); dd = R.d["doc_decisions"]
+-    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") for d in s_["docs"] if d["id"].startswith("c:")}
++    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") == "confirm"
++            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189) a confirmation slice's docs are in use too
+     cand = [i for i, p in enumerate(pool) if p in MERGED and i not in busy]
+     use = {i: lu.get(i, 0) + dd.get(f"c:{i}", 0) for i in cand}
+     rng = random.Random(seed); cand.sort(key=lambda i: (use[i], rng.random()))
+@@ -137,8 +141,12 @@ class Registry:
+         a = [n for n, s in self.d["slices"].items() if s["status"] == "active"]
+         return a[0] if a else None
+ 
++    def ready(self):
++        """the slices a rotation may activate: status "ready", never a confirmation slice (#189, RULES-confirm §5)"""
++        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role") != "confirm"]
++
+     def activate_next(self):
+-        r = [n for n, s in self.d["slices"].items() if s["status"] == "ready"]
++        r = self.ready()
+         if not r: return None
+         cur = self.active()
+         if cur: self.d["slices"][cur]["status"] = "retired"; self.d["slices"][cur]["retired"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+@@ -152,6 +160,16 @@ class Registry:
+         for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
+         self.save()
+ 
++    def confirmed(self, name, size, ndocs):
++        """one stage-2 decision on confirmation slice `name` (#189): counted per size under "confirm_decisions" (never
++        "decisions": confirmation does not count towards rotate_after) and in doc_decisions (the documents were used)"""
++        s = self.d["slices"][name]; cd = s.setdefault("confirm_decisions", {}); cd[size] = cd.get(size, 0) + 1
++        for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
++        self.save()
++
++    def role(self, name):
++        return self.d["slices"][name].get("role", "search")
++
+     def due(self, name, rotate_after, unit="slice"):
+         """rotation due: the slice's decisions over all sizes reach rotate_after (unit "slice", w145 after w141's audit:
+         ~25 decisions a slice as eval-data.md meant), or any one size's (unit "size", the #171 run's rule)"""
+@@ -190,7 +208,7 @@ def main(argv):
+     elif argv[0] == "show":
+         R = Registry(argv[1])
+         for n, s in R.d["slices"].items():
+-            print(f"{n:24s} {s['status']:8s} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
++            print(f"{n:24s} {s['status']:8s}{' confirm' if s.get('role') == 'confirm' else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
+                   f" decisions {s['decisions']}")
+         dd = R.d["doc_decisions"]
+         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")
+@@ -231,6 +249,11 @@ def main(argv):
+         return 1 if bad else 0
+     elif argv[0] == "retire":
+         R = Registry(argv[1]); R.retire(argv[2], " ".join(argv[3:])); print(f"{argv[2]}: retired")
++    elif argv[0] == "role":
++        R = Registry(argv[1]); s = R.d["slices"][argv[2]]
++        if argv[3] in ("search", "-"): s.pop("role", None)
++        else: s["role"] = argv[3]
++        R.save(); print(f"{argv[2]}: role {s.get('role', 'search')} (status {s['status']})")
+     elif argv[0] == "ledger":
+         R = Registry(argv[1]); s = R.d["slices"][argv[2]]; os.makedirs(argv[3], exist_ok=True)
+         c = s["parts"].get("c")

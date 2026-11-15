@@ -1,0 +1,54 @@
+== test_confirm189 (fresh HEAD 5f4225e7 archive + driver-confirm.patch, 11-14 21:23 CST)
+PASS tentative_then_confirmed_accept
+PASS tentative_then_rejected
+PASS k1_accept_and_reject
+PASS pool_join_confirmed_as_join
+PASS incumbent_changed_mid_confirmation
+PASS rotation_mid_confirmation_uses_the_cached_retag
+PASS restart_mid_confirmation
+PASS failed_confirmation_eval
+PASS paused_size_untouched
+PASS golive_revert_and_keep
+PASS golive_restart_mid_check
+PASS rotation_skips_confirm_slices
+PASS plot_chains_stage2_logr
+   346 events identical (275 decisions; state sha256 ec82d3cecc5892d0)
+PASS identity_confirm_absent_183
+   792 events identical (713 decisions; state sha256 898fb6ad1f5c4d8b)
+PASS identity_confirm_absent_live_k3
+15 / 15 PASS
+== pool188/test_pool188.py
+PASS join_table
+PASS worst_reseed_reselect_rules
+PASS parent_draws
+PASS cross_units_and_byte_window
+PASS pool_add_then_reject_then_add
+PASS pool_full_replace_worst_then_incumbent
+PASS early_stop_reference_is_the_worst_member
+PASS rotation_rescore_then_reselect
+PASS rotation_incumbent_rescore_survives_restart
+PASS reseed_set_ranking_and_pool
+PASS cap_null_with_strata_is_plain_pooled_sums
+PASS pool_state_roundtrip
+PASS k1_identity_on_the_recorded_replay
+13 / 13 PASS
+== test_picks.py
+PASS capped_weights_agree
+PASS old_rule_unchanged
+PASS one_dominant_document
+PASS guard_catches_a_heavy_tail
+PASS short_document_noise
+PASS finalpick_flag_guard_default
+PASS traces_resample_as_units
+PASS early_stop_matches_the_hosts
+PASS rotation_per_slice
+PASS old_slice_unchanged_recorded
+PASS strata_cap_within_stratum
+PASS strata_formula_matches_definition
+PASS strata_absent_stratum
+PASS strata_guard_matches_definition
+PASS strata_se_needs_three_per_stratum
+PASS strata_require_a_stratum
+PASS strata_registry
+PASS pickstat_strata_and_small_parts
+18 / 18 PASS

@@ -7973,3 +7973,38 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   switch-time incumbent. w167 (Opus high) implements it as a CONF-gated driver patch; nothing live until lead review.
   4.0 diagnosis pending (t183 read of pair-00600). **Runtime:** neither.
 - 9:10 PM CST: 4.0 diagnosis: pair-00600 (= inc-00646, s173e accept) t183 0.00753 (≈ the earlier 0.00749: null, harmless); cross-00683 t183 0.00834 (+10.8 %) and t186n 0.01284 vs 0.01291 (−0.6 %). So the s186a cross accept (z −2.35 on s186a) is a false accept that costs Latin text without helping non-Latin. Not reverted by hand: RULES-confirm rule 7 (go-live check vs the switch-time incumbent) handles it when w167 lands.
+
+### 2026-11-14 9:30 PM CST · #189 · Two-stage accept: driver patch, tests, go-live dry run, cost (w167)
+- **Status:** built, not deployed. The lead reviews and applies `search/v3/confirm189/driver-confirm.patch` (driver.py + slices.py,
+  against HEAD `5f4225e7`); switch procedure and rollback in `search/v3/confirm189/README.md`; candidate config
+  `local/workers/w167/driver-189.candidate.json` (live `driver.json` + `confirm` + `about`). **Machines:** VM only (light tests and a
+  dry run), ds8 / box2 read-only checks. **Runtime:** neither.
+- **Rule:** RULES-confirm (`29e7398e`) as written. Choices it leaves open, each in the patch header and pinned by a test: stage-1
+  accept / join → `tentative` event (counts as the search slice's decision at once; incumbent and pool unchanged); confirm evals
+  kind `confirm`, whole slice, cached per (assignment hash, slice) (a rotation's `inc` retag = the same model); stage 2 =
+  `driver.paired` on the confirm slice (strata, size offset with the candidate's recorded b, cap / guard as in force), z =
+  `Paired.z()` = da / se, confirmed iff z < −1; reference = the current incumbent at the end of the confirmation, or for a
+  join that would only replace the worst member the *current* worst (K = 3 waits until the pool is scored on the active slice);
+  verdict → `confirm` + `decision` with `stage: 2` (`accept` | `join` | `reject` why `confirm`; `logr` = stage 2's, `logr1` =
+  stage 1's) → usual pool / incumbent events. Joins that do not become incumbent are `join`, so convplot4 does not chain them.
+  Stage-2 decisions never count towards `rotate_after` (registry `confirm_decisions`). Registry `role: "confirm"` on s186b/d/f:
+  rotation and `draw_merged` skip them; the driver refuses to start without the roles. Go-live (rule 7): one-shot at the first
+  step, switch-time incumbents = last `incumbent` event at or before line 3271; a size's tentatives wait for its check.
+- **Tests** (fresh `git archive HEAD` + patch; `search/v3/confirm189/tests.txt`): `test_confirm189.py` **15 / 15**, `pool188` **13 / 13**,
+  `test_picks` **18 / 18**. Identity with CONF `confirm` absent: HEAD and patched trees emit the same events on the #183 replay
+  (346 events, 275 decisions reproduced) and on a copy of the live K = 3 state after the switch (792 events, state sha256
+  `898fb6ad1f5c4d8b`). Each new test is shown to fail under a matching mutation of the driver (7 mutations, all caught; one
+  go-live test was tightened after its mutation survived).
+- **Go-live dry run** on a copy of the live state (9:21 PM CST, no evals): 5 sizes to confirm on s186b — 3.0 cross-00782,
+  3.5 cross-00786, 4.0 thompson-00818, 4.5 cross-00685, 6.0 cross-00693, each vs its `inc-006xx` switch-time model; 2.0 / 2.5 / 5.0
+  unchanged (no eval). 10 evals, lines identical in form to the live queue's (a8g128, the s186b alias).
+- **Hosts:** golden-s186b/d/f exist on ds8 and box2 at the registry alias (`/data/q27/w164/slices/`), kld.json md5 identical on both,
+  doc order / parts / strata / tokens = the registry's.
+- **Cost (live, 8:18–9:22 PM CST):** ~21 stage-1 accepts + joins / h at 2.0–6.0 (8–9.5 incumbent changes, 12–13 joins) against
+  ~120 whole-slice equivalents / h → ~22–24 whole confirm evals / h ≈ 18–20 % of capacity (rule's guess 10–15 %: joins are more
+  than half the stage-1 accepts). With the shared queue, ~16–17 % fewer search decisions / h.
+- **Found:** the live plot already chains K = 3 pool joins: a join that does not change the incumbent is a `decision: accept` with
+  its log r vs the *worst member*, and convplot4 chains every accept (11 of 21 accepts since the switch). Not fixed (history;
+  confirm mode logs them as `join`); the lead decides on a convplot4 change.
+- **Files:** `search/v3/confirm189/` (patch, tests, tests.txt, README), `local/workers/w167/` (candidate config, scratch tree, snapshot
+  of the live state, dry run).

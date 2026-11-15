@@ -26,9 +26,12 @@ Registry (JSON, REG): {"slices": {NAME: {"parts": {"x": DIR, "c": DIR}, "mix": D
   python3 slices.py poolcheck POOLS GOLDEN [GOLDEN ..]           the pools of each golden's calib docs ("orig"); exit 1
           if any is outside fit + search (a search slice / prior_obs golden must come from the merged pool)
   python3 slices.py retire REG NAME [WHY]                       retire a slice by hand (w145: s171b after w141's audit)
+  python3 slices.py role REG NAME ROLE                          set a slice's role (#189, RULES-confirm §5: "confirm" = a
+          confirmation slice: never rotated to as a search slice, its documents never drawn for a new slice; "search" or
+          "-" = remove the role). Edit the registry only while the driver is stopped (it rewrites the file)
 Rotation (driver): a slice is retired once it has decided `rotate_after` candidates (default 25), all sizes together
 (driver CONF rotate_unit "slice", w145; "size" = any one size reaching it, the #171 run's rule); the next "ready" slice
-becomes active (its incumbents are scored first, no early stop)."""
+becomes active (its incumbents are scored first, no early stop). A slice with "role": "confirm" (#189) is never activated."""
 import json, os, random, shutil, sys, time
 
 import numpy as np
@@ -105,7 +108,8 @@ def ledger_use(led, mine=()):
 def draw_merged(R, led, pool, n, seed):
     """N fit + search docs, least-used first (ledger decisions + this registry's own decisions), ties random"""
     mine = {f"golden-{k}-c" for k in R.d["slices"]}; lu = ledger_use(led, mine); dd = R.d["doc_decisions"]
-    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") for d in s_["docs"] if d["id"].startswith("c:")}
+    busy = {int(d["id"][2:]) for s_ in R.d["slices"].values() if s_["status"] in ("ready", "active") or s_.get("role") == "confirm"
+            for d in s_["docs"] if d["id"].startswith("c:")}            # (#189) a confirmation slice's docs are in use too
     cand = [i for i, p in enumerate(pool) if p in MERGED and i not in busy]
     use = {i: lu.get(i, 0) + dd.get(f"c:{i}", 0) for i in cand}
     rng = random.Random(seed); cand.sort(key=lambda i: (use[i], rng.random()))
@@ -137,8 +141,12 @@ class Registry:
         a = [n for n, s in self.d["slices"].items() if s["status"] == "active"]
         return a[0] if a else None
 
+    def ready(self):
+        """the slices a rotation may activate: status "ready", never a confirmation slice (#189, RULES-confirm §5)"""
+        return [n for n, s in self.d["slices"].items() if s["status"] == "ready" and s.get("role") != "confirm"]
+
     def activate_next(self):
-        r = [n for n, s in self.d["slices"].items() if s["status"] == "ready"]
+        r = self.ready()
         if not r: return None
         cur = self.active()
         if cur: self.d["slices"][cur]["status"] = "retired"; self.d["slices"][cur]["retired"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -151,6 +159,16 @@ class Registry:
         s = self.d["slices"][name]; s["decisions"][size] = s["decisions"].get(size, 0) + 1
         for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
         self.save()
+
+    def confirmed(self, name, size, ndocs):
+        """one stage-2 decision on confirmation slice `name` (#189): counted per size under "confirm_decisions" (never
+        "decisions": confirmation does not count towards rotate_after) and in doc_decisions (the documents were used)"""
+        s = self.d["slices"][name]; cd = s.setdefault("confirm_decisions", {}); cd[size] = cd.get(size, 0) + 1
+        for d in s["docs"][:ndocs]: self.d["doc_decisions"][d["id"]] = self.d["doc_decisions"].get(d["id"], 0) + 1
+        self.save()
+
+    def role(self, name):
+        return self.d["slices"][name].get("role", "search")
 
     def due(self, name, rotate_after, unit="slice"):
         """rotation due: the slice's decisions over all sizes reach rotate_after (unit "slice", w145 after w141's audit:
@@ -190,7 +208,7 @@ def main(argv):
     elif argv[0] == "show":
         R = Registry(argv[1])
         for n, s in R.d["slices"].items():
-            print(f"{n:24s} {s['status']:8s} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
+            print(f"{n:24s} {s['status']:8s}{' confirm' if s.get('role') == 'confirm' else ''} docs {len(s['docs'])} (x {sum(d['part'] == 'x' for d in s['docs'])}, c {sum(d['part'] == 'c' for d in s['docs'])})"
                   f" decisions {s['decisions']}")
         dd = R.d["doc_decisions"]
         if dd: print(f"doc decisions: {len(dd)} docs, max {max(dd.values())}, calib docs {sum(1 for k in dd if k.startswith('c:'))}")
@@ -231,6 +249,11 @@ def main(argv):
         return 1 if bad else 0
     elif argv[0] == "retire":
         R = Registry(argv[1]); R.retire(argv[2], " ".join(argv[3:])); print(f"{argv[2]}: retired")
+    elif argv[0] == "role":
+        R = Registry(argv[1]); s = R.d["slices"][argv[2]]
+        if argv[3] in ("search", "-"): s.pop("role", None)
+        else: s["role"] = argv[3]
+        R.save(); print(f"{argv[2]}: role {s.get('role', 'search')} (status {s['status']})")
     elif argv[0] == "ledger":
         R = Registry(argv[1]); s = R.d["slices"][argv[2]]; os.makedirs(argv[3], exist_ok=True)
         c = s["parts"].get("c")
