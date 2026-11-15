@@ -8159,3 +8159,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   around it.
 - **Runtime:** neither.
 - 3:09 AM CST: **ds8 back** (container up ~3:06 AM CST after a reboot by the donor; ~1 h 15 min down). Coordinator reconnected on its own, the in-flight units were retried ("unit process gone" → restart), 7 cards scoring within 2 min. 220 GB of built mixes in srch183/mixes (incl. pre-crash leftovers: box2clean / the guard prune them). watch.conf ds8 rules restored. Suggested to the donor: BMC / kernel log of the previous boot (GPU reset, NIC, thermal, PSU).
+- 3:15 AM CST (user): round-robin inbox live: inbox_share 0.5, inbox_max 13, inbox_pending_max 200 (driver restarted after the old PID exited; no traceback). w172 told to keep the inbox stocked.
