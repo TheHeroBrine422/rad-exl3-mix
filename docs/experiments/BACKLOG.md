@@ -726,3 +726,17 @@ A8: scales trained without it may not hold under it) — the screen measures by 
   K1.5-1.75 + swj at equal bytes. Gate 1 (cheap, offline): ~6 tensors (ffn / attn / ssm, early / mid / late), ternary +
   local heal vs trellis + swj, knapsack err + one swap KL. Only if ternary wins somewhere: kernel (prefill A8 + decode)
   and menu entries. Format addition → V3.x / V4 unless gate 1 is dramatic.
+
+### Pooled allocation model + anomaly finder (user 11-15) — GATED on #192's consensus result
+Start only if the #192 consensus candidates match or beat the incumbents (stage 2 / t183), i.e. the cross-size pooling
+structure holds. Then one research worker (Opus high, CPU on colo), both parts, outputs as #192 inbox files:
+1. **Curve model of the allocation.** Per tensor K_t(size) = size + offset_t + slope_t·(size − 4) (~670 params for the
+   ladder; allow a kink below ~2.5, since w165's joint fit hurt b1), fitted directly to every measured eval across sizes
+   and slices (~1,400 rows, stratified statistic, slice offsets), so each size's evals inform the others. Optimize the
+   curve under each size's byte budget → one candidate per size + in-between sizes.
+2. **Anomaly finder.** Treat the search history as an experiment log: regress each candidate's paired outcome on its
+   per-tensor deviation from the consensus curve (lasso / grouped by ~70 type × depth-band groups, pooled across sizes)
+   → measured marginal value per group. Flag groups where it disagrees with the curve / fit.py, or changes sharply with
+   size (kinks). #186's early-FFN starvation is the kind of case it should catch. Each flag → an inbox test at fixed
+   size (shift bits toward / away from the group), judged by the normal rule + confirmation.
+Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not a per-tensor map.
