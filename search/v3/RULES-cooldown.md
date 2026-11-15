@@ -65,3 +65,7 @@ live pair s190c / s190d, t183, t186n, golden-final750, final-x, verify. If the f
 the c parts, fill the shortfall with more xcorp Latin pieces in the x parts (same total L gen positions per slice) and
 say so; never shrink a slice. Pair (s190e search, s190f confirm). The N-rich xcorp batch (TODO 11-15) replaces N reuse
 once it exists.
+
+## Amendment 2026-11-15 4:40 PM CST (user): Latin reuse for the s190e search slice
+For s190e (the search side only): Latin may also reuse retired search slices' and V2-era documents of the fit + search
+pool, least-used first by V3 decision count (ledger). s190f (confirm) keeps the freshest Latin available.
