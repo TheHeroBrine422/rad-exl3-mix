@@ -1,0 +1,30 @@
+== fresh: git archive 30448bb0 (search eval pipeline) + driver-inbox-rr.patch (2026-11-15 UTC); RXM_POOL_BASE = git archive 8b839e47 (search eval pipeline; its driver.py equals 30448bb0's)
+== test_inbox192b (13)
+PASS share_holds_half_of_26
+PASS keys_absent_the_inbox_takes_the_slots_first
+PASS own_moves_still_go_in_when_the_inbox_is_full
+PASS share_one_gives_the_inbox_first_and_the_own_moves_the_rest
+PASS odd_depth_round_robin_gives_the_inbox_the_extra_slot
+PASS decide_waiting_for_its_incumbent_holds_no_slot
+PASS two_eval_probe_holds_the_last_slot
+PASS one_slot_takes_the_decide_before_an_older_probe_once
+PASS overflow_moves_the_newest_beyond_pending_max_and_skips_a_young_file
+PASS restart_in_the_share_path_never_resubmits
+PASS bad_round_robin_keys_are_refused
+   23 events, 4 queued identical (inbox {'': ['junk.json'], 'done': ['a.json', 'p.json'], 'rejected': ['r.json']})
+PASS identity_absent_keys_on_a_scenario_with_inbox_files
+   5 events, 1 queued, 1 log lines identical (15 files)
+PASS identity_absent_keys_on_a_pinned_live_copy_with_the_consensus_files
+13 / 13 PASS
+== test_inbox192 (9, the #192 suite, unchanged)
+9 / 9 PASS
+== test_confirm189 15 / 15 PASS;  test_reselect189 12 / 12 PASS;  pool188 13 / 13 PASS;  test_picks 18 / 18 PASS
+
+== mutants (copies of the tree with one line broken; test_inbox192b on each)
+ignore_share (first = inbox always): 10 / 13; FAIL share_holds_half_of_26, odd_depth_round_robin..., restart_in_the_share_path...
+no_hold (return 0 instead of -1): 11 / 13; FAIL two_eval_probe_holds_the_last_slot, one_slot_takes_the_decide...
+no_decide_first (no inbox_passed): 12 / 13; FAIL one_slot_takes_the_decide_before_an_older_probe_once
+
+== real data, pinned copy of the live run (dryrun192.py, 3 steps)
+- keys absent, fresh state (inbox records removed), 15 consensus files, inbox_max 20: HEAD == tree: 37 events, 20 queued, 14 log, status, inc, pool, inbox
+- keys absent, live copy at 02:04 AM CST (queue_depth 26, full): HEAD == tree: 5 events, 1 queued, 1 log line

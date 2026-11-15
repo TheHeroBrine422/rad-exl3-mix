@@ -1,0 +1,201 @@
+# w174 · #192-02 round-robin share and pending cap for the driver inbox: search/v3/driver.py against HEAD 8b839e47 (driver.py = a44315da, w171's inbox).
+# Apply:  git apply -p1 search/v3/inbox192/driver-inbox-rr.patch   (inert with no CONF change: inbox_share / inbox_pending_max absent = the #192 behaviour)
+# New CONF keys (candidates, none set in the live config): inbox_share (0 < x <= 1, e.g. 0.5), inbox_pending_max (>= 1, e.g. 200).
+# Choices and why: README.md, section 'Round-robin (#192-02)'. Tests: test_inbox192b.py (13), scenario192b.py (identity helper).
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -90,6 +90,12 @@
+ "extra_slices": [{"name", "golden"}] add a whole read of a probe on each golden (kind "read", tag <inbox_prefix>-<slice>-<probe tag>): never
+ a decision, never a fit row. A file that fails a check (mode, size, unknown weight or option, unassigned weight, window) moves to
+ inbox/rejected/ with its reason in driver.log; a submitted file moves to inbox/done/ after its "inbox" state event (never resubmitted).
++Round-robin (#192-02, user 11-15; CONF "inbox_share" in (0, 1] and "inbox_pending_max"; both absent = the behaviour above): with files
++waiting, each free slot (queue_depth - outstanding) goes to the side further below its share of the outstanding evals (inbox: inbox
++evals / share; own moves: the rest / (1 - share)); a tie goes to the side that did not get the previous slot. The inbox's evals stay
++under inbox_max. A slot the oldest inbox file needs more of than is free is held for it. With one slot free, a waiting decide goes
++before an older probe, once. "inbox_pending_max": the files waiting in inbox/ beyond the first N (oldest first) move to inbox/overflow/
++with a log line; a file under 30 s old waits for a later pass.
+ State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit, inbox), ROOT/assign/<tag>.json.
+ Restart = the same command (state replayed; outstanding evals stay in the queue)."""
+ import argparse, collections, hashlib, json, math, os, random, subprocess, sys, time
+@@ -180,6 +186,12 @@
+         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+         # driver inbox (#192): ROOT/inbox/ (see the module doc); the state of the submitted files is replayed
+         self.inbox_max = int(c.get("inbox_max", 6)); self.inbox_pfx = c.get("inbox_prefix", "ibx")
++        # round-robin (#192-02): absent = the #192 behaviour exactly (inbox first up to inbox_max, own moves fill the rest)
++        self.inbox_share = None if c.get("inbox_share") is None else float(c["inbox_share"])
++        if self.inbox_share is not None and not 0 < self.inbox_share <= 1: raise ValueError(f"CONF inbox_share {self.inbox_share:g} is not in (0, 1]")
++        self.inbox_pending = None if c.get("inbox_pending_max") is None else int(c["inbox_pending_max"])
++        if self.inbox_pending is not None and self.inbox_pending < 1: raise ValueError(f"CONF inbox_pending_max {self.inbox_pending} is < 1")
++        self.inbox_passed = None                                    # the probe a decide went before (one slot): it goes at the next one-slot turn
+         self.inbox_rec = {}; self.inbox_tags = []
+         for d in ("inbox", "inbox/done", "inbox/rejected"): os.makedirs(f"{self.R}/{d}", exist_ok=True)
+         self.replay()
+@@ -1003,28 +1015,100 @@
+         evals under CONF inbox_max) and recorded (an "inbox" event) BEFORE it moves to done/. A file that fails a check moves to
+         rejected/ with the reason in driver.log. The first file that has to wait holds back the later ones."""
+         for f in self.inbox_files():
+-            p = f"{self.R}/inbox/{f}"
+-            try: raw = open(p, "rb").read()
+-            except OSError: continue                                        # moved meanwhile
+-            sha = hashlib.sha1(raw).hexdigest()[:16]
+-            if f in self.inbox_rec:                                         # a crash between the record and the move: just move it
+-                e = self.inbox_rec[f]
+-                if e["sha"] == sha:
+-                    self.log(f"inbox {f}: already submitted as {e['tag']}; moved to done/, not resubmitted"); self.inbox_move(f, "done")
+-                else: self.inbox_reject(f, f"name already used by a different file (submitted as {e['tag']})")
+-                continue
+-            try: d = json.loads(raw)
+-            except ValueError as ex:
+-                if time.time() - os.path.getmtime(p) < 30: break            # still being written: next pass
+-                self.inbox_reject(f, f"not valid JSON ({ex})"); continue
+-            why, sp = self.inbox_spec(d)
+-            if why: self.inbox_reject(f, why); continue
+-            n_eval = 1 + len(sp["extra"])
+-            if n_eval > self.inbox_max: self.inbox_reject(f, f"needs {n_eval} evals, CONF inbox_max is {self.inbox_max}"); continue
+-            if len(self.inbox_out()) + n_eval > self.inbox_max: break
+-            if sp["mode"] == "decide" and not (self.scored_on(sp["size"], act) and not self.reseed_wait(sp["size"], act)): break
++            st, sha, sp = self.inbox_check(f)
++            if st == "moved": continue
++            if st == "young": break
++            if len(self.inbox_out()) + self.inbox_n(sp) > self.inbox_max: break
++            if sp["mode"] == "decide" and not self.inbox_ready(sp, act): break
+             self.inbox_submit(f, sha, sp, act)
+ 
++    def inbox_check(self, f):
++        """one file of inbox/, checked without the queue -> ("moved", None, None) when it was handled here (a recorded name, or a reject),
++        ("young", None, None) when its JSON is still being written, else ("ok", sha, spec)"""
++        p = f"{self.R}/inbox/{f}"
++        try: raw = open(p, "rb").read()
++        except OSError: return "moved", None, None                          # moved meanwhile
++        sha = hashlib.sha1(raw).hexdigest()[:16]
++        if f in self.inbox_rec:                                         # a crash between the record and the move: just move it
++            e = self.inbox_rec[f]
++            if e["sha"] == sha:
++                self.log(f"inbox {f}: already submitted as {e['tag']}; moved to done/, not resubmitted"); self.inbox_move(f, "done")
++            else: self.inbox_reject(f, f"name already used by a different file (submitted as {e['tag']})")
++            return "moved", None, None
++        try: d = json.loads(raw)
++        except ValueError as ex:
++            if time.time() - os.path.getmtime(p) < 30: return "young", None, None   # still being written: next pass
++            self.inbox_reject(f, f"not valid JSON ({ex})"); return "moved", None, None
++        why, sp = self.inbox_spec(d)
++        if why: self.inbox_reject(f, why); return "moved", None, None
++        if self.inbox_n(sp) > self.inbox_max:
++            self.inbox_reject(f, f"needs {self.inbox_n(sp)} evals, CONF inbox_max is {self.inbox_max}"); return "moved", None, None
++        return "ok", sha, sp
++
++    def inbox_n(self, sp): return 1 + len(sp["extra"])
++
++    def inbox_ready(self, sp, act):
++        """a probe is always ready; a decide needs its size's incumbent scored on the active slice (and no re-seed wait)"""
++        return sp["mode"] == "probe" or (self.scored_on(sp["size"], act) and not self.reseed_wait(sp["size"], act))
++
++    def inbox_take(self, act, room):
++        """(#192-02) one inbox turn: submits the file that goes next, if it fits `room` free slots -> its evals (> 0). 0 when nothing can
++        go this turn (no file, a decide waiting for its incumbent, the inbox cap); -1 when the oldest file fits the cap but needs more
++        than `room` slots: the slot is held for it. Oldest first. With one slot free a waiting decide goes before an older probe, once
++        (inbox_passed): the probe is then the next one-slot pick, so decides cannot starve it."""
++        head = pick = None
++        for f in self.inbox_files():
++            st, sha, sp = self.inbox_check(f)
++            if st == "young": break
++            if st == "moved": continue
++            if head is None:
++                head = pick = (f, sha, sp)
++                if room != 1 or sp["mode"] == "decide" or self.inbox_passed == f: break
++                continue
++            if sp["mode"] == "decide" and self.inbox_n(sp) == 1 and self.inbox_ready(sp, act): pick = (f, sha, sp); break
++        if head is None: return 0
++        f, sha, sp = pick; n = self.inbox_n(sp)
++        if len(self.inbox_out()) + n > self.inbox_max or not self.inbox_ready(sp, act): return 0
++        if n > room: return -1
++        if pick is not head: self.inbox_passed = head[0]
++        self.inbox_submit(f, sha, sp, act)
++        return n
++
++    def inbox_fill(self, act):
++        """(#192-02) the free slots while inbox files wait: each slot goes to the side further below its share of the outstanding evals
++        (inbox: inbox evals / share; own moves: the others / (1 - share)); a tie goes to the side that did not get the previous slot
++        (round robin, the inbox first). A side that cannot use the slot passes it on. Stops when the queue is full, when neither side
++        can use a slot, or when the inbox holds the slot for its oldest file."""
++        for f in self.inbox_files(): self.inbox_check(f)                    # every waiting file is checked (rejects, recorded names) even with no slot free
++        depth = int(self.c.get("queue_depth", 6)); s = self.inbox_share; last = None
++        while True:
++            T = len(self.outstanding()); I = len(self.inbox_out())
++            free = depth - T
++            if free <= 0: return
++            ib = I / s; ow = (T - I) / (1.0 - s) if s < 1 else math.inf
++            first = "inbox" if ib < ow or (ib == ow and last != "inbox") else "own"
++            got = None
++            for side in (first, "own" if first == "inbox" else "inbox"):
++                if side == "inbox":
++                    n = self.inbox_take(act, free)
++                    if n < 0: return                                    # held for the oldest file
++                    if n > 0: got = "inbox"; break
++                elif self.generate(act, room=1): got = "own"; break
++            if got is None: return
++            last = got
++
++    def inbox_overflow(self):
++        """(#192-02) CONF inbox_pending_max: the files waiting in inbox/ beyond the first N (oldest first) move to inbox/overflow/ with a
++        log line (an agent re-drops them later). A file under 30 s old may still be being written: it waits for a later pass."""
++        if self.inbox_pending is None: return
++        fs = self.inbox_files()
++        for f in fs[self.inbox_pending:]:
++            try:
++                if time.time() - os.path.getmtime(f"{self.R}/inbox/{f}") < 30: continue
++            except OSError: continue                                    # moved meanwhile
++            self.log(f"inbox {f} overflow: {len(fs)} waiting > CONF inbox_pending_max {self.inbox_pending}; moved to inbox/overflow/")
++            self.inbox_move(f, "overflow")
++
+     def inbox_submit(self, f, sha, sp, act):
+         size, a, note = sp["size"], sp["a"], sp["note"]
+         if sp["mode"] == "decide":                                         # judged like generate(): reference, audit draw, early-stop block
+@@ -1246,16 +1330,17 @@
+         n = len(self.sub)
+         return f"{self.c.get('tag_prefix', 'v3s')}-{size:g}-{kind}-{n:05d}"
+ 
+-    def generate(self, act):
++    def generate(self, act, room=None):
+         if all(f is None for f in self.fits.values()): return 0
+         out = self.outstanding(); depth = int(self.c.get("queue_depth", 6)); made = 0
++        cap = depth - len(out) if room is None else min(int(room), depth - len(out))    # (#192-02) room: at most this many now
+         inflight = collections.Counter(self.sub[t]["size"] for t in out)
+         share0 = self.c.get("kind_share0", MV.SHARE0)
+         if self.K > 1 and "cross" not in share0: share0 = dict(share0, cross=self.cross_share0)     # RULES-pool §4
+         shares = MV.kind_shares({k: tuple(v) for k, v in self.kind_stats.items()}, share0)
+         kcount = collections.Counter(self.sub[t]["kind"] for t in self.sub if self.sub[t]["kind"] in shares)
+         tries = 0; failed = set()
+-        while len(out) + made < depth and tries < 4 * len(self.sizes):
++        while made < cap and tries < 4 * len(self.sizes):
+             tries += 1
+             ready = [s for s in self.sizes if s not in self.stopped_sizes and self.feasible(s) and self.scored_on(s, act) and not self.reseed_wait(s, act) and s not in failed
+                      and self.fits[self.gname[s]] is not None]
+@@ -1399,7 +1484,9 @@
+         if self.rs and not self.rs_end:
+             line += (f" | reselect {len(self.rs_res)}/{len(self.rs_plan['plan'])} on {self.rs_sl}" if self.rs_plan else f" | reselect {self.rs_sl} waits for go-live")
+         n_in, k_in = self.inbox_status()
+-        if n_in or k_in: line += f" | inbox {n_in} ({k_in} outstanding)"
++        if self.inbox_share is not None or self.inbox_pending is not None:          # (#192-02) the new segment; absent keys: the #192 one
++            if n_in or k_in: line += f" | inbox waiting {n_in}, outstanding {k_in} / {self.inbox_max}"
++        elif n_in or k_in: line += f" | inbox {n_in} ({k_in} outstanding)"
+         open(f"{self.R}/status.txt", "w").write(line + "\n")
+         return line
+ 
+@@ -1420,9 +1507,13 @@
+         if self.cf: self.golive_step()
+         if self.rs: self.reselect_step(act)
+         if self.cf: self.confirm_step(act)
+-        self.inbox_step(act)                                                # (#192) before the driver's own moves
+-        self.monitor_refs()
+-        self.generate(act)
++        self.inbox_overflow()                                               # (#192-02) before the folder is read
++        if self.inbox_share is not None and self.inbox_files():             # (#192-02) files wait: the free slots are shared
++            self.monitor_refs(); self.inbox_fill(act)
++        else:
++            self.inbox_step(act)                                            # (#192) before the driver's own moves
++            self.monitor_refs()
++            self.generate(act)
+         return self.report()
+ 
+     def run(self, steps=None, sleep=None):
