@@ -7743,3 +7743,35 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Lead read: (2) is the actionable one and is what RULES-strata should let the search see (it starved early FFN on
   English-dominated, capped statistics); (1) needs the pack check. Rows (70 MB) kept on ds8 / box2, not in the repo.
   Xcorp diagnostic documents: no ledger rows (the ledger is for calib documents). VM clock is UTC; times in notes CST.
+
+### 2026-11-14 7:03 PM CST · #186-05 · RULES-strata step 5: t186n references (V2 1.50-7.00, IQR-V4 iq2r-iq6r), paired N intervals, the #186 track plot (w164)
+- **Status:** done for the references and the plot; the search's incumbents on t186n are not read (open, see below) · **Machines:** ds8 card 7 (V2 4.50, 5.00; V2 1.50-4.00 ran on ds8 cards 0/3/5/6 before the card rule, see `refs-lane-ds8.log`), box2 cards 2/3 (V2 6.00 / 7.00, IQR iq2r / iq3r / iq4r / iq5r / iq6r; box2 downloads; equivalence read iq2r on t183) · **Code:** `search/v3/run186w/` (`ref186.sh`, `refs186.sh`, `refs186.py`, `refs186ci.py`, `refs186tails.py`; README steps 9-11), `search/convplot4.py` (`--track-strata` now draws per-band IQR-V4 N and board lines; the first version put the points at x = bpw on the eval-step axis, which was wrong) · **Rule:** RULES-strata §2, §7 (f0db8aa5)
+- **Question:** what do V2 and IQR-V4 read on the non-Latin supplement t186n, next to t183's L part, at each size; is IQR-V4 ahead of V2 on the N stratum?
+- **Method:** each reference container scored on `golden-t186n` (radiance, bf16 KV, top-512 + tail reference, as the other goldens); the board counts gen positions only (32,117 on t186n). Board = 0.961 L + 0.039 N (§2). Intervals: paired per-document bootstrap (4,000 replicates, documents resampled together, 21 documents with gen positions).
+- **Result (gen positions; KLD, p99 and top-1 on N; `data/strata186/refs186.jsonl`, `refs186-tails-t186n.tsv`):**
+
+| size (bpw) | V2 t183 L | V2 t186n N | V2 board | V2 N p99 | V2 N top-1 | | IQR-V4 size | IQR t183 L | IQR t186n N | IQR board | IQR N p99 | IQR N top-1 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1.5 | 0.50966 | 0.86700 | 0.52360 | 5.70 | 0.619 | | | | | | | |
+| 2.0 | 0.17113 | 0.29633 | 0.17601 | 2.87 | 0.777 | | | | | | | |
+| 2.5 (2.49) | 0.07174 | 0.11382 | 0.07338 | 1.20 | 0.856 | | iq2r (2.47) | 0.06716 | 0.13131 | 0.06966 | 2.07 | 0.861 |
+| 3.0 | 0.03399 | 0.05214 | 0.03470 | 0.53 | 0.904 | | | | | | | |
+| 3.5 (3.50) | 0.01826 | 0.02720 | 0.01861 | 0.32 | 0.932 | | iq3r (3.47) | 0.01710 | 0.03467 | 0.01779 | 0.51 | 0.930 |
+| 4.0 | 0.00861 | 0.01311 | 0.00879 | 0.13 | 0.951 | | | | | | | |
+| 4.5 (4.50) | 0.00458 | 0.00956 | 0.00478 | 0.14 | 0.960 | | iq4r (4.47) | 0.00474 | 0.00922 | 0.00491 | 0.12 | 0.962 |
+| 5.0 | 0.00265 | 0.00433 | 0.00271 | 0.047 | 0.972 | | iq5r (5.43) | 0.00156 | 0.00363 | 0.00165 | 0.050 | 0.976 |
+| 6.0 (5.98) | 0.00092 | 0.00145 | 0.00094 | 0.016 | 0.985 | | iq6r (6.44) | 0.00079 | 0.00124 | 0.00080 | 0.0135 | 0.985 |
+| 7.0 | 0.00039 | 0.00068 | 0.00040 | 0.009 | 0.989 | | | | | | | |
+
+  - **IQR-V4 ÷ V2 on N, paired intervals (IQR as B; V2 at the nearest size, `data/strata186/refs186ci.jsonl`):** 2.47 vs 2.49: **1.15 [0.94, 1.45]**; 3.47 vs 3.50: **1.27 [0.97, 1.77]**; 4.47 vs 4.50: **0.97 [0.70, 1.31]**; 5.43 vs 5.00: 0.84 [0.59, 1.44] and 6.44 vs 6.00: 0.85 [0.74, 1.02] (both 0.4-0.5 bpw from the nearest V2 size). **No pair differs from 1 at 95 %.**
+  - **Tails:** IQR's N p99 is heavier at 2.5-3.5 (2.07 vs 1.20; 0.51 vs 0.32) with the same top-1; at 4.5-6 the p99s are within ~15 %.
+  - **Same readings on the board's other terms (t183 L, IQR ÷ V2 at the near size):** 0.94 (2.5), 0.94 (3.5), 1.03 (4.5). Board: 0.95, 0.96, 1.03.
+  - **Band lines on the plot** (log-linear V2 between sizes, geo-mean per band): N b1 1.10, b2 1.23, b3 1.16; board b1 0.91, b2 0.93, b3 1.07. The b3 values depend on V2's log-linear interpolation between 5.0 and 6.0 and between 6.0 and 7.0 (the 5.43 and 6.44 points); the nearest-size pairs above give 0.84-0.85 for the same sizes. Read the band lines as the plot's convention, not as a result.
+- **Equivalence (the 1e-5 bar, cross-machine):** same radiance build on both boxes (md5 `d07114d0`), same golden-t186n (md5 of kld.json and rows.f32). iq2r on t183 read on box2 and ds8's row file (the lead's): **181,488 rows x 4 columns bit-identical (max |diff| 0.0)**; gen-masked mean 0.067851394415 on both = the lead's refs-t183 value. The t183 means recomputed from every reference's rows match the lead's `refs-t183.jsonl` for all 23 references (max |diff| 0.0). `data/strata186/equiv-iq2r-t183.txt`.
+- **Reading:** on t186n (21 documents, not t183's documents) IQR-V4 and V2 are not separated on the N stratum at any size. Point readings: IQR is 15 % and 27 % higher at 2.47 and 3.47, about even at 4.47, and 15-16 % lower at 5.43 and 6.44 (against the nearest V2 size, 0.4-0.5 bpw away); the intervals are wide (0.6-1.8). IQR is ahead on t183's L part at 2.5-3.5 (about 6 %). The N/L ratios across slices are not compared: t183's L and t186n's N are different documents, so only IQR-vs-V2 within one slice is valid. The 14x V2 N/L reading on ver3-8k (LOG #186, 6:05 PM CST) is a within-document ratio on six documents; t186n cannot test it, so it stays unverified.
+- **Defects and open items (stated, not fixed):**
+  1. **t186n doc 9** (calib orig 966, 4,096 tokens) has no gen positions under the mask (`genmask181`); it adds nothing to any reading, and its monitor row in the ledger counts a document with 0 positions. Fix in the next build of t186n (a rebuild re-scores 15 containers, not done). `check186.py` should have required gen > 0 per document; it did not.
+  2. **The search's incumbents on t186n are not read.** The track panel's N and board lines need 62 incumbent reads on t186n (each container 5-20 GB, ~1-1.5 min on a free card) plus an L-only t183 row per incumbent for the board line (the driver keeps only the full t183 score). Not run: about 2-3 GPU hours on the shared cards, the lead's decision. `--track-n` is ready in convplot4.
+  3. The registry entries for s186a-f are still staged in `workers/w164/registry-staged-186.json` (step 2, not written to the live registry).
+- **Runtime:** neither (quality readings of existing containers; no prefill or decode change).
+- **Files:** `data/strata186/` (`refs186.jsonl`, `refs186ci.jsonl`, `refs186-tails-t186n.tsv`, `rows-t186n/` (15 rows + report files, 8.5 MB), `track186.png`, `refs-lane-ds8.log`, `refs-lane-box2.log`, `equiv-iq2r-t183.txt`), `search/v3/run186w/` (scripts, README), `search/convplot4.py`

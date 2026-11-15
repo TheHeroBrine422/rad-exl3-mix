@@ -1,0 +1,7 @@
+#186 equivalence check (w164, 11-15 ~00:30 UTC): iq2r on t183, box2 vs ds8 (the lead's row file)
+radiance build: md5 d07114d0aa599b154b98d9e6014da37e on both boxes (ds8 /data/q27/rad10-e157b, box2 same path)
+golden-t183 copied from ds8 /data/q27/w131/slices/golden-t183 to box2 (rsync 10 GbE); golden-t186n md5 of kld.json and rows.f32 equal on both
+container: iq2r-v4 (IQR-V4), ds8 /data/q27/srch183/refs/iq2r-t183.json.rows (lead, ds8) vs box2 /data/q27/w164/refs/iq2r-t183-box2.json.rows
+rows: 181,488 golden rows x 4 columns, float32
+max per-row |difference| over all rows and columns: 0.0 (bit-identical)
+gen-masked mean KLD (157,572 gen positions): box2 0.067851394415, ds8 0.067851394415; lead refs-t183 value 0.06785139441490173 (difference 0)

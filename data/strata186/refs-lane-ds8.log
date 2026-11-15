@@ -1,0 +1,17 @@
+v2-1.50-t186n rc 0 card 3
+23:57:40 v2-1.50 done rc 0
+v2-2.00-t186n rc 0 card 5
+00:00:15 v2-2.00 done rc 0
+v2-2.50-t186n rc 0 card 6
+00:11:41 v2-2.50 done rc 0
+v2-3.00-t186n rc 0 card 3
+00:12:22 v2-3.00 done rc 0
+v2-3.50-t186n rc 0 card 0
+00:13:01 v2-3.50 done rc 0
+v2-4.00-t186n rc 0 card 0
+=== lane2 (card 7 restart) ===
+v2-4.50-t186n rc 0 card 7
+00:18:15 v2-4.50 done rc 0
+v2-5.00-t186n rc 0 card 7
+00:18:57 v2-5.00 done rc 0
+=== lane2 (ds8, card 7) ===

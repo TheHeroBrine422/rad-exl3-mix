@@ -16,7 +16,8 @@ raw numbers are in `data/strata186/` (plan, checks, build log, built-part shares
 | 8 refs | `refs186.py T183G T183R T186G T186R REFS_T183 TOK OUT` | the rows files of each reference on t183 and t186n | `refs186.jsonl`: L, N183, N (t186n), board per reference |
 | 9 refs lane | `refs186.sh` (one reference at a time through `ref186.sh`; `LIST`, `CARDS`, `LOCAL_DIRS`) | containers (local, or `hf download` and delete) and golden-t186n | `{name}-t186n.json.rows` (+ `.json.part` report) |
 | 10 CI | `refs186ci.py GOLDEN ROWS_A ROWS_B --name-a A --name-b B` | two references' rows on golden-t186n | paired per-document bootstrap (4,000 replicates, documents resampled together) of the N-stratum ratio B/A and difference |
-| 11 plot | `search/convplot4.py STATE OUT.png ... --track results.jsonl --track-refs refs-t183.jsonl --track-strata refs186.jsonl` | `refs186.jsonl` | the tracking panel with the IQR-V4 ratios on L (o), N (s) and board (^) |
+| 12 tails | `refs186tails.py GOLDEN ROWS_DIR` | the rows of step 9 and golden-t186n's gen mask | `data/strata186/refs186-tails-t186n.tsv`: gen-position mean KLD, p99, top-1 per reference |
+| 11 plot | `search/convplot4.py STATE OUT.png ... --track results.jsonl --track-refs refs-t183.jsonl --track-strata refs186.jsonl` | `refs186.jsonl` | the tracking panel; with `--track-strata`, IQR-V4 per band: N (dotted) and board (dash-dot) geo-means of the ratio to V2 (log-linear in bpw); the t183 band lines are full t183 |
 
 `xview/` is a scratch view of the b1 golden with colo's copy of its corpus meta (`/data/work/gold27/xc8k-b1.jsonl.meta.jsonl`
 on colo; 3,389 lines, tokens and source identical to the golden line by line). ds8's `xc8k-b1` has no meta.
@@ -73,8 +74,11 @@ before a build, and only after the registry has been merged, or the plan changes
   `kld.json` and `rows.f32` match). iq2r on t183 scored on box2 (golden copied from ds8, 10 GbE) against the lead's ds8 row file:
   the rows are bit-identical (181,488 rows, 4 columns, max |diff| 0.0), the gen-masked mean 0.067851394415 = the lead's
   refs-t183 value. Raw: `data/strata186/equiv-iq2r-t183.txt`.
-- **Plot.** `convplot4.py` with `--track-strata refs186.jsonl` draws the IQR-V4 ratios on L (t183), N (t186n) and the board
-  combination. Incumbents' own t186n reads (`--track-n`) are not scored (they need the search's containers and driver rows;
-  a follow-up, not in the step-5 list).
+- **Plot.** `convplot4.py` with `--track-strata refs186.jsonl` draws the IQR-V4 band geo-means of the N and board ratios (V2
+  log-linear in bpw). The t183 band lines stay full t183 (3.8 % of its positions are N); the board uses t183's L-only reads.
+  Not drawn: the search's incumbents on t186n (`--track-n`, 62 incumbents, each needs a t186n read; the board line for them also
+  needs an L-only t183 row per incumbent). Not run: a GPU decision for the lead.
+- **Paired intervals** (`refs186ci.py`; 21 of the 22 t186n documents have gen positions: doc 9, calib orig 966, has none under the mask and adds nothing, a defect of the t186n build, not fixed here): IQR-V4 / V2 at the nearest bpw, N stratum,
+  95 % per-document bootstrap. Results in `data/strata186/refs186ci.jsonl`; none differs from 1 at 95 %.
 - **Reruns.** `CARDS=7 ./refs186.sh` on ds8 (default list), or on box2 `LIST=... CARDS="3 2" LOCAL_DIRS=... ./refs186.sh`
   (commands in the script header). `refs186.py` then needs the t183 rows (`/data/q27/srch183/refs`) and the bf16 tokenizer.

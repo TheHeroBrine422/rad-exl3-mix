@@ -1,0 +1,20 @@
+iq2r-t183-box2 rc 0 card 3
+EQUIV_DONE 00:27:02
+iq2r-t186n rc 0 card 3
+00:27:37 iq2r done rc 0
+iq4r-t186n rc 0 card 3
+00:28:13 iq4r done rc 0
+=== lane-box2-v2 (V2 6.00 / 7.00) ===
+v2-6.00-t186n rc 0 card 3
+00:39:47 v2-6.00 done rc 0
+v2-7.00-t186n rc 0 card 3
+00:50:18 v2-7.00 done rc 0
+LANE DONE
+=== lane-box2-iq (iq3r / iq5r / iq6r) ===
+iq3r-t186n rc 0 card 2
+00:39:15 iq3r done rc 0
+iq5r-t186n rc 0 card 2
+00:51:01 iq5r done rc 0
+iq6r-t186n rc 0 card 2
+00:57:49 iq6r done rc 0
+LANE DONE
