@@ -4,6 +4,56 @@ Append-only; template and rules in `README.md`. Every experiment's entries are h
 before 2026-11-02 ~05:00 CST were rewritten into this template from the old trackers; notes at the end). Earlier
 versions of anything: git history.
 
+### 2026-11-15 11:45 AM CST · #191 · QAD combination screen done: **scales-only stays the recipe.** B (block-wise first) **+4.1 %** KL and D (calib-heavy mix) **+3.4 %** hurt; T (DFlash2 taps) −0.2 % and Q (A8 in training) +0.1 % do nothing; L (rank-16 adapters) **−0.7 % [−1.1, −0.2]**, far below its size cost (w170)
+- **Status:** done · **Machine:** box2 cards 0–3 (11-15 1:05 AM → 11:25 AM CST) · **Rules:** `v3/qad191/RULES191.md`
+  (800dd1e4) · **Plan:** `v3/qad191/plan191.json` (5992bbde, committed before any arm ran) · **Code:** `v3/qad191/`
+  (uncommitted, for the lead) · **Data:** `data/qad191/` (per-doc sums, analysis, per-arm logs)
+- **Student:** the 2.5 incumbent at the start, `v3s183-2.5-inc-01334` (hash 05022252c480908f). The torch student matches
+  the served form: mad trunk (virtual level), mad R16 u2.875 head, K1.75 trellis token table (oracle-decoded), T4 GDN
+  a/b. Gate: the control through `eval191.py`'s pack path gives rows byte-identical to the incumbent's own mix (fe38).
+  The 17 arms all use 1M gen rows, #181's recipe and lr 1e-3. Judge sets: x181g (152,007 gen rows) and fe38 (#181's 38
+  held-out qad docs, 31,147 rows). Response: pooled gen-row KL on the torch path with A8.
+- **Effects** (log-KL contrasts over the 16 design arms; 95 % per-doc bootstrap, 2,000 replicates):
+
+  | term | KL effect | 95 % CI | x181g | fe38 |
+  |---|---|---|---|---|
+  | L adapters r16 | **−0.68 %** | [−1.09, −0.19] | −0.59 % | −1.04 % |
+  | B block-wise 25 % | **+4.09 %** | [+2.38, +6.47] | +4.29 % | +3.27 % |
+  | T tap MSE (w 1) | −0.16 % | [−0.37, +0.07] | −0.23 % | +0.10 % |
+  | Q A8 fake quant | +0.06 % | [−0.03, +0.18] | +0.07 % | +0.04 % |
+  | D 50 % calib | **+3.39 %** | [+1.02, +6.17] | +3.88 % | +1.37 % |
+
+  Two-way terms are all ≤ 0.4 % except BD +0.96 % [−0.16, +2.36]. The ones whose CI excludes 0: LB −0.37 %, LT −0.15 %,
+  TD −0.15 %, BQ +0.16 %. Served path, L-off half (B, T, Q, D): +4.55 / −0.06 / −0.02 / +3.25 %, the same picture.
+- **Arms:** the S-only reference is 0.8716 of the untrained control [0.822, 0.914] on torch and 0.8701 served (x181g
+  −14.3 %, fe38 −6.2 %). Best arm: L+T+Q, D− at 0.9946 of the reference [0.990, 1.000]. Worst: B+Q+D+ at 1.082. Right
+  after the block stage, fe38 is 14–17 % worse than untrained (0.0669–0.0690 vs 0.0587), and end-to-end training does not
+  fully recover. D+ also loses on the calib judge set (fe38 +1.4 %).
+- **Torch vs served:** torch reads 0.64–0.97 % higher than served on every arm. On the reference: fe38 +0.58 %, x181g
+  +0.88 %, per-row max |Δ| 1.38, median 8e-4. That fails the 1e-5 bar, so the L-off arms were also analysed on the served
+  path (rule); the conclusions are the same.
+- **L cost** (#165's estimate scaled to r16): 108.8M values, **+0.065 bpw bf16 / ~+0.037 int8**. At b 1.48 that is a
+  ×1.10 / ×1.06 size-adjusted penalty against a 0.7 % gain. Decode +1–3 % fused (~+10 % as 800 launches); prefill
+  +0.5 % fused (~+8 % unfused). **L does not pay.**
+- **Deviations / incidents** (all fixed before any affected arm finished; every reported arm ran to completion):
+  - D− is #181's order. It is 6.6 % calib by gen rows, not the 20 % RULES191 states. D+ realised 49.7 %.
+  - T weight = 1: the untrained student's KL/tap ratio was 1.09 (plan rule).
+  - Host RSS crept ~0.3 GB per step per run (glibc heap). The four round-1 arms were stopped and resumed once, at steps
+    15–18, with `MALLOC_MMAP_THRESHOLD_`; after that RSS stayed flat at ~15 GB per run. No OOM kill. RAM never went below
+    18 GB available. `/data` never went below 193 GB free.
+  - L arms hit the #165 / #168 Tensile fault (`Cijk_Ailk_Bjlk_BBS_BH_…_MT64x64x32`) at fixed steps, on hipBLASLt and on
+    rocBLAS alike. Serialized kernels located it: the bf16 adapter weight-gradient GEMM (dA = dTᵀx₀, [16, 5120], 80
+    workgroups). The fix: the adapters now run in f32 (`use_lora32`). All 8 L arms were rerun from step 0 that way, on the
+    same GEMM backend as the other arms. The aborted bf16-adapter attempts were discarded.
+  - The B stage OOMed on 8k windows. Each layer now runs in ≤ 2,048-token segments with the layer state carried
+    (`layer_run`). This was fixed before any B arm trained.
+- **Recommendation:** keep #181 arm A (scales only, #181 data order, lr 1e-3) at 1M for V3.1. Drop B and D+. T and Q add
+  nothing at 1M (Q's A8 stays in the served form regardless). L is the user's call, but its 0.7 % does not cover its
+  bytes. Follow-up per RULES191: the best combination at 4M and at 4.0. In practice that is S-only (#181's 4M curve
+  exists for the old incumbent). Ledger: `data/qad191/ledger-add.jsonl` + `ledger-roles-add.json` (483 qad-pool train
+  docs, the 38 fe38 judge docs), not applied.
+- **Runtime:** none (L would be prefill + decode; not adopted).
+
 ### 2026-11-14 4:33 PM CST · #176-02 · int8-decode column (lead note 2:11 PM): held-out **FAIL** (−3 to −6 %) — int8 decode overlaps dispatches, so per-op stamped times are not additive there; the per-level e2e says int8 rows gain 8–15 % at K ≤ 2.625 and ≤ ~4 % from K3, and lose 2–3 % at K5 / K6 (w159)
 - **Status:** done (f16 table stands; int8 table **not usable** for λ_d) · **Machine:** ds8 HIP 6 (~1.9 card-h incl. builds) ·
   **Code:** `v3/bench/decode17602/int8.sh`, `fit17602.py --prefix i8` · rule: amendment 3 (ed1185d) · **Data:**
@@ -8200,3 +8250,42 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 5:05 AM CST (user): Fable 5.2 is available in pi; the user tried it as the lead and went back to Opus medium (too much autonomy: it acted without checking in first). AGENTS.md updated: Fable for workers / research runs, not the lead.
 - 5:20 AM CST (user): overnight split: inbox_share 0.85 / inbox_max 22 of queue_depth 26, applied at the s190c rotation restart (allocator trials get most of the night; own moves as filler).
 - 5:30 AM CST (user): w172 restarted on Fable 5.2 low (was Opus medium); restart note: continue the agenda + invent its own allocator ideas (each with a RULES-193 amendment before its files); time box ~1:00 PM CST.
+
+### 2026-11-15 5:19 AM CST · #190-02 · Pair s190c / s190d under RULES-cooldown 1'': x parts built and copied; c N part blocked by the calib N supply; nothing staged (w176, Haiku xhigh)
+- **Status:** blocked (c part: calib N supply) · x parts built, checked, copied to box2 · **Machine:** ds8 CPU only (`nice -n 19`, ram.lock shared), copy on box2 (same path) · **Code:** `search/v3/run190/` (`draw190cd.py`, `check190cd.py`, `pickx190cd.py`, `build190cd.py`, `verify190cd.py`; new files, uncommitted) · **Data:** `data/strata190cd/` (README)
+- **Question:** the rotation rule 1'' (5:15 AM CST, "rotate"): the next pair s190c (search) / s190d (confirm): Latin 2× the matching s186 part's L gen (s190c ↔ s186a, s190d ↔ s186b, as s190a/b), N reused from retired search slices only (s173a–e, s186a, s186c) plus the 11 unused xc8k-b2 N pieces, never from a confirm / reselect / tracking / staged / active / final / verify slice. ≥ 4 scripts per part, N about s190a/b's.
+- **Result:** the x side is complete; the c side is not.
+  - **c N supply (blocking):** 64 N documents in the fit + search pool. 15 are s190a/b's (the whole free N pool at s190a's draw). Of the 16 in retired slices, only 846 (HEBREW, 2,136 N gen) is eligible with gen; 520 (CYRILLIC) is eligible but has 0 gen; 1917 is in t186n and 13 are in s186b/d/e/f (confirm / reselect), both excluded by the rule. 33 more are in non-retired slices / goldens only. Two c N parts need ~12.8k N gen and ≥ 4 scripts each: the rule leaves 1 usable document.
+  - **c side:** Latin drawn, not built: s190c-c 107 docs (L gen 100,564 = 2.01× s186a), s190d-c 58 docs (L gen 86,941 = 2.00× s186b). No N part. `check190cd.out`: 32 PASS, 1 FAIL (`c part not blocked (N supply)`), nothing else.
+  - **x side (built, verified, copied):** s190c-x 201 pieces (N 24 = 5 fresh b2 + 19 reused; L 177; L gen 244,586 = 2.01× s186a; N gen 28,152 = 10.3 %, 7 scripts, max 29 %); s190d-x 193 pieces (N 24 = 6 fresh b2 + 18 reused; L 169; L gen 216,672 = 2.01× s186b; N gen 22,191 = 9.3 %, 8 scripts, max 28 %). All 11 unused b2 N pieces are in the pair (the three xc8k-b2 gen masks built by `genmask181.py make`, all ok). Reused N x pieces come only from retired slices (s186a, s173a, s173e).
+  - **Verify:** every piece's tokens, top-k bytes and rows.f32 equal its batch's; built gen sums equal the plan (272,738 / 238,863); labels equal the xsupply table; header Qwen/Qwen3.8-27B, top 512. md5 of the 14 files identical on ds8 and box2 (`data/strata190cd/md5-golden-s190cd-x.txt`).
+- **Decision needed (lead / user):** calib N for search is exhausted under the rule (the pools are fixed, so it cannot be replenished). (a) allow the s186 confirm / reselect documents as N (still not t186n, final750, s190a/b, t183, s171, verify): 15 documents, 7 scripts, 16,538 N gen; candidate drawn, **not built**: `/data/q27/w176/strata/plan190cd-optA.json` (ds8): s190c c = 6 N docs / 5 scripts / 6.8 % N gen (max script 44 %), s190d c = 7 N docs / 6 scripts / 7.4 % (max 31 %); it passes the amended thresholds but reuses confirm / reselect data, which the rule excludes on purpose. (b) Latin-only c parts: no calib N stratum on search; not recommended. Until one of these is decided, the rotation to s190c waits; s190a stays active past its rotate_after (209 decisions at 4:53 AM CST).
+- **Choices I made (redirect if wanted):** (1) Latin matched as s190a/b. (2) draw190's exclusion missed the s190a/b x pieces (xsupply's used flags predate them): draw190cd adds their xdocs, so the new x Latin pieces are disjoint from s190a/b. (3) Reused N least used first (calib: ledger + registry decision counts; xcorp: the decisions of the retired slices holding the piece); fresh b2 N first. (4) Seed 1902; a re-run gives the same plan md5 (`f24def05…`). (5) x N reuse is strict in both policies; only the calib N pool changes under (a). (6) N targets per part: c 6,388 and x 25,120 gen (the mean of s190a / s190b).
+- **Not done (waits for the decision):** c parts (build, goldmix), staged registry (`workers/w176/`, not written: the pair is incomplete), driver config (`confirm.pairs` + s190c/d), ledger rows (no calib part built). The live registry, driver, config and coordinator were only read (snapshot copies), not changed.
+- **Runtime:** neither (search infrastructure; the quantizer, kernels and format are untouched).
+- **Leftover N supply:** after this pair 36 reusable N x pieces remain (38,911 gen, 8 scripts) for the x side. The calib N stratum has no reusable documents left under the rule.
+
+### 2026-11-15 6:32 AM CST · #193 · w172: alternative allocators via the inbox — interim (run 1 Opus medium 1:47–5:28 AM, run 2 Fable 5.2 low 5:13–6:32 AM); search stalled since 5:18 AM CST
+- **Stopped early, on purpose:** the search made no progress from 5:18:55 AM CST on (`multi/v3b/multi.log`: `ds8: unit ev-v3s183-2.5-confirm-01719 FAILED (1x) … q-L32.safetensors: Too many open files`, then one `start eval` and nothing; driver results stuck at 1709, outstanding 26, 11 ds8 units "up"). Hosts and coordinator are off limits to w172 (rule 4), so nothing submitted can be judged until the lead restores ds8 (likely hostd's fd limit under the hybrid loader, #185-02).
+- **Rules:** `search/v3/alloc193/RULES-193.md` + amendments 1–8, each committed alone before its data (7: own allocators, budget 600 / 100; 8: outstanding cap 80, own-file order, rankreg data cut). Training data: allowed slices only (allow-list in `common193.py`); fit.py is my refit without s190b rows.
+- **Live outcomes so far** (`data/alloc193/outcomes.md`, tally on top; 51 decide files with a stage-1 decision): `tr` (fit.py optimum inside ±0.25 K of the incumbent) 4 decided → 1 confirmed **accept** (2.5, stage 2 log r −0.0194, z −2.38); `anom` (one-step moves on flagged groups) 7 decided, 7 tentative → 2 joins (2.5 ffn_down@6, 4.5 ffn_down@7), 4 stage-2 rejects, 1 pending; `recal` 4 → 1 join (3.0), 1 pending; `cons` 5 → 1 join (4.5); `curve` 5 → 0 (4 stage-1 rejects; 2.0 at +8.8 %); `rob` 3 → 0 (all stage-1 rejects); `ens` 8 decided → 4 tentative, all 4 confirmations pending. Probes (boot ±, 5 read): |log r| ≤ 0.8 % vs the incumbent, nothing to re-submit.
+- **Queued, not yet judged:** 67 files waiting in the inbox (oldest first: 24 `rankreg`, then 11 `ens`, 12 `anom`, 4 `tr`, 8 `xplant`, 8 `spread`) + 13 running; 91 more in `workers/w172/queue.txt` (cap, pavg, mom, floor, spread 1.15, smooth, the `tr` radius chain, second variants). Ledger: 116 decide / 600, 7 probes / 100.
+- **rankreg (user 3:50 AM):** XGBRegressor (RULES-187 arm d + curve features) trained on 564 whole stage-1 rows of the snap2 state; 24 candidates per size from `moves.generate` / `generate_cross` on my refit; top 3 per size submitted (24 files, moved to the front of my own files). A generator bug (a failing `solve` stalled the loop) fixed first (472c7c0c).
+- **Own allocators (amendment 7; model-free, from incumbents / pools / neighbours / the incumbent chain):** `xplant` (neighbour size's shape shifted to this size: lo / hi / mid), `pavg` (pool mean), `smooth` (depth smoothing within type), `spread` (contrast × 0.85 / 1.15), `cap` / `floor` (clip at the 90th / 10th percentile K), `mom` (extrapolate the incumbent chain). `own193.py`: 89 files generated; 16 in the inbox (xplant mid, spread 0.85), none judged.
+- **Offline:** replay (RULES-187 metrics, live state 1027 rows): `reg` S 0.214 vs fit.py 0.130 (dS 80 % CI [+0.007, +0.162], gate fail on the ≥ 0.10 gain), rank:pairwise 0.070, rank:ndcg 0.100 (both worse than the regressor); curve model dS +0.074 [−0.037, +0.186], fit.py + curve ensemble +0.059 [−0.002, +0.119]. `hyp193.py` (paired stage-1 outcomes, n 1027): candidates that raised the K contrast were worse in b1 (z +7.8) and b2 (z +4.5), nothing in b3; roughness, top-decile and bottom-decile changes |z| ≤ 2.3. Caveat: any random move raises contrast, so this is weak support for `spread` 0.85, not a test of it.
+- **Recommendation so far (thin: 1 accept, 4 joins):** `tr` is the only allocator with a confirmed accept and costs one mckp per size: worth a driver move kind (a `solve` with a ±0.25 K box) if its chain confirms again; `anom` passes stage 1 every time (7 / 7) but confirms 2 / 6: keep as a tool; `curve` and `rob`: drop (0 of 5, 0 of 3; under the 8-try bar but all clear stage-1 losses for rob / curve at 2.0, 4.5); the rest undecided until the search runs.
+- **Runtime:** neither (allocation only).
+
+### 2026-11-15 11:55 AM CST · #183 / #185-02 · search stalled 6.5 h (hostd open-file limit); fixed. #191 QAD screen done.
+- **Stall 5:18–11:51 AM CST:** under the hybrid loader the census / virtual-bytes step opens ~1,500 final safetensors per
+  unit; hostd's soft limit was 1024 → "Too many open files", units failed and the ds8 connection went silent. **Not
+  caught for 6.5 h: the lead did not relaunch the watchdog after its 5:21 AM notification** (lead error). w172 (Fable low)
+  spotted it and stopped early. Fix: coordinator host commands now run hostd under `prlimit --nofile=65536:524288`
+  (both hosts); coordinator restarted; evals flowing (17 radiance processes on ds8).
+- **#191 (w170) done:** QAD factorial screen at 2.5: keep #181 arm A (scales only, mixed data, lr 1e-3, 1M gen rows).
+  Scales-only −13.0 % KL served vs untrained (−6.2 % held-out calib, −14.3 % fresh xcorp). Effects: adapters −0.68 %
+  [−1.09, −0.19] (doesn't pay its +0.04–0.07 bpw); block-wise +4.09 % (hurts); DFlash2-tap −0.16 % (null); A8 fake-quant
+  +0.06 % (null); 50/50 calib data +3.39 % (hurts). Torch vs served path differ 0.6–1.0 % (served-path re-analysis of the
+  adapter-free runs gives the same verdicts). Report out/w170.md, code v3/qad191/.
+- Restarted w172 (Fable low; time box ~6 PM CST); started w175 (mining review, Fable low) on merged-q-20261115-1251.md.
+  w176 building s190c/d calib parts (option A). box2 idle since w170 finished (proposal pending).
