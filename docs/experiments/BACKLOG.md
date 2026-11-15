@@ -745,3 +745,7 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
    with groups = (size, slice, incumbent), labels = paired outcomes incl. early-stopped candidates (weaker labels) and
    stage-2 confirmations; same features + deviation from the consensus curve. Judged in w165's RULES-187 time-ordered
    replay against the current fit. Expect most value in a fresh search (V3.1 after QAD), little near the optimum.
+4. **Uncertainty-targeted probes (user 11-15).** Bootstrap the consensus / curve model over its source models (and
+   slices) → a per-tensor K band. Tensors with wide bands, or whose consensus K disagrees confidently with fit.py's
+   sensitivity-optimal K, get ± inbox probes at fixed size. (fit.py is the sensitivity model and its posterior already
+   drives the thompson moves; this adds the allocation-side view.)
