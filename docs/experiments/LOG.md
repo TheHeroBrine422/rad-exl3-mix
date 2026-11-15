@@ -8100,3 +8100,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither (search infrastructure; the quantizer, the kernels and the format are untouched).
 - **Files:** `data/strata190/` (README, plan190.json, supply190.json, draw190.err.txt, check190.out, verify190.json, build.log, md5-golden-s190.txt, attempt1/ = the superseded six-pair run of 11:25 PM CST); ds8 `/data/q27/w169/` (in/, work/, slices/, code/); `workers/w169/` (staged registry, candidate config, the mix and c kld copies for the ledger).
 - 11:52 PM CST: s190a/b reviewed (check190 ALL PASS, md5 on both hosts) and merged into the live registry (s190a ready, s190b confirm), confirm pair added; driver restarted after the old PID exited; rotation to s190a when s186c reaches 200 (at 188). N share is low (c 6–7 %, x 9–10 %) as the amendment allows.
+
+### 2026-11-15 12:35 AM CST · #191 · QAD combination screen started; box2 moved from the search to QAD
+- User: pull cards from the search for QAD and start the factorial screen. RULES191 committed first (2^(5-1) at 2.5: L adapter, B block-wise, T DFlash2-tap MSE, Q A8 fake-quant, D data mix; D = LBTQ, resolution V; +1 S-only reference; 1M gen rows each; judged on #181 monitor sets, torch path with A8, served-path check on L-off arms). w170 (Opus high) on box2 cards 0-3.
+- Search: box2 host.json eval slots 0 (backup host.json.pre191), coordinator restarted, box2 connected with 0 slots and no units in flight; the search continues on ds8 (8 cards). **Runtime:** none except L (prefill + decode).
