@@ -33,7 +33,9 @@ def main(out_md, out_js):
         r = {"file": f, "alloc": alloc, "mode": m["mode"], "size": m["size"], "tag": t}
         if m["mode"] == "decide":
             e = tent.get(t) or d1.get(t)
-            if e:
+            if e and "logr" not in e:
+                r["s1"] = e["decision"]             # "stale": scored on a slice retired meanwhile (fit rows only)
+            elif e:
                 r.update({"s1": "tentative" if t in tent else e["decision"], "s1_logr": e["logr"], "s1_z": e["z"], "s1_k": e.get("k"),
                           "s1_vs": e.get("vs") or sub[t].get("ref"), "stopped": bool(res.get(t, {}).get("stopped"))})
             e2 = d2.get(t)
@@ -49,23 +51,24 @@ def main(out_md, out_js):
     T = {}
     for r in rows:
         if r["mode"] != "decide": continue
-        t = T.setdefault(r["alloc"], {"files": 0, "s1": 0, "tent": 0, "accept": 0, "join": 0, "s2rej": 0, "s2pend": 0, "sizes": []})
+        t = T.setdefault(r["alloc"], {"files": 0, "stale": 0, "s1": 0, "tent": 0, "accept": 0, "join": 0, "s2rej": 0, "s2pend": 0, "sizes": []})
         t["files"] += 1
-        if "s1" in r: t["s1"] += 1
+        if r.get("s1") == "stale": t["stale"] += 1
+        elif "s1" in r: t["s1"] += 1
         if r.get("s1") == "tentative":
             t["tent"] += 1
             if "s2" not in r: t["s2pend"] += 1
             elif r["s2"] == "accept": t["accept"] += 1; t["sizes"].append(f"{r['size']:g}A")
             elif r["s2"] == "join": t["join"] += 1; t["sizes"].append(f"{r['size']:g}j")
             else: t["s2rej"] += 1
-    L = ["| allocator | files | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |",
-         "|---|---|---|---|---|---|---|---|---|"]
+    L = ["| allocator | files | stale (slice rotated) | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |",
+         "|---|---|---|---|---|---|---|---|---|---|"]
     for a, t in sorted(T.items(), key=lambda kv: -(kv[1]["accept"] + kv[1]["join"])):
-        L.append(f"| {a} | {t['files']} | {t['s1']} | {t['tent']} | {t['accept']} | {t['join']} | {t['s2rej']} | {t['s2pend']} | {' '.join(t['sizes'])} |")
+        L.append(f"| {a} | {t['files']} | {t['stale']} | {t['s1']} | {t['tent']} | {t['accept']} | {t['join']} | {t['s2rej']} | {t['s2pend']} | {' '.join(t['sizes'])} |")
     L += ["", "| file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |", "|---|---|---|---|---|---|"]
     for r in rows:
         if r["mode"] == "decide":
-            s1 = f"{r.get('s1', 'pending')} {r['s1_logr']:+.4f} z {r['s1_z']:+.2f} k {r['s1_k']}{' stopped' if r.get('stopped') else ''}" if "s1_logr" in r else "pending"
+            s1 = f"{r.get('s1', 'pending')} {r['s1_logr']:+.4f} z {r['s1_z']:+.2f} k {r['s1_k']}{' stopped' if r.get('stopped') else ''}" if "s1_logr" in r else r.get("s1", "pending")
             s2 = f"{r['s2']} {r['s2_logr']:+.4f} z {r['s2_z']:+.2f}" if "s2" in r else ("pending" if r.get("s1") == "tentative" else "-")
         else:
             s1 = f"probe KLD {r['kld']:.5f}, log r vs incumbent {r['logr_vs_inc']:+.4f}" if r.get("logr_vs_inc") is not None else "probe pending"

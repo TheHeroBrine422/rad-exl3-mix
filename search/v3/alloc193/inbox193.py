@@ -61,7 +61,7 @@ def submit(files, max_new=None):
         if why: print(f"{f}: REFUSED {why}"); continue
         if "#193" not in d.get("note", "") or "code " not in d["note"]: print(f"{f}: REFUSED note"); continue
         h = hashlib.sha1(json.dumps(d["assign"], sort_keys=True).encode()).hexdigest()
-        if h in known: print(f"{f}: REFUSED duplicate of an assignment already in the run"); continue
+        if h in known and not name.endswith("-re.json"): print(f"{f}: REFUSED duplicate of an assignment already in the run"); continue
         if any(x["name"] == name for x in L) or os.path.exists(f"{DRV}/inbox/done/{name}"): print(f"{f}: REFUSED name used"); continue
         tmp = f"{DRV}/.{name}.tmp"
         json.dump(d, open(tmp, "w")); os.replace(tmp, f"{DRV}/inbox/{name}")

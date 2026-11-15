@@ -19,6 +19,7 @@ HYP = {"xplant": "a neighbouring size's incumbent shape, shifted to this size, b
        "spread": "the allocation's overall contrast is off: K scaled about the mean beats the incumbent",
        "cap": "the top tensors sit on the flat part of the error curve: K clipped at the 90th percentile beats the incumbent",
        "floor": "the lowest tensors sit on the steep part: K raised to the 10th percentile beats the incumbent",
+       "dxp": "a step that confirmed at a neighbouring size (its latest incumbent change) also helps this size",
        "mom": "accepted moves keep pointing the same way: one extrapolated step along the incumbent chain beats the incumbent"}
 
 
@@ -129,6 +130,14 @@ def targets(L, alloc, s, sizes):
         for var, k, al in (("", 3, 1.0), ("k6", 6, 0.5)):
             if len(ch) <= 1: continue
             Kb = L.K(L.asg(ch[min(k, len(ch) - 1)])); out.append((var, {w: K[w] + al * (K[w] - Kb[w]) for w in L.W}))
+    elif alloc == "dxp":                                        # amendment 9
+        i = sizes.index(s); ds = {}
+        for var, nb in (("lo", sizes[i - 1] if i > 0 else None), ("hi", sizes[i + 1] if i + 1 < len(sizes) else None)):
+            ch = L.distinct_chain(nb) if nb in L.chain else []
+            if len(ch) < 2: continue
+            Kn, Kp = L.K(L.asg(ch[0])), L.K(L.asg(ch[1])); ds[var] = {w: Kn[w] - Kp[w] for w in L.W}
+            out.append((var, {w: K[w] + ds[var][w] for w in L.W}))
+        if len(ds) == 2: out.append(("both", {w: K[w] + ds["lo"][w] + ds["hi"][w] for w in L.W}))
     else:
         raise SystemExit(f"unknown allocator {alloc}")
     return out
