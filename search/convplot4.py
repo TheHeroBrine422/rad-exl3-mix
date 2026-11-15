@@ -362,7 +362,13 @@ def main(argv=None):
     for x_ in (ax, ax2):
         x_.set_yscale("log"); x_.grid(alpha=0.3, which="both")
         x_.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); x_.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax.set_ylim(0.3, 2.0); ax.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
+    if a.anchor_track:                                  # (user 11-14) range fitted to the lines (training + IQR), not 0.3–2
+        ys = [y for ln in ax.get_lines() for y in ln.get_ydata() if isinstance(y, (int, float)) and 0 < y < 5]
+        lo, hi = (max(0.2, min(ys) * 0.9), max(1.05, min(2.0, max(ys) * 1.05))) if ys else (0.3, 2.0)
+        ax.set_ylim(lo, hi)
+        ax.set_yticks([t for t in [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 1.2, 1.4, 1.6, 2.0] if lo <= t <= hi])
+    else:
+        ax.set_ylim(0.3, 2.0); ax.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     ax.set_ylabel(f"KLD ÷ V2 at the same bpw (V2 measured on {ylab_sl})")
     ax.legend(loc="upper right", fontsize=7.5)
     ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; " + (f"each size anchored on its first "
