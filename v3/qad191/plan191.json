@@ -1,0 +1,338 @@
+{
+ "experiment": "#191 QAD combination screen 2^(5-1) at 2.5 bpw (RULES191, commit 800dd1e4)",
+ "by": "w170",
+ "written": "2026-11-15, before any arm runs (US Central)",
+ "student": {
+  "incumbent": "v3s183-2.5-inc-01334",
+  "size": 2.5,
+  "assign_hash": "05022252c480908f",
+  "assign_sha256": "c69c54266f4c73b485f71d7277081ddb5c1bbaaea27e905bac342eeb9c728b9f",
+  "source": "lead-srch/run/drv/state.jsonl line 6453 (last 2.5 incumbent event, 11-14 23:56:16 CST; of v3s183-2.5-pair-01153)",
+  "mix": "search/v3/menu.py eval_mix with driver.json base V3-T4: 336 trunk weights from 22 mad levels q27v3-635bac02-k*-mad (K1.375-4.5), head donor /data/q27/w158/heads/hd-u2.875.rad, token table donor /data/q27/emb/trellis/emb-t-i8-K1.75.rad, act a8g128 on every trunk weight; box2 copy of the hostd mix file /data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix",
+  "torch_student": {
+   "trunk": "/data/q27/w170/vl/inc2.5m (vlevel.py from /data/q27/ladder-src-mad: every trunk tensor byte for byte from its level's final/, = the search's packs-mad planes (w162 #185 identity); mad codes held int8-exact, 400 linears)",
+   "head": "/data/q27/w170/heads/K2.875 (= ds8 /data/q27/heads/q/R16s003mad/K2.875, the donor's source; sha256 1d4581e4...; R16 rows, perm /data/q27/w119/perms/R16.npy), frozen",
+   "token_table": "/data/q27/w170/emb/t1.75.bf16 (emb191.py: the oracle rows of /data/q27/emb/trellis/t-i8/K1.75/src, mul1i8), frozen",
+   "gdn_ab": "/data/q27/w170/ab/ab-T4.safetensors (= ds8 /data/q27/mad/ab/ab-T4.safetensors, w151's T4 a / b, the base's ssm_ab), frozen",
+   "rest": "the bf16 checkpoint (norms, conv, A / dt), frozen"
+  }
+ },
+ "recipe": {
+  "trainer": "v3/qad191/qad191.py (qad181.py + flags), run191.sh, one R9700 a run, box2",
+  "budget_gen_rows": 1000000.0,
+  "V": 24,
+  "Q": 1024,
+  "cap": 8192,
+  "gen_rows_only": true,
+  "lr": 0.001,
+  "warmup_steps": 8,
+  "schedule": "WSD, linear decay to 0 over the last 20% of the (end-to-end) budget",
+  "adam": [
+   0.9,
+   0.99
+  ],
+  "trust": 0.3,
+  "gauge": "#89 (down_proj r, v_proj c fixed)",
+  "S": "every arm trains the trunk suh / svh log multipliers (#181 arm A)",
+  "fixed_eval": "--fixed-eval 30000 --fe-seed 2181: #181's 38 held-out qad-pool docs, removed from every arm's training data",
+  "monitor": "none (no search-pool reads)",
+  "data": "w154's goldens (xq-c00..39, xc8k-b3-c0..4, tr32k) + gen masks, calib qad pool"
+ },
+ "factors": {
+  "L": {
+   "minus": "off",
+   "plus": "--lora 16 --lr-lora 0.0001",
+   "init": "A [r, k] ~ N(0, 1/k) seeded per linear (index), B [n, r] = 0, f32",
+   "lr": "0.0001 (#165's adapter lr), same WSD shape as the scales, no clamp; Adam on the CPU (masters f32)"
+  },
+  "B": {
+   "minus": "off",
+   "plus": "--block-frac 0.25 --block-lr 0.001 --block-batch 4096",
+   "what": "block stage on the documents of the plan's first 25% of the budget's gen rows (one layer at a time, inputs = the student's own trajectory from the served token table, targets = the bf16 checkpoint layer on the bf16 trajectory, per-token relative MSE, fresh Adam per layer, warmup 2 batches, decay to 0 over the last 20% of the batches, one pass); then the end-to-end stage on the remaining plan steps (fresh Adam, own warmup 8 and decay over its last 20%) to the same 1M end"
+  },
+  "T": {
+   "minus": "off",
+   "plus": "--taps /data/q27/w170/taps/{A|M} --tap-weight 1",
+   "what": "+ weight x sum over the segment's gen rows of mean over taps of |s - t|^2 / |t|^2, taps = layers 5/19/33/47/61 outputs (DFlash2 target_layer_ids), teacher = the bf16 checkpoint (stored per data order by --make-taps)",
+   "weight_rule": "KL / T-term ratio of the untrained student over the first 4 plan steps of order A, rounded to 1 significant digit",
+   "calibration": {
+    "steps": 4,
+    "rows": 75375,
+    "kl_row": 0.04914341330646876,
+    "tap_row": 0.0450195747078157,
+    "ratio": 1.0916010119024322
+   },
+   "weight": 1.0
+  },
+  "Q": {
+   "minus": "off",
+   "plus": "--a8",
+   "what": "a8g128 fake quant on every trunk linear's input (STE), #181 arm Q"
+  },
+  "D": {
+   "minus": "#181's order (seeded shuffle of all documents, seed 0)",
+   "plus": "--mix50 191 (half calib qad pool, half xcorp by gen rows)",
+   "streams": {
+    "A": {
+     "order": "shuffle seed 0",
+     "order_sha1": "2c3a906fcba5",
+     "last_step": 49,
+     "rows": 1013729,
+     "decay_from_step": 39,
+     "shares": {
+      "calib": [
+       66846,
+       0.0659
+      ],
+      "tr32k": [
+       3673,
+       0.0036
+      ],
+      "xc8k": [
+       122714,
+       0.1211
+      ],
+      "xq": [
+       820496,
+       0.8094
+      ]
+     },
+     "calib_share": 0.0659,
+     "xcorp_share": 0.9341
+    },
+    "M": {
+     "order": "mix50 seed 191",
+     "order_sha1": "b3d089cc3dca",
+     "last_step": 47,
+     "rows": 1007803,
+     "decay_from_step": 38,
+     "shares": {
+      "calib": [
+       500497,
+       0.4966
+      ],
+      "tr32k": [
+       7915,
+       0.0079
+      ],
+      "xc8k": [
+       51878,
+       0.0515
+      ],
+      "xq": [
+       447513,
+       0.444
+      ]
+     },
+     "calib_share": 0.4966,
+     "xcorp_share": 0.5034
+    }
+   },
+   "note": "RULES191 calls D- '80 % xcorp, 20 % qad pool'; #181's order realises the calib share shown in streams.A (by gen rows to the budget)"
+  }
+ },
+ "design": "2^4 in L, B, T, Q; D = L.B.T.Q (+-1 coding; resolution V); + the D- S-only reference (17th)",
+ "arms": [
+  {
+   "L": 0,
+   "B": 0,
+   "T": 0,
+   "Q": 0,
+   "D": 0,
+   "ref": true,
+   "name": "L0B0T0Q0D0",
+   "flags": "",
+   "seed": 0,
+   "ram": 0
+  },
+  {
+   "L": 0,
+   "B": 0,
+   "T": 0,
+   "Q": 0,
+   "D": 1,
+   "name": "L0B0T0Q0D1",
+   "flags": "--mix50 191",
+   "seed": 0,
+   "ram": 0
+  },
+  {
+   "L": 0,
+   "B": 0,
+   "T": 0,
+   "Q": 1,
+   "D": 0,
+   "name": "L0B0T0Q1D0",
+   "flags": "--a8",
+   "seed": 0,
+   "ram": 0
+  },
+  {
+   "L": 0,
+   "B": 0,
+   "T": 1,
+   "Q": 0,
+   "D": 0,
+   "name": "L0B0T1Q0D0",
+   "flags": "--taps /data/q27/w170/taps/A --tap-weight 1",
+   "seed": 0,
+   "ram": 0
+  },
+  {
+   "L": 0,
+   "B": 0,
+   "T": 1,
+   "Q": 1,
+   "D": 1,
+   "name": "L0B0T1Q1D1",
+   "flags": "--taps /data/q27/w170/taps/M --tap-weight 1 --a8 --mix50 191",
+   "seed": 0,
+   "ram": 0
+  },
+  {
+   "L": 1,
+   "B": 0,
+   "T": 0,
+   "Q": 0,
+   "D": 0,
+   "name": "L1B0T0Q0D0",
+   "flags": "--lora 16 --lr-lora 0.0001",
+   "seed": 0,
+   "ram": 1
+  },
+  {
+   "L": 1,
+   "B": 0,
+   "T": 0,
+   "Q": 1,
+   "D": 1,
+   "name": "L1B0T0Q1D1",
+   "flags": "--lora 16 --lr-lora 0.0001 --a8 --mix50 191",
+   "seed": 0,
+   "ram": 1
+  },
+  {
+   "L": 1,
+   "B": 0,
+   "T": 1,
+   "Q": 0,
+   "D": 1,
+   "name": "L1B0T1Q0D1",
+   "flags": "--lora 16 --lr-lora 0.0001 --taps /data/q27/w170/taps/M --tap-weight 1 --mix50 191",
+   "seed": 0,
+   "ram": 1
+  },
+  {
+   "L": 1,
+   "B": 0,
+   "T": 1,
+   "Q": 1,
+   "D": 0,
+   "name": "L1B0T1Q1D0",
+   "flags": "--lora 16 --lr-lora 0.0001 --taps /data/q27/w170/taps/A --tap-weight 1 --a8",
+   "seed": 0,
+   "ram": 1
+  },
+  {
+   "L": 0,
+   "B": 1,
+   "T": 0,
+   "Q": 0,
+   "D": 0,
+   "name": "L0B1T0Q0D0",
+   "flags": "--block-frac 0.25 --block-lr 0.001 --block-batch 4096",
+   "seed": 0,
+   "ram": 2
+  },
+  {
+   "L": 0,
+   "B": 1,
+   "T": 0,
+   "Q": 1,
+   "D": 1,
+   "name": "L0B1T0Q1D1",
+   "flags": "--block-frac 0.25 --block-lr 0.001 --block-batch 4096 --a8 --mix50 191",
+   "seed": 0,
+   "ram": 2
+  },
+  {
+   "L": 0,
+   "B": 1,
+   "T": 1,
+   "Q": 0,
+   "D": 1,
+   "name": "L0B1T1Q0D1",
+   "flags": "--block-frac 0.25 --block-lr 0.001 --block-batch 4096 --taps /data/q27/w170/taps/M --tap-weight 1 --mix50 191",
+   "seed": 0,
+   "ram": 2
+  },
+  {
+   "L": 0,
+   "B": 1,
+   "T": 1,
+   "Q": 1,
+   "D": 0,
+   "name": "L0B1T1Q1D0",
+   "flags": "--block-frac 0.25 --block-lr 0.001 --block-batch 4096 --taps /data/q27/w170/taps/A --tap-weight 1 --a8",
+   "seed": 0,
+   "ram": 2
+  },
+  {
+   "L": 1,
+   "B": 1,
+   "T": 0,
+   "Q": 0,
+   "D": 1,
+   "name": "L1B1T0Q0D1",
+   "flags": "--lora 16 --lr-lora 0.0001 --block-frac 0.25 --block-lr 0.001 --block-batch 4096 --mix50 191",
+   "seed": 0,
+   "ram": 3
+  },
+  {
+   "L": 1,
+   "B": 1,
+   "T": 0,
+   "Q": 1,
+   "D": 0,
+   "name": "L1B1T0Q1D0",
+   "flags": "--lora 16 --lr-lora 0.0001 --block-frac 0.25 --block-lr 0.001 --block-batch 4096 --a8",
+   "seed": 0,
+   "ram": 3
+  },
+  {
+   "L": 1,
+   "B": 1,
+   "T": 1,
+   "Q": 0,
+   "D": 0,
+   "name": "L1B1T1Q0D0",
+   "flags": "--lora 16 --lr-lora 0.0001 --block-frac 0.25 --block-lr 0.001 --block-batch 4096 --taps /data/q27/w170/taps/A --tap-weight 1",
+   "seed": 0,
+   "ram": 3
+  },
+  {
+   "L": 1,
+   "B": 1,
+   "T": 1,
+   "Q": 1,
+   "D": 1,
+   "name": "L1B1T1Q1D1",
+   "flags": "--lora 16 --lr-lora 0.0001 --block-frac 0.25 --block-lr 0.001 --block-batch 4096 --taps /data/q27/w170/taps/M --tap-weight 1 --a8 --mix50 191",
+   "seed": 0,
+   "ram": 3
+  }
+ ],
+ "judge": {
+  "sets": {
+   "x181g": "/data/q27/w154/slices/golden-x181g",
+   "fe38": "/data/q27/w170/slices/sub-fe38"
+  },
+  "sets_note": "x181g: 150 fresh xcorp pieces, gen rows (152,007); fe38: #181's 38 held-out qad-pool docs, first 2,048 tokens, calib's official gen rows (31,147; mksub.py drops the last row of the 4 docs longer than 2,048)",
+  "response": "per arm: mean KL over the gen rows of both sets pooled (torch path with A8: tscore191.py, carried 2,048-token segments); also each set alone",
+  "served": "L-off arms + the untrained control through eval191.py (the incumbent's mix with the pack of the trained level); torch vs served on the S-only reference; gate: the control's pack path vs the incumbent's own mix (fe38)",
+  "template": "/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix",
+  "host": "/data/q27/srch183/host.json",
+  "gate_set": "fe38",
+  "analysis": "analyse191.py: main effects and two-way interactions as contrasts of log KL over the 16 arms (mean at + minus mean at -), 95% CIs by a per-document bootstrap (documents resampled within each set, jointly across all arms, 2,000 replicates, seed 0); every arm vs the reference (paired ratio, same bootstrap); a factor helps if its main effect's CI is below 0"
+ }
+}
