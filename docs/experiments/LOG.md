@@ -7963,3 +7963,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   Re-seed results so far (3.0–6.0): every size kept its incumbent (0 accepted under the guard); cross moves are joining
   pools (3.0 ×2, 4.0, 6.0).
 - 8:45 PM CST (user: why aren't improvements tested on t183?): the tracker read only every 5th incumbent per size + a 2 h catch-up, and rotation rescores used up the counter. Now: each size's latest incumbent is read once it has held 45 min (superseded ones skipped), and a model already read under another tag (rotation 'inc' retags) is not read again (assignment hash). Same for t186n. Caught up now: 2.5, 3.0, 3.5, 4.0, 5.0, 6.0 queued (2.0's incumbent is an already-read model).
+
+### 2026-11-14 9:05 PM CST · #189 · Two-stage accept (confirmation) — rule written, w167 implementing
+- Trigger: per-size t183 (held out) vs training estimate over the whole search: real share 2.0 ~75 %, 2.5 ~45 %, 3.0
+  ~35 %, 3.5 ~15 %, 4.0 negative (+12 % on t183), 4.5 ~5 %, 5.0 ~35 %, 6.0 ~25 %; since the s186 switch 4.0 claims −7.4 %
+  and is +11 % on t183. Reading: winner's curse (accepted = noise-favoured among near-null candidates).
+- User: do the confirmation step. `search/v3/RULES-confirm.md` committed first: stage-1 accept is tentative; whole-slice
+  confirm on a fresh paired slice (s186b/d/f), z < −1; chain stage-2 logr; go-live check of each size's incumbent vs its
+  switch-time incumbent. w167 (Opus high) implements it as a CONF-gated driver patch; nothing live until lead review.
+  4.0 diagnosis pending (t183 read of pair-00600). **Runtime:** neither.
