@@ -7689,7 +7689,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   K4, ~4,290 vs ~3,970 board scale) → the ssm_out producer (gated RMSNorm + actq fused) is the first item of the
   post-search kernel pass on 2.0.0. box2 cards 0-1 free. **Runtime:** prefill.
 
-### 2026-11-15 12:40 AM CST · #186 · swap test result: doc 100 = late attention; the other non-Latin excess = early FFN (w163)
+### 2026-11-14 6:40 PM CST · #186 · swap test result: doc 100 = late attention; the other non-Latin excess = early FFN (w163)
 - Diagnostic golden `data/lc186/golden` (97 docs, 155,950 gen rows: doc 100 + 5 more non-Latin of ver3-8k, 86 non-Latin docs
   across 11 scripts, 10 English controls). 21 radmix arms on the 2.5 pick, one change each, scored with radiance KLD (`search/v3/run186/README.md`).
 - **Doc 100 (gen-masked KL; pick 0.782, uniform 0.334):** caused by the attention tensors of layers 19–63. Those 44 tensors → K2.5
