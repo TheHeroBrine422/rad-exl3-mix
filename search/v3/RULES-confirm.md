@@ -35,3 +35,14 @@ accepted gains is biased. A second, independent measurement of only the accepted
 - Confirmation pass rate per size; held-out (t183) gain per confirmed accept vs the stage-2 estimate (should agree within
   noise; if stage 2 still overstates, raise the threshold — by a new amendment, before looking at more data).
 - Cost: one or two whole evals per tentative accept (~10–15 % more evals at the current accept rate).
+
+## Amendment 2026-11-14 9:40 PM CST (user): one-shot re-selection of past incumbents on a fresh slice (rule 9)
+9. **Re-selection.** For each active size (2.0–6.0), every distinct model (assignment hash) that has been an incumbent
+   or a pool member since the A8 switch (89 models at 9:15 PM CST, plus any since) is scored whole on **s186e**, a slice
+   that has never decided or confirmed; the size's current incumbent is among them. Ranking: the stage-1 statistic
+   (stratified pooled, size-adjusted, board weights) of each model against the current incumbent on s186e. The new
+   incumbent is the best-ranked model that beats the current incumbent with **z < −1** (else the current one stays); the
+   pool is the top 3 of the ranking with the incumbent kept in it. Then the pool is scored on the active slice as at a
+   rotation. s186e gets `role: "reselect"` and is never used again (no search, no confirmation). The third search /
+   confirm pair (was e/f) is replaced by a new pair built with w164's builder when needed; s186f stays an unused confirm slice
+   until then. Rule 7's go-live check, already running, completes first; re-selection follows it.
