@@ -241,3 +241,16 @@ committed before the data they affect.
 - **Rounds vs new incumbents (lead 5:00 AM):** allocators with a confirmation (tr, anom, ens, recal, cons) get new
   rounds; model-based ones use the snap2 refit from the new incumbent. Allocators with 0 confirmations in ≥ 8 decided
   tries are dropped (no new files; waiting ones stay).
+
+## Amendment 10 — 2026-11-15 2:20 PM CST (system clock; before any file below is in the inbox)
+- **xplant round 2 + variants** (xplant round 1: 4 tentative of 8, 2 accepts + 1 join). Same prefix `w172-xplant-…`:
+  - round 2 = `lo` / `hi` / `mid` from the current incumbents (files `…-i2`);
+  - `lo2` / `hi2`: the incumbent two menu sizes away, shifted (K − its size + this size). Hypothesis: if a shifted
+    neighbour shape wins, the shape is largely size-free, so a farther size's independently searched shape also works;
+  - `half`: the mean of this size's incumbent K and the `mid` target. Hypothesis: the gain of `mid` comes from averaging
+    out search noise; half a step keeps this size's own structure and is safer where `mid` lost at stage 1 (4.0–5.0).
+- **New own allocator `xavg` (cross-size consensus), prefix `w172-xavg-…`:** target = the mean over ALL active sizes'
+  incumbents of (K − size) + this size (variant `w`: weights e^(−|Δsize|), so nearer sizes count more). Hypothesis: the
+  eight incumbents are eight noisy searches of one size-free shape; their mean is a better shape than any one of them.
+  (This is #192's consensus idea on live incumbents only, without the local-linear size trend.)
+- Rounds vs new incumbents continue for ens, anom, rankreg, tr (amendment 9).
