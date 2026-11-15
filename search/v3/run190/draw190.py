@@ -1,38 +1,36 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""draw190.py -- the draws of RULES-cooldown §1 (#190, w169): six 2x-size slices s190a-f (c and x parts; no monitor).
-draw186.py with the targets as parameters (X_PIECES, C_POS), the exclusion set of RULES-cooldown §1 (exclusion()) and a
-stop, not a crash, when the x supply runs out (x_short in the plan).
+"""draw190.py -- the draw of RULES-cooldown §1 as amended 11-14 11:40 PM CST (#190, w169): ONE 2x-Latin pair, s190a (search)
+and s190b (confirm), each matched to s186a / s186b. The amendment replaces the six-pair sizes: the supply has 15 free
+non-Latin calib documents and 41 unused non-Latin xc8k-b1 pieces (the 11 in the b2 batches have no gen mask on ds8 and stay out).
 
-Runs on ds8 (CPU; reads the calib golden, the xcorp goldens, the registry and the ledger; writes only the plan).
-  x parts: 260 pieces of xc8k-b1 that no earlier x part used (its meta from colo's copy, verified line by line
-           against the golden: tokens and source), N pieces by round-robin over their scripts until their gen
-           positions reach the share TARGET_X of the part's gen positions, the rest L pieces stratified by category
-           (largest remainder over the unused L pieces; the heavy categories cut to 2,048 scored positions, as pickx).
-  c parts: calib documents of the merged fit + search pool (least used first: ledger decision counts + the registry's own
-           decisions, ties random by SEED), never a document of an earlier slice (exclusion()); N documents
-           by round-robin over their scripts (capped at 4,096 tokens as draw171), then L documents to TARGET_C scored
-           positions; the N share of the part's gen positions aimed at TARGET_C_SHARE.
-Output: one JSON (plan) + a summary on stderr. Pieces and documents are indices; no text leaves the machine.
+draw186.py's draw with the targets as parameters (L_MULT, C_CAP, CUT) and the pair's sharing rules:
+  c: the free calib N documents (merged fit + search pool, outside exclusion(): RULES-cooldown §1) are split between the two parts
+     (a script with two or more documents goes to both parts, the rest to the part with less N gen); then L documents, least used
+     first (ledger decision counts + the registry's own decisions, ties random by SEED), each part until its L gen positions reach
+     L_MULT x the matching s186 part's L gen. The two parts share no document.
+  x: the unused non-Latin xc8k-b1 pieces (exclusion(): earlier x parts, s186, t186n, final-x, golden-final750) split the same way;
+     L pieces stratified by category (largest remainder of the unused L pieces' category shares), grown until their gen positions
+     reach L_MULT x the matching s186 part's L gen; heavy categories cut to 2,048 scored positions (as pickx). No shared piece.
+  No monitor. The N share is not aimed at a band (the amendment: it falls to what the supply gives); check190.py reports it.
+Runs on ds8 (CPU; reads the calib golden, the xcorp golden, the registry and ledger snapshots; writes only the plan).
 python3 -I draw190.py PLAN.json SEED"""
 import collections, json, os, random, sys
 
 import numpy as np
 
-TARGET_X = 0.16          # aimed N share of an x part's gen positions (band 15-20 %)
-TARGET_C_SHARE = 0.16    # the same for a c part
-X_PIECES = 260           # 2x s186's 130 (RULES-cooldown §1)
-C_POS = 90000            # 2x draw171's 45k (scored positions, cap 4,096)
-C_CAP = 4096
-RESERVE_MINOR = False    # w164's reserve of the scripts with < 20 unused N pieces (off for s190, see the x loop)
+L_MULT = 2.0                                        # the Latin part doubles (RULES-cooldown amendment 11-14 11:40 PM CST)
+C_CAP = 4096                                        # draw171's cut for calib documents
+CUT = 2048                                          # pickx's cap for the heavy categories
 HEAVY = {"agentic", "tools", "long", "reasoning"}
-CUT = 2048               # pickx's --cap-cat for the heavy categories
+PAIR = [("s190a", "s186a"), ("s190b", "s186b")]    # (new part, matching s186 part): the search slice, then its confirmation slice
 
 CAL = "/data/q27/w164/strata/calib-kld-strata.json"
 POOLS = "/data/q27/w164/strata/pools-v3.json"
 CALGEN = "/data/q27/challenge/golden/calib/gen.u8"
-LED = "/data/q27/w169/in/ledger.jsonl"                  # snapshot of eval/pools/ledger.jsonl (w169, 11-15)
-REG = "/data/q27/w169/in/registry-live.json"             # snapshot of the live registry (w169, 11-15)
+LED = "/data/q27/w169/in/ledger.jsonl"              # snapshot of eval/pools/ledger.jsonl (w169, 11-15)
+REG = "/data/q27/w169/in/registry-live.json"        # snapshot of the live registry (lead-srch/run/registry.json)
 S = "/data/q27/w131/slices"; S186 = "/data/q27/w164/slices"
+PLAN186 = "/data/q27/w164/strata/plan186.json"
 XSUP = "/data/q27/w164/strata/xsupply186b.jsonl"
 XGM = "/data/q27/w164/strata/gm-b1.u8"
 XB1 = "/data/q27/goldens/xcorp/xc8k-b1/kld.json"
@@ -64,37 +62,31 @@ def exclusion(REGJ):
     return ex_c, ex_x
 
 
-def pick_balanced(pool, script_of, gen_of, n=None, gen=None, max_scripts=6, reserve=None):
-    """N documents from `pool` (the caller's preference order: least used / shuffled first), balanced over the scripts by
-    gen positions (RULES-strata §3: at most a third of a part's N positions from one script).
-    Phase 1: one document from each of the `max_scripts` scripts with the most supply, so a part has >= 6 scripts.
-    Phase 2 takes the next document from the script with the fewest gen positions picked so far, until `n` documents or
-    `gen` gen positions are reached; a script keeps reserve[script] documents back (the parts still to draw take their turn)."""
+def split_pair(items, gen_of, script_of):
+    """the items of one stratum split into the two parts of the pair (each item in one part only): the scripts are taken
+    in order of size; the first two items of a script go one to each part (so every script with >= 2 items is in both
+    parts), the rest to the part with less gen so far (balanced by gen positions)"""
     by = collections.defaultdict(list)
-    for i in pool: by[script_of(i)].append(i)
-    reserve = reserve or {}
-    picks, got, gg, ng = [], collections.Counter(), collections.Counter(), 0
-    def done(): return (n is not None and len(picks) >= n) or (gen is not None and ng >= gen)
-    ph1 = [s for s in sorted(by, key=lambda s: (-len(by[s]), s)) if by[s]][:max_scripts]
-    for s in ph1:
-        i = by[s].pop(0); picks.append(i); got[s] += 1; gg[s] += gen_of(i); ng += gen_of(i)
-    while not done():
-        cand = [s for s in by if len(by[s]) > reserve.get(s, 0)]
-        if not cand: break
-        s = min(cand, key=lambda s: (gg[s], -len(by[s]), s))
-        i = by[s].pop(0); picks.append(i); got[s] += 1; gg[s] += gen_of(i); ng += gen_of(i)
-    return picks
+    for i in items: by[script_of(i)].append(i)
+    parts, gg = ([], []), [0, 0]
+    for s in sorted(by, key=lambda s: (-len(by[s]), s)):
+        first = None
+        for k, i in enumerate(sorted(by[s], key=lambda i: (-gen_of(i), i))):
+            p = 1 - first if k == 1 else gg.index(min(gg))      # the second document of a script goes to the other part
+            if k == 0: first = p
+            parts[p].append(i); gg[p] += gen_of(i)
+    return parts
 
 
 def main(plan_path, seed):
-    rng = random.Random(seed)
     # ---------------------------------------------------------------- calib
     K = json.load(open(CAL))["docs"]; P = json.load(open(POOLS))["pool"]; GEN = np.fromfile(CALGEN, np.uint8)
+    sc = lambda i: min(K[i]["tokens"], C_CAP) - 1 - K[i]["score_from"]
     gen_c = {}
-    for i, d in enumerate(K):                       # the gen positions the c part scores (documents cut at C_CAP)
-        n = min(d["tokens"], C_CAP) - 1 - d["score_from"]; gen_c[i] = int(GEN[d["row0"]:d["row0"] + n].sum())
-    REGJ = json.load(open(REG))
-    ex_c, ex_x = exclusion(REGJ)
+    for i, d in enumerate(K):                       # the gen positions a c part scores (documents cut at C_CAP)
+        n = sc(i); gen_c[i] = int(GEN[d["row0"]:d["row0"] + n].sum())
+    REGJ = json.load(open(REG)); ex_c, ex_x = exclusion(REGJ)
+    ref = json.load(open(PLAN186)); r_c = {c["name"]: c for c in ref["c"]}; r_x = {x["name"]: x for x in ref["x"]}
     mine = {f"golden-{k}-c" for k in REGJ["slices"]}
     use = collections.Counter()
     for l in open(LED):
@@ -106,64 +98,31 @@ def main(plan_path, seed):
     for k, v in REGJ["doc_decisions"].items():
         if k.startswith("c:"): use[int(k[2:])] += v
     free = [i for i, p in enumerate(P) if p in ("fit", "search") and i not in ex_c]
-    sc = lambda i: min(K[i]["tokens"], C_CAP) - 1 - K[i]["score_from"]
-    # ---------------------------------------------------------------- c parts (merged pool)
     N_free = [i for i in free if K[i]["stratum"] == "N" and sc(i) >= 16]
     L_free = [i for i in free if K[i]["stratum"] == "L" and sc(i) >= 16]
     rng2 = random.Random(seed + 1); rnd = {i: rng2.random() for i in free}
-    key_c = lambda i: (use[i], rnd[i])
-    plan = {"seed": seed, "c": [], "x": [], "x_short": None, "stats": {}}
-    # the six c parts draw least used first and count their own uses as they go (a document may recur in a later part once
-    # the less used ones are spent: the N pool is ~58 documents and 6 parts need >= 6 scripts each; the recurrences are reported)
-    c_used = set(); recur = collections.Counter()
-    for slice_ in "abcdef":
-        Lc = sorted(L_free, key=key_c)
-        Nc = sorted(N_free, key=key_c)
-        pick_l, lp = [], 0
-        for i in Lc:                                    # L documents first: ~ (1 - share) of the part's positions
-            if lp >= C_POS * (1 - TARGET_C_SHARE - 0.01): break
-            pick_l.append(i); lp += sc(i)
-        gl = sum(gen_c[i] for i in pick_l)
-        # N gen needed for the share: gn / (gn + gl) = TARGET_C_SHARE
-        pick_n = pick_balanced(Nc, lambda i: K[i]["script"], lambda i: gen_c[i], gen=TARGET_C_SHARE / (1 - TARGET_C_SHARE) * gl)
-        Lrest = [i for i in Lc if i not in set(pick_l)]; Nrest = [i for i in Nc if i not in set(pick_n)]
-        def stats():
-            gn_ = sum(gen_c[i] for i in pick_n); gl_ = sum(gen_c[i] for i in pick_l); sg_ = collections.Counter()
-            for i in pick_n: sg_[K[i]["script"]] += gen_c[i]
-            return gn_, gl_, gn_ / max(gn_ + gl_, 1), (max(sg_.values()) / gn_ if gn_ else 1.0), sg_
-        # repair (RULES-strata §3: >= 6 scripts, at most a third of the N gen positions from one script, N share in band):
-        # a script too big gets an N document from another script; a share too high gets an L document, too low an N one
-        for _ in range(400):
-            gn_, gl_, share_, mx_, sg_ = stats()
-            if len(sg_) < 6 or mx_ > 1 / 3 + 1e-9:
-                top = max(sg_, key=lambda s_: sg_[s_]) if sg_ else None
-                cand = [i for i in Nrest if (K[i]["script"] not in sg_) if len(sg_) < 6] or [i for i in Nrest if K[i]["script"] != top]
-                if not cand: break
-                pick_n.append(cand[0]); Nrest.remove(cand[0])
-            elif share_ > 0.19 and Lrest:
-                pick_l.append(Lrest.pop(0))
-            elif share_ < 0.155 and Nrest:
-                pick_n.append(Nrest.pop(0))
-            elif share_ < 0.155 and pick_l:              # N pool exhausted (w169): trim L docs back into the band
-                pick_l.pop()
-            else:
-                break
-        gl = sum(gen_c[i] for i in pick_l); gn = sum(gen_c[i] for i in pick_n)
-        ch = sorted(pick_n + pick_l)
-        for i in ch:
-            if use[i] > 0 and i in c_used: recur[i] += 1
-            c_used.add(i); use[i] += 1
-        scripts = collections.Counter(K[i]["script"] for i in pick_n)
+    N_parts = split_pair(N_free, lambda i: gen_c[i], lambda i: K[i]["script"])
+    plan = {"seed": seed, "c": [], "x": [], "stats": {}}
+    taken = set()
+    for k, (name, match) in enumerate(PAIR):
+        target = L_MULT * r_c[match]["gen_L"]
+        pick_l, g = [], 0
+        for i in sorted(L_free, key=lambda i: (use[i], rnd[i])):     # least used first; the other part's documents are out
+            if g >= target: break
+            if i in taken: continue
+            pick_l.append(i); g += gen_c[i]
+        taken |= set(pick_l)
+        ch = sorted(N_parts[k] + pick_l)
+        gl = sum(gen_c[i] for i in pick_l); gn = sum(gen_c[i] for i in N_parts[k])
         sg = collections.Counter()
-        for i in pick_n: sg[K[i]["script"]] += gen_c[i]
-        left = collections.Counter(K[i]["script"] for i in Nrest)
-        plan["c"].append({"name": f"s190{slice_}", "idx": ch, "N": sorted(pick_n), "gen_N": gn, "gen_L": gl, "share_N": gn / max(gn + gl, 1),
-                          "N_scripts_left_after": dict(left),
-                          "scripts": dict(scripts), "max_script_share": max(sg.values()) / max(gn, 1) if gn else 0,
-                          "pos": sum(sc(i) for i in ch), "docs_N": len(pick_n)})
-    plan["stats"]["calib"] = {"merged_free_docs": len(free), "N_free": len(N_free), "N_free_gen": sum(gen_c[i] for i in N_free),
-                              "c_recurrences": {str(k): v for k, v in recur.items()}, "c_distinct_docs": len(c_used),
-                              "excluded_c": len(ex_c)}
+        for i in N_parts[k]: sg[K[i]["script"]] += gen_c[i]
+        plan["c"].append({"name": name, "match": match, "idx": ch, "N": sorted(N_parts[k]), "gen_N": gn, "gen_L": gl,
+                          "share_N": gn / max(gn + gl, 1), "L_target": target, "docs_N": len(N_parts[k]), "docs_L": len(pick_l),
+                          "scripts": dict(collections.Counter(K[i]["script"] for i in N_parts[k])),
+                          "max_script_share": max(sg.values()) / gn if gn else 0.0, "pos": sum(sc(i) for i in ch)})
+    plan["stats"]["calib"] = {"merged_free_docs": len(free), "excluded_c": len(ex_c), "N_free": len(N_free),
+                              "N_free_gen": sum(gen_c[i] for i in N_free), "N_free_scripts": dict(collections.Counter(K[i]["script"] for i in N_free)),
+                              "L_free": len(L_free), "L_free_gen": sum(gen_c[i] for i in L_free)}
     # ---------------------------------------------------------------- x parts: xc8k-b1 unused pieces
     X = [json.loads(l) for l in open(XSUP)]
     G = np.fromfile(XGM, np.uint8); XD = json.load(open(XB1))["docs"]
@@ -178,63 +137,52 @@ def main(plan_path, seed):
         return CUT if stratum[i]["category"] in HEAVY and nrow[i] > CUT else 0
     N_x = [i for i in unused if stratum[i]["stratum"] == "N"]
     L_x = [i for i in unused if stratum[i]["stratum"] == "L"]
-    # w164 kept the scripts with < 20 unused pieces (THAI, HANGUL, GREEK, HEBREW, DEVANAGARI) for one piece per part, for the
-    # monitor. s190 has no monitor and only ~41 N pieces left: the reserve would block every part (every script is < 20 now), so
-    # it is off (RESERVE_MINOR = False); the >= 6 scripts rule is checked per part by check190.py
-    cnt0 = collections.Counter(stratum[i]["script"] for i in N_x); minor = {s_ for s_, v in cnt0.items() if v < 20}
-    reserve = {s_: 10 ** 9 for s_ in minor} if RESERVE_MINOR else {}
-    plan["stats"]["x"] = {"unused_b1": len(unused), "N": len(N_x), "N_gen": sum(xgen(i, cutof(i)) for i in N_x),
-                          "scripts_N": dict(cnt0), "minor_scripts": sorted(minor)}
-    for k, slice_ in enumerate("abcdef"):
-        rr = random.Random(seed + 10 + k)
-        Nxr = rr.sample(N_x, len(N_x))
-        best = None
-        for nN in range(30, 75):                       # the N piece count that puts the N share nearest TARGET_X
-            pn = pick_balanced(Nxr, lambda i: stratum[i]["script"], lambda i: xgen(i, cutof(i)), n=nN, max_scripts=8, reserve=reserve)
-            if len(pn) < nN: break
-            spn = set(pn); gN = sum(xgen(i, cutof(i)) for i in pn)
-            # L pieces: 130 - nN, category-stratified: largest remainder of the unused L pieces' category shares
-            nL = X_PIECES - nN
-            cnt = collections.Counter(stratum[i]["category"] for i in L_x if i not in spn)
-            tot = sum(cnt.values()); want = {c: nL * v / tot for c, v in cnt.items()}
-            take = {c: min(cnt[c], int(want[c])) for c in cnt}
-            for c in sorted(cnt, key=lambda c: (-(want[c] - int(want[c])), c)):
-                if sum(take.values()) >= nL: break
-                if take[c] < cnt[c]: take[c] += 1
-            rl = random.Random(seed + 100 + nN)
-            pl = []
-            for c in sorted(take):
-                pool_c = [i for i in L_x if stratum[i]["category"] == c and i not in spn]
-                rl.shuffle(pool_c); pl += pool_c[:take[c]]
-            gL = sum(xgen(i, cutof(i)) for i in pl)
-            share = gN / max(gN + gL, 1)
-            cand = (abs(share - TARGET_X), nN, share, pn, pl, gN, gL)
-            if best is None or cand[0] < best[0]: best = cand
-        # feasible only if the N pieces fill the part (nN of them, >= 6 scripts) and its N share is in band; else the supply
-        # is short: stop here, the parts built so far stay in the plan (never shrink a part to fit)
-        if best is None or len(best[3]) < best[1] or not (0.15 <= best[2] <= 0.20) or \
-                len({stratum[i]["script"] for i in best[3]}) < 6:
-            plan["x_short"] = {"from_part": f"s190{slice_}", "built": len(plan["x"]), "N_left": len(N_x),
-                               "N_gen_left": sum(xgen(i, cutof(i)) for i in N_x),
-                               "best_share": None if best is None else round(best[2], 4),
-                               "best_N_pieces": None if best is None else best[1]}
-            break
-        _, nN, share, pn, pl, gN, gL = best
+    N_xparts = split_pair(N_x, lambda i: xgen(i, cutof(i)), lambda i: stratum[i]["script"])
+    plan["stats"]["x"] = {"unused_b1": len(unused), "N_b1": len(N_x), "N_gen_b1": sum(xgen(i, cutof(i)) for i in N_x),
+                          "N_scripts_b1": dict(collections.Counter(stratum[i]["script"] for i in N_x)),
+                          "N_unused_b2_not_used": sum(1 for x in X if x["batch"] != "xc8k-b1" and not x["used"] and x["stratum"] == "N"),
+                          "L_b1": len(L_x)}
+
+    def pick_l(pool, n, seed_n):
+        """n L pieces of pool, stratified by category (largest remainder of the pool's category shares)"""
+        cnt = collections.Counter(stratum[i]["category"] for i in pool); tot = sum(cnt.values())
+        want = {c: n * v / tot for c, v in cnt.items()}
+        take = {c: min(cnt[c], int(want[c])) for c in cnt}
+        for c in sorted(cnt, key=lambda c: (-(want[c] - int(want[c])), c)):
+            if sum(take.values()) >= n: break
+            if take[c] < cnt[c]: take[c] += 1
+        rl = random.Random(seed + 100 + seed_n); pl = []
+        for c in sorted(take):
+            pool_c = [i for i in pool if stratum[i]["category"] == c]
+            rl.shuffle(pool_c); pl += pool_c[:take[c]]
+        return pl
+
+    taken_x = set()
+    for k, (name, match) in enumerate(PAIR):
+        target = L_MULT * r_x[match]["gen_L"]; nL0 = len(r_x[match]["idx"]) - r_x[match]["nN"]
+        pool = [i for i in L_x if i not in taken_x]
+        for n in range(nL0, nL0 + 400):                 # grown one piece at a time until the L gen positions reach the target
+            pl = pick_l(pool, n, k)
+            gl = sum(xgen(i, cutof(i)) for i in pl)
+            if gl >= target: break
+        taken_x |= set(pl)
+        pn = N_xparts[k]; gN = sum(xgen(i, cutof(i)) for i in pn)
         ids = sorted(pn + pl)
         caps = {str(i): cutof(i) for i in ids if cutof(i)}
-        N_x = [i for i in N_x if i not in set(pn)]; L_x = [i for i in L_x if i not in set(pl)]
-        sc_x = collections.Counter(stratum[i]["script"] for i in pn)
         sg = collections.Counter()
         for i in pn: sg[stratum[i]["script"]] += xgen(i, cutof(i))
-        plan["x"].append({"name": f"s190{slice_}", "idx": ids, "caps": caps, "N": sorted(pn), "nN": nN, "gen_N": gN, "gen_L": gL,
-                          "share_N": share, "scripts": dict(sc_x), "max_script_share": max(sg.values()) / max(gN, 1),
+        plan["x"].append({"name": name, "match": match, "idx": ids, "caps": caps, "N": sorted(pn), "nN": len(pn), "nL": len(pl),
+                          "gen_N": gN, "gen_L": gl, "L_target": target, "share_N": gN / max(gN + gl, 1),
+                          "scripts": dict(collections.Counter(stratum[i]["script"] for i in pn)),
+                          "max_script_share": max(sg.values()) / gN if gN else 0.0,
                           "cats_L": dict(collections.Counter(stratum[i]["category"] for i in pl))})
     json.dump(plan, open(plan_path + ".part", "w"), indent=1); os.replace(plan_path + ".part", plan_path)
     for c in plan["c"]:
-        print(f"{c['name']}: c {len(c['idx'])} docs (N {c['docs_N']}, scripts {len(c['scripts'])}, max script {c['max_script_share']:.2f}), N gen {c['gen_N']} of {c['gen_N'] + c['gen_L']} = {c['share_N']:.3f}, pos {c['pos']}", file=sys.stderr)
+        print(f"{c['name']}: c {len(c['idx'])} docs (N {c['docs_N']}, L {c['docs_L']}, scripts {len(c['scripts'])}), N gen {c['gen_N']} "
+              f"of {c['gen_N'] + c['gen_L']} = {c['share_N']:.3f}, L gen {c['gen_L']} (target {c['L_target']:.0f}), pos {c['pos']}", file=sys.stderr)
     for x in plan["x"]:
-        print(f"{x['name']}: x {len(x['idx'])} pieces (N {x['nN']}, scripts {len(x['scripts'])}, max script {x['max_script_share']:.2f}), N gen {x['gen_N']} of {x['gen_N'] + x['gen_L']} = {x['share_N']:.3f}", file=sys.stderr)
-    print(f"x_short: {plan['x_short']}", file=sys.stderr)
+        print(f"{x['name']}: x {len(x['idx'])} pieces (N {x['nN']}, L {x['nL']}, scripts {len(x['scripts'])}), N gen {x['gen_N']} "
+              f"of {x['gen_N'] + x['gen_L']} = {x['share_N']:.3f}, L gen {x['gen_L']} (target {x['L_target']:.0f})", file=sys.stderr)
     print(json.dumps(plan["stats"]), file=sys.stderr)
 
 

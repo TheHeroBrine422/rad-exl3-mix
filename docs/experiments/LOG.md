@@ -8079,3 +8079,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - **Runtime:** neither (search infrastructure; no inference change).
 - **Files:** `data/strata190/` (README, `supply190.json`, `draw190.err.txt`, `check190.out`, `plan190-dryrun.json` (indices, not built)); ds8 `/data/q27/w169/` (snapshots of the live registry and the ledger taken 11-14 11:19 PM CST, work files).
 - 11:40 PM CST: w169 first run: blocked on non-Latin supply (15 free calib N docs, 52 xcorp N pieces); no slices built. Amendment (user OK): one pair s190a/b, N at s186's amount, Latin 2×; w169 restarted. Open: non-Latin supply runs out soon — a new N-rich xcorp golden batch is needed for any further slices.
+- 11:45 PM CST (user): the N-rich xcorp golden batch is tomorrow's task (TODO).
