@@ -8198,3 +8198,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   - 11-15 04:28:29 CST ds8: eval ibx-t183-v3s183-7-probe-01646 done: t183 0.00050
 - 5:00 AM CST (user): no size stops; search continues at all active sizes for the #193 allocator trials (RULES-cooldown amendment). w172 told: rank-reg now at every size, budget 600 decide / 100 probes.
 - 5:05 AM CST (user): Fable 5.2 is available in pi; the user tried it as the lead and went back to Opus medium (too much autonomy: it acted without checking in first). AGENTS.md updated: Fable for workers / research runs, not the lead.
+- 5:20 AM CST (user): overnight split: inbox_share 0.85 / inbox_max 22 of queue_depth 26, applied at the s190c rotation restart (allocator trials get most of the night; own moves as filler).
