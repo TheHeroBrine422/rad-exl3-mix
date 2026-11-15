@@ -626,7 +626,8 @@ class Driver:
                 self.nogen[size] = True; continue
             self.nogen[size] = False
             pr = F["pred"]; dpred = math.log(pr.kl(c) / pr.kl(a))
-            audit = self.rng.random() < float(self.c.get("audit_frac", 0.1))
+            af = (self.c.get("audit_frac_by_size") or {}).get(f"{size:g}", self.c.get("audit_frac", 0.1))   # (#183) per size
+            audit = self.rng.random() < float(af)
             tag = self.newtag(size, kind)
             self.submit(tag, c, size, kind, act, early=not audit, ref_tag=self.inc[size], extra={"pred_logr": dpred, "audit": audit})
             kcount[kind] += 1; inflight[size] += 1; made += 1

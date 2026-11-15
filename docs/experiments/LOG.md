@@ -7670,3 +7670,14 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - User: focus on the target range; 1.25 / 1.5 / 1.75 stopped (`STOP-<size>`; incumbents kept), 2.0 stays; 7.0 already
   stopped. Size 1.0 not added. Search effort now goes to 2.0-6.0 (b1 = 2.0 / 2.5 only). The sub-1 calibration rows
   (w158 wave 2) still finish: the K < 1 options may help 2.0 on insensitive tensors. **Runtime:** neither.
+
+### 2026-11-14 6:25 PM CST · #183 / #187 · Model accuracy by band; more full-slice rows above 2.5; reranker worker
+- Whole-slice candidates, predicted vs measured log r: b1 n 47 corr 0.72 (pred −7.0% vs meas −4.6%), b2 n 26 corr 0.24
+  (−8.6% vs −2.8%), b3 n 17 corr 0.18 (−24.6% vs −3.4%); t183 first vs current incumbent: 3.0 −7.2% (z −2.7), 4.0 +1.0%,
+  4.5 −0.2%, 5.0 −2.6% (z −1.7), 6.0 +2.2%. The model ranks moves in b1 only.
+- User: (1) start the pooling + reranker job now (w165, Haiku xhigh, CPU on colo, replay protocol, RULES first);
+  (2) driver CONF audit_frac_by_size = 0.3 at 3-6 bpw (was 0.1): more candidates scored on the whole slice there, i.e.
+  cleaner fit rows (new driver key, test_picks 18/18). Driver restarted 6:19 PM CST.
+- Review note: w164's #186-02 (439096e: RULES-strata statistic in seqrule / pickstat / driver) is live in the driver
+  since the 5:56 PM restart; it only acts on slices with strata (s173a-f return none: checked), so decisions on s173
+  are unchanged. Full review before the s186 switch. **Runtime:** neither.
