@@ -8061,3 +8061,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   lead's call.
 - **Files:** `search/v3/confirm189/` (driver-reselect.patch, test_reselect189.py, step_events.py, tests-reselect.txt, README-reselect.md),
   `local/workers/w168/` (candidate config, base / patched trees, live snapshot `snap2`, dry run, smoke, mutation script).
+- 10:00 PM CST · #189-02 live: w168's patch reviewed and committed (12/12 reselect, 15/15 confirm, 13/13 pool, 18/18 picks; identity with reselect absent). Old driver confirmed exited before the new start. s186e role reselect; confirm pairs a/b, c/d. RESELECT on s186e: 93 models (2:8 2.5:9 3:18 3.5:14 4:16 4.5:9 5:8 6:11), ~45–60 min; the search pauses meanwhile. Plot: go-live reverts now reset a size's chain to the restored model's value (lead fix in convplot4.walk); w168's re-anchor handles re-selection changes.
