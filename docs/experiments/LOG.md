@@ -7894,3 +7894,45 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Incident: w165 ran `pkill -x python3 -u 0` on colo (~7:40 PM CST). The search's colo fits survived (fit b2 ran at
   7:49 PM); no colo job of ours was running (logs and /data/work show nothing recent beyond w165 / srch183). If the
   DeepSeek agent had a colo job, it was hit. **Runtime:** neither.
+
+### 2026-11-14 8:15 PM CST · #188 · Elite pool (K = 3 per size), crossover and re-seed at the s186 switch: rules, code, tests, sanity replay (w166)
+- **Status:** built, not deployed. The lead reviews and applies `search/v3/pool188/driver-pool.patch`; the switch with the strata is
+  `search/v3/SWITCH-186-188.md`; the candidate config is `local/workers/w166/driver-188.candidate.json` (5 keys differ from the
+  live `driver.json`). **Machines:** VM only. **Runtime:** neither (search allocation; no change to the format, kernels or prefill / decode).
+- **Rules first:** `search/v3/RULES-pool.md`, committed alone (`c87650e6`), then an amendment before any pool code ran on data
+  (`c555148c`): the in-search statistic is the driver's in force (cap null from the switch, user 11-14 7:20 PM CST; the guard stays).
+- **Design (RULES-pool):** K members per size, scored in full on the active slice; a whole-slice candidate is judged against the pool's
+  worst member when the pool is full (the incumbent otherwise): it joins if it beats the worst, and becomes incumbent if it beats the
+  incumbent; the early-stop reference is the worst; parents: incumbent w.p. 0.6, else another member; cross move per trunk layer (head
+  and embedding as their own units), repaired to the byte window; rotation rescores every member, then re-selects once on the new slice
+  (no new evaluation); one-time re-seed on s186a for 2.0–6.0: incumbent + frontier top 3 (distinct), ranked by the statistic, incumbent =
+  first ranked that passes the accept rule, pool = top K with it in. K = 1 is today's driver (no pool events, no RNG draw).
+- **Code:** patch against HEAD b9c58dd5 (`driver.py`, `moves.py` (additive only: `cross`, `generate_cross` at the end), new `poolrule.py`);
+  the live tree is untouched and nothing is committed beyond the two rule commits. Merge with w165's `driver-187.patch`: `SWITCH-186-188.md`
+  (exact overlaps: two lines of `generate()`, adjacent `__init__` blocks). Fit rows and tracking unchanged (the monitor reads the incumbent on a change only, as before).
+- **Tests** (`search/v3/pool188/test_pool188.py`, 13 / 13 on the patched HEAD; `test_picks.py` 18 / 18; `data/pool188/tests.txt`):
+  K = 1 identity on the recorded #183 replay (the HEAD tree and the patched tree emit the same 346 events; the replayed decisions
+  reproduce the 275 recorded ones); pool join add / replace / reject; worst as the early-stop reference; rotation rescore and
+  re-selection; restart with the same pools; re-seed ranking; cross units and byte window; cap null with strata (no `w` in the
+  rule, plain per-(part, stratum) sums; lead note 7:20 PM CST). Bug found while building: a rotation rescore of the incumbent changed
+  the pool list without a state event, so a restart would have lost the incumbent from its pool. Fixed and pinned by a test.
+- **Sanity replay** (RULES-pool §7; `search/v3/pool188/replay188.py`, `data/pool188/sanity-k1-k3/`; snapshot state sha256 `ec82d3cecc5892d0…`;
+  whole-slice results only, cap 0.2 as recorded): K = 1 reproduces the live accepts on **48 of 48** slice-size rows (37 accepts, the
+  simulator checks the live decisions). The audit runs are decided by the rule after the fact, which the simulator reproduces (20 audits
+  stopped). K = 3 on the same data: 46 joins, **9 pool members** (joined without becoming incumbent), **0 promoted at the slice end**
+  (in-sample; exact 95 % CI for 0 of 9: 0 to 0.34). Three members beat the final incumbent on the statistic and were not promoted: one
+  failed the (c) guard, two failed the per-part sign. **Reading:** on this history no pool member passes the accept rule against the
+  slice's final incumbent, so the pool adds nothing at the slice end here. The history cannot show what a rotation would do (only incumbents were rescored on the next
+  slice), so the live rotation rescore is the real test.
+- **Dry run on a copy of the live state** (`search/v3/pool188/smoke_dry.py`; fabricated results, no evaluations; `data/pool188/smoke/`):
+  rotation to s186a, the re-seed on 8 sizes (24 candidates), pools of 3, 4 re-selections at the next rotation, restart invariants
+  (every pool contains its incumbent, no duplicates, every member scored on the active slice; 0 violations). Joins through
+  `generate()` at a full queue were **not** run end to end: the deep runs were CPU-heavy (see Incident) and stopped.
+- **Incident (CPU):** the dry runs at a full queue depth used the VM beyond the light-check budget: 3 runs of about 14, 4 and 3 CPU-minutes,
+  each stopped by a timeout of mine. The cost is generation with the real fit (solve / explore / thompson). No evaluation or card was
+  involved and no process of ours is left running. The longer dry run belongs on colo if you want it.
+- **Open for the lead:** (1) review the patch and commit the driver change after review (w166 may not commit code); (2) `rotate_after` is 200 in
+  the live config, not the 25 that `SWITCH-strata.md` says: the switch doc now says so; (3) the re-seed picks incumbents that pass the accept
+  rule, not the raw rank-1 (a guard-failing rank-1 is kept in the pool, not as incumbent; RULES-pool §6); (4) K = 3 is untested on data.
+- **Files:** `search/v3/RULES-pool.md`, `search/v3/pool188/` (patch, tests, replay, dry run, README), `search/v3/SWITCH-186-188.md`,
+  `data/pool188/` (sanity, smoke, tests), `local/workers/w166/` (candidate config, scratch).

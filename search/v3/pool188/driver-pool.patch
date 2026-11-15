@@ -1,0 +1,431 @@
+--- a/search/v3/driver.py
++++ b/search/v3/driver.py
+@@ -62,6 +62,7 @@
+ import moves as MV           # noqa: E402
+ import seqrule as SR         # noqa: E402
+ import slices as SL          # noqa: E402
++import poolrule as PR        # noqa: E402
+ 
+ CST = -6 * 3600
+ 
+@@ -121,6 +122,10 @@
+         self.fitprocs = {g["name"]: None for g in self.groups}; self.fit_at = {g["name"]: 0 for g in self.groups}
+         self.res_off = 0; self.bias = []; self.nogen = {}; self.fixed0 = self.M.fixed; self.bytes_off = None; self.bytes_src = None
+         self.mon = collections.defaultdict(list); self.stopped_sizes = set()
++        # elite pool (#188, RULES-pool): K members per size; K = 1 is today's driver (no pool events, no extra random draws)
++        self.K = int(c.get("pool", 1)); self.pool = {}; self.cross_share0 = float(c.get("cross_share0", 0.15))
++        self.reseed_c = c.get("reseed"); self.reseed_seen = False; self.reseed_on = None; self.reseed_plan = None
++        self.reseed_done = set(); self.reselected = {}
+         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+         self.replay()
+ 
+@@ -156,6 +161,11 @@
+             elif ev == "fit_done":
+                 gn = e.get("group", self.groups[0]["name"]); self.fit_at[gn] = e["n_results"]; last_fit = getattr(self, "_lastfit", {}); last_fit[gn] = e["out"]; self._lastfit = last_fit
+             elif ev == "bias": self.bias.append(e)
++            elif ev == "pool": self.pool[e["size"]] = list(e["members"])
++            elif ev == "reseed_start": self.reseed_seen = True; self.reseed_on = e["slice"]; self.reseed_plan = {float(k): list(v) for k, v in e["plan"].items()}
++            elif ev == "reseed_abandon": self.reseed_on = None; self.reseed_plan = None
++            elif ev == "reseed": self.reseed_done.add(e["size"]); self.reselected[e["size"]] = e["slice"]
++            elif ev == "reselect": self.reselected[e["size"]] = e["slice"]
+         for t, r in self.res.items(): self.add_obs(t, r)
+         for gn, out in getattr(self, "_lastfit", {}).items():          # the last fit of each group, on the rows it was fitted on
+             try:
+@@ -308,6 +318,174 @@
+         json.dump({"curves": {str(k): v for k, v in self.mon.items()}, "alerts": {str(k): v for k, v in self.alerts.items()},
+                    "b": {str(k): self.b_of(k) for k in self.sizes}}, open(f"{self.R}/monitor.json", "w"), indent=0)
+ 
++    # ------------------------------------------------------------------------------------------------ elite pool (#188, RULES-pool)
++    def members(self, size):
++        """the size's pool members (tags); K = 1: the incumbent alone (today's driver)"""
++        t = self.inc.get(size)
++        if self.K <= 1 or size not in self.pool: return [t] if t is not None else []
++        return list(self.pool[size])
++
++    def scored_on(self, size, act):
++        """every member has a whole-slice score on the active slice (K > 1: and none of them failed)"""
++        mem = self.members(size)
++        return bool(mem) and all(m in self.res and self.res[m].get("slice") == act and (self.K <= 1 or not self.res[m].get("fail")) for m in mem)
++
++    def reseed_wait(self, size, act):
++        """a size whose re-seed set is still being scored on the active slice generates nothing yet"""
++        return self.reseed_on == act and self.reseed_plan is not None and size in self.reseed_plan and size not in self.reseed_done
++
++    def worst(self, size):
++        """RULES-pool §2: the pool's worst member: the largest size-adjusted paired statistic against the incumbent, on the active slice"""
++        act = self.reg.active(); parts = self.reg.parts_of(act); st = self.reg.strata_of(act)
++        inc = self.inc[size]; bs = self.b_of(size); da = {}
++        for m in self.members(size):
++            if m == inc: da[m] = 0.0; continue
++            off = bs * (self.sub[m]["bpw"] - self.sub[inc]["bpw"]) + (self.doff(m, inc) if bs else 0.0)
++            da[m] = self.paired(self.res[inc], self.res[m], parts, off=off, strata=st).da()
++        return PR.worst_of(inc, da)
++
++    def reference(self, size):
++        """RULES-pool §2: a new candidate's early-stop reference: the worst member once the pool is full, else the incumbent"""
++        if self.K <= 1 or len(self.members(size)) < self.K: return self.inc[size]
++        return self.worst(size)
++
++    def parent(self, size):
++        """RULES-pool §4: the incumbent (K = 1: always, no draw); else the incumbent w.p. 0.6, else another member"""
++        return self.inc[size] if self.K <= 1 else PR.choose_parent(self.inc[size], self.members(size), self.rng)
++
++    def gen_move(self, kind, size, F, a, lo, hi, other):
++        """one candidate of a move kind; cross (K > 1) takes the second parent (moves.generate_cross); the others as before.
++        size: for the non-cross branch only (RULES-187 reranker hook goes here; see SWITCH-186-188.md)"""
++        if kind == "cross": return MV.generate_cross(F["pred"], a, other, lo, hi, self.seen, self.rng) if other is not None else None
++        return MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
++
++    def set_incumbent(self, size, t):
++        old = self.inc.get(size); self.inc[size] = t
++        self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old}); return old
++
++    def pool_judge(self, t, s, r, parts, st, off):
++        """RULES-pool §3: a whole-slice candidate against the reference (the worst member once the pool is full, else the
++        incumbent) and against the incumbent. -> (P for the decision, "accept" | "reject", the join info or None)"""
++        size = s["size"]; inc = self.inc[size]
++        full = len(self.members(size)) >= self.K
++        W = self.worst(size) if full else inc
++        Pi = self.paired(self.res[inc], r, parts, off=off(inc), strata=st); acc_i = Pi.final() == "accept"
++        if W == inc: Pw, acc_w = Pi, acc_i
++        else: Pw = self.paired(self.res[W], r, parts, off=off(W), strata=st); acc_w = Pw.final() == "accept"
++        mode, new_inc = PR.join_action(full, acc_i, acc_w)
++        if mode is None: return Pi, "reject", None
++        info = {"join": mode, "inc": new_inc, "vs": W, **({"replaced": W} if mode == "replace" else {})}
++        return (Pi if acc_i else Pw), "accept", info
++
++    def pool_join(self, t, size, info):
++        """a join: added (pool not full) or replacing the worst member; recorded as a 'pool' event"""
++        mem = self.members(size)
++        new = mem + [t] if info["join"] == "add" else [t if m == info["replaced"] else m for m in mem]
++        self.pool[size] = new
++        self.rec({"ev": "pool", "size": size, "members": new, "why": "join", "tag": t, "join": info["join"], "replaced": info.get("replaced")})
++
++    def monitor_on_change(self, size, t):
++        """the held-out monitor reads the incumbent when it changes (CONF monitor when: accept), as decide() does"""
++        mc = self.c.get("monitor")
++        if mc and mc.get("when", "accept") == "accept":
++            self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
++                        slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
++
++    def ensure_pool(self, act):
++        """RULES-pool §5 (K > 1): the incumbent as ensure_incumbents; every other member is rescored in full on the active slice.
++        A change of the pool's list (a rescored member, a dropped failure, the incumbent's new tag) is a 'pool' event"""
++        before = {z: self.members(z) for z in self.sizes}; inc_before = dict(self.inc)
++        self.ensure_incumbents(act)
++        out = set(self.outstanding())
++        for size in self.sizes:
++            if self.inc.get(size) is None or not self.feasible(size): continue
++            mem = [self.inc[size] if m == inc_before.get(size) else m for m in self.members(size)]
++            new = []
++            for m in mem:
++                r = self.res.get(m)
++                if m == self.inc[size] or m in out or (r is not None and r.get("slice") == act and not r.get("fail")): new.append(m); continue
++                if r is not None and r.get("slice") == act:                              # a failed member leaves the pool
++                    self.log(f"{m}: pool member of {size} failed on {act}: dropped"); continue
++                tag = self.newtag(size, "inc")
++                self.submit(tag, self.assign(m), size, "incumbent", act, early=False, extra={"of": m})
++                out.add(tag); new.append(tag)
++            if new != before[size]:
++                self.pool[size] = new; self.rec({"ev": "pool", "size": size, "members": new, "why": "rescore"})
++
++    def reseed_step(self, act):
++        """RULES-pool §6 (once, K > 1): when CONF reseed.slice becomes active, the listed sizes' frontier top is scored in full on
++        it; when a size's set (with its incumbent) is complete, the ranking picks its incumbent and pool"""
++        rc = self.reseed_c
++        if not rc or self.K <= 1: return
++        if self.reseed_on is not None and self.reseed_on != act:
++            self.rec({"ev": "reseed_abandon", "slice": self.reseed_on})
++            self.log(f"re-seed on {self.reseed_on} abandoned: the slice rotated before its set was complete")
++            self.reseed_on = None; self.reseed_plan = None
++        if self.reseed_on is None and not self.reseed_seen and act == rc["slice"]: self.reseed_start(act, rc)
++        if self.reseed_on != act or not self.reseed_plan: return
++        for size in sorted(self.reseed_plan):
++            tags = self.reseed_plan[size]
++            if size in self.reseed_done or any(x not in self.res for x in tags): continue
++            inc = self.inc.get(size)
++            if inc is None or not (inc in self.res and self.res[inc].get("slice") == act and not self.res[inc].get("fail")): continue
++            self.reseed_apply(size, act, tags)
++
++    def reseed_start(self, act, rc):
++        src = json.load(open(rc.get("source", f"{self.R}/frontier.json")))
++        plan = {}; ntop = int(rc.get("top", 3))
++        for size in sorted(float(z) for z in rc["sizes"]):
++            t0 = self.inc.get(size)
++            if t0 is None or not self.feasible(size): continue
++            seen_h = {MV.ahash(self.assign(t0))}; picks = []
++            for x in (src.get(str(size)) or {}).get("top", []):
++                tg = x["tags"][0]; h = MV.ahash(self.assign(tg))
++                if h in seen_h: continue
++                seen_h.add(h); picks.append(tg)
++                if len(picks) >= ntop: break
++            plan[size] = []
++            for tg in picks:
++                tag = self.newtag(size, "reseed")
++                self.submit(tag, self.assign(tg), size, "reseed", act, early=False, extra={"of": tg})
++                plan[size].append(tag)
++        self.reseed_seen = True; self.reseed_on = act; self.reseed_plan = {k: v for k, v in plan.items() if v}
++        self.rec({"ev": "reseed_start", "slice": act, "source": rc.get("source"), "plan": {str(k): v for k, v in self.reseed_plan.items()}})
++        self.log(f"RE-SEED on {act}: {sum(len(v) for v in self.reseed_plan.values())} candidates for {len(self.reseed_plan)} sizes (frontier top {ntop}, incumbent rescored)")
++
++    def reseed_apply(self, size, act, tags):
++        inc = self.inc[size]; parts = self.reg.parts_of(act); st = self.reg.strata_of(act); scored = []
++        for x in tags:
++            if self.res[x].get("fail") or self.res[x].get("slice") != act: continue
++            bs = self.sub[x].get("b", 0.0) or 0.0
++            off = bs * (self.sub[x]["bpw"] - self.sub[inc]["bpw"]) + (self.doff(x, inc) if bs else 0.0)
++            P = self.paired(self.res[inc], self.res[x], parts, off=off, strata=st)
++            scored.append((x, P.da(), P.final() == "accept"))
++        new, pool = PR.reseed_pick(inc, scored, self.K)
++        self.reseed_done.add(size); self.reselected[size] = act
++        self.rec({"ev": "reseed", "size": size, "slice": act, "inc": new, "pool": pool, "prev": inc, "ranking": [[x, round(da, 6), a] for x, da, a in scored]})
++        self.pool[size] = pool; self.rec({"ev": "pool", "size": size, "members": pool, "why": "reseed"})
++        if new != inc: self.set_incumbent(size, new); self.monitor_on_change(size, new)
++        self.log(f"RE-SEED {size:g} on {act}: incumbent {'-> ' + new if new != inc else 'kept'}; pool {pool} ({len(scored)} scored, {sum(1 for _, _, a in scored if a)} accepted)")
++
++    def reselect(self, act):
++        """RULES-pool §5 (K > 1): once per slice and size, when every member is scored on the active slice: the accepted member with
++        the lowest statistic against the incumbent becomes the incumbent (no new evaluation)"""
++        if self.K <= 1: return
++        parts = self.reg.parts_of(act); st = self.reg.strata_of(act)
++        for size in self.sizes:
++            if self.reselected.get(size) == act or self.inc.get(size) is None or not self.scored_on(size, act) or self.reseed_wait(size, act): continue
++            inc = self.inc[size]; bs = self.b_of(size); scored = []
++            for m in self.members(size):
++                if m == inc: continue
++                off = bs * (self.sub[m]["bpw"] - self.sub[inc]["bpw"]) + (self.doff(m, inc) if bs else 0.0)
++                P = self.paired(self.res[inc], self.res[m], parts, off=off, strata=st)
++                scored.append((m, P.da(), P.final() == "accept"))
++            new = PR.reselect_pick(inc, scored)
++            self.reselected[size] = act
++            self.rec({"ev": "reselect", "size": size, "slice": act, "inc": new or inc, "ranking": [[m, round(da, 6), a] for m, da, a in scored]})
++            if new is not None:
++                self.set_incumbent(size, new); self.monitor_on_change(size, new)
++                self.log(f"RESELECT {size:g} on {act}: incumbent {inc} -> {new}")
++
+     def outstanding(self): return [t for t in self.sub if t not in self.res]
+ 
+     def ingest(self):
+@@ -365,13 +543,15 @@
+         if s["kind"] == "monitor": self.on_monitor(t, s, r); return
+         if s["kind"] == "incumbent":
+             self.log(f"{t}: incumbent of {size} scored on {r['slice']}: KLD {r['kld']:.5f} at {s['bpw']:.4f} bpw (container {r['bpw']:.4f})"); return
++        if s["kind"] == "reseed":                                          # RULES-pool §6: decided when the size's set is complete
++            self.log(f"{t}: re-seed candidate of {size} scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+         act = self.reg.active()
+         if r["slice"] != act:
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
+             k = sum(x is not None for x in r["docs"])
+             self.log(f"stale {t} ({s['kind']}) for {size}: scored on retired slice {r['slice']} ({'stopped after ' + str(k) + ' docs' if r.get('stopped') else 'whole slice'}): fit rows only"); return
+         cur = self.inc.get(size); parts = self.reg.parts_of(r["slice"]); st = self.reg.strata_of(r["slice"])
+-        if cur is None or cur not in self.res or self.res[cur].get("slice") != r["slice"]:
++        if cur is None or cur not in self.res or self.res[cur].get("slice") != r["slice"] or (self.K > 1 and not self.scored_on(size, r["slice"])):
+             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None}); return
+         ref = self.res[cur]
+         bs = s.get("b", 0.0) or 0.0                                       # the b recorded at submit (the hosts stopped on it)
+@@ -388,17 +568,20 @@
+                     self.rec({"ev": "bias", "tag": t, "k": Pe.k, "d_prefix": Pe.d(), "d_full": Pf.d(), "se_full": Pf.se(), "off": Pe.off})
+                     self.bias.append({"d_prefix": Pe.d(), "d_full": Pf.d()})
+                     self.decide(t, size, "reject", Pe, r["slice"], Pe.k); return
++            if self.K > 1:                                                  # RULES-pool §3: the join rule (the reference is the worst member)
++                P, d, info = self.pool_judge(t, s, r, parts, st, off); self.decide(t, size, d, P, r["slice"], P.k, pool=info); return
+             P = self.paired(ref, r, parts, off=off(cur), strata=st); d = P.final(); ndocs = P.k
+         self.decide(t, size, d, P, r["slice"], ndocs)
+ 
+-    def decide(self, t, size, d, P, sl, ndocs):
++    def decide(self, t, size, d, P, sl, ndocs, pool=None):
+         s = self.sub[t]
+         self.reg.decided(sl, str(size), ndocs); self.dec[size] += 1
+         self.kind_stats[s["kind"]][1] += 1; self.kind_stats[s["kind"]][0] += d == "accept"
+         self.rec({"ev": "decision", "tag": t, "size": size, "decision": d, "kind": s["kind"], "k": P.k, "z": P.z(), "logr": P.d(), "logr_pooled": P.d_pooled(),
+                   "off": P.off, "se": P.se(), "parts": P.summary()["parts"],
+                   "stat_b": P.w is not None, **({"why": P.why} if P.why else {})})
+-        if d == "accept":
++        if d == "accept" and pool is not None: self.pool_join(t, size, pool)
++        if d == "accept" and (pool is None or pool["inc"]):
+             old = self.inc.get(size); self.inc[size] = t
+             self.rec({"ev": "incumbent", "size": size, "tag": t, "prev": old})
+             self.log(f"ACCEPT {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) vs {old}; {s['bpw']:.4f} bpw")
+@@ -406,6 +589,8 @@
+             if mc and mc.get("when", "accept") == "accept":                 # the band's new best -> the held-out monitor
+                 self.submit(self.newtag(size, "mon"), self.assign(t), size, "monitor", None, early=False, extra={"of": t},
+                             slice_entry={"name": mc["name"], "parts": {"m": mc["golden"]}})
++        elif d == "accept":
++            self.log(f"JOIN {t} ({s['kind']}) for {size}: {pool['join']}{' ' + pool['replaced'] if pool.get('replaced') else ''} (pool {len(self.members(size))}/{self.K}): log r {P.d():+.4f}, size-adjusted {P.da():+.4f}, vs {pool['vs']}")
+         else:
+             self.log(f"reject {t} ({s['kind']}) for {size}: log r {P.d():+.4f}, size-adjusted {P.da():+.4f} (z {P.z():+.2f}) after {P.k} docs" + (" [stopped]" if self.res[t].get("stopped") else "") +
+                      (" [guard: per-document mean " + ", ".join(f"{p} {P.docmean(p) + P.off:+.4f}" for p in P.part if P.docmean(p) is not None) + "]" if P.why == "guard" else ""))
+@@ -601,35 +786,38 @@
+         if all(f is None for f in self.fits.values()): return 0
+         out = self.outstanding(); depth = int(self.c.get("queue_depth", 6)); made = 0
+         inflight = collections.Counter(self.sub[t]["size"] for t in out)
+-        shares = MV.kind_shares({k: tuple(v) for k, v in self.kind_stats.items()}, self.c.get("kind_share0", MV.SHARE0))
++        share0 = self.c.get("kind_share0", MV.SHARE0)
++        if self.K > 1 and "cross" not in share0: share0 = dict(share0, cross=self.cross_share0)     # RULES-pool §4
++        shares = MV.kind_shares({k: tuple(v) for k, v in self.kind_stats.items()}, share0)
+         kcount = collections.Counter(self.sub[t]["kind"] for t in self.sub if self.sub[t]["kind"] in shares)
+         tries = 0; failed = set()
+         while len(out) + made < depth and tries < 4 * len(self.sizes):
+             tries += 1
+-            ready = [s for s in self.sizes if s not in self.stopped_sizes and self.feasible(s) and self.inc.get(s) in self.res and self.res[self.inc[s]].get("slice") == act and s not in failed
++            ready = [s for s in self.sizes if s not in self.stopped_sizes and self.feasible(s) and self.scored_on(s, act) and not self.reseed_wait(s, act) and s not in failed
+                      and self.fits[self.gname[s]] is not None]
+             if not ready: break
+             w = self.c.get("size_weights", {})
+             size = min(ready, key=lambda s: ((self.dec[s] + inflight[s]) / float(w.get(str(s), 1.0)), self.rng.random()))
+-            a = self.assign(self.inc[size]); lo, hi = self.window(size)
++            par = self.parent(size); a = self.assign(par); lo, hi = self.window(size)
++            oth = PR.choose_other(par, self.members(size), self.rng) if self.K > 1 else None; other = self.assign(oth) if oth else None
+             kind = MV.pick_kind(shares, kcount, self.rng)
+             F = self.fits[self.gname[size]]
+-            c = MV.generate(kind, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
++            c = self.gen_move(kind, size, F, a, lo, hi, other)
+             if c is None:
+                 for k2 in sorted(shares, key=lambda k: -shares[k]):
+                     if k2 == kind: continue
+-                    c = MV.generate(k2, F["pred"], F["draws"], a, lo, hi, self.seen, self.rng)
++                    c = self.gen_move(k2, size, F, a, lo, hi, other)
+                     if c is not None: kind = k2; break
+             if c is None:
+                 failed.add(size)
+                 if not self.nogen.get(size): self.log(f"no new candidate for {size} (window {lo * 8 / self.M.P:.4f}-{hi * 8 / self.M.P:.4f} bpw)")
+                 self.nogen[size] = True; continue
+             self.nogen[size] = False
+-            pr = F["pred"]; dpred = math.log(pr.kl(c) / pr.kl(a))
++            rf = self.reference(size); pr = F["pred"]; dpred = math.log(pr.kl(c) / pr.kl(self.assign(rf)))
+             af = (self.c.get("audit_frac_by_size") or {}).get(f"{size:g}", self.c.get("audit_frac", 0.1))   # (#183) per size
+             audit = self.rng.random() < float(af)
+             tag = self.newtag(size, kind)
+-            self.submit(tag, c, size, kind, act, early=not audit, ref_tag=self.inc[size], extra={"pred_logr": dpred, "audit": audit})
++            self.submit(tag, c, size, kind, act, early=not audit, ref_tag=rf, extra={"pred_logr": dpred, "audit": audit, **({"parent": par, "other": oth} if self.K > 1 else {})})
+             kcount[kind] += 1; inflight[size] += 1; made += 1
+         return made
+ 
+@@ -739,6 +927,7 @@
+                 " | b " + " ".join(f"{z:g}:{self.b_of(z):.2f}" for z in self.sizes) +
+                 (" | ALERT " + " ".join(f"{z:g}" for z, v in sorted(self.alerts.items()) if v) if any(self.alerts.values()) else "") +
+                 " | fits " + " ".join(f"{g}:{'none' if not f else f['report'].get('rows')}" + ("*" if self.fitprocs[g] else "") for g, f in self.fits.items()))
++        if self.K > 1: line += " | pool " + " ".join(f"{z:g}:{len(self.members(z))}" for z in self.sizes if self.inc.get(z) is not None)
+         open(f"{self.R}/status.txt", "w").write(line + "\n")
+         return line
+ 
+@@ -754,7 +943,8 @@
+         if act is None: return "no slice"
+         go = self.c.get("go") or self.c.get("dry")
+         if not go: return "no go (CONF go / dry)"
+-        self.ensure_incumbents(act)
++        if self.K > 1: self.ensure_pool(act); self.reseed_step(act); self.reselect(act)
++        else: self.ensure_incumbents(act)
+         self.monitor_refs()
+         self.generate(act)
+         return self.report()
+--- a/search/v3/moves.py
++++ b/search/v3/moves.py
+@@ -264,3 +264,32 @@
+     """deficit round robin over kinds by share"""
+     n = sum(counts.get(k, 0) for k in shares) + 1
+     return max(shares, key=lambda k: shares[k] * n - counts.get(k, 0) + 1e-6 * rng.random())
++
++
++def cross(pred, a, b, lo, hi, rng):
++    """crossover (RULES-pool §4, #188): one unit per trunk layer (the head is its own unit) takes parent b's options where a
++    fair coin says so and parent a's elsewhere; the embedding is one more unit. The child is repaired into [lo, hi]
++    (repair); generate() drops it when it is outside the window or already seen."""
++    Ja, Jb = pred.idx(a), pred.idx(b)
++    units = {}
++    for i in range(len(pred.D.W)): units.setdefault(int(pred.L[i]), []).append(i)
++    J = list(Ja)
++    for u in sorted(units):
++        if rng.random() < 0.5:
++            for i in units[u]: J[i] = Jb[i]
++    c = pred.assign(J, a)
++    if MN.EMB in b and rng.random() < 0.5: c[MN.EMB] = b[MN.EMB]
++    return repair(pred, c, lo, hi)
++
++
++def generate_cross(pred, a, other, lo, hi, seen, rng, tries=6):
++    """one cross child of a and `other` inside [lo, hi] and not seen (None if none; RULES-pool §4). Separate from generate()
++    so that the HEAD functions are unchanged."""
++    if other is None: return None
++    inc = ahash(a)
++    for t in range(tries):
++        c = cross(pred, a, other, lo, hi, rng)
++        if c is None: continue
++        h = ahash(c)
++        if h != inc and h not in seen and lo <= pred.M.bytes(c) <= hi: return c
++    return None
+--- /dev/null
++++ b/search/v3/poolrule.py
+@@ -0,0 +1,72 @@
++# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
++"""poolrule.py -- the elite pool's pure rules (#188, RULES-pool.md): the join decision, the worst member, the re-seed
++ranking, the reselection and the parent choice. No I/O: the driver (driver.py) builds the statistics (seqrule.Paired)
++and calls these; test_pool188.py checks them. With K = 1 the driver does not call them at all (today's rule).
++
++Notation: tags are the driver's candidate tags; `da[t]` is a member's size-adjusted paired statistic against the
++incumbent (d + off, the driver's Paired.da(); the incumbent is 0); `acc[t]` is the driver's accept rule vs the
++incumbent (Paired.final() == "accept": d + off < 0 on every part and the (c) guard)."""
++
++def join_action(full, acc_inc, acc_worst):
++    """RULES-pool §3 for a whole-slice candidate. Returns (mode, inc): mode "add" (the pool is not full and the
++    candidate beats the incumbent: it joins and becomes incumbent, the old one stays), "replace" (the pool is full and
++    the candidate beats the worst or the incumbent: it replaces the worst; it becomes incumbent if it beats the
++    incumbent), or None (reject)."""
++    if not full:
++        return ("add", True) if acc_inc else (None, False)
++    if acc_worst or acc_inc:
++        return ("replace", bool(acc_inc))
++    return (None, False)
++
++
++def worst_of(inc, da):
++    """the member with the largest size-adjusted statistic against the incumbent (RULES-pool §2); a tie goes to the
++    non-incumbent member. `da` maps each member's tag to its statistic (the incumbent's is 0)."""
++    return max(da, key=lambda t: (da[t], t != inc))
++
++
++def reseed_pick(inc, scored, K):
++    """RULES-pool §6: scored = [(tag, da, acc)] for the re-seed candidates other than the incumbent (against it, on the
++    slice). The ranking puts the incumbent (0) among them, ties to the incumbent. The new incumbent is the first-ranked
++    candidate that passes the accept rule (the old incumbent if none does). The pool is the top K of the ranking; the
++    new incumbent is kept in it (replacing the last member if it is outside the top K). Returns (new_inc, pool)."""
++    ranked = sorted([(0.0, inc, True)] + [(float(da), t, bool(a)) for t, da, a in scored],
++                    key=lambda x: (x[0], x[1] != inc))
++    new = next((t for _, t, a in ranked if a and t != inc), inc)
++    pool = [t for _, t, _ in ranked][:K]
++    if new not in pool: pool = pool[:max(K - 1, 0)] + [new]
++    return new, pool
++
++
++def reselect_pick(inc, scored):
++    """RULES-pool §5 (rotation re-selection): scored = [(tag, da, acc)] for the members other than the incumbent, on the
++    new slice. The accepted member with the lowest statistic becomes incumbent; None if no member is accepted."""
++    ok = [(da, t) for t, da, a in scored if a and t != inc]
++    return min(ok, key=lambda x: (x[0], x[1]))[1] if ok else None
++
++
++def choose_parent(inc, members, rng, p_inc=0.6):
++    """RULES-pool §4: the incumbent with probability p_inc, else uniform over the other members (draws only when the pool
++    has more than one member)"""
++    others = [t for t in members if t != inc]
++    if not others: return inc
++    if rng.random() < p_inc: return inc
++    return others[int(rng.random() * len(others)) % len(others)]
++
++
++def choose_other(parent, members, rng):
++    """the second parent of a cross child: uniform over the members other than `parent` (None if there is none)"""
++    others = [t for t in members if t != parent]
++    if not others: return None
++    return others[int(rng.random() * len(others)) % len(others)]
++
++
++def members_from_events(events):
++    """the pool's membership as the driver's replay rebuilds it (test helper): last 'pool' event per size wins"""
++    out = {}
++    for e in events:
++        if e.get("ev") == "pool": out[e["size"]] = list(e["members"])
++    return out
++
++
++__all__ = ["join_action", "worst_of", "reseed_pick", "reselect_pick", "choose_parent", "choose_other", "members_from_events"]

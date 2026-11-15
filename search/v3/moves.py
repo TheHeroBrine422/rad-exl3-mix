@@ -264,3 +264,32 @@ def pick_kind(shares, counts, rng):
     """deficit round robin over kinds by share"""
     n = sum(counts.get(k, 0) for k in shares) + 1
     return max(shares, key=lambda k: shares[k] * n - counts.get(k, 0) + 1e-6 * rng.random())
+
+
+def cross(pred, a, b, lo, hi, rng):
+    """crossover (RULES-pool §4, #188): one unit per trunk layer (the head is its own unit) takes parent b's options where a
+    fair coin says so and parent a's elsewhere; the embedding is one more unit. The child is repaired into [lo, hi]
+    (repair); generate() drops it when it is outside the window or already seen."""
+    Ja, Jb = pred.idx(a), pred.idx(b)
+    units = {}
+    for i in range(len(pred.D.W)): units.setdefault(int(pred.L[i]), []).append(i)
+    J = list(Ja)
+    for u in sorted(units):
+        if rng.random() < 0.5:
+            for i in units[u]: J[i] = Jb[i]
+    c = pred.assign(J, a)
+    if MN.EMB in b and rng.random() < 0.5: c[MN.EMB] = b[MN.EMB]
+    return repair(pred, c, lo, hi)
+
+
+def generate_cross(pred, a, other, lo, hi, seen, rng, tries=6):
+    """one cross child of a and `other` inside [lo, hi] and not seen (None if none; RULES-pool §4). Separate from generate()
+    so that the HEAD functions are unchanged."""
+    if other is None: return None
+    inc = ahash(a)
+    for t in range(tries):
+        c = cross(pred, a, other, lo, hi, rng)
+        if c is None: continue
+        h = ahash(c)
+        if h != inc and h not in seen and lo <= pred.M.bytes(c) <= hi: return c
+    return None
