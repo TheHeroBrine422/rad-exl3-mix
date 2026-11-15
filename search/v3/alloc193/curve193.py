@@ -10,7 +10,10 @@ curve linearised, sigma^2) and log kappa ~ N(0, 1). sigma by grouped CV (folds b
 import argparse, json, math, os, sys
 
 import numpy as np
-from scipy.optimize import least_squares
+try:
+    from scipy.optimize import least_squares
+except ImportError:          # the VM (python -I): only the alloc / linear paths are used there
+    least_squares = None
 
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import common193 as C  # noqa: E402
@@ -233,5 +236,93 @@ def main():
             if why is None: json.dump(d, open(f"{outdir}/curve-{s0:g}.json", "w"))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1] != "fitlin":
     main()
+
+
+# ---------------------------------------------------------------------------------------------------------- linear solver
+# With offsets per (label x nominal size) and the bowl evaluated at the nominal size s, the model is linear in the curve
+# parameters for fixed kappa: y - k_b k_x^[x] sum_t c_t (K_t - s)^2 = off_g - 2 k_b k_x^[x] sum_t c_t (K_t - s) d_t(s) + (terms in
+# s only, absorbed by off_g), d_t(s) = o_t + b_t (s - 4) + g_t min(0, s - 2.5). Offsets are projected out (weighted
+# within-group centering); ridge prior (theta - theta0) / sigma; soft_l1 by IRLS (3 passes, f_scale 3); kappa by grid.
+
+def lin_design(D, kb, kx):
+    sn = np.array([min(KN, key=lambda z: abs(z - s)) for s in D.s])
+    k = kb[D.b] * np.where(D.isx, kx, 1.0)
+    cK = D.c * (D.K - sn[:, None])                                              # n x T
+    Bs = basis(sn)                                                              # n x 3
+    A = (-2 * k)[:, None, None] * cK[:, :, None] * Bs[:, None, :]               # n x T x 3
+    z = D.y - k * (D.c * (D.K - sn[:, None]) ** 2).sum(1)
+    return A.reshape(len(D.y), -1), z, sn
+
+
+def lin_solve(D, kb, kx, p0, sigma, idx=None, irls=3):
+    idx = np.arange(len(D.y)) if idx is None else idx
+    A, z, _ = lin_design(D, kb, kx); A = A[idx]; z = z[idx]; g = D.li[idx]; w0 = 1 / D.sig[idx] ** 2
+    th0 = p0.ravel(); w = w0.copy()
+    for it in range(irls + 1):
+        # weighted within-group centering
+        sw = np.bincount(g, w, minlength=len(D.labs)); sw[sw == 0] = 1
+        Am = np.zeros((len(D.labs), A.shape[1])); np.add.at(Am, g, A * w[:, None]); Am /= sw[:, None]
+        zm = np.bincount(g, w * z, minlength=len(D.labs)) / sw
+        Ac = A - Am[g]; zc = z - zm[g]
+        H = (Ac * w[:, None]).T @ Ac + np.eye(A.shape[1]) / sigma ** 2
+        th = np.linalg.solve(H, (Ac * w[:, None]).T @ zc + th0 / sigma ** 2)
+        r = (zc - Ac @ th) * np.sqrt(w0)                                        # in sigma units
+        w = w0 / np.sqrt(1 + (r / 3.0) ** 2)                                    # soft_l1 IRLS weights
+    off = zm - Am @ th
+    return th.reshape(-1, 3), off
+
+
+def lin_predict(D, kb, kx, th, off, idx):
+    A, z, _ = lin_design(D, kb, kx)
+    return A[idx] @ th.ravel() + off[D.li[idx]], z[idx]
+
+
+def lin_cv(D, kb, kx, p0, sigma, folds=5, seed=193):
+    rng = np.random.default_rng(seed); ut = np.unique(D.tags); fold = dict(zip(ut, rng.integers(0, folds, len(ut))))
+    f = np.array([fold[t] for t in D.tags]); E = []
+    A, z, _ = lin_design(D, kb, kx)
+    for k in range(folds):
+        tr = np.where(f != k)[0]; te = np.where(f == k)[0]
+        th, off = lin_solve(D, kb, kx, p0, sigma, tr)
+        e = (z[te] - A[te] @ th.ravel())
+        # within-group differences only (offset of a held-out group re-centred on its held-out rows; anchors are
+        # incumbent tags, usually in another fold)
+        g = D.li[te]; e2 = np.full(len(te), np.nan)
+        for gg in np.unique(g):
+            m = g == gg
+            if m.sum() >= 2: e2[m] = e[m] - e[m].mean()
+        ok = ~np.isnan(e2); E.append(e2[ok] / D.sig[te][ok])
+    E = np.concatenate(E); return float(np.mean(np.minimum(E ** 2, 100.0))), len(E)
+
+
+def fitlin_main(snap, curv, out, sigmas=(0.03, 0.1, 0.3), kgrid=(0.003, 0.01, 0.03, 0.1, 0.3, 1.0), kxs=(0.5, 1.0, 2.0)):
+    M = C.load_menu(snap); km = C.KM(M); D = Data(snap, curv, km); p0 = prior_curve(snap, km)
+    print(f"rows {len(D.y)} groups {len(D.labs)}", flush=True)
+    res = []
+    # kappa per band: coordinate search over the grid (same kappa start for all bands), then sigma
+    best = None
+    for kk in kgrid:
+        for kx in kxs:
+            for sg in sigmas:
+                kb = np.array([kk, kk, kk]); s, n = lin_cv(D, kb, kx, p0, sg); res.append((s, kk, kk, kk, kx, sg))
+                if best is None or s < best[0]: best = (s, kb.copy(), kx, sg)
+                print(f"kappa {kk} kx {kx} sigma {sg}: cv {s:.4f} (n {n})", flush=True)
+    s0, kb, kx, sg = best
+    for b in range(3):                                                          # per-band refinement
+        for kk in kgrid:
+            k2 = kb.copy(); k2[b] = kk; s, n = lin_cv(D, k2, kx, p0, sg)
+            if s < s0: s0, kb = s, k2
+    print(f"best: kappa {kb.tolist()} kx {kx} sigma {sg} cv {s0:.4f}", flush=True)
+    # reference: the prior curve alone (theta = theta0) and kappa = 0 (offsets only)
+    th, off = lin_solve(D, kb, kx, p0, sg)
+    A, z, _ = lin_design(D, kb, kx); e = z - A @ th.ravel() - off[D.li]
+    json.dump({"cp": th.tolist(), "p0": p0.tolist(), "kappa": kb.tolist(), "kappa_x": kx, "sigma": sg, "cv": s0, "grid": res,
+               "rmse_log": float(np.sqrt(np.mean(e ** 2))), "W": D.W, "rows": len(D.y),
+               "cv_offsets_only": lin_cv(D, kb * 0, kx, p0, sg)[0]}, open(out, "w"))
+    print(f"rmse_log {np.sqrt(np.mean(e ** 2)):.4f}; |cp - p0| mean {np.abs(th - p0).mean(0)}", flush=True)
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "fitlin":
+    fitlin_main(sys.argv[2], json.load(open(sys.argv[3])), sys.argv[4])
