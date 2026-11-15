@@ -7823,3 +7823,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   blowup comes from mixing levels (hypothesis: swj scales fitted per level; QAD re-fits scales on the final mix, so no
   separate test). The early-FFN non-Latin effect stands and is the s186 / RULES-strata target. Guard test queued: 20
   guard-only rejects + their incumbents on t183 (36 evals, grd183-*).
+- 7:40 PM CST (lead): uniform K4.5 landed: doc 100 0.034, other non-Latin 0.0085, English 0.0043 (still monotone). Cards 2-3 (box2) and 7 (ds8) returned to the search (ds8 8 cards / 11 slots, box2 4 / 6, queue_depth 22). Deploy plan: s186 switch when w166 is done (strata + pool + re-seed + direct loader, cap off); w165's winner joins that restart if ready, else later as a config flip (no rescoring).
