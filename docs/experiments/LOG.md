@@ -7951,3 +7951,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   `/workspace/logs/track186.log`); guard prefixes + trk186. w165's reranker not applied (no arm passed).
 - Pending: verify the first early-stopped s186a eval (strata true, no `w`), the re-seed's pool events; direct loader (#185)
   as its own restart after the 46-level plane check (byte-identical path, no re-seed). **Runtime:** neither.
+- 8:20 PM CST: fit 0107 (b1) rmse_log 0.56 / chi2 161 (was 0.05 / 2.4) = ONE row: prior row w158-e-b6-t6 (emb t6, 0.00066) predicted e^-13.4 low (deterministic on rerun; next residual 0.39). The t6 embedding is never used at 2.0–2.5, so the moves are unaffected; noted, watch the next b1 fits (`/tmp/fitdbg.py` on colo lists residuals).
