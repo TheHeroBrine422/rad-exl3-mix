@@ -7972,3 +7972,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   confirm on a fresh paired slice (s186b/d/f), z < −1; chain stage-2 logr; go-live check of each size's incumbent vs its
   switch-time incumbent. w167 (Opus high) implements it as a CONF-gated driver patch; nothing live until lead review.
   4.0 diagnosis pending (t183 read of pair-00600). **Runtime:** neither.
+- 9:10 PM CST: 4.0 diagnosis: pair-00600 (= inc-00646, s173e accept) t183 0.00753 (≈ the earlier 0.00749: null, harmless); cross-00683 t183 0.00834 (+10.8 %) and t186n 0.01284 vs 0.01291 (−0.6 %). So the s186a cross accept (z −2.35 on s186a) is a false accept that costs Latin text without helping non-Latin. Not reverted by hand: RULES-confirm rule 7 (go-live check vs the switch-time incumbent) handles it when w167 lands.
