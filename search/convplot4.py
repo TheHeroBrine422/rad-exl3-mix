@@ -211,6 +211,7 @@ def main(argv=None):
     ap.add_argument("--track-name", default="t183")
     ap.add_argument("--track-strata", help="(#186) refs186.jsonl: the references' L (t183) / N (t186n) / board readings")
     ap.add_argument("--track-n", help="(#186) results.jsonl with trk186n-<incumbent tag> rows (the N supplement's incumbent reads)")
+    ap.add_argument("--anchor-track", action="store_true", help="(#186, user 11-14) training lines anchored on each size's first --track read, ÷ V2 on the tracking slice; IQR lines there; no monitor circles")
     ap.add_argument("--track-top", action="store_true", help="(#186) the tracking panel on top, the training estimate below")
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
@@ -224,6 +225,24 @@ def main(argv=None):
         sl, f = sk.split("=", 1)
         if os.path.exists(f): parts_of[sl] = [d.get("part") or "m" for d in json.load(open(f))["docs"]]
 
+    vA = v2; ylab_sl = a.monitor
+    if a.anchor_track:                                  # (user 11-14) anchor + scale on the tracking slice, not ver3-8k
+        tr = [json.loads(l) for l in open(a.track_refs)] if a.track_refs and os.path.exists(a.track_refs) else []
+        V2t = sorted((r["bpw"], r["kld"]) for r in tr if r["name"].startswith("v2"))
+        IQm = sorted((r["bpw"], r["kld"]) for r in tr if r["name"].startswith("iq"))
+        vA = lambda b: loglin(V2t, b); ylab_sl = a.track_name
+        so, step = {}, 0
+        for e in W["st"]:
+            if e["ev"] == "result": step += 1
+            elif e["ev"] == "incumbent": so.setdefault(e["tag"], (step, float(e["size"])))
+        rd = []
+        for l in open(a.track):
+            if '"trk183-' not in l: continue
+            r = json.loads(l); t = r["tag"][len("trk183-"):]
+            if r.get("kld") is None or t not in so or so[t][1] in DROP: continue
+            rd.append(dict(step=so[t][0], size=so[t][1], mode="A8" if (sub.get(t) or {}).get("act") else "f16",
+                           kld=r["kld"], bpw=r["bpw"], of=t, cof=W["cat"].get(t)))
+        W["reads"] = sorted(rd, key=lambda r: r["step"])
     # anchors: the first monitor read per (size, mode) whose pick's chain value is known
     anchor = {}
     for r in W["reads"]:
@@ -249,7 +268,7 @@ def main(argv=None):
     def est(k, step, extra=0.0, b=None):               # training estimate ÷ V2 for (size, mode) at step
         an = anchor.get(k); c = chain_at(k, step)
         if an is None or c is None: return None
-        b = b or bpw_at(k[0], step); v = v2(b)
+        b = b or bpw_at(k[0], step); v = vA(b)
         return None if v is None else an["kld"] * math.exp(c - an["cof"] + extra) / v
 
     # mode segments: [start, end) steps
@@ -299,8 +318,8 @@ def main(argv=None):
             else: ax.scatter([d["step"]], [y], s=7 if d["early"] else 10, alpha=0.25, color=c, lw=0)
         # held-out reads
         for r in W["reads"]:
-            if r["mode"] != m: continue
-            v = v2(r["bpw"])
+            if r["mode"] != m or a.anchor_track: continue   # (anchor-track: the reads are the anchors, drawn on the track panel)
+            v = vA(r["bpw"])
             if v is None: continue
             ax.scatter([r["step"]], [r["kld"] / v], s=34, facecolors="none", edgecolors=COL[band(r["size"])], lw=1.2, zorder=4)
     # incumbents' own full scores on the search slice ÷ V2 on that slice
@@ -330,10 +349,10 @@ def main(argv=None):
             ax.scatter([rstep[r["tag"]]], [y], marker="D", s=16, color=COL[band(b)], alpha=0.7, lw=0); nd += 1
     # IQR-V4 lines (measured on the monitor slice)
     for bd in range(4):
-        v = [loglin(IQm, s) / v2(s) for s in sizes if band(s) == bd and loglin(IQm, s) and v2(s)]
+        v = [loglin(IQm, s) / vA(s) for s in sizes if band(s) == bd and loglin(IQm, s) and vA(s)]
         if v:
             y = gmean(v)
-            ax.axhline(y, color=COL[bd], ls=":", lw=1.6, label=f"IQR-V4 {BN[bd]} [{', '.join(f'{s:g}' for s in sizes if band(s) == bd and loglin(IQm, s) and v2(s))}], measured: {y:.3f}")
+            ax.axhline(y, color=COL[bd], ls=":", lw=1.6, label=f"IQR-V4 {BN[bd]} [{', '.join(f'{s:g}' for s in sizes if band(s) == bd and loglin(IQm, s) and vA(s))}], measured: {y:.3f}")
     for st, kind, lab in W["events"]:
         for x_ in (ax, ax2):
             x_.axvline(st, color="red" if kind == "act" else "gray", ls="--" if kind == "act" else ":", lw=1.6 if kind == "act" else 1)
@@ -344,10 +363,10 @@ def main(argv=None):
         x_.set_yscale("log"); x_.grid(alpha=0.3, which="both")
         x_.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); x_.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax.set_ylim(0.3, 2.0); ax.set_yticks([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
-    ax.set_ylabel(f"KLD ÷ V2 at the same bpw (V2 measured on {a.monitor})")
+    ax.set_ylabel(f"KLD ÷ V2 at the same bpw (V2 measured on {ylab_sl})")
     ax.legend(loc="upper right", fontsize=7.5)
-    ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; open circles: held-out "
-                 f"{a.monitor} reads;\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
+    ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; " + (f"each size anchored on its first "
+                 f"{ylab_sl} read" if a.anchor_track else f"open circles: held-out {a.monitor} reads") + ";\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
 
     # bottom: validation
     for m, s0, s1 in segs:
@@ -382,9 +401,10 @@ def main(argv=None):
     ax2.set_title(f"Validation loss: the search's current picks scored on held-out {a.monitor}; stop when it stops falling", fontsize=10)
     ax2.legend(loc="upper right", fontsize=7.5)
     v2r = sorted(b for b, _ in V2m); iqr = sorted(b for b, _ in IQm)
-    note = (f"V2 on {a.monitor}: {len(v2r)} sizes ({v2r[0]:.2f}–{v2r[-1]:.2f} bpw)" if v2r else "no V2 refs") \
+    if a.anchor_track: v2r = sorted(b for b, _ in V2t)
+    note = (f"V2 on {ylab_sl}: {len(v2r)} sizes ({v2r[0]:.2f}–{v2r[-1]:.2f} bpw)" if v2r else "no V2 refs") \
         + (f"; IQR-V4: {len(iqr)} ({iqr[0]:.2f}–{iqr[-1]:.2f})" if iqr else "; IQR-V4: none yet") \
-        + f"; sizes without a held-out read (not in lines): {', '.join(f'{s:g}' for s in sorted(skipped)) or 'none'}" \
+        + f"; sizes without a {ylab_sl} read (not in lines): {', '.join(f'{s:g}' for s in sorted(skipped)) or 'none'}" \
         + f"; bpw = menu bpw (search containers still carry the R16 head in bf16 on disk)"
     note = "\n".join(w for n in [note] + a.note for w in textwrap.wrap(n, 230)); nl = note.count("\n") + 1
     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
