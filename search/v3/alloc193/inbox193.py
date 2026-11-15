@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(HERE, "..")); import menu as MN  # noqa: E402
 RUN = "/workspace/rad-local/workers/lead-srch/run"
 DRV = f"{RUN}/drv"
 LEDGER = os.path.join(HERE, "..", "..", "..", "data", "alloc193", "submitted.jsonl")
-MAXOUT, MAXDEC, MAXPRB = 40, 300, 60          # RULES-193 amendment 5 (lead notes 3:15 AM CST)
+MAXOUT, MAXDEC, MAXPRB = 40, 600, 100         # RULES-193 amendment 7 (lead note 5:00 AM CST)
 
 
 def ledger():
