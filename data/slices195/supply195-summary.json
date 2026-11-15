@@ -1,0 +1,213 @@
+{
+ "docs": 53587,
+ "N": 2911,
+ "N_used_by": {
+  "b1": 186,
+  "b2": 204,
+  "b3": 185,
+  "xq40": 1237,
+  "xqskip": 389
+ },
+ "N_free": 1187,
+ "free_tokens": 1451455,
+ "free_gen": 1353213,
+ "free_gen_lt_256": 261,
+ "free_by_script": {
+  "ARABIC": {
+   "pieces": 316,
+   "tokens": 236021,
+   "gen": 228170
+  },
+  "CYRILLIC": {
+   "pieces": 220,
+   "tokens": 294897,
+   "gen": 263696
+  },
+  "CJK": {
+   "pieces": 214,
+   "tokens": 193265,
+   "gen": 135624
+  },
+  "HIRAGANA": {
+   "pieces": 113,
+   "tokens": 81100,
+   "gen": 80987
+  },
+  "GREEK": {
+   "pieces": 101,
+   "tokens": 109148,
+   "gen": 109047
+  },
+  "THAI": {
+   "pieces": 70,
+   "tokens": 125462,
+   "gen": 125392
+  },
+  "HANGUL": {
+   "pieces": 49,
+   "tokens": 123016,
+   "gen": 122874
+  },
+  "HEBREW": {
+   "pieces": 49,
+   "tokens": 90091,
+   "gen": 90042
+  },
+  "DEVANAGARI": {
+   "pieces": 25,
+   "tokens": 92462,
+   "gen": 91418
+  },
+  "BENGALI": {
+   "pieces": 20,
+   "tokens": 94614,
+   "gen": 94594
+  },
+  "KATAKANA": {
+   "pieces": 9,
+   "tokens": 3187,
+   "gen": 3178
+  },
+  "MATHEMATICAL": {
+   "pieces": 1,
+   "tokens": 8192,
+   "gen": 8191
+  }
+ },
+ "free_by_source": {
+  "fineweb2-hq/jpn_Jpan": {
+   "pieces": 168,
+   "tokens": 115306,
+   "gen": 115138
+  },
+  "fineweb2-hq/cmn_Hani": {
+   "pieces": 159,
+   "tokens": 102865,
+   "gen": 102706
+  },
+  "fineweb2-hq/fas_Arab": {
+   "pieces": 124,
+   "tokens": 100624,
+   "gen": 100500
+  },
+  "fineweb2-hq/arb_Arab": {
+   "pieces": 120,
+   "tokens": 104210,
+   "gen": 104090
+  },
+  "wikipedia/uk": {
+   "pieces": 107,
+   "tokens": 99313,
+   "gen": 99206
+  },
+  "fineweb2-hq/ell_Grek": {
+   "pieces": 101,
+   "tokens": 109148,
+   "gen": 109047
+  },
+  "wildchat": {
+   "pieces": 99,
+   "tokens": 108820,
+   "gen": 69003
+  },
+  "fineweb2-hq/rus_Cyrl": {
+   "pieces": 88,
+   "tokens": 121808,
+   "gen": 121720
+  },
+  "wikipedia/th": {
+   "pieces": 70,
+   "tokens": 125462,
+   "gen": 125392
+  },
+  "wikipedia/he": {
+   "pieces": 49,
+   "tokens": 90091,
+   "gen": 90042
+  },
+  "wikipedia/ko": {
+   "pieces": 48,
+   "tokens": 122100,
+   "gen": 122052
+  },
+  "wikipedia/hi": {
+   "pieces": 24,
+   "tokens": 90950,
+   "gen": 90926
+  },
+  "wikipedia/bn": {
+   "pieces": 20,
+   "tokens": 94614,
+   "gen": 94594
+  },
+  "smoltalk2/longalign": {
+   "pieces": 7,
+   "tokens": 57344,
+   "gen": 0
+  },
+  "stackv2-edu": {
+   "pieces": 2,
+   "tokens": 608,
+   "gen": 606
+  },
+  "finemath-4plus": {
+   "pieces": 1,
+   "tokens": 8192,
+   "gen": 8191
+  }
+ },
+ "free_by_category": {
+  "multilingual": {
+   "pieces": 1078,
+   "tokens": 1276491,
+   "gen": 1275413
+  },
+  "chat": {
+   "pieces": 99,
+   "tokens": 108820,
+   "gen": 69003
+  },
+  "long": {
+   "pieces": 7,
+   "tokens": 57344,
+   "gen": 0
+  },
+  "code": {
+   "pieces": 2,
+   "tokens": 608,
+   "gen": 606
+  },
+  "math": {
+   "pieces": 1,
+   "tokens": 8192,
+   "gen": 8191
+  }
+ },
+ "all_N_by_category": {
+  "multilingual": {
+   "pieces": 2643,
+   "tokens": 3166993,
+   "gen": 3164350
+  },
+  "chat": {
+   "pieces": 241,
+   "tokens": 266152,
+   "gen": 138077
+  },
+  "long": {
+   "pieces": 18,
+   "tokens": 146138,
+   "gen": 1449
+  },
+  "code": {
+   "pieces": 8,
+   "tokens": 3647,
+   "gen": 3639
+  },
+  "math": {
+   "pieces": 1,
+   "tokens": 8192,
+   "gen": 8191
+  }
+ }
+}

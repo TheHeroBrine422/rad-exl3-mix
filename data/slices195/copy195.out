@@ -1,0 +1,6 @@
+  270 /data/q27/w180/strata/md5-golden-s195-box2.txt
+  270 /data/q27/w180/strata/md5-golden-s195-ds8.txt
+  540 total
+MD5 IDENTICAL
+BATCH MD5 IDENTICAL
+/dev/mapper/pve-vm--351--disk--1  2.5T  2.2T  146G  94% /data

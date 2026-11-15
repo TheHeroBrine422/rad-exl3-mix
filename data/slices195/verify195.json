@@ -1,0 +1,1010 @@
+{
+ "parts": {
+  "s195s1-x": {
+   "pieces": 306,
+   "rows": 375751,
+   "N_pieces": 43,
+   "gen_N": 37333,
+   "gen_L": 292574,
+   "N_share": 0.1132,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1024,
+   "N_gen_by_script": {
+    "HIRAGANA": 3824,
+    "HEBREW": 3824,
+    "HANGUL": 3824,
+    "DEVANAGARI": 3824,
+    "BENGALI": 3824,
+    "GREEK": 3732,
+    "CYRILLIC": 3665,
+    "THAI": 3662,
+    "ARABIC": 3581,
+    "CJK": 3573
+   },
+   "plan_gen_total": 329907,
+   "built_gen_total": 329907,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195s2-x": {
+   "pieces": 277,
+   "rows": 321367,
+   "N_pieces": 36,
+   "gen_N": 33336,
+   "gen_L": 251732,
+   "N_share": 0.1169,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "N_gen_by_script": {
+    "HANGUL": 3373,
+    "HEBREW": 3373,
+    "BENGALI": 3373,
+    "DEVANAGARI": 3373,
+    "THAI": 3373,
+    "CYRILLIC": 3356,
+    "ARABIC": 3344,
+    "HIRAGANA": 3336,
+    "GREEK": 3273,
+    "CJK": 3162
+   },
+   "plan_gen_total": 285068,
+   "built_gen_total": 285068,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195s3-x": {
+   "pieces": 298,
+   "rows": 400143,
+   "N_pieces": 27,
+   "gen_N": 40513,
+   "gen_L": 319485,
+   "N_share": 0.1125,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1015,
+   "N_gen_by_script": {
+    "THAI": 4113,
+    "DEVANAGARI": 4113,
+    "HANGUL": 4113,
+    "BENGALI": 4113,
+    "CJK": 4093,
+    "ARABIC": 4070,
+    "HEBREW": 4021,
+    "HIRAGANA": 4016,
+    "GREEK": 3977,
+    "CYRILLIC": 3884
+   },
+   "plan_gen_total": 359998,
+   "built_gen_total": 359998,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195s4-x": {
+   "pieces": 368,
+   "rows": 452804,
+   "N_pieces": 42,
+   "gen_N": 46056,
+   "gen_L": 370283,
+   "N_share": 0.1106,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1016,
+   "N_gen_by_script": {
+    "HIRAGANA": 4677,
+    "THAI": 4677,
+    "HEBREW": 4677,
+    "DEVANAGARI": 4677,
+    "BENGALI": 4677,
+    "CYRILLIC": 4586,
+    "GREEK": 4567,
+    "HANGUL": 4547,
+    "ARABIC": 4533,
+    "CJK": 4438
+   },
+   "plan_gen_total": 416339,
+   "built_gen_total": 416339,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195s5-x": {
+   "pieces": 285,
+   "rows": 381914,
+   "N_pieces": 37,
+   "gen_N": 39565,
+   "gen_L": 310868,
+   "N_share": 0.1129,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1016,
+   "N_gen_by_script": {
+    "HANGUL": 4018,
+    "BENGALI": 4018,
+    "DEVANAGARI": 4018,
+    "HIRAGANA": 4017,
+    "HEBREW": 4017,
+    "ARABIC": 3955,
+    "CJK": 3937,
+    "GREEK": 3926,
+    "CYRILLIC": 3888,
+    "THAI": 3771
+   },
+   "plan_gen_total": 350433,
+   "built_gen_total": 350433,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c1-x": {
+   "pieces": 302,
+   "rows": 372253,
+   "N_pieces": 42,
+   "gen_N": 38694,
+   "gen_L": 297721,
+   "N_share": 0.115,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.101,
+   "N_gen_by_script": {
+    "THAI": 3907,
+    "DEVANAGARI": 3907,
+    "HIRAGANA": 3907,
+    "HANGUL": 3907,
+    "HEBREW": 3907,
+    "BENGALI": 3907,
+    "CYRILLIC": 3880,
+    "CJK": 3822,
+    "ARABIC": 3813,
+    "GREEK": 3737
+   },
+   "plan_gen_total": 336415,
+   "built_gen_total": 336415,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c2-x": {
+   "pieces": 233,
+   "rows": 313957,
+   "N_pieces": 32,
+   "gen_N": 33709,
+   "gen_L": 258227,
+   "N_share": 0.1155,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.102,
+   "N_gen_by_script": {
+    "HANGUL": 3440,
+    "HIRAGANA": 3440,
+    "DEVANAGARI": 3440,
+    "BENGALI": 3440,
+    "CJK": 3439,
+    "THAI": 3413,
+    "ARABIC": 3348,
+    "GREEK": 3294,
+    "HEBREW": 3233,
+    "CYRILLIC": 3222
+   },
+   "plan_gen_total": 291936,
+   "built_gen_total": 291936,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c3-x": {
+   "pieces": 310,
+   "rows": 400505,
+   "N_pieces": 31,
+   "gen_N": 40097,
+   "gen_L": 321021,
+   "N_share": 0.111,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1028,
+   "N_gen_by_script": {
+    "DEVANAGARI": 4122,
+    "HANGUL": 4122,
+    "BENGALI": 4122,
+    "THAI": 4011,
+    "CYRILLIC": 4004,
+    "GREEK": 3992,
+    "HIRAGANA": 3970,
+    "ARABIC": 3959,
+    "HEBREW": 3907,
+    "CJK": 3888
+   },
+   "plan_gen_total": 361118,
+   "built_gen_total": 361118,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c4-x": {
+   "pieces": 329,
+   "rows": 456855,
+   "N_pieces": 40,
+   "gen_N": 46209,
+   "gen_L": 370991,
+   "N_share": 0.1108,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "N_gen_by_script": {
+    "HEBREW": 4678,
+    "HANGUL": 4678,
+    "HIRAGANA": 4678,
+    "BENGALI": 4678,
+    "DEVANAGARI": 4678,
+    "GREEK": 4594,
+    "ARABIC": 4561,
+    "CYRILLIC": 4560,
+    "THAI": 4554,
+    "CJK": 4550
+   },
+   "plan_gen_total": 417200,
+   "built_gen_total": 417200,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c5-x": {
+   "pieces": 286,
+   "rows": 384229,
+   "N_pieces": 45,
+   "gen_N": 39115,
+   "gen_L": 305053,
+   "N_share": 0.1137,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.102,
+   "N_gen_by_script": {
+    "HIRAGANA": 3990,
+    "HANGUL": 3990,
+    "THAI": 3990,
+    "DEVANAGARI": 3990,
+    "BENGALI": 3990,
+    "CYRILLIC": 3948,
+    "ARABIC": 3886,
+    "CJK": 3811,
+    "GREEK": 3782,
+    "HEBREW": 3738
+   },
+   "plan_gen_total": 344168,
+   "built_gen_total": 344168,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c6-x": {
+   "pieces": 279,
+   "rows": 361370,
+   "N_pieces": 43,
+   "gen_N": 37785,
+   "gen_L": 293189,
+   "N_share": 0.1142,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "N_gen_by_script": {
+    "THAI": 3824,
+    "HANGUL": 3824,
+    "HEBREW": 3824,
+    "BENGALI": 3824,
+    "DEVANAGARI": 3824,
+    "CYRILLIC": 3809,
+    "CJK": 3781,
+    "ARABIC": 3765,
+    "GREEK": 3719,
+    "HIRAGANA": 3591
+   },
+   "plan_gen_total": 330974,
+   "built_gen_total": 330974,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c7-x": {
+   "pieces": 250,
+   "rows": 311045,
+   "N_pieces": 46,
+   "gen_N": 32978,
+   "gen_L": 251180,
+   "N_share": 0.1161,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1021,
+   "N_gen_by_script": {
+    "HIRAGANA": 3368,
+    "THAI": 3368,
+    "BENGALI": 3368,
+    "HEBREW": 3368,
+    "DEVANAGARI": 3368,
+    "CYRILLIC": 3322,
+    "GREEK": 3314,
+    "ARABIC": 3196,
+    "HANGUL": 3157,
+    "CJK": 3149
+   },
+   "plan_gen_total": 284158,
+   "built_gen_total": 284158,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c8-x": {
+   "pieces": 320,
+   "rows": 395055,
+   "N_pieces": 40,
+   "gen_N": 40487,
+   "gen_L": 320825,
+   "N_share": 0.1121,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1181,
+   "N_gen_by_script": {
+    "CYRILLIC": 4781,
+    "THAI": 4128,
+    "HEBREW": 4128,
+    "BENGALI": 4128,
+    "ARABIC": 4050,
+    "HIRAGANA": 4044,
+    "HANGUL": 4013,
+    "CJK": 3957,
+    "GREEK": 3911,
+    "DEVANAGARI": 3347
+   },
+   "plan_gen_total": 361312,
+   "built_gen_total": 361312,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c9-x": {
+   "pieces": 345,
+   "rows": 455837,
+   "N_pieces": 53,
+   "gen_N": 46097,
+   "gen_L": 371340,
+   "N_share": 0.1104,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1801,
+   "N_gen_by_script": {
+    "CYRILLIC": 8300,
+    "HIRAGANA": 4681,
+    "HANGUL": 4681,
+    "THAI": 4681,
+    "HEBREW": 4681,
+    "GREEK": 4617,
+    "ARABIC": 4489,
+    "CJK": 4484,
+    "BENGALI": 3961,
+    "DEVANAGARI": 1522
+   },
+   "plan_gen_total": 417437,
+   "built_gen_total": 417437,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195c10-x": {
+   "pieces": 302,
+   "rows": 389644,
+   "N_pieces": 45,
+   "gen_N": 39387,
+   "gen_L": 308247,
+   "N_share": 0.1133,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.2022,
+   "N_gen_by_script": {
+    "CYRILLIC": 7964,
+    "HEBREW": 3981,
+    "HIRAGANA": 3981,
+    "HANGUL": 3981,
+    "THAI": 3981,
+    "CJK": 3920,
+    "GREEK": 3915,
+    "ARABIC": 3798,
+    "BENGALI": 2308,
+    "DEVANAGARI": 1558
+   },
+   "plan_gen_total": 347634,
+   "built_gen_total": 347634,
+   "header": {
+    "format": "radiance-kld-top-1",
+    "model": "Qwen/Qwen3.8-27B",
+    "top": 512,
+    "n_vocab": 248320
+   },
+   "mismatch_counts": {
+    "tokens": 0,
+    "top_bytes": 0,
+    "rows_f32": 0,
+    "gen_vs_plan": 0,
+    "labels": 0
+   }
+  },
+  "s195s1-c": {
+   "docs": 48,
+   "rows": 53108,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 51607,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195s2-c": {
+   "docs": 50,
+   "rows": 59150,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 51840,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195s3-c": {
+   "docs": 53,
+   "rows": 56819,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50701,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195s4-c": {
+   "docs": 71,
+   "rows": 57252,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50628,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195s5-c": {
+   "docs": 45,
+   "rows": 59522,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50707,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c1-c": {
+   "docs": 59,
+   "rows": 60820,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 53920,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c2-c": {
+   "docs": 55,
+   "rows": 62801,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 51410,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c3-c": {
+   "docs": 55,
+   "rows": 57053,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 49967,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c4-c": {
+   "docs": 49,
+   "rows": 54725,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 49987,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c5-c": {
+   "docs": 59,
+   "rows": 62162,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 54007,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c6-c": {
+   "docs": 53,
+   "rows": 61053,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50991,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c7-c": {
+   "docs": 50,
+   "rows": 59120,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 51935,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c8-c": {
+   "docs": 40,
+   "rows": 57188,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50682,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c9-c": {
+   "docs": 44,
+   "rows": 53040,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 49963,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195c10-c": {
+   "docs": 51,
+   "rows": 60156,
+   "N_docs": 0,
+   "gen_N": 0,
+   "gen_L": 50055,
+   "N_share": 0.0,
+   "N_scripts_with_gen": 0,
+   "max_script_share_of_N": 0.0,
+   "N_gen_by_script": {},
+   "mismatch_counts": {}
+  },
+  "s195s1": {
+   "docs": 354,
+   "rows": 428859,
+   "gen_rows": 381514,
+   "planned_gen": 381514,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195s1-x",
+    "c": "/data/q27/w180/slices/golden-s195s1-c"
+   },
+   "gen_L": 344181,
+   "gen_N": 37333,
+   "N_share": 0.0979,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1024,
+   "L_ratio_to_match": 2.0013,
+   "match": "s186a",
+   "role": "search"
+  },
+  "s195s2": {
+   "docs": 327,
+   "rows": 380517,
+   "gen_rows": 336908,
+   "planned_gen": 336908,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195s2-x",
+    "c": "/data/q27/w180/slices/golden-s195s2-c"
+   },
+   "gen_L": 303572,
+   "gen_N": 33336,
+   "N_share": 0.0989,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "L_ratio_to_match": 2.0044,
+   "match": "s186b",
+   "role": "search"
+  },
+  "s195s3": {
+   "docs": 351,
+   "rows": 456962,
+   "gen_rows": 410699,
+   "planned_gen": 410699,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195s3-x",
+    "c": "/data/q27/w180/slices/golden-s195s3-c"
+   },
+   "gen_L": 370186,
+   "gen_N": 40513,
+   "N_share": 0.0986,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1015,
+   "L_ratio_to_match": 2.0013,
+   "match": "s186c",
+   "role": "search"
+  },
+  "s195s4": {
+   "docs": 439,
+   "rows": 510056,
+   "gen_rows": 466967,
+   "planned_gen": 466967,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195s4-x",
+    "c": "/data/q27/w180/slices/golden-s195s4-c"
+   },
+   "gen_L": 420911,
+   "gen_N": 46056,
+   "N_share": 0.0986,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1016,
+   "L_ratio_to_match": 2.0023,
+   "match": "s186d",
+   "role": "search"
+  },
+  "s195s5": {
+   "docs": 330,
+   "rows": 441436,
+   "gen_rows": 401140,
+   "planned_gen": 401140,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195s5-x",
+    "c": "/data/q27/w180/slices/golden-s195s5-c"
+   },
+   "gen_L": 361575,
+   "gen_N": 39565,
+   "N_share": 0.0986,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1016,
+   "L_ratio_to_match": 2.0197,
+   "match": "s186e",
+   "role": "search"
+  },
+  "s195c1": {
+   "docs": 361,
+   "rows": 433073,
+   "gen_rows": 390335,
+   "planned_gen": 390335,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c1-x",
+    "c": "/data/q27/w180/slices/golden-s195c1-c"
+   },
+   "gen_L": 351641,
+   "gen_N": 38694,
+   "N_share": 0.0991,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.101,
+   "L_ratio_to_match": 2.0447,
+   "match": "s186a",
+   "role": "confirm"
+  },
+  "s195c2": {
+   "docs": 288,
+   "rows": 376758,
+   "gen_rows": 343346,
+   "planned_gen": 343346,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c2-x",
+    "c": "/data/q27/w180/slices/golden-s195c2-c"
+   },
+   "gen_L": 309637,
+   "gen_N": 33709,
+   "N_share": 0.0982,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.102,
+   "L_ratio_to_match": 2.0445,
+   "match": "s186b",
+   "role": "confirm"
+  },
+  "s195c3": {
+   "docs": 365,
+   "rows": 457558,
+   "gen_rows": 411085,
+   "planned_gen": 411085,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c3-x",
+    "c": "/data/q27/w180/slices/golden-s195c3-c"
+   },
+   "gen_L": 370988,
+   "gen_N": 40097,
+   "N_share": 0.0975,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1028,
+   "L_ratio_to_match": 2.0057,
+   "match": "s186c",
+   "role": "confirm"
+  },
+  "s195c4": {
+   "docs": 378,
+   "rows": 511580,
+   "gen_rows": 467187,
+   "planned_gen": 467187,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c4-x",
+    "c": "/data/q27/w180/slices/golden-s195c4-c"
+   },
+   "gen_L": 420978,
+   "gen_N": 46209,
+   "N_share": 0.0989,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "L_ratio_to_match": 2.0026,
+   "match": "s186d",
+   "role": "confirm"
+  },
+  "s195c5": {
+   "docs": 345,
+   "rows": 446391,
+   "gen_rows": 398175,
+   "planned_gen": 398175,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c5-x",
+    "c": "/data/q27/w180/slices/golden-s195c5-c"
+   },
+   "gen_L": 359060,
+   "gen_N": 39115,
+   "N_share": 0.0982,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.102,
+   "L_ratio_to_match": 2.0057,
+   "match": "s186e",
+   "role": "confirm"
+  },
+  "s195c6": {
+   "docs": 332,
+   "rows": 422423,
+   "gen_rows": 381965,
+   "planned_gen": 381965,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c6-x",
+    "c": "/data/q27/w180/slices/golden-s195c6-c"
+   },
+   "gen_L": 344180,
+   "gen_N": 37785,
+   "N_share": 0.0989,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1012,
+   "L_ratio_to_match": 2.0013,
+   "match": "s186a",
+   "role": "confirm"
+  },
+  "s195c7": {
+   "docs": 300,
+   "rows": 370165,
+   "gen_rows": 336093,
+   "planned_gen": 336093,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c7-x",
+    "c": "/data/q27/w180/slices/golden-s195c7-c"
+   },
+   "gen_L": 303115,
+   "gen_N": 32978,
+   "N_share": 0.0981,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1021,
+   "L_ratio_to_match": 2.0014,
+   "match": "s186b",
+   "role": "confirm"
+  },
+  "s195c8": {
+   "docs": 360,
+   "rows": 452243,
+   "gen_rows": 411994,
+   "planned_gen": 411994,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c8-x",
+    "c": "/data/q27/w180/slices/golden-s195c8-c"
+   },
+   "gen_L": 371507,
+   "gen_N": 40487,
+   "N_share": 0.0983,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1181,
+   "L_ratio_to_match": 2.0085,
+   "match": "s186c",
+   "role": "confirm"
+  },
+  "s195c9": {
+   "docs": 389,
+   "rows": 508877,
+   "gen_rows": 467400,
+   "planned_gen": 467400,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c9-x",
+    "c": "/data/q27/w180/slices/golden-s195c9-c"
+   },
+   "gen_L": 421303,
+   "gen_N": 46097,
+   "N_share": 0.0986,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.1801,
+   "L_ratio_to_match": 2.0041,
+   "match": "s186d",
+   "role": "confirm"
+  },
+  "s195c10": {
+   "docs": 353,
+   "rows": 449800,
+   "gen_rows": 397689,
+   "planned_gen": 397689,
+   "parts": {
+    "x": "/data/q27/w180/slices/golden-s195c10-x",
+    "c": "/data/q27/w180/slices/golden-s195c10-c"
+   },
+   "gen_L": 358302,
+   "gen_N": 39387,
+   "N_share": 0.099,
+   "N_scripts": 10,
+   "max_script_share_of_N": 0.2022,
+   "L_ratio_to_match": 2.0015,
+   "match": "s186e",
+   "role": "confirm"
+  }
+ },
+ "bad": []
+}

@@ -1,0 +1,5 @@
+xc8k-b2-c4: 994217 rows, gen 867675 (87.3%), chat docs 172 of 665
+xc8k-b2-c3: 741 pieces, unused 741; unused N 45 (scripts {'ARABIC': 13, 'CYRILLIC': 8, 'CJK': 7, 'HIRAGANA': 7, 'THAI': 3, 'GREEK': 3, 'HANGUL': 2, 'KATAKANA': 1, 'HEBREW': 1})
+xc8k-b2-c4: 665 pieces, unused 665; unused N 31 (scripts {'CJK': 8, 'ARABIC': 7, 'CYRILLIC': 4, 'HANGUL': 3, 'HIRAGANA': 2, 'DEVANAGARI': 2, 'BENGALI': 2, 'THAI': 1, 'GREEK': 1, 'HEBREW': 1})
+xn8k-b195: 1164 pieces, unused 1164; unused N 1164 (scripts {'ARABIC': 305, 'CYRILLIC': 216, 'CJK': 207, 'HIRAGANA': 113, 'GREEK': 101, 'THAI': 70, 'HANGUL': 49, 'HEBREW': 49, 'DEVANAGARI': 25, 'BENGALI': 20, 'KATAKANA': 9})
+PREP195 DONE

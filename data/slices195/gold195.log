@@ -1,0 +1,8 @@
+2026-11-15T22:29:38 start xn8k-b195 on 0,1
+2026-11-15T22:33:45 start xc8k-b2-c3 on 3,2
+2026-11-15T22:48:30 rec xc8k-b2-c3 rc=0 14 min
+2026-11-15T22:48:30 start xc8k-b2-c4 on 3,2
+2026-11-15T22:48:45 lane 0,1 DONE
+2026-11-15T22:49:55 rec xn8k-b195 rc=0 20 min
+2026-11-15T23:03:10 rec xc8k-b2-c4 rc=0 14 min
+2026-11-15T23:03:10 lane 3,2 DONE

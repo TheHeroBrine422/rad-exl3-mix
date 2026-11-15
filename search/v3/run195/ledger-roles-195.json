@@ -1,0 +1,93 @@
+{
+ "_doc": "#195 (w180, 2026-11-15, RULES-slices195): roles of the 15 slices' calib c parts, for ledger_add.py (ROLES argument). As ledger-roles-190cd.json / -190ef.json: the ledger's vocabulary has no 'search' or 'confirm' role, so every part is 'select'; the slice's role is in the note and in the registry. The x parts (xcorp pieces: xc8k-b1 / b2 Latin, the fresh non-Latin batch xn8k-b195) read no calib and have no ledger rows. Not merged into eval/pools/ledger-roles.json (lead's call).",
+ "golden-s195s1-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of search slice s195s1 (one of 5 cycling search slices; pairs with confirm s195c1 and s195c6): Latin documents of the merged fit + search pool, the more used third of the allowed pool (retired search / V2-era documents, least used first by V3 decision count), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (retired xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195s2-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of search slice s195s2 (one of 5 cycling search slices; pairs with confirm s195c2 and s195c7): Latin documents of the merged fit + search pool, the more used third of the allowed pool (retired search / V2-era documents, least used first by V3 decision count), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (retired xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195s3-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of search slice s195s3 (one of 5 cycling search slices; pairs with confirm s195c3 and s195c8): Latin documents of the merged fit + search pool, the more used third of the allowed pool (retired search / V2-era documents, least used first by V3 decision count), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (retired xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195s4-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of search slice s195s4 (one of 5 cycling search slices; pairs with confirm s195c4 and s195c9): Latin documents of the merged fit + search pool, the more used third of the allowed pool (retired search / V2-era documents, least used first by V3 decision count), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (retired xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195s5-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of search slice s195s5 (one of 5 cycling search slices; pairs with confirm s195c5 and s195c10): Latin documents of the merged fit + search pool, the more used third of the allowed pool (retired search / V2-era documents, least used first by V3 decision count), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (retired xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c1-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c1 (registry role confirm; used for one rotation period with search s195s1, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c2-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c2 (registry role confirm; used for one rotation period with search s195s2, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c3-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c3 (registry role confirm; used for one rotation period with search s195s3, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c4-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c4 (registry role confirm; used for one rotation period with search s195s4, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c5-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c5 (registry role confirm; used for one rotation period with search s195s5, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c6-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c6 (registry role confirm; used for one rotation period with search s195s1, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c7-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c7 (registry role confirm; used for one rotation period with search s195s2, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c8-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c8 (registry role confirm; used for one rotation period with search s195s3, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c9-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c9 (registry role confirm; used for one rotation period with search s195s4, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ },
+ "golden-s195c10-c": {
+  "role": "select",
+  "line": "v3",
+  "decisions": 0,
+  "note": "#195 (w180, 11-15, RULES-slices195 \u00a72): calib c part of confirm slice s195c10 (registry role confirm; used for one rotation period with search s195s5, then retired): Latin documents of the merged fit + search pool, from the least used two thirds of the allowed pool (the freshest available), cut at 4,096 tokens; disjoint from the other 14 slices. The x part (fresh xcorp Latin pieces + fresh non-Latin pieces of xn8k-b195) reads no calib. Staged, not ready."
+ }
+}

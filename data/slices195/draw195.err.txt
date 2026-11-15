@@ -1,0 +1,178 @@
+{
+ "calib": {
+  "pool_L_docs": 1065,
+  "pool_L_gen": 1089913,
+  "never_docs_in_pool": 283,
+  "avail_docs": 782,
+  "avail_gen": 768400,
+  "avail_v3_decisions_0": 0,
+  "need_gen_2x_15": 1395630.0,
+  "need_gen_2x_confirm_only": 930420.0
+ },
+ "xcorp_L": {
+  "fresh": {
+   "pieces": 2832,
+   "gen": 3470497
+  },
+  "fresh_by_batch": {
+   "xc8k-b1": {
+    "pieces": 1267,
+    "gen": 1590041
+   },
+   "xc8k-b2-c0": {
+    "pieces": 40,
+    "gen": 41247
+   },
+   "xc8k-b2-c1": {
+    "pieces": 124,
+    "gen": 158170
+   },
+   "xc8k-b2-c2": {
+    "pieces": 75,
+    "gen": 87096
+   },
+   "xc8k-b2-c3": {
+    "pieces": 696,
+    "gen": 801642
+   },
+   "xc8k-b2-c4": {
+    "pieces": 630,
+    "gen": 792301
+   }
+  },
+  "reuse": {
+   "pieces": 2538,
+   "gen": 3038144
+  },
+  "reuse_by_batch": {
+   "xc8k-b1": {
+    "pieces": 1240,
+    "gen": 1556032
+   },
+   "xc8k-b2-c0": {
+    "pieces": 590,
+    "gen": 690018
+   },
+   "xc8k-b2-c1": {
+    "pieces": 404,
+    "gen": 439466
+   },
+   "xc8k-b2-c2": {
+    "pieces": 304,
+    "gen": 352628
+   }
+  },
+  "holder_decisions": {
+   "s171a": 286,
+   "s171b": 252,
+   "s171c": 24,
+   "s171d": 24,
+   "s173a": 25,
+   "s173b": 29,
+   "s173c": 201,
+   "s173d": 208,
+   "s173e": 60,
+   "s186a": 200,
+   "s186b": 0,
+   "s186c": 202,
+   "s186d": 0,
+   "s186e": 0,
+   "s186f": 0,
+   "s190a": 221,
+   "s190b": 0,
+   "s190c": 292
+  },
+  "pre171_use": 10
+ },
+ "xcorp_N": {
+  "batch": {
+   "pieces": 1164,
+   "gen": 1343809
+  },
+  "by_script": {
+   "ARABIC": {
+    "pieces": 305,
+    "gen": 227132
+   },
+   "BENGALI": {
+    "pieces": 20,
+    "gen": 94594
+   },
+   "CJK": {
+    "pieces": 207,
+    "gen": 135624
+   },
+   "CYRILLIC": {
+    "pieces": 216,
+    "gen": 263521
+   },
+   "DEVANAGARI": {
+    "pieces": 25,
+    "gen": 91418
+   },
+   "GREEK": {
+    "pieces": 101,
+    "gen": 109047
+   },
+   "HANGUL": {
+    "pieces": 49,
+    "gen": 122874
+   },
+   "HEBREW": {
+    "pieces": 49,
+    "gen": 90042
+   },
+   "HIRAGANA": {
+    "pieces": 113,
+    "gen": 80987
+   },
+   "KATAKANA": {
+    "pieces": 9,
+    "gen": 3178
+   },
+   "THAI": {
+    "pieces": 70,
+    "gen": 125392
+   }
+  }
+ },
+ "targets": {
+  "slice_L": {
+   "s195s1": 343956.0,
+   "s195s2": 302900.0,
+   "s195s3": 369940.0,
+   "s195s4": 420438.0,
+   "s195s5": 358040.0,
+   "s195c1": 343956.0,
+   "s195c2": 302900.0,
+   "s195c3": 369940.0,
+   "s195c4": 420438.0,
+   "s195c5": 358040.0,
+   "s195c6": 343956.0,
+   "s195c7": 302900.0,
+   "s195c8": 369940.0,
+   "s195c9": 420438.0,
+   "s195c10": 358040.0
+  },
+  "sum_L": 5385822.0,
+  "sum_L_confirm": 3590548.0,
+  "sum_L_search": 1795274.0,
+  "sum_N": 598424.6666666667
+ }
+}
+s195s1 (search, s186a): c 48 docs L gen 51607 (1.03x), x 263 L + 43 N pieces, L gen 344181 (2.001x), N gen 37333 = 0.0979, scripts 10, max 0.102
+s195s2 (search, s186b): c 50 docs L gen 51840 (1.19x), x 241 L + 36 N pieces, L gen 303572 (2.004x), N gen 33336 = 0.0989, scripts 10, max 0.101
+s195s3 (search, s186c): c 53 docs L gen 50701 (1.18x), x 271 L + 27 N pieces, L gen 370186 (2.001x), N gen 40513 = 0.0986, scripts 10, max 0.102
+s195s4 (search, s186d): c 71 docs L gen 50628 (1.08x), x 326 L + 42 N pieces, L gen 420911 (2.002x), N gen 46056 = 0.0986, scripts 10, max 0.102
+s195s5 (search, s186e): c 45 docs L gen 50707 (1.03x), x 248 L + 37 N pieces, L gen 361575 (2.020x), N gen 39565 = 0.0986, scripts 10, max 0.102
+s195c1 (confirm, s186a): c 59 docs L gen 53920 (1.08x), x 260 L + 42 N pieces, L gen 351641 (2.045x), N gen 38694 = 0.0991, scripts 10, max 0.101
+s195c2 (confirm, s186b): c 55 docs L gen 51410 (1.18x), x 201 L + 32 N pieces, L gen 309637 (2.044x), N gen 33709 = 0.0982, scripts 10, max 0.102
+s195c3 (confirm, s186c): c 55 docs L gen 49967 (1.17x), x 279 L + 31 N pieces, L gen 370988 (2.006x), N gen 40097 = 0.0975, scripts 10, max 0.103
+s195c4 (confirm, s186d): c 49 docs L gen 49987 (1.07x), x 289 L + 40 N pieces, L gen 420978 (2.003x), N gen 46209 = 0.0989, scripts 10, max 0.101
+s195c5 (confirm, s186e): c 59 docs L gen 54007 (1.09x), x 241 L + 45 N pieces, L gen 359060 (2.006x), N gen 39115 = 0.0982, scripts 10, max 0.102
+s195c6 (confirm, s186a): c 53 docs L gen 50991 (1.02x), x 236 L + 43 N pieces, L gen 344180 (2.001x), N gen 37785 = 0.0989, scripts 10, max 0.101
+s195c7 (confirm, s186b): c 50 docs L gen 51935 (1.20x), x 204 L + 46 N pieces, L gen 303115 (2.001x), N gen 32978 = 0.0981, scripts 10, max 0.102
+s195c8 (confirm, s186c): c 40 docs L gen 50682 (1.18x), x 280 L + 40 N pieces, L gen 371507 (2.008x), N gen 40487 = 0.0983, scripts 10, max 0.118
+s195c9 (confirm, s186d): c 44 docs L gen 49963 (1.07x), x 292 L + 53 N pieces, L gen 421303 (2.004x), N gen 46097 = 0.0986, scripts 10, max 0.180
+s195c10 (confirm, s186e): c 51 docs L gen 50055 (1.01x), x 257 L + 45 N pieces, L gen 358302 (2.001x), N gen 39387 = 0.0990, scripts 10, max 0.202
+{"N_batch_unused": {"pieces": 553, "gen": 647554, "by_script": {"ARABIC": {"pieces": 233, "gen": 168784}, "BENGALI": {"pieces": 0, "gen": 0}, "CJK": {"pieces": 112, "gen": 77620}, "CYRILLIC": {"pieces": 144, "gen": 196352}, "DEVANAGARI": {"pieces": 0, "gen": 0}, "GREEK": {"pieces": 42, "gen": 50697}, "HANGUL": {"pieces": 8, "gen": 54885}, "HEBREW": {"pieces": 3, "gen": 23005}, "HIRAGANA": {"pieces": 4, "gen": 19850}, "THAI": {"pieces": 7, "gen": 56361}}}, "fresh_L_unused": {"pieces": 293, "gen": 372703}, "reuse_L_unused": {"pieces": 1189, "gen": 1493202}}
