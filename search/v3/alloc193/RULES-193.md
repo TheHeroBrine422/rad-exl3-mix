@@ -169,3 +169,11 @@ committed before the data they affect.
   the snap1 ones until refitted (a refit is logged here as a data cut, not a rule change).
 - Other allocators may get more variants under the same definitions (e.g. tr / rob at more sizes and radii; anom flags
   beyond the first 6) without a further amendment; any new allocator type gets one.
+
+## Amendment 6 — 2026-11-15 5:10 AM CST (system clock; before any file it describes)
+- anom, small groups: a flag whose one-step move shifts < 0.002 bpw is tested with n steps, n = the smallest number
+  (≤ 4) that shifts ≥ 0.002 bpw (else skipped). Same direction rule, same balancing.
+- anom, combined lead: "late ffn_down" (groups ffn_down@6 and ffn_down@7 = layers 48–63, flagged in all three bands,
+  same sign in both time halves): both groups one step down at the sizes not yet tested with it (2.0, 3.5, 4.0, 5.0)
+  and at 4.5 / 6.0 from the current incumbents.
+- tr: more radii (0.125, 0.25, 0.5) at every size from the current incumbent (a trust-region chain from the 2.5 accept).
