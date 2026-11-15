@@ -177,3 +177,37 @@ committed before the data they affect.
   same sign in both time halves): both groups one step down at the sizes not yet tested with it (2.0, 3.5, 4.0, 5.0)
   and at 4.5 / 6.0 from the current incumbents.
 - tr: more radii (0.125, 0.25, 0.5) at every size from the current incumbent (a trust-region chain from the 2.5 accept).
+
+## Amendment 7 — 2026-11-15 5:25 AM CST (system clock; w172 restarted on Fable 5.2 low; before any file it describes)
+- **Budget (lead note 5:00 AM CST):** ≤ 600 decide, ≤ 100 probe files in total; outstanding cap of mine stays ≤ 40.
+  Allocators with 0 confirmations (accept or join) in ≥ 8 decided tries get no further rounds; whatever confirms may get
+  new rounds from the new incumbents under the same definition.
+- **Own allocators (user 5:30 AM CST: "invent your own").** All are model-free transformations of assignments the search
+  already holds: the size's incumbent, its pool members, the neighbouring sizes' incumbents, and the size's incumbent
+  chain (the `prev` links). They read no score at all except `pavg`'s s190a weights (allowed slice); no s190b number, no
+  fit. Incumbent / pool identities are used as starting points, as in amendments 2 and 5. Common construction: a
+  real-valued target K per trunk tensor → own-family nearest-option rounding with one global shift (bisection) into the
+  size's window and top-up (cons193.round_to); head and embedding stay at the size's incumbent's options. A candidate
+  equal to an assignment already in the run is not submitted. File prefix `w172-<token>-<size>[-variant].json`.
+  - `xplant` (transplant between sizes): target = the K profile of the next lower (`lo`) or next higher (`hi`) active
+    size's incumbent, or the mean of the two (`mid`); the global shift carries it to this size. Hypothesis: each size's
+    search found different good features of the shape; a neighbour's shape, shifted, beats the size's own incumbent
+    somewhere (most likely where the size's own search stalled: 3.5, 4.0, 5.0, 6.0).
+  - `pavg` (pool mean): target = the s190a-weighted mean K of the size's pool members (weights e^(−Δ / 1 %) as §2; equal
+    weights if a member has no whole s190a score). Hypothesis: the members are near-equal optima reached by different
+    moves; their per-tensor mean cancels each one's noise moves (the cross move only swaps blocks, never averages).
+  - `smooth` (depth smoothing): target = the incumbent's K smoothed over layers within each tensor type (kernel
+    [1, 2, 1] / 4, variant `w5` = [1, 2, 3, 2, 1] / 9; edges renormalized). Hypothesis: the true optimum is smooth in
+    depth; the ragged part of an incumbent is search noise that costs a little.
+  - `spread` (contrast): target = m + λ (K − m), m = the trunk's bytes-weighted mean K; λ = 0.85 (flatter) and 1.15
+    (more contrast). Hypothesis: the search moves in small steps, so the overall contrast of the allocation may be
+    systematically too low or too high; one of the two signs helps.
+  - `cap` / `floor` (one-sided contrast, the error-curve cap idea): `cap` clips the target at the trunk's 90th-percentile
+    K (bytes go to everything else through the global shift); `floor` raises it to the 10th percentile. Hypothesis: the
+    top tensors sit on the flat part of their error curve (cap wins, mostly ≥ 4.0), or the lowest tensors sit on the steep
+    part / near the K1 floor (floor wins, mostly ≤ 3.0).
+  - `mom` (momentum): target = K_inc + α (K_inc − K_back), K_back = the incumbent k distinct assignments back on the
+    size's chain; (k, α) = (3, 1), variant `k6` = (6, 0.5). Hypothesis: accepted moves at a size keep pointing the same
+    way (a drift the small moves follow slowly); one extrapolated step gets there sooner.
+- First round: every allocator above at every active size (≈ 10 files per size), interleaved in the queue with rankreg
+  (top 3 per size), the queued `tr` chain and the waiting `ens` files.
