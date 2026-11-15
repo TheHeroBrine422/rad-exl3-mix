@@ -221,3 +221,23 @@ committed before the data they affect.
   my older ones.
 - rankreg round 1 (data cut, not a rule change): training rows = the snap2 state (1110 stage-1 candidates on allowed
   slices, 564 whole rows), 24 generated candidates per size on the snap2 refit, top 3 per size.
+
+## Amendment 9 — 2026-11-15 12:50 PM CST (system clock; before any file below is in the inbox)
+- **Slice rotation (driver, 12:06 PM CST):** the active pair is now s190c (search) / s190d (confirmation). §0 by its own
+  wording: s190c is an allowed search slice once I refit; **s190d is the live confirmation slice: never training,
+  selection or tuning data.** s190b is now a retired confirmation slice but is not on the task's allow-list: it stays
+  excluded from anything I fit (the lead may add it). No refit is planned in this run (snap2 fits stay).
+- **Stale files:** 13 `ens` files were scored on s190a after it retired ("stale": fit rows only, no decision). They may
+  be resubmitted unchanged under the name `…-re.json` (same assignment; the duplicate check is waived for exactly
+  these, since the first copy was never judged). They count against the decide budget again.
+- **Regeneration:** not-yet-submitted amendment-7 files at a size whose incumbent has changed since they were generated
+  are regenerated from the new incumbent under the same names (same allocator, same variant).
+- **New own allocator `dxp` (delta transplant), prefix `w172-dxp-…`:** target = this size's incumbent K + the per-tensor
+  K change of the latest distinct incumbent change at a neighbouring size (K_new − K_prev on that size's chain; live
+  state only, no confirmation-slice score is read). Variants `lo` (lower neighbour), `hi` (upper), `both` (sum),
+  rounded as amendment 7. Hypothesis: an improvement that confirmed at one size (e.g. the anom step at 2.0, the ens /
+  tr steps at 2.5) is a property of the model, not of the size, so the same step helps the neighbours; the search's
+  moves never copy a step across sizes.
+- **Rounds vs new incumbents (lead 5:00 AM):** allocators with a confirmation (tr, anom, ens, recal, cons) get new
+  rounds; model-based ones use the snap2 refit from the new incumbent. Allocators with 0 confirmations in ≥ 8 decided
+  tries are dropped (no new files; waiting ones stay).
