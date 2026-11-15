@@ -86,6 +86,8 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("snap"); ap.add_argument("rdir"); ap.add_argument("out")
     ap.add_argument("--alloc", required=True); ap.add_argument("--sizes", default="2.5,3,4,5"); ap.add_argument("--R", type=float, default=0.25)
     ap.add_argument("--anom"); ap.add_argument("--curve"); ap.add_argument("--curv"); ap.add_argument("--commit", default="?")
+    ap.add_argument("--w", type=float, default=0.5); ap.add_argument("--scales", help="ens2: JSON {band: [sd_fit, sd_curve]}")
+    ap.add_argument("--tag", default="")
     a = ap.parse_args()
     M = C.load_menu(a.snap); km = C.KM(M); st = C.load_state(a.snap); inc = {}
     for e in st:
@@ -94,7 +96,8 @@ def main():
     HYP = {"tr": "fit.py optimum in a +-0.25 K trust region beats the incumbent (optimizer's curse avoided)",
            "rob": "fit.py's pessimistic (80th pct over posterior draws) optimum beats the incumbent",
            "recal": "fit.py recalibrated (band slope + group residuals from paired outcomes), +-0.25 trust region, beats the incumbent",
-           "ens": "mean of fit.py and the curve model, +-0.25 trust region, beats the incumbent"}
+           "ens": "mean of fit.py and the curve model, +-0.25 trust region, beats the incumbent",
+           "ens2": "scale-free ensemble of fit.py and the curve model (amendment 5) beats the incumbent"}
     for s0 in [float(x) for x in a.sizes.split(",")]:
         g = CV.band(s0)
         if g not in cache: cache[g] = load(M, a.rdir, g, draws=(a.alloc == "rob"))
@@ -109,6 +112,15 @@ def main():
             zmin = float(os.environ.get("RECAL_ZMIN", "0"))      # amendment 3: only |z| >= 2 coefficients
             beta = {w: (co[C.gname(w)][g]["beta"] if abs(co[C.gname(w)][g]["beta"]) >= zmin * co[C.gname(w)][g]["se"] else 0.0) for w in W}
             extra = lambda i, w, K, K0: beta[w] * n[w] * (K - K0) / tot
+        elif a.alloc == "ens2":
+            F = json.load(open(a.curve)); cp = np.array(F["cp"]); cu = json.load(open(a.curv)); bi = 0 if s0 < 2.75 else (1 if s0 <= 4.25 else 2)
+            kb = F["kappa"][bi]; cs = sorted(float(k) for k in cu["curv"]); FW = F["W"]
+            import curve193 as CU
+            Ct = dict(zip(FW, s0 + CU.basis(np.array([s0]))[0] @ cp.T))
+            cvec = {w: np.interp(s0, cs, [cu["curv"][f"{s:g}"][w][1] for s in cs]) for w in FW}
+            sdf, sdc = json.load(open(a.scales))[["b1", "b2", "b3"][bi]]
+            wf = (1 - a.w) / sdf; wc = a.w / sdc
+            extra = lambda i, w, K, K0: wc * kb * cvec[w] * ((K - Ct[w]) ** 2 - (K0 - Ct[w]) ** 2)
         elif a.alloc == "ens":
             F = json.load(open(a.curve)); cp = np.array(F["cp"]); cu = json.load(open(a.curv)); kb = F["kappa"][[0, 1, 2][0 if s0 < 2.75 else (1 if s0 <= 4.25 else 2)]]
             cs = sorted(float(k) for k in cu["curv"]); FW = F["W"]
@@ -135,10 +147,11 @@ def main():
         if asg is None: print(f"{s0:g}: no feasible allocation"); continue
         pm = math.log(pred.kl(asg) / pred.kl(ia))
         nd = sum(asg[w] != ia[w] for w in km.W); dk = np.mean([abs(km.Kof[w][asg[w]] - km.Kof[w][ia[w]]) for w in km.W])
-        d = {"size": s0, "mode": "decide", "assign": asg, "note": f"#193 {a.alloc} | {HYP[a.alloc]} | code {a.commit}"}
+        hyp = HYP[a.alloc] + (f" (w {a.w}, R {a.R})" if a.alloc == "ens2" else (f" (R {a.R})" if a.alloc == "tr" else ""))
+        d = {"size": s0, "mode": "decide", "assign": asg, "note": f"#193 {a.alloc.rstrip('2')} | {hyp} | code {a.commit}"}
         why = C.check_file(M, d)
         print(f"{a.alloc} {s0:g}: bpw {M.bpw(asg):.4f} vs {inc[s0]}: {nd} changed, mean|dK| {dk:.3f}, fit.py log r {pm:+.4f} {info} {why or 'OK'}", flush=True)
-        if why is None: json.dump(d, open(f"{a.out}/{a.alloc}-{s0:g}.json", "w"))
+        if why is None: json.dump(d, open(f"{a.out}/{a.alloc.rstrip('2')}-{s0:g}{a.tag}.json", "w"))
 
 
 if __name__ == "__main__":
