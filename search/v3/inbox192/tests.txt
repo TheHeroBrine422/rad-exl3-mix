@@ -1,0 +1,85 @@
+== test_inbox192 (fresh git archive a1db482c + driver-inbox.patch, 2026-11-15 UTC; RXM_POOL_BASE = the archive)
+PASS decide_tentative_then_confirmed
+PASS probe_fit_rows_and_reads_no_decision
+PASS decide_waits_for_the_scored_incumbent
+PASS rejects_with_reasons
+PASS restart_mid_inbox
+PASS inbox_max_bounds_outstanding_evals
+PASS oldest_file_first
+   346 events identical (275 decisions; state sha256 ec82d3cecc5892d0)
+PASS empty_inbox_identity_183
+   3 events, 0 queued identical (status: slice s190a (a8g128) | submitted 1478, results 1456 (522 stopped early), outstanding 22 | decisions 1062, accepts 99 | kinds block 11/138 cross 19/164 explore 2/55 pair 27/245 partial 24/194 solve 3/66 thompson 13/132 | b 1.25:2.66 1.5:1.96 1.75:1.74 2:1.59 2.5:1.42 3:1.32 3.5:1.23 4:1.13 4.5:1.20 5:1.12 6:0.75 7:0.11 | ALERT 2 2.5 3.5 4.5 5 6 | fits b1:none b2:none b3:none b4:none | pool 1.25:1 1.5:1 1.75:1 2:3 2.5:3 3:3 3.5:3 4:3 4.5:3 5:3 6:3 7:1 | confirm pending 10 (3:3 3.5:2 4:1 4.5:3 6:1))
+PASS empty_inbox_identity_live
+9 / 9 PASS
+
+== test_confirm189 (fresh + patch)
+PASS tentative_then_confirmed_accept
+PASS tentative_then_rejected
+PASS k1_accept_and_reject
+PASS pool_join_confirmed_as_join
+PASS incumbent_changed_mid_confirmation
+PASS rotation_mid_confirmation_uses_the_cached_retag
+PASS restart_mid_confirmation
+PASS failed_confirmation_eval
+PASS paused_size_untouched
+PASS golive_revert_and_keep
+PASS golive_restart_mid_check
+PASS rotation_skips_confirm_slices
+PASS plot_chains_stage2_logr
+   346 events identical (275 decisions; state sha256 ec82d3cecc5892d0)
+PASS identity_confirm_absent_183
+   792 events identical (713 decisions; state sha256 898fb6ad1f5c4d8b)
+PASS identity_confirm_absent_live_k3
+15 / 15 PASS
+
+== test_reselect189
+PASS candidate_set_dedupe_and_from_line
+PASS pool_members_count_and_left_members_stay
+PASS switch_pool_top3_and_rescore_on_active
+PASS ranking_rule_matches_the_event
+PASS rotation_during_reselection_holds_section5
+PASS waits_for_golive_then_tentatives_wait
+PASS restart_mid_reselection
+PASS failed_evals
+PASS registry_role_rotation_and_refusals
+PASS plot_level_reset_nothing_chained
+PASS identity_reselect_absent_live_on_result
+PASS identity_reselect_absent_live_steps
+12 / 12 PASS
+
+== test_pool188
+PASS join_table
+PASS worst_reseed_reselect_rules
+PASS parent_draws
+PASS cross_units_and_byte_window
+PASS pool_add_then_reject_then_add
+PASS pool_full_replace_worst_then_incumbent
+PASS early_stop_reference_is_the_worst_member
+PASS rotation_rescore_then_reselect
+PASS rotation_incumbent_rescore_survives_restart
+PASS reseed_set_ranking_and_pool
+PASS cap_null_with_strata_is_plain_pooled_sums
+PASS pool_state_roundtrip
+PASS k1_identity_on_the_recorded_replay
+13 / 13 PASS
+
+== test_picks
+PASS capped_weights_agree
+PASS old_rule_unchanged
+PASS one_dominant_document
+PASS guard_catches_a_heavy_tail
+PASS short_document_noise
+PASS finalpick_flag_guard_default
+PASS traces_resample_as_units
+PASS early_stop_matches_the_hosts
+PASS rotation_per_slice
+PASS old_slice_unchanged_recorded
+PASS strata_cap_within_stratum
+PASS strata_formula_matches_definition
+PASS strata_absent_stratum
+PASS strata_guard_matches_definition
+PASS strata_se_needs_three_per_stratum
+PASS strata_require_a_stratum
+PASS strata_registry
+PASS pickstat_strata_and_small_parts
+18 / 18 PASS

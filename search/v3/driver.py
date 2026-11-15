@@ -82,9 +82,17 @@ tentatives wait and §5 does not run for it. Events "reselect_start" (the plan),
 on the new model's own read (a level reset, convplot4) instead of chaining anything. The slice carries "role": "reselect" in
 the registry (never rotated to, never a confirmation slice; the driver refuses to start unless it has that role and was never
 active, decided or confirmed).
-State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit), ROOT/assign/<tag>.json.
+Driver inbox (#192, user 11-15; CONF "inbox_max" (6) bounds the inbox evals outstanding, "inbox_prefix" ("ibx") tags the reads; inert
+while ROOT/inbox/ holds no file, no CONF change needed): ROOT/inbox/*.json, oldest file first. "mode": "decide" (size in CONF sizes,
+not stopped, the menu bytes in the size's window) is submitted as kind "manual" ahead of the driver's own moves and judged exactly
+like a generated candidate (stage 1 with the usual early stop, tentative -> confirmation, pool rules). "mode": "probe" (any size; the
+bpw within 0.02 of it) is scored whole on the active slice as kind "probe": no decision, no pool, no incumbent; its rows feed the fit.
+"extra_slices": [{"name", "golden"}] add a whole read of a probe on each golden (kind "read", tag <inbox_prefix>-<slice>-<probe tag>): never
+a decision, never a fit row. A file that fails a check (mode, size, unknown weight or option, unassigned weight, window) moves to
+inbox/rejected/ with its reason in driver.log; a submitted file moves to inbox/done/ after its "inbox" state event (never resubmitted).
+State: ROOT/state.jsonl (append-only: submit, result, decision, incumbent, rotate, fit, inbox), ROOT/assign/<tag>.json.
 Restart = the same command (state replayed; outstanding evals stay in the queue)."""
-import argparse, collections, json, math, os, random, subprocess, sys, time
+import argparse, collections, hashlib, json, math, os, random, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -170,6 +178,10 @@ class Driver:
             self.rs_sizes = {float(z) for z in self.rs.get("sizes", self.sizes)}; self.rs_tries = int(self.rs.get("tries", 2))
             self.check_reselect_registry()
         self.act = "f16"                           # the activation mode in force (w132): changes only at a rotation
+        # driver inbox (#192): ROOT/inbox/ (see the module doc); the state of the submitted files is replayed
+        self.inbox_max = int(c.get("inbox_max", 6)); self.inbox_pfx = c.get("inbox_prefix", "ibx")
+        self.inbox_rec = {}; self.inbox_tags = []
+        for d in ("inbox", "inbox/done", "inbox/rejected"): os.makedirs(f"{self.R}/{d}", exist_ok=True)
         self.replay()
 
     # ------------------------------------------------------------------------------------------------ state
@@ -224,6 +236,7 @@ class Driver:
             elif ev == "reselect_start": self.rs_plan = e
             elif ev == "reselect_size": self.rs_res[e["size"]] = e; self.reselected[e["size"]] = e["act"]
             elif ev == "reselect_done": self.rs_end = True
+            elif ev == "inbox": self.inbox_rec[e["file"]] = e; self.inbox_tags += e["tags"]     # (#192) a recorded file is never resubmitted
         for t, r in self.res.items(): self.add_obs(t, r)
         for gn, out in getattr(self, "_lastfit", {}).items():          # the last fit of each group, on the rows it was fitted on
             try:
@@ -609,6 +622,10 @@ class Driver:
             self.log(f"{t}: confirmation eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
         if s["kind"] == "reselect":                                        # (#189-02) decided in reselect_step (a fit row above)
             self.log(f"{t}: re-selection eval of {s.get('of')} ({size}) scored on {r['slice']}: KLD {r['kld']:.5f}"); return
+        if s["kind"] == "probe":                                            # (#192) a whole read: its fit rows are added above, no decision
+            self.log(f"{t}: probe of {size:g} scored on {r['slice']}: KLD {r['kld']:.5f} at {s['bpw']:.4f} bpw (no decision)"); return
+        if s["kind"] == "read":                                             # (#192) an extra slice read of a probe: never a decision
+            self.log(f"{t}: inbox read of {s.get('of')} on {r['slice']}: KLD {r['kld']:.5f} (no decision)"); return
         act = self.reg.active()
         if r["slice"] != act:
             self.rec({"ev": "decision", "tag": t, "size": size, "decision": "stale", "kind": None})
@@ -935,11 +952,118 @@ class Driver:
         self.log(f"RESELECT {size:g}: on {sl} vs {inc} ({len(scored)} scored, {g['n_failed']} failed, b {bs:.3f}): incumbent "
                  + (f"-> {new} (of {tag_of[new_h]})" if new != inc else "kept") + f"; pool {pool}; ranking (size-adjusted, * = z < {self.rs_z:g}): {rk}")
 
+    # ------------------------------------------------------------------------------------------------ driver inbox (#192)
+    def inbox_files(self):
+        """ROOT/inbox/*.json, oldest first (mtime, then name)"""
+        d = f"{self.R}/inbox"
+        if not os.path.isdir(d): return []
+        out = []
+        for f in os.listdir(d):
+            try:
+                if f.endswith(".json") and os.path.isfile(f"{d}/{f}"): out.append((os.path.getmtime(f"{d}/{f}"), f))
+            except OSError: continue                                        # moved meanwhile
+        return [f for _, f in sorted(out)]
+
+    def inbox_out(self):
+        """the inbox's evals (probes, decisions, reads) submitted and not yet answered: CONF inbox_max bounds them"""
+        return [t for t in self.inbox_tags if t not in self.res]
+
+    def inbox_status(self): return len(self.inbox_files()), len(self.inbox_out())
+
+    def inbox_spec(self, d):
+        """the checks that need no queue state -> (None, spec) or (reason, None); spec: mode, size, a, note, extra"""
+        M = self.M
+        if not isinstance(d, dict): return "not a JSON object", None
+        mode = d.get("mode")
+        if mode not in ("decide", "probe"): return f"mode {mode!r} is neither decide nor probe", None
+        try: size = float(d["size"])
+        except (KeyError, TypeError, ValueError): return "size is not a number", None
+        a = d.get("assign")
+        if not isinstance(a, dict) or not a: return "assign is not a {weight: option} object", None
+        for w, o in a.items():
+            if w not in M.WI: return f"unknown weight {w}", None
+            if not isinstance(o, str) or o not in M.oi[M.WI[w]]: return f"unknown option {o!r} for {w}", None
+        miss = [w for w in M.W if w not in a]
+        if miss: return f"assign leaves {len(miss)} menu weight(s) unassigned (first: {miss[0]})", None
+        ex = d.get("extra_slices") or []
+        if not isinstance(ex, list) or not all(isinstance(x, dict) and isinstance(x.get("name"), str) and isinstance(x.get("golden"), str)
+                                               and x["name"] and x["golden"] for x in ex):
+            return "extra_slices is not a list of {name, golden}", None
+        if mode == "decide":
+            if size not in self.sizes: return f"size {size:g} is not in CONF sizes (decide)", None
+            if size in self.stopped_sizes: return f"size {size:g} is stopped", None
+            if not self.feasible(size): return f"size {size:g} is below the menu's cheapest mix", None
+            lo, hi = self.window(size); B = M.bytes(a)
+            if not lo <= B <= hi: return f"bpw {M.bpw(a):.4f} is outside {size:g}'s window [{lo * 8 / M.P:.4f}, {hi * 8 / M.P:.4f}]", None
+        elif abs(M.bpw(a) - size) > 0.02 + 1e-9: return f"bpw {M.bpw(a):.4f} is more than 0.02 from {size:g} (probe)", None
+        return None, {"mode": mode, "size": size, "a": a, "note": str(d.get("note", "")), "extra": ex}
+
+    def inbox_step(self, act):
+        """oldest file first: a file is checked (inbox_spec), then submitted (decide: its size scored on the active slice; the file's
+        evals under CONF inbox_max) and recorded (an "inbox" event) BEFORE it moves to done/. A file that fails a check moves to
+        rejected/ with the reason in driver.log. The first file that has to wait holds back the later ones."""
+        for f in self.inbox_files():
+            p = f"{self.R}/inbox/{f}"
+            try: raw = open(p, "rb").read()
+            except OSError: continue                                        # moved meanwhile
+            sha = hashlib.sha1(raw).hexdigest()[:16]
+            if f in self.inbox_rec:                                         # a crash between the record and the move: just move it
+                e = self.inbox_rec[f]
+                if e["sha"] == sha:
+                    self.log(f"inbox {f}: already submitted as {e['tag']}; moved to done/, not resubmitted"); self.inbox_move(f, "done")
+                else: self.inbox_reject(f, f"name already used by a different file (submitted as {e['tag']})")
+                continue
+            try: d = json.loads(raw)
+            except ValueError as ex:
+                if time.time() - os.path.getmtime(p) < 30: break            # still being written: next pass
+                self.inbox_reject(f, f"not valid JSON ({ex})"); continue
+            why, sp = self.inbox_spec(d)
+            if why: self.inbox_reject(f, why); continue
+            n_eval = 1 + len(sp["extra"])
+            if n_eval > self.inbox_max: self.inbox_reject(f, f"needs {n_eval} evals, CONF inbox_max is {self.inbox_max}"); continue
+            if len(self.inbox_out()) + n_eval > self.inbox_max: break
+            if sp["mode"] == "decide" and not (self.scored_on(sp["size"], act) and not self.reseed_wait(sp["size"], act)): break
+            self.inbox_submit(f, sha, sp, act)
+
+    def inbox_submit(self, f, sha, sp, act):
+        size, a, note = sp["size"], sp["a"], sp["note"]
+        if sp["mode"] == "decide":                                         # judged like generate(): reference, audit draw, early-stop block
+            tag = self.newtag(size, "manual"); rf = self.reference(size)
+            F = self.fits[self.gname[size]]
+            dpred = math.log(F["pred"].kl(a) / F["pred"].kl(self.assign(rf))) if F is not None else None
+            af = (self.c.get("audit_frac_by_size") or {}).get(f"{size:g}", self.c.get("audit_frac", 0.1))
+            audit = self.rng.random() < float(af)
+            self.submit(tag, a, size, "manual", act, early=not audit, ref_tag=rf,
+                        extra={"inbox": f, "note": note, "audit": audit, **({"pred_logr": dpred} if dpred is not None else {})})
+            what = f"decide {size:g} -> {tag} (stage 1 on {act}, {'audit, whole' if audit else 'early stop'}, reference {rf})"
+        else:
+            tag = self.newtag(size, "probe")
+            self.submit(tag, a, size, "probe", act, early=False, extra={"inbox": f, "note": note})
+            what = f"probe {size:g} -> {tag} (whole on {act}, no decision)"
+        tags = [tag]
+        for x in sp["extra"]:
+            xt = f"{self.inbox_pfx}-{x['name']}-{tag}"
+            self.submit(xt, a, size, "read", None, early=False, extra={"inbox": f, "of": tag, "slice": x["name"]},
+                        slice_entry={"name": x["name"], "parts": {"m": x["golden"]}})
+            tags.append(xt)
+        self.rec({"ev": "inbox", "file": f, "sha": sha, "mode": sp["mode"], "size": size, "tag": tag, "tags": tags, "note": note})
+        self.inbox_rec[f] = {"file": f, "sha": sha, "tag": tag, "tags": tags}; self.inbox_tags += tags
+        self.inbox_move(f, "done")
+        self.log(f"INBOX {f}: {what}" + "".join(f"; read {x['name']} -> {t}" for x, t in zip(sp["extra"], tags[1:])))
+
+    def inbox_move(self, f, to):
+        d = f"{self.R}/inbox/{to}"; os.makedirs(d, exist_ok=True); dst = f"{d}/{f}"; k = 0
+        while os.path.exists(dst): k += 1; dst = f"{d}/{f[:-5]}.{k}.json"        # an earlier file of that name is never overwritten
+        os.replace(f"{self.R}/inbox/{f}", dst)
+
+    def inbox_reject(self, f, why):
+        self.log(f"inbox {f} rejected: {why}"); self.inbox_move(f, "rejected")
+
     # ------------------------------------------------------------------------------------------------ fit rows
     def add_obs(self, t, r):
         if r.get("fail") or not r.get("docs"): return
         s = self.sub.get(t)
-        if s is None or s["kind"] in ("monitor", "monitor_ref"): return   # verify data: never a fit row
+        if s is None or s["kind"] in ("monitor", "monitor_ref", "read"): return   # verify data and inbox reads: never a fit row
         a = self.assign(t); docs, pos = r["docs"], r["pos"]
         N = len(docs); k = sum(1 for x in docs if x is not None)
         if k == 0: return
@@ -1238,7 +1362,7 @@ class Driver:
         bands = release_bands(self.sizes)
         pts = []
         for t, r in self.res.items():
-            if r.get("fail") or not r.get("docs") or any(x is None for x in r["docs"]) or self.sub[t]["kind"] in ("monitor", "monitor_ref"): continue
+            if r.get("fail") or not r.get("docs") or any(x is None for x in r["docs"]) or self.sub[t]["kind"] in ("monitor", "monitor_ref", "probe", "read"): continue   # (#192) no frontier points
             pts.append({"tag": t, "bpw": self.sub[t]["bpw"], "bpw_container": r["bpw"], "kld": r["kld"], "slice": r["slice"],
                         "kld_norm": self.kld_norm(t, r), "size": self.sub[t]["size"]})
         fr = {}; topn = int(self.c.get("topn", 5))
@@ -1274,6 +1398,8 @@ class Driver:
             if self.golive is not None and not self.golive_end: line += f" | go-live {len(self.golive_res)}/{len(self.golive['plan']) + len(self.golive.get('same', []))}"
         if self.rs and not self.rs_end:
             line += (f" | reselect {len(self.rs_res)}/{len(self.rs_plan['plan'])} on {self.rs_sl}" if self.rs_plan else f" | reselect {self.rs_sl} waits for go-live")
+        n_in, k_in = self.inbox_status()
+        if n_in or k_in: line += f" | inbox {n_in} ({k_in} outstanding)"
         open(f"{self.R}/status.txt", "w").write(line + "\n")
         return line
 
@@ -1294,6 +1420,7 @@ class Driver:
         if self.cf: self.golive_step()
         if self.rs: self.reselect_step(act)
         if self.cf: self.confirm_step(act)
+        self.inbox_step(act)                                                # (#192) before the driver's own moves
         self.monitor_refs()
         self.generate(act)
         return self.report()
