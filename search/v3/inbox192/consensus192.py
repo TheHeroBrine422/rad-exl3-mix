@@ -89,7 +89,8 @@ def main():
                     i = [o[1] for o in opts[w]].index(asg[w])
                     if i + 1 >= len(opts[w]): continue
                     nk, no, nb = opts[w][i + 1]
-                    if w.startswith("blk.") and nk > a.kmax: continue; db = nb - opts[w][i][2]
+                    db = nb - opts[w][i][2]
+                    if w.startswith("blk.") and nk > a.kmax: continue
                     if b + db > hi: continue
                     gap = nk - (tk[w] + l_)
                     if best is None or gap < best[0]: best = (gap, w, no, db)
