@@ -3,7 +3,7 @@
 Source: artificialanalysis.ai, Intelligence Index v5.0.1 (AA-Briefcase v1.1, AutomationBench-AA, Terminal-Bench 4.0,
 FrontierCode-AA 2.0, AA-Omniscience v1.1, GDP.pdf, HLE-Diamond, CritPt v2 Hard, Terminal-Bench-Science 0.1) and cost per
 Intelligence Index task (weighted average USD per task), as shown on the site on 2026-11-15 (pasted by the user).
-`*` = marked with an asterisk by AA (Haiku). F = on the cost/intelligence Pareto frontier.
+`*` = AA's asterisk on Haiku: long-context input is charged at 5× (so these costs hold only for short contexts; the user's guess: Haiku still uses global attention rather than the newer sparse-attention design). F = on the cost/intelligence Pareto frontier.
 
 | model (reasoning) | index | $/task | frontier |
 |---|---|---|---|
