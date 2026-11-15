@@ -7962,3 +7962,4 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   restarted (the three rescheduled). Same restart: **guard null** (RULES-picks amendment) and **rotate_after back to 200**.
   Re-seed results so far (3.0–6.0): every size kept its incumbent (0 accepted under the guard); cross moves are joining
   pools (3.0 ×2, 4.0, 6.0).
+- 8:45 PM CST (user: why aren't improvements tested on t183?): the tracker read only every 5th incumbent per size + a 2 h catch-up, and rotation rescores used up the counter. Now: each size's latest incumbent is read once it has held 45 min (superseded ones skipped), and a model already read under another tag (rotation 'inc' retags) is not read again (assignment hash). Same for t186n. Caught up now: 2.5, 3.0, 3.5, 4.0, 5.0, 6.0 queued (2.0's incumbent is an already-read model).

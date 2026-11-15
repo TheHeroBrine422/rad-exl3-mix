@@ -6,7 +6,7 @@ state.jsonl (the first and then every TRACK_EVERY-th (5) of each size, plus a si
 TRACK_STALE_H (2) hours untracked: user 11-14) whose tag has no tracking eval yet gets one eval line (tag trk183-<tag>, the incumbent's assignment, the
 driver's base and act mode, the whole SLICE golden, no early stop) appended to the coordinator's evals.jsonl. Results
 land in the coordinator's results.jsonl like any eval; nothing reads them back into the search."""
-import json, os, sys, time
+import hashlib, json, os, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, ".."))
 import menu as MN  # noqa: E402
@@ -18,9 +18,12 @@ FROM = int(os.environ.get("TRACK_FROM_LINE", 0))                      # state.js
 
 def main(conf, slice_name, golden, once=False):
     c = json.load(open(conf)); M = MN.Menu.load(c["menu"]); R = c["root"]; act = c.get("act") or "f16"
-    done = set(); seen_at = {}                                          # tag -> first time seen as a size's latest
+    done = set(); seen_at = {}; hashes = set()                                          # tag -> first time seen as a size's latest
     if os.path.exists(c["evals"]):
         done = {json.loads(l)["tag"] for l in open(c["evals"]) if l.strip() and f'"{PFX}-' in l}
+    for t in done:                                                      # assignments already read
+        f = f"{R}/assign/{t[len(PFX) + 1:]}.json"
+        if os.path.exists(f): hashes.add(hashlib.sha1(open(f, "rb").read()).hexdigest())
     while True:
         new = []; nth = {}; latest = {}; cand = []
         for i, l in enumerate(open(f"{R}/state.jsonl")):
@@ -37,6 +40,10 @@ def main(conf, slice_name, golden, once=False):
             if now - first >= STALE_H * 3600: cand.append(e)
         for e in cand:
             t = f"{PFX}-{e['tag']}"
+            if os.path.exists(f"{R}/assign/{e['tag']}.json"):          # (11-14) the same model under a new tag (rotation
+                h = hashlib.sha1(open(f"{R}/assign/{e['tag']}.json", "rb").read()).hexdigest()   # rescore "inc"): read once
+                if h in hashes: done.add(t); continue
+                hashes.add(h)
             if t in done or not os.path.exists(f"{R}/assign/{e['tag']}.json"): continue
             mx = M.eval_mix(json.load(open(f"{R}/assign/{e['tag']}.json")), c["base"])
             if act != "f16": mx["act"] = act
