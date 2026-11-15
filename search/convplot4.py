@@ -69,6 +69,8 @@ def walk(state_path):
     sub = {e["tag"]: e for e in st if e["ev"] == "submit"}
     mode = lambda tag: "A8" if (sub.get(tag) or {}).get("act") else "f16"
     step = 0; C = collections.defaultdict(float); inc = {}; cat = {}
+    became = {e["tag"] for e in st if e["ev"] == "incumbent"}   # (#188/#189) a pool join that never became incumbent was
+                                                                 # paired against the worst member: not chained (w167)
     accepts = collections.defaultdict(list)            # (size, mode) -> [(step, C)]
     reads, decs, events, incbpw = [], [], [], {}
     for e in st:
@@ -79,7 +81,7 @@ def walk(state_path):
             if e["tag"] not in cat: cat[e["tag"]] = C[(s, m)]
             if not accepts[(s, m)]: accepts[(s, m)].append((step, C[(s, m)]))
         elif ev == "decision" and e.get("decision") in ("accept", "reject") and e.get("logr") is not None:
-            s = float(e["size"]); m = mode(e["tag"]); acc = e["decision"] == "accept"
+            s = float(e["size"]); m = mode(e["tag"]); acc = e["decision"] == "accept" and e["tag"] in became
             ref = (sub.get(e["tag"]) or {}).get("ref")
             decs.append(dict(step=step, size=s, mode=m, logr=e["logr"], acc=acc, C=C[(s, m)], kind=e.get("kind"),
                              early=(sub.get(e["tag"]) or {}).get("early"), ref=ref))
