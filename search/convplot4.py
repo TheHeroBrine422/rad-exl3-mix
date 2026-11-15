@@ -130,6 +130,14 @@ def anchor_at(segs, k, step):
     return an
 
 
+def _tleg(axT, a):
+    """the tracking panel's legend: in the gap above the panel (user 11-15) when the panels are stacked training-on-top"""
+    if a.track and a.no_val and not a.track_top:
+        axT.legend(loc="lower center", bbox_to_anchor=(0.5, 1.07), ncol=3, fontsize=7.5, frameon=False)
+    else:
+        axT.legend(fontsize=7.5, loc="upper right")
+
+
 def track_panel(axT, W, a, sizes):
     """(#183) the fixed tracking slice: each incumbent's full score there (one measurement each, no chaining), plotted
     at the step it became incumbent, ÷ V2 at the same bpw on the same slice (log-linear between V2's measured sizes, as
@@ -184,7 +192,7 @@ def track_panel(axT, W, a, sizes):
         axT.set_ylabel(f"KLD ÷ V2 at the same bpw ({a.track_name})")
     else:
         axT.set_yscale("log"); axT.set_ylabel(f"raw KL on {a.track_name} (V2 refs pending: {len(v2)} of 2+)")
-    axT.set_yscale("log"); axT.grid(alpha=.3, which="both"); axT.legend(fontsize=7.5, loc="upper right")
+    axT.set_yscale("log"); axT.grid(alpha=.3, which="both"); _tleg(axT, a)
     axT.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter()); axT.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     if rel:                                                     # log scale, range fitted to the data (user 11-14)
         ys = [y for v in ser.values() for _, y in v] + [1.0]
@@ -235,7 +243,7 @@ def strata_overlay(axT, a, step_of):
                         label="incumbents on t186n N (s)"); ys += [y for _, y, _ in pts]
     if ys and getattr(axT, "_fit_ylim", None):              # keep every N / board line on the panel (the fitted range is applied last)
         lo, hi = axT._fit_ylim; axT._fit_ylim = (min(lo, min(ys) * 0.95), max(hi, max(ys) * 1.05)); axT.set_ylim(*axT._fit_ylim)
-    if axT.get_legend_handles_labels()[0]: axT.legend(fontsize=7.5, loc="upper right")
+    if axT.get_legend_handles_labels()[0]: _tleg(axT, a)
 
 
 def main(argv=None):
@@ -325,7 +333,7 @@ def main(argv=None):
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
         if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
-            fig = plt.figure(figsize=(13.5, 11.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1])
+            fig = plt.figure(figsize=(13.5, 13)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1], hspace=0.5)
             if a.track_top:                                 # (user 11-14) held-out tracking on top, training estimate below
                 axT = fig.add_subplot(gs[0]); ax = fig.add_subplot(gs[1], sharex=axT)
                 ax.set_xlabel("eval step (search results, in order)")
@@ -438,11 +446,19 @@ def main(argv=None):
             ts = [t for t, v in alloc_of.items() if v == al]; dn = [res[t] for t in ts if t in res]
             ax.scatter([], [], marker=AMARK[i % len(AMARK)], s=45, facecolors="none", edgecolors="k",
                        label=f"inbox {al}: {len(ts)} tried, {len(dn)} decided, {sum(1 for d in dn if d['acc'])} confirmed")
-    ax.legend(loc="upper right", fontsize=7.5)
-    if alloc_of:
-        ax.text(0.005, 0.01, "inbox candidates (shape = allocator): hollow = rejected at stage 1 · grey = passed stage 1, failed "
-                "confirmation · filled with black edge = confirmed accept", transform=ax.transAxes, fontsize=8, va="bottom",
-                bbox=dict(facecolor="white", alpha=0.85, edgecolor="0.7", boxstyle="round,pad=0.25"))
+    out_leg = a.track and a.no_val and not a.track_top      # (user 11-15) legends in the gap between the panels
+    if out_leg:
+        h, l = ax.get_legend_handles_labels()
+        if alloc_of:                                    # the inbox key as a legend entry (no marker)
+            h.append(matplotlib.lines.Line2D([], [], lw=0)); l.append("inbox key: hollow = rejected at stage 1 · grey = failed "
+                                                                    "confirmation · filled, black edge = confirmed accept")
+        ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=7.5, frameon=False)
+    else:
+        ax.legend(loc="upper right", fontsize=7.5)
+        if alloc_of:
+            ax.text(0.005, 0.01, "inbox candidates (shape = allocator): hollow = rejected at stage 1 · grey = passed stage 1, failed "
+                    "confirmation · filled with black edge = confirmed accept", transform=ax.transAxes, fontsize=8, va="bottom",
+                    bbox=dict(facecolor="white", alpha=0.85, edgecolor="0.7", boxstyle="round,pad=0.25"))
     ax.set_title(f"{a.title} convergence (lines: training estimate; dots: evals; x: accepted; " + (f"each size anchored on its first "
                  f"{ylab_sl} read" if a.anchor_track else f"open circles: held-out {a.monitor} reads") + ";\n◆: incumbents' full scores on their search slice ÷ V2 there (geo-mean of the c / x parts' ratios); dotted: IQR-V4 measured; lower is better)", fontsize=10)
 
@@ -490,7 +506,11 @@ def main(argv=None):
     fig.text(0.01, 0.003, note, fontsize=7.5, color="dimgray")
     if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)
         axT.set_ylim(*axT._fit_ylim)
-    fig.tight_layout(rect=(0, 0.012 * nl, 1, 1)); fig.savefig(a.out, dpi=100)
+    if a.track and a.no_val and not a.track_top:      # legends sit between the panels: fixed margins (tight_layout pads them)
+        fig.subplots_adjust(left=0.065, right=0.985, top=0.95, bottom=0.045 + 0.011 * nl)
+    else:
+        fig.tight_layout(rect=(0, 0.012 * nl, 1, 1))
+    fig.savefig(a.out, dpi=100)
     print("\n".join(summary)); print(note); print(f"{W['steps']} results, {len(W['decs'])} decisions, {len(W['reads'])} held-out reads, {nd} slice diamonds")
     return 0
 
