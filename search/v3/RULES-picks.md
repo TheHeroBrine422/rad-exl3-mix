@@ -38,3 +38,11 @@ noisy ranking): (1) the restarted search's incumbent; (2) the M1 re-solve on the
 (3) the re-solve from the alternate fit (V2-prior-free, w143's ablation) if its picks differ; (4) the search's runner-up
 by (b) on its last slices; (5) a near-tie variant where the re-solve flags one (embedding / head choice). Identical
 candidates are merged. Cost ~0.35 card-h each (≈ 3–4 h on ds8 for all sizes).
+
+## Amendment 2026-11-14 7:20 PM CST (user): no capped statistic in the search
+From the switch to the stratified slices (s186a, RULES-strata) on, the in-search accept / early-stop statistic is the
+uncapped one: (b) is dropped, driver CONF `cap: null` (RULES-strata §4 then sums each (part, stratum) without weights).
+Why: since the board gen mask (11-14) the prompt-side rows that made single documents dominate are gone, the strata
+weighting now controls the non-Latin share explicitly, and the cap was down-weighting exactly the high-KL (non-Latin)
+documents (#186). The per-document guard (c) stays for now (re-checked after ~200 s186 decisions: how often it alone
+rejects). Final picks are unchanged ((a) with the guard, finalpick.py). Decisions on s173 stand.
