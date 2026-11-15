@@ -31,7 +31,7 @@ def main():
     ap.add_argument("conf"); ap.add_argument("out")
     ap.add_argument("--decide", default="2,2.5,3,3.5,4,4.5,5,6"); ap.add_argument("--probe", default="2.25,2.75,3.25,3.75,4.25,4.75,5.5")
     ap.add_argument("--within", type=float, default=0.03); ap.add_argument("--top", type=int, default=5)
-    ap.add_argument("--bw", type=float, default=1.0); ap.add_argument("--slice", default="s186e")
+    ap.add_argument("--bw", type=float, default=1.0); ap.add_argument("--kmax", type=float, default=99.0, help="cap trunk K (w8a8 saturates above ~K7)"); ap.add_argument("--slice", default="s186e")
     a = ap.parse_args()
     c = json.load(open(a.conf)); M = MN.Menu.load(c["menu"]); R = c["root"]; tol = float(c.get("size_tol", 0.02))
     st = [json.loads(l) for l in open(f"{R}/state.jsonl")]
@@ -68,7 +68,8 @@ def main():
         return sy / sw if abs(d) < 1e-12 else (sy * sxx - sx * sxy) / d     # local linear intercept at s0
 
     def rnd(k, w):
-        return min(opts[w], key=lambda o: abs(o[0] - k))
+        cand = [o for o in opts[w] if not (w.startswith("blk.") and o[0] > a.kmax)] or opts[w]
+        return min(cand, key=lambda o: abs(o[0] - k))
 
     os.makedirs(a.out, exist_ok=True)
     for mode, lst in (("decide", a.decide), ("probe", a.probe)):
@@ -87,7 +88,8 @@ def main():
                 for w in W:
                     i = [o[1] for o in opts[w]].index(asg[w])
                     if i + 1 >= len(opts[w]): continue
-                    nk, no, nb = opts[w][i + 1]; db = nb - opts[w][i][2]
+                    nk, no, nb = opts[w][i + 1]
+                    if w.startswith("blk.") and nk > a.kmax: continue; db = nb - opts[w][i][2]
                     if b + db > hi: continue
                     gap = nk - (tk[w] + l_)
                     if best is None or gap < best[0]: best = (gap, w, no, db)
