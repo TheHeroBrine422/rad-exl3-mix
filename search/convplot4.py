@@ -138,6 +138,11 @@ def track_panel(axT, W, a, sizes):
         if e["ev"] == "result": step += 1
         elif e["ev"] == "incumbent": step_of.setdefault(e["tag"], (step, float(e["size"])))
     T = [json.loads(l) for l in open(a.track) if l.strip() and '"trk183-' in l]
+    hof = lambda t: (W["sub"].get(t) or {}).get("hash")             # (#189) a restored / re-selected incumbent has a new tag:
+    byh = {hof(r["tag"][len("trk183-"):]): r for r in T if hof(r["tag"][len("trk183-"):])}   # use the read of the same model
+    have = {r["tag"][len("trk183-"):] for r in T}
+    for t in step_of:
+        if t not in have and hof(t) in byh: T.append(dict(byh[hof(t)], tag="trk183-" + t))
     refs = [json.loads(l) for l in open(a.track_refs)] if a.track_refs and os.path.exists(a.track_refs) else []
     iq = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("iq"))
     v2 = sorted((r["bpw"], r["kld"]) for r in refs if r["name"].startswith("v2"))
