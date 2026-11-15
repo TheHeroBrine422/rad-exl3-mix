@@ -142,3 +142,11 @@ committed before the data they affect.
 - `anom`: direction of a test = −sign(β) of the flagging version (ii: fit.py overvalues the group → fewer bits). The flag
   attn_output@5 b3 is not tested: its group is 2 small tensors (a one-step move shifts ~0.0002 bpw; expected effect
   ~0.03 %, far below the stage-1 SE). 7 anom decides instead of 8; the spare one is not reassigned.
+
+## Amendment 4 — 2026-11-15 2:25 AM CST (system clock; before any curve candidate; after one diagnostic curve fit)
+- §1 curve, model level: the first fit (σ 0.05, shared h(s) + label offsets) fitted badly (rmse_log 0.125, κ ≈ 0.01,
+  CV blown up by a few labels); its worst residuals are stratum labels (`…|N|full`) whose KL-vs-size slope differs from
+  the shared h(s). Change: offsets per (label × nominal size: the search size nearest the row's bpw), no h(s); rows whose
+  (label, size) group has a single row carry no information and are dropped (this drops most w158 prior rows). Loss:
+  soft_l1 with f_scale 3 (in σ units) against the remaining outliers. Everything else as amendment 1. The diagnostic fit
+  made no candidate.
