@@ -80,3 +80,7 @@ Written before any phase-1 data; the search (#183) ends at ≥ 4,929 results wit
    pick and every published number come from phase 2 only; the calib part vetoes (pick must not be significantly worse
    on it). Report each pick's CI vs runner-up, vs the search incumbent, and vs IQR-V4 (interpolated t183 line).
 6. **Data:** phase-1 reads are kept (data/picks202/) as the low-noise benchmark for replaying search models.
+   **§1 addendum (user, 2026-11-16 ~2:40 PM CST, before any phase-1 read):** the narrow-miss rule (stage-1 tentatives
+   whose stage-2 |z| ≤ 0.5) applies at every size with fewer than 6 candidates after the other sources (not only
+   6.5 / 7.0). Thin sizes are further served by phase 1.5 (xavg window |Δsize| ≤ 0.75 draws on neighbour leaders) and,
+   if still thin, by §4.
