@@ -354,7 +354,7 @@ def main(argv=None):
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
         if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
-            fig = plt.figure(figsize=(19, 12)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1], hspace=0.22)
+            fig = plt.figure(figsize=(15, 10.5)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1], hspace=0.2)
             if a.track_top:                                 # (user 11-14) held-out tracking on top, training estimate below
                 axT = fig.add_subplot(gs[0]); ax = fig.add_subplot(gs[1], sharex=axT)
                 ax.set_xlabel("eval step (search results, in order)")
@@ -402,9 +402,9 @@ def main(argv=None):
             if e0 is None: continue
             al = alloc_of[t]; mk = AMARK[sorted(set(alloc_of.values())).index(al) % len(AMARK)]
             y = e0 * math.exp(d["logr"]); c = COL[band(d["size"])]
-            if d["acc"]: ax.scatter([d["step"]], [y], marker=mk, s=70, color=c, edgecolors="k", lw=1.2, zorder=5)
-            elif d["stage"] == 2: ax.scatter([d["step"]], [y], marker=mk, s=45, color="0.6", edgecolors=c, lw=1.0, zorder=4)
-            else: ax.scatter([d["step"]], [y], marker=mk, s=45, facecolors="none", edgecolors=c, lw=1.0, zorder=4)
+            if d["acc"]: ax.scatter([d["step"]], [y], marker=mk, s=30, color=c, edgecolors="k", lw=0.8, zorder=5)
+            elif d["stage"] == 2: ax.scatter([d["step"]], [y], marker=mk, s=14, color="0.6", edgecolors=c, lw=0.5, zorder=4)
+            else: ax.scatter([d["step"]], [y], marker=mk, s=12, facecolors="none", edgecolors=c, lw=0.5, alpha=0.6, zorder=4)
         # held-out reads
         for r in W["reads"]:
             if r["mode"] != m or a.anchor_track: continue   # (anchor-track: the reads are the anchors, drawn on the track panel)
@@ -528,7 +528,7 @@ def main(argv=None):
     if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)
         axT.set_ylim(*axT._fit_ylim)
     if a.track and a.no_val and not a.track_top:      # legends sit between the panels: fixed margins (tight_layout pads them)
-        fig.subplots_adjust(left=0.05, right=0.70, top=0.95, bottom=0.045 + 0.011 * nl)
+        fig.subplots_adjust(left=0.055, right=0.73, top=0.94, bottom=0.05 + 0.012 * nl)
     else:
         fig.tight_layout(rect=(0, 0.012 * nl, 1, 1))
     if a.xmin is not None:                                                        # (#199) zoom on the steps after a start point
