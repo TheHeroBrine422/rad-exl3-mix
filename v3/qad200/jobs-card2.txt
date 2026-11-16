@@ -1,0 +1,4 @@
+# card 2 (after w186's chain: DEP = its analysis.json): arm 3, then the 1 M seeds 3 and 2 (for S4seed)
+B4|4e6|ckpt-4e+06|--warmup-frac 8/49 --accum 4|/data/q27/w186/analysis/analysis.json
+s3|1e6|ckpt-1e+06|--warmup-frac 8/49 --order-seed 3|
+s2|1e6|ckpt-1e+06|--warmup-frac 8/49 --order-seed 2|

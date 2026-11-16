@@ -1,0 +1,3 @@
+# card 3 (RULES200 arms 2 and 5): NAME|BUDGET|CKPT|FLAGS|DEP
+P20-4M|4e6|ckpt-4e+06|--warmup-frac 8/49 --wd 20|
+B4P20|4e6|ckpt-4e+06|--warmup-frac 8/49 --wd 20 --accum 4|

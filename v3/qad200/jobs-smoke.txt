@@ -1,0 +1,2 @@
+# smoke (card 1, before the card-1 queue): the accumulation and AdamW paths on the GPU, two plan steps = one 4-step optimizer step
+smoke-acc4|1e6|ckpt-1e+06|--wd 20 --accum 4 --max-steps 2 --warmup-frac 8/49|

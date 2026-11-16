@@ -1,0 +1,12 @@
+{
+ "A": "chk/old",
+ "B": "chk/neg/flip",
+ "train_records": 3,
+ "steps_A": 3,
+ "steps_B": 3,
+ "differences": [
+  "snap/cur/model.language_model.layers.0.linear_attn.in_proj_qkv:r: tensor differs"
+ ],
+ "n_differences": 1,
+ "identical": false
+}

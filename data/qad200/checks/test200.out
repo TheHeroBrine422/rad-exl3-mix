@@ -1,0 +1,19 @@
+/workspace/rad-exl3-mix/v3/qad200/test200.py:63: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  f"max diff {float((pa - pc).abs().max()):.2e}")
+PASS N=1: group_lr == lr_main (last 49, fork 39, warm 8, k0 0)
+PASS N=1: group_lr == lr_main (last 194, fork 155, warm 32, k0 0)
+PASS N=1: group_lr == lr_main (last 49, fork 39, warm 8, k0 5)
+PASS N=1: group_lr == lr_main (last 30, fork 20, warm 3, k0 4)
+PASS B4 shape: 49 optimizer steps, warmup 8, decay from group 39  [U 49 W 8 FU 39]
+PASS B4 warmup ramps lr/8 .. 8lr/8, then constant
+PASS B4 last group: lr * (U - (U-1)) / (U - FU) = lr / 10  [1.000e-04]
+PASS A4M warmup = round(8/49 x 194) = 32
+PASS defaults: wd 0, accum 1, rows None, warmup_frac None, order_seed None, seed 0
+PASS flags parse (wd 20, accum 4, rows 4e6, order-seed 3, warmup-frac 8/49)
+PASS AdamW(wd) == decay by (1 - lr wd) then the Adam step (3 steps, float64)  [max diff 0.00e+00]
+PASS zero gradient: the step is the decay alone, p (1 - lr wd) = 2 % shrink at wd 20  [ratio 0.980000]
+PASS AdamW(weight_decay=0) == Adam bitwise (3 steps)
+PASS accumulated gradient (unequal micro-batches) == one backward over the step's rows  [max diff 5.55e-17]
+PASS N = 4 equal micro-batches: the accumulated grad == the grad of the mean over the 4 micro-batches
+FAILS: none

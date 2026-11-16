@@ -1,0 +1,12 @@
+07:54:43 qad191.py {"out": "/data/q27/w187/runs/smoke-acc4", "model": "/data/q27/models/qwen38-27b-bf16", "level": "/data/q27/w170/vl/inc2.5m", "chunks": "@/data/q27/w187/chunks200.txt", "calib": "/data/q27/challenge/golden/calib", "pools": "/data/q27/w187/code/eval/pools/pools-v3.json", "pool": "qad", "genmask": "/data/q27/w154/genmask", "head": "/data/q27/w170/heads/K2.875", "head_perm": "/data/
+07:54:47 corpus 30747 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}, "tr32k": {"docs": 166, "tokens": 1299022, "rows": 838449}, "xc8k": {"docs": 3459, "tokens": 4928672, "rows": 4361695}, "xq": {"docs": 24329, "tokens": 39664974, "rows": 33593856}}
+07:54:47 chunk list: 49 golden dirs, sha1 c1aa4bcebf3c (/data/q27/w154/gold/tr32k-b2-c2 .. /data/q27/w154/gold/xq-c39)
+07:54:47 fixed eval: 38 qad-pool docs, 31151 rows (first 2048 tokens), held out of training (38 items removed)
+07:54:48 plan: 2193 steps of 24 x 1024 (data 42061932 rows); main to step 49 (1013729 rows), decay from step 39; branches ; order shuffle seed 0 (sha1 2c3a906fcba5); gen rows to the budget by corpus {"calib": [66846, 0.0659], "tr32k": [3673, 0.0036], "xc8k": [122714, 0.1211], "xq": [820496, 0.8094]}
+07:54:48 #200: 4 plan step(s) per optimizer step, 13 optimizer steps, warmup 2, wd 20.0, lr 0.001, budget 1000000 rows
+07:55:19 student built in 31 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+07:55:19 token table: /data/q27/w170/emb/t1.75.bf16 (served form; rows [0, 1000, 248070, 248319]: 20382 of 20480 bf16 values differ from the checkpoint's)
+07:55:19 GDN a / b: /data/q27/w170/ab/ab-T4.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0833)
+07:55:19 {"step": 0, "rows": 0, "mon_kl": null}
+08:02:31 {"what": "main", "step": 4, "rows": 75375, "lr": 0.0005, "train_kl": 0.04914341330646876, "ema": 0.04914341330646876, "by": {"calib": 0.05860780174183119, "xc8k": 0.04417507452245043, "xq": 0.04908890747546866}, "n": {"calib": 3643, "xc8k": 6221, "xq": 65511}, "prefix_tok": 0, "wall": 392.7, "pos_s": 191.9, "peak_gib": 28.34, "accum": 4, "gnorm": 0.024233}
+08:02:31 max steps

@@ -1,0 +1,10 @@
+{
+ "A": "chk/old",
+ "B": "chk/new",
+ "train_records": 3,
+ "steps_A": 3,
+ "steps_B": 3,
+ "differences": [],
+ "n_differences": 0,
+ "identical": true
+}
