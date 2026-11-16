@@ -2,3 +2,5 @@ bd358f16882e7074098d9df58bf79e7b753f6cb82856abe433d73c098764b7ac  /data/q27/w185
 46bcf5a3d7ebdedfbc063c7fd33fc1e33f52453e5165c9773bc13625db90efa6  /data/q27/w185/donors/small-head.rad
 c53d18d20e73faca03d72fe24f2c47fbc567512fd2790c86ad2a4dc3c47e2ab9  /data/q27/w185/donors/tiny-emb.rad
 399442dad09f08a10437cebed76af3b486cd2da5fd0ae2d5ec1da579026ba396  /data/q27/w185/donors/tiny-head.rad
+7a14081036fd3b0da92fa8518490b5d384c6bf5b0492cbfb8313e9208c80e1e6  /data/q27/w185/donors/fp8-emb.rad
+ab82e33dca98cbf51368d0e6995b428e6872878032dfc0365cce1151175f6965  /data/q27/w185/donors/fp8deq-emb.rad

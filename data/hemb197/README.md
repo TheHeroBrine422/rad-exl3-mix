@@ -100,3 +100,19 @@ Q2 (card bytes = menu accounting; VRAM = engine settled free, agreeing with the 
   (5.5-a vs 5.5-a-vs, 4.0-a vs 4.0-a-vs, 2.5-a vs 2.5-a-vs).
 - Failed attempts kept in `raw/logs/failed/`: the two `a-ram` reads (the vload build refuses `--embedding-placement ram`
   for the trellis table; the d-ram runs are the host-RAM variant).
+
+## Addendum: lead notes (host-RAM bf16 embedding on VRAM and speed; fp8 arm f)
+
+- Speed (`raw/speed/table.md`, batch 1, greedy, spec off, 512 tokens, contexts 0 / 4k / 16k, 1 warm-up, 3 runs; `tools/speed197.sh`
+  + w177's `bench.py`): bf16 host embedding (row d, `--embedding-placement ram`) vs quantized card (row a). Decode ms/token at ctx 0:
+  5.5 34.09 vs 34.08, 4.0 26.48 vs 26.56, 2.5 21.46 vs 21.49; prefill at 4k: within 0.1 %. No measurable cost at batch 1.
+- VRAM (engine settled free and sysfs sampler; `raw/vram/`, `raw/logs/`): the card drops by exactly the quantized table's bytes
+  (0.28 / 0.50 / 0.68 GiB at 2.5 / 4.0 / 5.5); the bf16 table takes 2.37 GiB of host RAM.
+- fp8 arm (f): `tools/mkfp8donor197.cpp` quantises the bf16 table with libquant's `rtn` (`codes=fp8_e4m3, block=*x*, scale=f32`:
+  one scale for the table); the core decodes it back with rel. Frobenius 0.0267. The engine refuses an E4M3 `token_embd.weight`
+  at load (the arch declares it bf16), on the card and on the host; the KL was therefore measured with the decoded values as a
+  plain bf16 table (identical values to `embed_lookup_q`'s bf16(code * scale)): `raw/fp8-arms.json`. Serving fp8 needs an arch change.
+- Commands added: `mkfp8donor197 PLUGIN IN.bf16 248320 5120 OUT.rad token_embd.weight`; `fparm197.py ROWS GOLDEN OUT.json`;
+  `speed197.sh NAME MANIFEST "EXTRA"` (CARD, PORT env); `speedtable197.py SPEED_DIR OUT.md ROW...`.
+- Operational fixes recorded (all reruns from the same manifests): `ulimit -n 65536` (the vload build keeps every level shard open:
+  1024 is too low for mixes over 14+ levels); the speed script needs it too.
