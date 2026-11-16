@@ -1,0 +1,1 @@
+{"monitor": [], "budgets": [1000000.0], "last": 50, "branches": {}, "fork_last": 40, "steps": 2134, "e2e_from": 0, "share": {"xq": 846907, "xc8k": 78201, "calib": 68262, "tr32k": 21869}, "accum": 1, "wd": 0.0, "warmup": 8, "opt_steps": 50, "order_seed": 3}

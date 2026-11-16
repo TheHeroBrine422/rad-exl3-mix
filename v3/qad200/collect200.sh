@@ -11,8 +11,8 @@ for t in "$@"; do
   for f in result.json census.txt mix.txt eval.log score-x181g.json score-fe38.json; do [ -e served/$t/$f ] && cp served/$t/$f $d/served/; done
   for f in served/$t/score-*.json.rows; do [ -e "$f" ] && gzip -c "$f" > $d/served/$(basename $f).gz; done
 done
-for a in "$@"; do :; done
 [ -d analysis-a123 ] && mkdir -p collect/analysis-a123 && cp analysis-a123/* collect/analysis-a123/
 [ -d analysis ] && mkdir -p collect/analysis && cp analysis/* collect/analysis/
+[ -d analysis-final ] && mkdir -p collect/analysis-final && cp analysis-final/* collect/analysis-final/
 tar czf $OUT -C collect .
 echo "wrote $OUT"
