@@ -1,0 +1,122 @@
+{
+ "experiment": "#196 QAD pilot: restricted factors (R), RMSNorm gains (N), un-shrink (U), at 2.5 and 4.0",
+ "rules": "v3/qad196/RULES196.md (commit 22306e58)",
+ "by": "w182",
+ "written": "2026-11-15 ~7:10 PM CST, before any run (US Central)",
+ "students": {
+  "2.5": {
+   "incumbent": "v3s183-2.5-inc-01334",
+   "hash": "05022252c480908f",
+   "assign_sha256": "c69c54266f4c73b485f71d7277081ddb5c1bbaaea27e905bac342eeb9c728b9f",
+   "hash_check": "05022252c480908f",
+   "source": "lead-srch/run/drv/state.jsonl (last 2.5 incumbent event; same as #191)",
+   "lr": 0.001,
+   "vl": "/data/q27/w170/vl/inc2.5m (shared with #191)"
+  },
+  "4.0": {
+   "incumbent": "v3s183-4-inc-02362",
+   "hash": "481c35dc10881175",
+   "assign_sha256": "5185c3fdf09d644d69ae1b204c7b06b88826846b143d7442bb8fcb2eaa78fe0c",
+   "hash_check": "481c35dc10881175",
+   "source": "lead-srch/run/drv/state.jsonl: last {\"ev\": \"incumbent\", \"size\": 4.0} event (line 16993, tag v3s183-4-inc-02362, prev v3s183-4-inc-02246); the search may move on, this pin does not",
+   "lr": 0.0001,
+   "vl": "/data/q27/w182/vl/inc4.0m (built by vlevel.py from the assignment)"
+  }
+ },
+ "hash_def": "sha1(json.dumps(sorted(assignment.items())))[:16] (matches the search's submit hash; checked for both)",
+ "budget_gen_rows": 1000000.0,
+ "seed": 0,
+ "data": "#191's S-only reference (w154 goldens + gen masks, calib qad pool, D-)",
+ "judge": {
+  "sets": {
+   "x181g": "/data/q27/w154/slices/golden-x181g",
+   "fe38": "/data/q27/w170/slices/sub-fe38"
+  },
+  "gate_set": "fe38"
+ },
+ "unit_checks": [
+  "switches off == #191 L0B0T0Q0D0 train.jsonl, first 3 steps (exact)",
+  "un-shrink with c forced to 1 == identity (scales all 1, params 0)"
+ ],
+ "arms": [
+  {
+   "size": 2.5,
+   "name": "A",
+   "flags": "",
+   "train": true,
+   "note": "#191 arm A rerun (all trunk row scales), same seed/data as #191 S-only"
+  },
+  {
+   "size": 2.5,
+   "name": "R",
+   "flags": "--factors attn_ssmout",
+   "train": true,
+   "note": "restricted row scales: attn_qg/k/v/output + ssm_out"
+  },
+  {
+   "size": 2.5,
+   "name": "U",
+   "flags": "--unshrink U25 --export-only",
+   "train": false,
+   "note": "un-shrink only, no training"
+  },
+  {
+   "size": 2.5,
+   "name": "UR",
+   "flags": "--unshrink U25 --factors attn_ssmout",
+   "train": true,
+   "note": "U then R"
+  },
+  {
+   "size": 2.5,
+   "name": "RN",
+   "flags": "--factors attn_ssmout --norms",
+   "train": true,
+   "note": "R + RMSNorm gains at lr/10"
+  },
+  {
+   "size": 2.5,
+   "name": "AN",
+   "flags": "--norms",
+   "train": true,
+   "note": "A + RMSNorm gains at lr/10"
+  },
+  {
+   "size": 2.5,
+   "name": "UA",
+   "flags": "--unshrink U25",
+   "train": true,
+   "note": "U then A"
+  },
+  {
+   "size": 4.0,
+   "name": "A4",
+   "flags": "",
+   "train": true,
+   "note": "A at the 4.0 incumbent"
+  },
+  {
+   "size": 4.0,
+   "name": "R4",
+   "flags": "--factors attn_ssmout",
+   "train": true,
+   "note": "R at 4.0"
+  },
+  {
+   "size": 4.0,
+   "name": "U4",
+   "flags": "--unshrink U40 --export-only",
+   "train": false,
+   "note": "un-shrink only at 4.0"
+  },
+  {
+   "size": 4.0,
+   "name": "UR4",
+   "flags": "--unshrink U40 --factors attn_ssmout",
+   "train": true,
+   "note": "U then R at 4.0"
+  }
+ ],
+ "analysis": "analyse196.py: per-arm served mean KL on x181g + fe38 pooled (gen rows); effects vs A (2.5) and A4 (4.0); per-document bootstrap CIs (2,000 reps, seed 0); each arm vs its untrained student",
+ "runtime": "none (scales and norm gains fold into the format; un-shrink is a per-row scale)"
+}
