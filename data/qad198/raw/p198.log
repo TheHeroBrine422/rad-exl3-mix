@@ -1,0 +1,38 @@
+11-15 11:58 PM CST p198 start on card 2
+11-15 11:58 PM CST unit check (files) passed: {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "soup": "/data/q27/w186/unit/SO1-file", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6565765, "scale_max_rel_diff": 1.1920928955078125e-07}
+11-15 11:58 PM CST soup SO1 built (mean)
+11-16 12:06 AM CST served SO1 rc 0
+11-16 12:06 AM CST unit gate passed (SO1 = L0B0T0Q0D0 served)
+11-16 12:06 AM CST soup S2 built (mean)
+11-16 12:22 AM CST served S2 rc 0
+11-16 12:22 AM CST soup S4 built (mean)
+REF2 rc 0
+11-16 12:29 AM CST p198 start on card 2
+11-16 12:33 AM CST UNIT CHECK NOT EXACT: {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "soup": "/data/q27/w186/unit/SO1-file", "exp_device": "cuda:0", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "scale_max_rel_diff": 0.0}; chain stopped
+11-16 12:35 AM CST p198 start on card 2
+11-16 12:35 AM CST unit check (files) exact: {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "soup": "/data/q27/w186/unit/SO1-file", "exp_device": "cuda:0", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "scale_max_rel_diff": 0.0, "exact": true}
+11-16 12:35 AM CST soup SO1 built (mean, exp on the GPU)
+11-16 12:44 AM CST served SO1 rc 0
+11-16 12:44 AM CST unit gate passed: SO1 served rows byte-identical to L0B0T0Q0D0
+11-16 12:45 AM CST soup S2 built (mean, exp on the GPU)
+11-16 1:10 AM CST served S2 rc 0
+11-16 1:10 AM CST soup S4 built (mean, exp on the GPU)
+11-16 1:16 AM CST served S4 rc 0
+11-16 1:16 AM CST soup C2 built (consensus, exp on the GPU)
+11-16 1:20 AM CST served C2 rc 0
+11-16 2:48 AM CST train A-s1 done
+11-16 2:53 AM CST served A-s1 rc 0
+11-16 2:53 AM CST soup S2s built (mean, exp on the GPU)
+11-16 2:58 AM CST served S2s rc 0
+11-16 2:58 AM CST analysis written: analysis/tables.md
+11-16 2:58 AM CST p198 done
+11-16 3:09 AM CST p198sh start on card 2
+11-16 3:09 AM CST unit shrink (N identical members) exact: {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 2, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true} {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 4, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true} 
+11-16 3:11 AM CST p198sh start on card 0
+11-16 3:11 AM CST unit shrink (N identical members) exact: {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 2, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true} {"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 4, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true} 
+11-16 3:11 AM CST soup SH4 built (shrink, exp on the GPU)
+11-16 3:16 AM CST served SH4 rc 0
+11-16 3:16 AM CST soup SH2s built (shrink, exp on the GPU)
+11-16 3:21 AM CST served SH2s rc 0
+11-16 3:21 AM CST analysis-sh written
+11-16 3:21 AM CST p198sh done

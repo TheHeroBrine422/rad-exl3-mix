@@ -1,0 +1,37 @@
+{
+ "tag": "SO1",
+ "mode": "mean",
+ "exp_device": "cuda:0",
+ "members": [
+  {
+   "dir": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06",
+   "params_sha256": "de8e443561f12a8ed578f1688bffb62d54f2cf117c0dea2f8be1d23001412df0",
+   "scale_file_gap_rel": 0.0,
+   "steps": 49,
+   "rows": 1013729,
+   "checksum": 95.76263228853223,
+   "args_seed": 0,
+   "args_mix50": null,
+   "args_a8": false
+  }
+ ],
+ "start": {
+  "dir": "/data/q27/w182/runs/ONE/ckpt-1e+06",
+  "sha256": "0d6e42baac24cd52bbf14e3a52c7333b36e380ad7c3ac288c8905fa13a128019",
+  "max_abs": 0.0
+ },
+ "n_scale_params": 720,
+ "n_scale_keys": 400,
+ "n_nonscale_params": 0,
+ "member_spread": {},
+ "soup_vs_member": [
+  {
+   "dir": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06",
+   "mean_abs_log_diff": 0.0,
+   "max_abs_log_diff": 0.0
+  }
+ ],
+ "sign_pairs": [],
+ "consensus_agree_frac_mean": null,
+ "soup_abs_log_mean": 0.005056211471997409
+}

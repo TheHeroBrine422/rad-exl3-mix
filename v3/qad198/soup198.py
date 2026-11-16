@@ -14,6 +14,9 @@ pointing eval196.py --ckpt at OUT.
 mean      every scale parameter = mean over the members of its log multiplier (the state value). This is RULES198's soup.
 consensus C2: d_i = state_i - start; where all members have the same sign of d_i: start + mean(d_i); else start (0 moved).
           No line search. (start = the untrained student's state; log 1 = 0 everywhere, checked with --start.)
+shrink    SH (RULES198 amendment 1, eval only): per log multiplier, m = mean over the N members and v = unbiased variance
+          across them; value = m * m^2 / (m^2 + v / N), 0 where m = 0. No fitted parameter. Needs N >= 2. With N identical
+          members v = 0 and the value is m exactly, so it equals the plain mean soup bitwise (unitshrink checks it).
 Everything that is not a scale parameter must be identical across members (checked) and is copied from CKPT[0].
 Member scale files are checked against exp(state) on load (max relative difference is recorded in soup.json).
 exp is taken on DEVICE (default: the GPU when torch sees one, as the trainer's write_ckpt does): on CPU the float32 exp
@@ -80,10 +83,11 @@ def check_same_student(M):
 
 
 def build(out, mode, dirs, start_dir=None, force=False, dev="cpu"):
-    assert mode in ("mean", "consensus"), mode
+    assert mode in ("mean", "consensus", "shrink"), mode
     if os.path.exists(os.path.join(out, ".done")) and not force:
         print(f"soup198: {out} exists (.done): skipped", file=sys.stderr); return None
     M = [load_ckpt(d, dev) for d in dirs]
+    if mode == "shrink": assert len(M) >= 2, "shrink needs at least two members (unbiased variance)"
     names = check_same_student(M)
     ref = M[0]
     scale = [n for n in names if n.endswith(SUFFIX)]
@@ -99,12 +103,22 @@ def build(out, mode, dirs, start_dir=None, force=False, dev="cpu"):
         start_info = {"dir": None, "assumed": "log 1 everywhere (0)"}
     st = {}
     agree_frac = {}
+    shrink_ratio = []
     for n in names:
         if not n.endswith(SUFFIX):
             st[n] = ref["state"][n].clone(); continue
         X = torch.stack([m["state"][n].double() for m in M])
         if mode == "mean":
             Y = X.mean(0)
+        elif mode == "shrink":
+            N = X.shape[0]
+            mu = X.mean(0); var = X.var(0, unbiased=True)
+            den = mu * mu + var / N
+            pos = den > 0
+            ratio = torch.where(pos, mu * mu / torch.where(pos, den, torch.ones_like(den)), torch.zeros_like(mu))
+            Y = mu * ratio
+            nz = mu != 0
+            if bool(nz.any()): shrink_ratio.append(ratio[nz].flatten())
         else:
             D = X - start[n].unsqueeze(0)
             sg = torch.sign(D)
@@ -145,6 +159,11 @@ def build(out, mode, dirs, start_dir=None, force=False, dev="cpu"):
         "consensus_agree_frac_mean": (float(np.mean(list(agree_frac.values()))) if agree_frac else None),
         "soup_abs_log_mean": float(np.mean([float(st[n].abs().mean()) for n in scale])) if scale else None,
     }
+    if mode == "shrink":
+        rr = torch.cat(shrink_ratio).double()
+        manifest["shrink"] = {"formula": "m * m^2 / (m^2 + v/N), v unbiased, N = members", "n": len(M),
+                              "ratio_mean": float(rr.mean()), "ratio_median": float(rr.median()), "ratio_min": float(rr.min()),
+                              "frac_ratio_below_0.5": float((rr < 0.5).double().mean()), "nonzero_params": int(rr.numel())}
     meta = dict(ref["meta"]); meta["soup"] = {"mode": mode, "members": [m["dir"] for m in M], "start": start_info, "exp_device": dev}
     tmp = out + ".part"
     if os.path.exists(tmp): shutil.rmtree(tmp)
@@ -180,6 +199,26 @@ def unit(out, member, start_dir=None, dev="cpu"):
     assert maxrel <= 2.5e-7, f"unit check failed: scale files differ by {maxrel:.3g}"
     rep["exact"] = bool(state_eq and n_eq == n_tot)
     print(json.dumps(rep))
+    return rep
+
+
+def unitshrink(out_dir, member, n, start_dir=None, dev="cpu"):
+    """N identical members: the shrink soup equals the plain mean soup exactly (state and scale files, bitwise)"""
+    tm, ts = out_dir + "-mean", out_dir + "-shrink"
+    build(tm, "mean", [member] * n, start_dir=start_dir, force=True, dev=dev)
+    build(ts, "shrink", [member] * n, start_dir=start_dir, force=True, dev=dev)
+    A, B = load_ckpt(tm, dev), load_ckpt(ts, dev)
+    names = sorted(A["state"])
+    state_eq = all(torch.equal(A["state"][n_], B["state"][n_]) for n_ in names)
+    n_eq = n_tot = 0
+    for k in A["keys"]:
+        for x, y in zip(A["files"][k], B["files"][k]):
+            n_tot += x.numel(); n_eq += int((x == y).sum())
+    rep = {"member": member, "n": n, "exp_device": dev, "state_bitwise_equal": bool(state_eq), "state_params": len(names),
+           "scale_values": n_tot, "scale_values_bitwise_equal": n_eq, "exact": bool(state_eq and n_eq == n_tot)}
+    shutil.rmtree(tm); shutil.rmtree(ts)
+    print(json.dumps(rep))
+    assert rep["exact"], "unitshrink failed: shrink of identical members differs from the mean soup"
     return rep
 
 
@@ -233,6 +272,23 @@ def selftest():
     # 3: a soup of one is the member, exactly (state) and within float32 rounding (scale files)
     rep = unit(os.path.join(T, "one"), m3, start_dir=start_dir)
     assert rep["state_bitwise_equal"]
+    # 3b: shrink: hand-computed value (m = 0.02, v = 0.0002 unbiased, N = 2 -> ratio 0.8 -> 0.016); zero mean -> 0;
+    #     identical members -> the mean exactly; one member -> refused
+    sa = mk("sh_a", {"l.a": ([0.01, 0.01, 0.0, 0.0], [0.5, -0.25, 0.1]), "l.b": (None, [0.1, 0.1, -0.1])}, {"norm.x": np.zeros(4)})
+    sb = mk("sh_b", {"l.a": ([0.03, -0.01, 0.0, 0.0], [0.5, -0.25, 0.3]), "l.b": (None, [0.3, -0.1, -0.1])}, {"norm.x": np.zeros(4)})
+    shd = os.path.join(T, "shrink2")
+    msh = build(shd, "shrink", [sa, sb], start_dir=start4)
+    S = torch.load(os.path.join(shd, "params.pt"), weights_only=False)["state"]
+    assert abs(float(S["l.a:r"][0]) - 0.016) < 1e-7, S["l.a:r"]          # m = 0.02, v = 0.0002, ratio = 0.8
+    assert float(S["l.a:r"][2]) == 0.0 and float(S["l.a:r"][3]) == 0.0    # zero mean -> 0
+    assert abs(float(S["l.a:c"][0]) - 0.5) < 1e-7                         # identical values -> exact
+    assert msh["shrink"]["n"] == 2 and msh["mode"] == "shrink"
+    unitshrink(os.path.join(T, "ushr2"), sa, 2, start_dir=start4)
+    unitshrink(os.path.join(T, "ushr4"), m1, 4, start_dir=start_dir)
+    try:
+        build(os.path.join(T, "shrink1"), "shrink", [m1]); raise SystemExit("selftest: shrink of one member not refused")
+    except AssertionError as e:
+        print("refused (shrink one member):", str(e)[:70])
     # 4: refusals: different student (a shape), a non-scale parameter that differs, a scale file that is not exp(state)
     bad = mk("bad_shape", {"l.a": (arr(5), arr(3)), "l.b": (None, arr(3))}, {"norm.x": np.zeros(4)})
     for args in ([m1, bad], ):
@@ -260,11 +316,13 @@ def selftest():
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    b = sub.add_parser("build"); b.add_argument("out"); b.add_argument("mode", choices=["mean", "consensus"])
+    b = sub.add_parser("build"); b.add_argument("out"); b.add_argument("mode", choices=["mean", "consensus", "shrink"])
     b.add_argument("ckpts", nargs="+"); b.add_argument("--start"); b.add_argument("--force", action="store_true")
     b.add_argument("--device", default="auto", help="where exp runs: cpu, cuda:N (ROCm too), or auto (cuda:0 if visible)")
     u = sub.add_parser("unit"); u.add_argument("out"); u.add_argument("ckpt"); u.add_argument("--start")
     u.add_argument("--device", default="auto")
+    us = sub.add_parser("unitshrink"); us.add_argument("out"); us.add_argument("ckpt"); us.add_argument("n", type=int)
+    us.add_argument("--start"); us.add_argument("--device", default="cpu")
     sub.add_parser("selftest")
     a = ap.parse_args()
     dev = ("cuda:0" if torch.cuda.is_available() else "cpu") if a.cmd != "selftest" and getattr(a, "device", "auto") == "auto" \
@@ -272,6 +330,8 @@ def main():
     if a.cmd == "build": build(os.path.abspath(a.out), a.mode, [os.path.abspath(x) for x in a.ckpts],
                                os.path.abspath(a.start) if a.start else None, a.force, dev=dev)
     elif a.cmd == "unit": unit(os.path.abspath(a.out), os.path.abspath(a.ckpt), os.path.abspath(a.start) if a.start else None, dev=dev)
+    elif a.cmd == "unitshrink": unitshrink(os.path.abspath(a.out), os.path.abspath(a.ckpt), a.n,
+                                           os.path.abspath(a.start) if a.start else None, dev=a.device)
     else: selftest()
 
 

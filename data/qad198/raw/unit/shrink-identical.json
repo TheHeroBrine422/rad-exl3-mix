@@ -1,0 +1,2 @@
+{"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 2, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true}
+{"member": "/data/q27/w170/runs/L0B0T0Q0D0/ckpt-1e+06", "n": 4, "exp_device": "cpu", "state_bitwise_equal": true, "state_params": 720, "scale_values": 6799360, "scale_values_bitwise_equal": 6799360, "exact": true}
