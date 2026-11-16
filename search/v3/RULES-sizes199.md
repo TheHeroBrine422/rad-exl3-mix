@@ -35,3 +35,10 @@ s195s1 vs the incumbent, confirmation on s195c1). 7.0 joins the final picks like
    the shifted mean of all sizes' incumbents / pool members), submitted as `decide` files, each judged like any candidate
    (stage 1 on s195s1, confirmation on s195c1). A file whose assignment equals one already submitted is skipped.
 3. No rerankers (xgb regressor / learn-to-rank failed the offline gate and confirmed 0 of 60 on s195).
+
+## Amendment 4 — 2026-11-16 4:15 AM CST (user: "yea try it. also you might as well kill the automated consensus/xavg")
+1. allocloop.sh stopped (round 1 decided as logged; round 2's unprocessed files held in `drv/inbox-held/`, not submitted).
+2. One round of **partial pulls** (`search/v3/inbox192/pull199.py`): per size, the live incumbent with its N = 12 / 24
+   trunk tensors of largest |K − K_consensus| set to the consensus option (consensus = allocloop round r11161001's
+   consensus192 output, s195s1 whole results), bytes rebalanced into the size window by menu err per byte among the
+   other trunk tensors; head / embedding unchanged. 32 decide files, judged like any candidate (stage 1 + confirmation).
