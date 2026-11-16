@@ -4722,7 +4722,10 @@
   "s1_z": -0.7680696705775953,
   "s1_k": 341,
   "s1_vs": "v3s183-5-inc-02222",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.022931057064540464,
+  "s2_z": 0.7131891352808857
  },
  {
   "file": "w172-xplant-3-hi.json",
@@ -4881,7 +4884,10 @@
   "s1_z": -0.6113542640671676,
   "s1_k": 341,
   "s1_vs": "v3s183-6-inc-02208",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": -0.012334460204517894,
+  "s2_z": -0.24620946706809432
  },
  {
   "file": "w172-tr-3.5-R0.125.json",
@@ -5050,7 +5056,10 @@
   "s1_z": -0.598061904160444,
   "s1_k": 341,
   "s1_vs": "v3s183-3.5-inc-02216",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": -0.003864121834691432,
+  "s2_z": -0.1816398592225198
  },
  {
   "file": "w172-xplant-2-hi-r5.json",
@@ -5076,7 +5085,10 @@
   "s1_z": -0.7082214389942315,
   "s1_k": 341,
   "s1_vs": "v3s183-2-inc-02211",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.01674593755369656,
+  "s2_z": 0.29335669743273557
  },
  {
   "file": "w172-anomall-2-t3.json",
@@ -5089,7 +5101,10 @@
   "s1_z": -2.124456425954969,
   "s1_k": 341,
   "s1_vs": "v3s183-2-inc-02201",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.019949452928441636,
+  "s2_z": 1.2578040190179631
  },
  {
   "file": "w172-ens-2.5-w0.5-R0.25-r5.json",
@@ -5115,7 +5130,10 @@
   "s1_z": -2.0340611041784333,
   "s1_k": 341,
   "s1_vs": "v3s183-2.5-inc-02212",
-  "stopped": false
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.04083000333378756,
+  "s2_z": 1.2467708544700808
  },
  {
   "file": "w172-xplant-2.5-half-r5.json",
@@ -5135,111 +5153,463 @@
   "alloc": "xavg",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-02328"
+  "tag": "v3s183-2-manual-02328",
+  "s1": "tentative",
+  "s1_logr": -0.01354678504208625,
+  "s1_z": -2.366786074186593,
+  "s1_k": 341,
+  "s1_vs": "v3s183-2-inc-02201",
+  "stopped": false,
+  "s2": "accept",
+  "s2_logr": -0.1507801973327772,
+  "s2_z": -2.1569130977469837
  },
  {
   "file": "w172-anomall-2.5-t3.json",
   "alloc": "anomall",
   "mode": "decide",
   "size": 2.5,
-  "tag": "v3s183-2.5-manual-02329"
+  "tag": "v3s183-2.5-manual-02329",
+  "s1": "tentative",
+  "s1_logr": -0.036916366727584055,
+  "s1_z": -1.6280360888429284,
+  "s1_k": 341,
+  "s1_vs": "v3s183-2.5-inc-02212",
+  "stopped": false,
+  "s2": "reject",
+  "s2_logr": 0.013718490959243265,
+  "s2_z": 0.4312642516157489
  },
  {
   "file": "w172-ens-5-w0.5-R0.25-r5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-02330"
+  "tag": "v3s183-5-manual-02330",
+  "s1": "stale"
  },
  {
   "file": "w172-anom-attn_outputd5-5.json",
   "alloc": "anom",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-02331"
+  "tag": "v3s183-5-manual-02331",
+  "s1": "stale"
  },
  {
   "file": "w172-xplant-3-half-r5.json",
   "alloc": "xplant",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-02332"
+  "tag": "v3s183-3-manual-02332",
+  "s1": "stale"
  },
  {
   "file": "w172-xavg-2-w-r5.json",
   "alloc": "xavg",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-02334"
+  "tag": "v3s183-2-manual-02334",
+  "s1": "stale"
  },
  {
   "file": "w172-anomall-2.5.json",
   "alloc": "anomall",
   "mode": "decide",
   "size": 2.5,
-  "tag": "v3s183-2.5-manual-02335"
+  "tag": "v3s183-2.5-manual-02335",
+  "s1": "stale"
  },
  {
   "file": "w172-rankreg-2-1-r5b.json",
   "alloc": "rankreg",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-02336"
+  "tag": "v3s183-2-manual-02336",
+  "s1": "stale"
  },
  {
   "file": "w172-ens-5-w0.75-R0.25-r5.json",
   "alloc": "ens",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-02337"
+  "tag": "v3s183-5-manual-02337",
+  "s1": "stale"
  },
  {
   "file": "w172-anom-attn_outputd6-5.json",
   "alloc": "anom",
   "mode": "decide",
   "size": 5.0,
-  "tag": "v3s183-5-manual-02338"
+  "tag": "v3s183-5-manual-02338",
+  "s1": "stale"
  },
  {
   "file": "w172-xplant-3-lo-r5.json",
   "alloc": "xplant",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-02339"
+  "tag": "v3s183-3-manual-02339",
+  "s1": "stale"
  },
  {
   "file": "w172-xavg-2.5-p.json",
   "alloc": "xavg",
   "mode": "decide",
   "size": 2.5,
-  "tag": "v3s183-2.5-manual-02340"
+  "tag": "v3s183-2.5-manual-02340",
+  "s1": "stale"
  },
  {
   "file": "w172-anomall-2.json",
   "alloc": "anomall",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-02342"
+  "tag": "v3s183-2-manual-02342",
+  "s1": "stale"
  },
  {
   "file": "w172-rankreg-2-2-r5b.json",
   "alloc": "rankreg",
   "mode": "decide",
   "size": 2.0,
-  "tag": "v3s183-2-manual-02343"
+  "tag": "v3s183-2-manual-02343",
+  "s1": "stale"
  },
  {
   "file": "w172-anom-ffn_downd0-3.5.json",
   "alloc": "anom",
   "mode": "decide",
   "size": 3.5,
-  "tag": "v3s183-3.5-manual-02348"
+  "tag": "v3s183-3.5-manual-02348",
+  "s1": "stale"
  },
  {
   "file": "w172-xplant-3-mid-r5.json",
   "alloc": "xplant",
   "mode": "decide",
   "size": 3.0,
-  "tag": "v3s183-3-manual-02352"
+  "tag": "v3s183-3-manual-02352",
+  "s1": "stale"
+ },
+ {
+  "file": "w172-xavg-2.5-w-r5.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02385",
+  "s1": "tentative",
+  "s1_logr": -0.014347840192918385,
+  "s1_z": -2.730426263805383,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": false
+ },
+ {
+  "file": "w172-anom-ffn_downd6-2.5-r5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02386",
+  "s1": "tentative",
+  "s1_logr": -0.014060365898946632,
+  "s1_z": -2.1726537212072685,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": false
+ },
+ {
+  "file": "w172-xavg-2.5-r5.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02387",
+  "s1": "tentative",
+  "s1_logr": -0.015256242289346874,
+  "s1_z": -1.8226061460455087,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": false
+ },
+ {
+  "file": "w172-rankreg-2.5-1-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02388",
+  "s1": "reject",
+  "s1_logr": 0.01971942644028065,
+  "s1_z": 1.5130963666202155,
+  "s1_k": 86,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-2.5-2-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02389",
+  "s1": "reject",
+  "s1_logr": 0.01658317935525298,
+  "s1_z": 1.430583392421293,
+  "s1_k": 85,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": true
+ },
+ {
+  "file": "w172-rankreg-2.5-3-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02390",
+  "s1": "reject",
+  "s1_logr": 0.022035065156252864,
+  "s1_z": 1.8160828223969534,
+  "s1_k": 89,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": true
+ },
+ {
+  "file": "w172-anom-ffn_gate_upd0-2.5-r5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02391",
+  "s1": "tentative",
+  "s1_logr": -0.008482285024086128,
+  "s1_z": -1.922944342695072,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02359",
+  "stopped": false
+ },
+ {
+  "file": "w172-anom-ssm_outd5-2.5-r5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02392",
+  "s1": "tentative",
+  "s1_logr": -0.015948774455081895,
+  "s1_z": -2.981003227481562,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": false
+ },
+ {
+  "file": "w172-anom-ssm_zd6-2.5-r5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 2.5,
+  "tag": "v3s183-2.5-manual-02393",
+  "s1": "tentative",
+  "s1_logr": -0.01719086702442784,
+  "s1_z": -2.514842214567398,
+  "s1_k": 354,
+  "s1_vs": "v3s183-2.5-inc-02370",
+  "stopped": false
+ },
+ {
+  "file": "w172-xplant-3.5-lo2-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-02399",
+  "s1": "reject",
+  "s1_logr": 0.01451741940342415,
+  "s1_z": 1.2782469040477364,
+  "s1_k": 111,
+  "s1_vs": "v3s183-3.5-inc-02373",
+  "stopped": false
+ },
+ {
+  "file": "w172-anomall-3-t3.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02400",
+  "s1": "reject",
+  "s1_logr": 0.003031292002877987,
+  "s1_z": 0.258014303145302,
+  "s1_k": 273,
+  "s1_vs": "v3s183-3-inc-02371",
+  "stopped": true
+ },
+ {
+  "file": "w172-anomall-3.5-t3.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-02401",
+  "s1": "reject",
+  "s1_logr": 0.026254970965363826,
+  "s1_z": 2.0326018324525994,
+  "s1_k": 43,
+  "s1_vs": "v3s183-3.5-inc-02373",
+  "stopped": true
+ },
+ {
+  "file": "w172-anom-ffn_downd6-3.5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-02402",
+  "s1": "reject",
+  "s1_logr": 0.060865340876814805,
+  "s1_z": 2.247342135336164,
+  "s1_k": 21,
+  "s1_vs": "v3s183-3.5-inc-02373",
+  "stopped": true
+ },
+ {
+  "file": "w172-anomall-3.5.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-02403",
+  "s1": "reject",
+  "s1_logr": 0.02852896604557168,
+  "s1_z": 2.04972224915652,
+  "s1_k": 38,
+  "s1_vs": "v3s183-3.5-inc-02373",
+  "stopped": true
+ },
+ {
+  "file": "w172-xplant-4.5-half-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-02404"
+ },
+ {
+  "file": "w172-anom-ffn_downd7-5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-02405"
+ },
+ {
+  "file": "w172-xplant-4-hi2-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-02406",
+  "s1": "reject",
+  "s1_logr": 0.005155938124076349,
+  "s1_z": 0.4005831905853243,
+  "s1_k": 273,
+  "s1_vs": "v3s183-4-inc-02375",
+  "stopped": true
+ },
+ {
+  "file": "w172-xavg-3-h.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02407",
+  "s1": "reject",
+  "s1_logr": -0.0049028024493174135,
+  "s1_z": -0.6413992476328076,
+  "s1_k": 354,
+  "s1_vs": "v3s183-3-inc-02371",
+  "stopped": false
+ },
+ {
+  "file": "w172-anomall-3.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02408"
+ },
+ {
+  "file": "w172-xplant-4.5-hi-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-02409"
+ },
+ {
+  "file": "w172-xavg-3-p.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02410"
+ },
+ {
+  "file": "w172-anomall-4-t3.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-02411"
+ },
+ {
+  "file": "w172-rankreg-3-1-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02412"
+ },
+ {
+  "file": "w172-anom-ssm_outd4-3.5.json",
+  "alloc": "anom",
+  "mode": "decide",
+  "size": 3.5,
+  "tag": "v3s183-3.5-manual-02422"
+ },
+ {
+  "file": "w172-xplant-4.5-mid-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-02423"
+ },
+ {
+  "file": "w172-xplant-5-half-r5.json",
+  "alloc": "xplant",
+  "mode": "decide",
+  "size": 5.0,
+  "tag": "v3s183-5-manual-02425"
+ },
+ {
+  "file": "w172-xavg-3-w-r5.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02426"
+ },
+ {
+  "file": "w172-anomall-4.5.json",
+  "alloc": "anomall",
+  "mode": "decide",
+  "size": 4.5,
+  "tag": "v3s183-4.5-manual-02427"
+ },
+ {
+  "file": "w172-rankreg-2-3-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-02428"
+ },
+ {
+  "file": "w172-xavg-2-r5.json",
+  "alloc": "xavg",
+  "mode": "decide",
+  "size": 2.0,
+  "tag": "v3s183-2-manual-02429"
+ },
+ {
+  "file": "w172-rankreg-3-2-r5b.json",
+  "alloc": "rankreg",
+  "mode": "decide",
+  "size": 3.0,
+  "tag": "v3s183-3-manual-02430"
+ },
+ {
+  "file": "w172-ens-4-w0.5-R0.25-r7.json",
+  "alloc": "ens",
+  "mode": "decide",
+  "size": 4.0,
+  "tag": "v3s183-4-manual-02431"
  }
 ]

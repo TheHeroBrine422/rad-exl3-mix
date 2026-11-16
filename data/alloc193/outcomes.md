@@ -1,12 +1,12 @@
 | allocator | files | stale (slice rotated) | stage-1 decided | tentative | confirmed accept | confirmed join | stage-2 reject | stage-2 pending | confirmed at (A accept, j join) |
 |---|---|---|---|---|---|---|---|---|---|
-| anom | 48 | 0 | 45 | 27 | 2 | 5 | 18 | 2 | 4.5j 2.5j 2A 4A 5j 2.5j 2j |
-| rankreg | 58 | 0 | 56 | 18 | 1 | 5 | 12 | 0 | 2.5j 2A 2j 6j 2j 4.5j |
-| ens | 79 | 14 | 63 | 24 | 3 | 1 | 20 | 0 | 2.5A 2.5A 3.5A 5j |
-| xplant | 61 | 8 | 50 | 15 | 3 | 1 | 10 | 1 | 3.5A 2.5j 2A 4A |
-| xavg | 20 | 0 | 17 | 10 | 2 | 0 | 7 | 1 | 2.5A 5A |
+| anom | 55 | 3 | 50 | 31 | 2 | 5 | 20 | 4 | 4.5j 2.5j 2A 4A 5j 2.5j 2j |
+| rankreg | 64 | 2 | 59 | 18 | 1 | 5 | 12 | 0 | 2.5j 2A 2j 6j 2j 4.5j |
+| ens | 80 | 16 | 63 | 24 | 3 | 1 | 20 | 0 | 2.5A 2.5A 3.5A 5j |
+| xplant | 67 | 11 | 52 | 15 | 3 | 1 | 11 | 0 | 3.5A 2.5j 2A 4A |
+| xavg | 26 | 2 | 21 | 13 | 3 | 0 | 8 | 2 | 2.5A 5A 2A |
 | cons | 5 | 0 | 5 | 2 | 0 | 1 | 1 | 0 | 4.5j |
-| tr | 31 | 0 | 31 | 8 | 1 | 0 | 6 | 1 | 2.5A |
+| tr | 31 | 0 | 31 | 8 | 1 | 0 | 7 | 0 | 2.5A |
 | recal | 12 | 0 | 12 | 3 | 0 | 1 | 2 | 0 | 3j |
 | curve | 5 | 0 | 5 | 1 | 0 | 0 | 1 | 0 |  |
 | rob | 3 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
@@ -17,7 +17,7 @@
 | mom | 8 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | floor | 8 | 4 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | smooth | 16 | 4 | 12 | 1 | 0 | 0 | 1 | 0 |  |
-| anomall | 4 | 0 | 1 | 1 | 0 | 0 | 0 | 1 |  |
+| anomall | 10 | 2 | 5 | 2 | 0 | 0 | 2 | 0 |  |
 
 | file | alloc | size | tag | stage 1 (log r, z, docs) | stage 2 (log r, z) |
 |---|---|---|---|---|---|
@@ -371,7 +371,7 @@
 | w172-xplant-2.5-lo.json | xplant | 2.5 | manual-02282 | reject +0.0647 z +2.58 k 30 stopped | - |
 | w172-xplant-3.5-hi.json | xplant | 3.5 | manual-02283 | reject +0.0070 z +0.54 k 182 | - |
 | w172-xplant-4-hi.json | xplant | 4 | manual-02284 | reject +0.0196 z +0.93 k 133 stopped | - |
-| w172-xplant-5-hi.json | xplant | 5 | manual-02285 | tentative -0.0118 z -0.77 k 341 | pending |
+| w172-xplant-5-hi.json | xplant | 5 | manual-02285 | tentative -0.0118 z -0.77 k 341 | reject +0.0229 z +0.71 |
 | w172-xplant-3-hi.json | xplant | 3 | manual-02286 | reject +0.0026 z +0.22 k 243 | - |
 | w172-xplant-4.5-hi.json | xplant | 4.5 | manual-02287 | reject +0.0171 z +1.10 k 119 stopped | - |
 | w172-xplant-2.5-hi.json | xplant | 2.5 | manual-02288 | tentative -0.0140 z -1.21 k 341 | reject +0.0237 z +0.57 |
@@ -383,7 +383,7 @@
 | w172-smooth-4.5-w5.json | smooth | 4.5 | manual-02299 | reject +0.0259 z +1.48 k 79 stopped | - |
 | w172-smooth-2.5-w5.json | smooth | 2.5 | manual-02300 | reject +0.0005 z +0.09 k 322 | - |
 | w172-smooth-2-w5.json | smooth | 2 | manual-02301 | reject +0.0119 z +1.32 k 102 | - |
-| w172-tr-6R0.5.json | tr | 6 | manual-02302 | tentative -0.0059 z -0.61 k 341 | pending |
+| w172-tr-6R0.5.json | tr | 6 | manual-02302 | tentative -0.0059 z -0.61 k 341 | reject -0.0123 z -0.25 |
 | w172-tr-3.5-R0.125.json | tr | 3.5 | manual-02303 | reject +0.0075 z +0.55 k 181 stopped | - |
 | w172-tr-3.5-R0.25.json | tr | 3.5 | manual-02304 | reject +0.0288 z +1.56 k 71 stopped | - |
 | w172-tr-3.5-R0.5.json | tr | 3.5 | manual-02305 | reject +0.0343 z +1.90 k 68 stopped | - |
@@ -396,26 +396,58 @@
 | w172-tr-5-R0.5.json | tr | 5 | manual-02315 | reject +0.0077 z +0.47 k 217 stopped | - |
 | w172-tr-6-R0.25.json | tr | 6 | manual-02316 | reject +0.0104 z +0.72 k 164 stopped | - |
 | w172-tr-6-R0.5.json | tr | 6 | manual-02319 | reject +0.0122 z +0.67 k 171 stopped | - |
-| w172-anom-attn_outputd1-3.5.json | anom | 3.5 | manual-02320 | tentative -0.0084 z -0.60 k 341 | pending |
+| w172-anom-attn_outputd1-3.5.json | anom | 3.5 | manual-02320 | tentative -0.0084 z -0.60 k 341 | reject -0.0039 z -0.18 |
 | w172-xplant-2-hi-r5.json | xplant | 2 | manual-02321 | reject +0.0010 z +0.13 k 289 stopped | - |
-| w172-xavg-2-h.json | xavg | 2 | manual-02322 | tentative -0.0031 z -0.71 k 341 | pending |
-| w172-anomall-2-t3.json | anomall | 2 | manual-02323 | tentative -0.0133 z -2.12 k 341 | pending |
+| w172-xavg-2-h.json | xavg | 2 | manual-02322 | tentative -0.0031 z -0.71 k 341 | reject +0.0167 z +0.29 |
+| w172-anomall-2-t3.json | anomall | 2 | manual-02323 | tentative -0.0133 z -2.12 k 341 | reject +0.0199 z +1.26 |
 | w172-ens-2.5-w0.5-R0.25-r5.json | ens | 2.5 | manual-02324 | reject +0.0147 z +1.04 k 123 stopped | - |
-| w172-anom-attn_outputd5-2.5-r5.json | anom | 2.5 | manual-02325 | tentative -0.0253 z -2.03 k 341 | pending |
+| w172-anom-attn_outputd5-2.5-r5.json | anom | 2.5 | manual-02325 | tentative -0.0253 z -2.03 k 341 | reject +0.0408 z +1.25 |
 | w172-xplant-2.5-half-r5.json | xplant | 2.5 | manual-02326 | reject +0.0281 z +1.37 k 341 | - |
-| w172-xavg-2-p.json | xavg | 2 | manual-02328 | pending | - |
-| w172-anomall-2.5-t3.json | anomall | 2.5 | manual-02329 | pending | - |
-| w172-ens-5-w0.5-R0.25-r5.json | ens | 5 | manual-02330 | pending | - |
-| w172-anom-attn_outputd5-5.json | anom | 5 | manual-02331 | pending | - |
-| w172-xplant-3-half-r5.json | xplant | 3 | manual-02332 | pending | - |
-| w172-xavg-2-w-r5.json | xavg | 2 | manual-02334 | pending | - |
-| w172-anomall-2.5.json | anomall | 2.5 | manual-02335 | pending | - |
-| w172-rankreg-2-1-r5b.json | rankreg | 2 | manual-02336 | pending | - |
-| w172-ens-5-w0.75-R0.25-r5.json | ens | 5 | manual-02337 | pending | - |
-| w172-anom-attn_outputd6-5.json | anom | 5 | manual-02338 | pending | - |
-| w172-xplant-3-lo-r5.json | xplant | 3 | manual-02339 | pending | - |
-| w172-xavg-2.5-p.json | xavg | 2.5 | manual-02340 | pending | - |
-| w172-anomall-2.json | anomall | 2 | manual-02342 | pending | - |
-| w172-rankreg-2-2-r5b.json | rankreg | 2 | manual-02343 | pending | - |
-| w172-anom-ffn_downd0-3.5.json | anom | 3.5 | manual-02348 | pending | - |
-| w172-xplant-3-mid-r5.json | xplant | 3 | manual-02352 | pending | - |
+| w172-xavg-2-p.json | xavg | 2 | manual-02328 | tentative -0.0135 z -2.37 k 341 | accept -0.1508 z -2.16 |
+| w172-anomall-2.5-t3.json | anomall | 2.5 | manual-02329 | tentative -0.0369 z -1.63 k 341 | reject +0.0137 z +0.43 |
+| w172-ens-5-w0.5-R0.25-r5.json | ens | 5 | manual-02330 | stale | - |
+| w172-anom-attn_outputd5-5.json | anom | 5 | manual-02331 | stale | - |
+| w172-xplant-3-half-r5.json | xplant | 3 | manual-02332 | stale | - |
+| w172-xavg-2-w-r5.json | xavg | 2 | manual-02334 | stale | - |
+| w172-anomall-2.5.json | anomall | 2.5 | manual-02335 | stale | - |
+| w172-rankreg-2-1-r5b.json | rankreg | 2 | manual-02336 | stale | - |
+| w172-ens-5-w0.75-R0.25-r5.json | ens | 5 | manual-02337 | stale | - |
+| w172-anom-attn_outputd6-5.json | anom | 5 | manual-02338 | stale | - |
+| w172-xplant-3-lo-r5.json | xplant | 3 | manual-02339 | stale | - |
+| w172-xavg-2.5-p.json | xavg | 2.5 | manual-02340 | stale | - |
+| w172-anomall-2.json | anomall | 2 | manual-02342 | stale | - |
+| w172-rankreg-2-2-r5b.json | rankreg | 2 | manual-02343 | stale | - |
+| w172-anom-ffn_downd0-3.5.json | anom | 3.5 | manual-02348 | stale | - |
+| w172-xplant-3-mid-r5.json | xplant | 3 | manual-02352 | stale | - |
+| w172-xavg-2.5-w-r5.json | xavg | 2.5 | manual-02385 | tentative -0.0143 z -2.73 k 354 | pending |
+| w172-anom-ffn_downd6-2.5-r5.json | anom | 2.5 | manual-02386 | tentative -0.0141 z -2.17 k 354 | pending |
+| w172-xavg-2.5-r5.json | xavg | 2.5 | manual-02387 | tentative -0.0153 z -1.82 k 354 | pending |
+| w172-rankreg-2.5-1-r5b.json | rankreg | 2.5 | manual-02388 | reject +0.0197 z +1.51 k 86 stopped | - |
+| w172-rankreg-2.5-2-r5b.json | rankreg | 2.5 | manual-02389 | reject +0.0166 z +1.43 k 85 stopped | - |
+| w172-rankreg-2.5-3-r5b.json | rankreg | 2.5 | manual-02390 | reject +0.0220 z +1.82 k 89 stopped | - |
+| w172-anom-ffn_gate_upd0-2.5-r5.json | anom | 2.5 | manual-02391 | tentative -0.0085 z -1.92 k 354 | pending |
+| w172-anom-ssm_outd5-2.5-r5.json | anom | 2.5 | manual-02392 | tentative -0.0159 z -2.98 k 354 | pending |
+| w172-anom-ssm_zd6-2.5-r5.json | anom | 2.5 | manual-02393 | tentative -0.0172 z -2.51 k 354 | pending |
+| w172-xplant-3.5-lo2-r5.json | xplant | 3.5 | manual-02399 | reject +0.0145 z +1.28 k 111 | - |
+| w172-anomall-3-t3.json | anomall | 3 | manual-02400 | reject +0.0030 z +0.26 k 273 stopped | - |
+| w172-anomall-3.5-t3.json | anomall | 3.5 | manual-02401 | reject +0.0263 z +2.03 k 43 stopped | - |
+| w172-anom-ffn_downd6-3.5.json | anom | 3.5 | manual-02402 | reject +0.0609 z +2.25 k 21 stopped | - |
+| w172-anomall-3.5.json | anomall | 3.5 | manual-02403 | reject +0.0285 z +2.05 k 38 stopped | - |
+| w172-xplant-4.5-half-r5.json | xplant | 4.5 | manual-02404 | pending | - |
+| w172-anom-ffn_downd7-5.json | anom | 5 | manual-02405 | pending | - |
+| w172-xplant-4-hi2-r5.json | xplant | 4 | manual-02406 | reject +0.0052 z +0.40 k 273 stopped | - |
+| w172-xavg-3-h.json | xavg | 3 | manual-02407 | reject -0.0049 z -0.64 k 354 | - |
+| w172-anomall-3.json | anomall | 3 | manual-02408 | pending | - |
+| w172-xplant-4.5-hi-r5.json | xplant | 4.5 | manual-02409 | pending | - |
+| w172-xavg-3-p.json | xavg | 3 | manual-02410 | pending | - |
+| w172-anomall-4-t3.json | anomall | 4 | manual-02411 | pending | - |
+| w172-rankreg-3-1-r5b.json | rankreg | 3 | manual-02412 | pending | - |
+| w172-anom-ssm_outd4-3.5.json | anom | 3.5 | manual-02422 | pending | - |
+| w172-xplant-4.5-mid-r5.json | xplant | 4.5 | manual-02423 | pending | - |
+| w172-xplant-5-half-r5.json | xplant | 5 | manual-02425 | pending | - |
+| w172-xavg-3-w-r5.json | xavg | 3 | manual-02426 | pending | - |
+| w172-anomall-4.5.json | anomall | 4.5 | manual-02427 | pending | - |
+| w172-rankreg-2-3-r5b.json | rankreg | 2 | manual-02428 | pending | - |
+| w172-xavg-2-r5.json | xavg | 2 | manual-02429 | pending | - |
+| w172-rankreg-3-2-r5b.json | rankreg | 3 | manual-02430 | pending | - |
+| w172-ens-4-w0.5-R0.25-r7.json | ens | 4 | manual-02431 | pending | - |
