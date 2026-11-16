@@ -26,3 +26,12 @@ for the final picks or V3.1).
 dropped. The #192 consensus probe `lead-consensus-k7cap-7-probe.json` (K ≤ 7 cap; t183 0.000501 at 6.987 bpw vs the
 stopped incumbent's 0.00051) is submitted through the inbox as `decide` for 7.0, judged like any candidate (stage 1 on
 s195s1 vs the incumbent, confirmation on s195c1). 7.0 joins the final picks like the other sizes.
+
+## Amendment 3 — 2026-11-16 3:30 AM CST (user: "add 1.5 and 1.75 bpw targets"; "do xavg in addition to consensus")
+1. 1.5 and 1.75 resume (research points, not release sizes; fit group b1; confirmation as every size). 1.25 stays stopped.
+2. Lead inbox loop (`rad-local/bin/allocloop.sh`, every 3 h until the user stops the search): for every active size,
+   (a) a consensus refresh (consensus192 `--whole --slice s195s1`: sources = every whole result on the live search
+   slice, best + within 3 %, at most 5 per size) and (b) the #193 `xavg` allocator (own193.py variants "", "w", "p":
+   the shifted mean of all sizes' incumbents / pool members), submitted as `decide` files, each judged like any candidate
+   (stage 1 on s195s1, confirmation on s195c1). A file whose assignment equals one already submitted is skipped.
+3. No rerankers (xgb regressor / learn-to-rank failed the offline gate and confirmed 0 of 60 on s195).

@@ -27,7 +27,7 @@ def main(frm=None):
     for t in d1 | tent:
         if num(t) < frm or kind.get(t) in (None, "incumbent", "confirm"): continue
         src = kind[t]
-        if t in mine: src = ("w172:" + mine[t][5:].split("-")[0]) if mine[t].startswith("w172-") else "inbox:other"
+        if t in mine: src = ("w172:" + mine[t][5:].split("-")[0]).replace("w172:", mine[t][:4] + ":") if mine[t].startswith(("w172-", "w181-")) else "inbox:other"
         r = T.setdefault(src, [0, 0, 0, 0, 0]); r[0] += 1
         if t in tent:
             r[1] += 1; v = d2.get(t)

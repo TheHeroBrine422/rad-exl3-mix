@@ -32,6 +32,7 @@ def main():
     ap.add_argument("--decide", default="2,2.5,3,3.5,4,4.5,5,6"); ap.add_argument("--probe", default="2.25,2.75,3.25,3.75,4.25,4.75,5.5")
     ap.add_argument("--within", type=float, default=0.03); ap.add_argument("--top", type=int, default=5)
     ap.add_argument("--bw", type=float, default=1.0); ap.add_argument("--kmax", type=float, default=99.0, help="cap trunk K (w8a8 saturates above ~K7)"); ap.add_argument("--slice", default="s186e")
+    ap.add_argument("--whole", action="store_true", help="(11-16) sources = every whole (not early-stopped) result on --slice in the driver state, any kind")
     a = ap.parse_args()
     c = json.load(open(a.conf)); M = MN.Menu.load(c["menu"]); R = c["root"]; tol = float(c.get("size_tol", 0.02))
     st = [json.loads(l) for l in open(f"{R}/state.jsonl")]
@@ -41,7 +42,16 @@ def main():
         r = json.loads(l)
         if r.get("tag") in sub and r.get("kld") and r.get("slice", a.slice) == a.slice: kl[r["tag"]] = r["kld"]
     by = {}
-    for t, e in sub.items():
+    if a.whole:                                                 # (11-16) every whole result on the slice, any kind
+        sub2 = {e["tag"]: e for e in st if e.get("ev") == "submit"}
+        for e in st:
+            if e.get("ev") != "result": continue
+            r = e["r"]; t = e["tag"]
+            if r.get("slice") != a.slice or r.get("stopped") or not r.get("kld") or t not in sub2: continue
+            if not os.path.exists(f"{R}/assign/{t}.json"): continue
+            by.setdefault(float(sub2[t]["size"]), []).append((r["kld"], t))
+    else:
+      for t, e in sub.items():
         if t in kl: by.setdefault(float(e["size"]), []).append((kl[t], e["of"]))
     src = []                                                    # (size, weight, assignment)
     for s, L in sorted(by.items()):
