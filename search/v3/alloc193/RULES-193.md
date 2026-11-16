@@ -272,3 +272,16 @@ committed before the data they affect.
 - **`xavg` variants** (same prefix): `h` = half way from the incumbent to the `w` target; `p` = `w` over the pool
   members of all sizes instead of the incumbents only. Hypotheses: `h` keeps the size's own structure where the full
   step lost at stage 1; `p` averages more independent searches, so less noise.
+
+## Amendment 12 — 2026-11-15 6:45 PM CST (lead; user: "kill the worker and make a new one specifically to look at anomaly flags and xgb ranker", "swap the search slice", "give it all the data from everything before this rotation")
+1. w172 stopped (decide 378 / 600 used). Successor **w181** runs only `anom` and `rankreg`, plus `xplant` at ≤ 20 % of
+   its files (the user is unsure of it). Every other allocator is closed (no new files; queued ones may resolve).
+   Evidence (w172 interim 4:35 PM CST, confirmed / decided, 80 % Wilson): anom 19 % [12, 28], rankreg 11 % [6, 17],
+   xplant 11 % [5, 20], the search's own moves 7 % [4, 11].
+2. The search rotates now to s195s1 (confirm s195c1). **Training data for w181 = every eval result of the whole run up
+   to that rotation**, on every slice that is retired at the rotation (all s173*, s186*, s190a–e, the s186e
+   re-selection, retired confirm slices s186b/d/f, s190b/d), plus the prior rows; s190f once its pending confirmations
+   are resolved. Never: s195* (the live set), t183 / t186n (report-only monitors), golden-final750, final-x, verify,
+   public.
+3. Budget for w181: 300 decide, 30 probes (its own count). Low bar for submission as before; rigour for what it
+   recommends adopting.
