@@ -237,6 +237,7 @@ class Driver:
             elif ev == "monitor": self.mon[e["size"]].append(e)
             elif ev == "act": self.act = e["mode"]
             elif ev == "size_stop": self.stopped_sizes.add(e["size"])
+            elif ev == "size_resume": self.stopped_sizes.discard(e["size"])
             elif ev == "fit_done":
                 gn = e.get("group", self.groups[0]["name"]); self.fit_at[gn] = e["n_results"]; last_fit = getattr(self, "_lastfit", {}); last_fit[gn] = e["out"]; self._lastfit = last_fit
             elif ev == "bias": self.bias.append(e)
@@ -1498,6 +1499,9 @@ class Driver:
         for size in self.sizes:                                             # sizes ended by hand (alert-only monitor)
             if size not in self.stopped_sizes and os.path.exists(f"{self.R}/STOP-{size:g}"):
                 self.stopped_sizes.add(size); self.rec({"ev": "size_stop", "size": size, "by": "hand"}); self.log(f"SIZE STOP {size} (by hand)")
+            elif size in self.stopped_sizes and os.path.exists(f"{self.R}/RESUME-{size:g}"):   # (11-16) a stopped size resumed by hand
+                self.stopped_sizes.discard(size); self.rec({"ev": "size_resume", "size": size, "by": "hand"}); self.log(f"SIZE RESUME {size} (by hand)")
+                os.replace(f"{self.R}/RESUME-{size:g}", f"{self.R}/RESUME-{size:g}.done")
             if self.c.get("monitor"): self.monitor_alert(size)
         self.maybe_refit()
         act = self.rotate()
