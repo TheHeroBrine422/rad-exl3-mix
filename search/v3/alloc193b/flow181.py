@@ -47,7 +47,7 @@ def tally():
     V = verdicts(); M = meta(); T = collections.OrderedDict()
     for f, v in V.items():
         n = f[5:-5]; al, var, fl = var_of(n, M)
-        for key in ((al, "", ""), (al, var, ""), (al, var, fl or "")):
+        for key in dict.fromkeys(((al, "", ""), (al, var, ""), (al, var, fl or ""))):
             if v["s1"] in (None, "stale"): continue
             r = T.setdefault(key, [0, 0, 0, 0, 0]); r[0] += 1
             if v["s1"] == "tentative":
