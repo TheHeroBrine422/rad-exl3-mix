@@ -14,3 +14,9 @@ lead: even with QAD it stays above 0.05). w181 (#193-02) stopped at the same tim
    confirmed models) through the inbox as `decide` — judged like any candidate.
 5. The new sizes enter the final picks like the others (RULES-picks amendment to come), with their confirmed models
    and pool as candidates.
+
+## Amendment 1 — 2026-11-16 1:00 AM CST (user: "i question if rotation is even necessary given at this point we are just trying to improve the new targets")
+No further rotation: s195s1 stays the search slice and s195c1 the confirm slice until the final picks (`rotate_after`
+100000). The new sizes start fresh on s195s1 (0 decisions there); the final picks re-score every candidate on two
+fresh large slices, so slice reuse here cannot carry into the published numbers. s195s2–5 / c2–10 stay unused (spare
+for the final picks or V3.1).
