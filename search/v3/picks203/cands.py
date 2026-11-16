@@ -1,7 +1,7 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """cands.py DRV EVALS OUT.json [--final] -- phase-1 candidate set (RULES-picks amendment 2026-11-16 §1).
 Per size: every stage-2 accept / join whose tag index >= 1000; the latest s186e re-selection's top 3; the live incumbent
-and pool members; at 6.5 / 7.0 stage-1 tentatives whose stage-2 |z| <= 0.5. Dedup by assignment hash (moves.ahash).
+and pool members; stage-1 tentatives whose stage-2 |z| <= 0.5 at 6.5 / 7.0 and at sizes with < 6 candidates. Dedup by assignment hash (moves.ahash).
 Each candidate carries its exact eval mix from the coordinator's evals.jsonl (same base, levels, donors, act).
 Without --final the live incumbent / pool are the current ones (a preview); --final after the search stops."""
 import hashlib, json, os, sys
@@ -12,7 +12,7 @@ mix = {}
 for l in open(evals):
     e = json.loads(l); mix[e["tag"]] = e["mix"]
 idx = lambda t: int(t.rsplit("-", 1)[1]) if t.rsplit("-", 1)[1].isdigit() else -1
-C, why = {}, {}
+C, why, narrow = {}, {}, {}
 def add(size, tag, w):
     C.setdefault(size, []); why.setdefault(tag, [])
     if tag not in C[size]: C[size].append(tag)
@@ -22,8 +22,8 @@ for e in st:
     ev = e.get("ev")
     if ev == "decision" and e.get("stage") == 2 and e.get("decision") in ("accept", "join") and idx(e["tag"]) >= 1000:
         add(float(e["size"]), e["tag"], "confirmed")
-    if ev == "decision" and e.get("stage") == 2 and e.get("decision") == "reject" and float(e["size"]) in (6.5, 7.0) and abs(e.get("z", 9)) <= 0.5:
-        add(float(e["size"]), e["tag"], "narrow-miss")
+    if ev == "decision" and e.get("stage") == 2 and e.get("decision") == "reject" and abs(e.get("z", 9)) <= 0.5:
+        narrow.setdefault(float(e["size"]), []).append(e["tag"])
     if ev == "incumbent": inc[float(e["size"])] = e["tag"]
     if ev == "pool": pool[float(e["size"])] = e.get("members") or [e.get("tag")]
     if ev == "reselect" and e.get("slice") == "s186e": resel[float(e["size"])] = [r[0] for r in e.get("ranking", [])[:3]]
@@ -33,6 +33,9 @@ for s, m in pool.items():
         if t: add(s, t, "pool")
 for s, m in resel.items():
     for t in m: add(s, t, "reselect-s186e")
+for s, ts in narrow.items():          # 6.5 / 7.0 always; elsewhere only where the size has < 6 candidates (am. §1 addendum)
+    if s in (6.5, 7.0) or len(C.get(s, [])) < 6:
+        for t in ts: add(s, t, "narrow-miss")
 res = {}
 for s in sorted(C):
     if s == 1.25: continue
