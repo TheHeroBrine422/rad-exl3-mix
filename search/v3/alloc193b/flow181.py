@@ -62,8 +62,13 @@ def upd():
     V = verdicts(); M = meta(); p = f"{DATA}/confirmed.json"; Cf = json.load(open(p)); n = 0
     for f, v in V.items():
         m = M.get(f[5:-5])
-        if not m or v["s2"] not in ("accept", "join") or m["var"] not in ("base", "xb", "nbm", "nbp"): continue
+        if not m or v["s2"] not in ("accept", "join"): continue
         b = BAND[m["size"]]
+        if m["var"] == "s2":                                          # amendment 16: s3 after a confirmed s2
+            for c in Cf:
+                if c["groups"] == m["groups"] and c["band"] == b and not c.get("s2ok"): c["s2ok"] = True; n += 1
+            continue
+        if m["var"] not in ("base", "xb", "nbm", "nbp", "nb2"): continue
         if any(c["groups"] == m["groups"] and c["band"] == b for c in Cf): continue
         Cf.append({"groups": m["groups"], "band": b, "dir": m["dir"], "src": f"{f[:-5]} ({v['s2']})"}); n += 1
     if n: json.dump(Cf, open(p + ".tmp", "w"), indent=1); os.replace(p + ".tmp", p)
@@ -95,7 +100,9 @@ def queue(rnd, gen):
     import random
     for v in A: random.Random(193 + int(rnd)).shuffle(A[v])
     mout = open(f"{DATA}/meta.jsonl", "a")
-    order = ["base", "s2", "nb2", "xb", "nbm", "nbp", "rev"]
+    order = ["cmb", "s3", "base", "s2", "nb2", "xb", "nbm", "nbp", "rev"]
+    # amendment 16: the standing drop rule per token (0 confirmed in >= 8 decided, pending not counted)
+    deadtok = {k[0] for k, r in T.items() if not k[1] and not k[2] and r[0] - r[4] >= 8 and r[2] + r[3] == 0}
     for t in itertools.zip_longest(*[A[v] for v in order if A[v]]):
         for x in t:
             if not x: continue
@@ -107,9 +114,11 @@ def queue(rnd, gen):
                 nrev += m["var"] == "rev"; mout.write(json.dumps(dict(m, name=n)) + "\n")
     mout.close()
     rr = sorted(glob.glob(f"{gen}/rr/rank*.json"), key=lambda p: (int(p[:-5].split("-")[-1]), "rankanom" in p, p))
-    for p in rr: take(p, "rank")
+    for p in rr:
+        if os.path.basename(p).split("-")[0] in deadtok: drop["dead token"] += 1; continue
+        take(p, "rank")
     for p in sorted(glob.glob(f"{gen}/own/xplant-*.json")):
-        if p[:-5].split("-")[-1] in ("lo", "hi", "mid"): take(p, "xplant")
+        if p[:-5].split("-")[-1] in ("lo", "hi", "mid") and "xplant" not in deadtok: take(p, "xplant")
     its = {k: iter(v) for k, v in by.items()}; fin = []
     while True:
         got = False
@@ -118,7 +127,7 @@ def queue(rnd, gen):
             if x: fin.append(x); got = True
         if not got: break
     tmp = W + "/queue.txt.tmp"; open(tmp, "w").write("".join(p + "\n" for p in fin)); os.replace(tmp, W + "/queue.txt")
-    print(f"round {rnd}: queue {len(fin)}: " + ", ".join(f"{k} {len(v)}" for k, v in by.items()) + f"; dropped {dict(drop)}; dead {sorted(dead)}")
+    print(f"round {rnd}: queue {len(fin)}: " + ", ".join(f"{k} {len(v)}" for k, v in by.items()) + f"; dropped {dict(drop)}; dead {sorted(dead)}; dead tokens {sorted(deadtok)}")
 
 
 if __name__ == "__main__":

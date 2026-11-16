@@ -42,20 +42,23 @@ def main():
         g = CV.band(s)
         if g not in cache: cache[g] = FO.load(M, a.rdir, g)[0]
         pred = cache[g]; ia = C.assign(a.snap, inc[s]); G = [w for w in km.W if C.gname(w) in groups]; b = dict(ia)
-        for w in G: b[w] = BL.shift(M, b, w, steps * d)
+        for w in G: b[w] = BL.shift(M, b, w, steps * (d[C.gname(w)] if isinstance(d, dict) else d))
         moved = sum(b[w] != ia[w] for w in G)
         if not moved: print(f"{name}: nothing to move"); return
         bb = BL.balance(pred, M, b, set(G), s)
         if bb is None: print(f"{name}: no balance"); return
         f = {"size": s, "mode": "decide", "assign": bb, "note": f"#193 anom | {why_txt} | code {a.commit}"}
         why = C.check_file(M, f)
-        print(f"{name}: {moved}/{len(G)} moved {steps * d:+d}, {sum(bb[w] != ia[w] for w in km.W)} changed, bpw {M.bpw(bb):.4f}, "
+        print(f"{name}: {moved}/{len(G)} moved {steps} step(s), {sum(bb[w] != ia[w] for w in km.W)} changed, bpw {M.bpw(bb):.4f}, "
               f"fit.py log r {math.log(pred.kl(bb) / pred.kl(ia)):+.4f} {why or 'OK'}", flush=True)
         if why is None:
             json.dump(f, open(f"{a.out}/{name}.json", "w"))
-            meta.write(json.dumps({"name": name, "size": s, "groups": groups, "dir": d, "steps": steps, "var": var, "flag": flag, "from": inc[s]}) + "\n"); meta.flush()
+            meta.write(json.dumps({"name": name, "size": s, "groups": groups, "dir": d if not isinstance(d, dict) else 0, "steps": steps, "var": var, "flag": flag, "from": inc[s]}) + "\n"); meta.flush()
 
-    tok = lambda gs: "lateffndown" if gs == ["ffn_down@6", "ffn_down@7"] else "+".join(x.replace("@", "d") for x in gs)
+    def tok(gs):
+        if gs == ["ffn_down@6", "ffn_down@7"]: return "lateffndown"
+        if len(gs) > 1 and len({x.split("@")[0] for x in gs}) == 1: return gs[0].split("@")[0] + "d" + "".join(x.split("@")[1] for x in gs)
+        return "+".join(x.replace("@", "d") for x in gs)
     bsz = lambda b: sorted([s for s in C.SIZES if C.BAND[s] == b], key=lambda s: -cnt[s])
     if not a.no_base:
         res = json.load(open(a.anom)); seen = set(); F = []
@@ -70,7 +73,9 @@ def main():
     for c in json.load(open(a.confirmed)):
         gs, b, d = c["groups"], c["band"], c["dir"]; fl = f"{'+'.join(gs)}|{b}"; t = tok(gs); way = "more" if d > 0 else "fewer"
         for s in bsz(b):
+            if c.get("s2ok"): make(f"anom-{t}-{s:g}-s3", s, gs, d, 3, "s3", fl, f"follow-up of the confirmed two-step {fl}: three steps {way} (still short of the optimum)")
             make(f"anom-{t}-{s:g}-s2", s, gs, d, 2, "s2", fl, f"follow-up of the confirmed flag {fl}: two steps {way} (the confirmed step was short of the optimum)")
+            if "@" not in gs[0]: continue                                 # head / emb: no depth neighbours
             lo = [x for x in (nb(gs[0], -1),) if x and x not in gs]; hi = [x for x in (nb(gs[-1], +1),) if x and x not in gs]
             if lo: make(f"anom-{t}-{s:g}-nbm", s, lo, d, 1, "nbm", fl, f"follow-up of the confirmed flag {fl}: the neighbouring depth band {lo[0]} shares the mis-valuation ({way} bits)")
             if hi: make(f"anom-{t}-{s:g}-nbp", s, hi, d, 1, "nbp", fl, f"follow-up of the confirmed flag {fl}: the neighbouring depth band {hi[0]} shares the mis-valuation ({way} bits)")
@@ -81,6 +86,15 @@ def main():
                 make(f"anom-{t}-{s:g}-xb", s, gs, d, 1, "xb", fl, f"follow-up of the confirmed flag {fl}: the effect is not band-specific ({way} bits in {'+'.join(gs)} at {s:g})")
         s = bsz(b)[0]
         make(f"anom-{t}-{s:g}-rev", s, gs, -d, 1, "rev", fl, f"control for the confirmed flag {fl}: one step AGAINST the flag should lose")
+    Cf = json.load(open(a.confirmed))                                  # amendment 16: cmb
+    for s in C.SIZES:
+        dirs = {}
+        for c in Cf:
+            if c["band"] == C.BAND[s]:
+                for g in c["groups"]: dirs.setdefault(g, c["dir"])
+        if len(dirs) >= 2:
+            make(f"anom-cmb-{s:g}", s, sorted(dirs), dirs, 1, "cmb", f"cmb|{C.BAND[s]}",
+                 f"confirmed effects add: every confirmed flag of {C.BAND[s]} one step at once ({', '.join(g + ('+' if v > 0 else '-') for g, v in sorted(dirs.items()))})")
 
 
 if __name__ == "__main__":
