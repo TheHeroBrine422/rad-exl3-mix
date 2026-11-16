@@ -94,7 +94,17 @@ def pick(a):
                                        if res[g][b]["se"] and abs(res[g][b]["beta"] / res[g][b]["se"]) >= 2))
     for s in sorted({c["size"] for c in cands}):
         L = sorted([c for c in cands if c["size"] == s], key=lambda c: S[c["tag"]])
-        for k, c in enumerate(L[:a.top]):
+        picked = []                                                   # amendment 14: >= --mindiff tensors apart
+        def div(order, n):
+            out = []
+            for c in order:
+                asg = json.load(open(f"{a.work}/assign/{c['tag']}.json"))
+                if any(sum(asg[w] != p[w] for w in asg) < a.mindiff for p in picked): continue
+                picked.append(asg); out.append(c)
+                if len(out) >= n: break
+            return out
+        top = div(L, a.top)
+        for k, c in enumerate(top):
             asg = json.load(open(f"{a.work}/assign/{c['tag']}.json"))
             d = {"size": s, "mode": "decide", "assign": asg,
                  "note": f"#193 rankreg | xgboost regressor (RULES-187 arm d + curve features) ranks this {c['kind']} move "
@@ -103,9 +113,9 @@ def pick(a):
             print(f"{s:g} #{k + 1}: {c['tag']} score {S[c['tag']]:+.4f} refit pred {c['pred_live']:+.4f} {why or 'OK'}")
             if why is None: json.dump(d, open(f"{a.outdir}/rankreg-{s:g}-{k + 1}.json", "w"))
         if a.anom:                                                    # amendment 13: rankanom = score + anomaly correction
-            got = {c["tag"] for c in L[:a.top]}
+            got = {c["tag"] for c in top}
             L2 = sorted([c for c in L if c["tag"] not in got], key=lambda c: S[c["tag"]] + corr[c["tag"]])
-            for k, c in enumerate(L2[:a.top2]):
+            for k, c in enumerate(div(L2, a.top2)):
                 asg = json.load(open(f"{a.work}/assign/{c['tag']}.json"))
                 d = {"size": s, "mode": "decide", "assign": asg,
                      "note": f"#193 rankanom | xgboost score {S[c['tag']]:+.4f} + cut-A anomaly correction {corr[c['tag']]:+.4f} "
@@ -120,6 +130,7 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=40); ap.add_argument("--sizes", default="2,2.5,3,3.5,4,4.5,5,6")
     ap.add_argument("--top", type=int, default=3); ap.add_argument("--commit", default="?")
     ap.add_argument("--seed", type=int, default=193); ap.add_argument("--anom"); ap.add_argument("--top2", type=int, default=2)
+    ap.add_argument("--mindiff", type=int, default=40)
     a = ap.parse_args()
     if a.cmd == "gen": a.snap, a.rdir, a.work = a.args; gen(a)
     elif a.cmd == "score": a.train, a.new, a.out = a.args; score(a)

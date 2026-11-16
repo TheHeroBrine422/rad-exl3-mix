@@ -92,6 +92,8 @@ def queue(rnd, gen):
         m = newm[os.path.basename(p)[:-5]]
         if (m["var"], m["flag"]) in dead: drop["dead"] += 1; continue
         A[m["var"]].append((p, m))
+    import random
+    for v in A: random.Random(193 + int(rnd)).shuffle(A[v])
     mout = open(f"{DATA}/meta.jsonl", "a")
     order = ["base", "s2", "nb2", "xb", "nbm", "nbp", "rev"]
     for t in itertools.zip_longest(*[A[v] for v in order if A[v]]):
