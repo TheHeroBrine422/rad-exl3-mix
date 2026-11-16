@@ -19,3 +19,10 @@ Training arm (one, ~1.5 card-h): **A-s1**: arm A with a different data-order see
 Contrasts: each soup vs its best member, and vs L0B0T0Q0D0. Verdict per contrast: 95 % CI wholly below 0 = soup better.
 If S2s is better than its best member: every later V3.1 QAD arm is a soup. Runtime: none (scales fold into the format).
 Data: judge sets are #191's (ledger rows exist); training data as #191 (qad pool + xcorp).
+
+## Amendment 1 — 2026-11-16 2:15 AM CST (user: "yea add that"), before any agreement-shrinkage soup is built
+Arm **SH** (eval only): agreement shrinkage over a set of member runs. Per log multiplier: mean m and unbiased variance
+v across the N members; value = m · m² / (m² + v / N) (0 where m = 0). No fitted parameter.
+Built on (a) the S4 members and (b) the S2s pair (D0 + A-s1) → **SH4**, **SH2s**; also on all available independent
+seeds if w187's s2 / s3 exist by then (**SHseed**, optional). Contrasts: each SH vs its plain soup (S4 / S2s) and vs its
+best member, as RULES198. Verdict rule unchanged.
