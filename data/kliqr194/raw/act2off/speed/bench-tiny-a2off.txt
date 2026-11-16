@@ -1,0 +1,21 @@
+tiny-a2off ctx 0 run 0 (warm): prompt 107 ttft 152 ms, client 31.96 ms/tok, server 31.95 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 1 (warm): prompt 103 ttft 122 ms, client 32.02 ms/tok, server 32.01 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 2: prompt 101 ttft 122 ms, client 32.05 ms/tok, server 32.05 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 3: prompt 101 ttft 122 ms, client 32.07 ms/tok, server 32.06 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 4: prompt 101 ttft 121 ms, client 32.08 ms/tok, server 32.08 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 5: prompt 104 ttft 121 ms, client 32.10 ms/tok, server 32.10 ms/step x 1.00 tok
+tiny-a2off ctx 0 run 6: prompt 106 ttft 122 ms, client 32.10 ms/tok, server 32.09 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 0 (warm): prompt 4145 ttft 1673 ms, client 32.66 ms/tok, server 32.66 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 1 (warm): prompt 4148 ttft 1671 ms, client 32.67 ms/tok, server 32.67 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 2: prompt 4151 ttft 1674 ms, client 32.67 ms/tok, server 32.66 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 3: prompt 4145 ttft 1672 ms, client 32.68 ms/tok, server 32.67 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 4: prompt 4148 ttft 1675 ms, client 32.64 ms/tok, server 32.63 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 5: prompt 4147 ttft 1673 ms, client 32.67 ms/tok, server 32.66 ms/step x 1.00 tok
+tiny-a2off ctx 4k run 6: prompt 4148 ttft 1674 ms, client 32.68 ms/tok, server 32.67 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 0 (warm): prompt 16437 ttft 7005 ms, client 33.99 ms/tok, server 33.99 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 1 (warm): prompt 16434 ttft 6986 ms, client 33.95 ms/tok, server 33.95 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 2: prompt 16433 ttft 6986 ms, client 33.98 ms/tok, server 33.98 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 3: prompt 16433 ttft 7002 ms, client 33.99 ms/tok, server 33.99 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 4: prompt 16438 ttft 6996 ms, client 33.98 ms/tok, server 33.97 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 5: prompt 16435 ttft 6982 ms, client 33.98 ms/tok, server 33.98 ms/step x 1.00 tok
+tiny-a2off ctx 16k run 6: prompt 16435 ttft 6972 ms, client 33.95 ms/tok, server 33.95 ms/step x 1.00 tok

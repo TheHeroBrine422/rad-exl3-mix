@@ -1,0 +1,21 @@
+nano-rep-ctl ctx 0 run 0 (warm): prompt 104 ttft 183 ms, client 34.60 ms/tok, server 34.59 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 1 (warm): prompt 105 ttft 154 ms, client 34.79 ms/tok, server 34.78 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 2: prompt 107 ttft 156 ms, client 34.83 ms/tok, server 34.83 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 3: prompt 103 ttft 155 ms, client 34.91 ms/tok, server 34.90 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 4: prompt 103 ttft 155 ms, client 34.94 ms/tok, server 34.93 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 5: prompt 104 ttft 156 ms, client 34.96 ms/tok, server 34.96 ms/step x 1.00 tok
+nano-rep-ctl ctx 0 run 6: prompt 99 ttft 155 ms, client 34.95 ms/tok, server 34.95 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 0 (warm): prompt 4148 ttft 3358 ms, client 35.44 ms/tok, server 35.43 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 1 (warm): prompt 4146 ttft 3358 ms, client 35.46 ms/tok, server 35.45 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 2: prompt 4150 ttft 3361 ms, client 35.48 ms/tok, server 35.48 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 3: prompt 4148 ttft 3361 ms, client 35.47 ms/tok, server 35.46 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 4: prompt 4146 ttft 3353 ms, client 35.42 ms/tok, server 35.41 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 5: prompt 4144 ttft 3344 ms, client 35.48 ms/tok, server 35.47 ms/step x 1.00 tok
+nano-rep-ctl ctx 4k run 6: prompt 4149 ttft 3362 ms, client 35.50 ms/tok, server 35.49 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 0 (warm): prompt 16435 ttft 13603 ms, client 36.77 ms/tok, server 36.77 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 1 (warm): prompt 16438 ttft 13591 ms, client 36.70 ms/tok, server 36.70 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 2: prompt 16433 ttft 13602 ms, client 36.74 ms/tok, server 36.73 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 3: prompt 16432 ttft 13572 ms, client 36.76 ms/tok, server 36.75 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 4: prompt 16436 ttft 13589 ms, client 36.74 ms/tok, server 36.74 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 5: prompt 16436 ttft 13593 ms, client 36.77 ms/tok, server 36.76 ms/step x 1.00 tok
+nano-rep-ctl ctx 16k run 6: prompt 16437 ttft 13596 ms, client 36.78 ms/tok, server 36.78 ms/step x 1.00 tok

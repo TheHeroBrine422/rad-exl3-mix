@@ -1,0 +1,4 @@
+{"rows_file": "/data/q27/w178/rows/nano-t183-a2off.json.rows", "golden": "/data/q27/w164/slices/golden-t183", "n_rows": 181488, "gen_positions": 157572, "kl_mean_gen": 0.029459413141012192, "kl_nonfinite": 0}
+{"rows_file": "/data/q27/w178/rows/nano-t183-ctl.json.rows", "golden": "/data/q27/w164/slices/golden-t183", "n_rows": 181488, "gen_positions": 157572, "kl_mean_gen": 0.029568545520305634, "kl_nonfinite": 0}
+{"rows_file": "/data/q27/w178/rows/small-t183-a2off.json.rows", "golden": "/data/q27/w164/slices/golden-t183", "n_rows": 181488, "gen_positions": 157572, "kl_mean_gen": 0.001230045803822577, "kl_nonfinite": 0}
+{"rows_file": "/data/q27/w178/rows/tiny-t183-a2off.json.rows", "golden": "/data/q27/w164/slices/golden-t183", "n_rows": 181488, "gen_positions": 157572, "kl_mean_gen": 0.007268788293004036, "kl_nonfinite": 0}

@@ -1,0 +1,14 @@
+I chained launches: off -- no drafter whose plugin measured a gain with them decodes speculatively
+I host-site execution: 9 of 1686 declared ops have no host kernel (rmsnorm_had_quant_i8g, gemm_nt_q, gather_cols3, had_quant_act_i8g32x2, gated_had_quant_i8g, qk_norm_rope_gate, qk_norm_rope_gate_kv_store, gate_quant_fp8, logits_gemm_vocab)
+I activation arena: not lent -- the 'qwen35_w8a8' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+I VRAM budget, per card:
+  activation arena     1.04 GiB   computed from the buffer plan
+    kv cache          20.20 GiB   100% of it -- 95% backing of the 8 x 40960 worst case: 7.6 full-length
+I arena: 895.87 MiB device + 172.66 MiB scratch + 0 B for the second lane = 1.04 GiB, charged to the VRAM budget before it was split
+I device allocations: 2 totalling 10.99 GiB, of which 30.15 GiB is the two pools -- the rest is the activation arena and the step staging. Anything on the card past this is the driver or a kernel plugin's own hipMalloc, which this cannot se
+I   --num-speculative-tokens           0                                           [command line]
+I   chained launches                   off
+I                                        VRAM budget, per card:
+I                                          activation arena     1.04 GiB   computed from the buffer plan
+I                                            kv cache          20.20 GiB   100% of it -- 95% backing of the 8 x 40960 worst case: 7.6 full-length
+I   kv cache                           20.20 GiB a card: 312176 tokens, 7.6 sessions at 40960

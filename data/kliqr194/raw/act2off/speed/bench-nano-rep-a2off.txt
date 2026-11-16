@@ -1,0 +1,21 @@
+nano-rep-a2off ctx 0 run 0 (warm): prompt 102 ttft 144 ms, client 107.97 ms/tok, server 107.96 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 1 (warm): prompt 101 ttft 116 ms, client 108.27 ms/tok, server 108.27 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 2: prompt 105 ttft 117 ms, client 108.31 ms/tok, server 108.30 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 3: prompt 105 ttft 116 ms, client 108.32 ms/tok, server 108.31 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 4: prompt 104 ttft 116 ms, client 108.35 ms/tok, server 108.35 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 5: prompt 105 ttft 115 ms, client 108.36 ms/tok, server 108.36 ms/step x 1.00 tok
+nano-rep-a2off ctx 0 run 6: prompt 107 ttft 116 ms, client 108.34 ms/tok, server 108.33 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 0 (warm): prompt 4147 ttft 1959 ms, client 108.96 ms/tok, server 108.96 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 1 (warm): prompt 4148 ttft 1959 ms, client 108.97 ms/tok, server 108.97 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 2: prompt 4150 ttft 1957 ms, client 108.98 ms/tok, server 108.98 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 3: prompt 4148 ttft 1959 ms, client 108.99 ms/tok, server 108.98 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 4: prompt 4147 ttft 1959 ms, client 108.87 ms/tok, server 108.87 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 5: prompt 4146 ttft 1961 ms, client 108.96 ms/tok, server 108.96 ms/step x 1.00 tok
+nano-rep-a2off ctx 4k run 6: prompt 4148 ttft 1958 ms, client 108.96 ms/tok, server 108.96 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 0 (warm): prompt 16434 ttft 7978 ms, client 110.45 ms/tok, server 110.44 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 1 (warm): prompt 16436 ttft 7969 ms, client 110.36 ms/tok, server 110.36 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 2: prompt 16434 ttft 7978 ms, client 110.44 ms/tok, server 110.44 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 3: prompt 16433 ttft 7981 ms, client 110.45 ms/tok, server 110.44 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 4: prompt 16436 ttft 7974 ms, client 110.36 ms/tok, server 110.35 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 5: prompt 16436 ttft 7977 ms, client 110.46 ms/tok, server 110.45 ms/step x 1.00 tok
+nano-rep-a2off ctx 16k run 6: prompt 16436 ttft 7973 ms, client 110.45 ms/tok, server 110.44 ms/step x 1.00 tok

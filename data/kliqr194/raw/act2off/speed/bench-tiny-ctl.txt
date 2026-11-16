@@ -1,0 +1,21 @@
+tiny-ctl ctx 0 run 0 (warm): prompt 102 ttft 185 ms, client 35.93 ms/tok, server 35.92 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 1 (warm): prompt 103 ttft 158 ms, client 36.06 ms/tok, server 36.05 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 2: prompt 103 ttft 158 ms, client 36.10 ms/tok, server 36.09 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 3: prompt 105 ttft 158 ms, client 36.12 ms/tok, server 36.12 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 4: prompt 105 ttft 158 ms, client 36.13 ms/tok, server 36.13 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 5: prompt 103 ttft 158 ms, client 36.14 ms/tok, server 36.13 ms/step x 1.00 tok
+tiny-ctl ctx 0 run 6: prompt 101 ttft 157 ms, client 36.14 ms/tok, server 36.13 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 0 (warm): prompt 4146 ttft 2984 ms, client 36.73 ms/tok, server 36.73 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 1 (warm): prompt 4147 ttft 2985 ms, client 36.73 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 2: prompt 4148 ttft 2986 ms, client 36.73 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 3: prompt 4145 ttft 2984 ms, client 36.72 ms/tok, server 36.71 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 4: prompt 4143 ttft 2969 ms, client 36.72 ms/tok, server 36.72 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 5: prompt 4147 ttft 2984 ms, client 36.71 ms/tok, server 36.71 ms/step x 1.00 tok
+tiny-ctl ctx 4k run 6: prompt 4145 ttft 2980 ms, client 36.67 ms/tok, server 36.67 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 0 (warm): prompt 16434 ttft 12100 ms, client 37.92 ms/tok, server 37.92 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 1 (warm): prompt 16436 ttft 12082 ms, client 37.91 ms/tok, server 37.91 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 2: prompt 16434 ttft 12095 ms, client 37.93 ms/tok, server 37.93 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 3: prompt 16433 ttft 12076 ms, client 37.94 ms/tok, server 37.94 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 4: prompt 16437 ttft 12078 ms, client 37.95 ms/tok, server 37.94 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 5: prompt 16434 ttft 12063 ms, client 37.90 ms/tok, server 37.89 ms/step x 1.00 tok
+tiny-ctl ctx 16k run 6: prompt 16436 ttft 12074 ms, client 37.94 ms/tok, server 37.94 ms/step x 1.00 tok

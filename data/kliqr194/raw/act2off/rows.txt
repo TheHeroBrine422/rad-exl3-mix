@@ -1,0 +1,10 @@
+# TAG PACKKEY ENV   -- w178 (#194-02): per entry, act_two OFF then the same-day control (act_two as the container says);
+# then a repeat of the Nano pair in reverse order (control first), because its act_two-off decode is 3x the control's.
+nano-a2off nano RADIANCE_ACT_TWO=0
+nano-ctl nano -
+tiny-a2off tiny RADIANCE_ACT_TWO=0
+tiny-ctl tiny -
+small-a2off small RADIANCE_ACT_TWO=0
+small-ctl small -
+nano-rep-ctl nano -
+nano-rep-a2off nano RADIANCE_ACT_TWO=0

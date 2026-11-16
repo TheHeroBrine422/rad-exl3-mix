@@ -1,0 +1,21 @@
+small-a2off ctx 0 run 0 (warm): prompt 104 ttft 357 ms, client 37.34 ms/tok, server 37.33 ms/step x 1.00 tok
+small-a2off ctx 0 run 1 (warm): prompt 101 ttft 132 ms, client 37.40 ms/tok, server 37.40 ms/step x 1.00 tok
+small-a2off ctx 0 run 2: prompt 105 ttft 133 ms, client 37.43 ms/tok, server 37.42 ms/step x 1.00 tok
+small-a2off ctx 0 run 3: prompt 103 ttft 132 ms, client 37.44 ms/tok, server 37.44 ms/step x 1.00 tok
+small-a2off ctx 0 run 4: prompt 106 ttft 134 ms, client 37.47 ms/tok, server 37.46 ms/step x 1.00 tok
+small-a2off ctx 0 run 5: prompt 104 ttft 133 ms, client 37.47 ms/tok, server 37.46 ms/step x 1.00 tok
+small-a2off ctx 0 run 6: prompt 102 ttft 133 ms, client 37.48 ms/tok, server 37.47 ms/step x 1.00 tok
+small-a2off ctx 4k run 0 (warm): prompt 4146 ttft 1682 ms, client 38.04 ms/tok, server 38.04 ms/step x 1.00 tok
+small-a2off ctx 4k run 1 (warm): prompt 4148 ttft 1686 ms, client 38.05 ms/tok, server 38.05 ms/step x 1.00 tok
+small-a2off ctx 4k run 2: prompt 4148 ttft 1684 ms, client 38.05 ms/tok, server 38.05 ms/step x 1.00 tok
+small-a2off ctx 4k run 3: prompt 4146 ttft 1684 ms, client 38.04 ms/tok, server 38.04 ms/step x 1.00 tok
+small-a2off ctx 4k run 4: prompt 4149 ttft 1687 ms, client 38.04 ms/tok, server 38.03 ms/step x 1.00 tok
+small-a2off ctx 4k run 5: prompt 4149 ttft 1681 ms, client 38.05 ms/tok, server 38.05 ms/step x 1.00 tok
+small-a2off ctx 4k run 6: prompt 4144 ttft 1685 ms, client 38.05 ms/tok, server 38.04 ms/step x 1.00 tok
+small-a2off ctx 16k run 0 (warm): prompt 16436 ttft 7038 ms, client 39.38 ms/tok, server 39.38 ms/step x 1.00 tok
+small-a2off ctx 16k run 1 (warm): prompt 16438 ttft 7025 ms, client 39.36 ms/tok, server 39.35 ms/step x 1.00 tok
+small-a2off ctx 16k run 2: prompt 16432 ttft 7022 ms, client 39.36 ms/tok, server 39.36 ms/step x 1.00 tok
+small-a2off ctx 16k run 3: prompt 16434 ttft 7011 ms, client 39.37 ms/tok, server 39.37 ms/step x 1.00 tok
+small-a2off ctx 16k run 4: prompt 16437 ttft 7034 ms, client 39.38 ms/tok, server 39.37 ms/step x 1.00 tok
+small-a2off ctx 16k run 5: prompt 16432 ttft 7023 ms, client 39.35 ms/tok, server 39.34 ms/step x 1.00 tok
+small-a2off ctx 16k run 6: prompt 16435 ttft 7029 ms, client 39.37 ms/tok, server 39.37 ms/step x 1.00 tok
