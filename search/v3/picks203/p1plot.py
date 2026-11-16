@@ -21,10 +21,12 @@ PFX = os.environ.get("P1_PREFIX", "p1-")
 C = json.load(open(cp))
 bpw, docs = {}, {}
 for l in open(f"{root}/results.jsonl"):
-    if f'"{PFX}' not in l: continue
+    if f'"{PFX}' not in l and '"p1s' not in l: continue
     r = json.loads(l)
-    if r.get("fail") or r.get("stopped") or r.get("slice") not in SL or not r["tag"].startswith(PFX): continue
-    t = r["tag"][len(PFX):]; bpw[t] = r["bytes"] * 8 / 26895998464 if "bytes" in r else None
+    if r.get("fail") or r.get("stopped") or r.get("slice") not in SL: continue
+    if r["tag"].startswith(PFX) and (PFX or not r["tag"].startswith("p1")): t = r["tag"][len(PFX):]
+    elif PFX == "p1-" and r["tag"].startswith("p1s"): t = r["tag"].split("-", 1)[1]      # per-slice evals (feed.py, 11-16 5:20 PM)
+    else: continue; bpw[t] = r["bytes"] * 8 / 26895998464 if "bytes" in r else None
     p = f"{root}/docs/{r['tag']}-{r['slice']}.json"
     if os.path.exists(p): 
         m = json.load(open(p))["m"]
