@@ -1,0 +1,270 @@
+{
+"format": "radiance-kld-top-1",
+"model": "Qwen/Qwen3.8-27B",
+"corpus": "/data/night1105/corpora/xc8k-b1.jsonl",
+"corpus_fnv1a64": "01d19c6811626e8d",
+"created": "2026-11-05T07:11:45Z",
+"n_vocab": 248320,
+"top": 512,
+"strata": {
+"rule": "N if > 50 % of alphabetic characters are non-LATIN (RULES-strata \u00a71)",
+"n_N": 2
+},
+"rows": 36457,
+"docs": [
+{
+"source": "fineweb2-hq/jpn_Jpan",
+"tokens": 257,
+"score_from": 0,
+"row0": 0,
+"orig": 4606,
+"stratum": "N",
+"script": "HIRAGANA",
+"part": "c",
+"src": 19
+},
+{
+"source": "wildchat",
+"tokens": 379,
+"score_from": 0,
+"row0": 256,
+"orig": 1577,
+"stratum": "N",
+"script": "CJK",
+"part": "c",
+"src": 11
+},
+{
+"source": "wikipedia/hi",
+"tokens": 4096,
+"score_from": 0,
+"row0": 634,
+"orig": 1011,
+"stratum": "N",
+"script": "DEVANAGARI",
+"part": "c",
+"src": 7
+},
+{
+"source": "fineweb2-hq/jpn_Jpan",
+"tokens": 348,
+"score_from": 0,
+"row0": 4729,
+"orig": 1292,
+"stratum": "N",
+"script": "HIRAGANA",
+"part": "c",
+"src": 10
+},
+{
+"source": "wikipedia/ko",
+"tokens": 2177,
+"score_from": 0,
+"row0": 5076,
+"orig": 1891,
+"stratum": "N",
+"script": "HANGUL",
+"part": "c",
+"src": 12
+},
+{
+"source": "wikipedia/th",
+"tokens": 4096,
+"score_from": 0,
+"row0": 7252,
+"orig": 1064,
+"stratum": "N",
+"script": "THAI",
+"part": "c",
+"src": 8
+},
+{
+"source": "wikipedia/th",
+"tokens": 1700,
+"score_from": 0,
+"row0": 11347,
+"orig": 974,
+"stratum": "N",
+"script": "THAI",
+"part": "c",
+"src": 6
+},
+{
+"source": "fineweb2-hq/arb_Arab",
+"tokens": 1846,
+"score_from": 0,
+"row0": 13046,
+"orig": 596,
+"stratum": "N",
+"script": "ARABIC",
+"part": "c",
+"src": 4
+},
+{
+"source": "fineweb2-hq/cmn_Hani",
+"tokens": 1184,
+"score_from": 0,
+"row0": 14891,
+"orig": 2182,
+"stratum": "N",
+"script": "CJK",
+"part": "c",
+"src": 14
+},
+{
+"source": "smoltalk2/longalign",
+"tokens": 4096,
+"score_from": 0,
+"row0": 16074,
+"orig": 966,
+"stratum": "N",
+"script": "CJK",
+"part": "c",
+"src": 5
+},
+{
+"source": "fineweb2-hq/ell_Grek",
+"tokens": 627,
+"score_from": 0,
+"row0": 20169,
+"orig": 418,
+"xdoc": 37657,
+"category": "multilingual",
+"stratum": "N",
+"script": "GREEK",
+"part": "x",
+"src": 0
+},
+{
+"source": "fineweb2-hq/jpn_Jpan",
+"tokens": 548,
+"score_from": 0,
+"row0": 20795,
+"orig": 2568,
+"stratum": "N",
+"script": "HIRAGANA",
+"part": "c",
+"src": 16
+},
+{
+"source": "fineweb2-hq/rus_Cyrl",
+"tokens": 323,
+"score_from": 0,
+"row0": 21342,
+"orig": 396,
+"stratum": "N",
+"script": "CYRILLIC",
+"part": "c",
+"src": 2
+},
+{
+"source": "wikipedia/he",
+"tokens": 902,
+"score_from": 0,
+"row0": 21664,
+"orig": 147,
+"stratum": "N",
+"script": "HEBREW",
+"part": "c",
+"src": 0
+},
+{
+"source": "wildchat",
+"tokens": 1670,
+"score_from": 0,
+"row0": 22565,
+"orig": 1917,
+"stratum": "N",
+"script": "CYRILLIC",
+"part": "c",
+"src": 13
+},
+{
+"source": "fineweb2-hq/cmn_Hani",
+"tokens": 372,
+"score_from": 0,
+"row0": 24234,
+"orig": 572,
+"stratum": "N",
+"script": "CJK",
+"part": "c",
+"src": 3
+},
+{
+"source": "wikipedia/he",
+"tokens": 3855,
+"score_from": 0,
+"row0": 24605,
+"orig": 1186,
+"stratum": "N",
+"script": "HEBREW",
+"part": "c",
+"src": 9
+},
+{
+"source": "wikipedia/bn",
+"tokens": 1056,
+"score_from": 0,
+"row0": 28459,
+"orig": 3504,
+"stratum": "N",
+"script": "BENGALI",
+"part": "c",
+"src": 17
+},
+{
+"source": "wikipedia/bn",
+"tokens": 1537,
+"score_from": 0,
+"row0": 29514,
+"orig": 2268,
+"stratum": "N",
+"script": "BENGALI",
+"part": "c",
+"src": 15
+},
+{
+"source": "fineweb2-hq/ell_Grek",
+"tokens": 358,
+"score_from": 0,
+"row0": 31050,
+"orig": 4208,
+"stratum": "N",
+"script": "GREEK",
+"part": "c",
+"src": 18
+},
+{
+"source": "wikipedia/uk",
+"tokens": 699,
+"score_from": 0,
+"row0": 31407,
+"orig": 154,
+"stratum": "N",
+"script": "CYRILLIC",
+"part": "c",
+"src": 1
+},
+{
+"source": "fineweb2-hq/ell_Grek",
+"tokens": 4353,
+"score_from": 0,
+"row0": 32105,
+"orig": 454,
+"xdoc": 5907,
+"category": "multilingual",
+"stratum": "N",
+"script": "GREEK",
+"part": "x",
+"src": 1
+}
+],
+"goldmix": {
+"parts": {
+"x": "/data/q27/w164/slices/golden-t186n-x",
+"c": "/data/q27/w164/slices/golden-t186n-c"
+},
+"seed": 1869,
+"built": "2026-11-14T23:50:03Z"
+}
+}

@@ -1,0 +1,675 @@
+base /data/q27/srch183/base/base-T4.rad
+blk.0.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4-mad/final codebook=mad
+blk.0.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k3.875-mad/final codebook=mad
+blk.0.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.0.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.0.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.1.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.5-mad/final codebook=mad
+blk.1.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.375-mad/final codebook=mad
+blk.1.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.1.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4-mad/final codebook=mad
+blk.1.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4-mad/final codebook=mad
+blk.2.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.2.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.75-mad/final codebook=mad
+blk.2.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.2.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.5-mad/final codebook=mad
+blk.2.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.375-mad/final codebook=mad
+blk.3.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.3.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.3.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.3.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.3.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.3.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.4.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.4.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.4.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.4.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.4.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.5.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.5.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.5.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.5.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.5.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.6.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.6.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.6.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.6.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.6.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.7.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.7.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.7.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.7.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.7.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.7.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.8.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.8.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.8.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.8.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.8.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.9.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.9.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.9.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.9.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.9.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.10.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.10.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.10.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.10.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.10.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.11.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.11.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.11.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.11.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.11.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.11.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.12.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.12.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.12.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.12.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.12.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.13.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.13.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.13.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.13.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.13.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.14.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.14.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.14.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.14.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.14.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.15.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k4.875-mad/final codebook=mad
+blk.15.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.15.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.15.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.15.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.15.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.16.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.16.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.16.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.16.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.16.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.17.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.17.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.17.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.17.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.17.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.18.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.18.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.18.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.18.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.18.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.19.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.19.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.19.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.19.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.19.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.19.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.20.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.20.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.20.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.20.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.20.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.21.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.21.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.21.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.21.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.21.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.22.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.22.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.22.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.22.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.22.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.23.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.23.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.23.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.23.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.23.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.23.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.24.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.24.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.24.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.24.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.24.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.25.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.25.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.25.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.25.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.25.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.26.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.26.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.26.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.26.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.26.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.27.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.27.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.27.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.27.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.27.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.27.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.28.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.28.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.28.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.28.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.28.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.29.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.29.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.29.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.29.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.29.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.30.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.30.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.30.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.30.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.30.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.31.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.31.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.31.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.31.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.31.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.31.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.32.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.32.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.32.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.32.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.32.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.33.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.33.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.33.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.33.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.33.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.34.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.34.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.34.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.34.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.34.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.35.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.35.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.35.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.35.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.35.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.35.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.36.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.36.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.36.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.36.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.36.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.37.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.37.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.37.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.37.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.37.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.38.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.38.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.38.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.38.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.38.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.39.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.39.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.39.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.39.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.39.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.39.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.40.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.40.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.40.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.40.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.40.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.41.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.41.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.41.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.41.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.41.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.42.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.42.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.42.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.42.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.42.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.43.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.43.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.43.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.43.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.43.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.43.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.44.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.44.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.44.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.44.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.44.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5-mad/final codebook=mad
+blk.45.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.45.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.45.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.45.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.45.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.46.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.46.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.46.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.46.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.46.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.47.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.47.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.47.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.47.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.47.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.47.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.48.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.48.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.48.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.48.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.48.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.49.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.49.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.49.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.49.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.49.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.25-mad/final codebook=mad
+blk.50.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.50.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.50.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.50.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.50.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.5-mad/final codebook=mad
+blk.51.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.51.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.51.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.51.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.51.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.51.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.52.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.52.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.52.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.52.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.52.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k5.75-mad/final codebook=mad
+blk.53.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.53.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.53.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.53.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.53.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.54.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.54.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.54.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.54.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.54.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.55.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.55.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.55.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.55.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.55.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.55.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.56.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.56.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.56.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.56.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.56.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.57.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.57.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.57.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.57.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.57.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.58.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.58.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.58.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.58.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.58.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.59.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.59.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.59.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.59.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.59.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.59.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.60.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.60.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.60.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.60.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.60.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.61.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.61.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.61.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.61.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.61.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.62.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.62.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.62.ssm_out.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.62.ssm_qkv.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.62.ssm_z.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.63.attn_k.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6-mad/final codebook=mad
+blk.63.attn_output.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.5-mad/final codebook=mad
+blk.63.attn_qg.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+blk.63.attn_v.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.63.ffn_down.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.75-mad/final codebook=mad
+blk.63.ffn_gate_up.weight final /data/q27/ladder-src-mad/q27v3-635bac02-k6.25-mad/final codebook=mad
+output.weight /data/q27/w158/heads/hd-u5.375.rad
+token_embd.weight /data/q27/w185/donors/small-emb.rad
+act blk.0.ffn_down.weight a8g128
+act blk.0.ffn_gate_up.weight a8g128
+act blk.0.ssm_out.weight a8g128
+act blk.0.ssm_qkv.weight a8g128
+act blk.0.ssm_z.weight a8g128
+act blk.1.ffn_down.weight a8g128
+act blk.1.ffn_gate_up.weight a8g128
+act blk.1.ssm_out.weight a8g128
+act blk.1.ssm_qkv.weight a8g128
+act blk.1.ssm_z.weight a8g128
+act blk.2.ffn_down.weight a8g128
+act blk.2.ffn_gate_up.weight a8g128
+act blk.2.ssm_out.weight a8g128
+act blk.2.ssm_qkv.weight a8g128
+act blk.2.ssm_z.weight a8g128
+act blk.3.attn_k.weight a8g128
+act blk.3.attn_output.weight a8g128
+act blk.3.attn_qg.weight a8g128
+act blk.3.attn_v.weight a8g128
+act blk.3.ffn_down.weight a8g128
+act blk.3.ffn_gate_up.weight a8g128
+act blk.4.ffn_down.weight a8g128
+act blk.4.ffn_gate_up.weight a8g128
+act blk.4.ssm_out.weight a8g128
+act blk.4.ssm_qkv.weight a8g128
+act blk.4.ssm_z.weight a8g128
+act blk.5.ffn_down.weight a8g128
+act blk.5.ffn_gate_up.weight a8g128
+act blk.5.ssm_out.weight a8g128
+act blk.5.ssm_qkv.weight a8g128
+act blk.5.ssm_z.weight a8g128
+act blk.6.ffn_down.weight a8g128
+act blk.6.ffn_gate_up.weight a8g128
+act blk.6.ssm_out.weight a8g128
+act blk.6.ssm_qkv.weight a8g128
+act blk.6.ssm_z.weight a8g128
+act blk.7.attn_k.weight a8g128
+act blk.7.attn_output.weight a8g128
+act blk.7.attn_qg.weight a8g128
+act blk.7.attn_v.weight a8g128
+act blk.7.ffn_down.weight a8g128
+act blk.7.ffn_gate_up.weight a8g128
+act blk.8.ffn_down.weight a8g128
+act blk.8.ffn_gate_up.weight a8g128
+act blk.8.ssm_out.weight a8g128
+act blk.8.ssm_qkv.weight a8g128
+act blk.8.ssm_z.weight a8g128
+act blk.9.ffn_down.weight a8g128
+act blk.9.ffn_gate_up.weight a8g128
+act blk.9.ssm_out.weight a8g128
+act blk.9.ssm_qkv.weight a8g128
+act blk.9.ssm_z.weight a8g128
+act blk.10.ffn_down.weight a8g128
+act blk.10.ffn_gate_up.weight a8g128
+act blk.10.ssm_out.weight a8g128
+act blk.10.ssm_qkv.weight a8g128
+act blk.10.ssm_z.weight a8g128
+act blk.11.attn_k.weight a8g128
+act blk.11.attn_output.weight a8g128
+act blk.11.attn_qg.weight a8g128
+act blk.11.attn_v.weight a8g128
+act blk.11.ffn_down.weight a8g128
+act blk.11.ffn_gate_up.weight a8g128
+act blk.12.ffn_down.weight a8g128
+act blk.12.ffn_gate_up.weight a8g128
+act blk.12.ssm_out.weight a8g128
+act blk.12.ssm_qkv.weight a8g128
+act blk.12.ssm_z.weight a8g128
+act blk.13.ffn_down.weight a8g128
+act blk.13.ffn_gate_up.weight a8g128
+act blk.13.ssm_out.weight a8g128
+act blk.13.ssm_qkv.weight a8g128
+act blk.13.ssm_z.weight a8g128
+act blk.14.ffn_down.weight a8g128
+act blk.14.ffn_gate_up.weight a8g128
+act blk.14.ssm_out.weight a8g128
+act blk.14.ssm_qkv.weight a8g128
+act blk.14.ssm_z.weight a8g128
+act blk.15.attn_k.weight a8g128
+act blk.15.attn_output.weight a8g128
+act blk.15.attn_qg.weight a8g128
+act blk.15.attn_v.weight a8g128
+act blk.15.ffn_down.weight a8g128
+act blk.15.ffn_gate_up.weight a8g128
+act blk.16.ffn_down.weight a8g128
+act blk.16.ffn_gate_up.weight a8g128
+act blk.16.ssm_out.weight a8g128
+act blk.16.ssm_qkv.weight a8g128
+act blk.16.ssm_z.weight a8g128
+act blk.17.ffn_down.weight a8g128
+act blk.17.ffn_gate_up.weight a8g128
+act blk.17.ssm_out.weight a8g128
+act blk.17.ssm_qkv.weight a8g128
+act blk.17.ssm_z.weight a8g128
+act blk.18.ffn_down.weight a8g128
+act blk.18.ffn_gate_up.weight a8g128
+act blk.18.ssm_out.weight a8g128
+act blk.18.ssm_qkv.weight a8g128
+act blk.18.ssm_z.weight a8g128
+act blk.19.attn_k.weight a8g128
+act blk.19.attn_output.weight a8g128
+act blk.19.attn_qg.weight a8g128
+act blk.19.attn_v.weight a8g128
+act blk.19.ffn_down.weight a8g128
+act blk.19.ffn_gate_up.weight a8g128
+act blk.20.ffn_down.weight a8g128
+act blk.20.ffn_gate_up.weight a8g128
+act blk.20.ssm_out.weight a8g128
+act blk.20.ssm_qkv.weight a8g128
+act blk.20.ssm_z.weight a8g128
+act blk.21.ffn_down.weight a8g128
+act blk.21.ffn_gate_up.weight a8g128
+act blk.21.ssm_out.weight a8g128
+act blk.21.ssm_qkv.weight a8g128
+act blk.21.ssm_z.weight a8g128
+act blk.22.ffn_down.weight a8g128
+act blk.22.ffn_gate_up.weight a8g128
+act blk.22.ssm_out.weight a8g128
+act blk.22.ssm_qkv.weight a8g128
+act blk.22.ssm_z.weight a8g128
+act blk.23.attn_k.weight a8g128
+act blk.23.attn_output.weight a8g128
+act blk.23.attn_qg.weight a8g128
+act blk.23.attn_v.weight a8g128
+act blk.23.ffn_down.weight a8g128
+act blk.23.ffn_gate_up.weight a8g128
+act blk.24.ffn_down.weight a8g128
+act blk.24.ffn_gate_up.weight a8g128
+act blk.24.ssm_out.weight a8g128
+act blk.24.ssm_qkv.weight a8g128
+act blk.24.ssm_z.weight a8g128
+act blk.25.ffn_down.weight a8g128
+act blk.25.ffn_gate_up.weight a8g128
+act blk.25.ssm_out.weight a8g128
+act blk.25.ssm_qkv.weight a8g128
+act blk.25.ssm_z.weight a8g128
+act blk.26.ffn_down.weight a8g128
+act blk.26.ffn_gate_up.weight a8g128
+act blk.26.ssm_out.weight a8g128
+act blk.26.ssm_qkv.weight a8g128
+act blk.26.ssm_z.weight a8g128
+act blk.27.attn_k.weight a8g128
+act blk.27.attn_output.weight a8g128
+act blk.27.attn_qg.weight a8g128
+act blk.27.attn_v.weight a8g128
+act blk.27.ffn_down.weight a8g128
+act blk.27.ffn_gate_up.weight a8g128
+act blk.28.ffn_down.weight a8g128
+act blk.28.ffn_gate_up.weight a8g128
+act blk.28.ssm_out.weight a8g128
+act blk.28.ssm_qkv.weight a8g128
+act blk.28.ssm_z.weight a8g128
+act blk.29.ffn_down.weight a8g128
+act blk.29.ffn_gate_up.weight a8g128
+act blk.29.ssm_out.weight a8g128
+act blk.29.ssm_qkv.weight a8g128
+act blk.29.ssm_z.weight a8g128
+act blk.30.ffn_down.weight a8g128
+act blk.30.ffn_gate_up.weight a8g128
+act blk.30.ssm_out.weight a8g128
+act blk.30.ssm_qkv.weight a8g128
+act blk.30.ssm_z.weight a8g128
+act blk.31.attn_k.weight a8g128
+act blk.31.attn_output.weight a8g128
+act blk.31.attn_qg.weight a8g128
+act blk.31.attn_v.weight a8g128
+act blk.31.ffn_down.weight a8g128
+act blk.31.ffn_gate_up.weight a8g128
+act blk.32.ffn_down.weight a8g128
+act blk.32.ffn_gate_up.weight a8g128
+act blk.32.ssm_out.weight a8g128
+act blk.32.ssm_qkv.weight a8g128
+act blk.32.ssm_z.weight a8g128
+act blk.33.ffn_down.weight a8g128
+act blk.33.ffn_gate_up.weight a8g128
+act blk.33.ssm_out.weight a8g128
+act blk.33.ssm_qkv.weight a8g128
+act blk.33.ssm_z.weight a8g128
+act blk.34.ffn_down.weight a8g128
+act blk.34.ffn_gate_up.weight a8g128
+act blk.34.ssm_out.weight a8g128
+act blk.34.ssm_qkv.weight a8g128
+act blk.34.ssm_z.weight a8g128
+act blk.35.attn_k.weight a8g128
+act blk.35.attn_output.weight a8g128
+act blk.35.attn_qg.weight a8g128
+act blk.35.attn_v.weight a8g128
+act blk.35.ffn_down.weight a8g128
+act blk.35.ffn_gate_up.weight a8g128
+act blk.36.ffn_down.weight a8g128
+act blk.36.ffn_gate_up.weight a8g128
+act blk.36.ssm_out.weight a8g128
+act blk.36.ssm_qkv.weight a8g128
+act blk.36.ssm_z.weight a8g128
+act blk.37.ffn_down.weight a8g128
+act blk.37.ffn_gate_up.weight a8g128
+act blk.37.ssm_out.weight a8g128
+act blk.37.ssm_qkv.weight a8g128
+act blk.37.ssm_z.weight a8g128
+act blk.38.ffn_down.weight a8g128
+act blk.38.ffn_gate_up.weight a8g128
+act blk.38.ssm_out.weight a8g128
+act blk.38.ssm_qkv.weight a8g128
+act blk.38.ssm_z.weight a8g128
+act blk.39.attn_k.weight a8g128
+act blk.39.attn_output.weight a8g128
+act blk.39.attn_qg.weight a8g128
+act blk.39.attn_v.weight a8g128
+act blk.39.ffn_down.weight a8g128
+act blk.39.ffn_gate_up.weight a8g128
+act blk.40.ffn_down.weight a8g128
+act blk.40.ffn_gate_up.weight a8g128
+act blk.40.ssm_out.weight a8g128
+act blk.40.ssm_qkv.weight a8g128
+act blk.40.ssm_z.weight a8g128
+act blk.41.ffn_down.weight a8g128
+act blk.41.ffn_gate_up.weight a8g128
+act blk.41.ssm_out.weight a8g128
+act blk.41.ssm_qkv.weight a8g128
+act blk.41.ssm_z.weight a8g128
+act blk.42.ffn_down.weight a8g128
+act blk.42.ffn_gate_up.weight a8g128
+act blk.42.ssm_out.weight a8g128
+act blk.42.ssm_qkv.weight a8g128
+act blk.42.ssm_z.weight a8g128
+act blk.43.attn_k.weight a8g128
+act blk.43.attn_output.weight a8g128
+act blk.43.attn_qg.weight a8g128
+act blk.43.attn_v.weight a8g128
+act blk.43.ffn_down.weight a8g128
+act blk.43.ffn_gate_up.weight a8g128
+act blk.44.ffn_down.weight a8g128
+act blk.44.ffn_gate_up.weight a8g128
+act blk.44.ssm_out.weight a8g128
+act blk.44.ssm_qkv.weight a8g128
+act blk.44.ssm_z.weight a8g128
+act blk.45.ffn_down.weight a8g128
+act blk.45.ffn_gate_up.weight a8g128
+act blk.45.ssm_out.weight a8g128
+act blk.45.ssm_qkv.weight a8g128
+act blk.45.ssm_z.weight a8g128
+act blk.46.ffn_down.weight a8g128
+act blk.46.ffn_gate_up.weight a8g128
+act blk.46.ssm_out.weight a8g128
+act blk.46.ssm_qkv.weight a8g128
+act blk.46.ssm_z.weight a8g128
+act blk.47.attn_k.weight a8g128
+act blk.47.attn_output.weight a8g128
+act blk.47.attn_qg.weight a8g128
+act blk.47.attn_v.weight a8g128
+act blk.47.ffn_down.weight a8g128
+act blk.47.ffn_gate_up.weight a8g128
+act blk.48.ffn_down.weight a8g128
+act blk.48.ffn_gate_up.weight a8g128
+act blk.48.ssm_out.weight a8g128
+act blk.48.ssm_qkv.weight a8g128
+act blk.48.ssm_z.weight a8g128
+act blk.49.ffn_down.weight a8g128
+act blk.49.ffn_gate_up.weight a8g128
+act blk.49.ssm_out.weight a8g128
+act blk.49.ssm_qkv.weight a8g128
+act blk.49.ssm_z.weight a8g128
+act blk.50.ffn_down.weight a8g128
+act blk.50.ffn_gate_up.weight a8g128
+act blk.50.ssm_out.weight a8g128
+act blk.50.ssm_qkv.weight a8g128
+act blk.50.ssm_z.weight a8g128
+act blk.51.attn_k.weight a8g128
+act blk.51.attn_output.weight a8g128
+act blk.51.attn_qg.weight a8g128
+act blk.51.attn_v.weight a8g128
+act blk.51.ffn_down.weight a8g128
+act blk.51.ffn_gate_up.weight a8g128
+act blk.52.ffn_down.weight a8g128
+act blk.52.ffn_gate_up.weight a8g128
+act blk.52.ssm_out.weight a8g128
+act blk.52.ssm_qkv.weight a8g128
+act blk.52.ssm_z.weight a8g128
+act blk.53.ffn_down.weight a8g128
+act blk.53.ffn_gate_up.weight a8g128
+act blk.53.ssm_out.weight a8g128
+act blk.53.ssm_qkv.weight a8g128
+act blk.53.ssm_z.weight a8g128
+act blk.54.ffn_down.weight a8g128
+act blk.54.ffn_gate_up.weight a8g128
+act blk.54.ssm_out.weight a8g128
+act blk.54.ssm_qkv.weight a8g128
+act blk.54.ssm_z.weight a8g128
+act blk.55.attn_k.weight a8g128
+act blk.55.attn_output.weight a8g128
+act blk.55.attn_qg.weight a8g128
+act blk.55.attn_v.weight a8g128
+act blk.55.ffn_down.weight a8g128
+act blk.55.ffn_gate_up.weight a8g128
+act blk.56.ffn_down.weight a8g128
+act blk.56.ffn_gate_up.weight a8g128
+act blk.56.ssm_out.weight a8g128
+act blk.56.ssm_qkv.weight a8g128
+act blk.56.ssm_z.weight a8g128
+act blk.57.ffn_down.weight a8g128
+act blk.57.ffn_gate_up.weight a8g128
+act blk.57.ssm_out.weight a8g128
+act blk.57.ssm_qkv.weight a8g128
+act blk.57.ssm_z.weight a8g128
+act blk.58.ffn_down.weight a8g128
+act blk.58.ffn_gate_up.weight a8g128
+act blk.58.ssm_out.weight a8g128
+act blk.58.ssm_qkv.weight a8g128
+act blk.58.ssm_z.weight a8g128
+act blk.59.attn_k.weight a8g128
+act blk.59.attn_output.weight a8g128
+act blk.59.attn_qg.weight a8g128
+act blk.59.attn_v.weight a8g128
+act blk.59.ffn_down.weight a8g128
+act blk.59.ffn_gate_up.weight a8g128
+act blk.60.ffn_down.weight a8g128
+act blk.60.ffn_gate_up.weight a8g128
+act blk.60.ssm_out.weight a8g128
+act blk.60.ssm_qkv.weight a8g128
+act blk.60.ssm_z.weight a8g128
+act blk.61.ffn_down.weight a8g128
+act blk.61.ffn_gate_up.weight a8g128
+act blk.61.ssm_out.weight a8g128
+act blk.61.ssm_qkv.weight a8g128
+act blk.61.ssm_z.weight a8g128
+act blk.62.ffn_down.weight a8g128
+act blk.62.ffn_gate_up.weight a8g128
+act blk.62.ssm_out.weight a8g128
+act blk.62.ssm_qkv.weight a8g128
+act blk.62.ssm_z.weight a8g128
+act blk.63.attn_k.weight a8g128
+act blk.63.attn_output.weight a8g128
+act blk.63.attn_qg.weight a8g128
+act blk.63.attn_v.weight a8g128
+act blk.63.ffn_down.weight a8g128
+act blk.63.ffn_gate_up.weight a8g128
