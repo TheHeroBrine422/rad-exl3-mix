@@ -34,3 +34,8 @@ Where each term matters is measured, not assumed:
 2. Per size, the share of the term at the size's incumbent: P / S (saturation; > ~0.1 = bending) and F / (F + P) (floor).
 3. Use per band follows the per-size gate: a band switches only where its sizes pass; live solves (§3) at every size
    whose per-size dS is ≥ 0 in the band's fit.
+
+## Amendment 3 — 2026-11-16 ~2:15 PM CST, before any sub-2 fit (user: "curious trying it only on the <2 bpw sizes")
+Extra fitsat arm on the 1.5 + 1.75 rows only (own fit; reference = fit.py on the same rows), plus a second arm on
+1.5 + 1.75 + 2.0 (2.0 is the edge case). Same per-size replay gate and S / (P/S) report. Live solves (optimum + Thompson)
+at 1.5 and 1.75 from the sub-2 fit, `w188-sat2-<size>-<var>.json`, judged like any candidate.
