@@ -172,7 +172,7 @@ def track_panel(axT, W, a, sizes):
     for size in sorted(ser):
         for x, y in ser[size]: axT.scatter([x], [y], s=16, color=COL[band(size)], alpha=0.55, lw=0, zorder=3)
     ev = sorted({x for v in ser.values() for x, _ in v})
-    for bd in range(4):
+    for bd in range(len(BN)):
         bs = [z for z in ser if band(z) == bd]
         if not bs: continue
         pts = []
@@ -222,7 +222,7 @@ def strata_overlay(axT, a, step_of):
           "B": sorted((r["bpw"], r["board"]) for r in V2 if r.get("board"))}
     ys = []
     if len(vs["N"]) >= 2:
-        for bd in range(4):
+        for bd in range(len(BN)):
             for k, key, ls, lab in (("N", "t186n_N", ":", "N"), ("B", "board", "-.", "board")):
                 if len(vs[k]) < 2: continue
                 rs = [r[key] / loglin(vs[k], r["bpw"]) for r in IQ if band(r["bpw"]) == bd and r.get(key) is not None
@@ -263,12 +263,17 @@ def main(argv=None):
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     ap.add_argument("--drop", default="7", help="(#199) comma list of sizes left off the plot (band geo-means keep a fixed size set)")
+    ap.add_argument("--xmin", type=float, default=None, help="(#199) left edge of the step axis")
     ap.add_argument("--only", default="", help="(#199) comma list: plot only these sizes (e.g. the in-between sizes)")
     a = ap.parse_args(argv)
-    global DROP
+    global DROP, band, BN, COL
     DROP = {float(x) for x in a.drop.split(",") if x}
     if a.only:
         keep = {float(x) for x in a.only.split(",")}
+        ks = sorted(keep)                                                         # (#199, user) one line per size on this plot
+        band = lambda b, ks=ks: min(range(len(ks)), key=lambda i: abs(ks[i] - b))
+        BN = [f"{k:g} bpw" for k in ks]
+        COL = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:olive", "tab:cyan"][:len(ks)]
         DROP = {float(json.loads(l)["size"]) for l in open(a.state) if '"size"' in l and json.loads(l).get("size") is not None} - keep
     R = load_refs(a.refs + ([a.results] if a.results else []))
     V2m = R.get(a.monitor, {}).get("V2", []); IQm = R.get(a.monitor, {}).get("IQR4", [])
@@ -360,7 +365,7 @@ def main(argv=None):
         ks = [(s, m) for s in sizes if (s, m) in anchor and v2(bpw_at(s, s0)) is not None]
         if m == segs[-1][0]: skipped = {s for s in sizes if (s, m) not in anchor or v2(bpw_at(s, s0)) is None}
         grid = sorted({s0} | {st for k in ks for st, _ in W["accepts"][k] if s0 <= st < s1} | {min(s1, W["steps"])} )
-        for bd in range(4):
+        for bd in range(len(BN)):
             kb = [k for k in ks if band(k[0]) == bd]
             if not kb: continue
             ys = []
@@ -424,7 +429,7 @@ def main(argv=None):
             if y is None: continue
             ax.scatter([rstep[r["tag"]]], [y], marker="D", s=16, color=COL[band(b)], alpha=0.7, lw=0); nd += 1
     # IQR-V4 lines (measured on the monitor slice)
-    for bd in range(4):
+    for bd in range(len(BN)):
         v = [loglin(IQm, s) / vA(s) for s in sizes if band(s) == bd and loglin(IQm, s) and vA(s)]
         if v:
             y = gmean(v)
@@ -476,14 +481,14 @@ def main(argv=None):
         szs = sorted({r["size"] for r in rd}); last = {}; series = collections.defaultdict(list)
         for r in rd:
             last[r["size"]] = r
-            for bd in list(range(4)) + ["all"]:
+            for bd in list(range(len(BN))) + ["all"]:
                 kb = [s for s in szs if bd == "all" or band(s) == bd]
                 if not kb or not all(s in last for s in kb): continue
                 hv = gmean([last[s]["kld"] / v2(last[s]["bpw"]) for s in kb])
                 tv = [None if last[s]["cof"] is None or (s, m) not in anchor else
                       anchor_at(segs_a, (s, m), r["step"])["kld"] * math.exp(last[s]["cof"] - anchor_at(segs_a, (s, m), r["step"])["cof"]) / v2(last[s]["bpw"]) for s in kb]
                 series[bd].append((r["step"], hv, gmean(tv) if all(x is not None for x in tv) else None))
-        for bd in range(4):
+        for bd in range(len(BN)):
             if series[bd]:
                 kb = [s for s in szs if band(s) == bd]
                 ax2.plot([x for x, _, _ in series[bd]], [h for _, h, _ in series[bd]], drawstyle="steps-post", marker=".", ms=3,
@@ -518,6 +523,9 @@ def main(argv=None):
         fig.subplots_adjust(left=0.065, right=0.985, top=0.95, bottom=0.045 + 0.011 * nl)
     else:
         fig.tight_layout(rect=(0, 0.012 * nl, 1, 1))
+    if a.xmin is not None:                                                        # (#199) zoom on the steps after a start point
+        for ax_ in fig.axes:
+            if ax_.get_xlabel() or ax_.get_ylabel(): ax_.set_xlim(left=a.xmin)
     fig.savefig(a.out, dpi=a.dpi)
     print("\n".join(summary)); print(note); print(f"{W['steps']} results, {len(W['decs'])} decisions, {len(W['reads'])} held-out reads, {nd} slice diamonds")
     return 0
