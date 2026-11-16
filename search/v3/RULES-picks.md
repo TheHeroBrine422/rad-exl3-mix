@@ -84,3 +84,15 @@ Written before any phase-1 data; the search (#183) ends at ≥ 4,929 results wit
    whose stage-2 |z| ≤ 0.5) applies at every size with fewer than 6 candidates after the other sources (not only
    6.5 / 7.0). Thin sizes are further served by phase 1.5 (xavg window |Δsize| ≤ 0.75 draws on neighbour leaders) and,
    if still thin, by §4.
+
+## Amendment 2026-11-16 ~5:15 PM CST (user), before any phase-2 data; changes §3–§5 of the 11-16 amendment
+1. **Phase 1.5, targeted:** consensus192 / xavg (window |Δsize| ≤ 0.75, sources = phase-1 leaders of the size and its
+   neighbours) only at the thin sizes (2.75, 3.25, 3.75, 5.5, 6.5) and at any size whose phase-1 top 5 spans > 1 %;
+   2–4 models per targeted size, scored on the phase-1 slices; they compete for phase 2 like any candidate.
+2. **Phase 2 = top 5 per size** (size-adjusted phase-1 score, frozen measured b) on ~3M positions: golden-ver4 /
+   golden-final750 (calib verify part) + final-x + s195c6–c10. The pick = best size-adjusted pooled KLD; the calib-verify
+   part vetoes (pick not significantly worse there than the runner-up).
+3. **§4 low-noise search round**, if triggered, uses the unused staged search slices s195s2–s5 (never c6–c10).
+4. **Published numbers:** the **public** corpus after the picks are frozen (true holdout, report only, never selects),
+   scored as the board does, plus the 2 public long-agentic traces whole at full context (TP2 where needed) as the
+   long-context check; RULER as planned. Calib-verify numbers are reported too (secondary).
