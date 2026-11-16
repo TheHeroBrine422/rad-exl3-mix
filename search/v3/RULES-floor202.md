@@ -18,3 +18,10 @@ one at 6.5 / 7.0 (fit ~0.7 vs measured ~0.3), and 7.0 made 167 decisions since 1
    with tests, separate step). The final picks include every confirmed fitfloor model.
 Data: search rows only (calib search pool + xcorp parts); t183 report-only; never verify / final / public.
 Runtime: none (allocation only).
+
+## Amendment 1 — 2026-11-16 12:20 PM CST, before any low-band fit (user: "im expecting that the additive model is no longer accurate [below 2.5] and we need some kind of saturation model")
+Low band (b1 rows, 1.5–2.75): model `fitsat` = fit.py with one added parameter S > 0: KLD = exp(soff) · P / (1 + P / S)
+(saturating: linear in P while P << S, bounded by S). Prior log S ~ N(log 1.0, 1.5) (KLD in nats; wide). Same replay gate
+as §2 on the 1.5–2.75 rows (pass: dS 80 % CI wholly above 0), same live trial as §3 at 1.5, 1.75, 2.0, 2.5, 2.75
+(`w188-sat-<size>-<var>.json`). Report S ± SE and fitted vs measured slopes. The band split in the lead note of 12:15 PM
+is withdrawn.
