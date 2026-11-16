@@ -96,3 +96,4 @@ Written before any phase-1 data; the search (#183) ends at ≥ 4,929 results wit
 4. **Published numbers:** the **public** corpus after the picks are frozen (true holdout, report only, never selects),
    scored as the board does, plus the 2 public long-agentic traces whole at full context (TP2 where needed) as the
    long-context check; RULER as planned. Calib-verify numbers are reported too (secondary).
+   Clarification (user, same day): public is scored on the **16 final picks only** (one per size), never on candidates.
