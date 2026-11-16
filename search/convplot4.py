@@ -348,7 +348,7 @@ def main(argv=None):
         if e["ev"] == "inbox" and e.get("mode") == "decide":
             f = e.get("file", "")                       # (user 11-16) three groups only
             if f.startswith(("w172-", "w181-")): lab = "worker allocators (#193)"
-            elif "cons" in f or "xavg" in f or "consensus" in (e.get("note") or "") or "probe" in f: lab = "averaging (consensus / xavg)"
+            elif "cons" in f or "xavg" in f or "pull" in f or "consensus" in (e.get("note") or "") or "probe" in f: lab = "averaging (consensus / xavg / pull)"
             else: lab = "other hand-made"
             for t in e.get("tags") or [e.get("tag")]: alloc_of[t] = lab
     if a.track:
