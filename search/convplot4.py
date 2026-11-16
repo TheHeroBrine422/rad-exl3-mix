@@ -263,11 +263,19 @@ def main(argv=None):
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
     ap.add_argument("--drop", default="7", help="(#199) comma list of sizes left off the plot (band geo-means keep a fixed size set)")
+    ap.add_argument("--bands", default="", help="(11-16) fixed size sets, one line each: '2,2.5;3,3.5,4;...' (labels = the sizes)")
     ap.add_argument("--xmin", type=float, default=None, help="(#199) left edge of the step axis")
     ap.add_argument("--only", default="", help="(#199) comma list: plot only these sizes (e.g. the in-between sizes)")
     a = ap.parse_args(argv)
     global DROP, band, BN, COL
     DROP = {float(x) for x in a.drop.split(",") if x}
+    if a.bands:                                                                   # (11-16) one figure, fixed size sets per line
+        B = [[float(x) for x in g.split(",")] for g in a.bands.split(";")]
+        allb = {x for g in B for x in g}
+        DROP = {float(json.loads(l)["size"]) for l in open(a.state) if '"size"' in l and json.loads(l).get("size") is not None} - allb
+        band = lambda b, B=B: min(range(len(B)), key=lambda i: min(abs(x - b) for x in B[i]))
+        BN = [(f"{g[0]:g}–{g[-1]:g} bpw" if len(g) > 1 else f"{g[0]:g} bpw") for g in B]
+        COL = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:olive", "tab:cyan"][:len(B)]
     if a.only:
         keep = {float(x) for x in a.only.split(",")}
         ks = sorted(keep)                                                         # (#199, user) one line per size on this plot
