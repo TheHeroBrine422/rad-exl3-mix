@@ -1,0 +1,31 @@
+$ /data/q27/venv/bin/python -I /data/q27/srch183/census.py /data/q27/w187/served/P20-4M/mix.rad.part --mix /data/q27/w187/served/P20-4M/mix.txt --base /data/q27/srch183/base/base-T4.rad --fast --expect-act a8g128 --expect-emb trellis --max-version 4
+mix.rad.part: 739 weights, 2.5012 bpw (file), 2.4958 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i     2.125 mad      a8g128     4 nat    46    0.926
+  exl3i         2 mad      a8g128     4 nat    39    0.902
+  exl3i       2.5 mad      a8g128     4 nat    35    0.685
+  exl3i      2.25 mad      a8g128     4 nat    39    0.665
+  exl3i      3.25 mad      a8g128     4 nat    16    0.623
+  exl3i     2.625 mad      a8g128     4 nat    19    0.597
+  exl3i      2.75 mad      a8g128     4 nat    21    0.562
+  exl3i         3 mad      a8g128     4 nat    26    0.548
+  exl3i     2.875 mad      f16        4 r16     1    0.458
+  exl3i     3.125 mad      a8g128     4 nat    16    0.443
+  exl3i     2.375 mad      a8g128     4 nat    18    0.373
+  exl3i     2.875 mad      a8g128     4 nat    22    0.346
+  exl3i     1.875 mad      a8g128     4 nat     9    0.293
+  exl3i      1.75 mul1i8   f16        1 nat     1    0.279
+  exl3i       3.5 mad      a8g128     4 nat     7    0.186
+  exl3i     3.375 mad      a8g128     4 nat     7    0.166
+  exl3i      3.75 mad      a8g128     4 nat     5    0.116
+  exl3i         4 mad      a8g128     4 nat    50    0.105
+  exl3i     4.125 mad      a8g128     4 nat     2    0.043
+  exl3i       1.5 mad      a8g128     4 nat     1    0.034
+  exl3i     1.625 mad      a8g128     4 nat     2    0.017
+  exl3i     1.375 mad      a8g128     4 nat     2    0.014
+  plain                                       353    0.005
+  exl3i       4.5 mad      a8g128     4 nat     1    0.003
+  exl3i      4.25 mad      a8g128     4 nat     1    0.003
+  output.weight      exl3i mad K2.875 r16  0.458 GB  act f16
+  token_embd.weight  exl3i mul1i8 K1.75 nat  0.279 GB  act f16
+CENSUS PASS [checked: mix base act emb version (fast)]

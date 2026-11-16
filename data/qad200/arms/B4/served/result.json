@@ -1,0 +1,22 @@
+{
+ "tag": "B4",
+ "ckpt": "/data/q27/w187/runs/B4/ckpt-4e+06",
+ "as_is": false,
+ "template": "/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix",
+ "slices": {
+  "x181g": {
+   "golden": "/data/q27/w154/slices/golden-x181g",
+   "rows": "/data/q27/w187/served/B4/score-x181g.json.rows",
+   "kld": 0.043188908215769484,
+   "positions": 152007,
+   "docs": 150
+  },
+  "fe38": {
+   "golden": "/data/q27/w170/slices/sub-fe38",
+   "rows": "/data/q27/w187/served/B4/score-fe38.json.rows",
+   "kld": 0.054154701029640435,
+   "positions": 31147,
+   "docs": 38
+  }
+ }
+}
