@@ -133,7 +133,7 @@ def anchor_at(segs, k, step):
 def _tleg(axT, a):
     """the tracking panel's legend: in the gap above the panel (user 11-15) when the panels are stacked training-on-top"""
     if a.track and a.no_val and not a.track_top:
-        axT.legend(loc="lower center", bbox_to_anchor=(0.5, 1.07), ncol=3, fontsize=7.5, frameon=False)
+        axT.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), ncol=1, fontsize=7, frameon=False)
     else:
         axT.legend(fontsize=7.5, loc="upper right")
 
@@ -338,15 +338,15 @@ def main(argv=None):
     alloc_of = {}                                       # inbox candidate tag -> allocator label (file name / note)
     for e in W["st"]:
         if e["ev"] == "inbox" and e.get("mode") == "decide":
-            f = e.get("file", ""); parts = f.split("-")
-            lab = parts[1] if f.startswith("w172-") and len(parts) > 2 else ("consensus (first)" if "consensus" in (e.get("note") or "") else parts[0])
-            lab = {"cons": "consensus refresh", "anom": "anomaly flags", "tr": "fit trust-region", "rob": "fit robust",
-                   "recal": "fit recalibrated", "ens": "fit+curve ensemble", "rankreg": "xgb ranker", "boot": "uncertainty probes"}.get(lab, lab)
+            f = e.get("file", "")                       # (user 11-16) three groups only
+            if f.startswith(("w172-", "w181-")): lab = "worker allocators (#193)"
+            elif "cons" in f or "xavg" in f or "consensus" in (e.get("note") or "") or "probe" in f: lab = "averaging (consensus / xavg)"
+            else: lab = "other hand-made"
             for t in e.get("tags") or [e.get("tag")]: alloc_of[t] = lab
     if a.track:
         fig = plt.figure(figsize=(13.5, 16)); gs = fig.add_gridspec(3, 1, height_ratios=[1.35, 1.1, 1])
         if a.no_val:                                        # (#183, user 11-14: no in-search held-out panel)
-            fig = plt.figure(figsize=(13.5, 13)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1], hspace=0.5)
+            fig = plt.figure(figsize=(19, 12)); gs = fig.add_gridspec(2, 1, height_ratios=[1.35, 1.1], hspace=0.22)
             if a.track_top:                                 # (user 11-14) held-out tracking on top, training estimate below
                 axT = fig.add_subplot(gs[0]); ax = fig.add_subplot(gs[1], sharex=axT)
                 ax.set_xlabel("eval step (search results, in order)")
@@ -463,9 +463,9 @@ def main(argv=None):
     if out_leg:
         h, l = ax.get_legend_handles_labels()
         if alloc_of:                                    # the inbox key as a legend entry (no marker)
-            h.append(matplotlib.lines.Line2D([], [], lw=0)); l.append("inbox key: hollow = rejected at stage 1 · grey = failed "
+            h.append(matplotlib.lines.Line2D([], [], lw=0)); l.append("inbox key: hollow = rejected at stage 1\n· grey = failed "
                                                                     "confirmation · filled, black edge = confirmed accept")
-        ax.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, -0.07), ncol=3, fontsize=7.5, frameon=False)
+        ax.legend(h, l, loc="upper left", bbox_to_anchor=(1.01, 1.0), ncol=1, fontsize=7, frameon=False)
     else:
         ax.legend(loc="upper right", fontsize=7.5)
         if alloc_of:
@@ -520,7 +520,7 @@ def main(argv=None):
     if a.track and getattr(axT, "_fit_ylim", None):        # last word on the tracking panel's range (shared-x panels reset it)
         axT.set_ylim(*axT._fit_ylim)
     if a.track and a.no_val and not a.track_top:      # legends sit between the panels: fixed margins (tight_layout pads them)
-        fig.subplots_adjust(left=0.065, right=0.985, top=0.95, bottom=0.045 + 0.011 * nl)
+        fig.subplots_adjust(left=0.05, right=0.70, top=0.95, bottom=0.045 + 0.011 * nl)
     else:
         fig.tight_layout(rect=(0, 0.012 * nl, 1, 1))
     if a.xmin is not None:                                                        # (#199) zoom on the steps after a start point
