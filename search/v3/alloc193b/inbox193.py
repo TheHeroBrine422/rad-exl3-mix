@@ -17,6 +17,7 @@ DRV = f"{RUN}/drv"
 LEDGER = os.path.join(HERE, "..", "..", "..", "data", "alloc193b", "submitted.jsonl")
 MAXOUT, MAXDEC, MAXPRB = 80, 300, 30          # RULES-193 amendment 12 (w181); outstanding cap as amendment 8
 PFX = "w181-"
+MAXWAIT = int(os.environ.get("A193_MAXWAIT", 60)); TOTWAIT = int(os.environ.get("A193_TOTWAIT", 45)); XSHARE = 0.2
 
 
 def ledger():
@@ -47,7 +48,10 @@ def status():
 
 def submit(files, max_new=None):
     conf = json.load(open(f"{RUN}/driver.json")); M = MN.Menu.load(conf["menu"])
-    st = state(); w, s = outstanding(st); L = ledger(); room = MAXOUT - len(w) - len(s)
+    st = state(); w, s = outstanding(st); L = ledger(); room = min(MAXOUT - len(w) - len(s), MAXWAIT - len(w))
+    # amendment 13: top up only while the whole inbox (all owners) holds < TOTWAIT waiting files (mine start after the
+    # older ones anyway; a later submit is generated from fresher incumbents)
+    room = min(room, TOTWAIT - len([f for f in os.listdir(f"{DRV}/inbox") if f.endswith(".json")]))
     if max_new is not None: room = min(room, max_new)
     known = set()
     for p in glob.glob(f"{DRV}/assign/*.json"):
@@ -58,6 +62,8 @@ def submit(files, max_new=None):
         nd = sum(x["mode"] == "decide" for x in L); npb = sum(x["mode"] == "probe" for x in L)
         if (d["mode"] == "decide" and nd >= MAXDEC) or (d["mode"] == "probe" and npb >= MAXPRB):
             print(f"{f}: budget exhausted for {d['mode']}"); continue
+        if os.path.basename(f).startswith("xplant-") and sum(x["name"].startswith(PFX + "xplant-") for x in L) + 1 > XSHARE * (len(L) + 1):
+            print(f"{f}: SKIPPED xplant share"); continue
         why = C.check_file(M, d)
         if why: print(f"{f}: REFUSED {why}"); continue
         if "#193" not in d.get("note", "") or "code " not in d["note"]: print(f"{f}: REFUSED note"); continue
