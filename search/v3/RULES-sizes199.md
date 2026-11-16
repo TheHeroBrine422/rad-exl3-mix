@@ -20,3 +20,9 @@ No further rotation: s195s1 stays the search slice and s195c1 the confirm slice 
 100000). The new sizes start fresh on s195s1 (0 decisions there); the final picks re-score every candidate on two
 fresh large slices, so slice reuse here cannot carry into the published numbers. s195s2–5 / c2–10 stay unused (spare
 for the final picks or V3.1).
+
+## Amendment 2 — 2026-11-16 3:10 AM CST (user: "add 7.0 bpw to the search based on consensus")
+7.0 resumes (STOP-7 removed). Fit group: 7.0 moves into b3 (with 4.5–6.5; b4 had 200 rows / 55 labels) and b4 is
+dropped. The #192 consensus probe `lead-consensus-k7cap-7-probe.json` (K ≤ 7 cap; t183 0.000501 at 6.987 bpw vs the
+stopped incumbent's 0.00051) is submitted through the inbox as `decide` for 7.0, judged like any candidate (stage 1 on
+s195s1 vs the incumbent, confirmation on s195c1). 7.0 joins the final picks like the other sizes.
