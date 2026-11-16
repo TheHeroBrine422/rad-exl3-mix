@@ -25,3 +25,12 @@ Low band (b1 rows, 1.5–2.75): model `fitsat` = fit.py with one added parameter
 as §2 on the 1.5–2.75 rows (pass: dS 80 % CI wholly above 0), same live trial as §3 at 1.5, 1.75, 2.0, 2.5, 2.75
 (`w188-sat-<size>-<var>.json`). Report S ± SE and fitted vs measured slopes. The band split in the lead note of 12:15 PM
 is withdrawn.
+
+## Amendment 2 — 2026-11-16 12:30 PM CST, before any fit (user: "it might only be necessary 1.5 / 1.75 / 2.0, it might be necessary higher, idk")
+Where each term matters is measured, not assumed:
+1. fitsat is fitted on b1 AND b2 rows (1.5–4.0) separately, plus one joint fit on b1 + b2; fitfloor on b2 AND b3 rows
+   (3.0–7.0) separately. Replay metrics are reported **per size** (S, pair accuracy, Spearman with 80 % CIs), not only
+   pooled.
+2. Per size, the share of the term at the size's incumbent: P / S (saturation; > ~0.1 = bending) and F / (F + P) (floor).
+3. Use per band follows the per-size gate: a band switches only where its sizes pass; live solves (§3) at every size
+   whose per-size dS is ≥ 0 in the band's fit.
