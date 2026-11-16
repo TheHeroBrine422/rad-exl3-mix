@@ -285,3 +285,47 @@ committed before the data they affect.
    public.
 3. Budget for w181: 300 decide, 30 probes (its own count). Low bar for submission as before; rigour for what it
    recommends adopting.
+
+## Amendment 13 — 2026-11-15 6:50 PM CST (system clock; w181; before any w181 file, flag table or ranker fit exists)
+- **Code and ledger:** w181 works from a copy, `search/v3/alloc193b/` (allow-list, file prefix `w181-`, ledger
+  `data/alloc193b/submitted.jsonl`, budget 300 decide / 30 probe); `alloc193/` is left as w172 used it.
+- **Data cut A (amendment 12, item 2):** state snapshot taken 6:30 PM CST (after the rotation). Allow-list = s173a–f,
+  s186a–f, s190a–e, `fit129` (prior rows). **s190f is excluded in cut A** (confirmations on it were pending at the
+  snapshot); one later cut B adds s190f once no confirmation on it is pending (logged here as a data cut). No other
+  retraining during the run: results on s195* never enter a fit, a flag table, a ranker or a feature. fit.py = my
+  refit on the allowed rows of the driver's fit inputs 0432–0434 (16 posterior draws); the anomaly regression (§3,
+  both versions, same CV grid / bootstrap) and the ranker (amendment 5 `reg` arm, same features and xgboost settings)
+  are refitted on cut A before the first `anom` / `rankreg` file.
+- **What the live set may tell me:** only identities and verdicts, as in amendments 5, 7, 9, 11: the current
+  incumbents / pool members / the driver's current reference per size (starting points), and the accept / join / reject
+  verdict of my own files (which flags get follow-ups; reporting). No s195 score, log r or z enters a model or a choice
+  among candidates.
+- **anom:** flags from the cut-A table (|z| ≥ 3, top 12 distinct group × band), each at every size of its band, one
+  step in the flag's direction (amendment 11's definition), regenerated from the current incumbents each round.
+  **Follow-up variants** for a flag that has confirmed (accept or join) at least once, in w172's run (ffn_down@7 b3,
+  ffn_down@6 b1, ffn_gate_up@0 b1, attn_output@5 b1, late ffn_down = ffn_down@6+7 at b2 / b3) or in mine, at every
+  size of the flag's band, from the current incumbent, same balancing (bal193):
+  - `s2`: two menu steps in the flag's direction (hypothesis: the confirmed step was short of the optimum);
+  - `nbm` / `nbp`: the same type's neighbouring depth band (d − 1 / d + 1), one step in the flag's direction
+    (hypothesis: the mis-valuation is smooth in depth, so the neighbour band shares it); `nb2`: the flagged band and
+    both neighbours together, one step;
+  - `xb`: the flagged group, one step, at the sizes of the adjacent size band(s) (hypothesis: the effect is not
+    band-specific; the regression's band deviation is shrunk noise);
+  - `rev`: one step **against** the flag's direction (control: if the flag is real this loses; at most one size per
+    flag, the one with most paired rows; ≤ 8 files in all).
+  A (flag, variant) with 0 confirmed in ≥ 6 decided gets no further rounds.
+- **rankreg:** 64 candidates per size per round from the driver's move generator (`moves.generate`, all kinds, +
+  cross) on my cut-A refit, from the incumbent and pool members; reference for the features = the driver's current
+  reference of the size (the `ref` of its latest own submit on the active slice: an identity, no score), else the
+  incumbent. Top 4 per size by the regressor's score. Variant `rankreg-…-anom` (token `rankanom`): the same candidates
+  ranked by score + the cut-A anomaly regression's version-(ii) correction Σ_g β_{g,band} x_g with |z| ≥ 2 groups only
+  (recal's rule), top 2 per size (hypothesis: the two signals found by different models add).
+- **xplant:** `lo` / `hi` / `mid` from the current incumbents each round, at most 20 % of my files (counted on the
+  ledger before each submit; the excess is dropped, not queued).
+- **Mix and order:** round-robin anom (incl. variants) : rankreg (incl. rankanom) : xplant ≈ 2 : 2 : 1 by files, a round
+  about every 60 min from the then-current incumbents; outstanding cap ≤ 80 of mine (waiting + running), ≤ 60 waiting.
+  w172's waiting files are not touched or re-ordered; mine queue behind them.
+- **Report:** per allocator and per variant decided / tentative / confirmed with 80 % Wilson intervals vs the search's
+  own moves in the same tag range; t183 of accepted candidates from the tracker (report only). Recommendation gate for
+  "driver move kind": the allocator's 80 % interval above the own moves' point rate in my period **and** pooled with
+  w172's period, plus (rankreg) the time-ordered replay of §4 on cut A.
