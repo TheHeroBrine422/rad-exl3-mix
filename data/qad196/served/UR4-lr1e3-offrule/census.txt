@@ -1,0 +1,32 @@
+$ /data/q27/venv/bin/python -I /data/q27/srch183/census.py /data/q27/w182/served/UR4/mix.rad.part --mix /data/q27/w182/served/UR4/mix.txt --base /data/q27/srch183/base/base-T4.rad --fast --expect-act a8g128 --expect-emb trellis --max-version 4
+mix.rad.part: 739 weights, 4.0012 bpw (file), 3.9958 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i     4.125 mad      a8g128     4 nat    42    1.695
+  exl3i         4 mad      a8g128     4 nat    90    1.541
+  exl3i      3.75 mad      a8g128     4 nat    26    1.209
+  exl3i     3.875 mad      a8g128     4 nat    30    1.178
+  exl3i     4.875 mad      a8g128     4 nat    14    0.998
+  exl3i       3.5 mad      a8g128     4 nat    30    0.997
+  exl3i     4.375 mad      a8g128     4 nat    32    0.864
+  exl3i      4.25 mad      a8g128     4 nat    26    0.859
+  exl3i     3.625 mad      a8g128     4 nat    24    0.654
+  exl3i      3.75 mad      f16        4 r16     1    0.597
+  exl3i     4.625 mad      a8g128     4 nat    11    0.540
+  exl3i     3.375 mul1i8   f16        1 nat     1    0.537
+  exl3i     3.375 mad      a8g128     4 nat    13    0.388
+  exl3i       4.5 mad      a8g128     4 nat    15    0.346
+  exl3i      4.75 mad      a8g128     4 nat     8    0.343
+  exl3i         5 mad      a8g128     4 nat     8    0.249
+  exl3i      3.25 mad      a8g128     4 nat     2    0.109
+  exl3i     2.875 mad      a8g128     4 nat     1    0.064
+  exl3i      5.25 mad      a8g128     4 nat     2    0.062
+  exl3i       5.5 mad      a8g128     4 nat     2    0.058
+  exl3i     2.375 mad      a8g128     4 nat     1    0.053
+  exl3i         3 mad      a8g128     4 nat     2    0.032
+  exl3i      5.75 mad      a8g128     4 nat     3    0.030
+  exl3i       2.5 mad      a8g128     4 nat     1    0.016
+  exl3i     2.625 mad      a8g128     4 nat     1    0.010
+  plain                                       353    0.005
+  output.weight      exl3i mad K3.75 r16  0.597 GB  act f16
+  token_embd.weight  exl3i mul1i8 K3.375 nat  0.537 GB  act f16
+CENSUS PASS [checked: mix base act emb version (fast)]

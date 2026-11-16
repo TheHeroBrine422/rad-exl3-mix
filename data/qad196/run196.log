@@ -1,0 +1,26 @@
+11-15 6:44 PM CST A start on card 1 (level /data/q27/w170/vl/inc2.5m): 
+11-15 6:46 PM CST R start on card 2 (level /data/q27/w170/vl/inc2.5m): --factors attn_ssmout
+11-15 6:55 PM CST ONE start on card 3 (level /data/q27/w170/vl/inc2.5m): --unshrink /data/q27/w182/data/one25.safetensors --export-only
+11-15 6:55 PM CST ONE rc 0
+11-15 7:00 PM CST T4 start on card 0 (level /data/q27/w182/vl/inc4.0m): --max-steps 1
+11-15 7:02 PM CST T4 start on card 0 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): --max-steps 1
+11-15 7:05 PM CST T4 rc 0
+11-15 7:11 PM CST U start on card 3 (level /data/q27/w170/vl/inc2.5m, head , emb /data/q27/w170/emb/t1.75.bf16): --unshrink /data/q27/w182/data/U25.safetensors --export-only
+11-15 7:12 PM CST U rc 0
+11-15 7:27 PM CST U4 start on card 3 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): --unshrink /data/q27/w182/data/U40.safetensors --export-only
+11-15 7:27 PM CST U4 rc 0
+11-15 7:27 PM CST UR4 start on card 3 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): --unshrink /data/q27/w182/data/U40.safetensors --factors attn_ssmout
+11-15 8:11 PM CST AN start on card 1 (level /data/q27/w170/vl/inc2.5m, head , emb /data/q27/w170/emb/t1.75.bf16): --norms
+11-15 8:12 PM CST RN start on card 2 (level /data/q27/w170/vl/inc2.5m, head , emb /data/q27/w170/emb/t1.75.bf16): --factors attn_ssmout --norms
+11-15 8:52 PM CST UR4 rc 0
+11-15 8:53 PM CST A4 start on card 3 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): 
+11-15 9:02 PM CST A4 start on card 3 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): 
+11-15 9:39 PM CST UR start on card 2 (level /data/q27/w170/vl/inc2.5m, head , emb /data/q27/w170/emb/t1.75.bf16): --unshrink /data/q27/w182/data/U25.safetensors --factors attn_ssmout
+11-15 9:40 PM CST UA start on card 1 (level /data/q27/w170/vl/inc2.5m, head , emb /data/q27/w170/emb/t1.75.bf16): --unshrink /data/q27/w182/data/U25.safetensors
+11-15 10:28 PM CST A4 rc 0
+11-15 10:28 PM CST R4 start on card 3 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): --factors attn_ssmout
+11-15 11:05 PM CST UR rc 0
+11-15 11:07 PM CST UA rc 0
+11-15 11:07 PM CST UR4 start on card 1 (level /data/q27/w182/vl/inc4.0m, head bf16, emb /data/q27/w182/emb/t3.375.bf16): --unshrink /data/q27/w182/data/U40.safetensors --factors attn_ssmout
+11-15 11:55 PM CST R4 rc 0
+11-16 12:35 AM CST UR4 rc 0

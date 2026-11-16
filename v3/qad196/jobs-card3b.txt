@@ -1,0 +1,2 @@
+A4|/data/q27/w182/vl/inc4.0m|1|/data/q27/w182/emb/t3.375.bf16||
+R4|/data/q27/w182/vl/inc4.0m|1|/data/q27/w182/emb/t3.375.bf16|--factors attn_ssmout|

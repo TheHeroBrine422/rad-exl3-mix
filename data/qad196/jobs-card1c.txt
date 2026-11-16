@@ -1,0 +1,1 @@
+UR4|/data/q27/w182/vl/inc4.0m|1|/data/q27/w182/emb/t3.375.bf16|--unshrink /data/q27/w182/data/U40.safetensors --factors attn_ssmout|/data/q27/w182/runs/UA/ckpt-1e+06/.done

@@ -1,0 +1,6 @@
+01:11 queue card 3: @cpu:merge25 rc 0
+01:12 queue card 3: U rc 0
+01:27 queue card 3: @gpu:ffn40 rc 0
+01:27 queue card 3: @cpu:merge40 rc 0
+01:27 queue card 3: U4 rc 0
+02:52 queue card 3: UR4 rc 0

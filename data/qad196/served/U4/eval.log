@@ -1,0 +1,21 @@
+$ bash -c cd /data/q27 && RADIANCE_HOME=/data/q27/rad10-e157b/home RADIANCE_HOST_DEVICES=1 /data/q27/rad10-e157b/install/bin/rad-convert --no-error models/qwen38-27b-bf16 --recipe /data/q27/w182/served/U4/final.recipe --set quantization_config.quant_method=exl3 -o /data/q27/w182/served/U4/trunk.rad.part
+I source   models/qwen38-27b-bf16 (1199 tensors)
+I arch     qwen35, quant exl3
+I device: AQL backend, 4 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201]
+I recipe   336 rule(s)
+W 15 of 1199 checkpoint tensors are read by no declared weight and are not written: mtp.fc.weight, mtp.layers.0.input_layernorm.weight, mtp.layers.0.mlp.down_proj.weight, mtp.layers.0.mlp.gate_proj.weight, mtp.layers.0.mlp.up_proj.weight, mtp.layers.0.post_attention_layernorm.weight, mtp.layers.0.self_attn.k_norm.weight, mtp.layers.0.self_attn.k_proj.weight, ...
+I plan     1120 weight(s): 336 quantised by the recipe, 784 kept as the checkpoint holds them
+I vocab    models/qwen38-27b-bf16/tokenizer.json
+I tokenizer: chat template from models/qwen38-27b-bf16/chat_template.jinja (9004 bytes)
+I tokenizer: models/qwen38-27b-bf16/tokenizer.json -> 248077 tokens, 247587 merges, 4 chain steps
+I tokenizer:   NFC
+I tokenizer:   Split((?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?[\p{L}\p{M}]+|\p{N}| ?[^\s\p{L}\p{M}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+ behavior=1 invert=0) [dfa: 20 states, 16 classes]
+I tokenizer:   ByteLevel(add_prefix_space=0 use_regex=0)
+I tokenizer:   decode ByteLevel
+I weights  1120 written in 161 s: 816 a thread each, 304 across every thread
+I finish   1 s
+I wrote /data/q27/w182/served/U4/trunk.rad.part: 1120 weight(s), 17.08 GiB of weights, 248077 vocab token(s)
+$ /data/q27/srch183/tools/radmix /data/q27/w182/served/U4/mix.rad.part /data/q27/srch183/base/base-T4.rad /data/q27/w182/served/U4/mix.txt
+/data/q27/w182/served/U4/mix.rad.part: 739 weights (338 from donors, 0 added, 0 dropped, 336 act keys), 12.528 GiB, 0 cloned, 739 copied
+$ bash -c ROCR_VISIBLE_DEVICES=0 RADIANCE_HOME=/data/q27/rad10-e157b/home /data/q27/rad10-e157b/install/bin/radiance --model /data/q27/w182/served/U4/mix.rad --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref /data/q27/w154/slices/golden-x181g --kld-out /data/q27/w182/served/U4/score-x181g.json.part > /data/q27/w182/served/U4/score-x181g.log 2>&1 && mv /data/q27/w182/served/U4/score-x181g.json.part.rows /data/q27/w182/served/U4/score-x181g.json.rows && mv /data/q27/w182/served/U4/score-x181g.json.part /data/q27/w182/served/U4/score-x181g.json
+$ bash -c ROCR_VISIBLE_DEVICES=0 RADIANCE_HOME=/data/q27/rad10-e157b/home /data/q27/rad10-e157b/install/bin/radiance --model /data/q27/w182/served/U4/mix.rad --tp 1 --kv-cache-dtype bf16 --max-model-len 16384 --max-num-seqs 1 --host-headroom-mib 8192 --kld-ref /data/q27/w170/slices/sub-fe38 --kld-out /data/q27/w182/served/U4/score-fe38.json.part > /data/q27/w182/served/U4/score-fe38.log 2>&1 && mv /data/q27/w182/served/U4/score-fe38.json.part.rows /data/q27/w182/served/U4/score-fe38.json.rows && mv /data/q27/w182/served/U4/score-fe38.json.part /data/q27/w182/served/U4/score-fe38.json

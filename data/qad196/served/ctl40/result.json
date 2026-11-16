@@ -1,0 +1,22 @@
+{
+ "tag": "ctl40",
+ "ckpt": null,
+ "as_is": false,
+ "template": "/data/q27/w182/template40.mix",
+ "slices": {
+  "x181g": {
+   "golden": "/data/q27/w154/slices/golden-x181g",
+   "rows": "/data/q27/w182/served/ctl40/score-x181g.json.rows",
+   "kld": 0.006916751202819933,
+   "positions": 152007,
+   "docs": 150
+  },
+  "fe38": {
+   "golden": "/data/q27/w170/slices/sub-fe38",
+   "rows": "/data/q27/w182/served/ctl40/score-fe38.json.rows",
+   "kld": 0.00738914338837177,
+   "positions": 31147,
+   "docs": 38
+  }
+ }
+}

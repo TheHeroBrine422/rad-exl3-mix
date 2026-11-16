@@ -1,0 +1,11 @@
+ctl40|/data/q27/w182/vl/inc4.0m|/data/q27/w182/template40.mix||
+A|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/A/ckpt-1e+06|/data/q27/w182/runs/A/ckpt-1e+06/.done
+R|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/R/ckpt-1e+06|/data/q27/w182/runs/R/ckpt-1e+06/.done
+U|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/U/ckpt-1e+06|/data/q27/w182/runs/U/ckpt-1e+06/.done
+U4|/data/q27/w182/vl/inc4.0m|/data/q27/w182/template40.mix|/data/q27/w182/runs/U4/ckpt-1e+06|/data/q27/w182/runs/U4/ckpt-1e+06/.done
+RN|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/RN/ckpt-1e+06|/data/q27/w182/runs/RN/ckpt-1e+06/.done
+AN|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/AN/ckpt-1e+06|/data/q27/w182/runs/AN/ckpt-1e+06/.done
+A4|/data/q27/w182/vl/inc4.0m|/data/q27/w182/template40.mix|/data/q27/w182/runs/A4/ckpt-1e+06|/data/q27/w182/runs/A4/ckpt-1e+06/.done
+UA|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/UA/ckpt-1e+06|/data/q27/w182/runs/UA/ckpt-1e+06/.done
+UR|/data/q27/w170/vl/inc2.5m|/data/q27/srch183/mixes/v3s183-2.5-inc-01334.mix|/data/q27/w182/runs/UR/ckpt-1e+06|/data/q27/w182/runs/UR/ckpt-1e+06/.done
+R4|/data/q27/w182/vl/inc4.0m|/data/q27/w182/template40.mix|/data/q27/w182/runs/R4/ckpt-1e+06|/data/q27/w182/runs/R4/ckpt-1e+06/.done

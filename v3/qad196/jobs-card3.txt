@@ -1,0 +1,6 @@
+@cpu:merge25|/data/q27/w182/data/U25.final|||/data/q27/w182/code/v3/qad196/ushr196.sh /data/q27/w170/vl/inc2.5m 25 > /dev/null 2>&1 && touch /data/q27/w182/data/U25.final|/data/q27/w182/data/u25-ffn_down.safetensors
+U||||--unshrink /data/q27/w182/data/U25.safetensors --export-only|/data/q27/w182/data/U25.final
+@gpu:ffn40|/data/q27/w182/data/u40-ffn_down.safetensors|||TYPES=ffn_down DEV=cuda:0 ./code/v3/qad196/ushr196.sh /data/q27/w182/vl/inc4.0m 40 > /dev/null 2>&1|
+@cpu:merge40|/data/q27/w182/data/U40.final|||/data/q27/w182/code/v3/qad196/ushr196.sh /data/q27/w182/vl/inc4.0m 40 > /dev/null 2>&1 && touch /data/q27/w182/data/U40.final|/data/q27/w182/data/u40-ssm_qkv.safetensors
+U4|/data/q27/w182/vl/inc4.0m|1|/data/q27/w182/emb/t3.375.bf16|--unshrink /data/q27/w182/data/U40.safetensors --export-only|/data/q27/w182/data/U40.final
+UR4|/data/q27/w182/vl/inc4.0m|1|/data/q27/w182/emb/t3.375.bf16|--unshrink /data/q27/w182/data/U40.safetensors --factors attn_ssmout|/data/q27/w182/data/U40.final
