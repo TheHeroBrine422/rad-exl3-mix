@@ -16,6 +16,9 @@ consensus C2: d_i = state_i - start; where all members have the same sign of d_i
           No line search. (start = the untrained student's state; log 1 = 0 everywhere, checked with --start.)
 Everything that is not a scale parameter must be identical across members (checked) and is copied from CKPT[0].
 Member scale files are checked against exp(state) on load (max relative difference is recorded in soup.json).
+exp is taken on DEVICE (default: the GPU when torch sees one, as the trainer's write_ckpt does): on CPU the float32 exp
+differs from the GPU's in ~4 % of values by 1 ulp, which moves the served float16 rounding (w186, 11-16: served KL +0.04 %
+x181g / -0.17 % fe38 for a soup of one). On the GPU a soup of one reproduces the member's scale files bitwise.
 Writes OUT.part/ and renames it to OUT once complete (.done is the last file written inside).
 """
 import argparse, hashlib, json, os, shutil, sys, tempfile
@@ -35,7 +38,7 @@ def sha256(path):
     return h.hexdigest()
 
 
-def load_ckpt(d):
+def load_ckpt(d, dev="cpu"):
     """state (float32 CPU), meta, scale keys, the scale files, and the max relative gap between the files and exp(state)"""
     z = torch.load(os.path.join(d, "params.pt"), map_location="cpu", weights_only=False)
     st = {k: v.detach().to("cpu", torch.float32).clone() for k, v in z["state"].items()}
@@ -48,7 +51,7 @@ def load_ckpt(d):
         for nm, f_ in (("r", r), ("c", c)):
             p = k + ":" + nm
             if p in st:
-                e = torch.exp(st[p])
+                e = torch.exp(st[p].to(dev)).cpu()
                 gap = max(gap, float(((f_.double() - e.double()).abs() / e.double().abs()).max()))
             else:
                 assert bool((f_ == 1).all()), f"{d}: {k}:{nm} has no state parameter but its scale file is not all ones"
@@ -76,16 +79,16 @@ def check_same_student(M):
     return names
 
 
-def build(out, mode, dirs, start_dir=None, force=False):
+def build(out, mode, dirs, start_dir=None, force=False, dev="cpu"):
     assert mode in ("mean", "consensus"), mode
     if os.path.exists(os.path.join(out, ".done")) and not force:
         print(f"soup198: {out} exists (.done): skipped", file=sys.stderr); return None
-    M = [load_ckpt(d) for d in dirs]
+    M = [load_ckpt(d, dev) for d in dirs]
     names = check_same_student(M)
     ref = M[0]
     scale = [n for n in names if n.endswith(SUFFIX)]
     if start_dir:
-        S = load_ckpt(start_dir)
+        S = load_ckpt(start_dir, dev)
         assert sorted(S["state"]) == names and S["keys"] == ref["keys"], "start checkpoint: different student"
         for n in names:
             assert S["state"][n].shape == ref["state"][n].shape, f"start checkpoint: shape of {n}"
@@ -111,8 +114,8 @@ def build(out, mode, dirs, start_dir=None, force=False):
         st[n] = Y.to(torch.float32).contiguous()
     scales = {}
     for k in ref["keys"]:
-        r = torch.exp(st[k + ":r"]).to(torch.float32) if (k + ":r") in st else ref["files"][k][0].clone()
-        c = torch.exp(st[k + ":c"]).to(torch.float32) if (k + ":c") in st else ref["files"][k][1].clone()
+        r = torch.exp(st[k + ":r"].to(dev)).cpu().to(torch.float32) if (k + ":r") in st else ref["files"][k][0].clone()
+        c = torch.exp(st[k + ":c"].to(dev)).cpu().to(torch.float32) if (k + ":c") in st else ref["files"][k][1].clone()
         scales[k] = (r.contiguous(), c.contiguous())
     # member spread and the soup's distance to each member (log units), for the manifest
     spread = {}
@@ -131,7 +134,7 @@ def build(out, mode, dirs, start_dir=None, force=False):
                 sign_pairs.append({"a": M[i]["dir"], "b": M[j]["dir"], "same_sign_frac_of_both_nonzero": float((torch.sign(ai[nz]) == torch.sign(aj[nz])).float().mean()) if bool(nz.any()) else None,
                                    "nonzero_frac": float(nz.float().mean())})
     manifest = {
-        "tag": os.path.basename(os.path.abspath(out)), "mode": mode,
+        "tag": os.path.basename(os.path.abspath(out)), "mode": mode, "exp_device": dev,
         "members": [{"dir": m["dir"], "params_sha256": m["sha"], "scale_file_gap_rel": m["gap"],
                      "steps": m["meta"].get("steps"), "rows": m["meta"].get("rows"), "checksum": m["meta"].get("checksum"),
                      "args_seed": (m["meta"].get("args") or {}).get("seed"), "args_mix50": (m["meta"].get("args") or {}).get("mix50"),
@@ -142,7 +145,7 @@ def build(out, mode, dirs, start_dir=None, force=False):
         "consensus_agree_frac_mean": (float(np.mean(list(agree_frac.values()))) if agree_frac else None),
         "soup_abs_log_mean": float(np.mean([float(st[n].abs().mean()) for n in scale])) if scale else None,
     }
-    meta = dict(ref["meta"]); meta["soup"] = {"mode": mode, "members": [m["dir"] for m in M], "start": start_info}
+    meta = dict(ref["meta"]); meta["soup"] = {"mode": mode, "members": [m["dir"] for m in M], "start": start_info, "exp_device": dev}
     tmp = out + ".part"
     if os.path.exists(tmp): shutil.rmtree(tmp)
     if os.path.exists(out): shutil.rmtree(out)
@@ -159,10 +162,11 @@ def build(out, mode, dirs, start_dir=None, force=False):
     return manifest
 
 
-def unit(out, member, start_dir=None):
-    """a soup of one run = that run: state bitwise equal; scale files compared (exp on CPU vs the trainer's write)"""
-    build(out, "mean", [member], start_dir=start_dir, force=True)
-    A, B = load_ckpt(member), load_ckpt(out)
+def unit(out, member, start_dir=None, dev="cpu"):
+    """a soup of one run = that run: state bitwise equal; scale files compared with the member's own files (bitwise on
+    the GPU: the same exp as the trainer's write)"""
+    build(out, "mean", [member], start_dir=start_dir, force=True, dev=dev)
+    A, B = load_ckpt(member, dev), load_ckpt(out, dev)
     names = sorted(A["state"])
     state_eq = all(torch.equal(A["state"][n], B["state"][n]) for n in names)
     n_eq = n_tot = 0; maxrel = 0.0
@@ -170,11 +174,12 @@ def unit(out, member, start_dir=None):
         for x, y in zip(A["files"][k], B["files"][k]):
             n_tot += x.numel(); n_eq += int((x == y).sum())
             maxrel = max(maxrel, float(((x.double() - y.double()).abs() / x.double().abs().clamp_min(1e-30)).max()))
-    rep = {"member": member, "soup": out, "state_bitwise_equal": bool(state_eq), "state_params": len(names),
+    rep = {"member": member, "soup": out, "exp_device": dev, "state_bitwise_equal": bool(state_eq), "state_params": len(names),
            "scale_values": n_tot, "scale_values_bitwise_equal": n_eq, "scale_max_rel_diff": maxrel}
-    print(json.dumps(rep))
     assert state_eq, "unit check failed: state differs"
     assert maxrel <= 2.5e-7, f"unit check failed: scale files differ by {maxrel:.3g}"
+    rep["exact"] = bool(state_eq and n_eq == n_tot)
+    print(json.dumps(rep))
     return rep
 
 
@@ -257,12 +262,16 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     b = sub.add_parser("build"); b.add_argument("out"); b.add_argument("mode", choices=["mean", "consensus"])
     b.add_argument("ckpts", nargs="+"); b.add_argument("--start"); b.add_argument("--force", action="store_true")
+    b.add_argument("--device", default="auto", help="where exp runs: cpu, cuda:N (ROCm too), or auto (cuda:0 if visible)")
     u = sub.add_parser("unit"); u.add_argument("out"); u.add_argument("ckpt"); u.add_argument("--start")
+    u.add_argument("--device", default="auto")
     sub.add_parser("selftest")
     a = ap.parse_args()
+    dev = ("cuda:0" if torch.cuda.is_available() else "cpu") if a.cmd != "selftest" and getattr(a, "device", "auto") == "auto" \
+        else getattr(a, "device", "cpu")
     if a.cmd == "build": build(os.path.abspath(a.out), a.mode, [os.path.abspath(x) for x in a.ckpts],
-                               os.path.abspath(a.start) if a.start else None, a.force)
-    elif a.cmd == "unit": unit(os.path.abspath(a.out), os.path.abspath(a.ckpt), os.path.abspath(a.start) if a.start else None)
+                               os.path.abspath(a.start) if a.start else None, a.force, dev=dev)
+    elif a.cmd == "unit": unit(os.path.abspath(a.out), os.path.abspath(a.ckpt), os.path.abspath(a.start) if a.start else None, dev=dev)
     else: selftest()
 
 

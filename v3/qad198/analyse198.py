@@ -32,6 +32,11 @@ ARM = {}
 for s in a.arm:
     t, p = s.split("=", 1)
     ARM[t] = {"path": p, **json.load(open(p))}
+    for st in SETS:                       # the rows file beside the arm's own result.json (a moved dir: served-cpuexp/)
+        sl = ARM[t]["slices"][st]
+        beside = os.path.join(os.path.dirname(os.path.abspath(p)), os.path.basename(sl["rows"]))
+        if os.path.exists(beside):
+            sl["rows"] = beside
 tags = list(ARM)
 S, N, sha = {}, {}, {}
 for t in tags:
