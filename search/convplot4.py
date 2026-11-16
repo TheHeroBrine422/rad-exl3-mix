@@ -262,7 +262,14 @@ def main(argv=None):
     ap.add_argument("--track-top", action="store_true", help="(#186) the tracking panel on top, the training estimate below")
     ap.add_argument("--no-val", action="store_true", help="(#183) drop the held-out validation panel")
     ap.add_argument("--note", action="append", default=[], help="extra footnote line"); ap.add_argument("--title", default="EXL3-V3 search (#171)")
+    ap.add_argument("--drop", default="7", help="(#199) comma list of sizes left off the plot (band geo-means keep a fixed size set)")
+    ap.add_argument("--only", default="", help="(#199) comma list: plot only these sizes (e.g. the in-between sizes)")
     a = ap.parse_args(argv)
+    global DROP
+    DROP = {float(x) for x in a.drop.split(",") if x}
+    if a.only:
+        keep = {float(x) for x in a.only.split(",")}
+        DROP = {float(json.loads(l)["size"]) for l in open(a.state) if '"size"' in l and json.loads(l).get("size") is not None} - keep
     R = load_refs(a.refs + ([a.results] if a.results else []))
     V2m = R.get(a.monitor, {}).get("V2", []); IQm = R.get(a.monitor, {}).get("IQR4", [])
     v2 = lambda b, sl=a.monitor: loglin(R.get(sl, {}).get("V2", []), b)
