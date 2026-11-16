@@ -329,3 +329,17 @@ committed before the data they affect.
   own moves in the same tag range; t183 of accepted candidates from the tracker (report only). Recommendation gate for
   "driver move kind": the allocator's 80 % interval above the own moves' point rate in my period **and** pooled with
   w172's period, plus (rankreg) the time-ordered replay of §4 on cut A.
+
+## Amendment 14 — 2026-11-15 7:20 PM CST (system clock; w181; before any w181 file is in the inbox)
+- **Time correction:** amendment 13 was committed 6:31 PM CST (3dd0b311), not 6:50 PM; the snapshot of cut A was taken
+  6:30 PM CST. Git is the record.
+- **Cut A as fitted (data cut, no rule change):** refits b1 / b2 / b3 on 2371 / 3381 / 3167 allowed rows (s190f rows
+  dropped: 16 / 56 / 32); anomaly regression on 1847 paired rows (1764 with an SE); ranker on 1515 stage-1 candidates
+  (824 whole rows train the regressor). §4 replay on cut A: `reg` S 0.206 vs fit.py 0.193, dS 80 % CI [−0.046, +0.070]:
+  the gate fails (report; not a submission gate, amendment 5).
+- **rankreg / rankanom picks, diversity (seen on round 1's picks before any was submitted: the top 4 of a size were the
+  same `partial` move with 4–30 tensors changed between them):** a candidate that differs from an already picked one of
+  the same size and round (rankreg picks first, then rankanom) in fewer than 40 tensors is skipped; the next by score
+  takes its place. Still 4 + 2 per size.
+- **anom queue order:** within a variant the files are taken in a seeded random order (seed 193 + round), so that a
+  partly used queue covers flags and sizes evenly.
