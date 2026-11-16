@@ -343,3 +343,9 @@ committed before the data they affect.
   takes its place. Still 4 + 2 per size.
 - **anom queue order:** within a variant the files are taken in a seeded random order (seed 193 + round), so that a
   partly used queue covers flags and sizes evenly.
+
+## Amendment 15 — 2026-11-15 9:05 PM CST (system clock; w181; data cut B, before any file generated from it)
+- **Cut B (the one planned in amendment 13):** no confirmation on s190f was pending at 8:25 PM CST; state snapshot then,
+  allow-list = cut A + s190f. Refits on 2447 / 3469 / 3223 rows (dropped: s195s1 123 / 150 / 72, s195c1 33 / 27 / 27);
+  anomaly regression on 1870 paired rows (+23 stage-2 rows on s190f; 1787 with an SE); ranker rows unchanged (1515
+  stage-1 candidates). Rounds from round 4 on use cut B's refit, flag table and ranker; no further cut.
