@@ -349,3 +349,14 @@ committed before the data they affect.
   allow-list = cut A + s190f. Refits on 2447 / 3469 / 3223 rows (dropped: s195s1 123 / 150 / 72, s195c1 33 / 27 / 27);
   anomaly regression on 1870 paired rows (+23 stage-2 rows on s190f; 1787 with an SE); ranker rows unchanged (1515
   stage-1 candidates). Rounds from round 4 on use cut B's refit, flag table and ranker; no further cut.
+
+## Amendment 16 — 2026-11-15 9:40 PM CST (system clock; w181; before any file it describes)
+- **Standing drop rule applied per file token (amendment 7: 0 confirmed in ≥ 8 decided, pending confirmations not
+  counted as decided):** at each queue build, a token (`rankreg`, `rankanom`, `xplant`, `anom`) that meets it gets no
+  new files; its waiting files resolve. At 9:30 PM: rankanom 0 of 21, xplant 0 of 12, rankreg 0 of 26 (4 pending). The
+  freed share goes to `anom`; a token that later shows a confirmation is queued again.
+- **anom follow-ups of confirmations seen on the live pair (verdicts only, amendment 13):**
+  - `s3`: three steps, for a flag whose `s2` file confirmed (hypothesis: still short of the optimum);
+  - a confirmed `nb2` (flag + neighbour bands) becomes a flag of its own (the widened group), with the usual variants;
+  - `cmb`: every confirmed flag of the size's band in one file, one step each in its direction, one file per size and
+    round (hypothesis: confirmed effects add; unlike the closed `anomall` it uses only flags that confirmed).
