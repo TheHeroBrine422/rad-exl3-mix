@@ -55,3 +55,28 @@ pooled, 7 with the 95 % interval below 0, none above; mean −1.4 % pooled (acti
 per-document mean on t183 also improves (−2.4 %). The guard mostly blocked real held-out gains → driver CONF
 `guard: null` from the next restart. The per-document mean stays in the decision events (logged, not used). Final picks
 keep their own checks (finalpick.py, golden-final750).
+
+## Amendment 2026-11-16 ~1:45 PM CST (user): final picks in two phases (+ 1.5); supersedes "Final picks" slice / finalists above
+Written before any phase-1 data; the search (#183) ends at ≥ 4,929 results with no confirmation pending (`stopat.sh`).
+1. **Candidates per size (release sizes + 1.5 / 1.75):** every confirmed accept / join since eval step ~1000, the s186e
+   re-selection top 3, the live incumbent and pool at stop time, and at 6.5 / 7.0 the stage-1 tentatives whose
+   confirmation missed narrowly (stage-2 |z| ≤ 0.5). Dedup by assignment hash.
+2. **Phase 1:** a fresh ~1.5M-scored-position xcorp slice (never used, stratified as RULES-strata with ~10 % N, 8k cap,
+   ledger as non-calib), built on ds8 / box2. Every candidate is scored on it. Statistic: (a) pooled, size-adjusted
+   with **b frozen per size from the measured curve** (slope of ln KLD vs bpw between neighbouring sizes' incumbents on
+   this slice; ends one-sided), not the search fit's b. Keep the top 30–50 % per size (at least 3), plus any candidate
+   whose CI vs the size's best overlaps 0. N stratum: veto only (a candidate significantly worse on N alone is dropped,
+   never picked for N).
+3. **Phase 1.5:** consensus and xavg models built from phase 1's leaders (consensus192 / own193 xavg with phase-1 scores
+   as sources: best + those within the phase-1 CI per size; xavg neighbour window |Δsize| ≤ 0.75), scored on the
+   phase-1 slice; they join phase 2 if they qualify under §2's keep rule.
+4. **Low-noise search round (optional, decided after phase 1):** if phase 1 shows real differences at a size, i.e. its
+   best beats the search incumbent with the 95 % CI wholly below 0 and by ≥ 1.5 %, or any search model ranks the phase-1
+   candidates with Spearman ρ ≥ 0.3 (80 % CI above 0.1) when replayed on the phase-1 reads, the lead proposes to the user
+   a short search round at those sizes on large fresh xcorp slices (phase-1 size or ≥ 2× s195; phase-1 reads may feed
+   the fit; accept on the new slice, confirm on a second large fresh slice). Its confirmed results join phase 2.
+   Never on ver4 or any phase-2 data.
+5. **Phase 2:** the survivors on golden-final750 / ver4 (calib part) + a fresh xcorp part (as "Final picks" above). The
+   pick and every published number come from phase 2 only; the calib part vetoes (pick must not be significantly worse
+   on it). Report each pick's CI vs runner-up, vs the search incumbent, and vs IQR-V4 (interpolated t183 line).
+6. **Data:** phase-1 reads are kept (data/picks202/) as the low-noise benchmark for replaying search models.
