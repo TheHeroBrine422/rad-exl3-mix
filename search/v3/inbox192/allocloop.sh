@@ -10,7 +10,12 @@ while [ ! -e $W/drv/STOP-allocloop ]; do
   cd $R
   nice -n 10 timeout 1800 python3 search/v3/inbox192/consensus192.py $W/driver.json $out/cons --whole --slice s195s1 \
       --decide $SIZES --probe "" --kmax 7.5 > $out/cons.log 2>&1
-  nice -n 10 timeout 1800 python3 search/v3/alloc193/own193.py $out/xavg --sizes $SIZES --allocs xavg > $out/xavg.log 2>&1
+  # (11-16 4:05 AM CST) xavg over each size's neighbours only (|dz| <= 0.75): the all-sizes mean from 1.5 to 7 lost by 3-50 %
+  for z in ${SIZES//,/ }; do
+    nb=$(python3 -c "S=[float(x) for x in '$SIZES'.split(',')]; z=$z; print(','.join(f'{x:g}' for x in S if abs(x-z)<=0.75))")
+    mkdir -p $out/xw; nice -n 10 timeout 600 python3 search/v3/alloc193/own193.py $out/xw --sizes $nb --allocs xavg >> $out/xavg.log 2>&1
+    for f in $out/xw/xavg-$z.json $out/xw/xavg-$z-*.json; do [ -e "$f" ] && mv "$f" $out/xavg/; done; rm -rf $out/xw
+  done
   python3 - "$out" "$W/drv/inbox" "$L/ledger.txt" "$n" <<'EOF'
 import json, sys, os, glob, hashlib
 out, inbox, ledger, n = sys.argv[1:5]
