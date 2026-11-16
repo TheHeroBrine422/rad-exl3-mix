@@ -21,7 +21,8 @@
   ],
   "band": "b1",
   "dir": -1,
-  "src": "w172-anom-ffn_downd6-2.5 (join)"
+  "src": "w172-anom-ffn_downd6-2.5 (join)",
+  "s2ok": true
  },
  {
   "groups": [
@@ -67,5 +68,14 @@
   "band": "b1",
   "dir": -1,
   "src": "w181-anom-ffn_downd6-2-nbp (join)"
+ },
+ {
+  "groups": [
+   "ffn_gate_up@0",
+   "ffn_gate_up@1"
+  ],
+  "band": "b1",
+  "dir": -1,
+  "src": "w181-anom-ffn_gate_upd0-2-nb2 (accept)"
  }
 ]
