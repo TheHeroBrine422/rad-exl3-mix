@@ -168,3 +168,11 @@ pairwise variance), and misses c:2115 (12×, 10 % at 5.0). New criterion, per si
 per-token KL across the size's phase-2 candidates is ≥ 8× the slice's median per-token KL** (documents with 0 scored
 positions excluded), at most 5 (the highest first); 0 is allowed. Pick, guards (full slice, calib-verify part) and
 reporting as in the 3:35 AM amendment.
+
+## Amendment 2026-11-17 ~5:10 AM CST (user), before any swap data: mad-only release check
+After the 16 picks: every head / embedding of a pick not in mad (mul1 heads, mul1 / mul1i8 embeddings) is replaced by the
+mad option at the same K (built where missing: w198 embeddings; mad heads at the picks' K ≥ 6 if needed), nothing else
+changed. Each swapped pick is scored on the phase-2 slices and compared with its pick (paired, phase-2 statistic: per-token
+outlier trim, size-adjusted). **Mad-only is adopted for the whole release (all 16) if no size is worse by more than 1 %
+(point estimate, trimmed) and none is significantly worse below 6.0** (95 % CI wholly above 0). User: a ~1 % loss at the top
+sizes is acceptable for one codebook (simpler plugin, lower decode compute). Otherwise the picks ship as chosen.
