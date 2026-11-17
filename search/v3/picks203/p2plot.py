@@ -2,7 +2,7 @@
 """p2plot.py CANDS-P2.json OUT.png -- phase-2 progress chart (RULES-picks am. 11-17), in p1plot's style.
 
 Top 4 x 4: one panel per size, one row per phase-2 candidate, vs the size's current pick (dashed 0 line):
-  filled dot + bar  phase 2, trimmed (the 5 heaviest documents by median KL share left out; the decision statistic), 95 % CI
+  filled dot + bar  phase 2, trimmed (per-token KL outliers >= 8x median left out, <= 5; the decision statistic), 95 % CI
   x                 phase 2, untrimmed (all documents)
   hollow diamond    phase 1 (s195c2-c5, c:4151 left out), vs the same pick
   hollow dot (k/6)  partial phase-2 read: untrimmed, on the slices done so far
@@ -40,8 +40,7 @@ for k, s in enumerate(sizes):
     keep = None; pick = None; changed = False; share = 0.0
     if full:
         V = {t: R2.vec(t) for t in full}
-        med = np.median(np.stack([V[t] / V[t].sum() for t in full]), axis=0)
-        trim = np.argsort(-med)[:5]; keep = np.ones(len(med), bool); keep[trim] = False
+        keep, trim, _ = L.trim_mask([V[t] for t in full], R2.pos(full[0]))
         tr = {t: math.log(V[t][keep].sum()) + adj(R2, t) for t in full}
         un = {t: math.log(V[t].sum()) + adj(R2, t) for t in full}
         pick = min(full, key=tr.get); changed = pick != min(full, key=un.get)
@@ -80,7 +79,7 @@ for k, s in enumerate(sizes):
         ax.text(1.0, y, t.split("-", 2)[-1] + ("" if fullr else f" ({ns}/6)"), transform=ax.get_yaxis_transform(), fontsize=6.5, va="center", ha="left")
     ax.axvline(0, color="k", lw=0.8, ls="--"); ax.set_yticks([]); ax.set_ylim(-0.7, max(len(rows), 1) - 0.3)
     ttl = f"{S:g} bpw — {len(full)}/{len(cand)} full"
-    if full: ttl += f", trim {100 * share:.1f} % KL" + (", TRIM CHANGED PICK" if changed else "")
+    if full: ttl += f", trim {len(trim)} doc{'s' if len(trim) != 1 else ''} / {100 * share:.1f} % KL" + (", TRIM CHANGED PICK" if changed else "")
     ax.set_title(ttl, fontsize=8.5); ax.tick_params(labelsize=7); ax.grid(axis="x", alpha=0.3)
     if k // 4 == 3: ax.set_xlabel("size-adjusted KLD vs the pick (%), 95 % CI", fontsize=7.5)
 ax = fig.add_subplot(gs[4, 0:2])
@@ -104,13 +103,13 @@ if tstat:
     ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=7)
     ax.set_ylabel("KL share (%)", fontsize=8); ax2.set_ylabel("rank shift", fontsize=8)
     h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels(); ax.legend(h1 + h2, l1 + l2, fontsize=7, loc="upper left")
-    ax.set_title("(b) what the trim does: 5 heaviest documents per size", fontsize=9)
+    ax.set_title("(b) what the trim does: per-token KL outliers (≥ 8× median, ≤ 5) per size", fontsize=9)
 h = [plt.Line2D([], [], marker="o", ls="", color=v, label=k) for k, v in COL.items()]
 h += [plt.Line2D([], [], marker="x", ls="", color="k", label="untrimmed"), plt.Line2D([], [], marker="D", ls="", mfc="none", mec="#2ca02c", label="phase 1"),
       plt.Line2D([], [], marker="o", ls="", mfc="white", mec="gray", label="partial (slices/6)")]
 fig.legend(handles=h, loc="upper center", ncol=11, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, 0.995))
 tot = sum(len(C[s]) for s in sizes)
-fig.suptitle(f"Phase 2 (final750 + s195c6–c10, ~2.8M rows, 5 heaviest docs/size trimmed): {nfull} complete + {npart} partial of {tot} — lower is better",
+fig.suptitle(f"Phase 2 (final750 + s195c6–c10, ~2.8M rows, per-token KL outliers ≥ 8× median trimmed): {nfull} complete + {npart} partial of {tot} — lower is better",
              fontsize=11, y=1.012)
 fig.savefig(outp + ".part.png", dpi=110, bbox_inches="tight"); os.replace(outp + ".part.png", outp)
 print(outp, nfull, npart, tot)

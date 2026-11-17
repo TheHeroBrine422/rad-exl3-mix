@@ -106,3 +106,14 @@ def measured_b(reads, cands, keep=None):
     for s in map(float, cands):
         if s not in b and b: b[s] = b[min(b, key=lambda x: abs(x - s))]
     return b
+
+
+def trim_mask(vecs, pos, factor=8.0, kmax=5):
+    """(RULES-picks am. 11-17 4:30 AM) documents whose median per-token KL across the candidates is >= factor x the slice's
+    median per-token KL (documents with 0 positions excluded), at most kmax, highest first -> (keep mask, trimmed indices)"""
+    V = np.stack(vecs); ok = pos > 0
+    ptk = np.zeros(len(pos)); ptk[ok] = np.median(V[:, ok] / pos[ok], axis=0)
+    med = np.median(ptk[ok])
+    cand = [i for i in np.argsort(-ptk) if ok[i] and ptk[i] >= factor * med][:kmax]
+    keep = np.ones(len(pos), bool); keep[cand] = False
+    return keep, list(cand), ptk / med
