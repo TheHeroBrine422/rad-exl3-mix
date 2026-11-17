@@ -8,7 +8,7 @@ overrides, read each loop). --only-old: skip the live incumbent / pool."""
 import json, os, sys, time
 
 cp, evp, rp, mx = sys.argv[1:5]; mx = int(mx); old = "--only-old" in sys.argv; once = "--once" in sys.argv
-SL = ["final750"] + [f"s195c{i}" for i in (6, 7, 8, 9, 10)]
+SL = [f"s195c{i}" for i in (6, 7, 8, 9, 10)] + ["final750"]   # final750 (ver4) last: overfit audit first (AGENTS.md)
 GP = {"final750": "/data/q27/final/golden-final750", **{f"s195c{i}": f"/data/q27/w180/slices/golden-s195c{i}" for i in (6, 7, 8, 9, 10)}}
 SHORT = {"final750": "f", **{f"s195c{i}": str(i) for i in (6, 7, 8, 9, 10)}}
 mxf = os.path.join(os.path.dirname(os.path.abspath(cp)), "MAXOUT")
