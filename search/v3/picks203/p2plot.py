@@ -27,8 +27,8 @@ COL = {"incumbent": "#d62728", "pool": "#ff7f0e", "confirmed": "#1f77b4", "narro
        "round-near-miss": "#8c564b", "extra-solve": "#7f7f7f", "late-confirmed": "#bcbd22"}
 def colour(why): return next((COL[w] for w in COL if w in why), "#555555")
 sizes = sorted((k for k in C if not k.startswith("_")), key=float)
-fig = plt.figure(figsize=(24, 13.5))                       # 16:9: 4 x 4 size panels, the two summaries stacked on the right
-gs = fig.add_gridspec(4, 6, width_ratios=[1, 1, 1, 1, 0.12, 1.55], hspace=0.45, wspace=0.55, top=0.93, bottom=0.05, left=0.03, right=0.985)
+fig = plt.figure(figsize=(28, 13.5))                       # 16:9: 4 x 4 size panels, the two summaries stacked on the right
+gs = fig.add_gridspec(4, 6, width_ratios=[1, 1, 1, 1, 0.25, 2.5], hspace=0.45, wspace=0.55, top=0.93, bottom=0.05, left=0.03, right=0.985)
 scatter, tstat = [], []
 nfull = npart = 0
 for k, s in enumerate(sizes):
@@ -87,23 +87,23 @@ if scatter:
     cm = plt.get_cmap("viridis"); sz = sorted({x[0] for x in scatter})
     for S in sz:
         p = [(a, b_) for s_, a, b_ in scatter if s_ == S]
-        ax.scatter([x[0] for x in p], [x[1] for x in p], s=14, color=cm(sz.index(S) / max(1, len(sz) - 1)), label=f"{S:g}")
+        ax.scatter([x[0] for x in p], [x[1] for x in p], s=24, color=cm(sz.index(S) / max(1, len(sz) - 1)), label=f"{S:g}")
     lim = [min(min(x[1] for x in scatter), min(x[2] for x in scatter)) - 0.3, max(max(x[1] for x in scatter), max(x[2] for x in scatter)) + 0.3]
     ax.plot(lim, lim, "k--", lw=0.8); ax.set_xlim(lim); ax.set_ylim(lim)
     r = np.corrcoef([x[1] for x in scatter], [x[2] for x in scatter])[0, 1] if len(scatter) > 2 else float("nan")
-    ax.set_title(f"(a) phase 1 vs phase 2 (trimmed), % vs each size's pick — r = {r:.2f}, n = {len(scatter)}", fontsize=9)
-    ax.legend(fontsize=6.5, ncol=2, loc="upper left", title="bpw", title_fontsize=7)
-ax.set_xlabel("phase 1 (s195c2–c5, c:4151 out)", fontsize=8); ax.set_ylabel("phase 2 (trimmed)", fontsize=8); ax.grid(alpha=0.3)
+    ax.set_title(f"(a) phase 1 vs phase 2 (trimmed), % vs each size's pick — r = {r:.2f}, n = {len(scatter)}", fontsize=11)
+    ax.legend(fontsize=8.5, ncol=2, loc="upper left", title="bpw", title_fontsize=9)
+ax.set_xlabel("phase 1 (s195c2–c5, c:4151 out)", fontsize=10); ax.set_ylabel("phase 2 (trimmed)", fontsize=10); ax.grid(alpha=0.3); ax.tick_params(labelsize=9)
 ax = fig.add_subplot(gs[2:4, 5])
 if tstat:
     xs = np.arange(len(tstat)); ax.bar(xs - 0.2, [t[1] for t in tstat], 0.4, color="#1f77b4", label="trimmed docs' share of the pick's KL (%)")
     ax2 = ax.twinx(); ax2.bar(xs + 0.2, [t[2] for t in tstat], 0.4, color="#ff7f0e", label="mean rank shift, trimmed vs untrimmed")
     for i, t in enumerate(tstat):
-        if t[3]: ax.text(i, t[1] + 0.3, "pick\nchanged", ha="center", fontsize=6, color="#d62728")
-    ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=7)
-    ax.set_ylabel("KL share (%)", fontsize=8); ax2.set_ylabel("rank shift", fontsize=8)
-    h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels(); ax.legend(h1 + h2, l1 + l2, fontsize=7, loc="upper left")
-    ax.set_title("(b) what the trim does: per-token KL outliers (≥ 8× median, ≤ 5) per size", fontsize=9)
+        if t[3]: ax.text(i, t[1] + 0.3, "pick\nchanged", ha="center", fontsize=7.5, color="#d62728")
+    ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=9)
+    ax.set_ylabel("KL share (%)", fontsize=10); ax2.set_ylabel("rank shift", fontsize=10)
+    h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels(); ax.legend(h1 + h2, l1 + l2, fontsize=9, loc="upper left")
+    ax.set_title("(b) what the trim does: per-token KL outliers (≥ 8× median, ≤ 5) per size", fontsize=11)
 h = [plt.Line2D([], [], marker="o", ls="", color=v, label=k) for k, v in COL.items()]
 h += [plt.Line2D([], [], marker="x", ls="", color="k", label="untrimmed"), plt.Line2D([], [], marker="D", ls="", mfc="none", mec="#2ca02c", label="phase 1"),
       plt.Line2D([], [], marker="o", ls="", mfc="white", mec="gray", label="partial (slices/6)")]
