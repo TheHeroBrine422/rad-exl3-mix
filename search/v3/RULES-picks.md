@@ -97,3 +97,11 @@ Written before any phase-1 data; the search (#183) ends at ≥ 4,929 results wit
    scored as the board does, plus the 2 public long-agentic traces whole at full context (TP2 where needed) as the
    long-context check; RULER as planned. Calib-verify numbers are reported too (secondary).
    Clarification (user, same day): public is scored on the **16 final picks only** (one per size), never on candidates.
+
+## Amendment 2026-11-16 ~6:15 PM CST (user: "more 3.75 candidates, also more 3.25 and 6.5")
+At 3.25, 3.75 and 6.5 (thin: the search made 1 / 1 / 4 accepts there in ~234 decisions each) phase 1 adds, before
+their phase-1 ranking is read: (a) fresh knapsack solves from the search's final fit of the size's group (b2: fit0591,
+b3: fit0588): the optimum + 3 Thompson draws from the fit's posterior draws, each from the size's final incumbent, window
+[size − 0.02, size]; (b) the 3 best stage-1 whole-slice reads (size-adjusted log r, any decision) not already in the set;
+(c) at 6.5 every past incumbent / pool member and every stage-1 tentative not already in. Phase 1.5 (consensus / xavg
+from neighbour leaders) still follows for them. All are scored on s195c2–c5 like every candidate.
