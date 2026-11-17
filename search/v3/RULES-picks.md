@@ -125,3 +125,6 @@ Phase 1.5 at 6.0–7.0 then uses the mul1 forms. Not a selection on this result:
    other 13 sizes may run meanwhile.
    Revision (user, same evening, before the round starts): **6.0 added; 400 results.** 6.0's phase-1 leader without
    c:4151 (manual-02480) enters through the inbox too.
+   Inbox additions to the round (user "create inbox?", 11-16 ~11:40 PM CST): consensus192 --whole on s195s23 (every whole
+   s195s23 read of every size as sources) at 4.5 / 6 / 6.5 / 7, and embedding-only mul1 swaps (t6.5 → t6.5m) of the 6.5 and
+   7.0 incumbents (phase-1 swap reads without c:4151: head codebook ±0.0 %, embedding m −0.6 % ns). Judged like any candidate.
