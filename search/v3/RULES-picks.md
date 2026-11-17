@@ -142,3 +142,8 @@ c:4151 left out (paired, per-document bootstrap 2,000), each size keeps for phas
 within **1.5 % of the size's best** or whose 95 % CI vs the best includes 0, **at least 3, at most 8** (closest to the
 best first). The loose margin offsets the winner's curse of the phase-1 leaders (chosen on this corpus). Why: fewer,
 better candidates give phase 2 a clean read on the best (fewer near-ties competing on noise).
+   Addendum (user question, 11-17 ~2:05 AM CST): the old search's last tentatives at sizes stopped for the round also go
+   through phase 1.75 (scored on s195c2–c5, then ranked with their size's phase-1 candidates for the top-5 cut): 1.5
+   block-04933 (confirmed on s195c1 at 8:51 PM, −0.7 %, z −3.59), 1.75 block-04937 / block-04948 and 5.5 cross-04934 (their
+   confirmations can never resolve: the driver skips stopped sizes). Every candidate belongs to one size (its bytes in that
+   size's window), so nothing crosses size bands.
