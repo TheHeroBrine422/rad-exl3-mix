@@ -128,3 +128,9 @@ Phase 1.5 at 6.0–7.0 then uses the mul1 forms. Not a selection on this result:
    Inbox additions to the round (user "create inbox?", 11-16 ~11:40 PM CST): consensus192 --whole on s195s23 (every whole
    s195s23 read of every size as sources) at 4.5 / 6 / 6.5 / 7, and embedding-only mul1 swaps (t6.5 → t6.5m) of the 6.5 and
    7.0 incumbents (phase-1 swap reads without c:4151: head codebook ±0.0 %, embedding m −0.6 % ns). Judged like any candidate.
+
+## Amendment 2026-11-17 ~12:05 AM CST (user agreed): phase-2 candidates at the round sizes (4.5, 6.0, 6.5, 7.0)
+Phase 2 at each round size takes: every round accept / join (confirmed on s195s45), the size's pool at the round's end,
+the phase-1 top 5 (c:4151 left out), **plus the best 5 round stage-1 reads that failed confirmation only narrowly**
+(stage-1 z ≤ −1 on s195s23 and stage-2 z ≤ +0.5 on s195s45), deduplicated by assignment hash. Confirmation still steers
+the search (incumbent / pool); phase 2 (~2.8M rows) decides among everything that showed a signal.
