@@ -30,8 +30,9 @@ branch's four plugins exl3quant qwen35_exl3 exl3import exl3i; gfx1201, FFmpeg of
 J=16 bash /data/q27/w201/rad21/build.sh /data/q27/w201/rad21     # log: rad21/logs/rad21build.log, ~50 min cold
 # after a main.cpp-only change: rad21/rebuild-main.sh (incremental radiance + install)
 ```
-Result: `rad21/install/bin/radiance`, `rad21/home` (RADIANCE_HOME). Host tests per plugin pass (exl3quant 1,
-qwen35_exl3 0, exl3import 5 under exl3i's test label as printed by the build script).
+Result: `rad21/install/bin/radiance`, `rad21/home` (RADIANCE_HOME). Plugins in the home: qwen35_exl3.so,
+exl3quant.so, exl3i.so (exl3import is a header/common library they compile in). Host tests: exl3quant 1 passed,
+exl3i 5 passed, qwen35_exl3 has no host-labelled tests (ctest: "No tests were found").
 CPU tests on box2 (GPUs hidden): config_test, fleet_config_test, format_test, kld_test all Passed.
 
 ## 2. Equivalence (step 3): the coordinator's score command on s195c2, card 3
