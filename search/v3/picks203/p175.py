@@ -26,6 +26,9 @@ if not late_only:
                 add.append((e["size"], e["tag"], "round-near-miss"))
         if e.get("ev") == "pool": add += [(e["size"], t, "round-pool") for t in (e.get("members") or [])]
         if e.get("ev") == "incumbent": add.append((e["size"], e["tag"], "round-incumbent"))
+    dec2 = {e["tag"] for e in st[i:] if e.get("ev") == "decision" and e.get("stage") == 2}
+    for t, e in s1.items():                                   # (11-17) tentatives whose confirmation never resolved (size stopped)
+        if t not in dec2: add.append((e["size"], t, "round-tentative-unconfirmed"))
     for t, e in sub.items():
         if e.get("size") in S and e.get("kind") == "manual" and t in mix and st.index(e) >= i: add.append((e["size"], t, "round-inbox"))
 n = 0
