@@ -134,3 +134,11 @@ Phase 2 at each round size takes: every round accept / join (confirmed on s195s4
 the phase-1 top 5 (c:4151 left out), **plus the best 5 round stage-1 reads that failed confirmation only narrowly**
 (stage-1 z ≤ −1 on s195s23 and stage-2 z ≤ +0.5 on s195s45), deduplicated by assignment hash. Confirmation still steers
 the search (incumbent / pool); phase 2 (~2.8M rows) decides among everything that showed a signal.
+
+## Amendment 2026-11-17 ~1:50 AM CST (user): phase 1.75 filter at the round sizes (replaces the 12:05 AM candidate list)
+After the round, at 4.5 / 6.0 / 6.5 / 7.0: every round model (accepts, joins, pool at the end, near misses as defined at
+12:05 AM, inbox models) not yet read on s195c2–c5 is scored there (whole slices, per-slice evals). Then, on s195c2–c5 with
+c:4151 left out (paired, per-document bootstrap 2,000), each size keeps for phase 2 every candidate (phase-1 and round)
+within **1.5 % of the size's best** or whose 95 % CI vs the best includes 0, **at least 3, at most 8** (closest to the
+best first). The loose margin offsets the winner's curse of the phase-1 leaders (chosen on this corpus). Why: fewer,
+better candidates give phase 2 a clean read on the best (fewer near-ties competing on noise).
