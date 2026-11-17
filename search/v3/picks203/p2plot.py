@@ -47,7 +47,14 @@ for k, s in enumerate(sizes):
         share = 1 - V[pick][keep].sum() / V[pick].sum()
         ranks_t = sorted(full, key=tr.get); ranks_u = sorted(full, key=un.get)
         spread = np.mean([abs(ranks_t.index(t) - ranks_u.index(t)) for t in full])
-        tstat.append((S, 100 * share, spread, changed))
+        wr = []                                            # CI width, trimmed / untrimmed, vs the pick (non-pick candidates)
+        for t in full:
+            if t == pick: continue
+            d = adj(R2, t) - adj(R2, pick)
+            bt = L.boot(V[t][keep], V[pick][keep], d); bu = L.boot(V[t], V[pick], d)
+            wr.append((bt[2] - bt[1]) / (bu[2] - bu[1]))
+        cired = 100 * (1 - float(np.median(wr))) if wr else 0.0
+        tstat.append((S, 100 * share, spread, changed, cired))
     elif part:                                             # no full read yet: reference = best partial read so far
         pick = min(part, key=lambda t: (-len(R2.d[t]), math.log(sum(R2.d[t][x][:, 0].sum() for x in R2.d[t])) + adj(R2, t)))
     rows = []
@@ -99,12 +106,13 @@ if scatter:
 ax.set_xlabel("phase 1 (s195c2–c5, c:4151 out)", fontsize=10); ax.set_ylabel("phase 2 (trimmed)", fontsize=10); ax.grid(alpha=0.3); ax.tick_params(labelsize=9)
 ax = fig.add_subplot(gs[2:4, 5])
 if tstat:
-    xs = np.arange(len(tstat)); ax.bar(xs - 0.2, [t[1] for t in tstat], 0.4, color="#1f77b4", label="trimmed docs' share of the pick's KL (%)")
-    ax2 = ax.twinx(); ax2.bar(xs + 0.2, [t[2] for t in tstat], 0.4, color="#ff7f0e", label="mean rank shift, trimmed vs untrimmed")
+    xs = np.arange(len(tstat)); ax.bar(xs - 0.27, [t[1] for t in tstat], 0.27, color="#1f77b4", label="trimmed docs' share of the pick's KL (%)")
+    ax.bar(xs, [t[4] for t in tstat], 0.27, color="#2ca02c", label="95 % CI narrower after trim (%, median over candidates vs pick)")
+    ax2 = ax.twinx(); ax2.bar(xs + 0.27, [t[2] for t in tstat], 0.27, color="#ff7f0e", label="mean rank shift, trimmed vs untrimmed")
     for i, t in enumerate(tstat):
         if t[3]: ax.text(i, t[1] + 0.3, "pick\nchanged", ha="center", fontsize=7.5, color="#d62728")
     ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=9)
-    ax.set_ylabel("KL share (%)", fontsize=10); ax2.set_ylabel("rank shift", fontsize=10)
+    ax.set_ylabel("KL share / CI narrowing (%)", fontsize=10); ax2.set_ylabel("rank shift", fontsize=10)
     h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels(); ax.legend(h1 + h2, l1 + l2, fontsize=9, loc="upper left")
     ax.set_title("(b) what the trim does: per-token KL outliers (≥ 8× median, ≤ 5) per size", fontsize=11)
 h = [plt.Line2D([], [], marker="o", ls="", color=v, label=k) for k, v in COL.items()]
