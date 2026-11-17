@@ -123,3 +123,5 @@ Phase 1.5 at 6.0–7.0 then uses the mul1 forms. Not a selection on this result:
    (= s195s4 + s195s5); both never used. Phase-1 leaders without c:4151 enter through the inbox as decide candidates
    (4.5 manual-02404, 6.5 solve-03042, 7.0 cross-03741). Confirmed results join phase 2 of those sizes; phase 2 of the
    other 13 sizes may run meanwhile.
+   Revision (user, same evening, before the round starts): **6.0 added; 400 results.** 6.0's phase-1 leader without
+   c:4151 (manual-02480) enters through the inbox too.
