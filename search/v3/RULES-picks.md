@@ -147,3 +147,16 @@ better candidates give phase 2 a clean read on the best (fewer near-ties competi
    block-04933 (confirmed on s195c1 at 8:51 PM, −0.7 %, z −3.59), 1.75 block-04937 / block-04948 and 5.5 cross-04934 (their
    confirmations can never resolve: the driver skips stopped sizes). Every candidate belongs to one size (its bytes in that
    size's window), so nothing crosses size bands.
+
+## Amendment 2026-11-17 ~3:35 AM CST (user), before any phase-2 data: heavy-document trim in phase 2
+Per size, on the phase-2 slices (final750 + s195c6–c10, 2,157 documents): the **5 documents with the largest median
+KL share across all of that size's phase-2 candidates** (each candidate's per-document KL / its pooled total; median over
+candidates) are left out of the decision statistic. Fixed per size once every candidate is scored, before any pair is
+compared; never chosen by where candidates differ.
+- **Pick** = best size-adjusted pooled KLD (frozen measured b) on the trimmed slice.
+- **Guards:** the pick must not be significantly worse (95 % paired CI wholly above 0) than the runner-up on (i) the full,
+  untrimmed slice and (ii) the calib-verify part (final750's c1 / c3 documents). If a guard fails, the runner-up is
+  checked the same way.
+- Report trimmed and untrimmed numbers and the 5 documents per size. Published numbers (public, the 16 picks) are
+  untrimmed, as the board scores.
+c:4151 is not in the phase-2 slices; the phase-1 / 1.75 rule (c:4151 left out) is unchanged.
