@@ -7,7 +7,7 @@ Top 4 x 4: one panel per size, one row per phase-2 candidate, vs the size's curr
   hollow diamond    phase 1 (s195c2-c5, c:4151 left out), vs the same pick
   hollow dot (k/6)  partial phase-2 read: untrimmed, on the slices done so far
 Panel title: pick, trimmed documents' share of the pick's KL, whether the trim changed the pick.
-Bottom row: (a) phase 1 vs phase 2 (trimmed), every candidate with a full read, % vs its size's pick, one colour a size;
+Right column: (a) phase 1 vs phase 2 (trimmed), every candidate with a full read, % vs its size's pick, one colour a size;
 (b) per size: the trimmed documents' share of KL and the untrimmed vs trimmed spread (how much the trim moves the
 ranking). Size adjustment: the frozen measured b (CANDS-P2["_b"])."""
 import json, math, os, sys
@@ -27,8 +27,8 @@ COL = {"incumbent": "#d62728", "pool": "#ff7f0e", "confirmed": "#1f77b4", "narro
        "round-near-miss": "#8c564b", "extra-solve": "#7f7f7f", "late-confirmed": "#bcbd22"}
 def colour(why): return next((COL[w] for w in COL if w in why), "#555555")
 sizes = sorted((k for k in C if not k.startswith("_")), key=float)
-fig = plt.figure(figsize=(16, 3.2 * 4 + 4.2))
-gs = fig.add_gridspec(5, 4, height_ratios=[1, 1, 1, 1, 1.25], hspace=0.45, wspace=0.55, top=0.955, bottom=0.04)
+fig = plt.figure(figsize=(24, 13.5))                       # 16:9: 4 x 4 size panels, the two summaries stacked on the right
+gs = fig.add_gridspec(4, 6, width_ratios=[1, 1, 1, 1, 0.12, 1.55], hspace=0.45, wspace=0.55, top=0.93, bottom=0.05, left=0.03, right=0.985)
 scatter, tstat = [], []
 nfull = npart = 0
 for k, s in enumerate(sizes):
@@ -82,7 +82,7 @@ for k, s in enumerate(sizes):
     if full: ttl += f", trim {len(trim)} doc{'s' if len(trim) != 1 else ''} / {100 * share:.1f} % KL" + (", TRIM CHANGED PICK" if changed else "")
     ax.set_title(ttl, fontsize=8.5); ax.tick_params(labelsize=7); ax.grid(axis="x", alpha=0.3)
     if k // 4 == 3: ax.set_xlabel("size-adjusted KLD vs the pick (%), 95 % CI", fontsize=7.5)
-ax = fig.add_subplot(gs[4, 0:2])
+ax = fig.add_subplot(gs[0:2, 5])
 if scatter:
     cm = plt.get_cmap("viridis"); sz = sorted({x[0] for x in scatter})
     for S in sz:
@@ -94,7 +94,7 @@ if scatter:
     ax.set_title(f"(a) phase 1 vs phase 2 (trimmed), % vs each size's pick — r = {r:.2f}, n = {len(scatter)}", fontsize=9)
     ax.legend(fontsize=6.5, ncol=2, loc="upper left", title="bpw", title_fontsize=7)
 ax.set_xlabel("phase 1 (s195c2–c5, c:4151 out)", fontsize=8); ax.set_ylabel("phase 2 (trimmed)", fontsize=8); ax.grid(alpha=0.3)
-ax = fig.add_subplot(gs[4, 2:4])
+ax = fig.add_subplot(gs[2:4, 5])
 if tstat:
     xs = np.arange(len(tstat)); ax.bar(xs - 0.2, [t[1] for t in tstat], 0.4, color="#1f77b4", label="trimmed docs' share of the pick's KL (%)")
     ax2 = ax.twinx(); ax2.bar(xs + 0.2, [t[2] for t in tstat], 0.4, color="#ff7f0e", label="mean rank shift, trimmed vs untrimmed")
