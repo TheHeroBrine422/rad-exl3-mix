@@ -21,7 +21,7 @@ def base(tag):
 
 while True:
     C = json.load(open(cp))
-    todo = [c for s in sorted(C, key=float) for c in C[s] if not (old and set(c["why"]) & {"incumbent", "pool"})]
+    todo = [c for s in sorted((k for k in C if not k.startswith("_")), key=float) for c in C[s] if not (old and set(c["why"]) & {"incumbent", "pool"})]
     sub = {}                                    # eval tag -> (base tag, [slices])
     for l in open(evp):
         e = json.loads(l); b = base(e["tag"])
