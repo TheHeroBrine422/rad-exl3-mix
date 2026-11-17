@@ -113,3 +113,13 @@ bytes). Confounder test, before phase 2: codebook-only swaps of the search incum
 6.0 head u6 → u6m; 6.5 head u6.5 → u6.5m, embedding t6.5 → t6.5m, both; 7.0 embedding t6.5 → t6.5m (its head is
 already mul1). Scored on s195c2–c5 like every candidate (tags swap-<size>-<H|E|HE>); they compete for phase 2.
 Phase 1.5 at 6.0–7.0 then uses the mul1 forms. Not a selection on this result: the swaps only isolate the cause.
+
+## Amendment 2026-11-16 ~8:15 PM CST (user: "that's an outlier we should ignore"; "an extra 300 evals on just 4.5, 6.5, 7.0")
+1. **c:4151 is left out of every phase-1 statistic** (chart and the phase-2 top-5 cut): one wildchat document (a long
+   repetitive list, KL ~45× typical) carried most of the apparent phase-1 gains at 3.25 / 5.5 / 6.0 / 6.5 / 7.0. Phase 2
+   uses its own fresh documents with the plain pooled statistic (c:4151 is not in them).
+2. **Low-noise search round (§4) at 4.5, 6.5, 7.0 only, 300 results:** the #183 driver restarted with every other size
+   stopped; search slice **s195s23** (= s195s2 + s195s3 concatenated by goldcat, ~2× s195s1), confirm slice **s195s45**
+   (= s195s4 + s195s5); both never used. Phase-1 leaders without c:4151 enter through the inbox as decide candidates
+   (4.5 manual-02404, 6.5 solve-03042, 7.0 cross-03741). Confirmed results join phase 2 of those sizes; phase 2 of the
+   other 13 sizes may run meanwhile.
