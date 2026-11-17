@@ -105,3 +105,11 @@ b3: fit0588): the optimum + 3 Thompson draws from the fit's posterior draws, eac
 [size − 0.02, size]; (b) the 3 best stage-1 whole-slice reads (size-adjusted log r, any decision) not already in the set;
 (c) at 6.5 every past incumbent / pool member and every stage-1 tentative not already in. Phase 1.5 (consensus / xavg
 from neighbour leaders) still follows for them. All are scored on s195c2–c5 like every candidate.
+
+## Amendment 2026-11-16 ~7:50 PM CST (lead, after the 6.5 phase-1 reads; user: "holy shit 6.5")
+Observation (phase 1, s195c2–c5): every 6.5 candidate ~4 % better than the incumbent uses a **mul1** head (u6.5m /
+u6.375m) and mostly a mul1 embedding (t6.5m); the incumbent has a mad head and a mul1i8 embedding at the same K (same
+bytes). Confounder test, before phase 2: codebook-only swaps of the search incumbents, nothing else changed:
+6.0 head u6 → u6m; 6.5 head u6.5 → u6.5m, embedding t6.5 → t6.5m, both; 7.0 embedding t6.5 → t6.5m (its head is
+already mul1). Scored on s195c2–c5 like every candidate (tags swap-<size>-<H|E|HE>); they compete for phase 2.
+Phase 1.5 at 6.0–7.0 then uses the mul1 forms. Not a selection on this result: the swaps only isolate the cause.
