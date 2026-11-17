@@ -1,0 +1,54 @@
+{
+ "golden": "/data/q27/w180/slices/golden-s195c2",
+ "ref": "/data/q27/srch183/scores/p1-v3s183-2-manual-01645-s195c2-m",
+ "new": "/data/q27/w201/eq/new/p1-v3s183-2-manual-01645-s195c2-m",
+ "coord_kld_ref": 0.1091973007707044,
+ "coord_kld_new": 0.1091973007707044,
+ "coord_kld_diff": 0.0,
+ "coord_positions": 343346,
+ "all_mean_ref": 0.2925400445350157,
+ "all_mean_new": 0.2925400445350157,
+ "all_mean_diff": 0.0,
+ "all_positions": 376758,
+ "top1_ref": 0.8587130200287718,
+ "top1_new": 0.8587130200287718,
+ "rows_byte_identical": true,
+ "max_abs_pos_kl_diff": 0.0,
+ "pos_kl_differ": 0,
+ "top1_mismatch_positions": 0,
+ "docs": 288,
+ "max_doc_mean_abs_diff": 0.0,
+ "top_doc_diffs": [
+  {
+   "doc": 287,
+   "ref_mean": 0.08796997282608697,
+   "new_mean": 0.08796997282608697,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 286,
+   "ref_mean": 0.062352827823691455,
+   "new_mean": 0.062352827823691455,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 285,
+   "ref_mean": 0.14388902958579883,
+   "new_mean": 0.14388902958579883,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 284,
+   "ref_mean": 0.04928932154644036,
+   "new_mean": 0.04928932154644036,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 283,
+   "ref_mean": 0.12473968740515932,
+   "new_mean": 0.12473968740515932,
+   "abs_diff": 0.0
+  }
+ ],
+ "docs_sum_differ": 0
+}

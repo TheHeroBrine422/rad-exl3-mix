@@ -1,0 +1,7 @@
+21:19:12 start 8bed46f7 (qc-exl3-v3-eval: qc-exl3-v3 a6a4dcc0 + kld-progress (8a3c08fe 43a04e00 2162ce54) + manifest loader (719dae65 64e4487c e29c765b); w201) -DCMAKE_HIP_COMPILER=/data/q27/w201/rad21/rocm-repeatable/lib/llvm/bin/clang++ -DCMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm-10.1 -DCMAKE_HIP_FLAGS=--rocm-path=/opt/rocm-10.1 -DRAD_HIP_VOPD_REPEATABLE=ON -DRAD_WITH_FFMPEG=OFF
+21:21:34 start 02bf0d0a (qc-exl3-v3-eval: qc-exl3-v3 a6a4dcc0 + kld-progress (8a3c08fe 43a04e00 2162ce54) + manifest loader (719dae65 64e4487c e29c765b) + port fix 02bf0d0a; w201) -DCMAKE_HIP_COMPILER=/data/q27/w201/rad21/rocm-repeatable/lib/llvm/bin/clang++ -DCMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm-10.1 -DCMAKE_HIP_FLAGS=--rocm-path=/opt/rocm-10.1 -DRAD_HIP_VOPD_REPEATABLE=ON -DRAD_WITH_FFMPEG=OFF
+21:27:21 CORE DONE
+21:27:25 exl3quant: built, host tests 1 passed
+21:27:39 qwen35_exl3: built, host tests 0 passed
+21:29:00 exl3i: built, host tests 5 passed
+21:29:00 HOME READY /data/q27/w201/rad21/home

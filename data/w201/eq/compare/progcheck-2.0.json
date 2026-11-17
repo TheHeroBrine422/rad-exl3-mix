@@ -1,0 +1,15 @@
+{
+ "progress_lines": 288,
+ "distinct_docs": 288,
+ "docs_in_golden": 288,
+ "order_docs_first_5": [
+  0,
+  1,
+  2,
+  3,
+  4
+ ],
+ "max_abs_kl_sum_diff_vs_rows": 3.637978807091713e-12,
+ "max_abs_perpos_kl_diff_vs_rows": 0.0,
+ "bad": []
+}

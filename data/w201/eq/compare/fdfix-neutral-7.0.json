@@ -1,0 +1,54 @@
+{
+ "golden": "/data/q27/w180/slices/golden-s195c2",
+ "ref": "/data/q27/w201/eq/prefdfix/p1s2-v3s183-7-inc-02366-s195c2-m",
+ "new": "/data/q27/w201/eq/new/p1s2-v3s183-7-inc-02366-s195c2-m",
+ "coord_kld_ref": 0.0006139825390838309,
+ "coord_kld_new": 0.0006139825390838309,
+ "coord_kld_diff": 0.0,
+ "coord_positions": 343346,
+ "all_mean_ref": 0.013717250314297352,
+ "all_mean_new": 0.013717250314297352,
+ "all_mean_diff": 0.0,
+ "all_positions": 376758,
+ "top1_ref": 0.9872331841659633,
+ "top1_new": 0.9872331841659633,
+ "rows_byte_identical": true,
+ "max_abs_pos_kl_diff": 0.0,
+ "pos_kl_differ": 0,
+ "top1_mismatch_positions": 0,
+ "docs": 288,
+ "max_doc_mean_abs_diff": 0.0,
+ "top_doc_diffs": [
+  {
+   "doc": 287,
+   "ref_mean": 0.00032705434782608696,
+   "new_mean": 0.00032705434782608696,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 286,
+   "ref_mean": 0.00036330578512396694,
+   "new_mean": 0.00036330578512396694,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 285,
+   "ref_mean": 0.0004163757396449704,
+   "new_mean": 0.0004163757396449704,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 284,
+   "ref_mean": 0.00034413531353135314,
+   "new_mean": 0.00034413531353135314,
+   "abs_diff": 0.0
+  },
+  {
+   "doc": 283,
+   "ref_mean": 0.0006991107738998483,
+   "new_mean": 0.0006991107738998483,
+   "abs_diff": 0.0
+  }
+ ],
+ "docs_sum_differ": 0
+}

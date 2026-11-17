@@ -1,0 +1,11 @@
+pack.mix: 739 weights, 0.0000 bpw (file), 1.1056 bpw (weights)
+  scheme        K codebook act      ver rows    n       GB
+  exl3i         1 mad      a8g128     1 nat   336    3.058
+  exl3i     2.375 mad      f16        3 r16     1    0.378
+  exl3i     1.625 mad      f16        1 nat     1    0.259
+  exl3i         4 mad      a8g128     1 nat    48    0.016
+  plain                                       353    0.005
+  output.weight      exl3i mad K2.375 r16  0.378 GB  act f16
+  token_embd.weight  exl3i mad K1.625 nat  0.259 GB  act f16
+CENSUS PASS [checked: mix base (fast)]
+CENSUS HYBRID PASS: 23 final levels (336 trunk lines; 1564 files: 23 levels by stat signature, 0 by md5), 2 pack/donor lines (census_manifest rc 0)

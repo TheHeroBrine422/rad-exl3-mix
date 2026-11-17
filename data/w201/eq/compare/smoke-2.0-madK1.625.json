@@ -1,0 +1,54 @@
+{
+ "golden": "/data/q27/w180/slices/golden-s195c2",
+ "ref": "/data/q27/w201/eq/new/p1-v3s183-2-manual-01645-s195c2-m",
+ "new": "/data/q27/w201/eq/smoke/smoke-2.0-madK1.625-s195c2-m",
+ "coord_kld_ref": 0.1091973007707044,
+ "coord_kld_new": 0.10936323819634905,
+ "coord_kld_diff": 0.00016593742564464942,
+ "coord_positions": 343346,
+ "all_mean_ref": 0.2925400445350157,
+ "all_mean_new": 0.2940628242991268,
+ "all_mean_diff": 0.0015227797641110818,
+ "all_positions": 376758,
+ "top1_ref": 0.8587130200287718,
+ "top1_new": 0.858229951321538,
+ "rows_byte_identical": false,
+ "max_abs_pos_kl_diff": 37.00377953052521,
+ "pos_kl_differ": 376758,
+ "top1_mismatch_positions": 7426,
+ "docs": 288,
+ "max_doc_mean_abs_diff": 0.06927892592592591,
+ "top_doc_diffs": [
+  {
+   "doc": 146,
+   "ref_mean": 0.19854765432098767,
+   "new_mean": 0.2678265802469136,
+   "abs_diff": 0.06927892592592591
+  },
+  {
+   "doc": 237,
+   "ref_mean": 0.21446503947368423,
+   "new_mean": 0.26047280921052635,
+   "abs_diff": 0.04600776973684212
+  },
+  {
+   "doc": 170,
+   "ref_mean": 0.2640929197080292,
+   "new_mean": 0.3043393284671533,
+   "abs_diff": 0.04024640875912411
+  },
+  {
+   "doc": 7,
+   "ref_mean": 0.24027802760736194,
+   "new_mean": 0.2695527576687117,
+   "abs_diff": 0.02927473006134973
+  },
+  {
+   "doc": 285,
+   "ref_mean": 0.14388902958579883,
+   "new_mean": 0.119239949704142,
+   "abs_diff": 0.02464907988165682
+  }
+ ],
+ "docs_sum_differ": 288
+}
