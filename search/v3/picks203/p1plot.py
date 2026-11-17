@@ -15,7 +15,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 cp, root, outp = sys.argv[1:4]
-stp = sys.argv[4] if len(sys.argv) > 4 else None
+stp = sys.argv[4] if len(sys.argv) > 4 and not sys.argv[4].startswith("--") else None
+DROP = set(os.environ.get("P1_DROP", "").split(",")) - {""}       # document ids left out of the chart (e.g. c:4151)
+_reg = json.load(open(os.environ.get("P1_REGISTRY", "/workspace/rad-local/workers/lead-srch/run/registry.json")))
+_reg = _reg.get("slices", _reg)
+KEEP = {s: np.array([d["id"] not in DROP for d in _reg[s]["docs"]]) for s in [f"s195c{i}" for i in (2, 3, 4, 5)] if s in _reg}
 SL = os.environ.get("P1_SLICES", "s195c2,s195c3,s195c4,s195c5").split(",")   # env overrides: tests
 PFX = os.environ.get("P1_PREFIX", "p1-")
 C = json.load(open(cp))
@@ -31,7 +35,9 @@ for l in open(f"{root}/results.jsonl"):
     if os.path.exists(p): 
         m = json.load(open(p))["m"]
         if any(not x or len(x) < 2 or x[0] is None for x in m): continue
-        docs.setdefault(t, {})[r["slice"]] = np.array([[x[0], x[1]] for x in m], dtype=float)
+        arr = np.array([[x[0], x[1]] for x in m], dtype=float)
+        if DROP and r["slice"] in KEEP and len(KEEP[r["slice"]]) == len(arr): arr = arr[KEEP[r["slice"]]]
+        docs.setdefault(t, {})[r["slice"]] = arr
 B = {}
 if stp and os.path.exists(stp):
     m = re.search(r"\| b ([^|]*)", open(stp).read().strip().split("\n")[-1])
@@ -94,6 +100,6 @@ for k in range(n, nr * nc): axs[k // nc][k % nc].axis("off")
 h = [plt.Line2D([], [], marker="o", ls="", color=v, label=k) for k, v in COL.items()]
 h += [plt.Line2D([], [], marker="o", ls="", mfc="white", mec="gray", label="partial (slices done/4)")]
 fig.legend(handles=h, loc="upper center", ncol=6, fontsize=8, frameon=False, bbox_to_anchor=(0.5, 0.995))
-fig.suptitle(f"Phase 1 (s195c2–c5, ~1.8M rows): {full} complete + {part} partial of {tot} candidates — lower is better", fontsize=11, y=1.015)
+fig.suptitle(("documents left out: " + ", ".join(sorted(DROP)) + " — " if DROP else "") + f"Phase 1 (s195c2–c5, ~1.8M rows): {full} complete + {part} partial of {tot} candidates — lower is better", fontsize=11, y=1.015)
 fig.tight_layout(rect=(0, 0, 0.93, 0.98)); fig.savefig(outp + ".part.png", dpi=110, bbox_inches="tight"); os.replace(outp + ".part.png", outp)
 print(outp, full, part, tot)
