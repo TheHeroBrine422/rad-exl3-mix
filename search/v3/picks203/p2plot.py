@@ -112,6 +112,9 @@ if tstat:
     for i, t in enumerate(tstat):
         if t[3]: ax.text(i, t[1] + 0.3, "pick\nchanged", ha="center", fontsize=7.5, color="#d62728")
     ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=9)
+    ax.axhline(0, color="k", lw=0.8)                      # line the twin axis's 0 up with the left one (negatives = trim widened the CI)
+    lo, hi = ax.get_ylim(); fr = -lo / (hi - lo) if lo < 0 else 0.0; r2 = max([t[2] for t in tstat] + [0.5]) * 1.1
+    ax2.set_ylim(-fr / (1 - fr) * r2, r2)
     ax.set_ylabel("KL share / CI narrowing (%)", fontsize=10); ax2.set_ylabel("rank shift", fontsize=10)
     h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels(); ax.legend(h1 + h2, l1 + l2, fontsize=9, loc="upper left")
     ax.set_title("(b) what the trim does: per-token KL outliers (≥ 8× median, ≤ 5) per size", fontsize=11)
