@@ -68,7 +68,10 @@ for k, s in enumerate(sizes):
             if not sl: continue
             a = np.concatenate([R2.d[t][x][:, 0] for x in sl]); r = np.concatenate([R2.d[pick][x][:, 0] for x in sl])
             e = (0, 0, 0) if t == pick else L.boot(a, r, adj(R2, t) - adj(R2, pick))
-            rows.append((e[0] + 1, e, None, None, t, c["why"], len(R2.d[t])))
+            e1 = None                                          # phase-1 diamond also for partial rows (not in the scatter)
+            if R1.full(t) and R1.full(pick):
+                e1 = math.log(R1.vec(t, K1).sum() / R1.vec(pick, K1).sum()) + adj(R1, t) - adj(R1, pick)
+            rows.append((e[0] + 1, e, None, e1, t, c["why"], len(R2.d[t])))
     rows.sort(key=lambda r: r[0])
     for i, (_, et, eu, e1, t, why, ns) in enumerate(rows):
         y = len(rows) - 1 - i; col = colour(why); fullr = ns == 6
