@@ -160,3 +160,11 @@ compared; never chosen by where candidates differ.
 - Report trimmed and untrimmed numbers and the 5 documents per size. Published numbers (public, the 16 picks) are
   untrimmed, as the board scores.
 c:4151 is not in the phase-2 slices; the phase-1 / 1.75 rule (c:4151 left out) is unchanged.
+
+## Amendment 2026-11-17 ~4:30 AM CST (user), before any phase-2 data; replaces the 3:35 AM trim criterion
+Dry run on the phase-1 data showed the "top 5 by median KL share" rule trims long normal documents (8k tokens, 2–3×
+per-token KL, ~0 % of the comparison variance) besides the real noise source (c:4151: 12–59× per-token KL, 58–89 % of the
+pairwise variance), and misses c:2115 (12×, 10 % at 5.0). New criterion, per size: trim every document whose **median
+per-token KL across the size's phase-2 candidates is ≥ 8× the slice's median per-token KL** (documents with 0 scored
+positions excluded), at most 5 (the highest first); 0 is allowed. Pick, guards (full slice, calib-verify part) and
+reporting as in the 3:35 AM amendment.
