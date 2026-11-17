@@ -110,7 +110,7 @@ if tstat:
     ax.bar(xs, [t[4] for t in tstat], 0.27, color="#2ca02c", label="95 % CI narrower after trim (%, median over candidates vs pick)")
     ax2 = ax.twinx(); ax2.bar(xs + 0.27, [t[2] for t in tstat], 0.27, color="#ff7f0e", label="mean rank shift, trimmed vs untrimmed")
     for i, t in enumerate(tstat):
-        if t[3]: ax.text(i, t[1] + 0.3, "pick\nchanged", ha="center", fontsize=7.5, color="#d62728")
+        if t[3]: ax.text(i, max(t[1], t[4]) + 1.0, "pick\nchanged", ha="center", fontsize=7.5, color="#d62728")
     ax.set_xticks(xs); ax.set_xticklabels([f"{t[0]:g}" for t in tstat], fontsize=9)
     ax.axhline(0, color="k", lw=0.8)                      # line the twin axis's 0 up with the left one (negatives = trim widened the CI)
     lo, hi = ax.get_ylim(); fr = -lo / (hi - lo) if lo < 0 else 0.0; r2 = max([t[2] for t in tstat] + [0.5]) * 1.1
