@@ -8782,3 +8782,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   at high bpw the relative % grows because the KLD denominator shrinks (7.0: 0.0008) while the absolute
   delta stays ≤ ~1e-4 nats. Rule recorded in AGENTS.md (equivalence-checks). The clean 7.0 isolation (ctrltp:
   TP2 vs TP1 @16448, final750, same build) lands for the record regardless.
+- 11-18 2:50 PM CST: **ctrltp done (the clean 7.0 TP isolation):** TP2 vs TP1 at identical ctx (16448),
+  build (w204) and corpus (final750): TP2 0.000876 vs TP1 0.000938 = **−6.6 % relative, −6e-5 nats
+  absolute** (TP2 better here; w204's original −3.2 % was ctx-confounded; on public the same pair reads
+  +11.4 % / +9e-5). The sign flips corpus to corpus while the absolute stays at the ulp floor
+  (±4–9e-5 on a 0.0008–0.0009 mean) — the "rounding noise on 7.0" is confirmed quantitatively: with a
+  0.0008 KLD, a 1e-4-nat ulp wobble IS ±10 % relative. TP bar record complete (2.5 +0.12 %, 7.0 ±7 %
+  relative / ≤1e-4 absolute); no action, the numbers stand as reported.
