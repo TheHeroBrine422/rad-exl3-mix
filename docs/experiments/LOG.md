@@ -8645,3 +8645,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (codebook= + stamp.json authoritative, old marker tolerated; ourq renamed to `.cb` if contained), (4) delete
   provably-dead V1/V2 leftovers (exl3_decode.c/h candidates), (5) docs scrub, (6) dad1 build + tests, (7) rebase
   `qc-exl3-v3-eval` + box2 card-3 equivalence on 2-mad / 7-mad (byte-identical gate), (8) optional dead-code sweep.
+- 11-18 2:15 AM CST: #208 public results 3.25 and 3.5 (ctx 262144, no SHORT; watchdog catch): scored KLD (gen mask)
+  3.25 0.01505 (short 0.01668, long 0.00997), 3.5 0.01146 (short 0.01281, long 0.00725); top-1 (scored) 0.958 / 0.964.
+  Both below the picks' phase-2 KLDs (0.01798 / 0.01324) — public reads slightly easier, as expected; long traces below
+  the short-doc means, pattern holds 6/16 sizes.
