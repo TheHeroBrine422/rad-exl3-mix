@@ -8761,3 +8761,18 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   all-mad 7.0). The cross-corpus card numbers (V2 board 6.0 0.000914 / 7.0 0.00045 vs V3 0.001126 / 0.000805)
   had made V3 look worse at 6.0 — pure slice mismatch; on one corpus 6.0 is a V3 win. Model card section
   filled (v3/hf/README.md).
+- 11-18 2:45 PM CST: **public table finalized — 16/16 on the full 596-doc golden** (data/public-v3/,
+  card main table). 4.5–7.0 now read on the full golden at TP2 (longpass, ds8, w204 install): KLD
+  0.003739 / 0.002252 / 0.001432 / 0.001058 / 0.000828 / 0.000780, top-1 0.9799–0.9921, and the two
+  245k long traces for the first time at every size (0.00211/0.00226 @4.5 … 0.000415/0.000415 @7.0) —
+  below the short-doc mean at all 16 sizes, no long-context degradation anywhere. The old public-short
+  TP1 rows (0.004223 … 0.000805) are kept in the README as the historical basis. **TP2 equivalence bar
+  (user, 11-18 2 PM): "<1 % delta is probably fine for TP2" — TP2 accepted as a release path.** Record:
+  build effect excluded (ctrl7: 7.0 TP1 public-short = 0.000805 with BOTH the w201 eval-core and the
+  w204 release-core builds); clean same-ctx same-build TP delta on final750 = +0.12 % (2.5); the
+  corpus-mean shifts seen on public (4.5 +0.3 % … 7.0 +11.4 %, sign-mixed, ≤ 9e-5 nats absolute at 7.0)
+  are the bf16-ulp noise floor (one ulp per clean position, deterministic, unbiased) whose relative
+  magnitude grows as the KLD shrinks; a same-ctx 7.0 isolation (ctrltp, TP2 @16448 vs TP1 @16448,
+  final750) is running for the record. **ctrl4: the integrated branch's TP4 runtime is verified** —
+  7.0 @262144 TP4 on the w206 install (fixed ssm_qkv .so) is byte-identical to w204's own tp4 rows
+  (w206b's residual closed).

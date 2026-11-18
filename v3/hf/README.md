@@ -40,25 +40,26 @@ Sixteen sizes, 1.5–7.0 bits a weight (trunk + head):
 | `vram/qwen3.8-27b-exl3-v3-3.50bpw.rad` | 14.35 | 3.532 | 0.011459 | 96.4% | 0.007 / 0.007 |
 | `vram/qwen3.8-27b-exl3-v3-3.75bpw.rad` | 15.19 | 3.788 | 0.008565 | 96.9% | 0.005 / 0.005 |
 | `vram/qwen3.8-27b-exl3-v3-4.00bpw.rad` | 16.03 | 4.032 | 0.006398 | 97.3% | 0.004 / 0.004 |
-| `vram/qwen3.8-27b-exl3-v3-4.50bpw.rad` | 17.71 | 4.532 | 0.004223 | 97.8% | — |
-| `vram/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 19.39 | 5.019 | 0.002527 | 98.3% | — |
-| `vram/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 21.07 | 5.544 | 0.001667 | 98.7% | — |
-| `vram/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 22.75 | 6.051 | 0.001126 | 99.0% | — |
-| `vram/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 24.43 | 6.526 | 0.000972 | 99.1% | — |
-| `vram/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 26.12 | 7.001 | 0.000805 | 99.2% | — |
+| `vram/qwen3.8-27b-exl3-v3-4.50bpw.rad` | 17.71 | 4.532 | 0.003739 | 98.0% | 0.0021 / 0.0023 |
+| `vram/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 19.39 | 5.019 | 0.002252 | 98.5% | 0.0013 / 0.0014 |
+| `vram/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 21.07 | 5.544 | 0.001432 | 98.8% | 0.0008 / 0.0008 |
+| `vram/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 22.75 | 6.051 | 0.001058 | 99.0% | 0.0006 / 0.0006 |
+| `vram/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 24.43 | 6.526 | 0.000828 | 99.2% | 0.0005 / 0.0005 |
+| `vram/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 26.12 | 7.001 | 0.000780 | 99.2% | 0.0004 / 0.0004 |
 
 - **bpw (trunk+head)** = trunk + head bytes × 8 / 25,625,844,224 params (the embedding, and the vision tower +
   drafter carried in the file, excluded). The file itself is 0.77 bpw larger than that (the 2.58 GB tower +
   drafter); the challenge's container-bytes formula gives 2.268–7.768 across the files.
 - **public KLD / top-1**: KLD vs the bf16 model on the challenge's *public* corpus (596 docs, 1.69M tokens;
-  1.17M scored positions — tool outputs and user messages are not scored; bf16 KV, 262k context). These are our
-  own read of a published corpus; the official board scores on the *private* corpus will be reported when the
-  entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
-- **Long 245k traces** (1.50–4.00 only): the corpus's two long agentic traces (245k tokens each), scored whole.
-  They read *below* the short-document mean at every size — the mixes, which were picked on documents ≤ 16.4k
-  tokens, show no long-context degradation. At 4.50–7.00 the two traces don't fit a single 32 GB card's KV pool
-  next to the weights, so those sizes are scored on the other 594 documents; the trace numbers will be added
-  once tensor-parallel serving of these containers lands.
+  1.17M scored positions — tool outputs and user messages are not scored; bf16 KV, 262k context, scored whole).
+  4.50–7.00 were scored at tensor parallelism 2 (two 32 GB cards): at those weights a single card's KV pool
+  cannot hold the 245k-token traces beside the weights. TP2 is the same model to within bf16 rounding
+  (one ulp per position; ≤ 1e-4 nats absolute on the corpus means) — the scores below are the containers'
+  own numbers. These are our own read of a published corpus; the official board scores on the *private*
+  corpus will be reported when the entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
+- **Long 245k traces**: the corpus's two long agentic traces (245k tokens each), scored whole at every size.
+  They read *below* the short-document mean at all 16 sizes — the mixes, which were picked on documents
+  ≤ 16.4k tokens, show no long-context degradation.
 
 **Needs radiance 2.1.0 plus the EXL3-V3 plugins** (branch `qc-exl3-v3` of the radiance fork: `exl3i` kernels,
 `exl3import`, `exl3quant`, `qwen35_exl3` arch). The upstream PR is in preparation; until it lands, build from

@@ -14,7 +14,8 @@
   "full_gb": 7.624,
   "trunk_head_bpw": 1.501,
   "lm_bpw": 1.5012,
-  "shipped_bpw": 2.2678
+  "shipped_bpw": 2.2678,
+  "world": 1
  },
  {
   "size": 1.75,
@@ -31,7 +32,8 @@
   "full_gb": 8.465,
   "trunk_head_bpw": 1.7572,
   "lm_bpw": 1.7512,
-  "shipped_bpw": 2.5178
+  "shipped_bpw": 2.5178,
+  "world": 1
  },
  {
   "size": 2,
@@ -48,7 +50,8 @@
   "full_gb": 9.305,
   "trunk_head_bpw": 2.0196,
   "lm_bpw": 2.0012,
-  "shipped_bpw": 2.7678
+  "shipped_bpw": 2.7678,
+  "world": 1
  },
  {
   "size": 2.5,
@@ -65,7 +68,8 @@
   "full_gb": 10.986,
   "trunk_head_bpw": 2.5319,
   "lm_bpw": 2.5012,
-  "shipped_bpw": 3.2678
+  "shipped_bpw": 3.2678,
+  "world": 1
  },
  {
   "size": 2.75,
@@ -82,7 +86,8 @@
   "full_gb": 11.809,
   "trunk_head_bpw": 2.7702,
   "lm_bpw": 2.7458,
-  "shipped_bpw": 3.5124
+  "shipped_bpw": 3.5124,
+  "world": 1
  },
  {
   "size": 3,
@@ -99,7 +104,8 @@
   "full_gb": 12.667,
   "trunk_head_bpw": 3.0257,
   "lm_bpw": 3.0012,
-  "shipped_bpw": 3.7678
+  "shipped_bpw": 3.7678,
+  "world": 1
  },
  {
   "size": 3.25,
@@ -116,7 +122,8 @@
   "full_gb": 13.508,
   "trunk_head_bpw": 3.2819,
   "lm_bpw": 3.2512,
-  "shipped_bpw": 4.0178
+  "shipped_bpw": 4.0178,
+  "world": 1
  },
  {
   "size": 3.5,
@@ -133,7 +140,8 @@
   "full_gb": 14.348,
   "trunk_head_bpw": 3.5318,
   "lm_bpw": 3.5012,
-  "shipped_bpw": 4.2678
+  "shipped_bpw": 4.2678,
+  "world": 1
  },
  {
   "size": 3.75,
@@ -150,7 +158,8 @@
   "full_gb": 15.189,
   "trunk_head_bpw": 3.788,
   "lm_bpw": 3.7512,
-  "shipped_bpw": 4.5178
+  "shipped_bpw": 4.5178,
+  "world": 1
  },
  {
   "size": 4,
@@ -167,84 +176,115 @@
   "full_gb": 16.029,
   "trunk_head_bpw": 4.0319,
   "lm_bpw": 4.0012,
-  "shipped_bpw": 4.7678
+  "shipped_bpw": 4.7678,
+  "world": 1
  },
  {
   "size": 4.5,
-  "golden": "short",
-  "kld": 0.004223,
-  "top1": 0.9782,
+  "golden": "full",
+  "kld": 0.003739,
+  "top1": 0.9799,
   "p2_pick_kld": 0.003961,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 15.133,
   "full_gb": 17.71,
   "trunk_head_bpw": 4.5317,
   "lm_bpw": 4.5012,
-  "shipped_bpw": 5.2678
+  "shipped_bpw": 5.2678,
+  "world": 2,
+  "long_traces": [
+   0.002106,
+   0.002261
+  ]
  },
  {
   "size": 5,
-  "golden": "short",
-  "kld": 0.002527,
-  "top1": 0.9834,
+  "golden": "full",
+  "kld": 0.002252,
+  "top1": 0.9847,
   "p2_pick_kld": 0.002299,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 16.814,
   "full_gb": 19.391,
   "trunk_head_bpw": 5.0193,
   "lm_bpw": 5.0012,
-  "shipped_bpw": 5.7678
+  "shipped_bpw": 5.7678,
+  "world": 2,
+  "long_traces": [
+   0.001276,
+   0.00136
+  ]
  },
  {
   "size": 5.5,
-  "golden": "short",
-  "kld": 0.001667,
-  "top1": 0.9874,
+  "golden": "full",
+  "kld": 0.001432,
+  "top1": 0.9884,
   "p2_pick_kld": 0.00141,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 18.495,
   "full_gb": 21.072,
   "trunk_head_bpw": 5.5441,
   "lm_bpw": 5.5012,
-  "shipped_bpw": 6.2678
+  "shipped_bpw": 6.2678,
+  "world": 2,
+  "long_traces": [
+   0.000837,
+   0.000841
+  ]
  },
  {
   "size": 6,
-  "golden": "short",
-  "kld": 0.001126,
-  "top1": 0.9897,
+  "golden": "full",
+  "kld": 0.001058,
+  "top1": 0.9903,
   "p2_pick_kld": 0.000922,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 20.176,
   "full_gb": 22.753,
   "trunk_head_bpw": 6.0505,
   "lm_bpw": 6.0012,
-  "shipped_bpw": 6.7678
+  "shipped_bpw": 6.7678,
+  "world": 2,
+  "long_traces": [
+   0.000585,
+   0.000593
+  ]
  },
  {
   "size": 6.5,
-  "golden": "short",
-  "kld": 0.000972,
-  "top1": 0.9909,
+  "golden": "full",
+  "kld": 0.000828,
+  "top1": 0.9916,
   "p2_pick_kld": 0.0007,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 21.857,
   "full_gb": 24.434,
   "trunk_head_bpw": 6.5256,
   "lm_bpw": 6.5012,
-  "shipped_bpw": 7.2678
+  "shipped_bpw": 7.2678,
+  "world": 2,
+  "long_traces": [
+   0.000458,
+   0.000457
+  ]
  },
  {
   "size": 7,
-  "golden": "short",
-  "kld": 0.000805,
-  "top1": 0.9915,
+  "golden": "full",
+  "kld": 0.00078,
+  "top1": 0.9921,
   "p2_pick_kld": 0.000611,
-  "n_scored": 883911,
+  "n_scored": 1167650,
   "text_only_gb": 23.538,
   "full_gb": 26.115,
   "trunk_head_bpw": 7.0007,
   "lm_bpw": 7.0012,
-  "shipped_bpw": 7.7678
+  "shipped_bpw": 7.7678,
+  "world": 2,
+  "long_traces": [
+   0.000415,
+   0.000415
+  ]
  }
 ]
