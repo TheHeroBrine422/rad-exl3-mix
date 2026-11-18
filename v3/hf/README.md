@@ -8,7 +8,7 @@ base_model_relation: quantized
 datasets:
 - StillDeadcode/qwen3.8-27b-quant-challenge
 ---
-# Qwen3.8-27B — EXL3-V3: all-mad trellis quants, integer compute, vision + DFlash2 drafter (16 sizes)
+# Qwen3.8-27B — EXL3-V3: all-mad trellis quants, integer compute, vision + DFlash2 drafter (14 sizes)
 
 EXL3 quants of Qwen3.8-27B for the [radiance](https://codeberg.org/StillDeadcode/radiance) inference engine,
 where **every tensor gets its own bit width**. Like EXL3-V2, each size is the result of a per-tensor allocation:
@@ -26,7 +26,7 @@ over whole mixes (thousands of evaluations on held-out slices) finds the best on
   drafter: images work out of the box, and decoding runs ~4.5–5.1 tokens per step (measured, greedy) with the
   drafter on by default. Neither is counted in the quality numbers below.
 
-Sixteen sizes, 1.5–7.0 bits a weight:
+Fourteen sizes, 1.5–6.0 bits a weight:
 
 | file | GiB | bpw (LM: trellis + trunk + head) | public KLD | public top-1 |
 |---|---|---|---|---|
@@ -44,8 +44,6 @@ Sixteen sizes, 1.5–7.0 bits a weight:
 | `vram/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 18.06 | 5.001 | 0.002252 | 98.5% |
 | `vram/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 19.63 | 5.501 | 0.001432 | 98.8% |
 | `vram/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 21.19 | 6.001 | 0.001058 | 99.0% |
-| `vram/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 22.76 | 6.501 | 0.000828 | 99.2% |
-| `vram/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 24.32 | 7.001 | 0.000780 | 99.2% |
 
 - **bpw (LM: trellis + trunk + head)** = the language model's bytes × 8 / 26,895,998,464 (the challenge's
   parameter count) — the number the board scores, as on the IQR-V4 card. The **vision tower + DFlash2 drafter
@@ -55,7 +53,7 @@ Sixteen sizes, 1.5–7.0 bits a weight:
   below).
 - **public KLD / top-1**: KLD vs the bf16 model on the challenge's *public* corpus (596 docs, 1.69M tokens;
   1.17M scored positions — tool outputs and user messages are not scored; bf16 KV, 262k context, scored whole).
-  4.50–7.00 were scored at tensor parallelism 2 (two 32 GB cards): at those weights a single card's KV pool
+  4.50–6.00 were scored at tensor parallelism 2 (two 32 GB cards): at those weights a single card's KV pool
   cannot hold the 245k-token traces beside the weights. TP2 is the same model to within bf16 rounding
   (one ulp per position; ≤ 1e-4 nats absolute on the corpus means) — the scores below are the containers'
   own numbers. These are our own read of a published corpus; the official board scores on the *private*
@@ -70,7 +68,7 @@ the branch.
 The same final picks with the token table replaced by the checkpoint's **bf16** embedding (248,320 ×
 5,120, 2.37 GiB). Every file is verified weight-by-weight **byte-identical to its `vram/` twin except
 `token_embd.weight`** — same trunk, same head, a strictly more accurate table (the `vram/` tables are
-1.5–7.0-bit trellis; here bf16). Quality is at least the `vram/` file's by construction; the measured
+1.5–6.0-bit trellis; here bf16). Quality is at least the `vram/` file's by construction; the measured
 read is the board's.
 
 | file | VRAM (GiB) | vs `vram/` (GiB) |
@@ -89,8 +87,6 @@ read is the board's.
 | `host-emb/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 14.97 | −0.69 |
 | `host-emb/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 16.54 | −0.69 |
 | `host-emb/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 18.05 | −0.75 |
-| `host-emb/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 19.47 | −0.89 |
-| `host-emb/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 20.88 | −1.04 |
 
 - **VRAM (GiB)** = the trunk + head — what is on the card when the bf16 table is served from host RAM
   (`--embedding-placement ram`; it pins in the host pool, `--host-pool-mib` needs to cover the 2.37 GiB;
@@ -105,16 +101,14 @@ The four published V2 sizes, re-scored on the same 594-document public subset (8
 positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0, TP1):
 
 | bpw | V2 KLD | V3 KLD | Δ | V2 top-1 | V3 top-1 |
-|---|---|---|
+|---|---|---|---|---|---|
 | 5.0 | 0.00317 | 0.00253 | **−20 %** | 98.2 % | 98.3 % |
 | 5.5 | 0.00213 | 0.00167 | **−22 %** | 98.6 % | 98.7 % |
 | 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
-| 7.0 | 0.000646 | 0.000805 | +25 % | 99.2 % | 99.2 % |
 
-At 5.0–6.0 V3 is 16–22 % below V2 on the same corpus — the V2 board numbers at these sizes
+
+At 5.0–6.0 V3 is 16–22 % below V2 on the same corpus — the V2 board numbers at those sizes
 (0.00256 / 0.000914) were scored on different slices and made the comparison look the other way.
-At 7.0 V2 keeps a real edge: its 7.0 mix (V2-era per-tensor allocation, f16-activation compute) sits
-below V3's all-mad 7.0.
 
 ### Against IQR-V4 on the leaderboard
 
@@ -130,8 +124,8 @@ radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-m
 ```
 
 The DFlash2 drafter is declared in the container and runs by default (disable with
-`--num-speculative-tokens 0`); image prompts work as-is. Files up to ~7 bpw run on one 32 GB card at moderate
-context (262k context fits up to ~4.5 bpw; 5.5–7.0 need two cards once tensor parallelism is available). Use
+`--num-speculative-tokens 0`); image prompts work as-is. Files up to ~6 bpw run on one 32 GB card at moderate
+context (262k context fits up to ~4.5 bpw; 5.5–6.0 need two cards once tensor parallelism is available). Use
 prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
 
 ## How the mixes were made
