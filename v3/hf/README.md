@@ -150,22 +150,30 @@ bf16 KV), on the same full 596-doc golden for both releases — V2's published f
 V3's long-context gap to V2 tracks the short-doc result: −19…−21 % at 5.0/5.5 (short docs: −20…−22 %),
 and at 7.0 V2's edge is the same in both (+26 % vs +25 %).
 
-### Against IQR-V4 on the leaderboard, at the same size
+### Against IQR-V4, at the same size
 
-V3's board numbers are pending submission, so V3 is converted from its public score with the
-public→private ratio measured on EXL3-V2's own files (its board / public-short KLD: 0.81 / 0.72 / 0.68 /
-0.70 at 5.0 / 5.5 / 6.0 / 7.0, 6.5 interpolated):
+Both scored on the same 2.8M-position evaluation slice (IQR-V4's published files re-scored next to our
+picks; untrimmed mean KLD):
 
-| size | EXL3-V3 (est. board) | IQR-V4 (board) | V3 vs IQR-V4 |
+| size | EXL3-V3 | IQR-V4 | V3 vs IQR-V4 |
 |---|---|---|---|
-| 5.0 | 0.002041 | iq5r-s (5.07): 0.00223 | **-8 %** |
-| 5.5 | 0.001199 | iq5r (5.43): 0.00154 | **-22 %** |
-| 6.0 | 0.0007686 | iq6r-s (6.06): 0.001 | **-23 %** |
-| 6.5 | 0.0006703 | iq6r (6.44): 0.00081 | **-17 %** |
-| 7.0 | 0.0005608 | iq6r-l (6.94): 0.00068 | **-18 %** |
+| 2.5 | 0.05008 | 0.06334 | **−21 %** |
+| 2.75 | 0.03619 | 0.04448 | **−19 %** |
+| 3.0 | 0.02537 | 0.03111 | **−18 %** |
+| 3.25 | 0.01801 | 0.02215 | **−19 %** |
+| 3.5 | 0.01326 | 0.01621 | **−18 %** |
+| 3.75 | 0.00973 | 0.01151 | **−16 %** |
+| 4.0 | 0.00725 | 0.00847 | **−14 %** |
+| 4.5 | 0.00397 | 0.00482 | **−18 %** |
+| 5.0 | 0.00230 | 0.00264 | **−13 %** |
+| 5.5 | 0.00141 | 0.00165 | **−15 %** |
+| 6.0 | 0.00092 | 0.00117 | **−21 %** |
+| 6.5 | 0.00070 | 0.00087 | **−19 %** |
+| 7.0 | 0.00061 | 0.00071 | **−14 %** |
 
-Below 5.0 the cross-corpus read is less reliable; the same-corpus measurement (IQR-V4's files re-scored
-next to ours on our own 2.8M-position slices) puts V3 14–27 % below IQR-V4 across its full range.
+IQR-V4 is interpolated along its own 15-entry board ladder (log KLD linear in bpw, as on the EXL3-V2
+card); V3 is 13–21 % below it across IQR-V4's full range. At equal quality the same slice puts V3
+4–6 % smaller (bits a weight).
 
 ## How these quants were made
 

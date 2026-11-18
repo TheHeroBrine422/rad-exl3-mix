@@ -8883,3 +8883,21 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 
 **Files touched:** `v3/hf/README.md` (several commits above), this LOG. Runtime: the v2long/v2mid legs are
 already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
+
+## 2026-11-18 — IQR section switched to the phase-2 same-corpus numbers (user: "use the phase-2 numbers as the estimate")
+
+- The est.-board conversion table (V2's public→private ratios) came out right (−22/−23/−17 % at 5.5/6.0/6.5,
+  matching the user's "we definitely beat IQR at these sizes") but it's a derived number — the user wants
+  the direct data. **The card's IQR section now uses #206 as-is**: IQR-V4's 13 published files re-scored on
+  the phase-2 slice next to the V3 picks (data/iqr206/tables206.md, section 2): V3 13–21 % below across the
+  full range (−21/−19/−18/−19/−18/−16/−14/−18/−13/−15/−21/−19/−14 % at 2.5→7.0), plus the 4–6 %
+  smaller-at-equal-quality line. No conversion, no pending-submission caveat — same corpus, both measured.
+  (The earlier "14–27 %" figure in the card was the untrimmed-interpolation variant; the table is now the
+  record.)
+- **v2mid name-race post-mortem + recovery:** the download script's `${S:3:1}` mangled 3.50→"3.0" and
+  4.50→"4.0" (same bug class as the 5.50 one, fixed individually last time). 3.0 and 3.5 both landed as
+  `v2-3.0.rad`; the in-flight 3.0 run loaded a file that was swapped mid-load → KLD 1.09 (garbage,
+  discarded, verified: the finished file was 11,761,164,288 B = the 3.5 size). Recovery: files renamed to
+  correct names (2.5, 4.5 verified byte-exact vs the Hub), real 3.0/4.0 re-downloaded, launches now
+  size-gated (v2wait30.sh waits for 10,083,115,008 B; v2mid3.sh settles 10 s after file appearance). 2.5
+  (correct file) and the real-3.0 run in flight; 3.5/4.0/4.5 queued. ETA ~23:40 UTC (5:40 PM CST).
