@@ -8623,3 +8623,25 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 11-18 1:20 AM CST: w203 smoke 2.0 done (vramvd/2.rad, card 0, ff203 build): drafter depth 7, tok/step 4.507 (off: 1.0), startup names the drafter + vision tower (encoder 879 MiB) and the exl3i_rerank own-head rescore; greedy off-vs-on: 3/8 text prompts identical to the end, 5 split at the first near-tie (margins 0.02–0.09 nats; one 0.69 — the #180-02 own-head rescorer is a noisier rescorer than #180's int8 copy, logit error 4.8–9.2 % vs 0.6 %: expected, #180's "greedy splits only at near-ties (as IQR-V4 S)" stands), 2/2 image answers sensible (quad colors); KLD rows byte-identical (separate verify).
 - 11-18 1:25 AM CST: #208 first two public results (card 1: 2.0, card 2: 2.5; ctx 262144, ~20 min each, no SHORT): **scored KLD (gen mask — the radiance JSON "all" mean of 1.77 / 1.41 includes the 31 % unscored header positions, mean ~4.5–5.5 there, unusable, the V2-era "scored positions only" rule)**: 2.0 0.0932 (594 short docs 0.1024, long traces 0.0609 / 0.0676), 2.5 0.0417 (short 0.0458, long 0.0270 / 0.0303). The two 245k-token traces are BELOW the short-doc means at both sizes: no long-context degradation of the picks (their first long-context read; public is report-only, never selection). Short-doc reads match the picks' phase-2 KLDs (0.1026 / 0.0500) to within the known corpus spread. The public report script must use doc_sums (as #206), not the JSON mean.
 - 11-18 1:45 AM CST (user: Claude subscription out of usage, Qwen-only workers): two workers started via subagent. (1) **w203 wrap-up** (qwen38-27b:medium, brief `rad-local/workers/instr3/w203b.md`): watches the box2 vramvd loop to 16/16 vd-ok, starts the 7.0 smoke when `vramvd/7.rad` exists, then the script copy + `out/w203.md` report + repo commit; no uploads. (2) **w204 TP2/TP4** (qwen38-27b:xhigh, new brief `rad-local/workers/instr3/w204.md` — the handoff named it but it was never written): branch `qc-exl3-v3-tp2` from `qc-exl3-v3` @1fadfb4d; phase 0 read-only analysis (the refusal is `qwen35_exl3.cpp:~490`, ssm_ab trellis weight TP1-only; upstream qwen35_fp8 is the TP wiring reference) with a hard stop if radiance CORE changes are needed, then minimal TP2 (dad1 builds, ds8 cards 0–3 runtime, TP2-vs-TP1 rows within 1e-5 + max per-row diff, `7.rad` must load at `--tp 2 --max-model-len 262144`), TP4 stretch. **Plugin codebook cleanup: no worker needed** — w202's removal verified in `qc-exl3-v3` (1fadfb4d; the eval branch contains it): the remaining "mul1" traces are the frozen ABI enum numbers (0 mul1 / 1 mul1i8 / 2 mul1i4 / 3 mad), the named load-refusals, the ourq on-disk `.mul1` trellis marker format (exl3_quant reads it), and docs: all intentional.
+- 11-18 2:05 AM CST (user: uploads as things verify, a stream; HF is scratch until release — nobody uses it yet):
+  upload stream live on box2, `upvd207.sh` (release-v3/): waits for each `state/<S>.vd-ok` (the FULL container),
+  uploads `vramvd/<S>.rad` one file per commit to `Hero422/qwen3.8-27b-exl3-v3-rad` as
+  `vram/qwen3.8-27b-exl3-v3-<bpw>bpw.rad`, overwriting the early text-only 2.0 / 2.5. First files (2.0, 2.5, 2.75)
+  uploaded within minutes; ~70 MB/s measured.
+- 11-18 2:10 AM CST: #208 public results 2.75 and 3.0 (card 1 / 2, ctx 262144, no SHORT; watchdog catch): scored
+  KLD (gen mask) 2.75 0.0310 (short 0.0343, long traces 0.0207), 3.0 0.0215 (short 0.0237, long 0.0144); top-1
+  (scored) 0.939 / 0.949. Long traces below the short-doc means, as at 2.0 / 2.5. (The JSON "all" means 1.2565 /
+  1.1134 are the unscored-header artifact, not reported numbers.)
+- 11-18 2:15 AM CST (user: Qwen always xhigh — local usage is no concern; every bash call < 2 min): rules recorded
+  (AGENTS.md + global rules). w203 wrap-up restarted on xhigh (the medium instance stopped cleanly at 6/16
+  verified; continuation instructed to resume from out/w203.md, no duplicate smoke 7). Watchdog restarted on xhigh
+  (the first medium cycle had completed with a correct NOTIFY: it caught the 2.75 / 3.0 public landings).
+- 11-18 2:20 AM CST (user: the PR must not carry mul1 or V1/V2 — "remove any mention of mul1", "only needs to
+  support V3", "worst case repull via git history", goal = minimum LOC / maintenance without losing performance or
+  used features; a future mad w4a4 variant is the only forward-compat argument for keeping the codebook field):
+  w205 started (qwen38-27b:xhigh, brief `rad-local/workers/instr3/w205.md`): on `qc-exl3-v3` — (1) determine what
+  the container stores for the codebook (string "mad" vs int 3; the int case stops it: repack needed), (2) renumber
+  the enum mad-only, generic unnamed codebook refusals, (3) exl3quant stops requiring the ourq `.mul1` marker
+  (codebook= + stamp.json authoritative, old marker tolerated; ourq renamed to `.cb` if contained), (4) delete
+  provably-dead V1/V2 leftovers (exl3_decode.c/h candidates), (5) docs scrub, (6) dad1 build + tests, (7) rebase
+  `qc-exl3-v3-eval` + box2 card-3 equivalence on 2-mad / 7-mad (byte-identical gate), (8) optional dead-code sweep.
