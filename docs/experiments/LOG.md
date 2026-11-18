@@ -8813,3 +8813,23 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (dad1 green, ds8 TP1/TP2/TP4 byte-identical) is exactly what the branch now names. `update-git.sh` pushes
   it as LIVE_BRANCH (--force-with-lease) — the user's push is a one-liner. Main fork worktree left detached
   at 9a20d9be (the branch is checked out in wt/w205-radiance).
+
+## 2026-11-18 — card size metrics fixed to the final spec (user, ~1:55 PM)
+
+- **#209 follow-up.** The card's size presentation was wrong: the vram table showed trunk + head bpw where
+  the leaderboard number belongs, and the host-emb table I wrote this morning had a label formula that
+  counted the tower + drafter. Fixed per the user's spec, following the IQR-V4 card's convention ("bpw
+  counts the language model, as the board does; the drafter and the vision tower come on top"):
+  - `vram/` table: **one** bpw column = trellis + trunk + head (LM container) × 8 / 26,895,998,464 — the
+    number the leaderboard scores (1.501–7.001; 2.75 is 2.746). For these files that equals the VRAM
+    usage, so no second column.
+  - `host-emb/` gets its **own table** (the user: one combined table is too much data): bpw column =
+    trunk + head × 8 / 25,625,844,224 — the VRAM usage when the bf16 table is served from host RAM
+    (1.501–7.001, the same numbers the vram table used to show).
+  - Tower + drafter in **neither** number (optional, `--num-speculative-tokens 0` turns the drafter off);
+    both tables' GiB columns are the complete files; bullets spell it out.
+- Runtime: neither (card text). Values are the existing `lm_bpw` / `trunk_head_bpw` from public-v3.json —
+  no new measurements.
+
+**Files touched:** `v3/hf/README.md` (both tables + metric bullets + host-emb table header),
+`data/public-v3/README.md` (Size metrics bullet = the final decision).

@@ -79,4 +79,11 @@ Raw per-size numbers: `public-v3.json` (this directory). Reproduce: 1.5–4.0 on
 `/data/q27/release-v3/public/<S>.json(.rows)` (TP1); 4.5–7.0 on ds8 `/data/q27/w204/out/long-<S>.json(.rows)`
 (TP2, w204 install, YAML cfgs in `/data/q27/w204/`), full golden `/data/q27/w204/challenge-golden-public`,
 per-doc sums in `/data/q27/w204/out/longpass-scores.json`. gen-mask sums via `rxrun.hostd.doc_sums`
-(pattern in `search/v3/picks203/iqr206/iqr206.sh`).
+(pattern in `search/v3/picks203/iqr206/iqr206.sh`).- **Size metrics** (user, 2026-11-18 ~1:55 PM): two numbers. (A) **Leaderboard** = the language model
+  (trellis embedding + trunk + head) × 8 / 26,895,998,464 — the `lm_bpw` column; that is the card's single
+  bpw column for the `vram/` files and what the board scores. (B) **VRAM usage**: `vram/` files = A;
+  `host-emb/` files = trunk + head only (the `trunk_head_bpw` column, × 8 / 25,625,844,224) because the
+  bf16 table is served from host RAM. The vision tower + DFlash2 drafter are **never in either number**
+  (optional; they ride in the file and come on top, +2.58 GB / +0.77 bpw) — noted on the card, as on the
+  IQR-V4 card. `shipped_file_bpw` stays in this table for the record only (the board formula on the whole
+  file).
