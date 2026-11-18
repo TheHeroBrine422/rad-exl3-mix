@@ -66,7 +66,20 @@ the branch.
 
 ### EXL3-V3 vs EXL3-V2, same corpus
 
-_(placeholder: V2's 5.00 / 5.50 / 6.00 / 7.00 files scored on the same 594-document subset, numbers incoming)_
+The four published V2 sizes, re-scored on the same 594-document public subset (883,911 scored
+positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0, TP1):
+
+| bpw | V2 KLD | V3 KLD | Δ | V2 top-1 | V3 top-1 |
+|---|---|---|---|---|---|
+| 5.0 | 0.00317 | 0.00253 | **−20 %** | 98.2 % | 98.3 % |
+| 5.5 | 0.00213 | 0.00167 | **−22 %** | 98.6 % | 98.7 % |
+| 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
+| 7.0 | 0.000646 | 0.000805 | +25 % | 99.2 % | 99.2 % |
+
+At 5.0–6.0 V3 is 16–22 % below V2 on the same corpus — the V2 board numbers at these sizes
+(0.00256 / 0.000914) were scored on different slices and made the comparison look the other way.
+At 7.0 V2 keeps a real edge: its 7.0 mix (V2-era per-tensor allocation, f16-activation compute) sits
+below V3's all-mad 7.0.
 
 ### Against IQR-V4 on the leaderboard
 

@@ -8751,3 +8751,13 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   not re-run after the fix (same declaration, guard covers it, w204's own TP4 was clean — cheap insurance
   available: vs `tp4-7-262144.json.rows`); the generate-at-TP2 smoke (sampling, not teacher-forced KLD) is
   still untested on any install.
+- 11-18 6:35 AM CST: **v2pub done (box2, cards 1+2; the V2 same-corpus reference for the model card).**
+  The published V2 5.00/5.50/6.00/7.00 files (`Hero422/qwen3.8-27b-exl3-v2-rad`, downloaded fresh) scored on
+  public-short (594 docs, 883,911 scored positions, gen mask) with the rad10 build (the V2-era 1.x engine;
+  V3 side: #208's 2.1.0 TP1 numbers, same corpus): V2 KLD 5.0 0.00317 / 5.5 0.002128 / 6.0 0.001339 /
+  7.0 0.000646 (top-1 0.9817/0.9861/0.9893/0.9924) vs V3 0.002527 / 0.001667 / 0.001126 / 0.000805
+  (0.9834/0.9874/0.9897/0.9915). **Same-corpus result: V3 is −20 % / −22 % / −16 % at 5.0/5.5/6.0; V2 keeps a
+  +25 % edge at 7.0** (its 7.0 mix — V2-era allocation, f16-activation compute — genuinely sits below V3's
+  all-mad 7.0). The cross-corpus card numbers (V2 board 6.0 0.000914 / 7.0 0.00045 vs V3 0.001126 / 0.000805)
+  had made V3 look worse at 6.0 — pure slice mismatch; on one corpus 6.0 is a V3 win. Model card section
+  filled (v3/hf/README.md).
