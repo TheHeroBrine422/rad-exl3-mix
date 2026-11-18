@@ -59,8 +59,6 @@ Fourteen sizes, 1.5–6.0 bits a weight:
   own numbers. These are our own read of a published corpus; the official board scores on the *private*
   corpus will be reported when the entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
 
-
-
 ### Host-embedding variant (`host-emb/`)
 
 The same final picks with the token table replaced by the checkpoint's **bf16** embedding (248,320 ×
@@ -95,7 +93,7 @@ read is the board's.
 
 ### EXL3-V3 vs EXL3-V2, same corpus
 
-The four published V2 sizes, re-scored on the same 594-document public subset (883,911 scored
+The three published V2 sizes, re-scored on the same 594-document public subset (883,911 scored
 positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0, TP1):
 
 | bpw | V2 KLD | V3 KLD | Δ | V2 top-1 | V3 top-1 |
@@ -150,9 +148,9 @@ a narrower gap (as expected: V2's 2.5–4.5 mixes predate the search depth that 
 
 ### Against IQR-V4 on the leaderboard
 
-At the sizes where IQR-V4's board entries are published: 2.5 bpw — IQR iq2r 0.0611, here **0.0417** (−32%, and
-this number includes both long traces); 4.5 bpw — IQR iq4r-s 0.00643, here **0.00422** (−34%). On our own
-2.8M-position evaluation slices the gap over the full IQR-V4 range was 14–27%.
+Against IQR-V4's nearest board entries: iq2r (2.47 bpw) 0.0611 → here at 2.5 bpw **0.0417** (−32 %);
+iq4r-s (4.47 bpw) 0.00643 → here at 4.5 bpw **0.00374** (−42 %). Both numbers include the two long traces.
+On our own 2.8M-position evaluation slices the gap over the full IQR-V4 range was 14–27 %.
 
 ## Use one file
 
@@ -163,27 +161,25 @@ radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-m
 
 The DFlash2 drafter is declared in the container and runs by default (disable with
 `--num-speculative-tokens 0`); image prompts work as-is. Files up to ~6 bpw run on one 32 GB card at moderate
-context (262k context fits up to ~4.5 bpw; 5.5–6.0 need two cards once tensor parallelism is available). Use
+context (262k context fits up to ~4.5 bpw; 5.5–6.0 need two cards, `--tp 2`). Use
 prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
 
 ## How these quants were made
 
 V3 changes three things versus EXL3-V2:
 
-- **Integer compute.** The GEMMs run on int8 activations (A8, f16 below the gate) instead of f16 — the same
-  trellis codes, faster prefill. (This is the "EXL3-V3" step of the V1 → V2 → V3 series.)
-- **One codebook.** Every tensor — trunk, head, embedding — uses the same integer trellis codebook (mad). V2
-  mixed three codebooks by tensor class; for this model one of them was enough, and one codebook is one set of
-  kernels to maintain.
+- **Integer compute.** The GEMMs run on int8 activations instead of f16 — the same
+  trellis codes, faster prefill. 
+- **mad codebook** instead of mul1. This reduces dequant overhead and 
 - **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 drafter: images
   work out of the box, and decoding runs ~4.5–5.1 tokens per step (measured, greedy) with the drafter on by
-  default. Neither is counted in the quality numbers below.
+  default. Neither is counted in the size or quality numbers on this card.
 
 Like EXL3-V2, each size is the result of a per-tensor allocation:
 
-- **Options per tensor:** our own EXL3 quants of every linear at 49 trellis levels (K 0.125–7, 1/8 steps, the
-  mad codebook, on the challenge's published calibration Hessians; the head and the trellis embedding are
-  quantised separately at the levels the mix needs).
+- **Options per tensor:** our own EXL3 quants of every linear at the 49 menu levels (K 0.5–6.0 in 1/8
+  steps, then 6.25–7.0 in 1/4 steps; the mad codebook, on the challenge's published calibration Hessians; the
+  head and the trellis embedding are quantised separately at the levels the mix needs).
 - **Allocation:** a per-tensor sensitivity fit (weight error × fitted depth-compounding) priced with measured
   A8 compute costs; an exact knapsack solve gives the mix at each target size.
 - **Search:** streaming local search over whole mixes on a held-out pool (thousands of evaluations,
