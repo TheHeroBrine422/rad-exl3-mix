@@ -8833,3 +8833,20 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 
 **Files touched:** `v3/hf/README.md` (both tables + metric bullets + host-emb table header),
 `data/public-v3/README.md` (Size metrics bullet = the final decision).
+
+## 2026-11-18 — host-emb table: VRAM usage + saving vs vram (user, ~3 PM)
+
+- **#209 follow-up 2.** The user: no bpw for host-emb — show the VRAM usage and how much lower it is than
+  the `vram/` file. The host-emb table is now `file | VRAM (GiB) | vs vram/ (GiB)`:
+  - VRAM = trunk + head (the bf16 table is in host RAM via `--embedding-placement ram`).
+  - vs vram/ = the exact saving, computed from the uploaded file bytes
+    (`vram_bytes − hostemb_bytes + 2,548,188,160` = the vram file's trellis embedding table): 0.23 GiB at
+    1.5 → 1.04 GiB at 7.0. Note the saving is the *vram* file's small trellis table, not 2.37 GiB (vram
+    never had 2.37 on the card).
+- While at it: the vram table's "GiB" column was decimal GB mislabeled (7.62 for the 1.5 file = 7.62e9 B);
+  it now shows real GiB from the Hub sizes (7.10 … 24.32). Also verified the host-emb 7.0 upload against
+  the box2 build log: 27,544,743,936 B on both (an earlier session note had a 27,746,548,736 typo — the
+  upload is correct).
+- Runtime: neither (card text). No new measurements; bytes from the Hub tree API + `heb209.log`.
+
+**Files touched:** `v3/hf/README.md`, `data/public-v3/README.md`, `/workspace/AGENTS.md` (rule wording).
