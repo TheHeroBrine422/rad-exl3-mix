@@ -8668,3 +8668,15 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   means — the pattern now holds at all 10 full-golden sizes. Milestones: rel207 text-only verify 16/16 (ALL DONE
   08:30 UTC); vramvd 15/16 vd-ok (1.75 built, verifying); upload stream 15/16 (only 1.75 left). The 4.5–7.0 SHORT
   reruns (public-short, ctx 73728) are in flight on cards 1+2.
+- 11-18 3:35 AM CST: **w203 done (reviewed: report + commit 8517136a)**: vramvd 16/16 `.vd-ok` — every full container
+  (text + bf16 vision tower + DFlash2 drafter) verifies **rows byte-identical** to its text-only final750 rows (zero
+  failures); container bytes 7.62 GB (1.5) → 26.12 GB (7.0). Smoke 7.0 passed (tok/step 1.000 off → 5.114 on, drafter
+  depth 7, acceptance 0.522; text 6/8 prompts identical to the end, splits near-ties 0.014–0.027; images 2/2 identical
+  to the end, answers sensible) — the drafter + tower add no KLD and behave at 7.0 like at 2.0. `loop203` exited ALL
+  DONE; box2 left clean. **Upload stream complete 09:14 UTC: all 16 full containers on `Hero422/qwen3.8-27b-exl3-v3-rad`**
+  (`vram/qwen3.8-27b-exl3-v3-<bpw>bpw.rad`, one commit each); the early text-only 2.0 / 2.5 were overwritten.
+- 11-18 3:40 AM CST: #208 SHORT reruns progressing (public-short golden, ctx 73728): 4.5 scored KLD 0.00422 (top-1
+  0.9782), 5.0 0.00253 (0.9834) — vs the picks' phase-2 KLDs 0.003961 / 0.002299, i.e. +6.5 % / +10 % on this
+  single-corpus read (public-short vs the phase-2 corpus share no documents; #206 measured ~8–10 % corpus effects in
+  the other direction for IQR-V4: normal corpus spread, reported as-is). 4.0 (full golden) 0.00640 (short 0.00722 ≈
+  its phase-2 0.007237, long 0.00384, top-1 0.9728). 5.5 / 6 / 6.5 / 7.0 in flight; then the full public table.
