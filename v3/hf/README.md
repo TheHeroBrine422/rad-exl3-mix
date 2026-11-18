@@ -151,29 +151,24 @@ substantially faster (integer-activation GEMMs).
 
 ### Long context
 
-The corpus's two long agentic traces (`flask` and `tqdm`, 245k tokens each) scored whole (262k context,
-bf16 KV), on the same full 596-doc golden for both releases — V2's published files on the V2-era engine
-(the short-doc comparison above used a 594-doc subset that excluded these traces).
+V3 vs V2 at 245k context (the corpus's two long agentic traces, scored whole) and on short docs —
+negative means V3 is below V2:
 
-**V3 vs V2: −7 % on the long traces, −10 % on the short docs** (geomean of the per-size deltas at 5.0–7.0,
-the sizes where V2 was scored). The long-context gap tracks the short-doc gap — no long-context degradation:
-V3 is below at 5.0/5.5/6.0 in both (−19/−21/−7 % on the traces vs −20/−22/−16 % on short docs), and at 7.0
-V2's edge is the same in both (+26 % vs +25 %).
-
-| size | V3 long traces (flask / tqdm) | V2 long traces (flask / tqdm) |
+| size | short docs | long traces |
 |---|---|---|
-| 2.5 | 0.027042 / 0.030276 | TBD |
-| 3.0 | 0.013546 / 0.015073 | TBD |
-| 3.5 | 0.006973 / 0.007470 | TBD |
-| 4.0 | 0.003698 / 0.003943 | TBD |
-| 4.5 | 0.002106 / 0.002261 | TBD |
-| 5.0 | 0.001276 / 0.001360 | 0.001604 / 0.001660 |
-| 5.5 | 0.000837 / 0.000841 | 0.001073 / 0.001070 |
-| 6.0 | 0.000585 / 0.000593 | 0.000630 / 0.000641 |
-| 7.0 | 0.000415 / 0.000415 | 0.000329 / 0.000329 |
+| 2.5 |  | TBD |
+| 3.0 |  | TBD |
+| 3.5 |  | TBD |
+| 4.0 |  | TBD |
+| 4.5 |  | TBD |
+| 5.0 | −20 % | −19 % |
+| 5.5 | −22 % | −22 % |
+| 6.0 | −16 % | −7 % |
+| 7.0 | +25 % | +26 % |
 
-V3's long-context gap to V2 tracks the short-doc result: −19…−21 % at 5.0/5.5 (short docs: −20…−22 %),
-and at 7.0 V2's edge is the same in both (+26 % vs +25 %).
+The long-trace column tracks the short-doc column at every size — no long-context degradation. V2 was
+scored on the public corpus only at 5.0–7.0 (hence the blank short-doc cells); both columns are the same
+596-doc golden, V2's published files on the V2-era engine.
 
 ## How these quants were made
 
