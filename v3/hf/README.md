@@ -10,21 +10,21 @@ datasets:
 ---
 # Qwen3.8-27B — EXL3-V3: all-mad trellis quants, integer compute, vision + DFlash2 drafter (14 sizes)
 
-EXL3 quants of Qwen3.8-27B for the [radiance](https://codeberg.org/StillDeadcode/radiance) inference engine,
-where **every tensor gets its own bit width**. Like EXL3-V2, each size is the result of a per-tensor allocation:
-we quantise the model ourselves at 49 trellis levels (1/8-bit steps, our own integer "mad" codebook), a fitted
-sensitivity model + an exact knapsack solver pick the per-tensor mix for a target size, and a streaming search
-over whole mixes (thousands of evaluations on held-out slices) finds the best one. V3 changes three things:
+**Needs radiance 2.1.0 plus the [EXL3-V3 plugins (PR #401)](https://codeberg.org/StillDeadcode/radiance/pulls/401)**
+(branch `qc-exl3-v3` of the radiance fork: `exl3i` kernels, `exl3import`, `exl3quant`, `qwen35_exl3` arch).
+Until the PR lands, build from the branch; EXL3-V1/V2 remain served by the older plugins.
 
-- **Integer compute.** The GEMMs run on int8 activations (A8, f16 below the gate) instead of f16 — the same
-  trellis codes, faster prefill. (This is the "EXL3-V3" step of the V1 → V2 → V3 series; V1/V2 remain served by
-  the older plugins.)
-- **One codebook.** Every tensor — trunk, head, embedding — uses the same integer trellis codebook (mad). V2
-  mixed three codebooks by tensor class; for this model one of them was enough, and one codebook is one set of
-  kernels to maintain.
-- **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 speculative
-  drafter: images work out of the box, and decoding runs ~4.5–5.1 tokens per step (measured, greedy) with the
-  drafter on by default. Neither is counted in the quality numbers below.
+EXL3 quants of Qwen3.8-27B for the [radiance](https://codeberg.org/StillDeadcode/radiance) inference engine,
+where **every tensor gets its own bit width** and the GEMMs run on integer compute. Each file is a single
+`.rad` container carrying the whole model — the bf16 vision tower and the DFlash2 speculative drafter are
+merged in.
+
+| | |
+|---|---|
+| Weights | EXL3 trellis codes, one integer "mad" codebook, per-tensor allocation (sensitivity fit + exact knapsack + streaming search — [how](#how-these-quants-were-made)) |
+| Speculator | DFlash2, on by default (~4.5–5.1 tokens per step, measured, greedy); `--num-speculative-tokens 0` turns it off |
+| Vision | the 27-block vision tower, bf16: images in chat requests |
+| Context | 262,144 tokens |
 
 Fourteen sizes, 1.5–6.0 bits a weight:
 
@@ -59,9 +59,7 @@ Fourteen sizes, 1.5–6.0 bits a weight:
   own numbers. These are our own read of a published corpus; the official board scores on the *private*
   corpus will be reported when the entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
 
-**Needs radiance 2.1.0 plus the EXL3-V3 plugins** (branch `qc-exl3-v3` of the radiance fork: `exl3i` kernels,
-`exl3import`, `exl3quant`, `qwen35_exl3` arch). The upstream PR is in preparation; until it lands, build from
-the branch.
+
 
 ### Host-embedding variant (`host-emb/`)
 
@@ -168,7 +166,20 @@ The DFlash2 drafter is declared in the container and runs by default (disable wi
 context (262k context fits up to ~4.5 bpw; 5.5–6.0 need two cards once tensor parallelism is available). Use
 prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
 
-## How the mixes were made
+## How these quants were made
+
+V3 changes three things versus EXL3-V2:
+
+- **Integer compute.** The GEMMs run on int8 activations (A8, f16 below the gate) instead of f16 — the same
+  trellis codes, faster prefill. (This is the "EXL3-V3" step of the V1 → V2 → V3 series.)
+- **One codebook.** Every tensor — trunk, head, embedding — uses the same integer trellis codebook (mad). V2
+  mixed three codebooks by tensor class; for this model one of them was enough, and one codebook is one set of
+  kernels to maintain.
+- **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 drafter: images
+  work out of the box, and decoding runs ~4.5–5.1 tokens per step (measured, greedy) with the drafter on by
+  default. Neither is counted in the quality numbers below.
+
+Like EXL3-V2, each size is the result of a per-tensor allocation:
 
 - **Options per tensor:** our own EXL3 quants of every linear at 49 trellis levels (K 0.125–7, 1/8 steps, the
   mad codebook, on the challenge's published calibration Hessians; the head and the trellis embedding are
