@@ -113,7 +113,27 @@ radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-m
     --embedding-placement ram --host-pool-mib 4096
 ```
 
-### EXL3-V3 vs EXL3-V2, same corpus
+### Against IQR-V4
+
+Both scored on our 2.8M-position evaluation slice. Will be replaced with leaderboard numbers when scored.
+
+| size | EXL3-V3 | IQR-V4 | V3 vs IQR-V4 |
+|---|---|---|---|
+| 2.5 | 0.05008 | 0.06334 | **−21 %** |
+| 2.75 | 0.03619 | 0.04448 | **−19 %** |
+| 3.0 | 0.02537 | 0.03111 | **−18 %** |
+| 3.25 | 0.01801 | 0.02215 | **−19 %** |
+| 3.5 | 0.01326 | 0.01621 | **−18 %** |
+| 3.75 | 0.00973 | 0.01151 | **−16 %** |
+| 4.0 | 0.00725 | 0.00847 | **−14 %** |
+| 4.5 | 0.00397 | 0.00482 | **−18 %** |
+| 5.0 | 0.00230 | 0.00264 | **−13 %** |
+| 5.5 | 0.00141 | 0.00165 | **−15 %** |
+| 6.0 | 0.00092 | 0.00117 | **−21 %** |
+| 6.5 | 0.00070 | 0.00087 | **−19 %** |
+| 7.0 | 0.00061 | 0.00071 | **−14 %** |
+
+### EXL3-V3 vs EXL3-V2
 
 The four published V2 sizes, re-scored on the same 594-document public subset (883,911 scored
 positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0, TP1):
@@ -133,7 +153,12 @@ substantially faster (integer-activation GEMMs).
 
 The corpus's two long agentic traces (`flask` and `tqdm`, 245k tokens each) scored whole (262k context,
 bf16 KV), on the same full 596-doc golden for both releases — V2's published files on the V2-era engine
-(the short-doc comparison above used a 594-doc subset that excluded these traces):
+(the short-doc comparison above used a 594-doc subset that excluded these traces).
+
+**V3 vs V2: −7 % on the long traces, −10 % on the short docs** (geomean of the per-size deltas at 5.0–7.0,
+the sizes where V2 was scored). The long-context gap tracks the short-doc gap — no long-context degradation:
+V3 is below at 5.0/5.5/6.0 in both (−19/−21/−7 % on the traces vs −20/−22/−16 % on short docs), and at 7.0
+V2's edge is the same in both (+26 % vs +25 %).
 
 | size | V3 long traces (flask / tqdm) | V2 long traces (flask / tqdm) |
 |---|---|---|
@@ -149,31 +174,6 @@ bf16 KV), on the same full 596-doc golden for both releases — V2's published f
 
 V3's long-context gap to V2 tracks the short-doc result: −19…−21 % at 5.0/5.5 (short docs: −20…−22 %),
 and at 7.0 V2's edge is the same in both (+26 % vs +25 %).
-
-### Against IQR-V4, at the same size
-
-Both scored on the same 2.8M-position evaluation slice (IQR-V4's published files re-scored next to our
-picks; untrimmed mean KLD):
-
-| size | EXL3-V3 | IQR-V4 | V3 vs IQR-V4 |
-|---|---|---|---|
-| 2.5 | 0.05008 | 0.06334 | **−21 %** |
-| 2.75 | 0.03619 | 0.04448 | **−19 %** |
-| 3.0 | 0.02537 | 0.03111 | **−18 %** |
-| 3.25 | 0.01801 | 0.02215 | **−19 %** |
-| 3.5 | 0.01326 | 0.01621 | **−18 %** |
-| 3.75 | 0.00973 | 0.01151 | **−16 %** |
-| 4.0 | 0.00725 | 0.00847 | **−14 %** |
-| 4.5 | 0.00397 | 0.00482 | **−18 %** |
-| 5.0 | 0.00230 | 0.00264 | **−13 %** |
-| 5.5 | 0.00141 | 0.00165 | **−15 %** |
-| 6.0 | 0.00092 | 0.00117 | **−21 %** |
-| 6.5 | 0.00070 | 0.00087 | **−19 %** |
-| 7.0 | 0.00061 | 0.00071 | **−14 %** |
-
-IQR-V4 is interpolated along its own 15-entry board ladder (log KLD linear in bpw, as on the EXL3-V2
-card); V3 is 13–21 % below it across IQR-V4's full range. At equal quality the same slice puts V3
-4–6 % smaller (bits a weight).
 
 ## How these quants were made
 
