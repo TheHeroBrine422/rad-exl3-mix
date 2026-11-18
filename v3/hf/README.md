@@ -28,24 +28,24 @@ over whole mixes (thousands of evaluations on held-out slices) finds the best on
 
 Sixteen sizes, 1.5–7.0 bits a weight:
 
-| file | GiB | bpw (LM: trellis + trunk + head) | public KLD | public top-1 | long 245k traces |
-|---|---|---|---|---|---|
-| `vram/qwen3.8-27b-exl3-v3-1.50bpw.rad` | 7.10 | 1.501 | 0.226589 | 83.2% | 0.173 / 0.190 |
-| `vram/qwen3.8-27b-exl3-v3-1.75bpw.rad` | 7.88 | 1.751 | 0.129496 | 87.0% | 0.103 / 0.112 |
-| `vram/qwen3.8-27b-exl3-v3-2.00bpw.rad` | 8.67 | 2.001 | 0.093233 | 89.5% | 0.061 / 0.068 |
-| `vram/qwen3.8-27b-exl3-v3-2.50bpw.rad` | 10.23 | 2.501 | 0.041709 | 92.9% | 0.027 / 0.030 |
-| `vram/qwen3.8-27b-exl3-v3-2.75bpw.rad` | 11.00 | 2.746 | 0.031004 | 93.9% | 0.020 / 0.022 |
-| `vram/qwen3.8-27b-exl3-v3-3.00bpw.rad` | 11.80 | 3.001 | 0.021467 | 94.9% | 0.014 / 0.015 |
-| `vram/qwen3.8-27b-exl3-v3-3.25bpw.rad` | 12.58 | 3.251 | 0.015052 | 95.8% | 0.010 / 0.010 |
-| `vram/qwen3.8-27b-exl3-v3-3.50bpw.rad` | 13.36 | 3.501 | 0.011459 | 96.4% | 0.007 / 0.007 |
-| `vram/qwen3.8-27b-exl3-v3-3.75bpw.rad` | 14.15 | 3.751 | 0.008565 | 96.9% | 0.005 / 0.005 |
-| `vram/qwen3.8-27b-exl3-v3-4.00bpw.rad` | 14.93 | 4.001 | 0.006398 | 97.3% | 0.004 / 0.004 |
-| `vram/qwen3.8-27b-exl3-v3-4.50bpw.rad` | 16.49 | 4.501 | 0.003739 | 98.0% | 0.0021 / 0.0023 |
-| `vram/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 18.06 | 5.001 | 0.002252 | 98.5% | 0.0013 / 0.0014 |
-| `vram/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 19.63 | 5.501 | 0.001432 | 98.8% | 0.0008 / 0.0008 |
-| `vram/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 21.19 | 6.001 | 0.001058 | 99.0% | 0.0006 / 0.0006 |
-| `vram/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 22.76 | 6.501 | 0.000828 | 99.2% | 0.0005 / 0.0005 |
-| `vram/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 24.32 | 7.001 | 0.000780 | 99.2% | 0.0004 / 0.0004 |
+| file | GiB | bpw (LM: trellis + trunk + head) | public KLD | public top-1 |
+|---|---|---|---|---|
+| `vram/qwen3.8-27b-exl3-v3-1.50bpw.rad` | 7.10 | 1.501 | 0.226589 | 83.2% |
+| `vram/qwen3.8-27b-exl3-v3-1.75bpw.rad` | 7.88 | 1.751 | 0.129496 | 87.0% |
+| `vram/qwen3.8-27b-exl3-v3-2.00bpw.rad` | 8.67 | 2.001 | 0.093233 | 89.5% |
+| `vram/qwen3.8-27b-exl3-v3-2.50bpw.rad` | 10.23 | 2.501 | 0.041709 | 92.9% |
+| `vram/qwen3.8-27b-exl3-v3-2.75bpw.rad` | 11.00 | 2.746 | 0.031004 | 93.9% |
+| `vram/qwen3.8-27b-exl3-v3-3.00bpw.rad` | 11.80 | 3.001 | 0.021467 | 94.9% |
+| `vram/qwen3.8-27b-exl3-v3-3.25bpw.rad` | 12.58 | 3.251 | 0.015052 | 95.8% |
+| `vram/qwen3.8-27b-exl3-v3-3.50bpw.rad` | 13.36 | 3.501 | 0.011459 | 96.4% |
+| `vram/qwen3.8-27b-exl3-v3-3.75bpw.rad` | 14.15 | 3.751 | 0.008565 | 96.9% |
+| `vram/qwen3.8-27b-exl3-v3-4.00bpw.rad` | 14.93 | 4.001 | 0.006398 | 97.3% |
+| `vram/qwen3.8-27b-exl3-v3-4.50bpw.rad` | 16.49 | 4.501 | 0.003739 | 98.0% |
+| `vram/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 18.06 | 5.001 | 0.002252 | 98.5% |
+| `vram/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 19.63 | 5.501 | 0.001432 | 98.8% |
+| `vram/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 21.19 | 6.001 | 0.001058 | 99.0% |
+| `vram/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 22.76 | 6.501 | 0.000828 | 99.2% |
+| `vram/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 24.32 | 7.001 | 0.000780 | 99.2% |
 
 - **bpw (LM: trellis + trunk + head)** = the language model's bytes × 8 / 26,895,998,464 (the challenge's
   parameter count) — the number the board scores, as on the IQR-V4 card. The **vision tower + DFlash2 drafter
@@ -60,9 +60,6 @@ Sixteen sizes, 1.5–7.0 bits a weight:
   (one ulp per position; ≤ 1e-4 nats absolute on the corpus means) — the scores below are the containers'
   own numbers. These are our own read of a published corpus; the official board scores on the *private*
   corpus will be reported when the entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
-- **Long 245k traces**: the corpus's two long agentic traces (245k tokens each), scored whole at every size.
-  They read *below* the short-document mean at all 16 sizes — the mixes, which were picked on documents
-  ≤ 16.4k tokens, show no long-context degradation.
 
 **Needs radiance 2.1.0 plus the EXL3-V3 plugins** (branch `qc-exl3-v3` of the radiance fork: `exl3i` kernels,
 `exl3import`, `exl3quant`, `qwen35_exl3` arch). The upstream PR is in preparation; until it lands, build from
@@ -108,7 +105,7 @@ The four published V2 sizes, re-scored on the same 594-document public subset (8
 positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0, TP1):
 
 | bpw | V2 KLD | V3 KLD | Δ | V2 top-1 | V3 top-1 |
-|---|---|---|---|---|---|
+|---|---|---|
 | 5.0 | 0.00317 | 0.00253 | **−20 %** | 98.2 % | 98.3 % |
 | 5.5 | 0.00213 | 0.00167 | **−22 %** | 98.6 % | 98.7 % |
 | 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
