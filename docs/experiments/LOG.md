@@ -8713,3 +8713,20 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   2× wire bytes on the column ops, gate becomes reachable).** Lead is proceeding as if accepted: the 4.5–7.0 long
   traces score at TP2 on ds8 now (full 596-doc golden — at TP2 the per-rank KV pool holds 262144, so the whole
   golden fits; the short-doc part cross-checks the TP1 public-short numbers within the TP delta).
+- 11-18 4:40 AM CST: **w205 done (reviewed: out/w205.md) — the V3 PR is mad-only and V3-only.** 7 commits on
+  `qc-exl3-v3` (37 files, +301/−1128, 5 deleted): the old exl3 encoding leaves the tree (exl3_abi.h, exl3_encoding.h,
+  exl3_layout.c/h, the V1 ladder recipe — the `exl3_dense` op had no implementation on the branch, grep-verified),
+  exl3_decode trimmed to the shared numerics exl3i uses, exl3_dense_op.h exl3i-only, exl3quant's `.mul1` marker read
+  dropped (codebook= + stamp.json authoritative), the enum renumbered **mad = 0** (containers store the codebook as the
+  string `/mad/h128/k…`, so no repack), all retired-codebook doc stories gone, plus two real bugs the pass caught
+  (the API-version pin left at 3 → #error in every build; the twopass B section's stale mad=3 literal, 8 failures/
+  variant on first run) and a design correction (qwen35 tests: the all-exl3i trunk serves at world 1 with
+  whole-weight extents; the TP2 refusal is test_exl3i's). dad1: build RC=0, exl3i 14/14, qwen35_exl3 1/1, exl3quant 1/1.
+  `qc-exl3-v3-eval` rebased to fdca043b (core-only; the TP2 work is plugin-side); rad21c built on box2; final750:
+  2-mad and 7-mad rows **byte-identical** to the w201 build (mean KLD diff 0.0, 0 top-1 flips) → **the released
+  containers and the HF uploads stay valid, no repack / re-upload.** Item 9 dead sweep skipped by design (would force
+  a full re-verification for a few lines; candidates: `GdnEXL3::Config::in_dim()`, `exl3i_pt::S`). Note: the exllamav3
+  fork still writes the `.mul1` marker file (source-layout fact, documented; a rename is fork + patch-series work,
+  deferred). **Integration pending:** w204's `qc-exl3-v3-tp2` (cut from the pre-w205 HEAD) must be rebased onto the
+  cleaned branch — w206 commissioned (rebase + dad1 + ds8 equivalence on cards 4–7, which should come out
+  byte-identical to w204's TP2 rows if the rebase preserved the numerics).
