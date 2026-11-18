@@ -749,3 +749,6 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
    slices) → a per-tensor K band. Tensors with wide bands, or whose consensus K disagrees confidently with fit.py's
    sensitivity-optimal K, get ± inbox probes at fixed size. (fit.py is the sensitivity model and its posterior already
    drives the thompson moves; this adds the allocation-side view.)
+- **EXL3 (mad trellis) on the DFlash2 drafter** (user 11-18, later / post-release): quantize the drafter's linears with our
+  exl3i mad codebook instead of IQR's MXFP4 (and its u2 draft head); measure acceptance (tokens/step), decode speed and drafter
+  bytes vs the MXFP4 drafter. Needs the stock DFlash2 block to accept exl3i linears (today: fp8a8 / mxfp4a8 only).
