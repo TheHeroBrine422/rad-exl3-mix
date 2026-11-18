@@ -8662,3 +8662,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   non-trace documents, 1,203,306 rows, max 67,566 tok) + **pub208b.sh** (cards 1+2, ctx 73728, marks .short): the
   4.5–7.0 numbers are scored on public-short, their two long traces are left out and get scored once TP2 exists
   (w204). Sizes 2.0–4.0 and 1.5/1.75 keep the full 596-doc golden (their pools fit the traces).
+- 11-18 3:20 AM CST: #208 public results 1.5 and 1.75 (full 596-doc golden incl. both long traces, ctx 262144):
+  scored KLD (gen mask) 1.5 0.22659 (short 0.24088, long 0.18207), 1.75 0.12950 (short 0.13647, long 0.10778); top-1
+  (scored) 0.832 / 0.870. Both below the picks' phase-2 KLDs (0.24389 / 0.15320); long traces below the short-doc
+  means — the pattern now holds at all 10 full-golden sizes. Milestones: rel207 text-only verify 16/16 (ALL DONE
+  08:30 UTC); vramvd 15/16 vd-ok (1.75 built, verifying); upload stream 15/16 (only 1.75 left). The 4.5–7.0 SHORT
+  reruns (public-short, ctx 73728) are in flight on cards 1+2.
