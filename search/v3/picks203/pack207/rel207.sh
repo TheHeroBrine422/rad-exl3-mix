@@ -33,4 +33,4 @@ upload() { export HF_TOKEN=$(cat /root/.hf_token); hf repos create $REPO --repo-
       && { touch $R/state/$S.up; log "upload $S: $n done"; break; } || { log "upload $S: attempt $a failed"; sleep 120; }
   done
 done; }
-pack & verify & upload & wait; log "ALL DONE"
+pack & verify & { [ -z "${NOUP:-}" ] && upload; } & wait; log "ALL DONE"
