@@ -8696,3 +8696,20 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   at 1.5–4.0, a constant +0.0002–0.0003 nat at 4.5–7.0 (corpus spread). vs IQR-V4 board: 2.5 0.0417 vs iq2r 0.0611
   (−32 %, ours incl. both long traces), 4.5 0.00422 vs iq4r-s 0.00643 (−34 %). Size metrics in the table
   (trunk+head 1.501–7.001; LM container 1.501–7.001; shipped file incl. 2.58 GB tower + drafter 2.268–7.768).
+- 11-18 4:20 AM CST: **w204 done (reviewed: out/w204.md + w204-plan.md) — TP2/TP4 works for the V3 containers.**
+  Branch `qc-exl3-v3-tp2` (6 commits, plugin-only: no core / ABI changes — the core already slices single-plane
+  weights per rank and ships the exact all_reduce; the TP1 refusal was plugin-side: ssm_ab declared world-1,
+  `decl_exl3_weight` refused exl3i at world>1, layout hooks asserted full extents). exl3i 14/14 on dad1 incl. a
+  new device TP-slice test; qwen35_exl3 all pass incl. a whole-container TP2/TP4 declare test. **Fit met:** 7.0
+  loads and scores at `--tp 2 --max-model-len 262144` (per rank 12.03 GiB weights + 8.07 GiB KV + 2.20 GiB arena of
+  31.86) and at TP4 (7.09/4.04/2.20). **Equivalence (final750, 612k scored positions): fails the 1e-5 per-row gate
+  at exactly the bf16-ulp level, fully diagnosed** — column-sharded GEMM partials round to bf16 before the exact
+  (f32-accumulating) all_reduce: y_TP2 = round(round(p0)+round(p1)) vs round(p0+p1); 96 % of the 7.0 rows are clean
+  with mean |ΔKL| 2.0e-3 = one bf16 ulp (2^-9 = 1.95e-3); whole-model KLD +0.12 % (2.5) / −3.2 % (7.0, TP2) / +2.0 %
+  (TP4), PPL ≤ 0.29 %, top-1 ±0.01 pp, zero bias, TP2 rerun byte-identical (deterministic). The stock fp8/bf16
+  archs show the same behavior — no TP2 arch in this engine can meet the 1e-5 refactor gate; that gate is for
+  same-computation refactors, a different world size changes the op sequence. **Decision (user): accept bf16-level
+  TP equivalence (w204 + lead recommendation), or commission the f32-partials GEMM path (kernel + buffer work,
+  2× wire bytes on the column ops, gate becomes reachable).** Lead is proceeding as if accepted: the 4.5–7.0 long
+  traces score at TP2 on ds8 now (full 596-doc golden — at TP2 the per-rank KV pool holds 262144, so the whole
+  golden fits; the short-doc part cross-checks the TP1 public-short numbers within the TP delta).
