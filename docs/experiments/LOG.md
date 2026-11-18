@@ -8649,3 +8649,16 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   3.25 0.01505 (short 0.01668, long 0.00997), 3.5 0.01146 (short 0.01281, long 0.00725); top-1 (scored) 0.958 / 0.964.
   Both below the picks' phase-2 KLDs (0.01798 / 0.01324) — public reads slightly easier, as expected; long traces below
   the short-doc means, pattern holds 6/16 sizes.
+- 11-18 2:55 AM CST (user: shut off the miner — server load; their pkill reached it): minq was re-mining a fresh
+  0849 chunk set (built 08:51, "3 to mine") at JOBS 8 / 420k-token requests — the 6–7 extra requests (last activity
+  08:49–08:52 UTC; the 08:52 request hit HTTP 500 under the load). minq.py + minqauto.sh confirmed dead (the user's
+  pkill worked: same PID namespace, the miner runs in the VM); `rad-local/mine/q/PAUSE` set so nothing restarts it;
+  watch.conf's minq proc rule retired. Not relaunching mining without the user.
+- 11-18 3:00 AM CST: #208 PROBLEM (caught by the xhigh watchdog) + fixed: the six bpw ≥ 4.5 public runs died in
+  13–24 s with no KLD — at those sizes the weights leave a KV pool of 245,200 @4.5 … 116,960 @7.0 tokens, below the
+  two long public traces (245,423 / 245,298 tok), and radiance's kld mode treats any document it can never score as
+  fatal (upstream core/engine_kld.cpp:171, no skip flag); the 32768 SHORT fallback died on the same check. Fix:
+  `golden_pick.py` sub-golden **public-short** (box2 /data/q27/challenge/golden/public-short: the same 594
+  non-trace documents, 1,203,306 rows, max 67,566 tok) + **pub208b.sh** (cards 1+2, ctx 73728, marks .short): the
+  4.5–7.0 numbers are scored on public-short, their two long traces are left out and get scored once TP2 exists
+  (w204). Sizes 2.0–4.0 and 1.5/1.75 keep the full 596-doc golden (their pools fit the traces).
