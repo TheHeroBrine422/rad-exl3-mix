@@ -28,8 +28,13 @@ Restartable: finished containers and verifies are skipped; `loop203.sh` (in `vra
 sixteen sizes as the packs finish them. Locks as pack207 (conv.lock + ram shared around rad-convert / radmix; card + ram shared
 around radiance). Stops if `/data` has < 100 GB free.
 
-Smoke (`smoke203/smoke203.sh SIZE`, not committed): one server with the drafter off (`--num-speculative-tokens 0`), one with it
-on (default depth), greedy; 8 text prompts (tokens per decode step from the counters) and 2 image prompts; `dcmp.py` /
+Smoke (`smoke203/smoke203.sh SIZE`, committed below): one server with the drafter off (`--num-speculative-tokens 0`), one with it on
+(default depth), greedy; 8 text prompts (tokens per decode step from the counters) and 2 image prompts; `dcmp.py` /
 `tiemargin.py` comparison.
+
+Result (box2, 2026-11-18): all sixteen `vramvd/<size>.rad` censuses PASS and final750 verifies **byte-identical** to the text-only
+rows (`state/<size>.vd-ok` × 16, no `.vd-bad`) — the tower + drafter add no KLD. Smokes of 2.0 and 7.0 pass: drafter depth 7, on/off
+identical in greedy except near-tie splits (2.0: tok/step 1.000 → 4.507, acceptance 0.46; 7.0: 1.000 → 5.114, acceptance 0.52), image
+answers identical to the end at 7.0.
 
 Files on box2: `/data/q27/release-v3/{vd203.sh,base-T4vd.rad,vramvd/,smoke203/}`; the drafter in `/data/q27/models/qwen38-27b-dflash2`.
