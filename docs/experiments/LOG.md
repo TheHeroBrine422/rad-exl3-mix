@@ -8730,3 +8730,24 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   deferred). **Integration pending:** w204's `qc-exl3-v3-tp2` (cut from the pre-w205 HEAD) must be rebased onto the
   cleaned branch — w206 commissioned (rebase + dad1 + ds8 equivalence on cards 4–7, which should come out
   byte-identical to w204's TP2 rows if the rebase preserved the numerics).
+- 11-18 6:05 AM CST: **w206 / w206b done (reviewed: out/w206.md, raw evidence out/w206b-raw/) — TP2 is
+  integrated into the mad-only branch and byte-identical to w204.** The rebase of `qc-exl3-v3-tp2` (w204's 6
+  commits, cut pre-w205) onto w205's `3969955f` was a clean union (all conflict resolutions documented in the
+  report), but the first ds8 verification FAILED the byte-identity gate: TP1 rows byte-identical to w204,
+  **TP2 rows garbage (mean ~5.7 nats, uniform from position 0)**. Root cause (w206b, found by diffing the TP2
+  op graphs — byte-identical — then dumping the loaded weights: only one record differed): the conflict
+  resolution dropped one argument in `rad_block_gdn_exl3.h` — ssm_qkv's `decl_exl3_weight` call got
+  `n_parts` 3 → 0 (w205's world-1 `0, nullptr` met w204's `qkv_parts`; the 0 won), so at world > 1 the loader
+  cut one CONTIGUOUS row range of the fused [q|k|v] record instead of a slice of each part (rank 0 got q's
+  first 2048 rows + k's first 1024, no v): every GDN layer's k/v projections ran on the wrong rows. TP1 is
+  parts-inert (hence byte-identical), no compiler warning, and no declare test looked at ssm_qkv's parts.
+  Fix `9a20d9be`: `3, qkv_parts` restored + row-parts asserts added to test_tp (TP2+TP4, ssm_qkv 3 /
+  ffn_gate_up 2) and test_exl3i's TP2 arm — the pre-fix tree aborts on the new assert (guard sensitivity
+  proven). All 11 decl call sites re-checked for the same merge class: ssm_qkv was the only one. Re-verified:
+  dad1 build RC=0 ×3 + exl3i 14/14 + qwen35 all sections + exl3quant 1/1; ds8 (cards 5,6) both TP2 KLD runs
+  **byte-identical to w204's rows** (cmp) — the union bug, not a latent w204 bug; w204's numerics restored
+  exactly. **Branch state: `qc-exl3-v3-tp2` = `9a20d9be` (7 commits over `3969955f`), a direct superset of
+  `qc-exl3-v3` — push order for the PR: the cleaned branch, then the tp2 commits on top.** Residuals: TP4 KLD
+  not re-run after the fix (same declaration, guard covers it, w204's own TP4 was clean — cheap insurance
+  available: vs `tp4-7-262144.json.rows`); the generate-at-TP2 smoke (sampling, not teacher-forced KLD) is
+  still untested on any install.
