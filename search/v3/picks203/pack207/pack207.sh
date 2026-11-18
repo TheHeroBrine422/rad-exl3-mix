@@ -12,6 +12,7 @@ R=$Q/release-v3; mkdir -p $R/vram $R/work
 for S in "$@"; do
   M=$Q/mad205/mixes/$S-mad.mix; W=$R/work/$S; O=$R/vram/$S.rad; mkdir -p $W
   [ -f $O ] && { echo "$S: skip (have $O)"; continue; }
+  # (the census's --expect-emb knows only the V2-era trellis codebooks mul1i8 | mul1; the embedding is still byte-checked vs its donor)
   [ "$(df --output=avail -B1G /data | tail -1)" -lt 150 ] && { echo "$S: STOP, /data < 150 GB free"; exit 1; }
   awk '$2=="final" {k=$3; sub(/.*-k/,"",k); sub(/-mad\/final$/,"",k); print $1" exl3i src="$3" codebook=mad rate="k}' $M > $W/trunk.recipe
   [ "$(wc -l < $W/trunk.recipe)" = 336 ] || { echo "$S: trunk recipe has $(wc -l < $W/trunk.recipe) lines"; continue; }
@@ -27,7 +28,7 @@ for S in "$@"; do
   rm -f $O.part
   flock $Q/locks/conv.lock flock -s $Q/locks/ram.lock nice -n 10 $RADMIX $O.part $B $W/release.mix > $W/radmix.log 2>&1 \
     || { echo "$S: FAIL radmix ($W/radmix.log)"; continue; }
-  if /data/q27/venv/bin/python -I $CEN $O.part --mix $W/release.mix --base $B --expect-act a8g128 --expect-emb trellis --max-version 4 \
+  if /data/q27/venv/bin/python -I $CEN $O.part --mix $W/release.mix --base $B --expect-act a8g128 --max-version 4 \
        > $W/census.txt 2>&1; then
     mv $O.part $O; rm -f $W/trunk.rad; echo "$S: $O $(stat -c %s $O) bytes, census PASS"
   else echo "$S: CENSUS FAIL ($W/census.txt), kept $O.part"; fi
