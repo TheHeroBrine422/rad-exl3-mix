@@ -8687,3 +8687,12 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - 11-18 3:40 AM CST: #208 SHORT 6.0 and 7.0: scored KLD (public-short) 6.0 0.001126 (top-1 0.9897) vs phase-2 pick
   0.000922; 7.0 0.000805 (0.9915) vs 0.000611. The absolute excess over phase-2 stays ~0.0002 nat across 4.5–7.0
   (the percentages +22/+32 % are the shrinking denominators). 6.5 running (last size), then the full table.
+- 11-18 3:55 AM CST: **#208 done — the full public table** (`data/public-v3/`, 16/16): scored KLD (gen mask)
+  1.5 0.2266, 1.75 0.1295, 2.0 0.0932, 2.5 0.0417, 2.75 0.0310, 3.0 0.0215, 3.25 0.0151, 3.5 0.0115, 3.75 0.00857,
+  4.0 0.00640, 4.5 0.00422, 5.0 0.00253, 5.5 0.00167, 6.0 0.00113, 6.5 0.000972, 7.0 0.000805; top-1 0.832 → 0.992.
+  1.5–4.0 on the full 596-doc golden (the two 245k long traces scored whole at 262144: below the short-doc mean at
+  every size — no long-context degradation of the picks); 4.5–7.0 on public-short (594 docs; the KV pool can't hold
+  the traces at those weights, long-trace numbers pending TP2/w204). vs the picks' phase-2 KLDs: public 7–15 % easier
+  at 1.5–4.0, a constant +0.0002–0.0003 nat at 4.5–7.0 (corpus spread). vs IQR-V4 board: 2.5 0.0417 vs iq2r 0.0611
+  (−32 %, ours incl. both long traces), 4.5 0.00422 vs iq4r-s 0.00643 (−34 %). Size metrics in the table
+  (trunk+head 1.501–7.001; LM container 1.501–7.001; shipped file incl. 2.58 GB tower + drafter 2.268–7.768).
