@@ -8680,3 +8680,7 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   single-corpus read (public-short vs the phase-2 corpus share no documents; #206 measured ~8–10 % corpus effects in
   the other direction for IQR-V4: normal corpus spread, reported as-is). 4.0 (full golden) 0.00640 (short 0.00722 ≈
   its phase-2 0.007237, long 0.00384, top-1 0.9728). 5.5 / 6 / 6.5 / 7.0 in flight; then the full public table.
+- 11-18 3:26 AM CST: #208 SHORT 5.5: scored KLD 0.00167 (top-1 0.9874; public-short) vs the pick's phase-2 0.001410.
+  Note on the 4.5–5.5 pattern: the public-short excess over phase-2 is a constant ~0.0002–0.0003 nat in absolute
+  terms (+6.5 % / +10 % / +18 % only because the denominators shrink) — corpus spread, not a trend. 6 / 6.5 / 7.0
+  in flight (~15 min each).
