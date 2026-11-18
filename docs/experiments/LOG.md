@@ -8796,3 +8796,14 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   build + verify + upload: heb209.sh v2 on box2 (1.5–2.75 already uploaded; resuming at 3.0 after a pattern
   regression — the v2 re-push had carried the stale `--expect-emb bf16`; fixed on box2), the ds8 TP2 driver
   killed. Card section will state the by-construction relation, not a measured KLD.
+- 11-18 1:35 PM CST: **host-emb variant: 16/16 built, gated, uploaded (HEB209-DONE 19:23 UTC; no KLD runs —
+  user decision, above).** Each file = its vramvd twin with the token table swapped to the checkpoint's bf16
+  embedding (248,320×5,120, 2.37 GiB, already in base-T4vd.rad — one-line mix swap, no requantization); the
+  gate per file: census (`--expect-emb "plain - bf16"`) + whash vs the vramvd container = **exactly one weight
+  differs, `token_embd.weight`** (16/16). Uploads `host-emb/qwen3.8-27b-exl3-v3-<bpw>bpw.rad`, one HF commit
+  each, verified on the Hub (16 files, sizes match the build log byte-for-byte). Label bpw (11-16 formula:
+  file bytes − bf16 table × 8 / 26,895,998,464): 2.20 (1.5) … 4.61 (4.0) … 7.44 (7.0). Card section added
+  (v3/hf/README.md): same trunk + head, strictly more accurate table → quality ≥ the vram file by
+  construction, measured read is the board's; serving note (--embedding-placement ram, 2.37 GiB host pool).
+  Hiccup noted for the record: the v2 driver push had reverted the census pattern (fixed on box2 19:04; the
+  three pre-restart FAILs are that, no container impact — every shipped file passed the fixed gate).

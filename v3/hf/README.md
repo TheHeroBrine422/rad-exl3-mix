@@ -65,6 +65,35 @@ Sixteen sizes, 1.5–7.0 bits a weight (trunk + head):
 `exl3import`, `exl3quant`, `qwen35_exl3` arch). The upstream PR is in preparation; until it lands, build from
 the branch.
 
+### Host-embedding variant (`host-emb/`)
+
+The same final picks with the token table replaced by the checkpoint's **bf16** embedding (248,320 ×
+5,120, 2.37 GiB). Every file is verified weight-by-weight **byte-identical to its `vram/` twin except
+`token_embd.weight`** — same trunk, same head, a strictly more accurate table (the `vram/` tables are
+1.5–7.0-bit trellis; here bf16). Quality is at least the `vram/` file's by construction; the measured
+read is the board's.
+
+| `host-emb/qwen3.8-27b-exl3-v3-1.50bpw.rad` | 9.25 | 2.20 |
+| `host-emb/qwen3.8-27b-exl3-v3-1.75bpw.rad` | 10.01 | 2.44 |
+| `host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad` | 10.79 | 2.69 |
+| `host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad` | 12.32 | 3.18 |
+| `host-emb/qwen3.8-27b-exl3-v3-2.75bpw.rad` | 13.03 | 3.40 |
+| `host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad` | 13.79 | 3.65 |
+| `host-emb/qwen3.8-27b-exl3-v3-3.25bpw.rad` | 14.56 | 3.89 |
+| `host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad` | 15.30 | 4.13 |
+| `host-emb/qwen3.8-27b-exl3-v3-3.75bpw.rad` | 16.07 | 4.37 |
+| `host-emb/qwen3.8-27b-exl3-v3-4.00bpw.rad` | 16.80 | 4.61 |
+| `host-emb/qwen3.8-27b-exl3-v3-4.50bpw.rad` | 18.29 | 5.08 |
+| `host-emb/qwen3.8-27b-exl3-v3-5.00bpw.rad` | 19.74 | 5.55 |
+| `host-emb/qwen3.8-27b-exl3-v3-5.50bpw.rad` | 21.31 | 6.05 |
+| `host-emb/qwen3.8-27b-exl3-v3-6.00bpw.rad` | 22.82 | 6.53 |
+| `host-emb/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 24.24 | 6.98 |
+| `host-emb/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 25.65 | 7.44 |
+
+- **label bpw** = (file bytes − the bf16 table) × 8 / 26,895,998,464: the table is not counted because it
+  is served from host RAM. Serve with `--embedding-placement ram` (it pins in the host pool,
+  `--host-pool-mib` needs to cover the 2.37 GiB); without the flag it stays in VRAM, +2.37 GiB on the card.
+
 ### EXL3-V3 vs EXL3-V2, same corpus
 
 The four published V2 sizes, re-scored on the same 594-document public subset (883,911 scored
