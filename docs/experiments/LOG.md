@@ -8776,3 +8776,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   final750) is running for the record. **ctrl4: the integrated branch's TP4 runtime is verified** —
   7.0 @262144 TP4 on the w206 install (fixed ssm_qkv .so) is byte-identical to w204's own tp4 rows
   (w206b's residual closed).
+- 11-18 2:45 PM CST: **TP bar settled (user):** "if 7.0 is above 1 %, that's fine — it's an extended-release
+  option and there's a lot of rounding noise on that one specifically." TP2/TP4 accepted at ALL sizes; the
+  rounding-level judgment stands (one ulp per clean position, deterministic, unbiased), with no size gate —
+  at high bpw the relative % grows because the KLD denominator shrinks (7.0: 0.0008) while the absolute
+  delta stays ≤ ~1e-4 nats. Rule recorded in AGENTS.md (equivalence-checks). The clean 7.0 isolation (ctrltp:
+  TP2 vs TP1 @16448, final750, same build) lands for the record regardless.
