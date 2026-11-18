@@ -8789,3 +8789,10 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   (±4–9e-5 on a 0.0008–0.0009 mean) — the "rounding noise on 7.0" is confirmed quantitatively: with a
   0.0008 KLD, a 1e-4-nat ulp wobble IS ±10 % relative. TP bar record complete (2.5 +0.12 %, 7.0 ±7 %
   relative / ≤1e-4 absolute); no action, the numbers stand as reported.
+- 11-18 3:45 PM CST: **host-emb variant: KLD legs cancelled (user): "kill the kld runs ... by construction they
+  have to be higher quality than vram"** — the variants carry the same trunk + head (whash-gated: exactly one
+  weight differs, the token table) with a strictly more accurate bf16 table, so their public numbers are
+  implied (≥ the vram file's); the measured read is the board's (or a separate benchmark). Pipeline reduced to
+  build + verify + upload: heb209.sh v2 on box2 (1.5–2.75 already uploaded; resuming at 3.0 after a pattern
+  regression — the v2 re-push had carried the stale `--expect-emb bf16`; fixed on box2), the ds8 TP2 driver
+  killed. Card section will state the by-construction relation, not a measured KLD.
