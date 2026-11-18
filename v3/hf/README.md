@@ -181,27 +181,35 @@ prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
 
 V3 changes three things versus EXL3-V2:
 
-- **Integer compute.** The GEMMs run on int8 activations instead of f16 — the same
-  trellis codes, faster prefill. 
-- **mad codebook** instead of mul1. This reduces dequant overhead and 
-- **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 drafter: images
-  work out of the box, and decoding runs with the drafter on by default. Neither is counted in the size or quality numbers on this card.
+- **Integer compute.** The GEMMs run on int8 activations instead of f16 — the same trellis codes,
+  faster prefill.
+- **The mad codebook** instead of mul1: it reduces dequant overhead and speeds up decode, and it is one
+  set of kernels to maintain — every tensor (trunk, head, embedding) uses it.
+- **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 drafter:
+  images work out of the box, and decoding runs with the drafter on by default. Neither is counted in the
+  size or quality numbers on this card.
 
-Like EXL3-V2, each size is the result of a per-tensor allocation:
+### The quantisation method (for the technically curious)
+
+Like EXL3-V2, each size is the result of a per-tensor allocation — with a larger menu and a longer,
+better-tested allocation than V2's:
 
 - **Options per tensor:** our own EXL3 quants of every linear at the 49 menu levels (K 0.5–6.0 in 1/8
-  steps, then 6.25–7.0 in 1/4 steps; the mad codebook, on the challenge's published calibration Hessians; the
-  head and the trellis embedding are quantised separately at the levels the mix needs).
-- **Allocation:** a per-tensor sensitivity fit (weight error × fitted depth-compounding) priced with measured
-  A8 compute costs; an exact knapsack solve gives the mix at each target size.
+  steps, then 6.25–7.0 in 1/4 steps — V2's menu was integer bits only) on the challenge's published
+  calibration Hessians, with a joint SwiGLU scale refit (swj) on the frozen codes for the gate/up pairs
+  (27B-verified: −6.5 % KLD at K2.5 over the base fit, two seed pairs). The head and the trellis embedding
+  are quantised separately at the levels the mix needs.
+- **Allocation:** a per-tensor sensitivity fit (weight error × fitted depth-compounding) priced with
+  measured A8 compute costs; an exact knapsack solve gives the mix at each target size.
 - **Search:** streaming local search over whole mixes on a held-out pool (thousands of evaluations,
-  per-document bootstrap, slice rotation), ending in a two-phase final selection: ~130 candidates per size on a
-  fresh xcorp slice, then the survivors — including fresh consensus models — on a second 2.8M-position slice
-  drawn like the private corpus. The pick per size comes from that second slice alone; the public corpus above
+  per-document bootstrap, slice rotation), ending in a two-phase final selection: ~130 candidates per size
+  on a fresh xcorp slice, trimmed to finalists, then the survivors — including fresh consensus models — on
+  a second 2.8M-position slice drawn like the private corpus. The trim trades a little signal for much
+  less selection noise; the pick per size comes from that second slice alone, and the public corpus above
   never entered any decision.
 - **One codebook, verified end to end:** after the picks were frozen, every non-mad head / embedding was
-  re-tested against its mad replacement on the selection slices; the all-mad mixes were adopted (small cost at
-  3.25/3.75, small gain at 1.5–2.75) and the other codebooks removed from the release plugin.
+  re-tested against its mad replacement on the selection slices; the all-mad mixes were adopted (small cost
+  at 3.25/3.75, small gain at 1.5–2.75) and the other codebooks removed from the release plugin.
 
 ## Credits
 
