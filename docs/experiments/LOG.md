@@ -8684,3 +8684,6 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   Note on the 4.5–5.5 pattern: the public-short excess over phase-2 is a constant ~0.0002–0.0003 nat in absolute
   terms (+6.5 % / +10 % / +18 % only because the denominators shrink) — corpus spread, not a trend. 6 / 6.5 / 7.0
   in flight (~15 min each).
+- 11-18 3:40 AM CST: #208 SHORT 6.0 and 7.0: scored KLD (public-short) 6.0 0.001126 (top-1 0.9897) vs phase-2 pick
+  0.000922; 7.0 0.000805 (0.9915) vs 0.000611. The absolute excess over phase-2 stays ~0.0002 nat across 4.5–7.0
+  (the percentages +22/+32 % are the shrinking denominators). 6.5 running (last size), then the full table.
