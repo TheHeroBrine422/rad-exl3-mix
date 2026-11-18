@@ -8807,3 +8807,9 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
   construction, measured read is the board's; serving note (--embedding-placement ram, 2.37 GiB host pool).
   Hiccup noted for the record: the v2 driver push had reverted the census pattern (fixed on box2 19:04; the
   three pre-restart FAILs are that, no container impact — every shipped file passed the fixed gate).
+- 11-18 1:50 PM CST: **PR branch consolidated (user: "add everything to qc-exl3-v3 so i can push it"):**
+  `qc-exl3-v3` fast-forwarded to `9a20d9be` = w205's 7 mad-only commits + w204/w206's 7 TP2 commits
+  (14 over `1fadfb4d`; `qc-exl3-v3-tp2` kept pointing at the same commit as the lineage). The verified tree
+  (dad1 green, ds8 TP1/TP2/TP4 byte-identical) is exactly what the branch now names. `update-git.sh` pushes
+  it as LIVE_BRANCH (--force-with-lease) — the user's push is a one-liner. Main fork worktree left detached
+  at 9a20d9be (the branch is checked out in wt/w205-radiance).
