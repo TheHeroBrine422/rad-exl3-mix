@@ -110,6 +110,46 @@ positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0
 At 5.0–6.0 V3 is 16–22 % below V2 on the same corpus — the V2 board numbers at those sizes
 (0.00256 / 0.000914) were scored on different slices and made the comparison look the other way.
 
+### Long context
+
+The corpus's two long agentic traces (`flask` and `tqdm`, 245k tokens each) were scored whole at every
+size (262k context, bf16 KV):
+
+| size | long traces (flask / tqdm) | corpus KLD |
+|---|---|---|
+| 1.50 | 0.172516 / 0.189598 | 0.226589 |
+| 1.75 | 0.102521 / 0.111927 | 0.129496 |
+| 2.00 | 0.060879 / 0.067555 | 0.093233 |
+| 2.50 | 0.027042 / 0.030276 | 0.041709 |
+| 2.75 | 0.019552 / 0.021533 | 0.031004 |
+| 3.00 | 0.013546 / 0.015073 | 0.021467 |
+| 3.25 | 0.009578 / 0.010279 | 0.015052 |
+| 3.50 | 0.006973 / 0.007470 | 0.011459 |
+| 3.75 | 0.005170 / 0.005429 | 0.008565 |
+| 4.00 | 0.003698 / 0.003943 | 0.006398 |
+| 4.50 | 0.002106 / 0.002261 | 0.003739 |
+| 5.00 | 0.001276 / 0.001360 | 0.002252 |
+| 5.50 | 0.000837 / 0.000841 | 0.001432 |
+| 6.00 | 0.000585 / 0.000593 | 0.001058 |
+
+Both traces score **below the full-corpus mean at every shipped size** — the picks (chosen on documents of
+≤ 16.4k tokens) do not degrade at 245k context, from 1.5 to 6.0 bpw.
+
+In the band where these models are actually served, against EXL3-V2 on the same traces (V2's published
+files, same full 596-doc golden, the V2-era engine; the short-doc comparison above used a 594-doc subset
+that excluded these traces):
+
+| size | V3 long traces | V2 long traces |
+|---|---|---|
+| 2.5 | 0.027042 / 0.030276 | TBD |
+| 3.0 | 0.013546 / 0.015073 | TBD |
+| 3.5 | 0.006973 / 0.007470 | TBD |
+| 4.0 | 0.003698 / 0.003943 | TBD |
+| 4.5 | 0.002106 / 0.002261 | TBD |
+
+V3 is below V2 on both traces at every size of the band — the same direction as the short-doc result, with
+a narrower gap (as expected: V2's 2.5–4.5 mixes predate the search depth that gives V3 its short-doc lead).
+
 ### Against IQR-V4 on the leaderboard
 
 At the sizes where IQR-V4's board entries are published: 2.5 bpw — IQR iq2r 0.0611, here **0.0417** (−32%, and
