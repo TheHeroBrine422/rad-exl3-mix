@@ -61,6 +61,18 @@ Sixteen sizes, 1.5–7.0 bits a weight:
   own numbers. These are our own read of a published corpus; the official board scores on the *private*
   corpus will be reported when the entries are submitted. 1.50 / 1.75 are research points, not practical sizes.
 
+## Use one file
+
+```
+hf download Hero422/qwen3.8-27b-exl3-v3-rad vram/qwen3.8-27b-exl3-v3-4.00bpw.rad --local-dir .
+radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-model-len 262144
+```
+
+The DFlash2 drafter is declared in the container and runs by default (disable with
+`--num-speculative-tokens 0`); image prompts work as-is. Files up to ~7 bpw run on one 32 GB card at moderate
+context (262k context fits up to ~4.5 bpw; 5.5–7.0 need two cards, `--tp 2`). Use
+prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
+
 ### Host-embedding variant (`host-emb/`)
 
 The same final picks with the token table replaced by the checkpoint's **bf16** embedding (248,320 ×
@@ -88,12 +100,18 @@ read is the board's.
 | `host-emb/qwen3.8-27b-exl3-v3-6.50bpw.rad` | 19.47 | −0.89 |
 | `host-emb/qwen3.8-27b-exl3-v3-7.00bpw.rad` | 20.88 | −1.04 |
 
-- **VRAM (GiB)** = the trunk + head — what is on the card when the bf16 table is served from host RAM
-  (`--embedding-placement ram`; it pins in the host pool, `--host-pool-mib` needs to cover the 2.37 GiB;
-  without the flag it stays in VRAM, +2.37 GiB on the card). **vs `vram/`** = how much less VRAM this file
-  uses than its `vram/` twin, which is byte-identical everywhere else: it is the `vram/` file's trellis
-  embedding table (0.23–1.04 GiB). The tower + drafter are in neither number (optional, as above); the
-  files themselves are 9.24–25.62 GiB on disk.
+- **VRAM (GiB)** = trunk + head — what is on the card when the bf16 table is served from host RAM
+  (without `--embedding-placement ram` it stays in VRAM, +2.37 GiB). **vs `vram/`** = the saving over the
+  byte-identical `vram/` twin: its trellis embedding table (0.23–1.04 GiB). The tower + drafter are excluded
+  (as above); the files are 9.24–25.63 GiB on disk.
+
+Serve with the table in host RAM:
+
+```
+hf download Hero422/qwen3.8-27b-exl3-v3-rad host-emb/qwen3.8-27b-exl3-v3-4.00bpw.rad --local-dir .
+radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-model-len 262144 \
+    --embedding-placement ram --host-pool-mib 4096
+```
 
 ### EXL3-V3 vs EXL3-V2, same corpus
 
@@ -107,44 +125,17 @@ positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0
 | 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
 | 7.0 | 0.000646 | 0.000805 | +25 % | 99.2 % | 99.2 % |
 
-
-At 5.0–6.0 V3 is 16–22 % below V2 on the same corpus — the V2 board numbers at those sizes
-(0.00256 / 0.000914) were scored on different slices and made the comparison look the other way.
-At 7.0 V2 keeps a real edge on quality: its 7.0 mix (V2-era per-tensor allocation) sits below V3's
-all-mad 7.0. V3's 7.0 is still the release file — its integer-activation GEMMs run substantially
-faster at the same size.
+V3 is 16–22 % below V2 at 5.0–6.0 (the cross-corpus board numbers — V2's were scored on different
+slices — made it look the other way). At 7.0 V2's mix keeps a real quality edge; V3's 7.0 runs
+substantially faster (integer-activation GEMMs).
 
 ### Long context
 
-The corpus's two long agentic traces (`flask` and `tqdm`, 245k tokens each) were scored whole at every
-size (262k context, bf16 KV):
-
-| size | long traces (flask / tqdm) | corpus KLD |
-|---|---|---|
-| 1.50 | 0.172516 / 0.189598 | 0.226589 |
-| 1.75 | 0.102521 / 0.111927 | 0.129496 |
-| 2.00 | 0.060879 / 0.067555 | 0.093233 |
-| 2.50 | 0.027042 / 0.030276 | 0.041709 |
-| 2.75 | 0.019552 / 0.021533 | 0.031004 |
-| 3.00 | 0.013546 / 0.015073 | 0.021467 |
-| 3.25 | 0.009578 / 0.010279 | 0.015052 |
-| 3.50 | 0.006973 / 0.007470 | 0.011459 |
-| 3.75 | 0.005170 / 0.005429 | 0.008565 |
-| 4.00 | 0.003698 / 0.003943 | 0.006398 |
-| 4.50 | 0.002106 / 0.002261 | 0.003739 |
-| 5.00 | 0.001276 / 0.001360 | 0.002252 |
-| 5.50 | 0.000837 / 0.000841 | 0.001432 |
-| 6.00 | 0.000585 / 0.000593 | 0.001058 |
-| 6.50 | 0.000458 / 0.000457 | 0.000828 |
-| 7.00 | 0.000415 / 0.000415 | 0.000780 |
-
-Both traces score **below the full-corpus mean at every shipped size** — the picks (chosen on documents of
-≤ 16.4k tokens) do not degrade at 245k context, from 1.5 to 7.0 bpw.
-
-Against EXL3-V2 on the same traces — V2's published files, same full 596-doc golden, the V2-era engine
+The corpus's two long agentic traces (`flask` and `tqdm`, 245k tokens each) scored whole (262k context,
+bf16 KV), on the same full 596-doc golden for both releases — V2's published files on the V2-era engine
 (the short-doc comparison above used a 594-doc subset that excluded these traces):
 
-| size | V3 long traces | V2 long traces |
+| size | V3 long traces (flask / tqdm) | V2 long traces (flask / tqdm) |
 |---|---|---|
 | 2.5 | 0.027042 / 0.030276 | TBD |
 | 3.0 | 0.013546 / 0.015073 | TBD |
@@ -156,35 +147,32 @@ Against EXL3-V2 on the same traces — V2's published files, same full 596-doc g
 | 6.0 | 0.000585 / 0.000593 | 0.000630 / 0.000641 |
 | 7.0 | 0.000415 / 0.000415 | 0.000329 / 0.000329 |
 
-V3 is below V2 on both traces from 2.5 to 6.0 — the same direction as the short-doc result, with a narrower
-gap; at 7.0 V2's mix keeps its edge in long context as well, as it does in short context.
+V3's long-context gap to V2 tracks the short-doc result: −19…−21 % at 5.0/5.5 (short docs: −20…−22 %),
+and at 7.0 V2's edge is the same in both (+26 % vs +25 %).
 
-### Against IQR-V4 on the leaderboard
+### Against IQR-V4 on the leaderboard, at the same size
 
-Against IQR-V4's nearest board entries: iq2r (2.47 bpw) 0.0611 → here at 2.5 bpw **0.0417** (−32 %);
-iq4r-s (4.47 bpw) 0.00643 → here at 4.5 bpw **0.00374** (−42 %). Both numbers include the two long traces.
-On our own 2.8M-position evaluation slices the gap over the full IQR-V4 range was 14–27 %.
+V3's board numbers are pending submission, so V3 is converted from its public score with the
+public→private ratio measured on EXL3-V2's own files (its board / public-short KLD: 0.81 / 0.72 / 0.68 /
+0.70 at 5.0 / 5.5 / 6.0 / 7.0, 6.5 interpolated):
 
-## Use one file
+| size | EXL3-V3 (est. board) | IQR-V4 (board) | V3 vs IQR-V4 |
+|---|---|---|---|
+| 5.0 | 0.002041 | iq5r-s (5.07): 0.00223 | **-8 %** |
+| 5.5 | 0.001199 | iq5r (5.43): 0.00154 | **-22 %** |
+| 6.0 | 0.0007686 | iq6r-s (6.06): 0.001 | **-23 %** |
+| 6.5 | 0.0006703 | iq6r (6.44): 0.00081 | **-17 %** |
+| 7.0 | 0.0005608 | iq6r-l (6.94): 0.00068 | **-18 %** |
 
-```
-hf download Hero422/qwen3.8-27b-exl3-v3-rad vram/qwen3.8-27b-exl3-v3-4.00bpw.rad --local-dir .
-radiance --model ./qwen3.8-27b-exl3-v3-4.00bpw.rad --kv-cache-dtype bf16 --max-model-len 262144
-```
-
-The DFlash2 drafter is declared in the container and runs by default (disable with
-`--num-speculative-tokens 0`); image prompts work as-is. Files up to ~7 bpw run on one 32 GB card at moderate
-context (262k context fits up to ~4.5 bpw; 5.5–7.0 need two cards, `--tp 2`). Use
-prefill chunks of ≥ 2048 tokens (`--max-num-batched-tokens`).
+Below 5.0 the cross-corpus read is less reliable; the same-corpus measurement (IQR-V4's files re-scored
+next to ours on our own 2.8M-position slices) puts V3 14–27 % below IQR-V4 across its full range.
 
 ## How these quants were made
 
 V3 changes three things versus EXL3-V2:
 
-- **Integer compute.** The GEMMs run on int8 activations instead of f16 — the same trellis codes,
-  faster prefill.
-- **The mad codebook** instead of mul1: it reduces dequant overhead and speeds up decode, and it is one
-  set of kernels to maintain — every tensor (trunk, head, embedding) uses it.
+- **Integer compute.** The GEMMs run on int8 activations instead of f16. Doubles prefill speed.
+- **The mad codebook** instead of mul1: reduces dequant overhead and speeds up decode
 - **The full model in the file.** Each container carries the bf16 vision tower and the DFlash2 drafter:
   images work out of the box, and decoding runs with the drafter on by default. Neither is counted in the
   size or quality numbers on this card.
@@ -198,7 +186,7 @@ better-tested allocation than V2's:
   steps, then 6.25–7.0 in 1/4 steps — V2's menu was integer bits only) on the challenge's published
   calibration Hessians, with a joint SwiGLU scale refit (swj) on the frozen codes for the gate/up pairs
   (27B-verified: −6.5 % KLD at K2.5 over the base fit, two seed pairs). The head and the trellis embedding
-  are quantised separately at the levels the mix needs.
+  are quantized separately at the levels the mix needs.
 - **Allocation:** a per-tensor sensitivity fit (weight error × fitted depth-compounding) priced with
   measured A8 compute costs; an exact knapsack solve gives the mix at each target size.
 - **Search:** streaming local search over whole mixes on a held-out pool (thousands of evaluations,
