@@ -1,0 +1,98 @@
+03:04:37 card 4 iq3r-l download
+03:04:37 card 0 iq2r download
+03:04:37 card 1 iq2r-l download
+03:04:37 card 3 iq3r download
+03:04:37 card 6 iq4r download
+03:04:37 card 2 iq3r-s download
+03:04:37 card 7 iq4r-l download
+03:10:51 card 5 iq4r-s final750 rc=0 374 s
+03:15:18 card 5 iq4r-s s195c6 rc=0 267 s
+03:19:15 card 5 iq4r-s s195c7 rc=0 237 s
+03:23:59 card 5 iq4r-s s195c8 rc=0 284 s
+03:29:41 card 5 iq4r-s s195c9 rc=0 342 s
+03:37:05 card 6 iq4r final750 rc=0 562 s
+03:37:13 card 5 iq4r-s s195c10 rc=0 452 s
+03:38:42 card 3 iq3r final750 rc=0 577 s
+03:39:32 card 0 iq2r final750 rc=0 574 s
+03:39:36 card 1 iq2r-l final750 rc=0 581 s
+03:39:57 card 4 iq3r-l final750 rc=0 603 s
+03:40:12 card 2 iq3r-s final750 rc=0 615 s
+03:42:17 card 7 iq4r-l final750 rc=0 570 s
+03:44:04 card 6 iq4r s195c6 rc=0 419 s
+03:45:44 card 3 iq3r s195c6 rc=0 422 s
+03:46:28 card 0 iq2r s195c6 rc=0 416 s
+03:46:53 card 1 iq2r-l s195c6 rc=0 437 s
+03:47:16 card 4 iq3r-l s195c6 rc=0 439 s
+03:47:35 card 2 iq3r-s s195c6 rc=0 443 s
+03:49:15 card 7 iq4r-l s195c6 rc=0 418 s
+03:50:28 card 6 iq4r s195c7 rc=0 384 s
+03:52:06 card 3 iq3r s195c7 rc=0 382 s
+03:52:43 card 0 iq2r s195c7 rc=0 375 s
+03:53:22 card 1 iq2r-l s195c7 rc=0 389 s
+03:53:48 card 4 iq3r-l s195c7 rc=0 392 s
+03:54:08 card 2 iq3r-s s195c7 rc=0 392 s
+03:55:36 card 7 iq4r-l s195c7 rc=0 381 s
+03:57:48 card 6 iq4r s195c8 rc=0 440 s
+03:59:28 card 3 iq3r s195c8 rc=0 442 s
+03:59:54 card 0 iq2r s195c8 rc=0 430 s
+04:00:38 card 1 iq2r-l s195c8 rc=0 436 s
+04:01:16 card 4 iq3r-l s195c8 rc=0 448 s
+04:01:46 card 2 iq3r-s s195c8 rc=0 458 s
+04:02:53 card 7 iq4r-l s195c8 rc=0 437 s
+04:05:50 card 6 iq4r s195c9 rc=0 482 s
+04:07:32 card 3 iq3r s195c9 rc=0 484 s
+04:07:42 card 0 iq2r s195c9 rc=0 468 s
+04:08:36 card 1 iq2r-l s195c9 rc=0 478 s
+04:09:18 card 4 iq3r-l s195c9 rc=0 482 s
+04:09:49 card 2 iq3r-s s195c9 rc=0 483 s
+04:10:53 card 7 iq4r-l s195c9 rc=0 480 s
+04:13:13 card 6 iq4r s195c10 rc=0 443 s
+04:14:33 card 0 iq2r s195c10 rc=0 411 s
+04:14:33 card 0 iq5r-s download
+04:14:38 card 3 iq3r s195c10 rc=0 426 s
+04:14:38 card 3 iq6r download
+04:14:59 card 1 iq2r-l s195c10 rc=0 383 s
+04:14:59 card 1 iq2r-l deleted
+04:14:59 card 1 iq5r download
+04:15:28 card 4 iq3r-l s195c10 rc=0 370 s
+04:15:28 card 4 iq3r-l deleted
+04:15:28 card 4 iq7r download
+04:15:49 card 2 iq3r-s s195c10 rc=0 360 s
+04:15:49 card 2 iq3r-s deleted
+04:15:49 card 2 iq6r-s download
+04:16:23 card 7 iq4r-l s195c10 rc=0 330 s
+04:16:23 card 7 iq4r-l deleted
+04:46:22 card 0 iq5r-s final750 rc=0 451 s
+04:49:05 card 4 iq7r final750 rc=0 473 s
+04:51:01 card 1 iq5r final750 rc=0 488 s
+04:51:42 card 3 iq6r final750 rc=0 510 s
+04:52:05 card 2 iq6r-s final750 rc=0 509 s
+04:52:08 card 0 iq5r-s s195c6 rc=0 346 s
+04:55:06 card 4 iq7r s195c6 rc=0 361 s
+04:57:07 card 1 iq5r s195c6 rc=0 366 s
+04:57:24 card 0 iq5r-s s195c7 rc=0 316 s
+04:58:09 card 3 iq6r s195c6 rc=0 387 s
+04:58:39 card 2 iq6r-s s195c6 rc=0 394 s
+05:00:32 card 4 iq7r s195c7 rc=0 326 s
+05:02:40 card 1 iq5r s195c7 rc=0 333 s
+05:03:38 card 3 iq6r s195c7 rc=0 329 s
+05:04:00 card 2 iq6r-s s195c7 rc=0 321 s
+05:04:05 card 0 iq5r-s s195c8 rc=0 401 s
+05:06:46 card 4 iq7r s195c8 rc=0 374 s
+05:09:01 card 1 iq5r s195c8 rc=0 381 s
+05:10:16 card 3 iq6r s195c8 rc=0 398 s
+05:10:33 card 2 iq6r-s s195c8 rc=0 392 s
+05:11:24 card 0 iq5r-s s195c9 rc=0 439 s
+05:13:43 card 4 iq7r s195c9 rc=0 417 s
+05:16:04 card 1 iq5r s195c9 rc=0 423 s
+05:17:16 card 0 iq5r-s s195c10 rc=0 352 s
+05:17:16 card 0 iq5r-s deleted
+05:17:29 card 3 iq6r s195c9 rc=0 433 s
+05:17:46 card 2 iq6r-s s195c9 rc=0 433 s
+05:19:41 card 4 iq7r s195c10 rc=0 358 s
+05:19:41 card 4 iq7r deleted
+05:21:49 card 1 iq5r s195c10 rc=0 345 s
+05:23:07 card 3 iq6r s195c10 rc=0 338 s
+05:23:18 card 2 iq6r-s s195c10 rc=0 332 s
+05:23:18 card 2 iq6r-s deleted
+05:23:18 ALL DONE
