@@ -176,3 +176,8 @@ changed. Each swapped pick is scored on the phase-2 slices and compared with its
 outlier trim, size-adjusted). **Mad-only is adopted for the whole release (all 16) if no size is worse by more than 1 %
 (point estimate, trimmed) and none is significantly worse below 6.0** (95 % CI wholly above 0). User: a ~1 % loss at the top
 sizes is acceptable for one codebook (simpler plugin, lower decode compute). Otherwise the picks ship as chosen.
+
+## Decision 2026-11-17 ~11:50 PM CST (user, AFTER the #205 swap data): mad-only adopted
+The 5:10 AM rule rejected mad-only (3.25 +0.39 %, 3.75 +0.72 % significantly worse; 7.0 +1.61 % trimmed). The user overrides it:
+"1 % for much simpler kernels and future work is better. We just use mad everywhere." Release = the 16 frozen picks with every
+head and embedding in mad at the same K (box2 /data/q27/mad205/mixes/<size>-mad.mix). Recorded as a decision after data.
