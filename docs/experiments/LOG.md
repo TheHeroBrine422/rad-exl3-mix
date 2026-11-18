@@ -8850,3 +8850,36 @@ Activation scales applied along K (`wmmagrp.hip`, a tight loop, so the worst cas
 - Runtime: neither (card text). No new measurements; bytes from the Hub tree API + `heb209.log`.
 
 **Files touched:** `v3/hf/README.md`, `data/public-v3/README.md`, `/workspace/AGENTS.md` (rule wording).
+
+## 2026-11-18 — release scope corrected (16 sizes ship), V2 long-context numbers land, card restructure (user)
+
+- **Scope correction (user, ~4:20 PM CST):** I had misread "we don't need the even higher bpws" as dropping
+  6.5/7.0 from the release — wrong. **All 16 sizes (1.5–7.0) ship**; 7.0 is a known quality degradation vs
+  V2 but is "a fuck ton faster" (integer-activation GEMMs). What was trimmed to 2.5–4.5 was the *new
+  long-context evals*, not the ladder. Card restored (e60e4249): title, both tables, the V2 same-corpus
+  section (7.0 row back, with the V2-edge + speed disclosure), use-one-file, long-context table 1.
+  No new testing above 4.75 bpw (user): the v2long 7.0 leg finished anyway (launched earlier) and is a
+  record number; 6.5 was never run and won't be.
+- **V2 long-trace KLD (full 596-doc golden, docs 435 flask / 531 tqdm, pair order flask/tqdm):**
+  - 5.0 = 0.001604 / 0.001660 (V3 0.001276 / 0.001360 — V3 below)
+  - 5.5 = 0.001073 / 0.001070 (V3 0.000837 / 0.000841 — V3 below)
+  - 6.0 = 0.000630 / 0.000641 (V3 0.000585 / 0.000593 — V3 below)
+  - 7.0 = 0.000329 / 0.000329 (V3 0.000415 / 0.000415 — **V2 below**, consistent with its 7.0 short-doc edge)
+  - 2.5/3.0/3.5/4.0/4.5 = v2mid runs in flight (box2; 4.0/4.5 at TP2 — at TP1 the 4.0 KV pool held
+    244,736 tokens, 562 short of the 245,298-token trace, so TP1 can never score it). Card table has every
+    size with data; the five band cells fill at ~5:10 PM CST.
+- **Card restructure (user):** the Needs line (radiance 2.1.0 + plugins, **PR #401 link**) is at the very top
+  (50f4e4ed); the top is now a short intro + Weights/Speculator/Vision/Context facts table; the design detail
+  moved to "## How these quants were made". Full-read fixes (bdae9ce6): IQR 4.5 number 0.00422 → 0.00374
+  (−42 %), "four published V2 sizes", TP2 shipped wording, host-emb disk range, level menu (K 0.5–6.0 in 1/8
+  steps, then 6.25–7.0 in 1/4 = the 49 menu levels; "K 0.125–7" was wrong), the V2 6.0 top-1 cell (user's
+  own fix, 99.0 → 98.9, matches v2pub's 0.9893).
+- **Tokens/step claims dropped (user, ~4:25 PM CST):** "I wouldn't include the decoding runs at x tokens per
+  step because I don't fully trust those numbers" — removed from the facts table and the design section.
+  (The greedy decode-smoke measurement stays in the worker records only.)
+- **PR #401 is up** (codeberg, WIP, opened 11-04, Hero422/radiance:qc-exl3-v3 → main): its description still
+  says "builds against radiance 1.17.0" (the Nov 4 wording) — the release is on 2.1.0; user may want to
+  refresh that line.
+
+**Files touched:** `v3/hf/README.md` (several commits above), this LOG. Runtime: the v2long/v2mid legs are
+already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
