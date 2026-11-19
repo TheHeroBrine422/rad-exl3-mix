@@ -8972,3 +8972,25 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   run-to-run noise; no clean parallel penalty found.
 - Raw: /data/q27/bench375/runs/ (JSON + per-run HTML). Endpoints 8010-8015 left up for the user
   (ms8 now). User verdict: good enough.
+
+## 2026-11-19 — DS4.1-Flash-1017: pre-sleep inventory + box2 overnight smoke (user heading to sleep)
+
+- User shifted focus to DeepSeek-V4.1-Flash-1017 EXL3 quants (their work; ds41pipe on the VM).
+  Inventory (read-only, /workspace/ds41pipe + ds41): the 1017 calibration collection is COMPLETE and
+  safe — HF dataset Hero422/deepseek-v4.1-flash-1017-quant-calib (corpus, dense, experts, golden,
+  noise-floor, routing, embed, dumps) + colo backup; d100b-1017 11-11 20:55Z (100.04M tokens,
+  verify 167/168). Pre-1017 numbers invalid (wrong checkpoint, found 11-11 09:52Z).
+- Arch census (96,085 tensors / 40 layers): 46,080 expert weights (40×384×3, fp4 e2m1 in the ckpt),
+  dense attn/indexer/compressor linears fp8-32x32, engram on 2 layers (~203 GB tables; user's 11-11
+  call: fp8 + rotation, no calibration), head + embed. No EXL3 arch exists for deepseek_v41 yet —
+  the engine plugin (CSA2 attention, hyper-connections, engram, fp4-expert path) is the long pole,
+  Opus/Fable-tier. Expert-allocation granularity (per-expert K from the 46k G3 Hessians) is the main
+  quantizer design question. Full notes: /workspace/ds41pipe/MORNING-2026-11-19.md.
+- Overnight (box2, self-driving): ds41smoke/overnight.sh — 6 ckpt shards (embed + layers 0-3, ~126 GB)
+  + ds41pipe.smoke --no-engram on card 0: verifies the collection pipeline runs on box2 alone (ds8
+  killed). Check /data/ds41smoke/run.log in the morning.
+- Also 11-19: ds8 killed state (data moved to box2, /data 205G→2.1M), box2 cleaned to 158G, 27B card
+  final, BetterBench done + logged, backlog: high-batch int8 decode kernel (user deferral).
+- An unattributable stale subagent notification (old #208 watcher, missing receipt, KLD values
+  1.2565/1.1134 inconsistent with the published 2.75/3.0 results) arrived mid-session: no action,
+  logged here; #208 data is in the repo and on the card.
