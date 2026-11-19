@@ -759,3 +759,22 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   while MXFP4→native-FP8 does ~600 at conc8 (stays memory-bound). User's call: kernel optimization, not a
   format issue; defer (and the lead model at the time was not strong enough for it — Opus/Fable-tier work
   when it comes up). Evidence: LOG 2026-11-19 BetterBench entry, /data/q27/bench375/runs/.
+
+## Added 2026-11-19
+
+- **LittleBit-2 — sub-1-bit (1~0.1 bpp) low-rank binary quantization with latent geometry alignment**
+  (arXiv 2603.00042v2, Samsung Research, v1 2026-02-09 / v2 2026-05-03; CC BY-NC-ND — read-only, no code
+  reuse). For our **<2 bpw quants** (user, 2026-11-19: "put this in the backlog to look at").
+  What it claims: "Spectral Energy Gain" — low-rank BINARY approximations beat tiny-rank floating-point
+  on heavy-tailed spectra; prior LittleBit-style attempts failed because standard SVD singular vectors are
+  coherent (spiky) = worst-case geometry for binary codes ("Latent Geometry Misalignment"). Their fix:
+  an internal latent rotation (geometric preconditioner aligning the latent distribution with the binary
+  hypercube, zero inference overhead) + Joint-ITQ (joint iterative quantization) over a tri-scale latent
+  factorization. SOTA sub-1-bit on Llama-2/3, matching 1-bit baseline fidelity at 1~0.1 bpp.
+  Relevance to <2 bpw: overlap at 1.0-2.0 bpp with the bottom of our ladders (27B V3 starts at 2.5; the
+  DS41 daily is 2.1). Their rotation is the same incoherence family as our RHT; their per-tensor "distortion
+  coefficient" (Sec 4.2) and the heavy-tail gain condition are checkable on our data.
+  First step if activated: (1) per-tensor spectral tail analysis on 27B (+ DS41 expert) data with the
+  existing Hessians / weight samples — does the gain condition hold for a material share of tensors at
+  1-2 bpp? (no new collection); (2) if yes: proxy reproduction at tensor level (C3-style, CPU), then
+  model-level KLD. Needs a research brief before starting. Status: not started.
