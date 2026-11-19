@@ -9055,3 +9055,26 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   — launched on box2 (dlfull.sh, log /data/ds41smoke/dlfull.log). The same release ckpt is the
   P1 quantizer source, so this download serves both. Then: engram_tables.py + imatrix_merge.py →
   rad-convert → TP4 serve → KLD part-0.
+
+## 2026-11-19 — CPTC paper read (user link, arXiv 2611.22019, Amazon, 11-17)
+
+- CPTC = new trellis quantization FORMAT: L=16 tail-biting Viterbi, fixed (a0,a1) coefficients
+  for all targets, per-value decode = 2 multiplies + 6-bit add + 64-byte (127-entry) table;
+  per-tensor freedom = the table only. Prop 1: every INTK/FPK/scalar format is a special case.
+  RHT preprocessing unchanged from QuIP#/QTIP. No Hessian/GPTQ, no fine-tuning (format-level,
+  orthogonal to calibration). No code released; fully specified for reimplementation.
+- Their Table 22 ran QWEN3.8-27B (single seed, YAQA pipeline, their Hessians): CPTC DKL
+  0.0563/0.1060/0.2630 at K=4/3/2 vs HYB (QTIP, IQR's default family) 0.1175/0.3063 — ~2.1–2.9×
+  lower. Same ordering on Llama 8B/70B (Table 4). Accuracy is rate-driven, not format-driven.
+- Decoder: fused into tensor-core GEMM on stock GPUs (App D.1; fixed stream→fragment
+  permutation pre-applied to weights, conflict-free 63-entry table gather); INT4-baseline rows
+  isolate the decode cost. RDNA4 port structure is sound (shfl + per-lane gather + WMMA).
+- Implications: our EXL3-V3 mad and CPTC are the same category with different decoders — the
+  KLD-vs-decode-cost answer is an experiment. 27B V3 card frozen (unchanged). DS41 P1 (mad
+  baseline) proceeds; CPTC is the next codebook to bring in after the mad baseline (needs the
+  same per-tensor scale/rotation plumbing; per-expert Viterbi over the 46k experts is CPU-hours).
+  Note: this is the direct answer to bakon's #266 open question 3 (codebook) — his IQR v5 u3 is
+  the HYB arm of their tables.
+- Plan (docs/research/cptc.md): (1) CPU reference implementation, (2) proxy KLD vs mad at 0.8B/
+  2B same slice, (3) if it reproduces → RDNA4 kernel + 27B KLD on the card's corpus + timing vs
+  exl3r4d, (4) global-adopt vs knapsack-option per the standing rule.
