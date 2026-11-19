@@ -156,9 +156,9 @@ negative means V3 is below V2:
 
 | size | short docs | long traces |
 |---|---|---|
-| 2.5 |  | TBD |
-| 3.0 |  | TBD |
-| 3.5 |  | TBD |
+| 2.5 |  | −43 % |
+| 3.0 |  | −30 % |
+| 3.5 |  | −38 % |
 | 4.0 |  | TBD |
 | 4.5 |  | TBD |
 | 5.0 | −20 % | −19 % |
