@@ -9078,3 +9078,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - Plan (docs/research/cptc.md): (1) CPU reference implementation, (2) proxy KLD vs mad at 0.8B/
   2B same slice, (3) if it reproduces → RDNA4 kernel + 27B KLD on the card's corpus + timing vs
   exl3r4d, (4) global-adopt vs knapsack-option per the standing rule.
+
+## 2026-11-19 — CPTC is now the priority (user): "get this working if it's real before working on dsv4.1f"
+
+- User decision: verify CPTC sequentially, not in parallel with DS4.1. C1–C4 plan in
+  local/TODO.md (reference impl → i.i.d. validation vs their tables → tensor-level 27B check vs
+  our mad → only then engine kernel + full-model KLD). DS4.1 paused at P0b.2 (box2 release
+  download finishes on its own; convert/serve queued).
