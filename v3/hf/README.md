@@ -145,10 +145,6 @@ positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0
 | 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
 | 7.0 | 0.000646 | 0.000805 | +25 % | 99.2 % | 99.2 % |
 
-V3 is 16–22 % below V2 at 5.0–6.0 (the cross-corpus board numbers — V2's were scored on different
-slices — made it look the other way). At 7.0 V2's mix keeps a real quality edge; V3's 7.0 runs
-substantially faster (integer-activation GEMMs).
-
 ### Long context
 
 V3 vs V2 at 245k context (the corpus's two long agentic traces, scored whole) and on short docs —
