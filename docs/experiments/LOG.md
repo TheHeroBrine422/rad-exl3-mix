@@ -9034,3 +9034,24 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - Setup: `/workspace/forks/radiance-ds41` = clone of his HEAD `9a963c2`, branch `ds41-exl3`;
   source transferred to box2 (md5-verified); P0b build launching on box2 (hipcc/cmake/ninja
   confirmed). Plan (phases P0b–P3) in local/TODO.md; research note docs/research/deepseek41-pr266.md.
+
+## 2026-11-19 — DS41 P0b: engine built on box2, baseline container pipeline launched
+
+- Build (box2, /data/radiance-ds41, recipe in rad-local/notes/box2.md): `radiance`,
+  `rad-convert` + all tools built (CMAKE_PREFIX_PATH=/opt/rocm 7.16 + CMAKE_HIP_COMPILER=
+  amdclang-24; the PATH hipcc is a python wrapper cmake 4.2 rejects). 18/1230 link failures =
+  halo_emu_* and friends (clang-as-HIP-compiler omits host runtime at link); ctest fast 71%
+  (50/175: those links + -j16 GPU contention; device_test/images_test pass standalone, HSA init
+  OK on all 4 cards, `radiance --help` clean). Not a product failure; fix the link flags when we
+  need those tests.
+- KLD harness design settled: the HF dataset's `golden/main` (411 GB, 46 parts of tokens.i32 +
+  top.bin per-position top-K logprobs from the bf16 1017 model, 100M tokens) IS the reference —
+  no bf16 container needed. KLD = engine logprobs on the part's tokens vs top.bin, per-doc
+  bootstrap as in 27B (aggscore machinery).
+- Baseline container (their daily, for the first KLD row): his `deepseek41-ud-iq1s.recipe` sources
+  the OFFICIAL 1017 release (rad-convert imports release form: F8_E8M0 scales, fp4 experts as
+  MXFP4; recipe re-encodes experts to llama.cpp blocks with unsloth's imatrix), so downloading:
+  full 1017 release (~1.05 TB, 84 files, ~4 h @ donor link) + imatrix_unsloth.gguf_file (0.79 GB)
+  — launched on box2 (dlfull.sh, log /data/ds41smoke/dlfull.log). The same release ckpt is the
+  P1 quantizer source, so this download serves both. Then: engram_tables.py + imatrix_merge.py →
+  rad-convert → TP4 serve → KLD part-0.
