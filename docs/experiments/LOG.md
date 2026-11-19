@@ -8919,3 +8919,16 @@ already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
   config for real-time switching written to /workspace/rad-local/ds8-375-providers.json (one provider
   per endpoint — the format is per-provider baseUrl). Model ids: `vram` (8010/8011), `hostemb`
   (8012/8013). Tear down: kill the four `w206/install/bin/radiance` processes; cards stay free.
+
+## 2026-11-19 — v2mid complete: all five long-trace cells filled, card final
+
+- box2 TP2 runs (4.5 cards 0,1 00:38; 4.0 cards 2,3 01:13 UTC): V2 per-doc long-trace KLDs — 4.0
+  flask 0.005205 / tqdm 0.005549, 4.5 flask 0.002924 / tqdm 0.003046. Geomean per-size deltas:
+  **4.0 −29 %, 4.5 −27 %** (V3 below, same direction as every other size).
+- Card long-context table now complete: 2.5 −43 / 3.0 −30 / 3.5 −38 / 4.0 −29 / 4.5 −27 / 5.0 −19 /
+  5.5 −22 / 6.0 −7 / 7.0 +26 %. V3 below at 8 of 9 sizes, V2's edge only at 7.0 (disclosed; V3's 7.0
+  is the fast one). Final card version uploaded to the HF repo (README at root).
+- ds8 practice endpoints (8010–8013, 3.75 bpw, 128k) now under the user's BetterBench (quick+prefill,
+  120k): Phase A sequential over all six endpoints (ours ×4 + IQR-V4 iq4r 8014 + iq3r-l 8015, the
+  latter on download), then Phase B all-parallel; driver /data/q27/bench375/driver.sh, results
+  bench375/runs/. IQR endpoints run on the w173/rad10 engine (TP1-only there; IQR files served fine).
