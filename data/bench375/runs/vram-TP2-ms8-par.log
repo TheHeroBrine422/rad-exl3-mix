@@ -1,0 +1,96 @@
+BetterBench 0.6.1 · corpus v1.0 · 29 prompts in 8 categories
+phases: decode, prefill, concurrency
+1 warmup + 5 measured passes per category  (quick mode — smoke check, not a publishable result)
+model max context: 120000 tokens
+output: /data/q27/bench375/runs/vram-TP2-ms8-par.json
+[single] chat: warmup 1 + 5 runs
+[single] code: warmup 1 + 5 runs
+[single] file_edit: warmup 1 + 5 runs
+[single] json: warmup 1 + 5 runs
+[single] math: warmup 1 + 5 runs
+[single] prose: warmup 1 + 5 runs
+[single] reasoning: warmup 1 + 5 runs
+[single] summarization: warmup 1 + 5 runs
+[prefill] depth ~2000 tok: warmup 2 + 8
+[prefill] depth ~8000 tok: warmup 2 + 8
+[prefill] depth ~16000 tok: warmup 2 + 8
+[prefill] depth ~32000 tok: warmup 2 + 8
+[prefill] depth ~64000 tok: warmup 2 + 8
+[concurrency] level 1: 48 requests
+[concurrency] level 2: 48 requests
+[concurrency] level 4: 48 requests
+[concurrency] level 8: 48 requests
+
+wrote /data/q27/bench375/runs/vram-TP2-ms8-par.json
+# BetterBench report
+
+- **endpoint**: `http://127.0.0.1:8011/v1`  ·  **model**: `vram`  ·  **host**: gpu-sandbox
+- **corpus**: v1.0  ·  **sampling**: temp 0.7  ·  **passes/cat**: 5  ·  prefix-cache: cold (nonce)
+- **gpu**: amd ['card5,N/A,0x7551,Advanced Micro Devices Inc. [AMD/ATI],G2872200,0x2444,0xc1,7,34381,gfx1201', 'card6,N/A,0x7551,Advanced Micro Devices Inc. [AMD/ATI],G2872200,0x2444,0xc1,4,8378,gfx1201', 'card7,N/A,0x7551,Advanced Micro Devices Inc. [AMD/ATI],G2872200,0x2444,0xc1,5,46462,gfx1201']
+
+## Single-stream (batch = 1)
+
+This server packs several tokens into one stream update (speculative decoding), so there is no per-token latency to report — the tokens in an update arrive together. **update p50/p99** is the measured wall-clock gap between updates (p99 is the stutter); **tok/update** is how many tokens land per update. TTFT in ms; decode = per-run tok/s.
+
+| category | passes | TTFT p50 | TTFT p99 | update p50 (ms) | update p99 (ms) | tok/update | decode t/s (med) | ±IQR | CV |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| chat | 5 | 96.0 | 97.5† | 24.2 | 24.8† | 2.38 | 100.3 | 39.6 | 19.7% |
+| code | 5 | 74.7 | 76.6† | 24.4 | 26.2 | 3.44 | 171.6 | 58.1 | 27.4% |
+| file_edit | 5 | 98.0 | 123.1† | 24.9 | 26.6† | 4.31 | 167.8 | 34.2 | 23.1% |
+| json | 5 | 97.4 | 99.5† | 25.0 | 26.5† | 5.22 | 211.5 | 6.9 | 8.0% |
+| math | 5 | 76.0 | 99.2† | 25.0 | 27.2† | 4.65 | 203.6 | 2.2 | 9.7% |
+| prose | 5 | 76.4 | 95.5† | 25.0 | 27.1 | 2.41 | 97.8 | 29.6 | 25.0% |
+| reasoning | 5 | 76.6 | 100.1† | 25.0 | 27.2 | 2.87 | 117.5 | 22.5 | 25.7% |
+| summarization | 5 | 100.3 | 127.0† | 25.5 | 28.5† | 4.98 | 203.6 | 24.3 | 12.1% |
+
+**Combined (weighted code:0.3, reasoning:0.2, prose:0.15, json:0.15, file_edit:0.1, summarization:0.1)** — decode t/s median ≈ **158.5**, update p99 ≈ **26.8 ms**, TTFT p50 ≈ **84 ms**
+
+*40 of 40 runs streamed several tokens per update (`chunk_token_mismatch`). Per-token ITL is not reported for them — see METHODOLOGY.md §chunk-token.*
+
+## Reasoning / answer split
+
+A per-token rate cannot see how much of a run was spent thinking. Two configs with identical decode t/s can take very different times to reach an answer. **TTFA** is time to the first *answer* token — the wait a reader actually feels.
+
+| category | runs w/ split | reasoning share (est) | TTFA p50 (ms) | never reached answer |
+|---|--:|--:|--:|--:|
+| chat | 5/5 | 93% | — | 3/5 |
+| code | 5/5 | 84% | — | 1/5 |
+| file_edit | 5/5 | 93% | — | 2/5 |
+| json | 5/5 | 64% | — | 1/5 |
+| math | 5/5 | 65% | — | 2/5 |
+| prose | 5/5 | 99% | — | 4/5 |
+| reasoning | 5/5 | 98% | — | 4/5 |
+| summarization | 5/5 | 65% | — | 2/5 |
+
+*A `—` means too few runs reached an answer to say (fewer than 5, or under half the passes). Runs cut off before any answer began are counted, not folded in: crediting their output as an answer would flatter the result. Token counts are apportioned by character count, so the share is an estimate — punctuation-dense answers (json, code) are under-counted.*
+
+*Stopped at `max_tokens`: **28/40** runs (70%). On a thinking model a truncated run measures the thinking phase, not a complete answer.*
+
+## Concurrency sweep
+
+| level | ok/req | aggregate t/s | TTFT p50 | TTFT p99 | per-req decode t/s (med) |
+|--:|--:|--:|--:|--:|--:|
+| 1 | 48/48 | 132.6 | 78.7 | 130.7† | 167.3 |
+| 2 | 48/48 | 203.3 | 112.7 | 167.6† | 141.6 |
+| 4 | 48/48 | 247.6 | 160.0 | 310.1† | 82.3 |
+| 8 | 48/48 | 364.0 | 232.3 | 345.1† | 68.9 |
+
+## Prompt processing (prefill) sweep
+
+Prefill throughput = prompt tokens ÷ TTFT, at increasing input depth (tiny decode, cold prefix cache). PP t/s columns: 1% low / median / 99% high.
+
+| target depth | prompt tokens (med) | TTFT p50 (ms) | PP t/s 1% low | PP t/s median | PP t/s 99% high |
+|--:|--:|--:|--:|--:|--:|
+| 2000 | 1562 | 402.3 | 3860.4† | 3879.2 | 4008.7† |
+| 8000 | 5963 | 1491.0 | 3968.7† | 3992.1 | 4017.8† |
+| 16000 | 11832 | 3053.1 | 3863.4† | 3884.4 | 3898.0† |
+| 32000 | 23563 | 6436.8 | 3653.5† | 3669.6 | 3691.4† |
+| 64000 | 47109 | 14085.4 | 3332.9† | 3346.3 | 3353.7† |
+
+---
+*† this percentile rests on fewer samples than `n · tail ≥ 5` requires — a p99 needs 500 observations, and 20 passes give 20. Read it as "roughly the worst observed", not as a percentile. The full list is under `sample_gate` in `results.json`.*
+
+*Generated by BetterBench. See METHODOLOGY.md §sample-size.*
+
+wrote /data/q27/bench375/runs/vram-TP2-ms8-par.html  —  open it in a browser for the charted report:
+    file:///data/q27/bench375/runs/vram-TP2-ms8-par.html

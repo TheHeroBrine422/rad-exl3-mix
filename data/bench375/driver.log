@@ -1,0 +1,19 @@
+===== PHASE A sequential Thu Nov 19 01:42:14 UTC 2026 =====
+done exl3-v3-vram-TP1-3.75-bpw rc=0 01:49:14
+done exl3-v3-vram-TP2-3.75-bpw rc=0 01:53:30
+done exl3-v3-hostemb-TP1-3.75-bpw rc=0 02:01:08
+done exl3-v3-hostemb-TP2-3.75-bpw rc=0 02:05:18
+done iqr4-4r-TP1 rc=0 02:12:19
+done iqr4-3r-l-TP1 rc=0 02:19:14
+===== PHASE B parallel Thu Nov 19 02:19:14 UTC 2026 =====
+done exl3-v3-hostemb-TP2-3.75-bpw-par rc=0 02:23:28
+done exl3-v3-vram-TP2-3.75-bpw-par rc=0 02:23:29
+done iqr4-4r-TP1-par rc=0 02:26:18
+done exl3-v3-vram-TP1-3.75-bpw-par rc=0 02:26:20
+done iqr4-3r-l-TP1-par rc=0 02:26:25
+done exl3-v3-hostemb-TP1-3.75-bpw-par rc=0 02:26:48
+===== ALL DONE Thu Nov 19 02:26:48 UTC 2026 =====
+===== FULL-PAR DONE Thu Nov 19 02:48:15 UTC 2026 =====
+===== ms8 run A done; stopping others for solo ===== 03:02:46
+ms8 solo done rc=0 03:18:16
+===== ms8 all-parallel round ===== 03:19:16
