@@ -145,6 +145,10 @@ positions, gen mask) with each release's own engine (V2: radiance 1.x; V3: 2.1.0
 | 6.0 | 0.00134 | 0.00113 | **−16 %** | 98.9 % | 99.0 % |
 | 7.0 | 0.000646 | 0.000805 | +25 % | 99.2 % | 99.2 % |
 
+Below 5.0 bpw, EXL3-V2 is not a relevant reference: on the public leaderboard IQR-V4 beats it at every
+size in that range (e.g. IQ4R-V4: 0.00444 KLD at 4.47 bpw, against V2-4.5's 0.00480 at 4.50 bpw).
+EXL3-V3 against IQR-V4 across the full range is in the table above.
+
 ### Long context
 
 V3 vs V2 at 245k context (the corpus's two long agentic traces, scored whole) and on short docs —
