@@ -8901,3 +8901,21 @@ already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
   correct names (2.5, 4.5 verified byte-exact vs the Hub), real 3.0/4.0 re-downloaded, launches now
   size-gated (v2wait30.sh waits for 10,083,115,008 B; v2mid3.sh settles 10 s after file appearance). 2.5
   (correct file) and the real-3.0 run in flight; 3.5/4.0/4.5 queued. ETA ~23:40 UTC (5:40 PM CST).
+
+## 2026-11-19 — 3.75 bpw practice endpoints on ds8 (user request: TP1 + TP2 × vram + host-emb, 128k ctx)
+
+- Four OpenAI-compatible servers on ds8 (10.29.4.100), all 3.75 bpw (vram file 15,188,934,656 B /
+  host-emb file 17,254,199,296 B, downloaded byte-exact from the HF release repo), bf16 KV,
+  max-model-len 131072, cards 0 / 1,2 / 3 / 4,5, ports **8010 / 8011 / 8012 / 8013**. All four
+  verified with a test prompt ("ready", radiance-2.1.0 fingerprint).
+- **Engine finding:** the w173/rad10 build (radiance 1.17.0) refuses TP2 for our containers —
+  `qwen35_exl3: blk.0.ssm_ab (a | b as one trellis weight) serves at tensor parallelism 1 only`
+  (the SSM record's TP fix landed in w206, commit line "the ssm_qkv record keeps its three row parts
+  at TP…"). All four now run on the **w206 install** (/data/q27/w206, radiance 2.1.0, LD_LIBRARY_PATH
+  needs /data/q27/w204/ffmpeg + /opt/rocm-10.1/lib), which is the 9a20d9be line the card ships.
+  The 2.1.0 engine takes YAML config (`radiance --config FILE`), not the old flat CLI flags; configs
+  in /data/q27/serve375/cfg-801{0,1,2,3}.yaml, launcher notes in serve375/launch4.sh.
+- Reachable from the user's machine on the donor's VPN (http://10.29.4.100:801x/v1); provider
+  config for real-time switching written to /workspace/rad-local/ds8-375-providers.json (one provider
+  per endpoint — the format is per-provider baseUrl). Model ids: `vram` (8010/8011), `hostemb`
+  (8012/8013). Tear down: kill the four `w206/install/bin/radiance` processes; cards stay free.
