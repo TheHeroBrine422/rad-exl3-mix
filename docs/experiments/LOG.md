@@ -8948,3 +8948,27 @@ already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
   interference ≤ ±3 % (see the 8:45 PM report). Phase C (full quick, all-parallel) in flight;
   finished TP2 runs so far: single-stream decode ~172-176 tok/s (vram-TP2) / 166-180 (hostemb-TP2),
   flat across concurrency 1-8. Phase D (sequential full on vram-TP1 + iq3r-l) auto-starts after C.
+
+## 2026-11-19 — BetterBench on ds8 (3.75 bpw practice endpoints + IQR-V4), final numbers
+
+User-facing bench (BetterBench, quick mode, 120k ctx cap, ds8 8× R9700S, w206/9a20d9be engine for
+ours, w173/rad10 for IQR; first rounds at --max-num-seqs 1, then ms8 after the user caught the
+flat concurrency scaling — it was the launch setting, requests were queueing, not batching).
+- **Prefill (pp_tps, med, seq vs all-parallel):** interference ≤ ±3 % at every depth 2k-64k on all
+  six endpoints — parallel serving costs nothing for prefill. vram-TP1 2544@2k → 2062@64k;
+  vram-TP2 4062 → 3391; hostemb ≈ vram (TP2 hostemb +2 %); IQR iq4r 2575 → 2011, iq3r-l 2674 →
+  2034. We are even with IQR on prefill (±5 %), both ~2× EXL3-V2 (board GEMM µs ~4000 vs ~8000).
+- **Decode (aggregate tok/s, med, ms8 all-parallel round):** vram-TP1 86/143/164/256, vram-TP2
+  133/209/242/371, hostemb-TP1 88/144/163/235, hostemb-TP2 130/214/251/379, IQR iq4r 93/157/230/304,
+  IQR iq3r-l 97/170/227/293 (conc 1/2/4/8). At batch 8 the step time ~doubles vs batch 1 (weight
+  traffic is batch-invariant) → our int8-mad path flips compute-bound around batch 4-8; IQR (also
+  int8, exl3dense) flattens the same way, so it is the int8-format ceiling on RDNA4, not our
+  kernel specifically. At conc 8 we beat IQR-TP1 (371-379 vs 293-304). User's reference: MXFP4
+  (5 bpw, dequants to FP8 natively on RDNA4) ~600 at conc 8 — stays memory-bound because the FP8
+  pipe is ~2× FP16 rate and MX dequant is nearly free. Single-stream we are ~86-133 tok/s
+  (DFlash2 ~2.4 tokens/step on).
+- Solo-vs-parallel decode A/B (vram-TP2): confounded by thermal drift (cards power-capped 210 W,
+  solo ran second, hot): solo conc1 138.8 vs parallel 167.3 — the "interference" is inside
+  run-to-run noise; no clean parallel penalty found.
+- Raw: /data/q27/bench375/runs/ (JSON + per-run HTML). Endpoints 8010-8015 left up for the user
+  (ms8 now). User verdict: good enough.
