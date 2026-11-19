@@ -156,19 +156,19 @@ negative means V3 is below V2:
 
 | size | short docs | long traces |
 |---|---|---|
-| 2.5 |  | −43 % |
-| 3.0 |  | −30 % |
-| 3.5 |  | −38 % |
-| 4.0 |  | −29 % |
-| 4.5 |  | −27 % |
+| 2.5 | −31 % | −43 % |
+| 3.0 | −29 % | −30 % |
+| 3.5 | −26 % | −38 % |
+| 4.0 | −25 % | −29 % |
+| 4.5 | −21 % | −27 % |
 | 5.0 | −20 % | −19 % |
 | 5.5 | −22 % | −22 % |
 | 6.0 | −16 % | −7 % |
 | 7.0 | +25 % | +26 % |
 
-The long-trace column tracks the short-doc column at every size — no long-context degradation. V2 was
-scored on the public corpus only at 5.0–7.0 (hence the blank short-doc cells); both columns are the same
-596-doc golden, V2's published files on the V2-era engine.
+The long-trace column tracks the short-doc column at every size — no long-context degradation. Short docs
+is the 594-doc public subset (the two 245k traces excluded); long traces are those traces scored whole.
+Both columns are V2's published files on the V2-era engine against the same public golden.
 
 ## How these quants were made
 

@@ -8932,3 +8932,19 @@ already spent; 4.0/4.5 TP2 reruns ~30 min on box2 cards 2,3.
   120k): Phase A sequential over all six endpoints (ours ×4 + IQR-V4 iq4r 8014 + iq3r-l 8015, the
   latter on download), then Phase B all-parallel; driver /data/q27/bench375/driver.sh, results
   bench375/runs/. IQR endpoints run on the w173/rad10 engine (TP1-only there; IQR files served fine).
+
+## 2026-11-19 — card long-context table complete (short-doc V2 2.5–4.5 scored)
+
+- V2 published files 2.5–4.5 on the public-short golden (v2pub.sh, box2 cards 0-2, ~17 min each,
+  02:19-02:37 UTC): 2.5 0.066466 / 3.0 0.033293 / 3.5 0.017354 / 4.0 0.009688 / 4.5 0.005376
+  (top-1 0.8997/0.9329/0.9526/0.9656/0.9753). V3's 594-doc reads recomputed from the #208 per-doc
+  rows (full public minus docs 435/531; for 4.5 the row was already the public-short scoring —
+  verified against the known 0.004223): 2.5 0.045837 / 3.0 0.023735 / 3.5 0.012810 / 4.0 0.007221
+  / 4.5 0.004223.
+- Card cells (V3/V2 − 1): **2.5 −31 %, 3.0 −29 %, 3.5 −26 %, 4.0 −25 %, 4.5 −21 %** — same sign and
+  same story as the long-trace column at every size (−43/−30/−38/−29/−27 %). The long-context table
+  is now fully filled (9/9 × 2 columns); footnote updated. Card uploaded to HF.
+- BetterBench (ds8): Phase A (prefill-only, sequential) + Phase B (all-parallel) done — prefill
+  interference ≤ ±3 % (see the 8:45 PM report). Phase C (full quick, all-parallel) in flight;
+  finished TP2 runs so far: single-stream decode ~172-176 tok/s (vram-TP2) / 166-180 (hostemb-TP2),
+  flat across concurrency 1-8. Phase D (sequential full on vram-TP1 + iq3r-l) auto-starts after C.
