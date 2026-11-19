@@ -9018,3 +9018,19 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - Overnight box2 smoke (ds41pipe on box2 alone): first runs failed on a filename bug (6-digit
   model-000002-... pattern); fixed (model-{n:05d}) and relaunched — 6 shards (~126 GB) downloading,
   smoke --no-engram on card 0 after; result expected ~8:40 AM UTC in /data/ds41smoke/run.log.
+
+## 2026-11-19 — DSV4.1-Flash-1017 EXL3-V3: user decisions + P0 (engine base) started
+
+- User decisions (after the PR read): (1) bakon has OK'd reuse of his work; no HE/GSM harness —
+  test KLD vs bf16 like the 27B card. (2) Route straight to EXL3-V3 (mad), no IQR. (3) Base on his
+  branch; separate local branch + a `deepseek_v41_exl3` arch if arch work is needed.
+- ds41pipe box2 smoke: **PASS** (08:06Z) — layers 0-3 of 1017 on card 0, ~4.4k tok/s, all finite
+  (earlier failures were my 6-digit shard-name pattern; fixed). Pipeline is box2-viable for
+  future re-collections.
+- Scoping discovery: his branch already runs DS41 EXL3 experts — in-tree `exl3r4d` kernels,
+  `moe_exl3_gate_up`/`moe_exl3_down` units, mikoskinen's 2.25 bpw container (turboderp V1-style
+  experts) served TP4 56.6 tok/s on 11-15. Gaps: in-tree EXL3 quantizer is ABI 40 (not built in the
+  ABI-41 tree) and nothing is calibrated — our G1/G3 dataset is the asset.
+- Setup: `/workspace/forks/radiance-ds41` = clone of his HEAD `9a963c2`, branch `ds41-exl3`;
+  source transferred to box2 (md5-verified); P0b build launching on box2 (hipcc/cmake/ninja
+  confirmed). Plan (phases P0b–P3) in local/TODO.md; research note docs/research/deepseek41-pr266.md.
