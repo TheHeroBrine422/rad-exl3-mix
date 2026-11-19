@@ -9085,3 +9085,26 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   local/TODO.md (reference impl → i.i.d. validation vs their tables → tensor-level 27B check vs
   our mad → only then engine kernel + full-model KLD). DS4.1 paused at P0b.2 (box2 release
   download finishes on its own; convert/serve queued).
+
+## 2026-11-19 — CPTC C1 done: reference impl + Prop 1 PASS; C2 full-protocol run on colo
+
+- C1: `cptc/cptc.py` (new dir) — CPTC CPU reference. Key fact: CPTC's tail-biting bitshift
+  trellis is bit-identical to the workspace EXL3 Viterbi (v3/e3/viterbi.c) run on the REVERSED
+  value sequence with cb[s] = the 65536-entry precomputed decode table — no new encoder needed
+  (only a `_st` state-output variant added to viterbi.c for the bit-exact Algorithm 2 cross-check).
+- **Proposition 1 PASSES for K=1..6** (0/16384, f64): scalar formats (any 2^K codebook) are
+  reproduced exactly through the full pipeline — validates decode-table construction, the reversal
+  equivalence, and the tail-biting Viterbi plumbing.
+- f32 finding: the production f32 Viterbi flips near-tie code choices in the fully-separable
+  Prop-1 degenerate case (1/16384 positions; f32 accumulation ulp ~1e-5 vs ~1e-6 gaps). Harmless
+  for real trellises (path coupling); logged for future reference.
+- Protocol notes/assumptions (README): signed 64-entry lower-half table (center cell 63 = 0 by
+  exact mirror fold), E2M5 grid per Sec 5.1, Table 6 L=16 coefficients, damping 0.5 (NOT stated
+  in the paper), fresh 2^22 samples/round, 2^18 held-out, fit ntry=1 / eval ntry=16.
+- Table-gen pipeline verified end-to-end (coarse K=4: Keff 3.39 vs scalar 3.36 — underfit as
+  expected; machinery active).
+- C2 launched on colo (6 K jobs @ 8 threads, ~90 min): full-protocol tables + Keff vs Table 2
+  targets (0.950/1.948/2.943/3.934/4.913/5.802; pass bar ±0.005). Results in /data/work/cptc/.
+- DS4.1 (paused per user): box2 release download FINISHED 11:53 UTC and verified — 48 shards,
+  510.3 GB exactly matching the HF manifest (my ~1 TB estimate was wrong) + imatrix. P0b.2
+  convert/serve input ready, queued behind CPTC.

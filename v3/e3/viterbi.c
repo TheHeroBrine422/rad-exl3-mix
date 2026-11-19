@@ -148,3 +148,28 @@ void viterbi_tiles_tb(const float* x, float* out, int ntiles, const float* cb, i
     free(cost); free(ncost); free(gmin); free(bj); free(bp);
   }
 }
+
+/* Same as viterbi_tiles_tb but also writes the 16-bit state after each position's shift
+ * (st: [ntiles][256]) -- for decode-side verification (CPTC reference, cptc/). */
+void viterbi_tiles_tb_st(const float* x, float* out, uint16_t* st_out, int ntiles, const float* cb, int K, int ntry) {
+  static const int rolls[16] = {128, 64, 192, 32, 96, 160, 224, 16, 48, 80, 112, 144, 176, 208, 240, 0};
+#pragma omp parallel
+  {
+    const int NS = 65536, NG = NS >> K;
+    float* cost = malloc(sizeof(float) * NS); float* ncost = malloc(sizeof(float) * NS);
+    float* gmin = malloc(sizeof(float) * NG); uint8_t* bj = malloc(NG); uint8_t* bp = malloc((size_t)256 * NG);
+    uint16_t st[256], best[256];
+#pragma omp for schedule(dynamic, 1)
+    for (int t = 0; t < ntiles; t++) {
+      const float* xt = x + (size_t)t * 256; float bm = FLT_MAX;
+      for (int r = 0; r < ntry && r < 16; r++) {
+        tb_run(xt, cb, K, rolls[r], -1, cost, ncost, gmin, bj, bp, st);
+        const int c = st[(256 - rolls[r]) & 255] >> K;
+        const float m = tb_run(xt, cb, K, 0, c, cost, ncost, gmin, bj, bp, st);
+        if (m < bm) { bm = m; memcpy(best, st, sizeof st); }
+      }
+      for (int i = 0; i < 256; i++) { out[(size_t)t * 256 + i] = cb[best[i]]; st_out[(size_t)t * 256 + i] = best[i]; }
+    }
+    free(cost); free(ncost); free(gmin); free(bj); free(bp);
+  }
+}
