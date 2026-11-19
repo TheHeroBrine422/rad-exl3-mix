@@ -11,6 +11,7 @@
 | [`design/lsa-residency.md`](design/lsa-residency.md) | D-LSA on radiance's window residency (#412): mapping, bridge ops, computed VRAM / page-in costs | built on branch `lsa-residency`, host / emulator tests only (2026-11-07) |
 | [`experiments/`](experiments/) | every experiment and measured piece of work: `INDEX.md` (numbered, status), `LOG.md` (append-only entries), `BACKLOG.md`; conventions in its README | current |
 | [`research/`](research/) | literature briefs: PTQ state of the art, mix allocation, RCO, NVIDIA Model Optimizer overlap (`modelopt.md`, 2026-11-03), IQR-V4 (`iqr-v4.md`, 2026-11-04), MACaQ (`macaq.md`, 2026-11-11), the ideas passes (`ideas-runs/`) | snapshots (2026-10-29/30), each with a status header saying what became of its recommendations |
+  - `research/deepseek41-pr266.md` — bakon's DeepSeek-V4.1 radiance PR #266: what exists in the WIP branch, IQR's 1017 ladder result, and what our calibration dataset provides (2026-11-19)
 | [`ideas/`](ideas/) | LLM-generated research-idea passes (lenses + a ranked merge), one folder per pass, with the paper lists | **untested**; status of anything tried is in `experiments/` |
 
 Related code (2026-11-07): `pipeline/` (the production quantizer pipeline, package `rxq`, merged in from its side repo; its

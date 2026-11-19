@@ -8994,3 +8994,27 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - An unattributable stale subagent notification (old #208 watcher, missing receipt, KLD values
   1.2565/1.1134 inconsistent with the published 2.75/3.0 results) arrived mid-session: no action,
   logged here; #208 data is in the repo and on the card.
+
+## 2026-11-19 — bakon's radiance PR #266 (deepseek41) changes the DSV4.1 plan (research read)
+
+- Read bakon/radiance `deepseek41-wip` @ 9a963c2 (rebased on 1.17.0, pushed 11-18) + the PR
+  conversation (user shared it). It already contains: arch/deepseek41 (CSA2 sparse attention,
+  two-level indexer, mHC, router, Engram planes, DSpark drafter, TP3/TP4 measured on 4x R9700,
+  fused decode chains, file-stager that reads only routed experts), libr4d DS41 kernels, lossless
+  GGUF block import, and an IQR-MoE converter + routing for 1017 (converter + v5 recipe NOT in the
+  public branch — offered for sharing). The "engine arch is the long pole" note in
+  MORNING-2026-11-19.md is superseded: the arch exists in WIP form.
+- IQR's own DS41-1017 result: pure-IQR u3 (3.03 bpw, 307.7 GiB) is 6 HumanEval@164 tasks behind
+  the 2.1 bpw Unsloth UD-IQ1_S daily (251 GiB) and ~40% slower in decode; GSM fine. Their blockers
+  are exactly our data: no per-expert Hessians (one shared Gram/layer; per-expert tap 8.5x slower,
+  stopped) and no dense-linear calibration (uncalibrated GPTQ fallback). Their open questions
+  (per-expert importance vectors = diagonals; dense Grams) are answered by our published dataset
+  (G3 + G1) with no new GPU work.
+- Plan shape (full note docs/research/deepseek41-pr266.md): (1) derive per-expert importance vectors
+  + note the dense Grams already exist (CPU, from the HF dataset); (2) route (i) calibrated
+  IQR-layout quant via his converter (directly comparable to his v5) vs (ii) port the mad codebook
+  to DS41 (bigger; our 27B edge over IQR-V4 was 13–21% KLD); (3) user decides: engage bakon, route,
+  engine base.
+- Overnight box2 smoke (ds41pipe on box2 alone): first runs failed on a filename bug (6-digit
+  model-000002-... pattern); fixed (model-{n:05d}) and relaunched — 6 shards (~126 GB) downloading,
+  smoke --no-engram on card 0 after; result expected ~8:40 AM UTC in /data/ds41smoke/run.log.
