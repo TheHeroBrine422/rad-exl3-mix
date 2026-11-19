@@ -752,3 +752,10 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
 - **EXL3 (mad trellis) on the DFlash2 drafter** (user 11-18, later / post-release): quantize the drafter's linears with our
   exl3i mad codebook instead of IQR's MXFP4 (and its u2 draft head); measure acceptance (tokens/step), decode speed and drafter
   bytes vs the MXFP4 drafter. Needs the stock DFlash2 block to accept exl3i linears (today: fp8a8 / mxfp4a8 only).
+
+- **Decode kernel: high-batch int8 scaling (post-freeze, user 2026-11-19).** BetterBench (ds8, 3.75 bpw,
+  ms8): aggregate decode scales 2.7× conc1→8 (371 tok/s, TP2) — the step time doubles at 8× the GEMM work,
+  i.e. the int8-mad path flips compute-bound around batch 4-8; IQR (int8, exl3dense) flattens identically,
+  while MXFP4→native-FP8 does ~600 at conc8 (stays memory-bound). User's call: kernel optimization, not a
+  format issue; defer (and the lead model at the time was not strong enough for it — Opus/Fable-tier work
+  when it comes up). Evidence: LOG 2026-11-19 BetterBench entry, /data/q27/bench375/runs/.
