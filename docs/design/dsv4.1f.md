@@ -110,3 +110,8 @@ Build after the frontier picks the codebook.
 - box2 host→GPU bandwidth with all 4 cards copying at once; host memory bandwidth.
 - Per-layer decode timeline of an offloaded container (transfer / wait / compute).
 - w208's ALU table; the quality table on real experts; A4 activation error on the expert-input dumps.
+
+## Final note (user, 11-20)
+
+Once everything else is well optimized: try the **Engram projections at K4–7** (they are 2.4 % of decode reads at native FP8, 0.32 GB
+per token — the largest of the parts kept native).
