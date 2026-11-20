@@ -4,6 +4,6 @@
 cd /data/work/cptcv/v3/e3; mkdir -p ../../logs
 export OMP_WAIT_POLICY=passive E3_ROWSEED=1 OMP_NUM_THREADS=${T:-8} E3_CKPT=/data/models/qwen38-27b-bf16 E3_HESS=/data/challenge/hessians/calib
 E3_TB=16 E3_V2=0 python3 -u trellis.py 2 ssm_z mul1 2,3,4 256 > ../../logs/vo-legacy-tb16.jsonl 2>&1
-E3_TB=16 E3_V2=1 python3 -u trellis.py 2 ssm_z mul1 2,3,4 256 > ../../logs/vo-v2-tb16.jsonl 2>&1
-E3_TB=1  E3_V2=1 python3 -u trellis.py 2 ssm_z mul1,mad 2,3,4 256 > ../../logs/vo-v2-tb1.jsonl 2>&1
+E3_TB=16 E3_V2=3 python3 -u trellis.py 2 ssm_z mul1 2,3,4 256 > ../../logs/vo-v3-tb16.jsonl 2>&1
+E3_TB=1  E3_V2=3 python3 -u trellis.py 2 ssm_z mul1,mad 2,3,4 256 > ../../logs/vo-v3-tb1.jsonl 2>&1
 echo "VERIFY DONE $(date -u +%H:%M)" >> ../../logs/c2.done

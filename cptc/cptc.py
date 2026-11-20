@@ -34,7 +34,8 @@ from statistics import NormalDist
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 E3 = os.environ.get("CPTC_LIBDIR", os.path.join(os.path.dirname(HERE), "v3", "e3"))
-LIB = ctypes.CDLL(os.path.join(E3, "libviterbi.so"))
+# CPTC_VIT3=1: viterbi3.c (fused search, bit-identical to viterbi.c's tail-biting functions, 1.6-5x faster at K >= 2)
+LIB = ctypes.CDLL(os.path.join(E3, "libviterbi3.so" if os.environ.get("CPTC_VIT3") == "1" else "libviterbi.so"))
 LIBD = ctypes.CDLL(os.path.join(E3, "libviterbi_d.so"))  # double-precision build (exactness checks)
 LIB.viterbi_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p,
                                  ctypes.c_int, ctypes.c_int]

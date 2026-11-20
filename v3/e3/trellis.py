@@ -41,7 +41,10 @@ LIB.viterbi_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
 # still use the legacy lib (viterbi2 has no pat variant yet).
 V2 = int(os.environ.get("E3_V2", 0))
 LIBV2 = None
-if V2:
+if V2 == 3:   # viterbi3.c: the legacy tail-biting interface, fused search, bit-identical to libviterbi.so (V3 note in the .c)
+    LIB3 = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libviterbi3.so"))
+    LIB3.viterbi_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
+elif V2:
     LIBV2 = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                      "libviterbi2_avx2.so" if V2 == 1 else "libviterbi2.so"))
     LIBV2.viterbi2_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
@@ -87,7 +90,9 @@ def vit(x, cb, K):
     x = np.ascontiguousarray(x, dtype=np.float32); out = np.empty_like(x)
     TB = int(os.environ.get("E3_TB", 0))     # >0: tail-biting search (EXL3's real constraint), TB wrap candidates
     if TB and float(K).is_integer():
-        if V2:
+        if V2 == 3:
+            LIB3.viterbi_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), TB)
+        elif V2:
             LIBV2.viterbi2_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), 1, TB)
         else:
             LIB.viterbi_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), TB)
