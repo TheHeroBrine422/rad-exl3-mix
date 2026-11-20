@@ -89,6 +89,14 @@ only; no reflink filesystem needed — box2's `/data` is ext4). Shape (proposal)
 - swapping a mix = a new manifest (seconds to write); a search eval needs no pack step (the 27B search's mix → pack cost);
 - release: either assemble real containers once per size (rad-convert from a manifest = a copy), or publish the store + manifests
   (users download only one size's records; sizes share records). Upstreamable as a generic loader feature.
+**User-built sizes (user, 11-20; idea, later):** publish the record store + the fitted sensitivity model (per-tensor error curves,
+KLD calibration, speed tables) + a small solver (`rad-mix`-style): the user gives a budget (VRAM / host RAM, context length,
+embedding in VRAM or host, decode vs prefill weight, cards) and gets a manifest; they download only its records. Ends the
+variant explosion (e.g. host-embedding twins, per-GPU sizes). Notes: placement choices (embedding host / VRAM) are manifest flags,
+not records; a custom point between published sizes is mostly covered by records the neighbours already use (picks are monotone
+in the budget), anything else needs records we never made (offer only what is in the store); quality is the fit's *prediction*
+(state it with an interval) — our searched sizes beat the plain knapsack, so custom mixes start from the nearest searched mix and
+move by the fit's deltas; speed tables exist only for measured cards.
 Stage: after the quantizer stages 1–3, before the DS4.1-F run. Open: what radiance's loader assumes about one file (mmap ranges,
 TP shard placement, the decision / plan hashes), and how the content hash is defined (V3 used a vid per weight).
 
