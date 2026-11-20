@@ -9465,3 +9465,15 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   the snap returns the global table. After the RHT a real tensor at unit RMS is Gaussian enough that the global table is already
   its own optimum; per-tensor tables only matter if the storage grid is finer or the objective changes (QAD on KLD). One tensor,
   one K: recheck on DS experts (MXFP4 source) before closing.
+- 11-20 ~5:55 PM CST: **w208 codebook ALU bench (Fable low) — work done, report missing** (the agent hit the 5-hour quota at
+  4:37 PM CST right after writing `v3/bench/cb208/RESULTS.md`, committed ad404f61; no `out/w208.md`). Lead read RESULTS.md:
+  expert GEMV (gate_up 5120→4608 + down 2304→5120), factor vs a shift-and-mask base, M = 1, w8a8, dad1 9070 XT (box2 R9700
+  same ranking): **mad 1.41 / 1.24 / 1.06 / 1.04× at K1 / 2 / 3 / 4**; lc1 (one 24-bit multiply + 64 B table) 1.29 / 1.12 / 1.08 /
+  1.05 (cheapest; quality not measured yet); **CPTC cptc5 / cptc6-stored-full 1.77 / 1.58 / 1.40 / 1.10** (+0.2–0.35 over mad at
+  K ≤ 3; per weight 5 ALU + a load vs mad's 3); cptcmin (no table) 1.71 / 1.48 / 1.32 / 1.07; mul1_i8 / QTIP 1MAD ~2.1× at K1;
+  state tables NOT cheap here (cptcst10 1.71×, 4 KB 2.29×: load cost grows with table size); Eq. 3 shift-accumulate no help;
+  per-weight mirror fold costs 5.5 instr (expand 64 → 127 entries at load instead); codegen trap: products must stay
+  `v_mul_u32_u24` (else 1.22–1.33× slower). Base is ALU-bound at K ≤ 2, bandwidth-bound at K4; M = 8 dilutes (mad 1.23×,
+  cptc5 1.41× at K1). w4a4: same decode, cheaper base from M = 4. Under host-link offload the resident-expert ALU hides
+  (dsv4.1f.md), so CPTC's +0.2–0.35 matters only for fully resident / prefill. Next: lc1's quality (Keff) — if near CPTC it
+  is the frontier point.
