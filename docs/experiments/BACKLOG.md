@@ -778,3 +778,11 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   existing Hessians / weight samples — does the gain condition hold for a material share of tensors at
   1-2 bpp? (no new collection); (2) if yes: proxy reproduction at tensor level (C3-style, CPU), then
   model-level KLD. Needs a research brief before starting. Status: not started.
+
+- **Trainable codebook tables as a healing knob (user, 11-20).** With a table codebook (CPTC), each tensor can carry its own
+  64-entry int8 table (64 B; ≤ 8 KB allows up to ~128 tables per tensor, e.g. per row-block or per expert) and QAD / post-mix
+  healing trains the entries (codes fixed; gradient of an entry = sum over the weights using it; STE for the int8 rounding).
+  Unlike row / column scales (linear, per row or column) a table is a nonlinear per-value-magnitude correction shared across
+  the whole tensor; the full (unfolded) 63/127-entry form also allows asymmetry. Few parameters → low overfit risk. Needs
+  per-tensor table pointers in the decoder (LDS load stays the same). Not possible with mad (a hash, no table). Order: closed-form
+  H-weighted per-tensor refit first (no training), then QAD on top. Runtime: neither (same decode).
