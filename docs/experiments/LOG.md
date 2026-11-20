@@ -9143,3 +9143,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - C3 (Thor): wave 1 of 11 running ~30 min (fits + baselines); L2/L26 wave queued; results in
   /data/work/cptc/c3.jsonl. (Two "jobs died" scares were my own reading errors: pgrep without
   -f, and an ls truncated at head -20 — no files were ever lost. /data is fuse.shfs.)
+
+## 2026-11-19 — lab sizing corrected (user): Qwen fleet ~6 agents, GPU pool = donor only
+
+- User: the old ≤2-concurrent/50k Qwen cap is stale — Qwen38-27b does 4–8 concurrent
+  requests at 100–200k tokens (box KV 1.4M); **6 agents at 256k context caps** is the lab
+  fleet size, critic alongside. Agent AND critic = Qwen38-27B xhigh (free); Claude is the
+  escalation path only if Qwen produces no good ideas (config flip).
+- **iceman is out of the lab's GPU pool**: card 0 now runs Qwen38-27b for the user's LLM
+  inference (so the user keeps more inference headroom). Lab GPUs = donor compute only:
+  box2 (4× R9700) + ds8 (8× R9700S, pending forward) = 12 cards; T2 manual KLD on box2 card
+  0 + ds8 card 0.
+- Paper corpus (local/papers/corpus/, 1.7 MB) staged into agent workspaces as files; critic
+  brief adapted from local/papers/critic-brief.md.
