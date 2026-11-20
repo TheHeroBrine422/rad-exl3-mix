@@ -9233,3 +9233,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   grid is the production ladder (SPEC.md updated, Ks = ints or a/b fractions); fractional
   CPTC (bracketing integer pair vs re-searched (a0,a1) on the fractional path) is a
   candidate family — CPTC's published Table 6 pairs are integer-K only.
+
+## 2026-11-19 — fused RDNA4 search-encoder kernel added to the plan (user)
+
+- User: build a fused kernel search-encoder for the final format — the paper's fused encoder
+  is the source of its 75× over PyTorch (8B linears < 2 min, L16, one GPU); our CPU Viterbi
+  is minutes/tensor. Plan item (local/TODO.md): fused HIP encoder (Viterbi search + encode +
+  pack, one kernel) with a design-space search (2^16-state frontier placement, tail-biting
+  2-pass, per-L/Q variants), reusing radiance's kernel plumbing / libquant scaffolding and the
+  computed-decode GEMM-side structure; bench on box2; GPU encode-sec reported next to CPU in
+  the quantization-time axis. Kernel-tier, after the first sweep picks the format.
