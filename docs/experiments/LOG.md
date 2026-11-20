@@ -9432,3 +9432,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   backtrack re-forms the 2^K candidates of the one followed group in viterbi.c's order) -> **bit-identical** to viterbi.c on
   the VM (AVX-512), colo (Cascade Lake), thor and box2 (Zen3), K1–8, and 2.5–5x faster on the loaded hosts. Thread counts now
   stay within physical cores (SMT siblings halve L2 and the old search was cache-bound) with OMP_WAIT_POLICY=passive.
+- 11-20 ~2:00 PM CST (user): w207 (Fable 5.2 low) started: MoE routed-expert ops for EXL3-V3 on a new general branch `exl3-v3` (worktree /workspace/forks/radiance-exl3v3, from qc-exl3-v3 9a20d9be), ported from Dad_Vibes/radiance-ds4.1-vibes exl3/ (ABI 40), Dyluhn/radiance-exl3 and our pre-9ddc84aa exl3r4d MoE library; exl3i record + mad behind one codebook hook; op oracle tests; dad1 + box2 card 3.
