@@ -77,9 +77,11 @@ fused GPU encoder runs ~60M values/s at L=16 on an L40S → ~40 min of trellis s
 2. LDLQ + rotation + scale search on single 27B tensors (the 22 C3 tensors) vs `ourq.py` / `tensor_check.py`: proxy error within
    noise; **speed table vs the old quantizer**. → **user review.**
 3. (proposed, smaller than a ladder) one K level of the whole 27B trunk, compared with the existing ladder records at the same K
-   (already in the store on box2, so the old quantizer needn't rerun): per-tensor error, then one assembled size's KLD.
+   (the mad level records `finals-mad`: on ds8 since box2 was cleaned after the release — check before stage 3; the old
+   quantizer needn't rerun) — **accepted by the user 11-20**: per-tensor error, then one assembled size's KLD.
 4. After the user's go: MoE batching; Qwen3.6-35B-A3B end to end (convert, serve with w207's kernels, KLD vs bf16).
 5. DS4.1-F: MXFP4 / fp8 source, d100b Hessians, out-of-core, 4 cards.
 6. Later: optimization passes.
 
-Before stage 1: rebase `exl3-v3` onto radiance v2.2.0.
+Rebase onto v2.2.0: optional (user: radiance updates often); not part of w209.
+Worker brief: `rad-local/workers/instr3/w209.md` (stages 1 + 2).
