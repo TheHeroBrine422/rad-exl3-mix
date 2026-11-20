@@ -98,6 +98,20 @@ Not for experts: CPTC matmul-aware tables (need correlated operand pairs, ρ > ~
 (2603.00042): needs full QAT, worse than 2-bit methods at 1 bpw, a different kernel family; at most a later option for experts below
 1 bpw.
 
+**Menu step size (user + lead, 11-20).** Error falls ~4× per bit (convex), so splitting a group of tensors between two rates is
+worse than giving each its best rate — the number of experts does not average a coarse grid out. Expected extra error from a
+step Δ ≈ 0.96 · Δ²/12: integer 8 %, 1/2 2 %, 1/4 0.5 %, 1/8 0.13 %. The 27B agrees: integer → quarter steps −5…−7 % KLD (#36,
+`design/v3.md`), extra 1/8 levels ≤ 0.8 % (11-01, "extra trunk levels don't pay"). Menu (not exact):
+
+| range | step | for |
+|---|---|---|
+| K0.125–1 | 1/8 | cold routed experts (cheap to quantize; the 27B's sub-1 curve #90) |
+| K1–4 (experts up to ~K4–5) | 1/4 | routed experts — the bulk of the quantization work; about half the levels of 1/8 steps |
+| K4–7 | 1/4 (trunk is ~7B params, so the extra levels are cheap) or 1/2 | attention, shared experts, head |
+
+The format and encoder keep 1/8 everywhere (free); add 1/8 levels only where the knapsack piles up. Codebook gate: supports
+fractional patterns (1/8 granularity itself is not needed for experts).
+
 Healing knob (user, 11-20; BACKLOG): a table codebook lets each tensor (or expert) carry its own 64 B table that post-mix
 healing / QAD can train — a nonlinear correction that scales can't express. Mad has no such knob. Counts for CPTC in the choice.
 
