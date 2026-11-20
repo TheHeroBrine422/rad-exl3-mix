@@ -232,15 +232,16 @@ def gen_table(K, samples=2 ** 22, holdout=2 ** 18, seed=1234, verbose=True, fit_
     grid = e2m5_pos()
     T = table_init_gauss(a0, a1, K).astype(np.float64)
     best = None
+    t0 = time.time()
     for r in range(50):
         damped = r >= 30
         xf = rng.standard_normal((nblk, 256)).astype(np.float32)  # fresh samples per round (paper)
         Tnew, _, _ = lloyd_round(T, a0, a1, K, xf, ntry=fit_ntry)
         T = 0.5 * T + 0.5 * Tnew if damped else Tnew
-        if verbose and (r % 5 == 0 or r >= 30):
-            print(f"  K={K} round {r:2d}{' (damped)' if damped else ''}", flush=True)
         qh, _ = encode_rev(xh, decode_table(a0, a1, T).astype(np.float32), K, fit_ntry)
         sc = keff_of(xh, qh)
+        if verbose:
+            print(f"  K={K} round {r:2d}{' (damped)' if damped else ''}: held-out Keff {sc:.4f}  {time.time() - t0:.0f}s", flush=True)
         if best is None or sc > best[0]:
             best = (sc, T.copy())
     T = best[1]

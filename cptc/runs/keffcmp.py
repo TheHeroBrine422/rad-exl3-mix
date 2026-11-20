@@ -14,6 +14,6 @@ for name in ("cptc", "cptc_presnap", "mad", "mul1"):
         cb = cptc.decode_table(*cptc.COEF[K], T).astype(np.float32)
     else:
         cb = np.ascontiguousarray(trellis.codebook(name), dtype=np.float32)
-    q, _ = cptc.encode_rev(x, cb, K, 16)
+    q, _ = cptc.encode_rev(x, cb, K, int(os.environ.get("KEFF_NTRY", 16)))
     out[name] = round(cptc.keff_of(x, q), 4); print(name, out[name], flush=True)
 print(json.dumps(out), flush=True)
