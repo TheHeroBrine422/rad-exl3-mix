@@ -9243,3 +9243,18 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   2-pass, per-L/Q variants), reusing radiance's kernel plumbing / libquant scaffolding and the
   computed-decode GEMM-side structure; bench on box2; GPU encode-sec reported next to CPU in
   the quantization-time axis. Kernel-tier, after the first sweep picks the format.
+
+## 2026-11-19 — ldlq cost calibration (box2 microbench) + C3 ETA revised to ~12 AM CST
+
+- Box2 microbench (pinned judge image, cold XFS, 4 threads Zen3, uncontended): ONE
+  ldlq_trellis call (768 rows × Kd 5120, K=3) ran 71+ CPU-min at 99% without finishing.
+  C3 jobs = 15 such calls (3 K × 5 codebooks, incl. the cptc row) + the fit → ~1300 CPU-min
+  ≈ 5 h total. **C3 ETA ~11:30 PM–12:30 AM CST** (supersedes the 8–9 PM estimates; the ldlq
+  tail was mis-modeled ~10×). Jobs healthy, not restarted (2.5 h in).
+- Consequence for the lab: T1 per candidate ≈ 143 CPU-h ≈ 1–1.5 h wall with the full
+  ~130-core pool tensor-parallel ≈ 6–10 candidates/day. T0 (0.8B/2B, ~10–30× smaller ldlq)
+  is the high-throughput screen; T1 confirms; T2 stays manual. The quantizer map (user):
+  IQR-V4 = StillDeadcode's separate project (own quantizer, built into radiance, shared
+  tech/ideas, out of our scope); ours = ourq.py (encode) + plugin/exl3quant (exl3i
+  importer, the mad patches: cf9d4f61 / 03fe0489) + v3/e3 kernels (exl3hash, exl3frac2,
+  exl3cb); rqah = separate, ignorable.
