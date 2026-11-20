@@ -9310,3 +9310,24 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   promotion queue, making the fused quantizer LAB INFRASTRUCTURE, and (c) the search phase
   (per-rate stores → radmix → KLD) speeds up too. The per-rate/per-tensor mode of the fused
   command comes before the whole-model pass.
+
+### 2026-11-20 04:35 UTC · C3/C2 re-balance: capacity to the decision, C2 to its two decision-relevant K's
+- **Status:** done (operational) · **Machines:** thor, box2, colo
+- **Why:** C3 (the verdict: CPTC vs baselines on real tensors) was the slower of the two running
+  experiments, so its wall time got the cores. C2 (Keff protocol sanity) was kept only where it
+  disambiguates a C3 result: a CPTC row that *loses* needs "construction broken" vs "format
+  doesn't win" separated, and Keff at the same K is that separator.
+- **C2 (colo):** killed `table 1/2/3/5` (the memory-bound slow tails, K5 not in C3's K range);
+  kept `table 4` (C3's money row is K4) and `table 6` (near done, Keff eval running). If a
+  specific C3 row turns out to need its K's Keff, the job is a restartable ~2-4 h rerun.
+- **C3 (thor→thor+box2):** the original 11-concurrent driver died at some point (11 wave-1 jobs
+  continued as orphans; the 12th, L27 ffn_down, never started). Wave 2 (L2/L26, 10 jobs) now
+  splits: **box2** runs L2 (5 jobs, 8 threads, CPU-only, model + Hessians already there for the
+  judge) and **thor** runs L26 + L27 ffn_down (6 jobs, 8 threads). Both write the same c3.jsonl
+  protocol (E3_TB=16 is baked into tensor_check.py); box2's rows land in its local c3.jsonl and
+  are merged at aggregation. Full 22-row table ETA ~01:00-03:00 UTC (7:00-9:00 AM CT) instead of
+  ~08:00 UTC.
+- **Judge meanwhile:** box2 image pin 98f99584 now carries viterbi2 (scalar + AVX2, bit-identical
+  to the legacy search, 4-9x the in-image legacy at 4 threads) with E3_V2=1 default and a 15 s
+  in-container self-test (v2smoke). Candidate #0 (reproduce the C3 cptc rows through the judge)
+  is the next step after the anchors exist.
