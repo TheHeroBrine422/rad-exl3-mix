@@ -9424,3 +9424,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - **Efficiency:** old C3 used E3_TB=16 (16 wrap candidates = 16x search cost; LOG ff97d597: multi-candidate wrap ~nothing) and the
   legacy search; v2 uses TB=1 + the AVX2 search (bit-identical) — verify-old measures the TB16 vs TB1 difference on one tensor.
 - **Runtime:** neither (quantizer-side study).
+- **11-20 ~1:35 PM CST, audit cont.: second bug + speed.** `gen_table`'s held-out set was `((holdout // 256) * 256, 256)` = 2^26
+  samples (262,144 blocks) at holdout 2^18, encoded after EVERY Lloyd round and every hill-climb try: that, not "the paper's
+  protocol is slow", is why the first C2 runs took ~35 min a round (K6 reached round 33 in 19 h; handoff gotcha 6 is wrong). Fixed
+  (holdout // 256 blocks). Now: colo 2^22/round ~30 s, thor 2^20 ~6 s. **viterbi3.c** (new, fe3b5059): the tail-biting search
+  without the two 2^16 cost arrays (a step's costs only feed the next step's group minima; the hot loop is a pure min, the
+  backtrack re-forms the 2^K candidates of the one followed group in viterbi.c's order) -> **bit-identical** to viterbi.c on
+  the VM (AVX-512), colo (Cascade Lake), thor and box2 (Zen3), K1–8, and 2.5–5x faster on the loaded hosts. Thread counts now
+  stay within physical cores (SMT siblings halve L2 and the old search was cache-bound) with OMP_WAIT_POLICY=passive.

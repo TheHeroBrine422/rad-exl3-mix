@@ -229,7 +229,9 @@ def gen_table(K, samples=2 ** 22, holdout=2 ** 18, seed=1234, verbose=True, fit_
     rng = np.random.default_rng(seed)
     nblk = samples // 256
     hrng = np.random.default_rng(seed + 1)
-    xh = hrng.standard_normal(((holdout // 256) * 256, 256)).astype(np.float32)
+    # held-out set: `holdout` samples = holdout // 256 blocks. (Fixed 11-20: was ((holdout // 256) * 256, 256) = 2^26 samples at
+    # holdout 2^18, a 262,144-block encode after EVERY round and every hill-climb try -- why the first C2 runs took ~35 min a round.)
+    xh = hrng.standard_normal((holdout // 256, 256)).astype(np.float32)
     grid = e2m5_pos()
     T = table_init_gauss(a0, a1, K).astype(np.float64)
     best = None
