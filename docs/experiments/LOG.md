@@ -9180,3 +9180,29 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (a711d78): SPEC.md (candidate format, patch bounds, score spec), problems/quantlab-27b.json
   (judge host now box2 — to be updated), qljudge.py (spec-parameterized fit, fit/encode time
   split, size model; eval ntry=1 frozen for comparability with the C3 anchors).
+
+## 2026-11-19 — lab scope corrections after the IQR-V4 read (user questions)
+
+- User: (1) do C3/the lab include our swj + damping improvements or purely the trellis
+  codes? (2) are CPTC's 64 values trained per tensor, given mad gets the swj pass?
+  (3) IQR-V4 is closer to mad — we took the sudot4 byte-sum from the IQR line.
+- Answers from the record: C3 / judge v1 = the pure trellis-code layer (uniform damping
+  0.01, no scale passes) — right for isolating the format variable, but the production bar
+  = codebook + per-tensor damping (0.005/0.05/0.01, #38) + **swj = the C10 joint gate/up
+  scale refit** (structural, not a generic polish: post-swj the ≥4.0 residual KL is 8–60×
+  smaller; IQR-V4's own "scale refit after GPTQ" found only 0–2%) + edy + C9. The lab will
+  apply the pass-set equally to candidate and baseline and expose the tunables as per-class
+  knobs.
+- CPTC's 64 e2m5 table values are already per-tensor trained (the A.2 protocol); mad
+  trains scales, its codebook stays the fixed universal byte-sum hash (a 0xd0474b,
+  b 0x2545f491). Coefficient re-search in the lab maps to CPTC (a0,a1) ↔ mad (a,b).
+- IQR-V4 whitepaper read (/workspace/references/whitepapers/iqr-v4.txt): the byte-sum
+  computed decode + 2^16 trellis + one f32 scale a row are IQR-V3's, inherited by V4 (V4's
+  diff = measured allocation, vocab-weighted GPTQ head, decode GEMMs). Its "What did not
+  work" list (Hessian reweighting, incoherence, finer act groups, damping <0.01, 16-bit
+  trunk, ...) becomes a negative-results reference staged in the agents' docs; their stated
+  ceiling (int8 code grid above 6.5 bits) matches ours (#94), and CPTC's table-dtype knob
+  is the candidate lever for that wall.
+- C3 still running (98 min at check, in the final baseline phase); box2 data downloads
+  done (99 GB in ~25 min — my earlier 3 h estimate was a stale iceman-upload number),
+  judge image building there.
