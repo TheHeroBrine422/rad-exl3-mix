@@ -9441,3 +9441,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   - **C3 v2 (global tables, 8 tensors so far, 256 rows, H-weighted rel):** CPTC vs mad **−2.7 % K2, −4.7 % K3, −4.2 % K4, 8 / 8
     tensors each** (mad vs mul1 +0.6–0.8 %). The paper's LLM margin over 1MAD is 1–5 % KL: **CPTC transfers.**
   - Raw `data/cptc/rerun-1120/`.
+- 11-20 ~2:20 PM CST (user): codebook Pareto frontier for DS4.1-F routed experts started: axes ALU cost / size (tables ≤ 8 KB) / quality, gates fractional K; w208 (Fable low, dad1) = ALU bench (w8a8 + w4a4, decode M 1-8 + prefill; candidates mad, mad4, mul1_i8, CPTC Q6 / Q5-full / minimal / one-multiply / state-table L10-12 (paper App. D.1), QTIP 1MAD / 3INST, int4grid); lead = quality on real 1017 experts. CPTC paper read in full (references/cptc/cptc.txt): matmul-aware tables only help with correlated operand pairs (rho > ~0.3; weights x RHT activations ~0) -> not for experts. Plan notes in rad-local/TODO.md.
