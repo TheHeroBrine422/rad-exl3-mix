@@ -9331,3 +9331,19 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   to the legacy search, 4-9x the in-image legacy at 4 threads) with E3_V2=1 default and a 15 s
   in-container self-test (v2smoke). Candidate #0 (reproduce the C3 cptc rows through the judge)
   is the next step after the anchors exist.
+
+### 2026-11-20 ~05:55 UTC · thor reboot killed the C3 wave-1 restart; recovered across 3 machines
+- **Status:** operational · **Machines:** thor (reboot), box2, colo
+- **Event:** thor (the Unraid host / VPN box) went down and its container restarted ~05:16 UTC
+  (uptime 39 min at 05:55). All 12 wave-1 C3 jobs died at ~95% (no per-job checkpoints —
+  tensor_check writes c3.jsonl at job end; nothing had completed, so no rows were lost, but
+  ~290 CPU-min/job × 12 of progress was). c3.jsonl was never created; state clean.
+- **Recovery:** 11 jobs restarted on thor (run-c3w1b.sh, 8 threads, 6 concurrent ≈ 2 waves)
+  and "3 ffn_down" moved to box2 (run2.sh, 8 threads, sharing with its 5 L2 wave-2 jobs).
+  Wave-2 jobs on box2 (L2) and colo (L26) were unaffected and kept running.
+- **Revised ETA:** wave-1 restart rows ~11:45-12:00 UTC (~6:00 AM CT); full 22-row table
+  ~12:00-12:30 UTC (6:00-6:30 AM CT). When the wave-2 jobs finish (~07:30-08:45 UTC), box2/colo cores are freed
+  and the still-running thor jobs will be migrated there (kill + restart, net positive at ~50%).
+- **Lesson:** thor's reboot risk (known: it's the VPN host, can go up and down) finally bit a
+  long job mid-run — reinforces "never make a result depend on thor staying up" for multi-hour
+  single-machine batches; wave-1 was 12 jobs on one box for exactly this reason.
