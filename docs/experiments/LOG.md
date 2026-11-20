@@ -9108,3 +9108,22 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - DS4.1 (paused per user): box2 release download FINISHED 11:53 UTC and verified — 48 shards,
   510.3 GB exactly matching the HF manifest (my ~1 TB estimate was wrong) + imatrix. P0b.2
   convert/serve input ready, queued behind CPTC.
+
+## 2026-11-19 — CPTC workstream generalizes to a tensor-quant lab on autoresearch-v3 (user)
+
+- User reframes: the goal is not just "does CPTC work" — long term we may improve on it, so
+  the multi-codebook comparison stays and the whole thing generalizes to **full tensor
+  quantization research** on the existing `/workspace/autoresearch-v3` harness (docker pi-agent
+  fleet, serialized judge, ledger; kvreal runs prove the ssh-bench-host judge).
+- Design (user decisions): candidate space = all our codebook research (mad production, E3 set,
+  exl3frac2 fractional, emb-trellis) + external (CPTC dials incl. re-searched coefficient pairs,
+  RPTC/HYB/1MAD, LC, later LittleBit-2 <2bpp); tiers T0 0.8B/2B hproxy (Hessians exist on the
+  4070 box; 9B pending) → T1 27B hproxy (C3 slice → full) → **T2 manual full-model KLD**
+  (harness keeps a promotion queue; lead runs KLD on iceman card 0 + box2 card 0 and writes
+  verdicts back; proxy≠KLD gated structurally); all candidates kept with artifacts + rel +
+  CPU-sec for later runtime re-ranking; **box2** added (48 CPU + a 27B-fit card). Full design
+  in local/TODO.md (tensor-quant lab section).
+- C3 status: RUNNING on Thor since 23:43 UTC (my pgrep false negatives — forgot -f; the jobs
+  were alive and at full CPU all along). 22 (layer,tensor) × K=2,3,4, CPTC per-tensor fit +
+  the 4 E3 codebooks; first wave ~10 min out, full set ~35–45 min. Scorer core:
+  cptc/tensor_check.py (committed 54e0fec2 + follow-ups).
