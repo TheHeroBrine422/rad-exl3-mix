@@ -9458,3 +9458,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   under fakes; dad1: device vs reference 42 cases (tolerance 1/256 h, 1 bf16 ulp y), exl3i 16 / 16, arch_test 225. A rebuild, not a
   port of the 7k-line exl3r4d library (fused gate_up_down, _mod4, SwiGLU limit, A8, persistent launches not ported). DS4.1-F needs
   SwiGLU limit (config swiglu_limit 10). No live engine run yet.
+- 11-20 3:19 PM CST: **CPTC INT8 table (CPTC_GRID=int8, scale 32; colo, paper protocol):** K6 Keff **5.751** (E2M5 5.807, mad 5.556, mul1 5.621): int8 costs 0.055 bits vs E2M5 and still leads mad by **0.195 bits**. K5 int8 table post-snap held-out 4.900 (E2M5 4.905), Keff pending; K4 fitting. Use INT8 for the A8 trunk.
