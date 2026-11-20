@@ -104,3 +104,97 @@ Any allocator, ranker or predictive model with a decent rank correlation on any 
 time-ordered / out-of-sample, not overfit) is worth a live trial through the search inbox, even if it fails a
 pre-committed adoption rule. Inbox candidates are judged by the live stage-1 + confirmation rule, so a weak model costs
 only evals. Pre-committed winner rules (e.g. RULES-187 §5) still govern making something a built-in driver move.
+
+
+## Appendix: 27B data rules as they stood in AGENTS.md (moved here 2026-11-20)
+
+The challenge scores mean KLD vs the bf16 model on a **private** corpus drawn like the two published ones
+(`StillDeadcode/qwen3.8-27b-quant-challenge`: `calib` 10.26M tokens / 4,789 docs, `public` 1.69M / 596 docs).
+
+- **Selection and tuning happen on calib only.** Sensitivity fits, knapsack refits, local search, QAD training,
+  hyperparameter choices: calib.
+- **Calib is split into four fixed, disjoint pools**, each with the corpus's category mix. Two rules:
+  never move a document between pools, and never judge a decision on the pool it was tuned on. (fit and search are one pool since 2026-11-13: the search refits on its own results; independence comes from slice rotation, fresh slices for finalists and verify.)
+
+  | pool | docs (pools-v3) | use | long traces |
+  |---|---|---|---|
+  | fit + search (merged 2026-11-13, user) | 551 + 583 | sensitivity measurements, knapsack refits, search accept-reject: one pool; draw least-used docs first (ledger decision counts); pool ids unchanged | ripgrep, cobra |
+  | qad | 2,799 (largest) | QAD / healing training data | attrs, click |
+  | verify | 856 | checking finished mixes, QAD before/after. Routine checks only: every reuse bakes in a little noise, so never iterate against it | rich, express, lua, requests (lua and requests moved from qad on 11-01) |
+
+  - **Pool file: `pools-v3.json`, the only one to use.** On iceman `/root/challenge/pools-v3.json`; copy in
+    `/workspace/rad-exl3-mix/eval/pools/`. `pool[i]` is the pool of calib document `i`. Read-only: never regenerate.
+    History: `pools.json` (made by `mkpools.py`) was the original; on 2026-11-01 the user moved 11 qad docs to
+    verify for ver3/ver4 (record `eval/pools/amend-2026-11-01.json`). Token counts before the move: fit 0.92M,
+    search 1.42M, qad 5.74M, verify 2.18M.
+  - **Long traces:** calib has only 8 (~250k tokens each), split as in the table (from the per-document `pool` list;
+    the `traces` field inside pools-v3.json is stale, pre-move: ignore it).
+  - **Long-context testing (user, 2026-11-07):** capability via RULER (`eval/ruler/`). The long traces are cut into
+    ≤ 32k turn-aligned chunks (unscored system / tool header) for routine scoring; CIs on chunks resample by trace
+    (`eval/traces/`). Both verify traces are also kept whole for rare full-length checks of finished mixes: a sanity
+    check (n = 2), never a selection or tuning target, always reported together.
+    The public corpus has 2 more long-agentic traces (~245k each): at the end, report full-length KLD on them with the
+    other public numbers (report only, after selection, like all of public).
+  - **Building slices:** `calib_slice.py CORPUS TOKENS CAP SEED POOL`.
+  - **Document-use ledger: `eval/pools/ledger.jsonl`** — one line per (calib document, use): which golden or
+    collection used it, its role (train / fit-hessian / fit-diag / fit / select / monitor / check / final), the
+    line (v2, v3, ...), the scored position range and date. Built by `mkledger.py` from the goldens plus the
+    hand-written roles in `ledger-roles.json`. To add new uses without a rebuild: `ledger_add.py` (goldens' kld.json,
+    `--all USE DATE` for whole-calib collections; add the role to `ledger-roles.json` first; skips duplicates).
+    `provenance.py` gives the per-golden pool mix and overlaps, and the "clean" verify docs no golden has touched.
+    **Check it before building a verify slice, and add every new golden or collection that reads calib.**
+  - **Old slices:** `golden-calA` (calib-A) is inside fit, so it is fit data. `golden-calB` / `golden-calBbig`
+    (calib-B) are mostly verify but contain the first 8k tokens of ripgrep, cobra, click and requests (now search
+    and qad). They are fine for comparisons made before any search or QAD; after that, verify only on slices built
+    from the verify pool.
+- **V3.1 QAD data (user, 2026-11-16):** after the V3 final picks, QAD may train on the qad pool **plus the fit + search
+  pool** (~8M tokens; selection is finished, so the bias no longer matters for it). **Verify stays a real holdout:** no
+  verify document (ver4, golden-final750, agent-verify32, any verify slice) is ever trained on, and every V3.1 number
+  is read on verify only (never on s195 / phase-1 slices, whose calib parts become trained-on). Ledger: role train.
+- **Published input Hessians** (`hessians/calib/`, sum of x x^T over every calib token, verify pool included) are
+  fine to quantize against: a per-layer covariance over 10M tokens can't memorize documents, and every entry uses
+  them. Anything *we* fit with many free parameters per token follows the pools: QAD and our own YAQA output-side
+  Hessians on qad, local-search accept/reject on search.
+- **Public is held out.** Use it only to report numbers at the end; it never selects, not even among finalists or as
+  a tie-break (user, 2026-11-01). Never run a tuning loop against public, never fit anything on it.
+- **Private is the real test.** A gap between our public numbers and the leaderboard means we overfit somewhere.
+- **Overfit audit every ~2 days (user, 2026-11-08).** Go through the decisions since the last audit (LOG): which
+  slice decided each one and how often it has been reused, whether anything was fitted or picked outside its pool,
+  whether a rule was changed after its data, whether adopted settings hold on verify (and score them there once
+  if they have no verify rows), and that public was never touched. Log it as a dated LOG entry ("Overfit audit")
+  with the actions, and rotate the search slices: 27B search slices are two-part and calib-sparing (~65% fresh
+  xcorp redrawn every round + ~35% fresh calib search-pool documents; same sign required on both parts;
+  `docs/design/eval-data.md`); retire any slice that has decided many pairs. Audits: 2026-11-08, 2026-11-10, 2026-11-13 (w141; next due ~11-15, and before the first ver4 read of the finals if that comes first).
+- **Report uncertainty.** Compare models paired on the same documents, with a per-document bootstrap interval
+  (`/workspace/rad-exl3-mix/mix/paired.py`, `/workspace/rad-exl3-mix/search/abreport.py`). On ~100k-position slices the paired SE is ~±1.5%; do
+  not treat smaller differences as real. Small slices cap documents at 8k tokens — long-context behavior needs
+  whole traces (TP2 for >~170k at high bpw).
+- Never train or calibrate on the public corpus.
+- **Our own pi session logs (`/workspace/pi-sessions`) are an allowed training / statistics corpus** (user,
+  2026-11-02, deliberate: it is data made in this research, which is public anyway; supersedes the earlier "not the
+  user's traces" rule). Use them like xcorp: QAD / healing data, Hessian and H_out collections, long-context
+  statistics; never for selection or verification (they are not drawn like the private corpus). They contain private
+  material (IPs, key paths, emails, DMs): never publish them or text derived from them; keep builds under `/data` or
+  `local/`, and record their use in the ledger as a non-calib corpus.
+- **xcorp is allowed for training too** (healing, QAD; user 2026-11-04: real-world use is the goal, not the board).
+- **Search pool from xcorp (user, 2026-11-04):** xcorp (+ a share of the user's traces) may be used for **search
+  accept/reject**, drawing fresh documents per round, with our own bf16 goldens. **Every published number stays on
+  calib verify** (drawn like the private corpus). **Final picks** (user, 2026-11-13): ver4 (calib verify, frozen) + a
+  fresh xcorp part, pooled best with the calib part as a veto (`docs/design/eval-data.md`); keep the rest of verify
+  unspent. Fitting and search share the merged fit + search pool (2026-11-13).
+- **The user's traces never leave our own machines** (iceman, the 4070, colo, Thor, the VM, the dad's RDNA4 boxes): no donated-compute job may
+  carry them or anything derived per document (goldens, slices). Donor jobs use xcorp / calib-based data only;
+  trace-based evals run on our cards. The user's dad's boxes count as ours (user, 2026-11-04). **box2 (the lent 4× R9700 box) counts as ours too (user, 2026-11-12):** trace / session-derived data and xcorp goldens may go there.
+  Corpus list: `docs/CORPORA.md` (light, public), details and locations in `local/notes/corpora.md`.
+- **Unpublished material others share** (papers, PDFs, DMs, screenshots) stays out of the repo: notes in
+  `local/research/`, files under `/workspace/references/` (user 2026-11-04).
+
+### V3 size metrics (moved from AGENTS.md 2026-11-20)
+
+- **Size metrics (user, 2026-11-13, refined for the V3 card 2026-11-18 ~1:55 PM):** the V3 card presents
+  two numbers: (A) **leaderboard** = trellis + trunk + head (the LM) × 8 / 26,895,998,464 — the `vram/`
+  table's single bpw column, what the board scores; (B) **VRAM usage** — `vram/` = A; the `host-emb/`
+  table shows the VRAM usage in GiB (trunk + head; the bf16 table is in host RAM) and how much lower it is
+  than the `vram/` twin (= the vram file's trellis table, 0.23–1.04 GiB) — no bpw column for host-emb.
+  head × 8 / 25,625,844,224 (the bf16 table is in host RAM), its own table. Tower + drafter in neither
+  (optional, noted "come on top", IQR-V4 convention). Both formulas stay the record for other reports.
