@@ -9298,3 +9298,15 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   quantize command (previous item) is the PRODUCTION fast path; search keeps per-rate
   stores + radmix + KLD. No new mechanism needed for the lab's T2 promotion flow:
   candidate mix = radmix over the production .rad with the candidate's donor tensors.
+
+## 2026-11-19 — fused quantizer goal corrected (user): per-RATE generation speed is the point
+
+- User: not production-only. The V3 ladder took ~80 GPU-h (1–2 h per rate, ~49 rates) to
+  generate every tensor at every rate, mix (radmix), and publish. The fused quantizer's job
+  is to make per-rate tensor generation ~5–10× faster (one read of the checkpoint per rate;
+  the CPTC paper's fused encoder: 8B linears < 2 min at L16 → ~10 min for 27B aspirational;
+  L10/L12 search variants cut 4–16× more), so (a) ladder rebuilds cost ~10–15 GPU-h,
+  (b) lab T2 candidates cost a few rates of generation — the binding cost of the manual KLD
+  promotion queue, making the fused quantizer LAB INFRASTRUCTURE, and (c) the search phase
+  (per-rate stores → radmix → KLD) speeds up too. The per-rate/per-tensor mode of the fused
+  command comes before the whole-model pass.
