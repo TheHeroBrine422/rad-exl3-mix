@@ -9370,9 +9370,31 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   C3 row exactly: 0.004258) → cptc-T216 (2^16 blocks/round refit, with-replacement) → cptc-Thd (table fit on
   H-diagonal-weighted values — prime suspect: plain-MSE fit vs H-weighted DP objective) → global mad/mul1 →
   madfit/mul1fit (per-tensor 30-round Lloyd of the full 65536-state map: "does fitting help what we do").
-  ETA ~14:30 UTC (~6:30 AM CT). C2-K4 full-protocol i.i.d. Keff started on colo (background, ~8-16 h).
+  ETA ~11:30 UTC (~5:30 AM CT). C2-K4 full-protocol i.i.d. Keff started on colo (background, ~8-16 h).
 - **Decision rule (pre-registered here, before the diag lands):** if Thd or T216 closes the K4 gap to
   mul1 → re-run C3 with the better fit protocol; CPTC+H-fit becomes a T2 candidate. If nothing closes it
   → CPTC's i.i.d. claim doesn't transfer to H-weighted 27B; CPTC stays lab anchor #0, fleet hunts formats
   that beat computed-mad. If madfit ≪ mul1 → per-tensor fitting is valuable in our domain; the fleet's
   first experiment is a fitted 64K-state (or mid-size) codebook.
+
+### 2026-11-20 ~19:00 UTC · CPTC verdict: real i.i.d., no transfer to our harness — not adopted; handoff written
+- **Status:** CPTC workstream decision (pending the optional C3-2hess two-sided follow-up + the user's call)
+- **Diag results (diag-cptc, thor; T1024 control reproduced the C3 row exactly):**
+  - cptc-T216 (2^16 blocks/round): 0.004287 vs T1024 0.004258 — **fit volume not the cause**.
+  - cptc-Thd (H-diagonal-weighted fit): 0.004803 — **H-diag fit not the cause** (hurt +13%).
+  - madfit 0.002141 / mul1fit 0.002130 vs globals 0.002142 / 0.002127 — **per-tensor fitting of
+    64K-state maps is worthless in our domain** (new lab design fact: no large-map fits in the fleet).
+  - keff_real K4: CPTC 3.3979 vs mad 3.8715 / mul1 3.8806 — CPTC drops 0.48 bits off its i.i.d.
+    Keff (3.93) on real H-weighted data; the dense computed codebooks don't budge. Mechanism: the
+    128-cell fitted map can't adapt to post-RHT structure; the dense map absorbs it free.
+- **Full table (18 tensors × 3 rates, 56 arm-rows, pre-box2-reconnect):** K2 10W/4T/0L (−0.5…−3.1%),
+  K3 0W/0T/14L (+1.8…+10.2%), K4 0W/0T/18L (+69…+103%). Gaps filling: 4 fast-track tensors' K2/K3
+  on thor (~4:30 PM CT), 26/ffn_down on colo, up to 3 box2 rows unknown (box2 unreachable ~18:40 UTC —
+  user reconnect needed; procedure in the handoff).
+- **Decision (per the pre-registered rule, LOG ~10:40 UTC today):** CPTC's i.i.d. claim reproduces
+  (3.9275 vs 3.934) but does not transfer to H-weighted 27B one-sided quantization. CPTC = lab anchor
+  #0 (real, cheap to decode, fittable — but dominated by computed-mad at K≥3 in our harness). Open
+  item: C3-2hess (two-sided diagonal H_out — the paper's actual LLM setup) before final closure;
+  user decision.
+- **Handoff:** `rad-local/handoff-cptc-2026-11-20.md` (state, jobs+ETAs, next actions in order,
+  box2 reconnect procedure for the user, infra state, 10 gotchas, files map).
