@@ -9220,3 +9220,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   1-instruction decode, zero runtime cost, the sleeper; (3) QAD/healing on scales + 64 table
   values (~37k params, ~8M qad tokens, Hessian-weighted fit option). C3 isolates where the
   CPTC edge lives (fixed-table variant tells table-vs-coefficients) → decides the order.
+
+## 2026-11-19 — fractional K in scope for the CPTC comparison (user)
+
+- User: don't forget the fractional trellis work with mad — it's important. Record check:
+  the generic fractional trellis (shift pattern, any K = a/b; quarter steps K1–K5, half
+  steps K5–K8) is a −5…−7 % V3 win (design/v3.md W/A table), the mad 49-level ladder spans
+  it all, and mad = exl3hash (exl3cb i8 + exl3frac2 mul1, EXL3_CB_HASH) — the fractional
+  machinery is load-bearing for production, and production picks fractional K (2.625, 4.125).
+- Consequences: C3's integer-K rows are partial — C3-frac follow-up (few tensors × K 2.5 /
+  3.5) to check the CPTC-vs-baseline ranking doesn't flip at fractional K; the lab's Ks
+  grid is the production ladder (SPEC.md updated, Ks = ints or a/b fractions); fractional
+  CPTC (bracketing integer pair vs re-searched (a0,a1) on the fractional path) is a
+  candidate family — CPTC's published Table 6 pairs are integer-K only.
