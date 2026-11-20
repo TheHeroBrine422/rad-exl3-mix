@@ -102,8 +102,9 @@ def vit(x, cb, K):
     return out
 
 
-def ldlq_trellis(W, H, cb, K, damp=0.01):
-    """W [R, Kd] (R % 16 == 0, unit-RMS rows), H [Kd, Kd] -> Q"""
+def ldlq_trellis(W, H, cb, K, damp=0.01, collect=None):
+    """W [R, Kd] (R % 16 == 0, unit-RMS rows), H [Kd, Kd] -> Q. collect: a list that receives (targets, q) per block
+    (the LDLQ-adjusted values the trellis was asked to code, and its output) for codebook refits."""
     W = W.clone(); R, Kd = W.shape
     H = H.clone(); dead = H.diagonal() == 0
     H[dead, dead] = 1; W[:, dead] = 0
@@ -115,6 +116,8 @@ def ldlq_trellis(W, H, cb, K, damp=0.01):
         tiles = blk.reshape(R // 16, 16, 16).reshape(R // 16, 256).numpy()
         q = torch.from_numpy(vit(tiles, cb, K).astype(np.float64)).reshape(R, 16)
         Q[:, a:a + 16] = q
+        if collect is not None:
+            collect.append((blk.numpy().copy(), q.numpy()))
         if a + 16 < Kd:
             E = (blk - q) @ torch.linalg.inv(U[a:a + 16, a:a + 16])
             W[:, a + 16:] -= E @ U[a:a + 16, a + 16:]

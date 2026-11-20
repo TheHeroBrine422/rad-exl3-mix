@@ -84,6 +84,32 @@ def fit_table(vals, K, rounds=50, snap_rounds=16, nblk_fit=1024, seed=1234):
     return T
 
 
+def refit_table(T, K, Wn, Hr):
+    """One per-tensor refit (factor 1): code the tensor with table T through LDLQ, then set each entry to the mirrored
+    mean of the LDLQ targets coded to it (entries matched by magnitude; plain mean, the block D weights ignored), and
+    snap to the storage grid (CPTC_GRID). Entries never used keep their value; the zero entry stays 0."""
+    cb = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
+    col = []
+    trellis.ldlq_trellis(Wn, Hr, cb, K, float(os.environ.get("E3_DAMP", "0.01")), collect=col)
+    t = np.concatenate([c[0].ravel() for c in col]); q = np.concatenate([c[1].ravel() for c in col]).astype(np.float32)
+    mags = np.unique(np.abs(T.astype(np.float32)))
+    out = T.copy()
+    aq = np.abs(q)
+    j = np.searchsorted(mags, aq)
+    j = np.clip(j, 0, len(mags) - 1)
+    ok = np.isclose(mags[j], aq, rtol=0, atol=1e-6)
+    sg = np.sign(q)
+    for m_i, m in enumerate(mags):
+        if m == 0:
+            continue
+        sel = ok & (j == m_i)
+        if sel.sum() < 4:
+            continue
+        newm = float(np.mean(t[sel] * sg[sel]))
+        out[np.isclose(np.abs(T), m, rtol=0, atol=1e-6)] = np.sign(T[np.isclose(np.abs(T), m, rtol=0, atol=1e-6)]) * max(newm, 0)
+    return cptc.snap_e2m5(out, cptc.table_grid())
+
+
 def main():
     layer, tensor = int(sys.argv[1]), sys.argv[2]
     bits = [int(x) for x in sys.argv[3].split(",")]
@@ -118,6 +144,9 @@ def main():
         if os.environ.get("E3_C3_ARMS", "all") != "base":
             T = np.load(os.path.join(tdir, f"table-K{K}.npy")) if tdir else fit_table(flat, K)
             cbs[f"cptc{K}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
+            for it in range(int(os.environ.get("CPTC_REFIT", "0"))):   # per-tensor closed-form refit on the LDLQ targets
+                T = refit_table(T, K, Wr / rms, Hr)
+                cbs[f"cptc{K}r{it + 1}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
         t_fit += time.time() - tf
         row = {}
         for n, cb in cbs.items():
