@@ -1,0 +1,5 @@
+{"K": 2, "blocks": 2048, "target": 1.948, "cptc": 1.9467, "cptc_presnap": 1.9467, "mad": 1.93, "mul1": 1.9341}
+{"K": 3, "blocks": 2048, "target": 2.943, "cptc": 2.9402, "cptc_presnap": 2.9404, "mad": 2.9071, "mul1": 2.9135}
+{"K": 4, "blocks": 2048, "target": 3.934, "cptc": 3.9268, "cptc_presnap": 3.9275, "mad": 3.8722, "mul1": 3.8795}
+{"layer": 2, "w": "ssm_z", "method": "trellis_mul1", "seed": 0, "rowseed": 1, "damp": 0.01, "f16": false, "tb": 16, "bits": 2.0, "bpw": 2.003125, "rel": 0.0066295659444910796, "scale_f": 1.15, "rows": 256, "N": 6144, "K": 5120, "sec": 760.9}
+{"layer": 2, "w": "ssm_z", "method": "trellis_mul1", "seed": 0, "rowseed": 1, "damp": 0.01, "f16": false, "tb": 16, "bits": 3.0, "bpw": 3.003125, "rel": 0.0016207527258286798, "scale_f": 1.15, "rows": 256, "N": 6144, "K": 5120, "sec": 622.3}

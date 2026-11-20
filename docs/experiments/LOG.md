@@ -9433,3 +9433,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   the VM (AVX-512), colo (Cascade Lake), thor and box2 (Zen3), K1–8, and 2.5–5x faster on the loaded hosts. Thread counts now
   stay within physical cores (SMT siblings halve L2 and the old search was cache-bound) with OMP_WAIT_POLICY=passive.
 - 11-20 ~2:00 PM CST (user): w207 (Fable 5.2 low) started: MoE routed-expert ops for EXL3-V3 on a new general branch `exl3-v3` (worktree /workspace/forks/radiance-exl3v3, from qc-exl3-v3 9a20d9be), ported from Dad_Vibes/radiance-ds4.1-vibes exl3/ (ABI 40), Dyluhn/radiance-exl3 and our pre-9ddc84aa exl3r4d MoE library; exl3i record + mad behind one codebook hook; op oracle tests; dad1 + box2 card 3.
+- **11-20 ~2:05 PM CST, first corrected numbers (partial; final when all 22 tensors + colo's paper-protocol tables land):**
+  - **Old baseline rows reproduce exactly:** legacy search, TB16, 2/ssm_z mul1 K2 0.0066295659 / K3 0.0016207527 = the 11-19
+    box2 row (0.006629566 / 0.001620753). TB1 (now) vs TB16 on the same rows: +0.2–0.4 % rel, every arm alike.
+  - **i.i.d. Keff, fixed E2M5 tables (thor, 2^20/round, ntry 1, 2048 blocks):** CPTC K2 1.9467 / K3 2.9402 / K4 3.9268 (paper
+    1.948 / 2.943 / 3.934; snapped = pre-snap within 0.001); mad 1.9300 / 2.9071 / 3.8722; mul1 1.9341 / 2.9135 / 3.8795.
+  - **C3 v2 (global tables, 8 tensors so far, 256 rows, H-weighted rel):** CPTC vs mad **−2.7 % K2, −4.7 % K3, −4.2 % K4, 8 / 8
+    tensors each** (mad vs mul1 +0.6–0.8 %). The paper's LLM margin over 1MAD is 1–5 % KL: **CPTC transfers.**
+  - Raw `data/cptc/rerun-1120/`.
