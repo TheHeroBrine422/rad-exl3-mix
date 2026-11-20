@@ -83,10 +83,16 @@ def e2m5_pos():
     return g
 
 
+def table_grid():
+    """CPTC_GRID=e2m5 (default, the paper's deployed type) | int8 (signed integers 0..127: the int8 A8 GEMM path, paper
+    Table 16 / 17 "INT8"). Returns the non-negative magnitudes."""
+    return np.arange(128, dtype=np.float64) if os.environ.get("CPTC_GRID", "e2m5") == "int8" else e2m5_pos()
+
+
 def storage_scale(grid=None):
     """Appendix C.3 rule: the largest 3-mantissa-bit float c such that c x (max entry of the K=4 Eq (2) starting
     table) does not saturate the type. Stored value = round(c v), decoded as stored / c. E2M5 -> 2 (paper)."""
-    grid = e2m5_pos() if grid is None else grid
+    grid = table_grid() if grid is None else grid
     vmax = float(np.max(np.abs(table_init_gauss(*COEF[4], 4) / ((1 + 2 / 13) * (1 - 4 ** -4)))))
     cands = sorted({m / 8 * 2.0 ** e for m in range(8, 16) for e in range(-4, 6)})
     return max(c for c in cands if c * vmax <= grid[-1])
@@ -232,7 +238,7 @@ def gen_table(K, samples=2 ** 22, holdout=2 ** 18, seed=1234, verbose=True, fit_
     # held-out set: `holdout` samples = holdout // 256 blocks. (Fixed 11-20: was ((holdout // 256) * 256, 256) = 2^26 samples at
     # holdout 2^18, a 262,144-block encode after EVERY round and every hill-climb try -- why the first C2 runs took ~35 min a round.)
     xh = hrng.standard_normal((holdout // 256, 256)).astype(np.float32)
-    grid = e2m5_pos()
+    grid = table_grid()
     T = table_init_gauss(a0, a1, K).astype(np.float64)
     best = None
     t0 = time.time()
@@ -345,7 +351,8 @@ def check(K, blocks=32, seed=5):
 
 
 STORE_C = storage_scale()
-assert STORE_C == 2.0, STORE_C   # the paper's E2M5 scale (Appendix C.3)
+assert STORE_C == (32.0 if os.environ.get("CPTC_GRID") == "int8" else 2.0), STORE_C   # paper Appendix C.3: E2M5 2, INT8 32
+TBL = os.path.join(HERE, "tables-int8" if os.environ.get("CPTC_GRID") == "int8" else "tables")
 
 
 if __name__ == "__main__":
