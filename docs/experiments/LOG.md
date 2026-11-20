@@ -9206,3 +9206,17 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - C3 still running (98 min at check, in the final baseline phase); box2 data downloads
   done (99 GB in ~25 min — my earlier 3 h estimate was a stale iceman-upload number),
   judge image building there.
+
+## 2026-11-19 — mad×CPTC hybrids enter the candidate space (user)
+
+- User's synthesis: CPTC + mad may be viable together — CPTC's per-tensor fit adds 64 trainable
+  table values per tensor, which mad (fixed universal byte-sum hash; per-tensor = scales only)
+  lacks, giving healing/QAD/per-tensor-fitting new targets (scale-only QAD already finds
+  nothing at ≥4.0 post-swj).
+- Three families (local/TODO.md): (1) CPTC structure + int8 per-tensor table (int8 plane,
+  +3–4 decode ops/value vs sudot4 — the e2m5/int8 interaction scoped this turn: e2m5 is a
+  fit-time grid; snap the 64 values onto the int8 grid for the A8 plane, one table serves
+  both planes); (2) mad structure + per-tensor (a,b) — CPTC's per-tensor-fit idea on mad's
+  1-instruction decode, zero runtime cost, the sleeper; (3) QAD/healing on scales + 64 table
+  values (~37k params, ~8M qad tokens, Hessian-weighted fit option). C3 isolates where the
+  CPTC edge lives (fixed-table variant tells table-vs-coefficients) → decides the order.
