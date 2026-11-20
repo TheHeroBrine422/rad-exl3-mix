@@ -34,6 +34,18 @@ LIB = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libv
 LIB.viterbi_tiles.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
 LIB.viterbi_tiles_pat.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int]
 LIB.viterbi_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
+# E3_V2: the shared viterbi2 core (V2.md) for integer-K tail-biting encodes.
+#   0 (default): legacy libviterbi.so -- byte-identical to every earlier run (C3 anchors etc.)
+#   1: libviterbi2_avx2.so (vectorized)   2: libviterbi2.so (scalar reference)
+# viterbi2 is bit-identical to the legacy search (same per-element ops); fractional-K pat encodes
+# still use the legacy lib (viterbi2 has no pat variant yet).
+V2 = int(os.environ.get("E3_V2", 0))
+LIBV2 = None
+if V2:
+    LIBV2 = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                     "libviterbi2_avx2.so" if V2 == 1 else "libviterbi2.so"))
+    LIBV2.viterbi2_tiles_tb.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
+                                        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
 if os.environ.get("E3_F16") == "1": LIB.viterbi_set_f16(1)   # emulate the GPU search's fp16 costs
 from fractions import Fraction
 
@@ -68,7 +80,10 @@ def vit(x, cb, K):
     x = np.ascontiguousarray(x, dtype=np.float32); out = np.empty_like(x)
     TB = int(os.environ.get("E3_TB", 0))     # >0: tail-biting search (EXL3's real constraint), TB wrap candidates
     if TB and float(K).is_integer():
-        LIB.viterbi_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), TB)
+        if V2:
+            LIBV2.viterbi2_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), 1, TB)
+        else:
+            LIB.viterbi_tiles_tb(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, int(K), TB)
         return out
     p = np.ascontiguousarray(pattern(K), dtype=np.int32)
     LIB.viterbi_tiles_pat(x.ctypes.data, out.ctypes.data, x.shape[0], cb.ctypes.data, p.ctypes.data, len(p))
