@@ -9275,3 +9275,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (CPTC permutation value function + (a0,a1) per-instance constants + L/Q variants + pack),
   not a from-scratch kernel search. The exllamav3 fork stays the bit-exact reference and
   the DS4 pool-quant source.
+
+## 2026-11-19 — the encoder item is a radiance-style fused quantize command (user)
+
+- User clarification of the fused-encoder ask: once the format is settled (CPTC or whatever
+  wins), take the qtf2 kernels and build a radiance-style quantize COMMAND (like IQR's
+  built-in quantizer) that fully fuses the chain — one pass: rotation → Hessian prep →
+  qtf2 search/encode → scale refit (swj in-GPU) → pack → exl3i container, weight read once,
+  no intermediate level dir, no CPU↔GPU round trips. Plan item updated in local/TODO.md
+  (it's the big kernel-tier project, after the format decision; bit-exact gate vs the ourq
+  pipeline).
