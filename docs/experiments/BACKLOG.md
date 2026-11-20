@@ -786,3 +786,9 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   the whole tensor; the full (unfolded) 63/127-entry form also allows asymmetry. Few parameters → low overfit risk. Needs
   per-tensor table pointers in the decoder (LDS load stays the same). Not possible with mad (a hash, no table). Order: closed-form
   H-weighted per-tensor refit first (no training), then QAD on top. Runtime: neither (same decode).
+
+- **User-built sizes from the record store (11-20, user: "meh", backlog).** Publish the store + fitted sensitivity model + a small
+  solver; users pick a budget (VRAM / host RAM, context, embedding placement, decode vs prefill) and download one manifest's
+  records. Builds on the manifest container (`docs/design/quantizer-native.md`). Mostly worth it only for placement-type choices
+  (embedding in VRAM vs host), which don't matter for DS4.1-F. Caveats: quality is a prediction, only records we made are offered,
+  speed tables only for measured cards.
