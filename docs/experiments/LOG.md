@@ -9258,3 +9258,20 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   tech/ideas, out of our scope); ours = ourq.py (encode) + plugin/exl3quant (exl3i
   importer, the mad patches: cf9d4f61 / 03fe0489) + v3/e3 kernels (exl3hash, exl3frac2,
   exl3cb); rqah = separate, ignorable.
+
+## 2026-11-19 — the RDNA4 quantizer question answered: qtf2 already is it (user)
+
+- User: "there should be a GPU quantizer built from exllamav3's CUDA quantizer, iqr uses one
+  built into radiance; should we use a radiance-style quantizer for RDNA4 instead of theirs
+  (PyTorch + specific kernels)?"
+- Findings: (1) the exllamav3 CUDA quantizer = forks/exllamav3-frac (exllamav3_ext/quant,
+  modules/quant, convert.py; PyTorch-driven; upstream a3bfbfd0 + our patches 0001–0007
+  mirrored in quantize/exl3-patches/). (2) We ALREADY have the native-HIP reimplementation:
+  v3/e3/exl3frac2 (qtf2) — the fork's quantize_tiles_frac_kernel search as gfx1201 kernels,
+  bit-identical by gate, frontier-placement solved in v5–v10 (64 KB LDS cost arrays, packed
+  history, fused KA0 forward), full K0.125–7.875 ladder, production-proven (the V3 49-level
+  ladder quantized on the HIP lanes). IQR's quantizer = StillDeadcode's, separate project.
+- Consequence: the fused-encoder plan item is now "extend qtf2 to the winning lab format"
+  (CPTC permutation value function + (a0,a1) per-instance constants + L/Q variants + pack),
+  not a from-scratch kernel search. The exllamav3 fork stays the bit-exact reference and
+  the DS4 pool-quant source.
