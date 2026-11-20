@@ -9285,3 +9285,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   no intermediate level dir, no CPU↔GPU round trips. Plan item updated in local/TODO.md
   (it's the big kernel-tier project, after the format decision; bit-exact gate vs the ourq
   pipeline).
+
+## 2026-11-19 — search vs production quant paths: radmix + exl3i confirmed as the store/mix machinery (user)
+
+- User: the search phase still needs per-tensor generation; maybe "one recipe per rate, then
+  swap tensors between .rads" — and there should be a tensor store + a radiance branch that
+  loads mixes directly. Confirmed all present: (a) per-tensor store = ourq level dir
+  (exllamav3 layout); (b) mix/radmix.cpp assembles .rad from donor .rads weight-by-weight
+  BY REFERENCE (FICLONE reflink, no copy), with per-weight activation mode (act f16|a8t|
+  a8g<N>) + add/drop; (c) qc-exl3-v3 branch's exl3i plugin imports stores bit-exactly
+  (per-rule src=$LEVEL rate=K), radmix output serves directly. The fused whole-model
+  quantize command (previous item) is the PRODUCTION fast path; search keeps per-rate
+  stores + radmix + KLD. No new mechanism needed for the lab's T2 promotion flow:
+  candidate mix = radmix over the production .rad with the candidate's donor tensors.
