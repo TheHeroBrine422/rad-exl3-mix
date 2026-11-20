@@ -89,8 +89,9 @@ expert-input dumps. Candidate use: cold / unimportant experts at low K.
 Work: w208 = ALU bench (dad1); lead = quality harness on real experts; w207 = MoE routed-expert ops on the general `exl3-v3` branch
 with ONE codebook hook (decode) — the encoder should share the same header.
 
-Evidence so far (27B, LOG 11-20): CPTC beats mad by 2.7 / 4.7 / 4.2 % H-weighted error at K2 / 3 / 4 (8 / 8 tensors), i.i.d. CPTC
-1.947 / 2.940 / 3.927 vs mad 1.930 / 2.907 / 3.872 effective bits. Headroom beyond CPTC for any scalar trellis code: ≤ 0.05–0.06 bits
+Evidence so far (27B, LOG 11-20): CPTC beats mad by 2.9 / 4.4 / 4.7 % H-weighted error at K2 / 3 / 4 (22 / 22 tensors), i.i.d. CPTC
+1.947 / 2.940 / 3.928 vs mad 1.930 / 2.907 / 3.869 effective bits; at K5 / K6 CPTC 4.903 / 5.807 vs mad 4.770 / 5.556 (mad's int8
+grid binds at high K: relevant for the K5–6.5 trunk). Headroom beyond CPTC for any scalar trellis code: ≤ 0.05–0.06 bits
 at K2–3 (CPTC's gap to the rate-distortion limit).
 
 Not for experts: CPTC matmul-aware tables (need correlated operand pairs, ρ > ~0.3; weights × RHT activations ≈ 0). LittleBit-2
