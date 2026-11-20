@@ -76,6 +76,22 @@ fused GPU encoder runs ~60M values/s at L=16 on an L40S → ~40 min of trellis s
 - **No full 27B ladder.**
 - **Stage 4 (MoE / 35B-A3B) starts only after the user has reviewed stages 1 + 2.**
 
+## Mix assembly in the engine (user, 11-20)
+
+Goal: radiance loads a mix **directly from the record store**, so no assembled container is written at all (storage = the cache
+only; no reflink filesystem needed — box2's `/data` is ext4). Shape (proposal):
+- a **manifest container**: a small `.rad` (header, metadata, tokenizer, the small native tensors) whose weight table points at
+  records in other files: (file, offset, length, encoding, content hash) per weight; the store's records are written in exactly the
+  container's record layout and alignment, so the loader reads them as it reads its own;
+- the loader opens / mmaps the referenced files, checks each record's hash (V3's "release = what was measured" manifest check, now
+  in the engine), and uploads or pins host memory as for a normal container; host-RAM-offloaded experts stream from those files /
+  the page cache like any other source;
+- swapping a mix = a new manifest (seconds to write); a search eval needs no pack step (the 27B search's mix → pack cost);
+- release: either assemble real containers once per size (rad-convert from a manifest = a copy), or publish the store + manifests
+  (users download only one size's records; sizes share records). Upstreamable as a generic loader feature.
+Stage: after the quantizer stages 1–3, before the DS4.1-F run. Open: what radiance's loader assumes about one file (mmap ranges,
+TP shard placement, the decision / plan hashes), and how the content hash is defined (V3 used a vid per weight).
+
 ## Order (one agent, staged, each stage reviewed by the lead)
 
 1. Codebook header + GPU tile Viterbi (tail-biting, fractional patterns) vs `viterbi3.c` on random tiles: bit-identical codes.

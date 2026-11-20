@@ -122,8 +122,8 @@ fractional patterns (1/8 granularity itself is not needed for experts).
 4. quantize only the (matrix, K) pairs the sizes pick, into a cache keyed by (tensor, K, codebook, quantizer version); a record is
    identical whichever size picks it, and neighbouring sizes share most picks.
 Cost for 5 sizes (1.5–3.5): ~8 passes (~5 h) and **~0.8–0.9 TB cache** (+ ~50–100 GB sample ladders); a later size adds ~1 pass
-and ~0.15–0.2 TB. Finished containers duplicate the cache (another ~0.85 TB for 5): assemble one size at a time and prune, or
-assemble with reflinks (needs a reflink filesystem + aligned records; box2 `/data` is LVM: check).
+and ~0.15–0.2 TB. Containers: **radiance assembles the mix in the engine from the store** (manifest container pointing at the cached records;
+`quantizer-native.md`), so no container copies exist — storage is the cache only. (box2 `/data` is ext4: no reflinks anyway.)
 
 Healing knob (user, 11-20; BACKLOG): a table codebook lets each tensor (or expert) carry its own 64 B table that post-mix
 healing / QAD can train — a nonlinear correction that scales can't express. Mad has no such knob. Counts for CPTC in the choice.
