@@ -9156,3 +9156,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   0 + ds8 card 0.
 - Paper corpus (local/papers/corpus/, 1.7 MB) staged into agent workspaces as files; critic
   brief adapted from local/papers/critic-brief.md.
+## 2026-11-19 — correction: both iceman cards serve Qwen (AGENTS.md updated)
+
+- User clarifies: card 0 **and** card 1 both run llama-swap (now radiance) serving Qwen38-27B
+  (proxied through llama-swap) — neither card is available for lab work. AGENTS.md amended
+  (card-ownership + Local LLM sections): no polling, donor boxes (box2 + ds8) are the standing
+  GPU pool, Qwen capacity 4–8 concurrent at 100–200k (KV ~1.4M).
