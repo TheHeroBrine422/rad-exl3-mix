@@ -68,13 +68,27 @@ def depth(a0, a1):
 
 
 def e2m5_pos():
-    """E2M5 positive magnitudes (sign bit, 2 exp bits bias 1, 5 mantissa, subnormals, no inf,
-    all-ones magnitude = NaN): 32 subnormal m/64 + 3x32 normal 2^e(1+m/32), e=0,1,2 minus the
-    NaN (e=2,m=31) -> 127 positive values + 0. (paper Sec 5.1)"""
-    g = [m / 64 for m in range(32)]
-    for e in (0, 1, 2):
-        g += [2 ** e * (1 + m / 32) for m in range(32) if not (e == 2 and m == 31)]
-    return np.array(sorted(set(g)))  # 128 incl. 0
+    """E2M5 non-negative magnitudes (paper Sec 5.1): sign + 2 exponent bits (bias 1) + 5 mantissa bits, subnormals,
+    no infinities, all-ones magnitude = NaN. Exponent field 0 = subnormal m/32 (0 .. 31/32); fields 1..3 = normal
+    2^(e-1) (1 + m/32), minus the NaN (e=3, m=31) -> steps 1/32 below 2, 1/16 in [2, 4), 1/8 in [4, 7.75]:
+    127 magnitudes incl. 0 = 253 signed values.
+    (Fixed 2026-11-20: the first version had subnormals m/64, i.e. no values in (0.484, 1.0), which with the
+    missing storage scale below cost ~0.55 bits at K=4.)"""
+    g = [m / 32 for m in range(32)]
+    for e in (1, 2, 3):
+        g += [2 ** (e - 1) * (1 + m / 32) for m in range(32) if not (e == 3 and m == 31)]
+    g = np.array(sorted(set(g)))
+    assert len(g) == 127 and g[-1] == 7.75
+    return g
+
+
+def storage_scale(grid=None):
+    """Appendix C.3 rule: the largest 3-mantissa-bit float c such that c x (max entry of the K=4 Eq (2) starting
+    table) does not saturate the type. Stored value = round(c v), decoded as stored / c. E2M5 -> 2 (paper)."""
+    grid = e2m5_pos() if grid is None else grid
+    vmax = float(np.max(np.abs(table_init_gauss(*COEF[4], 4) / ((1 + 2 / 13) * (1 - 4 ** -4)))))
+    cands = sorted({m / 8 * 2.0 ** e for m in range(8, 16) for e in range(-4, 6)})
+    return max(c for c in cands if c * vmax <= grid[-1])
 
 
 def cell_index(a0, a1, states, shift=0):
@@ -181,27 +195,24 @@ def lloyd_round(Tlower, a0, a1, K, x, ntry=16):
     # states of the ORIGINAL domain: reverse back (encode_rev already reversed the output)
     st = st_rev
     i = cell_index(a0, a1, st, 0)
-    j = np.where(i < 64, i, 126 - i)  # lower index
-    sums_pos = np.zeros(64); cnts = np.zeros(64)
-    # pooled: Tlower[j] = (mean(x|cell j) - mean(x|cell 126-j)) / 2
-    m = np.zeros(127); c = np.zeros(127)
-    np.add.at(m, i.ravel(), x.ravel())
-    np.add.at(c, i.ravel(), 1.0)
-    mean = np.where(c > 0, m / np.maximum(c, 1), 0.0)
-    # signed mirror-symmetric table: pool pair (j, 126-j), j<=62; center cell 63 = 0
+    # pooled mirror-symmetric centroid of the pair (j, 126-j), j <= 62: (sum_j - sum_{126-j}) / (n_j + n_{126-j});
+    # center cell 63 = 0 (the exact fold forces it). (Fixed 11-20: was the unweighted average of the two means.)
+    m = np.bincount(i.ravel(), weights=x.ravel().astype(np.float64), minlength=127)
+    c = np.bincount(i.ravel(), minlength=127).astype(np.float64)
+    num = m[:63] - m[126:63:-1]; den = c[:63] + c[126:63:-1]
     Tnew = np.zeros(64)
-    Tnew[:63] = (mean[:63] - mean[126:63:-1]) / 2
-    Tnew[:63] = np.where(c[:63] + c[126:63:-1] > 0, Tnew[:63], Tlower[:63])  # keep old where unvisited
+    Tnew[:63] = np.where(den > 0, num / np.maximum(den, 1), Tlower[:63])  # keep old where unvisited
     return Tnew, i, q
 
 
-def snap_e2m5(Tlower, grid):
-    """Snap each (signed) entry to the nearest E2M5 magnitude, keeping its sign."""
-    a = np.abs(Tlower)
+def snap_e2m5(Tlower, grid, c=None):
+    """Store each signed entry as round(c v) on the E2M5 grid, decode stored / c (Appendix C.3; c = storage_scale())."""
+    c = STORE_C if c is None else c
+    a = np.abs(Tlower) * c
     idx = np.clip(np.searchsorted(grid, a), 1, len(grid) - 1)
     lo, hi = grid[idx - 1], grid[idx]
     m = np.where(np.abs(a - lo) <= np.abs(a - hi), lo, hi)
-    return np.sign(Tlower) * m
+    return np.sign(Tlower) * m / c
 
 
 def keff_of(x, q):
@@ -238,21 +249,35 @@ def gen_table(K, samples=2 ** 22, holdout=2 ** 18, seed=1234, verbose=True, fit_
         xf = rng.standard_normal((nblk, 256)).astype(np.float32)
         T, _, _ = lloyd_round(T, a0, a1, K, xf, ntry=fit_ntry)
         T = snap_e2m5(T, grid)
-    # final single-entry grid hill-climb (one sweep)
-    cbT = decode_table(a0, a1, T).astype(np.float32)
-    qh, _ = encode_rev(xh, cbT, K)
-    base = keff_of(xh, qh)
-    for j in range(64):
-        for dj in (-1, 1):
-            jj = j + dj
-            if not (0 <= jj < len(grid)):
-                continue
-            Tt = T.copy(); Tt[j] = (np.sign(T[j]) if T[j] != 0 else 1.0) * grid[jj]
-            qh2, _ = encode_rev(xh, decode_table(a0, a1, Tt).astype(np.float32), K)
-            if keff_of(xh, qh2) > base:
-                T, base = Tt, keff_of(xh, qh2)
+    if verbose:
+        qh, _ = encode_rev(xh, decode_table(a0, a1, T).astype(np.float32), K, fit_ntry)
+        print(f"  K={K} after snap rounds: held-out Keff {keff_of(xh, qh):.4f} (pre-snap best {best[0]:.4f})", flush=True)
+    # final pass: move single entries to a neighbouring grid value while the held-out error falls (paper A.2).
+    # (Fixed 11-20: the first version tried grid[j +- 1] for table entry j -- an unrelated value -- once.)
+    def score(Tt):
+        qh2, _ = encode_rev(xh, decode_table(a0, a1, Tt).astype(np.float32), K, fit_ntry)
+        return keff_of(xh, qh2)
+    base = score(T)
+    for sweep in range(8):
+        moved = 0
+        for j in range(63):                        # entry 63 = the center cell, fixed at 0
+            g = int(np.argmin(np.abs(grid - abs(T[j]) * STORE_C)))
+            sg = np.sign(T[j]) if T[j] != 0 else 1.0
+            for gg in (g - 1, g + 1):
+                if not (0 <= gg < len(grid)):
+                    continue
+                Tt = T.copy(); Tt[j] = sg * grid[gg] / STORE_C
+                sc = score(Tt)
+                if sc > base:
+                    T, base, moved = Tt, sc, moved + 1
+                    break
+        if verbose:
+            print(f"  K={K} hill-climb sweep {sweep}: {moved} moves, held-out Keff {base:.4f}", flush=True)
+        if moved == 0:
+            break
     os.makedirs(TBL, exist_ok=True)
     np.save(os.path.join(TBL, f"table-K{K}.npy"), T)
+    np.save(os.path.join(TBL, f"table-K{K}-presnap.npy"), best[1])
     print(f"K={K}: saved {len(T)}-entry E2M5 table (best-round held-out Keff {best[0]:.4f}, "
           f"post-snap {base:.4f})")
     return T
@@ -315,13 +340,19 @@ def check(K, blocks=32, seed=5):
     return bad == 0 and bad2 == 0
 
 
+STORE_C = storage_scale()
+assert STORE_C == 2.0, STORE_C   # the paper's E2M5 scale (Appendix C.3)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "prop1":
         prop1(int(sys.argv[2]) if len(sys.argv) > 2 else 4)
-    elif cmd == "table":
-        gen_table(int(sys.argv[2]))
+    elif cmd == "table":   # table K [samples_per_round]
+        gen_table(int(sys.argv[2]), samples=int(sys.argv[3]) if len(sys.argv) > 3 else 2 ** 22)
     elif cmd == "keff":
-        keff(int(sys.argv[2]))
+        keff(int(sys.argv[2]),
+             blocks=int(sys.argv[3]) if len(sys.argv) > 3 else 16384,
+             ntry=int(sys.argv[4]) if len(sys.argv) > 4 else 16)
     elif cmd == "check":
         check(int(sys.argv[2]))

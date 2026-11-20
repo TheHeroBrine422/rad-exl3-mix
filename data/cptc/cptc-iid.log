@@ -1,0 +1,19 @@
+CPTC K4 coeffs: a0=27256 a1=34255 depth=16
+  round 0: holdout err 0.004369  (62s)
+  round 1: holdout err 0.004368  (119s)
+  round 2: holdout err 0.004367  (170s)
+  round 3: holdout err 0.004367  (223s)
+  round 4: holdout err 0.004366  (275s)
+  round 5: holdout err 0.004364  (326s)
+  round 6: holdout err 0.004364  (378s)
+  round 7: holdout err 0.004363  (428s)
+  round 8: holdout err 0.004361  (480s)
+  round 9: holdout err 0.004360  (533s)
+  round 10: holdout err 0.009130  (587s)
+  round 11: holdout err 0.008998  (647s)
+  round 12: holdout err 0.008991  (702s)
+  round 13: holdout err 0.008986  (754s)
+table fit done
+CPTC K4 (reduced fit): Keff 3.9275  (paper target 4.913, spread ~0.0005/seed)
+plain-128 grid control: Keff 2.7634  (D 0.021689 vs CPTC 0.004319)
+IID DISAMBIGUATION DONE

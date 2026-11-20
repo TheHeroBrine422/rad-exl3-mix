@@ -62,6 +62,13 @@ def codebook(name):
     v = sum(((h >> (8 * i)) & 0xFF) for i in range(4)).astype(np.float64)
     v = (v - v.mean()) / v.std()
     if name == "mul1": return v
+    if name == "mad":   # V3's production codebook (v3/e3/exl3hash: bytesum(((s A + B) mod 2^32) & 0x3F3F3F3F) - 126, fp16 grid)
+        a, b = 0xD0474B, 0x2545F491
+        hm = ((s * a + b) % (1 << 32)).astype(np.uint32) & np.uint32(0x3F3F3F3F)
+        q = sum(((hm >> (8 * i)) & 0xFF).astype(np.int64) for i in range(4)) - 126
+        s4 = np.float32(4.0) * np.uint16(0x1EEE).view(np.float16).astype(np.float32)
+        m = (q.astype(np.float32) * s4).astype(np.float16).astype(np.float64)
+        return (m - m.mean()) / m.std()
     if name == "mul1_i8":
         st = 3.5 / 127; return np.clip(np.round(v / st), -127, 127) * st
     if name == "gauss_i8":

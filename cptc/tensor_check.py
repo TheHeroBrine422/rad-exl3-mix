@@ -29,7 +29,7 @@ sys.path.insert(0, HERE)
 import cptc
 
 F = tuple(float(v) for v in os.environ.get("E3_FACTORS", "1.0,1.15,1.3").split(","))
-BASELINES = os.environ.get("E3_C3_BASE", "mul1,mul1_i8,gauss_i8,int4grid").split(",")
+BASELINES = os.environ.get("E3_C3_BASE", "mul1,mul1_i8,gauss_i8,int4grid").split(",")   # 11-20: use mul1,mad
 
 
 def table_init_emp(vals, a0, a1, K):
@@ -113,7 +113,8 @@ def main():
     for K in bits:
         cbs = {n: np.ascontiguousarray(trellis.codebook(n), dtype=np.float32) for n in BASELINES}
         tf = time.time()
-        T = fit_table(flat, K)
+        tdir = os.environ.get("CPTC_TABLES")   # global Gaussian tables (the paper's deployed tables), else per-tensor fit
+        T = np.load(os.path.join(tdir, f"table-K{K}.npy")) if tdir else fit_table(flat, K)
         cbs[f"cptc{K}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
         t_fit += time.time() - tf
         row = {}

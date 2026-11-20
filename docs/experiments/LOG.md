@@ -9398,3 +9398,29 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   user decision.
 - **Handoff:** `rad-local/handoff-cptc-2026-11-20.md` (state, jobs+ETAs, next actions in order,
   box2 reconnect procedure for the user, infra state, 10 gotchas, files map).
+
+### 2026-11-20 ~1:15 PM CST · CPTC audit (lead, user: "verify all of it"): the K4 "no transfer" verdict is a BUG — retracted
+- **Status:** the 11-20 ~19:00 UTC verdict above ("real i.i.d., no transfer; CPTC 2x worse at K4") is **withdrawn**. Every C3 CPTC
+  row, the diag-cptc CPTC arms (fit volume, H-diag fit, keff_real) and the colo C2 tables were built with a broken E2M5 table
+  storage. Baseline (mul1 / mul1_i8 / gauss_i8 / int4grid / mad) rows are unaffected.
+- **Bug 1 (cptc.py `e2m5_pos`)**: subnormals were m/64 instead of m/32 (paper Sec 5.1: bias 1 -> steps 1/32 below 2), so the grid
+  had **no values in (0.484, 1.0)**. **Bug 2 (`snap_e2m5`)**: entries were snapped at scale c=1; the paper stores round(c v) with
+  the Appendix C.3 storage scale c=2 (decoded as stored / c). Together, a unit-variance table loses most of its |v| < 1 resolution.
+- **Proof (VM, K4, same table, 2^16 held-out samples):** fp64 table Keff 3.9283; buggy snap **3.3812**; paper grid c=1 3.9270; paper
+  grid c=2 3.9267. The buggy-snap number = the old "keff_real" CPTC 3.3979 and the old i.i.d. post-snap held-out error 0.0090 vs
+  0.0044 pre-snap (`data/cptc/cptc-iid.log` rounds 10–13) — i.e. the "real-data collapse" was the snap, on any data. The old i.i.d.
+  "3.9275 reproduces the paper" number was the **pre-snap fp64 table**, so the paper's deployed-table claim was never checked.
+  The rate dependence (K2 ok, K4 2x) is what a fixed table-rounding error does: it is small next to K2's distortion, ~equal to K4's.
+- **Also fixed:** the final hill-climb tried `grid[j +- 1]` for table entry j (an unrelated value) once, now neighbouring grid values
+  of the entry's own value, repeated while the held-out error falls (paper A.2); the Lloyd step pooled mirrored cells as the
+  unweighted average of the two means, now the count-weighted centroid; `agg-c3.py` labelled tensor classes by layer only.
+- **Checked OK:** Table 6 L=16 coefficients, Algorithm 1 cell index + fold, Eq (2) init, Table 2 targets; Prop 1 K=1..6 re-run
+  PASS (VM, f64); production mad definition (diag + new `trellis.codebook("mad")` = v3/e3/exl3hash, standardised).
+- **Not yet checked (running):** C2 i.i.d. tables with the fixed code (colo, paper protocol 2^22/round, K1..6, + Keff vs mad / mul1
+  on the same samples); C3 v2 = the paper's approach (one global Gaussian table per K, not per-tensor fits) vs mad / mul1 on the
+  same 22 tensors, K2..6 (thor, reduced 2^20 tables first); old-row reproduction + viterbi2 bit-identity + TB16 vs TB1 on 2/ssm_z.
+  Scripts `cptc/runs/` (c2.sh, c3.sh, keffcmp.py, verify-old.sh), aggregator `cptc/agg-c3v.py`. Killed: the 4 thor gap jobs,
+  colo's 26/ffn_down + C2 K4r / K6 (all buggy). The quantlab judge image bundles the buggy cptc.py: rebuild before any anchor seeding.
+- **Efficiency:** old C3 used E3_TB=16 (16 wrap candidates = 16x search cost; LOG ff97d597: multi-candidate wrap ~nothing) and the
+  legacy search; v2 uses TB=1 + the AVX2 search (bit-identical) — verify-old measures the TB16 vs TB1 difference on one tensor.
+- **Runtime:** neither (quantizer-side study).

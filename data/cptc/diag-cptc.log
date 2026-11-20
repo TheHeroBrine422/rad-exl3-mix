@@ -1,0 +1,17 @@
+== Part 1: i.i.d. K4 Keff, global codebooks (CPTC reduced-fit: 3.9275, paper target 3.934)
+  mul1: Keff 3.8809  D 0.004607
+  mul1_i8: Keff 3.8810  D 0.004607
+  gauss_i8: Keff 3.8249  D 0.004979
+  int4grid: Keff 3.2139  D 0.011616
+  mad: Keff 3.8726  D 0.004661
+== Part 2: real 3/ffn_gate_up
+  cptc-T1024 (C3 repro) 0.004258  [skipped, verified this session]
+  cptc-T216 (2^16/round) 0.004287  (6065s)
+  cptc-Thd (H-diag fit) 4.802769  (6795s)
+  mad (global) 0.002142  (7298s)
+  mul1 (global) 0.002127  (7799s)
+  madfit 0.002141  (8324s)
+  mul1fit 0.002130  (8851s)
+  keff_real: {'cptc-T216': 3.3979, 'mad': 3.8715, 'mul1': 3.8806}
+{"iid": {"mul1": 3.8809, "mul1_i8": 3.881, "gauss_i8": 3.8249, "int4grid": 3.2139, "mad": 3.8726}, "rel": {"cptc-T1024": 0.004258, "cptc-T216": 0.00428658, "cptc-Thd": 4.802768731, "mad": 0.002142268, "mul1": 0.002127333, "madfit": 0.002140565, "mul1fit": 0.002129628}, "keff_real": {"cptc-T216": 3.3979, "mad": 3.8715, "mul1": 3.8806}, "total_sec": 9011.4}
+DIAG DONE
