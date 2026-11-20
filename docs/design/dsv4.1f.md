@@ -98,6 +98,9 @@ Not for experts: CPTC matmul-aware tables (need correlated operand pairs, ρ > ~
 (2603.00042): needs full QAT, worse than 2-bit methods at 1 bpw, a different kernel family; at most a later option for experts below
 1 bpw.
 
+Healing knob (user, 11-20; BACKLOG): a table codebook lets each tensor (or expert) carry its own 64 B table that post-mix
+healing / QAD can train — a nonlinear correction that scales can't express. Mad has no such knob. Counts for CPTC in the choice.
+
 ## Encoder
 
 Target: a native fused encoder in radiance **libquant** (C++ / HIP, rad-convert), not the PyTorch / exllamav3 path. Base:
