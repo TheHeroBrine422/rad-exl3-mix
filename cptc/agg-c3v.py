@@ -4,7 +4,12 @@ error, same rows / rotation / LDLQ for every arm). Per K: geometric-mean ratio o
 over tensors, and the mad-vs-mul1 spread as the empirical scale of 'two equal-quality codebooks' noise."""
 import json, sys, math, numpy as np
 R = [json.loads(l) for f in sys.argv[1:] for l in open(f) if l.strip()]
-R = list({(r["layer"], r["w"]): r for r in R if "per_K" in r}.values())
+M = {}
+for r in R:                       # merge arm files (base / cptc rows of the same tensor): per K dict union
+    if "per_K" not in r: continue
+    m = M.setdefault((r["layer"], r["w"]), {"layer": r["layer"], "w": r["w"], "per_K": {}})
+    for k, d in r["per_K"].items(): m["per_K"].setdefault(k, {}).update(d)
+R = [m for m in M.values() if all(f"cptc{k}" in d and "mad" in d for k, d in m["per_K"].items())]
 Ks = sorted({int(k) for r in R for k in r["per_K"]})
 def ci(v, n=4000, rng=np.random.default_rng(0)):
     v = np.asarray(v); b = [np.mean(rng.choice(v, len(v))) for _ in range(n)]

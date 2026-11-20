@@ -258,7 +258,7 @@ def gen_table(K, samples=2 ** 22, holdout=2 ** 18, seed=1234, verbose=True, fit_
         qh2, _ = encode_rev(xh, decode_table(a0, a1, Tt).astype(np.float32), K, fit_ntry)
         return keff_of(xh, qh2)
     base = score(T)
-    for sweep in range(8):
+    for sweep in range(int(os.environ.get("CPTC_HC_SWEEPS", 8))):
         moved = 0
         for j in range(63):                        # entry 63 = the center cell, fixed at 0
             g = int(np.argmin(np.abs(grid - abs(T[j]) * STORE_C)))

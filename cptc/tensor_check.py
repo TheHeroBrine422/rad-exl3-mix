@@ -114,8 +114,10 @@ def main():
         cbs = {n: np.ascontiguousarray(trellis.codebook(n), dtype=np.float32) for n in BASELINES}
         tf = time.time()
         tdir = os.environ.get("CPTC_TABLES")   # global Gaussian tables (the paper's deployed tables), else per-tensor fit
-        T = np.load(os.path.join(tdir, f"table-K{K}.npy")) if tdir else fit_table(flat, K)
-        cbs[f"cptc{K}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
+        if os.environ.get("E3_C3_ARMS", "all") == "cptc": cbs = {}
+        if os.environ.get("E3_C3_ARMS", "all") != "base":
+            T = np.load(os.path.join(tdir, f"table-K{K}.npy")) if tdir else fit_table(flat, K)
+            cbs[f"cptc{K}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
         t_fit += time.time() - tf
         row = {}
         for n, cb in cbs.items():
