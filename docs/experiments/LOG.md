@@ -9347,3 +9347,32 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - **Lesson:** thor's reboot risk (known: it's the VPN host, can go up and down) finally bit a
   long job mid-run — reinforces "never make a result depend on thor staying up" for multi-hour
   single-machine batches; wave-1 was 12 jobs on one box for exactly this reason.
+
+### 2026-11-20 ~10:40 UTC · C3 fast-track + first box2 rows: CPTC is rate-dependent — tie at K2, −7% at K3, −100% at K4
+- **Status:** in progress (C3) · **Machines:** thor, box2 · **Data:** /tmp/c3-sofar.jsonl (7 rows: fast-track 4 + box2 L2 3)
+- **i.i.d. Keff K4 (VM, reduced fit 10+4 rounds, 2^14/round): 3.9275 vs paper target 3.934** — the
+  CONSTRUCTION is sound (my first i.i.d. check had mis-indexed the target; 4.913 is K5's). Same-harness
+  i.i.d. K4 Keff: CPTC 3.9275 > mul1 3.8809 ≈ mad 3.8726 > gauss_i8 3.8249 > int4grid 3.2139 — the paper's
+  i.i.d. ordering (CPTC beats RPTC-class) reproduces in our hands.
+- **Real-tensor rows (H-weighted ldlq, E3_TB=16, best of f∈{1,1.15,1.3}, one-sided):**
+  - K2 (L2 ssm tensors, 3 rows): cptc2 −1.9% / −1.8% / −0.5% vs best baseline (mul1_i8/mul1) — tie/slight win.
+  - K3 (same 3): +6.2…+7.6% loss vs mul1_i8 — consistent, ~2× the ±1.5% noise bar.
+  - K4 (all 7 rows incl. dense L3/L27): +96.8…+100.3% loss (≈2× rel-MSE) vs mul1/mul1_i8.
+  The gap is rate-dependent and K4-specific: ΔKeff implied ≈ +0.02 (K2) / +0.05 (K3) / **+0.5 bits (K4)** —
+  a collapse at K4, not a gradual one. K4 construction is i.i.d.-sound, so the K4 collapse is a
+  real-data/harness effect.
+- **Confounder corrections (same night):** (1) "mul1 is a 128 KB LUT" was wrong for production — mul1/mad are
+  COMPUTED hash codebooks (cb_hash.cuh: value = cheap function of state, 0 B stored); the stored-RPTC
+  instantiation is the non-deployable one, which is what the CPTC paper's cost argument targets. qlagg cost
+  model fixed (autoresearch-v3 7f0ac39). (2) C3's CPTC fit protocol deviates from the paper in fit data
+  volume (1024 blocks/round vs 2^22) — being tested directly.
+- **Disambiguation running:** diag-cptc.py on thor (K4, 3/ffn_gate_up): cptc-T1024 control (REPRODUCED the
+  C3 row exactly: 0.004258) → cptc-T216 (2^16 blocks/round refit, with-replacement) → cptc-Thd (table fit on
+  H-diagonal-weighted values — prime suspect: plain-MSE fit vs H-weighted DP objective) → global mad/mul1 →
+  madfit/mul1fit (per-tensor 30-round Lloyd of the full 65536-state map: "does fitting help what we do").
+  ETA ~14:30 UTC (~6:30 AM CT). C2-K4 full-protocol i.i.d. Keff started on colo (background, ~8-16 h).
+- **Decision rule (pre-registered here, before the diag lands):** if Thd or T216 closes the K4 gap to
+  mul1 → re-run C3 with the better fit protocol; CPTC+H-fit becomes a T2 candidate. If nothing closes it
+  → CPTC's i.i.d. claim doesn't transfer to H-weighted 27B; CPTC stays lab anchor #0, fleet hunts formats
+  that beat computed-mad. If madfit ≪ mul1 → per-tensor fitting is valuable in our domain; the fleet's
+  first experiment is a fitted 64K-state (or mid-size) codebook.
