@@ -9459,3 +9459,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   port of the 7k-line exl3r4d library (fused gate_up_down, _mod4, SwiGLU limit, A8, persistent launches not ported). DS4.1-F needs
   SwiGLU limit (config swiglu_limit 10). No live engine run yet.
 - 11-20 3:19 PM CST: **CPTC INT8 table (CPTC_GRID=int8, scale 32; colo, paper protocol):** K6 Keff **5.751** (E2M5 5.807, mad 5.556, mul1 5.621): int8 costs 0.055 bits vs E2M5 and still leads mad by **0.195 bits**. K5 int8 table post-snap held-out 4.900 (E2M5 4.905), Keff pending; K4 fitting. Use INT8 for the A8 trunk.
+- 11-20 ~3:50 PM CST: **per-tensor CPTC table refit (closed form on the LDLQ targets, CPTC_REFIT; thor) — null on 27B layer 3
+  attn_k K4:** rel 0.0008687 for the global table and after 1 / 2 / 3 refits (identical). Debug (`refitdbg.py`): all 64 entries
+  used, every entry's mirrored target mean within ≤ 0.003 of its table value, far below half the E2M5 storage step (1/64 near 0) →
+  the snap returns the global table. After the RHT a real tensor at unit RMS is Gaussian enough that the global table is already
+  its own optimum; per-tensor tables only matter if the storage grid is finer or the objective changes (QAD on KLD). One tensor,
+  one K: recheck on DS experts (MXFP4 source) before closing.
