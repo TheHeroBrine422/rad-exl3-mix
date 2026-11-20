@@ -61,10 +61,25 @@ fused GPU encoder runs ~60M values/s at L=16 on an L40S → ~40 min of trellis s
 8. **Search settings.** TB = 1 (TB16 costs 16× for ~0.3 %), viterbi3's fused form as the CPU reference.
 9. **Later, not in v1:** trainable tables / healing hooks, A4-aware encoding, QAD.
 
-## Proposed order (one agent, staged, each stage reviewed by the lead)
+## Decisions (user, 11-20)
+
+- Gaps list (Q1) is about right. **The ladder / mix flow is the main problem** → ladder mode (Q2 option a).
+- **PR later**: build upstreamable where reasonable (libquant plugin on `exl3-v3`), no promise it lands.
+- Expert Hessians: plenty of rows per expert expected; no row threshold logic, only the pooled fallback for an expert with none.
+- **Speed comparison vs the old quantizer** is a deliverable: same tensors, same card (box2 R9700), wall time per tensor and
+  per K, and the extrapolated time for a 27B ladder and for DS4.1-F. Optimization passes come later, separately.
+- **No full 27B ladder.**
+- **Stage 4 (MoE / 35B-A3B) starts only after the user has reviewed stages 1 + 2.**
+
+## Order (one agent, staged, each stage reviewed by the lead)
 
 1. Codebook header + GPU tile Viterbi (tail-biting, fractional patterns) vs `viterbi3.c` on random tiles: bit-identical codes.
-2. LDLQ + rotation + scale search on one tensor vs `ourq.py` / `tensor_check.py`: proxy error within noise.
-3. Ladder mode over a whole 27B (all levels), into the store; KLD check of one assembled size.
-4. MoE batching; Qwen3.6-35B-A3B end to end (convert, serve with w207's kernels, KLD vs bf16).
+2. LDLQ + rotation + scale search on single 27B tensors (the 22 C3 tensors) vs `ourq.py` / `tensor_check.py`: proxy error within
+   noise; **speed table vs the old quantizer**. → **user review.**
+3. (proposed, smaller than a ladder) one K level of the whole 27B trunk, compared with the existing ladder records at the same K
+   (already in the store on box2, so the old quantizer needn't rerun): per-tensor error, then one assembled size's KLD.
+4. After the user's go: MoE batching; Qwen3.6-35B-A3B end to end (convert, serve with w207's kernels, KLD vs bf16).
 5. DS4.1-F: MXFP4 / fp8 source, d100b Hessians, out-of-core, 4 cards.
+6. Later: optimization passes.
+
+Before stage 1: rebase `exl3-v3` onto radiance v2.2.0.
