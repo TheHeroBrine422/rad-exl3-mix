@@ -9127,3 +9127,19 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   were alive and at full CPU all along). 22 (layer,tensor) × K=2,3,4, CPTC per-tensor fit +
   the 4 E3 codebooks; first wave ~10 min out, full set ~35–45 min. Scorer core:
   cptc/tensor_check.py (committed 54e0fec2 + follow-ups).
+
+## 2026-11-19 — tensor-quant lab: scoring axes + ds8 re-join + GPU-per-agent (user)
+
+- User's scoring spec for the lab: (1) quantization time (2^L Viterbi scaling explicit — the
+  QTIP L20-vs-L16 16× case), (2) quality vs size, (3) dequant time, (4) prefill/decode,
+  (5) per-band × per-tensor-class Pareto (narrow-band specialists like int4 at 0.125–2 bpw are
+  useful as mixed-allocation candidates, e.g. DS4.1F experts); Pareto = 3–4D (quality, size,
+  dequant, quant). Unoptimized kernel outputs → dual reporting: measured + analytic cost model;
+  thresholds on the model.
+- **ds8 is back in the pool** (user: donor compute, "we can take it back"; 8× R9700S, 48
+  threads, 235 GB, 2.2 TB — LXC on Proxmox). ssh forward 2240 down — user re-establishes
+  (thanos VPN + reverse forward). GPU-per-agent = docker containers inside the existing LXC,
+  each ROCR_VISIBLE_DEVICES-pinned to one card (user can't create LXCs).
+- C3 (Thor): wave 1 of 11 running ~30 min (fits + baselines); L2/L26 wave queued; results in
+  /data/work/cptc/c3.jsonl. (Two "jobs died" scares were my own reading errors: pgrep without
+  -f, and an ls truncated at head -20 — no files were ever lost. /data is fuse.shfs.)
