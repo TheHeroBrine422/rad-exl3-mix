@@ -9162,3 +9162,21 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (proxied through llama-swap) — neither card is available for lab work. AGENTS.md amended
   (card-ownership + Local LLM sections): no polling, donor boxes (box2 + ds8) are the standing
   GPU pool, Qwen capacity 4–8 concurrent at 100–200k (KV ~1.4M).
+
+## 2026-11-19 — quantlab judge containment: docker on box2 (user: untrusted candidate code)
+
+- User: the judge runs effectively untrusted code (agent-written candidate patches) → it must
+  run in a container. Thor's sandbox is locked down (no docker/podman, unshare -U/-m and mount
+  all "Operation not permitted" — tested) so namespace sandboxes are out there.
+- Decision: judge host = **box2** (docker 29.1.3). Per-candidate run = `docker run --rm
+  --network=none --read-only` with ro mounts (candidate dir, checkpoint, Hessians), tmpfs /tmp,
+  small rw output, --cpus=4 --memory=16g, non-root user; pinned image bakes the scorer tree
+  (viterbi compiled in-image). No network in the judge = no exfil/fetch; read-only = no host
+  writes; the static gate + critic remain the first two lines, the container the third.
+- Data to box2 (all public, HF): Qwen/Qwen3.8-27B (52 GB, 32 files) +
+  StillDeadcode/qwen3.8-27b-quant-challenge hessians/calib (47 GB, 257 files, --repo-type
+  dataset) — both downloading since 00:35 UTC, ETA ~3 h (1 Gbps).
+- C3 stays on Thor (trusted code only). quantlab scaffolding so far in autoresearch-v3
+  (a711d78): SPEC.md (candidate format, patch bounds, score spec), problems/quantlab-27b.json
+  (judge host now box2 — to be updated), qljudge.py (spec-parameterized fit, fit/encode time
+  split, size model; eval ntry=1 frozen for comparability with the C3 anchors).
