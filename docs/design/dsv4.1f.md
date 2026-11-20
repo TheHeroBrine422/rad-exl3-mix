@@ -112,6 +112,19 @@ step Δ ≈ 0.96 · Δ²/12: integer 8 %, 1/2 2 %, 1/4 0.5 %, 1/8 0.13 %. The 27
 The format and encoder keep 1/8 everywhere (free); add 1/8 levels only where the knapsack piles up. Codebook gate: supports
 fractional patterns (1/8 granularity itself is not needed for experts).
 
+**Lazy ladder, not a full expert ladder (user + lead, 11-20).** Menu: 20 expert levels to K4, 24 to K5 → ~1M knapsack options
+(easy). But a full ladder = 20–24 encodes of 544B values (~13–15 h Viterbi on 4 cards at the paper's ~60M values/s/card) and
+**~2.5 TB (to K4) / ~3.7 TB (to K5)** of records: too big for any box. Instead:
+1. full ladders on a sample of experts (a few %, across layers, hot / cold) → the curve shape (27B: fractional levels sit at 0.99–1.00
+   of the interpolated curve, #36);
+2. every other matrix at 2–3 levels → its fitted curve (keep only the error numbers, delete the records);
+3. knapsack per target size on the fitted curves;
+4. quantize only the (matrix, K) pairs the sizes pick, into a cache keyed by (tensor, K, codebook, quantizer version); a record is
+   identical whichever size picks it, and neighbouring sizes share most picks.
+Cost for 5 sizes (1.5–3.5): ~8 passes (~5 h) and **~0.8–0.9 TB cache** (+ ~50–100 GB sample ladders); a later size adds ~1 pass
+and ~0.15–0.2 TB. Finished containers duplicate the cache (another ~0.85 TB for 5): assemble one size at a time and prune, or
+assemble with reflinks (needs a reflink filesystem + aligned records; box2 `/data` is LVM: check).
+
 Healing knob (user, 11-20; BACKLOG): a table codebook lets each tensor (or expert) carry its own 64 B table that post-mix
 healing / QAD can train — a nonlinear correction that scales can't express. Mad has no such knob. Counts for CPTC in the choice.
 

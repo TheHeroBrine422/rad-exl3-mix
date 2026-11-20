@@ -63,6 +63,11 @@ fused GPU encoder runs ~60M values/s at L=16 on an L40S → ~40 min of trellis s
 
 ## Decisions (user, 11-20)
 
+- **Store = a cache keyed by (tensor, K, codebook, quantizer version)**; "quantize this mix" fills the missing records and reuses
+  the rest; a full ladder is the cache filled completely (one code path). Every quantization reports its proxy error (the curve
+  fits for DS experts read these). DS4.1-F uses a lazy ladder (sampled curves → knapsack → quantize the picks only;
+  `dsv4.1f.md`), so the quantizer must support both modes.
+
 - Gaps list (Q1) is about right. **The ladder / mix flow is the main problem** → ladder mode (Q2 option a).
 - **PR later**: build upstreamable where reasonable (libquant plugin on `exl3-v3`), no promise it lands.
 - Expert Hessians: plenty of rows per expert expected; no row threshold logic, only the pooled fallback for an expert with none.
