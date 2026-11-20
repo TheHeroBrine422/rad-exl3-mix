@@ -1,0 +1,3 @@
+{"K": 4, "blocks": 16384, "target": 3.934, "cptc": 3.9279, "cptc_presnap": 3.9304, "mad": 3.8692, "mul1": 3.8786}
+{"K": 5, "blocks": 16384, "target": 4.913, "cptc": 4.903, "cptc_presnap": 4.9119, "mad": 4.7699, "mul1": 4.807}
+{"K": 6, "blocks": 16384, "target": 5.802, "cptc": 5.8065, "cptc_presnap": 5.8667, "mad": 5.5563, "mul1": 5.6209}

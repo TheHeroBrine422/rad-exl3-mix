@@ -9442,3 +9442,19 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
     tensors each** (mad vs mul1 +0.6–0.8 %). The paper's LLM margin over 1MAD is 1–5 % KL: **CPTC transfers.**
   - Raw `data/cptc/rerun-1120/`.
 - 11-20 ~2:20 PM CST (user): codebook Pareto frontier for DS4.1-F routed experts started: axes ALU cost / size (tables ≤ 8 KB) / quality, gates fractional K; w208 (Fable low, dad1) = ALU bench (w8a8 + w4a4, decode M 1-8 + prefill; candidates mad, mad4, mul1_i8, CPTC Q6 / Q5-full / minimal / one-multiply / state-table L10-12 (paper App. D.1), QTIP 1MAD / 3INST, int4grid); lead = quality on real 1017 experts. CPTC paper read in full (references/cptc/cptc.txt): matmul-aware tables only help with correlated operand pairs (rho > ~0.3; weights x RHT activations ~0) -> not for experts. Plan notes in rad-local/TODO.md.
+- **11-20 ~2:55 PM CST, CPTC rerun results (fixed code; supersedes the 11-20 "no transfer" verdict):**
+  - **C3 v2, all 22 tensors (27B, global Gaussian tables thor 2^20, TB1, 256 rows):** CPTC vs mad **−2.9 % [−3.3, −2.5] K2,
+    −4.4 % [−5.0, −3.8] K3, −4.7 % [−5.3, −4.2] K4, 22 / 22 tensors at every K**; vs mul1 −2.3 / −4.0 / −3.6 %; mad vs mul1 +0.4–1.2 %.
+    `data/cptc/rerun-1120/agg-c3v.md`.
+  - **C2 paper protocol (colo, 2^22 / round, keff 2^22 samples, ntry 4):** CPTC K4 3.9279 / K5 4.9030 / K6 5.8065 (paper 3.934 /
+    4.913 / 5.802: −0.006 / −0.010 / +0.005); mad 3.8692 / 4.7699 / 5.5563; mul1 3.8786 / 4.8070 / 5.6209. **At K5 / K6 CPTC leads mad
+    by 0.13 / 0.25 bits** (mad's int8 grid binds at high K) — relevant for the K5–6.5 trunk. K1–3 still in hill-climb. Tables
+    `cptc/tables-1120/`.
+  - **Verdict: CPTC is real and transfers to our one-sided H-weighted 27B harness.** Next: full-model KLD needs a CPTC decode
+    in exl3i (w207's codebook hook) + the ALU numbers (w208).
+- 11-20 ~2:55 PM CST: **w207 done (reviewed):** branch `exl3-v3` (worktree /workspace/forks/radiance-exl3v3; d82ff75c, 4d8568d1,
+  88468d9b, 90c435b1): `moe_exl3_gate_up` / `moe_exl3_down` over exl3i records (decode ≤ 16 tokens / prefill forms, f16 activations,
+  mad, fractional + sub-1 K), one codebook hook (`exl3i_decode_what_rows` host, `plan.decode(w)` device), routed block wired into HYV3
+  under fakes; dad1: device vs reference 42 cases (tolerance 1/256 h, 1 bf16 ulp y), exl3i 16 / 16, arch_test 225. A rebuild, not a
+  port of the 7k-line exl3r4d library (fused gate_up_down, _mod4, SwiGLU limit, A8, persistent launches not ported). DS4.1-F needs
+  SwiGLU limit (config swiglu_limit 10). No live engine run yet.
