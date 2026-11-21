@@ -1,0 +1,312 @@
+{
+ "base": "data/ds41-baseline/mik225/mik1/report.json",
+ "cand": "/workspace/rad-exl3-mix/data/ds41-baseline/w213/port1/report.json",
+ "positions": 150008,
+ "base_mean": 0.061247837321347594,
+ "cand_mean": 0.061247837321347594,
+ "diff": {
+  "mean": 0.0,
+  "ci": [
+   0.0,
+   0.0
+  ],
+  "sd": 0.0,
+  "rel": 0.0,
+  "rel_ci": [
+   0.0,
+   0.0
+  ]
+ },
+ "top1": {
+  "base": 0.9215108752250671,
+  "cand": 0.9215108752250671,
+  "diff_pp": 0.0
+ },
+ "rows": {
+  "identical_share": 1.0,
+  "p50_abs": 0.0,
+  "p99_abs": 0.0,
+  "p999_abs": 0.0,
+  "max_abs": 0.0,
+  "top1_flips": 0,
+  "lp_ref_max_abs": 0.0
+ },
+ "by_category": {
+  "agentic": {
+   "positions": 28678,
+   "docs": 46,
+   "base": 0.021047222399463817,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "books": {
+   "positions": 8118,
+   "docs": 2,
+   "base": 0.12283979700065244,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "chat": {
+   "positions": 10204,
+   "docs": 13,
+   "base": 0.04848657826362214,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "code": {
+   "positions": 14331,
+   "docs": 7,
+   "base": 0.049061945406705706,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "encyclopedic": {
+   "positions": 4444,
+   "docs": 7,
+   "base": 0.1094362684855254,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "legal": {
+   "positions": 1527,
+   "docs": 2,
+   "base": 0.10220651620625192,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "long": {
+   "positions": 6713,
+   "docs": 2,
+   "base": 0.0677962037305446,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "long-agentic": {
+   "positions": 18850,
+   "docs": 14,
+   "base": 0.0387146566431972,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "math": {
+   "positions": 7186,
+   "docs": 8,
+   "base": 0.12761928270373013,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "multilingual": {
+   "positions": 9174,
+   "docs": 10,
+   "base": 0.11058216690692267,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "qa": {
+   "positions": 4400,
+   "docs": 6,
+   "base": 0.11232065950983892,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "reasoning": {
+   "positions": 10227,
+   "docs": 4,
+   "base": 0.02472405921730608,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "science": {
+   "positions": 8428,
+   "docs": 3,
+   "base": 0.06676380181855882,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "tools": {
+   "positions": 4627,
+   "docs": 49,
+   "base": 0.025929771420867834,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  },
+  "web": {
+   "positions": 13101,
+   "docs": 11,
+   "base": 0.09162854481528832,
+   "diff": 0.0,
+   "ci": [
+    0.0,
+    0.0
+   ],
+   "se": 0.0,
+   "z": 0.0
+  }
+ },
+ "top_docs": [
+  {
+   "doc": 0,
+   "source": "5ccd3fe8",
+   "category": "agentic",
+   "scored": 61,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 1,
+   "source": "25bdceb7",
+   "category": "agentic",
+   "scored": 1277,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 2,
+   "source": "f6eee81d",
+   "category": "agentic",
+   "scored": 851,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 3,
+   "source": "65ba2af0",
+   "category": "agentic",
+   "scored": 778,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 4,
+   "source": "13197e7c",
+   "category": "agentic",
+   "scored": 892,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 5,
+   "source": "d80f77b4",
+   "category": "agentic",
+   "scored": 298,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 6,
+   "source": "605b24df",
+   "category": "agentic",
+   "scored": 622,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 7,
+   "source": "6bb7e807",
+   "category": "agentic",
+   "scored": 1552,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 8,
+   "source": "ca69fff7",
+   "category": "agentic",
+   "scored": 616,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  },
+  {
+   "doc": 9,
+   "source": "deaa3ab5",
+   "category": "agentic",
+   "scored": 876,
+   "diff_sum": 0.0,
+   "diff_mean": 0.0
+  }
+ ],
+ "not_generated_rows_diag": {
+  "positions": 456108,
+  "base_mean": 0.7208519620795834,
+  "cand_mean": 0.7208519620795834,
+  "identical_share": 1.0,
+  "max_abs": 0.0
+ },
+ "gate": {
+  "mean_within_3pct": true,
+  "ci_within_5pct": true,
+  "categories_within_2se": true,
+  "top1_within_0p3pp": true,
+  "pass": true
+ }
+}

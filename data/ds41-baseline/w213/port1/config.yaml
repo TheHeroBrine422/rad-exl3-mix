@@ -1,0 +1,19 @@
+cards: [0,1,2,3]
+memory:
+  gpu-headroom-mib: 96
+models:
+  ds41-mik225:
+    model: /data/q27/w212/mik225/deepseek-v4.1-flash-1017-exl3-2.25bpw.rad
+    tp: 4
+    tp-wire: exact
+    placement: expert_tiered
+    host-pool-mib: 49152
+    ngram-placement: disk
+    kv-cache-dtype: bf16
+    max-model-len: 9216
+    max-num-seqs: 1
+    max-num-batched-tokens: 2048
+    checkpoint-interval: 8192
+    chat-template-kwargs: {"enable_thinking":false}
+    kld-ref: /data/q27/w212/gold-v1
+    kld-out: /data/q27/w213/runs/port1/report.json.part
