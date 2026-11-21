@@ -545,5 +545,17 @@
   "line": "v3",
   "decisions": 0,
   "note": "#186 (w163, 2026-11-14): diagnostic golden's calib documents (32): 16 golden-ver3-8k monitor docs (6 non-Latin script, 10 English prose controls) + 14 search-pool and 2 fit-pool documents from the search goldens' calib parts (non-Latin script); diagnosis of the 2.5 pick's doc-100 gap, no search decision"
+ },
+ "qad215-train": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#215 (w215, 2026-11-21): trainer-speed equivalence runs (v3/qad181/eq215.sh: qad181 V 6 x Q 1024, seed 0, 20 steps on a K2.5 student, iceman): the 81 qad-pool docs the 20 steps reach, from their start; speed / equivalence only, no quality decision"
+ },
+ "qad215-check": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#215 (w215, 2026-11-21): eval215.py's held-out sanity of the speed runs' final scales (fast vs base within 0.1 %): the last 40 qad-pool docs of eq215's seeded order, first 2,048 tokens; never trained on in these runs; equivalence only, no quality decision"
  }
 }
