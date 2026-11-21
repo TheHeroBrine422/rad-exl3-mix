@@ -165,6 +165,9 @@ else:
     fine = np.arange(g0 - 0.08, g0 + 0.081, 0.02)
     sc2 = [keff(xs, v * g, 1) for g in fine]
     g = float(fine[int(np.argmax(sc2))]); cb = v * g; extra = {"scale": round(g, 3)}
+if os.environ.get("CB_SAVE"):   # save the final 65536-entry codebook (for the real-tensor harness)
+    os.makedirs(os.environ["CB_SAVE"], exist_ok=True)
+    np.save(os.path.join(os.environ["CB_SAVE"], f"{NAME.replace(':', '_')}-K{K}.npy"), np.asarray(cb, dtype=np.float32))
 x = np.random.default_rng(777).standard_normal((NB, 256)).astype(np.float32)
 out = {"name": NAME, "K": K, "blocks": NB, "ntry": NTRY, "keff": round(keff(x, cb, NTRY), 4), **extra}
 print(json.dumps(out), flush=True)

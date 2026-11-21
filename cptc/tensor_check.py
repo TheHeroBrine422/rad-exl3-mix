@@ -147,6 +147,9 @@ def main():
             for it in range(int(os.environ.get("CPTC_REFIT", "0"))):   # per-tensor closed-form refit on the LDLQ targets
                 T = refit_table(T, K, Wr / rms, Hr)
                 cbs[f"cptc{K}r{it + 1}"] = np.ascontiguousarray(cptc.decode_table(*cptc.COEF[K], T), dtype=np.float32)
+        for spec in filter(None, os.environ.get("CB_EXTRA", "").split(",")):   # name=DIR: DIR/<name>-K<K>.npy (65536 codebook)
+            nm, d = spec.split("=", 1); f = os.path.join(d, f"{nm.replace(':', '_')}-K{K}.npy")
+            if os.path.exists(f): cbs[nm.split(":")[0]] = np.ascontiguousarray(np.load(f), dtype=np.float32)
         t_fit += time.time() - tf
         row = {}
         for n, cb in cbs.items():
