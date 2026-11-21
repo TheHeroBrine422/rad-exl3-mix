@@ -75,6 +75,12 @@ def cells(name):
             return n.astype(np.int64), 16, False
         m = np.uint64(0x3F3F3F3F if name == "madlut" else 0x7F7F7F7F)
         return bytesum(h & m).astype(np.int64), (253 if name == "madlut" else 509), False
+    if name.startswith("cptc1m"):   # ONE 24-bit multiply, two 6-bit fields (bits 10-15 + 26-31) summed: CPTC-like index
+        C = int(name.split(":")[1], 16) if ":" in name else 0x9E3779
+        p = (S * np.uint64(C)) & np.uint64(0xFFFFFFFF)
+        return (((p >> np.uint64(10)) & np.uint64(63)) + (p >> np.uint64(26))).astype(np.int64), 127, False
+    if name == "cptc7":   # unified pair, 7-bit fields: 255-entry table (wider alphabet for K5-6)
+        return (prod_hi(A0, 9) + prod_hi(A1, 9)).astype(np.int64), 255, False
     if name == "cptcst10":
         return (S & np.uint64(1023)).astype(np.int64), 1024, False
     raise KeyError(name)
@@ -147,7 +153,7 @@ def fit_table(name, rng):
 
 rng = np.random.default_rng(1000 + K)
 extra = {}
-if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10", "madlut", "madlutw", "madpoplut", "mul1lut"):
+if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10", "madlut", "madlutw", "madpoplut", "mul1lut", "cptc7") or NAME.startswith("cptc1m"):
     cb, extra = fit_table(NAME, rng)
 else:
     v = fixed_cb(NAME); v = v / np.sqrt(np.mean(v ** 2))
