@@ -37,6 +37,17 @@ One 1,024-token segment fwd + bwd 3.9 s (264 positions/s); GPU-bound: GEMMs 46 %
 int8 → bf16 / f32 ↔ bf16 copies 21 %, f32 scale multiplies 13 %, GDN 8 %. Peak 29.4 GiB at an 8k prefix. Data parallel:
 3 cards 664 tokens/s (~590 gen rows/s).
 
+## Speed (w215, 11-21; iceman R9700 at 250 W, K2.5 student, qad-pool calib, V 6 × Q 1024)
+Full optimizer steps (steps 3–20 of `eq215.sh`): **base 241 positions/s → 299 with `--compile-scales --compile-ew` (1.24×)**,
+peak 28.7 GiB. Pieces: the int8 → bf16 weight copy is a Triton kernel (`qmodel.i8_to_bf16`, always on, bitwise identical,
+1.06×); `--compile-scales` (QLinear's scale / cast chain) 1.19× with it; `--compile-ew` (shift conv + MLP silu · up) a further
+1.04×. Both compile flags run Inductor with `numerics = "strict"` (eager's bf16 downcasts and reduction order: forward
+bitwise = eager) and `deterministic = True` (runs reproducible); their backward differs from eager at rounding level
+(first-step gradient rel L2 1.5e-7 for `--compile-scales`, 1.6e-2 with `--compile-ew`). Use both for new runs. Gate and
+benches: `eq215.sh` / `eq215.py` (20-step run, final scales + per-step KL + first-step gradient with `GRAD215=1`),
+`prof215.py` (`PROF215_STEP=k`: profile one optimizer step), `eval215.py` (held-out KL of final scales), `testew215.py`,
+`bench215.py`, `benchmm215.py` / `benchblas215.py` / `benchdx215.py` (GEMM layouts). Report: `rad-local/workers/out/w215.md`.
+
 ## Results (LOG #181, 11-13 → 11-14)
 - **Gen rows only.** The xcorp / trace goldens record every row; the board scores only the tokens the model writes
   (`gen.u8`). Prompt-side rows are arbitrary in any bf16 implementation and hold 73–83 % of the search slices' x-part KL.

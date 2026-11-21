@@ -186,6 +186,12 @@ radiance `main` between 2.1.0 and 2.2.0. v2.2.0 already carries part of it (the 
 Estimate: one focused worker session (port + build + boot on box2 at TP4 with the release's MXFP4 experts), then exl3i experts.
 His upstream PR plan splits the same pieces (imatrix fix #267, gather read-ahead, release reader, model support, kernels).
 
+## KV cache (w216 measurement; user 11-21: i8 KV deferred)
+deepseek41 bf16 KV: 3,200 B a token a card at TP4 + ~93 MiB fixed → 122 MiB / card at 9k, 294 MiB at 64k, 3.2 GiB at the 1M max,
+~6.3 GiB at 2M. The main compressed KV is the model's own FP8 / FP4 (exact, `rad_kv_fp8.h`); i8 would only touch the bf16 window /
+tail / indexer caches, and indexer error can change which 512 tokens are selected (discrete, high-risk). Not worth it at this size:
+**deferred** (needs kernels anyway; the plugin takes bf16 / fp8 only).
+
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
 

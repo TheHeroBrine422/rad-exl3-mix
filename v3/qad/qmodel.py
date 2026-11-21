@@ -305,6 +305,7 @@ class Student:
 
     def embed(self, ids):
         rows = torch.from_numpy(np.ascontiguousarray(self.emb[ids])).view(BF)
+        if self.devs[0].type == "cuda": return rows[None].pin_memory().to(self.devs[0], non_blocking=True)   # no host wait (w215)
         return rows[None].to(self.devs[0])
 
     def _ctx(self, dev, x):
