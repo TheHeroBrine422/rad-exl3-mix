@@ -9563,3 +9563,15 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-20 ~10:20 PM CST: **K3 screens final:** cptc1m 80 constants best 2.929 (0xd9dc6d), median 2.916; lc1 best 2.909 of 110. **Codebook round 2 closed:** frontier = madpop4 (int4, K ≤ 2, mad cost) · packed cptc7 (int8, K2–5, 1.21–1.41× at K2–3 vs mad 1.14–1.24×; one 255 B table) · mad / mul1_i8 (K ≥ 6) · searched lc1 optional at K ≤ 2 (1.11×). Open: CPTC fractional-K table; madpop4 / cptc7 on real tensors; K1 sub-1 choices.
 - 11-21 ~11:00 PM CST (11-20): **Decision (user): mad everywhere for DS4.1-F v1** (one codebook; w8a8). lc1 (K ≤ 2, pure decode win) and packed cptc7 (K2–5, ~3–5 % weight error) kept as the V4 upgrade path on a future per-tensor table plane. Running colo fits finish for the record.
 - 11-21 ~11:30 PM CST (11-20): **saved-codebook fits (colo sv):** lc1:0xc8b3 K1 **0.955** / K2 1.934 / K3 2.903 (best multiplier at K1 and K2: one constant covers both; mad 0.951 / 1.932 / 2.917); cptc7 K1 0.952 / K2 1.947 / K3 2.937 / K4 3.926 / K5 4.896. Codebooks saved on colo `/data/work/cptcv/cbsave/` for the V4 real-tensor check (not run: mad-only decision).
+- 11-21 ~12:10 AM CST: **w210 done (Fable low; native quantizer part 2)** — `exl3-v3` 3630b377, 9f87fd31, 836e6334, 925b9dd1, d1b1c8fd;
+  data `data/quantizer-native/w210/` (b254492b, ae263f8d). Whole tensor pipeline on the card (rotation, rms scales, scale search,
+  Hessian damping / factor, back-rotation, refit, packing) + `quantize_batch` / `run_batches` (same-shape tensors together, shared
+  Hessians factored once, reader / card / writer pipe). Records byte-identical to w209's host path (layer 3, K2 / K4, 42 / 42 files).
+  Layer 3 vs rxq (same card / session, loads excluded): plain 0.67× / 0.71× time at K2 / K4, ladder 0.72× / 0.65×, release settings
+  (ladder + H_out + tile CD + clamp) 0.72× / 0.74×, proxy within ±0.1 % (ladder / release) — **now 25–35 % faster than the old
+  quantizer**; non-search time 17–19 → 9 s a layer, tile search = 2/3 now. Batching (synthetic experts, 1 card): ~1 matrix/s
+  (11–14M values/s); 2 cards scale. Extrapolated DS4.1-F routed experts one K on 4 cards, all steps: ~3.3 h (K2) / 2.9 h (K4), disk
+  reads excluded; 27B level ~30 min. Extras behind flags, each checked vs rxq: tile CD, scale clamp, measured drift (K ≤ 1), swj,
+  stacked gate_up suh.1, R16 rows, two-sided LDLQ (diagonal H_out). Defaults changed: scale_clamp on, measured_drift on (g below
+  K1.5), quantizer version 3 (K ≥ 1.5 output = w209 byte for byte) — lead OK (release settings). `scale_sample` (faster scale search,
+  proxy ±0.33 %) left off. Not implemented: #117 block order, C9 α, asym writers.
