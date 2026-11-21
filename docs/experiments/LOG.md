@@ -9482,3 +9482,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   K5 4.898, K6 5.751**; mad 0.936 / 1.931 / 2.908 / 3.869 / 4.770 / 5.556; mul1 0.931 / 1.936 / 2.915 / 3.879 / 4.807 / 5.621. INT8
   costs nothing to K5 and 0.055 bits at K6; still +0.13 / +0.20 bits over mad at K5 / K6. Tables: `cptc/tables-1120/`,
   `cptc/tables-int8-1120/`.
+- 11-21 ~6:15 PM CST (11-20): **C3 K5 / K6 with int8 CPTC tables (thor, 22 tensors, TB1): K5 CPTC vs mad −5.6 % [−7.1, −4.7], 22 / 22;
+  K6 +9.2 % [+5.4, +11.5], CPTC worse on 21 / 22** (mad vs mul1 +2.0 % at both). UNVERIFIED anomaly: i.i.d. predicts −23 % at K6
+  (5.755 vs 5.570 bits, re-measured with the same E3 Viterbi TB1 as the harness, so the encoder is not it). Real-vs-i.i.d. shortfall
+  grows with K (K2 0, K3 ~0, K4 3 pp, K5 10 pp, K6 33 pp) and is uniform across tensors → a systematic, K-growing error floor on the
+  CPTC side, not tails (both tables top out at ~3.9 σ; mad's grid at ~3.4 σ). Diagnostics running: factor grid 0.7–1.8 and the
+  E2M5 table on 3 tensors. `data/cptc/rerun-1120/c3v-k56-int8.jsonl`, `agg-c3v-k56-int8.md`.
