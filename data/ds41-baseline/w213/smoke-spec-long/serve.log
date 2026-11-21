@@ -1,0 +1,407 @@
+I device: AQL backend, 4 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201]
+I fleet: 1 model(s) on card(s) 0,1,2,3; 1 load now, the rest on demand
+I model ds41-mik225: loading on card(s) 0,1,2,3
+I rope: YaRN factor 16 over 65536 trained positions -- the rotary reaches 1048576; --max-model-len 9216 (the container's own)
+I model: deepseek41  arch=deepseek41  quant=bf16  40 layers  1048576 ctx
+I vocab: 129280 tokens, bos=0 eos=1
+I gbnf: vocabulary index built in 30 ms, 13.20 MiB
+I device: the 4 cards reach each other's memory directly (peer to peer)
+I speculation: depth 5, this drafter's own operating point (--num-speculative-tokens N overrides it)
+I chained launches: off -- no drafter whose plugin measured a gain with them decodes speculatively
+I media: off -- the model carries a vision tower, but this build has no media decoder (RAD_WITH_FFMPEG) and would refuse every media part, so the tower is not loaded and its card memory goes to the experts and the cache; --mm-max-patches N loads it all the same
+I control vectors: not loaded (no --control-vector); a request that asks for one is refused
+I[0] sampler: 129280-token vocabulary (32320 this rank), 6 rows, 1010 mask words (3.95 KiB per row)
+I[3] sampler: 129280-token vocabulary (32320 this rank), 6 rows, 1010 mask words (3.95 KiB per row)
+I[1] sampler: 129280-token vocabulary (32320 this rank), 6 rows, 1010 mask words (3.95 KiB per row)
+I[2] sampler: 129280-token vocabulary (32320 this rank), 6 rows, 1010 mask words (3.95 KiB per row)
+I host-site execution: 5 of 1590 declared ops have no host kernel (mhc_collapse_rmsnorm, rmsnorm_rope_roundtrip, rope_rows_roundtrip, mhc_post_collapse_rmsnorm, ar_mhc_post_collapse_rmsnorm). Their weights may still be tiered to host or SSD -- only the arithmetic is pinned to the device. --debug-graph lists the bands.
+I declare: 1590 ops, 28029 weights, 200 buffers, 9 KV groups
+I speculation: 'dspark' proposes 5 token(s) in ONE block pass over 5 row(s) (mask id 128799, window 129); prompt lookup fills in for any sequence it declines
+I activation arena: not lent -- the 'deepseek41' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+I placement: n-gram table (103.00 GiB) disk: as asked
+I kv: the pool backs 100% of the worst case (1 sequences all at 9216 tokens), 1.0 full-length sessions; a larger --host-pool-mib gives the cache more
+I VRAM budget, per card:
+  card total          31.86 GiB
+  already held       485.54 MiB   measured: driver context, code objects, anything else resident
+  driver drift        16.00 MiB   what that moves by after it is read: kept free
+  activation arena   1022.82 MiB   computed from the buffer plan
+  step staging       276.25 KiB   the step batch's block tables and media staging, and the
+                                  KV tiers' copy staging
+  hardware queues    266.11 MiB   3 a card at 35.37 MiB each, measured: the engine's streams
+  expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+  --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+  ------------------------------
+  claimable           30.02 GiB
+  static weights       3.16 GiB   off the top: every rank's own shard, and not a share of anything
+  ------------------------------
+  elastic             26.86 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+                                  and lends what no live request holds to the expert slab
+    experts           26.74 GiB   100% of it
+    kv cache         121.71 MiB   0% of it -- backs 1 sequences all at 9216 tokens at once, which is the worst case and
+                                  more would be unusable
+  ==============================
+  vram_weights        29.90 GiB   static + experts
+  vram_kv            122.00 MiB   the cache's share
+  unclaimed           95.26 MiB   the headroom, the unusable above, and what MiB rounding
+                                  could not place
+
+I[0] pools:
+vram_weights    29.90 GiB budget,        0 B used,  29.90 GiB free
+vram_kv        122.00 MiB budget,        0 B used, 122.00 MiB free
+host_pool       12.00 GiB budget,        0 B used,  12.00 GiB free
+
+I[1] pools:
+vram_weights    29.90 GiB budget,        0 B used,  29.90 GiB free
+vram_kv        122.00 MiB budget,        0 B used, 122.00 MiB free
+host_pool       12.00 GiB budget,        0 B used,  12.00 GiB free
+
+I[2] pools:
+vram_weights    29.90 GiB budget,        0 B used,  29.90 GiB free
+vram_kv        122.00 MiB budget,        0 B used, 122.00 MiB free
+host_pool       12.00 GiB budget,        0 B used,  12.00 GiB free
+
+I[3] pools:
+vram_weights    29.90 GiB budget,        0 B used,  29.90 GiB free
+vram_kv        122.00 MiB budget,        0 B used, 122.00 MiB free
+host_pool       12.00 GiB budget,        0 B used,  12.00 GiB free
+
+I[0] mover: 2901 slab slots (88 shadow, up to 440 more kept free out of a loan as swaps ask for them), 1123 pinned pool slots, 3.16 GiB static vram
+I[0] load: rank 0, mover took 29.89 GiB, weights pool 4.32 MiB free of 29.90 GiB
+I[0] heat engine: 3936 movable units, 64 moves a step, decay 0.950 hysteresis 1.25 min-gain 1.50 credit cap 512 admit-heat 8.0
+I[1] mover: 2917 slab slots (88 shadow, up to 440 more kept free out of a loan as swaps ask for them), 1107 pinned pool slots, 3.01 GiB static vram
+I[1] load: rank 1, mover took 29.89 GiB, weights pool 6.95 MiB free of 29.90 GiB
+I[1] heat engine: 3936 movable units, 64 moves a step, decay 0.950 hysteresis 1.25 min-gain 1.50 credit cap 512 admit-heat 8.0
+I[2] mover: 2917 slab slots (88 shadow, up to 440 more kept free out of a loan as swaps ask for them), 1107 pinned pool slots, 3.01 GiB static vram
+I[2] load: rank 2, mover took 29.89 GiB, weights pool 6.95 MiB free of 29.90 GiB
+I[2] heat engine: 3936 movable units, 64 moves a step, decay 0.950 hysteresis 1.25 min-gain 1.50 credit cap 512 admit-heat 8.0
+I[3] mover: 2917 slab slots (88 shadow, up to 440 more kept free out of a loan as swaps ask for them), 1107 pinned pool slots, 3.01 GiB static vram
+I[3] load: rank 3, mover took 29.89 GiB, weights pool 6.95 MiB free of 29.90 GiB
+I[3] heat engine: 3936 movable units, 64 moves a step, decay 0.950 hysteresis 1.25 min-gain 1.50 credit cap 512 admit-heat 8.0
+I load: 8.04 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 119045541888
+I load: 16.07 GiB of 150.48 GiB read, 1.7 GB/s, at container offset 127665573888
+I load: 24.12 GiB of 150.48 GiB read, 1.7 GB/s, at container offset 136308600832
+I load: 32.15 GiB of 150.48 GiB read, 1.7 GB/s, at container offset 144944992256
+I load: 40.17 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 153549955072
+I load: 48.19 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 162166636544
+I load: 56.21 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 170791202816
+I load: 64.23 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 179382640640
+I load: 72.28 GiB of 150.48 GiB read, 1.6 GB/s, at container offset 188034252800
+I load: 80.30 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 196641886208
+I load: 88.35 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 205286518784
+I load: 96.35 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 213876293632
+I load: 104.36 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 222473117696
+I load: 112.41 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 231118438400
+I load: 120.46 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 239769079808
+I load: 128.56 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 248448102400
+I load: 136.56 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 257038979072
+I load: 144.57 GiB of 150.48 GiB read, 1.5 GB/s, at container offset 265840095232
+I load: one pass over the container, 150.55 GiB read in 102.2 s (1.6 GB/s) for 4 rank(s); 50.4 s of that was the disk (3.2 GB/s)
+I load: 109596 weight(s), 150.36 GiB of planes, rearranged for their kernels by 16 worker(s) behind the read, 1.04 GiB held at most; done 102.2 s after the read began
+I load: 112104 weights, 154.69 GiB placed from 150.55 GiB of container read
+I load: 12 weight(s), 412.00 GiB, read in place from the container's mapping -- not copied and charged to no pool (summed over ranks, which map the same file: the resident bytes are that divided by --tp); 103.00 GiB of the container stays page-cached for them
+I chunk geometry: quantum 16 (attn block 16, state chunk 1), checkpoint interval 2048, max_tok 2048 -> prefill chunks of at most 2048
+I prefix resume: exact -- a hit resumes only where an idle server's cold prefill of the same prompt starts a chunk (every 2048 tokens) and a prompt's tail snapshot is taken where its last chunk starts, so the hit recomputes the cold run's own chunks and answers bit-identically; a turn re-prefills up to one chunk more than --prefix-resume nearest
+I checkpoint slots: auto: 6 linear-state + sliding-window snapshot(s) of 25.33 MiB in pinned host memory (151.97 MiB), none of it on the card; 6 a sequence for --max-num-seqs 1: geometric-backoff keeps 5 for a 9216-token session at a 2048-token interval, and one more for a running turn
+I kv tiers: off (no --prefix-cache-mib); a finished conversation's KV stays in VRAM until the cache evicts it
+I kv: KV layer bundles 40/2/3/3/3/1/1/3 (56 real layers)
+    vLLM stock    size  1 -> 56 groups,  56 slots (0 padding)
+    least-waste   size  1 -> 56 groups,  56 slots (0 padding)
+    radiance      per state kind, own pool ->  8 groups,  56 slots (0 padding)
+    (none)         ?        0 layers  state      0 B        0 slots =       0 B
+    kv_window      window  40 layers  block   16 tok  page 640.00 KiB      139 blocks = 86.88 MiB  (2224 tokens)
+    kv_engram_tokens conv     2 layers  state     64 B        1 slots =      64 B
+    kv_comp_tail_r2 linear   3 layers  state 84.00 KiB        2 slots = 168.00 KiB
+    kv_index_r2    full     3 layers  block    2 tok  page    768 B     4656 blocks =  3.41 MiB  (9312 tokens)
+    kv_compressed_r2 full     3 layers  block    2 tok  page 3.00 KiB     4656 blocks = 13.64 MiB  (9312 tokens)
+    kv_index_r1    full     1 layers  block    1 tok  page    256 B     9312 blocks =  2.27 MiB  (9312 tokens)
+    kv_compressed_r1 full     1 layers  block    1 tok  page 1.00 KiB     9312 blocks =  9.09 MiB  (9312 tokens)
+    kv_dspark      window   3 layers  block   16 tok  page 48.00 KiB      139 blocks =  6.52 MiB  (2224 tokens)
+    pool at 0x7a42bfe00000, 122.00 MiB; groups at +0..+127901696
+
+I prefix cache: 4 paged group(s) in 2-token entries; checkpoints every 2048 tokens (6 slots of 6.33 MiB a rank, pinned host memory), retention 'geometric-backoff'
+  group 'kv_index_r1' block 1: 2 blocks an entry
+  group 'kv_compressed_r1' block 1: 2 blocks an entry
+  group 'kv_window' is windowed (10 blocks): not cached; a checkpoint slot carries its window
+  group 'kv_dspark' is windowed (10 blocks): not cached
+
+I[0] arena: 976.81 MiB device + 46.00 MiB scratch + 0 B for the second lane = 1022.82 MiB, charged to the VRAM budget before it was split
+I[1] arena: 973.80 MiB device + 46.00 MiB scratch + 0 B for the second lane = 1019.81 MiB, charged to the VRAM budget before it was split
+I[2] arena: 973.80 MiB device + 46.00 MiB scratch + 0 B for the second lane = 1019.81 MiB, charged to the VRAM budget before it was split
+I[3] arena: 973.80 MiB device + 46.00 MiB scratch + 0 B for the second lane = 1019.81 MiB, charged to the VRAM budget before it was split
+I mover: 1 slots can be lent out of the KV cache (8.48 MiB), filled as it lends them
+I mover: 1 slots can be lent out of the KV cache (8.48 MiB), filled as it lends them
+I mover: 1 slots can be lent out of the KV cache (8.48 MiB), filled as it lends them
+I mover: 1 slots can be lent out of the KV cache (8.48 MiB), filled as it lends them
+I kv: the cache can grow to 121.97 MiB a card -- 9312 tokens of context, 1.0 sessions at 9216 -- with every block it lends the experts taken back; 168.06 KiB of that is per-sequence state, and up to 8.48 MiB is lent to the experts while no request holds it
+I device allocations: 16 totalling 123.58 GiB, of which 120.07 GiB is the two pools -- the rest is the activation arena and the step staging. Anything on the card past this is the driver or a kernel plugin's own hipMalloc, which this cannot see.
+I[0] card 0 settled at 340.64 MiB free, against 131.64 MiB (the 96.00 MiB --gpu-headroom-mib and 35.64 MiB kept for the step staging and for what is built on first use)
+I[1] card 1 settled at 344.65 MiB free, against 131.64 MiB (the 96.00 MiB --gpu-headroom-mib and 35.64 MiB kept for the step staging and for what is built on first use)
+I[2] card 2 settled at 344.64 MiB free, against 131.64 MiB (the 96.00 MiB --gpu-headroom-mib and 35.64 MiB kept for the step staging and for what is built on first use)
+I[3] card 3 settled at 344.64 MiB free, against 131.64 MiB (the 96.00 MiB --gpu-headroom-mib and 35.64 MiB kept for the step staging and for what is built on first use)
+I draft floor: 6 paged group(s), 4 prefix-cached, 1 in the window snapshot -> a hit leaves a hole in a drafter's own KV
+I prefix cache: a trunk layer's windowed group is not prefix-cached -- a hit resumes from a window snapshot (a checkpoint slot)
+I scheduler: --prefill-interleave auto: after a prefill chunk that leaves its prompt unfinished while other sequences decode, decode-only steps follow for up to 1.00 of the chunk step's measured time (at most 64 steps)
+I draft refill: a prefix hit ends 129 tokens before the prompt's end, so the drafter's window is recomputed
+I step batch: 4.33 MiB pinned staging ring + 276.25 KiB device slab a rank (147.25 KiB of it block tables), 9 KV group(s), 0 derived buffer(s)
+I scheduler: --busy-prefill-chunk auto: a prefill chunk sharing a step leaves decode rows and waiting requests their room and keeps at least 16 tokens
+I chat: template loaded (18693 bytes); tools=1 tool_calls=1 system=1 thinking=1
+I chat: reply format plugin:deepseek41: reasoning "<think>".."</think>"; section "<｜DSML｜ calls>".."</｜DSML｜ calls>"; calls """<｜DSML｜ invoke name=\""NAME"\">\n" "<｜DSML｜ parameter name=\""ARG"\""" string=\"true\">"|" string=\"false\">"VALUE"</｜DSML｜ parameter>" "</｜DSML｜ invoke>"""; grammar on "<｜DSML｜ calls>"
+I sampling defaults for requests that send none: temperature 1.00, top_k 0 (the 1024 most likely tokens, the sampler's candidate width), top_p 1.00, min_p 0.00 (from nothing stated it)
+W this checkpoint states no sampling of its own and none was given, so a request that sends no sampler fields is served with the whole vocabulary live at temperature 1 -- which ends a reply early often enough to notice. Pass --generation-config, or put the checkpoint's generation_config.json beside the container as /data/q27/w212/mik225/deepseek-v4.1-flash-1017-exl3-2.25bpw.generation.json.
+I request defaults and bounds from the command line: template enable_thinking=false
+I chat: the template takes reasoning_effort low, medium, high, xhigh, max, and none or minimal turn thinking off
+I chat: a request naming no reasoning_effort renders as 'high', the template's own default (--reasoning-effort sets another)
+I STARTUP REPORT -- radiance 2.2.0
+I CONFIGURATION -- every option not at its default, the value in force, and where it came from
+I   --model                            /data/q27/w212/mik225/deepseek-v4.1-flash-1017-exl3-2.25bpw.rad  [models.ds41-mik225.model]
+I   --radiance-home                    /data/q27/w213/src/build/radiance_home      [environment (RADIANCE_HOME)]
+I   --kernels                          exl3r4d@0.1.0,libavx@0.1.0,libr4d@0.5.0,spechub@0.1.0,exl3ref@0.1.0,libref@0.1.0  [auto]
+I                                        every kernel library under --radiance-home, in the loader's order (a reference implementation last); architecture plugin deepseek41@0.1.0
+I   --tp                               4                                           [models.ds41-mik225.tp]
+I   --tp-wire                          exact                                       [models.ds41-mik225.tp-wire]
+I   --p2p                              peer to peer                                [auto]
+I                                        the driver reports every pair of the ranks' cards can reach the other's memory
+I   --max-num-batched-tokens           2048                                        [models.ds41-mik225.max-num-batched-tokens]
+I   --prefill-interleave               auto:1                                      [auto]
+I                                        decode-only steps for as long as a chunk step took while prompts prefill beside decoding sequences
+I   --max-num-seqs                     1                                           [models.ds41-mik225.max-num-seqs]
+I   --max-model-len                    9216                                        [models.ds41-mik225.max-model-len]
+I   --gpu-headroom-mib                 96                                          [memory.gpu-headroom-mib]
+I   --kv-cache-dtype                   bf16                                        [models.ds41-mik225.kv-cache-dtype]
+I   --host-pool-mib                    49152                                       [models.ds41-mik225.host-pool-mib]
+I   --embedding-placement              vram                                        [auto]
+I                                        no table only embed_lookup reads (an output head tied to it reads it too, whole, every step)
+I   --vision-tower-placement           n/a                                         [auto]
+I                                        this server declares no encoder tower
+I   --ngram-placement                  disk                                        [models.ds41-mik225.ngram-placement]
+I                                        the table is 103.00 GiB: as asked
+I   --placement                        expert_tiered                               [models.ds41-mik225.placement]
+I                                        as asked
+I   --checkpoint-slots                 6                                           [auto]
+I                                        6 a sequence for --max-num-seqs 1: geometric-backoff keeps 5 for a 9216-token session at a 2048-token interval, and one more for a running turn
+I   --num-speculative-tokens           5                                           [auto]
+I                                        the depth the drafter in this container states as its operating point
+I   --host                             127.0.0.1                                   [server.host]
+I   --port                             8011                                        [server.port]
+I   --served-model-name                ds41-mik225                                 [models.ds41-mik225]
+I   --mm-max-patches                   0                                           [auto]
+I                                        the model carries a vision tower, but this build has no media decoder to feed it
+I   --temp                             1                                           [auto]
+I                                        the model states no sampling of its own, so this is the built-in default
+I   --top-k                            0                                           [auto]
+I                                        the model states no sampling of its own, so this is the built-in default
+I   --top-p                            1                                           [auto]
+I                                        the model states no sampling of its own, so this is the built-in default
+I   --min-p                            0                                           [auto]
+I                                        the model states no sampling of its own, so this is the built-in default
+I   --max-n                            8                                           [auto]
+I                                        the larger of 8 and --max-num-seqs
+I   --max-queued-requests              8                                           [auto]
+I                                        8 x --max-num-seqs
+I   --chat-template-kwargs             enable_thinking=false                       [models.ds41-mik225.chat-template-kwargs]
+I   --http-threads                     48                                          [auto]
+I                                        one a hardware thread, at least 4
+I   137 options at their default (-v lists every option; /diagnostics carries them all)
+I ENVIRONMENT -- the RADIANCE_* variables set, by name; their values are not shown
+I   RADIANCE_HOME
+I DERIVED -- what startup worked out that no single option states
+I   chained launches                   off
+I                                        no drafter whose plugin measured a gain with them decodes speculatively
+I   kernel selection                   exl3r4d 160, exl3ref (host) 160, libavx (host) 1840, libr4d 2054 op bands
+I                                        attention:
+I                                        attn_sparse_sink -> avx_attn_sparse_sink
+I                                        attn_sparse_sink -> ds41_attn_sparse_sink_d512_bf16
+I                                        ds41_rope_rows -> avx_rope_rows
+I                                        ds41_rope_rows -> ds41_rope_rows_bf16
+I                                        entry_store -> avx_entry_store
+I                                        entry_store -> entry_store_bf16
+I                                        index_candidates -> avx_index_candidates
+I                                        index_score -> avx_index_score
+I                                        index_score -> ds41_index_score_d128_bf16
+I                                        index_topk -> avx_index_topk
+I                                        kv_store -> avx_kv_store
+I                                        kv_store -> kv_store_bf16
+I                                        qsa_tail_store -> avx_qsa_tail_store
+I                                        qsa_tail_store -> qsa_tail_store_f32
+I                                        qsa_work -> avx_qsa_work
+I                                        qsa_work -> qsa_work_f32
+I                                        rope_rows_roundtrip -> rope_rows_roundtrip_fp4_bf16
+I                                        rope_rows_roundtrip -> rope_rows_roundtrip_fp8_bf16
+I                                        rope_table -> avx_rope_table
+I                                        rope_table -> rope_table_f32
+I                                        softmax_pool -> avx_softmax_pool
+I                                        softmax_pool -> softmax_pool_bf16
+I   vram split                         weights 29.90 GiB (experts 26.74 GiB of it), KV cache 121.71 MiB, a card
+I                                        VRAM budget, per card:
+I                                          card total          31.86 GiB
+I                                          already held       485.54 MiB   measured: driver context, code objects, anything else resident
+I                                          driver drift        16.00 MiB   what that moves by after it is read: kept free
+I                                          activation arena   1022.82 MiB   computed from the buffer plan
+I                                          step staging       276.25 KiB   the step batch's block tables and media staging, and the
+I                                                                          KV tiers' copy staging
+I                                          hardware queues    266.11 MiB   3 a card at 35.37 MiB each, measured: the engine's streams
+I                                          expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+I                                          --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+I                                          ------------------------------
+I                                          claimable           30.02 GiB
+I                                          static weights       3.16 GiB   off the top: every rank's own shard, and not a share of anything
+I                                          ------------------------------
+I                                          elastic             26.86 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+I                                                                          and lends what no live request holds to the expert slab
+I                                            experts           26.74 GiB   100% of it
+I                                            kv cache         121.71 MiB   0% of it -- backs 1 sequences all at 9216 tokens at once, which is the worst case and
+I                                                                          more would be unusable
+I                                          ==============================
+I                                          vram_weights        29.90 GiB   static + experts
+I                                          vram_kv            122.00 MiB   the cache's share
+I                                          unclaimed           95.26 MiB   the headroom, the unusable above, and what MiB rounding
+I                                                                          could not place
+I   weights by tier                    VRAM 28.88 GiB, host pool 9.94 GiB, container on disk 0 B, mapped 103.00 GiB (rank 0)
+I   kv cache                           121.97 MiB a card: 9312 tokens, 1.0 sessions at 9216
+I                                        168.06 KiB of it is per-sequence state; up to 8.48 MiB is lent to the experts while no request holds it
+I HARDWARE
+I   host      AMD EPYC 7443 24-Core Processor | 24 cores, 48 threads | RAM 113.57 GiB, 63.30 GiB available | swap none
+I   system    kernel 7.0.14-26-pve | Ubuntu 26.04.1 LTS | no container seen | cgroup memory unlimited | memlock unlimited
+I   memory    huge pages madvise (defrag madvise, shmem never) | ttm.pages_limit 125.86 GiB | pinned by this process 48.26 GiB
+I   iommu     passthrough (the display devices' IOMMU groups are of type identity)
+I   amdgpu    cwsr_enable 1 | boot parameters: iommu=pt pcie_aspm=off
+I   cpu       governor performance (acpi-cpufreq) | io_uring available
+I   runtime   HIP 7.16.26385 | backend device
+I   media     decoders absent (built without libav*)
+I   card 0000:03:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card4
+I       link   00:01.1 2.5 GT/s x16 (max 16.0 GT/s x16) -> 01:00.0 2.5 GT/s x16 (max 32.0 GT/s x16) -> 02:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 03:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 0% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:27:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card3
+I       link   20:03.1 2.5 GT/s x16 (max 16.0 GT/s x16) -> 25:00.0 2.5 GT/s x16 (max 32.0 GT/s x16) -> 26:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 27:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 0% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:43:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card2
+I       link   40:01.1 2.5 GT/s x16 (max 16.0 GT/s x16) -> 41:00.0 2.5 GT/s x16 (max 32.0 GT/s x16) -> 42:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 43:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 0% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:63:00.0  not serving  0x1002:0x7551  31.86 GiB VRAM  NUMA 0  driver amdgpu card1
+I       link   60:03.1 2.5 GT/s x16 (max 16.0 GT/s x16) -> 61:00.0 2.5 GT/s x16 (max 32.0 GT/s x16) -> 62:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 63:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 0% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 500-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:65:00.0  not serving  0x1a03:0x2000  unknown VRAM  NUMA 0  driver ast card0
+I       link   60:05.2 2.5 GT/s x1 (max 2.5 GT/s x1) -> 64:00.0 2.5 GT/s x1 (max 5.0 GT/s x1) -> 65:00.0 ? (max ?)  [read at ?% busy]
+I       power  cap unknown (default unknown, max unknown) | voltage offset unknown | sclk unknown | mclk unknown | runtime pm active (control on) | iommu group identity
+I   card 0000:83:00.0  rank 3 (device 3)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA 1  driver amdgpu card8
+I       link   80:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> 81:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> 82:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> 83:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 97-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:a3:00.0  rank 2 (device 2)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA 1  driver amdgpu card7
+I       link   a0:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> a1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> a2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> a3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 97-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:c3:00.0  rank 1 (device 1)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA 1  driver amdgpu card6
+I       link   c0:01.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> c1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> c2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> c3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 97-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I   card 0000:e3:00.0  rank 0 (device 0)  gfx1201 "AMD Radeon AI PRO R9700"  31.86 GiB VRAM  NUMA 1  driver amdgpu card5
+I       link   e0:03.1 16.0 GT/s x16 (max 16.0 GT/s x16) -> e1:00.0 16.0 GT/s x16 (max 32.0 GT/s x16) -> e2:00.0 32.0 GT/s x16 (max 32.0 GT/s x16) -> e3:00.0 32.0 GT/s x16 (max 32.0 GT/s x16)  [read at 5% busy: a link at rest parks below its maximum]
+I       pcie   0: 2.5GT/s, x16 250Mhz | 1: 16.0GT/s, x16 616Mhz | *2: 16.0GT/s, x16 1143Mhz
+I       dma    copy lists not used: nothing streams weights onto this card
+I       power  cap 210 W (default 300 W, max 330 W) | voltage offset 0 mV | sclk 93-2350 MHz | mclk 96-1258 MHz | runtime pm active (control on) | iommu group identity
+I FINDINGS -- 0 warnings, 9 notes
+I   note experts-from-host: 9.94 GiB of weights a rank live in the pinned host pool and cross PCIe when they are used
+I        why: a prefill step streams every routed layer's pooled experts onto the card, so its speed is bounded by the link; decode reads the ones it routes to
+I        fix: more VRAM for the experts: a shorter --max-model-len or fewer --max-num-seqs, --embedding-placement ram, --kv-cache-dtype i8, or more cards (--tp)
+I   note link-capped: card 0000:e3:00.0 (rank 0): the card's link is 32.0 GT/s x16 at most, and 0000:e0:03.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note link-capped: card 0000:c3:00.0 (rank 1): the card's link is 32.0 GT/s x16 at most, and 0000:c0:01.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note link-capped: card 0000:a3:00.0 (rank 2): the card's link is 32.0 GT/s x16 at most, and 0000:a0:03.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note link-capped: card 0000:83:00.0 (rank 3): the card's link is 32.0 GT/s x16 at most, and 0000:80:01.1 above it is 16.0 GT/s x16 at most
+I        why: the host side of the link bounds what the card can move to and from host memory: streamed experts, the host pool and the all-reduce when it goes through host memory
+I        fix: a slot with the card's full width and speed (the board manual says which slots share lanes), or no riser; nothing to do if the board has no faster slot
+I   note power-cap-below-default: card 0000:e3:00.0 (rank 0): the power cap is 210 W, below the card's default of 300 W
+I        why: under a sustained load the power cap is what sets the clock on these cards (scripts/cardclock.py shows which limit binds)
+I        fix: echo 300000000 | sudo tee /sys/class/drm/card5/device/hwmon/hwmon*/power1_cap restores the default, with the server stopped; nothing to do if the cap was lowered on purpose
+I   note power-cap-below-default: card 0000:c3:00.0 (rank 1): the power cap is 210 W, below the card's default of 300 W
+I        why: under a sustained load the power cap is what sets the clock on these cards (scripts/cardclock.py shows which limit binds)
+I        fix: echo 300000000 | sudo tee /sys/class/drm/card6/device/hwmon/hwmon*/power1_cap restores the default, with the server stopped; nothing to do if the cap was lowered on purpose
+I   note power-cap-below-default: card 0000:a3:00.0 (rank 2): the power cap is 210 W, below the card's default of 300 W
+I        why: under a sustained load the power cap is what sets the clock on these cards (scripts/cardclock.py shows which limit binds)
+I        fix: echo 300000000 | sudo tee /sys/class/drm/card7/device/hwmon/hwmon*/power1_cap restores the default, with the server stopped; nothing to do if the cap was lowered on purpose
+I   note power-cap-below-default: card 0000:83:00.0 (rank 3): the power cap is 210 W, below the card's default of 300 W
+I        why: under a sustained load the power cap is what sets the clock on these cards (scripts/cardclock.py shows which limit binds)
+I        fix: echo 300000000 | sudo tee /sys/class/drm/card8/device/hwmon/hwmon*/power1_cap restores the default, with the server stopped; nothing to do if the cap was lowered on purpose
+I model ds41-mik225 serves  (/v1/completions; /v1/chat/completions with tools and reasoning)
+I model ds41-mik225: ready
+I model ds41-mik225: loaded on card(s) 0,1,2,3 in 105.9 s, holding 31.02 GiB a card (paging owner 1)
+I server: listening on http://127.0.0.1:8011 (48 threads, up to 72)
+I req chatcmpl-65137db44f963799162a59bf chat from 127.0.0.1:51350 model=ds41-mik225 msgs=1 tools=0 prompt=36 tok n=1 max_tokens=600
+I recorded pass: draft pass -1 at 36 token(s) -- 18 records, 3 of the 18 dispatches unordered behind the one before; 0 host op(s), 0 table refresh point(s) and 0 routing report(s) between the played stretches
+I recorded pass: draft pass 1 at 5 token(s) -- 137 records, 25 of the 137 dispatches unordered behind the one before; 0 host op(s), 6 table refresh point(s) and 3 routing report(s) between the played stretches
+I recorded pass: draft pass 0 at 6 token(s) -- 1358 records, 463 of the 1354 dispatches unordered behind the one before; 2 host op(s), 640 table refresh point(s) and 40 routing report(s) between the played stretches
+I device: card 0 copy lists go to DMA engine 0 on a queue of this process's own (1.1 ms to open)
+I device: card 2 copy lists go to DMA engine 0 on a queue of this process's own (1.3 ms to open)
+I device: card 1 copy lists go to DMA engine 0 on a queue of this process's own (1.5 ms to open)
+I device: card 3 copy lists go to DMA engine 0 on a queue of this process's own (1.8 ms to open)
+I req chatcmpl-65137db44f963799162a59bf done from 127.0.0.1:51350 finish=stop prompt=36 (cache 0) gen=432 reason=0 ttft=0.44s 42.9 tok/s 10.50s
+I stopping: draining in-flight requests
+I[0] heat engine: 11481 dispatches, 1775 swaps proposed, 722 promotions, 707 demotions
+  268 dispatches declined on hysteresis, 0 found no candidate at one end
+  722 distinct units promoted, 152 readmits (21% of promotions were of something already demoted)
+  resident units a layer: min 33 max 77 mean 66.8 sd 11.9
+  per layer:
+   L0      69   77   74   69   70   69   46   50   51   54   61   55
+   L12     66   74   74   67   73   74   74   74   73   74   74   66
+   L24     73   74   75   75   75   75   74   75   75   75   75   69
+   L36     69   69   67   69   33   33   33
+
+I[0]   routing evidence: 11481 layer-histograms credited, 43 layer-sweeps found nothing new, 0 dropped by a ring shallower than the run-ahead
+I[0] mover: 268 dispatches, 722 promotions, 707 demotions, 0 staged (6.71 GiB h2d, 6.39 GiB d2h)
+  0 found no free move record, 1028 starved of a slab slot, 1305 of a pool slot; 1429 slots quarantined
+
+I[1] heat engine: 11481 dispatches, 1724 swaps proposed, 729 promotions, 696 demotions
+  268 dispatches declined on hysteresis, 0 found no candidate at one end
+  729 distinct units promoted, 160 readmits (22% of promotions were of something already demoted)
+  resident units a layer: min 33 max 78 mean 67.6 sd 11.5
+  per layer:
+   L0      71   78   71   70   69   70   53   54   56   58   52   60
+   L12     73   73   73   74   73   77   74   75   75   74   74   73
+   L24     63   74   74   73   74   74   74   76   74   73   74   70
+   L36     71   70   71   71   33   33   33
+
+I[1]   routing evidence: 11481 layer-histograms credited, 43 layer-sweeps found nothing new, 0 dropped by a ring shallower than the run-ahead
+I[1] mover: 268 dispatches, 729 promotions, 696 demotions, 0 staged (6.57 GiB h2d, 6.25 GiB d2h)
+  0 found no free move record, 992 starved of a slab slot, 1278 of a pool slot; 1425 slots quarantined
+
+I[2] heat engine: 11481 dispatches, 1969 swaps proposed, 705 promotions, 684 demotions
+  268 dispatches declined on hysteresis, 0 found no candidate at one end
+  705 distinct units promoted, 123 readmits (17% of promotions were of something already demoted)
+  resident units a layer: min 33 max 77 mean 67.3 sd 11.6
+  per layer:
+   L0      72   73   75   70   70   71   48   58   57   50   66   67
+   L12     74   64   75   75   70   74   60   74   75   75   63   76
+   L24     74   75   74   71   77   76   76   75   75   59   76   71
+   L36     71   71   70   71   33   33   33
+
+I[2]   routing evidence: 11481 layer-histograms credited, 43 layer-sweeps found nothing new, 0 dropped by a ring shallower than the run-ahead
+I[2] mover: 268 dispatches, 705 promotions, 684 demotions, 0 staged (6.53 GiB h2d, 6.19 GiB d2h)
+  0 found no free move record, 1238 starved of a slab slot, 1511 of a pool slot; 1389 slots quarantined
+
+I[3] heat engine: 11481 dispatches, 1990 swaps proposed, 735 promotions, 699 demotions
+  268 dispatches declined on hysteresis, 0 found no candidate at one end
+  735 distinct units promoted, 166 readmits (23% of promotions were of something already demoted)
+  resident units a layer: min 33 max 78 mean 67.6 sd 11.3
+  per layer:
+   L0      78   75   72   68   69   72   58   54   62   62   52   61
+   L12     74   69   74   74   74   76   76   69   59   74   74   75
+   L24     74   74   77   76   74   74   65   75   74   73   75   70
+   L36     68   70   70   69   33   33   33
+
+I[3]   routing evidence: 11481 layer-histograms credited, 43 layer-sweeps found nothing new, 0 dropped by a ring shallower than the run-ahead
+I[3] mover: 268 dispatches, 735 promotions, 699 demotions, 0 staged (6.64 GiB h2d, 6.30 GiB d2h)
+  0 found no free move record, 1251 starved of a slab slot, 1533 of a pool slot; 1434 slots quarantined
+
