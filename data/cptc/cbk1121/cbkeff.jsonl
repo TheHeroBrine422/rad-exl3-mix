@@ -39,3 +39,13 @@
 {"name": "mul1_i8", "K": 5, "blocks": 16384, "ntry": 4, "keff": 4.8799, "scale": 1.14}
 {"name": "mul1_i8", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.8426, "scale": 1.18}
 {"name": "cptc6u", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.7425, "table_entries": 64, "presnap_keff_heldout": 5.8198}
+{"name": "mul1lut", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9393, "table_entries": 1021, "presnap_keff_heldout": 1.94}
+{"name": "mul1lut", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9298, "table_entries": 1021, "presnap_keff_heldout": 2.9283}
+{"name": "mul1lut", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.9113, "table_entries": 1021, "presnap_keff_heldout": 3.9161}
+{"name": "mul1lut", "K": 5, "blocks": 16384, "ntry": 4, "keff": 4.8855, "table_entries": 1021, "presnap_keff_heldout": 4.9}
+{"name": "mul1lut", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.8242, "table_entries": 1021, "presnap_keff_heldout": 5.8718}
+{"name": "madpoplut", "K": 1, "blocks": 16384, "ntry": 4, "keff": 0.9518, "table_entries": 16, "presnap_keff_heldout": 0.9535}
+{"name": "madpoplut", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9302, "table_entries": 16, "presnap_keff_heldout": 1.9316}
+{"name": "madpoplut", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.7806, "table_entries": 16, "presnap_keff_heldout": 2.7817}
+{"name": "madlutw", "K": 1, "blocks": 16384, "ntry": 4, "keff": 0.9524, "table_entries": 509, "presnap_keff_heldout": 0.954}
+{"name": "madlutw", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9366, "table_entries": 509, "presnap_keff_heldout": 1.9374}

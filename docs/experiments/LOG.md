@@ -9517,3 +9517,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   branches a step) that caps it, while mad / mul1 have ~253 int8 levels. **Rule:** CPTC pays at K ≤ 5 (+0.016 / 0.022 / 0.028 /
   ~0.03 bits at K2 / 3 / 4 / 5 ≈ 2–5 % error); at K ≥ 6 keep mad / mul1_i8. Files `data/cptc/cbk1121/cbkeff.jsonl`,
   `data/cptc/rerun-1120/diag-k56-*.jsonl`.
+- 11-20 ~7:35 PM CST: **hash → fitted int8 table (thor):** mul1lut (mul1 byte sum 0–1020 → 1 KB table) 1.939 / 2.930 / 3.911 / 4.886 /
+  5.824 at K2–6 vs plain mul1_i8 1.937 / 2.924 / 3.905 / 4.880 / 5.843: **the table adds only +0.002–0.006 bits** (and the int8 snap
+  costs 0.05 at K6: presnap 5.872). madlutw (509 levels) K1 0.952 / K2 1.937 (mad 0.951 / 1.932). madpoplut (popcount → 16 entries)
+  K1 0.952 / K2 1.930 / K3 2.781. So CPTC's +0.01–0.02 over a table-on-hash comes from its two-product index structure, not the
+  table's shape. Corrected madpop4 (centred): K2 1.930 (= mad at mad's cost, int4), K4 3.058; rest pending.
