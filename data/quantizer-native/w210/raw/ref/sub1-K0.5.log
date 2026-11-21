@@ -1,0 +1,9 @@
+K0.5: H_out does not apply at this level (settings): --hout ignored
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w210/ref/extbuild/exl3hash-d0474b-2545f491
+  model.language_model.layers.3.self_attn.k_proj               K0.5 proxy 1.398e-01 5.9s
+  model.language_model.layers.3.self_attn.v_proj               K0.5 proxy 2.493e-01 2.2s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K0.5", "K": 0.5, "codebook": "mad", "seed_offset": 0, "keys": ["model.language_model.layers.3.self_attn.k_proj", "model.language_model.layers.3.self_attn.v_proj"], "settings_stamp": "9a5872186520c8b3", "inputs": {"ckpt": "/data/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": null}}, "settings_stamp": "9a5872186520c8b3", "code_stamp": "f3aa155ce77a01cc", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 2, "seconds": 8.1}

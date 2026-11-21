@@ -1,0 +1,11 @@
+K4: H_out does not apply at this level (settings): --hout ignored
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w210/ref/extbuild/exl3hash-d0474b-2545f491
+     tile CD 3: rel 6.4578e-05 -> 6.3824e-05 (x0.9883), accepted 0.145 / 0.080 / 0.052, 12.3s
+  model.language_model.layers.3.self_attn.q_proj               K4 proxy 4.560e-05 21.8s
+     tile CD 3: rel 7.1152e-04 -> 7.0580e-04 (x0.9920), accepted 0.113 / 0.056 / 0.034, 1.5s
+  model.language_model.layers.3.self_attn.k_proj               K4 proxy 7.014e-04 2.7s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K4", "K": 4, "codebook": "mad", "seed_offset": 0, "keys": ["model.language_model.layers.3.self_attn.q_proj", "model.language_model.layers.3.self_attn.k_proj"], "settings_stamp": "b6eef3344a48cb9a", "inputs": {"ckpt": "/data/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": null}}, "settings_stamp": "b6eef3344a48cb9a", "code_stamp": "f3aa155ce77a01cc", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 2, "seconds": 24.6}

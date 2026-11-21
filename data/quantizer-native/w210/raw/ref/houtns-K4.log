@@ -1,0 +1,8 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w210/ref/extbuild/exl3hash-d0474b-2545f491
+  model.language_model.layers.3.self_attn.k_proj               K4 proxy 2.791e-03 7.5s
+  model.language_model.layers.3.self_attn.o_proj               K4 proxy 5.198e-05 4.8s
+{"spec": {"type": "rxq.quant", "version": 1, "level": "K4", "K": 4, "codebook": "mad", "seed_offset": 0, "keys": ["model.language_model.layers.3.self_attn.k_proj", "model.language_model.layers.3.self_attn.o_proj"], "settings_stamp": "8ebce0aef2d0d1e0", "inputs": {"ckpt": "/data/models/qwen38-27b-bf16", "hessians": "/data/q27/challenge/hessians/calib", "hin": null, "wpre": null, "hout": "/data/q27/w210/hout/bn1920"}}, "settings_stamp": "8ebce0aef2d0d1e0", "code_stamp": "f3aa155ce77a01cc", "kernels": "gpu", "device": "AMD Radeon AI PRO R9700", "host": null, "tensors": 2, "seconds": 12.3}
