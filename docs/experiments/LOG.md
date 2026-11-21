@@ -9530,3 +9530,14 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (+0.016 / 0.022 / 0.028 / ~0.02 bits over mad) vs mad; K ≥ 6 mad / mul1_i8. Next idea (kernel side, same codes): CPTC's two
   16-bit products in ONE packed instruction (`v_pk_mul_lo_u16` on the state duplicated in both halves × (a0, a1)), then mask +
   dot2 + shift + load ≈ mad + a load — could cut CPTC's decode cost to ~lc1's 1.3×. Needs a w208-bench candidate on dad1.
+- 11-20 ~7:55 PM CST: **w209 native EXL3-V3 quantizer, stages 1 + 2 done (Fable low, reviewed headline + data dir):** libquant
+  `exl3v3` quantiser on `exl3-v3` (8a583ebc … d90a5b44): shared codebook header (mad + CPTC table form), batched GPU tail-biting
+  tile search, rotation / scale search / LDLQ / refit / exl3i record, recipe entry, `tests/exl3v3/exl3v3_tool`, README.
+  **Stage 1:** codes bit-identical to the host definition at every K tested (int 1–8, 1.5 / 2.25 / 2.5 / 3.125 / 4.25, 0.125 /
+  0.5 / 0.75, TB1 / TB16) and to `viterbi3.c` at integer K (0 / 4096 tiles differ); vs the fork's fp16 qtf2 ~80 % tiles identical
+  to K4.25, MSE 0.01–0.3 % lower. **Stage 2:** harness (22 C3 tensors, TB1) new / ref K2 −0.07 % [−0.25, +0.04], K3 +0.26 %
+  [0.00, +0.54], K4 +0.03 %; production (layer 3, 7 tensors vs ourq) K2 0.00 %, K4 −0.37 %, K4.25 −0.22 %, K6 +0.50 %; records
+  decode through exl3i_decode_rows. **Speed: 4.4–8.2× SLOWER than ourq** (layer 3 K4 178 s vs 38 s; tile search 10k tiles/s vs
+  qtf2's 75k) → a 27B level ~190 min vs 41; DS4.1-F at K4 ~16 h on 4 cards vs ~2 h at qtf2's rate. Missing vs release: H_out
+  two-sided LDLQ, tile CD, scale clamp, SWJ, gate_up `suh.1`, head R16. Decision for the user: tile-kernel direction (port
+  qtf2's workgroup-per-tile fp16 design vs fix the f32 form). Raw `data/quantizer-native/w209/` (4e823d9b).
