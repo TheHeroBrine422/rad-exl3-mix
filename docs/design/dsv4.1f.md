@@ -127,6 +127,12 @@ Regimes: int4 — madpop4 at K ≤ 2 (= mad's quality at mad's cost); int8 — C
 anything at K1. All are pure functions of the 16-bit state (fractional K works; CPTC needs the unified pair; its fractional-K table
 is untested).
 
+**Current plan (user + lead, 11-21): w8a8 everywhere; codebook by K: packed cptc7 at K2–5 (one 255 B int8 table, glb, packed
+decode), mad at K ≤ 1.5 and K ≥ 6** (K1: all codebooks tie; lc1 searched is a cheaper K ≤ 2 option if decode at K1 matters). A4 /
+int4 compute stays out (27B: +~4.7 % KLD per band at K2; cold experts at K1 would tolerate it but int4 saves no storage and cold
+experts are rarely computed). madpop4 kept as the int4 codebook if a better A4 appears. To confirm: cptc7 on the 22 real 27B
+tensors, its fractional-K table, whole-model KLD mad-only vs frontier.
+
 Not for experts: CPTC matmul-aware tables (need correlated operand pairs, ρ > ~0.3; weights × RHT activations ≈ 0). LittleBit-2
 (2603.00042): needs full QAT, worse than 2-bit methods at 1 bpw, a different kernel family; at most a later option for experts below
 1 bpw.
