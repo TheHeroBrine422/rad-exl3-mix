@@ -191,6 +191,10 @@ deepseek41 bf16 KV: 3,200 B a token a card at TP4 + ~93 MiB fixed → 122 MiB / 
 ~6.3 GiB at 2M. The main compressed KV is the model's own FP8 / FP4 (exact, `rad_kv_fp8.h`); i8 would only touch the bf16 window /
 tail / indexer caches, and indexer error can change which 512 tokens are selected (discrete, high-risk). Not worth it at this size:
 **deferred** (needs kernels anyway; the plugin takes bf16 / fp8 only).
+Later (user 11-21): host-RAM KV tier (Code 000's sliding-window KV offload idea) — keep the window + indexer keys in VRAM (the
+indexer scores every past token each step, so its keys must be resident), hold the bulk of the compressed entries in host RAM and
+fetch only the top-512 selected entries a layer a token (small reads), with a VRAM cache for frequently selected ones. Makes very
+long contexts cheap in VRAM without touching precision.
 
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
