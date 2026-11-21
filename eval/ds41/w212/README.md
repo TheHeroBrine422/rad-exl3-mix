@@ -11,6 +11,7 @@ Status: slice + harness + conversion done; **the engine cannot serve the release
 | `convert.sh` | `rad-convert` of the release with that recipe (`--arch deepseek41 --max-spec 0 --add engram-tables.safetensors`); `convert-first.sh` = the first try (Engram bf16, 651 GiB, unservable) |
 | `score.sh TAG` | writes the YAML and runs `radiance --config` (`kld-ref` / `kld-out` are YAML-only), TP4, locks card0–3; run twice for run-to-run noise |
 | `score41.py` | masked (gen.u8) mean KLD + per-document bootstrap CI, per category, top-1, ppl ratio; two reports → paired run-to-run difference (tested on synthetic rows only) |
+| `join-mik.sh`, `smoke-mik.sh`, `score-mik.sh` | w212b: join mikoskinen's container parts + sha check; serve + one greedy request; score the slice with it (same locks / outputs as `score.sh`). Results `data/ds41-baseline/mik225/` |
 | `mksmoke.py` | cuts a few documents out of a golden for a smoke run |
 | `engine-patches/0001-…patch` | the one-line engine experiment (`in.file_relayout = true`), **not sufficient** (see report); commit on local branch `ds41-baseline` of `forks/radiance-ds41` |
 

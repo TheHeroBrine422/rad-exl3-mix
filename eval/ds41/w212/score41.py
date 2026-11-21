@@ -52,6 +52,10 @@ def summary(r):
                       top1=float(r[m, 3].mean()),
                       ppl_ratio=float(np.exp((r[m, 1].astype(np.float64).sum() - r[m, 2].astype(np.float64).sum()) / m.sum())))
     res["unmasked_all_rows_kld_mean"] = float(kl.mean())
+    u = ~gen  # diagnostic only: prompt / tool / user rows (not model-written); their reference rows are NOT part of the headline
+    res["not_generated_rows"] = dict(positions=int(u.sum()), kld_mean=float(kl[u].mean()), median=float(np.median(kl[u])),
+                                     top1=float(r[u, 3].mean()),
+                                     ppl_ratio=float(np.exp((r[u, 1].astype(np.float64).sum() - r[u, 2].astype(np.float64).sum()) / u.sum())))
     res["by_category"] = {}
     for c in sorted(set(cats)):
         mc = m & np.isin(doc_of, np.flatnonzero(cats == c))

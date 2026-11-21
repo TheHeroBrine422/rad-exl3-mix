@@ -1,0 +1,28 @@
+{"id":"chatcmpl-319d0bd1dd9dc7e5f8ddd46d","object":"chat.completion","created":1795297623,"model":"ds41-mik225","system_fingerprint":"radiance-2.1.0","choices":[{"index":0,"message":{"role":"assistant","content":"The capital of France is Paris, which serves as the country's political, cultural, and economic center and is home to landmarks such as the Eiffel Tower and the Louvre.\n\n```python\ndef reverse_string(s: str) -> str:\n    return s[::-1]\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":27,"completion_tokens":57,"total_tokens":84,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{"reasoning_tokens":0}},"timings":{"cache_n":0,"prompt_n":27,"prompt_ms":501.920725,"prompt_per_token_ms":18.58965648148148,"prompt_per_second":53.79335551445898,"predicted_n":57,"predicted_ms":1504.212165,"predicted_per_token_ms":26.860931517857143,"predicted_per_second":37.22879079361787,"ttft_ms":503.08588199999997,"total_ms":2007.298047,"draft_n":125,"draft_n_accepted":31}}server:
+  host: "127.0.0.1"
+  port: 8011
+cards: [0,1,2,3]
+memory:
+  gpu-headroom-mib: 96
+models:
+  ds41-mik225:
+    model: /data/q27/w212/mik225/deepseek-v4.1-flash-1017-exl3-2.25bpw.rad
+    tp: 4
+    tp-wire: exact
+    placement: expert_tiered
+    host-pool-mib: 49152
+    ngram-placement: disk
+    kv-cache-dtype: bf16
+    max-model-len: 9216
+    max-num-seqs: 1
+    max-num-batched-tokens: 2048
+    chat-template-kwargs: {"enable_thinking":false}
+deepseek-v4.1-flash-1017-exl3-2.25bpw.rad: OK
+dspark-dlw-q8_0.rad: OK
+dspark-conf.f32: OK
+-rw-r--r-- 1 root root 48318382080 Nov 21 21:37 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-00
+-rw-r--r-- 1 root root 48318382080 Nov 21 21:33 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-01
+-rw-r--r-- 1 root root 48318382080 Nov 21 21:35 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-02
+-rw-r--r-- 1 root root 48318382080 Nov 21 21:36 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-03
+-rw-r--r-- 1 root root 48318382080 Nov 21 21:37 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-04
+-rw-r--r-- 1 root root 31646585760 Nov 21 21:38 deepseek-v4.1-flash-1017-exl3-2.25bpw.rad.part-05
