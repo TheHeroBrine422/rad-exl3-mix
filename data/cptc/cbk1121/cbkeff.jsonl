@@ -67,3 +67,8 @@
 {"name": "madpop31", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9229, "scale": 1.02}
 {"name": "madpop31", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.8933, "scale": 1.04}
 {"name": "madpop31", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.448, "scale": 0.82}
+{"name": "cptc7", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9374, "table_entries": 255, "presnap_keff_heldout": 2.9373}
+{"name": "cptc7", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.9263, "table_entries": 255, "presnap_keff_heldout": 3.931}
+{"name": "cptc7", "K": 5, "blocks": 16384, "ntry": 4, "keff": 4.8955, "table_entries": 255, "presnap_keff_heldout": 4.9152}
+{"name": "cptc7", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.8229, "table_entries": 255, "presnap_keff_heldout": 5.8854}
+{"name": "cptc6u", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9391, "table_entries": 64, "presnap_keff_heldout": 2.9377}

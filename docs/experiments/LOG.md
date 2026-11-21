@@ -9555,3 +9555,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   ourq 37 s, K4 35 s vs 34 s (first cut 322 / 178 s): **parity**; proxy −0.5 / −0.7 % vs ourq (small k / v_proj −1 to −3.4 %,
   unverified). Search is now ~half the layer time; the rest is host prep / factorisation / refit. Extrapolated: 27B level ~38–42 min;
   DS4.1-F one K on 4 cards ~1.7–1.9 h search alone. K8 stays f32 (qtf2 form slower there); no rad-convert run through the recipe yet.
+- 11-20 ~8:40 PM CST: **cptc7 (unified pair, 7-bit fields, 255-entry int8 table; thor):** K3 2.937 / K4 3.926 / K5 **4.896** / K6 **5.823** (cptc6u 2.939 / 3.928 / 4.886 / 5.743; mad — / 3.900 / 4.866 / 5.830; mul1_i8 5.843 at K6). The wider alphabet fixes most of CPTC's K6 loss (+0.08) and is the best at K5, but mad / mul1_i8 still edge it at K6. Decode = cptc + a 255 B table (packed form needs 8-bit fields: same trick with masks 0xFE00FE00, udot4 → x2 stride).
