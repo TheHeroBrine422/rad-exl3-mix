@@ -1,5 +1,5 @@
-# ds41-release-bf16trunk.recipe (w212): DeepSeek-V4.1-Flash-1017 official release, routed experts kept as the release's MXFP4
-# (no rule), everything else the plugin declares bf16 -> cast dtype=bf16 (fp8 e4m3 * e8m0 block scale widening); norms / hc / router f32 as in
+# ds41-release.recipe (w212): DeepSeek-V4.1-Flash-1017 official release, routed experts kept as the release's MXFP4
+# (no rule), Engram table kept fp8*e8m0[1x32] (native affine planes), everything else the plugin declares bf16 -> cast dtype=bf16 (fp8 e4m3 * e8m0 block scale widening); norms / hc / router f32 as in
 # bakon's deepseek41-ud-iq1s.recipe, from which this is derived (every ggml rule on a non-expert weight became cast bf16).
 # PATTERN  QUANTISER  OPTIONS
 dspark.enc.output_norm.weight  cast  dtype=f32
@@ -9,7 +9,6 @@ dspark.markov_w2.weight  cast  dtype=bf16
 dspark.output_norm.weight  cast  dtype=f32
 output.weight  cast  dtype=bf16
 output_norm.weight  cast  dtype=f32
-per_layer_token_embd.weight  cast  dtype=bf16
 token_embd.weight  cast  dtype=bf16
 blk.0.attn_kv.weight  cast  dtype=bf16
 blk.0.attn_kv_a_norm.weight  cast  dtype=f32

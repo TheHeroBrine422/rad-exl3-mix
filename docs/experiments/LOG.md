@@ -9575,3 +9575,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   stacked gate_up suh.1, R16 rows, two-sided LDLQ (diagonal H_out). Defaults changed: scale_clamp on, measured_drift on (g below
   K1.5), quantizer version 3 (K ≥ 1.5 output = w209 byte for byte) — lead OK (release settings). `scale_sample` (faster scale search,
   proxy ±0.33 %) left off. Not implemented: #117 block order, C9 α, asym writers.
+- 11-21 ~1:30 AM CST: **w212 (Sonnet high) DS4.1-F baseline: slice + harness + conversion done, the official release cannot be served on box2** — verify slice
+  `ds41-verify-v1` (`eval/ds41/mkslice41.py`; manifest; ledger role `check`): 184 documents of the verify pool only, 150,008 scored (gen.u8) of 606,116 rows,
+  per-category quotas by verify-pool token share, documents cut to their first 8192 tokens. Release converted with `--arch deepseek41` (the plugin id; the release
+  says deepseekv41) and a recipe (`eval/ds41/recipes/ds41-release.recipe`): the plugin declares every trunk weight bf16 (fp8 e4m3 × e8m0 32×32 refused without a
+  rule; `cast bf16` is exact), only MXFP4 experts and the Engram table pass as released; a bf16 Engram table (366 GiB) makes the engine classify it as the token
+  embedding (OOM), the native fp8 table (189 GiB, `--ngram-placement disk`, mapped tier) works → 473.47 GiB container. **Blocker:** experts 269 GiB vs 4 × 21.3 GiB VRAM +
+  pinned RAM; the disk tier refuses (`weight_file_direct`: every expert encoding, MXFP4 and bakon's own iq1_s, is relaid at load). Experiment `in.file_relayout=true`
+  (branch `ds41-baseline`) gets past the planner, the loader then refuses. Options in `out/w212.md`. No KLD number; score41.py only tested on synthetic rows. #212

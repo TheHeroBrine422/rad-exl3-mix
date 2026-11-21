@@ -1,0 +1,120 @@
+I device: AQL backend, 4 device(s) [0:gfx1201 1:gfx1201 2:gfx1201 3:gfx1201]
+I rope: YaRN factor 16 over 65536 trained positions -- the rotary reaches 1048576; --max-model-len 9216 (the container's own)
+I model: deepseek41  arch=deepseek41  quant=bf16  40 layers  1048576 ctx
+I vocab: 129280 tokens, bos=0 eos=1
+I gbnf: vocabulary index built in 47 ms, 13.20 MiB
+I device: the 4 cards reach each other's memory directly (peer to peer)
+I chained launches: off -- no drafter whose plugin measured a gain with them decodes speculatively
+I control vectors: not loaded (no --control-vector); a request that asks for one is refused
+I[2] sampler: 129280-token vocabulary (32320 this rank), 1 rows, 1010 mask words (3.95 KiB per row)
+I[0] sampler: 129280-token vocabulary (32320 this rank), 1 rows, 1010 mask words (3.95 KiB per row)
+I[1] sampler: 129280-token vocabulary (32320 this rank), 1 rows, 1010 mask words (3.95 KiB per row)
+I[3] sampler: 129280-token vocabulary (32320 this rank), 1 rows, 1010 mask words (3.95 KiB per row)
+I host-site execution: 5 of 1487 declared ops have no host kernel (mhc_collapse_rmsnorm, rmsnorm_rope_roundtrip, rope_rows_roundtrip, mhc_post_collapse_rmsnorm, ar_mhc_post_collapse_rmsnorm). Their weights may still be tiered to host or SSD -- only the arithmetic is pinned to the device. --debug-graph lists the bands.
+I declare: 1487 ops, 8568 weights, 112 buffers, 8 KV groups
+I activation arena: not lent -- the 'deepseek41' plugin does not declare at a smaller step size (RadArchProbe::shape_probe_ok)
+I placement: token embedding (315.62 MiB a rank) ram (default): pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I placement: n-gram table (188.83 GiB) disk: as asked
+W one --max-model-len sequence's cache (355.00 MiB) leaves the experts 21.34 GiB, short of the 59.70 GiB the pinned host pool cannot hold: raise --host-pool-mib or lower --max-model-len
+I kv: the pool backs 100% of the worst case (1 sequences all at 9216 tokens), 1.0 full-length sessions; a larger --host-pool-mib gives the cache more
+I VRAM budget, per card:
+  card total          31.86 GiB
+  already held       1017.53 MiB   measured: driver context, code objects, anything else resident
+  driver drift        16.00 MiB   what that moves by after it is read: kept free
+  activation arena     3.58 GiB   computed from the buffer plan
+  step staging       604.50 KiB   the step batch's block tables and media staging, and the
+                                  KV tiers' copy staging
+  hardware queues    266.11 MiB   3 a card at 35.37 MiB each, measured: the engine's streams
+  expert prefetch           0 B   the next-layer prefetch's ring of expert units and buffers
+  --gpu-headroom-mib  96.00 MiB   left unclaimed on purpose
+  ------------------------------
+  claimable           26.92 GiB
+  static weights       5.23 GiB   off the top: every rank's own shard, and not a share of anything
+  ------------------------------
+  elastic             21.69 GiB   the experts keep what the host pool cannot hold; the cache takes the rest
+                                  and lends what no live request holds to the expert slab
+    experts           21.34 GiB   98% of it
+    kv cache         354.42 MiB   2% of it -- backs 1 sequences all at 9216 tokens at once, which is the worst case and
+                                  more would be unusable
+  ==============================
+  vram_weights        26.57 GiB   static + experts
+  vram_kv            355.00 MiB   the cache's share
+  unclaimed           95.30 MiB   the headroom, the unusable above, and what MiB rounding
+                                  could not place
+
+I[0] pools:
+vram_weights    26.57 GiB budget,        0 B used,  26.57 GiB free
+vram_kv        355.00 MiB budget,        0 B used, 355.00 MiB free
+host_pool       10.31 GiB budget,        0 B used,  10.31 GiB free
+
+I[0] placement: 'token_embd.weight' (315.62 MiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[1] pools:
+vram_weights    26.57 GiB budget,        0 B used,  26.57 GiB free
+vram_kv        355.00 MiB budget,        0 B used, 355.00 MiB free
+host_pool       10.31 GiB budget,        0 B used,  10.31 GiB free
+
+I[1] placement: 'token_embd.weight' (315.62 MiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[2] pools:
+vram_weights    26.57 GiB budget,        0 B used,  26.57 GiB free
+vram_kv        355.00 MiB budget,        0 B used, 355.00 MiB free
+host_pool       10.31 GiB budget,        0 B used,  10.31 GiB free
+
+I[2] placement: 'token_embd.weight' (315.62 MiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[3] pools:
+vram_weights    26.57 GiB budget,        0 B used,  26.57 GiB free
+vram_kv        355.00 MiB budget,        0 B used, 355.00 MiB free
+host_pool       10.31 GiB budget,        0 B used,  10.31 GiB free
+
+I[3] placement: 'token_embd.weight' (315.62 MiB) in the pinned host pool, read in place (--embedding-placement ram, the default)
+I[0] mover: 1102 slab slots (32 shadow, up to 160 more kept free out of a loan as swaps ask for them), 467 pinned pool slots, 5.23 GiB static vram, file tier open
+I[0] load: rank 0, mover took 26.56 GiB, weights pool 15.31 MiB free of 26.57 GiB
+I[0] heat engine: 1536 movable units, 64 moves a step, decay 0.950 hysteresis 1.25 min-gain 1.50 credit cap 512 admit-heat 8.0
+E[0] rank 0: 'blk.0.ffn_gate_up_exps.39.weight' was placed on the ssd tier, which reads the container where it lies, and its stored form is not the container's (ggml_mxfp4)
+I STARTUP REPORT -- radiance 2.1.0 -- STARTUP STOPPED; this is what it had resolved when it did
+I CONFIGURATION -- every option not at its default, the value in force, and where it came from
+I   --model                            /data/q27/w212/ds41-official.rad            [models.ds41-official.model]
+I   --radiance-home                    /data/radiance-ds41/build/radiance_home     [environment (RADIANCE_HOME)]
+I   --kernels                          exl3r4d@0.1.0,libavx@0.1.0,libr4d@0.5.0,spechub@0.1.0,exl3ref@0.1.0,libref@0.1.0  [auto]
+I                                        every kernel library under --radiance-home, in the loader's order (a reference implementation last); architecture plugin deepseek41@0.1.0
+I   --tp                               4                                           [models.ds41-official.tp]
+I   --tp-wire                          exact                                       [models.ds41-official.tp-wire]
+I   --p2p                              peer to peer                                [auto]
+I                                        the driver reports every pair of the ranks' cards can reach the other's memory
+I   --max-num-batched-tokens           8192                                        [models.ds41-official.max-num-batched-tokens]
+I   --prefill-interleave               0                                           [auto]
+I                                        KL mode scores documents and decodes nothing
+I   --max-num-seqs                     1                                           [models.ds41-official.max-num-seqs]
+I   --max-model-len                    9216                                        [models.ds41-official.max-model-len]
+I   --gpu-headroom-mib                 96                                          [memory.gpu-headroom-mib]
+I   --kv-cache-dtype                   bf16                                        [models.ds41-official.kv-cache-dtype]
+I   --host-pool-mib                    40960                                       [models.ds41-official.host-pool-mib]
+I   --embedding-placement              ram                                         [auto]
+I                                        the table is 315.62 MiB a rank: pinned in host memory and read over the link in place, so its VRAM goes to the KV cache and the experts
+I   --vision-tower-placement           n/a                                         [auto]
+I                                        this server declares no encoder tower
+I   --ngram-placement                  disk                                        [models.ds41-official.ngram-placement]
+I                                        the table is 188.83 GiB: as asked
+I   --weights-disk-tier                on                                          [models.ds41-official.weights-disk-tier]
+I   --placement                        expert_tiered                               [models.ds41-official.placement]
+I                                        as asked
+I   --checkpoint-interval              8192                                        [models.ds41-official.checkpoint-interval]
+I   --no-prefix-cache                  prefix caching off                          [auto]
+I                                        the KL mode: a prefix hit would start a document past positions the reference holds
+I   --num-speculative-tokens           0                                           [auto]
+I                                        the KL mode scores the trunk's own rows
+I   --served-model-name                ds41-official                               [models.ds41-official]
+I   --kld-ref                          /data/q27/w212/gold-smoke                   [models.ds41-official.kld-ref]
+I   --kld-out                          /data/q27/w212/runs/smoke1/report.json.part [models.ds41-official.kld-out]
+I   131 options at their default (-v lists every option; /diagnostics carries them all)
+I ENVIRONMENT -- the RADIANCE_* variables set, by name; their values are not shown
+I   RADIANCE_HOME
+I DERIVED -- what startup worked out that no single option states
+I   chained launches                   off
+I                                        no drafter whose plugin measured a gain with them decodes speculatively
+I   kernel selection                   libavx (host) 2201, libr4d 2415 op bands
+I                                        attention:
+I                                        attn_sparse_sink -> avx_attn_sparse_sink
+I                                        attn_sparse_sink -> ds41_attn_sparse_sink_d512_bf16
+I                                        ds41_rope_rows -> avx_rope_rows
+I                                        ds41_rope_rows -> ds41_rope_rows_bf16
+I                                        entry_store -> avx_entry_store

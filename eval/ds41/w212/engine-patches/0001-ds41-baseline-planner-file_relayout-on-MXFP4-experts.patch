@@ -1,0 +1,26 @@
+From 3b51b678e7f632dec0c5b4e5b699984057983ddb Mon Sep 17 00:00:00 2001
+From: Hero <caleb@calebgj.io>
+Date: Sat, 21 Nov 2026 07:22:27 +0000
+Subject: [PATCH] ds41-baseline: planner file_relayout on (MXFP4 experts on the
+ file tier)
+
+---
+ core/engine_bringup.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/engine_bringup.cpp b/core/engine_bringup.cpp
+index 0de12c5..f338da2 100644
+--- a/core/engine_bringup.cpp
++++ b/core/engine_bringup.cpp
+@@ -2382,6 +2382,8 @@ int Engine::plan() {
+         }
+         in.container = file_ != nullptr;
+         in.host_backend = device_is_host();
++        /* w212: let the file tier serve a weight whose kernel relayouts on read (MXFP4 routed experts). */
++        in.file_relayout = true;
+         Planner planner(in);
+         s = planner.plan(&r->plan);
+         if (cfg_.debug_placement || s < 0)
+-- 
+2.56.0
+
