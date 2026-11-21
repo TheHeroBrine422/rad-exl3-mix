@@ -127,7 +127,10 @@ Regimes: int4 — madpop4 at K ≤ 2 (= mad's quality at mad's cost); int8 — C
 anything at K1. All are pure functions of the 16-bit state (fractional K works; CPTC needs the unified pair; its fractional-K table
 is untested).
 
-**Current plan (user + lead, 11-21): w8a8 everywhere; codebook by K: packed cptc7 at K2–5 (one 255 B int8 table, glb, packed
+**Decision (user, 11-21): mad everywhere for now (simplicity: one codebook), w8a8.** Upgrade path kept for later (V4): lc1 at
+K ≤ 2 (same quality, 10–15 % cheaper decode where dequant-bound) and packed cptc7 at K2–5 (~3–5 % lower weight error), both on one
+per-tensor table plane added to the format without touching mad records. Previous candidate plan, for reference:
+**w8a8 everywhere; codebook by K: packed cptc7 at K2–5 (one 255 B int8 table, glb, packed
 decode), mad at K ≤ 1.5 and K ≥ 6** (K1: all codebooks tie; lc1 searched is a cheaper K ≤ 2 option if decode at K1 matters). A4 /
 int4 compute stays out (27B: +~4.7 % KLD per band at K2; cold experts at K1 would tolerate it but int4 saves no storage and cold
 experts are rarely computed). madpop4 kept as the int4 codebook if a better A4 appears. To confirm: cptc7 on the 22 real 27B
