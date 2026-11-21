@@ -792,3 +792,8 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   records. Builds on the manifest container (`docs/design/quantizer-native.md`). Mostly worth it only for placement-type choices
   (embedding in VRAM vs host), which don't matter for DS4.1-F. Caveats: quality is a prediction, only records we made are offered,
   speed tables only for measured cards.
+- **V3.1 QAD follow-ups (user / lead 11-21, after the w214 pilot):** (a) cosine vs WSD at the final recipe, cosine at 2–3 peak lrs
+  (1e-3 / 1.5e-3 / 2e-3: its mean lr is ~half the peak); (b) long low-lr xcorp run (16M+, lr 3e-4 vs 1e-3 at 4M) — #181 showed xcorp
+  keeps gaining to 16M (0.808) while calib verify saturates by 1–4M, so it is a real-use variant (judge fresh xcorp + verify, must not
+  regress verify) and a noise-averaging test (scales random-walk, seed spread ±1.7 %); (c) a fixed ~500k held-out qad eval
+  (torch-side, ledger) for all sweep comparisons, verify only for finalists; successive halving on WSD branches instead of BO.
