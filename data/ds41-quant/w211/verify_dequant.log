@@ -1,0 +1,4 @@
+w1 (2304, 5120) max|ours - ref(bf16)| = 0.0 bit-equal after bf16: True bf16-exact: True
+w2 (5120, 2304) max|ours - ref(bf16)| = 0.0 bit-equal after bf16: True bf16-exact: True
+w3 (2304, 5120) max|ours - ref(bf16)| = 0.0 bit-equal after bf16: True bf16-exact: True
+expert output rel diff (ours-dequant fp32 GEMM vs reference Expert/fp4_gemm): 0.0 ref norm 215.501953125
