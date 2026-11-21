@@ -9488,3 +9488,24 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   grows with K (K2 0, K3 ~0, K4 3 pp, K5 10 pp, K6 33 pp) and is uniform across tensors → a systematic, K-growing error floor on the
   CPTC side, not tails (both tables top out at ~3.9 σ; mad's grid at ~3.4 σ). Diagnostics running: factor grid 0.7–1.8 and the
   E2M5 table on 3 tensors. `data/cptc/rerun-1120/c3v-k56-int8.jsonl`, `agg-c3v-k56-int8.md`.
+- 11-20 ~6:55 PM CST: **i.i.d. Keff of the w208 candidate set (colo `cbkeff.py`: int8 tables fitted by Lloyd, fixed codebooks
+  with a global scale search; 16384 blocks, ntry 4; `data/cptc/cbk1121/cbkeff.jsonl`):**
+
+  | codebook | K1 | K2 | K3 | K4 |
+  |---|---|---|---|---|
+  | mad | 0.951 | 1.932 | 2.917 | 3.900 |
+  | mul1_i8 | 0.942 | 1.937 | 2.924 | 3.905 |
+  | int4grid | 0.941 | 1.931 | 2.889 | 3.214 |
+  | mad4 | 0.923 | 1.883 | 2.824 | 3.194 |
+  | cptcmin | 0.951 | 1.916 | 2.864 | 3.805 |
+  | lc1 | 0.950 | 1.919 | 2.871 | 3.781 |
+  | cptc5 | 0.951 | 1.947 | 2.938 | 3.920 |
+  | cptc6u (unified pair, int8) | 0.951 | 1.948 | 2.939 | 3.928 |
+  | cptcst10 | 0.913 | 1.808 | 2.684 | 3.566 |
+
+  **Correction:** with its scale searched, mad is much closer to CPTC than the fixed-scale numbers said (K4 3.900 vs 3.869
+  before): the gap to CPTC is 0.016 / 0.022 / 0.028 bits at K2 / 3 / 4 (≈ −2.2 / −3.0 / −3.8 % error), consistent with the
+  real-tensor C3 (−2.9 / −4.4 / −4.7 %). **K1: every reasonable codebook ties (0.950–0.951)** → use the cheapest decoder there.
+  int4 output is free at K2 (int4grid 1.931 = mad), costs 0.03 at K3, unusable at K4. The cheap decoders (lc1, cptcmin) lose
+  0.03–0.05 at K2–3 and ~0.1 at K4; the state table is a depth-10 trellis (bad). **The K6 real-tensor anomaly is likely the same
+  effect** (i.i.d. mad at K5 / K6 was fixed-scale; rerunning K5 / K6 with the scale search).
