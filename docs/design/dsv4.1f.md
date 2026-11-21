@@ -170,6 +170,22 @@ and ~0.15–0.2 TB. Containers: **radiance assembles the mix in the engine from 
 Healing knob (user, 11-20; BACKLOG): a table codebook lets each tensor (or expert) carry its own 64 B table that post-mix
 healing / QAD can train — a nonlinear correction that scales can't express. Mad has no such knob. Counts for CPTC in the choice.
 
+## Serving base (scout, lead 11-21; user: option 1 = port onto our live branch)
+
+bakon's `deepseek41-wip` (`/workspace/forks/radiance-ds41`, 9a963c2, shallow) is NOT on 1.17 any more (old note): it sits on
+radiance `main` between 2.1.0 and 2.2.0. v2.2.0 already carries part of it (the `F8_E8M0` safetensors reader,
+`rad_deepseek41_chat.h`). What a port onto `exl3-v3` (rebased to 2.2.0) needs, all small or new files:
+- `arch/deepseek41/` (2.8k lines, new) + `ds41_walk_geom.h`;
+- 29 new `libr4d` files: `r4d_ds41_sparse*` (compressed / sparse attention + indexer), `r4d_ds41_walk*`, `r4d_ds41_elem*`,
+  `r4d_ar_mhc_pcn.hip` (mHC), `r4d_ds41_mxfp4*` (DSpark drafter, out of scope), `r4d_ds41_ggml*` (IQ1_S / IQ2_XXS — only for the
+  Unsloth baseline containers);
+- `abi/rad_kv_fp8.h` (189), `arch/common/rad_expert_split.h` (60), `rad_ggml.h` (49), `core/runtime/rowprefetch.*` (row read-ahead
+  of the mapped tier), the weight sidecar, `RAD_MAP_MUL` (Engram gate) in the reader, the imatrix-name fix, scheduler lever D7;
+- `rad_block_moe_fp8.h`: 43 lines differ from 2.2.0 — w207 also edited this file on `exl3-v3` (merge point);
+- his `arch/common/exl3` + `exl3/` (radiance-exl3 import, ABI 40) are replaced by our exl3i MoE ops.
+Estimate: one focused worker session (port + build + boot on box2 at TP4 with the release's MXFP4 experts), then exl3i experts.
+His upstream PR plan splits the same pieces (imatrix fix #267, gather read-ahead, release reader, model support, kernels).
+
 ## Encoder
 
 Target: a native fused encoder in radiance **libquant** (C++ / HIP, rad-convert), not the PyTorch / exllamav3 path. Base:
