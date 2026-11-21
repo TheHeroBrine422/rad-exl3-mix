@@ -9522,3 +9522,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   costs 0.05 at K6: presnap 5.872). madlutw (509 levels) K1 0.952 / K2 1.937 (mad 0.951 / 1.932). madpoplut (popcount → 16 entries)
   K1 0.952 / K2 1.930 / K3 2.781. So CPTC's +0.01–0.02 over a table-on-hash comes from its two-product index structure, not the
   table's shape. Corrected madpop4 (centred): K2 1.930 (= mad at mad's cost, int4), K4 3.058; rest pending.
+- 11-20 ~7:45 PM CST: **colo hash-table + popcount results (final):** madlut (mad byte sum → 253-entry int8 table) 0.952 / 1.935 /
+  2.923 / 3.907 / 4.855 / 5.781 at K1–6 (mad 0.951 / 1.932 / 2.917 / 3.900 / 4.866 / 5.830): +0.003–0.007 at K2–4, worse at K5–6
+  (int8 table snap); madlutw K3–6 2.922 / 3.893 / 4.870 / 5.797. madpop4 (centred) 0.952 / 1.930 / 2.774 / 3.058; madpop31 0.945 /
+  1.923 / 2.893 / 3.448. **Verdict #4 (first pass): no cheap codebook reaches CPTC's K2–4 quality; tables on a hash add ≤ 0.007
+  bits.** The frontier: K ≤ 1 any (cheapest decode); K2 int4 madpop4 (mad's 3 instructions, = mad quality); K2–5 int8 CPTC
+  (+0.016 / 0.022 / 0.028 / ~0.02 bits over mad) vs mad; K ≥ 6 mad / mul1_i8. Next idea (kernel side, same codes): CPTC's two
+  16-bit products in ONE packed instruction (`v_pk_mul_lo_u16` on the state duplicated in both halves × (a0, a1)), then mask +
+  dot2 + shift + load ≈ mad + a load — could cut CPTC's decode cost to ~lc1's 1.3×. Needs a w208-bench candidate on dad1.
