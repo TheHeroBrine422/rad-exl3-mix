@@ -815,3 +815,4 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   for the winner. Context: #191 D (50 % calib mixed throughout) +3.4 %; 16M rows worse than 4M on verify (#181; scales random-walk,
   w183) → the winner's order goes to the long run at lower lr. V3.1 data: ~7.5M calib (qad + fit/search, minus a ~0.5M held-out
   qad eval) + 8M xcorp; verify (2.18M) final holdout.
+- **QAD decay shape (user 11-21):** WSD's linear decay was never tested; add a 1−√ cooldown arm (Hägele et al. 2024) next to the decay-fraction arms (20 / 40 %), same seed + data order; expected < 1 % (Defazio et al. 2023: linear-to-zero is last-iterate optimal for convex SGD, our scale-only problem is close to that); promote only if it wins on two seeds.
