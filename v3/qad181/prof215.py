@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """prof215.py OUT [qad181.py args] -- qad181.main() unchanged, plus (w215): GRAD215=1 saves the first optimizer step's
-gradient (summed over the step's rows, before Adam) to OUT/grad0.pt; PROF215_STEP=k profiles optimizer step k
+gradient (summed over the step's rows, before Adam) to OUT/grad0.pt; CH215=n sets seg_loss's KL row chunk (rounding-only control); PROF215_STEP=k profiles optimizer step k
 (torch.profiler, CPU + device) -> OUT/profile-step.txt (top ops by device time), OUT/profile-shapes.txt (by input shape) and OUT/trace-step.json; at exit
 OUT/speed215.json: per-step wall, positions / s over the steps after the first (compile / warm-up), peak VRAM."""
 import json, os, sys, time
@@ -12,6 +12,8 @@ import torch  # noqa: E402
 import qad181  # noqa: E402
 
 PSTEP = int(os.environ.get("PROF215_STEP", "-1"))
+if os.environ.get("CH215"):                                 # gate calibration: the KL's row chunk (default 256), an eager-only rounding change
+    d = list(qad181.seg_loss.__defaults__); d[0] = int(os.environ["CH215"]); qad181.seg_loss.__defaults__ = tuple(d)
 walls, rows, poss = [], [], []
 _run = qad181.Trainer.run_step
 

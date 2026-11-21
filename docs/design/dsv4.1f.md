@@ -191,6 +191,11 @@ deepseek41 bf16 KV: 3,200 B a token a card at TP4 + ~93 MiB fixed → 122 MiB / 
 ~6.3 GiB at 2M. The main compressed KV is the model's own FP8 / FP4 (exact, `rad_kv_fp8.h`); i8 would only touch the bf16 window /
 tail / indexer caches, and indexer error can change which 512 tokens are selected (discrete, high-risk). Not worth it at this size:
 **deferred** (needs kernels anyway; the plugin takes bf16 / fp8 only).
+Exact KV savings (reference `ds41/inference/model.py`, lead 11-21): the reference fp4-quantizes the index keys (32-block scale)
+and fp8-quantizes the window K before caching, so storing those as fp4 / fp8 is lossless: index keys 640 → ~170 B a token a card
+(3,200 → ~2,730 B, −15 %; −0.47 GiB / card at 1M) and the window ~87 → ~43 MiB fixed. The compressed latent (2,560 B) is bf16 in the
+reference → compressing it is lossy (deferred). Index keys come only from the 4 kv-source layers; the 8 index-source layers run their
+own top-k over those keys (plugin's 4 index caches are correct).
 Later (user 11-21): host-RAM KV tier (Code 000's sliding-window KV offload idea) — keep the window + indexer keys in VRAM (the
 indexer scores every past token each step, so its keys must be resident), hold the bulk of the compressed entries in host RAM and
 fetch only the top-512 selected entries a layer a token (small reads), with a VRAM cache for frequently selected ones. Makes very
