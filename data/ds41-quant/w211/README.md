@@ -25,3 +25,9 @@ python3 -I agg.py out experts.json 0,1 > tables.md
 ```
 Env of the jobs: `E3_V2=3 E3_TB=1 OMP_NUM_THREADS=1 OMP_WAIT_POLICY=passive`. Rows: `W211_ROWS_GU` (576 of 4608) / `W211_ROWS_DN` (640 of 5120) per
 slice, the same rows for every setting of a matrix (seeded permutation, disjoint slices); `W211_ROWS=0` = all rows (~10 h for the grid on 32 threads).
+
+## What was run (2026-11-20/21)
+Slice 0: `W211_SLICE=0 W211_ROWS_GU=288 W211_ROWS_DN=320 ./run_grid.sh 24` (270 jobs, 9 settings, K = 1..4, 2 h 40 m on box2, 24 jobs = one per physical core).
+Slice 1 (replicate, other rows): same with `W211_SLICE=1 W211_KS=2,4 SETTINGS="base d0.1 pooled mix0.1 d0.001"`. `res/` holds all 414 job files (a few K = 1 / 3 base lines of slice 1 come from a killed first launch).
+`tables-s0.md` (main tables), `tables-s1.md` (replicate), `tables-s01.md` (K = 2, 4 averaged over both slices), `ksref.log` (KS reference), `bench-notes.md` (viterbi3 contention on box2).
+`calib/` (34 GB) was deleted from box2 afterwards; re-download with the HF dataset's `experts/L{05,20,35}-s0.safetensors`, `experts/index.json`, `dense/L{05,20,35}.ffn_in.safetensors`.
