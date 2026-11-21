@@ -1,0 +1,28 @@
+{
+ "xcorp": {
+  "xc8k-b2-c0": {
+   "docs": 681,
+   "gen_rows": 859710
+  },
+  "xc8k-b2-c1": {
+   "docs": 698,
+   "gen_rows": 824472
+  },
+  "tr32k-b2-c0": {
+   "docs": 62,
+   "gen_rows": 355741
+  }
+ },
+ "xcorp_gen_rows": 2039923,
+ "calib_docs": 416,
+ "calib_gen_rows": 510375,
+ "calib_share": 0.2001236718218812,
+ "calib_pools": {
+  "qad": 289,
+  "search": 61,
+  "fit": 66
+ },
+ "calib_candidates": 3925,
+ "cap": 8192,
+ "seed": 214
+}
