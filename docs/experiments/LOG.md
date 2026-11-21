@@ -9623,3 +9623,17 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   exl3i both register `moe_exl3_gate_up / down` → remove his `exl3/` next; (3) removal list in the report, except the DSpark drafter's
   MXFP4 experts + q8_0 sidecar ride on the GGUF path (keep it or give them a format). Data `data/ds41-baseline/w213/`, scripts
   `eval/ds41/w213/` (f0724a37, 1fd64cf7). Report `out/w213.md`.
+- 11-21 ~6:00 PM CST: **w215 stopped early (iceman went unreachable ~5:50 PM; Opus medium): QAD trainer 1.24× faster.** One R9700:
+  241 → **299 positions/s** (222 → 275 gen rows/s; 1M gen rows ≈ 1.0 card-h, 4M ≈ 4.0, vs 1.25 / 5.0), peak 29.0 → 28.7 GiB. Profile
+  (2.5, one step): trunk GEMMs 44 % (94–123 TFLOP/s, fine), elementwise scale / cast 27 %, int8→bf16 conversion 14 %, GDN 11 %.
+  Changes: Triton int8→bf16 copy (always on; 1.06×, bitwise identical); `--compile-scales` now torch.compile strict numerics +
+  deterministic (forward bitwise, with the copy 1.19×); new `--compile-ew` (shift conv + silu·up compiled, +4 %; forward bitwise,
+  gradients differ at bf16 rounding: step-1 gradient rel L2 1.6e-2, cosine 0.99988). Two compiled runs reproduce exactly. Dropped:
+  compiled RMSNorm (changes the forward), a Triton fused int8 GEMM (55–67 vs hipBLASLt 105–130 TFLOP/s), rocBLAS, pinned copies.
+  **Finding:** 20-step final scales diverge 30–46 % under ANY rounding change (two compiled runs differing only in reduction order:
+  30 %) — Adam normalises near-zero gradients into ~lr moves (→ BACKLOG Adam-eps idea); so the gate is the step-1 gradient + loss.
+  **Lead: adopt `--compile-scales --compile-ew` for future QAD runs** (the gradient difference is bf16 rounding propagated through
+  64 layers; the trained-scale difference it causes is the same size as run-to-run noise). Remaining ~5 %: layer-major two-segment
+  weight cache, transposed copy for the dX GEMM. Not yet in the repo: raw runs on iceman `/data/w215/runs/` (copy when iceman is
+  back). Commits: the lead's `commit -am` swept w215's edits into five unrelated commits (77aeed35 … e1e08952; HEAD correct) →
+  lead commits path-specific while workers write the repo. Code `v3/qad/qmodel.py`, `v3/qad181/` (README "Speed (w215)").
