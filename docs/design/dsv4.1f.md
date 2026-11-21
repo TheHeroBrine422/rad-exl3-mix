@@ -186,6 +186,9 @@ radiance `main` between 2.1.0 and 2.2.0. v2.2.0 already carries part of it (the 
 Estimate: one focused worker session (port + build + boot on box2 at TP4 with the release's MXFP4 experts), then exl3i experts.
 His upstream PR plan splits the same pieces (imatrix fix #267, gather read-ahead, release reader, model support, kernels).
 
+## Scoring (user 11-21)
+KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
+
 ## Encoder
 
 Target: a native fused encoder in radiance **libquant** (C++ / HIP, rad-convert), not the PyTorch / exllamav3 path. Base:
