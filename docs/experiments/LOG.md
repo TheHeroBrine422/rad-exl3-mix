@@ -9583,3 +9583,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   embedding (OOM), the native fp8 table (189 GiB, `--ngram-placement disk`, mapped tier) works → 473.47 GiB container. **Blocker:** experts 269 GiB vs 4 × 21.3 GiB VRAM +
   pinned RAM; the disk tier refuses (`weight_file_direct`: every expert encoding, MXFP4 and bakon's own iq1_s, is relaid at load). Experiment `in.file_relayout=true`
   (branch `ds41-baseline`) gets past the planner, the loader then refuses. Options in `out/w212.md`. No KLD number; score41.py only tested on synthetic rows. #212
+- 11-21 ~2 AM CST: **w212 stopped, blocked (Sonnet high)** — DS4.1-F verify slice `ds41-verify-v1` built (184 verify docs, 150,008 scored
+  positions, 15 categories; `eval/ds41/mkslice41.py`, manifest, ledger role check; lead checked all 184 are verify-pool), scorer
+  `score41.py` (synthetic test only), official release converted on box2 (`/data/q27/w212/ds41-official.rad`, 473 GiB: MXFP4 experts +
+  fp8 Engram as released, trunk widened to bf16 exactly). **No baseline:** 269 GiB of routed experts > box2 VRAM room (~86 GiB) + pinned
+  RAM (~95 GiB), and bakon's disk tier cannot hold any routed-expert encoding (experts are relaid into llama.cpp blocks at load; the file
+  stager has no relayout). Port notes: `--arch deepseek41` needed; the plugin declares the trunk bf16 (no FP8 trunk); kld-ref /
+  kld-out only via YAML. Options: offload engine (relayout-on-read), or a substitute baseline that fits (mikoskinen's EXL3 2.25 bpw,
+  UD-IQ1_S). Report `rad-local/workers/out/w212.md`.
