@@ -9548,3 +9548,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **+0.03–0.17** (K1 +0.06, K2 +0.17, K2.5 +0.03, K3 +0.07, K4 +0.06). LDS placement of the strided table is slower (1.80 at K1); glb
   wins. At M = 8 the packed form is slower than the plain one (1.49 vs 1.40 at K2): the kernel can pick the form by M (same codes).
   Raw `v3/bench/cb208/pk/results-pk-dad1.jsonl`; candidates in `cb208.hip`.
+- 11-20 ~8:50 PM CST: **w209 fp16 tile-kernel pass done** (`exl3-v3` 68f082f9, 97eb3dab; data `data/quantizer-native/w209/kernel-1121/`
+  34f8d2ad): qtf2 carried over (workgroup per tile, fp16 costs in LDS, half2; MIT notice), default for mad at one try; f32 kept as
+  reference. Box2 card 3, 4096 tiles: 49k / 77k / 51k / 88k / 63k / 88k tiles/s at K1 / 2 / 2.5 / 4 / 4.25 / 6 = **1.02–1.15× qtf2**;
+  codes **identical to qtf2 on 4096 / 4096 tiles at 16 rates**; MSE vs f32 +0.015–0.058 % (worst +0.2 % K7). Layer 3: K2 40 s vs
+  ourq 37 s, K4 35 s vs 34 s (first cut 322 / 178 s): **parity**; proxy −0.5 / −0.7 % vs ourq (small k / v_proj −1 to −3.4 %,
+  unverified). Search is now ~half the layer time; the rest is host prep / factorisation / refit. Extrapolated: 27B level ~38–42 min;
+  DS4.1-F one K on 4 cards ~1.7–1.9 h search alone. K8 stays f32 (qtf2 form slower there); no rad-convert run through the recipe yet.
