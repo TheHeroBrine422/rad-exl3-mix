@@ -9541,3 +9541,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   qtf2's 75k) → a 27B level ~190 min vs 41; DS4.1-F at K4 ~16 h on 4 cards vs ~2 h at qtf2's rate. Missing vs release: H_out
   two-sided LDLQ, tile CD, scale clamp, SWJ, gate_up `suh.1`, head R16. Decision for the user: tile-kernel direction (port
   qtf2's workgroup-per-tile fp16 design vs fix the f32 form). Raw `data/quantizer-native/w209/` (4e823d9b).
+- 11-20 ~8:20 PM CST: **packed-multiply CPTC decode (lead, cb208 `CptcPk`: both products in one `v_pk_mul_lo_u16`, mask + udot4 =
+  the table's byte address; dad1 9070 XT; exactness 192 / 192 checks bad = 0).** Expert factor vs base, w8a8, M = 1, K1 / 1.5 / 2 /
+  2.5 / 3 / 4: **cptc6pk glb 1.61 / 1.50 / 1.41 / 1.31 / 1.21 / 1.11** vs current cptc6full lds 1.88 / 1.71 / 1.59 / 1.54 / 1.40 / 1.09
+  and mad 1.55 / 1.43 / 1.24 / 1.28 / 1.14 / 1.05 (lc1 1.31 / … / 1.05). → CPTC's extra over mad at batch 1 drops from +0.26–0.35 to
+  **+0.03–0.17** (K1 +0.06, K2 +0.17, K2.5 +0.03, K3 +0.07, K4 +0.06). LDS placement of the strided table is slower (1.80 at K1); glb
+  wins. At M = 8 the packed form is slower than the plain one (1.49 vs 1.40 at K2): the kernel can pick the form by M (same codes).
+  Raw `v3/bench/cb208/pk/results-pk-dad1.jsonl`; candidates in `cb208.hip`.
