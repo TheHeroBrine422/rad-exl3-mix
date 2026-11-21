@@ -1,0 +1,38 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w209/old/extbuild/exl3hash-d0474b-2545f491
+code stamp 55c9a557c9318a52 (K4.25)
+  model.language_model.layers.3.self_attn.q_proj               K4.25 proxy 4.770e-05 7.7s
+  model.language_model.layers.3.self_attn.k_proj               K4.25 proxy 1.861e-03 1.0s
+  model.language_model.layers.3.self_attn.v_proj               K4.25 proxy 1.709e-03 0.8s
+  model.language_model.layers.3.self_attn.o_proj               K4.25 proxy 3.853e-05 3.1s
+  model.language_model.layers.3.mlp.gate_proj                  K4.25 proxy 1.379e-03 7.7s
+  model.language_model.layers.3.mlp.up_proj                    K4.25 proxy 1.781e-03 7.6s
+  model.language_model.layers.3.mlp.down_proj                  K4.25 proxy 1.726e-03 12.2s
+layer 3: 41s  anon rss 2134 MiB
+done
+	Command being timed: "flock /data/q27/locks/card3.lock python code/quantize/ourq.py --codebook mad --qtf2 --frac-ext /data/q27/w209/old/exl3src/exllamav3/exllamav3_ext -K 4.25 -o ../out/old-K4.25 --layers 3-3 --device 0"
+	User time (seconds): 61.49
+	System time (seconds): 5.51
+	Percent of CPU this job got: 44%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:30.22
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 7371300
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 2381414
+	Voluntary context switches: 12715
+	Involuntary context switches: 798
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 427728
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

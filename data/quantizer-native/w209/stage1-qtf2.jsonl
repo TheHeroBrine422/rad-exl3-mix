@@ -1,0 +1,17 @@
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w209/old/extbuild/exl3hash-d0474b-2545f491
+{"K": "1", "tiles": 4096, "identical_tiles": 3406, "state_diff": 112090, "mse_old": 0.274587, "mse_new": 0.274547, "mse_ratio": 0.99985, "tiles_new_better": 526, "tiles_old_better": 164}
+{"K": "2", "tiles": 4096, "identical_tiles": 3300, "state_diff": 103727, "mse_old": 0.068902, "mse_new": 0.068889, "mse_ratio": 0.99982, "tiles_new_better": 671, "tiles_old_better": 125}
+{"K": "3", "tiles": 4096, "identical_tiles": 3314, "state_diff": 86251, "mse_old": 0.017741, "mse_new": 0.017738, "mse_ratio": 0.99984, "tiles_new_better": 676, "tiles_old_better": 106}
+{"K": "4", "tiles": 4096, "identical_tiles": 3243, "state_diff": 79692, "mse_old": 0.004672, "mse_new": 0.004671, "mse_ratio": 0.99979, "tiles_new_better": 788, "tiles_old_better": 65}
+{"K": "5", "tiles": 4096, "identical_tiles": 3035, "state_diff": 75162, "mse_old": 0.001329, "mse_new": 0.001329, "mse_ratio": 0.99973, "tiles_new_better": 1027, "tiles_old_better": 34}
+{"K": "6", "tiles": 4096, "identical_tiles": 2775, "state_diff": 85622, "mse_old": 0.000438, "mse_new": 0.000438, "mse_ratio": 0.99942, "tiles_new_better": 1289, "tiles_old_better": 32}
+{"K": "7", "tiles": 4096, "identical_tiles": 1881, "state_diff": 124998, "mse_old": 0.000217, "mse_new": 0.000217, "mse_ratio": 0.99797, "tiles_new_better": 2135, "tiles_old_better": 4}
+{"K": "8", "tiles": 4096, "identical_tiles": 619, "state_diff": 360439, "mse_old": 0.000195, "mse_new": 0.000194, "mse_ratio": 0.99738, "tiles_new_better": 3325, "tiles_old_better": 0}
+{"K": "1.5", "tiles": 4096, "identical_tiles": 3338, "state_diff": 108458, "mse_old": 0.136583, "mse_new": 0.136554, "mse_ratio": 0.99979, "tiles_new_better": 624, "tiles_old_better": 134}
+{"K": "2.25", "tiles": 4096, "identical_tiles": 3304, "state_diff": 97523, "mse_old": 0.049145, "mse_new": 0.049135, "mse_ratio": 0.99981, "tiles_new_better": 682, "tiles_old_better": 110}
+{"K": "2.5", "tiles": 4096, "identical_tiles": 3311, "state_diff": 93663, "mse_old": 0.035064, "mse_new": 0.035058, "mse_ratio": 0.99981, "tiles_new_better": 688, "tiles_old_better": 97}
+{"K": "3.125", "tiles": 4096, "identical_tiles": 3280, "state_diff": 88079, "mse_old": 0.015034, "mse_new": 0.015031, "mse_ratio": 0.99979, "tiles_new_better": 723, "tiles_old_better": 93}
+{"K": "4.25", "tiles": 4096, "identical_tiles": 3208, "state_diff": 72519, "mse_old": 0.003388, "mse_new": 0.003387, "mse_ratio": 0.99983, "tiles_new_better": 829, "tiles_old_better": 59}
+{"K": "0.5", "tiles": 4096, "identical_tiles": 3431, "state_diff": 128622, "mse_old": 0.58388, "mse_new": 0.583758, "mse_ratio": 0.99979, "tiles_new_better": 473, "tiles_old_better": 192}
+{"K": "0.75", "tiles": 4096, "identical_tiles": 3425, "state_diff": 117040, "mse_old": 0.395365, "mse_new": 0.39529, "mse_ratio": 0.99981, "tiles_new_better": 513, "tiles_old_better": 158}
+{"K": "0.125", "tiles": 4096, "identical_tiles": 3698, "state_diff": 90672, "mse_old": 1.253754, "mse_new": 1.253635, "mse_ratio": 0.99991, "tiles_new_better": 271, "tiles_old_better": 127}
