@@ -122,6 +122,14 @@ struct Mad4 : CBDef {
     for (u32 s = 0; s < 65536; s++) { const u32 h = s * MAD_A + MAD_B; n[s] = ((h >> 28) & 7) + ((h >> 24) & 7) + ((h >> 20) & 1); }
   }
 };
+// madpop4 (lead 11-21): popcount of 15 high bits of mad's hash = binomial(15): 16 levels, near-Gaussian, no rescale, no clamp
+struct MadPop4 : CBDef {
+  CB_COMMON("madpop4", "-") typedef NoCtx Ctx;
+  static constexpr bool i4(int) { return true; }
+  static constexpr int bias2(int) { return 15; }
+  template <int MM, int A4> DEV u32 n(u32 st, const Ctx&) { return __builtin_popcount((st * MAD_A + MAD_B) & 0xFFFE0000u); }
+  static void host(int, int, uint8_t* n) { for (u32 s = 0; s < 65536; s++) n[s] = __builtin_popcount((s * MAD_A + MAD_B) & 0xFFFE0000u); }
+};
 struct Mad4F : CBDef {   // mad4 folded: sudot8(h & mask, x * 0x11100000) = x * n  (w4a4 only; x as a replicated nibble a column)
   CB_COMMON("mad4", "fold") typedef NoCtx Ctx;
   static constexpr bool FOLD = true;
@@ -342,16 +350,17 @@ typedef Cptc6<true> Cptc6Lds; typedef Cptc6<false> Cptc6Glb; typedef Cptc6F<true
 // CPTC with both 16 x 16 products in ONE packed multiply (lead 11-21): v_pk_mul_lo_u16 of the state broadcast to both halves
 // times (a0, a1); the top Q bits of each half lie in bytes 1 and 3, so a mask + udot4 sums them, already scaled by 2^(8-Q)
 // (x4 for Q = 6, x8 for Q = 5): the table is laid out at that stride, so the dot's result IS the byte address. 3 ALU + 1 load.
+static constexpr uint8_t T7S(int i) { return (uint8_t)(128 + ((i * 37) % 255) - 127); }   // cptc7 timing table (contents do not affect time)
 typedef unsigned short pk_us2 __attribute__((ext_vector_type(2)));
 template <int Q> DEV u32 cptc_addr_pk(u32 st) {
   const pk_us2 s2 = (pk_us2)((unsigned short)st);
   const pk_us2 c = {(unsigned short)CPTC_A0, (unsigned short)CPTC_A1};
   const pk_us2 p = s2 * c;
-  const u32 m = __builtin_bit_cast(u32, p) & (Q == 6 ? 0xFC00FC00u : 0xF800F800u);
+  const u32 m = __builtin_bit_cast(u32, p) & (Q == 7 ? 0xFE00FE00u : Q == 6 ? 0xFC00FC00u : 0xF800F800u);
   return __builtin_amdgcn_udot4(m, 0x01000100u, 0u, false);
 }
 template <int Q, bool LDS> struct CptcPk : CBDef {
-  CB_COMMON(Q == 6 ? "cptc6pk" : "cptc5pk", LDS ? "lds" : "glb") typedef TabCtx<LDS> Ctx;
+  CB_COMMON(Q == 7 ? "cptc7pk" : Q == 6 ? "cptc6pk" : "cptc5pk", LDS ? "lds" : "glb") typedef TabCtx<LDS> Ctx;
   static constexpr bool ST8 = true;
   static constexpr int STR = 1 << (8 - Q), NE = (1 << (Q + 1)) - 1;
   static constexpr int TABB = LDS ? 512 : 0, TABG = 512;
@@ -359,14 +368,15 @@ template <int Q, bool LDS> struct CptcPk : CBDef {
   static constexpr int bias2(int) { return 256; }
   static const void* tab(int kc) {
     static uint8_t X[4][512];
-    for (int i = 0; i < NE; i++) X[kc - 1][i * STR] = Q == 6 ? T6F[kc - 1][i] : T5[kc - 1][i];
+    for (int i = 0; i < NE; i++) X[kc - 1][i * STR] = Q == 7 ? T7S(i) : Q == 6 ? T6F[kc - 1][i] : T5[kc - 1][i];
     return X[kc - 1];
   }
   template <int MM, int A4> DEV u32 n(u32 st, const Ctx& c) { return c.t[cptc_addr_pk<Q>(st)]; }
   static void host(int mm, int, uint8_t* n) {
-    for (u32 s = 0; s < 65536; s++) n[s] = Q == 6 ? T6F[KCEIL(mm) - 1][cptc_idx_h(s, 6)] : T5[KCEIL(mm) - 1][cptc_idx_h(s, 5)];
+    for (u32 s = 0; s < 65536; s++) n[s] = Q == 7 ? T7S(cptc_idx_h(s, 7)) : Q == 6 ? T6F[KCEIL(mm) - 1][cptc_idx_h(s, 6)] : T5[KCEIL(mm) - 1][cptc_idx_h(s, 5)];
   }
 };
+typedef CptcPk<7, false> Cptc7PkGlb;
 typedef CptcPk<6, true> Cptc6PkLds; typedef CptcPk<6, false> Cptc6PkGlb; typedef CptcPk<5, true> Cptc5PkLds; typedef CptcPk<5, false> Cptc5PkGlb;
 typedef Cptc5<true> Cptc5Lds; typedef Cptc5<false> Cptc5Glb; typedef Lc1<true> Lc1Lds; typedef Lc1<false> Lc1Glb;
 typedef CptcSt<6, true> St6Lds; typedef CptcSt<6, false> St6Glb; typedef CptcSt<8, true> St8Lds; typedef CptcSt<8, false> St8Glb;
