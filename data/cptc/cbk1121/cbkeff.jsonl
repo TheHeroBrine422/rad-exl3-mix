@@ -104,3 +104,15 @@
 {"name": "lc1:0xee69", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.8138, "table_entries": 64, "presnap_keff_heldout": 3.8091}
 {"name": "lc1:0xf397", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9006, "table_entries": 64, "presnap_keff_heldout": 1.8987}
 {"name": "lc1:0xf397", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.7947, "table_entries": 64, "presnap_keff_heldout": 3.7883}
+{"name": "cptc1m:0x2545F5", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9378, "table_entries": 127, "presnap_keff_heldout": 1.9386}
+{"name": "cptc1m:0x2545F5", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9229, "table_entries": 127, "presnap_keff_heldout": 2.9223}
+{"name": "cptc1m:0x6C8E9D", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9332, "table_entries": 127, "presnap_keff_heldout": 1.9341}
+{"name": "cptc1m:0x6C8E9D", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9247, "table_entries": 127, "presnap_keff_heldout": 2.9243}
+{"name": "cptc1m:0x9E3779", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9387, "table_entries": 127, "presnap_keff_heldout": 1.9392}
+{"name": "cptc1m:0x9E3779", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9261, "table_entries": 127, "presnap_keff_heldout": 2.9259}
+{"name": "cptc1m:0xA98193", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9243, "table_entries": 127, "presnap_keff_heldout": 1.9258}
+{"name": "cptc1m:0xA98193", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9164, "table_entries": 127, "presnap_keff_heldout": 2.9151}
+{"name": "cptc1m:0xB5297B", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.915, "table_entries": 127, "presnap_keff_heldout": 1.9168}
+{"name": "cptc1m:0xB5297B", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9044, "table_entries": 127, "presnap_keff_heldout": 2.9044}
+{"name": "cptc1m:0xD0474B", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9363, "table_entries": 127, "presnap_keff_heldout": 1.9373}
+{"name": "cptc1m:0xD0474B", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9276, "table_entries": 127, "presnap_keff_heldout": 2.9275}
