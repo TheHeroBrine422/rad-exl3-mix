@@ -65,7 +65,7 @@ def use_compiled_scales(stu, a8=False):
         x = pre(x.reshape(-1, self.k), self.suh, self.r)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
         if a8: x = _A8.apply(x)
-        y = x @ self.wq.to(BF)
+        y = x @ qmodel.i8_to_bf16(self.wq)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         return post(y, self.svh, self.c, self.s).view(*sh[:-1], self.n)
     for q in stu.qlin.values():
@@ -82,7 +82,7 @@ def use_a8(stu):
         x = (x0 * self.su()).to(BF)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
         x = _A8.apply(x)
-        y = x @ self.wq.to(BF)
+        y = x @ qmodel.i8_to_bf16(self.wq)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         y = y * (self.sv() * self.s)
         if self.la is not None: y = y + (x0.to(BF) @ self.la.to(BF).T) @ self.lb.to(BF).T     # adapters (arm L) compose

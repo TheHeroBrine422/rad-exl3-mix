@@ -3,7 +3,8 @@
 """eq215.py REF RUN [RUN ...] -- w215's equivalence gate for trainer-speed changes: each RUN's final trained log
 multipliers (OUT/state.pt, snap.cur) vs REF's: max |delta|, relative L2 of delta (|d| / |ref|), the largest per-tensor
 relative L2; the per-step training KL (train.jsonl) side by side (max relative step difference); speed from speed215.json
-(positions / s and gen rows / s over steps 3.., peak VRAM)."""
+(positions / s and gen rows / s over steps 3.., peak VRAM); with OUT/grad0.pt in both (prof215 GRAD215=1) the first
+step's gradient: relative L2, cosine, max difference."""
 import json, os, sys
 
 import torch
@@ -38,6 +39,12 @@ def main():
               f"steps {len(kl)}, max rel step-KL diff {sk:.3e} (last {kl[n - 1]:.6f} vs {rkl[n - 1]:.6f}); "
               f"{sp.get('pos_s', 0):.1f} pos/s ({sp.get('pos_s', 0) / rsp.get('pos_s', 1):.2f}x), "
               f"{sp.get('rows_s', 0):.1f} rows/s, peak {sp.get('peak_gib', 0):.2f} GiB")
+        ga, gb = (os.path.join(x, "grad0.pt") for x in (sys.argv[1], d))
+        if os.path.exists(ga) and os.path.exists(gb):
+            A, B = torch.load(ga), torch.load(gb)
+            a = torch.cat([A[k].double().reshape(-1) for k in sorted(A)]); b = torch.cat([B[k].double().reshape(-1) for k in sorted(A)])
+            print(f"   step-1 gradient: rel L2 {float((b - a).norm() / a.norm()):.3e}, cosine {float(a @ b / a.norm() / b.norm()):.9f}, "
+                  f"max |d| / max |g| {float((b - a).abs().max() / a.abs().max()):.3e}")
 
 
 if __name__ == "__main__":

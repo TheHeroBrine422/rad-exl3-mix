@@ -809,3 +809,9 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   ladder at today's speed.
 - **5.5+ activation mode (lead 11-21):** the board gap to KL-IQR at 5.5 ≈ our A8 floor (+5–7 % served at 5–6 bpw, #132) ≈ their two-pass
   gain (6.5 %, #194-02). Options: f16 activations at ≥ 5 bpw (~1.46× prefill), two-pass A8 (~1.7–1.8×), or keep A8. User decision.
+- **QAD data order: xcorp warm-up, calib anneal (user 11-21):** WSD constant phase on xcorp only, decay phase on calib only
+  ("anneal on target data", MiniCPM / Llama 3). Arms at 2.5 / 4M, same seed + data order: M (today's ~80 % xcorp mix throughout),
+  XC (xcorp → calib, 20 % decay), XC40 (40 % decay). Judge on the held-out qad eval; fresh xcorp held-out guards real use; verify once
+  for the winner. Context: #191 D (50 % calib mixed throughout) +3.4 %; 16M rows worse than 4M on verify (#181; scales random-walk,
+  w183) → the winner's order goes to the long run at lower lr. V3.1 data: ~7.5M calib (qad + fit/search, minus a ~0.5M held-out
+  qad eval) + 8M xcorp; verify (2.18M) final holdout.

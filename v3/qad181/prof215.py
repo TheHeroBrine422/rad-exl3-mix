@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""prof215.py OUT [qad181.py args] -- qad181.main() unchanged, plus (w215): PROF215_STEP=k profiles optimizer step k
+"""prof215.py OUT [qad181.py args] -- qad181.main() unchanged, plus (w215): GRAD215=1 saves the first optimizer step's
+gradient (summed over the step's rows, before Adam) to OUT/grad0.pt; PROF215_STEP=k profiles optimizer step k
 (torch.profiler, CPU + device) -> OUT/profile-step.txt (top ops by device time), OUT/profile-shapes.txt (by input shape) and OUT/trace-step.json; at exit
 OUT/speed215.json: per-step wall, positions / s over the steps after the first (compile / warm-up), peak VRAM."""
 import json, os, sys, time
@@ -17,6 +18,12 @@ _run = qad181.Trainer.run_step
 
 def run_step(self, s, lr):
     dev = self.dev
+    if s == 0 and os.environ.get("GRAD215"):                 # the first step's summed gradient, before Adam
+        step = self.opt.step
+        def save_then_step(*a, **k):
+            torch.save({n: p.grad.detach().cpu().clone() for n, p in zip(self.names, self.P)}, os.path.join(self.a.out, "grad0.pt"))
+            self.opt.step = step; return step(*a, **k)
+        self.opt.step = save_then_step
     torch.cuda.synchronize(dev); t0 = time.time()
     if s == PSTEP:
         from torch.profiler import profile, ProfilerActivity

@@ -39,6 +39,31 @@ def int_form(cb):
     return None
 
 
+_I8BF = None
+
+
+def i8_to_bf16(w):
+    """w (int8) as bf16, bitwise = w.to(bfloat16) (|m| <= 127 is exact in bf16): on the GPU a vectorized Triton copy
+    (w215: torch's int8 -> bf16 copy runs a non-vectorized kernel at ~390 GB/s on the R9700); else w.to(bfloat16)"""
+    global _I8BF
+    if w.dtype != torch.int8 or w.device.type != "cuda": return w.to(BF)
+    if _I8BF is None:
+        import triton, triton.language as tl
+
+        @triton.jit
+        def _k(src, dst, n, BLOCK: tl.constexpr):
+            off = tl.program_id(0).to(tl.int64) * BLOCK + tl.arange(0, BLOCK)
+            m = off < n
+            tl.store(dst + off, tl.load(src + off, mask=m).to(tl.bfloat16), mask=m)
+
+        def run(x):
+            x = x.contiguous(); y = torch.empty(x.shape, dtype=BF, device=x.device); n = x.numel()
+            _k[(triton.cdiv(n, 8192),)](x, y, n, BLOCK=8192, num_warps=8)
+            return y
+        _I8BF = run
+    return _I8BF(w)
+
+
 def to_int8(what, cb):
     """W_hat f32 [k, n] -> (int8 m, s) with fp16(m s) == W_hat (bit-exact), or None"""
     s = int_form(cb)
@@ -91,7 +116,7 @@ class QLinear(torch.nn.Module):
         x0 = x.reshape(-1, self.k)
         x = (x0 * self.su()).to(BF)                                    # f32 scale, bf16 out
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)               # hadamards as one 2D bf16 GEMM (f32 accumulate)
-        y = x @ self.wq.to(BF)
+        y = x @ i8_to_bf16(self.wq)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         y = y * (self.sv() * self.s)
         if self.la is not None:
