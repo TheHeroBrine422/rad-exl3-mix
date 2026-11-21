@@ -9602,3 +9602,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   +0.1–1.6 %, own + 1·pooled +9–15 %. **Caveat:** judged under the expert's own H (favours it by construction; under the pooled H
   the order reverses) → the real test is held-out: split-half expert Hessians, λ ∈ {0, 0.03, 0.1, 0.3}. Adopted for now: damp 0.01,
   factors {1, 1.15, 1.3}, per-expert H. Report `rad-local/workers/out/w211.md`.
+- 11-21 (user): DS experts: **per-expert Hessians only** — no pooled fallback or blend, no split-half test (the collection is large enough). Baseline = mikoskinen's EXL3 2.25 bpw container (w212b).
