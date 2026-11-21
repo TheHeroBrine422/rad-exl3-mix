@@ -9603,3 +9603,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   the order reverses) → the real test is held-out: split-half expert Hessians, λ ∈ {0, 0.03, 0.1, 0.3}. Adopted for now: damp 0.01,
   factors {1, 1.15, 1.3}, per-expert H. Report `rad-local/workers/out/w211.md`.
 - 11-21 (user): DS experts: **per-expert Hessians only** — no pooled fallback or blend, no split-half test (the collection is large enough). Baseline = mikoskinen's EXL3 2.25 bpw container (w212b).
+- 11-21 ~4:40 PM CST: **w212b done (Sonnet high): first DS4.1-F KLD — mikoskinen's EXL3 2.25 bpw container on bakon's tree** (TP4, box2,
+  tp-wire exact, bf16 KV; rev 57e019d8, sha256 OK). `ds41-verify-v1` (184 verify docs, 150,008 gen positions): **mean KLD 0.0612
+  [0.0512, 0.0721]**, median 0.0046, p99 0.778, top-1 92.15 %, ppl ×1.016. Two engine starts byte-identical (run-to-run noise 0).
+  KLD pass ~5 min. The container is a MIX (EXL3 experts K2 / K2.5 + q5_K / q6_K / q8_0 attention and shared experts + iq4_nl Engram).
+  Prompt-side (unscored) rows read KLD 0.72 / ppl ×0.70: the same pattern the golden's own G6 check recorded at build time (unmasked
+  0.080 / 0.742 vs masked 0.0072 / 0.0021, `ds41pipe/OVERNIGHT-2026-11-11.md`), so a property of prompt rows, not of the scored rows;
+  lead: headline stands. Data `data/ds41-baseline/mik225/`, scripts `eval/ds41/w212/`, e43db2f4. Report `out/w212b.md`.
