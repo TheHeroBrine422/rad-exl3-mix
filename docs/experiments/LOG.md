@@ -9477,3 +9477,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   cptc5 1.41× at K1). w4a4: same decode, cheaper base from M = 4. Under host-link offload the resident-expert ALU hides
   (dsv4.1f.md), so CPTC's +0.2–0.35 matters only for fully resident / prefill. Next: lc1's quality (Keff) — if near CPTC it
   is the frontier point.
+- 11-20 ~6:00 PM CST: **CPTC i.i.d. tables done (colo, paper protocol), Keff:** E2M5 K1 0.951 / K2 1.950 / K3 2.944 / K4 3.928 /
+  K5 4.903 / K6 5.807 (paper 0.95 / 1.948 / 2.943 / 3.934 / 4.913 / 5.802 — all reproduced); **INT8 table (scale 32): K4 3.931,
+  K5 4.898, K6 5.751**; mad 0.936 / 1.931 / 2.908 / 3.869 / 4.770 / 5.556; mul1 0.931 / 1.936 / 2.915 / 3.879 / 4.807 / 5.621. INT8
+  costs nothing to K5 and 0.055 bits at K6; still +0.13 / +0.20 bits over mad at K5 / K6. Tables: `cptc/tables-1120/`,
+  `cptc/tables-int8-1120/`.
