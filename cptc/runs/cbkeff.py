@@ -48,7 +48,7 @@ def fixed_cb(name):
         n = np.zeros_like(bits)
         for b in range(31):
             n += (bits >> np.uint64(b)) & np.uint64(1)
-        return n.astype(np.float64)
+        return n.astype(np.float64) - (7.5 if name == "madpop4" else 15.5)   # centred (11-21 fix: was uncentred)
     if name == "cptcmin":
         Q = math.ceil(K) + 1
         i = prod_hi(A0, 16 - Q) + prod_hi(A1, 16 - Q)
