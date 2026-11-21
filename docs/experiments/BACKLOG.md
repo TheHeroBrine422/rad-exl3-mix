@@ -799,7 +799,13 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   (torch-side, ledger) for all sweep comparisons, verify only for finalists; successive halving on WSD branches instead of BO.
 - **More trainable parameters for QAD (lead 11-21):** (1) **code-changing healing** (PV-tuning style: KL-trained shadow weights →
   Hessian-weighted Viterbi re-encode per tile with the w210 batched encoder, a few rounds; same format, zero runtime cost; the lever for
-  weight-side gaps such as 4.0); (2) **learned A8 clip ratios** (LSQ / OmniQuant style, per tensor or channel group, trained with arm
+  weight-side gaps such as 4.0); (2) [downgraded 11-21: #26 found clipping hurts A8 (per-row clip 0.9 +119 %), g32 vs g128 only ~2 %; absmax is near-optimal] **learned A8 clip ratios** (LSQ / OmniQuant style, per tensor or channel group, trained with arm
   Q's fake-quant; ~one multiply in the activation quantizer; targets the 5.5 A8 floor that KL-IQR buys back with 1.8× prefill);
   (3) per-output bias vectors (learned end to end; small format addition). Ruled out: norms, head scales, adapters (bits cost more than
   they save), finer scales / tables (V4 format).
+- **Native quantizer optimisation pass (lead 11-21, before the DS ladder):** w210's open levers: the tile-search kernel (2/3 of a layer,
+  64 % of an expert; K5 / K8 paths, hash products; no dedicated tuning since the qtf2 port), `scale_sample` (user decision), the refit's
+  7 k²n products, Hessian I/O for DS (~0.5 GB/s f64 needed: measure box2 disk; f32 / packed-triangle files). ~24 h box2 per DS lazy
+  ladder at today's speed.
+- **5.5+ activation mode (lead 11-21):** the board gap to KL-IQR at 5.5 ≈ our A8 floor (+5–7 % served at 5–6 bpw, #132) ≈ their two-pass
+  gain (6.5 %, #194-02). Options: f16 activations at ≥ 5 bpw (~1.46× prefill), two-pass A8 (~1.7–1.8×), or keep A8. User decision.
