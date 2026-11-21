@@ -58,8 +58,9 @@ def fixed_cb(name):
 
 # ---- table codebooks: cell index per state, table size, mirror fold ----
 def cells(name):
-    if name == "lc1":
-        return prod_hi(A1, 10).astype(np.int64), 64, False
+    if name.startswith("lc1"):   # one multiply, 64-entry table; "lc1:0xMULT" searches the multiplier (paper's LC is searched)
+        a = int(name.split(":")[1], 16) if ":" in name else A1
+        return prod_hi(a, 10).astype(np.int64), 64, False
     if name == "cptc5":
         return (prod_hi(A0, 11) + prod_hi(A1, 11)).astype(np.int64), 63, False
     if name == "cptc6u":
@@ -153,7 +154,7 @@ def fit_table(name, rng):
 
 rng = np.random.default_rng(1000 + K)
 extra = {}
-if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10", "madlut", "madlutw", "madpoplut", "mul1lut", "cptc7") or NAME.startswith("cptc1m"):
+if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10", "madlut", "madlutw", "madpoplut", "mul1lut", "cptc7") or NAME.startswith("cptc1m") or NAME.startswith("lc1"):
     cb, extra = fit_table(NAME, rng)
 else:
     v = fixed_cb(NAME); v = v / np.sqrt(np.mean(v ** 2))
