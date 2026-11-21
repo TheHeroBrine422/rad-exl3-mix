@@ -34,3 +34,8 @@
 {"name": "mul1_i8", "K": 2, "blocks": 16384, "ntry": 4, "keff": 1.9367, "scale": 1.02}
 {"name": "mul1_i8", "K": 3, "blocks": 16384, "ntry": 4, "keff": 2.9235, "scale": 1.06}
 {"name": "mul1_i8", "K": 4, "blocks": 16384, "ntry": 4, "keff": 3.9055, "scale": 1.1}
+{"name": "mad", "K": 5, "blocks": 16384, "ntry": 4, "keff": 4.8657, "scale": 1.14}
+{"name": "mad", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.8304, "scale": 1.18}
+{"name": "mul1_i8", "K": 5, "blocks": 16384, "ntry": 4, "keff": 4.8799, "scale": 1.14}
+{"name": "mul1_i8", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.8426, "scale": 1.18}
+{"name": "cptc6u", "K": 6, "blocks": 16384, "ntry": 4, "keff": 5.7425, "table_entries": 64, "presnap_keff_heldout": 5.8198}

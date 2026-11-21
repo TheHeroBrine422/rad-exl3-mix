@@ -9509,3 +9509,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   int4 output is free at K2 (int4grid 1.931 = mad), costs 0.03 at K3, unusable at K4. The cheap decoders (lc1, cptcmin) lose
   0.03–0.05 at K2–3 and ~0.1 at K4; the state table is a depth-10 trellis (bad). **The K6 real-tensor anomaly is likely the same
   effect** (i.i.d. mad at K5 / K6 was fixed-scale; rerunning K5 / K6 with the scale search).
+- 11-20 ~7:15 PM CST: **K6 anomaly explained — mad is BETTER than CPTC at K6; the earlier "+0.13 / +0.20 bits at K5 / K6" was
+  mad at the wrong scale (retracted).** i.i.d. with mad's scale searched (colo cbkeff): **mad K5 4.866 / K6 5.830, mul1_i8 4.880 /
+  5.843** vs CPTC E2M5 4.903 / 5.807, CPTC int8 (per-K pair) 4.898 / 5.751, unified int8 — / 5.743. Real tensors (thor diag, 3
+  tensors, factor grid 0.7–1.8): K6 E2M5 table +1.8 / +3.8 / +5.7 % vs mad, int8 table +9.8 / +13.6 / +13.9 %; K5 CPTC −4 to −7 %
+  (the wider factor grid changed nothing). Mechanism (consistent with both): CPTC's output alphabet is 127 values; at K6 (64
+  branches a step) that caps it, while mad / mul1 have ~253 int8 levels. **Rule:** CPTC pays at K ≤ 5 (+0.016 / 0.022 / 0.028 /
+  ~0.03 bits at K2 / 3 / 4 / 5 ≈ 2–5 % error); at K ≥ 6 keep mad / mul1_i8. Files `data/cptc/cbk1121/cbkeff.jsonl`,
+  `data/cptc/rerun-1120/diag-k56-*.jsonl`.
