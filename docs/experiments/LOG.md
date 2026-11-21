@@ -9591,3 +9591,14 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   stager has no relayout). Port notes: `--arch deepseek41` needed; the plugin declares the trunk bf16 (no FP8 trunk); kld-ref /
   kld-out only via YAML. Options: offload engine (relayout-on-read), or a substitute baseline that fits (mikoskinen's EXL3 2.25 bpw,
   UD-IQ1_S). Report `rad-local/workers/out/w212.md`.
+- 11-21 ~2:30 AM CST: **w211 done (Sonnet high): DS4.1-F routed-expert quantizer harness + first settings sweep (mad, CPU, box2)** —
+  data `data/ds41-quant/w211/` (944cde19, 50432180, f1e73ac9). MXFP4 dequant bit-identical to the reference model, reference Expert
+  forward exact; chunked LDLQ = `trellis.ldlq_trellis` bit for bit. Layers 5 / 20 / 35 (shard s0), 18 experts (hot / mid / cold),
+  gate_up + down, K1–4, **rows subsampled 1/16** (all rows ~38 h); a disjoint-row replicate reproduces every ratio to ≤ 0.3 %.
+  Rotated rows Gaussian (FP4 grid gone after the Hadamard); kept rows 10k–21.6k per expert (participation ratio 12–431).
+  Weight-error proxy, in-sample (own H): **nothing beats the baseline (damp 0.01, factors {1, 1.15, 1.3}, per-expert H) beyond
+  ~1.5 %**. Damp 0.001–0.025 tie at K ≥ 2, ≥ 0.05 worse (+0.4–2.6 %); factors: only 1.0 / 1.15 ever picked (wider grid only down K1
+  −0.3 %). Pooled layer H: +46 % (K1) … +61 % (K4), worse for rarer experts (cold ×1.94 vs hot ×1.46 at K4); own + 0.1·pooled
+  +0.1–1.6 %, own + 1·pooled +9–15 %. **Caveat:** judged under the expert's own H (favours it by construction; under the pooled H
+  the order reverses) → the real test is held-out: split-half expert Hessians, λ ∈ {0, 0.03, 0.1, 0.3}. Adopted for now: damp 0.01,
+  factors {1, 1.15, 1.3}, per-expert H. Report `rad-local/workers/out/w211.md`.
