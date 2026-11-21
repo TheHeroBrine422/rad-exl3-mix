@@ -64,6 +64,17 @@ def cells(name):
         return (prod_hi(A0, 11) + prod_hi(A1, 11)).astype(np.int64), 63, False
     if name == "cptc6u":
         return (prod_hi(A0, 10) + prod_hi(A1, 10)).astype(np.int64), 127, True
+    if name in ("madlut", "madlutw", "madpoplut", "mul1lut"):   # hash index -> fitted int8 table
+        if name == "mul1lut":
+            h = (S * np.uint64(0x83DCD12D)) & np.uint64(0xFFFFFFFF)
+            return bytesum(h).astype(np.int64), 1021, False
+        h = (S * np.uint64(0xD0474B) + np.uint64(0x2545F491)) & np.uint64(0xFFFFFFFF)
+        if name == "madpoplut":
+            b = (h >> np.uint64(17)) & np.uint64(0x7FFF); n = np.zeros_like(b)
+            for i in range(15): n += (b >> np.uint64(i)) & np.uint64(1)
+            return n.astype(np.int64), 16, False
+        m = np.uint64(0x3F3F3F3F if name == "madlut" else 0x7F7F7F7F)
+        return bytesum(h & m).astype(np.int64), (253 if name == "madlut" else 509), False
     if name == "cptcst10":
         return (S & np.uint64(1023)).astype(np.int64), 1024, False
     raise KeyError(name)
@@ -136,7 +147,7 @@ def fit_table(name, rng):
 
 rng = np.random.default_rng(1000 + K)
 extra = {}
-if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10"):
+if NAME in ("lc1", "cptc5", "cptc6u", "cptcst10", "madlut", "madlutw", "madpoplut", "mul1lut"):
     cb, extra = fit_table(NAME, rng)
 else:
     v = fixed_cb(NAME); v = v / np.sqrt(np.mean(v ** 2))
