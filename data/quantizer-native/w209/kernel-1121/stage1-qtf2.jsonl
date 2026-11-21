@@ -1,0 +1,16 @@
+{"K": "1", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.274587, "mse_new": 0.274587, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "2", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.068902, "mse_new": 0.068902, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "3", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.017741, "mse_new": 0.017741, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "4", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.004672, "mse_new": 0.004672, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "5", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.001329, "mse_new": 0.001329, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "6", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.000438, "mse_new": 0.000438, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "7", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.000217, "mse_new": 0.000217, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "8", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.000195, "mse_new": 0.000195, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "1.5", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.136583, "mse_new": 0.136583, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "2.25", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.049145, "mse_new": 0.049145, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "2.5", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.035064, "mse_new": 0.035064, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "3.125", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.015034, "mse_new": 0.015034, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "4.25", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.003388, "mse_new": 0.003388, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "0.5", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.58388, "mse_new": 0.58388, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "0.75", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 0.395365, "mse_new": 0.395365, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}
+{"K": "0.125", "tiles": 4096, "identical_tiles": 4096, "state_diff": 0, "mse_old": 1.253754, "mse_new": 1.253754, "mse_ratio": 1.0, "tiles_new_better": 0, "tiles_old_better": 0}

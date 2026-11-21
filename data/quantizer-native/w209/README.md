@@ -9,3 +9,9 @@ Report: `rad-local/workers/out/w209.md`. Code: radiance fork branch `exl3-v3` (`
   scaled Hessian + sigma_in 0.005; `old-K*/proxy.jsonl`, `oldsh-K4/`: `quantize/ourq.py --codebook mad --qtf2` on the same layer.
 - `agg.py` (tables), `extrap.py` (speed extrapolations), `pull.sh` (copy from box2).
 No KLD data was read (proxy errors on calib Hessians only): no overfit audit needed.
+
+## kernel-1121/ — the fp16 kernel pass (2026-11-21, user decision: fp16 tile search)
+qtf2 carried into libquant as the default tile search (radiance `exl3-v3` 68f082f9 + the K8 follow-up). Same box, card and
+tiles: `stage1-tiles.jsonl` (`exl3v3_tool tiles`: f32 reference + fp16 search; the K8 row there is the removed fp16 K8 kernel,
+`stage1-tiles-k8.jsonl` the final build), `stage1-qtf2*.jsonl` (the old encoder on the dumped tiles: codes identical on all 16
+rates), `prod-new.*.jsonl` (layer 3, K 2 / 4 / 6 / 4.25), `old-K2`, `old-K4` (ourq re-timed in the same session), `agg.py`.

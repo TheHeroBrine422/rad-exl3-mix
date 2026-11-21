@@ -1,0 +1,15 @@
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+[92mSuccessfully preprocessed all matching files.[0m
+exl3hash: A 0xd0474b B 0x2545f491, builds in /data/q27/w209/old/extbuild/exl3hash-d0474b-2545f491
+code stamp 7fdf829cb731d98f (K2)
+  model.language_model.layers.3.self_attn.q_proj               K2 proxy 9.538e-04 7.2s
+  model.language_model.layers.3.self_attn.k_proj               K2 proxy 2.739e-02 0.9s
+  model.language_model.layers.3.self_attn.v_proj               K2 proxy 3.124e-02 0.8s
+  model.language_model.layers.3.self_attn.o_proj               K2 proxy 8.643e-04 2.8s
+  model.language_model.layers.3.mlp.gate_proj                  K2 proxy 3.051e-02 6.9s
+  model.language_model.layers.3.mlp.up_proj                    K2 proxy 3.929e-02 6.8s
+  model.language_model.layers.3.mlp.down_proj                  K2 proxy 3.787e-02 11.4s
+layer 3: 37s  anon rss 2149 MiB
+done
