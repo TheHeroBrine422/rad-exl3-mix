@@ -159,7 +159,7 @@ def seg_loss(stu, g, it, a, b, prev, ch=256, per_row=False):
     j, r = gold.scored(i, a, b)
     if len(j) == 0: return (torch.zeros((), device=h.device) if not per_row else torch.zeros(0)), 0, nxt
     dev = h.device
-    h = h[D.to_dev(j - a, dev)]
+    h = h[torch.from_numpy(j - a).to(dev)]
     tid, tlp, ptail = gold.targets(r, dev)
     if stu.v2row is not None: tid = stu.v2row[tid]
     if per_row:

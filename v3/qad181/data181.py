@@ -57,21 +57,13 @@ class Gold:
         return len(self.scored(i, 0, min(cap, self.ntok(i)))[0])
 
     def targets(self, r, dev):
-        """(top ids [m, K] long, top log-probs [m, K] f32, tail mass [m] f32) on dev (on a GPU: copied from pinned memory
-        without blocking the host, the ids widened to long on the card)"""
+        """(top ids [m, K] long, top log-probs [m, K] f32, tail mass [m] f32) on dev"""
+        import torch
         t = np.asarray(self.top[r[0]:r[-1] + 1])[r - r[0]]
-        tid = to_dev(t["id"], dev).long()
-        tlp = to_dev(t["lp"], dev).float()
-        ptail = to_dev(self.rows[r[0]:r[-1] + 1, 2][r - r[0]], dev).float()
+        tid = torch.from_numpy(np.ascontiguousarray(t["id"])).long().to(dev)
+        tlp = torch.from_numpy(np.ascontiguousarray(t["lp"])).float().to(dev)
+        ptail = torch.from_numpy(np.ascontiguousarray(self.rows[r[0]:r[-1] + 1, 2][r - r[0]])).float().to(dev)
         return tid, tlp, ptail
-
-
-def to_dev(a, dev):
-    """a numpy array as a torch tensor on dev; to a GPU through pinned memory with non_blocking (w215: a pageable host ->
-    device copy waits for the card's queue to drain, leaving it idle while the host prepares the next work)"""
-    import torch
-    x = torch.from_numpy(np.ascontiguousarray(a))
-    return x.pin_memory().to(dev, non_blocking=True) if torch.device(dev).type == "cuda" else x.to(dev)
 
 
 def corpus_tag(name):
