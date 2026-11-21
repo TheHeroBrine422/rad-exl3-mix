@@ -797,3 +797,9 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   keeps gaining to 16M (0.808) while calib verify saturates by 1–4M, so it is a real-use variant (judge fresh xcorp + verify, must not
   regress verify) and a noise-averaging test (scales random-walk, seed spread ±1.7 %); (c) a fixed ~500k held-out qad eval
   (torch-side, ledger) for all sweep comparisons, verify only for finalists; successive halving on WSD branches instead of BO.
+- **More trainable parameters for QAD (lead 11-21):** (1) **code-changing healing** (PV-tuning style: KL-trained shadow weights →
+  Hessian-weighted Viterbi re-encode per tile with the w210 batched encoder, a few rounds; same format, zero runtime cost; the lever for
+  weight-side gaps such as 4.0); (2) **learned A8 clip ratios** (LSQ / OmniQuant style, per tensor or channel group, trained with arm
+  Q's fake-quant; ~one multiply in the activation quantizer; targets the 5.5 A8 floor that KL-IQR buys back with 1.8× prefill);
+  (3) per-output bias vectors (learned end to end; small format addition). Ruled out: norms, head scales, adapters (bits cost more than
+  they save), finer scales / tables (V4 format).
