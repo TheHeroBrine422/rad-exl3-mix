@@ -557,5 +557,17 @@
   "line": "v3.1",
   "decisions": 0,
   "note": "#215 (w215, 2026-11-21): eval215.py's held-out sanity of the speed runs' final scales (fast vs base within 0.1 %): the last 40 qad-pool docs of eq215's seeded order, first 2,048 tokens; never trained on in these runs; equivalence only, no quality decision"
+ },
+ "qad214": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#214 (w214, 2026-11-21): V3.1 QAD pilot training data, the calib part: a seeded subset (seed 214) of the qad + fit + search pool docs with >= 16 gen rows in their first 8,192 tokens of the published calib golden (gen rows, document starts), sized to ~20 % of the mixed gen rows, one epoch with the xcorp / own-trace goldens xc8k-b2-c0..c2 and tr32k-b2-c0 (v3/qad214/RULES214.md); arms 25A / 30A / 40Q (and 25Q) reuse these docs. The fixed-eval documents (held out of training) are among them"
+ },
+ "qad214-judge": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#214 (w214, 2026-11-21): the pilot's judge slice golden-j214: 80 verify-pool docs (cap 8,192 tokens, 121,641 gen rows; no select / final / fit use, not V4-reserve, not in golden-verify27-w114*, no QAD training use), cut from the published calib golden with mkjudge214.py seed 214; served-path reads of the unhealed released 2.50 / 3.00 / 4.00 picks and QAD checkpoints vs them (report only, never a pick)"
  }
 }

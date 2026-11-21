@@ -54,8 +54,12 @@ class _A8(torch.autograd.Function):
 
 def use_compiled_scales(stu, a8=False):
     """QLinear's elementwise chain (x . su -> bf16, y . (sv s) -> bf16; arm Q's fake quant) as torch.compile'd functions
-    (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager)"""
+    (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager). Inductor's deterministic
+    mode (no on-device autotuning: w215 saw two runs differ without it) keeps runs bitwise reproducible; numerics "strict"
+    keeps eager's bf16 downcasts between fused ops and eager's reduction order"""
     import types
+    import torch._inductor.config
+    torch._inductor.config.deterministic = True; torch._inductor.config.numerics = "strict"
     @torch.compile(dynamic=True)
     def pre(x0, suh, r): return (x0 * (suh * r.exp() if r is not None else suh)).to(BF)
     @torch.compile(dynamic=True)
@@ -155,7 +159,7 @@ def seg_loss(stu, g, it, a, b, prev, ch=256, per_row=False):
     j, r = gold.scored(i, a, b)
     if len(j) == 0: return (torch.zeros((), device=h.device) if not per_row else torch.zeros(0)), 0, nxt
     dev = h.device
-    h = h[torch.from_numpy(j - a).to(dev)]
+    h = h[D.to_dev(j - a, dev)]
     tid, tlp, ptail = gold.targets(r, dev)
     if stu.v2row is not None: tid = stu.v2row[tid]
     if per_row:
@@ -412,7 +416,7 @@ def main():
     ap.add_argument("--gate", action="store_true"); ap.add_argument("--profile", action="store_true"); ap.add_argument("--bench", action="store_true")
     ap.add_argument("--a8", action="store_true", help="arm Q: a8g128 fake-quant activations in the student (STE)")
     ap.add_argument("--compile-scales", action="store_true", help="torch.compile QLinear's scale / cast chain (speed)")
-    ap.add_argument("--compile-ew", action="store_true", help="torch.compile the shift conv, MLP silu * up and RMSNorm (speed, rounding-level)")
+    ap.add_argument("--compile-ew", action="store_true", help="torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
     ap.add_argument("--lora", type=int, default=0, help="rank of adapters on every trunk linear (qmodel's arm L), composable with the rest")
     ap.add_argument("--lr-lora", type=float, default=1e-4)
     ap.add_argument("--fixed-eval", type=int, default=0, help="rows target of a fixed eval set of calib qad-pool docs (first --len tokens, held out of training)")
@@ -430,7 +434,7 @@ def main():
     log("qad181.py " + json.dumps(vars(a)) + f" world {d.world}")
     mad_int_form()
     if a.conv == "shift": qmodel.use_shift_conv()
-    if a.compile_ew: qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up / RMSNorm compiled")
+    if a.compile_ew: qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up compiled")
     chunks = [x.strip() for x in (open(a.chunks[1:]).read().split() if a.chunks.startswith("@") else a.chunks.split(",")) if x.strip()]
     t0 = time.time()
     C = D.Corpus(chunks, a.cap, calib=a.calib, pools=a.pools, pool=a.pool, genmask=a.genmask,

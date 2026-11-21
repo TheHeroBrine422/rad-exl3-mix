@@ -27,8 +27,8 @@ def main():
     qad181.use_seg_attention(stu)
     base = None
     for run in sys.argv[1:]:
-        if run != "-":
-            stu.load_state(torch.load(os.path.join(run, "state.pt"), weights_only=False, map_location="cpu")["snap"]["cur"])
+        if run == "-": stu.load_state({n: torch.zeros_like(p) for n, p in stu.P.items()})
+        else: stu.load_state(torch.load(os.path.join(run, "state.pt"), weights_only=False, map_location="cpu")["snap"]["cur"])
         s = np.zeros(2)
         with torch.no_grad():
             for gi, i in docs:

@@ -150,10 +150,15 @@ def use_shift_conv():
 
 
 def use_compiled_elementwise():
-    """w215: the elementwise chains outside QLinear as torch.compile'd functions (dynamic shapes, fwd + bwd fused):
-    the GDN shift conv (when use_shift_conv is on), the MLP's silu(gate) * up, Qwen3_5RMSNorm. Same ops in the same
-    order; rounding-level vs eager (FMA contraction, the norm's mean reduced in another order)"""
+    """w215: two elementwise chains outside QLinear as torch.compile'd functions (dynamic shapes, fwd + bwd fused): the
+    GDN shift conv (when use_shift_conv is on) and the MLP's silu(gate) * up. Inductor in its eager-numerics mode
+    (numerics "strict": eager's bf16 downcasts between fused ops kept; without it silu(g) * u skipped silu's bf16
+    rounding and the student's KL moved ~1 % per segment) and its deterministic mode (no on-device autotuning: runs
+    bitwise reproducible). Forward bitwise = eager; the backward's bf16 input gradients differ at rounding level.
+    (Qwen3_5RMSNorm compiled was left out: its forward differs from eager even in strict mode.)"""
+    import torch._inductor.config
     import transformers.models.qwen3_5.modeling_qwen3_5 as q35
+    torch._inductor.config.deterministic = True; torch._inductor.config.numerics = "strict"
     if q35.causal_conv1d_fn is shift_conv1d: q35.causal_conv1d_fn = torch.compile(shift_conv1d, dynamic=True)
 
     @torch.compile(dynamic=True)
@@ -162,15 +167,7 @@ def use_compiled_elementwise():
     def mlp_forward(self, x):
         assert self.config.hidden_act == "silu", self.config.hidden_act
         return self.down_proj(silu_mul(self.gate_proj(x), self.up_proj(x)))
-
-    @torch.compile(dynamic=True)
-    def rms(x, w, eps):
-        o = x.float(); o = o * torch.rsqrt(o.pow(2).mean(-1, keepdim=True) + eps)
-        return (o * (1.0 + w.float())).type_as(x)
-
-    def rms_forward(self, x): return rms(x, self.weight, self.eps)
     q35.Qwen3_5MLP.forward = mlp_forward
-    q35.Qwen3_5RMSNorm.forward = rms_forward
 
 
 def _norm_hook(mod, inp, out):
@@ -308,6 +305,7 @@ class Student:
 
     def embed(self, ids):
         rows = torch.from_numpy(np.ascontiguousarray(self.emb[ids])).view(BF)
+        if self.devs[0].type == "cuda": return rows[None].pin_memory().to(self.devs[0], non_blocking=True)   # no host wait (w215)
         return rows[None].to(self.devs[0])
 
     def _ctx(self, dev, x):
