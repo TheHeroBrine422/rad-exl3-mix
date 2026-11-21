@@ -42,6 +42,13 @@ def fixed_cb(name):
         h = (S * np.uint64(0xD0474B) + np.uint64(0x2545F491)) & np.uint64(0xFFFFFFFF)
         n = ((h >> np.uint64(28)) & np.uint64(7)) + ((h >> np.uint64(24)) & np.uint64(7)) + ((h >> np.uint64(20)) & np.uint64(1))
         return n.astype(np.float64) - 8.0
+    if name in ("madpop4", "madpop31"):   # popcount of mad-hash high bits: binomial(15) = 16 levels / binomial(31)
+        h = (S * np.uint64(0xD0474B) + np.uint64(0x2545F491)) & np.uint64(0xFFFFFFFF)
+        bits = (h >> np.uint64(17)) & np.uint64(0x7FFF) if name == "madpop4" else h >> np.uint64(1)
+        n = np.zeros_like(bits)
+        for b in range(31):
+            n += (bits >> np.uint64(b)) & np.uint64(1)
+        return n.astype(np.float64)
     if name == "cptcmin":
         Q = math.ceil(K) + 1
         i = prod_hi(A0, 16 - Q) + prod_hi(A1, 16 - Q)
