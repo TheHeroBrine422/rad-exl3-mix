@@ -149,6 +149,30 @@ def use_shift_conv():
     q35.causal_conv1d_fn = shift_conv1d
 
 
+def use_compiled_elementwise():
+    """w215: the elementwise chains outside QLinear as torch.compile'd functions (dynamic shapes, fwd + bwd fused):
+    the GDN shift conv (when use_shift_conv is on), the MLP's silu(gate) * up, Qwen3_5RMSNorm. Same ops in the same
+    order; rounding-level vs eager (FMA contraction, the norm's mean reduced in another order)"""
+    import transformers.models.qwen3_5.modeling_qwen3_5 as q35
+    if q35.causal_conv1d_fn is shift_conv1d: q35.causal_conv1d_fn = torch.compile(shift_conv1d, dynamic=True)
+
+    @torch.compile(dynamic=True)
+    def silu_mul(g, u): return F.silu(g) * u
+
+    def mlp_forward(self, x):
+        assert self.config.hidden_act == "silu", self.config.hidden_act
+        return self.down_proj(silu_mul(self.gate_proj(x), self.up_proj(x)))
+
+    @torch.compile(dynamic=True)
+    def rms(x, w, eps):
+        o = x.float(); o = o * torch.rsqrt(o.pow(2).mean(-1, keepdim=True) + eps)
+        return (o * (1.0 + w.float())).type_as(x)
+
+    def rms_forward(self, x): return rms(x, self.weight, self.eps)
+    q35.Qwen3_5MLP.forward = mlp_forward
+    q35.Qwen3_5RMSNorm.forward = rms_forward
+
+
 def _norm_hook(mod, inp, out):
     return (out.float() * mod._qg.exp()).to(out.dtype)
 

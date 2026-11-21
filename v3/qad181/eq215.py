@@ -14,7 +14,7 @@ def load(d):
     z = torch.load(os.path.join(d, "state.pt"), weights_only=False, map_location="cpu")
     tr = [json.loads(l) for l in open(os.path.join(d, "train.jsonl"))]
     sp = json.load(open(os.path.join(d, "speed215.json"))) if os.path.exists(os.path.join(d, "speed215.json")) else {}
-    if sp:                                              # rates over steps 3.. (steps 1-2: kernel tuning / warm-up)
+    if sp and len(sp["walls"]) > 2:                     # rates over steps 3.. (steps 1-2: kernel tuning / warm-up)
         w = sum(sp["walls"][2:]); sp["pos_s"] = sum(sp["pos"][2:]) / w; sp["rows_s"] = sum(sp["rows"][2:]) / w
     return z["snap"]["cur"], [r["train_kl"] for r in tr if r["what"] == "main"], sp
 

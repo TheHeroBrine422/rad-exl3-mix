@@ -9610,3 +9610,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Prompt-side (unscored) rows read KLD 0.72 / ppl ×0.70: the same pattern the golden's own G6 check recorded at build time (unmasked
   0.080 / 0.742 vs masked 0.0072 / 0.0021, `ds41pipe/OVERNIGHT-2026-11-11.md`), so a property of prompt rows, not of the scored rows;
   lead: headline stands. Data `data/ds41-baseline/mik225/`, scripts `eval/ds41/w212/`, e43db2f4. Report `out/w212b.md`.
+- 11-21 ~5:10 PM CST: **w213 done (Opus medium): DS4.1-F on our branch.** `exl3-v3` rebased onto radiance v2.2.0 (tag
+  `archive/exl3-v3-pre-2.2.0` = d1b1c8fd; 156 commits, one conflict: v2.2.0 took MoE format 12 for its 6-bit codebook → exl3i experts
+  are format 13 (internal to `rad_block_moe_fp8.h`, no container change); plugin ABI pins 40 → 43). bakon's tree imported as one
+  commit on local `bakon-ds41-import` (his clone is shallow), cherry-picked 0e7d734a, 14 files resolved; his partial break of the 6-bit
+  path restored. Commits 12aa5cab, 0e7d734a, eadee967, 4e3f296b. **mikoskinen EXL3 2.25 mix at TP4: rows byte-identical to w212b**
+  (0.0612, all 150,008 scored rows and every category Δ 0). DSpark speculation bit-exact on vs off (57- and 432-token greedy answers).
+  Tests: exl3i 16/16, arch_test, deepseek41_test, exl3quant, qwen35_exl3, libquant exl3v3 selftest / tiles, ds41 emulator tests pass;
+  43/183 in-tree fast tests fail on box2 setup only (FFmpeg absent, link needs `-lstdc++ -lm`). i8 KV: plugin takes bf16 / fp8 only,
+  needs kernels (whole KV 115 MiB a card at 9k tokens: not worth it now). Open: (1) **pushing exl3-v3 now carries bakon's whole tree
+  incl. his machine configs + mikoskinen-derived code (NOTICE) — user decision before update-git**; (2) op-name clash: his EXL3 and our
+  exl3i both register `moe_exl3_gate_up / down` → remove his `exl3/` next; (3) removal list in the report, except the DSpark drafter's
+  MXFP4 experts + q8_0 sidecar ride on the GGUF path (keep it or give them a format). Data `data/ds41-baseline/w213/`, scripts
+  `eval/ds41/w213/` (f0724a37, 1fd64cf7). Report `out/w213.md`.

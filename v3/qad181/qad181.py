@@ -412,6 +412,7 @@ def main():
     ap.add_argument("--gate", action="store_true"); ap.add_argument("--profile", action="store_true"); ap.add_argument("--bench", action="store_true")
     ap.add_argument("--a8", action="store_true", help="arm Q: a8g128 fake-quant activations in the student (STE)")
     ap.add_argument("--compile-scales", action="store_true", help="torch.compile QLinear's scale / cast chain (speed)")
+    ap.add_argument("--compile-ew", action="store_true", help="torch.compile the shift conv, MLP silu * up and RMSNorm (speed, rounding-level)")
     ap.add_argument("--lora", type=int, default=0, help="rank of adapters on every trunk linear (qmodel's arm L), composable with the rest")
     ap.add_argument("--lr-lora", type=float, default=1e-4)
     ap.add_argument("--fixed-eval", type=int, default=0, help="rows target of a fixed eval set of calib qad-pool docs (first --len tokens, held out of training)")
@@ -429,6 +430,7 @@ def main():
     log("qad181.py " + json.dumps(vars(a)) + f" world {d.world}")
     mad_int_form()
     if a.conv == "shift": qmodel.use_shift_conv()
+    if a.compile_ew: qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up / RMSNorm compiled")
     chunks = [x.strip() for x in (open(a.chunks[1:]).read().split() if a.chunks.startswith("@") else a.chunks.split(",")) if x.strip()]
     t0 = time.time()
     C = D.Corpus(chunks, a.cap, calib=a.calib, pools=a.pools, pool=a.pool, genmask=a.genmask,
