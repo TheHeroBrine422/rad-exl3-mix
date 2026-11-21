@@ -95,6 +95,38 @@ Evidence so far (27B, LOG 11-20 / 11-21): CPTC beats mad by 2.9 / 4.4 / 4.7 % H-
 stays mad. Headroom beyond CPTC for any scalar trellis code: ≤ 0.05–0.06 bits
 at K2–3 (CPTC's gap to the rate-distortion limit).
 
+**Candidate results so far (i.i.d. Keff, scale searched / int8 tables fitted; decode = w208 factor vs the shift-and-mask base at
+K1, M = 1; 11-21), split by output type — int4 output feeds the w4a4 path (cheaper GEMM from M ≥ 4, weights limited to 16 levels),
+int8 the w8a8 path:**
+
+int4 output (useful to ~K2; 16 levels cap it above):
+
+| codebook | K1 | K2 | K3 | K4 | decode |
+|---|---|---|---|---|---|
+| madpop4 (popcount of 15 mad-hash bits) | 0.952 | 1.930 | 2.774 | 3.058 | ≈ mad (3 instr; untimed) |
+| madpoplut (popcount → 16-entry table) | 0.952 | 1.930 | 2.781 | — | ≈ mad + load |
+| int4grid (mul1 hash → 16 levels) | 0.941 | 1.931 | 2.889 | 3.214 | 2.2× |
+| cptcmin (Q = K+1, int4 at K ≤ 2) | 0.951 | 1.916 | (int8 above K2) | | 1.71× |
+| mad4 (3+3+1-bit fields) | 0.923 | 1.883 | 2.824 | 3.194 | 1.52× |
+
+int8 output:
+
+| codebook | K1 | K2 | K3 | K4 | K5 | K6 | decode |
+|---|---|---|---|---|---|---|---|
+| CPTC unified pair (cptc6u, 64 B) | 0.951 | 1.948 | 2.939 | 3.928 | 4.886 | 5.743 | 1.77× (packed form under test) |
+| cptc5 (63 B) | 0.951 | 1.947 | 2.938 | 3.920 | | | 1.77× |
+| mul1lut (1 KB) | | 1.939 | 2.930 | 3.911 | 4.886 | 5.824 | > mul1 |
+| mul1_i8 | 0.942 | 1.937 | 2.924 | 3.905 | 4.880 | 5.843 | 2.13× |
+| madlut (253 B) | 0.952 | 1.935 | 2.923 | 3.907 | 4.855 | 5.781 | ≈ mad + load |
+| mad (production) | 0.951 | 1.932 | 2.917 | 3.900 | 4.866 | 5.830 | 1.41× |
+| madpop31 | 0.945 | 1.923 | 2.893 | 3.448 | | | ≈ mad |
+| lc1 (64 B, one multiply) | 0.950 | 1.919 | 2.871 | 3.781 | | | 1.29× |
+| cptcst10 (1 KB state table) | 0.913 | 1.808 | 2.684 | 3.566 | | | 1.71× |
+
+Regimes: int4 — madpop4 at K ≤ 2 (= mad's quality at mad's cost); int8 — CPTC K2–5 (+0.016–0.028 bits), mad / mul1_i8 at K ≥ 6,
+anything at K1. All are pure functions of the 16-bit state (fractional K works; CPTC needs the unified pair; its fractional-K table
+is untested).
+
 Not for experts: CPTC matmul-aware tables (need correlated operand pairs, ρ > ~0.3; weights × RHT activations ≈ 0). LittleBit-2
 (2603.00042): needs full QAT, worse than 2-bit methods at 1 bpw, a different kernel family; at most a later option for experts below
 1 bpw.
