@@ -1,0 +1,3 @@
+# --- int8 night list, iceman (user decision 11-22): the lr 1e-4 2 M runs, reads at every branch; controls are box2's I25C / I30C (syncctl.sh)
+T I25-lr1e-4 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I25C
+T I30-lr1e-4 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I30C

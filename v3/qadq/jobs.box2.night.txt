@@ -1,0 +1,17 @@
+# --- int8 night list (user decision 11-22 ~4 AM CST; the '# HOLD' batch above is NOT in). All compiled + --a8-int8, wait for QROOT/a8int8.ok (w223), j217 reads at every checkpoint, @ctl controls.
+# 2. A8 controls (also w223's gate iv): all layers, lr 3e-4, 1 M; I25C 0.5 M is the paired check vs A8-25 (fake-quant), I30C vs A8-30
+T I25C 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=A8-25
+T I30C 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=A8-30
+T I40C 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok
+# 5. 4.00 lr 1e-4 to 1 M (the 2.50 / 3.00 lr 1e-4 2 M runs are on iceman)
+T I40-lr1e-4 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# 6. cosine-all / linear-all, lr 3e-4, 1 M (one budget: one read at the end)
+T I25-cos-3e-4 2.50 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-cos-3e-4 3.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-cos-3e-4 4.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25-lin-3e-4 2.50 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-lin-3e-4 3.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-lin-3e-4 4.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# 7. clip 3 at 3.00 / 4.00, lr 3e-4, 1 M
+T I30-CB 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-CB 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
