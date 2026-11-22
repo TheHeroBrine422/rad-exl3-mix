@@ -5,6 +5,7 @@ compiled (use_compiled_scales), on every 27B trunk shape. QLinears with random i
 suh / svh ~ the stored scales' spread, random r / c, inputs with outlier channels. Prints per shape and M:
   out  max |y_int8 - y_a8| and that / max |y_a8|; the share of outputs that differ; both paths' error vs the f64 product of the same
        quantized input (q sa exactly, no bf16 rounding of the activation) -- the int8 path should be the closer one
+       rel L2 vs the f64 product per path; rel L2 of y_int8 - y_a8 next to rel L2 of y_a8 - y (no A8): the int8 change against the size of the A8 effect itself
   grad rel L2 of dx, dr, dc (int8 vs a8; dX is the same bf16 GEMM, so only the forward's difference reaches it through dy)
   cfg  mm_a8 bitwise the same under every autotune config (int32 group dots exact, f32 accumulation over groups in order)
   python test223.py [--m 279,700,1105] [--shapes ...]"""
@@ -59,11 +60,12 @@ def rl2(a, b): return float((a - b).norm() / b.norm())
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--m", default="279,700,1105"); ap.add_argument("--shapes", default=SHAPES)
     a = ap.parse_args()
+    noa8 = grab_fwd(qad220.use_compiled_scales, False)
     paths = {"eager": (grab_fwd(qad220.use_a8), grab_fwd(qad220.use_a8, True)),
              "compiled": (grab_fwd(qad220.use_compiled_scales, True), grab_fwd(qad220.use_compiled_scales, True, True))}
     g = torch.Generator().manual_seed(0)
-    print("| path | k x n | M | max abs dy | max abs dy / max abs y | outputs differing | f64 err int8 / a8 (max rel) | dx rel L2 | dr rel L2 | dc rel L2 |")
-    print("|---|---|---|---|---|---|---|---|---|---|")
+    print("| path | k x n | M | max abs dy | max abs dy / max abs y | outputs differing | f64 err int8 / a8 (max rel) | rel L2 vs f64 int8 / a8 | rel L2 int8 vs a8 | rel L2 a8 vs no-A8 | dx rel L2 | dr rel L2 | dc rel L2 |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     worst = 0.0
     for sh in a.shapes.split(","):
         k, n = map(int, sh.split("x")); q = mk(k, n, g)
@@ -77,12 +79,13 @@ def main():
                 gg = xr.float().view(M, -1, 128); s = gg.abs().amax(-1, keepdim=True).clamp_min(1e-30) / 127.0
                 xq = (torch.round(gg / s).clamp(-127, 127).double() * s.double()).view(M, k)
                 ex = ((xq @ q.wq.double()).view(-1, 128) @ q.Hb.double()).view(M, n) * (q.sv().double() * q.s)
+            y0 = run(q, noa8, x, G)[0].float()
             for name, (fa, fi) in paths.items():
                 ya, dxa, dra, dca = run(q, fa, x, G)
                 yi, dxi, dri, dci = run(q, fi, x, G)
                 d = (yi.float() - ya.float()).abs(); rel = float(d.max() / ya.float().abs().max()); worst = max(worst, rel)
                 ei = float((yi.double() - ex).abs().max() / ex.abs().max()); ea = float((ya.double() - ex).abs().max() / ex.abs().max())
-                print(f"| {name} | {k}x{n} | {M} | {float(d.max()):.3g} | {rel:.2e} | {float((d > 0).float().mean()) * 100:.1f} % | {ei:.2e} / {ea:.2e} | "
+                print(f"| {name} | {k}x{n} | {M} | {float(d.max()):.3g} | {rel:.2e} | {float((d > 0).float().mean()) * 100:.1f} % | {ei:.2e} / {ea:.2e} | {rl2(yi.double(), ex):.2e} / {rl2(ya.double(), ex):.2e} | {rl2(yi.float(), ya.float()):.2e} | {rl2(ya.float(), y0):.2e} | "
                       f"{rl2(dxi, dxa):.2e} | {rl2(dri, dra):.2e} | {rl2(dci, dca):.2e} |", flush=True)
         del q; torch.cuda.empty_cache()
     print(f"worst max abs dy / max abs y: {worst:.2e}")
