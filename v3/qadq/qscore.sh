@@ -1,0 +1,29 @@
+#!/bin/bash
+# qscore.sh MACHINE NAME RAD CARD [GOLDEN] -- the judge of the global queue: plain radiance --kld-ref of one container on one card (w221's score221.sh with qenv.sh's paths; default golden j217).
+# A8 as released, --embedding-placement ram, bf16 KV. Output QROOT/scores/NAME.json(.rows) (written .part, renamed). The card lock is held by qcard.sh (QCARD_LOCKED=1), else taken here.
+set -u
+MACHINE=$1 NAME=$2 RAD=$3 CARD=$4
+HERE0=$(dirname "$(readlink -f "$0")"); source $HERE0/qenv.sh $MACHINE
+G=${5:-$J217}; O=$QROOT/scores; mkdir -p $O
+[ -s $O/$NAME.json ] && { echo "$NAME done"; exit 0; }
+if [ -z "${QCARD_LOCKED:-}" ]; then eval "exec {fd}>$(CARDLOCK $CARD)"; flock $fd; fi
+eval "exec {rf}>$RAMLOCK"; flock -s $rf
+Y=$O/$NAME.yaml
+cat > $Y <<YEOF
+memory:
+  host-headroom-mib: 8192
+models:
+  $NAME:
+    model: $(readlink -f $RAD)
+    tp: 1
+    kv-cache-dtype: bf16
+    max-model-len: 16448
+    max-num-seqs: 1
+    embedding-placement: ram
+    kld-ref: $G
+    kld-out: $O/$NAME.json.part
+YEOF
+LD_LIBRARY_PATH="$RLIBS" RADIANCE_HOME=$RH env $(GPUENV $CARD) $RB --config $Y > $O/$NAME.log 2>&1
+rc=$?
+if [ $rc -eq 0 ] && [ -s $O/$NAME.json.part ]; then mv $O/$NAME.json.part.rows $O/$NAME.json.rows; mv $O/$NAME.json.part $O/$NAME.json; fi
+echo "$NAME rc=$rc"; exit $rc
