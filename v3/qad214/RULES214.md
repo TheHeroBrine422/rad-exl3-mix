@@ -80,3 +80,19 @@ Budgets 0.25 M and 0.5 M only (a checkpoint of budget T is a one-epoch run of bu
 and data exactly); read each on j214 vs ctl-4.00. The decision rule is unchanged: a 0.5 M ratio ≥ 0.990 ends the arm (nothing beyond 0.5 M is run for
 these controls in any case; 1 M for a control only if its 0.5 M read is ≤ -2 % with the CI below 1, the stage-2 trigger applied to the 1 M step). The spike
 (batch, documents) is recorded in the report. 25Q is not launched (the lead).
+
+### Amendment 2 — 2026-11-21 7:35 PM CST, before any read of the new arms (lead, after stage 1's 25A / 30A reads and the 40A 0.25 M reads)
+(Time label of amendment 1: its commit 739d8feb is 6:40 PM CST, not 6:52 PM; the two controls started at 6:40 PM, before any read of them.)
+**Why.** 25A (lr 1e-3) reads 0.917 / 0.909 / 0.904 at 0.25 / 0.5 / 1 M (1 M CI [0.843, 0.947], 71 / 9 documents better / worse); 30A reads 0.917 / 0.933 /
+0.980 (it degrades after 0.25 M: 0.5 → 1 M step 1.050 [1.011, 1.135]); at 4.00 lr 1e-3 is harmful from the start (40Q 1.033 / 1.218, 40A no-A8 1.052 at
+0.25 M) while lr 3e-4 gains (40A-lr3e-4: 0.948 [0.879, 0.998] at 0.25 M). The usable lr falls with the size's KL scale. The lead's decision: no stage 2 / 4 M
+run in w214 (stage 2's trigger is met by 25A alone; it moves to the follow-up task w217, which varies lr × Adam eps × budget systematically).
+**Change (nothing else changes: released picks, data, order, seed 0, normal batch, warmup 8, j214 judge).** Added arms, all arm A (no A8), lr 3e-4:
+| arm | size | budgets | card |
+|---|---|---|---|
+| 25A-lr3e-4 | 2.50 | 0.25 / 0.5 / 1 M (WSD branches) | 0 |
+| 30A-lr3e-4 | 3.00 | 0.25 / 0.5 / 1 M (WSD branches) | 1 |
+| 40A-lr3e-4-1M | 4.00 | 1 M only (main run decays to 1 M; its 0.25 / 0.5 M checkpoints are 40A-lr3e-4's) | 2 |
+40A (lr 1e-3, no A8) is read at 0.5 M and ends (as planned); 40A-lr3e-4's 0.5 M read is taken, then its 1 M comes from 40A-lr3e-4-1M. Readout: each new
+checkpoint vs its size's unhealed control, paired per document, plus the same-size lr 1e-3 vs lr 3e-4 contrasts at equal budget (descriptive). No pick, no
+adoption here. Stage 2 (4 M) is not run in w214.
