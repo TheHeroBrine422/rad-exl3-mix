@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""encode218.py OUT --grad GDIR [--base BDIR] --etas 0,0.01,... [--tool EXE] -- #218's discrete step: for each eta, the probe
-tensors' target W_t = W_hat - eta / rms(G) * G (W_hat: the current codes' values, BDIR/<key>.q or the released level's; G: GDIR's
-gradient; rms over all probe tensors together, so eta is the step's rms in codebook units and the tensors keep their relative
+"""encode218.py OUT --grad GDIR[,GDIR...] [--base BDIR] --etas 0,0.01,... [--tool EXE] -- #218's discrete step: for each eta, the probe
+tensors' target W_t = W_hat - eta / rms(G) * G (W_hat: the current codes' values, BDIR/<key>.q or the released level's; G: the
+gradient, the rows-weighted mean of the GDIRs' (probe218.py grad chunks at the same codes; merged once into OUT/grad); rms over all probe tensors together, so eta is the step's rms in codebook units and the tensors keep their relative
 gradient scale), re-encoded at the tensor's own K and its released suh / svh by the native quantizer's reencode_fixed
 (exl3v3_tool reencode: LDLQ in the stored codes' metric Hb S H S Hb with the calib Hessian, sigma_reg 0.025, the fp16 tile search).
 
@@ -40,6 +40,24 @@ def tiles_changed(a, b, k, n):
     return int(d.sum())
 
 
+def merge(gdirs, out):
+    """the rows-weighted mean of several chunks' gradients (each the mean-KL gradient over its own rows) -> out (restartable)"""
+    if os.path.exists(os.path.join(out, "grad.json")): return out
+    os.makedirs(out, exist_ok=True)
+    zs = [json.load(open(os.path.join(d, "grad.json"))) for d in gdirs]
+    assert len({z["codes"] for z in zs}) == 1, "chunks at different codes"
+    N = sum(z["rows"] for z in zs); meta = {}
+    for k, v in zs[0]["tensors"].items():
+        g = np.zeros((v["k"], v["n"]), np.float64)
+        for d, z in zip(gdirs, zs): g += (z["rows"] / N) * np.fromfile(os.path.join(d, k + ".g"), np.float32).reshape(v["k"], v["n"])
+        g = g.astype(np.float32); g.tofile(os.path.join(out, k + ".g"))
+        meta[k] = {**v, "g_rms": float(np.sqrt((g.astype(np.float64) ** 2).mean()))}
+    json.dump({"chunks": gdirs, "rows": N, "codes": zs[0]["codes"], "tensors": meta}, open(os.path.join(out, "grad.json.part"), "w"))
+    os.replace(os.path.join(out, "grad.json.part"), os.path.join(out, "grad.json"))
+    print(f"merged {len(gdirs)} chunks, {N} rows -> {out}", flush=True)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out"); ap.add_argument("--grad", required=True); ap.add_argument("--base", default="")
@@ -47,6 +65,9 @@ def main():
     ap.add_argument("--tool", default="/data/w218/bin/exl3v3_tool"); ap.add_argument("--hess", default="/data/challenge/hessians/calib")
     ap.add_argument("--precond", choices=("none",), default="none"); ap.add_argument("--keep-targets", action="store_true")
     a = ap.parse_args()
+    gdirs = a.grad.split(",")
+    if len(gdirs) > 1:
+        a.grad = merge(gdirs, os.path.join(a.out, "grad"))
     gm = json.load(open(os.path.join(a.grad, "grad.json")))["tensors"]
     keys = sorted(gm, key=lambda k: (hname(k), k))
     lev = deq.Level(f"{a.lv}/trunk", "cpu")

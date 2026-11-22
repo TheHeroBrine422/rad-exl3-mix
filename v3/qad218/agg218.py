@@ -4,8 +4,8 @@
   judge   every runs/judge/<variant>.json (and runs/scale/scale.json) vs rel: KL ratio, paired per document, 95 % bootstrap CI
           (2,000 resamples of documents, seed 0), documents better / worse
   tune    per round, every runs/rR/tune/<variant>.json vs cur
-  grad    per round: train KL, the gradient's SNR from samp.npz (per sampled entry: |mean of the per-step gradients| / (their
-          std / sqrt(steps)); the per-step gradient = the step's sum scaled to the round's rows), energy share of the mean
+  grad    per round: train KL, the gradient's SNR from samp.npz (per sampled entry: |G| / its standard error from the spread of
+          the per-step gradients, steps weighted by their rows), signal share = sum G^2 / (sum G^2 + sum se^2)
   enc     per round and eta: tiles whose values changed (share), the record decode check, mean proxy, encode seconds"""
 import argparse, glob, json, os
 
@@ -30,14 +30,22 @@ def fmt(name, p):
             f"better/worse {p['better']}/{p['worse']} of {p['docs']} ({p['rows']} rows)")
 
 
-def snr(d):
-    z = np.load(os.path.join(d, "samp.npz")); rows = z["rows"].astype(np.float64); N = rows.sum()
+def snr(dirs):
+    """over the steps of every chunk dir (the same sampled entries: seed 218 in every chunk)"""
+    zs = [np.load(os.path.join(d, "samp.npz")) for d in dirs]
+    rows = np.concatenate([z["rows"] for z in zs]).astype(np.float64); N = rows.sum()
+    for z in zs[1:]:
+        assert all(np.array_equal(z[k], zs[0][k]) for k in zs[0].files if k.endswith(":idx")), "chunks sampled different entries"
     out = {}
     allm, allv = [], []
-    for k in z.files:
+    for k in zs[0].files:
         if k == "rows" or k.endswith(":idx"): continue
-        x = z[k] * (N / rows[:, None])                       # per-step gradient of the mean KL (steps x samples)
-        S = x.shape[0]; m = x.mean(0); se = x.std(0, ddof=1) / np.sqrt(S)
+        # z[k][s] = step s's gradient sum / its chunk's rows; as a share of G over all chunks: x_s = z_s N_chunk / N. Steps differ
+        # in rows, so the standard error of G = sum_s x_s is the ratio estimator's: g_s = x_s N / rows_s (step s's per-row
+        # gradient), se^2 = S / (S - 1) sum_s (rows_s / N)^2 (g_s - G)^2
+        x = np.concatenate([z[k].astype(np.float64) * (z["rows"].sum() / N) for z in zs]); S = x.shape[0]; m = x.sum(0)
+        gs = x * (N / rows[:, None]); w = (rows / N)[:, None]
+        se = np.sqrt(S / (S - 1) * ((w * (gs - m)) ** 2).sum(0))
         s = np.abs(m) / np.maximum(se, 1e-30)
         out[k] = {"median_snr": float(np.median(s)), "frac_snr_gt2": float((s > 2).mean()),
                   "signal_share": float((m ** 2).sum() / max((m ** 2).sum() + (se ** 2).sum(), 1e-30))}
@@ -62,11 +70,16 @@ def main():
             p = paired(rel, v); res["judge"][name] = p; print(fmt(name, p))
     for rd in sorted(glob.glob(os.path.join(R, "r[0-9]"))):
         r = os.path.basename(rd)
-        if os.path.exists(os.path.join(rd, "grad", "grad.json")):
-            g = json.load(open(os.path.join(rd, "grad", "grad.json")))
-            s = snr(os.path.join(rd, "grad"))
-            res["grad"][r] = {"rows": g["rows"], "steps": g["steps"], "train_kl": g["train_kl"], "sec": g["sec"], "snr": s}
-            print(f"== {r} grad: {g['rows']} rows, {g['steps']} steps, train KL {g['train_kl']:.6f}, {g['sec']:.0f} s; SNR all: "
+        gd = sorted(d for d in glob.glob(os.path.join(rd, "g[0-9]")) if os.path.exists(os.path.join(d, "grad.json")))
+        if gd:
+            gs = [json.load(open(os.path.join(d, "grad.json"))) for d in gd]
+            g = {"rows": sum(x["rows"] for x in gs), "steps": sum(x["steps"] for x in gs), "sec": sum(x["sec"] for x in gs),
+                 "train_kl": sum(x["train_kl"] * x["rows"] for x in gs) / sum(x["rows"] for x in gs), "chunks": len(gs)}
+            s = snr(gd)
+            res["grad"][r] = {**g, "snr": s}
+            for d, x in zip(gd, gs):
+                res["grad"][r].setdefault("by_chunk", {})[os.path.basename(d)] = snr([d])["_all"]
+            print(f"== {r} grad ({len(gd)} chunks): {g['rows']} rows, {g['steps']} steps, train KL {g['train_kl']:.6f}, {g['sec']:.0f} s; SNR all: "
                   + json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, v in s["_all"].items()}))
             for k, v in s.items():
                 if k != "_all": print(f"   {k.split('layers.')[1]:32s} median SNR {v['median_snr']:.3f}  >2: {v['frac_snr_gt2']:.3f}  signal share {v['signal_share']:.3f}")

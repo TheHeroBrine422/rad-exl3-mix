@@ -3,16 +3,17 @@
 """probe218.py MODE OUT [options] -- #218 code-QAD feasibility probe: the released 2.50 student (w214's rad2level214 output, no
 A8 in the loop = w214's arm 25A), the trunk linears of a few probe layers studied, everything else frozen as released.
 
-  grad   OUT --round R: the KL gradient G = dL/dW_hat (L = the mean KL over the round's gen rows; W_hat the probe tensors'
-         codebook values in the stored codes' basis, [k, n]) accumulated over round R's training documents (data218.json train,
-         consecutive runs of --rows gen rows a round), at the codes in --codes (else the released ones). Writes OUT/<key>.g
+  grad   OUT --chunk C: the KL gradient G = dL/dW_hat (L = the mean KL over the chunk's gen rows; W_hat the probe tensors'
+         codebook values in the stored codes' basis, [k, n]) accumulated over chunk C's training documents (data218.json train,
+         consecutive runs of --rows gen rows a chunk; a round merges several chunks: encode218.py), at the codes in --codes
+         (else the released ones). Writes OUT/<key>.g
          (f32 [k, n]), OUT/samp.npz (per plan step: G's sum at a fixed random sample of entries a tensor, the step's rows: the
          SNR readout), OUT/grad.json. Plan V x Q positions a step (default 6 x 1024), segments carry the student's state.
   eval   OUT --set judge|tune --variants NAME=DIR,...: per-document KL sums of each variant (DIR: <key>.q files, f32 [k, n],
          the probe tensors' new codebook values; "rel" or an empty DIR = the released codes) on the set's documents (each from
          its start to the data's cap, 2,048-token segments carrying the state). Writes OUT/<NAME>.json. Restartable a variant.
-  scale  OUT --rounds 3: scale-only QAD (w214's arm A recipe: suh / svh log multipliers on frozen codes, Adam lr 1e-3, trust
-         0.3) on the probe layers' tensors only, over the same documents as rounds 0 .. R-1 (plan 24 x 1024), warmup 2
+  scale  OUT --chunks 0-8: scale-only QAD (w214's arm A recipe: suh / svh log multipliers on frozen codes, Adam lr 1e-3, trust
+         0.3) on the probe layers' tensors only, over the same documents as the code-QAD rounds' chunks (plan 24 x 1024), warmup 2
          steps, constant, linear decay over the last 20 %; then eval on --set judge (OUT/scale.json) and its trained
          multipliers (OUT/params.pt).
 
@@ -74,8 +75,8 @@ def load_data(a):
     return z, gold
 
 
-def round_docs(z, r, rows):
-    """the documents of round r: consecutive runs of the train order with >= rows gen rows each"""
+def chunk_docs(z, r, rows):
+    """the documents of chunk r: consecutive runs of the train order with >= rows gen rows each"""
     out, acc, cur = [[]], 0, 0
     for i, n in zip(z["train"], z["train_rows"]):
         out[-1].append(i); acc += n
@@ -157,14 +158,14 @@ def use_grad_probe(stu, nsamp, seed):
 
 def run_grad(a, log):
     z, gold = load_data(a)
-    docs = round_docs(z, a.round, a.rows)
+    docs = chunk_docs(z, a.chunk, a.rows)
     items, steps = plan_for(gold, docs, z["cap"], a.V, a.Q)
     N = sum(it[3] for it in items)
-    log(f"round {a.round}: {len(docs)} documents, {N} gen rows, {len(steps)} steps of {a.V} x {a.Q}")
+    log(f"chunk {a.chunk}: {len(docs)} documents, {N} gen rows, {len(steps)} steps of {a.V} x {a.Q}")
     stu = build(a, log)
     nq = set_codes(stu, a.codes)
     log(f"codes: {nq} probe tensors from {a.codes or '(released)'}")
-    use_grad_probe(stu, a.nsamp, 218 + a.round)
+    use_grad_probe(stu, a.nsamp, 218)
     G = [gold]; states = {}; samp = {k: [] for k in stu.probe}; srows = []; kls = []
     t0 = time.time()
     for s, st in enumerate(steps):
@@ -196,10 +197,10 @@ def run_grad(a, log):
         meta[k] = {"k": ql.k, "n": ql.n, "K": ql.K, "s": ql.s, "calls": ql.sink.calls, "g_rms": float(np.sqrt((g.astype(np.float64) ** 2).mean()))}
     np.savez(os.path.join(a.out, "samp.npz"), rows=np.array(srows), **{k: np.stack(v) for k, v in samp.items()},
              **{k + ":idx": stu.qlin[k].sink.idx.cpu().numpy() for k in stu.probe})
-    res = {"round": a.round, "docs": docs, "rows": N, "steps": len(steps), "V": a.V, "Q": a.Q, "codes": a.codes,
+    res = {"chunk": a.chunk, "docs": docs, "rows": N, "steps": len(steps), "V": a.V, "Q": a.Q, "codes": a.codes,
            "train_kl": float(sum(kls) / N), "sec": time.time() - t0, "tensors": meta}
     json.dump(res, open(os.path.join(a.out, "grad.json.part"), "w")); os.replace(os.path.join(a.out, "grad.json.part"), os.path.join(a.out, "grad.json"))
-    log(f"GRAD DONE round {a.round}: {N} rows in {time.time() - t0:.0f} s, train KL {res['train_kl']:.6f}")
+    log(f"GRAD DONE chunk {a.chunk}: {N} rows in {time.time() - t0:.0f} s, train KL {res['train_kl']:.6f}")
 
 
 # ------------------------------------------------------------------ eval
@@ -239,7 +240,8 @@ def run_eval(a, log, stu=None):
 # ------------------------------------------------------------------ scale
 def run_scale(a, log):
     z, gold = load_data(a)
-    docs = [i for r in range(a.rounds) for i in round_docs(z, r, a.rows)]
+    lo, hi = (int(x) for x in a.chunks.split("-"))
+    docs = [i for r in range(lo, hi + 1) for i in chunk_docs(z, r, a.rows)]
     items, steps = plan_for(gold, docs, z["cap"], 24, 1024)
     N = sum(it[3] for it in items)
     stu = build(a, log)
@@ -273,10 +275,10 @@ def main():
     ap.add_argument("--model", default="/data/workspace/models/qwen38-27b-bf16")
     ap.add_argument("--lv", default="/data/w218/lv/2.50"); ap.add_argument("--calib", default="/data/challenge/golden/calib")
     ap.add_argument("--data", default="/data/w218/data218.json"); ap.add_argument("--layers", default="8,23,40,55")
-    ap.add_argument("--codes", default=""); ap.add_argument("--round", type=int, default=0); ap.add_argument("--rows", type=int, default=100000)
+    ap.add_argument("--codes", default=""); ap.add_argument("--chunk", type=int, default=0); ap.add_argument("--rows", type=int, default=100000)
     ap.add_argument("--V", type=int, default=6); ap.add_argument("--Q", type=int, default=1024); ap.add_argument("--nsamp", type=int, default=20000)
     ap.add_argument("--set", default="judge"); ap.add_argument("--variants", default="rel=rel")
-    ap.add_argument("--rounds", type=int, default=3); ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--chunks", default="0-8"); ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--compile-scales", action="store_true")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
