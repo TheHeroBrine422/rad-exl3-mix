@@ -9749,3 +9749,17 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   docs better) — +1 %; 3.00 0.953 → **0.956 [0.893, 1.015]** — flat. At a constant lr 3e-4 the gain is nearly exhausted by 0.5–1M.
   The 2.50 lr 3e-4 2M run (branches 1M / 2M) is training on box2 card 1 since 2:05 AM (eager, ~4:50 AM); its reads need a dispatcher
   (w217's worker is gone). Card 0 free.
+- 11-22 ~2:30 AM CST: **w218 low-rank code-QAD follow-up (Opus medium) — sign right, but no usable step; and the low-rank "signal"
+  barely transfers to held-out documents.** Exact f32 rank-4 adds (no encode) on the 26 probe tensors, 17 tune docs (KL0 0.034640):
+  D₄ ΔKL +5.1e-4 at η +0.003 δ, +3.7e-3 at +0.01, +0.155 at +0.05 (ascent side −0.03: +2.03, coherent blow-up); M⁻¹D₄ ≈ flat
+  (≤ ±1.6e-3). **Slope dKL/dη along D₄: −6.1 from the round-0 300k training gradient (in-sample: D was built from it), −6.8 from chunk
+  g2 alone, but only −0.149 from a gradient on the held-out tune docs themselves** (M⁻¹D₄: −2.5 / −3.9 / +0.005). The rank-4 direction
+  that independent TRAINING chunks agree on keeps only ~2–3 % of its slope on held-out documents → the cross-chunk agreement found at
+  ~1:00 AM (and the scale-gradient version at ~1:45 AM, same chunks) measures structure shared by the training data, mostly not a
+  transferable KL-descent signal. Curvature ~340 / η² → optimal step t* ≈ 2.2e-4 δ, predicted gain ~1.6e-5 (0.05 % of KL), below the
+  encode noise (±0.5 %) and too small to flip a tile; 250–5,000× below the grids tried. No encodes, no judge read. **Code-QAD: shelved**
+  (would need far more data per round or a smoother objective). Projected low-rank SCALE steps: their premise is weakened — must be
+  checked by held-out slope before building. Code `v3/qad218/` (fd218.py, slope218.py), data `data/qad218/runs/`, report `out/w218.md`.
+- 11-22 2:23 AM CST: **A8-in-the-loop decision run started by the lead (user, before bed):** box2 card 0, `A8-25` = 2.50 lr 3e-4
+  compiled `--a8`, 0.5M with 0.25M branch, j217 reads; queue `/data/q27/w221/jobsA8.txt` via `card221x.sh` (cards 0 / 1): then
+  `C25-3` (compiled no-A8 control) and `A8-30` (3.00), picked up by card 1 when w217's 2M run frees it (~4:50 AM).
