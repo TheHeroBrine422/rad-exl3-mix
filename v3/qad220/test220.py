@@ -222,5 +222,75 @@ for _ in range(3):
     gg = torch.randn(8)
     for p, o in ((p1, o1), (p2, o2), (p3, o3)): p.grad = gg.clone(); o.step()
 check("beta2 0.99 = the old optimizer bitwise; 0.95 differs", torch.equal(p1, p2) and not torch.equal(p1, p3))
+
+# ---------------------------------------------------------------- item 5: schedules, fork, decay data
+sys.path.insert(0, os.path.join(HERE, "..", "qad181"))
+import data181 as D
+ns["D"] = D; ns["hashlib"] = __import__("hashlib")
+lr_main, group_lr, parse_lr_steps, decay_mult, sched_lr, make_lr, decay_start_step, rows_cum, calib_cooldown, plan_sha = grab(
+    "lr_main", "group_lr", "parse_lr_steps", "decay_mult", "sched_lr", "make_lr", "decay_start_step", "rows_cum", "calib_cooldown", "plan_sha")
+sys.path.insert(0, os.path.join(HERE, "..", "qad181"))
+def sargs(**kw):
+    d = dict(lr_steps=None, decay_shape="linear", lr=1e-3, warmup=8, decay_frac=0.2); d.update(kw); return argparse.Namespace(**d)
+cum = np.cumsum(np.full(200, 850))
+ok = True
+for last, fork, N, k0 in [(194, 155, 1, 0), (194, 155, 4, 0), (49, 39, 1, 5), (100, 80, 2, 0)]:
+    f = make_lr(sargs(), cum, last, fork, k0, N)
+    ok &= all(f(s) == group_lr(s, k0, last, fork, 1e-3, 8, N) for s in range(k0, last))
+check("defaults: make_lr is group_lr exactly (N 1 / 4 / 2, block offset)", ok)
+# sched_lr with linear shape and no phases == lr_main arithmetic, bitwise
+U, FU = 49, 39
+check("sched_lr(linear, no phases) == lr_main bitwise", all(sched_lr(g, U, FU, 8, 1e-3) == lr_main(g, U, FU, 1e-3, 8) for g in range(U)))
+check("parse_lr_steps", parse_lr_steps("1e-3:0.25e6,3e-4:1e6") == [(1e-3, 0.25e6), (3e-4, 1e6)])
+try: parse_lr_steps("1e-3:5e5,3e-4:1e5"); ok = False
+except AssertionError: ok = True
+check("parse_lr_steps: rows must increase", ok)
+# piecewise: 850 rows a plan step, budget 1M rows
+cum = np.cumsum(np.full(1300, 850.0))                    # 1.105M rows in 1300 steps
+last = int(np.searchsorted(cum, 1e6)) + 1
+a_ = sargs(lr_steps="1e-3:0.25e6,3e-4:0.9e6", lr=1e-3, warmup=4)
+fl = decay_start_step(a_, cum, 1e6)
+f = make_lr(a_, cum, last, fl, 0, 1)
+l1 = [f(s) for s in range(last)]
+ph1_end = int(np.searchsorted(cum, 0.25e6)) + 1
+check("lr-steps: warmup to 1e-3, 1e-3 until 0.25M rows, 3e-4 to 0.9M, then linear decay from 3e-4 to ~0",
+      abs(l1[3] - 1e-3) < 1e-15 and l1[10] == 1e-3 and all(x == 1e-3 for x in l1[4:ph1_end]) and all(x == 3e-4 for x in l1[ph1_end:fl])
+      and l1[fl] == 3e-4 and l1[-1] < 3e-4 / (last - fl) * 1.0001 and all(b <= a for a, b in zip(l1[fl:], l1[fl + 1:])),
+      f"phase1 ends step {ph1_end}, decay from {fl}, last lr {l1[-1]:.3e}")
+check("lr-steps: the first row count at which a phase has ended switches the lr (rows seen before the step)", l1[ph1_end - 1] == 1e-3 and l1[ph1_end] == 3e-4 or cum[ph1_end - 1] >= 0.25e6)
+# shapes at U = 100, decay start 80
+g_ = list(range(100))
+for shp in ("linear", "sqrt"):
+    v = [sched_lr(g, 100, 80, 8, 1e-3, shp) for g in g_]
+    check(f"shape {shp}: constant to 79, decays monotonically from 1e-3 at 80 to ~0", all(x == 1e-3 for x in v[8:80]) and v[80] == 1e-3 and all(b <= a for a, b in zip(v[80:], v[81:])) and 0 < v[-1] < 1e-3 * 0.1,
+          f"last {v[-1]:.3e}")
+v = [sched_lr(g, 100, 80, 8, 1e-3, "sqrt") for g in g_]; lv = [sched_lr(g, 100, 80, 8, 1e-3, "linear") for g in g_]
+check("shape sqrt: 1 - sqrt(progress): at mid-decay (g = 90) 1 - sqrt(.5) of the peak, below linear's 0.5 throughout (falls fast, ends gently)", abs(v[90] - 1e-3 * (1 - math.sqrt(0.5))) < 1e-12 and all(v[g] < lv[g] for g in range(81, 100)), f"{v[90]:.3e}")
+for shp in ("cosine-all", "linear-all"):
+    FU = 8
+    v = [sched_lr(g, 100, FU, 8, 1e-3, shp) for g in g_]
+    check(f"shape {shp}: warmup then straight into the decay (peak at g = 8, no constant phase), monotone to ~0", v[8] == 1e-3 and all(b < a for a, b in zip(v[8:], v[9:])) and v[-1] < 1e-4, f"g=54 {v[54]:.3e} last {v[-1]:.3e}")
+cs = [sched_lr(g, 100, 8, 8, 1e-3, "cosine-all") for g in g_]
+check("cosine-all: half the peak at the middle of the decay", abs(cs[54] - 1e-3 * 0.5 * (1 + math.cos(math.pi * (46 / 92)))) < 1e-12 and abs(cs[8 + 46] - 0.5e-3) < 1e-5)
+mk = make_lr(sargs(decay_shape="cosine-all", warmup=8), np.cumsum(np.full(100, 850)), 100, 80, 0, 1)
+check("make_lr: a *-all shape decays from the end of the warmup whatever fork_last is", mk(8) == 1e-3 and mk(50) < 0.6e-3)
+
+# calib cooldown over a fake corpus
+class FC: pass
+C = FC(); C.items = [(0 if k % 3 else 1, k, 3000 + 7 * k, 2000) for k in range(120)]; C.tags = ["xq", "calib"]
+class G_:
+    def scored(self, i, a, b): return np.arange(a, b), np.arange(a, b)
+C.g = [G_(), G_()]
+order = np.random.default_rng(0).permutation(len(C.items)); steps0 = D.plan(C.items, order, 4, 1024)
+rows_of, cumx = rows_cum(C, steps0)
+check("rows_cum: cumulative rows, one entry per step, = sum of the segment lengths", int(cumx[-1]) == sum(b - a for st in steps0 for segs in st for (_, a, b) in segs) and len(cumx) == len(steps0))
+fl = 30
+st2 = calib_cooldown(C, steps0, fl, 4, 1024, 0)
+used = {it for st in steps0[:fl] for segs in st for (it, _, _) in segs}
+tail_items = {it for st in st2[fl:] for segs in st for (it, _, _) in segs}
+check("calib cooldown: steps before fork_last unchanged (same plan checksum), the tail reads only unused calib documents",
+      st2[:fl] == steps0[:fl] and plan_sha(st2, fl) == plan_sha(steps0, fl) and tail_items and all(C.tags[C.items[it][0]] == "calib" for it in tail_items) and not (tail_items & used))
+check("calib cooldown: every unused calib document is planned once", tail_items == {k for k, x in enumerate(C.items) if x[0] == 1 and k not in used})
+check("plan_sha differs when the plan differs", plan_sha(st2, fl + 5) != plan_sha(steps0, fl + 5))
 print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
 sys.exit(1 if fails else 0)

@@ -331,6 +331,79 @@ def group_lr(s, k0, last, fork_last, lr, warm, N):
     return lr_main((s - k0) // N, cd(last - k0), cd(fork_last - k0), lr, warm)
 
 
+def parse_lr_steps(s):
+    """--lr-steps "lr1:rows1,lr2:rows2,..." -> [(lr, rows)] (rows = cumulative gen rows at which the phase ends, increasing)"""
+    ph = [(float(x.split(":")[0]), float(x.split(":")[1])) for x in s.split(",")]
+    assert all(b[1] > a_[1] for a_, b in zip(ph, ph[1:])) and all(r > 0 and l > 0 for l, r in ph), s
+    return ph
+
+
+def decay_mult(shape, f):
+    """the lr multiplier of the decay phase at remaining fraction f = (last - g) / (last - decay start) in (0, 1]: linear: f;
+    sqrt (Hagele et al.: 1 - sqrt(progress)): 1 - sqrt(1 - f); cosine-all: (1 + cos(pi progress)) / 2; linear-all: f"""
+    if shape in ("linear", "linear-all"): return f
+    if shape == "sqrt": return 1.0 - math.sqrt(1.0 - f)
+    if shape == "cosine-all": return 0.5 * (1.0 + math.cos(math.pi * (1.0 - f)))
+    raise ValueError(shape)
+
+
+def sched_lr(g, U, FU, warm, lr, shape="linear", phases=None, rows_before=0.0):
+    """w220: lr of optimizer step g of U (decay from step FU, warmup warm). Warmup ramps to the first phase's lr; piecewise constant
+    over the phases (phase i holds while the rows seen before the step are < its end; the last phase's lr after that); then the
+    decay of --decay-shape from the last phase's lr (or lr) to ~0 at step U. Linear without phases is lr_main's arithmetic"""
+    peak = phases[0][0] if phases else lr
+    if g < warm: return peak * (g + 1) / warm
+    if g < FU:
+        if not phases: return lr
+        for plr, prows in phases:
+            if rows_before < prows: return plr
+        return phases[-1][0]
+    base = phases[-1][0] if phases else lr
+    return base * decay_mult(shape, max(0.0, (U - g) / max(1, U - FU)))
+
+
+def make_lr(a, cum, last, fork_last, k0, N):
+    """the lr of the optimizer step starting at plan step s: group_lr (#200) unless a w220 schedule flag is set"""
+    if not (a.lr_steps or a.decay_shape != "linear"):
+        return lambda s: group_lr(s, k0, last, fork_last, a.lr, a.warmup, N)
+    cd = lambda x: -(-x // N)
+    phases = parse_lr_steps(a.lr_steps) if a.lr_steps else None
+    U = cd(last - k0); FU = a.warmup if a.decay_shape.endswith("-all") else cd(fork_last - k0)
+    return lambda s: sched_lr((s - k0) // N, U, FU, a.warmup, a.lr, a.decay_shape, phases, float(cum[s - 1]) if s > 0 else 0.0)
+
+
+def decay_start_step(a, cum, budget):
+    """plan step where the decay starts: the steps needed to see (1 - decay-frac) x budget rows, or --lr-steps' last phase end"""
+    x = parse_lr_steps(a.lr_steps)[-1][1] if a.lr_steps else (1 - a.decay_frac) * budget
+    return int(np.searchsorted(cum, x, side="left")) + 1
+
+
+def rows_cum(C, steps):
+    """(rows_of {(item, a, b): gen rows}, cumulative gen rows after each step)"""
+    rows_of, cum, tot = {}, [], 0
+    for st in steps:
+        for segs in st:
+            for (it, sa, sb) in segs:
+                gi, i = C.items[it][0], C.items[it][1]
+                rows_of[(it, sa, sb)] = len(C.g[gi].scored(i, sa, sb)[0]); tot += rows_of[(it, sa, sb)]
+        cum.append(tot)
+    return rows_of, np.array(cum)
+
+
+def calib_cooldown(C, steps, fork_last, V, Q, seed):
+    """--decay-data calib: plan steps 0 .. fork_last - 1 as planned; from fork_last on, a fresh plan over the calib-pool documents
+    the first fork_last steps did not touch (seeded shuffle), same V x Q streams"""
+    used = {it for st in steps[:fork_last] for segs in st for (it, _, _) in segs}
+    cal = [k for k, x in enumerate(C.items) if C.tags[x[0]] == "calib" and k not in used]
+    assert cal, "--decay-data calib: no unused calib documents"
+    return steps[:fork_last] + D.plan(C.items, np.random.default_rng(seed).permutation(np.array(cal)), V, Q)
+
+
+def plan_sha(steps, upto):
+    """sha1 of the first `upto` plan steps (--fork-from checks the fork state's data prefix is this run's)"""
+    return hashlib.sha1(str([[[(int(i), int(x), int(y)) for (i, x, y) in segs] for segs in st] for st in steps[:upto]]).encode()).hexdigest()[:16]
+
+
 # ------------------------------------------------------------------ tied scales (w220)
 class TiedQLinear(qmodel.QLinear):
     """a QLinear whose log multipliers r (input side) / c (output side) are held as one shared value per --tie-groups G consecutive
@@ -815,22 +888,21 @@ def build_data(a, d, log):
     order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
     budgets = [float(a.rows)] if a.rows else [float(x) for x in a.budgets.split(",")]
     steps = D.plan(C.items, order, a.V, a.Q)
-    rows_of, cum = {}, []
-    tot = 0
-    for st in steps:
-        for segs in st:
-            for (it, sa, sb) in segs:
-                gi, i = C.items[it][0], C.items[it][1]
-                rows_of[(it, sa, sb)] = len(C.g[gi].scored(i, sa, sb)[0]); tot += rows_of[(it, sa, sb)]
-        cum.append(tot)
-    cum = np.array(cum)
+    rows_of, cum = rows_cum(C, steps)
+    if a.lr_steps or a.decay_shape != "linear" or a.decay_data != "mix":
+        assert len(budgets) == 1, "w220 schedule flags: one budget (no WSD branches)"
+    fork_last = decay_start_step(a, cum, budgets[-1])
+    if a.decay_data == "calib":                                  # w220: the cooldown (steps from fork_last) reads unused calib documents only
+        assert not a.decay_shape.endswith("-all"), "--decay-data calib needs a constant phase (not a *-all shape)"
+        steps = calib_cooldown(C, steps, fork_last, a.V, a.Q, a.seed)
+        rows_of, cum = rows_cum(C, steps)
     last, br = schedule(cum, budgets, a.decay_frac)
     assert cum[-1] >= budgets[-1] or a.gate or a.profile, f"the data hold {cum[-1]} rows < budget {budgets[-1]}"
-    fork_last = int(np.searchsorted(cum, (1 - a.decay_frac) * budgets[-1], side="left")) + 1
     share = {}
     for s in range(last):
         for segs in steps[s]:
             for (it, sa, sb) in segs: t = C.tags[C.items[it][0]]; share[t] = share.get(t, 0) + rows_of[(it, sa, sb)]
+    if a.decay_data == "calib": log(f"decay data: calib only from plan step {fork_last} ({int(cum[fork_last - 1])} rows before)")
     log(f"plan: {len(steps)} steps of {a.V} x {a.Q} (data {cum[-1]} rows); main to step {last} ({cum[last - 1]} rows), decay from "
         f"step {fork_last}; branches " + ", ".join(f"{T:.0e}: fork {f} end {e} ({cum[e - 1]} rows)" for T, (f, e) in br.items())
         + f"; order {'mix50 seed ' + str(a.mix50) if a.mix50 is not None else 'shuffle seed ' + str(a.seed)} (sha1 "
@@ -1118,6 +1190,11 @@ def parser():
     ap.add_argument("--train-tensors", default=None, help="w220: train only the parameters whose name (<linear key>:<r|c|g>) matches this regex (re.search)")
     ap.add_argument("--tie-groups", type=int, default=1, help="w220: one shared log multiplier per G consecutive channels (exports per channel; 1 = off)")
     ap.add_argument("--tie-layers", default=None, help="w220: tie only in layers A-B (inclusive; default all layers)")
+    ap.add_argument("--lr-steps", default=None, help='w220: piecewise-constant lr "lr1:rows1,lr2:rows2,..." (rows = cumulative gen rows at each phase end), then the final decay from the last phase\'s lr (starts at the last end)')
+    ap.add_argument("--decay-shape", choices=("linear", "sqrt", "cosine-all", "linear-all"), default="linear", help="w220: the final decay's shape (sqrt = 1 - sqrt; *-all = decay over the whole run after warmup, no constant phase)")
+    ap.add_argument("--fork-from", default=None, help="w220: start from a saved state (DIR/state.pt or a state-<rows>.pt file: parameters, optimizer, step) in a fresh OUT and run on from its step with this run's schedule (a cooldown)")
+    ap.add_argument("--decay-data", choices=("mix", "calib"), default="mix", help="w220: data of the decay phase: the plan's own mix, or unused calib documents only")
+    ap.add_argument("--save-at", default=None, help="w220: comma list of gen-row counts: OUT/state-<rows>.pt is written when the run first passes each (fork points for --fork-from)")
     ap.add_argument("--clip-gnorm", type=float, default=0.0, help="w220: clip the global gradient norm at X x the running median batch norm (logs the clipped steps; 0 = off)")
     ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
@@ -1182,10 +1259,12 @@ def main():
     NU = -(-(last - k0) // N)                                # optimizer steps of the main run
     if a.warmup_frac is not None:                            # #200: warmup stretched to the optimizer steps (8 of 49 = #191)
         a.warmup = max(1, round(float(Fraction(a.warmup_frac)) * NU))
+    assert not (a.block_frac and (a.lr_steps or a.decay_shape != "linear" or a.decay_data != "mix")), "B stage: no w220 schedule flags"
     log(f"#200: {N} plan step(s) per optimizer step, {NU} optimizer steps, warmup {a.warmup}, wd {a.wd}, lr {a.lr}, budget {budgets[-1]:.0f} rows")
     json.dump({"monitor": mon, "budgets": budgets, "last": last, "branches": {str(k): v for k, v in br.items()},
                "fork_last": fork_last, "steps": len(steps), "e2e_from": k0, "share": P["share"], "accum": N, "wd": a.wd,
                "warmup": a.warmup, "opt_steps": NU, "order_seed": a.seed}, open(os.path.join(a.out, "plan.json"), "w"))
+    lr_at = make_lr(a, cum, last, fork_last, k0, N)             # w220: the lr of the optimizer step starting at plan step s
     dev = f"cuda:{d.local}"; torch.cuda.set_device(dev)
     for grp in range(0, d.world, a.build_group):                # ranks build in groups (each build holds the decoded trunk in host RAM once)
         if grp <= d.rank < grp + a.build_group: stu = build_student(a, dev, lambda s: log(s, True))
@@ -1222,13 +1301,6 @@ def main():
     T = Trainer(a, stu, C, steps, rows_of, d, log, tap=tap)
     if a.gradnoise: return gradnoise(a, T, d, log)
     st = {"step": k0, "done_br": [], "wall": 0.0, "ema": None, "next_mon": a.mon_every}
-    if os.path.exists(sp):
-        z = torch.load(sp, weights_only=False); T.restore(z["snap"]); st = z["st"]; log(f"resumed at main step {st['step']}")
-    else:
-        v = T.monitor(mon) if mon else None
-        log(json.dumps({"step": k0, "rows": 0, "mon_kl": v}))
-        if d.rank == 0:
-            with open(os.path.join(a.out, "mon.jsonl"), "a") as f: f.write(json.dumps({"step": k0, "rows": 0, "mon_kl": v, "what": "main"}) + "\n")
     def fixed_log(step, rows, what):
         if not fe: return
         z = T.fixed(fe)
@@ -1236,7 +1308,25 @@ def main():
             with open(os.path.join(a.out, "fixed.jsonl"), "a") as f:
                 f.write(json.dumps({"step": step, "rows": rows, "what": what, "kl": float(z[:, 0].sum() / z[:, 1].sum()),
                                     "sums": z[:, 0].round(6).tolist(), "n": z[:, 1].astype(int).tolist()}) + "\n")
-    if not os.path.exists(sp): fixed_log(k0, int(cum[k0 - 1]) if k0 else 0, "main")
+    forked = False
+    if os.path.exists(sp):
+        z = torch.load(sp, weights_only=False); T.restore(z["snap"]); st = z["st"]; log(f"resumed at main step {st['step']}")
+    elif a.fork_from:                                        # w220: a cooldown from a saved state (parameters, Adam state, step)
+        fp = a.fork_from if os.path.isfile(a.fork_from) else os.path.join(a.fork_from, "state.pt")
+        z = torch.load(fp, weights_only=False); T.restore(z["snap"]); st = z["st"]; st["done_br"] = []; forked = True
+        if "plan_sha" in st:
+            assert st["plan_sha"] == plan_sha(steps, st["step"]), f"--fork-from {fp}: its data plan up to step {st['step']} is not this run's"
+        else: log(f"WARNING: {fp} carries no plan checksum (written without --save-at): the data prefix is not verified")
+        assert st["step"] < last, f"--fork-from: the state's step {st['step']} is not before the run's end {last}"
+        log(f"fork from {fp} at main step {st['step']} ({int(cum[st['step'] - 1])} rows); decay starts at plan step {fork_last}, lr here {lr_at(st['step']):.3e}")
+        fixed_log(st["step"], int(cum[st["step"] - 1]), "fork")
+    else:
+        v = T.monitor(mon) if mon else None
+        log(json.dumps({"step": k0, "rows": 0, "mon_kl": v}))
+        if d.rank == 0:
+            with open(os.path.join(a.out, "mon.jsonl"), "a") as f: f.write(json.dumps({"step": k0, "rows": 0, "mon_kl": v, "what": "main"}) + "\n")
+    if not os.path.exists(sp) and not forked: fixed_log(k0, int(cum[k0 - 1]) if k0 else 0, "main")
+    save_at = [float(x) for x in a.save_at.split(",")] if a.save_at else []
     def save():
         if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": st}, sp)
         d.barrier()
@@ -1281,7 +1371,7 @@ def main():
                     log(json.dumps(r))
                 ckpt(Tb, end)
                 T.restore(snap); st["done_br"].append(Tb); save()
-        lr = group_lr(s, k0, last, fork_last, a.lr, a.warmup, N)      # per optimizer step (N plan steps)
+        lr = lr_at(s)                                                 # per optimizer step (N plan steps)
         e = min(s + N, last)
         accs, w = T.run_group(list(range(s, e)), lr); st["step"] = e; s = e - 1
         r = logstep(s, lr, accs, w, "main")
@@ -1293,6 +1383,11 @@ def main():
             log(f"monitor at step {s + 1} ({cum[s]} rows, lr {lr:.2e}): {v}")
         if fe and (st["step"] // N) % a.fe_every == 0: fixed_log(st["step"], int(cum[s]), "main")
         if (st["step"] // N) % max(1, a.save_every // N) == 0: save()
+        for r_ in save_at:                                            # w220: fork points
+            fn = os.path.join(a.out, f"state-{int(r_)}.pt")
+            if cum[s] >= r_ and not os.path.exists(fn):
+                if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": {**st, "plan_sha": plan_sha(steps, st["step"])}}, fn)
+                d.barrier(); log(f"fork point state: {fn} (step {st['step']}, {int(cum[s])} rows)")
         if a.max_steps and st["step"] >= a.max_steps: save(); log("max steps"); return
         stop = torch.tensor([float(os.path.exists(os.path.join(a.out, "STOP")))]); d.allsum(stop)
         if float(stop) > 0: save(); log(f"STOP file: saved at main step {st['step']}, exiting"); return
