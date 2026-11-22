@@ -436,9 +436,40 @@ def schedule(cum, budgets, frac):
     return last, br
 
 
+EXACT_NAMES = [False]          # lead 11-22: --exact-ckpt-names
+
+
+def _bfmt(x, spec):
+    """budget / checkpoint label: python's spec as before; with --exact-ckpt-names a '.0e' label that would round the row count
+    (1.5e6 -> '2e+06', 2.5e5 -> '2e+05') gets one more digit ('1.5e+06', '2.5e+05') so labels never collide or mislead"""
+    t = float.__format__(float(x), spec)
+    if EXACT_NAMES[0] and spec == ".0e": t = _exact(x, t)
+    return t
+
+
+def _exact(x, t):
+    """the shortest e-format label that is exactly x (1.25e6 -> '1.25e+06'); t = the '.0e' label"""
+    p = 0
+    while float(t) != float(x) and p < 6: p += 1; t = float.__format__(float(x), f".{p}e")
+    return t
+
+
+class BK(float):
+    """a budget (a checkpoint key): formats via _bfmt"""
+    def __format__(self, spec): return _bfmt(self, spec)
+
+
+class RW(float):
+    """lead 11-22: the key of an undecayed snapshot (--snap-at): the main run's state as it is (no decay), checkpoint dir ckpt-raw-<rows>"""
+    def __format__(self, spec):
+        t = float.__format__(float(self), spec)
+        if spec == ".0e": t = _exact(self, t)                         # always exact (new key, no old names to keep)
+        return "raw-" + t
+
+
 class SD(float):
     """w222: the key of a short-decay branch (--short-decay): formats as `sd-<rows>` so its checkpoint dir is ckpt-sd-2e+05"""
-    def __format__(self, spec): return "sd-" + float.__format__(float(self), spec)
+    def __format__(self, spec): return "sd-" + _bfmt(self, spec)
 
 
 def branch_lr(bs, s, end, last, fork_last, a_lr, warm, lr_at, scheduled):
@@ -1062,7 +1093,8 @@ def build_data(a, d, log):
         order = np.concatenate([np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(len(C.items) - n_old)])
     else:
         order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
-    budgets = [float(a.rows)] if a.rows else [float(x) for x in a.budgets.split(",")]
+    EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))
+    budgets = [BK(a.rows)] if a.rows else [BK(x) for x in a.budgets.split(",")]
     steps = D.plan(C.items, order, a.V, a.Q)
     rows_of, cum = rows_cum(C, steps)
     if a.lr_steps or a.decay_shape != "linear" or a.decay_data != "mix":
@@ -1367,6 +1399,8 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--snap-at", default=None, help="lead 11-22: comma list of gen-row counts: the main run's state as it is (undecayed, no branch) is written as ckpt-raw-<rows> when the run first passes each; nearly free (a checkpoint write + its read)")
+    ap.add_argument("--exact-ckpt-names", action="store_true", help="lead 11-22: checkpoint labels keep the exact row count when python's %%.0e would round it (1.5e6 -> ckpt-1.5e+06, not ckpt-2e+06); default off = the old names")
     ap.add_argument("--gradnoise-from", type=int, default=0, help="lead 11-22: the gradnoise batches are plan steps FROM..FROM+N-1 (default 0 = #217's first N); use steps a checkpoint never trained on")
     ap.add_argument("--gradnoise", type=int, default=0, help="#217: gradients of the first N plan steps at the start state (no optimizer step): per-scale mean / std across batches to OUT/gradnoise.npz, then exit")
     ap.add_argument("--wd", type=float, default=0.0, help="#200: AdamW decoupled weight decay on the log multipliers (0 = Adam)")
@@ -1537,6 +1571,7 @@ def main():
             with open(os.path.join(a.out, "mon.jsonl"), "a") as f: f.write(json.dumps({"step": k0, "rows": 0, "mon_kl": v, "what": "main"}) + "\n")
     if not os.path.exists(sp) and not forked: fixed_log(k0, int(cum[k0 - 1]) if k0 else 0, "main")
     save_at = [float(x) for x in a.save_at.split(",")] if a.save_at else []
+    snap_at = [RW(x) for x in a.snap_at.split(",")] if a.snap_at else []
     def save():
         if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": st}, sp)
         d.barrier()
@@ -1608,6 +1643,8 @@ def main():
             if cum[s] >= r_ and not os.path.exists(fn):
                 if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": {**st, "plan_sha": plan_sha(steps, st["step"])}}, fn)
                 d.barrier(); log(f"fork point state: {fn} (step {st['step']}, {int(cum[s])} rows)")
+        for r_ in snap_at:                                            # lead 11-22: undecayed snapshots (curves for nearly free)
+            if cum[s] >= r_ and not os.path.exists(os.path.join(a.out, f"ckpt-{r_:.0e}", ".done")): ckpt(r_, st["step"])
         if a.max_steps and st["step"] >= a.max_steps: save(); log("max steps"); return
         stop = torch.tensor([float(os.path.exists(os.path.join(a.out, "STOP")))]); d.allsum(stop)
         if float(stop) > 0: save(); log(f"STOP file: saved at main step {st['step']}, exiting"); return
