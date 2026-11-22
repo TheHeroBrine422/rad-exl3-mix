@@ -467,6 +467,20 @@ class RW(float):
         return "raw-" + t
 
 
+SNAP_GRID = (2.5e5, 5e5, 7.5e5, 1e6)       # then every 5e5 (keep in step with v3/qadq/qq.py snap_grid)
+
+
+def snap_grid(spec, final):
+    """the --snap-at row counts: 'none' -> [], an explicit comma list -> it, default ('auto' / None) -> 0.25 / 0.5 / 0.75 / 1 M, then every
+    0.5 M; always only the points before the final budget (the final checkpoint is the run's end)"""
+    if spec == "none": return []
+    if spec not in (None, "auto"): pts = [float(x) for x in spec.split(",")]
+    else:
+        pts = list(SNAP_GRID); x = 1.5e6
+        while x < final: pts.append(x); x += 5e5
+    return [p for p in pts if p < float(final)]
+
+
 class SD(float):
     """w222: the key of a short-decay branch (--short-decay): formats as `sd-<rows>` so its checkpoint dir is ckpt-sd-2e+05"""
     def __format__(self, spec): return "sd-" + _bfmt(self, spec)
@@ -1399,7 +1413,7 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
-    ap.add_argument("--snap-at", default=None, help="lead 11-22: comma list of gen-row counts: the main run's state as it is (undecayed, no branch) is written as ckpt-raw-<rows> when the run first passes each; nearly free (a checkpoint write + its read)")
+    ap.add_argument("--snap-at", default="auto", help="lead 11-22: undecayed snapshots, the norm: the main run's state as it is (no decay, no branch) written as ckpt-raw-<rows> when the run first passes each row count. auto (default) = 0.25 / 0.5 / 0.75 / 1 M then every 0.5 M before the final budget; a comma list; none = off. A fork skips the points at / before its start")
     ap.add_argument("--exact-ckpt-names", action="store_true", help="lead 11-22: checkpoint labels keep the exact row count when python's %%.0e would round it (1.5e6 -> ckpt-1.5e+06, not ckpt-2e+06); default off = the old names")
     ap.add_argument("--gradnoise-from", type=int, default=0, help="lead 11-22: the gradnoise batches are plan steps FROM..FROM+N-1 (default 0 = #217's first N); use steps a checkpoint never trained on")
     ap.add_argument("--gradnoise", type=int, default=0, help="#217: gradients of the first N plan steps at the start state (no optimizer step): per-scale mean / std across batches to OUT/gradnoise.npz, then exit")
@@ -1564,6 +1578,7 @@ def main():
             log(f"fork into a different trainable set: lr ramps up over {a.warmup} optimizer steps")
         log(f"fork from {fp} at main step {st['step']} ({int(cum[st['step'] - 1])} rows); decay starts at plan step {fork_last}, lr here {lr_at(st['step']):.3e}")
         fixed_log(st["step"], int(cum[st["step"] - 1]), "fork")
+        st["fork_rows"] = int(cum[st["step"] - 1])                  # kept in st: a resumed fork still skips the points before its start
     else:
         v = T.monitor(mon) if mon else None
         log(json.dumps({"step": k0, "rows": 0, "mon_kl": v}))
@@ -1571,7 +1586,7 @@ def main():
             with open(os.path.join(a.out, "mon.jsonl"), "a") as f: f.write(json.dumps({"step": k0, "rows": 0, "mon_kl": v, "what": "main"}) + "\n")
     if not os.path.exists(sp) and not forked: fixed_log(k0, int(cum[k0 - 1]) if k0 else 0, "main")
     save_at = [float(x) for x in a.save_at.split(",")] if a.save_at else []
-    snap_at = [RW(x) for x in a.snap_at.split(",")] if a.snap_at else []
+    snap_at = [RW(x) for x in snap_grid(a.snap_at, budgets[-1])]   # lead 11-22: undecayed snapshots are the norm (grid by default; --snap-at none to turn off)
     def save():
         if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": st}, sp)
         d.barrier()
@@ -1605,6 +1620,8 @@ def main():
         fixed_log(s, int(cum[s - 1]), f"ckpt {Tb:.0e}")
         log(f"CKPT {Tb:.0e} at step {s} ({cum[s - 1]} rows): monitor KL {v}")
         d.barrier()
+    if d.rank == 0:                                                   # lead 11-22: the snapshot list for the queue's reads (qq.py auto_snaps)
+        json.dump([f"ckpt-{r_:.0e}" for r_ in snap_at if r_ > st.get("fork_rows", 0)], open(os.path.join(a.out, "snaps.json"), "w"))
     while st["step"] < last:
         s = st["step"]
         for Tb, (fk, end) in br.items():                 # a branch forks at this step
@@ -1643,8 +1660,8 @@ def main():
             if cum[s] >= r_ and not os.path.exists(fn):
                 if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": {**st, "plan_sha": plan_sha(steps, st["step"])}}, fn)
                 d.barrier(); log(f"fork point state: {fn} (step {st['step']}, {int(cum[s])} rows)")
-        for r_ in snap_at:                                            # lead 11-22: undecayed snapshots (curves for nearly free)
-            if cum[s] >= r_ and not os.path.exists(os.path.join(a.out, f"ckpt-{r_:.0e}", ".done")): ckpt(r_, st["step"])
+        for r_ in snap_at:                                            # lead 11-22: undecayed snapshots (curves for nearly free); a fork skips the points at / before its start
+            if cum[s] >= r_ and not r_ <= st.get("fork_rows", 0) and not os.path.exists(os.path.join(a.out, f"ckpt-{r_:.0e}", ".done")): ckpt(r_, st["step"])
         if a.max_steps and st["step"] >= a.max_steps: save(); log("max steps"); return
         stop = torch.tensor([float(os.path.exists(os.path.join(a.out, "STOP")))]); d.allsum(stop)
         if float(stop) > 0: save(); log(f"STOP file: saved at main step {st['step']}, exiting"); return

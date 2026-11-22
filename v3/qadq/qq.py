@@ -15,6 +15,43 @@ usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M] | unclaim ROOT KE
 import fcntl, os, shlex, socket, sys, time
 
 
+SNAP_GRID = (2.5e5, 5e5, 7.5e5, 1e6)       # then every 5e5: keep in step with qad220.py snap_grid
+
+
+def raw_name(x):
+    t = "%.0e" % x; p = 0
+    while float(t) != x and p < 6: p += 1; t = "%.*e" % (p, x)
+    return "ckpt-raw-" + t
+
+
+def auto_snaps(root, j):
+    """lead 11-22: the undecayed snapshots (qad220 --snap-at, default auto) are read like the line's own checkpoints. Only for runs the
+    new trainer makes: no run dir yet (not started) or a run dir with snaps.json (written by qad220 at start); older runs: none"""
+    rd = f"{root}/runs/{j['arm']}"
+    if os.path.exists(f"{rd}/snaps.json"):
+        import json
+        return json.load(open(f"{rd}/snaps.json"))
+    if os.path.exists(rd): return []
+    fl = j["flags"]; spec = fl[fl.index("--snap-at") + 1] if "--snap-at" in fl else "auto"
+    if spec == "none": return []
+    fin = float(j["budgets"].split(",")[-1])
+    if spec == "auto":
+        pts = list(SNAP_GRID); x = 1.5e6
+        while x < fin: pts.append(x); x += 5e5
+    else: pts = [float(x) for x in spec.split(",")]
+    start = 0.0
+    if "--fork-from" in fl:                                   # a fork skips the points at / before its start
+        import re
+        fp = fl[fl.index("--fork-from") + 1]; m = re.search(r"state-(\d+)\.pt$", fp)
+        if m: start = float(m.group(1))
+        else:                                                 # DIR or DIR/state.pt: the source run's final budget
+            src = os.path.basename(os.path.dirname(fp) if fp.endswith(".pt") else fp.rstrip("/"))
+            for ln in open(f"{root}/jobs.txt"):
+                t = ln.split()
+                if len(t) > 3 and t[0] == "T" and t[1] == src: start = float(t[3].split(",")[-1])
+    return [raw_name(p) for p in pts if start < p < fin]
+
+
 def parse(line, root):
     lamf = f"{root}/lambda.txt"; haslam = "{lam" in line
     if haslam and os.path.exists(lamf):                         # {lam} = the rule's lambda, {lam*0.3} = a multiple of it
@@ -28,6 +65,7 @@ def parse(line, root):
     if kind == "T":
         assert len(rest) >= 4, f"T needs ARM SIZE BUDGETS READS: {line}"
         arm, size, bud, reads = rest[:4]; j = dict(kind="T", arm=arm, size=size, budgets=bud, reads=[] if reads == "-" else reads.split(","), flags=rest[4:], key=f"T-{arm}")
+        j["reads"] += [x for x in auto_snaps(root, j) if x not in j["reads"]]
     elif kind == "R":
         assert len(rest) == 3, f"R needs ARM SIZE CKPT: {line}"
         arm, size, ck = rest; ck = ck if ck.startswith("/") else f"{root}/runs/{ck}"
