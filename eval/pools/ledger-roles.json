@@ -587,5 +587,17 @@
   "line": "v3.1",
   "decisions": 0,
   "note": "#218 (w218, 2026-11-22): code-QAD probe training documents (3 rounds x ~100k gen rows: KL gradients for the code re-encode and the scale-only comparison), first 8,192 tokens"
+ },
+ "qad217": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#217 (w217, 2026-11-22): the Adam-eps screen's training data = w214's (qad214) calib part unchanged: the seeded subset (seed 214) of the qad + fit + search pool docs in pools214.json (train214), first 8,192 tokens, one epoch with the xcorp / own-trace goldens; arms = scale-only QAD on the released 2.50 / 3.00 / 4.00 picks, lr x Adam eps (v3/qad217/RULES217.md)"
+ },
+ "qad217-judge": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#217 (w217, 2026-11-22): the eps screen's held-out judge slice golden-j217: 166 qad-pool docs (cap 8,192 tokens, 163,534 gen rows) in no w214 / w217 training set (not train214, no qad214 use) and not read by the release's own fits (no swj27-qad / w94-headx-qad / select / final / fit / fit-hessian use) nor by other QAD tasks (qad215-*, qad218, qad218-tune, qad181-fixed), cut from the published calib golden with v3/qad217/mkjudge217.py seed 217; served-path reads of the unhealed released 2.50 / 3.00 / 4.00 picks and the eps-screen / w214 checkpoints (report only, never a pick)"
  }
 }
