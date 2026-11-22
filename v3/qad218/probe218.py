@@ -158,7 +158,7 @@ def use_grad_probe(stu, nsamp, seed):
 
 def run_grad(a, log):
     z, gold = load_data(a)
-    docs = chunk_docs(z, a.chunk, a.rows)
+    docs = chunk_docs(z, a.chunk, a.rows) if not a.grad_set else z[a.grad_set][:a.grad_docs or None]
     items, steps = plan_for(gold, docs, z["cap"], a.V, a.Q)
     N = sum(it[3] for it in items)
     log(f"chunk {a.chunk}: {len(docs)} documents, {N} gen rows, {len(steps)} steps of {a.V} x {a.Q}")
@@ -280,6 +280,8 @@ def main():
     ap.add_argument("--set", default="judge"); ap.add_argument("--variants", default="rel=rel")
     ap.add_argument("--chunks", default="0-8"); ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--compile-scales", action="store_true")
+    ap.add_argument("--grad-set", default="", help="grad: a data218 set (e.g. tune) instead of a train chunk (a check gradient, never a step)")
+    ap.add_argument("--grad-docs", type=int, default=0, help="grad: the first N documents of --grad-set")
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     log = log_to(os.path.join(a.out, f"{a.mode}.log"))
