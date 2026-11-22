@@ -9744,3 +9744,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   61.3 (**1.60×**); + 48–63 45.5 (**2.15×**); eager + 32–63 65.2 (1.50×). **Adopted: compiled default for every QAD run from now on,
   frozen prefix automatic.**
 - 11-22 ~2:15 AM CST: w221 launched (Sonnet high; box2 cards 2 / 3): L32, L48, T128, CB, C30, L32-30 at 0.5M (0.25M branch), compiled, j217; step 1 = w220's 25C bit for bit; step wall L32 60 s / L48 44 s; queue ends ~5:30–6 AM CST (code v3/qad221, 334de4c1). Note: the trainer's Adam has always used betas (0.9, 0.99) (qad200 l. 344–347), so CB tests clipping only, and the lead's earlier 'β2 0.999 keeps spikes for the whole run' concern does not apply.
+- 11-22 ~2:20 AM CST: **w217 ended (worker timeout at 6 h; its jobs ran to plan).** Eps verdict in `out/w217.md` (eps = a smaller lr;
+  keep the default). **1M extensions of the no-eps lr 3e-4 runs (j217):** 2.50 0.892 (0.5M) → **0.882 [0.777, 0.986]** at 1M (145 / 21
+  docs better) — +1 %; 3.00 0.953 → **0.956 [0.893, 1.015]** — flat. At a constant lr 3e-4 the gain is nearly exhausted by 0.5–1M.
+  The 2.50 lr 3e-4 2M run (branches 1M / 2M) is training on box2 card 1 since 2:05 AM (eager, ~4:50 AM); its reads need a dispatcher
+  (w217's worker is gone). Card 0 free.
