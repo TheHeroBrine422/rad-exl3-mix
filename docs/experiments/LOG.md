@@ -9776,3 +9776,15 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   0.992 [0.966, 1.012] at 0.25M (compiled vs eager C25-3 vs 25A-lr3e-4: 0.995 [0.984, 1.003]) → A8 in the loop neutral. CB30 (3.00
   clip, iceman) 1.24 [0.97, 1.82] at 0.5M with one blow-up doc (0.990 without); its control C30 pending. Risks: first real use of
   `--fork-from / --save-at / --lr-steps` (F1 jobs); failed jobs are not retried (delete failed/ + claims/ keys).
+- 11-22 ~4:35 AM CST: **w222 loaded the night batch items 2–7** (compiled + `--a8-int8`, gated on `a8int8.ok`; ~24 card-h box2, ~7 iceman;
+  padding pending the user). **D1 (blow-up documents):** over 61 reads only 4 of 166 j217 docs ever break (KL / row > 10× unhealed),
+  all wildchat chat: 3820 and 1893 = **derailments** (KL 1–2.5 / row for the rest of the doc, top-1 vs teacher 0.9 → 0.1–0.3), 1968 /
+  3947 milder (4.00 only); onset at the same position for every arm that breaks it, an ordinary prose token in 14 / 19 cases; only at
+  ≥ 0.5M, never at 0.25M; at 2.50 only lr 1e-3 arms (and the lr 3e-4 2M run's 1M checkpoint), at 3.00 only CB30. n = 4, cause not
+  isolated. Readout now reports median doc ratio, share improved, ratio without its blow-ups, and KL by token-frequency tercile
+  (first: C25-3 at 0.5M rare / mid / common 0.915 / 0.869 / 0.842 — gains concentrate on common tokens). **C1:** `--norms` (N) and new
+  `--head-train in` (H: the 5,120 hidden-side head scales only) built, 2-step checks pass. **MSE:** `--local-mse 31,…,local` would
+  only train layer 31 → new `block` mode (each block 0–3, 4–7, 8–15, 16–23, 24–31 trained on the MSE at its end tap from the student's
+  own detached state, no KL in stage 1) = the parallel cut-gradient form; teacher pass `M taps8` (layers 3/7/15/23/31/39/47/55, ~80 GB,
+  2-card job) claimed on box2 card 2, waiting for card 3; then `gn-mse` diagnostic auto-starts; stage 1/2 lines held until read.
+  λ rule: rms KL grad / rms MSE grad over layers 0–31 (matters only where KL meets MSE).
