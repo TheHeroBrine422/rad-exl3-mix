@@ -5,7 +5,7 @@ set -u
 cd /data/w218; G=code/v3/qad218/gpu218.sh; PY=/data/venv-exl3/bin/python; C=code/v3/qad218
 say() { echo "$(TZ=America/Chicago date '+%m-%d %-I:%M %p CST') $*" >> logs/driver.log; }
 run() { local log=$1; shift; while true; do $G $log "$@"; rc=$?; case $rc in 75|76) sleep 30;; *) return $rc;; esac; done; }
-while pgrep -f "^/bin/bash code/v3/qad218/[l]rb\?218.sh" > /dev/null; do sleep 30; done
+while pgrep -f "^/bin/bash code/v3/qad218/[l]rb?218.sh" > /dev/null; do sleep 30; done
 grep -q "lrb done" logs/driver.log || { say "lrj: lrb not done, no judge read"; exit 1; }
 PICK=$($PY - <<'PEOF'
 import json, glob
