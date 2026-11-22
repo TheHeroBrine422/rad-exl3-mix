@@ -1,0 +1,11 @@
+run                                        rms     p99   p99.9     max     n>2%    n>5%  top tensors by max|d|
+2.5 lr1e-3 0.25M ok                     0.0025  0.0055  0.0063  0.0074        0       0  26.in_proj_z:c=0.007, 28.out_proj:c=0.007, 48.out_proj:r=0.007
+2.5 lr1e-3 0.5M BLOWUP                  0.0043  0.0101  0.0122  0.0171        0       0  42.in_proj_z:c=0.017, 26.out_proj:r=0.017, 26.in_proj_z:c=0.017
+2.5 lr3e-4 0.25M ok                     0.0008  0.0017  0.0019  0.0022        0       0  34.in_proj_z:c=0.002, 34.out_proj:r=0.002, 49.in_proj_z:c=0.002
+2.5 lr3e-4 0.5M ok                      0.0013  0.0032  0.0039  0.0053        0       0  42.in_proj_z:c=0.005, 44.in_proj_qkv:c=0.005, 63.up_proj:c=0.005
+3.0 lr1e-3 0.25M                        0.0025  0.0055  0.0063  0.0074        0       0  9.in_proj_z:c=0.007, 16.gate_proj:r=0.007, 9.in_proj_qkv:c=0.007
+3.0 lr1e-3 0.5M                         0.0042  0.0100  0.0120  0.0160        0       0  63.v_proj:r=0.016, 52.in_proj_qkv:c=0.016, 58.out_proj:r=0.016
+3.0 lr3e-4 0.5M ok                      0.0013  0.0031  0.0037  0.0052        0       0  37.out_proj:r=0.005, 63.q_proj:c=0.005, 37.in_proj_qkv:c=0.005
+4.0 lr3e-4 0.25M ok                     0.0007  0.0016  0.0018  0.0022        0       0  63.q_proj:c=0.002, 56.down_proj:c=0.002, 14.gate_proj:c=0.002
+4.0 lr3e-4 0.5M BLOWUP(j217 3.15)       0.0013  0.0030  0.0036  0.0049        0       0  60.up_proj:c=0.005, 49.gate_proj:c=0.005, 43.o_proj:r=0.005
+4.0 lr1e-3 0.5M bad                     0.0042  0.0100  0.0119  0.0157        0       0  61.up_proj:r=0.016, 48.up_proj:r=0.016, 0.up_proj:c=0.016

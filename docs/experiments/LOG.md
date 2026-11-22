@@ -9690,3 +9690,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Scale-only comparison arm on the same blocks (304k rows) finishing ~11:45 PM on iceman (`runs/agg218.txt`); cannot change the
   code verdict. Data `data/qad218/`, code `v3/qad218/`, report `out/w218.md`.
 - 11-21 ~11:30 PM CST: w218's scale-only comparison arm stopped unfinished by the lead (user: iceman card 0 to w217's eps screen); the code-QAD verdict stands without it.
+- 11-22 ~12:00 AM CST (lead, CPU on box2): **QAD analyses on existing data.** (1) **Trained scale moves (w214 checkpoints):** no
+  outliers — max |log mult| only 2.5–4× the rms, none of 5.7M scales > 2 %; blow-up checkpoints (2.5 lr 1e-3 0.5M; 4.0 lr 3e-4 0.5M,
+  3.15× on j217) are statistically identical to healthy siblings (3.0 lr 3e-4 0.5M) → blow-ups are document sensitivity, not runaway
+  scales; a trust-region / box would never bind (dropped). rms ≈ lr·√steps (random walk). (2) **Signal mask** from w217 step 1
+  (|mean grad| > 3 se over 40 batches; chance 0.27 %): 2.50 1.88 %, 3.00 0.80 %, 4.00 0.53 % of scales → real-signal sets ~1.6 /
+  0.5 / 0.26 %. **Concentrated late:** layers 48–63 3.30 / 1.94 / 1.28 %, 32–47 2.44 / 0.88 / 0.57, 16–31 1.19 / 0.22 / 0.14, 0–15
+  0.59 / 0.15 / 0.12 (≤ chance at 3.0 / 4.0: heavy-tailed batches make the test conservative). **By tensor:** full-attention o_proj
+  4.2 % and q_proj 3.8 % (at 2.5) highest; MLP gate / up lowest (1.5 %) though they are 51 % of scales; GDN ~2 %; in vs out side
+  equal. **Cross-size overlap** 2.5 ∩ 3.0 = 12 % of 2.5's mask (15× chance): the same scales partly matter at every size.
+  Files `data/qad217/lead/` (mask-3se.txt, scale-moves-w214.txt, scripts).
