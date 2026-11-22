@@ -29,6 +29,18 @@
     "blowup": false,
     "jump_pos": null
    },
+   "25E-l1e-3-x0.3-ckpt-2e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.03820007647038841,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x0.3-ckpt-5e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 1.5404218021802398,
+    "blowup": true,
+    "jump_pos": 241
+   },
    "25E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.06949376330713669,
     "arm": 0.04425550435847624,
@@ -40,6 +52,18 @@
     "arm": 0.49904243579305846,
     "blowup": true,
     "jump_pos": 252
+   },
+   "25E-l3e-4-x0.3-ckpt-2e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.0565241992738156,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.055099063211138936,
+    "blowup": false,
+    "jump_pos": null
    },
    "25E-l3e-4-x1-ckpt-2e+05": {
     "ctl": 0.06949376330713669,
@@ -83,6 +107,12 @@
     "blowup": false,
     "jump_pos": null
    },
+   "30E-l1e-3-x0.3-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.03723174222985355,
+    "blowup": false,
+    "jump_pos": null
+   },
    "30E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.10996945752371874,
     "arm": 0.08896147438425642,
@@ -98,6 +128,12 @@
    "30E-l3e-4-x0.3-ckpt-2e+05": {
     "ctl": 0.10996945752371874,
     "arm": 0.09368718516178573,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.08586137045751076,
     "blowup": false,
     "jump_pos": null
    },
@@ -137,9 +173,33 @@
     "blowup": false,
     "jump_pos": null
    },
+   "40E-l1e-3-x0.3-ckpt-2e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.018664393510757955,
+    "blowup": false,
+    "jump_pos": null
+   },
    "40E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.02121493060821183,
     "arm": 0.019656763675336874,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.04536868850552881,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x0.3-ckpt-2e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.02108356599449713,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.0063571699467349935,
     "blowup": false,
     "jump_pos": null
    },
@@ -187,6 +247,18 @@
     "blowup": false,
     "jump_pos": null
    },
+   "25E-l1e-3-x0.3-ckpt-2e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.621034904465863,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x0.3-ckpt-5e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.18821096753353433,
+    "blowup": false,
+    "jump_pos": null
+   },
    "25E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.5325393314925202,
     "arm": 0.6810616454842817,
@@ -196,6 +268,18 @@
    "25E-l1e-3-x1-ckpt-5e+05": {
     "ctl": 0.5325393314925202,
     "arm": 0.17699069260819603,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l3e-4-x0.3-ckpt-2e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.6440326339029351,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.09470119402753063,
     "blowup": false,
     "jump_pos": null
    },
@@ -241,6 +325,12 @@
     "blowup": false,
     "jump_pos": null
    },
+   "30E-l1e-3-x0.3-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.21473999416480688,
+    "blowup": false,
+    "jump_pos": null
+   },
    "30E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.09114834273507844,
     "arm": 0.1047779087783276,
@@ -256,6 +346,12 @@
    "30E-l3e-4-x0.3-ckpt-2e+05": {
     "ctl": 0.09114834273507844,
     "arm": 0.103175145172471,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.049946162839271814,
     "blowup": false,
     "jump_pos": null
    },
@@ -295,11 +391,35 @@
     "blowup": true,
     "jump_pos": 210
    },
+   "40E-l1e-3-x0.3-ckpt-2e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 0.06034299988768441,
+    "blowup": false,
+    "jump_pos": null
+   },
    "40E-l1e-3-x1-ckpt-2e+05": {
     "ctl": 0.025869085826672647,
     "arm": 0.04261257769710896,
     "blowup": false,
     "jump_pos": null
+   },
+   "40E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 2.1562977215548167,
+    "blowup": true,
+    "jump_pos": 200
+   },
+   "40E-l3e-4-x0.3-ckpt-2e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 0.042672674648590446,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x0.3-ckpt-5e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 2.054022655809436,
+    "blowup": true,
+    "jump_pos": 214
    },
    "40E-l3e-4-x1-ckpt-2e+05": {
     "ctl": 0.025869085826672647,
