@@ -30,8 +30,8 @@ One page so the plan fits in a head. Details: LOG entries 11-21 / 11-22, BACKLOG
 
 ## Checkpoint rule (user 11-22)
 Every training run takes WSD branch checkpoints (a cheap decay forked off the main run) at 0.25M / 0.5M / 1M / 2M (/ 4M) up to
-its budget, each read on j217, so every run gives a curve. Whole-run cosine / linear decays: intermediate reads are mid-schedule
-("undecayed"); their end point is the real number.
+its budget, each read on j217, so every run gives a curve. Whole-run cosine / linear decays: at each checkpoint, fork a short linear decay to 0 over ~50k rows (2–3 steps) and read
+that ("short-decay"); the run's own end point is the main number.
 
 ## Judging rules
 j217 (held-out qad pool) for comparisons; ratio with and without the blow-up documents; flag any document whose KL rises > 10×;
