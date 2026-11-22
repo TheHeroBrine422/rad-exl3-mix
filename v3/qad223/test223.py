@@ -6,7 +6,8 @@ suh / svh ~ the stored scales' spread, random r / c, inputs with outlier channel
   out  max |y_int8 - y_a8| and that / max |y_a8|; the share of outputs that differ; both paths' error vs the f64 product of the same
        quantized input (q sa exactly, no bf16 rounding of the activation) -- the int8 path should be the closer one
   grad rel L2 of dx, dr, dc (int8 vs a8; dX is the same bf16 GEMM, so only the forward's difference reaches it through dy)
-  python test223.py [--m 700,1024] [--shapes ...]"""
+  cfg  mm_a8 bitwise the same under every autotune config (int32 group dots exact, f32 accumulation over groups in order)
+  python test223.py [--m 279,700,1105] [--shapes ...]"""
 import argparse, os, sys, types
 
 import numpy as np
@@ -56,7 +57,7 @@ def rl2(a, b): return float((a - b).norm() / b.norm())
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--m", default="700,1024"); ap.add_argument("--shapes", default=SHAPES)
+    ap = argparse.ArgumentParser(); ap.add_argument("--m", default="279,700,1105"); ap.add_argument("--shapes", default=SHAPES)
     a = ap.parse_args()
     paths = {"eager": (grab_fwd(qad220.use_a8), grab_fwd(qad220.use_a8, True)),
              "compiled": (grab_fwd(qad220.use_compiled_scales, True), grab_fwd(qad220.use_compiled_scales, True, True))}
@@ -85,6 +86,20 @@ def main():
                       f"{rl2(dxi, dxa):.2e} | {rl2(dri, dra):.2e} | {rl2(dci, dca):.2e} |", flush=True)
         del q; torch.cuda.empty_cache()
     print(f"worst max abs dy / max abs y: {worst:.2e}")
+    import triton, a8int8
+    for (k, n) in ((5120, 17408), (17408, 5120), (5120, 1024)):
+        w = torch.randint(-126, 127, (k, n), generator=g, dtype=torch.int8).cuda()
+        for M in (279, 1105):
+            qx, sa = a8int8.quant_a8((torch.randn(M, k, generator=g) * 3).to(BF).cuda())
+            outs = []
+            for c in a8int8._cfgs():
+                if k % (128 * c.kwargs["GPI"]): continue
+                y = torch.empty(M, n, dtype=BF, device="cuda")
+                grid = (triton.cdiv(M, c.kwargs["BM"]) * triton.cdiv(n, c.kwargs["BN"]),)
+                try: a8int8._mm_a8_k.fn[grid](qx, sa, w, y, M, n, k, 0, qx.stride(0), sa.stride(0), w.stride(0), y.stride(0), **c.kwargs, num_warps=c.num_warps, num_stages=c.num_stages)
+                except triton.runtime.errors.OutOfResources: continue                  # the autotuner skips these too
+                outs.append(y)
+            print(f"cfg {k}x{n} M {M}: {len(outs)} configs, all bitwise equal: {all(torch.equal(o, outs[0]) for o in outs)}", flush=True)
 
 
 if __name__ == "__main__":

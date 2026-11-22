@@ -55,10 +55,12 @@ def _cfgs():
     return out
 
 
-@triton.autotune(configs=_cfgs(), key=["M", "N", "K"], prune_configs_by={"early_config_prune": lambda cfgs, nargs, **kw: [c for c in cfgs if nargs["K"] % (128 * c.kwargs["GPI"]) == 0]})
+@triton.autotune(configs=_cfgs(), key=["MB", "N", "K"], prune_configs_by={"early_config_prune": lambda cfgs, nargs, **kw: [c for c in cfgs if nargs["K"] % (128 * c.kwargs["GPI"]) == 0]})
 @triton.jit
-def _mm_a8_k(a, sa, b, c, M, N, K, sam, ssm, sbk, scm, BM: tl.constexpr, BN: tl.constexpr, GPI: tl.constexpr, G: tl.constexpr):
-    """GPI = 128-groups per loop iteration (K % (128 GPI) == 0 required: the autotuner prunes)"""
+def _mm_a8_k(a, sa, b, c, M, N, K, MB, sam, ssm, sbk, scm, BM: tl.constexpr, BN: tl.constexpr, GPI: tl.constexpr, G: tl.constexpr):
+    """GPI = 128-groups per loop iteration (K % (128 GPI) == 0 required: the autotuner prunes). MB = M's power-of-2 bucket, the
+    autotune key (segments have many lengths: one tuning per bucket, not per M). The result is bitwise the same for every config:
+    int32 group dots are exact and the f32 accumulation runs over the groups in order"""
     pid = tl.program_id(0)
     npm, npn = tl.cdiv(M, BM), tl.cdiv(N, BN)
     gid = pid // (G * npn); fm = gid * G; gs = min(npm - fm, G)
@@ -85,7 +87,7 @@ def mm_a8(q, sa, w):
     assert w.shape[0] == K and w.dtype == torch.int8 and q.stride(1) == 1 and w.stride(1) == 1 and K % 128 == 0
     y = torch.empty(M, N, dtype=BF, device=q.device)
     grid = lambda m: (triton.cdiv(M, m["BM"]) * triton.cdiv(N, m["BN"]),)
-    _mm_a8_k[grid](q, sa, w, y, M, N, K, q.stride(0), sa.stride(0), w.stride(0), y.stride(0))
+    _mm_a8_k[grid](q, sa, w, y, M, N, K, min(4096, triton.next_power_of_2(M)), q.stride(0), sa.stride(0), w.stride(0), y.stride(0))
     return y
 
 
