@@ -9790,3 +9790,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   λ rule: rms KL grad / rms MSE grad over layers 0–31 (matters only where KL meets MSE).
 - 11-22 ~4:50 AM CST: w222 added 25 MSE stage lines to box2's queue (staged MA, staged-deep, joint MJ, 2.50 longer stage 1; per size 2.50 / 3.00 / 4.00 lr 3e-4 + 2.50 lr 1e-3; control I25C1E3 added), all gated on a8int8.ok + teacher taps (+ lambda.txt from lamwatch.sh after the gn-mse diagnostic: λ = rms KL grad / rms MSE grad over layers 0–31); KL-only baseline for layers 0–31: 7.9 % significant at 1.96 se (chance 5 %), 0.9 % at z 3. Joint uses `joint` mode (KL reaches every layer).
 - 11-22 ~5:10 AM CST: user dropped the 2.50 lr 1e-3 MSE lines (MA25h / MB25h / MJ25h / MD25h) and the I25C1E3 control (commented `# DROP-lr1e-3 (user)` in box2's jobs.txt; backup jobs.txt.pre-lead-1e3). w222 resumed: (1) count all usable gen rows (calib golden minus verify / judge docs + Thor's xcorp / trace goldens) and build a bigger one-epoch plan with w214's order as prefix; (2) blow-up fragility jobs (released 2.00 / 3.50 / 5.00 reads; random scale perturbations of trained rms; per-family scale reverts in derailing checkpoints).
+- 11-22 ~5:45 AM CST: **w222 follow-up 5: bigger data plan + fragility + checkpoint rule + fill batch.** Usable gen rows: calib 3.78M
+  (3,195 docs after removing verify, j217, ledger check / final / monitor, qad218-tune; 2.80M in the qad pool), xcorp / traces 9.12M
+  (Thor goldens, deduped; 5.99M new to w214). New plan `qad214-ext`: **10.04M gen rows, one epoch** (calib 20 % / tr32k 10.9 % / xc8k
+  69.1 %; qad-pool calib only), first 84 plan steps (1.76M rows) = w214's plan; max budget 1e7. iceman has the data; box2 copying
+  (~6 AM). Fragility reads queued (un-gated). Checkpoint rule applied (`qrule.py`): WSD branches 0.25 / 0.5 / 1 / 2 (/4) M; whole-run
+  decays and --lr-steps runs use a new `--short-decay` (50k-row decay branches, `ckpt-sd-<rows>`); --accum > 1 and fork runs exempt
+  (one budget). Fill batch + batch-size test (1× lr 3e-4 control; 4× batch `--accum 4 --warmup 2` at lr 3e-4 and 1e-3, separate runs
+  at 0.5 / 1 / 2M) loaded. Estimated: box2 93.2 card-h gated + 13.9 non-int8, iceman 20.4 + 2.6 → **113.6 card-h gated** on a8int8.ok.
+  46 of w214's 416 training docs had been read by earlier ledger slices (pre-existing overlap, left).
