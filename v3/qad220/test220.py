@@ -58,6 +58,8 @@ st = FakeStu(); apply_trainable(targs(train_tensors=r"up_proj:c$"), st, logs.app
 check("--train-tensors regex", {n.split(".", 4)[-1] for n, p in st.P.items() if p.requires_grad} == {"mlp.up_proj:c"}
       and sum(p.requires_grad for p in st.P.values()) == 6)
 st = FakeStu(); apply_trainable(targs(train_layers="3-5", train_tensors=r"q_proj"), st, logs.append); set_first_train(st, logs.append)
+st9 = FakeStu(); apply_trainable(targs(train_layers="2-4"), st9, logs.append); set_first_train(st9, logs.append, True)
+check("--no-frozen-prefix: first_train 0 (full path), first_trainable still 2", st9.first_train == 0 and st9.first_trainable == 2)
 check("--train-layers and --train-tensors intersect", sorted(n for n, p in st.P.items() if p.requires_grad) ==
       [f"model.language_model.layers.{i}.self_attn.q_proj:r" for i in (3, 4, 5)] and st.first_train == 3)
 

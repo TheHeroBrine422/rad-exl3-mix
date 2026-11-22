@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""qad200.py OUT --model BF16 --level LEVEL --chunks DIR,... [--calib GOLDEN --pools POOLS] [options] -- #200 (RULES200):
+"""qad220.py (w220) = qad200.py (w217's trainer, copied) + the w220 switches; every one is off by default and then the trainer is
+qad200's (v3/qad220/README.md "w220 flags"): --train-layers / --train-tensors / --mask (trainable set; the layers before the first
+trainable one run once under no_grad: automatic), --tie-groups / --tie-layers, --clip-gnorm / --beta2, --lr-steps / --decay-shape /
+--fork-from / --decay-data / --save-at, --prompt-weight, --local-mse / --local-taps (+ --make-taps --tap-layers), --no-frozen-prefix.
+qad200.py's header follows.
+
+qad200.py OUT --model BF16 --level LEVEL --chunks DIR,... [--calib GOLDEN --pools POOLS] [options] -- #200 (RULES200):
 #196's trainer (qad196.py, copied) with the #200 switches. All off = #196 arm A (checks in data/qad200/checks200.md):
   --wd W                     AdamW (decoupled weight decay) on the trunk log multipliers: each step multiplies them by
                              (1 - lr W) toward 0 (= the stored scales) before the Adam update; the norm gains are not decayed.
@@ -587,15 +593,16 @@ def apply_trainable(a, stu, log):
     return mk or None
 
 
-def set_first_train(stu, log):
-    """stu.first_train = the first decoder layer holding a trainable parameter: run_segment runs the layers before it once under
-    no_grad (no activations kept, no checkpoint recompute, no backward)"""
+def set_first_train(stu, log, skip=False):
+    """stu.first_trainable = the first decoder layer holding a trainable parameter; stu.first_train = the same: run_segment runs the
+    layers before it once under no_grad (no activations kept, no checkpoint recompute, no backward). skip (--no-frozen-prefix, for
+    the equivalence check and the speed table): every layer takes the full path, as before w220"""
     tl = [layer_of(stu, n) for n, p in stu.P.items() if p.requires_grad]
     assert tl, "no trainable parameter"
-    stu.first_train = min(tl)
+    stu.first_trainable = min(tl); stu.first_train = 0 if skip else min(tl)
     nt = sum(p.numel() for p in stu.P.values() if p.requires_grad); nf = sum(p.numel() for p in stu.P.values() if not p.requires_grad)
     log(f"trainable: {len(tl)} vectors / {nt} values (frozen: {len(stu.P) - len(tl)} vectors / {nf} values); first trainable layer {stu.first_train}"
-        + (f": layers 0 .. {stu.first_train - 1} run once under no_grad" if stu.first_train else ""))
+        + (f": layers 0 .. {stu.first_train - 1} run once under no_grad" if stu.first_train else (" (--no-frozen-prefix: full backward path)" if skip and stu.first_trainable else "")))
 
 
 # ------------------------------------------------------------------ optimizer hygiene (w220)
@@ -1295,6 +1302,7 @@ def parser():
     ap.add_argument("--tap-layers", default=None, help="w220: with --make-taps: comma list of layers to store (default the DFlash2 taps 5,19,33,47,61)")
     ap.add_argument("--clip-gnorm", type=float, default=0.0, help="w220: clip the global gradient norm at X x the running median batch norm (logs the clipped steps; 0 = off)")
     ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
+    ap.add_argument("--no-frozen-prefix", action="store_true", help="w220 (test / benchmark switch): do not skip the backward of the layers before the first trainable one (the old full path, same trainable set)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
     return ap
 
@@ -1377,7 +1385,7 @@ def main():
         return
     apply_ties(a, stu, log)
     stu.mask = apply_trainable(a, stu, log)
-    set_first_train(stu, log)
+    set_first_train(stu, log, a.no_frozen_prefix)
     use_seg_attention(stu)
     if a.compile_scales: use_compiled_scales(stu, a.a8); log(f"QLinear scales compiled (a8 {a.a8})")
     elif a.a8 and not a.check: use_a8(stu)
@@ -1387,7 +1395,7 @@ def main():
     loc = None
     if a.local_mse:
         assert a.local_taps and not a.taps, "--local-mse needs --local-taps DIR (and not the T arm's --taps)"
-        loc = LocalMSE(a.local_mse, TapStore(a.local_taps, any_layers=True)); loc.restrict(stu.first_train, log)
+        loc = LocalMSE(a.local_mse, TapStore(a.local_taps, any_layers=True)); loc.restrict(stu.first_trainable, log)
         log(f"local MSE: layers {loc.layers[0]}..{loc.layers[-1]} ({len(loc.layers)}), lambda {loc.lam}, mode {loc.mode}, targets {a.local_taps}")
     tap = TapStore(a.taps) if a.taps else None
     if tap is not None: log(f"arm T: tap MSE at layers {TAPS} from {a.taps}, weight {a.tap_weight}")
