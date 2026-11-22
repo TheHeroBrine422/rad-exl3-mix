@@ -9729,3 +9729,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   gradient check too:** L23 q 0.861 vs random −0.08 / −0.25 / 0.25; L40 down 0.914 vs 0.07 / −0.26 / −0.10; L55 gate 0.939 vs 0.71 /
   0.39 / 0.59 (that tensor's noise is anisotropic). Conclusion: a projected scale-gradient step (P_r from a separate sketch pass) is
   worth a trainer arm; agreement ≠ KL gain, untested as a step. Files `data/qad218/lead/` (scalelr2.py, lrnull.py, outputs).
+- 11-22 ~2:10 AM CST: **w218 low-rank-projected code-QAD step (round 0) — every variant worse; step size suspect.** Tune (cur 0.038242):
+  rank-4 projected step, fresh encode, η 0.05 → 5.39×, 0.1 → 40.8×, ≥ 0.2 → 276–379×; rank 16 η 0.05 → 3.23×; preconditioned rank 4
+  (M⁻¹D) η 0.05 → 1.028 [1.003, 1.073], 0.2 → 1.059, 0.5 → 1.21; rank-4 step applied to the released codes (no fresh-encode noise) η
+  0.2 → 269× with only 14 % tiles changed; plain fresh encode o0 → 0.998. Judge pick lr-p0.05: 1.049 [1.011, 1.107] (78 / 95 docs).
+  Lead reading: η was normalised so that the step's rms = η × the tensor's quantization step — fine for diffuse steps, far too large for
+  a COHERENT rank-4 perturbation (it adds up along the activations instead of averaging out), hence ×270 at only 14 % tiles; the right
+  step along D is likely 10–1000× smaller (a curvature line search along D would size it). Not yet checked: the sign of g·D (first-
+  order descent). Code-QAD verdict stays open until a sign check + curvature-sized step is run. Data iceman `/data/w218/runs/agg218.txt`.
