@@ -9737,3 +9737,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   a COHERENT rank-4 perturbation (it adds up along the activations instead of averaging out), hence ×270 at only 14 % tiles; the right
   step along D is likely 10–1000× smaller (a curvature line search along D would size it). Not yet checked: the sign of g·D (first-
   order descent). Code-QAD verdict stays open until a sign check + curvature-sized step is run. Data iceman `/data/w218/runs/agg218.txt`.
+- 11-22 ~2:05 AM CST: **w220 GPU gates — all PASS** (box2 cards 2 / 3; readout `data/qad220/readout220.md`). d: qad220 defaults = qad200
+  bit for bit (2 steps, 720 tensors, max |diff| 0). b: frozen prefix (layers 32–63 trainable) = full backward bitwise, eager and
+  compiled. a: compiled vs eager 25A on j217: 1.0050 [0.9951, 1.0194] at 0.25M, 0.9846 [0.9654, 1.0039] at 0.5M (within ±2 %).
+  c speed (2.50, other cards busy): eager 98.0 s / step (223 gen rows/s); compiled 88.9 (1.10×); compiled + train layers 32–63
+  61.3 (**1.60×**); + 48–63 45.5 (**2.15×**); eager + 32–63 65.2 (1.50×). **Adopted: compiled default for every QAD run from now on,
+  frozen prefix automatic.**
