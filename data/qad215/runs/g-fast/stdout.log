@@ -1,0 +1,13 @@
+23:15:10 qad181.py {"out": "/data/w215/runs/g-fast", "model": "/data/workspace/models/qwen38-27b-bf16", "level": "/data/v3ladder2/K2.5", "chunks": ",", "calib": "/data/challenge/golden/calib", "pools": "/data/w215/code-ew/eval/pools/pools-v3.json", "pool": "qad", "genmask": null, "head": null, "head_perm": null, "cap": 8192, "len": 2048, "V": 6, "Q": 1024, "budgets": "2e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 1000, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": false, "compile_scales": true, "compile_ew": true, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 0, "fe_every": 10, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 1} world 1
+23:15:12 shift conv / MLP silu * up compiled
+23:15:12 corpus 2793 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}}
+23:15:12 plan: 663 steps of 6 x 1024 (data 3308261 rows); main to step 36 (201920 rows), decay from step 29; branches 
+23:15:31 rank 0: student built in 19 s: 400 linears (i8, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+23:15:31 QLinear scales compiled (a8 False)
+23:15:31 {"step": 0, "rows": 0, "mon_kl": null}
+/data/w215/code-ew/v3/qad181/qad181.py:255: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+23:16:11 {"what": "main", "step": 1, "rows": 5414, "lr": 0.000125, "train_kl": 0.07382702034780096, "ema": 0.07382702034780096, "by": {"calib": 0.07382702034780096}, "n": {"calib": 5414}, "prefix_tok": 0, "wall": 39.75, "pos_s": 136.2}
+23:16:11 max steps
+rc 0

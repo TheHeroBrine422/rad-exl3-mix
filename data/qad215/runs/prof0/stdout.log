@@ -1,0 +1,56 @@
+22:04:53 qad181.py {"out": "/data/w215/runs/prof0", "model": "/data/workspace/models/qwen38-27b-bf16", "level": "/data/v3ladder2/K2.5", "chunks": ",", "calib": "/data/challenge/golden/calib", "pools": "/data/w215/code/eval/pools/pools-v3.json", "pool": "qad", "genmask": null, "head": null, "head_perm": null, "cap": 8192, "len": 2048, "V": 6, "Q": 1024, "budgets": "2e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 1000, "build_group": 2, "gate": false, "profile": true, "bench": false, "a8": false, "compile_scales": false, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 0, "fe_every": 10, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 20} world 1
+22:04:55 corpus 2793 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}}
+22:04:55 plan: 663 steps of 6 x 1024 (data 3308261 rows); main to step 36 (201920 rows), decay from step 29; branches 
+22:05:15 rank 0: student built in 20 s: 400 linears (i8, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+Traceback (most recent call last):
+  File "/data/w215/code/v3/qad181/qad181.py", line 573, in <module>
+    main()
+    ~~~~^^
+  File "/data/w215/code/v3/qad181/qad181.py", line 494, in main
+    if a.profile: return profile(a, stu, C, log)
+                         ~~~~~~~^^^^^^^^^^^^^^^^
+  File "/data/w215/code/v3/qad181/qad181.py", line 331, in profile
+    kl, m, _ = seg_loss(stu, C.g, (gi, i), 0, 1024, None); (kl / m).backward(); torch.cuda.synchronize(dev)
+                                                           ~~~~~~~~~~~~~~~~~^^
+  File "/data/venv-exl3/lib/python3.14/site-packages/torch/_tensor.py", line 623, in backward
+    torch.autograd.backward(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        self, gradient, retain_graph, create_graph, inputs=inputs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/data/venv-exl3/lib/python3.14/site-packages/torch/autograd/__init__.py", line 395, in backward
+    _engine_run_backward(
+    ~~~~~~~~~~~~~~~~~~~~^
+        tensors,
+        ^^^^^^^^
+    ...<5 lines>...
+        accumulate_grad=True,
+        ^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/data/venv-exl3/lib/python3.14/site-packages/torch/autograd/graph.py", line 1113, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        t_outputs, *args, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )  # Calls into the C++ engine to run the backward pass
+    ^
+RuntimeError: element 0 of tensors does not require grad and does not have a grad_fn
+rc 1
+22:17:02 qad181.py {"out": "/data/w215/runs/prof0", "model": "/data/workspace/models/qwen38-27b-bf16", "level": "/data/v3ladder2/K2.5", "chunks": ",", "calib": "/data/challenge/golden/calib", "pools": "/data/w215/code/eval/pools/pools-v3.json", "pool": "qad", "genmask": null, "head": null, "head_perm": null, "cap": 8192, "len": 2048, "V": 6, "Q": 1024, "budgets": "2e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 1000, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": false, "compile_scales": false, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 0, "fe_every": 10, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 4} world 1
+22:17:04 corpus 2793 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}}
+22:17:04 plan: 663 steps of 6 x 1024 (data 3308261 rows); main to step 36 (201920 rows), decay from step 29; branches 
+22:17:22 rank 0: student built in 18 s: 400 linears (i8, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+22:17:22 {"step": 0, "rows": 0, "mon_kl": null}
+/data/w215/code/v3/qad181/qad181.py:251: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+22:17:51 {"what": "main", "step": 1, "rows": 5414, "lr": 0.000125, "train_kl": 0.07382702034780096, "ema": 0.07382702034780096, "by": {"calib": 0.07382702034780096}, "n": {"calib": 5414}, "prefix_tok": 0, "wall": 28.68, "pos_s": 188.8}
+22:18:17 {"what": "main", "step": 2, "rows": 11202, "lr": 0.00025, "train_kl": 0.05483192918048534, "ema": 0.07287726578943517, "by": {"calib": 0.05483192918048534}, "n": {"calib": 5788}, "prefix_tok": 0, "wall": 26.17, "pos_s": 221.2}
+22:18:42 {"what": "main", "step": 3, "rows": 16230, "lr": 0.000375, "train_kl": 0.06432213485478028, "ema": 0.07244950924270242, "by": {"calib": 0.06432213485478028}, "n": {"calib": 5028}, "prefix_tok": 0, "wall": 24.97, "pos_s": 201.3}
+USDT:2026-11-21 22:18:42 2884958:2884958 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-21 22:19:09 2884958:2884958 SyncActivityProfilerHandler.cpp:46] profiler_stop
+22:20:03 {"what": "main", "step": 4, "rows": 22290, "lr": 0.0005, "train_kl": 0.06016142250287651, "ema": 0.07183510490571113, "by": {"calib": 0.06016142250287651}, "n": {"calib": 6060}, "prefix_tok": 0, "wall": 26.12, "pos_s": 232.0}
+22:20:04 max steps
+rc 0

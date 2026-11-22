@@ -1,0 +1,31 @@
+22:56:42 qad181.py {"out": "/data/w215/runs/csi8", "model": "/data/workspace/models/qwen38-27b-bf16", "level": "/data/v3ladder2/K2.5", "chunks": ",", "calib": "/data/challenge/golden/calib", "pools": "/data/w215/code-i8/eval/pools/pools-v3.json", "pool": "qad", "genmask": null, "head": null, "head_perm": null, "cap": 8192, "len": 2048, "V": 6, "Q": 1024, "budgets": "2e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 1000, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": false, "compile_scales": true, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 0, "fe_every": 10, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 20} world 1
+22:56:44 corpus 2793 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}}
+22:56:44 plan: 663 steps of 6 x 1024 (data 3308261 rows); main to step 36 (201920 rows), decay from step 29; branches 
+22:57:03 rank 0: student built in 19 s: 400 linears (i8, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+22:57:03 QLinear scales compiled (a8 False)
+22:57:03 {"step": 0, "rows": 0, "mon_kl": null}
+/data/w215/code-i8/v3/qad181/qad181.py:251: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+22:57:29 {"what": "main", "step": 1, "rows": 5414, "lr": 0.000125, "train_kl": 0.07382702034780096, "ema": 0.07382702034780096, "by": {"calib": 0.07382702034780096}, "n": {"calib": 5414}, "prefix_tok": 0, "wall": 25.44, "pos_s": 212.8}
+22:57:51 {"what": "main", "step": 2, "rows": 11202, "lr": 0.00025, "train_kl": 0.054868468351832074, "ema": 0.07287909274800251, "by": {"calib": 0.054868468351832074}, "n": {"calib": 5788}, "prefix_tok": 0, "wall": 22.39, "pos_s": 258.5}
+22:58:13 {"what": "main", "step": 3, "rows": 16230, "lr": 0.000375, "train_kl": 0.064230655334066, "ema": 0.07244667087730569, "by": {"calib": 0.064230655334066}, "n": {"calib": 5028}, "prefix_tok": 0, "wall": 21.53, "pos_s": 233.6}
+22:58:35 {"what": "main", "step": 4, "rows": 22290, "lr": 0.0005, "train_kl": 0.060073970410690056, "ema": 0.0718280358539749, "by": {"calib": 0.060073970410690056}, "n": {"calib": 6060}, "prefix_tok": 0, "wall": 22.28, "pos_s": 271.9}
+22:58:56 {"what": "main", "step": 5, "rows": 27938, "lr": 0.000625, "train_kl": 0.032461553474323605, "ema": 0.06985971173499234, "by": {"calib": 0.032461553474323605}, "n": {"calib": 5648}, "prefix_tok": 0, "wall": 21.64, "pos_s": 260.9}
+22:59:17 {"what": "main", "step": 6, "rows": 33143, "lr": 0.00075, "train_kl": 0.031158070926134915, "ema": 0.06792462969454946, "by": {"calib": 0.031158070926134915}, "n": {"calib": 5205}, "prefix_tok": 0, "wall": 20.34, "pos_s": 255.9}
+22:59:37 {"what": "main", "step": 7, "rows": 37884, "lr": 0.000875, "train_kl": 0.04300113308658531, "ema": 0.06667845486415125, "by": {"calib": 0.04300113308658531}, "n": {"calib": 4741}, "prefix_tok": 0, "wall": 19.66, "pos_s": 241.1}
+22:59:58 {"what": "main", "step": 8, "rows": 43185, "lr": 0.001, "train_kl": 0.07270194332322137, "ema": 0.06697962928710476, "by": {"calib": 0.07270194332322137}, "n": {"calib": 5301}, "prefix_tok": 0, "wall": 21.83, "pos_s": 242.8}
+23:00:21 {"what": "main", "step": 9, "rows": 49256, "lr": 0.001, "train_kl": 0.0549829477062926, "ema": 0.06637979520806415, "by": {"calib": 0.0549829477062926}, "n": {"calib": 6071}, "prefix_tok": 0, "wall": 22.7, "pos_s": 267.4}
+23:00:43 {"what": "main", "step": 10, "rows": 54725, "lr": 0.001, "train_kl": 0.049183622228748336, "ema": 0.06551998655909837, "by": {"calib": 0.049183622228748336}, "n": {"calib": 5469}, "prefix_tok": 0, "wall": 22.16, "pos_s": 246.8}
+23:01:02 {"what": "main", "step": 11, "rows": 59603, "lr": 0.001, "train_kl": 0.03901347101296788, "ema": 0.06419466078179184, "by": {"calib": 0.03901347101296788}, "n": {"calib": 4878}, "prefix_tok": 0, "wall": 18.9, "pos_s": 258.2}
+23:01:24 {"what": "main", "step": 12, "rows": 65299, "lr": 0.001, "train_kl": 0.056056903235698015, "ema": 0.06378777290448714, "by": {"calib": 0.056056903235698015}, "n": {"calib": 5696}, "prefix_tok": 0, "wall": 21.86, "pos_s": 260.6}
+23:01:46 {"what": "main", "step": 13, "rows": 71268, "lr": 0.001, "train_kl": 0.05310953136743823, "ema": 0.06325386082763469, "by": {"calib": 0.05310953136743823}, "n": {"calib": 5969}, "prefix_tok": 0, "wall": 21.88, "pos_s": 272.8}
+23:02:09 {"what": "main", "step": 14, "rows": 76906, "lr": 0.001, "train_kl": 0.06627213443243238, "ema": 0.06340477450787457, "by": {"calib": 0.06627213443243238}, "n": {"calib": 5638}, "prefix_tok": 0, "wall": 22.63, "pos_s": 249.2}
+23:02:31 {"what": "main", "step": 15, "rows": 82782, "lr": 0.001, "train_kl": 0.06032422061190466, "ema": 0.06325074681307608, "by": {"calib": 0.06032422061190466}, "n": {"calib": 5876}, "prefix_tok": 0, "wall": 22.23, "pos_s": 264.3}
+23:02:53 {"what": "main", "step": 16, "rows": 88924, "lr": 0.001, "train_kl": 0.05085884527133754, "ema": 0.06263115173598915, "by": {"calib": 0.05085884527133754}, "n": {"calib": 6142}, "prefix_tok": 0, "wall": 21.98, "pos_s": 279.5}
+23:03:15 {"what": "main", "step": 17, "rows": 95044, "lr": 0.001, "train_kl": 0.03204188798767289, "ema": 0.061101688548573334, "by": {"calib": 0.03204188798767289}, "n": {"calib": 6120}, "prefix_tok": 0, "wall": 22.25, "pos_s": 275.0}
+23:03:37 {"what": "main", "step": 18, "rows": 100996, "lr": 0.001, "train_kl": 0.035458405331898764, "ema": 0.0598195243877396, "by": {"calib": 0.035458405331898764}, "n": {"calib": 5952}, "prefix_tok": 0, "wall": 22.22, "pos_s": 267.9}
+23:03:59 {"what": "main", "step": 19, "rows": 106680, "lr": 0.001, "train_kl": 0.04672367332855804, "ema": 0.05916473183478053, "by": {"calib": 0.04672367332855804}, "n": {"calib": 5684}, "prefix_tok": 0, "wall": 22.06, "pos_s": 257.7}
+23:04:22 {"what": "main", "step": 20, "rows": 112819, "lr": 0.001, "train_kl": 0.04127836514808666, "ema": 0.05827041350044583, "by": {"calib": 0.04127836514808666}, "n": {"calib": 6139}, "prefix_tok": 0, "wall": 22.84, "pos_s": 268.8}
+23:04:22 max steps
+rc 0

@@ -1,0 +1,17 @@
+22:47:58 qad181.py {"out": "/data/w215/runs/prof-cs-i8", "model": "/data/workspace/models/qwen38-27b-bf16", "level": "/data/v3ladder2/K2.5", "chunks": ",", "calib": "/data/challenge/golden/calib", "pools": "/data/w215/code-i8/eval/pools/pools-v3.json", "pool": "qad", "genmask": null, "head": null, "head_perm": null, "cap": 8192, "len": 2048, "V": 6, "Q": 1024, "budgets": "2e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 1000, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": false, "compile_scales": true, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 0, "fe_every": 10, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 4} world 1
+22:47:59 corpus 2793 documents in 0 s: {"calib": {"docs": 2793, "tokens": 3724436, "rows": 3308261}}
+22:47:59 plan: 663 steps of 6 x 1024 (data 3308261 rows); main to step 36 (201920 rows), decay from step 29; branches 
+22:48:19 rank 0: student built in 19 s: 400 linears (i8, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+22:48:19 QLinear scales compiled (a8 False)
+22:48:19 {"step": 0, "rows": 0, "mon_kl": null}
+/data/w215/code-i8/v3/qad181/qad181.py:251: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+22:48:45 {"what": "main", "step": 1, "rows": 5414, "lr": 0.000125, "train_kl": 0.07382702034780096, "ema": 0.07382702034780096, "by": {"calib": 0.07382702034780096}, "n": {"calib": 5414}, "prefix_tok": 0, "wall": 26.31, "pos_s": 205.8}
+22:49:08 {"what": "main", "step": 2, "rows": 11202, "lr": 0.00025, "train_kl": 0.054868468351832074, "ema": 0.07287909274800251, "by": {"calib": 0.054868468351832074}, "n": {"calib": 5788}, "prefix_tok": 0, "wall": 22.52, "pos_s": 257.0}
+22:49:29 {"what": "main", "step": 3, "rows": 16230, "lr": 0.000375, "train_kl": 0.064230655334066, "ema": 0.07244667087730569, "by": {"calib": 0.064230655334066}, "n": {"calib": 5028}, "prefix_tok": 0, "wall": 21.55, "pos_s": 233.3}
+USDT:2026-11-21 22:49:29 2887396:2887396 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-21 22:49:52 2887396:2887396 SyncActivityProfilerHandler.cpp:46] profiler_stop
+22:50:43 {"what": "main", "step": 4, "rows": 22290, "lr": 0.0005, "train_kl": 0.060073970410690056, "ema": 0.0718280358539749, "by": {"calib": 0.060073970410690056}, "n": {"calib": 6060}, "prefix_tok": 0, "wall": 22.43, "pos_s": 270.2}
+22:50:43 max steps
+rc 0

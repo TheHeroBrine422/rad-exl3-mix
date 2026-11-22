@@ -1,0 +1,86 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                               aten::mm         3.12%     661.689ms         4.51%     958.549ms      27.344us       10.862s        53.98%       10.862s     309.858us         35055  
+Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us        3.919s        19.48%        3.919s       1.115ms          3513  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64...         0.00%       0.000us         0.00%       0.000us       0.000us        2.678s        13.31%        2.678s       1.179ms          2272  
+                                                  _k.kd         0.00%       0.000us         0.00%       0.000us       0.000us        1.883s         9.36%        1.883s     261.477us          7200  
+                    ChunkGatedDeltaRuleFunctionBackward         1.05%     222.205ms         2.01%     426.962ms     988.338us        1.683s         8.36%        1.699s       3.933ms           432  
+Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us        1.410s         7.01%        1.410s     463.804us          3040  
+    chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64.kd         0.00%       0.000us         0.00%       0.000us       0.000us        1.342s         6.67%        1.342s       3.108ms           432  
+                                              aten::mul         0.78%     164.861ms         3.21%     681.932ms      20.254us        1.333s         6.62%        1.333s      39.591us         33669  
+                                            aten::copy_         0.51%     107.881ms        22.31%        4.739s     119.415us        1.119s         5.56%        1.123s      28.290us         39688  
+                               CompiledFunctionBackward         3.30%     701.258ms        17.59%        3.736s     518.867us     946.351ms         4.70%        5.688s     790.050us          7200  
+Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64...         0.00%       0.000us         0.00%       0.000us       0.000us     761.547ms         3.78%     761.547ms      52.885us         14400  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     673.137ms         3.35%     673.137ms      55.320us         12168  
+void at::native::elementwise_kernel_manual_unroll<12...         0.00%       0.000us         0.00%       0.000us       0.000us     664.733ms         3.30%     664.733ms      39.560us         16803  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us     584.683ms         2.91%     584.683ms       1.142ms           512  
+                                              aten::add         0.30%      63.526ms         0.81%     172.071ms      12.578us     443.691ms         2.21%     443.691ms      32.434us         13680  
+                                             aten::add_         0.19%      40.569ms         1.06%     225.391ms      16.411us     403.602ms         2.01%     403.602ms      29.387us         13734  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64...         0.00%       0.000us         0.00%       0.000us       0.000us     365.018ms         1.81%     365.018ms      50.697us          7200  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us     307.397ms         1.53%     307.397ms       6.148ms            50  
+           triton_red_fused__to_copy_exp_mul_sum_view_0         0.27%      56.968ms         1.13%     240.465ms      37.952us     304.961ms         1.52%     304.961ms      48.131us          6336  
+        triton_red_fused__to_copy_exp_mul_sum_view_0.kd         0.00%       0.000us         0.00%       0.000us       0.000us     304.961ms         1.52%     304.961ms      48.131us          6336  
+                            ChunkGatedDeltaRuleFunction         1.50%     319.331ms         2.62%     555.528ms     642.973us     288.174ms         1.43%     326.953ms     378.418us           864  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us     277.920ms         1.38%     277.920ms       1.930ms           144  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us     262.014ms         1.30%     262.014ms      90.977us          2880  
+void at::native::elementwise_kernel_manual_unroll<12...         0.00%       0.000us         0.00%       0.000us       0.000us     229.187ms         1.14%     229.187ms      88.832us          2580  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     218.972ms         1.09%     218.972ms      37.145us          5895  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     217.636ms         1.08%     217.636ms      23.871us          9117  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     195.102ms         0.97%     195.102ms      14.491us         13464  
+                                              aten::cat         0.09%      19.045ms         1.37%     291.502ms     122.121us     191.830ms         0.95%     191.830ms      80.364us          2387  
+                        aten::_flash_attention_backward         0.02%       3.246ms         0.04%       8.358ms      58.043us     181.237ms         0.90%     185.866ms       1.291ms           144  
+                    triton_poi_fused__to_copy_exp_mul_1         0.30%      64.498ms         0.82%     175.179ms      25.344us     176.781ms         0.88%     176.781ms      25.576us          6912  
+                 triton_poi_fused__to_copy_exp_mul_1.kd         0.00%       0.000us         0.00%       0.000us       0.000us     176.781ms         0.88%     176.781ms      25.576us          6912  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64...         0.00%       0.000us         0.00%       0.000us       0.000us     144.353ms         0.72%     144.353ms     451.102us           320  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us     144.188ms         0.72%     144.188ms      22.822us          6318  
+void at::native::elementwise_kernel_manual_unroll<12...         0.00%       0.000us         0.00%       0.000us       0.000us     142.854ms         0.71%     142.854ms      27.814us          5136  
+                             __amd_rocclr_copyBuffer.kd         0.00%       0.000us         0.00%       0.000us       0.000us     141.963ms         0.71%     141.963ms      56.357us          2519  
+## Call CompiledFxGraph f4lvujx4cjxbyfwflwre3h2slbf2...         0.00%       0.000us         0.00%       0.000us       0.000us     132.564ms         0.66%     132.564ms     115.073us          1152  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     125.514ms         0.62%     125.514ms     116.217us          1080  
+                                    aten::silu_backward         0.03%       6.689ms         0.05%       9.941ms       6.903us     125.309ms         0.62%     125.309ms      87.020us          1440  
+void at::native::elementwise_kernel_manual_unroll<12...         0.00%       0.000us         0.00%       0.000us       0.000us     122.371ms         0.61%     122.371ms     242.799us           504  
+                              chunk_bwd_kernel_dqkwg.kd         0.00%       0.000us         0.00%       0.000us       0.000us     121.653ms         0.60%     121.653ms     281.604us           432  
+Cijk_Alik_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us     119.451ms         0.59%     119.451ms       1.866ms            64  
+                        triton_poi_fused__to_copy_mul_0         0.07%      14.893ms         0.11%      22.494ms      12.016us     116.949ms         0.58%     116.949ms      62.473us          1872  
+                     triton_poi_fused__to_copy_mul_0.kd         0.00%       0.000us         0.00%       0.000us       0.000us     116.949ms         0.58%     116.949ms      62.473us          1872  
+                                              aten::sum         0.10%      21.282ms         0.68%     143.611ms      38.543us     112.355ms         0.56%     112.355ms      30.154us          3726  
+                                              aten::sub         0.01%       1.472ms         0.01%       2.293ms       5.662us     111.674ms         0.56%     111.674ms     275.739us           405  
+                    triton_poi_fused__to_copy_exp_mul_0         0.28%      59.303ms         0.63%     133.050ms      21.999us     108.580ms         0.54%     108.580ms      17.953us          6048  
+                 triton_poi_fused__to_copy_exp_mul_0.kd         0.00%       0.000us         0.00%       0.000us       0.000us     108.580ms         0.54%     108.580ms      17.953us          6048  
+## Call CompiledFxGraph fdldeaoz7kqodij7yfyzv37jbt5o...         0.00%       0.000us         0.00%       0.000us       0.000us     107.483ms         0.53%     107.483ms      46.650us          2304  
+                                             aten::silu         0.12%      24.940ms         0.15%      32.641ms      11.334us     103.323ms         0.51%     103.323ms      35.876us          2880  
+void at::native::(anonymous namespace)::CatArrayBatc...         0.00%       0.000us         0.00%       0.000us       0.000us     102.542ms         0.51%     102.542ms     267.037us           384  
+      chunk_gated_delta_rule_fwd_kernel_h_blockdim64.kd         0.00%       0.000us         0.00%       0.000us       0.000us      99.454ms         0.49%      99.454ms      76.739us          1296  
+                                       flyc_bwd_dkdv.kd         0.00%       0.000us         0.00%       0.000us       0.000us      98.409ms         0.49%      98.409ms     683.398us           144  
+Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT128x1...         0.00%       0.000us         0.00%       0.000us       0.000us      98.296ms         0.49%      98.296ms       1.024ms            96  
+                         aten::_flash_attention_forward         0.02%       4.768ms         0.05%      11.211ms      38.928us      93.411ms         0.46%      94.064ms     326.613us           288  
+## Call CompiledFxGraph fkblgg3k54mfz5vjx6bpapblq4qv...         0.00%       0.000us         0.00%       0.000us       0.000us      89.961ms         0.45%      89.961ms      18.511us          4860  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us      89.370ms         0.44%      89.370ms      88.661us          1008  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us      89.261ms         0.44%      89.261ms      41.672us          2142  
+                                             aten::exp_         0.00%     253.280us         0.00%     476.982us       4.417us      84.263ms         0.42%      84.263ms     780.214us           108  
+                          prepare_wy_repr_bwd_kernel.kd         0.00%       0.000us         0.00%       0.000us       0.000us      84.161ms         0.42%      84.161ms     194.818us           432  
+                                              aten::pow         0.24%      50.426ms         0.38%      79.797ms      10.644us      82.999ms         0.41%     162.700ms      21.702us          7497  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us      81.758ms         0.41%      81.758ms      40.555us          2016  
+                                  chunk_fwd_kernel_o.kd         0.00%       0.000us         0.00%       0.000us       0.000us      81.401ms         0.40%      81.401ms      94.214us           864  
+## Call CompiledFxGraph feccvcnoxxpgzdniazaogz6j7klr...         0.00%       0.000us         0.00%       0.000us       0.000us      80.443ms         0.40%      80.443ms      69.829us          1152  
+                                         flyc_bwd_dq.kd         0.00%       0.000us         0.00%       0.000us       0.000us      80.126ms         0.40%      80.126ms     556.430us           144  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      79.428ms         0.39%      79.428ms      21.164us          3753  
+                            recompute_w_u_fwd_kernel.kd         0.00%       0.000us         0.00%       0.000us       0.000us      78.998ms         0.39%      78.998ms      60.955us          1296  
+                                       flyc_attn_fwd.kd         0.00%       0.000us         0.00%       0.000us       0.000us      78.755ms         0.39%      78.755ms     307.635us           256  
+                                             aten::mean         0.13%      27.084ms         0.17%      36.074ms       9.612us      72.541ms         0.36%      72.541ms      19.329us          3753  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us      72.541ms         0.36%      72.541ms      19.329us          3753  
+void at::native::vectorized_templated_elementwise_ke...         0.00%       0.000us         0.00%       0.000us       0.000us      67.198ms         0.33%      67.198ms      77.776us           864  
+## Call CompiledFxGraph ffzamhussvq5qudku2efl55fmyil...         0.00%       0.000us         0.00%       0.000us       0.000us      64.831ms         0.32%      64.831ms      26.679us          2430  
+void at::native::(anonymous namespace)::CatArrayBatc...         0.00%       0.000us         0.00%       0.000us       0.000us      63.255ms         0.31%      63.255ms      44.421us          1424  
+         chunk_gated_delta_rule_fwd_kkt_solve_kernel.kd         0.00%       0.000us         0.00%       0.000us       0.000us      58.900ms         0.29%      58.900ms      68.172us           864  
+void at::native::(anonymous namespace)::transpose_co...         0.00%       0.000us         0.00%       0.000us       0.000us      57.303ms         0.28%      57.303ms      45.916us          1248  
+                      __amd_rocclr_fillBufferAligned.kd         0.00%       0.000us         0.00%       0.000us       0.000us      57.163ms         0.28%      57.163ms       9.633us          5934  
+                                            aten::zero_         0.02%       4.506ms         0.91%     192.534ms      32.705us      57.083ms         0.28%      57.083ms       9.696us          5887  
+                                             aten::amax         0.00%     636.301us         0.00%     991.331us       9.179us      51.386ms         0.26%      51.386ms     475.801us           108  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us      51.347ms         0.26%      51.347ms     475.434us           108  
+Cijk_Ailk_Bljk_BBS_BH_Bias_HA_S_SAV_UserArgs_MT64x64...         0.00%       0.000us         0.00%       0.000us       0.000us      48.603ms         0.24%      48.603ms     189.857us           256  
+void at::native::elementwise_kernel_manual_unroll<12...         0.00%       0.000us         0.00%       0.000us       0.000us      46.666ms         0.23%      46.666ms      15.432us          3024  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 21.240s
+Self CUDA time total: 20.121s

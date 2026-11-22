@@ -1,0 +1,6 @@
+-: held-out KL/row 0.053521 over 34572 rows of 40 docs (+0.0000 % vs first)
+runs/base: held-out KL/row 0.068001 over 34572 rows of 40 docs (+27.0551 % vs first)
+runs/fast: held-out KL/row 0.066765 over 34572 rows of 40 docs (+24.7468 % vs first)
+runs/csi8d: held-out KL/row 0.068812 over 34572 rows of 40 docs (+28.5701 % vs first)
+runs/cs: held-out KL/row 0.067731 over 34572 rows of 40 docs (+26.5508 % vs first)
+runs/fast2: held-out KL/row 0.066765 over 34572 rows of 40 docs (+24.7468 % vs first)
