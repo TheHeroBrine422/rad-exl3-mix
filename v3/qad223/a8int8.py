@@ -18,6 +18,19 @@ import triton.language as tl
 from triton.language.extra import libdevice
 
 BF = torch.bfloat16
+
+
+def _memhist_request():
+    """debug (w223): when the trainer's OUT dir (argv[1]) holds a file memhist.request, record the CUDA allocator's history from here
+    on and dump the snapshot to OUT/memhist.pickle at exit (torch.cuda.memory._dump_snapshot); off otherwise"""
+    import atexit, os, sys
+    out = sys.argv[1] if len(sys.argv) > 1 else ""
+    if not (out and os.path.exists(os.path.join(out, "memhist.request"))): return
+    torch.cuda.memory._record_memory_history(max_entries=4000000)
+    atexit.register(lambda: torch.cuda.memory._dump_snapshot(os.path.join(out, "memhist.pickle")))
+
+
+_memhist_request()
 _INV127 = float(np.float32(1.0) / np.float32(127.0))
 
 
@@ -47,12 +60,12 @@ def quant_a8(x):
 
 
 def _cfgs():
-    out = []
-    for bm, bn, gpi, w, st in ((128, 128, 1, 8, 2), (128, 128, 2, 8, 2), (128, 128, 1, 8, 3), (128, 128, 2, 4, 2), (64, 256, 1, 8, 2),
-                               (256, 128, 1, 8, 2), (256, 128, 2, 8, 2), (128, 256, 2, 8, 2), (64, 128, 1, 4, 2), (128, 64, 1, 4, 2),
-                               (64, 256, 2, 8, 2), (256, 256, 1, 8, 2)):
-        out.append(triton.Config({"BM": bm, "BN": bn, "GPI": gpi, "G": 8}, num_warps=w, num_stages=st))
-    return out
+    """configs that fit gfx12's 64 KiB LDS (BM, BN, GPI, warps, stages): a config that raises OutOfResources while autotuning leaves its
+    exception's traceback in a reference cycle, which keeps every caller frame's tensors (the whole layer stack's activations) alive
+    until Python's cyclic GC runs (w223: +2.5 GiB at the trainer's first step)"""
+    return [triton.Config({"BM": bm, "BN": bn, "GPI": gpi, "G": 8}, num_warps=w, num_stages=st)
+            for bm, bn, gpi, w, st in ((128, 128, 1, 8, 2), (128, 128, 2, 8, 2), (128, 128, 1, 8, 3), (64, 256, 1, 8, 2),
+                                       (256, 128, 1, 8, 2), (64, 128, 1, 4, 2), (128, 64, 1, 4, 2))]
 
 
 @triton.autotune(configs=_cfgs(), key=["MB", "N", "K"], prune_configs_by={"early_config_prune": lambda cfgs, nargs, **kw: [c for c in cfgs if nargs["K"] % (128 * c.kwargs["GPI"]) == 0]})
