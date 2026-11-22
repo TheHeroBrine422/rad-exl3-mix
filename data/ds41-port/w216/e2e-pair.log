@@ -1,0 +1,3 @@
+w213 RC=1     no small pool: pools of -1 and -1 tokens at 64 and 1024 MiB do not bracket 1192   FAIL preemption_by_recompute_continues_each_stream_exactly 
+w216 RC=1     no small pool: pools of -1 and -1 tokens at 64 and 1024 MiB do not bracket 1192   FAIL preemption_by_recompute_continues_each_stream_exactly 
+PAIR_DONE

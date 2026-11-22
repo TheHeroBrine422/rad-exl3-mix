@@ -1,0 +1,2 @@
+gate exl3i.so: 11
+exl3v3 tiles RC=0 {"check":"tiles","K":0.125,"m":2,"ntry":1,"tiles":4096,"f32_s":2.105,"f32_tiles_per_s":1946,"host_tiles":512,"host_state_diff":0,"host_tile_diff":0,"host_cost_diff":0,"decode_diff":0,"mse_gauss":1.253635,"f16_s":0.1732,"

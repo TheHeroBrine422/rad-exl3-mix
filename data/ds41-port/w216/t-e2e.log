@@ -1,0 +1,118 @@
+Test project /data/q27/w216/src/build
+    Start 29: engine_e2e_test
+1/1 Test #29: engine_e2e_test ..................***Failed  184.04 sec
+  ok   qwen35_a_rerun_writes_the_same_recording (10.01 s)
+  ok   qwen35_a_smaller_prefill_chunk_changes_no_logit (0.97 s)
+  ok   qwen35_a_prefill_span_changes_no_logit (0.93 s)
+  ok   qwen35_the_span_minimum_decides_which_prompts_span (1.86 s)
+  ok   qwen35_batching_documents_together_changes_no_logit (0.89 s)
+  ok   qwen35_preemption_by_recompute_changes_no_logit (10.48 s)
+  ok   the_diagnose_mode_measures_itself_and_reproduces_its_tokens (3.50 s)
+  ok   a_kl_document_longer_than_the_kv_pool_is_refused_up_front (9.14 s)
+  ok   a_checkpoint_in_a_quantisation_the_import_refuses_says_why (0.68 s)
+  ok   a_checkpoint_store_the_host_cannot_hold_is_refused_at_startup (2.72 s)
+  ok   an_attention_row_split_no_plugin_serves_is_refused_at_startup (0.69 s)
+  ok   the_coupling_flag_refuses_what_it_cannot_serve_at_startup (4.00 s)
+    qwen35 at two ranks: mean KL 0.00021, top-1 0.9818
+  ok   qwen35_two_ranks_agree_with_one_within_rounding (0.82 s)
+    runtime LoRA against the merged checkpoint: mean KL 0.00083, top-1 0.9749
+    runtime LoRA at two ranks against the merged checkpoint: mean KL 0.00081, top-1 0.9749
+    runtime LoRA on libavx against the merged checkpoint: mean KL 0.00089, top-1 0.9696
+    the base against the merged checkpoint: mean KL 0.91
+  ok   runtime_lora_scores_as_the_merged_checkpoint_does (3.94 s)
+  ok   runtime_lora_off_declares_no_adapter_op (1.28 s)
+  ok   runtime_lora_base_rows_and_mixed_steps_are_exact (3.17 s)
+  ok   runtime_lora_refuses_targets_it_cannot_serve_at_startup (2.10 s)
+    lfm3 iq8r against bf16: 121 of 129 top tokens equal, worst |dlogp| 0.1894
+  ok   lfm3_iq8r_container_tracks_the_bf16_one (4.77 s)
+  ok   each_family_computes_what_transformers_computes (2.84 s)
+  ok   lfm2_chunking_and_batching_change_no_logit (2.25 s)
+  ok   lfm3_chunking_and_batching_change_no_logit (2.28 s)
+  ok   gemma4_chunking_and_batching_change_no_logit (2.50 s)
+    mean KL against the bf16 model: round to nearest 0.01048, GPTQ 0.001792
+  ok   gemma4_s_calibration_tap_gives_gptq_a_container_closer_to_bf16_than_rounding (6.03 s)
+  ok   llama_fp8_container_chunking_and_batching_change_no_logit (2.22 s)
+    qwen35 on libavx: mean KL 0.00012, top-1 0.9895
+    lfm2 on libavx: mean KL 3.6e-05, top-1 0.9921
+    lfm3 on libavx: mean KL 8.1e-05, top-1 0.9828
+    gemma4 on libavx: mean KL 1.1e-05, top-1 0.9960
+    llama_fp8 on libavx: mean KL 6.8e-05, top-1 0.9966
+    qwen3asr's decoder on libavx: mean KL 4.2e-07, top-1 1.0000
+  ok   libavx_alone_serves_every_family_within_rounding_of_libref (5.16 s)
+  SKIP qwen3asr_transcribes_on_libavx_alone_as_on_libref: no media decoder in this build
+  skip qwen3asr_transcribes_on_libavx_alone_as_on_libref
+    llama, int8 head, on libavx alone: mean KL 6.8e-05, top-1 0.9966
+  ok   libavx_alone_serves_a_quantised_head_within_rounding_of_libref (1.49 s)
+    int4 llama on libavx alone, steps of 512: mean KL 9.2e-05, top-1 0.9732
+    int4 llama on libavx alone, steps of 64: mean KL 3.7e-06, top-1 0.9899
+  ok   libavx_alone_serves_an_int4_release_within_rounding_of_libref (3.16 s)
+  ok   speculation_by_prompt_lookup_returns_the_greedy_tokens (7.14 s)
+    lfm2: harness drafted 93, accepted 40 (lookup drafted 93)
+    lfm3: harness drafted 101, accepted 38 (lookup drafted 101)
+    gemma4: harness drafted 93, accepted 40 (lookup drafted 93)
+    qwen35: harness drafted 93, accepted 40 (lookup drafted 93)
+  ok   seeded_sampling_repeats_and_is_unchanged_by_speculation (11.78 s)
+    lfm2 --spec-ngram-min 1: drafted 20, accepted 12
+    lfm2 --draft-window adaptive: drafted 16, accepted 10
+    lfm3 --spec-ngram-min 1: drafted 8, accepted 1
+    lfm3 --draft-window adaptive: drafted 8, accepted 5
+    gemma4 --spec-ngram-min 1: drafted 16, accepted 12
+    gemma4 --draft-window adaptive: drafted 20, accepted 11
+    qwen35 --spec-ngram-min 1: drafted 4, accepted 3
+    qwen35 --draft-window adaptive: drafted 4, accepted 2
+  ok   spec_ngram_alone_returns_the_tokens_plain_decoding_returns (12.23 s)
+    lfm2: drafted 67, accepted 23
+    lfm2: worst |dlogprob| 0
+    lfm3: drafted 67, accepted 23
+    lfm3: worst |dlogprob| 0
+    gemma4: drafted 67, accepted 23
+    gemma4: worst |dlogprob| 0
+    qwen35: drafted 67, accepted 23
+    qwen35: worst |dlogprob| 0
+  ok   verifies_that_reject_at_every_depth_return_the_plain_tokens (7.28 s)
+  ok   concurrent_requests_return_what_each_returns_alone (7.76 s)
+  ok   a_prompt_resumed_from_the_prefix_cache_returns_what_a_cold_run_does (1.83 s)
+  ok   a_block_drafter_after_a_prefix_hit_proposes_what_a_cold_run_does (3.74 s)
+  ok   a_prompt_resumed_from_a_window_snapshot_returns_what_a_cold_run_does (12.13 s)
+  ok   lfm3_resumed_from_the_prefix_cache_returns_what_a_cold_run_does (3.49 s)
+  ok   several_models_in_one_process_answer_as_they_do_alone (3.63 s)
+  ok   the_snapshot_store_is_sized_by_auto_unless_a_count_is_given (7.15 s)
+  ok   a_snapshot_store_that_cannot_be_had_stops_the_start (2.70 s)
+  ok   decoding_without_a_drafter_issues_steps_ahead (1.69 s)
+  ok   a_requests_last_step_issues_no_step_ahead (0.86 s)
+  ok   a_decoded_token_has_the_probabilities_prefilling_it_gives (4.39 s)
+    no small pool: pools of -1 and -1 tokens at 64 and 1024 MiB do not bracket 1192
+  FAIL preemption_by_recompute_continues_each_stream_exactly
+    /data/q27/w216/src/tests/engine_e2e_test.cpp:2631: REQUIRE(mib > 0)
+  SKIP qwen_image_generates_on_libavx_alone_as_on_libref: this build has no image codec
+  skip qwen_image_generates_on_libavx_alone_as_on_libref
+  SKIP an_unconverted_qwen_image_pipeline_serves_the_containers_picture: this build has no image codec
+  skip an_unconverted_qwen_image_pipeline_serves_the_containers_picture
+  ok   nemotron35_endpoint_refuses_custom_template_overrides (1.44 s)
+  ok   nemotron35_endpoint_loads_the_oracle_weights_and_pools_ragged_inputs (1.82 s)
+  SKIP nemotron35_configured_combined_capacity_exceeds_old_gemm_ceiling: explicit RAD_NEMOTRON_DEVICE capacity validation only
+  skip nemotron35_configured_combined_capacity_exceeds_old_gemm_ceiling
+  SKIP nemotron35_endpoint_decodes_images_and_matches_the_multimodal_oracle: this build has no image codec
+  skip nemotron35_endpoint_decodes_images_and_matches_the_multimodal_oracle
+  SKIP nemotron35_real_weights_match_the_offline_transformers_reference: set RAD_NEMOTRON_REAL_FIXTURE to the offline real-weight oracle JSON
+  skip nemotron35_real_weights_match_the_offline_transformers_reference
+  ok   nemotron35_rerank_endpoint_loads_the_native_head_and_returns_text_image_scores (1.84 s)
+  SKIP nemotron35_rerank_real_weights_match_native_scores_and_rankings: set RAD_NEMOTRON_RERANK_REAL_FIXTURE for pinned native weights
+  skip nemotron35_rerank_real_weights_match_native_scores_and_rankings
+  SKIP undersized_guidance_is_rejected_without_blocking_the_image_server: this build has no image codec
+  skip undersized_guidance_is_rejected_without_blocking_the_image_server
+1 failure(s)
+slowest: spec_ngram_alone_returns_the_tokens_plain_decoding_returns 12.23 s, a_prompt_resumed_from_a_window_snapshot_returns_what_a_cold_run_does 12.13 s, seeded_sampling_repeats_and_is_unchanged_by_speculation 11.78 s
+kept /data/q27/w216/src/build/tmp/radtest-engine_e2e_test-bWSzHg
+
+
+0% tests passed, 1 tests failed out of 1
+
+Label Time Summary:
+e2e    = 184.04 sec*proc (1 test)
+
+Total Test time (real) = 184.15 sec
+
+The following tests FAILED:
+	 29 - engine_e2e_test (Failed)                          e2e
+Errors while running CTest

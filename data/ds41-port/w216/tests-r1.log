@@ -1,0 +1,30 @@
+ctest fast RC=8 76% tests passed, 44 tests failed out of 182
+install RC=0
+gate: 229 hits over 57 files
+emu ds41mx RC=0 PASS: 2104 cases, 0 failures
+emu ds41walk RC=0 ds41 walk: 84 case(s), 0 failure(s)
+emu mhc RC=0 14 case(s), 0 failure(s)
+emu moefuse RC=0 95 case(s), 0 failure(s)
+emu dsa RC=0 dsa split: 4 fixture(s), 0 failure(s)
+emu pick RC=0 pair_argmax: 80 cases, 0 failure(s)
+emu norm RC=0 norm joins: 0 failure(s)
+emu f32 RC=0 21 case(s), 0 failure(s)
+emu attn RC=0 0 failure(s)
+exl3v3 build RC=0
+exl3v3 selftest RC=0 {"check":"scale clamp","diff":0}
+exl3v3 tiles RC=0 {"check":"tiles","K":0.125,"m":2,"ntry":1,"tiles":4096,"f32_s":2.106,"f32_tiles_per_s":1945,"host_tiles":512,"host_state_diff":0,"host_tile_diff":0,"host_cost_diff":0,"decode_diff":0,"mse_gauss":1.253635,"f16_s":0.1619,"f16_tiles_per_s":25301,"f16_decode_diff":0,"f16_rerun_diff":0,"f16_mse_gauss":1.253754,"f16_mse_over_f32":1.00009,"f16_identical_tiles":3698,"f16_tiles_better":127,"f16_tiles_worse":271}
+r4d_selftest --case moe_gemm_mxfp4_gemv RC=2   skip  moe_gemm_mxfp4_gemv -- no smoke case
+r4d_selftest --case moe_gemm_mxfp4_tiled RC=2   skip  moe_gemm_mxfp4_tiled -- no smoke case
+r4d_selftest --mxcheck RC=0 MXCHECK down 5120x2304 tokens 48 tiled row, dropped tail, expert table: 41 live slots over 18 experts (a run up to 8): identical in every form MXVERDICT check: 260 cases, 2268 form launches, 0 differ 
+exl3i conf RC=0
+exl3i build RC=0
+exl3i ctest RC=0 100% tests passed, 0 tests failed out of 16
+exl3quant conf RC=0
+exl3quant build RC=0
+exl3quant ctest RC=0 100% tests passed, 0 tests failed out of 1
+qwen35_exl3 conf RC=0
+qwen35_exl3 build RC=0
+qwen35_exl3 ctest RC=0 100% tests passed, 0 tests failed out of 1
+moe host RC=0
+test_moe RC=0 C refusals: 8 PASS 
+TESTS_DONE

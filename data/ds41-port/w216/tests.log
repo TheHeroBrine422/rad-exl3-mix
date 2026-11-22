@@ -1,0 +1,28 @@
+ctest fast RC=8 77% tests passed, 42 tests failed out of 182
+install RC=0
+gate: 227 hits over 57 files
+emu ds41mx RC=0 PASS: 2104 cases, 0 failures
+emu ds41walk RC=0 ds41 walk: 84 case(s), 0 failure(s)
+emu mhc RC=0 14 case(s), 0 failure(s)
+emu moefuse RC=0 95 case(s), 0 failure(s)
+emu dsa RC=0 dsa split: 4 fixture(s), 0 failure(s)
+emu pick RC=0 pair_argmax: 80 cases, 0 failure(s)
+emu norm RC=0 norm joins: 0 failure(s)
+emu f32 RC=0 21 case(s), 0 failure(s)
+emu attn RC=0 0 failure(s)
+exl3v3 build RC=0
+exl3v3 selftest RC=0 {"check":"scale clamp","diff":0}
+exl3v3 tiles RC=2 card: tile search: hipMalloc of 6442450944 bytes failed
+r4d_selftest --mxcheck RC=0 20 MXREF ok, 0 MXREF FAIL; MXVERDICT check: 260 cases, 2268 form launches, 0 differ -> PASS (byte-identical, every form)
+exl3i conf RC=0
+exl3i build RC=0
+exl3i ctest RC=0 100% tests passed, 0 tests failed out of 16
+exl3quant conf RC=0
+exl3quant build RC=0
+exl3quant ctest RC=0 100% tests passed, 0 tests failed out of 1
+qwen35_exl3 conf RC=0
+qwen35_exl3 build RC=0
+qwen35_exl3 ctest RC=0 100% tests passed, 0 tests failed out of 1
+moe host RC=0
+test_moe RC=0 C refusals: 8 PASS 
+TESTS_DONE

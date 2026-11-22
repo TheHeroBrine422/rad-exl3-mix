@@ -1,0 +1,1605 @@
+Test project /data/q27/w216/src/build
+        Start 153: avx_check
+        Start  72: mtp_rrs_test_shard4
+        Start  80: mtp_rrs_test_shard12
+        Start  70: mtp_rrs_test_shard2
+        Start  66: mtp_block_test
+        Start  76: mtp_rrs_test_shard8
+        Start  53: kbench_mutant_test
+        Start  68: mtp_rrs_test_shard0
+  1/182 Test  #53: kbench_mutant_test ...............   Passed   17.66 sec
+        Start  78: mtp_rrs_test_shard10
+  2/182 Test  #68: mtp_rrs_test_shard0 ..............   Passed   18.56 sec
+        Start  38: gbnf_test_shard2
+  3/182 Test #153: avx_check ........................   Passed   18.80 sec
+        Start 134: transport_test
+  4/182 Test  #76: mtp_rrs_test_shard8 ..............   Passed   20.12 sec
+        Start  36: gbnf_test_shard0
+  5/182 Test  #66: mtp_block_test ...................   Passed   21.79 sec
+        Start 131: tokenizer_test
+  6/182 Test #134: transport_test ...................   Passed    5.85 sec
+        Start  37: gbnf_test_shard1
+  7/182 Test  #38: gbnf_test_shard2 .................   Passed    6.77 sec
+        Start 172: r4d_emu_attn_shard0
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_attn
+  8/182 Test #172: r4d_emu_attn_shard0 ..............***Not Run   0.00 sec
+        Start 174: r4d_emu_attn_shard2
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_attn
+  9/182 Test #174: r4d_emu_attn_shard2 ..............***Not Run   0.00 sec
+        Start  75: mtp_rrs_test_shard7
+ 10/182 Test  #36: gbnf_test_shard0 .................   Passed    5.26 sec
+        Start  69: mtp_rrs_test_shard1
+ 11/182 Test #131: tokenizer_test ...................   Passed    4.97 sec
+        Start 121: spechub_dflash_couple_test
+ 12/182 Test  #70: mtp_rrs_test_shard2 ..............   Passed   27.47 sec
+        Start  95: quant_test
+ 13/182 Test  #37: gbnf_test_shard1 .................   Passed    5.12 sec
+        Start 109: shape_test
+ 14/182 Test  #69: mtp_rrs_test_shard1 ..............   Passed    4.57 sec
+        Start  10: bailing_hybrid_arch_test
+ 15/182 Test  #75: mtp_rrs_test_shard7 ..............   Passed    5.00 sec
+        Start  39: gbnf_test_shard3
+ 16/182 Test #121: spechub_dflash_couple_test .......   Passed    4.41 sec
+        Start 103: relayout_iqr_test
+ 17/182 Test  #80: mtp_rrs_test_shard12 .............   Passed   31.52 sec
+        Start  73: mtp_rrs_test_shard5
+ 18/182 Test  #72: mtp_rrs_test_shard4 ..............   Passed   31.66 sec
+        Start  15: chatparse_test
+ 19/182 Test  #95: quant_test .......................   Passed    4.41 sec
+        Start   8: arch_test
+ 20/182 Test  #78: mtp_rrs_test_shard10 .............   Passed   14.91 sec
+        Start  77: mtp_rrs_test_shard9
+ 21/182 Test  #39: gbnf_test_shard3 .................   Passed    3.65 sec
+        Start 108: server_test
+ 22/182 Test #109: shape_test .......................   Passed    4.43 sec
+        Start  79: mtp_rrs_test_shard11
+ 23/182 Test  #10: bailing_hybrid_arch_test .........   Passed    4.51 sec
+        Start  87: place_test
+ 24/182 Test #103: relayout_iqr_test ................   Passed    3.40 sec
+        Start  71: mtp_rrs_test_shard3
+ 25/182 Test  #73: mtp_rrs_test_shard5 ..............   Passed    3.22 sec
+        Start 154: avx_check_general
+ 26/182 Test  #15: chatparse_test ...................   Passed    3.23 sec
+        Start 210: rad_export_test
+ 27/182 Test   #8: arch_test ........................   Passed    3.18 sec
+        Start  65: mm_test
+ 28/182 Test  #77: mtp_rrs_test_shard9 ..............   Passed    2.91 sec
+        Start  61: lora_test
+ 29/182 Test #108: server_test ......................   Passed    2.74 sec
+        Start  34: format_test
+ 30/182 Test  #79: mtp_rrs_test_shard11 .............   Passed    2.59 sec
+        Start 115: spark25_convert_test
+ 31/182 Test  #71: mtp_rrs_test_shard3 ..............   Passed    2.33 sec
+        Start  60: lora_ops_test
+ 32/182 Test  #87: place_test .......................   Passed    2.46 sec
+        Start 105: runtime_test
+ 33/182 Test  #65: mm_test ..........................   Passed    1.90 sec
+        Start  74: mtp_rrs_test_shard6
+ 34/182 Test #210: rad_export_test ..................   Passed    2.12 sec
+        Start  91: quant_algo_test
+ 35/182 Test  #61: lora_test ........................   Passed    1.91 sec
+        Start 106: sample_test
+ 36/182 Test  #91: quant_algo_test ..................   Passed    1.21 sec
+        Start 138: video_gen_test
+ 37/182 Test  #74: mtp_rrs_test_shard6 ..............   Passed    1.35 sec
+        Start  62: mem_test
+ 38/182 Test #105: runtime_test .....................   Passed    1.44 sec
+        Start 107: sched_test
+ 39/182 Test  #34: format_test ......................   Passed    1.75 sec
+        Start 102: ref_test
+ 40/182 Test #106: sample_test ......................   Passed    1.09 sec
+        Start 129: tokenizer_perf_test
+ 41/182 Test #115: spark25_convert_test .............   Passed    1.71 sec
+        Start 136: util_test
+ 42/182 Test  #60: lora_ops_test ....................   Passed    1.61 sec
+        Start  84: nemotron35_test
+ 43/182 Test  #62: mem_test .........................   Passed    0.74 sec
+        Start  31: fixture_test
+ 44/182 Test #107: sched_test .......................   Passed    0.81 sec
+        Start 209: vhead_test
+ 45/182 Test #136: util_test ........................   Passed    0.71 sec
+        Start 119: spechub_couple_test
+ 46/182 Test #102: ref_test .........................   Passed    0.76 sec
+        Start  93: quant_m2xfp_test
+ 47/182 Test #154: avx_check_general ................   Passed    4.50 sec
+        Start  44: harness_test
+ 48/182 Test #129: tokenizer_perf_test ..............   Passed    0.82 sec
+        Start  94: quant_tcq_gpu_test
+ 49/182 Test #138: video_gen_test ...................   Passed    1.24 sec
+        Start  56: kv_window_test
+ 50/182 Test  #84: nemotron35_test ..................   Passed    1.00 sec
+        Start  12: build_test
+ 51/182 Test #209: vhead_test .......................   Passed    0.78 sec
+        Start  33: flint_arch_test
+ 52/182 Test  #31: fixture_test .....................   Passed    0.96 sec
+        Start  88: plugin_test
+ 53/182 Test #119: spechub_couple_test ..............   Passed    0.83 sec
+        Start 112: shipped_plugins_test
+ 54/182 Test  #44: harness_test .....................   Passed    0.82 sec
+        Start 140: wire_test
+ 55/182 Test  #12: build_test .......................   Passed    0.61 sec
+        Start  86: p4b_kv_ring_test
+ 56/182 Test  #94: quant_tcq_gpu_test ...............   Passed    0.82 sec
+        Start 141: xstats_test
+ 57/182 Test  #56: kv_window_test ...................   Passed    0.68 sec
+        Start  51: issue_div_test
+ 58/182 Test  #93: quant_m2xfp_test .................   Passed    0.92 sec
+        Start 211: spark25_validation_test
+ 59/182 Test  #33: flint_arch_test ..................   Passed    0.46 sec
+        Start 128: text_test
+ 60/182 Test #112: shipped_plugins_test .............   Passed    0.40 sec
+        Start  13: chat_test
+ 61/182 Test #211: spark25_validation_test ..........   Passed    0.27 sec
+        Start  25: diag_test
+ 62/182 Test  #88: plugin_test ......................   Passed    0.42 sec
+        Start 125: stream_test
+ 63/182 Test #141: xstats_test ......................   Passed    0.33 sec
+        Start  54: kbench_test
+ 64/182 Test  #51: issue_div_test ...................   Passed    0.33 sec
+        Start 135: trigger_test
+ 65/182 Test  #86: p4b_kv_ring_test .................   Passed    0.35 sec
+        Start  59: lifecycle_test
+ 66/182 Test #140: wire_test ........................   Passed    0.41 sec
+        Start 123: speech_stream_test
+ 67/182 Test #123: speech_stream_test ...............   Passed    0.14 sec
+        Start  85: nemotronh_test
+ 68/182 Test  #59: lifecycle_test ...................   Passed    0.16 sec
+        Start  14: chatparse_gemma4_test
+ 69/182 Test  #25: diag_test ........................   Passed    0.22 sec
+        Start  55: kld_test
+ 70/182 Test #125: stream_test ......................   Passed    0.22 sec
+        Start  96: r4d_ar_links_test
+ 71/182 Test  #54: kbench_test ......................   Passed    0.21 sec
+        Start 212: dspark_qos_regression_test
+ 72/182 Test #135: trigger_test .....................   Passed    0.20 sec
+        Start 130: tokenizer_regex_test
+ 73/182 Test #128: text_test ........................   Passed    0.29 sec
+        Start  46: history_test
+ 74/182 Test  #13: chat_test ........................   Passed    0.29 sec
+        Start  41: gen_lora_test
+ 75/182 Test #130: tokenizer_regex_test .............   Passed    0.07 sec
+        Start  28: encoding_test
+ 76/182 Test  #96: r4d_ar_links_test ................   Passed    0.10 sec
+        Start 133: torch_zip_test
+ 77/182 Test  #14: chatparse_gemma4_test ............   Passed    0.14 sec
+        Start  16: checkpoint_test
+ 78/182 Test  #46: history_test .....................   Passed    0.07 sec
+        Start 205: ops_doc
+ 79/182 Test #212: dspark_qos_regression_test .......   Passed    0.10 sec
+        Start  21: cvec_test
+ 80/182 Test  #85: nemotronh_test ...................   Passed    0.15 sec
+        Start  52: json_test
+ 81/182 Test  #41: gen_lora_test ....................   Passed    0.07 sec
+        Start 155: isa_tools
+ 82/182 Test  #55: kld_test .........................   Passed    0.14 sec
+        Start  42: gen_test
+ 83/182 Test  #28: encoding_test ....................   Passed    0.06 sec
+        Start   7: advance_test
+ 84/182 Test  #52: json_test ........................   Passed    0.05 sec
+        Start  19: config_test
+ 85/182 Test #133: torch_zip_test ...................   Passed    0.06 sec
+        Start  35: front_test
+ 86/182 Test  #21: cvec_test ........................   Passed    0.06 sec
+        Start  45: hf_model_test
+ 87/182 Test #205: ops_doc ..........................   Passed    0.07 sec
+        Start  63: mica_test
+ 88/182 Test  #16: checkpoint_test ..................   Passed    0.07 sec
+        Start 117: spechub_accept_test
+ 89/182 Test #155: isa_tools ........................   Passed    0.06 sec
+        Start  49: hostmem_test
+ 90/182 Test  #42: gen_test .........................   Passed    0.04 sec
+        Start  48: hostbench_test
+ 91/182 Test   #7: advance_test .....................   Passed    0.04 sec
+        Start 219: vendor_sums
+ 92/182 Test  #35: front_test .......................   Passed    0.03 sec
+        Start  40: gen_config_test
+ 93/182 Test  #45: hf_model_test ....................   Passed    0.03 sec
+        Start 110: shapes_test
+ 94/182 Test  #19: config_test ......................   Passed    0.04 sec
+        Start 126: systemone_test
+ 95/182 Test  #63: mica_test ........................   Passed    0.03 sec
+        Start 206: kernel_report_check
+ 96/182 Test  #49: hostmem_test .....................   Passed    0.03 sec
+        Start  26: diagnose_test
+ 97/182 Test #117: spechub_accept_test ..............   Passed    0.04 sec
+        Start  32: fleet_config_test
+ 98/182 Test  #48: hostbench_test ...................   Passed    0.03 sec
+        Start  89: precompiled_test
+ 99/182 Test  #40: gen_config_test ..................   Passed    0.03 sec
+        Start   6: abi_layout_test
+100/182 Test #219: vendor_sums ......................   Passed    0.04 sec
+        Start  90: projection_test
+101/182 Test #110: shapes_test ......................   Passed    0.03 sec
+        Start 132: tools_test
+102/182 Test #126: systemone_test ...................   Passed    0.03 sec
+        Start  58: laya_test
+103/182 Test #206: kernel_report_check ..............   Passed    0.03 sec
+        Start  98: r4d_bf16_gemm_rows_test
+104/182 Test  #26: diagnose_test ....................   Passed    0.03 sec
+        Start  22: dashboard_test
+105/182 Test  #89: precompiled_test .................   Passed    0.03 sec
+        Start 100: recipe_test
+106/182 Test  #32: fleet_config_test ................   Passed    0.03 sec
+        Start  99: radfile_keep_test
+107/182 Test   #6: abi_layout_test ..................   Passed    0.03 sec
+        Start 111: share_test
+108/182 Test #132: tools_test .......................   Passed    0.02 sec
+        Start 122: spechub_wiring_test
+109/182 Test  #90: projection_test ..................   Passed    0.03 sec
+        Start  18: clef_test
+110/182 Test  #58: laya_test ........................   Passed    0.03 sec
+        Start 118: spechub_cooperative_test
+111/182 Test  #98: r4d_bf16_gemm_rows_test ..........   Passed    0.02 sec
+        Start 116: spark25_recipe_test
+112/182 Test #100: recipe_test ......................   Passed    0.02 sec
+        Start 124: speech_test
+113/182 Test  #22: dashboard_test ...................   Passed    0.03 sec
+        Start   9: audio_gen_test
+114/182 Test  #99: radfile_keep_test ................   Passed    0.03 sec
+        Start  67: mtp_couple_plan_test
+115/182 Test #111: share_test .......................   Passed    0.02 sec
+        Start 142: yarn_test
+116/182 Test #122: spechub_wiring_test ..............   Passed    0.02 sec
+        Start  30: expert_restore_test
+117/182 Test  #18: clef_test ........................   Passed    0.03 sec
+        Start  81: mtp_rrs_test_shard13
+118/182 Test #116: spark25_recipe_test ..............   Passed    0.02 sec
+        Start 127: text_split_test
+119/182 Test #118: spechub_cooperative_test .........   Passed    0.03 sec
+        Start 114: spark25_chat_test
+120/182 Test #124: speech_test ......................   Passed    0.02 sec
+        Start  82: museglimmer_test
+121/182 Test   #9: audio_gen_test ...................   Passed    0.03 sec
+        Start  64: minimaxh3_limits_test
+122/182 Test  #67: mtp_couple_plan_test .............   Passed    0.03 sec
+        Start 113: spark25_arch_test
+123/182 Test #142: yarn_test ........................   Passed    0.02 sec
+        Start 207: dashboard_page
+124/182 Test  #30: expert_restore_test ..............   Passed    0.02 sec
+        Start 208: artifact_sums
+125/182 Test  #81: mtp_rrs_test_shard13 .............   Passed    0.02 sec
+        Start  11: breeze_arch_test
+126/182 Test #127: text_split_test ..................   Passed    0.02 sec
+        Start 101: ref2va_pack_test
+127/182 Test #208: artifact_sums ....................   Passed    0.01 sec
+128/182 Test  #11: breeze_arch_test .................   Passed    0.01 sec
+        Start  43: glm5next_test
+        Start 137: vae_geom_test
+129/182 Test #114: spark25_chat_test ................   Passed    0.03 sec
+130/182 Test #101: ref2va_pack_test .................   Passed    0.01 sec
+131/182 Test  #43: glm5next_test ....................   Passed    0.00 sec
+        Start  20: convert_test
+        Start  23: deepseek41_test
+        Start  24: device_test
+132/182 Test  #64: minimaxh3_limits_test ............   Passed    0.02 sec
+133/182 Test #113: spark25_arch_test ................   Passed    0.02 sec
+134/182 Test #137: vae_geom_test ....................   Passed    0.01 sec
+        Start  47: host_experts_test
+        Start  50: images_test
+        Start  83: nemotron35_device_test
+135/182 Test  #82: museglimmer_test .................   Passed    0.03 sec
+136/182 Test #207: dashboard_page ...................   Passed    0.02 sec
+137/182 Test  #23: deepseek41_test ..................   Passed    0.01 sec
+        Start  97: r4d_bf16_capacity_test
+        Start 139: videos_test
+        Start 156: r4d_emu_pick
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_pick
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_pick
+/data/q27/w216/src/build/tests/r4d_emu_pick
+/data/q27/w216/src/build/tests/Release/r4d_emu_pick
+/data/q27/w216/src/build/tests/Release/r4d_emu_pick
+/data/q27/w216/src/build/tests/Debug/r4d_emu_pick
+/data/q27/w216/src/build/tests/Debug/r4d_emu_pick
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_pick
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_pick
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_pick
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_pick
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_pick
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_pick
+/data/q27/w216/src/build/tests/Development/r4d_emu_pick
+/data/q27/w216/src/build/tests/Development/r4d_emu_pick
+data/q27/w216/src/build/tests/r4d_emu_pick
+data/q27/w216/src/build/tests/r4d_emu_pick
+data/q27/w216/src/build/tests/Release/r4d_emu_pick
+data/q27/w216/src/build/tests/Release/r4d_emu_pick
+data/q27/w216/src/build/tests/Debug/r4d_emu_pick
+data/q27/w216/src/build/tests/Debug/r4d_emu_pick
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_pick
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_pick
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_pick
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_pick
+data/q27/w216/src/build/tests/Deployment/r4d_emu_pick
+data/q27/w216/src/build/tests/Deployment/r4d_emu_pick
+data/q27/w216/src/build/tests/Development/r4d_emu_pick
+data/q27/w216/src/build/tests/Development/r4d_emu_pick
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_pick
+138/182 Test #156: r4d_emu_pick .....................***Not Run   0.00 sec
+        Start 157: r4d_emu_norm
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_norm
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_norm
+/data/q27/w216/src/build/tests/r4d_emu_norm
+/data/q27/w216/src/build/tests/Release/r4d_emu_norm
+/data/q27/w216/src/build/tests/Release/r4d_emu_norm
+/data/q27/w216/src/build/tests/Debug/r4d_emu_norm
+/data/q27/w216/src/build/tests/Debug/r4d_emu_norm
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_norm
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_norm
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_norm
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_norm
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_norm
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_norm
+/data/q27/w216/src/build/tests/Development/r4d_emu_norm
+/data/q27/w216/src/build/tests/Development/r4d_emu_norm
+data/q27/w216/src/build/tests/r4d_emu_norm
+data/q27/w216/src/build/tests/r4d_emu_norm
+data/q27/w216/src/build/tests/Release/r4d_emu_norm
+data/q27/w216/src/build/tests/Release/r4d_emu_norm
+data/q27/w216/src/build/tests/Debug/r4d_emu_norm
+data/q27/w216/src/build/tests/Debug/r4d_emu_norm
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_norm
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_norm
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_norm
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_norm
+data/q27/w216/src/build/tests/Deployment/r4d_emu_norm
+data/q27/w216/src/build/tests/Deployment/r4d_emu_norm
+data/q27/w216/src/build/tests/Development/r4d_emu_norm
+data/q27/w216/src/build/tests/Development/r4d_emu_norm
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_norm
+139/182 Test #157: r4d_emu_norm .....................***Not Run   0.00 sec
+        Start 158: r4d_emu_escale
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_escale
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_escale
+/data/q27/w216/src/build/tests/r4d_emu_escale
+/data/q27/w216/src/build/tests/Release/r4d_emu_escale
+/data/q27/w216/src/build/tests/Release/r4d_emu_escale
+/data/q27/w216/src/build/tests/Debug/r4d_emu_escale
+/data/q27/w216/src/build/tests/Debug/r4d_emu_escale
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_escale
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_escale
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_escale
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_escale
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_escale
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_escale
+/data/q27/w216/src/build/tests/Development/r4d_emu_escale
+/data/q27/w216/src/build/tests/Development/r4d_emu_escale
+data/q27/w216/src/build/tests/r4d_emu_escale
+data/q27/w216/src/build/tests/r4d_emu_escale
+data/q27/w216/src/build/tests/Release/r4d_emu_escale
+data/q27/w216/src/build/tests/Release/r4d_emu_escale
+data/q27/w216/src/build/tests/Debug/r4d_emu_escale
+data/q27/w216/src/build/tests/Debug/r4d_emu_escale
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_escale
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_escale
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_escale
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_escale
+data/q27/w216/src/build/tests/Deployment/r4d_emu_escale
+data/q27/w216/src/build/tests/Deployment/r4d_emu_escale
+data/q27/w216/src/build/tests/Development/r4d_emu_escale
+data/q27/w216/src/build/tests/Development/r4d_emu_escale
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_escale
+140/182 Test #158: r4d_emu_escale ...................***Not Run   0.00 sec
+        Start 159: r4d_emu_qsa
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_qsa
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_qsa
+/data/q27/w216/src/build/tests/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Release/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Release/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Debug/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Debug/r4d_emu_qsa
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_qsa
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_qsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_qsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Development/r4d_emu_qsa
+/data/q27/w216/src/build/tests/Development/r4d_emu_qsa
+data/q27/w216/src/build/tests/r4d_emu_qsa
+data/q27/w216/src/build/tests/r4d_emu_qsa
+data/q27/w216/src/build/tests/Release/r4d_emu_qsa
+data/q27/w216/src/build/tests/Release/r4d_emu_qsa
+data/q27/w216/src/build/tests/Debug/r4d_emu_qsa
+data/q27/w216/src/build/tests/Debug/r4d_emu_qsa
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_qsa
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_qsa
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_qsa
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_qsa
+data/q27/w216/src/build/tests/Deployment/r4d_emu_qsa
+data/q27/w216/src/build/tests/Deployment/r4d_emu_qsa
+data/q27/w216/src/build/tests/Development/r4d_emu_qsa
+data/q27/w216/src/build/tests/Development/r4d_emu_qsa
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_qsa
+141/182 Test #159: r4d_emu_qsa ......................***Not Run   0.00 sec
+        Start 160: r4d_emu_lora
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_lora
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_lora
+/data/q27/w216/src/build/tests/r4d_emu_lora
+/data/q27/w216/src/build/tests/Release/r4d_emu_lora
+/data/q27/w216/src/build/tests/Release/r4d_emu_lora
+/data/q27/w216/src/build/tests/Debug/r4d_emu_lora
+/data/q27/w216/src/build/tests/Debug/r4d_emu_lora
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lora
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lora
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lora
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lora
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_lora
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_lora
+/data/q27/w216/src/build/tests/Development/r4d_emu_lora
+/data/q27/w216/src/build/tests/Development/r4d_emu_lora
+data/q27/w216/src/build/tests/r4d_emu_lora
+data/q27/w216/src/build/tests/r4d_emu_lora
+data/q27/w216/src/build/tests/Release/r4d_emu_lora
+data/q27/w216/src/build/tests/Release/r4d_emu_lora
+data/q27/w216/src/build/tests/Debug/r4d_emu_lora
+data/q27/w216/src/build/tests/Debug/r4d_emu_lora
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lora
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lora
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lora
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lora
+data/q27/w216/src/build/tests/Deployment/r4d_emu_lora
+data/q27/w216/src/build/tests/Deployment/r4d_emu_lora
+data/q27/w216/src/build/tests/Development/r4d_emu_lora
+data/q27/w216/src/build/tests/Development/r4d_emu_lora
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_lora
+142/182 Test #160: r4d_emu_lora .....................***Not Run   0.00 sec
+        Start 161: r4d_emu_f32
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_f32
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_f32
+/data/q27/w216/src/build/tests/r4d_emu_f32
+/data/q27/w216/src/build/tests/Release/r4d_emu_f32
+/data/q27/w216/src/build/tests/Release/r4d_emu_f32
+/data/q27/w216/src/build/tests/Debug/r4d_emu_f32
+/data/q27/w216/src/build/tests/Debug/r4d_emu_f32
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_f32
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_f32
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_f32
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_f32
+/data/q27/w216/src/build/tests/Development/r4d_emu_f32
+/data/q27/w216/src/build/tests/Development/r4d_emu_f32
+data/q27/w216/src/build/tests/r4d_emu_f32
+data/q27/w216/src/build/tests/r4d_emu_f32
+data/q27/w216/src/build/tests/Release/r4d_emu_f32
+data/q27/w216/src/build/tests/Release/r4d_emu_f32
+data/q27/w216/src/build/tests/Debug/r4d_emu_f32
+data/q27/w216/src/build/tests/Debug/r4d_emu_f32
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_f32
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_f32
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_f32
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_f32
+data/q27/w216/src/build/tests/Deployment/r4d_emu_f32
+data/q27/w216/src/build/tests/Deployment/r4d_emu_f32
+data/q27/w216/src/build/tests/Development/r4d_emu_f32
+data/q27/w216/src/build/tests/Development/r4d_emu_f32
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_f32
+143/182 Test #161: r4d_emu_f32 ......................***Not Run   0.00 sec
+        Start 162: r4d_emu_mhc
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_mhc
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_mhc
+/data/q27/w216/src/build/tests/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Release/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Release/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Debug/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Debug/r4d_emu_mhc
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mhc
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mhc
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mhc
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Development/r4d_emu_mhc
+/data/q27/w216/src/build/tests/Development/r4d_emu_mhc
+data/q27/w216/src/build/tests/r4d_emu_mhc
+data/q27/w216/src/build/tests/r4d_emu_mhc
+data/q27/w216/src/build/tests/Release/r4d_emu_mhc
+data/q27/w216/src/build/tests/Release/r4d_emu_mhc
+data/q27/w216/src/build/tests/Debug/r4d_emu_mhc
+data/q27/w216/src/build/tests/Debug/r4d_emu_mhc
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mhc
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mhc
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mhc
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mhc
+data/q27/w216/src/build/tests/Deployment/r4d_emu_mhc
+data/q27/w216/src/build/tests/Deployment/r4d_emu_mhc
+data/q27/w216/src/build/tests/Development/r4d_emu_mhc
+data/q27/w216/src/build/tests/Development/r4d_emu_mhc
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_mhc
+144/182 Test #162: r4d_emu_mhc ......................***Not Run   0.00 sec
+        Start 163: r4d_emu_kda
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_kda
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_kda
+/data/q27/w216/src/build/tests/r4d_emu_kda
+/data/q27/w216/src/build/tests/Release/r4d_emu_kda
+/data/q27/w216/src/build/tests/Release/r4d_emu_kda
+/data/q27/w216/src/build/tests/Debug/r4d_emu_kda
+/data/q27/w216/src/build/tests/Debug/r4d_emu_kda
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kda
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kda
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kda
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kda
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_kda
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_kda
+/data/q27/w216/src/build/tests/Development/r4d_emu_kda
+/data/q27/w216/src/build/tests/Development/r4d_emu_kda
+data/q27/w216/src/build/tests/r4d_emu_kda
+data/q27/w216/src/build/tests/r4d_emu_kda
+data/q27/w216/src/build/tests/Release/r4d_emu_kda
+data/q27/w216/src/build/tests/Release/r4d_emu_kda
+data/q27/w216/src/build/tests/Debug/r4d_emu_kda
+data/q27/w216/src/build/tests/Debug/r4d_emu_kda
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kda
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kda
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kda
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kda
+data/q27/w216/src/build/tests/Deployment/r4d_emu_kda
+data/q27/w216/src/build/tests/Deployment/r4d_emu_kda
+data/q27/w216/src/build/tests/Development/r4d_emu_kda
+data/q27/w216/src/build/tests/Development/r4d_emu_kda
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_kda
+145/182 Test #163: r4d_emu_kda ......................***Not Run   0.00 sec
+        Start 164: r4d_emu_mla
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_mla
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_mla
+/data/q27/w216/src/build/tests/r4d_emu_mla
+/data/q27/w216/src/build/tests/Release/r4d_emu_mla
+/data/q27/w216/src/build/tests/Release/r4d_emu_mla
+/data/q27/w216/src/build/tests/Debug/r4d_emu_mla
+/data/q27/w216/src/build/tests/Debug/r4d_emu_mla
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mla
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mla
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mla
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mla
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_mla
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_mla
+/data/q27/w216/src/build/tests/Development/r4d_emu_mla
+/data/q27/w216/src/build/tests/Development/r4d_emu_mla
+data/q27/w216/src/build/tests/r4d_emu_mla
+data/q27/w216/src/build/tests/r4d_emu_mla
+data/q27/w216/src/build/tests/Release/r4d_emu_mla
+data/q27/w216/src/build/tests/Release/r4d_emu_mla
+data/q27/w216/src/build/tests/Debug/r4d_emu_mla
+data/q27/w216/src/build/tests/Debug/r4d_emu_mla
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mla
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_mla
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mla
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_mla
+data/q27/w216/src/build/tests/Deployment/r4d_emu_mla
+data/q27/w216/src/build/tests/Deployment/r4d_emu_mla
+data/q27/w216/src/build/tests/Development/r4d_emu_mla
+data/q27/w216/src/build/tests/Development/r4d_emu_mla
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_mla
+146/182 Test #164: r4d_emu_mla ......................***Not Run   0.00 sec
+        Start 165: r4d_emu_moefuse
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_moefuse
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Release/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Release/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Debug/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Debug/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Development/r4d_emu_moefuse
+/data/q27/w216/src/build/tests/Development/r4d_emu_moefuse
+data/q27/w216/src/build/tests/r4d_emu_moefuse
+data/q27/w216/src/build/tests/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Release/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Release/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Debug/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Debug/r4d_emu_moefuse
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_moefuse
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_moefuse
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_moefuse
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Deployment/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Deployment/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Development/r4d_emu_moefuse
+data/q27/w216/src/build/tests/Development/r4d_emu_moefuse
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_moefuse
+147/182 Test #165: r4d_emu_moefuse ..................***Not Run   0.00 sec
+        Start 166: r4d_emu_kvres
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_kvres
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_kvres
+/data/q27/w216/src/build/tests/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Release/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Release/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Debug/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Debug/r4d_emu_kvres
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kvres
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kvres
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kvres
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Development/r4d_emu_kvres
+/data/q27/w216/src/build/tests/Development/r4d_emu_kvres
+data/q27/w216/src/build/tests/r4d_emu_kvres
+data/q27/w216/src/build/tests/r4d_emu_kvres
+data/q27/w216/src/build/tests/Release/r4d_emu_kvres
+data/q27/w216/src/build/tests/Release/r4d_emu_kvres
+data/q27/w216/src/build/tests/Debug/r4d_emu_kvres
+data/q27/w216/src/build/tests/Debug/r4d_emu_kvres
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kvres
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_kvres
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kvres
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_kvres
+data/q27/w216/src/build/tests/Deployment/r4d_emu_kvres
+data/q27/w216/src/build/tests/Deployment/r4d_emu_kvres
+data/q27/w216/src/build/tests/Development/r4d_emu_kvres
+data/q27/w216/src/build/tests/Development/r4d_emu_kvres
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_kvres
+148/182 Test #166: r4d_emu_kvres ....................***Not Run   0.00 sec
+        Start 167: r4d_emu_dsa
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_dsa
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_dsa
+/data/q27/w216/src/build/tests/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Release/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Release/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Debug/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Debug/r4d_emu_dsa
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_dsa
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_dsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_dsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Development/r4d_emu_dsa
+/data/q27/w216/src/build/tests/Development/r4d_emu_dsa
+data/q27/w216/src/build/tests/r4d_emu_dsa
+data/q27/w216/src/build/tests/r4d_emu_dsa
+data/q27/w216/src/build/tests/Release/r4d_emu_dsa
+data/q27/w216/src/build/tests/Release/r4d_emu_dsa
+data/q27/w216/src/build/tests/Debug/r4d_emu_dsa
+data/q27/w216/src/build/tests/Debug/r4d_emu_dsa
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_dsa
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_dsa
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_dsa
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_dsa
+data/q27/w216/src/build/tests/Deployment/r4d_emu_dsa
+data/q27/w216/src/build/tests/Deployment/r4d_emu_dsa
+data/q27/w216/src/build/tests/Development/r4d_emu_dsa
+data/q27/w216/src/build/tests/Development/r4d_emu_dsa
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_dsa
+149/182 Test #167: r4d_emu_dsa ......................***Not Run   0.00 sec
+        Start 168: r4d_emu_lili
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_lili
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_lili
+/data/q27/w216/src/build/tests/r4d_emu_lili
+/data/q27/w216/src/build/tests/Release/r4d_emu_lili
+/data/q27/w216/src/build/tests/Release/r4d_emu_lili
+/data/q27/w216/src/build/tests/Debug/r4d_emu_lili
+/data/q27/w216/src/build/tests/Debug/r4d_emu_lili
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lili
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lili
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lili
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lili
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_lili
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_lili
+/data/q27/w216/src/build/tests/Development/r4d_emu_lili
+/data/q27/w216/src/build/tests/Development/r4d_emu_lili
+data/q27/w216/src/build/tests/r4d_emu_lili
+data/q27/w216/src/build/tests/r4d_emu_lili
+data/q27/w216/src/build/tests/Release/r4d_emu_lili
+data/q27/w216/src/build/tests/Release/r4d_emu_lili
+data/q27/w216/src/build/tests/Debug/r4d_emu_lili
+data/q27/w216/src/build/tests/Debug/r4d_emu_lili
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lili
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_lili
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lili
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_lili
+data/q27/w216/src/build/tests/Deployment/r4d_emu_lili
+data/q27/w216/src/build/tests/Deployment/r4d_emu_lili
+data/q27/w216/src/build/tests/Development/r4d_emu_lili
+data/q27/w216/src/build/tests/Development/r4d_emu_lili
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_lili
+150/182 Test #168: r4d_emu_lili .....................***Not Run   0.00 sec
+        Start 169: r4d_emu_vit
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_vit
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_vit
+/data/q27/w216/src/build/tests/r4d_emu_vit
+/data/q27/w216/src/build/tests/Release/r4d_emu_vit
+/data/q27/w216/src/build/tests/Release/r4d_emu_vit
+/data/q27/w216/src/build/tests/Debug/r4d_emu_vit
+/data/q27/w216/src/build/tests/Debug/r4d_emu_vit
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_vit
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_vit
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_vit
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_vit
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_vit
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_vit
+/data/q27/w216/src/build/tests/Development/r4d_emu_vit
+/data/q27/w216/src/build/tests/Development/r4d_emu_vit
+data/q27/w216/src/build/tests/r4d_emu_vit
+data/q27/w216/src/build/tests/r4d_emu_vit
+data/q27/w216/src/build/tests/Release/r4d_emu_vit
+data/q27/w216/src/build/tests/Release/r4d_emu_vit
+data/q27/w216/src/build/tests/Debug/r4d_emu_vit
+data/q27/w216/src/build/tests/Debug/r4d_emu_vit
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_vit
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_vit
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_vit
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_vit
+data/q27/w216/src/build/tests/Deployment/r4d_emu_vit
+data/q27/w216/src/build/tests/Deployment/r4d_emu_vit
+data/q27/w216/src/build/tests/Development/r4d_emu_vit
+data/q27/w216/src/build/tests/Development/r4d_emu_vit
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_vit
+151/182 Test #169: r4d_emu_vit ......................***Not Run   0.00 sec
+        Start 170: r4d_emu_ds41mx
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_ds41mx
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Release/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Release/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Debug/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Debug/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Development/r4d_emu_ds41mx
+/data/q27/w216/src/build/tests/Development/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Release/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Release/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Debug/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Debug/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Development/r4d_emu_ds41mx
+data/q27/w216/src/build/tests/Development/r4d_emu_ds41mx
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_ds41mx
+152/182 Test #170: r4d_emu_ds41mx ...................***Not Run   0.00 sec
+        Start 171: r4d_emu_ds41walk
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_ds41walk
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Release/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Release/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Debug/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Debug/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Development/r4d_emu_ds41walk
+/data/q27/w216/src/build/tests/Development/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Release/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Release/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Debug/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Debug/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Deployment/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Development/r4d_emu_ds41walk
+data/q27/w216/src/build/tests/Development/r4d_emu_ds41walk
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_ds41walk
+153/182 Test #171: r4d_emu_ds41walk .................***Not Run   0.00 sec
+        Start 173: r4d_emu_attn_shard1
+Could not find executable /data/q27/w216/src/build/tests/r4d_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Release/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+/data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Release/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/Debug/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Deployment/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+data/q27/w216/src/build/tests/Development/r4d_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/r4d_emu_attn
+154/182 Test #173: r4d_emu_attn_shard1 ..............***Not Run   0.00 sec
+        Start 177: halo_emu_gemm
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_gemm
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_gemm
+/data/q27/w216/src/build/tests/halo_emu_gemm
+/data/q27/w216/src/build/tests/Release/halo_emu_gemm
+/data/q27/w216/src/build/tests/Release/halo_emu_gemm
+/data/q27/w216/src/build/tests/Debug/halo_emu_gemm
+/data/q27/w216/src/build/tests/Debug/halo_emu_gemm
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_gemm
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_gemm
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_gemm
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_gemm
+/data/q27/w216/src/build/tests/Deployment/halo_emu_gemm
+/data/q27/w216/src/build/tests/Deployment/halo_emu_gemm
+/data/q27/w216/src/build/tests/Development/halo_emu_gemm
+/data/q27/w216/src/build/tests/Development/halo_emu_gemm
+data/q27/w216/src/build/tests/halo_emu_gemm
+data/q27/w216/src/build/tests/halo_emu_gemm
+data/q27/w216/src/build/tests/Release/halo_emu_gemm
+data/q27/w216/src/build/tests/Release/halo_emu_gemm
+data/q27/w216/src/build/tests/Debug/halo_emu_gemm
+data/q27/w216/src/build/tests/Debug/halo_emu_gemm
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_gemm
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_gemm
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_gemm
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_gemm
+data/q27/w216/src/build/tests/Deployment/halo_emu_gemm
+data/q27/w216/src/build/tests/Deployment/halo_emu_gemm
+data/q27/w216/src/build/tests/Development/halo_emu_gemm
+data/q27/w216/src/build/tests/Development/halo_emu_gemm
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_gemm
+155/182 Test #177: halo_emu_gemm ....................***Not Run   0.00 sec
+        Start 178: halo_emu_norm
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_norm
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_norm
+/data/q27/w216/src/build/tests/halo_emu_norm
+/data/q27/w216/src/build/tests/Release/halo_emu_norm
+/data/q27/w216/src/build/tests/Release/halo_emu_norm
+/data/q27/w216/src/build/tests/Debug/halo_emu_norm
+/data/q27/w216/src/build/tests/Debug/halo_emu_norm
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_norm
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_norm
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_norm
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_norm
+/data/q27/w216/src/build/tests/Deployment/halo_emu_norm
+/data/q27/w216/src/build/tests/Deployment/halo_emu_norm
+/data/q27/w216/src/build/tests/Development/halo_emu_norm
+/data/q27/w216/src/build/tests/Development/halo_emu_norm
+data/q27/w216/src/build/tests/halo_emu_norm
+data/q27/w216/src/build/tests/halo_emu_norm
+data/q27/w216/src/build/tests/Release/halo_emu_norm
+data/q27/w216/src/build/tests/Release/halo_emu_norm
+data/q27/w216/src/build/tests/Debug/halo_emu_norm
+data/q27/w216/src/build/tests/Debug/halo_emu_norm
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_norm
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_norm
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_norm
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_norm
+data/q27/w216/src/build/tests/Deployment/halo_emu_norm
+data/q27/w216/src/build/tests/Deployment/halo_emu_norm
+data/q27/w216/src/build/tests/Development/halo_emu_norm
+data/q27/w216/src/build/tests/Development/halo_emu_norm
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_norm
+156/182 Test #178: halo_emu_norm ....................***Not Run   0.00 sec
+        Start 179: halo_emu_escale
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_escale
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_escale
+/data/q27/w216/src/build/tests/halo_emu_escale
+/data/q27/w216/src/build/tests/Release/halo_emu_escale
+/data/q27/w216/src/build/tests/Release/halo_emu_escale
+/data/q27/w216/src/build/tests/Debug/halo_emu_escale
+/data/q27/w216/src/build/tests/Debug/halo_emu_escale
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_escale
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_escale
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_escale
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_escale
+/data/q27/w216/src/build/tests/Deployment/halo_emu_escale
+/data/q27/w216/src/build/tests/Deployment/halo_emu_escale
+/data/q27/w216/src/build/tests/Development/halo_emu_escale
+/data/q27/w216/src/build/tests/Development/halo_emu_escale
+data/q27/w216/src/build/tests/halo_emu_escale
+data/q27/w216/src/build/tests/halo_emu_escale
+data/q27/w216/src/build/tests/Release/halo_emu_escale
+data/q27/w216/src/build/tests/Release/halo_emu_escale
+data/q27/w216/src/build/tests/Debug/halo_emu_escale
+data/q27/w216/src/build/tests/Debug/halo_emu_escale
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_escale
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_escale
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_escale
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_escale
+data/q27/w216/src/build/tests/Deployment/halo_emu_escale
+data/q27/w216/src/build/tests/Deployment/halo_emu_escale
+data/q27/w216/src/build/tests/Development/halo_emu_escale
+data/q27/w216/src/build/tests/Development/halo_emu_escale
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_escale
+157/182 Test #179: halo_emu_escale ..................***Not Run   0.00 sec
+        Start 180: halo_emu_pick
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_pick
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_pick
+/data/q27/w216/src/build/tests/halo_emu_pick
+/data/q27/w216/src/build/tests/Release/halo_emu_pick
+/data/q27/w216/src/build/tests/Release/halo_emu_pick
+/data/q27/w216/src/build/tests/Debug/halo_emu_pick
+/data/q27/w216/src/build/tests/Debug/halo_emu_pick
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_pick
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_pick
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_pick
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_pick
+/data/q27/w216/src/build/tests/Deployment/halo_emu_pick
+/data/q27/w216/src/build/tests/Deployment/halo_emu_pick
+/data/q27/w216/src/build/tests/Development/halo_emu_pick
+/data/q27/w216/src/build/tests/Development/halo_emu_pick
+data/q27/w216/src/build/tests/halo_emu_pick
+data/q27/w216/src/build/tests/halo_emu_pick
+data/q27/w216/src/build/tests/Release/halo_emu_pick
+data/q27/w216/src/build/tests/Release/halo_emu_pick
+data/q27/w216/src/build/tests/Debug/halo_emu_pick
+data/q27/w216/src/build/tests/Debug/halo_emu_pick
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_pick
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_pick
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_pick
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_pick
+data/q27/w216/src/build/tests/Deployment/halo_emu_pick
+data/q27/w216/src/build/tests/Deployment/halo_emu_pick
+data/q27/w216/src/build/tests/Development/halo_emu_pick
+data/q27/w216/src/build/tests/Development/halo_emu_pick
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_pick
+158/182 Test #180: halo_emu_pick ....................***Not Run   0.00 sec
+        Start 181: halo_emu_qsa
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_qsa
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_qsa
+/data/q27/w216/src/build/tests/halo_emu_qsa
+/data/q27/w216/src/build/tests/Release/halo_emu_qsa
+/data/q27/w216/src/build/tests/Release/halo_emu_qsa
+/data/q27/w216/src/build/tests/Debug/halo_emu_qsa
+/data/q27/w216/src/build/tests/Debug/halo_emu_qsa
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_qsa
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_qsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_qsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_qsa
+/data/q27/w216/src/build/tests/Deployment/halo_emu_qsa
+/data/q27/w216/src/build/tests/Deployment/halo_emu_qsa
+/data/q27/w216/src/build/tests/Development/halo_emu_qsa
+/data/q27/w216/src/build/tests/Development/halo_emu_qsa
+data/q27/w216/src/build/tests/halo_emu_qsa
+data/q27/w216/src/build/tests/halo_emu_qsa
+data/q27/w216/src/build/tests/Release/halo_emu_qsa
+data/q27/w216/src/build/tests/Release/halo_emu_qsa
+data/q27/w216/src/build/tests/Debug/halo_emu_qsa
+data/q27/w216/src/build/tests/Debug/halo_emu_qsa
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_qsa
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_qsa
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_qsa
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_qsa
+data/q27/w216/src/build/tests/Deployment/halo_emu_qsa
+data/q27/w216/src/build/tests/Deployment/halo_emu_qsa
+data/q27/w216/src/build/tests/Development/halo_emu_qsa
+data/q27/w216/src/build/tests/Development/halo_emu_qsa
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_qsa
+159/182 Test #181: halo_emu_qsa .....................***Not Run   0.00 sec
+        Start 182: halo_emu_lora
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_lora
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_lora
+/data/q27/w216/src/build/tests/halo_emu_lora
+/data/q27/w216/src/build/tests/Release/halo_emu_lora
+/data/q27/w216/src/build/tests/Release/halo_emu_lora
+/data/q27/w216/src/build/tests/Debug/halo_emu_lora
+/data/q27/w216/src/build/tests/Debug/halo_emu_lora
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_lora
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_lora
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_lora
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_lora
+/data/q27/w216/src/build/tests/Deployment/halo_emu_lora
+/data/q27/w216/src/build/tests/Deployment/halo_emu_lora
+/data/q27/w216/src/build/tests/Development/halo_emu_lora
+/data/q27/w216/src/build/tests/Development/halo_emu_lora
+data/q27/w216/src/build/tests/halo_emu_lora
+data/q27/w216/src/build/tests/halo_emu_lora
+data/q27/w216/src/build/tests/Release/halo_emu_lora
+data/q27/w216/src/build/tests/Release/halo_emu_lora
+data/q27/w216/src/build/tests/Debug/halo_emu_lora
+data/q27/w216/src/build/tests/Debug/halo_emu_lora
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_lora
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_lora
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_lora
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_lora
+data/q27/w216/src/build/tests/Deployment/halo_emu_lora
+data/q27/w216/src/build/tests/Deployment/halo_emu_lora
+data/q27/w216/src/build/tests/Development/halo_emu_lora
+data/q27/w216/src/build/tests/Development/halo_emu_lora
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_lora
+160/182 Test #182: halo_emu_lora ....................***Not Run   0.00 sec
+        Start 183: halo_emu_f32
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_f32
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_f32
+/data/q27/w216/src/build/tests/halo_emu_f32
+/data/q27/w216/src/build/tests/Release/halo_emu_f32
+/data/q27/w216/src/build/tests/Release/halo_emu_f32
+/data/q27/w216/src/build/tests/Debug/halo_emu_f32
+/data/q27/w216/src/build/tests/Debug/halo_emu_f32
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_f32
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_f32
+/data/q27/w216/src/build/tests/Deployment/halo_emu_f32
+/data/q27/w216/src/build/tests/Deployment/halo_emu_f32
+/data/q27/w216/src/build/tests/Development/halo_emu_f32
+/data/q27/w216/src/build/tests/Development/halo_emu_f32
+data/q27/w216/src/build/tests/halo_emu_f32
+data/q27/w216/src/build/tests/halo_emu_f32
+data/q27/w216/src/build/tests/Release/halo_emu_f32
+data/q27/w216/src/build/tests/Release/halo_emu_f32
+data/q27/w216/src/build/tests/Debug/halo_emu_f32
+data/q27/w216/src/build/tests/Debug/halo_emu_f32
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_f32
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_f32
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_f32
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_f32
+data/q27/w216/src/build/tests/Deployment/halo_emu_f32
+data/q27/w216/src/build/tests/Deployment/halo_emu_f32
+data/q27/w216/src/build/tests/Development/halo_emu_f32
+data/q27/w216/src/build/tests/Development/halo_emu_f32
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_f32
+161/182 Test #183: halo_emu_f32 .....................***Not Run   0.00 sec
+        Start 184: halo_emu_mhc
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_mhc
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_mhc
+/data/q27/w216/src/build/tests/halo_emu_mhc
+/data/q27/w216/src/build/tests/Release/halo_emu_mhc
+/data/q27/w216/src/build/tests/Release/halo_emu_mhc
+/data/q27/w216/src/build/tests/Debug/halo_emu_mhc
+/data/q27/w216/src/build/tests/Debug/halo_emu_mhc
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mhc
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mhc
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mhc
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mhc
+/data/q27/w216/src/build/tests/Deployment/halo_emu_mhc
+/data/q27/w216/src/build/tests/Deployment/halo_emu_mhc
+/data/q27/w216/src/build/tests/Development/halo_emu_mhc
+/data/q27/w216/src/build/tests/Development/halo_emu_mhc
+data/q27/w216/src/build/tests/halo_emu_mhc
+data/q27/w216/src/build/tests/halo_emu_mhc
+data/q27/w216/src/build/tests/Release/halo_emu_mhc
+data/q27/w216/src/build/tests/Release/halo_emu_mhc
+data/q27/w216/src/build/tests/Debug/halo_emu_mhc
+data/q27/w216/src/build/tests/Debug/halo_emu_mhc
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mhc
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mhc
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mhc
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mhc
+data/q27/w216/src/build/tests/Deployment/halo_emu_mhc
+data/q27/w216/src/build/tests/Deployment/halo_emu_mhc
+data/q27/w216/src/build/tests/Development/halo_emu_mhc
+data/q27/w216/src/build/tests/Development/halo_emu_mhc
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_mhc
+162/182 Test #184: halo_emu_mhc .....................***Not Run   0.00 sec
+        Start 185: halo_emu_fp8f32
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_fp8f32
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Release/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Release/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Debug/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Debug/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Deployment/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Deployment/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Development/halo_emu_fp8f32
+/data/q27/w216/src/build/tests/Development/halo_emu_fp8f32
+data/q27/w216/src/build/tests/halo_emu_fp8f32
+data/q27/w216/src/build/tests/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Release/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Release/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Debug/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Debug/halo_emu_fp8f32
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_fp8f32
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_fp8f32
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_fp8f32
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Deployment/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Deployment/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Development/halo_emu_fp8f32
+data/q27/w216/src/build/tests/Development/halo_emu_fp8f32
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_fp8f32
+163/182 Test #185: halo_emu_fp8f32 ..................***Not Run   0.00 sec
+        Start 186: halo_emu_kda
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_kda
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_kda
+/data/q27/w216/src/build/tests/halo_emu_kda
+/data/q27/w216/src/build/tests/Release/halo_emu_kda
+/data/q27/w216/src/build/tests/Release/halo_emu_kda
+/data/q27/w216/src/build/tests/Debug/halo_emu_kda
+/data/q27/w216/src/build/tests/Debug/halo_emu_kda
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kda
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kda
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kda
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kda
+/data/q27/w216/src/build/tests/Deployment/halo_emu_kda
+/data/q27/w216/src/build/tests/Deployment/halo_emu_kda
+/data/q27/w216/src/build/tests/Development/halo_emu_kda
+/data/q27/w216/src/build/tests/Development/halo_emu_kda
+data/q27/w216/src/build/tests/halo_emu_kda
+data/q27/w216/src/build/tests/halo_emu_kda
+data/q27/w216/src/build/tests/Release/halo_emu_kda
+data/q27/w216/src/build/tests/Release/halo_emu_kda
+data/q27/w216/src/build/tests/Debug/halo_emu_kda
+data/q27/w216/src/build/tests/Debug/halo_emu_kda
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kda
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kda
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kda
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kda
+data/q27/w216/src/build/tests/Deployment/halo_emu_kda
+data/q27/w216/src/build/tests/Deployment/halo_emu_kda
+data/q27/w216/src/build/tests/Development/halo_emu_kda
+data/q27/w216/src/build/tests/Development/halo_emu_kda
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_kda
+164/182 Test #186: halo_emu_kda .....................***Not Run   0.00 sec
+        Start 187: halo_emu_mla
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_mla
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_mla
+/data/q27/w216/src/build/tests/halo_emu_mla
+/data/q27/w216/src/build/tests/Release/halo_emu_mla
+/data/q27/w216/src/build/tests/Release/halo_emu_mla
+/data/q27/w216/src/build/tests/Debug/halo_emu_mla
+/data/q27/w216/src/build/tests/Debug/halo_emu_mla
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mla
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mla
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mla
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mla
+/data/q27/w216/src/build/tests/Deployment/halo_emu_mla
+/data/q27/w216/src/build/tests/Deployment/halo_emu_mla
+/data/q27/w216/src/build/tests/Development/halo_emu_mla
+/data/q27/w216/src/build/tests/Development/halo_emu_mla
+data/q27/w216/src/build/tests/halo_emu_mla
+data/q27/w216/src/build/tests/halo_emu_mla
+data/q27/w216/src/build/tests/Release/halo_emu_mla
+data/q27/w216/src/build/tests/Release/halo_emu_mla
+data/q27/w216/src/build/tests/Debug/halo_emu_mla
+data/q27/w216/src/build/tests/Debug/halo_emu_mla
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mla
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_mla
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mla
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_mla
+data/q27/w216/src/build/tests/Deployment/halo_emu_mla
+data/q27/w216/src/build/tests/Deployment/halo_emu_mla
+data/q27/w216/src/build/tests/Development/halo_emu_mla
+data/q27/w216/src/build/tests/Development/halo_emu_mla
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_mla
+165/182 Test #187: halo_emu_mla .....................***Not Run   0.00 sec
+        Start 188: halo_emu_moefuse
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_moefuse
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_moefuse
+/data/q27/w216/src/build/tests/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Release/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Release/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Debug/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Debug/halo_emu_moefuse
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_moefuse
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_moefuse
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_moefuse
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Deployment/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Deployment/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Development/halo_emu_moefuse
+/data/q27/w216/src/build/tests/Development/halo_emu_moefuse
+data/q27/w216/src/build/tests/halo_emu_moefuse
+data/q27/w216/src/build/tests/halo_emu_moefuse
+data/q27/w216/src/build/tests/Release/halo_emu_moefuse
+data/q27/w216/src/build/tests/Release/halo_emu_moefuse
+data/q27/w216/src/build/tests/Debug/halo_emu_moefuse
+data/q27/w216/src/build/tests/Debug/halo_emu_moefuse
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_moefuse
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_moefuse
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_moefuse
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_moefuse
+data/q27/w216/src/build/tests/Deployment/halo_emu_moefuse
+data/q27/w216/src/build/tests/Deployment/halo_emu_moefuse
+data/q27/w216/src/build/tests/Development/halo_emu_moefuse
+data/q27/w216/src/build/tests/Development/halo_emu_moefuse
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_moefuse
+166/182 Test #188: halo_emu_moefuse .................***Not Run   0.00 sec
+        Start 189: halo_emu_kvres
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_kvres
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_kvres
+/data/q27/w216/src/build/tests/halo_emu_kvres
+/data/q27/w216/src/build/tests/Release/halo_emu_kvres
+/data/q27/w216/src/build/tests/Release/halo_emu_kvres
+/data/q27/w216/src/build/tests/Debug/halo_emu_kvres
+/data/q27/w216/src/build/tests/Debug/halo_emu_kvres
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kvres
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kvres
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kvres
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kvres
+/data/q27/w216/src/build/tests/Deployment/halo_emu_kvres
+/data/q27/w216/src/build/tests/Deployment/halo_emu_kvres
+/data/q27/w216/src/build/tests/Development/halo_emu_kvres
+/data/q27/w216/src/build/tests/Development/halo_emu_kvres
+data/q27/w216/src/build/tests/halo_emu_kvres
+data/q27/w216/src/build/tests/halo_emu_kvres
+data/q27/w216/src/build/tests/Release/halo_emu_kvres
+data/q27/w216/src/build/tests/Release/halo_emu_kvres
+data/q27/w216/src/build/tests/Debug/halo_emu_kvres
+data/q27/w216/src/build/tests/Debug/halo_emu_kvres
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kvres
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_kvres
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kvres
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_kvres
+data/q27/w216/src/build/tests/Deployment/halo_emu_kvres
+data/q27/w216/src/build/tests/Deployment/halo_emu_kvres
+data/q27/w216/src/build/tests/Development/halo_emu_kvres
+data/q27/w216/src/build/tests/Development/halo_emu_kvres
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_kvres
+167/182 Test #189: halo_emu_kvres ...................***Not Run   0.00 sec
+        Start 190: halo_emu_dsa
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_dsa
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_dsa
+/data/q27/w216/src/build/tests/halo_emu_dsa
+/data/q27/w216/src/build/tests/Release/halo_emu_dsa
+/data/q27/w216/src/build/tests/Release/halo_emu_dsa
+/data/q27/w216/src/build/tests/Debug/halo_emu_dsa
+/data/q27/w216/src/build/tests/Debug/halo_emu_dsa
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_dsa
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_dsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_dsa
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_dsa
+/data/q27/w216/src/build/tests/Deployment/halo_emu_dsa
+/data/q27/w216/src/build/tests/Deployment/halo_emu_dsa
+/data/q27/w216/src/build/tests/Development/halo_emu_dsa
+/data/q27/w216/src/build/tests/Development/halo_emu_dsa
+data/q27/w216/src/build/tests/halo_emu_dsa
+data/q27/w216/src/build/tests/halo_emu_dsa
+data/q27/w216/src/build/tests/Release/halo_emu_dsa
+data/q27/w216/src/build/tests/Release/halo_emu_dsa
+data/q27/w216/src/build/tests/Debug/halo_emu_dsa
+data/q27/w216/src/build/tests/Debug/halo_emu_dsa
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_dsa
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_dsa
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_dsa
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_dsa
+data/q27/w216/src/build/tests/Deployment/halo_emu_dsa
+data/q27/w216/src/build/tests/Deployment/halo_emu_dsa
+data/q27/w216/src/build/tests/Development/halo_emu_dsa
+data/q27/w216/src/build/tests/Development/halo_emu_dsa
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_dsa
+168/182 Test #190: halo_emu_dsa .....................***Not Run   0.00 sec
+        Start 191: halo_emu_ref
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_ref
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_ref
+/data/q27/w216/src/build/tests/halo_emu_ref
+/data/q27/w216/src/build/tests/Release/halo_emu_ref
+/data/q27/w216/src/build/tests/Release/halo_emu_ref
+/data/q27/w216/src/build/tests/Debug/halo_emu_ref
+/data/q27/w216/src/build/tests/Debug/halo_emu_ref
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_ref
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_ref
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_ref
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_ref
+/data/q27/w216/src/build/tests/Deployment/halo_emu_ref
+/data/q27/w216/src/build/tests/Deployment/halo_emu_ref
+/data/q27/w216/src/build/tests/Development/halo_emu_ref
+/data/q27/w216/src/build/tests/Development/halo_emu_ref
+data/q27/w216/src/build/tests/halo_emu_ref
+data/q27/w216/src/build/tests/halo_emu_ref
+data/q27/w216/src/build/tests/Release/halo_emu_ref
+data/q27/w216/src/build/tests/Release/halo_emu_ref
+data/q27/w216/src/build/tests/Debug/halo_emu_ref
+data/q27/w216/src/build/tests/Debug/halo_emu_ref
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_ref
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_ref
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_ref
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_ref
+data/q27/w216/src/build/tests/Deployment/halo_emu_ref
+data/q27/w216/src/build/tests/Deployment/halo_emu_ref
+data/q27/w216/src/build/tests/Development/halo_emu_ref
+data/q27/w216/src/build/tests/Development/halo_emu_ref
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_ref
+169/182 Test #191: halo_emu_ref .....................***Not Run   0.00 sec
+        Start 192: halo_emu_paged
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_paged
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_paged
+/data/q27/w216/src/build/tests/halo_emu_paged
+/data/q27/w216/src/build/tests/Release/halo_emu_paged
+/data/q27/w216/src/build/tests/Release/halo_emu_paged
+/data/q27/w216/src/build/tests/Debug/halo_emu_paged
+/data/q27/w216/src/build/tests/Debug/halo_emu_paged
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_paged
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_paged
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_paged
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_paged
+/data/q27/w216/src/build/tests/Deployment/halo_emu_paged
+/data/q27/w216/src/build/tests/Deployment/halo_emu_paged
+/data/q27/w216/src/build/tests/Development/halo_emu_paged
+/data/q27/w216/src/build/tests/Development/halo_emu_paged
+data/q27/w216/src/build/tests/halo_emu_paged
+data/q27/w216/src/build/tests/halo_emu_paged
+data/q27/w216/src/build/tests/Release/halo_emu_paged
+data/q27/w216/src/build/tests/Release/halo_emu_paged
+data/q27/w216/src/build/tests/Debug/halo_emu_paged
+data/q27/w216/src/build/tests/Debug/halo_emu_paged
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_paged
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_paged
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_paged
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_paged
+data/q27/w216/src/build/tests/Deployment/halo_emu_paged
+data/q27/w216/src/build/tests/Deployment/halo_emu_paged
+data/q27/w216/src/build/tests/Development/halo_emu_paged
+data/q27/w216/src/build/tests/Development/halo_emu_paged
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_paged
+170/182 Test #192: halo_emu_paged ...................***Not Run   0.00 sec
+        Start 193: halo_emu_attn_shard0
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_attn
+171/182 Test #193: halo_emu_attn_shard0 .............***Not Run   0.00 sec
+        Start 194: halo_emu_attn_shard1
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_attn
+172/182 Test #194: halo_emu_attn_shard1 .............***Not Run   0.00 sec
+        Start 195: halo_emu_attn_shard2
+Could not find executable /data/q27/w216/src/build/tests/halo_emu_attn
+Looked in the following places:
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Release/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/Debug/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+/data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Release/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/Debug/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/MinSizeRel/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/RelWithDebInfo/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Deployment/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+data/q27/w216/src/build/tests/Development/halo_emu_attn
+Unable to find executable: /data/q27/w216/src/build/tests/halo_emu_attn
+173/182 Test #195: halo_emu_attn_shard2 .............***Not Run   0.00 sec
+174/182 Test  #50: images_test ......................***Failed    0.03 sec
+175/182 Test  #83: nemotron35_device_test ...........***Skipped   0.37 sec
+176/182 Test  #97: r4d_bf16_capacity_test ...........***Skipped   0.37 sec
+        Start  92: quant_ggml_test
+177/182 Test  #47: host_experts_test ................***Skipped   0.39 sec
+178/182 Test #139: videos_test ......................***Failed    0.48 sec
+179/182 Test  #92: quant_ggml_test ..................   Passed    4.82 sec
+        Start 104: relayout_parity_test
+180/182 Test #104: relayout_parity_test .............   Passed    0.82 sec
+181/182 Test  #24: device_test ......................***Failed   35.74 sec
+182/182 Test  #20: convert_test .....................***Failed   57.00 sec
+
+77% tests passed, 42 tests failed out of 182
+
+Label Time Summary:
+fast        = 444.77 sec*proc (182 tests)
+halo_emu    =   0.00 sec*proc (19 tests)
+r4d_emu     =   0.00 sec*proc (14 tests)
+unit        = 421.35 sec*proc (140 tests)
+
+Total Test time (real) =  98.09 sec
+
+The following tests did not run:
+	 47 - host_experts_test (Skipped)
+	 83 - nemotron35_device_test (Skipped)
+	 97 - r4d_bf16_capacity_test (Skipped)
+
+The following tests FAILED:
+	 20 - convert_test (Failed)                             fast unit
+	 24 - device_test (Failed)                              fast unit
+	 50 - images_test (Failed)                              fast unit
+	139 - videos_test (Failed)                              fast unit
+	156 - r4d_emu_pick (Not Run)                            fast r4d_emu
+	157 - r4d_emu_norm (Not Run)                            fast r4d_emu
+	158 - r4d_emu_escale (Not Run)                          fast r4d_emu
+	159 - r4d_emu_qsa (Not Run)                             fast r4d_emu
+	160 - r4d_emu_lora (Not Run)                            fast r4d_emu
+	161 - r4d_emu_f32 (Not Run)                             fast
+	162 - r4d_emu_mhc (Not Run)                             fast
+	163 - r4d_emu_kda (Not Run)                             fast
+	164 - r4d_emu_mla (Not Run)                             fast r4d_emu
+	165 - r4d_emu_moefuse (Not Run)                         fast r4d_emu
+	166 - r4d_emu_kvres (Not Run)                           fast
+	167 - r4d_emu_dsa (Not Run)                             fast r4d_emu
+	168 - r4d_emu_lili (Not Run)                            fast r4d_emu
+	169 - r4d_emu_vit (Not Run)                             fast
+	170 - r4d_emu_ds41mx (Not Run)                          fast r4d_emu
+	171 - r4d_emu_ds41walk (Not Run)                        fast r4d_emu
+	172 - r4d_emu_attn_shard0 (Not Run)                     fast r4d_emu
+	173 - r4d_emu_attn_shard1 (Not Run)                     fast r4d_emu
+	174 - r4d_emu_attn_shard2 (Not Run)                     fast r4d_emu
+	177 - halo_emu_gemm (Not Run)                           fast halo_emu
+	178 - halo_emu_norm (Not Run)                           fast halo_emu
+	179 - halo_emu_escale (Not Run)                         fast halo_emu
+	180 - halo_emu_pick (Not Run)                           fast halo_emu
+	181 - halo_emu_qsa (Not Run)                            fast halo_emu
+	182 - halo_emu_lora (Not Run)                           fast halo_emu
+	183 - halo_emu_f32 (Not Run)                            fast halo_emu
+	184 - halo_emu_mhc (Not Run)                            fast halo_emu
+	185 - halo_emu_fp8f32 (Not Run)                         fast halo_emu
+	186 - halo_emu_kda (Not Run)                            fast halo_emu
+	187 - halo_emu_mla (Not Run)                            fast halo_emu
+	188 - halo_emu_moefuse (Not Run)                        fast halo_emu
+	189 - halo_emu_kvres (Not Run)                          fast halo_emu
+	190 - halo_emu_dsa (Not Run)                            fast halo_emu
+	191 - halo_emu_ref (Not Run)                            fast halo_emu
+	192 - halo_emu_paged (Not Run)                          fast halo_emu
+	193 - halo_emu_attn_shard0 (Not Run)                    fast halo_emu
+	194 - halo_emu_attn_shard1 (Not Run)                    fast halo_emu
+	195 - halo_emu_attn_shard2 (Not Run)                    fast halo_emu
+Errors while running CTest
+Output from these tests are in: /data/q27/w216/src/build/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.

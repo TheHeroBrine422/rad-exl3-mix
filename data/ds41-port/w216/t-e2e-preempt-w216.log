@@ -1,0 +1,5 @@
+    no small pool: pools of -1 and -1 tokens at 64 and 1024 MiB do not bracket 1192
+  FAIL preemption_by_recompute_continues_each_stream_exactly
+    /data/q27/w216/src/tests/engine_e2e_test.cpp:2631: REQUIRE(mib > 0)
+1 failure(s)
+kept /tmp/radtest-engine_e2e_test-NpkXLd

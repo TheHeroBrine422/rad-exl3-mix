@@ -1,0 +1,282 @@
+drafter_mx byte check: moe_gemm_mxfp4, the multi-row forms vs the stock kernels
+MXCHECK gate_up 4608x5120 tokens 1 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 1 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 1 gemv row, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 1 tiled row, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXREF gate_up tokens 1 gemv row, dropped tail, expert table: rel_l2 0.000e+00 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 1 gemv row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXREF gate_up tokens 1 tiled row, dropped tail, expert table: rel_l2 0.000e+00 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 1 tiled row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 gemv row: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 tiled row: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 gemv row, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 tiled row, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 gemv row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 2 tiled row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 gemv row: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 tiled row: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 gemv row, dropped tail: 6 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 tiled row, dropped tail: 6 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 gemv row, expert table: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 tiled row, expert table: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 gemv row, dropped tail, expert table: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 3 tiled row, dropped tail, expert table: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 gemv row: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 tiled row: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 gemv row, expert table: 4 live slots over 2 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 tiled row, expert table: 4 live slots over 2 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 gemv row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK gate_up 4608x5120 tokens 4 tiled row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXREF gate_up tokens 5 gemv row: rel_l2 1.644e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 5 gemv row: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXREF gate_up tokens 5 tiled row: rel_l2 1.644e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 5 tiled row: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 5 gemv row, dropped tail: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 5 tiled row, dropped tail: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 5 gemv row, expert table: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 5 tiled row, expert table: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXREF gate_up tokens 5 gemv row, dropped tail, expert table: rel_l2 1.664e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 5 gemv row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXREF gate_up tokens 5 tiled row, dropped tail, expert table: rel_l2 1.664e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 5 tiled row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 gemv row: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 tiled row: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 gemv row, dropped tail: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 tiled row, dropped tail: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 gemv row, expert table: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 tiled row, expert table: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 gemv row, dropped tail, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 6 tiled row, dropped tail, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 gemv row: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 tiled row: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 gemv row, dropped tail: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 tiled row, dropped tail: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 gemv row, expert table: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 tiled row, expert table: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 gemv row, dropped tail, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 7 tiled row, dropped tail, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 gemv row: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 tiled row: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 gemv row, dropped tail: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 tiled row, dropped tail: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 gemv row, expert table: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 tiled row, expert table: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 gemv row, dropped tail, expert table: 7 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 8 tiled row, dropped tail, expert table: 7 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 gemv row: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 tiled row: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 gemv row, dropped tail: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 tiled row, dropped tail: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 gemv row, expert table: 10 live slots over 9 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 tiled row, expert table: 10 live slots over 9 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 gemv row, dropped tail, expert table: 9 live slots over 7 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 10 tiled row, dropped tail, expert table: 9 live slots over 7 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 gemv row: 9 live slots over 5 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 tiled row: 9 live slots over 5 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 gemv row, dropped tail: 12 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 tiled row, dropped tail: 12 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 gemv row, expert table: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 tiled row, expert table: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 gemv row, dropped tail, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 12 tiled row, dropped tail, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 gemv row: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 tiled row: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 gemv row, dropped tail: 17 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 tiled row, dropped tail: 17 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 gemv row, expert table: 14 live slots over 7 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 tiled row, expert table: 14 live slots over 7 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 gemv row, dropped tail, expert table: 6 live slots over 6 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 15 tiled row, dropped tail, expert table: 6 live slots over 6 experts (a run up to 1): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 gemv row: 10 live slots over 8 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 tiled row: 10 live slots over 8 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 gemv row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 tiled row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 gemv row, expert table: 7 live slots over 4 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 tiled row, expert table: 7 live slots over 4 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 gemv row, dropped tail, expert table: 11 live slots over 9 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 16 tiled row, dropped tail, expert table: 11 live slots over 9 experts (a run up to 3): identical in every form
+MXREF gate_up tokens 17 tiled row: rel_l2 1.667e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 17 tiled row: 12 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 17 tiled row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 17 tiled row, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXREF gate_up tokens 17 tiled row, dropped tail, expert table: rel_l2 1.667e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 17 tiled row, dropped tail, expert table: 11 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 20 tiled row: 15 live slots over 9 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 20 tiled row, dropped tail: 14 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 20 tiled row, expert table: 18 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 20 tiled row, dropped tail, expert table: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 24 tiled row: 26 live slots over 10 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 24 tiled row, dropped tail: 12 live slots over 8 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 24 tiled row, expert table: 14 live slots over 8 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 24 tiled row, dropped tail, expert table: 17 live slots over 11 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 25 tiled row: 14 live slots over 11 experts (a run up to 2): identical in every form
+MXCHECK gate_up 4608x5120 tokens 25 tiled row, dropped tail: 21 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 25 tiled row, expert table: 14 live slots over 10 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 25 tiled row, dropped tail, expert table: 25 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 30 tiled row: 26 live slots over 13 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 30 tiled row, dropped tail: 25 live slots over 14 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 30 tiled row, expert table: 26 live slots over 14 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 30 tiled row, dropped tail, expert table: 19 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 32 tiled row: 20 live slots over 14 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 32 tiled row, dropped tail: 23 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 32 tiled row, expert table: 22 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 32 tiled row, dropped tail, expert table: 25 live slots over 17 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 40 tiled row: 22 live slots over 12 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 40 tiled row, dropped tail: 34 live slots over 13 experts (a run up to 9): identical in every form
+MXCHECK gate_up 4608x5120 tokens 40 tiled row, expert table: 30 live slots over 13 experts (a run up to 7): identical in every form
+MXCHECK gate_up 4608x5120 tokens 40 tiled row, dropped tail, expert table: 22 live slots over 10 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 45 tiled row: 33 live slots over 15 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 45 tiled row, dropped tail: 21 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK gate_up 4608x5120 tokens 45 tiled row, expert table: 42 live slots over 18 experts (a run up to 6): identical in every form
+MXCHECK gate_up 4608x5120 tokens 45 tiled row, dropped tail, expert table: 32 live slots over 18 experts (a run up to 4): identical in every form
+MXREF gate_up tokens 48 tiled row: rel_l2 1.664e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 48 tiled row: 27 live slots over 16 experts (a run up to 3): identical in every form
+MXCHECK gate_up 4608x5120 tokens 48 tiled row, dropped tail: 24 live slots over 13 experts (a run up to 5): identical in every form
+MXCHECK gate_up 4608x5120 tokens 48 tiled row, expert table: 48 live slots over 20 experts (a run up to 8): identical in every form
+MXREF gate_up tokens 48 tiled row, dropped tail, expert table: rel_l2 1.664e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK gate_up 4608x5120 tokens 48 tiled row, dropped tail, expert table: 41 live slots over 18 experts (a run up to 8): identical in every form
+MXCHECK down 5120x2304 tokens 1 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 1 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 1 gemv row, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 1 tiled row, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXREF down tokens 1 gemv row, dropped tail, expert table: rel_l2 0.000e+00 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 1 gemv row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXREF down tokens 1 tiled row, dropped tail, expert table: rel_l2 0.000e+00 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 1 tiled row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 2 gemv row: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 2 tiled row: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 2 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 2 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 2 gemv row, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 2 tiled row, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 2 gemv row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 2 tiled row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 3 gemv row: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 3 tiled row: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 3 gemv row, dropped tail: 6 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 3 tiled row, dropped tail: 6 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 3 gemv row, expert table: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 3 tiled row, expert table: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 3 gemv row, dropped tail, expert table: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 3 tiled row, dropped tail, expert table: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 4 gemv row: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 4 tiled row: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 4 gemv row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 4 tiled row, dropped tail: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 4 gemv row, expert table: 4 live slots over 2 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 4 tiled row, expert table: 4 live slots over 2 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 4 gemv row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXCHECK down 5120x2304 tokens 4 tiled row, dropped tail, expert table: 0 live slots over 0 experts (a run up to 0): identical in every form
+MXREF down tokens 5 gemv row: rel_l2 1.677e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 5 gemv row: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXREF down tokens 5 tiled row: rel_l2 1.677e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 5 tiled row: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 5 gemv row, dropped tail: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 5 tiled row, dropped tail: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 5 gemv row, expert table: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 5 tiled row, expert table: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXREF down tokens 5 gemv row, dropped tail, expert table: rel_l2 1.633e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 5 gemv row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXREF down tokens 5 tiled row, dropped tail, expert table: rel_l2 1.633e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 5 tiled row, dropped tail, expert table: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 6 gemv row: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 6 tiled row: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 6 gemv row, dropped tail: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 6 tiled row, dropped tail: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 6 gemv row, expert table: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 6 tiled row, expert table: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 6 gemv row, dropped tail, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 6 tiled row, dropped tail, expert table: 2 live slots over 1 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 7 gemv row: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 7 tiled row: 5 live slots over 3 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 7 gemv row, dropped tail: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 7 tiled row, dropped tail: 2 live slots over 2 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 7 gemv row, expert table: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 7 tiled row, expert table: 4 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 7 gemv row, dropped tail, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 7 tiled row, dropped tail, expert table: 1 live slots over 1 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 8 gemv row: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 8 tiled row: 5 live slots over 3 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 8 gemv row, dropped tail: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 8 tiled row, dropped tail: 3 live slots over 3 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 8 gemv row, expert table: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 8 tiled row, expert table: 5 live slots over 4 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 8 gemv row, dropped tail, expert table: 7 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 8 tiled row, dropped tail, expert table: 7 live slots over 5 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 gemv row: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 10 tiled row: 4 live slots over 4 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 10 gemv row, dropped tail: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 tiled row, dropped tail: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 gemv row, expert table: 10 live slots over 9 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 tiled row, expert table: 10 live slots over 9 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 gemv row, dropped tail, expert table: 9 live slots over 7 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 10 tiled row, dropped tail, expert table: 9 live slots over 7 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 12 gemv row: 9 live slots over 5 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 12 tiled row: 9 live slots over 5 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 12 gemv row, dropped tail: 12 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 12 tiled row, dropped tail: 12 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 12 gemv row, expert table: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 12 tiled row, expert table: 8 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 12 gemv row, dropped tail, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 12 tiled row, dropped tail, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 15 gemv row: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 15 tiled row: 6 live slots over 3 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 15 gemv row, dropped tail: 17 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 15 tiled row, dropped tail: 17 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 15 gemv row, expert table: 14 live slots over 7 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 15 tiled row, expert table: 14 live slots over 7 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 15 gemv row, dropped tail, expert table: 6 live slots over 6 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 15 tiled row, dropped tail, expert table: 6 live slots over 6 experts (a run up to 1): identical in every form
+MXCHECK down 5120x2304 tokens 16 gemv row: 10 live slots over 8 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 16 tiled row: 10 live slots over 8 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 16 gemv row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 16 tiled row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 16 gemv row, expert table: 7 live slots over 4 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 16 tiled row, expert table: 7 live slots over 4 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 16 gemv row, dropped tail, expert table: 11 live slots over 9 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 16 tiled row, dropped tail, expert table: 11 live slots over 9 experts (a run up to 3): identical in every form
+MXREF down tokens 17 tiled row: rel_l2 1.652e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 17 tiled row: 12 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 17 tiled row, dropped tail: 11 live slots over 7 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 17 tiled row, expert table: 7 live slots over 6 experts (a run up to 2): identical in every form
+MXREF down tokens 17 tiled row, dropped tail, expert table: rel_l2 1.656e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 17 tiled row, dropped tail, expert table: 11 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 20 tiled row: 15 live slots over 9 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 20 tiled row, dropped tail: 14 live slots over 7 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 20 tiled row, expert table: 18 live slots over 11 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 20 tiled row, dropped tail, expert table: 11 live slots over 6 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 24 tiled row: 26 live slots over 10 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 24 tiled row, dropped tail: 12 live slots over 8 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 24 tiled row, expert table: 14 live slots over 8 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 24 tiled row, dropped tail, expert table: 17 live slots over 11 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 25 tiled row: 14 live slots over 11 experts (a run up to 2): identical in every form
+MXCHECK down 5120x2304 tokens 25 tiled row, dropped tail: 21 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 25 tiled row, expert table: 14 live slots over 10 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 25 tiled row, dropped tail, expert table: 25 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 30 tiled row: 26 live slots over 13 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 30 tiled row, dropped tail: 25 live slots over 14 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 30 tiled row, expert table: 26 live slots over 14 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 30 tiled row, dropped tail, expert table: 19 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 32 tiled row: 20 live slots over 14 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 32 tiled row, dropped tail: 23 live slots over 13 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 32 tiled row, expert table: 22 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 32 tiled row, dropped tail, expert table: 25 live slots over 17 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 40 tiled row: 22 live slots over 12 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 40 tiled row, dropped tail: 34 live slots over 13 experts (a run up to 9): identical in every form
+MXCHECK down 5120x2304 tokens 40 tiled row, expert table: 30 live slots over 13 experts (a run up to 7): identical in every form
+MXCHECK down 5120x2304 tokens 40 tiled row, dropped tail, expert table: 22 live slots over 10 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 45 tiled row: 33 live slots over 15 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 45 tiled row, dropped tail: 21 live slots over 12 experts (a run up to 4): identical in every form
+MXCHECK down 5120x2304 tokens 45 tiled row, expert table: 42 live slots over 18 experts (a run up to 6): identical in every form
+MXCHECK down 5120x2304 tokens 45 tiled row, dropped tail, expert table: 32 live slots over 18 experts (a run up to 4): identical in every form
+MXREF down tokens 48 tiled row: rel_l2 1.660e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 48 tiled row: 27 live slots over 16 experts (a run up to 3): identical in every form
+MXCHECK down 5120x2304 tokens 48 tiled row, dropped tail: 24 live slots over 13 experts (a run up to 5): identical in every form
+MXCHECK down 5120x2304 tokens 48 tiled row, expert table: 48 live slots over 20 experts (a run up to 8): identical in every form
+MXREF down tokens 48 tiled row, dropped tail, expert table: rel_l2 1.655e-03 vs the host reference, 0 nonzero dropped outputs: ok
+MXCHECK down 5120x2304 tokens 48 tiled row, dropped tail, expert table: 41 live slots over 18 experts (a run up to 8): identical in every form
+MXVERDICT check: 260 cases, 2268 form launches, 0 differ -> PASS (byte-identical, every form)
