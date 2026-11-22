@@ -9812,3 +9812,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   after dropping them step-1 peak 27.49 GiB, `--gate` segments 27.94 / 28.30 / 29.13 vs `--a8` 28.27 / 28.85 / 29.40. Gate (iv)
   = the lead's I25C (paired vs A8-25), queued. Side finding: `--compile-scales`' `pre` / `post` hit dynamo's recompile_limit (8)
   in every compiled run (pre-existing; the rest of the shapes run eager). Data `data/qad223/`, report `out/w223.md`.
+- 11-22 ~5:50 AM CST: **w223 done (Opus medium): real int8 forward `--a8-int8` in the QAD trainer, installed on box2 + iceman,
+  `a8int8.ok` created ~5:05 AM CST (int8 night list released).** Triton int8 × int8 → int32 GEMM, per-(row, 128-group) f32 activation
+  scales, bf16 out; quant kernel bitwise = `_A8`; deterministic across autotune configs. Speed (box2, s / step, `--a8` → int8): full
+  97.3 → 82.1 (1.19×; also faster than compiled no-A8 ~91), layers 32–63 69.4 → 55.4 (1.25×), 48–63 51.7 → 41.1 (1.26×); GEMM alone
+  1.33–1.47× hipBLASLt bf16 on dad1. Gates: (i) per-linear rounding-level vs fake quant (rel L2 3.6e-3, closer to exact: 2.87e-3 vs
+  3.33e-3), integers / scales / dx / dr bitwise; (ii) 2-step train KL ±0.5 %, gnorm −3.7 / −1.6 % (rounding-level, not bitwise);
+  (iv) = the queued I25C run. Memory bug found + fixed (15221f4e): 5 of 12 Triton autotune configs exceed 64 KiB LDS, their OOR
+  exceptions held ~2.5 GiB of activations in a reference cycle until GC → configs dropped; peak back to baseline. Code `v3/qad223/`.
