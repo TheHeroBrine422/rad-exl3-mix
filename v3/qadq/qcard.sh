@@ -10,19 +10,19 @@ case " $CARDS " in *" $CARD "*) ;; *) echo "card $CARD is not in $MACHINE's queu
 mkdir -p $QROOT/dispatch $QROOT/logs; touch $QROOT/jobs.txt
 eval "exec {inst}>$QROOT/dispatch/card$CARD.lock"; flock -n $inst || { echo "a dispatcher for card $CARD already runs"; exit 3; }
 echo $$ > $QROOT/dispatch/card$CARD.pid
-Q="$PY $HERE/qq.py"
+QQ="$PY $HERE/qq.py"
 stopped() { [ -e $QROOT/stop ] || [ -e $QROOT/stop-card$CARD ]; }
 qsay "qcard $MACHINE card $CARD start (pid $$)"
 while ! stopped; do
-  $Q peek $QROOT || { sleep 60; continue; }
+  $QQ peek $QROOT || { sleep 60; continue; }
   eval "exec {lk}>$(CARDLOCK $CARD)"
   flock -w 60 $lk || { exec {lk}>&-; continue; }
   stopped && break
-  LINE=$($Q claim $QROOT $CARD $$) || { exec {lk}>&-; sleep 5; continue; }
+  LINE=$($QQ claim $QROOT $CARD $$) || { exec {lk}>&-; sleep 5; continue; }
   eval "set -- $LINE"; KIND=$1 KEY=$2 ARM=$3 SIZE=$4 BUD=$5 READS=$6 CKD=$7 CTL=$8 ST=$9; shift 9
   qsay "card $CARD takes $KEY ($KIND $ARM $SIZE; $ST)"
   export QCARD_LOCKED=1
-  fin() { $Q finish $QROOT $KEY $1 $2; qsay "card $CARD $KEY: $1 rc $2"; }
+  fin() { $QQ finish $QROOT $KEY $1 $2; qsay "card $CARD $KEY: $1 rc $2"; }
   ok=1; rc=0
   case $KIND in
   T|B)
@@ -51,6 +51,7 @@ while ! stopped; do
     [ $r -eq 0 ] && fin ok 0 || fin fail $r;;
   esac
   unset QCARD_LOCKED
+  $HERE/qimport.sh $MACHINE >> $QROOT/logs/qimport.log 2>&1
   $PY $HERE/qrow.py fill $QROOT --golden $J217 --ctldir $CTLDIR >> $QROOT/logs/qrow.log 2>&1
   exec {lk}>&-
 done

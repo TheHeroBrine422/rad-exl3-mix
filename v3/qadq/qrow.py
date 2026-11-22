@@ -6,7 +6,7 @@
 NAME's rows file = ROOT/scores/NAME.json.rows (or --rows). Columns: ratio of the arm's KL / gen row vs the unhealed release (DIR/ctl-<size>.json.rows) with the paired per-document
 bootstrap CI (cmp214's arithmetic, 2,000 resamples, seed 0), the ratio without w217's two blow-up documents (calib ids 1893, 3820), docs better / worse, the paired ratio vs the
 control read CTLNAME (same golden) and s / step (median wall of the run's main steps >= 2, RUNDIR/train.jsonl)."""
-import argparse, fcntl, json, os, sys, time
+import argparse, datetime, fcntl, json, os, sys, time, zoneinfo
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, "..", "qad214"))
 import cmp214  # noqa: E402
@@ -64,7 +64,7 @@ def main():
         rows = [r for r in rows if r[-1] != a.name]
         rf = a.rows or f"{a.root}/scores/{a.name}.json.rows"
         r = stats(a.golden, a.ctldir, a.size, rf, f"{a.root}/scores/{a.ctl}.json.rows" if a.ctl != "-" else None)
-        rows.append(row_of(time.strftime("%m-%d %H:%M UTC", time.gmtime()), a.machine, a.card, a.arm, a.ckpt, a.size, a.name, a.ctl, r, s_per_step(a.run)))
+        rows.append(row_of(datetime.datetime.now(zoneinfo.ZoneInfo("America/Chicago")).strftime("%m-%d %-I:%M %p CT"), a.machine, a.card, a.arm, a.ckpt, a.size, a.name, a.ctl, r, s_per_step(a.run)))
         save(tsv, rows); print("row:", "\t".join(rows[-1]))
     else:
         for i, r in enumerate(rows):
