@@ -1323,7 +1323,7 @@ def parser():
     ap.add_argument("--pool", default="qad")
     ap.add_argument("--genmask", default=None, help="dir of gen masks <chunk>.u8 (genmask181.py) for the --chunks goldens: train on the board's rows only")
     ap.add_argument("--head", default=None); ap.add_argument("--head-perm", default=None)
-    ap.add_argument("--dynamo-limit", type=int, default=0, help="w222: torch._dynamo recompile limit for --compile-scales / --compile-ew (0 = torch's default 8, which the compiled scale functions exceed: the later linear shapes ran eager)")
+    ap.add_argument("--dynamo-limit", type=int, default=64, help="w222: torch._dynamo recompile limit for --compile-scales / --compile-ew (default 64; 0 = torch default 8, which the compiled scale functions exceed: the later linear shapes ran eager; 64: 6 % (full model) to 11 % (layers 32-63) faster, same peak memory, 2-step KL / gnorm identical)")
     ap.add_argument("--short-decay", default=None, help="w222: comma list of row counts: at each, a branch forks off the main run and decays linearly from the run's lr to ~0 over --short-decay-rows rows (ckpt-sd-<rows>); for runs without a constant phase (cosine-all, linear-all) and --lr-steps runs")
     ap.add_argument("--short-decay-rows", type=float, default=5e4, help="w222: length of the --short-decay branches in rows (default 50,000: the WSD 0.25 M branch's window)")
     ap.add_argument("--plan-ext", default=None, help="w222: the extended data plan (plan222-build.py): w214's documents in w214's order, then these new ones (xcorp / trace goldens under --ext-root/gold, calib qad documents), one epoch; budgets up to ~1e7 rows")
