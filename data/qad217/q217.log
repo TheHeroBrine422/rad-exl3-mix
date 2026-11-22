@@ -1,0 +1,32 @@
+11-21 8:39 PM CST train repro-25A card 3 rc 0
+11-21 9:09 PM CST card 3 queue q217-card3-ctl.txt done
+11-21 9:26 PM CST train gn-3.00 card 1 rc 0
+11-21 9:27 PM CST train gn-2.50 card 0 rc 0
+11-21 9:27 PM CST train gn-4.00 card 2 rc 0
+11-21 10:16 PM CST train 25E-l1e-3-x1 card 0 rc 0
+11-21 10:17 PM CST train 30E-l1e-3-x1 card 1 rc 0
+11-21 10:18 PM CST train 30E-l3e-4-x1 card 2 rc 0
+11-21 10:18 PM CST train 40E-l3e-4-x1 card 3 rc 0
+11-21 11:08 PM CST train 25E-l3e-4-x1 card 0 rc 0
+11-21 11:09 PM CST train 40E-l1e-3-x1 card 1 rc 0
+11-21 11:10 PM CST train 30E-l1e-3-x0.3 card 2 rc 0
+11-21 11:11 PM CST train 30E-l3e-4-x0.3 card 3 rc 0
+11-22 12:00 AM CST train 25E-l1e-3-x0.3 card 0 rc 0
+11-22 12:02 AM CST train 40E-l3e-4-x0.3 card 1 rc 0
+11-22 12:03 AM CST train 25E-l3e-4-x0.3 card 2 rc 0
+11-22 12:04 AM CST train 40E-l1e-3-x0.3 card 3 rc 0
+11-22 12:05 AM CST card 0 queue pre217-card0.txt done
+11-22 12:07 AM CST card 1 queue pre217-card1.txt done
+11-22 12:08 AM CST card 2 queue pre217-card2.txt done
+11-22 12:09 AM CST card 3 queue pre217-card3.txt done
+11-22 12:53 AM CST train 30E-l1e-3-x3 card 0 rc 0
+11-22 12:55 AM CST train 40E-l1e-3-x3 card 1 rc 0
+11-22 12:56 AM CST train 25E-l1e-3-x3 card 2 rc 0
+11-22 12:56 AM CST train 30E-l3e-4-x3 card 3 rc 0
+11-22 1:01 AM CST card 2 queue fin217-card2.txt done
+11-22 1:01 AM CST card 3 queue fin217-card3.txt done
+11-22 1:16 AM CST train 25E-l3e-4-x3 card 1 rc 143
+11-22 1:16 AM CST train 40E-l3e-4-x3 card 0 rc 143
+11-22 2:03 AM CST train 25A-lr3e-4-ext1M card 1 rc 0
+11-22 2:05 AM CST train 30A-lr3e-4-ext1M card 0 rc 0
+11-22 2:07 AM CST card 0 pull queue jobs217.txt done

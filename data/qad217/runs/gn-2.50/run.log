@@ -1,0 +1,51 @@
+02:27:10 qad191.py {"out": "/data/q27/w217/runs/gn-2.50", "model": "/data/q27/models/qwen38-27b-bf16", "level": "/data/q27/w214/lv/2.50/trunk", "chunks": "@/data/q27/w214/chunks214.txt", "calib": "/data/q27/challenge/golden/calib", "pools": "/data/q27/w214/pools214.json", "pool": "train214", "genmask": "/data/q27/w214/genmask", "head": "/data/q27/w214/lv/2.50/head", "head_perm": "/data/q27/w214/lv/2.50/R16.npy", "cap": 8192, "len": 2048, "V": 24, "Q": 1024, "budgets": "5e5", "decay_frac": 0.2, "lr": 0.001, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 12, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": false, "compile_scales": true, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 20000, "fe_every": 12, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 0, "emb": null, "ab": "/data/q27/w214/lv/2.50/ab.safetensors", "mix50": null, "block_frac": 0.0, "block_lr": 0.001, "block_batch": 4096, "taps": null, "tap_weight": 0.0, "make_taps": null, "tapcal": 0, "check": false, "build_lock": "/data/q27/w217/build.lock", "factors": "all", "norms": false, "unshrink": null, "export_only": false, "eps": 1e-08, "compile_ew": true, "gradnoise": 40, "wd": 0.0, "accum": 1, "rows": null, "order_seed": null, "warmup_frac": null} world 1
+02:27:13 shift conv / MLP silu * up compiled
+02:27:13 corpus 1857 documents in 0 s: {"calib": {"docs": 416, "tokens": 569109, "rows": 510375}, "tr32k": {"docs": 62, "tokens": 477679, "rows": 355741}, "xc8k": {"docs": 1379, "tokens": 1955614, "rows": 1684182}}
+02:27:13 chunk list: 3 golden dirs, sha1 e650ee46b4b5 (/data/q27/w214/gold/xc8k-b2-c0 .. /data/q27/w214/gold/tr32k-b2-c0)
+02:27:13 fixed eval: 22 qad-pool docs, 21090 rows (first 2048 tokens), held out of training (22 items removed)
+02:27:13 plan: 157 steps of 24 x 1024 (data 2519265 rows); main to step 24 (508528 rows), decay from step 20; branches ; order shuffle seed 0 (sha1 b9c122bbd7e2); gen rows to the budget by corpus {"calib": [84186, 0.1655], "tr32k": [59278, 0.1166], "xc8k": [365064, 0.7179]}
+02:27:13 #200: 1 plan step(s) per optimizer step, 24 optimizer steps, warmup 8, wd 0.0, lr 0.001, budget 500000 rows
+02:28:15 student built in 30 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+02:28:15 GDN a / b: /data/q27/w214/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+02:28:15 QLinear scales compiled (a8 False)
+02:31:26 {"step": 0, "rows": 21619.0, "kl_row": 0.04573589688264076, "gnorm": 0.02375912896748582, "wall": 190.1}
+02:33:21 {"step": 1, "rows": 20434.0, "kl_row": 0.051920380752894284, "gnorm": 0.023080391315310807, "wall": 114.9}
+02:34:44 {"step": 2, "rows": 21229.0, "kl_row": 0.05303149484106732, "gnorm": 0.021171753973283004, "wall": 83.6}
+02:36:07 {"step": 3, "rows": 22794.0, "kl_row": 0.052238583690274794, "gnorm": 0.019362551725323633, "wall": 83.0}
+02:37:32 {"step": 4, "rows": 21150.0, "kl_row": 0.05255565945420141, "gnorm": 0.02513907583112636, "wall": 84.6}
+02:38:57 {"step": 5, "rows": 21399.0, "kl_row": 0.04082941270285697, "gnorm": 0.014682776162221549, "wall": 84.4}
+02:40:27 {"step": 6, "rows": 19993.0, "kl_row": 0.045289360367267384, "gnorm": 0.024428666932072955, "wall": 90.0}
+02:41:51 {"step": 7, "rows": 20753.0, "kl_row": 0.0377666601897814, "gnorm": 0.015347834382024994, "wall": 84.0}
+02:43:13 {"step": 8, "rows": 19371.0, "kl_row": 0.03964003432619203, "gnorm": 0.02393766047592356, "wall": 82.1}
+02:44:33 {"step": 9, "rows": 19975.0, "kl_row": 0.032844793268378, "gnorm": 0.01900628120902385, "wall": 80.4}
+02:45:55 {"step": 10, "rows": 20656.0, "kl_row": 0.027843025331922875, "gnorm": 0.012974362038143759, "wall": 81.2}
+02:47:18 {"step": 11, "rows": 21982.0, "kl_row": 0.03405642922696182, "gnorm": 0.017219479118410798, "wall": 83.3}
+02:48:42 {"step": 12, "rows": 21343.0, "kl_row": 0.032566624049287375, "gnorm": 0.015440021990036138, "wall": 83.8}
+02:50:09 {"step": 13, "rows": 19992.0, "kl_row": 0.03134338235428163, "gnorm": 0.012700902514353728, "wall": 86.8}
+02:51:33 {"step": 14, "rows": 19610.0, "kl_row": 0.03169556569606294, "gnorm": 0.013138801013742422, "wall": 83.8}
+02:52:56 {"step": 15, "rows": 20861.0, "kl_row": 0.03164872015250003, "gnorm": 0.013774452452556343, "wall": 83.7}
+02:54:23 {"step": 16, "rows": 22756.0, "kl_row": 0.03199644103622705, "gnorm": 0.017335591761071224, "wall": 86.6}
+02:55:48 {"step": 17, "rows": 22325.0, "kl_row": 0.04452256897395562, "gnorm": 0.04401761586791548, "wall": 85.3}
+02:57:11 {"step": 18, "rows": 21430.0, "kl_row": 0.03807468782559322, "gnorm": 0.016843711458012348, "wall": 82.8}
+02:58:37 {"step": 19, "rows": 20964.0, "kl_row": 0.03800087491079861, "gnorm": 0.018069746874868738, "wall": 85.4}
+03:00:15 {"step": 20, "rows": 21798.0, "kl_row": 0.03972982543249154, "gnorm": 0.013983529964185634, "wall": 98.6}
+03:01:48 {"step": 21, "rows": 22635.0, "kl_row": 0.04233540561727427, "gnorm": 0.016088465602566295, "wall": 92.2}
+03:03:18 {"step": 22, "rows": 22928.0, "kl_row": 0.04020117672481324, "gnorm": 0.01556830067662841, "wall": 90.7}
+03:04:53 {"step": 23, "rows": 20531.0, "kl_row": 0.05197950738200163, "gnorm": 0.1261930955458582, "wall": 94.1}
+03:06:19 {"step": 24, "rows": 20910.0, "kl_row": 0.037248159766140196, "gnorm": 0.012689456725737316, "wall": 86.5}
+03:07:45 {"step": 25, "rows": 22490.0, "kl_row": 0.04335981019606533, "gnorm": 0.01823858553391044, "wall": 86.1}
+03:09:10 {"step": 26, "rows": 21908.0, "kl_row": 0.03673918401866319, "gnorm": 0.013726110189638015, "wall": 84.6}
+03:10:31 {"step": 27, "rows": 20211.0, "kl_row": 0.03715674457861004, "gnorm": 0.015270491363821456, "wall": 81.3}
+03:11:57 {"step": 28, "rows": 19171.0, "kl_row": 0.03867719766578604, "gnorm": 0.017056537888820448, "wall": 85.5}
+03:13:15 {"step": 29, "rows": 18216.0, "kl_row": 0.03602368982413069, "gnorm": 0.017272874201213522, "wall": 78.2}
+03:14:38 {"step": 30, "rows": 17735.0, "kl_row": 0.03397926431425464, "gnorm": 0.017711226432594093, "wall": 82.8}
+03:16:04 {"step": 31, "rows": 20306.0, "kl_row": 0.042087941836959436, "gnorm": 0.017366230545246737, "wall": 85.5}
+03:17:26 {"step": 32, "rows": 18901.0, "kl_row": 0.038313054338095204, "gnorm": 0.015751897473395587, "wall": 82.8}
+03:18:49 {"step": 33, "rows": 19874.0, "kl_row": 0.03629796414040842, "gnorm": 0.02233067042429645, "wall": 82.1}
+03:20:09 {"step": 34, "rows": 19302.0, "kl_row": 0.043083005193082446, "gnorm": 0.0302622883578588, "wall": 80.4}
+03:21:31 {"step": 35, "rows": 20367.0, "kl_row": 0.05401081787666025, "gnorm": 0.05139484946256401, "wall": 82.1}
+03:22:54 {"step": 36, "rows": 18729.0, "kl_row": 0.05013332464199911, "gnorm": 0.04866189917194653, "wall": 82.3}
+03:24:13 {"step": 37, "rows": 21049.0, "kl_row": 0.047304338551206464, "gnorm": 0.026454384105303003, "wall": 79.3}
+03:25:35 {"step": 38, "rows": 21161.0, "kl_row": 0.044931548827368585, "gnorm": 0.018347258905618186, "wall": 81.7}
+03:26:59 {"step": 39, "rows": 19813.0, "kl_row": 0.04581285310975054, "gnorm": 0.08356753217106512, "wall": 84.2}
+03:26:59 gradnoise: 40 batches, 720 scale vectors, 5668864 scales

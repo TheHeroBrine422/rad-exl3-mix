@@ -13,6 +13,10 @@ served reads on j217. box2 `/data/q27/w217` (inputs from w214's `/data/q27/w214`
 | `gradnoise217.py` | readout of `--gradnoise`: median |mean gradient|, median across-batch std, their ratio, per scale class |
 | `env217.sh`, `run217.sh`, `q217.sh`, `card217.sh`, `mkqueue217.py` | box2 runners: one training job a card (retrying), a card's sequential queue (train + read lines), the 18-arm queue builder |
 | `score217.sh`, `serve217.sh`, `reader217.sh` | judge: plain radiance `--kld-ref` on j217; swap (`../qad214/swap214.py`) + score of one checkpoint; a reader queue |
+| `pull217.sh`, `jobs217.txt` | dispatcher: a card pulls the next job of the shared list (train + served reads); the 11-21 job list (3× arms, 1 M extensions of w214's lr-3e-4 runs, 2.50 2 M run) |
+| `blowup217.py` | the blow-up documents: which documents a checkpoint derails on, where the KL jumps, per-checkpoint table |
+| `repupdate217.py`, `collect217.sh` | VM side: regenerate the report's tables; copy the small raw results into `data/qad217/` |
+| `RULES217.md` | rules, written before any eps arm (committed `9080d756`) |
 | `table217.py` | per-size tables: ratio vs the unhealed release at 0.25 / 0.5 M and the step, paired per document (`../qad214/cmp214.py`'s arithmetic) |
 
 ## Rerun (box2 `/data/q27/w217`; code = this dir + `v3/qad{,181,191,200,214}` shipped to `code/`, `code/pipeline` from w214)
@@ -23,5 +27,6 @@ code/v3/qad217/q217.sh gn-2.50 0 2.50 5e5 --gradnoise 40            # gradient n
 python code/v3/qad217/gradnoise217.py runs/gn-2.50 40
 code/v3/qad217/score217.sh ctl-2.50 $W14/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad 3         # the unhealed controls
 python code/v3/qad217/mkqueue217.py eps217.json .; code/v3/qad217/card217.sh 0 q217-card0.txt # the 18 arms (cards 0-3)
-python code/v3/qad217/table217.py scores slices/golden-j217 eps217.json --json table217.json
+python code/v3/qad217/table217.py scores slices/golden-j217 eps217.json --json table217.json   # also: blowup217.py scores slices/golden-j217 slices/j217.jsonl $MODEL
+# 11-21 changes: card queues -> code/v3/qad217/pull217.sh CARD jobs217.txt (jobs217.txt = the lead's order)
 ```

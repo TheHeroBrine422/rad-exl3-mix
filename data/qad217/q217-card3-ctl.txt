@@ -1,0 +1,12 @@
+R /data/q27/w214 25A 2.50 ckpt-2e+05
+R /data/q27/w214 25A 2.50 ckpt-5e+05
+R /data/q27/w214 25A-lr3e-4 2.50 ckpt-2e+05
+R /data/q27/w214 25A-lr3e-4 2.50 ckpt-5e+05
+R /data/q27/w214 30A 3.00 ckpt-2e+05
+R /data/q27/w214 30A 3.00 ckpt-5e+05
+R /data/q27/w214 30A-lr3e-4 3.00 ckpt-2e+05
+R /data/q27/w214 30A-lr3e-4 3.00 ckpt-5e+05
+R /data/q27/w214 40A 4.00 ckpt-2e+05
+R /data/q27/w214 40A 4.00 ckpt-5e+05
+R /data/q27/w214 40A-lr3e-4 4.00 ckpt-2e+05
+R /data/q27/w214 40A-lr3e-4 4.00 ckpt-5e+05

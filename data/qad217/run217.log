@@ -1,0 +1,49 @@
+11-21 8:27 PM CST gn-3.00 start on card 1 (size 3.00, budgets 5e5): --gradnoise 40
+11-21 8:27 PM CST gn-4.00 start on card 2 (size 4.00, budgets 5e5): --gradnoise 40
+11-21 8:27 PM CST gn-2.50 start on card 0 (size 2.50, budgets 5e5): --gradnoise 40
+11-21 8:33 PM CST repro-25A start on card 3 (size 2.50, budgets 2.5e5,5e5): --lr 1e-3 --eps 1e-8 --max-steps 3
+11-21 8:39 PM CST repro-25A rc 0
+11-21 9:26 PM CST gn-3.00 rc 0
+11-21 9:27 PM CST gn-2.50 rc 0
+11-21 9:27 PM CST gn-4.00 rc 0
+11-21 9:29 PM CST 25E-l1e-3-x1 start on card 0 (size 2.50, budgets 2.5e5,5e5): --lr 1e-3 --eps 5.5000e-06
+11-21 9:29 PM CST 30E-l1e-3-x1 start on card 1 (size 3.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 5.7000e-06
+11-21 9:29 PM CST 30E-l3e-4-x1 start on card 2 (size 3.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 5.7000e-06
+11-21 9:29 PM CST 40E-l3e-4-x1 start on card 3 (size 4.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 3.3000e-06
+11-21 10:16 PM CST 25E-l1e-3-x1 rc 0
+11-21 10:17 PM CST 30E-l1e-3-x1 rc 0
+11-21 10:18 PM CST 30E-l3e-4-x1 rc 0
+11-21 10:18 PM CST 40E-l3e-4-x1 rc 0
+11-21 10:21 PM CST 25E-l3e-4-x1 start on card 0 (size 2.50, budgets 2.5e5,5e5): --lr 3e-4 --eps 5.5000e-06
+11-21 10:22 PM CST 40E-l1e-3-x1 start on card 1 (size 4.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 3.3000e-06
+11-21 10:23 PM CST 30E-l1e-3-x0.3 start on card 2 (size 3.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.7000e-06
+11-21 10:23 PM CST 30E-l3e-4-x0.3 start on card 3 (size 3.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.7000e-06
+11-21 11:08 PM CST 25E-l3e-4-x1 rc 0
+11-21 11:09 PM CST 40E-l1e-3-x1 rc 0
+11-21 11:10 PM CST 30E-l1e-3-x0.3 rc 0
+11-21 11:11 PM CST 30E-l3e-4-x0.3 rc 0
+11-21 11:13 PM CST 25E-l1e-3-x0.3 start on card 0 (size 2.50, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.7000e-06
+11-21 11:14 PM CST 40E-l3e-4-x0.3 start on card 1 (size 4.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.0000e-06
+11-21 11:15 PM CST 25E-l3e-4-x0.3 start on card 2 (size 2.50, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.7000e-06
+11-21 11:16 PM CST 40E-l1e-3-x0.3 start on card 3 (size 4.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.0000e-06
+11-22 12:00 AM CST 25E-l1e-3-x0.3 rc 0
+11-22 12:02 AM CST 40E-l3e-4-x0.3 rc 0
+11-22 12:03 AM CST 25E-l3e-4-x0.3 rc 0
+11-22 12:04 AM CST 40E-l1e-3-x0.3 rc 0
+11-22 12:05 AM CST 30E-l1e-3-x3 start on card 0 (size 3.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.7000e-05
+11-22 12:07 AM CST 40E-l1e-3-x3 start on card 1 (size 4.00, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.0000e-05
+11-22 12:08 AM CST 25E-l1e-3-x3 start on card 2 (size 2.50, budgets 2.5e5,5e5): --lr 1e-3 --eps 1.7000e-05
+11-22 12:09 AM CST 30E-l3e-4-x3 start on card 3 (size 3.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.7000e-05
+11-22 12:53 AM CST 30E-l1e-3-x3 rc 0
+11-22 12:55 AM CST 40E-l1e-3-x3 rc 0
+11-22 12:56 AM CST 25E-l1e-3-x3 rc 0
+11-22 12:56 AM CST 30E-l3e-4-x3 rc 0
+11-22 12:58 AM CST 40E-l3e-4-x3 start on card 0 (size 4.00, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.0000e-05
+11-22 1:00 AM CST 25E-l3e-4-x3 start on card 1 (size 2.50, budgets 2.5e5,5e5): --lr 3e-4 --eps 1.7000e-05
+11-22 1:16 AM CST 25E-l3e-4-x3 rc 143
+11-22 1:16 AM CST 25A-lr3e-4-ext1M start on card 1 (size 2.50, budgets 2.5e5,5e5,1e6): --lr 3e-4
+11-22 1:16 AM CST 40E-l3e-4-x3 rc 143
+11-22 1:16 AM CST 30A-lr3e-4-ext1M start on card 0 (size 3.00, budgets 2.5e5,5e5,1e6): --lr 3e-4
+11-22 2:03 AM CST 25A-lr3e-4-ext1M rc 0
+11-22 2:05 AM CST 30A-lr3e-4-ext1M rc 0
+11-22 2:05 AM CST 25A-lr3e-4-2M start on card 1 (size 2.50, budgets 1e6,2e6): --lr 3e-4

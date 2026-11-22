@@ -1,0 +1,3 @@
+W 40E-l1e-3-x0.3
+R /data/q27/w217 40E-l1e-3-x0.3 4.00 ckpt-2e+05
+R /data/q27/w217 40E-l1e-3-x0.3 4.00 ckpt-5e+05

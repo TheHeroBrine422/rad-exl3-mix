@@ -1,0 +1,12 @@
+T 40E-l3e-4-x1 4.00 2.5e5,5e5 --lr 3e-4 --eps 3.3000e-06
+R /data/q27/w217 40E-l3e-4-x1 4.00 ckpt-2e+05
+R /data/q27/w217 40E-l3e-4-x1 4.00 ckpt-5e+05
+T 30E-l3e-4-x0.3 3.00 2.5e5,5e5 --lr 3e-4 --eps 1.7000e-06
+R /data/q27/w217 30E-l3e-4-x0.3 3.00 ckpt-2e+05
+R /data/q27/w217 30E-l3e-4-x0.3 3.00 ckpt-5e+05
+T 40E-l1e-3-x0.3 4.00 2.5e5,5e5 --lr 1e-3 --eps 1.0000e-06
+R /data/q27/w217 40E-l1e-3-x0.3 4.00 ckpt-2e+05
+R /data/q27/w217 40E-l1e-3-x0.3 4.00 ckpt-5e+05
+T 40E-l3e-4-x3 4.00 2.5e5,5e5 --lr 3e-4 --eps 1.0000e-05
+R /data/q27/w217 40E-l3e-4-x3 4.00 ckpt-2e+05
+R /data/q27/w217 40E-l3e-4-x3 4.00 ckpt-5e+05
