@@ -9649,3 +9649,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   KV per card (bakon's build, TP4, bf16): 3,200 B/token + ~93 MiB fixed. **Blocker for the next task: our exl3i MoE ops have no
   SwiGLU clamp; DS4.1 needs clamp 10** (deepseek41_test: exl3i refused at clamp 10). One card-lock slip (tests on w214's cards,
   rerun under card 3's lock; tests.sh fixed). Scripts / logs `c70917c3`. Report `out/w216.md`.
+- 11-21 ~7:30 PM CST: **w218 paused (iceman + dad1 unreachable from ~7:05–7:23 PM CST; Opus medium): code-QAD probe, partial.**
+  Probe: released 2.50, layers 8 / 23 / 40 / 55 (2 GDN + 2 full attention), 26 tensors. **Identity gate passed:** re-encoding the
+  released codes at their own scales (η = 0) is byte-identical (0 of 5,898,240 tiles change; ~2 min for the 26 tensors), so the
+  probe's re-encode noise floor is zero. **Weight-gradient noise:** at 100k gen rows the per-entry gradient is ~pure noise (median
+  SNR 0.96, signal share 0.51 vs 0.50 for pure noise; per-weight gradients see far fewer rows per parameter than per-scale ones) →
+  rounds of 300k rows (expected signal share ~0.76). Gradient pass ~220 gen rows/s, 28.4 GiB on card 0. Deviations: calib qad-pool
+  documents only (box2 → iceman link ~2 MB/s for w214's 12 GB mix), student rebuilt on iceman from the HF release; new judge
+  `qad218-heldout` (173 docs, 203,229 gen rows) + `qad218` train (230 docs) + `qad218-tune` (η), all in the ledger before reads.
+  No KL result yet. Report `out/w218.md`.
