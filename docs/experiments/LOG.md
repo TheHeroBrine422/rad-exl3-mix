@@ -9831,3 +9831,21 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   back); full 500k : 500k split to `runs/xfer-10c-t34*.json`, expected to confirm. Code `v3/qad218/` (f2490113), data `data/qad218/xfer/`.
 - 11-22 ~6:05 AM CST: **w222: WSD branches with `--accum > 1` (qad220 `branch_plan`) and `--dynamo-limit`.** accum = 1 bit for bit unchanged (new trainer vs C25-3: 15 records, 800 scale tensors); with `--accum 4` a branch at budget T = the standalone accum-4 run of budget T bit for bit (records + 800 scale tensors). 4x batch test lines = one run to 2 M with branches (0.25 / 0.5 M branches undecayed: shorter than one optimizer step). `--dynamo-limit 64` (default): compiled scales no longer hit the 8-recompile limit: full model 79.3 -> 74.7 s / step, layers 32-63 54.1 -> 48.3 s, same peak, identical first steps; installed in both queues. **MSE diagnostic:** block-MSE gradient on layers 0-31 significant for 75.9 % of scales (z 3: 64.7 %) vs 7.9 % (0.9 %) for the KL alone on the same 40 batches; lambda 1.257. Extended data plan qad214-ext (10.04 M gen rows) built and shipped; fragility reads queued.
 - 11-22 5:10 PM CST: **watchdog gap**: the watchdog was not relaunched after ab016439 returned (~11-22 early AM) — no watchdog for ~12 h; relaunched as 6bf058ef. Queues found healthy at 5:06 PM CST: box2 79 jobs done, 0 failed, 4 claimed, cards 58–100 % busy, /data 422 GB free; iceman 9 done, 0 failed, running T-I40-lr1e-4-2M. w218 xfer10 (full 1M rows, 500k : 500k, 34-doc tune) confirms: held / in-sample ≈ 0.000 for the weight step and both scale steps at 100k / 300k / 500k (`/data/w218/logs/xfer-10c.log`) — low-rank dead.
+- 11-22 5:30 PM CST: **Lead readout of the global queue (11-22 3 AM – 5 PM CST, j217 ratios vs unhealed; raw `data/qad222/results-*-1122-5pm.tsv`).**
+  - 2.50: best = constant lr 3e-4 to 2M: 0.840 (eager) / 0.842 (int8), w/o blow-ups 0.879, median doc 0.946, 93 % docs improved, still
+    falling 1M → 2M. lr 1e-4 2M 0.861–0.866 (no blow-ups, still falling). Early step-down hurts: F1-15 (→1e-4 at 0.5M) vs F3-15 1.028
+    [1.003, 1.060]; step schedule 0.875. Whole-run cosine / linear to 1M 0.896 / 0.910 vs 0.889 (no gain). 4× batch: ties at 0.5M, 2M
+    0.986 vs 1× 0.842 (1.17 [1.02, 1.46]); 4× at 1e-3 also worse → drop. Joint MSE MJ25 1M 0.976 [0.930, 1.001] vs control; MD25 0.977
+    [0.925, 1.013]; staged MA25 / MB25 worse at 0.5M (1.024 / 1.027, CIs exclude 1). N 1.007 [0.999, 1.020], H 1.027 [0.997, 1.078] →
+    drop. Back half L32 / L48 0.93 / 0.94 at 0.5M vs 0.89 all-layer. int8 gate (iv): I25C vs A8-25 0.995 [0.986, 1.002] PASS.
+  - 3.00: control lr 3e-4 noisy (1.00 / 1.02 / 0.959). Best = linear-all 1M 0.919 (vs control 0.958 [0.909, 0.999]); cosine 0.934;
+    joint MSE MJ30 1M 0.942 (0.983 [0.957, 1.002]); lr 1e-4 2M 0.942 (erratic mid-run 1.08–1.11, median doc 0.98); step 2M 0.951; clip
+    0.955 at 1M (tie); L48 1M = control; staged MA30 blows 3820, MB30 0.944 at 0.5M.
+  - 4.00: every lr 3e-4 arm (control, cos, lin, clip, MSE) derails 3820 by 0.5M and is worse even without it (1.10–1.26); lr 1e-4
+    0.995 / 1.004 / 0.989 at 0.25 / 0.5 / 1M, no blow-ups (2M on iceman running).
+  - **Fragility (D1 follow-up): the blow-ups are document fragility, not a QAD defect.** The *unhealed released* models derail them
+    too: 2.00 and 2.50 derail 3820 (KL / row after token 200: 1.83 / 0.54), 3.50 derails 1893 (0.79); 2.50 healing *fixes* 3820
+    (0.17) and breaks 1893 instead, and the 2.5 lr 3e-4 2M run broke 1893 at 1M and recovered by 2M. Random log-scale noise of the
+    trained rms (3 seeds × 2 sizes) creates no new derailment (and is +0–2 % worse overall). Per-family revert: at 2.50 (1893) putting
+    back MLP scales → 0.23, GDN → 0.49, attention → 1.52; at 4.00 (3820) MLP → 0.57, GDN / attention ≈ unchanged → mostly MLP
+    changes, not a GDN-state effect. Decision proposal: don't let these docs drive decisions; keep the robust columns.
