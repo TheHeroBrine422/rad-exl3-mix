@@ -33,7 +33,8 @@ def state(a, b):
     print(f"{len(za)} tensors, {nd} differ, max |diff| {mx:.3e}"); return 0 if nd == 0 else 1
 
 
-def grad(a, b):
+def grad_stats(a, b):
+    """({max abs diff, max rel diff (to the vector's max |g|), median rel diff over vectors}, per-batch [(kl_row a, kl_row b, gnorm a, gnorm b)])"""
     za, zb = np.load(f"{a}/gradnoise.npz"), np.load(f"{b}/gradnoise.npz")
     ka = sorted(k for k in za.files if k.endswith("|mean")); assert ka == sorted(k for k in zb.files if k.endswith("|mean")), "different trainable sets"
     mx = mr = 0.0; rel = []
@@ -41,8 +42,13 @@ def grad(a, b):
         x, y = za[k].astype(np.float64), zb[k].astype(np.float64); s = np.abs(x).max() or 1.0
         d = np.abs(x - y); mx = max(mx, d.max()); mr = max(mr, d.max() / s); rel.append(d.max() / s)
     ja, jb = json.load(open(f"{a}/gradnoise.json")), json.load(open(f"{b}/gradnoise.json"))
-    print(f"{len(ka)} vectors: max |diff| {mx:.3e}, max rel diff (to the vector's max |g|) {mr:.3e}, median over vectors {np.median(rel):.3e}")
-    for x, y in zip(ja, jb): print(f"batch {x['step']}: KL/row {x['kl_row']!r} / {y['kl_row']!r}  gnorm {x['gnorm']:.8e} / {y['gnorm']:.8e}  rel {abs(x['gnorm'] / y['gnorm'] - 1):.2e}")
+    return {"vectors": len(ka), "max_abs": mx, "max_rel": mr, "median_rel": float(np.median(rel))}, [(x["kl_row"], y["kl_row"], x["gnorm"], y["gnorm"]) for x, y in zip(ja, jb)]
+
+
+def grad(a, b):
+    st, bt = grad_stats(a, b)
+    print(f"{st['vectors']} vectors: max |diff| {st['max_abs']:.3e}, max rel diff (to the vector's max |g|) {st['max_rel']:.3e}, median over vectors {st['median_rel']:.3e}")
+    for i, (ka, kb, ga, gb) in enumerate(bt): print(f"batch {i}: KL/row {ka!r} / {kb!r}  gnorm {ga:.8e} / {gb:.8e}  rel {abs(ga / gb - 1):.2e}")
     return 0
 
 
