@@ -12,6 +12,10 @@ Runtime: none (training tool only). Tests: `python3 test220.py` (CPU, no student
   layer `k`. Forward values are those of the full path; the trainable layers' gradients are bitwise those of the full-backward run on the toy stack
   (`test220.py`) and rounding-level on the real model (report). `--no-frozen-prefix` turns it off (equivalence check, speed table).
 - `--compile-scales --compile-ew` (w215, 1.24x) — use both for new runs (the compiled-default check is in the report).
+- `--a8-int8` (w223; implies `--a8`): the a8g128 GEMM as a real int8 x int8 -> int32 product (`../qad223/a8int8.py`, Triton: per row x 128-group
+  activation scales applied in f32 per group; quantization bitwise = `_A8`'s) in the forward and the checkpoint recompute; backward dX = dy @ bf16(W)^T
+  (= `--a8`'s STE, bitwise the same GEMM). Output vs `--a8`: rounding level (one bf16 ulp; the int8 path skips `--a8`'s bf16 rounding of q s, so it is
+  the closer one to the exact product). Composes with the compile flags and the frozen prefix. Gates / speed: `data/qad223/`, report `out/w223.md`.
 
 ## w220 flags
 One line each; all off by default.
