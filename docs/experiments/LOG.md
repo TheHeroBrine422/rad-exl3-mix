@@ -9637,3 +9637,15 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   weight cache, transposed copy for the dX GEMM. Not yet in the repo: raw runs on iceman `/data/w215/runs/` (copy when iceman is
   back). Commits: the lead's `commit -am` swept w215's edits into five unrelated commits (77aeed35 … e1e08952; HEAD correct) →
   lead commits path-specific while workers write the repo. Code `v3/qad/qmodel.py`, `v3/qad181/` (README "Speed (w215)").
+- 11-22 ~12:40 AM CST (11-21 6:40 PM CST): **w216 done (Opus medium): `exl3-v3` cleaned of bakon's third-party paths.** Commits
+  b4a5b53c (radiance-exl3 + MoE format 15 out: only our exl3i registers `moe_exl3_gate_up / down`), dd034d94 (GGUF block ops out of
+  libr4d / libref / libavx / arch / libquant / core; the release's MXFP4 routed experts — trunk and DSpark drafter — on a new GGUF-free
+  op `moe_gemm_mxfp4`: bakon's `r4d_ds41_mxfp4*` kernels + our layout hooks, libref oracle, libavx row; MoE format 14 = MXFP4 at bf16,
+  deepseek41 only), eab5b90e (weight sidecar out), a5d3c65e (`ds41/`, his README banner, CHANGELOG, docs/RADIANCE.md out). Drafter
+  dense weights native bf16 (~1.2 GiB, 3 stages; MXFP4 experts 6.72 GiB). Gates: builds clean; exl3i 16/16, test_moe, arch_test,
+  deepseek41_test (new MXFP4 + DSpark case), ref_test, avx_check, 9 ds41 emulator tests, libquant exl3v3 pass; `--mxcheck` 260
+  byte-identical, 20/20 MXREF vs host ref (rel_l2 ≤ 1.7e-3); fast ctest 140/182 (42 = box2 environment, as w213); one engine_e2e
+  case fails on w213's build too. No full-model serve possible on the cleaned branch yet (by design); speculation not rechecked.
+  KV per card (bakon's build, TP4, bf16): 3,200 B/token + ~93 MiB fixed. **Blocker for the next task: our exl3i MoE ops have no
+  SwiGLU clamp; DS4.1 needs clamp 10** (deepseek41_test: exl3i refused at clamp 10). One card-lock slip (tests on w214's cards,
+  rerun under card 3's lock; tests.sh fixed). Scripts / logs `c70917c3`. Report `out/w216.md`.
