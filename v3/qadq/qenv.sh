@@ -20,6 +20,9 @@ iceman)
   RB=/data/w218/rad/install/bin/radiance; RH=/data/w218/rad/home; RLIBS=
   GPUENV() { echo "ROCR_VISIBLE_DEVICES=$1 HIP_VISIBLE_DEVICES=$1"; }
   FLA=$IN/pylib-fla;;
+test)   # dispatcher self-test (no GPU): QROOT_OVERRIDE=/tmp/dir, CODE_PY = a fake trainer
+  QROOT=${QROOT_OVERRIDE:?}; IN=$QROOT/in; PY=python3; MODEL=/none; CALIB=/none; CHUNKS=$IN/chunks; J217=$QROOT/j217; CTLDIR=$QROOT/ctl
+  CARDS="0 1"; CARDLOCK() { echo $QROOT/card$1.lock; }; RAMLOCK=$QROOT/ram.lock; MINRAM=0; RB=/bin/false; RH=; RLIBS=; GPUENV() { echo "X=$1"; }; FLA=;;
 *) echo "unknown machine $MACHINE" >&2; return 2 2>/dev/null || exit 2;;
 esac
 CODE=$QROOT/code; HERE=$CODE/v3/qadq

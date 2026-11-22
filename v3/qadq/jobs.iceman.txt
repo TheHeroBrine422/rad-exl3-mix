@@ -1,0 +1,4 @@
+# Global QAD queue, iceman card 0 (/data/queue/jobs.txt). Same syntax as box2's. Items 5 / 6 of the overnight list (3.00 clip, 3.00 lr 1e-4), independent of box2's jobs.
+# Controls (C30) are box2's: compare the ratios across the two machines' results.tsv (readout.py), or move a line between the files while it is unclaimed.
+T CB30 3.00 5e5 ckpt-5e+05 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew @ctl=C30
+T lr1e-4-30 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 1e-4 --compile-scales --compile-ew @ctl=C30

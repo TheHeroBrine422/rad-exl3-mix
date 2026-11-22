@@ -1,0 +1,21 @@
+# Global QAD queue, box2 (/data/q27/queue/jobs.txt). Lines are taken in order by qcard.sh (one per card). Syntax and how to add / reorder / cancel: README.md.
+# All compiled, w214's data / order, reads on j217. 2.50 / 3.00 students = the released picks.
+#
+# --- 1. A8-in-the-loop pair + the 3.00 control (A8-25 itself runs under w221's card-0 dispatcher; its reads are imported). C25-3 = compiled no-A8 control of A8-25.
+T C25-3 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew @ctl=25A-lr3e-4
+T A8-30 3.00 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew --a8 @ctl=C30
+T C30 3.00 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew
+# --- 2. w217's 2.50 lr 3e-4 2 M run (card 1, finishes ~4:40 AM CST): nobody has scored its checkpoints. Ready when the checkpoint is finished.
+R 25A-lr3e-4-2M 2.50 /data/q27/w217/runs/25A-lr3e-4-2M/ckpt-1e+06 @ctl=25A-lr3e-4-ext1M
+R 25A-lr3e-4-2M 2.50 /data/q27/w217/runs/25A-lr3e-4-2M/ckpt-2e+06
+# --- 3. w221's remaining jobs (controls: 25C = w220's compiled 25A recipe, C30)
+T T128 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --tie-groups 128 --tie-layers 0-31 @ctl=25C
+T CB 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --clip-gnorm 3 --beta2 0.99 @ctl=25C
+T L32-30 3.00 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew --train-layers 32-63 @ctl=C30
+# --- 4. lr 1e-4 at 2.50 (reads at all four budgets; ~3.7 card-h)
+T lr1e-4-25 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew @ctl=C25-3
+# --- 5. step-decay fork at 2.50: F3-15 = lr 3e-4 to 1.5 M (budgets 1 M / 1.5 M; saves the pre-decay state at 0.5 M rows); F1-15 / F1-1M continue from that state at lr 1e-4 (3e-4 until 0.5 M,
+#        then 1e-4 until 1.2 M / 0.8 M, linear decay to the budget) with the same data and the same decay window as F3-15's 1.5 M main run / 1 M branch. A budget of 1.5e6 names its checkpoint ckpt-2e+06.
+T F3-15 2.50 1e6,1.5e6 ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --save-at 5e5 --compile-scales --compile-ew
+T F1-15 2.50 1.5e6 ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.2e6 --fork-from {runs}/F3-15/state-500000.pt --compile-scales --compile-ew @needs=F3-15/state-500000.pt @ctl=F3-15
+T F1-1M 2.50 1e6 ckpt-1e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:8e5 --fork-from {runs}/F3-15/state-500000.pt --compile-scales --compile-ew @needs=F3-15/state-500000.pt @ctl=F3-15

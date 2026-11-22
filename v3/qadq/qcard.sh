@@ -28,7 +28,7 @@ while ! stopped; do
   T|B)
     LASTN=$($PY -c "print('%.0e' % float('${BUD##*,}'))")
     if [ "$KIND" = B ] || [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then
-      while true; do $HERE/qrun.sh $MACHINE $ARM $CARD $SIZE $BUD "$@"; rc=$?; case $rc in 75|76) sleep 120;; *) break;; esac; done
+      while true; do $HERE/qrun.sh $MACHINE $ARM $CARD $SIZE $BUD "$@" {inst}>&-; rc=$?; case $rc in 75|76) sleep 120;; *) break;; esac; done
       qsay "card $CARD train $ARM rc $rc"
       if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; ok=0
       elif [ $rc -ne 0 ]; then fin fail $rc; ok=0
@@ -37,16 +37,17 @@ while ! stopped; do
     fi
     if [ $ok = 1 ] && [ "$KIND" = B ]; then touch $QROOT/runs/$ARM/bench.done; fin ok $rc; ok=0; fi
     if [ $ok = 1 ]; then
+      [ "$READS" = - ] && READS=
       for ck in ${READS//,/ }; do
         [ "$CTL" = - ] && CN=- || CN=$CTL-$ck
-        $HERE/qread.sh $MACHINE $ARM-$ck $SIZE $QROOT/runs/$ARM/$ck $CARD $CN >> $QROOT/logs/qread-$CARD.log 2>&1; r=$?; qsay "card $CARD read $ARM-$ck rc $r"
+        $HERE/qread.sh $MACHINE $ARM-$ck $SIZE $QROOT/runs/$ARM/$ck $CARD $CN >> $QROOT/logs/qread-$CARD.log 2>&1 {inst}>&-; r=$?; qsay "card $CARD read $ARM-$ck rc $r"
         [ $r -eq 0 ] || { rc=$r; ok=2; }
       done
       [ $ok = 2 ] && fin fail $rc || fin ok 0
     fi;;
   R)
     [ "$CTL" = - ] && CN=- || CN=$CTL-$(basename $CKD)
-    $HERE/qread.sh $MACHINE $ARM-$(basename $CKD) $SIZE $CKD $CARD $CN >> $QROOT/logs/qread-$CARD.log 2>&1; r=$?; qsay "card $CARD read $ARM-$(basename $CKD) rc $r"
+    $HERE/qread.sh $MACHINE $ARM-$(basename $CKD) $SIZE $CKD $CARD $CN >> $QROOT/logs/qread-$CARD.log 2>&1 {inst}>&-; r=$?; qsay "card $CARD read $ARM-$(basename $CKD) rc $r"
     [ $r -eq 0 ] && fin ok 0 || fin fail $r;;
   esac
   unset QCARD_LOCKED
