@@ -9676,3 +9676,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   verify slice read ~15 times here → retired as a tuning judge (w217 builds a held-out qad-pool judge). Data `data/qad214/`
   (scores, runs, logs), code `v3/qad214/`. w214 never wrote its final report (stopped during a burst of contradictory lead steers on
   the lr-3e-4 1M runs; final decision: stop at 0.5M, test Adam eps first = w217).
+- 11-21 ~11:10 PM CST: **w218 done (Opus medium): code-QAD feasibility probe — NEGATIVE at this data scale.** Released 2.50, 26
+  tensors in layers 8 / 23 / 40 / 55, KL-gradient step → re-encode with the native quantizer at the released scales. First design
+  (global η 0.01–0.3) worse at every η in rounds 0–1 (stopped by the lead). Redesign (η as a fraction of each tensor's quant step),
+  round-0 line search on the tune set (cur 0.038242): plain gradient η 0.005 → 1.006 (0.54 % tiles), 0.01 → 1.033, 0.02 → 1.150,
+  0.05–0.2 → 1.97–212; Hessian-preconditioned (M⁻¹G) no change below η 0.05, best η 0.2 → 0.9989 [0.9969, 1.0016] (0.16 % tiles),
+  0.5 / 1 / 2 → 1.035 / 1.58 / 23. Smooth curves, no minimum below cur; the tune pick is worse on the judge (1.0082 [1.0012, 1.0197]).
+  Why: (1) **the per-weight gradient is ~80 % noise at 300k rows** (cosine between disjoint 100k-row chunks 0.08; the earlier 0.51
+  signal share was inflated by within-document correlation); (2) flipped tiles add error (layer 23 k output error 0.00591 → 0.00624 at
+  2.5 % tiles flipped); a fresh encode of (W − step) is worse than a fresh encode alone (+2.7 / +5.5 %). Encoder sound: re-encoding
+  the true weight gives a different code with equal error (judge 1.0047), i.e. many equally good codes. A full design would need ≥ 1M
+  rows per gradient round (~1.3 card-h), steps as a fresh encode of a continuous target, ~4 GB host RAM per M weights (~100 GB trunk).
+  Scale-only comparison arm on the same blocks (304k rows) finishing ~11:45 PM on iceman (`runs/agg218.txt`); cannot change the
+  code verdict. Data `data/qad218/`, code `v3/qad218/`, report `out/w218.md`.
