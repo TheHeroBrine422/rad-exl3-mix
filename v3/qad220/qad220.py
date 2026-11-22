@@ -4,6 +4,7 @@
 qad200's (v3/qad220/README.md "w220 flags"): --train-layers / --train-tensors / --mask (trainable set; the layers before the first
 trainable one run once under no_grad: automatic), --tie-groups / --tie-layers, --clip-gnorm / --beta2, --lr-steps / --decay-shape /
 --fork-from / --decay-data / --save-at, --prompt-weight, --local-mse / --local-taps (+ --make-taps --tap-layers), --no-frozen-prefix.
+w223: --a8-int8 (= --a8 with the GEMM as a real int8 x int8 -> int32 product, v3/qad223/a8int8.py; backward dX bf16 as --a8's STE).
 qad200.py's header follows.
 
 qad200.py OUT --model BF16 --level LEVEL --chunks DIR,... [--calib GOLDEN --pools POOLS] [options] -- #200 (RULES200):
@@ -73,6 +74,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "qad"))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "qad181"))
+sys.path.insert(0, os.path.join(HERE, "..", "qad223"))                       # w223 a8int8 (imported only with --a8-int8)
 import qmodel  # noqa: E402
 from qad import chunk_kl, save_atomic  # noqa: E402
 import data181 as D  # noqa: E402
@@ -99,7 +101,16 @@ class _A8(torch.autograd.Function):
     def backward(ctx, g): return g
 
 
-def use_compiled_scales(stu, a8=False):
+def _a8_int8_gemm(q, x):
+    """w223 --a8-int8: the a8g128 GEMM of the rotated input x (bf16) with q's int8 codebook integers as an int8 x int8 -> int32 product
+    (per row and 128-group scales in f32; quantization bitwise = _A8's); backward dX = dy @ bf16(wq)^T (= --a8's STE). A linear held as
+    bf16 W_hat (not integer-exact) takes the fake-quant path."""
+    if q.wq.dtype != torch.int8: return _A8.apply(x) @ q.wq.to(BF)
+    import a8int8
+    return a8int8.a8_matmul(x, q.wq, qmodel.i8_to_bf16)
+
+
+def use_compiled_scales(stu, a8=False, a8_int8=False):
     """QLinear's elementwise chain (x . su -> bf16, y . (sv s) -> bf16; arm Q's fake quant) as torch.compile'd functions
     (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager). Inductor's deterministic
     mode (no on-device autotuning: w215 saw two runs differ without it) keeps runs bitwise reproducible; numerics "strict"
@@ -115,8 +126,10 @@ def use_compiled_scales(stu, a8=False):
         sh = x.shape
         x = pre(x.reshape(-1, self.k), self.suh, self.r)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
-        if a8: x = _A8.apply(x)
-        y = x @ qmodel.i8_to_bf16(self.wq)
+        if a8_int8: y = _a8_int8_gemm(self, x)
+        else:
+            if a8: x = _A8.apply(x)
+            y = x @ qmodel.i8_to_bf16(self.wq)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         return post(y, self.svh, self.c, self.s).view(*sh[:-1], self.n)
     for q in stu.qlin.values():
@@ -124,16 +137,16 @@ def use_compiled_scales(stu, a8=False):
         q.forward = types.MethodType(fwd, q)
 
 
-def use_a8(stu):
+def use_a8(stu, a8_int8=False):
     """the student's trunk QLinears run the GEMM on a8g128 fake-quantized activations (the hadamard-rotated, suh-scaled
-    input, which is what the exl3i A8 path quantizes); the head stays f16 as served"""
+    input, which is what the exl3i A8 path quantizes); the head stays f16 as served. a8_int8 (w223): the GEMM as int8 x int8"""
     def fwd(self, x):
         sh = x.shape
         x0 = x.reshape(-1, self.k)
         x = (x0 * self.su()).to(BF)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
-        x = _A8.apply(x)
-        y = x @ self.wq.to(BF)
+        if a8_int8: y = _a8_int8_gemm(self, x)
+        else: y = _A8.apply(x) @ self.wq.to(BF)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         y = y * (self.sv() * self.s)
         if self.la is not None: y = y + (x0.float() @ self.la.T) @ self.lb.T            # adapters (arm L) compose, f32 (use_lora32)
@@ -1253,6 +1266,7 @@ def parser():
     ap.add_argument("--build-group", type=int, default=2, help="ranks building their student at once (host RAM)")
     ap.add_argument("--gate", action="store_true"); ap.add_argument("--profile", action="store_true"); ap.add_argument("--bench", action="store_true")
     ap.add_argument("--a8", action="store_true", help="arm Q: a8g128 fake-quant activations in the student (STE)")
+    ap.add_argument("--a8-int8", action="store_true", help="w223: --a8 with the GEMM as a real int8 x int8 -> int32 product (implies --a8)")
     ap.add_argument("--compile-scales", action="store_true", help="torch.compile QLinear's scale / cast chain (speed)")
     ap.add_argument("--lora", type=int, default=0, help="rank of adapters on every trunk linear (qmodel's arm L), composable with the rest")
     ap.add_argument("--lr-lora", type=float, default=1e-4)
@@ -1333,6 +1347,7 @@ def gradnoise(a, T, d, log):
 
 def main():
     a = parser().parse_args()
+    if a.a8_int8: a.a8 = True
     if a.order_seed is not None: a.seed = a.order_seed          # #200: the data order (--seed and --order-seed are one switch)
     d = Dist()
     os.makedirs(a.out, exist_ok=True)
@@ -1386,10 +1401,10 @@ def main():
     stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log, a.no_frozen_prefix)
     use_seg_attention(stu)
-    if a.compile_scales: use_compiled_scales(stu, a.a8); log(f"QLinear scales compiled (a8 {a.a8})")
-    elif a.a8 and not a.check: use_a8(stu)
+    if a.compile_scales: use_compiled_scales(stu, a.a8, a.a8_int8); log(f"QLinear scales compiled (a8 {a.a8}, int8 {a.a8_int8})")
+    elif a.a8 and not a.check: use_a8(stu, a.a8_int8)
     elif a.lora: use_lora32(stu); log("arm L: adapters in f32 (use_lora32)")
-    if a.a8: log("arm Q: a8g128 fake-quant activations on every trunk linear (STE)")
+    if a.a8: log("arm Q: a8g128 fake-quant activations on every trunk linear (STE)" + ("; GEMM int8 x int8 (w223 --a8-int8)" if a.a8_int8 else ""))
     assert not (a.prompt_weight > 0 and a.taps), "--prompt-weight with the T arm (--taps) is not implemented"
     loc = None
     if a.local_mse:
