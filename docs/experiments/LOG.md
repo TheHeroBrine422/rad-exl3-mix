@@ -9820,3 +9820,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   3.33e-3), integers / scales / dx / dr bitwise; (ii) 2-step train KL ±0.5 %, gnorm −3.7 / −1.6 % (rounding-level, not bitwise);
   (iv) = the queued I25C run. Memory bug found + fixed (15221f4e): 5 of 12 Triton autotune configs exceed 64 KiB LDS, their OOR
   exceptions held ~2.5 GiB of activations in a reference cycle until GC → configs dropped; peak back to baseline. Code `v3/qad223/`.
+- 11-22 ~6:00 AM CST (user, from bed): queue the low-rank scaling test (#3 / #2: w218 harness, 1M-row gradient for the 26 probe tensors, subspace from 500k / signal from 500k, held-out slope for codes AND projected scale steps vs the 300k result) — w218 resumed on iceman card 0 via the queue; recompile-limit fix — w222 (after accum branching). Dropped: 0.25× batch. Tomorrow (user awake): curvature line search along Adam's update (second-derivative step sizing).
