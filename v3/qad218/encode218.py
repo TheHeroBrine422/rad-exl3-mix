@@ -68,6 +68,7 @@ def main():
                     help="global: eta = the step's rms over all probe tensors (one G scale); quant: per tensor, the step's rms = eta x the "
                          "tensor's quantization step delta (qerr218.py's --qerr JSON), i.e. W_t = W_hat - eta delta G / rms(G_tensor)")
     ap.add_argument("--qerr", default="/data/w218/runs/qerr.json")
+    ap.add_argument("--cmp", default="", help="also count tiles whose values differ from this codes dir's .q (e.g. the eta-0 fresh encode)")
     ap.add_argument("--from-orig", action="store_true", help="the step starts from the bf16 checkpoint's weight in the codes' basis "
                     "(W_hat_orig, qerr218.py's transform) instead of the current codes: a fresh encode of the true weight minus the step")
     a = ap.parse_args()
@@ -135,15 +136,17 @@ def main():
             tw = int((tr != tr0).any(axis=2).sum())
             st["tensors"][k] = {"K": K, "k": kk, "n": n, "proxy": tool[k]["proxy"], "sec": tool[k]["sec_quant"],
                                 "tiles": kk * n // 256, "tiles_words_changed": tw, "tiles_values_changed": tiles_changed(q, w, kk, n),
-                                "decode_equal": bool(np.array_equal(dec, q)), "rms_dq": float(np.sqrt(((q - w).astype(np.float64) ** 2).mean()))}
+                                "decode_equal": bool(np.array_equal(dec, q)),
+                                "tiles_vs_cmp": tiles_changed(q, np.fromfile(os.path.join(a.cmp, k + ".q"), np.float32).reshape(kk, n), kk, n) if a.cmp else None, "rms_dq": float(np.sqrt(((q - w).astype(np.float64) ** 2).mean()))}
             if not a.keep_targets: os.remove(os.path.join(od, k + ".target"))
         tt = sum(v["tiles"] for v in st["tensors"].values())
         st["tiles"] = tt; st["tiles_values_changed"] = sum(v["tiles_values_changed"] for v in st["tensors"].values())
         st["tiles_words_changed"] = sum(v["tiles_words_changed"] for v in st["tensors"].values())
         st["decode_all_equal"] = all(v["decode_equal"] for v in st["tensors"].values())
+        if a.cmp: st["cmp"] = a.cmp; st["tiles_vs_cmp"] = sum(v["tiles_vs_cmp"] for v in st["tensors"].values())
         json.dump(st, open(os.path.join(od, "stats.json.part"), "w"), indent=1); os.replace(os.path.join(od, "stats.json.part"), os.path.join(od, "stats.json"))
         print(f"eta {e:g}: encode {t2 - t1:.0f} s, tiles values changed {st['tiles_values_changed']} / {tt} "
-              f"({100 * st['tiles_values_changed'] / tt:.2f} %), words {st['tiles_words_changed']}, decode == q: {st['decode_all_equal']}", flush=True)
+              f"({100 * st['tiles_values_changed'] / tt:.2f} %)" + (f", vs cmp {st['tiles_vs_cmp']}" if a.cmp else "") + f", words {st['tiles_words_changed']}, decode == q: {st['decode_all_equal']}", flush=True)
 
 
 if __name__ == "__main__":
