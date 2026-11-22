@@ -1,0 +1,5 @@
+w223 --a8-int8 installed and gated (11-22 ~5:05 AM CST). Trainer in the code dir: qad220.py md5 1f653a8498a1fad7c68bf9a154a4fa8b (= repo ff883d6c, w222 on top of w223 5dfc5440; A8I-sp2 ran on it: step-1 KL bitwise = A8I-sp); v3/qad223/a8int8.py md5 8d79da540109747f0c2297bb7f24aea8 (= repo 15221f4e).
+(i) per linear vs --a8 fake quant: rounding level (rel L2 3.6e-3, unbiased; int8 closer to the exact product: 2.87e-3 vs 3.33e-3); dx / dr bitwise.
+(ii) 2-step vs A8F-sp (= A8-25 bitwise): train KL -0.49 % / +0.50 %, gnorm -3.7 % / -1.6 % (rounding-level chaos; not bitwise by construction).
+(iii) s/step --a8 -> --a8-int8: full 97.3 -> 82.1 (1.19x), layers 32-63 69.4 -> 55.4 (1.25x), 48-63 51.7 -> 41.1 (1.26x).
+memory: step-1 peak 27.49 GiB (fake-A8 27.87) after the autotune-config fix 15221f4e (before: 30.35, OutOfResources tracebacks kept frames alive); --gate segments 27.94 / 28.30 / 29.13 vs fake 28.27 / 28.85 / 29.40.

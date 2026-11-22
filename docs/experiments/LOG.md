@@ -9799,3 +9799,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (one budget). Fill batch + batch-size test (1× lr 3e-4 control; 4× batch `--accum 4 --warmup 2` at lr 3e-4 and 1e-3, separate runs
   at 0.5 / 1 / 2M) loaded. Estimated: box2 93.2 card-h gated + 13.9 non-int8, iceman 20.4 + 2.6 → **113.6 card-h gated** on a8int8.ok.
   46 of w214's 416 training docs had been read by earlier ledger slices (pre-existing overlap, left).
+- 11-22 ~5:10 AM CST: **w223 (Opus medium): real int8 A8 forward for the QAD trainer, `--a8-int8` — gates (i)–(iii) pass, `a8int8.ok`
+  created on box2 + iceman (5:05 AM), int8 night list released.** Triton int8 × int8 → int32 GEMM with per-(row, 128-group)
+  activation scales (`v3/qad223/a8int8.py`; quantization bitwise = `_A8`; result bitwise independent of the autotune config);
+  forward + checkpoint recompute int8, backward dX bf16 (= `--a8`'s STE). dad1 9070 XT: GEMM 170–186 TOPS vs hipBLASLt bf16
+  121–134 (1.33–1.47×; with quant 1.28–1.49×). box2 s / step `--a8` → `--a8-int8`: full 97.3 → 82.1 (1.19×; < compiled no-A8 ~91),
+  layers 32–63 69.4 → 55.4 (1.25×), 48–63 51.7 → 41.1 (1.26×). Gate (i): per linear the int8 output is closer to the exact
+  product than `--a8` (rel L2 2.87e-3 vs 3.33e-3), int8-vs-`--a8` 3.6e-3 unbiased; dx / dr bitwise. Gate (ii): A8F-sp (queue
+  `--a8`) = A8-25 bit for bit; A8I-sp vs it train KL −0.49 % / +0.50 % (steps 1 / 2), gnorm −3.7 % / −1.6 % — rounding-level,
+  not bitwise by construction. **Bug found + fixed (15221f4e):** autotune configs over gfx12's 64 KiB LDS raised OutOfResources
+  whose tracebacks (reference cycle) kept the caller frames' activations alive until gc → +2.5 GiB at step 1 (30.35 vs 27.87);
+  after dropping them step-1 peak 27.49 GiB, `--gate` segments 27.94 / 28.30 / 29.13 vs `--a8` 28.27 / 28.85 / 29.40. Gate (iv)
+  = the lead's I25C (paired vs A8-25), queued. Side finding: `--compile-scales`' `pre` / `post` hit dynamo's recompile_limit (8)
+  in every compiled run (pre-existing; the rest of the shapes run eager). Data `data/qad223/`, report `out/w223.md`.
