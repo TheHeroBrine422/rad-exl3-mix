@@ -9743,3 +9743,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   c speed (2.50, other cards busy): eager 98.0 s / step (223 gen rows/s); compiled 88.9 (1.10×); compiled + train layers 32–63
   61.3 (**1.60×**); + 48–63 45.5 (**2.15×**); eager + 32–63 65.2 (1.50×). **Adopted: compiled default for every QAD run from now on,
   frozen prefix automatic.**
+- 11-22 ~2:15 AM CST: w221 launched (Sonnet high; box2 cards 2 / 3): L32, L48, T128, CB, C30, L32-30 at 0.5M (0.25M branch), compiled, j217; step 1 = w220's 25C bit for bit; step wall L32 60 s / L48 44 s; queue ends ~5:30–6 AM CST (code v3/qad221, 334de4c1). Note: the trainer's Adam has always used betas (0.9, 0.99) (qad200 l. 344–347), so CB tests clipping only, and the lead's earlier 'β2 0.999 keeps spikes for the whole run' concern does not apply.
