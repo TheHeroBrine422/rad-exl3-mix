@@ -23,8 +23,8 @@ _INV127 = float(np.float32(1.0) / np.float32(127.0))
 
 @triton.jit
 def _quant_a8_k(x, q, sa, M, K, sxm, sqm, ssm, INV127: tl.constexpr, BR: tl.constexpr):
-    """one program = BR rows x one 128-group"""
-    pr = tl.program_id(0); g = tl.program_id(1)
+    """one program = BR rows x one 128-group (groups fastest in launch order: neighbouring programs read neighbouring bytes)"""
+    g = tl.program_id(0); pr = tl.program_id(1)
     rm = pr * BR + tl.arange(0, BR); rk = g * 128 + tl.arange(0, 128)
     msk = rm[:, None] < M
     v = tl.load(x + rm[:, None].to(tl.int64) * sxm + rk[None, :], mask=msk, other=0.0).to(tl.float32)
@@ -41,8 +41,8 @@ def quant_a8(x):
     assert K % 128 == 0 and x.stride(1) == 1, (x.shape, x.stride())
     q = torch.empty(M, K, dtype=torch.int8, device=x.device)
     sa = torch.empty(M, K // 128, dtype=torch.float32, device=x.device)
-    BR = 16
-    _quant_a8_k[(triton.cdiv(M, BR), K // 128)](x, q, sa, M, K, x.stride(0), q.stride(0), sa.stride(0), INV127=_INV127, BR=BR, num_warps=4)
+    BR = 32
+    _quant_a8_k[(K // 128, triton.cdiv(M, BR))](x, q, sa, M, K, x.stride(0), q.stride(0), sa.stride(0), INV127=_INV127, BR=BR, num_warps=4)
     return q, sa
 
 
