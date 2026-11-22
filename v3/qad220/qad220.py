@@ -633,6 +633,13 @@ def clip_factor(hist, g, x):
 
 
 # ------------------------------------------------------------------ trainer
+def map_opt_state(old, old_order, new_order, new_groups):
+    """w222: Adam state_dict of an optimizer over the parameters old_order -> a state_dict for the optimizer over new_order (param_groups = the new optimizer's): per-parameter state copied
+    by name, absent (fresh) for the new ones"""
+    pos = {n: i for i, n in enumerate(old_order)}
+    return {"state": {j: old["state"][pos[n]] for j, n in enumerate(new_order) if n in pos and pos[n] in old["state"]}, "param_groups": new_groups}
+
+
 class Trainer:
     def __init__(self, a, stu, C, steps, rows_of, dist, log, tap=None, loc=None):
         self.a, self.stu, self.C, self.steps, self.rows_of, self.d, self.log = a, stu, C, steps, rows_of, dist, log
@@ -743,12 +750,21 @@ class Trainer:
             sd = o_.state_dict()
             return {"state": {k: {n: (v.detach().cpu().clone() if torch.is_tensor(v) else v) for n, v in s.items()} for k, s in sd["state"].items()},
                     "param_groups": copy.deepcopy(sd["param_groups"])}
-        z = {"cur": self.stu.state(), "opt": cp(self.opt), "gn_hist": list(self.gn_hist)}
+        z = {"cur": self.stu.state(), "opt": cp(self.opt), "gn_hist": list(self.gn_hist), "opt_order": self.opt_order()}
         if self.opt_lo is not None: z["opt_lo"] = cp(self.opt_lo)
         return z
 
+    def opt_order(self):
+        """the trainable parameter names in the main optimizer's index order (the scale vectors, then the norm gains)"""
+        return [n for n in self.names if not n.endswith((":la", ":lb", ":g"))] + [n for n in self.names if n.endswith(":g")]
+
     def restore(self, z):
-        self.stu.load_state(z["cur"]); self.opt.load_state_dict(z["opt"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", []))
+        self.stu.load_state(z["cur"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", [])); self.partial_restore = False
+        if "opt_order" in z and z["opt_order"] != self.opt_order():     # w222: a fork into a different trainable set (staged MSE -> KL): Adam state by name, fresh for the rest
+            new = map_opt_state(z["opt"], z["opt_order"], self.opt_order(), self.opt.state_dict()["param_groups"])
+            self.opt.load_state_dict(new); self.partial_restore = True
+            self.log(f"partial restore: Adam state kept for {len(new['state'])} of {len(self.opt_order())} parameters (the state's {len(z['opt_order'])}), fresh for the rest")
+        else: self.opt.load_state_dict(z["opt"])
         if self.opt_lo is not None:
             self.opt_lo.load_state_dict(z["opt_lo"])
             with torch.no_grad():
@@ -1451,6 +1467,10 @@ def main():
             assert st["plan_sha"] == plan_sha(steps, st["step"]), f"--fork-from {fp}: its data plan up to step {st['step']} is not this run's"
         else: log(f"WARNING: {fp} carries no plan checksum (written without --save-at): the data prefix is not verified")
         assert st["step"] < last, f"--fork-from: the state's step {st['step']} is not before the run's end {last}"
+        if getattr(T, "partial_restore", False):            # w222: parameters that start without Adam state: the lr ramps over --warmup optimizer steps from the fork (as at a run's start)
+            fk, base_lr = st["step"], lr_at
+            lr_at = lambda q, _f=fk, _b=base_lr: _b(q) * min(1.0, ((q - _f) // N + 1) / a.warmup)
+            log(f"fork into a different trainable set: lr ramps up over {a.warmup} optimizer steps")
         log(f"fork from {fp} at main step {st['step']} ({int(cum[st['step'] - 1])} rows); decay starts at plan step {fork_last}, lr here {lr_at(st['step']):.3e}")
         fixed_log(st["step"], int(cum[st["step"] - 1]), "fork")
     else:

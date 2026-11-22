@@ -402,6 +402,11 @@ check("block mode: the gen KL is the plain run's (forward unchanged)", torch.equ
 check("block mode: layers 0-2 get exactly the gradient of their block's MSE at layer 2 through the chain (layer 0 included)", same(gb[:6], gr[:6]) and gb[0] is not None)
 check("block mode: layers 3-4 (second block, input detached) get a gradient that differs from the plain KL's; layer 5 and the head get exactly the plain KL gradient",
       gb[6] is not None and gb[8] is not None and not same(gb[6:10], gk[6:10], 1e-3) and same([gb[10], gb[11], gb[12]], [gk[10], gk[11], gk[12]]))
+# w222: Adam state by name for a fork into a bigger trainable set (staged MSE -> KL)
+mos, = grab("map_opt_state")[:1]
+old_st = {"state": {0: {"step": torch.tensor(5.), "exp_avg": torch.ones(2)}, 1: {"step": torch.tensor(5.), "exp_avg": 2 * torch.ones(3)}}, "param_groups": [{"params": [0, 1]}]}
+new_st = mos(old_st, ["a:r", "b:r"], ["x:r", "b:r", "a:r"], [{"params": [0, 1, 2]}])
+check("map_opt_state: state by name (b, a kept at their new indices), fresh for the new parameter", sorted(new_st["state"]) == [1, 2] and float(new_st["state"][1]["exp_avg"][0]) == 2.0 and float(new_st["state"][2]["exp_avg"][0]) == 1.0 and new_st["param_groups"] == [{"params": [0, 1, 2]}])
 lcr = LocalMSE("0-3,0.1,local", type("S", (), {"layers": (0, 1, 2, 3)})()); logs2 = []; lcr.restrict(2, logs2.append)
 check("LocalMSE.restrict drops layers before the first trainable one", lcr.layers == [2, 3] and logs2)
 
