@@ -68,6 +68,8 @@ def main():
                     help="global: eta = the step's rms over all probe tensors (one G scale); quant: per tensor, the step's rms = eta x the "
                          "tensor's quantization step delta (qerr218.py's --qerr JSON), i.e. W_t = W_hat - eta delta G / rms(G_tensor)")
     ap.add_argument("--qerr", default="/data/w218/runs/qerr.json")
+    ap.add_argument("--from-orig", action="store_true", help="the step starts from the bf16 checkpoint's weight in the codes' basis "
+                    "(W_hat_orig, qerr218.py's transform) instead of the current codes: a fresh encode of the true weight minus the step")
     a = ap.parse_args()
     gdirs = a.grad.split(",")
     if len(gdirs) > 1:
@@ -92,6 +94,15 @@ def main():
         tr = raw["trellis"]
         return deq.decode_hat(tr, K, table).numpy(), tr.numpy()
 
+    def orig(k):
+        from safetensors import safe_open
+        M = "/data/workspace/models/qwen38-27b-bf16"; ix = json.load(open(f"{M}/model.safetensors.index.json"))["weight_map"]
+        with safe_open(f"{M}/{ix[k + '.weight']}", "pt") as f: W = f.get_tensor(k + ".weight").float().T.contiguous()
+        raw = lev.raw(k); kk, n = W.shape; Hb = deq.hadamard128("cpu")
+        W = W / raw["suh"].float()[:, None] / raw["svh"].float()[None, :]
+        W = (Hb @ W.reshape(kk // 128, 128, n)).reshape(kk, n)
+        return (W.reshape(kk, n // 128, 128) @ Hb).reshape(kk, n).numpy()
+
     for e in [float(x) for x in a.etas.split(",")]:
         od = os.path.join(a.out, f"eta-{e:g}")
         if os.path.exists(os.path.join(od, "stats.json")): print(f"eta {e:g}: done before", flush=True); continue
@@ -99,10 +110,10 @@ def main():
         t0 = time.time(); lines = []
         for k in keys:
             kk, n = gm[k]["k"], gm[k]["n"]
-            w, _ = current(k)
+            w = orig(k) if a.from_orig else current(k)[0]
             g = np.fromfile(os.path.join(a.grad, k + ".g"), np.float32).reshape(kk, n)
             scale = e * qe[k]["delta"] / gm[k]["g_rms"] if qe else e / g_rms
-            t = (w - scale * g).astype(np.float32) if e else w
+            t = (w - scale * g).astype(np.float32) if e else w.astype(np.float32)
             t.tofile(os.path.join(od, k + ".target"))
             np.asarray(lev.raw(k)["suh"].float().numpy(), np.float64).tofile(os.path.join(od, k + ".suh"))
             lines.append(f"{hname(k)} {gm[k]['K']:g} {kk} {n} {od}/{k}.target {od}/{k}.suh {od}/{k}")
@@ -114,7 +125,7 @@ def main():
             print(r.stdout, r.stderr, flush=True); sys.exit(f"reencode failed (rc {r.returncode})")
         tool = {json.loads(l)["out"].rsplit("/", 1)[1]: json.loads(l) for l in r.stdout.splitlines() if l.startswith("{")}
         t2 = time.time()
-        st = {"eta": e, "step": a.step, "g_rms": g_rms, "base": a.base or "released", "grad": a.grad, "sec_targets": t1 - t0, "sec_encode": t2 - t1, "tensors": {}}
+        st = {"eta": e, "step": a.step, "from_orig": a.from_orig, "g_rms": g_rms, "base": a.base or "released", "grad": a.grad, "sec_targets": t1 - t0, "sec_encode": t2 - t1, "tensors": {}}
         for k in keys:
             kk, n, K = gm[k]["k"], gm[k]["n"], gm[k]["K"]
             w, tr0 = current(k)
