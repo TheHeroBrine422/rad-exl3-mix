@@ -9821,3 +9821,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (iv) = the queued I25C run. Memory bug found + fixed (15221f4e): 5 of 12 Triton autotune configs exceed 64 KiB LDS, their OOR
   exceptions held ~2.5 GiB of activations in a reference cycle until GC → configs dropped; peak back to baseline. Code `v3/qad223/`.
 - 11-22 ~6:00 AM CST (user, from bed): queue the low-rank scaling test (#3 / #2: w218 harness, 1M-row gradient for the 26 probe tensors, subspace from 500k / signal from 500k, held-out slope for codes AND projected scale steps vs the 300k result) — w218 resumed on iceman card 0 via the queue; recompile-limit fix — w222 (after accum branching). Dropped: 0.25× batch. Tomorrow (user awake): curvature line search along Adam's update (second-derivative step sizing).
+- 11-22 ~6:20 AM CST: **w218 low-rank scaling test: negative — more rows do NOT make the rank-4 direction transfer.** Reused saved
+  chunk gradients at the released codes (9 × 100k = 911k train rows; held-out = 17 tune docs). Held-out share of the in-sample slope:
+  300k 2.6 %, 100k −0.3 %, 400k −2 %, 450k −2 % (wrong sign); projected scale step 6–8 %, plain scale step 1–4 % (bar was ≥ 20 %).
+  Independent training halves disagree in sign: the rank-4 *subspace* is shared, the direction inside it is not. Cause: heavy-tailed
+  per-document gradients — chunk gradient norm varies ~35× (largest chunk holds blow-up doc 3820); mean pairwise chunk cosine 0.023.
+  Per-chunk normalisation does not rescue the weight step (held-out −0.16). **Low-rank code-QAD and low-rank scale-QAD: dead.**
+  Chunk 9 + a 34-doc tune gradient run after iceman's current job (`stop-card0` → `scaleup218.sh` ~12 min → `qwait.sh` hands the card
+  back); full 500k : 500k split to `runs/xfer-10c-t34*.json`, expected to confirm. Code `v3/qad218/` (f2490113), data `data/qad218/xfer/`.
