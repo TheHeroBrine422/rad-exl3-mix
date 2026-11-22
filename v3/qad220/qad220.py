@@ -338,6 +338,45 @@ def layer_of(stu, name):
     return int(m.group(1)) if m else len(stu.layers)
 
 
+def parse_range(s):
+    """'A-B' (inclusive) or 'A' -> (A, B)"""
+    a, _, b = s.partition("-")
+    lo, hi = int(a), int(b if b else a)
+    assert 0 <= lo <= hi, s
+    return lo, hi
+
+
+def apply_trainable(a, stu, log):
+    """--train-layers A-B (inclusive), --train-tensors REGEX (re.search on the parameter name <linear key>:<r|c>), --mask FILE.npz
+    (per scale vector name -> 0 / 1 per scale, mkmask220.py): the trainable set is their intersection. Frozen parameters stay in
+    stu.P (state, export) with requires_grad False; a mask that zeroes a whole vector freezes it; a vector the mask file does not list is not masked. Returns {name: bool tensor on the
+    parameter's device} of the partial masks (None when no entry is partly masked)"""
+    mk = None
+    if a.train_layers is not None:
+        lo, hi = parse_range(a.train_layers)
+    rx = re.compile(a.train_tensors) if a.train_tensors else None
+    if a.mask:
+        z = np.load(a.mask)
+        extra = sorted(set(z.files) - set(stu.P))
+        assert not extra, f"--mask: {len(extra)} names not in the student, e.g. {extra[:3]}"
+        mk = {}
+    off = 0
+    for n, p in stu.P.items():
+        keep = True
+        if a.train_layers is not None: keep = lo <= layer_of(stu, n) <= hi
+        if keep and rx is not None: keep = rx.search(n) is not None
+        if keep and a.mask and n in z.files:
+            m = z[n]; assert m.shape == tuple(p.shape), f"--mask {n}: shape {m.shape} vs the parameter's {tuple(p.shape)} (tied scales need a mask of the tied shape)"
+            m = m.astype(bool)
+            if not m.any(): keep = False
+            elif not m.all(): mk[n] = torch.from_numpy(m).to(p.device)
+        if not keep: p.requires_grad_(False)
+    if a.train_layers is not None or rx is not None or a.mask:
+        log(f"trainable set: layers {a.train_layers}, tensors {a.train_tensors}, mask {a.mask}"
+            + (f" ({len(mk)} partly masked vectors, {sum(int(m.sum()) for m in mk.values())} of {sum(m.numel() for m in mk.values())} scales kept)" if mk else ""))
+    return mk or None
+
+
 def set_first_train(stu, log):
     """stu.first_train = the first decoder layer holding a trainable parameter: run_segment runs the layers before it once under
     no_grad (no activations kept, no checkpoint recompute, no backward)"""
@@ -372,6 +411,15 @@ class Trainer:
         self.lo = lo; self.is_lo = [n.endswith((":la", ":lb")) for n in self.names]
         self.lo_m = [p.detach().cpu().clone().requires_grad_(True) for p in lo]
         self.opt_lo = torch.optim.Adam([{"params": self.lo_m, "base": a.lr_lora}], lr=a.lr_lora, betas=(0.9, 0.99)) if lo else None
+        self.pin = []                                        # w220 --mask: partly masked vectors (mask, start value on the card)
+        self.fmask = None
+        if getattr(stu, "mask", None):
+            parts = []
+            for n, p in zip(self.names, self.P):
+                m = stu.mask.get(n)
+                parts.append(torch.ones(p.numel(), dtype=torch.float64) if m is None else m.reshape(-1).cpu().double())
+                if m is not None: self.pin.append((p, m, p.detach().clone()))
+            self.fmask = torch.cat(parts)
         self.mine = [s for s in range(a.V) if s % dist.world == dist.rank]
         self.states = {}                                     # stream -> (item index, offset, state on CPU)
         tags = sorted(set(C.tags)); self.tags = tags; self.tix = {t: k for k, t in enumerate(tags)}
@@ -412,6 +460,7 @@ class Trainer:
                 del prev, nxt
         flat = torch.cat([(p.grad if p.grad is not None else torch.zeros_like(p)).reshape(-1).double().cpu() for p in self.P] + [acc])
         self.d.allsum(flat)
+        if self.fmask is not None: flat[:len(self.fmask)] *= self.fmask         # w220 --mask: masked scales get gradient 0
         o = 0; k = 0
         for p, il in zip(self.P, self.is_lo):
             n = p.numel()
@@ -426,6 +475,7 @@ class Trainer:
             with torch.no_grad():
                 for p, m in zip(self.lo, self.lo_m): p.copy_(m.to(p.device, non_blocking=True)); m.grad = None
         with torch.no_grad():
+            for p, m, p0 in self.pin: p.copy_(torch.where(m, p, p0))        # masked scales stay at their start value (also under --wd)
             for p in self.scal: p.clamp_(-a.trust, a.trust)                 # the log multipliers only (not adapters)
         return accs, time.time() - t0
 
@@ -994,6 +1044,10 @@ def parser():
     ap.add_argument("--rows", type=float, default=None, help="#200: the budget in gen rows (overrides --budgets)")
     ap.add_argument("--order-seed", type=int, default=None, help="#200: data-order seed (alias of --seed)")
     ap.add_argument("--warmup-frac", type=str, default=None, help="#200: warmup as a fraction of the optimizer steps (8/49), overrides --warmup")
+    # w220
+    ap.add_argument("--train-layers", default=None, help="w220: train only the parameters of decoder layers A-B (inclusive); the layers before A run once under no_grad")
+    ap.add_argument("--train-tensors", default=None, help="w220: train only the parameters whose name (<linear key>:<r|c|g>) matches this regex (re.search)")
+    ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
     return ap
 
 
@@ -1071,6 +1125,7 @@ def main():
             open(o + "/.done", "w").close()
         log(f"export-only (#196): {o}")
         return
+    stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log)
     use_seg_attention(stu)
     if a.compile_scales: use_compiled_scales(stu, a.a8); log(f"QLinear scales compiled (a8 {a.a8})")
