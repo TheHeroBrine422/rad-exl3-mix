@@ -292,5 +292,132 @@ check("calib cooldown: steps before fork_last unchanged (same plan checksum), th
       st2[:fl] == steps0[:fl] and plan_sha(st2, fl) == plan_sha(steps0, fl) and tail_items and all(C.tags[C.items[it][0]] == "calib" for it in tail_items) and not (tail_items & used))
 check("calib cooldown: every unused calib document is planned once", tail_items == {k for k, x in enumerate(C.items) if x[0] == 1 and k not in used})
 check("plan_sha differs when the plan differs", plan_sha(st2, fl + 5) != plan_sha(steps0, fl + 5))
+
+# ---------------------------------------------------------------- item 6: prompt weight, local MSE
+ns["chunk_kl"] = __import__("qad").chunk_kl
+parse_layers, scored_all, chunk_kl_rows, seg_loss, seg_loss_ext = grab("parse_layers", "scored_all", "chunk_kl_rows", "seg_loss", "seg_loss_ext", classes=("LocalMSE", "TapStore"))[:5]
+LocalMSE, TapStore = ns["LocalMSE"], ns["TapStore"]
+ns["TAPS"] = (5, 19, 33, 47, 61)
+check("parse_layers", parse_layers("0-3") == [0, 1, 2, 3] and parse_layers("5+19+33") == [5, 19, 33] and parse_layers("0-1+4") == [0, 1, 4])
+
+# a real data181.Gold on a synthetic golden: 2 docs, gen mask with prompt-side rows
+V_, K_, d_ = 32, 4, 16
+gdir = os.path.join(tmp, "gold"); os.makedirs(gdir)
+nt = [40, 30]; sf = [0, 2]; rg_ = np.random.default_rng(5)
+R_ = sum(n - 1 - s0 for n, s0 in zip(nt, sf))
+rec = D.rec(K_); top = np.empty((R_, K_), rec); rows = np.zeros((R_, 3), np.float32)
+for r in range(R_):
+    pr = rg_.dirichlet(np.ones(V_) * 0.3); ix = np.argsort(-pr)[:K_]; top["id"][r] = ix; top["lp"][r] = np.log(pr[ix]); rows[r, 2] = 1 - pr[ix].sum()
+top.tofile(f"{gdir}/top.bin"); rows.tofile(f"{gdir}/rows.f32")
+rg_.integers(0, V_, sum(nt)).astype(np.int32).tofile(f"{gdir}/tokens.i32")
+r0 = 0; docs = []
+for n, s0 in zip(nt, sf): docs.append({"tokens": n, "score_from": s0, "row0": r0}); r0 += n - 1 - s0
+json.dump({"docs": docs, "top": K_, "rows": R_}, open(f"{gdir}/kld.json", "w"))
+gen = (np.arange(R_) % 3 != 0).astype(np.uint8); gen.tofile(f"{gdir}/gen.u8")
+gold = D.Gold(gdir, "toy")
+j_all, r_all, isg = scored_all(gold, 0, 0, 40); jg, rg = gold.scored(0, 0, 40)
+check("scored_all: every row of the window, gen flags = the golden's gen mask, gen rows = Gold.scored", len(j_all) == 39 and np.array_equal(j_all[isg], jg)
+      and np.array_equal(r_all[isg], rg) and 0 < isg.sum() < 39 and np.array_equal(isg, gen[r_all].astype(bool)))
+j2, r2, g2_ = scored_all(gold, 1, 5, 20); check("scored_all: a mid-document window", np.array_equal(j2, np.arange(5, 20)) and len(r2) == 15)
+
+class ToyStu2(ToyStu):
+    def __init__(self, nl=6, seed=0):
+        super().__init__(nl, d_, seed)
+        torch.manual_seed(seed + 1); self.head = torch.nn.Linear(d_, V_, bias=False); self.v2row = None
+        self.emb_ids = None
+    def embed(self, ids): return torch.randn(1, len(ids), d_, generator=torch.Generator().manual_seed(int(ids[0]) + 7)) * 0.5
+gl = [gold]
+def grads_of(stu, loss):
+    for p in list(stu.head.parameters()) + [q for l in stu.layers for q in l.parameters()]: p.grad = None
+    loss.backward()
+    return [None if q.grad is None else q.grad.clone() for l in stu.layers for q in (l.w, l.b)] + [None if stu.head.weight.grad is None else stu.head.weight.grad.clone()]
+def same(x, y, tol=0.0):
+    return all((u is None and v is None) or (u is not None and v is not None and (torch.equal(u, v) if tol == 0 else torch.allclose(u, v, rtol=tol, atol=tol * float(v.abs().max())))) for u, v in zip(x, y))
+
+st_ = ToyStu2(); tot0, m0, _ = seg_loss(st_, gl, (0, 0), 0, 40, None); g0 = grads_of(st_, tot0)
+st_ = ToyStu2(); loss, genkl, mg, n_all, _, ls = seg_loss_ext(st_, gl, (0, 0), 0, 40, None); g1 = grads_of(st_, loss)
+check("seg_loss_ext, prompt weight 0 and no local MSE: loss, gen KL, rows and gradients identical to seg_loss",
+      torch.equal(loss, tot0) and torch.equal(genkl, tot0.detach()) and mg == m0 == n_all and same(g0, g1) and float(ls) == 0.0)
+# prompt weight W: loss = gen KL + W x prompt KL, from per-row KL
+W = 0.3
+st_ = ToyStu2(); h_, _ = run_segment(st_, gold.ids(0, 0, 40), 0, None)
+tid, tlp, pt = gold.targets(r_all, torch.device("cpu"))
+kl_all = ns["chunk_kl"](h_[torch.from_numpy(j_all)], st_.head, tid, tlp, pt, True)
+want = kl_all[torch.from_numpy(isg)].sum() + W * kl_all[torch.from_numpy(~isg)].sum(); gw = grads_of(st_, want)
+st_ = ToyStu2(); loss, genkl, mg, n_all, _, _ = seg_loss_ext(st_, gl, (0, 0), 0, 40, None, pw=W); g2 = grads_of(st_, loss)
+check("--prompt-weight W: loss = gen KL sum + W x prompt KL sum (per-row recomputation), gradients match, gen KL stays gen-only, rows = gen rows",
+      torch.allclose(loss, want, rtol=1e-6) and torch.allclose(genkl, kl_all[torch.from_numpy(isg)].sum(), rtol=1e-6) and mg == int(isg.sum()) and n_all == 39 and same(g2, gw, 1e-5),
+      f"loss {float(loss):.5f} want {float(want):.5f}")
+check("--prompt-weight changes the gradient (prompt rows contribute)", not same(g2, g1, 1e-4))
+
+# local MSE: a store of the teacher's states at layers [1, 2, 4] of the gen rows (synthetic), taps format
+sdir = os.path.join(tmp, "taps"); os.makedirs(sdir)
+tl_ = [1, 2, 4]; Rg = int(gen.astype(bool)[:38].sum())
+nrow_doc0 = len(jg)
+mm = np.random.default_rng(3).standard_normal((nrow_doc0, len(tl_), d_)).astype(np.float32)
+mm_bf = torch.from_numpy(mm).to(torch.bfloat16).view(torch.int16).numpy().view(np.uint16); mm_bf.tofile(f"{sdir}/taps.bin")
+json.dump({"taps": tl_, "hidden": d_, "rows": nrow_doc0, "docs": {"toy:0": [0, 40]}}, open(f"{sdir}/index.json", "w")); open(f"{sdir}/.done", "w").close()
+store = TapStore(sdir, any_layers=True)
+check("TapStore(any_layers): layers from the index, rows at the gen positions", store.layers == (1, 2, 4) and torch.equal(store.rows(gold, 0, jg, "cpu")[:, 1].float(), torch.from_numpy(mm[:, 1]).to(torch.bfloat16).float()))
+try: TapStore(sdir); ok = False
+except AssertionError: ok = True
+check("TapStore (the T arm) still requires the DFlash2 layers", ok)
+try: LocalMSE("0-3,0.1", store); ok = False
+except AssertionError: ok = True
+check("--local-mse: layers missing from the store are an error", ok)
+def run_loc(mode, lam=0.5, layers="1+2"):
+    st = ToyStu2(); loc = LocalMSE(f"{layers},{lam},{mode}", store)
+    loss, genkl, mg, n_all, _, ls = seg_loss_ext(st, gl, (0, 0), 0, 40, None, loc=loc)
+    return st, loc, loss, genkl, ls
+# KL-only reference gradients (the plain run) and MSE-only gradients on the same graph shape
+st_ = ToyStu2(); tot_kl, _, _ = seg_loss(st_, gl, (0, 0), 0, 40, None); gk = grads_of(st_, tot_kl)
+st, loc, loss, genkl, ls = run_loc("local"); gl_ = grads_of(st, loss)
+check("local mode: the gen KL is the plain run's (forward unchanged)", torch.equal(genkl, tot_kl.detach()))
+# MSE-only through a local chain: lambda x term, same forward
+st_ = ToyStu2(); loc_ = LocalMSE("1+2,0.5,local", store)
+h_, _, outs = run_segment(st_, gold.ids(0, 0, 40), 0, None, loc=loc_)
+mse_only = loc_.lam * loc_.term(outs, store.rows(gold, 0, jg, "cpu"), torch.from_numpy(jg))
+gm = grads_of(st_, mse_only)
+nl = len(st.layers)
+ok_loc = all(same([gl_[2 * L], gl_[2 * L + 1]], [gm[2 * L], gm[2 * L + 1]]) for L in (1, 2)) and gl_[0] is None and gl_[1] is None
+ok_back = all(same([gl_[2 * L], gl_[2 * L + 1]], [gk[2 * L], gk[2 * L + 1]]) for L in (3, 4, 5))
+check("local mode: listed layers (1, 2) get exactly their own MSE gradient (no KL), layer 0 none, the layers after (3-5) get exactly the plain KL gradient", ok_loc and ok_back)
+check("local mode: the KL reaches no listed layer (their gradients differ from the plain KL run's)", not same([gl_[2], gl_[3]], [gk[2], gk[3]], 1e-3))
+st, loc, loss, genkl, ls = run_loc("joint"); gj = grads_of(st, loss)
+st_ = ToyStu2(); h_, _, outs = run_segment(st_, gold.ids(0, 0, 40), 0, None, loc=LocalMSE("1+2,0.5,joint", store))
+tt = store.rows(gold, 0, jg, "cpu"); lc = LocalMSE("1+2,0.5,joint", store)
+tid, tlp, pt = gold.targets(rg, torch.device("cpu"))
+kl_g = ns["chunk_kl"](h_[torch.from_numpy(jg)], st_.head, tid, tlp, pt)
+gjw = grads_of(st_, kl_g + 0.5 * lc.term(outs, tt, torch.from_numpy(jg)))
+check("joint mode: gradient of KL + lambda MSE through the whole chain (layer 0 included)", same(gj, gjw, 1e-5) and gj[0] is not None)
+check("local MSE term reported = the term's value", abs(float(ls) - float(lc.term(outs, tt, torch.from_numpy(jg)))) < 1e-5 * float(ls))
+lcr = LocalMSE("0-3,0.1,local", type("S", (), {"layers": (0, 1, 2, 3)})()); logs2 = []; lcr.restrict(2, logs2.append)
+check("LocalMSE.restrict drops layers before the first trainable one", lcr.layers == [2, 3] and logs2)
+
+# ---------------------------------------------------------------- item 7: --a8 composes (tied scales; the a8 forward reads r / c through su() / sv())
+use_a8, = grab("use_a8", classes=("_A8",))[:1]
+qa = mkq(); tie_linear(qa, G); qb = mkq()
+with torch.no_grad():
+    qa._parameters["r_t"].copy_(rt); qa._parameters["c_t"].copy_(ct); qb.r.copy_(rt.repeat_interleave(G)); qb.c.copy_(ct.repeat_interleave(G))
+use_a8(types.SimpleNamespace(qlin={"a": qa, "b": qb}))
+ya, yb = qa(x), qb(x)
+check("a8 forward: tied linear bitwise = the untied one with the expanded scales", torch.equal(ya, yb) and not torch.equal(ya, (mkq().__class__.forward)(qa, x)))
+(ya.float() ** 2).sum().backward(); (yb.float() ** 2).sum().backward()
+check("a8 backward (STE): the tied gradient is the group sum of the untied one",
+      torch.allclose(qa._parameters["r_t"].grad, qb.r.grad.view(-1, G).sum(1), rtol=1e-5, atol=1e-6 * float(qb.r.grad.abs().max())))
+
+# ---------------------------------------------------------------- parser: every w220 flag defaults to today's behaviour
+ns["__doc__"] = ast.get_docstring(TREE)
+parser, = grab("parser")
+d = parser().parse_args(["OUT", "--model", "m", "--level", "l", "--chunks", "c"])
+check("parser defaults: no w220 flag is on", d.train_layers is None and d.train_tensors is None and d.mask is None and d.tie_groups == 1 and d.tie_layers is None
+      and d.clip_gnorm == 0.0 and d.beta2 == 0.99 and d.lr_steps is None and d.decay_shape == "linear" and d.fork_from is None and d.decay_data == "mix"
+      and d.save_at is None and d.prompt_weight == 0.0 and d.local_mse is None and d.local_taps is None and d.tap_layers is None
+      and d.eps == 1e-8 and d.wd == 0.0 and d.accum == 1 and not d.a8 and not d.compile_scales and not d.compile_ew)
+d = parser().parse_args(["OUT", "--model", "m", "--level", "l", "--chunks", "c", "--train-layers", "32-63", "--tie-groups", "128", "--tie-layers", "0-31", "--clip-gnorm", "3",
+                         "--beta2", "0.95", "--lr-steps", "1e-3:2.5e5,3e-4:9e5", "--decay-shape", "sqrt", "--decay-data", "calib", "--prompt-weight", "0.2",
+                         "--local-mse", "0-31,0.1", "--local-taps", "T", "--fork-from", "F", "--save-at", "6e5", "--mask", "m.npz", "--train-tensors", "q_proj", "--a8", "--compile-scales", "--compile-ew"])
+check("parser: every w220 flag parses (with --a8 and the compile flags)", d.train_layers == "32-63" and d.tie_groups == 128 and d.clip_gnorm == 3.0 and d.beta2 == 0.95 and d.decay_shape == "sqrt"
+      and d.decay_data == "calib" and d.prompt_weight == 0.2 and d.local_mse == "0-31,0.1" and d.a8 and d.compile_scales and d.compile_ew)
 print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
 sys.exit(1 if fails else 0)

@@ -195,10 +195,11 @@ def use_seg_attention(stu):
 TAPS = (5, 19, 33, 47, 61)      # DFlash2 target_layer_ids: radiance copies layer li's output (residual stream) into the taps
 
 
-def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None):
+def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     """final-norm hidden states [n, H] of tokens a .. a + n - 1 of a document given the state after 0 .. a - 1 (prev:
     a SegCache.next of the segment before, or None at a = 0); returns (h, next state); with taps (layer indices) also
-    {layer: its output [1, n, H]}"""
+    {layer: its output [1, n, H]}; w220 loc (a LocalMSE): the same third value for loc's layers, and in mode "local" those layers
+    are cut out of the KL's graph (input and output detached: they train on their own MSE only)"""
     q35 = stu.q35
     dev = stu.devs[0]
     assert len(stu.devs) == 1, "qad181: one card a student"
@@ -206,16 +207,21 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None):
     n = x.shape[1]
     pid = torch.arange(a, a + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
     pe = stu.rotary[dev](x, pid[1:])
-    cache = SegCache(prev); tp = {}
+    cache = SegCache(prev); tp = {}; lo = {}
     ft = getattr(stu, "first_train", 0)                  # w220: layers before the first trainable one run once, no autograd
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
-        if i < ft and torch.is_grad_enabled():
+        if loc is not None and i in loc.set:
+            xi = x.detach() if loc.mode == "local" else x
+            o = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), xi, use_reentrant=False) if ckpt and torch.is_grad_enabled() else ly(xi, **kw)
+            lo[i] = o; x = o.detach() if loc.mode == "local" else o
+        elif i < ft and torch.is_grad_enabled():
             with torch.no_grad(): x = ly(x, **kw)
         elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
         else: x = ly(x, **kw)
         if taps is not None and i in taps: tp[i] = x
     if taps is not None: return stu.fnorm(x)[0], cache.next, tp
+    if loc is not None: return stu.fnorm(x)[0], cache.next, lo
     return stu.fnorm(x)[0], cache.next
 
 
@@ -260,11 +266,12 @@ class TapStore:
     """the bf16 teacher's TAPS states at the gen rows of the documents of a data stream (--make-taps): DIR/taps.bin
     bf16 [rows, taps, H], DIR/index.json {"golden:doc": [row offset, window]}; a document's stored rows are its
     scored positions in [0, window) in order"""
-    def __init__(self, d):
+    def __init__(self, d, any_layers=False):
         z = json.load(open(f"{d}/index.json")); assert os.path.exists(f"{d}/.done"), f"{d}: taps not finished"
-        assert tuple(z["taps"]) == TAPS, z["taps"]
+        if not any_layers: assert tuple(z["taps"]) == TAPS, z["taps"]          # the T arm: the DFlash2 taps
+        self.layers = tuple(z["taps"])                                          # w220 (--local-taps): any layers (--make-taps --tap-layers)
         self.off, self.H = z["docs"], z["hidden"]
-        self.mm = np.memmap(f"{d}/taps.bin", np.uint16, "r", shape=(z["rows"], len(TAPS), self.H))
+        self.mm = np.memmap(f"{d}/taps.bin", np.uint16, "r", shape=(z["rows"], len(self.layers), self.H))
         self.J = {}
 
     def rows(self, gold, i, j, dev):
@@ -276,6 +283,87 @@ class TapStore:
         assert np.array_equal(J[lo:lo + len(j)], j), (key, j[0], j[-1])
         x = torch.from_numpy(np.array(self.mm[o + lo:o + lo + len(j)])).view(BF)             # a copy (the memmap is read-only)
         return x.to(dev, non_blocking=True)
+
+
+# ------------------------------------------------------------------ loss options (w220)
+def parse_layers(s):
+    """'0-31', '5+19+33', '0-15+20' -> sorted layer list"""
+    out = set()
+    for t in s.split("+"):
+        lo, hi = parse_range(t); out.update(range(lo, hi + 1))
+    return sorted(out)
+
+
+class LocalMSE:
+    """--local-mse LAYERS,lambda[,local|joint] with --local-taps DIR: the bf16 teacher's hidden states (a TapStore of any layers) at
+    the gen rows as targets of the student's outputs of the listed layers; the term is lambda x (the sum over a segment's gen rows of
+    the mean over the listed layers of |s - t|^2 / |t|^2) and joins the KL sum before the division by the step's rows.
+    mode local (default): a listed layer's input is the previous output detached and its own output continues detached, so it trains
+    on its MSE alone (the KL never reaches it) and the MSE of layer i reaches only layer i; each layer is fed the student's own
+    state, the target is the bf16 trajectory's (arm B's block-wise loss). joint: gradients flow through the whole chain"""
+    def __init__(self, spec, store):
+        f = spec.split(",")
+        self.layers = parse_layers(f[0]); self.lam = float(f[1]); self.mode = f[2] if len(f) > 2 else "local"
+        assert self.mode in ("local", "joint") and len(f) in (2, 3), f"--local-mse LAYERS,lambda[,local|joint]: {spec}"
+        self.store = store
+        miss = [L for L in self.layers if L not in store.layers]
+        assert not miss, f"--local-mse: layers {miss} are not in the --local-taps store {store.layers}"
+        self.set = set(self.layers)
+
+    def restrict(self, first_train, log):
+        """layers before the first trainable one have nothing to train (and run under no_grad): drop them"""
+        drop = [L for L in self.layers if L < first_train]
+        if drop: log(f"--local-mse: layers {drop} are before the first trainable layer {first_train}: dropped")
+        self.layers = [L for L in self.layers if L >= first_train]; self.set = set(self.layers)
+        assert self.layers, "--local-mse: no listed layer is trainable"
+
+    def term(self, outs, tt, jj):
+        """sum over the rows jj of the segment of the mean over the layers of |s - t|^2 / |t|^2 (tt: the store's rows [m, layers, H])"""
+        ts = 0.0
+        for L in self.layers:
+            s = outs[L][0, jj].float(); t = tt[:, self.store.layers.index(L)].float()
+            ts = ts + ((s - t).pow(2).sum(-1) / t.pow(2).sum(-1).clamp_min(1e-12)).sum()
+        return ts / len(self.layers)
+
+
+def scored_all(gold, i, a, b):
+    """every row of the golden in [a, b) with its gen flag: (positions, rows, is_gen bool array); a golden without a gen mask has gen rows only"""
+    d = gold.docs[i]
+    j = np.arange(max(a, d["score_from"]), min(b, d["tokens"] - 1))
+    r = d["row0"] + j - d["score_from"]
+    if gold.gen is None or not len(r): return j, r, np.ones(len(j), bool)
+    return j, r, np.asarray(gold.gen[r[0]:r[-1] + 1]).astype(bool)[r - r[0]]
+
+
+def chunk_kl_rows(h, head, tid, tlp, ptail): return chunk_kl(h, head, tid, tlp, ptail, True)
+
+
+def seg_loss_ext(stu, g, it, a, b, prev, pw=0.0, loc=None, ch=256):
+    """seg_loss with the w220 loss options: (loss for backward, gen KL sum, gen rows, all rows, next state, local MSE term sum).
+    loss = sum over the segment's gen rows of KL + pw x sum over its prompt rows of KL (--prompt-weight; the golden's rows outside
+    its gen mask) + loc.lam x the local MSE term; the trainer divides it by the step's gen rows. gen KL / local term: detached"""
+    gi, i = it
+    gold = g[gi]
+    jg, rg = gold.scored(i, a, b)
+    if loc is not None: h, nxt, outs = run_segment(stu, gold.ids(i, a, b), a, prev, loc=loc)
+    else: h, nxt = run_segment(stu, gold.ids(i, a, b), a, prev)
+    dev = h.device; z = torch.zeros((), device=dev)
+    if pw > 0: j, r, isg = scored_all(gold, i, a, b)
+    else: j, r, isg = jg, rg, np.ones(len(jg), bool)
+    if len(j) == 0: return z, z, 0, 0, nxt, z
+    ls = z
+    if loc is not None and len(jg): ls = loc.term(outs, loc.store.rows(gold, i, jg, dev), torch.from_numpy(jg - a).to(dev))
+    h = h[torch.from_numpy(j - a).to(dev)]
+    tid, tlp, ptail = gold.targets(r, dev)
+    if stu.v2row is not None: tid = stu.v2row[tid]
+    wg = torch.from_numpy(isg).to(dev).float(); wt = torch.where(wg > 0, torch.ones_like(wg), torch.full_like(wg, pw))
+    tot = 0.0; gen = z
+    for c in range(0, len(j), ch):
+        args = (h[c:c + ch], stu.head, tid[c:c + ch], tlp[c:c + ch], ptail[c:c + ch])
+        v = checkpoint(chunk_kl_rows, *args, use_reentrant=False) if torch.is_grad_enabled() else chunk_kl_rows(*args)
+        tot = tot + (v * wt[c:c + ch]).sum(); gen = gen + (v.detach() * wg[c:c + ch]).sum()
+    if loc is not None: tot = tot + loc.lam * ls
+    return tot, gen, int(isg.sum()), len(j), nxt, ls.detach()
 
 
 def to_cpu(st): return {k: (tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu()) for k, v in st.items()}
@@ -525,9 +613,10 @@ def clip_factor(hist, g, x):
 
 # ------------------------------------------------------------------ trainer
 class Trainer:
-    def __init__(self, a, stu, C, steps, rows_of, dist, log, tap=None):
+    def __init__(self, a, stu, C, steps, rows_of, dist, log, tap=None, loc=None):
         self.a, self.stu, self.C, self.steps, self.rows_of, self.d, self.log = a, stu, C, steps, rows_of, dist, log
         self.tap = tap                                       # T: a TapStore (weight a.tap_weight)
+        self.loc = loc                                       # w220: a LocalMSE (--local-mse); with a.prompt_weight: seg_loss_ext
         self.dev = stu.devs[0]
         tr = [(n, p) for n, p in stu.P.items() if p.requires_grad]       # w220: frozen parameters (--train-*, --mask) stay in stu.P (state, export)
         self.P = [p for _, p in tr]; self.names = [n for n, _ in tr]
@@ -582,7 +671,11 @@ class Trainer:
                     k = self.states.get(sid)
                     if k is not None and k[0] == it and k[1] == sa: prev = to_dev(k[2], self.dev)
                     else: prev = prefix_state(stu, self.C.g, (gi, i), sa, a.len); acc[-1] += sa
-                if self.tap is not None:
+                if self.a.prompt_weight > 0 or self.loc is not None:
+                    loss, kl, m, n_all, nxt, ls = seg_loss_ext(stu, self.C.g, (gi, i), sa, sb, prev, self.a.prompt_weight, self.loc)
+                    if n_all: (loss / N).backward()
+                    acc[-2] += float(ls)
+                elif self.tap is not None:
                     kl, m, nxt, ts = seg_loss(stu, self.C.g, (gi, i), sa, sb, prev, tap=self.tap)
                     if m: ((kl + a.tap_weight * ts) / N).backward()
                     acc[-2] += float(ts)
@@ -1020,6 +1113,7 @@ def make_taps(a, P, log):
     from its start to its window): OUT/taps.bin + index.json; restartable (progress.json, flushed every 64 docs)"""
     C, steps, last = P["C"], P["steps"], P["last"]
     out = a.make_taps; os.makedirs(out, exist_ok=True)
+    tl = [int(x) for x in a.tap_layers.split(",")] if a.tap_layers else list(TAPS)
     seen, docs = set(), []
     for s in range(last):
         for segs in steps[s]:
@@ -1032,21 +1126,21 @@ def make_taps(a, P, log):
         idx[f"{C.g[gi].name}:{i}"] = [o, n]; J.append(j); o += len(j)
     H = 5120
     ip = os.path.join(out, "index.json")
-    z = {"taps": list(TAPS), "hidden": H, "rows": o, "docs": idx, "plan_last": last, "order": "mix50" if a.mix50 is not None else "shuffle"}
+    z = {"taps": tl, "hidden": H, "rows": o, "docs": idx, "plan_last": last, "order": "mix50" if a.mix50 is not None else "shuffle"}
     if os.path.exists(ip): assert json.load(open(ip)) == z, "index differs from the existing one"
     else: json.dump(z, open(ip + ".part", "w")); os.replace(ip + ".part", ip)
     bf = os.path.join(out, "taps.bin")
-    mm = np.memmap(bf, np.uint16, "r+" if os.path.exists(bf) else "w+", shape=(o, len(TAPS), H))
+    mm = np.memmap(bf, np.uint16, "r+" if os.path.exists(bf) else "w+", shape=(o, len(tl), H))
     pp = os.path.join(out, "progress.json"); done = json.load(open(pp))["done"] if os.path.exists(pp) else 0
-    log(f"taps: {len(docs)} documents, {o} rows ({o * len(TAPS) * H * 2 / 2**30:.1f} GiB), {done} done")
+    log(f"taps: {len(docs)} documents, {o} rows ({o * len(tl) * H * 2 / 2**30:.1f} GiB), {done} done")
     devs = [f"cuda:{k}" for k in range(torch.cuda.device_count())]
-    tea = build_student(a, devs, log, lora=0, layers=TAPS[-1] + 1, quant_layers=[], served=False)
+    tea = build_student(a, devs, log, lora=0, layers=max(tl) + 1, quant_layers=[], served=False)
     use_seg_attention(tea)
     t0 = time.time(); ntok = 0
     for k in range(done, len(docs)):
         it = docs[k]; gi, i, n, _ = C.items[it]
         x = torch.from_numpy(np.ascontiguousarray(tea.emb_bf16[C.g[gi].ids(i, 0, n)])).view(BF)[None]
-        cache = SegCache(None); pes = {}; rows = np.empty((len(J[k]), len(TAPS), H), np.uint16)
+        cache = SegCache(None); pes = {}; rows = np.empty((len(J[k]), len(tl), H), np.uint16)
         jj = None
         for l, ly in enumerate(tea.layers):
             dev = tea.dev_of[l]
@@ -1054,9 +1148,9 @@ def make_taps(a, P, log):
             if dev not in pes:
                 pid = torch.arange(n, device=dev).view(1, 1, -1).expand(4, 1, -1); pes[dev] = (tea.rotary[dev](x, pid[1:]), pid[0])
             x = ly(x, position_embeddings=pes[dev][0], attention_mask=None, position_ids=pes[dev][1], past_key_values=cache)
-            if l in TAPS:
+            if l in tl:
                 jj = torch.from_numpy(J[k]).to(dev)
-                rows[:, TAPS.index(l)] = x[0, jj].view(torch.int16).cpu().numpy().view(np.uint16)
+                rows[:, tl.index(l)] = x[0, jj].view(torch.int16).cpu().numpy().view(np.uint16)
         o0 = idx[f"{C.g[gi].name}:{i}"][0]; mm[o0:o0 + len(J[k])] = rows; ntok += n
         if (k + 1) % 64 == 0 or k + 1 == len(docs):
             mm.flush(); json.dump({"done": k + 1}, open(pp + ".part", "w")); os.replace(pp + ".part", pp)
@@ -1195,6 +1289,10 @@ def parser():
     ap.add_argument("--fork-from", default=None, help="w220: start from a saved state (DIR/state.pt or a state-<rows>.pt file: parameters, optimizer, step) in a fresh OUT and run on from its step with this run's schedule (a cooldown)")
     ap.add_argument("--decay-data", choices=("mix", "calib"), default="mix", help="w220: data of the decay phase: the plan's own mix, or unused calib documents only")
     ap.add_argument("--save-at", default=None, help="w220: comma list of gen-row counts: OUT/state-<rows>.pt is written when the run first passes each (fork points for --fork-from)")
+    ap.add_argument("--prompt-weight", type=float, default=0.0, help="w220: add the golden's prompt-side rows (outside the gen mask) to the loss at this weight per row (0 = gen rows only, as before); the loss is still divided by the step's gen rows")
+    ap.add_argument("--local-mse", default=None, help="w220: LAYERS,lambda[,local|joint]: lambda x the hidden-state MSE vs the bf16 model at those layers (LAYERS: 0-31, 5+19+33; needs --local-taps), added to the KL")
+    ap.add_argument("--local-taps", default=None, help="w220: the bf16 teacher's hidden states of the --local-mse layers (--make-taps DIR --tap-layers L,L,...)")
+    ap.add_argument("--tap-layers", default=None, help="w220: with --make-taps: comma list of layers to store (default the DFlash2 taps 5,19,33,47,61)")
     ap.add_argument("--clip-gnorm", type=float, default=0.0, help="w220: clip the global gradient norm at X x the running median batch norm (logs the clipped steps; 0 = off)")
     ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
@@ -1285,6 +1383,12 @@ def main():
     elif a.a8 and not a.check: use_a8(stu)
     elif a.lora: use_lora32(stu); log("arm L: adapters in f32 (use_lora32)")
     if a.a8: log("arm Q: a8g128 fake-quant activations on every trunk linear (STE)")
+    assert not (a.prompt_weight > 0 and a.taps), "--prompt-weight with the T arm (--taps) is not implemented"
+    loc = None
+    if a.local_mse:
+        assert a.local_taps and not a.taps, "--local-mse needs --local-taps DIR (and not the T arm's --taps)"
+        loc = LocalMSE(a.local_mse, TapStore(a.local_taps, any_layers=True)); loc.restrict(stu.first_train, log)
+        log(f"local MSE: layers {loc.layers[0]}..{loc.layers[-1]} ({len(loc.layers)}), lambda {loc.lam}, mode {loc.mode}, targets {a.local_taps}")
     tap = TapStore(a.taps) if a.taps else None
     if tap is not None: log(f"arm T: tap MSE at layers {TAPS} from {a.taps}, weight {a.tap_weight}")
     if a.check: return check(a, stu, P, tap, log)
@@ -1298,7 +1402,7 @@ def main():
     if a.block_frac and not os.path.exists(sp):
         assert d.world == 1, "B: one card"
         block_stage(a, stu, P, k0, log)
-    T = Trainer(a, stu, C, steps, rows_of, d, log, tap=tap)
+    T = Trainer(a, stu, C, steps, rows_of, d, log, tap=tap, loc=loc)
     if a.gradnoise: return gradnoise(a, T, d, log)
     st = {"step": k0, "done_br": [], "wall": 0.0, "ema": None, "next_mon": a.mon_every}
     def fixed_log(step, rows, what):
@@ -1339,6 +1443,7 @@ def main():
                "by": {t: v[0] / v[1] for t, v in kl.items() if v[1]}, "n": {t: v[1] for t, v in kl.items() if v[1]},
                "prefix_tok": int(accs[-1]), "wall": round(wall, 2), "pos_s": round(rows / wall, 1)}
         if tap is not None: rec["tap_row"] = float(accs[-2]) / max(1, rows)
+        if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         rec["accum"] = N; rec["gnorm"] = round(T.gnorm, 6) if hasattr(T, "gnorm") else None
         if a.clip_gnorm > 0:
