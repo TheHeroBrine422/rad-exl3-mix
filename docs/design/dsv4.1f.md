@@ -232,6 +232,18 @@ K4-vs-MXFP4 KLD test (user 11-22, first DS experiment once exl3i experts serve):
 ~240 GiB, MXFP4 269 GiB vs ~128 GiB VRAM + 113 GB RAM) → paired partial swap: most layers' experts at K2, a block of ~8–10 layers at K4
 vs native MXFP4 (two blocks: early / late), same container otherwise, verify slice.
 
+## Competitor field (user 11-22; numbers on THEIR corpora — not comparable across rows or to ours)
+| who | quant | size | published KLD |
+|---|---|---|---|
+| Unsloth v3.1 | UD-IQ1_S / IQ1_M / IQ2_XXS / Q2_K_XL | rest 122 / 140 / 165 / 200 GB (~1.73 / 1.98 / 2.34 / 2.82 bpw; Engram table extra) | on-policy 0.121 / 0.089 / 0.075 / —; long17k 0.364 / 0.241 / 0.142 / 0.088; wiki1100 0.457 / 0.314 / 0.203 / 0.138 |
+| turboderp EXL3 | 1.68 / 2.25 / 2.68 bpw | ~109 / 142 / 173 GiB | 0.188 / 0.080 / 0.038 (own trace, 67k tokens) |
+| GSQ-RCO (GGUF) | IQ1_M / IQ2_XXS | | 0.215 / 0.167 (Unsloth's on-policy sets) |
+Corpus effect is 3–4× (IQ1_S 0.121 on-policy vs 0.457 wiki). Cross-calibration: mikoskinen 2.25 (likely turboderp's 2.25) = 0.0612 on
+our ds41-verify-v1 vs 0.080 on turboderp's trace. **Proposal:** score the field on ds41-verify-v1 with bakon's reference build
+(serves Unsloth IQ1_S / IQ2_XXS and EXL3 .rad; turboderp's other sizes need an exllamav3 → .rad conversion); reporting only.
+Disk: 230–300 GB each incl. Engram; the 473 GiB unusable official2.rad on box2 is the candidate to delete (user decision).
+Sources: unsloth.ai/docs/models/deepseek-v4.1-flash, huggingface.co/turboderp/DeepSeek-V4.1-Flash-1017-exl3.
+
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
 
