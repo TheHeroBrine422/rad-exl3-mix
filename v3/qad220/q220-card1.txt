@@ -1,0 +1,4 @@
+B sp-eager 2.50
+B sp-comp 2.50 --compile-scales --compile-ew
+B sp-comp-32 2.50 --compile-scales --compile-ew --train-layers 32-63
+B sp-comp-48 2.50 --compile-scales --compile-ew --train-layers 48-63
