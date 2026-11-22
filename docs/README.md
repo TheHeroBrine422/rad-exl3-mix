@@ -4,7 +4,8 @@
 |---|---|---|
 | [`ROADMAP.md`](ROADMAP.md) | plans by release (V3, V3 extras, V4 = QAD and after), research method and infrastructure, data | current |
 | [`design/v2.md`](design/v2.md) | how EXL3-V2 was made: options, proxy error, sensitivity model, solver, search, data discipline | final (V2 released) |
-| [`design/v3.md` · `design/qad-v31.md` (V3.1 QAD plan, one page)`](design/v3.md) | the EXL3-V3 design: int8 / int4 compute, ladder and codebooks, quantizer stack, production pipeline, embedding, head, solver, search, order of work | current (2026-11-07), open decisions marked **[decide]** |
+| [`design/v3.md`](design/v3.md) | the EXL3-V3 design: int8 / int4 compute, ladder and codebooks, quantizer stack, production pipeline, embedding, head, solver, search, order of work | current (2026-11-07), open decisions marked **[decide]** |
+| [`design/qad-v31.md`](design/qad-v31.md) | V3.1 QAD: what we know, what runs, the next steps in order, judging rules (one page) | current (2026-11-22) |
 | [`design/quantizer-native.md`](design/quantizer-native.md) | native fused EXL3-V3 quantizer in radiance libquant: what exists, what our format needs, open questions, staged plan | planning draft (2026-11-20) |
 | [`design/dsv4.1f.md`](design/dsv4.1f.md) | DeepSeek-V4.1-Flash-1017 in EXL3-V3: scope, parameter / decode-read inventory, the four quantization targets, offload model, routed-expert codebook frontier, encoder plan | draft (2026-11-20) |
 | [`design/eval-data.md`](design/eval-data.md) | V3's evaluation and statistics data: roles of calib / xcorp / own traces / RULER, goldens, self-generated text, xcorp as a statistics source | current (2026-11-07) |
