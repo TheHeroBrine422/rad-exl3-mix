@@ -221,6 +221,17 @@ scale × activation scale, f32 sum (~1/32 extra FMAs). Weight side exact; only t
 reference's fp8 1×32 activations (option B, rejected: a second activation format). To do: kernel (`moe_gemm_mxfp4` A8 variant),
 KLD vs the bf16 path, speed vs bf16 / exl3i K4.
 
+## Quantizing an already-quantized source (lead 11-22)
+The reference is not bf16: routed experts are MXFP4 (4.25 bpw), the trunk fp8 with per-32×32 e8m0 block scales (~8 bpw). So each
+family's menu has a hard top = its native format, lossless at its size. Experts: native MXFP4 (above). **Trunk: native fp8 as the
+top trunk option** — our planned K5–6.5 trellis on attention / shared experts / head must beat "keep fp8" at its size. Not wired yet:
+the deepseek41 plugin declares every trunk weight bf16 and widens fp8 on load (w212); fp8 values are not exact int8, so an A8 path
+needs either an fp8 GEMM or a lossy conversion — decide when pricing the trunk. Trellis cannot exploit the source's fp4 / fp8 grid
+(gone after the Hadamard), so it compresses these weights as a fresh Gaussian source.
+K4-vs-MXFP4 KLD test (user 11-22, first DS experiment once exl3i experts serve): a full ~4-bit model does not fit box2 (K4 experts
+~240 GiB, MXFP4 269 GiB vs ~128 GiB VRAM + 113 GB RAM) → paired partial swap: most layers' experts at K2, a block of ~8–10 layers at K4
+vs native MXFP4 (two blocks: early / late), same container otherwise, verify slice.
+
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
 
