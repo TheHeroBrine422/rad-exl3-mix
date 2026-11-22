@@ -1367,6 +1367,7 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--gradnoise-from", type=int, default=0, help="lead 11-22: the gradnoise batches are plan steps FROM..FROM+N-1 (default 0 = #217's first N); use steps a checkpoint never trained on")
     ap.add_argument("--gradnoise", type=int, default=0, help="#217: gradients of the first N plan steps at the start state (no optimizer step): per-scale mean / std across batches to OUT/gradnoise.npz, then exit")
     ap.add_argument("--wd", type=float, default=0.0, help="#200: AdamW decoupled weight decay on the log multipliers (0 = Adam)")
     ap.add_argument("--accum", type=int, default=1, help="#200: plan steps (micro-batches) per optimizer step")
@@ -1402,11 +1403,11 @@ def gradnoise(a, T, d, log):
     s1 = [torch.zeros(p.numel(), dtype=torch.float64) for _, p in P]; s2 = [torch.zeros_like(x) for x in s1]
     rec = []
     for s in range(a.gradnoise):
-        accs, w = T.run_group([s], 0.0)
+        accs, w = T.run_group([a.gradnoise_from + s], 0.0)
         for (_, p), x1, x2 in zip(P, s1, s2):
             g = p.grad.reshape(-1).double().cpu(); x1 += g; x2 += g * g
         kl = sum(float(accs[2 * k]) for k in range(len(T.tags))); rows = sum(float(accs[2 * k + 1]) for k in range(len(T.tags)))
-        rec.append({"step": s, "rows": rows, "kl_row": kl / rows, "gnorm": T.gnorm, "wall": round(w, 1)})
+        rec.append({"step": a.gradnoise_from + s, "rows": rows, "kl_row": kl / rows, "gnorm": T.gnorm, "wall": round(w, 1)})
         log(json.dumps(rec[-1]))
     n = a.gradnoise
     out = {}
