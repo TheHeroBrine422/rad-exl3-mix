@@ -49,3 +49,10 @@ prints the markdown table across machines. `readout.py --gate A/train.jsonl B/tr
 ## iceman card 0 (`/data/queue`) and the gate
 Inputs identical to box2's: `iceman-pull.sh` (VM; goldens from Thor over the LAN with a forwarded ssh agent, small files + j217 + ctl rows from box2), HF download of the three host-emb releases + `iceman-setup.sh`
 (`rad2level214.py` per size, `--check 4`), `inputs-digest.sh` (md5 of every input on both machines, diffed). Gate (2.50, the 25C flags, `--max-steps 2`): see the report.
+
+## The int8 batch and the `a8int8.ok` handshake (11-22 night)
+Every line of `jobs.box2.int8.txt` / `jobs.iceman.int8.txt` runs with `--a8-int8` (w223's real int8 forward; implies `--a8`) and carries `@needs=<QROOT>/a8int8.ok`, so no dispatcher starts one until that file exists.
+**w223 / lead: create `/data/q27/queue/a8int8.ok` (box2) and `/data/queue/a8int8.ok` (iceman) only after (1) w223's gates passed and (2) the int8 trainer (the `--a8-int8` flag in `v3/qad220/qad220.py` or the copy `qrun.sh` runs: `TRAINER=$QROOT/code/v3/qad220/qad220.py`) and the kernel build / extension it needs are installed in THAT machine's `QROOT/code` and import under that machine's python (`/data/q27/venv`, iceman `/data/venv-exl3`; iceman has the system ROCm 7.14, box2 `/opt/rocm-10.1` libs).
+Install a new copy and rename it into place (the running jobs have loaded the old file). Test the flag on the card with `B` bench line first if in doubt: `B i8-gate 2.50 --lr 1e-3 --compile-scales --compile-ew --a8-int8 --max-steps 2`.**
+A line is skipped in place (later ready lines run) until its file exists. To run the batch without the handshake (e.g. the int8 path is dropped), delete the `@needs=` tokens or create the file. `python3 hours.py FILE...` prints the card-hour estimate (w220 speeds + 10 % A8, +7 min a read; the int8 kernel makes the training part cheaper).
+Budgets are capped at 2e6: the plan holds 2.52 M gen rows (a 3 M / 4 M budget asserts "the data hold ... rows < budget"; ~21 k rows a step up to ~2 M, then the tail steps are sparse).

@@ -1,0 +1,8 @@
+# --- int8 batch, iceman card 0 (w222): the long lr-curve runs (2 M, reads 0.25 / 0.5 / 1 / 2 M), waits for /data/queue/a8int8.ok (w223 installs the int8 trainer + kernel build here too). Controls are box2's I<size>C: syncctl.sh.
+T I25-lr1e-4 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I25C
+T I25-lr3e-5 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-5 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I25C
+T I30-lr1e-4 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I30C
+T I40-lr1e-4 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I40C
+T I25-lr3e-4-2M 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I25C
+T I30-lr3e-5 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-5 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I30C
+T I40-lr3e-5 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-5 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I40C

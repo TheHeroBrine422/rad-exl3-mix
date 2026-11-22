@@ -1,0 +1,61 @@
+# --- int8 batch (w222, user 11-22 night): every line runs with the real int8 forward --a8-int8 (w223) and waits for the file QROOT/a8int8.ok, which w223 creates when its gates pass and the code is installed in this queue's code dir.
+# Compiled, w214 data / order (seed 0 unless --seed), j217 reads at every checkpoint, controls by @ctl (the I<size>C all-layer lr 3e-4 1M runs). Budgets are capped at 2e6: the plan holds 2.52 M gen rows (a 3 M / 4 M budget asserts).
+# 1. controls: all layers, lr 3e-4, 1 M (reads 0.25 / 0.5 / 1 M)
+T I25C 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok
+T I30C 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok
+T I40C 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok
+# 2. back half: layers 32-63 and 48-63, lr 3e-4, 1 M
+T I25-L32 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I25-L48 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-L32 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I30-L48 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-L32 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I40-L48 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# 5. clip 3 (lr 3e-4: paired with the controls)
+T I25-CB 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-CB 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-CB 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# 6. tie the front half at 3.00; 7. prompt weight at 2.50 (0.5 M)
+T I30-T128 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --tie-groups 128 --tie-layers 0-31 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I25-PW0.1 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --prompt-weight 0.1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I25-PW0.3 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --prompt-weight 0.3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+# 4. schedules, one budget (1 M; one read at the end): cosine-all / linear-all at 2.50 (lr 1e-3, 3e-4) and 3.00 (lr 3e-4)
+T I25-cos-1e-3 2.50 1e6 ckpt-1e+06 --lr 1e-3 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I25-cos-3e-4 2.50 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-cos-3e-4 3.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-cos-3e-4 4.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25-lin-1e-3 2.50 1e6 ckpt-1e+06 --lr 1e-3 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I25-lin-3e-4 2.50 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-lin-3e-4 3.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-lin-3e-4 4.00 1e6 ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# step schedule at 2.50 (3e-4 to 0.5 M, 1e-4 to 1.6 M, linear decay to 2 M; the lead's 3e-4:5e5,1e-4:3e6 to 3 M is beyond the data)
+T I25-step 2.50 2e6 ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.6e6 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+# 8. seed repeats (second / third data order) of the controls, 1 M
+T I25C-s1 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30C-s1 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40C-s1 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25C-s2 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30C-s2 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40C-s2 4.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --seed 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+# more of the same: 2 M versions of the back-half arms (lr 3e-4), the lr 3e-5 curve at 4.00, 2 M cosine-all / long controls
+T I25-L48-2M 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-L48-2M 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-L48-2M 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 48-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25-L32-2M 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-L32-2M 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-L32-2M 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --train-layers 32-63 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25-cos-3e-4-2M 2.50 2e6 ckpt-2e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-cos-3e-4-2M 3.00 2e6 ckpt-2e+06 --lr 3e-4 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-CB-2M 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I30-CB-2M 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+# --- extras, lowest priority (more of the same kinds): seeds of the back-half arms, cosine / linear at lr 1e-3 (3.00), step schedule at 3.00 / 4.00, clip at lr 1e-3, a second seed of the 2.50 lr 1e-4 2 M run, the 3.00 lr 3e-4 2 M control
+T I25-L48-s1 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 48-63 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-L48-s1 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 48-63 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I25-L32-s1 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 32-63 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-L32-s1 3.00 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --train-layers 32-63 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I30-cos-1e-3 3.00 1e6 ckpt-1e+06 --lr 1e-3 --decay-shape cosine-all --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I30-step 3.00 2e6 ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.6e6 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
+T I40-step 4.00 2e6 ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.6e6 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I40C
+T I25-CB-1e-3 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 1e-3 --clip-gnorm 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I25-lr1e-4-s1 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --seed 1 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25C
+T I30-lr3e-4-2M 3.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I30C
