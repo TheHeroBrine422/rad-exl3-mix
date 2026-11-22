@@ -55,7 +55,7 @@ budget. Ranks hold their streams; grads are summed with gloo; every rank takes t
 OUT/state.pt resumes (main state + step; branches restart from their fork); OUT/train.jsonl per step;
 OUT/ckpt-<T>/params.pt + scales/<key>.safetensors (rxq.swj apply_level's format) + mon.json.
 --gate: decode / segment-carry exactness and timing on one card, then exit."""
-import argparse, hashlib, json, math, os, sys, time
+import argparse, hashlib, json, math, os, re, sys, time
 from fractions import Fraction
 
 import numpy as np
@@ -207,9 +207,12 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None):
     pid = torch.arange(a, a + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
     pe = stu.rotary[dev](x, pid[1:])
     cache = SegCache(prev); tp = {}
+    ft = getattr(stu, "first_train", 0)                  # w220: layers before the first trainable one run once, no autograd
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
-        if ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+        if i < ft and torch.is_grad_enabled():
+            with torch.no_grad(): x = ly(x, **kw)
+        elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
         else: x = ly(x, **kw)
         if taps is not None and i in taps: tp[i] = x
     if taps is not None: return stu.fnorm(x)[0], cache.next, tp
@@ -328,13 +331,32 @@ def group_lr(s, k0, last, fork_last, lr, warm, N):
     return lr_main((s - k0) // N, cd(last - k0), cd(fork_last - k0), lr, warm)
 
 
+# ------------------------------------------------------------------ trainable set (w220)
+def layer_of(stu, name):
+    """decoder layer index of a student parameter name (<linear or norm key>:<r|c|g|la|lb>); the final norm and the head: after the last layer"""
+    m = re.search(r"\.layers\.(\d+)\.", name)
+    return int(m.group(1)) if m else len(stu.layers)
+
+
+def set_first_train(stu, log):
+    """stu.first_train = the first decoder layer holding a trainable parameter: run_segment runs the layers before it once under
+    no_grad (no activations kept, no checkpoint recompute, no backward)"""
+    tl = [layer_of(stu, n) for n, p in stu.P.items() if p.requires_grad]
+    assert tl, "no trainable parameter"
+    stu.first_train = min(tl)
+    nt = sum(p.numel() for p in stu.P.values() if p.requires_grad); nf = sum(p.numel() for p in stu.P.values() if not p.requires_grad)
+    log(f"trainable: {len(tl)} vectors / {nt} values (frozen: {len(stu.P) - len(tl)} vectors / {nf} values); first trainable layer {stu.first_train}"
+        + (f": layers 0 .. {stu.first_train - 1} run once under no_grad" if stu.first_train else ""))
+
+
 # ------------------------------------------------------------------ trainer
 class Trainer:
     def __init__(self, a, stu, C, steps, rows_of, dist, log, tap=None):
         self.a, self.stu, self.C, self.steps, self.rows_of, self.d, self.log = a, stu, C, steps, rows_of, dist, log
         self.tap = tap                                       # T: a TapStore (weight a.tap_weight)
         self.dev = stu.devs[0]
-        self.P = list(stu.P.values()); self.names = list(stu.P.keys())
+        tr = [(n, p) for n, p in stu.P.items() if p.requires_grad]       # w220: frozen parameters (--train-*, --mask) stay in stu.P (state, export)
+        self.P = [p for _, p in tr]; self.names = [n for n, _ in tr]
         nrm = [p for n, p in zip(self.names, self.P) if n.endswith(":g")]          # N: RMSNorm gains at lr / 10
         sc = [p for n, p in zip(self.names, self.P) if not n.endswith((":la", ":lb", ":g"))]
         lo = [p for n, p in zip(self.names, self.P) if n.endswith((":la", ":lb"))]
@@ -1049,6 +1071,7 @@ def main():
             open(o + "/.done", "w").close()
         log(f"export-only (#196): {o}")
         return
+    set_first_train(stu, log)
     use_seg_attention(stu)
     if a.compile_scales: use_compiled_scales(stu, a.a8); log(f"QLinear scales compiled (a8 {a.a8})")
     elif a.a8 and not a.check: use_a8(stu)
