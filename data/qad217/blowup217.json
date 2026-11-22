@@ -1,0 +1,258 @@
+{
+ "1893": {
+  "category": "chat",
+  "source": "wildchat",
+  "tokens": 682,
+  "gen_rows": 583,
+  "checkpoints": {
+   "25A-ckpt-2e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.04003923407258889,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25A-ckpt-5e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 1.6619098589998114,
+    "blowup": true,
+    "jump_pos": 240
+   },
+   "25A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.058425883342943116,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.05718357176381775,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x1-ckpt-2e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.04425550435847624,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.06949376330713669,
+    "arm": 0.49904243579305846,
+    "blowup": true,
+    "jump_pos": 252
+   },
+   "30A-ckpt-2e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.08556014188079324,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.053854869648832425,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.09836149780169971,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.0752155213635964,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l1e-3-x1-ckpt-2e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.08896147438425642,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.025766547791088473,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x1-ckpt-2e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.09777031173443045,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x1-ckpt-5e+05": {
+    "ctl": 0.10996945752371874,
+    "arm": 0.07777184594993182,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-ckpt-2e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.015665615658475598,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-ckpt-5e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.04987375644772029,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.014524224294539482,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.011451438186060712,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x1-ckpt-2e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.030507014908289547,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x1-ckpt-5e+05": {
+    "ctl": 0.02121493060821183,
+    "arm": 0.005790358838743135,
+    "blowup": false,
+    "jump_pos": null
+   }
+  }
+ },
+ "3820": {
+  "category": "chat",
+  "source": "wildchat",
+  "tokens": 1137,
+  "gen_rows": 957,
+  "checkpoints": {
+   "25A-ckpt-2e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.6271515680414324,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25A-ckpt-5e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.16443886111961611,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.5482657278553873,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.11064164456363886,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x1-ckpt-2e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.6810616454842817,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "25E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.5325393314925202,
+    "arm": 0.17699069260819603,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-ckpt-2e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.11329203270489474,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.16378193215084336,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.07868072617337614,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.09560824796146046,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l1e-3-x1-ckpt-2e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.1047779087783276,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l1e-3-x1-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.18602829177479785,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x1-ckpt-2e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.09759647965433013,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "30E-l3e-4-x1-ckpt-5e+05": {
+    "ctl": 0.09114834273507844,
+    "arm": 0.06488286357223805,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-ckpt-2e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 0.11425507008605268,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-ckpt-5e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 1.7984907121331979,
+    "blowup": true,
+    "jump_pos": 202
+   },
+   "40A-lr3e-4-ckpt-2e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 0.04516490877840315,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40A-lr3e-4-ckpt-5e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 1.9953024532290546,
+    "blowup": true,
+    "jump_pos": 210
+   },
+   "40E-l3e-4-x1-ckpt-2e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 0.03201808849215168,
+    "blowup": false,
+    "jump_pos": null
+   },
+   "40E-l3e-4-x1-ckpt-5e+05": {
+    "ctl": 0.025869085826672647,
+    "arm": 1.8987470359693834,
+    "blowup": true,
+    "jump_pos": 221
+   }
+  }
+ }
+}
