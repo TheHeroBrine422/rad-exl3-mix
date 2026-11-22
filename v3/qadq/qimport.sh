@@ -11,7 +11,7 @@ for spec in /data/q27/w221:w221 /data/q27/w220:w220; do
     N=$(basename $f .json.rows); ARM=${N%-ckpt-*}; CK=ckpt-${N##*-ckpt-}
     case $D/$ARM in /data/q27/w220/25C) ;; /data/q27/w220/*) continue;; esac       # w220: only the 25C control
     ln -sfn $f $QROOT/scores/$N.json.rows
-    grep -q "	$N$" $QROOT/results.tsv 2>/dev/null && continue
+    awk -F'\t' -v n=$N '$19==n{f=1} END{exit !f}' $QROOT/results.tsv 2>/dev/null && continue
     CTL=-; [ -n "${CT[$ARM]:-}" ] && CTL=${CT[$ARM]}-$CK
     $PY $HERE/qrow.py add $QROOT --machine "$MACHINE(import)" --card - --name $N --arm $ARM --ckpt $CK --size ${SZ[$ARM]:-2.50} --golden $J217 --ctldir $CTLDIR \
       --ctl $CTL --run $D/runs/$ARM

@@ -1,0 +1,300 @@
+{
+ "per_read": {
+  "25A-ckpt-2e+05": [],
+  "25A-ckpt-5e+05": [
+   1893
+  ],
+  "25A-lr3e-4-2M-ckpt-1e+06": [
+   1893
+  ],
+  "25A-lr3e-4-ckpt-2e+05": [],
+  "25A-lr3e-4-ckpt-5e+05": [],
+  "25A-lr3e-4-ext1M-ckpt-1e+06": [],
+  "25C-ckpt-2e+05": [],
+  "25C-ckpt-5e+05": [
+   1893
+  ],
+  "25E-l1e-3-x0.3-ckpt-2e+05": [],
+  "25E-l1e-3-x0.3-ckpt-5e+05": [
+   1893
+  ],
+  "25E-l1e-3-x1-ckpt-2e+05": [],
+  "25E-l1e-3-x1-ckpt-5e+05": [],
+  "25E-l1e-3-x3-ckpt-2e+05": [],
+  "25E-l1e-3-x3-ckpt-5e+05": [],
+  "25E-l3e-4-x0.3-ckpt-2e+05": [],
+  "25E-l3e-4-x0.3-ckpt-5e+05": [],
+  "25E-l3e-4-x1-ckpt-2e+05": [],
+  "25E-l3e-4-x1-ckpt-5e+05": [],
+  "30A-ckpt-2e+05": [],
+  "30A-ckpt-5e+05": [],
+  "30A-lr3e-4-ckpt-2e+05": [],
+  "30A-lr3e-4-ckpt-5e+05": [],
+  "30A-lr3e-4-ext1M-ckpt-1e+06": [],
+  "30E-l1e-3-x0.3-ckpt-2e+05": [],
+  "30E-l1e-3-x0.3-ckpt-5e+05": [],
+  "30E-l1e-3-x1-ckpt-2e+05": [],
+  "30E-l1e-3-x1-ckpt-5e+05": [],
+  "30E-l1e-3-x3-ckpt-2e+05": [],
+  "30E-l1e-3-x3-ckpt-5e+05": [],
+  "30E-l3e-4-x0.3-ckpt-2e+05": [],
+  "30E-l3e-4-x0.3-ckpt-5e+05": [],
+  "30E-l3e-4-x1-ckpt-2e+05": [],
+  "30E-l3e-4-x1-ckpt-5e+05": [],
+  "30E-l3e-4-x3-ckpt-2e+05": [],
+  "30E-l3e-4-x3-ckpt-5e+05": [],
+  "40A-ckpt-2e+05": [],
+  "40A-ckpt-5e+05": [
+   1968,
+   3820,
+   3947
+  ],
+  "40A-lr3e-4-ckpt-2e+05": [],
+  "40A-lr3e-4-ckpt-5e+05": [
+   3820
+  ],
+  "40E-l1e-3-x0.3-ckpt-2e+05": [],
+  "40E-l1e-3-x0.3-ckpt-5e+05": [
+   1968,
+   3820,
+   3947
+  ],
+  "40E-l1e-3-x1-ckpt-2e+05": [],
+  "40E-l1e-3-x1-ckpt-5e+05": [
+   1968,
+   3820,
+   3947
+  ],
+  "40E-l1e-3-x3-ckpt-2e+05": [],
+  "40E-l1e-3-x3-ckpt-5e+05": [
+   1968,
+   3820,
+   3947
+  ],
+  "40E-l3e-4-x0.3-ckpt-2e+05": [],
+  "40E-l3e-4-x0.3-ckpt-5e+05": [
+   3820
+  ],
+  "40E-l3e-4-x1-ckpt-2e+05": [],
+  "40E-l3e-4-x1-ckpt-5e+05": [
+   3820
+  ],
+  "A8-25-ckpt-2e+05": [],
+  "A8-25-ckpt-5e+05": [],
+  "A8-30-ckpt-2e+05": [],
+  "A8-30-ckpt-5e+05": [],
+  "C25-3-ckpt-2e+05": [],
+  "C25-3-ckpt-5e+05": [],
+  "C30-ckpt-2e+05": [],
+  "L32-ckpt-2e+05": [],
+  "L32-ckpt-5e+05": [],
+  "L48-ckpt-2e+05": [],
+  "L48-ckpt-5e+05": [],
+  "CB30-ckpt-5e+05": [
+   3820
+  ]
+ },
+ "docs": {
+  "3820": {
+   "category": "chat",
+   "source": "wildchat",
+   "kind": "chat",
+   "tokens": 1137,
+   "gen_rows": 957,
+   "gen_start": 178,
+   "reads": {
+    "40A-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 1.7984907121331979,
+     "onset_pos": 196,
+     "onset_in_generation": 18,
+     "script": "Latin"
+    },
+    "40A-lr3e-4-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 1.9953024532290546,
+     "onset_pos": 200,
+     "onset_in_generation": 22,
+     "script": "punctuation / symbol"
+    },
+    "40E-l1e-3-x0.3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 2.0946800900019547,
+     "onset_pos": 178,
+     "onset_in_generation": 0,
+     "script": "whitespace / newline"
+    },
+    "40E-l1e-3-x1-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 2.1562977215548167,
+     "onset_pos": 194,
+     "onset_in_generation": 16,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 2.4011954540664484,
+     "onset_pos": 199,
+     "onset_in_generation": 21,
+     "script": "Latin"
+    },
+    "40E-l3e-4-x0.3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 2.054022655809436,
+     "onset_pos": 203,
+     "onset_in_generation": 25,
+     "script": "Latin"
+    },
+    "40E-l3e-4-x1-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.025869085826672647,
+     "read": 1.8987470359693834,
+     "onset_pos": 207,
+     "onset_in_generation": 29,
+     "script": "Latin"
+    },
+    "CB30-ckpt-5e+05": {
+     "size": "3.00",
+     "unhealed": 0.09114834273507844,
+     "read": 1.0667233257144761,
+     "onset_pos": 228,
+     "onset_in_generation": 50,
+     "script": "Arabic"
+    }
+   }
+  },
+  "1893": {
+   "category": "chat",
+   "source": "wildchat",
+   "kind": "chat",
+   "tokens": 682,
+   "gen_rows": 583,
+   "gen_start": 56,
+   "reads": {
+    "25A-ckpt-5e+05": {
+     "size": "2.50",
+     "unhealed": 0.06949376330713669,
+     "read": 1.6619098589998114,
+     "onset_pos": 247,
+     "onset_in_generation": 191,
+     "script": "Latin"
+    },
+    "25A-lr3e-4-2M-ckpt-1e+06": {
+     "size": "2.50",
+     "unhealed": 0.06949376330713669,
+     "read": 0.71067284093636,
+     "onset_pos": 258,
+     "onset_in_generation": 202,
+     "script": "punctuation / symbol"
+    },
+    "25C-ckpt-5e+05": {
+     "size": "2.50",
+     "unhealed": 0.06949376330713669,
+     "read": 1.5420511448356724,
+     "onset_pos": 248,
+     "onset_in_generation": 192,
+     "script": "Latin"
+    },
+    "25E-l1e-3-x0.3-ckpt-5e+05": {
+     "size": "2.50",
+     "unhealed": 0.06949376330713669,
+     "read": 1.5404218021802398,
+     "onset_pos": 248,
+     "onset_in_generation": 192,
+     "script": "Latin"
+    }
+   }
+  },
+  "1968": {
+   "category": "chat",
+   "source": "wildchat",
+   "kind": "chat",
+   "tokens": 948,
+   "gen_rows": 798,
+   "gen_start": 148,
+   "reads": {
+    "40A-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.004984393975552142,
+     "read": 0.10356906726119053,
+     "onset_pos": 232,
+     "onset_in_generation": 84,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x0.3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.004984393975552142,
+     "read": 0.23538680470174414,
+     "onset_pos": 214,
+     "onset_in_generation": 66,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x1-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.004984393975552142,
+     "read": 0.1531907400768281,
+     "onset_pos": 216,
+     "onset_in_generation": 68,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.004984393975552142,
+     "read": 0.08065691572764315,
+     "onset_pos": 685,
+     "onset_in_generation": 537,
+     "script": "punctuation / symbol"
+    }
+   }
+  },
+  "3947": {
+   "category": "chat",
+   "source": "wildchat",
+   "kind": "chat",
+   "tokens": 3277,
+   "gen_rows": 3203,
+   "gen_start": 72,
+   "reads": {
+    "40A-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.009907363261218289,
+     "read": 0.13010462896414657,
+     "onset_pos": 194,
+     "onset_in_generation": 122,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x0.3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.009907363261218289,
+     "read": 0.18894333803360552,
+     "onset_pos": 190,
+     "onset_in_generation": 118,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x1-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.009907363261218289,
+     "read": 0.1710144279343366,
+     "onset_pos": 193,
+     "onset_in_generation": 121,
+     "script": "Latin"
+    },
+    "40E-l1e-3-x3-ckpt-5e+05": {
+     "size": "4.00",
+     "unhealed": 0.009907363261218289,
+     "read": 0.10500045783252404,
+     "onset_pos": 301,
+     "onset_in_generation": 229,
+     "script": "punctuation / symbol"
+    }
+   }
+  }
+ },
+ "unknown": []
+}
