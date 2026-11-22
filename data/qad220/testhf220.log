@@ -1,0 +1,17 @@
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+tiny plan: 16 steps, 3114 gen rows
+PASS defaults: 2 optimizer steps of qad220's Trainer = qad200's (KL sums, rows, gradient norms) bit for bit  [(160.4860382080078, 167.0, 0.21422428943869415) (160.4860382080078, 167.0, 0.21422428943869415)]
+PASS defaults: ... and every parameter bit for bit (parameters moved from the start)
+PASS frozen prefix (layers 0-1 frozen, real GDN / attention layers, carried state): step records and all parameters bit for bit = the full-backward path  [first_train 2 vs 0; max diff 0.00e+00]
+PASS frozen prefix: frozen parameters did not move, trainable did
+PASS tied scales: the Trainer trains the tied parameters (a group shares one value, the export expands per channel)
+PASS mask: masked scales stay at their start value, kept ones move; unlisted vectors train as usual
+PASS clip: X huge = the unclipped run (bit for bit)
+PASS clip: nothing before step 6; later steps above 0.9 x the median of the earlier norms are scaled to it  [4 clipped of 10, gnorms [0.2142, 0.1999, 0.2107, 0.1789, 0.2018, 0.1995, 0.2166, 0.1753, 0.2042, 0.1875]]
+PASS beta2 0.9 changes the parameters, 0.99 is the default
+PASS prompt weight 0.3: gen KL sums / rows logged as before (gen only), the gradient (norm) and the parameters differ  [gnorm 2.1902e-01 vs 2.1422e-01]
+PASS prompt weight ~0 (ext path): same step records as the plain path to rounding  [160.48603057861328 vs 160.4860382080078]
+PASS local MSE (local) through the Trainer: KL sums as in the plain run; layers 1-2 train; layer 0 gets no gradient; layer 3 (KL) trains  [layer0 moved False, 1-2 True, 3 True]
+PASS local MSE (joint) through the Trainer: KL sums as in the plain run; layers 1-2 train; layer 0 trains through the chain; layer 3 (KL) trains  [layer0 moved True, 1-2 True, 3 True]
+
+ALL PASS
