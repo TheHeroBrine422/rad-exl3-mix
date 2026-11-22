@@ -1,0 +1,18 @@
+cos between chunk 0 and chunk 1 scale gradients (log-mult): raw | denoised s(P_r G) with P_r from chunk 2 (r=4, 16) | null = same with a random rank-r subspace
+8.linear_attn.in_proj_z        in  raw  0.725 | r4  0.879 (null -0.197) | r16  0.933 (null  0.084)
+8.linear_attn.in_proj_z        out raw  0.038 | r4  0.598 (null -0.166) | r16  0.137 (null  0.065)
+8.mlp.down_proj                in  raw  0.021 | r4  0.848 (null  0.136) | r16  0.562 (null -0.073)
+8.mlp.down_proj                out raw  0.053 | r4  0.812 (null  0.128) | r16  0.721 (null -0.048)
+23.mlp.up_proj                 in  raw  0.088 | r4  0.358 (null -0.040) | r16  0.398 (null  0.047)
+23.mlp.up_proj                 out raw  0.057 | r4  0.277 (null -0.002) | r16  0.363 (null  0.055)
+23.self_attn.q_proj            in  raw  0.762 | r4  0.916 (null  0.277) | r16 -0.677 (null -0.019)
+23.self_attn.q_proj            out raw  0.131 | r4  0.885 (null  0.285) | r16  0.489 (null  0.025)
+40.mlp.down_proj               in  raw  0.211 | r4  0.900 (null  0.523) | r16  0.760 (null  0.241)
+40.mlp.down_proj               out raw  0.245 | r4  0.901 (null  0.536) | r16  0.775 (null  0.212)
+40.mlp.gate_proj               in  raw  0.234 | r4  0.912 (null  0.079) | r16  0.780 (null  0.332)
+40.mlp.gate_proj               out raw  0.192 | r4  0.889 (null  0.047) | r16  0.462 (null  0.339)
+55.mlp.gate_proj               in  raw  0.077 | r4  0.887 (null  0.348) | r16  0.392 (null -0.022)
+55.mlp.gate_proj               out raw  0.102 | r4  0.910 (null  0.304) | r16  0.410 (null -0.017)
+55.mlp.up_proj                 in  raw  0.211 | r4  0.918 (null -0.008) | r16  0.759 (null  0.097)
+55.mlp.up_proj                 out raw  0.079 | r4  0.933 (null  0.006) | r16  0.761 (null  0.085)
+1

@@ -9719,3 +9719,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   code-QAD targets W − η·G were ~99 % noise by energy. Implication: a low-rank-projected step (GaLore-style P_r(G), subspace from
   independent data) for code-QAD targets, and possibly a low-rank parametrisation for any additive correction. Untested as a step.
   Files `data/qad218/lead/` (lowrank.py, lowrank-r0.txt).
+- 11-22 ~1:45 AM CST (lead, CPU on iceman, w218's round-0 chunk gradients + the decoded released 2.50 weights): **low-rank denoising
+  carries over to the scale gradients.** Log-multiplier gradients computed exactly from the weight gradient (input side
+  rowsum(H_k G ⊙ H_k Ŵ), output side colsum(Ŵ H_n ⊙ G H_n)); cosine between chunk 0 and chunk 1, raw vs after denoising G with the
+  rank-r subspace of an independent chunk 2 (s(P_r G)), with a random rank-r subspace as the null: e.g. L55 up_proj in 0.211 → r4
+  **0.918** (null −0.008), out 0.079 → **0.933** (null 0.006); L40 gate in 0.234 → 0.912 (null 0.079); L8 mlp down in 0.021 → 0.848
+  (null 0.136); L23 mlp up 0.088 → 0.358 (null −0.040, weak like its weights); some nulls are high (L40 down 0.52–0.54, L55 gate
+  0.30–0.35) — anisotropic noise, so the null is needed every time; r16 lower than r4 almost everywhere. **Null added to the weight-
+  gradient check too:** L23 q 0.861 vs random −0.08 / −0.25 / 0.25; L40 down 0.914 vs 0.07 / −0.26 / −0.10; L55 gate 0.939 vs 0.71 /
+  0.39 / 0.59 (that tensor's noise is anisotropic). Conclusion: a projected scale-gradient step (P_r from a separate sketch pass) is
+  worth a trainer arm; agreement ≠ KL gain, untested as a step. Files `data/qad218/lead/` (scalelr2.py, lrnull.py, outputs).

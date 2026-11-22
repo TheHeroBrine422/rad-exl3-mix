@@ -1,0 +1,3 @@
+23.self_attn.q_proj weight-grad r4: signal 0.861, random subspaces -0.076, -0.253, 0.247
+40.mlp.down_proj weight-grad r4: signal 0.914, random subspaces 0.072, -0.255, -0.097
+55.mlp.gate_proj weight-grad r4: signal 0.939, random subspaces 0.708, 0.390, 0.586
