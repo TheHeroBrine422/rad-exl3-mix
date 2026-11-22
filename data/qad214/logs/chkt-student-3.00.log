@@ -1,0 +1,4 @@
+student built in 29 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+GDN a / b: lv/3.00/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+chk/student-3.00.npz: KL/row 0.023216 over 121641 rows, 80 docs, A8 True, 189 s
+rc=0

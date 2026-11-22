@@ -1,0 +1,5 @@
+11-21 5:38 PM CST smoke start on card 0 (size 2.50, budgets 1e5): --max-steps 2
+11-21 5:41 PM CST 30A start on card 1 (size 3.00, budgets 2.5e5,5e5,1e6): 
+11-21 5:41 PM CST 40Q start on card 2 (size 4.00, budgets 2.5e5,5e5,1e6): --a8
+11-21 5:42 PM CST smoke rc 0
+11-21 5:43 PM CST 25A start on card 0 (size 2.50, budgets 2.5e5,5e5,1e6): 

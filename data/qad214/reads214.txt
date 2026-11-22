@@ -1,0 +1,10 @@
+# ARM SIZE CKPT  (budgets 2.5e5 -> ckpt-2e+05, 5e5 -> ckpt-5e+05, 1e6 -> ckpt-1e+06)
+25A 2.50 ckpt-2e+05
+30A 3.00 ckpt-2e+05
+40Q 4.00 ckpt-2e+05
+25A 2.50 ckpt-5e+05
+30A 3.00 ckpt-5e+05
+40Q 4.00 ckpt-5e+05
+25A 2.50 ckpt-1e+06
+30A 3.00 ckpt-1e+06
+40Q 4.00 ckpt-1e+06

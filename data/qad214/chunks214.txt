@@ -1,0 +1,3 @@
+/data/q27/w214/gold/xc8k-b2-c0
+/data/q27/w214/gold/xc8k-b2-c1
+/data/q27/w214/gold/tr32k-b2-c0
