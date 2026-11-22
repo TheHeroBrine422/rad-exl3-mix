@@ -9763,3 +9763,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-22 2:23 AM CST: **A8-in-the-loop decision run started by the lead (user, before bed):** box2 card 0, `A8-25` = 2.50 lr 3e-4
   compiled `--a8`, 0.5M with 0.25M branch, j217 reads; queue `/data/q27/w221/jobsA8.txt` via `card221x.sh` (cards 0 / 1): then
   `C25-3` (compiled no-A8 control) and `A8-30` (3.00), picked up by card 1 when w217's 2M run frees it (~4:50 AM).
+- 11-22 ~2:45 AM CST: **w221 first result, L48 (2.50, lr 1e-3, only layers 48–63 train, compiled; 2.15× faster):** j217 0.25M **0.9915 [0.988, 0.996]**, 0.5M **0.938 [0.870, 0.984]** (141 / 25 docs better), vs the all-layers compiled twin 25C 0.969 [0.930, 1.017] / 0.981 [0.796, 1.277] (25C's 0.5M carries a blow-up document). Training only the last 16 layers loses nothing at 0.5M here and avoids the blow-up; slower start at 0.25M. Card 3's w221 dispatcher retired (w222 migrating to the global queue).
