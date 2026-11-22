@@ -67,3 +67,14 @@ run220.sh 25N 0 2.50 5e5 --prompt-weight 0.2
 python3 qad220.py runs/taps-out --make-taps runs/taps --tap-layers 15,31,47 <the run's data flags>    # 2 cards; then:
 run220.sh 25F 0 2.50 5e5 --lr 3e-4 --local-mse 15+31,0.1 --local-taps runs/taps
 ```
+
+## Tests and GPU gates (w220)
+- `python3 test220.py` — CPU unit checks (VM or box2): every flag's helper (schedules, mask build, ties + export round trip, clip, calib cooldown plan, prompt-weight / local-MSE math, a8 + ties), parser defaults.
+- `testhf220.py` — a tiny real Qwen3.5 stack (3 GDN + 1 attention layer, QLinear trunk) through the real `Trainer.run_group` of qad200 and qad220 on a synthetic golden (box2 CPU:
+  `HIP_VISIBLE_DEVICES= ROCR_VISIBLE_DEVICES= CUDA_VISIBLE_DEVICES= QAD_PIPELINE=/data/q27/w220/code/pipeline /data/q27/venv/bin/python testhf220.py`): defaults bit for bit = qad200, frozen prefix bit for bit = full backward, every new flag through the Trainer.
+- GPU gates on box2 (`/data/q27/w220`, code shipped to `code/`, env `env220.sh`): `q220-jobs.txt` is a shared job list; `card220.sh CARD code/v3/qad220/q220-jobs.txt` is a card's dispatcher (waits until w217's dispatcher / queue / reader for the card
+  is gone and the card lock is free, takes the next job, repeats; restartable, finished work skipped by its outputs; remove `q220-jobs.txt.cursor` to re-walk the list). Jobs: `T` = a training job (`run220.sh`, then served reads on j217 with `serve220.sh`),
+  `B` = a short run (`bench220.sh`, `--max-steps 5` unless given). Gates: **a** 25C (w214's 25A recipe, 2.5e5 / 5e5 budgets, `--compile-scales --compile-ew`) read on j217 vs w214's eager 25A on the same judge (paired per document, pass = ratio within +-2 %);
+  **b** `gb-pre` / `gb-full` (`--gradnoise 2 --train-layers 32-63` with and without `--no-frozen-prefix`; `gbc-*` compiled; `*-r` repeats = run-to-run floor): mean gradients of the first 2 plan steps; **c** `sp-*` speed table (5 steps; wall of steps 3-5; `sp-eager`, `sp-comp`, `sp-comp-32`, `sp-comp-48`, `sp-eager-32`);
+  **d** `d200` / `d220` (qad200.py vs qad220.py defaults, 2 steps, eager: step records and parameters bit for bit).
+- Readout: `python3 code/v3/qad220/readout220.py` (box2; writes `/data/q27/w220/readout220.md`): summary table of the verdicts, then the details; `cmp220.py` has the pieces (`steps`, `state`, `grad`, `speed`).
