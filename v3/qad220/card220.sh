@@ -7,7 +7,7 @@
 CARD=$1; JOBS=$2; CUR=$JOBS.cursor
 cd /data/q27/w220
 say() { echo "$(TZ=America/Chicago date '+%m-%d %-I:%M %p CST') $*" >> q220.log; }
-w217gone() { ! pgrep -f "[c]ard217.sh $CARD " > /dev/null && ! pgrep -f "[r]eader217.sh $CARD " > /dev/null && ! pgrep -f "[p]ull217.sh $CARD " > /dev/null && ! pgrep -f "[q]217.sh .* $CARD "  > /dev/null; }
+w217gone() { ! pgrep -f "[c]ard217.sh $CARD " > /dev/null && ! pgrep -f "[r]eader217.sh $CARD " > /dev/null && ! pgrep -f "[p]ull217.sh $CARD " > /dev/null && ! pgrep -f "[q]217.sh .* $CARD " > /dev/null && ! pgrep -f "[s]erve217.sh .* $CARD( |$)" > /dev/null; }
 waitcard() { until w217gone; do sleep 120; done; }
 while true; do
   waitcard
