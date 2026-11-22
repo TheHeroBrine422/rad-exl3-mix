@@ -201,6 +201,13 @@ indexer scores every past token each step, so its keys must be resident), hold t
 fetch only the top-512 selected entries a layer a token (small reads), with a VRAM cache for frequently selected ones. Makes very
 long contexts cheap in VRAM without touching precision.
 
+## SwiGLU clamp (reference `ds41/inference/model.py` `Expert.forward`; user 11-22: match the reference as closely as possible)
+`swiglu_limit` = 10.0 (config), on routed AND shared experts:
+gate = w1(x).float(); up = w3(x).float(); up = clamp(up, −10, +10); gate = clamp(gate, max = +10) (gate only from above);
+h = silu(gate) · up (f32); routed experts: h = route_weight · h **before** w2 (f32); then h.to(bf16) → w2 (the reference's
+quantized Linear fp8-quantizes that input, 1×32 blocks). Our exl3i MoE ops (w207) have no clamp yet: add it with exactly these
+semantics (f32 gate / up, asymmetric clamp, weight before down), test against this reference on random inputs and real experts.
+
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
 
