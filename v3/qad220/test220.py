@@ -393,6 +393,15 @@ kl_g = ns["chunk_kl"](h_[torch.from_numpy(jg)], st_.head, tid, tlp, pt)
 gjw = grads_of(st_, kl_g + 0.5 * lc.term(outs, tt, torch.from_numpy(jg)))
 check("joint mode: gradient of KL + lambda MSE through the whole chain (layer 0 included)", same(gj, gjw, 1e-5) and gj[0] is not None)
 check("local MSE term reported = the term's value", abs(float(ls) - float(lc.term(outs, tt, torch.from_numpy(jg)))) < 1e-5 * float(ls))
+# block mode (w222): layers 2 and 4 end blocks [0-2] and [3-4]; the KL reaches only layer 5 and the head
+st, loc, loss, genkl, ls = run_loc("block", 0.5, "2+4"); gb = grads_of(st, loss)
+st_ = ToyStu2(); loc_ = LocalMSE("2,0.25,block", store)
+h_, _, outs = run_segment(st_, gold.ids(0, 0, 40), 0, None, loc=loc_)
+gr = grads_of(st_, loc_.lam * loc_.term(outs, store.rows(gold, 0, jg, "cpu"), torch.from_numpy(jg)))
+check("block mode: the gen KL is the plain run's (forward unchanged)", torch.equal(genkl, tot_kl.detach()))
+check("block mode: layers 0-2 get exactly the gradient of their block's MSE at layer 2 through the chain (layer 0 included)", same(gb[:6], gr[:6]) and gb[0] is not None)
+check("block mode: layers 3-4 (second block, input detached) get a gradient that differs from the plain KL's; layer 5 and the head get exactly the plain KL gradient",
+      gb[6] is not None and gb[8] is not None and not same(gb[6:10], gk[6:10], 1e-3) and same([gb[10], gb[11], gb[12]], [gk[10], gk[11], gk[12]]))
 lcr = LocalMSE("0-3,0.1,local", type("S", (), {"layers": (0, 1, 2, 3)})()); logs2 = []; lcr.restrict(2, logs2.append)
 check("LocalMSE.restrict drops layers before the first trainable one", lcr.layers == [2, 3] and logs2)
 

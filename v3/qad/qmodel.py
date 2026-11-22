@@ -178,7 +178,7 @@ class Student:
     """layers on devices; .P = {name: Parameter}; .qlin = {key: QLinear}; .norm = {key: module with _qg}
     head_dir: a quantized head (ourq --only-head dir, `lm_head`) as a QLinear instead of the bf16 lm_head, its rows in
     the stored order; head_perm (stored row s = vocab head_perm[s], R16.npy) maps the targets' vocab ids to stored rows
-    (.v2row); head_train: its r / c trainable (arm H). lora: rank of the adapters on every trunk QLinear (arm L)."""
+    (.v2row); head_train: its r / c trainable (arm H; w222: "in" = only r, the 5,120 hidden-side scales). lora: rank of the adapters on every trunk QLinear (arm L)."""
     def __init__(self, model_dir, level_dir, devs, layers=None, norms=False, gauge=True, teacher=False, quant_layers=None, log=print,
                  head_dir=None, head_perm=None, head_train=False, lora=0):
         from safetensors import safe_open
@@ -238,7 +238,7 @@ class Student:
         if head_dir:                                                    # decoded on the last card while it is still empty
             hl = deq.Level(head_dir, "cpu"); hcb = hl.codebook
             ht = self.tables[self.devs[-1]] if hcb == self.cb else torch.from_numpy(deq.lut(hcb)).to(self.devs[-1])
-            self.hq = QLinear("lm_head", hl.raw("lm_head"), hcb, ht, self.devs[-1], head_train, head_train, hold_bf16=True)
+            self.hq = QLinear("lm_head", hl.raw("lm_head"), hcb, ht, self.devs[-1], bool(head_train), head_train is True, hold_bf16=True)   # w222: head_train "in" = the input-side r only; True = r and c (arm H)
             assert self.hq.exact and self.hq.n == cfg.vocab_size, (self.hq.exact, self.hq.n)
             self.hq.requires_grad_(False)
             for p in (self.hq.r, self.hq.c):

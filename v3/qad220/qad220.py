@@ -231,9 +231,9 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
         if loc is not None and i in loc.set:
-            xi = x.detach() if loc.mode == "local" else x
+            xi = x.detach() if loc.mode == "local" else x          # block (w222): a listed layer ends a block; x is already detached when the layer before it was listed, so a block of layers trains jointly on its end layer's MSE
             o = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), xi, use_reentrant=False) if ckpt and torch.is_grad_enabled() else ly(xi, **kw)
-            lo[i] = o; x = o.detach() if loc.mode == "local" else o
+            lo[i] = o; x = o.detach() if loc.mode in ("local", "block") else o
         elif i < ft and torch.is_grad_enabled():
             with torch.no_grad(): x = ly(x, **kw)
         elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
@@ -319,11 +319,13 @@ class LocalMSE:
     the mean over the listed layers of |s - t|^2 / |t|^2) and joins the KL sum before the division by the step's rows.
     mode local (default): a listed layer's input is the previous output detached and its own output continues detached, so it trains
     on its MSE alone (the KL never reaches it) and the MSE of layer i reaches only layer i; each layer is fed the student's own
-    state, the target is the bf16 trajectory's (arm B's block-wise loss). joint: gradients flow through the whole chain"""
+    state, the target is the bf16 trajectory's (arm B's block-wise loss). joint: gradients flow through the whole chain.
+    block (w222): the listed layers are block ENDS (a few taps, e.g. 3+7+15+23+31): each block (the layers after the previous listed layer up to
+    the listed one) is fed the student's own state detached and trains jointly on the MSE at its end layer; the KL reaches only the layers after the last listed layer"""
     def __init__(self, spec, store):
         f = spec.split(",")
         self.layers = parse_layers(f[0]); self.lam = float(f[1]); self.mode = f[2] if len(f) > 2 else "local"
-        assert self.mode in ("local", "joint") and len(f) in (2, 3), f"--local-mse LAYERS,lambda[,local|joint]: {spec}"
+        assert self.mode in ("local", "joint", "block") and len(f) in (2, 3), f"--local-mse LAYERS,lambda[,local|joint|block]: {spec}"
         self.store = store
         miss = [L for L in self.layers if L not in store.layers]
         assert not miss, f"--local-mse: layers {miss} are not in the --local-taps store {store.layers}"
@@ -837,6 +839,10 @@ def write_ckpt(stu, out, meta):
             r = q.r.exp().cpu() if q.r is not None else torch.ones(q.k)
             c = q.c.exp().cpu() if q.c is not None else torch.ones(q.n)
         save_file({"r": r.float().contiguous(), "c": c.float().contiguous()}, f"{sd}/{k}.safetensors")
+    hq = getattr(stu, "hq", None)
+    if hq is not None and hq.r is not None and hq.r.requires_grad:             # w222 (H): the trained head scales (r always; c = 1 when only the input side was trained), stored row order
+        with torch.no_grad():
+            save_file({"r": hq.r.exp().float().cpu().contiguous(), "c": (hq.c.exp().float().cpu() if hq.c is not None else torch.ones(hq.n)).contiguous()}, f"{sd}/lm_head.safetensors")
     lo = {k: v.detach().to(torch.bfloat16).cpu().contiguous() for k, v in stu.P.items() if k.endswith((":la", ":lb"))}
     if lo: save_file(lo, os.path.join(out, "lora.safetensors"))
     if getattr(stu, "norm", None):                                          # N (#196): the trained norm weights, as the checkpoint stores them
@@ -932,7 +938,7 @@ def build_student(a, dev, log, lora=None, layers=None, quant_layers=None, served
         t1 = time.time(); devs = dev if isinstance(dev, list) else [dev]
         stu = qmodel.Student(a.model, a.level, devs, log=log, head_dir=a.head if served else None,
                              head_perm=a.head_perm if served else None, lora=a.lora if lora is None else lora,
-                             layers=layers, quant_layers=quant_layers)
+                             layers=layers, quant_layers=quant_layers, head_train={"none": False, "in": "in", "both": True}[getattr(a, "head_train", "none")] if served else False)
         log(f"student built in {time.time() - t1:.0f} s: {len(stu.qlin)} linears ({stu.cb}, {sum(q.exact for q in stu.qlin.values())} "
             f"int8-exact), {sum(p.numel() for p in stu.P.values())} values, alloc {torch.cuda.memory_allocated(devs[0]) / 2**30:.2f} GiB")
     finally:
@@ -1255,6 +1261,7 @@ def parser():
     ap.add_argument("--pool", default="qad")
     ap.add_argument("--genmask", default=None, help="dir of gen masks <chunk>.u8 (genmask181.py) for the --chunks goldens: train on the board's rows only")
     ap.add_argument("--head", default=None); ap.add_argument("--head-perm", default=None)
+    ap.add_argument("--head-train", choices=("none", "in", "both"), default="none", help="w222 (H): train the served head's log multipliers: in = only r (the 5,120 hidden-side scales, suh of output.weight; the per-vocabulary scales stay frozen), both = r and c; none = frozen (default)")
     ap.add_argument("--cap", type=int, default=8192); ap.add_argument("--len", type=int, default=2048, help="max segment for prefix rebuilds / monitor")
     ap.add_argument("--V", type=int, default=24); ap.add_argument("--Q", type=int, default=1024)
     ap.add_argument("--budgets", default="1e6,4e6,16e6,48e6")
@@ -1310,7 +1317,7 @@ def parser():
     ap.add_argument("--decay-data", choices=("mix", "calib"), default="mix", help="w220: data of the decay phase: the plan's own mix, or unused calib documents only")
     ap.add_argument("--save-at", default=None, help="w220: comma list of gen-row counts: OUT/state-<rows>.pt is written when the run first passes each (fork points for --fork-from)")
     ap.add_argument("--prompt-weight", type=float, default=0.0, help="w220: add the golden's prompt-side rows (outside the gen mask) to the loss at this weight per row (0 = gen rows only, as before); the loss is still divided by the step's gen rows")
-    ap.add_argument("--local-mse", default=None, help="w220: LAYERS,lambda[,local|joint]: lambda x the hidden-state MSE vs the bf16 model at those layers (LAYERS: 0-31, 5+19+33; needs --local-taps), added to the KL")
+    ap.add_argument("--local-mse", default=None, help="w220: LAYERS,lambda[,local|joint|block]: lambda x the hidden-state MSE vs the bf16 model at those layers (LAYERS: 0-31, 5+19+33; needs --local-taps), added to the KL")
     ap.add_argument("--local-taps", default=None, help="w220: the bf16 teacher's hidden states of the --local-mse layers (--make-taps DIR --tap-layers L,L,...)")
     ap.add_argument("--tap-layers", default=None, help="w220: with --make-taps: comma list of layers to store (default the DFlash2 taps 5,19,33,47,61)")
     ap.add_argument("--clip-gnorm", type=float, default=0.0, help="w220: clip the global gradient norm at X x the running median batch norm (logs the clipped steps; 0 = off)")
