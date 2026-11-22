@@ -1,5 +1,0 @@
-B d200 2.50 --max-steps 2
-B d220 2.50 --max-steps 2
-B gb-pre 2.50 --gradnoise 2 --train-layers 32-63
-B gb-full 2.50 --gradnoise 2 --train-layers 32-63 --no-frozen-prefix
-B gb-pre-r 2.50 --gradnoise 2 --train-layers 32-63

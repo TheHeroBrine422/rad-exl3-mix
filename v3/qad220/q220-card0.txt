@@ -1,3 +1,0 @@
-T 25C 2.50 2.5e5,5e5 --lr 1e-3 --compile-scales --compile-ew
-R 25C 2.50 ckpt-2e+05
-R 25C 2.50 ckpt-5e+05
