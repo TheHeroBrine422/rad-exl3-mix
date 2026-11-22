@@ -9788,3 +9788,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   own detached state, no KL in stage 1) = the parallel cut-gradient form; teacher pass `M taps8` (layers 3/7/15/23/31/39/47/55, ~80 GB,
   2-card job) claimed on box2 card 2, waiting for card 3; then `gn-mse` diagnostic auto-starts; stage 1/2 lines held until read.
   λ rule: rms KL grad / rms MSE grad over layers 0–31 (matters only where KL meets MSE).
+- 11-22 ~4:50 AM CST: w222 added 25 MSE stage lines to box2's queue (staged MA, staged-deep, joint MJ, 2.50 longer stage 1; per size 2.50 / 3.00 / 4.00 lr 3e-4 + 2.50 lr 1e-3; control I25C1E3 added), all gated on a8int8.ok + teacher taps (+ lambda.txt from lamwatch.sh after the gn-mse diagnostic: λ = rms KL grad / rms MSE grad over layers 0–31); KL-only baseline for layers 0–31: 7.9 % significant at 1.96 se (chance 5 %), 0.9 % at z 3. Joint uses `joint` mode (KL reaches every layer).
