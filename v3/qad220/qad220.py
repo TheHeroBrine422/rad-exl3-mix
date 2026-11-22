@@ -437,6 +437,19 @@ def set_first_train(stu, log):
         + (f": layers 0 .. {stu.first_train - 1} run once under no_grad" if stu.first_train else ""))
 
 
+# ------------------------------------------------------------------ optimizer hygiene (w220)
+CLIP_MIN, CLIP_WIN = 5, 256        # --clip-gnorm: clipping starts after CLIP_MIN steps; the median is over the last CLIP_WIN steps' raw norms
+
+
+def clip_factor(hist, g, x):
+    """(factor, threshold) of --clip-gnorm X for a step whose global gradient norm is g, given the raw norms of the earlier steps:
+    threshold = X x the median of the last CLIP_WIN norms; factor = threshold / g when g exceeds it, else 1 (no clipping before
+    CLIP_MIN steps of history, threshold None)"""
+    if x <= 0 or len(hist) < CLIP_MIN: return 1.0, None
+    thr = x * float(np.median(hist[-CLIP_WIN:]))
+    return (thr / g if g > thr else 1.0), thr
+
+
 # ------------------------------------------------------------------ trainer
 class Trainer:
     def __init__(self, a, stu, C, steps, rows_of, dist, log, tap=None):
@@ -451,15 +464,16 @@ class Trainer:
         self.scal = sc + nrm
         if a.wd > 0:       # #200: decoupled weight decay on the log multipliers (toward 0 = the stored scales); not on the norm gains
             groups = [{"params": sc, "base": a.lr, "weight_decay": a.wd}] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else [])
-            self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, 0.99), eps=a.eps, weight_decay=0.0)
+            self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps, weight_decay=0.0)
         else:              # W = 0: #196's Adam, unchanged
             groups = [{"params": sc, "base": a.lr}] + ([{"params": nrm, "base": a.lr / 10}] if nrm else [])
-            self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, 0.99), eps=a.eps)
+            self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps)
         # L: the adapters' Adam runs on the CPU on f32 master copies (its state, 2 x 0.46 GB at r = 16, does not fit
         # beside a card's training peak); the card's adapters are overwritten with the masters after every step
         self.lo = lo; self.is_lo = [n.endswith((":la", ":lb")) for n in self.names]
         self.lo_m = [p.detach().cpu().clone().requires_grad_(True) for p in lo]
-        self.opt_lo = torch.optim.Adam([{"params": self.lo_m, "base": a.lr_lora}], lr=a.lr_lora, betas=(0.9, 0.99)) if lo else None
+        self.opt_lo = torch.optim.Adam([{"params": self.lo_m, "base": a.lr_lora}], lr=a.lr_lora, betas=(0.9, a.beta2)) if lo else None
+        self.gn_hist = []                                    # w220 --clip-gnorm: the raw global gradient norms of the earlier steps
         self.pin = []                                        # w220 --mask: partly masked vectors (mask, start value on the card)
         self.fmask = None
         if getattr(stu, "mask", None):
@@ -510,6 +524,13 @@ class Trainer:
         flat = torch.cat([(p.grad if p.grad is not None else torch.zeros_like(p)).reshape(-1).double().cpu() for p in self.P] + [acc])
         self.d.allsum(flat)
         if self.fmask is not None: flat[:len(self.fmask)] *= self.fmask         # w220 --mask: masked scales get gradient 0
+        nflat = sum(p.numel() for p in self.P)
+        self.gnorm = float(flat[:nflat].norm())                 # the optimizer step's gradient norm (logged)
+        self.clip = None
+        if a.clip_gnorm > 0:                                    # w220: clip the global norm at X x the running median norm
+            f, thr = clip_factor(self.gn_hist, self.gnorm, a.clip_gnorm)
+            self.gn_hist.append(self.gnorm)
+            if f < 1.0: flat[:nflat] *= f; self.clip = (f, thr)
         o = 0; k = 0
         for p, il in zip(self.P, self.is_lo):
             n = p.numel()
@@ -517,7 +538,6 @@ class Trainer:
             else: p.grad = flat[o:o + n].view_as(p).to(self.dev, torch.float32)
             o += n
         accs = flat[o:]
-        self.gnorm = float(flat[:o].norm())                     # the optimizer step's gradient norm (logged)
         self.opt.step()
         if self.opt_lo is not None:
             self.opt_lo.step()
@@ -536,12 +556,12 @@ class Trainer:
             sd = o_.state_dict()
             return {"state": {k: {n: (v.detach().cpu().clone() if torch.is_tensor(v) else v) for n, v in s.items()} for k, s in sd["state"].items()},
                     "param_groups": copy.deepcopy(sd["param_groups"])}
-        z = {"cur": self.stu.state(), "opt": cp(self.opt)}
+        z = {"cur": self.stu.state(), "opt": cp(self.opt), "gn_hist": list(self.gn_hist)}
         if self.opt_lo is not None: z["opt_lo"] = cp(self.opt_lo)
         return z
 
     def restore(self, z):
-        self.stu.load_state(z["cur"]); self.opt.load_state_dict(z["opt"]); self.states = {}
+        self.stu.load_state(z["cur"]); self.opt.load_state_dict(z["opt"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", []))
         if self.opt_lo is not None:
             self.opt_lo.load_state_dict(z["opt_lo"])
             with torch.no_grad():
@@ -1098,6 +1118,8 @@ def parser():
     ap.add_argument("--train-tensors", default=None, help="w220: train only the parameters whose name (<linear key>:<r|c|g>) matches this regex (re.search)")
     ap.add_argument("--tie-groups", type=int, default=1, help="w220: one shared log multiplier per G consecutive channels (exports per channel; 1 = off)")
     ap.add_argument("--tie-layers", default=None, help="w220: tie only in layers A-B (inclusive; default all layers)")
+    ap.add_argument("--clip-gnorm", type=float, default=0.0, help="w220: clip the global gradient norm at X x the running median batch norm (logs the clipped steps; 0 = off)")
+    ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
     return ap
 
@@ -1229,6 +1251,9 @@ def main():
         if tap is not None: rec["tap_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         rec["accum"] = N; rec["gnorm"] = round(T.gnorm, 6) if hasattr(T, "gnorm") else None
+        if a.clip_gnorm > 0:
+            rec["clip"] = None if T.clip is None else round(T.clip[0], 6)
+            if T.clip is not None: log(f"CLIP step {s + 1}: gradient norm {T.gnorm:.4e} > {a.clip_gnorm} x median {T.clip[1] / a.clip_gnorm:.4e}: scaled by {T.clip[0]:.4f}")
         if d.rank == 0:
             with open(os.path.join(a.out, "train.jsonl"), "a") as f: f.write(json.dumps(rec) + "\n")
         return rec

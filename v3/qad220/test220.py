@@ -201,5 +201,26 @@ check("apply_ties: layers 1-3 tied, layer 0 per channel; the gauge-fixed side (N
 ts2 = TStu(); apply_ties(argparse.Namespace(tie_groups=1, tie_layers=None), ts2, lg.append)
 check("--tie-groups 1 (default) changes nothing", all(type(q) is qmodel.QLinear for q in ts2.qlin.values()))
 
+
+# ---------------------------------------------------------------- item 4: clip, beta2
+ns["CLIP_MIN"], ns["CLIP_WIN"] = 5, 256
+clip_factor, = grab("clip_factor")
+check("clip: off (X = 0) and no clipping before 5 steps of history", clip_factor([1.0] * 100, 1e9, 0.0) == (1.0, None) and clip_factor([1.0] * 4, 1e9, 3.0) == (1.0, None))
+f, thr = clip_factor([1.0, 2.0, 3.0, 4.0, 5.0], 12.0, 3.0)
+check("clip: threshold = X x the median of the earlier norms, factor = thr / g when above", thr == 9.0 and abs(f - 0.75) < 1e-15, f"thr {thr} f {f}")
+check("clip: g at or below the threshold is untouched", clip_factor([1.0] * 6, 3.0, 3.0)[0] == 1.0 and clip_factor([1.0] * 6, 2.0, 3.0)[0] == 1.0)
+hist = list(np.r_[np.full(300, 10.0), np.full(256, 1.0)])
+check("clip: the median runs over the last 256 norms only", clip_factor(hist, 5.0, 3.0)[1] == 3.0)
+g = torch.randn(1000, dtype=torch.float64) * 7; gn = float(g.norm()); f, thr = clip_factor([gn / 4] * 10, gn, 2.0)
+g2 = g * f
+check("clip: the clipped gradient has norm X x median", abs(float(g2.norm()) - thr) < 1e-9 * thr)
+# beta2: betas (0.9, b); the default 0.99 is the old optimizer (bitwise), another value changes the step
+p1 = torch.nn.Parameter(torch.ones(8)); p2 = torch.nn.Parameter(torch.ones(8)); p3 = torch.nn.Parameter(torch.ones(8))
+o1 = torch.optim.Adam([p1], lr=1e-3, betas=(0.9, 0.99), eps=1e-8); o2 = torch.optim.Adam([p2], lr=1e-3, betas=(0.9, 0.99), eps=1e-8)
+o3 = torch.optim.Adam([p3], lr=1e-3, betas=(0.9, 0.95), eps=1e-8)
+for _ in range(3):
+    gg = torch.randn(8)
+    for p, o in ((p1, o1), (p2, o2), (p3, o3)): p.grad = gg.clone(); o.step()
+check("beta2 0.99 = the old optimizer bitwise; 0.95 differs", torch.equal(p1, p2) and not torch.equal(p1, p3))
 print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
 sys.exit(1 if fails else 0)
