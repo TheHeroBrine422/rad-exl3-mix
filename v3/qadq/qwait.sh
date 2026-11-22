@@ -4,5 +4,6 @@ MACHINE=$1 CARD=$2; shift 2
 HERE0=$(dirname "$(readlink -f "$0")"); source $HERE0/qenv.sh $MACHINE
 qsay "qwait card $CARD: waiting for old dispatchers $*"
 for p in "$@"; do while kill -0 $p 2>/dev/null; do sleep 30; done; done
+rm -f $QROOT/stop-card$CARD     # `touch stop-card<N>` + qwait = restart a dispatcher between jobs (e.g. to pick up a new qcard.sh)
 qsay "qwait card $CARD: old dispatchers gone, starting qcard"
 exec $HERE0/qcard.sh $MACHINE $CARD

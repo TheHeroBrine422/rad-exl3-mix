@@ -14,17 +14,28 @@ QQ="$PY $HERE/qq.py"
 stopped() { [ -e $QROOT/stop ] || [ -e $QROOT/stop-card$CARD ]; }
 qsay "qcard $MACHINE card $CARD start (pid $$)"
 while ! stopped; do
-  $QQ peek $QROOT || { sleep 60; continue; }
+  $QQ peek $QROOT $CARD || { sleep 60; continue; }
   eval "exec {lk}>$(CARDLOCK $CARD)"
   flock -w 60 $lk || { exec {lk}>&-; continue; }
   stopped && break
-  LINE=$($QQ claim $QROOT $CARD $$) || { exec {lk}>&-; sleep 5; continue; }
+  LINE=$($QQ claim $QROOT $CARD $$ --caps M) || { exec {lk}>&-; sleep 5; continue; }
   eval "set -- $LINE"; KIND=$1 KEY=$2 ARM=$3 SIZE=$4 BUD=$5 READS=$6 CKD=$7 CTL=$8 ST=$9; shift 9
   qsay "card $CARD takes $KEY ($KIND $ARM $SIZE; $ST)"
   export QCARD_LOCKED=1
   fin() { $QQ finish $QROOT $KEY $1 $2; qsay "card $CARD $KEY: $1 rc $2"; }
   ok=1; rc=0
   case $KIND in
+  M)   # two-card job (the teacher tap pass): own card's lock held, the partner's taken too (45 min at most, else the claim is released), the trainer gets both cards
+    PARTNER=${1#partner=}; shift
+    eval "exec {lk2}>$(CARDLOCK $PARTNER)"; got=0
+    for try in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do flock -w 60 $lk2 && { got=1; break; }; stopped && break; done
+    if [ $got = 0 ]; then qsay "card $CARD $KEY: partner card $PARTNER not free in 45 min, claim released"; $QQ unclaim $QROOT $KEY; exec {lk2}>&-; unset QCARD_LOCKED; exec {lk}>&-; sleep 30; continue; fi
+    AVG=$(df -BG --output=avail $CKD 2>/dev/null | tail -1 | tr -dc 0-9); mkdir -p $CKD; AVG=$(df -BG --output=avail $CKD | tail -1 | tr -dc 0-9)
+    if [ "$AVG" -lt "${QMINFREE_GB:-200}" ]; then qsay "card $CARD $KEY: only ${AVG} GB free under $CKD (< ${QMINFREE_GB:-200}), not started"; fin fail "disk"; exec {lk2}>&-; unset QCARD_LOCKED; exec {lk}>&-; continue; fi
+    while true; do $HERE/qrun.sh $MACHINE $ARM "$CARD,$PARTNER" $SIZE $BUD --make-taps $CKD "$@" {inst}>&-; rc=$?; case $rc in 75|76) sleep 120;; *) break;; esac; done
+    qsay "card $CARD+$PARTNER $ARM taps rc $rc"
+    if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; elif [ $rc -eq 0 ] && [ -e $CKD/.done ]; then fin ok 0; else fin fail $rc; fi
+    exec {lk2}>&-;;
   T|B)
     LASTN=$($PY -c "print('%.0e' % float('${BUD##*,}'))")
     if [ "$KIND" = B ] || [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then

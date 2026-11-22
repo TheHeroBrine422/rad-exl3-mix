@@ -10,7 +10,7 @@ mkdir -p $QROOT/patched $QROOT/logs
 if [ ! -s $QROOT/scores/$N.json ]; then
   while [ "$(df -BG --output=avail $QROOT | tail -1 | tr -dc 0-9)" -lt 100 ]; do sleep 120; done
   RAD=$IN/rel/host-emb/qwen3.8-27b-exl3-v3-${SIZE}bpw.rad; P=$QROOT/patched/$N.rad
-  [ -e $P ] || $PY $CODE/v3/qad214/swap214.py $RAD $IN/lv/$SIZE $CKD $P --verify > $QROOT/logs/swap-$N.log 2>&1 || { echo "swap failed"; exit 4; }
+  [ -e $P ] || $PY $HERE/swap222.py $RAD $IN/lv/$SIZE $CKD $P --verify > $QROOT/logs/swap-$N.log 2>&1 || { echo "swap failed"; exit 4; }
   $HERE/qscore.sh $MACHINE $N $P $CARD; rc=$?
   [ $rc -eq 0 ] || exit $rc
   rm -f $P
