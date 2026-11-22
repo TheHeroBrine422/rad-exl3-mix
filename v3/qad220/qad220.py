@@ -427,6 +427,18 @@ def schedule(cum, budgets, frac):
     return last, br
 
 
+class SD(float):
+    """w222: the key of a short-decay branch (--short-decay): formats as `sd-<rows>` so its checkpoint dir is ckpt-sd-2e+05"""
+    def __format__(self, spec): return "sd-" + float.__format__(float(self), spec)
+
+
+def branch_lr(bs, s, end, last, fork_last, a_lr, warm, lr_at, scheduled):
+    """lr of plan step bs of a branch that forked at step s and ends at step end: linear to ~0 from the main run's lr. Unscheduled runs (WSD): a_lr x the ramp, as always; scheduled runs (w222:
+    --lr-steps / --decay-shape / --short-decay): the schedule's own lr at the fork, so a branch decays from where the run actually is"""
+    if scheduled: return min(lr_at(bs), lr_at(s) * (end - bs) / (end - s))
+    return min(lr_main(bs, last, fork_last, a_lr, warm), a_lr * (end - bs) / (end - s))
+
+
 def lr_main(step, last, fork_last, lr, warm):
     if step < warm: return lr * (step + 1) / warm
     if step < fork_last: return lr
@@ -1019,7 +1031,19 @@ def build_data(a, d, log):
         before = len(C.items); C.items = [x for x in C.items if not (x[0] == gc and x[1] in fes)]
         log(f"fixed eval: {len(fe)} qad-pool docs, {tot} rows (first {a.len} tokens), held out of training ({before - len(C.items)} items removed)")
         json.dump([i for _, i in fe], open(os.path.join(a.out, "fixed-eval-docs.json"), "w"))
-    order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
+    if a.plan_ext:                                    # w222 (ledger use qad214-ext): w214's plan + new documents appended after it, w214's order as the prefix of the new order
+        px = json.load(open(a.plan_ext)); n_old = len(C.items)
+        assert px["n_base_items"] == n_old and px["cap"] == a.cap, f"--plan-ext: its base has {px['n_base_items']} items (cap {px['cap']}), this run's {n_old} (cap {a.cap}): not w214's data"
+        for nm in px["new_goldens"]:
+            C.g.append(D.Gold(os.path.join(a.ext_root, "gold", nm), genfile=os.path.join(a.ext_root, "genmask", nm + ".u8"))); C.tags.append(D.corpus_tag(nm))
+        gidx = {g.name: k for k, g in enumerate(C.g)}
+        for nm, i, nr in px["items"]:
+            g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert r_ == nr, f"--plan-ext: {nm}:{i} has {r_} rows here, {nr} in the plan"
+            C.items.append((gidx[nm], i, min(a.cap, g.ntok(i)), r_))
+        log(f"plan-ext {a.plan_ext}: {len(C.items) - n_old} documents appended to w214's {n_old} ({', '.join(px['new_goldens'])} + calib qad docs): {json.dumps(C.summary())}")
+        order = np.concatenate([np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(len(C.items) - n_old)])
+    else:
+        order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
     budgets = [float(a.rows)] if a.rows else [float(x) for x in a.budgets.split(",")]
     steps = D.plan(C.items, order, a.V, a.Q)
     rows_of, cum = rows_cum(C, steps)
@@ -1031,6 +1055,10 @@ def build_data(a, d, log):
         steps = calib_cooldown(C, steps, fork_last, a.V, a.Q, a.seed)
         rows_of, cum = rows_cum(C, steps)
     last, br = schedule(cum, budgets, a.decay_frac)
+    if a.short_decay:                                           # w222: a cheap decayed point at each listed row count: fork there, decay linearly from the run's lr over --short-decay-rows rows
+        for Pk in [float(x) for x in a.short_decay.split(",")]:
+            if Pk < budgets[-1]:
+                br[SD(Pk)] = (int(np.searchsorted(cum, Pk, side="left")) + 1, min(len(cum), int(np.searchsorted(cum, Pk + a.short_decay_rows, side="left")) + 1))
     assert cum[-1] >= budgets[-1] or a.gate or a.profile, f"the data hold {cum[-1]} rows < budget {budgets[-1]}"
     share = {}
     for s in range(last):
@@ -1277,6 +1305,10 @@ def parser():
     ap.add_argument("--pool", default="qad")
     ap.add_argument("--genmask", default=None, help="dir of gen masks <chunk>.u8 (genmask181.py) for the --chunks goldens: train on the board's rows only")
     ap.add_argument("--head", default=None); ap.add_argument("--head-perm", default=None)
+    ap.add_argument("--short-decay", default=None, help="w222: comma list of row counts: at each, a branch forks off the main run and decays linearly from the run's lr to ~0 over --short-decay-rows rows (ckpt-sd-<rows>); for runs without a constant phase (cosine-all, linear-all) and --lr-steps runs")
+    ap.add_argument("--short-decay-rows", type=float, default=5e4, help="w222: length of the --short-decay branches in rows (default 50,000: the WSD 0.25 M branch's window)")
+    ap.add_argument("--plan-ext", default=None, help="w222: the extended data plan (plan222-build.py): w214's documents in w214's order, then these new ones (xcorp / trace goldens under --ext-root/gold, calib qad documents), one epoch; budgets up to ~1e7 rows")
+    ap.add_argument("--ext-root", default=None, help="w222: with --plan-ext: dir holding gold/<name>/ (the new goldens) and genmask/<name>.u8")
     ap.add_argument("--head-train", choices=("none", "in", "both"), default="none", help="w222 (H): train the served head's log multipliers: in = only r (the 5,120 hidden-side scales, suh of output.weight; the per-vocabulary scales stay frozen), both = r and c; none = frozen (default)")
     ap.add_argument("--cap", type=int, default=8192); ap.add_argument("--len", type=int, default=2048, help="max segment for prefix rebuilds / monitor")
     ap.add_argument("--V", type=int, default=24); ap.add_argument("--Q", type=int, default=1024)
@@ -1520,7 +1552,7 @@ def main():
                 save(); snap = T.snapshot()
                 log(f"branch {Tb:.0e}: steps {fk} .. {end}")
                 for bs in range(s, end):
-                    lr = min(lr_main(bs, last, fork_last, a.lr, a.warmup), a.lr * (end - bs) / (end - s))   # linear to ~0 at end
+                    lr = branch_lr(bs, s, end, last, fork_last, a.lr, a.warmup, lr_at, bool(a.lr_steps or a.decay_shape != "linear" or a.short_decay))   # linear to ~0 at end
                     accs, w = T.run_step(bs, lr); r = logstep(bs, lr, accs, w, f"branch {Tb:.0e}")
                     log(json.dumps(r))
                 ckpt(Tb, end)

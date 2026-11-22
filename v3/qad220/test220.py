@@ -402,6 +402,15 @@ check("block mode: the gen KL is the plain run's (forward unchanged)", torch.equ
 check("block mode: layers 0-2 get exactly the gradient of their block's MSE at layer 2 through the chain (layer 0 included)", same(gb[:6], gr[:6]) and gb[0] is not None)
 check("block mode: layers 3-4 (second block, input detached) get a gradient that differs from the plain KL's; layer 5 and the head get exactly the plain KL gradient",
       gb[6] is not None and gb[8] is not None and not same(gb[6:10], gk[6:10], 1e-3) and same([gb[10], gb[11], gb[12]], [gk[10], gk[11], gk[12]]))
+# w222: short-decay branches (--short-decay) and the scheduled branch lr
+blr, lrm = grab("branch_lr", "lr_main")[:2]
+ok = True
+for bs in range(6, 12):
+    ok &= abs(blr(bs, 6, 12, 24, 20, 1e-3, 8, None, False) - min(lrm(bs, 24, 20, 1e-3, 8), 1e-3 * (12 - bs) / (12 - 6))) < 1e-15
+check("branch_lr: unscheduled runs keep the old WSD branch lr exactly", ok)
+lra = lambda q: 3e-4 * 0.5 * (1 + math.cos(math.pi * q / 40))         # a cosine-like schedule
+v = [blr(bs, 10, 13, 40, 0, 3e-4, 8, lra, True) for bs in range(10, 13)]
+check("branch_lr: a scheduled run's branch decays from the schedule's lr at the fork (never above it, to ~0 at the end)", abs(v[0] - lra(10)) < 1e-15 and v[0] > v[1] > v[2] > 0 and all(x <= lra(10 + k) + 1e-15 for k, x in enumerate(v)))
 # w222: Adam state by name for a fork into a bigger trainable set (staged MSE -> KL)
 mos, = grab("map_opt_state")[:1]
 old_st = {"state": {0: {"step": torch.tensor(5.), "exp_avg": torch.ones(2)}, 1: {"step": torch.tensor(5.), "exp_avg": 2 * torch.ones(3)}}, "param_groups": [{"params": [0, 1]}]}
