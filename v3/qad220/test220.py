@@ -7,7 +7,7 @@ import numpy as np
 import torch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, HERE)
+sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "..", "qad"))
 TREE = ast.parse(open(os.path.join(HERE, "qad220.py")).read())
 ns = {"os": os, "re": re, "argparse": argparse, "json": json, "math": math, "Fraction": Fraction, "np": np, "torch": torch, "HERE": HERE,
       "F": torch.nn.functional, "checkpoint": torch.utils.checkpoint.checkpoint, "types": types, "BF": torch.bfloat16}
@@ -129,5 +129,77 @@ check("frozen prefix: loss and the trainable layers' gradients bitwise identical
 check("frozen prefix: layers 0..2 get no gradient, layers 3..5 do", all(x is None for x in ga[:6]) and all(x is not None for x in ga[6:]))
 h0, g0 = toy_grads(0, True); h0b, g0b = toy_grads(0, False)
 check("first_train = 0 is the old loop (bitwise)", torch.equal(h0, h0b) and all(torch.equal(x, y) for x, y in zip(g0, g0b)))
+
+# ---------------------------------------------------------------- item 3: tied scales
+import qmodel
+from rxq import deq
+ns["qmodel"] = qmodel
+grab("tie_linear", "apply_ties", classes=("TiedQLinear",))
+TiedQLinear, tie_linear, apply_ties = ns["TiedQLinear"], ns["tie_linear"], ns["apply_ties"]
+
+
+def mkq(k=256, n=384, seed=0, gauge_r=False):
+    q = qmodel.QLinear.__new__(qmodel.QLinear); torch.nn.Module.__init__(q)
+    g = torch.Generator().manual_seed(seed)
+    q.key = f"model.language_model.layers.{seed}.mlp.up_proj"; q.k, q.n = k, n; q.in_features, q.out_features = k, n
+    q.register_buffer("wq", torch.randint(-20, 20, (k, n), generator=g).to(torch.int8), persistent=False); q.s = 0.05; q.exact = True
+    q.register_buffer("suh", (torch.randint(0, 2, (k,), generator=g) * 2 - 1).float() * 0.8, persistent=False)
+    q.register_buffer("svh", (torch.randint(0, 2, (n,), generator=g) * 2 - 1).float() * 0.8, persistent=False)
+    q.register_buffer("H", deq.hadamard128("cpu"), persistent=False); q.register_buffer("Hb", q.H.to(torch.bfloat16), persistent=False)
+    q.r = None if gauge_r else torch.nn.Parameter(torch.zeros(k)); q.c = torch.nn.Parameter(torch.zeros(n)); q.la = q.lb = None
+    return q
+
+
+G = 32
+x = torch.randn(10, 256).to(torch.bfloat16)
+qt = mkq(); tie_linear(qt, G)
+rt, ct = torch.randn(256 // G) * 0.05, torch.randn(384 // G) * 0.05
+with torch.no_grad(): qt._parameters["r_t"].copy_(rt); qt._parameters["c_t"].copy_(ct)
+qf = mkq()
+with torch.no_grad(): qf.r.copy_(rt.repeat_interleave(G)); qf.c.copy_(ct.repeat_interleave(G))
+check("tied: r / c read as the per-channel vectors (group value repeated)", torch.equal(qt.r.detach(), rt.repeat_interleave(G)) and torch.equal(qt.c.detach(), ct.repeat_interleave(G)))
+check("tied: forward bitwise = the untied linear with the expanded scales", torch.equal(qt(x), qf(x)))
+(qt(x).float() ** 2).sum().backward(); (qf(x).float() ** 2).sum().backward()
+gr = qf.r.grad.view(-1, G).sum(1); gc = qf.c.grad.view(-1, G).sum(1)
+check("tied: a tied parameter's gradient = the sum of its members' per-channel gradients",
+      torch.allclose(qt._parameters["r_t"].grad, gr, rtol=1e-5, atol=1e-6 * float(gr.abs().max())) and
+      torch.allclose(qt._parameters["c_t"].grad, gc, rtol=1e-5, atol=1e-6 * float(gc.abs().max())),
+      f"max rel {float((qt._parameters['r_t'].grad - gr).abs().max() / gr.abs().max()):.1e}")
+check("tied: only r_t / c_t are parameters (r / c are gone)", sorted(n for n, _ in qt.named_parameters()) == ["c_t", "r_t"])
+sa, sb = qt.export(); sc_, sd_ = qf.export()
+check("tied: export() (f16 suh / svh) equals the untied one", torch.equal(sa, sc_) and torch.equal(sb, sd_))
+# the export round trip through write_ckpt: per-channel scales, format unchanged
+write_ckpt, = grab("write_ckpt")
+ns["save_atomic"] = lambda o, p: torch.save(o, p); 
+import safetensors.torch as stt
+ns["qmodel"] = qmodel
+class WStu:
+    def __init__(self, q): self.qlin = {q.key: q}; self.P = {q.key + ":r": q._parameters.get("r_t", q._parameters.get("r")), q.key + ":c": q._parameters.get("c_t", q._parameters.get("c"))}
+    norm = None
+    def state(self): return {k: v.detach().cpu().clone() for k, v in self.P.items()}
+o1, o2 = os.path.join(tmp, "ck-tied"), os.path.join(tmp, "ck-full")
+write_ckpt(WStu(qt), o1, {}); write_ckpt(WStu(qf), o2, {})
+f1 = stt.load_file(f"{o1}/scales/{qt.key}.safetensors"); f2 = stt.load_file(f"{o2}/scales/{qf.key}.safetensors")
+check("tied export round trip: scales/<key>.safetensors {r [k], c [n]} f32, identical to the untied student's with the expanded values",
+      f1["r"].shape == (256,) and f1["c"].shape == (384,) and f1["r"].dtype == torch.float32 and torch.equal(f1["r"], f2["r"]) and torch.equal(f1["c"], f2["c"])
+      and torch.equal(f1["r"], rt.repeat_interleave(G).exp()))
+# gauge (r None) and apply_ties on a fake student: layers range, P rebuilt, frozen sides untouched
+class TStu:
+    def __init__(self):
+        self.layers = [None] * 4; self.qlin = {}; self.P = {}
+        for i in range(4):
+            q = mkq(seed=i, gauge_r=(i == 3)); self.qlin[q.key] = q
+            for nm in ("r", "c"):
+                if getattr(q, nm) is not None: self.P[f"{q.key}:{nm}"] = getattr(q, nm)
+ts = TStu(); lg = []
+apply_ties(argparse.Namespace(tie_groups=64, tie_layers="1-3"), ts, lg.append)
+check("apply_ties: layers 1-3 tied, layer 0 per channel; the gauge-fixed side (None) stays None; P points at the tied parameters",
+      ts.P["model.language_model.layers.0.mlp.up_proj:r"].numel() == 256 and ts.P["model.language_model.layers.1.mlp.up_proj:r"].numel() == 4
+      and ts.P["model.language_model.layers.2.mlp.up_proj:c"].numel() == 6 and "model.language_model.layers.3.mlp.up_proj:r" not in ts.P
+      and ts.qlin["model.language_model.layers.3.mlp.up_proj"].r is None and ts.qlin["model.language_model.layers.3.mlp.up_proj"].c.numel() == 384
+      and ts.P["model.language_model.layers.1.mlp.up_proj:r"] is ts.qlin["model.language_model.layers.1.mlp.up_proj"]._parameters["r_t"], lg[0])
+ts2 = TStu(); apply_ties(argparse.Namespace(tie_groups=1, tie_layers=None), ts2, lg.append)
+check("--tie-groups 1 (default) changes nothing", all(type(q) is qmodel.QLinear for q in ts2.qlin.values()))
+
 print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
 sys.exit(1 if fails else 0)

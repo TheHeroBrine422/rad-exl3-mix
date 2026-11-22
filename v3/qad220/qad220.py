@@ -331,6 +331,55 @@ def group_lr(s, k0, last, fork_last, lr, warm, N):
     return lr_main((s - k0) // N, cd(last - k0), cd(fork_last - k0), lr, warm)
 
 
+# ------------------------------------------------------------------ tied scales (w220)
+class TiedQLinear(qmodel.QLinear):
+    """a QLinear whose log multipliers r (input side) / c (output side) are held as one shared value per --tie-groups G consecutive
+    channels (parameters r_t / c_t, [k / G] and [n / G]). r / c read as the per-channel vectors (a group's value repeated: expand +
+    reshape, whose backward is a deterministic sum over the group), so the forward, the export and the checkpoint format are those
+    of the untied student: export writes per-channel scales"""
+    tie_g = 1
+
+    @staticmethod
+    def expand(t, g): return t.view(-1, 1).expand(-1, g).reshape(-1)
+
+    def _side(self, nm):
+        t = self._parameters.get(nm + "_t")
+        return self.expand(t, self.tie_g) if t is not None else self._parameters.get(nm, self.__dict__.get(nm))
+
+    @property
+    def r(self): return self._side("r")
+
+    @property
+    def c(self): return self._side("c")
+
+
+def tie_linear(ql, g, sides=("r", "c")):
+    """convert a QLinear in place into a TiedQLinear with groups of g channels on its trainable sides; returns {side: tied Parameter}"""
+    out = {}
+    ql.__class__ = TiedQLinear; ql.tie_g = g
+    for nm in sides:
+        p = ql._parameters.get(nm)
+        if p is None or not p.requires_grad: continue
+        assert p.numel() % g == 0, f"--tie-groups {g}: {ql.key} {nm} has {p.numel()} channels"
+        ql._parameters.pop(nm)
+        t = torch.nn.Parameter(p.detach().view(-1, g).mean(1).clone())          # start value: the group mean (0 at a fresh start)
+        ql._parameters[nm + "_t"] = t; out[nm] = t
+    return out
+
+
+def apply_ties(a, stu, log):
+    """--tie-groups G [--tie-layers A-B]: every trainable r / c of the trunk linears in layers A-B (all by default) becomes one
+    parameter per G channels. stu.P[<key>:r|c] then holds the tied parameter"""
+    if a.tie_groups <= 1: return
+    lo, hi = parse_range(a.tie_layers) if a.tie_layers else (0, len(stu.layers) - 1)
+    nt = nv = 0
+    for k, ql in stu.qlin.items():
+        if not (lo <= layer_of(stu, k + ":r") <= hi): continue
+        for nm, t in tie_linear(ql, a.tie_groups).items():
+            stu.P[f"{k}:{nm}"] = t; nt += 1; nv += t.numel() * a.tie_groups
+    log(f"tied scales: {nt} vectors in layers {lo}-{hi} share one multiplier per {a.tie_groups} channels ({nv} scales -> {nv // a.tie_groups} parameters)")
+
+
 # ------------------------------------------------------------------ trainable set (w220)
 def layer_of(stu, name):
     """decoder layer index of a student parameter name (<linear or norm key>:<r|c|g|la|lb>); the final norm and the head: after the last layer"""
@@ -1047,6 +1096,8 @@ def parser():
     # w220
     ap.add_argument("--train-layers", default=None, help="w220: train only the parameters of decoder layers A-B (inclusive); the layers before A run once under no_grad")
     ap.add_argument("--train-tensors", default=None, help="w220: train only the parameters whose name (<linear key>:<r|c|g>) matches this regex (re.search)")
+    ap.add_argument("--tie-groups", type=int, default=1, help="w220: one shared log multiplier per G consecutive channels (exports per channel; 1 = off)")
+    ap.add_argument("--tie-layers", default=None, help="w220: tie only in layers A-B (inclusive; default all layers)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
     return ap
 
@@ -1125,6 +1176,7 @@ def main():
             open(o + "/.done", "w").close()
         log(f"export-only (#196): {o}")
         return
+    apply_ties(a, stu, log)
     stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log)
     use_seg_attention(stu)
