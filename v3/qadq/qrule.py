@@ -3,7 +3,7 @@
 """qrule.py ROOT [--apply] -- the checkpoint rule of the QAD queue (user 11-22, README "Checkpoint rule"): every training line gives a CURVE: a j217 read at each of 0.25 M / 0.5 M / 1 M / 2 M / 4 M rows up to the
 line's budget.  Plain lines (WSD): budgets = those points up to the final budget (each a decayed branch forked off the main run), reads = their checkpoints.  Lines with --lr-steps / --decay-shape (one budget; no constant
 phase or piecewise lr): the run's end is the real number, the intermediate points are `--short-decay P1,P2,..` branches (fork at P, linear decay of the run's lr over 50 k rows: checkpoints ckpt-sd-<P>, labelled
-short-decay in results.tsv). Not touched: lines already claimed / with a run dir, forks (--fork-from), --accum > 1 (the trainer allows one budget, no branches), M / B / R / U lines.
+short-decay in results.tsv). Not touched: lines already claimed / with a run dir, forks (--fork-from), M / B / R / U lines. (--accum > 1 lines take the same branches: qad220's branch_plan puts the fork on an optimizer-step boundary; at 4x batch a branch shorter than one optimizer step, e.g. 0.25 M, has no decay.)
 Without --apply: prints what would change; with it: rewrites jobs.txt under queue.lock (a backup jobs.txt.pre-qrule is kept)."""
 import fcntl, os, shlex, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -21,7 +21,7 @@ for ln in lines:
     if j is None or j["kind"] != "T" or os.path.exists(f"{root}/claims/{j['key']}") or os.path.exists(f"{root}/runs/{j['arm']}") or os.path.exists(f"{root}/done/{j['key']}"): out.append(ln); continue
     raw = shlex.split(ln, comments=True); arm, size, bud, reads = raw[1:5]; rest = raw[5:]; dirs = [x for x in rest if x.startswith("@")]; fl = [x for x in rest if not x.startswith("@")]
     fin = float(bud.split(",")[-1])
-    if "--fork-from" in fl or ("--accum" in fl and int(fl[fl.index("--accum") + 1]) > 1): out.append(ln); continue
+    if "--fork-from" in fl: out.append(ln); continue          # (--accum > 1 takes branches since 11-22: branch_plan in qad220)
     sched = "--lr-steps" in fl or ("--decay-shape" in fl)
     pts = [p for p in PTS if p < fin]; new_fl = list(fl)
     if sched:

@@ -1,9 +1,5 @@
 # --- batch-size test at 2.50 (user 11-22): 1x batch lr 3e-4 to 2 M (control; 0.25 / 0.5 / 1 / 2 M branches) vs 4x batch (--accum 4, #200's B4: 4 plan steps per optimizer step, same rows, 1/4 the steps; --warmup 2 = the 1x runs' 8 plan steps)
-# at lr 3e-4 and 1e-3. qad220 allows one budget and no branches with --accum > 1, so each 4x checkpoint is its own run (0.5 M, 1 M, 2 M; no 0.25 M: 3 optimizer steps); the 1x lr 1e-4 run (I25-lr1e-4, iceman) pairs: same data / order / checkpoints
+# at lr 3e-4 and 1e-3, one run to 2 M each with WSD branches at 0.25 / 0.5 / 1 / 2 M (qad220 branch_plan: fork on an optimizer-step boundary, a branch = the standalone run of its budget; at 4x batch the 0.25 M and 0.5 M branches are shorter than one optimizer step of decay, i.e. undecayed); the 1x lr 1e-4 run (I25-lr1e-4, iceman) pairs: same data / order / checkpoints
 T I25-lr3e-4-2M 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok
-T I25B4-3e-4-05M 2.50 5e5 ckpt-5e+05 --lr 3e-4 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
-T I25B4-3e-4-1M 2.50 1e6 ckpt-1e+06 --lr 3e-4 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
-T I25B4-3e-4-2M 2.50 2e6 ckpt-2e+06 --lr 3e-4 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
-T I25B4-1e-3-05M 2.50 5e5 ckpt-5e+05 --lr 1e-3 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
-T I25B4-1e-3-1M 2.50 1e6 ckpt-1e+06 --lr 1e-3 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
-T I25B4-1e-3-2M 2.50 2e6 ckpt-2e+06 --lr 1e-3 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
+T I25B4-3e-4 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok,/data/q27/queue/accumbr.ok @ctl=I25-lr3e-4-2M
+T I25B4-1e-3 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-3 --accum 4 --warmup 2 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok,/data/q27/queue/accumbr.ok @ctl=I25-lr3e-4-2M

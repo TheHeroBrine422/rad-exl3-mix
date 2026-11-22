@@ -411,6 +411,19 @@ check("branch_lr: unscheduled runs keep the old WSD branch lr exactly", ok)
 lra = lambda q: 3e-4 * 0.5 * (1 + math.cos(math.pi * q / 40))         # a cosine-like schedule
 v = [blr(bs, 10, 13, 40, 0, 3e-4, 8, lra, True) for bs in range(10, 13)]
 check("branch_lr: a scheduled run's branch decays from the schedule's lr at the fork (never above it, to ~0 at the end)", abs(v[0] - lra(10)) < 1e-15 and v[0] > v[1] > v[2] > 0 and all(x <= lra(10 + k) + 1e-15 for k, x in enumerate(v)))
+# w222: WSD branches with --accum: the branch forks on an optimizer-step boundary where the main run's lr equals the standalone run's, and runs the standalone's remaining groups
+bp, glr, lrm2 = grab("branch_plan", "group_lr", "lr_main")[:3]
+ok = True; cases = 0
+for N in (2, 3, 4):
+    for warm in (1, 2, 8):
+        for end in range(3, 60):
+            for fk in range(1, end + 1, 3):
+                g0, GT, sf = bp(fk, end, N); cases += 1
+                ok &= (sf == g0 * N) and (g0 < GT) and (GT == -(-end // N)) and (g0 <= -(-fk // N))
+                stand = [glr(g * N, 0, end, fk, 1e-3, warm, N) for g in range(GT)]
+                main = [glr(g * N, 0, 4 * end, 3 * end, 1e-3, warm, N) for g in range(GT)]        # a main run whose decay starts at plan step 3 x end
+                ok &= all(abs(stand[g] - main[g]) < 1e-18 for g in range(g0))                        # same lr before the fork: the forked state is the standalone's
+check(f"branch_plan: {cases} (N, warmup, fork, end) cases: fork on an optimizer-step boundary with the standalone lr before it, remaining groups = the standalone's", ok)
 # w222: Adam state by name for a fork into a bigger trainable set (staged MSE -> KL)
 mos, = grab("map_opt_state")[:1]
 old_st = {"state": {0: {"step": torch.tensor(5.), "exp_avg": torch.ones(2)}, 1: {"step": torch.tensor(5.), "exp_avg": 2 * torch.ones(3)}}, "param_groups": [{"params": [0, 1]}]}

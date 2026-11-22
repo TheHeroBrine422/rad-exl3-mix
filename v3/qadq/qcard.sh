@@ -18,7 +18,7 @@ while ! stopped; do
   eval "exec {lk}>$(CARDLOCK $CARD)"
   flock -w 60 $lk || { exec {lk}>&-; continue; }
   stopped && break
-  LINE=$($QQ claim $QROOT $CARD $$ --caps M) || { exec {lk}>&-; sleep 5; continue; }
+  LINE=$($QQ claim $QROOT $CARD $$ --caps M,U) || { exec {lk}>&-; sleep 5; continue; }
   eval "set -- $LINE"; KIND=$1 KEY=$2 ARM=$3 SIZE=$4 BUD=$5 READS=$6 CKD=$7 CTL=$8 ST=$9; shift 9
   qsay "card $CARD takes $KEY ($KIND $ARM $SIZE; $ST)"
   export QCARD_LOCKED=1

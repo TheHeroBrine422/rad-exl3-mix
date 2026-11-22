@@ -110,7 +110,15 @@ def _a8_int8_gemm(q, x):
     return a8int8.a8_matmul(x, q.wq, qmodel.i8_to_bf16)
 
 
-def use_compiled_scales(stu, a8=False, a8_int8=False):
+def set_dynamo_limit(n):
+    """w222: raise torch._dynamo's per-function recompile limit (default 8: the two compiled scale functions hit it with the 400 linears' guard variants and the rest fell back to eager); 0 / None = untouched"""
+    if not n: return
+    import torch._dynamo
+    for k in ("recompile_limit", "cache_size_limit", "accumulated_recompile_limit", "accumulated_cache_size_limit"):
+        if hasattr(torch._dynamo.config, k): setattr(torch._dynamo.config, k, max(int(n) * (8 if k.startswith("acc") else 1), getattr(torch._dynamo.config, k)))
+
+
+def use_compiled_scales(stu, a8=False, a8_int8=False, dynamo_limit=0):
     """QLinear's elementwise chain (x . su -> bf16, y . (sv s) -> bf16; arm Q's fake quant) as torch.compile'd functions
     (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager). Inductor's deterministic
     mode (no on-device autotuning: w215 saw two runs differ without it) keeps runs bitwise reproducible; numerics "strict"
@@ -118,6 +126,7 @@ def use_compiled_scales(stu, a8=False, a8_int8=False):
     import types
     import torch._inductor.config
     torch._inductor.config.deterministic = True; torch._inductor.config.numerics = "strict"
+    set_dynamo_limit(dynamo_limit)
     @torch.compile(dynamic=True)
     def pre(x0, suh, r): return (x0 * (suh * r.exp() if r is not None else suh)).to(BF)
     @torch.compile(dynamic=True)
@@ -443,6 +452,15 @@ def lr_main(step, last, fork_last, lr, warm):
     if step < warm: return lr * (step + 1) / warm
     if step < fork_last: return lr
     return lr * max(0.0, (last - step) / max(1, last - fork_last))
+
+
+def branch_plan(fk, end, N):
+    """w222: a WSD branch of budget T (decay from plan step fk to its end step `end`, k0 = 0) with N plan steps per optimizer step, on optimizer-step boundaries: the groups the standalone run of budget T
+    executes are 0 .. GT - 1 (GT = ceil(end / N), the last one partial); its lr is constant before group g_f = ceil(fk / N), so the main run (same lr there) is forked at group g0 = min(g_f, GT - 1)
+    = plan step g0 * N and the branch runs groups g0 .. GT - 1 with the standalone lr. Returns (g0, GT, g0 * N)"""
+    cd = lambda x: -(-x // N)
+    GT = cd(end); g0 = min(cd(fk), GT - 1)
+    return g0, GT, g0 * N
 
 
 def group_lr(s, k0, last, fork_last, lr, warm, N):
@@ -1305,6 +1323,7 @@ def parser():
     ap.add_argument("--pool", default="qad")
     ap.add_argument("--genmask", default=None, help="dir of gen masks <chunk>.u8 (genmask181.py) for the --chunks goldens: train on the board's rows only")
     ap.add_argument("--head", default=None); ap.add_argument("--head-perm", default=None)
+    ap.add_argument("--dynamo-limit", type=int, default=0, help="w222: torch._dynamo recompile limit for --compile-scales / --compile-ew (0 = torch's default 8, which the compiled scale functions exceed: the later linear shapes ran eager)")
     ap.add_argument("--short-decay", default=None, help="w222: comma list of row counts: at each, a branch forks off the main run and decays linearly from the run's lr to ~0 over --short-decay-rows rows (ckpt-sd-<rows>); for runs without a constant phase (cosine-all, linear-all) and --lr-steps runs")
     ap.add_argument("--short-decay-rows", type=float, default=5e4, help="w222: length of the --short-decay branches in rows (default 50,000: the WSD 0.25 M branch's window)")
     ap.add_argument("--plan-ext", default=None, help="w222: the extended data plan (plan222-build.py): w214's documents in w214's order, then these new ones (xcorp / trace goldens under --ext-root/gold, calib qad documents), one epoch; budgets up to ~1e7 rows")
@@ -1413,7 +1432,7 @@ def main():
     log("qad191.py " + json.dumps(vars(a)) + f" world {d.world}")
     mad_int_form()
     if a.conv == "shift": qmodel.use_shift_conv()
-    if a.compile_ew: qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up compiled")
+    if a.compile_ew: set_dynamo_limit(a.dynamo_limit); qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up compiled")
     P = build_data(a, d, log)
     C, fe, budgets, steps, rows_of, cum, last, br, fork_last = (P[k] for k in ("C", "fe", "budgets", "steps", "rows_of", "cum", "last", "br", "fork_last"))
     if a.make_taps: return make_taps(a, P, log)
@@ -1430,7 +1449,12 @@ def main():
         fork_last = int(np.searchsorted(cum, cum[k0 - 1] + (1 - a.decay_frac) * (budgets[-1] - cum[k0 - 1]), side="left")) + 1
         log(f"B: block stage on plan steps 0 .. {k0 - 1} ({cum[k0 - 1]} rows); end-to-end steps {k0} .. {last - 1}, decay from step {fork_last}")
     N = max(1, a.accum)                                      # #200: plan steps per optimizer step
-    assert N == 1 or (k0 == 0 and not br), "--accum > 1: one budget, no block stage"
+    assert N == 1 or k0 == 0, "--accum > 1: no block stage"
+    if N > 1 and br:                                         # w222: WSD branches with --accum > 1: fork points on optimizer-step boundaries, each branch = a standalone run of its budget (branch_plan)
+        assert not (a.lr_steps or a.decay_shape != "linear" or a.short_decay or a.warmup_frac is not None), "--accum > 1 with branches: WSD only (no --lr-steps / --decay-shape / --short-decay / --warmup-frac: a branch must equal a standalone run)"
+        for Tb, (fk, end) in br.items():
+            g0, GT, sf = branch_plan(fk, end, N)
+            assert g0 <= -(-fork_last // N), f"--accum {N}: the branch at {Tb:.0e} forks at optimizer step {g0}, after the main run's decay has started (step {-(-fork_last // N)}): give the main run a longer constant phase (--decay-frac) or fewer / larger branches"
     NU = -(-(last - k0) // N)                                # optimizer steps of the main run
     if a.warmup_frac is not None:                            # #200: warmup stretched to the optimizer steps (8 of 49 = #191)
         a.warmup = max(1, round(float(Fraction(a.warmup_frac)) * NU))
@@ -1456,7 +1480,7 @@ def main():
     stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log, a.no_frozen_prefix)
     use_seg_attention(stu)
-    if a.compile_scales: use_compiled_scales(stu, a.a8, a.a8_int8); log(f"QLinear scales compiled (a8 {a.a8}, int8 {a.a8_int8})")
+    if a.compile_scales: use_compiled_scales(stu, a.a8, a.a8_int8, a.dynamo_limit); log(f"QLinear scales compiled (a8 {a.a8}, int8 {a.a8_int8})")
     elif a.a8 and not a.check: use_a8(stu, a.a8_int8)
     elif a.lora: use_lora32(stu); log("arm L: adapters in f32 (use_lora32)")
     if a.a8: log("arm Q: a8g128 fake-quant activations on every trunk linear (STE)" + ("; GEMM int8 x int8 (w223 --a8-int8)" if a.a8_int8 else ""))
@@ -1548,9 +1572,18 @@ def main():
     while st["step"] < last:
         s = st["step"]
         for Tb, (fk, end) in br.items():                 # a branch forks at this step
-            if s == fk - 1 and Tb not in st["done_br"] and not os.path.exists(os.path.join(a.out, f"ckpt-{Tb:.0e}", ".done")):
+            g0, GT, sf = branch_plan(fk, end, N) if N > 1 else (None, None, fk - 1)
+            if s == sf and Tb not in st["done_br"] and not os.path.exists(os.path.join(a.out, f"ckpt-{Tb:.0e}", ".done")):
                 save(); snap = T.snapshot()
-                log(f"branch {Tb:.0e}: steps {fk} .. {end}")
+                log(f"branch {Tb:.0e}: steps {fk} .. {end}" + (f" (optimizer steps {g0} .. {GT - 1}, forked at plan step {sf})" if N > 1 else ""))
+                if N > 1:                                 # w222: the standalone run of budget Tb, step for step: its lr (group_lr with last = end, fork_last = fk) and its (partial) last group
+                    for g in range(g0, GT):
+                        s0 = g * N; e_ = min(s0 + N, end); lr = group_lr(s0, 0, end, fk, a.lr, a.warmup, N)
+                        accs, w = T.run_group(list(range(s0, e_)), lr); r = logstep(e_ - 1, lr, accs, w, f"branch {Tb:.0e}")
+                        log(json.dumps(r))
+                    ckpt(Tb, end)
+                    T.restore(snap); st["done_br"].append(Tb); save()
+                    continue
                 for bs in range(s, end):
                     lr = branch_lr(bs, s, end, last, fork_last, a.lr, a.warmup, lr_at, bool(a.lr_steps or a.decay_shape != "linear" or a.short_decay))   # linear to ~0 at end
                     accs, w = T.run_step(bs, lr); r = logstep(bs, lr, accs, w, f"branch {Tb:.0e}")

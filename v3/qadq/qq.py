@@ -127,7 +127,7 @@ def main():
             s, _ = state(root, j)
             if s not in ("ready", "stale"): continue
             if j["cards"] is not None and card is not None and card not in j["cards"]: continue
-            if j["kind"] == "M" and a[0] == "claim" and "M" not in caps: continue
+            if j["kind"] in ("M", "U") and a[0] == "claim" and j["kind"] not in caps: continue
             if a[0] == "claim":
                 open(f"{root}/claims/{j['key']}", "w").write(f"{a[2]} {a[3]} {socket.gethostname()} {time.strftime('%F %T')}\n")
                 line = [j["kind"], j["key"], j["arm"], j["size"], j.get("budgets") or "-", ",".join(j.get("reads", [])) or "-", j.get("ckptdir") or "-", j["ctl"] or "-", s] + (["partner=" + j["partner"]] if j["kind"] == "M" else []) + j["flags"]
