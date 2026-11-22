@@ -9658,3 +9658,21 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   documents only (box2 → iceman link ~2 MB/s for w214's 12 GB mix), student rebuilt on iceman from the HF release; new judge
   `qad218-heldout` (173 docs, 203,229 gen rows) + `qad218` train (230 docs) + `qad218-tune` (η), all in the ledger before reads.
   No KL result yet. Report `out/w218.md`.
+- 11-21 ~8:30 PM CST: **w214 stopped by the lead (user OK; Sonnet high): V3.1 QAD pilot on the released picks.** Scale-only arm A
+  (suh / svh, frozen codes), batch 24 × 1,024 (~21k gen rows a step), w214's rebuilt inputs (`.rad → student` loader, scale-swap
+  packer, served radiance judge on j214 = 80 calib-verify docs / 121k gen rows; data calib qad + fit/search + Thor xcorp / trace
+  goldens; RULES214 + amendments). Served KL ratio vs the unhealed release (cmp214, paired 95 % CI):
+  | arm | 0.25M | 0.5M | 1M |
+  |---|---|---|---|
+  | 25A 2.5 lr 1e-3 | 0.917 [0.852, 0.962] | 0.909 | **0.904** [0.843, 0.947] |
+  | 25A 2.5 lr 3e-4 | 0.957 [0.923, 0.981] | 0.935 [0.892, 0.966] (step 0.977, still gaining) | — |
+  | 30A 3.0 lr 1e-3 | **0.917** [0.830, 0.979] | 0.933 | 0.980 (drifts: step 1.050 [1.011, 1.135]) |
+  | 30A 3.0 lr 3e-4 | 0.947 [0.893, 0.985] | **0.929** [0.861, 0.976] (step 0.981, still gaining) | — |
+  | 40Q 4.0 lr 1e-3 + A8 | 1.033 | 1.218 (early stop) | — |
+  | 40A 4.0 lr 1e-3 | 1.052 [1.012, 1.097] | 1.188 [1.035, 1.373] | — |
+  | 40A 4.0 lr 3e-4 | **0.948** [0.879, 0.998] | 0.950 [0.878, 1.008] (flat) | — |
+  Readings: gains arrive early; constant lr then stalls or drifts; usable lr falls with size (the 4.0 divergence was the lr, not A8);
+  lr 3e-4 gains less at first but steadily (70+ of 80 docs better) and was still gaining at 0.5M at 2.5 / 3.0. Note j214 is a calib-
+  verify slice read ~15 times here → retired as a tuning judge (w217 builds a held-out qad-pool judge). Data `data/qad214/`
+  (scores, runs, logs), code `v3/qad214/`. w214 never wrote its final report (stopped during a burst of contradictory lead steers on
+  the lr-3e-4 1M runs; final decision: stop at 0.5M, test Adam eps first = w217).
