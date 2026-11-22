@@ -9710,3 +9710,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   0.53 % at z 3; no layer empty, so mask alone gives no prefix speedup). **GPU gates queued self-starting on box2 cards 2 / 3**
   (after w217 yields them ~1 AM): a compiled vs eager 25A within ±2 % on j217, b frozen-prefix gradient, c speed table, d defaults
   bit-identical on the full model; readout `/data/q27/w220/readout220.md` (`code/v3/qad220/readout220.py`). Report `out/w220.md`.
+- 11-22 ~1:00 AM CST (lead, CPU on iceman, w218's saved per-chunk weight gradients, round 0, 3 × 100k rows): **the KL weight gradient's
+  consistent part lives in a tiny low-rank subspace.** Cosine between two chunks' gradients, raw vs after projecting both onto the
+  top-r singular subspace of a THIRD independent chunk (r = 4 / 16 / 64; energy share of the projection in brackets): layer 55
+  gate_proj 0.051 → **0.947** (0.6 %) / 0.434 / 0.364; layer 40 down_proj 0.256 → **0.907** (1.0 %) / 0.803 / 0.731; layer 23
+  q_proj 0.067 → **0.884** (2.3 %) / 0.396 / 0.427; layer 8 GDN qkv 0.028 → 0.377 (0.9 %) / 0.227 / 0.108; layer 23 k_proj 0.018 →
+  0.051 (no structure). So gradient ≈ a small, consistent, rank-few signal (≤ ~1–2 % of the energy) + large full-rank noise; w218's
+  code-QAD targets W − η·G were ~99 % noise by energy. Implication: a low-rank-projected step (GaLore-style P_r(G), subspace from
+  independent data) for code-QAD targets, and possibly a low-rank parametrisation for any additive correction. Untested as a step.
+  Files `data/qad218/lead/` (lowrank.py, lowrank-r0.txt).

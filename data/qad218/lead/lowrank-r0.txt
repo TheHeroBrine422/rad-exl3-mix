@@ -1,0 +1,6 @@
+tensor                                   full cos r4  cos/energy r16 cos/energy r64 cos/energy
+8.linear_attn.in_proj_qkv                   0.028   0.377/0.009   0.227/0.013   0.108/0.031
+23.self_attn.k_proj                         0.018   0.051/0.047   0.033/0.233   0.048/0.372
+23.self_attn.q_proj                         0.067   0.884/0.023   0.396/0.039   0.427/0.060
+40.mlp.down_proj                            0.256   0.907/0.010   0.803/0.022   0.731/0.042
+55.mlp.gate_proj                            0.051   0.947/0.006   0.434/0.046   0.364/0.061
