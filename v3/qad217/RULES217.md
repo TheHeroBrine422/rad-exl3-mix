@@ -1,6 +1,6 @@
 # RULES217 — does a larger Adam eps fix the scale-only QAD noise? (w217)
 
-Written 2026-11-21 9:35 PM CST, after step 1 (the held-out judge, the gradient-noise medians) and before any step-2 run (the only healed checkpoints read so far are w214's no-eps ones, the controls; their j217 reads are in the report); committed alone. Amendments are appended below with a
+Written 2026-11-21 9:28 PM CST, after step 1 (the held-out judge, the gradient-noise medians) and before any step-2 run (the only healed checkpoints read so far are w214's no-eps ones, the controls; their j217 reads are in the report); committed alone. Amendments are appended below with a
 time and a reason, never edits of the text above. Brief: `rad-local/workers/instr3/w217.md` (lead). Runtime: none (scales fold into the container's f16 suh / svh planes).
 
 ## Question
