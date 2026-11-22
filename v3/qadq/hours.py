@@ -14,8 +14,15 @@ def hours(j):
     b = [float(x) for x in j["budgets"].split(",")]
     rows = b[-1] + sum(0.2 * x for x in b[:-1])
     fl = j["flags"]; t = 98.0
+    if "--fork-from" in fl:                                   # a fork resumes at its state's rows (state-<rows>.pt)
+        import re
+        m = re.search(r"state-(\d+)\.pt", fl[fl.index("--fork-from") + 1]); rows -= int(m.group(1)) if m else 0
+    if "--local-mse" in fl:                                   # w222 guesses: block stage 1 (the KL is cut: layers after the last tap run forward only) 0.65 / 0.8 of a step for taps to 31 / 47; joint +5 %
+        spec = fl[fl.index("--local-mse") + 1].split(",")
+        if spec[-1] == "joint": t *= 1.05
+        elif "--train-layers" in fl: pass          # (0-31 / 0-47 factors are in the train-layers table below)
     if "--train-layers" in fl:
-        t = {"32-63": 67.0, "48-63": 50.0}.get(fl[fl.index("--train-layers") + 1], 98.0)
+        t = {"32-63": 67.0, "48-63": 50.0, "0-31": 98.0 * 0.65, "0-47": 98.0 * 0.8}.get(fl[fl.index("--train-layers") + 1], 98.0)
     if "--prompt-weight" in fl: t *= 1.1
     return rows / ROWS_STEP * t / 3600, len(j["reads"]) * READ_H
 

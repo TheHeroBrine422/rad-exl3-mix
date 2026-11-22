@@ -8,13 +8,15 @@ dispatcher, or not ready (a missing `@needs` path / checkpoint). Job lines (shle
   B ARM SIZE flags...                 short run (bench / gate), no reads; done when the trainer exits 0
   M ARM SIZE BUDGETS TAPDIR flags...  two-card job (w222: the teacher tap pass, `--make-taps TAPDIR`): claimed only by a dispatcher on a card in @cards=A[,B..], which also takes the lock of @partner=P (its
                                       other card; the partner's dispatcher takes no new job while the claim is live, so P frees up) and gives the trainer both cards; done when TAPDIR/.done exists
-  directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH (absolute, or relative to runs/; the job waits until it exists)   @ctl=ARM (control arm for the paired column)
+  directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH[,PATH..] (absolute, or relative to runs/; the job waits until all exist)   @budgets=B (B lines: the trainer's --budgets, default 2.5e5,5e5)   `{lam}` in a line = the first number of QROOT/lambda.txt (the line also waits for that file)   @ctl=ARM (control arm for the paired column)
   `{runs}` in any field expands to ROOT/runs.
 usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M] | unclaim ROOT KEY | finish ROOT KEY ok|fail|cancelled RC | status ROOT | key LINE..."""
 import fcntl, os, shlex, socket, sys, time
 
 
 def parse(line, root):
+    lamf = f"{root}/lambda.txt"; haslam = "{lam}" in line
+    if haslam and os.path.exists(lamf): line = line.replace("{lam}", open(lamf).read().split()[0])
     t = shlex.split(line.replace("{runs}", f"{root}/runs"), comments=True)
     if not t: return None
     kind, rest = t[0], t[1:]
@@ -33,10 +35,11 @@ def parse(line, root):
         assert "cards" in d and "partner" in d, f"M needs @cards= and @partner=: {line}"
     elif kind == "B":
         assert len(rest) >= 2, f"B needs ARM SIZE: {line}"
-        j = dict(kind="B", arm=rest[0], size=rest[1], budgets="2.5e5,5e5", reads=[], flags=rest[2:], key=f"B-{rest[0]}")
+        j = dict(kind="B", arm=rest[0], size=rest[1], budgets=d.get("budgets", "2.5e5,5e5"), reads=[], flags=rest[2:], key=f"B-{rest[0]}")
     else: raise ValueError(f"unknown job kind {kind}: {line}")
     j["needs"] = d.get("needs"); j["ctl"] = d.get("ctl"); j["cards"] = d["cards"].split(",") if "cards" in d else None; j["partner"] = d.get("partner")
-    if j["needs"] and not j["needs"].startswith("/"): j["needs"] = f"{root}/runs/{j['needs']}"
+    j["needs"] = [x if x.startswith("/") else f"{root}/runs/{x}" for x in j["needs"].split(",")] if j["needs"] else []
+    if haslam: j["needs"].append(lamf)            # a {lam} line waits for QROOT/lambda.txt (written once from the gradient-noise pass)
     return j
 
 
@@ -80,8 +83,9 @@ def state(root, j):
         c = open(cf).read().split()
         if len(c) >= 3 and c[2] == socket.gethostname() and not alive(int(c[1])): stale = True
         else: return "running", f"card {c[0]} pid {c[1]}"
-    need = j["needs"] or (f"{j['ckptdir']}/.done" if j["kind"] == "R" else None)
-    if need and not os.path.exists(need): return "waiting", f"needs {need}"
+    need = j["needs"] or ([f"{j['ckptdir']}/.done"] if j["kind"] == "R" else [])
+    miss = [x for x in need if not os.path.exists(x)]
+    if miss: return "waiting", "needs " + ", ".join(miss)
     return ("stale" if stale else "ready"), ("claim of a dead dispatcher (resume)" if stale else "")
 
 
