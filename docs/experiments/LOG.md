@@ -9689,3 +9689,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   rows per gradient round (~1.3 card-h), steps as a fresh encode of a continuous target, ~4 GB host RAM per M weights (~100 GB trunk).
   Scale-only comparison arm on the same blocks (304k rows) finishing ~11:45 PM on iceman (`runs/agg218.txt`); cannot change the
   code verdict. Data `data/qad218/`, code `v3/qad218/`, report `out/w218.md`.
+- 11-21 ~11:30 PM CST: w218's scale-only comparison arm stopped unfinished by the lead (user: iceman card 0 to w217's eps screen); the code-QAD verdict stands without it.
