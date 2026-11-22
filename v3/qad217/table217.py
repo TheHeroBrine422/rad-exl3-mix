@@ -51,5 +51,22 @@ for size, S in (("2.50", "25"), ("3.00", "30"), ("4.00", "40")):
             elif xs[0] is not None: extra[0] = f"{bl[0].sum()} / -"
             res[f"{size}/{arm}"] = r
             md.append(f"| {lr} | {el} | {cells[0]} | {cells[1]} | {cells[2]} | {extra[0]} | {extra[1]} | {extra[2]} | {vs[0]} | {vs[1]} |")
+# the no-eps lr-3e-4 runs extended past 0.5 M (lead 11-21): w214's 0.25 / 0.5 M checkpoints, the resumed 1 M runs (`<arm>-ext1M`), the 2.50 2 M run (branches 1 M / 2 M)
+chains = {"2.50": [("w214 0.25 M", "25A-lr3e-4-ckpt-2e+05"), ("w214 0.5 M", "25A-lr3e-4-ckpt-5e+05"), ("ext 1 M (resumed at step 21)", "25A-lr3e-4-ext1M-ckpt-1e+06"),
+                   ("2 M run: 1 M branch", "25A-lr3e-4-2M-ckpt-1e+06"), ("2 M run: 2 M", "25A-lr3e-4-2M-ckpt-2e+06")],
+          "3.00": [("w214 0.25 M", "30A-lr3e-4-ckpt-2e+05"), ("w214 0.5 M", "30A-lr3e-4-ckpt-5e+05"), ("ext 1 M (resumed at step 20)", "30A-lr3e-4-ext1M-ckpt-1e+06")]}
+for size, ch in chains.items():
+    cf = f"{sd}/ctl-{size}.json.rows"
+    if not os.path.exists(cf) or not any(os.path.exists(f"{sd}/{f}.json.rows") for _, f in ch[2:]): continue
+    xc, n = cmp214.doc_sums(g, cf)
+    md += [f"\n**{size} lr 3e-4, no eps, longer budgets** (ratio vs unhealed [95 % CI] (docs better / worse); step = vs the previous row)\n", "| checkpoint | ratio | step | blow-up docs | ratio w/o blow-ups | median doc ratio |", "|---|---|---|---|---|---|"]
+    prev = None
+    for lab, f in ch:
+        p = f"{sd}/{f}.json.rows"
+        if not os.path.exists(p): continue
+        x = cmp214.doc_sums(g, p)[0]; d = cmp214.paired(xc, x, n); b = (x / np.maximum(n, 1) >= 0.3) & (x / np.maximum(n, 1) >= 5 * xc / np.maximum(n, 1)) & (n > 0); ok = (n > 0) & ~b
+        st = fmt(cmp214.paired(prev, x, n)) if prev is not None else "-"
+        res[f"{size}/long/{f}"] = dict(d, blowups=int(b.sum()), ratio_wo_blowups=float(x[ok].sum() / xc[ok].sum()))
+        md.append(f"| {lab} | {fmt(d)} | {st} | {int(b.sum())} | {x[ok].sum() / xc[ok].sum():.3f} | {np.median(x[n > 0] / xc[n > 0]):.3f} |"); prev = x
 print("\n".join(md))
 if out: json.dump(res, open(out, "w"), indent=1)
