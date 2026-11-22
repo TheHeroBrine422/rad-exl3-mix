@@ -569,5 +569,23 @@
   "line": "v3.1",
   "decisions": 0,
   "note": "#214 (w214, 2026-11-21): the pilot's judge slice golden-j214: 80 verify-pool docs (cap 8,192 tokens, 121,641 gen rows; no select / final / fit use, not V4-reserve, not in golden-verify27-w114*, no QAD training use), cut from the published calib golden with mkjudge214.py seed 214; served-path reads of the unhealed released 2.50 / 3.00 / 4.00 picks and QAD checkpoints vs them (report only, never a pick)"
+ },
+ "qad218-heldout": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#218 (w218, 2026-11-22): the code-QAD probe's judge, qad-pool documents not in swj27-qad (the release's swj fit), the w94 head fits, qad214, qad215-*, qad181-fixed; first 8,192 tokens, 203,229 gen rows; torch-side reads of a few variants (released, the code-QAD rounds, scale-only)"
+ },
+ "qad218-tune": {
+  "role": "select",
+  "line": "v3.1",
+  "decisions": 12,
+  "note": "#218 (w218, 2026-11-22): the eta line search (4-5 etas x 3 rounds) of the code-QAD probe, training side; first 8,192 tokens, 54,308 gen rows"
+ },
+ "qad218": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "#218 (w218, 2026-11-22): code-QAD probe training documents (3 rounds x ~100k gen rows: KL gradients for the code re-encode and the scale-only comparison), first 8,192 tokens"
  }
 }
