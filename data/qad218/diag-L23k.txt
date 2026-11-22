@@ -1,0 +1,11 @@
+# diag218.py on L23 self_attn.k_proj; rows in order: released; enc/eta-0.01, enc/eta-0.03 (first design, global step); encq/eta-0.005, encq/eta-0.02 (normalized plain step); encp/eta-0.2 (preconditioned); enco/eta-0, enco/eta-0.05 (fresh encode of the true weight, minus the preconditioned step)
+model.language_model.layers.23.self_attn.k_proj K 2.5 rms(W_hat_orig) 0.9428
+released   rms(E) 0.2120  rel out err 0.00591  rms(q - rel) 0.0000
+eta-0.01   rms(E) 0.2314  rel out err 0.47392  rms(q - rel) 0.0934
+eta-0.03   rms(E) 0.2660  rel out err 4.26609  rms(q - rel) 0.1618
+eta-0.005  rms(E) 0.2137  rel out err 0.00624  rms(q - rel) 0.0271
+eta-0.02   rms(E) 0.2225  rel out err 0.01358  rms(q - rel) 0.0679
+eta-0.2    rms(E) 0.2120  rel out err 0.00591  rms(q - rel) 0.0002
+eta-0      rms(E) 0.2028  rel out err 0.00589  rms(q - rel) 0.2855
+eta-0.05   rms(E) 0.2029  rel out err 0.00589  rms(q - rel) 0.2855
+damping as the tool had it (sigma mean diag H, before S): d S^2 mean 5.1962e-06 vs mean diag(M) 1.9236e-04; suh^2 max / mean 5.4; diag(H) max / mean 3263.2

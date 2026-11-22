@@ -1,0 +1,30 @@
+11-21 7:18 PM CST r0 encode 0,0.01,0.03,0.1,0.3
+11-21 7:36 PM CST r0 grad chunk 1
+11-21 7:44 PM CST r0 grad chunk 2
+11-21 7:51 PM CST r0 encode 0,0.01,0.03,0.1,0.3
+11-21 8:02 PM CST r0 tune
+11-21 8:07 PM CST r0 pick: cur (no eta beat cur) -> codes rel
+11-21 8:07 PM CST r0 judge
+11-21 8:15 PM CST r1 grad chunk 3
+11-21 8:23 PM CST r1 grad chunk 4
+11-21 8:30 PM CST r1 grad chunk 5
+11-21 8:38 PM CST r1 encode 0.01,0.03,0.1,0.3
+11-21 8:49 PM CST r1 tune
+11-21 8:54 PM CST r1 pick: cur (no eta beat cur) -> codes rel
+11-21 8:54 PM CST r1 judge
+11-21 8:59 PM CST r2 grad chunk 6
+11-21 9:07 PM CST r2 grad chunk 7
+11-21 9:14 PM CST r2 grad chunk 8
+11-21 9:21 PM CST r2 encode 0.01,0.03,0.1,0.3
+11-21 9:32 PM CST r2 tune
+11-21 9:40 PM CST driver stopped by lead (eta grid too large: every eta worse than cur in r0/r1)
+11-21 9:44 PM CST ls218: encode --step quant 0.005,0.01,0.02,0.05,0.1,0.2
+11-21 10:00 PM CST ls218: tune
+11-21 10:08 PM CST ls218 done
+11-21 10:08 PM CST ls2: precond
+11-21 10:09 PM CST ls2: encode precond 0.005,0.01,0.02,0.05,0.1,0.2
+11-21 10:18 PM CST ls2: encode precond 0.05,0.2,0.5,1,2
+11-21 10:32 PM CST ls2: encode from orig 0,0.05,0.2
+11-21 10:39 PM CST ls2: tune
+11-21 10:52 PM CST ls2 done
+11-21 10:52 PM CST final: judge r0p, o0

@@ -1,0 +1,9 @@
+03:39:00 probe218.py {"mode": "eval", "out": "runs/diag/tune", "model": "/data/workspace/models/qwen38-27b-bf16", "lv": "/data/w218/lv/2.50", "calib": "/data/challenge/golden/calib", "data": "/data/w218/data218.json", "layers": "8,23,40,55", "codes": "", "chunk": 0, "rows": 100000, "V": 6, "Q": 1024, "nsamp": 20000, "set": "tune", "variants": "k23=runs/diag/k23,v23=runs/diag/v23,mlp40=runs/diag/mlp40,gdn8=runs/diag/gdn8,l55=runs/diag/l55", "chunks": "0-8", "lr": 0.001, "compile_scales": false}
+03:39:22 student built in 20 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+03:39:22 GDN a / b: /data/w218/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+03:39:22 probe: 26 tensors in layers [8, 23, 40, 55], 1.510 G values
+03:40:19 EVAL tune k23: KL 0.039055 over 54310 rows (34 docs, 1 tensors from runs/diag/k23), 56 s
+03:41:14 EVAL tune v23: KL 0.039960 over 54310 rows (34 docs, 1 tensors from runs/diag/v23), 55 s
+03:42:10 EVAL tune mlp40: KL 0.038877 over 54310 rows (34 docs, 3 tensors from runs/diag/mlp40), 55 s
+03:43:06 EVAL tune gdn8: KL 0.047418 over 54310 rows (34 docs, 3 tensors from runs/diag/gdn8), 55 s
+03:44:03 EVAL tune l55: KL 0.038469 over 54310 rows (34 docs, 7 tensors from runs/diag/l55), 55 s

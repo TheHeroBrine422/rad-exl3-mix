@@ -83,21 +83,22 @@ def main():
                   + json.dumps({k: round(v, 4) if isinstance(v, float) else v for k, v in s["_all"].items()}))
             for k, v in s.items():
                 if k != "_all": print(f"   {k.split('layers.')[1]:32s} median SNR {v['median_snr']:.3f}  >2: {v['frac_snr_gt2']:.3f}  signal share {v['signal_share']:.3f}")
-        for sf in sorted(glob.glob(os.path.join(rd, "enc", "eta-*", "stats.json"))):
-            st = json.load(open(sf)); e = st["eta"]
+        for sf in sorted(glob.glob(os.path.join(rd, "enc*", "eta-*", "stats.json"))):
+            if os.path.getsize(sf) == 0: continue                       # r0/enc/eta-0's, cut by the 11-21 outage (result in the log)
+            st = json.load(open(sf)); e = f"{os.path.basename(os.path.dirname(os.path.dirname(sf)))}/{st['eta']}"
             px = np.mean([v["proxy"] for v in st["tensors"].values()])
             res["enc"].setdefault(r, {})[str(e)] = {"tiles_values_changed": st["tiles_values_changed"], "tiles": st["tiles"],
                                                      "decode_all_equal": st["decode_all_equal"], "mean_proxy": px, "sec": st["sec_encode"],
                                                      "per_tensor": {k: v["tiles_values_changed"] / v["tiles"] for k, v in st["tensors"].items()}}
-            print(f"   {r} eta {e:<6g} tiles changed {st['tiles_values_changed']:>8d} / {st['tiles']} ({100 * st['tiles_values_changed'] / st['tiles']:.2f} %), "
+            print(f"   {r} {e:<12s} tiles changed {st['tiles_values_changed']:>8d} / {st['tiles']} ({100 * st['tiles_values_changed'] / st['tiles']:.2f} %), "
                   f"decode ok {st['decode_all_equal']}, mean proxy {px:.4e}, encode {st['sec_encode']:.0f} s")
-        td = os.path.join(rd, "tune")
-        if os.path.exists(os.path.join(td, "cur.json")):
-            cur = json.load(open(os.path.join(td, "cur.json")))
+        for td in sorted(glob.glob(os.path.join(rd, "tune*"))):      # tune (driver), tuneq / tunep (the 11-21 line searches)
+            if not os.path.exists(os.path.join(td, "cur.json")): continue
+            cur = json.load(open(os.path.join(td, "cur.json"))); tn = os.path.basename(td)
             for f in sorted(glob.glob(os.path.join(td, "*.json"))):
                 v = json.load(open(f))
                 if v["name"] == "cur": continue
-                p = paired(cur, v); res["tune"].setdefault(r, {})[v["name"]] = p; print("   tune " + fmt(v["name"], p))
+                p = paired(cur, v); res["tune"].setdefault(f"{r}/{tn}", {})[v["name"]] = p; print(f"   {tn} " + fmt(v["name"], p))
     if a.json: json.dump(res, open(a.json, "w"), indent=1)
 
 

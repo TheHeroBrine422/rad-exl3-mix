@@ -1,0 +1,9 @@
+02:02:27 probe218.py {"mode": "eval", "out": "runs/r0/tune", "model": "/data/workspace/models/qwen38-27b-bf16", "lv": "/data/w218/lv/2.50", "calib": "/data/challenge/golden/calib", "data": "/data/w218/data218.json", "layers": "8,23,40,55", "codes": "", "chunk": 0, "rows": 100000, "V": 6, "Q": 1024, "nsamp": 20000, "set": "tune", "variants": "cur=rel,e0.01=runs/r0/enc/eta-0.01,e0.03=runs/r0/enc/eta-0.03,e0.1=runs/r0/enc/eta-0.1,e0.3=runs/r0/enc/eta-0.3", "chunks": "0-8", "lr": 0.001, "compile_scales": false}
+02:02:48 student built in 19 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+02:02:48 GDN a / b: /data/w218/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+02:02:48 probe: 26 tensors in layers [8, 23, 40, 55], 1.510 G values
+02:03:47 EVAL tune cur: KL 0.038242 over 54310 rows (34 docs, 0 tensors from rel), 59 s
+02:04:46 EVAL tune e0.01: KL 0.096746 over 54310 rows (34 docs, 26 tensors from runs/r0/enc/eta-0.01), 55 s
+02:05:45 EVAL tune e0.03: KL 3.612301 over 54310 rows (34 docs, 26 tensors from runs/r0/enc/eta-0.03), 55 s
+02:06:44 EVAL tune e0.1: KL 11.750989 over 54310 rows (34 docs, 26 tensors from runs/r0/enc/eta-0.1), 55 s
+02:07:43 EVAL tune e0.3: KL 13.080678 over 54310 rows (34 docs, 26 tensors from runs/r0/enc/eta-0.3), 55 s

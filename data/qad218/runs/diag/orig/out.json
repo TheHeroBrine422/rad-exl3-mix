@@ -1,0 +1,1 @@
+{"out":"runs/diag/orig/model.language_model.layers.23.self_attn.k_proj","hname":"model.language_model.layers.23.input","K":2.5,"k":5120,"n":1024,"proxy":6.598163e-03,"sec_io":0.06,"sec_quant":2.14}
