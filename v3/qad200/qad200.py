@@ -95,8 +95,12 @@ class _A8(torch.autograd.Function):
 
 def use_compiled_scales(stu, a8=False):
     """QLinear's elementwise chain (x . su -> bf16, y . (sv s) -> bf16; arm Q's fake quant) as torch.compile'd functions
-    (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager)"""
+    (dynamic shapes): the same arithmetic in fused kernels (rounding-level differences from eager). Inductor's deterministic
+    mode (no on-device autotuning: w215 saw two runs differ without it) keeps runs bitwise reproducible; numerics "strict"
+    keeps eager's bf16 downcasts between fused ops and eager's reduction order"""
     import types
+    import torch._inductor.config
+    torch._inductor.config.deterministic = True; torch._inductor.config.numerics = "strict"
     @torch.compile(dynamic=True)
     def pre(x0, suh, r): return (x0 * (suh * r.exp() if r is not None else suh)).to(BF)
     @torch.compile(dynamic=True)
@@ -106,7 +110,7 @@ def use_compiled_scales(stu, a8=False):
         x = pre(x.reshape(-1, self.k), self.suh, self.r)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
         if a8: x = _A8.apply(x)
-        y = x @ self.wq.to(BF)
+        y = x @ qmodel.i8_to_bf16(self.wq)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         return post(y, self.svh, self.c, self.s).view(*sh[:-1], self.n)
     for q in stu.qlin.values():
@@ -337,10 +341,10 @@ class Trainer:
         self.scal = sc + nrm
         if a.wd > 0:       # #200: decoupled weight decay on the log multipliers (toward 0 = the stored scales); not on the norm gains
             groups = [{"params": sc, "base": a.lr, "weight_decay": a.wd}] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else [])
-            self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, 0.99), weight_decay=0.0)
+            self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, 0.99), eps=a.eps, weight_decay=0.0)
         else:              # W = 0: #196's Adam, unchanged
             groups = [{"params": sc, "base": a.lr}] + ([{"params": nrm, "base": a.lr / 10}] if nrm else [])
-            self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, 0.99))
+            self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, 0.99), eps=a.eps)
         # L: the adapters' Adam runs on the CPU on f32 master copies (its state, 2 x 0.46 GB at r = 16, does not fit
         # beside a card's training peak); the card's adapters are overwritten with the masters after every step
         self.lo = lo; self.is_lo = [n.endswith((":la", ":lb")) for n in self.names]
@@ -960,12 +964,40 @@ def parser():
     ap.add_argument("--norms", action="store_true", help="N (#196): RMSNorm gains, trained at lr / 10")
     ap.add_argument("--unshrink", default=None, help="U (#196): safetensors of per-row un-shrink factors c (key = linear, value = [n] f32)")
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
+    ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
+    ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--gradnoise", type=int, default=0, help="#217: gradients of the first N plan steps at the start state (no optimizer step): per-scale mean / std across batches to OUT/gradnoise.npz, then exit")
     ap.add_argument("--wd", type=float, default=0.0, help="#200: AdamW decoupled weight decay on the log multipliers (0 = Adam)")
     ap.add_argument("--accum", type=int, default=1, help="#200: plan steps (micro-batches) per optimizer step")
     ap.add_argument("--rows", type=float, default=None, help="#200: the budget in gen rows (overrides --budgets)")
     ap.add_argument("--order-seed", type=int, default=None, help="#200: data-order seed (alias of --seed)")
     ap.add_argument("--warmup-frac", type=str, default=None, help="#200: warmup as a fraction of the optimizer steps (8/49), overrides --warmup")
     return ap
+
+
+def gradnoise(a, T, d, log):
+    """#217: the log-multiplier gradient of each of the first a.gradnoise plan steps (one normal batch: V x Q positions) at the current
+    state, no optimizer step. Writes OUT/gradnoise.npz: per trainable scale vector (name) its mean and std (ddof 1) across the batches."""
+    P = [(n, p) for n, p in zip(T.names, T.P) if p.requires_grad and not n.startswith("lm_head")]
+    T.opt.step = lambda *x, **k: None
+    s1 = [torch.zeros(p.numel(), dtype=torch.float64) for _, p in P]; s2 = [torch.zeros_like(x) for x in s1]
+    rec = []
+    for s in range(a.gradnoise):
+        accs, w = T.run_group([s], 0.0)
+        for (_, p), x1, x2 in zip(P, s1, s2):
+            g = p.grad.reshape(-1).double().cpu(); x1 += g; x2 += g * g
+        kl = sum(float(accs[2 * k]) for k in range(len(T.tags))); rows = sum(float(accs[2 * k + 1]) for k in range(len(T.tags)))
+        rec.append({"step": s, "rows": rows, "kl_row": kl / rows, "gnorm": T.gnorm, "wall": round(w, 1)})
+        log(json.dumps(rec[-1]))
+    n = a.gradnoise
+    out = {}
+    for (nm, _), x1, x2 in zip(P, s1, s2):
+        m = x1 / n; var = ((x2 - n * m * m) / (n - 1)).clamp_min(0)
+        out[nm + "|mean"] = m.float().numpy(); out[nm + "|std"] = var.sqrt().float().numpy()
+    if d.rank == 0:
+        np.savez(os.path.join(a.out, "gradnoise.npz"), **out)
+        json.dump(rec, open(os.path.join(a.out, "gradnoise.json"), "w"))
+    log(f"gradnoise: {n} batches, {len(P)} scale vectors, {sum(x.numel() for x in s1)} scales")
 
 
 def main():
@@ -980,6 +1012,7 @@ def main():
     log("qad191.py " + json.dumps(vars(a)) + f" world {d.world}")
     mad_int_form()
     if a.conv == "shift": qmodel.use_shift_conv()
+    if a.compile_ew: qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up compiled")
     P = build_data(a, d, log)
     C, fe, budgets, steps, rows_of, cum, last, br, fork_last = (P[k] for k in ("C", "fe", "budgets", "steps", "rows_of", "cum", "last", "br", "fork_last"))
     if a.make_taps: return make_taps(a, P, log)
@@ -1035,6 +1068,7 @@ def main():
         assert d.world == 1, "B: one card"
         block_stage(a, stu, P, k0, log)
     T = Trainer(a, stu, C, steps, rows_of, d, log, tap=tap)
+    if a.gradnoise: return gradnoise(a, T, d, log)
     st = {"step": k0, "done_br": [], "wall": 0.0, "ema": None, "next_mon": a.mon_every}
     if os.path.exists(sp):
         z = torch.load(sp, weights_only=False); T.restore(z["snap"]); st = z["st"]; log(f"resumed at main step {st['step']}")
