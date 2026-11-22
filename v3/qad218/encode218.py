@@ -64,6 +64,10 @@ def main():
     ap.add_argument("--etas", required=True); ap.add_argument("--lv", default="/data/w218/lv/2.50")
     ap.add_argument("--tool", default="/data/w218/bin/exl3v3_tool"); ap.add_argument("--hess", default="/data/challenge/hessians/calib")
     ap.add_argument("--precond", choices=("none",), default="none"); ap.add_argument("--keep-targets", action="store_true")
+    ap.add_argument("--step", choices=("global", "quant"), default="global",
+                    help="global: eta = the step's rms over all probe tensors (one G scale); quant: per tensor, the step's rms = eta x the "
+                         "tensor's quantization step delta (qerr218.py's --qerr JSON), i.e. W_t = W_hat - eta delta G / rms(G_tensor)")
+    ap.add_argument("--qerr", default="/data/w218/runs/qerr.json")
     a = ap.parse_args()
     gdirs = a.grad.split(",")
     if len(gdirs) > 1:
@@ -74,7 +78,8 @@ def main():
     table = torch.from_numpy(deq.lut(lev.codebook))
     g2 = sum(gm[k]["g_rms"] ** 2 * gm[k]["k"] * gm[k]["n"] for k in keys); nv = sum(gm[k]["k"] * gm[k]["n"] for k in keys)
     g_rms = float(np.sqrt(g2 / nv))
-    print(f"{len(keys)} tensors, G rms {g_rms:.4e}", flush=True)
+    qe = json.load(open(a.qerr)) if a.step == "quant" else None
+    print(f"{len(keys)} tensors, G rms {g_rms:.4e}, step {a.step}", flush=True)
 
     def current(k):
         """(W_hat f32 [k, n], trellis int16 of the current codes)"""
@@ -96,7 +101,8 @@ def main():
             kk, n = gm[k]["k"], gm[k]["n"]
             w, _ = current(k)
             g = np.fromfile(os.path.join(a.grad, k + ".g"), np.float32).reshape(kk, n)
-            t = (w - (e / g_rms) * g).astype(np.float32) if e else w
+            scale = e * qe[k]["delta"] / gm[k]["g_rms"] if qe else e / g_rms
+            t = (w - scale * g).astype(np.float32) if e else w
             t.tofile(os.path.join(od, k + ".target"))
             np.asarray(lev.raw(k)["suh"].float().numpy(), np.float64).tofile(os.path.join(od, k + ".suh"))
             lines.append(f"{hname(k)} {gm[k]['K']:g} {kk} {n} {od}/{k}.target {od}/{k}.suh {od}/{k}")
@@ -108,7 +114,7 @@ def main():
             print(r.stdout, r.stderr, flush=True); sys.exit(f"reencode failed (rc {r.returncode})")
         tool = {json.loads(l)["out"].rsplit("/", 1)[1]: json.loads(l) for l in r.stdout.splitlines() if l.startswith("{")}
         t2 = time.time()
-        st = {"eta": e, "g_rms": g_rms, "base": a.base or "released", "grad": a.grad, "sec_targets": t1 - t0, "sec_encode": t2 - t1, "tensors": {}}
+        st = {"eta": e, "step": a.step, "g_rms": g_rms, "base": a.base or "released", "grad": a.grad, "sec_targets": t1 - t0, "sec_encode": t2 - t1, "tensors": {}}
         for k in keys:
             kk, n, K = gm[k]["k"], gm[k]["n"], gm[k]["K"]
             w, tr0 = current(k)
