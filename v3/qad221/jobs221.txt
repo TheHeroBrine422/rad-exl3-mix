@@ -1,0 +1,7 @@
+# w221 queue (cards 2 and 3 pull the next line). All compiled, w214's data / order, budgets 0.25 M / 0.5 M, reads on j217.
+T L32 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --train-layers 32-63
+T L48 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --train-layers 48-63
+T T128 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --tie-groups 128 --tie-layers 0-31
+T CB 2.50 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 1e-3 --compile-scales --compile-ew --clip-gnorm 3 --beta2 0.99
+T C30 3.00 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew
+T L32-30 3.00 2.5e5,5e5 ckpt-2e+05,ckpt-5e+05 --lr 3e-4 --compile-scales --compile-ew --train-layers 32-63
