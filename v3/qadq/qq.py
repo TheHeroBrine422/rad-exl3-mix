@@ -6,18 +6,21 @@ dispatcher, or not ready (a missing `@needs` path / checkpoint). Job lines (shle
   T ARM SIZE BUDGETS READS flags...   train (qad220.py, budgets = comma list, READS = comma list of ckpt dir names read on j217, or -), then the reads
   R ARM SIZE CKPTDIR                  read-only: the served read of an existing checkpoint dir (absolute, or relative to runs/); score name ARM-<basename CKPTDIR>
   B ARM SIZE flags...                 short run (bench / gate), no reads; done when the trainer exits 0
+  U ARM BPW                           the served read of a RELEASED container as it is (BPW = 2.00 / 3.50 / 5.00 ...; downloaded from the HF release into QROOT/rel/host-emb when missing), score name ARM (w222 fragility test)
   M ARM SIZE BUDGETS TAPDIR flags...  two-card job (w222: the teacher tap pass, `--make-taps TAPDIR`): claimed only by a dispatcher on a card in @cards=A[,B..], which also takes the lock of @partner=P (its
                                       other card; the partner's dispatcher takes no new job while the claim is live, so P frees up) and gives the trainer both cards; done when TAPDIR/.done exists
-  directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH[,PATH..] (absolute, or relative to runs/; the job waits until all exist)   @budgets=B (B lines: the trainer's --budgets, default 2.5e5,5e5)   `{lam}` in a line = the first number of QROOT/lambda.txt (the line also waits for that file)   @ctl=ARM (control arm for the paired column)
+  directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH[,PATH..] (absolute, or relative to runs/; the job waits until all exist)   @budgets=B (B lines: the trainer's --budgets, default 2.5e5,5e5)   `{lam}` / `{lam*0.3}` in a line = the first number of QROOT/lambda.txt (x the factor; the line also waits for that file)   @ctl=ARM (control arm for the paired column)
   `{runs}` in any field expands to ROOT/runs.
 usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M] | unclaim ROOT KEY | finish ROOT KEY ok|fail|cancelled RC | status ROOT | key LINE..."""
 import fcntl, os, shlex, socket, sys, time
 
 
 def parse(line, root):
-    lamf = f"{root}/lambda.txt"; haslam = "{lam}" in line
-    if haslam and os.path.exists(lamf): line = line.replace("{lam}", open(lamf).read().split()[0])
-    t = shlex.split(line.replace("{runs}", f"{root}/runs"), comments=True)
+    lamf = f"{root}/lambda.txt"; haslam = "{lam" in line
+    if haslam and os.path.exists(lamf):                         # {lam} = the rule's lambda, {lam*0.3} = a multiple of it
+        import re
+        lv = float(open(lamf).read().split()[0]); line = re.sub(r"\{lam(?:\*([0-9.eE+-]+))?\}", lambda m: "%.6g" % (lv * float(m.group(1) or 1)), line)
+    t = shlex.split(line.replace("{runs}", f"{root}/runs").replace("{ext}", f"{root}/ext"), comments=True)
     if not t: return None
     kind, rest = t[0], t[1:]
     dirs = [x for x in rest if x.startswith("@")]; rest = [x for x in rest if not x.startswith("@")]
@@ -29,6 +32,9 @@ def parse(line, root):
         assert len(rest) == 3, f"R needs ARM SIZE CKPT: {line}"
         arm, size, ck = rest; ck = ck if ck.startswith("/") else f"{root}/runs/{ck}"
         j = dict(kind="R", arm=arm, size=size, ckptdir=ck, flags=[], key=f"R-{arm}-{os.path.basename(ck)}")
+    elif kind == "U":
+        assert len(rest) == 2, f"U needs ARM BPW: {line}"
+        j = dict(kind="U", arm=rest[0], size=rest[1], budgets=None, reads=[], flags=[], key=f"U-{rest[0]}")
     elif kind == "M":
         assert len(rest) >= 4, f"M needs ARM SIZE BUDGETS TAPDIR: {line}"
         arm, size, bud, td = rest[:4]; j = dict(kind="M", arm=arm, size=size, budgets=bud, reads=[], ckptdir=td, flags=rest[4:], key=f"M-{arm}")
@@ -60,6 +66,7 @@ def outputs_done(root, j):
     if j["kind"] == "R": return os.path.exists(f"{root}/scores/{j['arm']}-{os.path.basename(j['ckptdir'])}.json")
     if j["kind"] == "B": return False
     if j["kind"] == "M": return os.path.exists(f"{j['ckptdir']}/.done")
+    if j["kind"] == "U": return os.path.exists(f"{root}/scores/{j['arm']}.json")
     if not os.path.exists(f"{root}/runs/{j['arm']}/{last_ckpt(j['budgets'])}/.done"): return False
     return all(os.path.exists(f"{root}/scores/{j['arm']}-{ck}.json") for ck in j["reads"])
 

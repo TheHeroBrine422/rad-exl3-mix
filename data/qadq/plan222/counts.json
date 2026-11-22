@@ -1,0 +1,672 @@
+{
+ "cap": 8192,
+ "min_rows": 16,
+ "calib": {
+  "all": {
+   "docs": 4789,
+   "gen_rows": 7725290,
+   "capped_rows": 5758469,
+   "docs_ge16_capped": 4779,
+   "capped_rows_ge16": 5758469
+  },
+  "by_pool": {
+   "qad": {
+    "docs": 2799,
+    "gen_rows": 3836849,
+    "capped_rows": 3308261,
+    "docs_ge16_capped": 2793,
+    "capped_rows_ge16": 3308261
+   },
+   "fit": {
+    "docs": 551,
+    "gen_rows": 765800,
+    "capped_rows": 691766,
+    "docs_ge16_capped": 549,
+    "capped_rows_ge16": 691766
+   },
+   "search": {
+    "docs": 583,
+    "gen_rows": 1033132,
+    "capped_rows": 694644,
+    "docs_ge16_capped": 583,
+    "capped_rows_ge16": 694644
+   },
+   "verify": {
+    "docs": 856,
+    "gen_rows": 2089509,
+    "capped_rows": 1063798,
+    "docs_ge16_capped": 854,
+    "capped_rows_ge16": 1063798
+   }
+  },
+  "excluded_docs": {
+   "verify pool": 856,
+   "j217": 166,
+   "ledger check/final/monitor": 1560,
+   "qad select (qad218-tune)": 34,
+   "ledger select (all)": 1407
+  },
+  "eligible_V1": {
+   "all": {
+    "docs": 3767,
+    "gen_rows": 5472012,
+    "capped_rows": 4531136,
+    "docs_ge16_capped": 3759,
+    "capped_rows_ge16": 4531136
+   },
+   "by_pool": {
+    "qad": {
+     "docs": 2633,
+     "gen_rows": 3673080,
+     "capped_rows": 3144726,
+     "docs_ge16_capped": 2627,
+     "capped_rows_ge16": 3144726
+    },
+    "fit": {
+     "docs": 551,
+     "gen_rows": 765800,
+     "capped_rows": 691766,
+     "docs_ge16_capped": 549,
+     "capped_rows_ge16": 691766
+    },
+    "search": {
+     "docs": 583,
+     "gen_rows": 1033132,
+     "capped_rows": 694644,
+     "docs_ge16_capped": 583,
+     "capped_rows_ge16": 694644
+    }
+   },
+   "of_which_train214": {
+    "docs": 416,
+    "gen_rows": 547577,
+    "capped_rows": 510375,
+    "docs_ge16_capped": 416,
+    "capped_rows_ge16": 510375
+   }
+  },
+  "eligible_V2": {
+   "all": {
+    "docs": 3195,
+    "gen_rows": 4139101,
+    "capped_rows": 3781972,
+    "docs_ge16_capped": 3188,
+    "capped_rows_ge16": 3781972
+   },
+   "by_pool": {
+    "qad": {
+     "docs": 2361,
+     "gen_rows": 3060193,
+     "capped_rows": 2799949,
+     "docs_ge16_capped": 2355,
+     "capped_rows_ge16": 2799949
+    },
+    "fit": {
+     "docs": 408,
+     "gen_rows": 472712,
+     "capped_rows": 452142,
+     "docs_ge16_capped": 407,
+     "capped_rows_ge16": 452142
+    },
+    "search": {
+     "docs": 426,
+     "gen_rows": 606196,
+     "capped_rows": 529881,
+     "docs_ge16_capped": 426,
+     "capped_rows_ge16": 529881
+    }
+   },
+   "of_which_train214": {
+    "docs": 370,
+    "gen_rows": 467707,
+    "capped_rows": 440830,
+    "docs_ge16_capped": 370,
+    "capped_rows_ge16": 440830
+   }
+  },
+  "eligible_V3": {
+   "all": {
+    "docs": 2361,
+    "gen_rows": 3060193,
+    "capped_rows": 2799949,
+    "docs_ge16_capped": 2355,
+    "capped_rows_ge16": 2799949
+   },
+   "by_pool": {
+    "qad": {
+     "docs": 2361,
+     "gen_rows": 3060193,
+     "capped_rows": 2799949,
+     "docs_ge16_capped": 2355,
+     "capped_rows_ge16": 2799949
+    },
+    "fit": {
+     "docs": 0,
+     "gen_rows": 0,
+     "capped_rows": 0,
+     "docs_ge16_capped": 0,
+     "capped_rows_ge16": 0
+    },
+    "search": {
+     "docs": 0,
+     "gen_rows": 0,
+     "capped_rows": 0,
+     "docs_ge16_capped": 0,
+     "capped_rows_ge16": 0
+    }
+   },
+   "of_which_train214": {
+    "docs": 281,
+    "gen_rows": 351159,
+    "capped_rows": 333722,
+    "docs_ge16_capped": 281,
+    "capped_rows_ge16": 333722
+   }
+  },
+  "train214_in_V2": 370
+ },
+ "xcorp": {
+  "xc8k-b2-c0": {
+   "docs": 683,
+   "rows_all": 1001293,
+   "gen_rows": 859710,
+   "capped_gen_rows": 859710,
+   "docs_ge16_capped": 681,
+   "capped_rows_ge16": 859710,
+   "duplicate_docs": 8,
+   "w214_base": true,
+   "by_source": {
+    "arxiv": {
+     "docs": 4,
+     "capped_gen_rows": 32764
+    },
+    "arxiv-long": {
+     "docs": 1,
+     "capped_gen_rows": 8191
+    },
+    "caselaw": {
+     "docs": 4,
+     "capped_gen_rows": 10865
+    },
+    "doab": {
+     "docs": 6,
+     "capped_gen_rows": 22473
+    },
+    "finemath-4plus": {
+     "docs": 29,
+     "capped_gen_rows": 28438
+    },
+    "fineweb-edu": {
+     "docs": 136,
+     "capped_gen_rows": 143515
+    },
+    "fineweb2-hq": {
+     "docs": 81,
+     "capped_gen_rows": 87266
+    },
+    "glaive-fc-v2": {
+     "docs": 53,
+     "capped_gen_rows": 6148
+    },
+    "hermes-fc": {
+     "docs": 10,
+     "capped_gen_rows": 4513
+    },
+    "libretexts": {
+     "docs": 13,
+     "capped_gen_rows": 28785
+    },
+    "nemotron-swe": {
+     "docs": 1,
+     "capped_gen_rows": 874
+    },
+    "openthoughts3": {
+     "docs": 7,
+     "capped_gen_rows": 56387
+    },
+    "peS2o": {
+     "docs": 5,
+     "capped_gen_rows": 28399
+    },
+    "pg19": {
+     "docs": 7,
+     "capped_gen_rows": 53700
+    },
+    "pubmed": {
+     "docs": 3,
+     "capped_gen_rows": 21837
+    },
+    "smoltalk2": {
+     "docs": 41,
+     "capped_gen_rows": 52117
+    },
+    "stackexchange": {
+     "docs": 55,
+     "capped_gen_rows": 38628
+    },
+    "stackv2-edu": {
+     "docs": 78,
+     "capped_gen_rows": 96536
+    },
+    "swe-rebench-openhands": {
+     "docs": 1,
+     "capped_gen_rows": 638
+    },
+    "swe-smith": {
+     "docs": 1,
+     "capped_gen_rows": 1383
+    },
+    "the-stack-smol-xl": {
+     "docs": 14,
+     "capped_gen_rows": 30738
+    },
+    "when2call": {
+     "docs": 20,
+     "capped_gen_rows": 585
+    },
+    "wikimedia": {
+     "docs": 42,
+     "capped_gen_rows": 42605
+    },
+    "wikipedia": {
+     "docs": 17,
+     "capped_gen_rows": 28914
+    },
+    "wildchat": {
+     "docs": 54,
+     "capped_gen_rows": 33411
+    }
+   }
+  },
+  "xc8k-b2-c1": {
+   "docs": 702,
+   "rows_all": 1002088,
+   "gen_rows": 824472,
+   "capped_gen_rows": 824472,
+   "docs_ge16_capped": 698,
+   "capped_rows_ge16": 824472,
+   "duplicate_docs": 25,
+   "w214_base": true,
+   "by_source": {
+    "arxiv": {
+     "docs": 7,
+     "capped_gen_rows": 49014
+    },
+    "arxiv-long": {
+     "docs": 1,
+     "capped_gen_rows": 8191
+    },
+    "doab": {
+     "docs": 7,
+     "capped_gen_rows": 28690
+    },
+    "finemath-4plus": {
+     "docs": 44,
+     "capped_gen_rows": 45303
+    },
+    "fineweb-edu": {
+     "docs": 116,
+     "capped_gen_rows": 126979
+    },
+    "fineweb2-hq": {
+     "docs": 87,
+     "capped_gen_rows": 69902
+    },
+    "glaive-fc-v2": {
+     "docs": 49,
+     "capped_gen_rows": 5418
+    },
+    "gutenberg": {
+     "docs": 6,
+     "capped_gen_rows": 48634
+    },
+    "hermes-fc": {
+     "docs": 6,
+     "capped_gen_rows": 2577
+    },
+    "libretexts": {
+     "docs": 9,
+     "capped_gen_rows": 19201
+    },
+    "nemotron-swe": {
+     "docs": 2,
+     "capped_gen_rows": 1855
+    },
+    "openthoughts3": {
+     "docs": 3,
+     "capped_gen_rows": 21587
+    },
+    "peS2o": {
+     "docs": 3,
+     "capped_gen_rows": 15946
+    },
+    "pg19": {
+     "docs": 3,
+     "capped_gen_rows": 24573
+    },
+    "pg19-long": {
+     "docs": 1,
+     "capped_gen_rows": 8191
+    },
+    "pubmed": {
+     "docs": 2,
+     "capped_gen_rows": 15387
+    },
+    "smoltalk2": {
+     "docs": 44,
+     "capped_gen_rows": 57924
+    },
+    "stackexchange": {
+     "docs": 68,
+     "capped_gen_rows": 48613
+    },
+    "stackv2-edu": {
+     "docs": 75,
+     "capped_gen_rows": 69846
+    },
+    "swe-rebench-openhands": {
+     "docs": 2,
+     "capped_gen_rows": 913
+    },
+    "swe-smith": {
+     "docs": 3,
+     "capped_gen_rows": 2878
+    },
+    "the-stack-smol-xl": {
+     "docs": 25,
+     "capped_gen_rows": 41965
+    },
+    "when2call": {
+     "docs": 12,
+     "capped_gen_rows": 360
+    },
+    "wikimedia": {
+     "docs": 44,
+     "capped_gen_rows": 39773
+    },
+    "wikipedia": {
+     "docs": 16,
+     "capped_gen_rows": 34301
+    },
+    "wildchat": {
+     "docs": 67,
+     "capped_gen_rows": 36451
+    }
+   }
+  },
+  "tr32k-b2-c0": {
+   "docs": 63,
+   "rows_all": 1000823,
+   "gen_rows": 640646,
+   "capped_gen_rows": 355741,
+   "docs_ge16_capped": 62,
+   "capped_rows_ge16": 355741,
+   "duplicate_docs": 0,
+   "w214_base": true,
+   "by_source": {
+    "pi-sessions": {
+     "docs": 63,
+     "capped_gen_rows": 355741
+    }
+   }
+  },
+  "xc8k-b2-c2": {
+   "docs": 741,
+   "rows_all": 1000032,
+   "gen_rows": 859324,
+   "capped_gen_rows": 859324,
+   "docs_ge16_capped": 738,
+   "capped_rows_ge16": 859324,
+   "duplicate_docs": 22,
+   "w214_base": false,
+   "by_source": {
+    "arxiv": {
+     "docs": 3,
+     "capped_gen_rows": 24309
+    },
+    "caselaw": {
+     "docs": 6,
+     "capped_gen_rows": 13276
+    },
+    "doab": {
+     "docs": 15,
+     "capped_gen_rows": 23656
+    },
+    "finemath-4plus": {
+     "docs": 51,
+     "capped_gen_rows": 57019
+    },
+    "fineweb-edu": {
+     "docs": 127,
+     "capped_gen_rows": 144523
+    },
+    "fineweb2-hq": {
+     "docs": 93,
+     "capped_gen_rows": 68419
+    },
+    "glaive-fc-v2": {
+     "docs": 48,
+     "capped_gen_rows": 5828
+    },
+    "gutenberg": {
+     "docs": 2,
+     "capped_gen_rows": 16382
+    },
+    "hermes-fc": {
+     "docs": 7,
+     "capped_gen_rows": 2311
+    },
+    "libretexts": {
+     "docs": 5,
+     "capped_gen_rows": 20515
+    },
+    "nemotron-swe": {
+     "docs": 1,
+     "capped_gen_rows": 1046
+    },
+    "openthoughts3": {
+     "docs": 2,
+     "capped_gen_rows": 15829
+    },
+    "peS2o": {
+     "docs": 4,
+     "capped_gen_rows": 26782
+    },
+    "pg19": {
+     "docs": 2,
+     "capped_gen_rows": 16382
+    },
+    "pg19-long": {
+     "docs": 1,
+     "capped_gen_rows": 8191
+    },
+    "pubmed": {
+     "docs": 2,
+     "capped_gen_rows": 12654
+    },
+    "smoltalk2": {
+     "docs": 46,
+     "capped_gen_rows": 78626
+    },
+    "stackexchange": {
+     "docs": 60,
+     "capped_gen_rows": 43911
+    },
+    "stackv2-edu": {
+     "docs": 85,
+     "capped_gen_rows": 91823
+    },
+    "swe-rebench-openhands": {
+     "docs": 1,
+     "capped_gen_rows": 0
+    },
+    "swe-smith": {
+     "docs": 1,
+     "capped_gen_rows": 310
+    },
+    "the-stack-smol-xl": {
+     "docs": 34,
+     "capped_gen_rows": 78250
+    },
+    "when2call": {
+     "docs": 24,
+     "capped_gen_rows": 752
+    },
+    "wikimedia": {
+     "docs": 54,
+     "capped_gen_rows": 47880
+    },
+    "wikipedia": {
+     "docs": 8,
+     "capped_gen_rows": 25922
+    },
+    "wildchat": {
+     "docs": 59,
+     "capped_gen_rows": 34728
+    }
+   }
+  },
+  "xc8k-b1": {
+   "docs": 3389,
+   "rows_all": 4998556,
+   "gen_rows": 4448277,
+   "capped_gen_rows": 4448277,
+   "docs_ge16_capped": 3385,
+   "capped_rows_ge16": 4448277,
+   "duplicate_docs": 215,
+   "w214_base": false,
+   "by_source": {
+    "arxiv": {
+     "docs": 25,
+     "capped_gen_rows": 202107
+    },
+    "arxiv-long": {
+     "docs": 1,
+     "capped_gen_rows": 3657
+    },
+    "caselaw": {
+     "docs": 23,
+     "capped_gen_rows": 74505
+    },
+    "doab": {
+     "docs": 46,
+     "capped_gen_rows": 137256
+    },
+    "finemath-4plus": {
+     "docs": 196,
+     "capped_gen_rows": 251746
+    },
+    "fineweb-edu": {
+     "docs": 641,
+     "capped_gen_rows": 612435
+    },
+    "fineweb2-hq": {
+     "docs": 423,
+     "capped_gen_rows": 374156
+    },
+    "glaive-fc-v2": {
+     "docs": 222,
+     "capped_gen_rows": 25404
+    },
+    "gutenberg": {
+     "docs": 18,
+     "capped_gen_rows": 143963
+    },
+    "hermes-fc": {
+     "docs": 27,
+     "capped_gen_rows": 11510
+    },
+    "libretexts": {
+     "docs": 34,
+     "capped_gen_rows": 99224
+    },
+    "nemotron-swe": {
+     "docs": 3,
+     "capped_gen_rows": 3204
+    },
+    "openthoughts3": {
+     "docs": 27,
+     "capped_gen_rows": 217774
+    },
+    "peS2o": {
+     "docs": 33,
+     "capped_gen_rows": 163781
+    },
+    "pg19": {
+     "docs": 24,
+     "capped_gen_rows": 191167
+    },
+    "pg19-long": {
+     "docs": 3,
+     "capped_gen_rows": 24573
+    },
+    "pubmed": {
+     "docs": 14,
+     "capped_gen_rows": 103559
+    },
+    "smoltalk2": {
+     "docs": 185,
+     "capped_gen_rows": 270786
+    },
+    "stackexchange": {
+     "docs": 270,
+     "capped_gen_rows": 201892
+    },
+    "stackv2-edu": {
+     "docs": 411,
+     "capped_gen_rows": 537663
+    },
+    "swe-rebench-openhands": {
+     "docs": 9,
+     "capped_gen_rows": 4309
+    },
+    "swe-smith": {
+     "docs": 6,
+     "capped_gen_rows": 4685
+    },
+    "the-stack-smol-xl": {
+     "docs": 148,
+     "capped_gen_rows": 302837
+    },
+    "when2call": {
+     "docs": 87,
+     "capped_gen_rows": 2728
+    },
+    "wikimedia": {
+     "docs": 250,
+     "capped_gen_rows": 283049
+    },
+    "wikipedia": {
+     "docs": 46,
+     "capped_gen_rows": 77831
+    },
+    "wildchat": {
+     "docs": 217,
+     "capped_gen_rows": 122476
+    }
+   }
+  },
+  "tr32k-b1": {
+   "docs": 142,
+   "rows_all": 2530763,
+   "gen_rows": 1482663,
+   "capped_gen_rows": 751892,
+   "docs_ge16_capped": 142,
+   "capped_rows_ge16": 751892,
+   "duplicate_docs": 3,
+   "w214_base": false,
+   "by_source": {
+    "pi-sessions": {
+     "docs": 142,
+     "capped_gen_rows": 751892
+    }
+   }
+  }
+ },
+ "extension": {
+  "calib_docs": 2818,
+  "calib_capped_rows": 3341142,
+  "xcorp_docs": 4027,
+  "xcorp_capped_rows": 5991799
+ }
+}

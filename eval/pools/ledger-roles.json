@@ -599,5 +599,11 @@
   "line": "v3.1",
   "decisions": 0,
   "note": "#217 (w217, 2026-11-22): the eps screen's held-out judge slice golden-j217: 166 qad-pool docs (cap 8,192 tokens, 163,534 gen rows) in no w214 / w217 training set (not train214, no qad214 use) and not read by the release's own fits (no swj27-qad / w94-headx-qad / select / final / fit / fit-hessian use) nor by other QAD tasks (qad215-*, qad218, qad218-tune, qad181-fixed), cut from the published calib golden with v3/qad217/mkjudge217.py seed 217; served-path reads of the unhealed released 2.50 / 3.00 / 4.00 picks and the eps-screen / w214 checkpoints (report only, never a pick)"
+ },
+ "qad214-ext": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "w222 extended QAD data plan (calib qad-pool docs appended after w214's plan)"
  }
 }

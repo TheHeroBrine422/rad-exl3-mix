@@ -1,0 +1,19 @@
+# --- D1 follow-up: blow-up fragility tests (w222; normal priority, not int8-gated). Sources: j217 reads; compare per document with fragility222.py (onset, KL / row after it vs unhealed).
+# (a) released unhealed containers as they are (2.00 / 3.50 / 5.00): do they derail on docs 3820 / 1893 / 1968 / 3947?
+U UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad.ok
+U UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad.ok
+U UN5.00 5.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-5.00bpw.rad.ok
+# (b) random log-multiplier noise of the same rms as a derailing checkpoint's trained scales (2.50: 25A lr 1e-3 0.5 M, rms 0.00425; 4.00: 40A lr 3e-4 0.5 M, rms 0.00126), 3 seeds, the same vectors as that checkpoint trained
+R FP25-s0 2.50 FP25-s0/ckpt-5e+05
+R FP25-s1 2.50 FP25-s1/ckpt-5e+05
+R FP25-s2 2.50 FP25-s2/ckpt-5e+05
+R FP40-s0 4.00 FP40-s0/ckpt-5e+05
+R FP40-s1 4.00 FP40-s1/ckpt-5e+05
+R FP40-s2 4.00 FP40-s2/ckpt-5e+05
+# (c) per-family revert in the derailing checkpoints (the family's linears back to the released scales, the other two families as trained): gdn = linear_attn, att = self_attn, mlp
+R FV25-gdn 2.50 FV25-gdn/ckpt-5e+05
+R FV25-att 2.50 FV25-att/ckpt-5e+05
+R FV25-mlp 2.50 FV25-mlp/ckpt-5e+05
+R FV40-gdn 4.00 FV40-gdn/ckpt-5e+05
+R FV40-att 4.00 FV40-att/ckpt-5e+05
+R FV40-mlp 4.00 FV40-mlp/ckpt-5e+05

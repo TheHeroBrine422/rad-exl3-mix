@@ -8,7 +8,7 @@ import json, re, sys
 
 
 def ck_rows(ck):
-    m = re.match(r"ckpt-([0-9.]+e[+-]\d+)", ck); return float(m.group(1)) if m else 0.0
+    m = re.match(r"ckpt-(?:sd-)?([0-9.]+e[+-]\d+)", ck); return float(m.group(1)) if m else 0.0
 
 
 def gate(a, b, n=2):
@@ -36,7 +36,8 @@ def main():
     for r in rows:
         vc = f"{r[14]} [{r[15]}, {r[16]}] ({r[13].rsplit('-ckpt-', 1)[0]})" if r[14] != "-" else "-"
         sh = f"{float(r[20]) * 100:.0f} %" if r[20] != "-" else "-"
-        print(f"| {r[5]} | {r[3]} | {r[4]} | {r[1]}:{r[2]} | {r[7]} [{r[8]}, {r[9]}] | {r[10]} | {r[21]} ({r[22]}) | {r[19]} | {sh} ({r[11]}/{r[12]}) | {vc} | {r[17]} | {r[23]} | {r[24]} | {r[25]} |")
+        ckl = r[4].replace("ckpt-sd-", "short-decay ckpt-") if "ckpt-sd-" in r[4] else r[4]
+        print(f"| {r[5]} | {r[3]} | {ckl} | {r[1]}:{r[2]} | {r[7]} [{r[8]}, {r[9]}] | {r[10]} | {r[21]} ({r[22]}) | {r[19]} | {sh} ({r[11]}/{r[12]}) | {vc} | {r[17]} | {r[23]} | {r[24]} | {r[25]} |")
 
 
 if __name__ == "__main__": main()

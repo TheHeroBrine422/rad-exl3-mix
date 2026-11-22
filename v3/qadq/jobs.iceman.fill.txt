@@ -1,0 +1,5 @@
+# --- fill batch, iceman (user 11-22): step schedule 3e-4 to 0.5 M then 1e-4 to 1.6 M, linear decay to 2 M at 2.50 / 3.00 (short-decay branches at 0.25 / 0.5 / 1 M); 4.00 lr 1e-4 and 3e-4 to 2 M. Controls (box2: I25-lr3e-4-2M, I30-lr3e-4-2M, I40C) via syncctl.sh
+T I25-step 2.50 2e6 ckpt-sd-2e+05,ckpt-sd-5e+05,ckpt-sd-1e+06,ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.6e6 --short-decay 2.5e5,5e5,1e6 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I25-lr3e-4-2M
+T I30-step 3.00 2e6 ckpt-sd-2e+05,ckpt-sd-5e+05,ckpt-sd-1e+06,ckpt-2e+06 --lr 3e-4 --lr-steps 3e-4:5e5,1e-4:1.6e6 --short-decay 2.5e5,5e5,1e6 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I30-lr3e-4-2M
+T I40-lr1e-4-2M 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 1e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I40C
+T I40-lr3e-4-2M 4.00 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok @ctl=I40C

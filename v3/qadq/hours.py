@@ -14,6 +14,7 @@ def hours(j):
     b = [float(x) for x in j["budgets"].split(",")]
     rows = b[-1] + sum(0.2 * x for x in b[:-1])
     fl = j["flags"]; t = 98.0
+    if "--short-decay" in fl: rows += 5e4 * len(fl[fl.index("--short-decay") + 1].split(","))     # w222: each short-decay branch = ~50 k rows
     if "--fork-from" in fl:                                   # a fork resumes at its state's rows (state-<rows>.pt)
         import re
         m = re.search(r"state-(\d+)\.pt", fl[fl.index("--fork-from") + 1]); rows -= int(m.group(1)) if m else 0

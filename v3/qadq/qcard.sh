@@ -56,6 +56,11 @@ while ! stopped; do
       done
       [ $ok = 2 ] && fin fail $rc || fin ok 0
     fi;;
+  U)   # a released container read as it is (fragility test: does the unhealed model derail on the blow-up documents?)
+    RADF=$QROOT/rel/host-emb/qwen3.8-27b-exl3-v3-${SIZE}bpw.rad
+    if [ ! -e $RADF.ok ]; then mkdir -p $QROOT/rel; hf download Hero422/qwen3.8-27b-exl3-v3-rad host-emb/qwen3.8-27b-exl3-v3-${SIZE}bpw.rad --local-dir $QROOT/rel >> $QROOT/logs/hf-dl.log 2>&1 && touch $RADF.ok; fi
+    if [ -e $RADF.ok ]; then $HERE/qscore.sh $MACHINE $ARM $RADF $CARD >> $QROOT/logs/qread-$CARD.log 2>&1 {inst}>&-; r=$?; else r=5; fi
+    qsay "card $CARD read $ARM (released $SIZE) rc $r"; [ $r -eq 0 ] && fin ok 0 || fin fail $r;;
   R)
     [ "$CTL" = - ] && CN=- || CN=$CTL-$(basename $CKD)
     $HERE/qread.sh $MACHINE $ARM-$(basename $CKD) $SIZE $CKD $CARD $CN >> $QROOT/logs/qread-$CARD.log 2>&1 {inst}>&-; r=$?; qsay "card $CARD read $ARM-$(basename $CKD) rc $r"
