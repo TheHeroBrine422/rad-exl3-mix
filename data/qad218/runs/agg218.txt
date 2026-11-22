@@ -3,7 +3,10 @@
 /data/w218/code/v3/qad218/agg218.py:47: RuntimeWarning: invalid value encountered in multiply
   gs = x * (N / rows[:, None]); w = (rows / N)[:, None]
 == judge (qad218-heldout) vs rel
+lr-p0.05                 KL 0.042834 vs 0.040832  ratio 1.0490 [1.0107, 1.1068]  better/worse 78/95 of 173 (203233 rows)
+o0                       KL 0.041022 vs 0.040832  ratio 1.0047 [0.9980, 1.0109]  better/worse 84/89 of 173 (203233 rows)
 r0                       KL 0.040832 vs 0.040832  ratio 1.0000 [1.0000, 1.0000]  better/worse 0/0 of 173 (203233 rows)
+r0p                      KL 0.041168 vs 0.040832  ratio 1.0082 [1.0012, 1.0197]  better/worse 75/98 of 173 (203233 rows)
 r1                       KL 0.040832 vs 0.040832  ratio 1.0000 [1.0000, 1.0000]  better/worse 0/0 of 173 (203233 rows)
 == r0 grad (3 chunks): 304367 rows, 95 steps, train KL 0.051351, 1243 s; SNR all: {"steps": 95, "median_snr": 0.9084, "frac_snr_gt2": 0.0315, "signal_share": 0.5398}
    8.linear_attn.in_proj_qkv        median SNR 0.904  >2: 0.019  signal share 0.520
@@ -36,6 +39,24 @@ r1                       KL 0.040832 vs 0.040832  ratio 1.0000 [1.0000, 1.0000] 
    r0 enc/0.03     tiles changed   450992 / 5898240 (7.65 %), decode ok True, mean proxy 2.0157e-03, encode 122 s
    r0 enc/0.1      tiles changed  2143545 / 5898240 (36.34 %), decode ok True, mean proxy 9.2400e-03, encode 121 s
    r0 enc/0.3      tiles changed  4980374 / 5898240 (84.44 %), decode ok True, mean proxy 6.0307e-02, encode 121 s
+   r0 enclr16/0.05 tiles changed  5895579 / 5898240 (99.95 %), decode ok True, mean proxy 1.3056e-02, encode 126 s
+   r0 enclr16/0.1  tiles changed  5896695 / 5898240 (99.97 %), decode ok True, mean proxy 1.2519e-02, encode 125 s
+   r0 enclr16/0.2  tiles changed  5897812 / 5898240 (99.99 %), decode ok True, mean proxy 1.3278e-02, encode 122 s
+   r0 enclr16/0.5  tiles changed  5898234 / 5898240 (100.00 %), decode ok True, mean proxy 2.2609e-02, encode 121 s
+   r0 enclr16/1.0  tiles changed  5898240 / 5898240 (100.00 %), decode ok True, mean proxy 4.1998e-02, encode 122 s
+   r0 enclr4/0.05  tiles changed  5895732 / 5898240 (99.96 %), decode ok True, mean proxy 1.3058e-02, encode 123 s
+   r0 enclr4/0.1   tiles changed  5896811 / 5898240 (99.98 %), decode ok True, mean proxy 1.2506e-02, encode 122 s
+   r0 enclr4/0.2   tiles changed  5897828 / 5898240 (99.99 %), decode ok True, mean proxy 1.1616e-02, encode 122 s
+   r0 enclr4/0.5   tiles changed  5898232 / 5898240 (100.00 %), decode ok True, mean proxy 1.3676e-02, encode 122 s
+   r0 enclr4/1.0   tiles changed  5898240 / 5898240 (100.00 %), decode ok True, mean proxy 2.9559e-02, encode 124 s
+   r0 enclr4b/0.2  tiles changed   829930 / 5898240 (14.07 %), decode ok True, mean proxy 2.8810e-03, encode 125 s
+   r0 enclr4b/0.5  tiles changed  2853043 / 5898240 (48.37 %), decode ok True, mean proxy 9.4904e-03, encode 123 s
+   r0 enclr4b/1.0  tiles changed  5189116 / 5898240 (87.98 %), decode ok True, mean proxy 2.8385e-02, encode 122 s
+   r0 enclr4b/2.0  tiles changed  5726731 / 5898240 (97.09 %), decode ok True, mean proxy 7.1538e-02, encode 122 s
+   r0 enclr4p/0.05 tiles changed  5896099 / 5898240 (99.96 %), decode ok True, mean proxy 1.3377e-02, encode 122 s
+   r0 enclr4p/0.2  tiles changed  5898007 / 5898240 (100.00 %), decode ok True, mean proxy 1.3388e-02, encode 122 s
+   r0 enclr4p/0.5  tiles changed  5898233 / 5898240 (100.00 %), decode ok True, mean proxy 1.3457e-02, encode 122 s
+   r0 enclr4p/1.0  tiles changed  5898239 / 5898240 (100.00 %), decode ok True, mean proxy 1.3774e-02, encode 122 s
    r0 enco/0.05    tiles changed  5895961 / 5898240 (99.96 %), decode ok True, mean proxy 1.3377e-02, encode 121 s
    r0 enco/0.2     tiles changed  5898075 / 5898240 (100.00 %), decode ok True, mean proxy 1.3390e-02, encode 121 s
    r0 enco/0.0     tiles changed  5894931 / 5898240 (99.94 %), decode ok True, mean proxy 1.3376e-02, encode 121 s
@@ -57,6 +78,25 @@ r1                       KL 0.040832 vs 0.040832  ratio 1.0000 [1.0000, 1.0000] 
    tune e0.03                    KL 3.612301 vs 0.038242  ratio 94.4601 [75.5394, 123.8148]  better/worse 0/34 of 34 (54310 rows)
    tune e0.1                     KL 11.750989 vs 0.038242  ratio 307.2834 [243.6853, 402.6998]  better/worse 0/34 of 34 (54310 rows)
    tune e0.3                     KL 13.080678 vs 0.038242  ratio 342.0542 [271.6893, 449.3983]  better/worse 0/34 of 34 (54310 rows)
+   tunelr a0.05                    KL 0.206099 vs 0.038242  ratio 5.3894 [4.2499, 6.3795]  better/worse 0/34 of 34 (54310 rows)
+   tunelr a0.1                     KL 1.559692 vs 0.038242  ratio 40.7853 [29.7993, 55.8970]  better/worse 0/34 of 34 (54310 rows)
+   tunelr a0.2                     KL 10.559802 vs 0.038242  ratio 276.1344 [222.8687, 361.7013]  better/worse 0/34 of 34 (54310 rows)
+   tunelr a0.5                     KL 12.960044 vs 0.038242  ratio 338.8997 [272.0436, 441.7529]  better/worse 0/34 of 34 (54310 rows)
+   tunelr a1                       KL 14.498267 vs 0.038242  ratio 379.1236 [299.5022, 498.4984]  better/worse 0/34 of 34 (54310 rows)
+   tunelr b0.05                    KL 0.123595 vs 0.038242  ratio 3.2319 [2.5255, 3.9425]  better/worse 0/34 of 34 (54310 rows)
+   tunelr b0.1                     KL 0.435762 vs 0.038242  ratio 11.3950 [8.9363, 13.8105]  better/worse 0/34 of 34 (54310 rows)
+   tunelr b0.2                     KL 9.002352 vs 0.038242  ratio 235.4077 [190.3378, 309.3844]  better/worse 0/34 of 34 (54310 rows)
+   tunelr b0.5                     KL 9.895463 vs 0.038242  ratio 258.7622 [210.5390, 335.7435]  better/worse 0/34 of 34 (54310 rows)
+   tunelr b1                       KL 12.566525 vs 0.038242  ratio 328.6093 [259.3557, 432.7323]  better/worse 0/34 of 34 (54310 rows)
+   tunelr o0                       KL 0.038170 vs 0.038242  ratio 0.9981 [0.9814, 1.0136]  better/worse 14/20 of 34 (54310 rows)
+   tunelr p0.05                    KL 0.039326 vs 0.038242  ratio 1.0284 [1.0029, 1.0732]  better/worse 10/24 of 34 (54310 rows)
+   tunelr p0.2                     KL 0.040504 vs 0.038242  ratio 1.0592 [1.0180, 1.1450]  better/worse 8/26 of 34 (54310 rows)
+   tunelr p0.5                     KL 0.046429 vs 0.038242  ratio 1.2141 [1.0709, 1.4632]  better/worse 1/33 of 34 (54310 rows)
+   tunelr p1                       KL 0.074481 vs 0.038242  ratio 1.9476 [1.3516, 2.8434]  better/worse 0/34 of 34 (54310 rows)
+   tunelrb c0.2                     KL 10.302935 vs 0.038242  ratio 269.4174 [216.4174, 355.4215]  better/worse 0/34 of 34 (54310 rows)
+   tunelrb c0.5                     KL 12.719725 vs 0.038242  ratio 332.6154 [265.7177, 434.0619]  better/worse 0/34 of 34 (54310 rows)
+   tunelrb c1                       KL 13.898191 vs 0.038242  ratio 363.4318 [287.9322, 477.4357]  better/worse 0/34 of 34 (54310 rows)
+   tunelrb c2                       KL 13.752199 vs 0.038242  ratio 359.6142 [284.5920, 473.2051]  better/worse 0/34 of 34 (54310 rows)
    tunep o0.05                    KL 0.039220 vs 0.038242  ratio 1.0256 [0.9954, 1.0812]  better/worse 13/21 of 34 (54310 rows)
    tunep o0.2                     KL 0.040274 vs 0.038242  ratio 1.0531 [0.9992, 1.1694]  better/worse 11/23 of 34 (54310 rows)
    tunep o0                       KL 0.038170 vs 0.038242  ratio 0.9981 [0.9814, 1.0136]  better/worse 14/20 of 34 (54310 rows)

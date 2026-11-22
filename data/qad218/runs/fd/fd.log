@@ -1,0 +1,34 @@
+08:04:38 fd218.py {"out": "runs/fd", "dirs": "lr4,lr4p", "etas": "-3e-2,-1e-2,-3e-3,3e-3,1e-2,3e-2,5e-2", "eta_blk": 0.01, "docs": 17, "cap": 8192, "model": "/data/workspace/models/qwen38-27b-bf16", "lv": "/data/w218/lv/2.50", "calib": "/data/challenge/golden/calib", "data": "/data/w218/data218.json", "layers": "8,23,40,55", "R": "/data/w218/runs/r0"}
+08:04:59 student built in 20 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+08:04:59 GDN a / b: /data/w218/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+08:05:00 probe: 26 tensors in layers [8, 23, 40, 55], 1.510 G values
+08:05:27 KL0 0.034640 (27 s)
+08:05:32 lr4: predicted slope dKL/deta -6.0755e+00 (per block 8: -8.129e-01, 23: -1.643e+00, 40: -3.069e+00, 55: -5.504e-01); factor rel err max 5.5e-04
+08:05:59 lr4 path control (f32 add of ~0): KL 0.034640 (d +0.000e+00)
+08:06:25 lr4 eta -3.0000e-02: KL 2.066049 (d +2.031e+00; predicted first order +1.823e-01)
+08:06:51 lr4 eta -1.0000e-02: KL 0.099007 (d +6.437e-02; predicted first order +6.075e-02)
+08:07:17 lr4 eta -3.0000e-03: KL 0.034782 (d +1.420e-04; predicted first order +1.823e-02)
+08:07:44 lr4 eta +3.0000e-03: KL 0.035153 (d +5.131e-04; predicted first order -1.823e-02)
+08:08:10 lr4 eta +1.0000e-02: KL 0.038376 (d +3.736e-03; predicted first order -6.075e-02)
+08:08:36 lr4 eta +3.0000e-02: KL 0.059831 (d +2.519e-02; predicted first order -1.823e-01)
+08:09:03 lr4 eta +5.0000e-02: KL 0.190112 (d +1.555e-01; predicted first order -3.038e-01)
+08:09:54 lr4 block 8 (eta +-0.01): KL(+) 0.036137 KL(-) 0.037504  FD slope -6.8363e-02 vs predicted -8.1290e-01
+08:10:46 lr4 block 23 (eta +-0.01): KL(+) 0.035351 KL(-) 0.034483  FD slope 4.3364e-02 vs predicted -1.6433e+00
+08:11:37 lr4 block 40 (eta +-0.01): KL(+) 0.035945 KL(-) 0.036118  FD slope -8.6923e-03 vs predicted -3.0689e+00
+08:12:29 lr4 block 55 (eta +-0.01): KL(+) 0.035287 KL(-) 0.034313  FD slope 4.8699e-02 vs predicted -5.5040e-01
+08:12:29 lr4: FD slope 6.1850e-02 vs predicted -6.0755e+00; parabola a 8.0527e+02 b -3.4525e+01 -> eta* 0.021436690806463477 (predicted KL there -0.28929921836640593)
+08:12:32 lr4p: predicted slope dKL/deta -2.4900e+00 (per block 8: -1.727e-01, 23: -6.635e-01, 40: -1.426e+00, 55: -2.282e-01); factor rel err max 2.4e-06
+08:12:58 lr4p path control (f32 add of ~0): KL 0.034640 (d +0.000e+00)
+08:13:25 lr4p eta -3.0000e-02: KL 0.036204 (d +1.564e-03; predicted first order +7.470e-02)
+08:13:51 lr4p eta -1.0000e-02: KL 0.034236 (d -4.039e-04; predicted first order +2.490e-02)
+08:14:17 lr4p eta -3.0000e-03: KL 0.034326 (d -3.141e-04; predicted first order +7.470e-03)
+08:14:43 lr4p eta +3.0000e-03: KL 0.034669 (d +2.887e-05; predicted first order -7.470e-03)
+08:15:10 lr4p eta +1.0000e-02: KL 0.035082 (d +4.425e-04; predicted first order -2.490e-02)
+08:15:36 lr4p eta +3.0000e-02: KL 0.035758 (d +1.119e-03; predicted first order -7.470e-02)
+08:16:02 lr4p eta +5.0000e-02: KL 0.036183 (d +1.544e-03; predicted first order -1.245e-01)
+08:16:54 lr4p block 8 (eta +-0.01): KL(+) 0.034602 KL(-) 0.034616  FD slope -6.5965e-04 vs predicted -1.7270e-01
+08:17:46 lr4p block 23 (eta +-0.01): KL(+) 0.034629 KL(-) 0.034413  FD slope 1.0778e-02 vs predicted -6.6346e-01
+08:18:37 lr4p block 40 (eta +-0.01): KL(+) 0.034831 KL(-) 0.034416  FD slope 2.0723e-02 vs predicted -1.4257e+00
+08:19:29 lr4p block 55 (eta +-0.01): KL(+) 0.034736 KL(-) 0.034540  FD slope 9.7588e-03 vs predicted -2.2819e-01
+08:19:29 lr4p: FD slope 5.7162e-02 vs predicted -2.4900e+00; parabola a 9.3591e-01 b -1.0015e-02 -> eta* 0.0053502797297674265 (predicted KL there 0.03464447074033984)
+08:19:29 FD DONE

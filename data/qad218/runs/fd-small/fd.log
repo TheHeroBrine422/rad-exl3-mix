@@ -1,0 +1,11 @@
+08:01:01 fd218.py {"out": "runs/fd", "dirs": "lr4,lr4p", "etas": "-1e-3,-3e-4,-1e-4,1e-5,1e-4,3e-4,1e-3,3e-3", "eta_blk": 0.0003, "docs": 17, "cap": 8192, "model": "/data/workspace/models/qwen38-27b-bf16", "lv": "/data/w218/lv/2.50", "calib": "/data/challenge/golden/calib", "data": "/data/w218/data218.json", "layers": "8,23,40,55", "R": "/data/w218/runs/r0"}
+08:01:23 student built in 20 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+08:01:23 GDN a / b: /data/w218/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+08:01:23 probe: 26 tensors in layers [8, 23, 40, 55], 1.510 G values
+08:01:50 KL0 0.034640 (27 s)
+08:01:56 lr4: predicted slope dKL/deta -6.0755e+00 (per block 8: -8.129e-01, 23: -1.643e+00, 40: -3.069e+00, 55: -5.504e-01); factor rel err max 7.8e-05
+08:02:22 lr4 path control (f32 add of ~0): KL 0.034640 (d +0.000e+00)
+08:02:48 lr4 eta -1.0000e-03: KL 0.034568 (d -7.136e-05; predicted first order +6.075e-03)
+08:03:14 lr4 eta -3.0000e-04: KL 0.034541 (d -9.893e-05; predicted first order +1.823e-03)
+08:03:41 lr4 eta -1.0000e-04: KL 0.034621 (d -1.854e-05; predicted first order +6.075e-04)
+08:04:07 lr4 eta +1.0000e-05: KL 0.034606 (d -3.396e-05; predicted first order -6.075e-05)

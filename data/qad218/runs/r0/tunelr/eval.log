@@ -1,0 +1,20 @@
+07:13:26 probe218.py {"mode": "eval", "out": "runs/r0/tunelr", "model": "/data/workspace/models/qwen38-27b-bf16", "lv": "/data/w218/lv/2.50", "calib": "/data/challenge/golden/calib", "data": "/data/w218/data218.json", "layers": "8,23,40,55", "codes": "", "chunk": 0, "rows": 100000, "V": 6, "Q": 1024, "nsamp": 20000, "set": "tune", "variants": "cur=rel,o0=runs/r0/enco/eta-0,a0.05=runs/r0/enclr4/eta-0.05,b0.05=runs/r0/enclr16/eta-0.05,a0.1=runs/r0/enclr4/eta-0.1,b0.1=runs/r0/enclr16/eta-0.1,a0.2=runs/r0/enclr4/eta-0.2,b0.2=runs/r0/enclr16/eta-0.2,a0.5=runs/r0/enclr4/eta-0.5,b0.5=runs/r0/enclr16/eta-0.5,a1=runs/r0/enclr4/eta-1,b1=runs/r0/enclr16/eta-1,p0.05=runs/r0/enclr4p/eta-0.05,p0.2=runs/r0/enclr4p/eta-0.2,p0.5=runs/r0/enclr4p/eta-0.5,p1=runs/r0/enclr4p/eta-1", "chunks": "0-8", "lr": 0.001, "compile_scales": false}
+07:15:56 student built in 148 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 25.35 GiB
+07:15:56 GDN a / b: /data/w218/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+07:15:56 probe: 26 tensors in layers [8, 23, 40, 55], 1.510 G values
+07:16:56 EVAL tune cur: KL 0.038242 over 54310 rows (34 docs, 0 tensors from rel), 60 s
+07:17:56 EVAL tune o0: KL 0.038170 over 54310 rows (34 docs, 26 tensors from runs/r0/enco/eta-0), 55 s
+07:18:56 EVAL tune a0.05: KL 0.206099 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4/eta-0.05), 55 s
+07:19:58 EVAL tune b0.05: KL 0.123595 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr16/eta-0.05), 55 s
+07:21:00 EVAL tune a0.1: KL 1.559692 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4/eta-0.1), 55 s
+07:22:03 EVAL tune b0.1: KL 0.435762 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr16/eta-0.1), 55 s
+07:23:05 EVAL tune a0.2: KL 10.559802 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4/eta-0.2), 55 s
+07:24:07 EVAL tune b0.2: KL 9.002352 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr16/eta-0.2), 55 s
+07:25:10 EVAL tune a0.5: KL 12.960044 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4/eta-0.5), 55 s
+07:26:10 EVAL tune b0.5: KL 9.895463 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr16/eta-0.5), 55 s
+07:27:11 EVAL tune a1: KL 14.498267 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4/eta-1), 55 s
+07:28:11 EVAL tune b1: KL 12.566525 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr16/eta-1), 55 s
+07:29:13 EVAL tune p0.05: KL 0.039326 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4p/eta-0.05), 55 s
+07:30:14 EVAL tune p0.2: KL 0.040504 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4p/eta-0.2), 55 s
+07:31:16 EVAL tune p0.5: KL 0.046429 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4p/eta-0.5), 55 s
+07:32:16 EVAL tune p1: KL 0.074481 over 54310 rows (34 docs, 26 tensors from runs/r0/enclr4p/eta-1), 55 s

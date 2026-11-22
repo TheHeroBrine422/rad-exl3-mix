@@ -1,0 +1,6 @@
+lr4 check   dKL/deta total -1.4850e-01  L8 -1.458e-01  L23 -9.097e-03  L40 -2.033e-02  L55 +2.674e-02
+lr4 r0mean  dKL/deta total -6.0755e+00  L8 -8.129e-01  L23 -1.643e+00  L40 -3.069e+00  L55 -5.504e-01
+lr4 g2      dKL/deta total -6.7882e+00  L8 -1.140e+00  L23 -2.202e+00  L40 -2.713e+00  L55 -7.337e-01
+lr4p check   dKL/deta total +4.8163e-03  L8 +5.820e-04  L23 +4.501e-04  L40 +2.000e-03  L55 +1.785e-03
+lr4p r0mean  dKL/deta total -2.4900e+00  L8 -1.727e-01  L23 -6.635e-01  L40 -1.426e+00  L55 -2.282e-01
+lr4p g2      dKL/deta total -3.8904e+00  L8 -4.012e-01  L23 -1.139e+00  L40 -1.903e+00  L55 -4.476e-01
