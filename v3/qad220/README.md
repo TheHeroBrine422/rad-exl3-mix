@@ -58,11 +58,12 @@ run220.sh 25T 0 2.50 5e5 --lr 1e-3 --tie-groups 128 --tie-layers 0-31 --compile-
 run220.sh 25S 0 2.50 1e6 --lr-steps "1e-3:2.5e5,3e-4:9e5" --compile-scales --compile-ew
 # long cosine to zero; clipped spikes
 run220.sh 25L 0 2.50 1e6 --lr 1e-3 --decay-shape cosine-all --clip-gnorm 4 --compile-scales --compile-ew
-# cooldown fork: constant phase to 60 % saved, then two cooldowns from it
-run220.sh 25P 0 2.50 1e6 --lr 1e-3 --decay-frac 0.4 --save-at 6e5 --max-steps 0 ...      # (stop at the fork point with a STOP file or --max-steps N)
-run220.sh 25Q-sqrt 0 2.50 1e6 --lr 1e-3 --decay-frac 0.4 --fork-from runs/25P/state-600000.pt --decay-shape sqrt --decay-data calib
+# cooldown fork: a base run (40 % linear decay) saves its pre-decay state at 0.6 M rows; stop it there (touch runs/25P/STOP after the "fork point state" log line)
+run220.sh 25P 0 2.50 1e6 --lr 1e-3 --decay-frac 0.4 --save-at 6e5 --compile-scales --compile-ew
+# ... then cooldowns from that state (same data order; the checksum is verified): 1 - sqrt shape with a calib-only decay phase
+run220.sh 25Q-sqrt 0 2.50 1e6 --lr 1e-3 --decay-frac 0.4 --fork-from /data/q27/w220/runs/25P/state-600000.pt --decay-shape sqrt --decay-data calib --compile-scales --compile-ew
 # prompt-side rows at 0.2, local MSE on the front half (taps of the quarter ends)
 run220.sh 25N 0 2.50 5e5 --prompt-weight 0.2
-python3 qad220.py runs/taps --make-taps runs/taps --tap-layers 15,31,47 <data flags>   # then:
+python3 qad220.py runs/taps-out --make-taps runs/taps --tap-layers 15,31,47 <the run's data flags>    # 2 cards; then:
 run220.sh 25F 0 2.50 5e5 --lr 3e-4 --local-mse 15+31,0.1 --local-taps runs/taps
 ```

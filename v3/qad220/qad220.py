@@ -576,7 +576,6 @@ def apply_trainable(a, stu, log):
         extra = sorted(set(z.files) - set(stu.P))
         assert not extra, f"--mask: {len(extra)} names not in the student, e.g. {extra[:3]}"
         mk = {}
-    off = 0
     for n, p in stu.P.items():
         keep = True
         if a.train_layers is not None: keep = lo <= layer_of(stu, n) <= hi
