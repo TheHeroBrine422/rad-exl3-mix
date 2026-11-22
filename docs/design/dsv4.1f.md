@@ -208,6 +208,13 @@ h = silu(gate) · up (f32); routed experts: h = route_weight · h **before** w2 
 quantized Linear fp8-quantizes that input, 1×32 blocks). Our exl3i MoE ops (w207) have no clamp yet: add it with exactly these
 semantics (f32 gate / up, asymmetric clamp, weight before down), test against this reference on random inputs and real experts.
 
+## Expert menu top: native MXFP4 (lead 11-22)
+The released routed experts ARE the model (trained in FP4; the goldens come from them), so any deviation is loss. Trellis cannot
+reproduce them: after the 128-Hadamard they are an ordinary Gaussian source (w211), so error stays continuous at every K (i.i.d.
+rel. MSE ~0.45 % at K4, ~0.12 % K5, ~0.03 % K6) and anything > 4.25 bpw is larger than the original. **Menu top for experts = native
+MXFP4, 4.25 bpw, lossless,** served by `moe_gemm_mxfp4` (w216). The knapsack picks per expert: trellis K ≤ 4 where bits pay, MXFP4
+where it is sensitive; no trellis above ~K4 for experts. Needs: MXFP4 decode / prefill timings in the speed table (vs exl3i K4).
+
 ## Scoring (user 11-21)
 KLD is read only on the rows the golden marks in its own `gen.u8` (from the HF parts, copied byte for byte into every slice; `eval/ds41/w212/score41.py`). Never rebuild the mask; prompt-side rows are diagnostic only (they read high KLD by nature: golden G6 check).
 
