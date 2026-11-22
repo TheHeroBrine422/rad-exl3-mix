@@ -64,3 +64,19 @@ the data deviations above. Raw results → `rad-exl3-mix/data/qad214/`. Not deci
 ## Cards / hosts
 box2 HIP cards 0–3 only (`/data/q27/locks/card<N>.lock`; card lock, then ram.lock shared for training / scoring; the packer's copy takes no GPU). RAM
 per training job ≈ 17 GB at the student build (builds serialized by `--build-lock`); keep ≥ 15 GB free; `/data` ≥ 100 GB free. No iceman.
+
+### Amendment 1 — 2026-11-21 6:52 PM CST, before any read of the new arms (lead, after 40Q's early stop): two control arms at 4.00
+**Why.** 40Q's 0.25 M / 0.5 M checkpoints read 1.033 [1.004, 1.065] / 1.218 [1.037, 1.423] vs the unhealed 4.00 on j214 (31 / 49 and 18 / 62 documents
+better / worse); the early-stop rule (0.5 M ratio ≥ 0.990) fired and 40Q was stopped at its 0.5 M checkpoint (card 2 freed). Its training log shows a
+calib-batch spike in the last branch step (train KL 0.0126, calib 0.0395 vs 0.0068 a step earlier, grad norm 0.055) and its held-out fixed eval
+(calib docs, torch student, A8 on) went 0.00684 → 0.00694 (0.25 M) → 0.01277 (0.5 M). #181's 4.0 lr screen (arm A, no A8) also ended worse than base at
+lr 1e-3. A8-in-the-loop and lr 1e-3 on a ~0.006-KL model are confounded; two controls separate them.
+**Change.** Added arms (nothing else changes: the released 4.00 pick, data, order, seed 0, lr schedule shape, normal batch, warmup 8, j214 judge):
+| arm | size | flags |
+|---|---|---|
+| 40A | 4.00 | arm A, lr 1e-3 (card 2): separates A8-in-the-loop from the lr |
+| 40A-lr3e-4 | 4.00 | arm A, lr 3e-4 (card 3): #181's next screen value |
+Budgets 0.25 M and 0.5 M only (a checkpoint of budget T is a one-epoch run of budget T, so a main run decaying to 0.5 M reproduces 40Q's 0.5 M schedule
+and data exactly); read each on j214 vs ctl-4.00. The decision rule is unchanged: a 0.5 M ratio ≥ 0.990 ends the arm (nothing beyond 0.5 M is run for
+these controls in any case; 1 M for a control only if its 0.5 M read is ≤ -2 % with the CI below 1, the stage-2 trigger applied to the 1 M step). The spike
+(batch, documents) is recorded in the report. 25Q is not launched (the lead).
