@@ -9700,3 +9700,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   4.2 % and q_proj 3.8 % (at 2.5) highest; MLP gate / up lowest (1.5 %) though they are 51 % of scales; GDN ~2 %; in vs out side
   equal. **Cross-size overlap** 2.5 ∩ 3.0 = 12 % of 2.5's mask (15× chance): the same scales partly matter at every size.
   Files `data/qad217/lead/` (mask-3se.txt, scale-moves-w214.txt, scripts).
+- 11-22 ~12:40 AM CST: **w220 handed off (Sonnet high): QAD trainer upgrade `v3/qad220/qad220.py`** (copy of w217's qad200 + new flags,
+  all off by default; commits fe2e1183 … c5ee6098; README "w220 flags"). Frozen-prefix no-grad (auto; `--no-frozen-prefix` to disable),
+  `--train-layers / --train-tensors / --mask` (+ `mkmask220.py` from w217's gradient-noise npz), `--tie-groups / --tie-layers`
+  (export expands to per-channel), `--clip-gnorm`, `--beta2`, `--lr-steps`, `--decay-shape`, `--fork-from` (+ `--save-at`),
+  `--decay-data`, `--prompt-weight`, `--local-mse` (stored bf16 teacher states, modes local / joint; ~10 KB / row / layer → use
+  stage-end layers or fewer rows; no on-card teacher: 27B bf16 + student exceed one card), `--a8` composes. CPU gates: defaults =
+  qad200 bit for bit and frozen prefix = full backward bit for bit (tiny real stack); mask counts match the lead's (1.88 / 0.80 /
+  0.53 % at z 3; no layer empty, so mask alone gives no prefix speedup). **GPU gates queued self-starting on box2 cards 2 / 3**
+  (after w217 yields them ~1 AM): a compiled vs eager 25A within ±2 % on j217, b frozen-prefix gradient, c speed table, d defaults
+  bit-identical on the full model; readout `/data/q27/w220/readout220.md` (`code/v3/qad220/readout220.py`). Report `out/w220.md`.
