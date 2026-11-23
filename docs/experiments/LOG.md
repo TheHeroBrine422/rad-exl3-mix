@@ -9973,3 +9973,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   ~10 PM CST. **w225 launched (Opus medium, e2dff026, 10 h)**: 2-card layer-split training for 64k–256k (brief `workers/instr3/w225.md`;
   gates: exact vs one card at 8k, filled pipeline, memory at 64k / 128k / 256k, a short 256k run).
 - 11-23 ~3:25 AM CST: + C32S-30 (3.00: 32k cap + extended plan + 3e-4 → 1e-4 at 1M, to 3M) and its long-context read, end of box2's queue (~5 PM CST with w225's card use).
+- 11-23 ~4:05 AM CST (user): **32k-cap runs held** (C32-25, C32-30, C32S-25, C32S-30 + their JL reads, `# HOLD-256k`): rerun at --cap 262144 on 2 cards once w225 passes; c32-plan-test stays (cheap check of the --cap-keep path).
