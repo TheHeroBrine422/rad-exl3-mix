@@ -1,2 +1,2 @@
 # G4 a short real run at --cap 262144 (golden-jlong's docs kept at 8k)
-w225-c256k A,B 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --split-layers 32 --pipeline --attn-gqa --state-card-gb 6
+w225-c256k A,B 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --split-layers 32 --pipeline --attn-gqa --state-card-gb 8

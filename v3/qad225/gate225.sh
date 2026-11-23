@@ -15,7 +15,7 @@ while read -r ARM CARDS SIZE BUD FLAGS; do
   case "$ARM" in w225-*) ;; *) log "skip $ARM: not a w225- arm"; continue;; esac
   [ -e $QROOT/runs/$ARM/gate225.done ] && { log "$ARM done before"; continue; }
   CARDS=${CARDS//A/$A}; CARDS=${CARDS//B/$B}
-  rm -rf $QROOT/runs/$ARM
+  [ -n "${NOWIPE:-}" ] || rm -rf $QROOT/runs/$ARM          # NOWIPE=1: resume the run from its state.pt
   log "$ARM start (cards $CARDS): $SIZE $BUD $FLAGS"
   t0=$(date +%s)
   while true; do eval "$CODE/v3/qadq/qrun.sh box2 $ARM $CARDS $SIZE $BUD $FLAGS" < /dev/null; rc=$?; [ $rc = 76 ] || break; log "$ARM: RAM floor, waiting"; sleep 120; done

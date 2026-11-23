@@ -248,6 +248,20 @@ def devctx(dev):
 
 
 ATTN_GQA = [False]              # w225 --attn-gqa
+PIPE_INFLIGHT = 4 * 2**30       # w225 --pipeline: bytes of carried states brought onto the cards (parked / rebuilt) that the segments in flight may hold
+
+
+def triton_autotune_lock():
+    """w225 --pipeline: triton's Autotuner keeps per-call state on the shared kernel object (self.nargs, read by its reset / restore hooks while
+    it benchmarks a new key), so the two cards' threads must not interleave inside it: one lock around Autotuner.run (a launch holds it for
+    microseconds; a first-time benchmark for its duration)"""
+    import threading
+    import triton.runtime.autotuner as at
+    if getattr(at.Autotuner, "_w225_lock", None) is not None: return
+    lk = threading.RLock(); run0 = at.Autotuner.run
+    def run(self, *args, **kwargs):
+        with lk: return run0(self, *args, **kwargs)
+    at.Autotuner.run = run; at.Autotuner._w225_lock = lk
 
 
 def seg_attention(module, q, k, v, attention_mask, dropout=0.0, scaling=None, **kw):
@@ -1025,12 +1039,12 @@ class Trainer:
         """the carried state of stream sid's segment starting at sa, on its layers' cards: the stored one, else a no-grad rebuild over the prefix
         (counted in acc[-1]); at a document's start None (--depth-test: the synthetic prefix)"""
         stu = self.stu
-        st0 = self.synth() if getattr(stu, "pos_off", 0) else None
-        if sa == 0: return st0
+        st0 = lambda: self.synth() if getattr(stu, "pos_off", 0) else None       # built only when used (a 256k synthetic prefix is 8 GiB a card)
+        if sa == 0: return st0()
         k = self.states.get(sid)
         if k is not None and k[0] == it and k[1] == sa: return self.place(k[2])
         acc[-1] += sa
-        return prefix_state(stu, self.C.g, tuple(self.C.items[it][:2]), sa, self.a.len, st0)
+        return prefix_state(stu, self.C.g, tuple(self.C.items[it][:2]), sa, self.a.len, st0())
 
     def state_out(self, sid, it, sb, n_doc, nxt):
         if sb < n_doc: self.states[sid] = (it, sb, self.park(sid, nxt))
@@ -1059,7 +1073,7 @@ class Trainer:
 
     def run_pipe(self, work, N, acc):
         """--pipeline (with --split-layers): the filled two-card pipeline over a step's segments. Card A (this thread) runs segment j's first half
-        forward while card B (a worker thread) runs segment j - 1's second half forward + loss + backward; then A runs j - 1's first-half backward
+        forward while card B (a worker thread) runs segment j - 2's second half forward + loss + backward; then A runs j - 2's first-half backward
         seeded with the hidden-state gradient B sent back. The graph is the naive split's cut at the card boundary (B's input = A's output
         detached), each card accumulates its parameters' gradients in segment order, and states / losses are booked in segment order, so the
         step equals the naive split's bit for bit"""
@@ -1068,47 +1082,61 @@ class Trainer:
         A, B, K, NL = stu.devs[0], stu.devs[-1], stu.split, len(stu.layers)
         assert a.clip_doc == 0, "--pipeline: no --clip-doc"
         qb, qg = queue.Queue(), queue.Queue()
+        tm = self.pipe_s = dict.fromkeys(("a_fwd", "a_wait", "a_bwd", "a_out", "b_wait", "b_fwd", "b_bwd"), 0.0)     # host-side seconds per phase (logged as pipe_s)
+        sync = (lambda d_: torch.cuda.synchronize(d_)) if os.environ.get("W225_SYNC") == "1" and A.type == "cuda" else (lambda d_: None)   # profiling: each phase waits for its card (GPU time per phase)
         def side_b():
             try:
                 if B.type == "cuda": torch.cuda.set_device(B)
                 while True:
-                    job = qb.get()
+                    t_ = time.time(); job = qb.get(); tm["b_wait"] += time.time() - t_
                     if job is None: return
+                    t_ = time.time()
                     j, hA, prevB, gi, i, sa, sb, cap = job
                     xB = hA.detach().to(B)
                     if hA.requires_grad: xB.requires_grad_(True)
                     cache = SegCacheBuf(prevB, cap)
                     h = stu.fnorm(run_half(stu, xB, sa, cache, K, NL))[0]
                     kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, h)
+                    sync(B); t1 = time.time(); tm["b_fwd"] += t1 - t_
                     if m: (kl / N).backward()
-                    qg.put((j, xB.grad if (m and hA.requires_grad) else None, float(kl), m, cache.next))
+                    sync(B); tm["b_bwd"] += time.time() - t1
+                    qg.put((j, xB.grad if (m and hA.requires_grad) else None, float(kl.detach()), m, cache.next))
                     del job, hA, xB, h, kl, cache, prevB
             except BaseException as e:
                 qg.put((None, e))
-        th = threading.Thread(target=side_b, name="w225-card-B", daemon=True); th.start()
+        import contextvars                      # torch's dynamo / inductor configs (recompile limit, deterministic, strict numerics) are context variables: the worker runs in a copy of this thread's context
+        th = threading.Thread(target=contextvars.copy_context().run, args=(side_b,), name="w225-card-B", daemon=True); th.start()
         pend = collections.deque()
         def finish():
-            j, sid, it, sb, n_doc, gi, hA, cacheA = pend.popleft()
-            r = qg.get()
+            j, sid, it, sb, n_doc, gi, hA, cacheA, _ = pend.popleft()
+            t_ = time.time(); r = qg.get(); tm["a_wait"] += time.time() - t_
             if r[0] is None: raise r[1]
             assert r[0] == j, (r[0], j)
             _, gx, kl, m, nxtB = r
+            t_ = time.time()
             if gx is not None: hA.backward(gx.to(A))
+            sync(A); t1 = time.time(); tm["a_bwd"] += t1 - t_
             t = self.tix[self.C.tags[gi]]; acc[2 * t] += kl; acc[2 * t + 1] += m
             self.state_out(sid, it, sb, n_doc, {**cacheA.next, **nxtB})
+            tm["a_out"] += time.time() - t1
         try:
             with devctx(A):
                 for j, (sid, it, sa, sb) in enumerate(work):
                     while any(p_[1] == sid for p_ in pend): finish()     # the stream's previous segment (its state) first (--accum, V = 1)
                     gi, i, n_doc = self.C.items[it][:3]
                     cap = n_doc + getattr(stu, "pos_off", 0); stu.kv_cap = cap
+                    t_ = time.time()
+                    k_ = self.states.get(sid)
+                    kept = sa > 0 and k_ is not None and k_[0] == it and k_[1] == sa and all(d_.type != "cpu" for d_ in self.st_bytes(k_[2]))
                     prev = self.state_in(sid, it, sa, acc) or {}
+                    nb = 0 if kept else sum(self.st_bytes(prev).values())         # a state brought to the cards for this segment (parked / rebuilt / synthetic)
+                    while pend and sum(p_[-1] for p_ in pend) + nb > PIPE_INFLIGHT: finish()   # deep states: few in flight (a 256k stream's KV is 16 GiB)
                     pa = {k: v for k, v in prev.items() if k[1] < K}; pb = {k: v for k, v in prev.items() if k[1] >= K}
                     cacheA = SegCacheBuf(pa, cap)
                     hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
-                    qb.put((j, hA, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA))
+                    qb.put((j, hA, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
                     del prev, pa, pb, hA, cacheA
-                    if len(pend) > 1: finish()
+                    if len(pend) > 2: finish()       # A runs two segments ahead: B always has the next one queued (B's work per segment is the larger half)
                 while pend: finish()
         finally:
             qb.put(None); th.join()
@@ -1164,7 +1192,7 @@ class Trainer:
         return out.view(-1, 2).numpy()
 
     def checksum(self):
-        v = torch.tensor([float(sum(p.detach().double().sum() for p in self.P))], dtype=torch.float64)
+        v = torch.tensor([float(sum(p.detach().double().sum().to(self.dev) for p in self.P))], dtype=torch.float64)    # w225: parameters on two cards
         mine = float(v); self.d.allsum(v)
         assert abs(float(v) / self.d.world - mine) <= 1e-9 * max(1.0, abs(mine)), f"ranks out of sync: {mine} vs mean {float(v) / self.d.world}"
         return mine
@@ -1841,6 +1869,7 @@ def main():
         d.barrier()
     apply196(a, stu, log)
     ATTN_GQA[0] = a.attn_gqa                                     # w225
+    if a.pipeline: triton_autotune_lock()
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:
         stu.split = a.split_layers; stu.kvbuf = True; stu.pos_off = a.depth_test; stu.kv_cap = 0
         log(f"w225: split {a.split_layers}" + (f" (layers 0-{a.split_layers - 1} on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB, "
@@ -1932,6 +1961,7 @@ def main():
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         if a.split_layers: rec["peak_gib_b"] = round(torch.cuda.max_memory_allocated(stu.devs[1]) / 2**30, 2)    # w225: the second card
+        if getattr(T, "pipe_s", None): rec["pipe_s"] = {k_: round(v_, 1) for k_, v_ in T.pipe_s.items()}
         if T.w225:
             rec["states_gib"] = {str(k_): round(v_ / 2**30, 2) for k_, v_ in T.resident().items()}
             rec["rss_gib"] = round(int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30, 2)

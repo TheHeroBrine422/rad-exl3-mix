@@ -1,0 +1,10 @@
+{"calib": {"docs": 416, "tokens": 596597, "rows": 530226}, "tr32k": {"docs": 63, "tokens": 1000886, "rows": 640646}, "xc8k": {"docs": 1379, "tokens": 1955614, "rows": 1684182}}
+docs > 8192: 50  tokens beyond 8192: 542503  (0.153)
+docs > 32768: 0  tokens beyond 32768: 0  (0.000)
+docs > 65536: 0  tokens beyond 65536: 0  (0.000)
+docs > 131072: 0  tokens beyond 131072: 0  (0.000)
+docs > 262144: 0  tokens beyond 262144: 0  (0.000)
+streams at depth >= 32768: mean 0.00 max 0 over 177 steps
+streams at depth >= 65536: mean 0.00 max 0 over 177 steps
+streams at depth >= 131072: mean 0.00 max 0 over 177 steps
+carried KV of all streams: mean 6.5 GiB, max 14.0 GiB (64 KB a token)

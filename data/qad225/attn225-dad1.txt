@@ -1,0 +1,16 @@
+# attn225.py on dad1 (RX 9070 XT, gfx1201, torch 2.15 rocm 7.14), 11-23: one attention layer, 1,024 queries after P carried tokens, 24 q / 4 KV heads x 256, bf16, fwd + bwd
+P    8192 rep:     13.8 ms fwd+bwd, transient peak   0.48 GiB (inputs held: 0.03 GiB)
+P    8192 gqa:     12.7 ms fwd+bwd, transient peak   0.13 GiB (inputs held: 0.03 GiB)
+P    8192 rep vs gqa: max |diff| out 0 dq 0.201 dk 0.115 dv 0.101; bitwise [True, False, False, False]
+P   32768 rep:     52.6 ms fwd+bwd, transient peak   1.61 GiB (inputs held: 0.12 GiB)
+P   32768 gqa:     48.9 ms fwd+bwd, transient peak   0.32 GiB (inputs held: 0.12 GiB)
+P   32768 rep vs gqa: max |diff| out 0 dq 0.0723 dk 0.0367 dv 0.0306; bitwise [True, False, False, False]
+P   65536 rep:    108.7 ms fwd+bwd, transient peak   3.11 GiB (inputs held: 0.25 GiB)
+P   65536 gqa:     97.6 ms fwd+bwd, transient peak   0.57 GiB (inputs held: 0.25 GiB)
+P   65536 rep vs gqa: max |diff| out 0 dq 0.0533 dk 0.0156 dv 0.0129; bitwise [True, False, False, False]
+P  131072 rep:    219.6 ms fwd+bwd, transient peak   6.11 GiB (inputs held: 0.50 GiB)
+P  131072 gqa:    194.4 ms fwd+bwd, transient peak   1.07 GiB (inputs held: 0.50 GiB)
+P  131072 rep vs gqa: max |diff| out 0 dq 0.0362 dk 0.00804 dv 0.00726; bitwise [True, False, False, False]
+P  262144 rep:    442.6 ms fwd+bwd, transient peak  12.11 GiB (inputs held: 1.00 GiB)
+P  262144 gqa:    389.4 ms fwd+bwd, transient peak   2.07 GiB (inputs held: 1.00 GiB)
+P  262144 rep vs gqa: max |diff| out 0 dq 0.028 dk 0.00694 dv 0.0033; bitwise [True, False, False, False]

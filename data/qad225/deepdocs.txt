@@ -1,0 +1,16 @@
+calib (all)                                docs  4789 max  253163 >8k  149 >32k   31 >64k   10 >128k    8  tokens>32k  2209941  (of >32k: 8 golden-jlong)
+  pools214.json:fit                        docs   485 max   43689 >8k   11 >32k    2 >64k    0 >128k    0  tokens>32k    14906  (of >32k: 0 golden-jlong)
+  pools214.json:qad                        docs  2510 max  246898 >8k   69 >32k    8 >64k    2 >128k    2  tokens>32k   522423  (of >32k: 8 golden-jlong)
+  pools214.json:search                     docs   522 max  245774 >8k   16 >32k    2 >64k    2 >128k    2  tokens>32k   425437  (of >32k: 0 golden-jlong)
+  pools214.json:train214                   docs   416 max   19767 >8k   12 >32k    0 >64k    0 >128k    0  tokens>32k        0  (of >32k: 0 golden-jlong)
+  pools214.json:verify                     docs   856 max  253163 >8k   41 >32k   19 >64k    6 >128k    4  tokens>32k  1247175  (of >32k: 0 golden-jlong)
+  pools-v3.json:fit                        docs   551 max   43689 >8k   14 >32k    2 >64k    0 >128k    0  tokens>32k    14906  (of >32k: 0 golden-jlong)
+  pools-v3.json:qad                        docs  2799 max  246898 >8k   76 >32k    8 >64k    2 >128k    2  tokens>32k   522423  (of >32k: 8 golden-jlong)
+  pools-v3.json:search                     docs   583 max  245774 >8k   18 >32k    2 >64k    2 >128k    2  tokens>32k   425437  (of >32k: 0 golden-jlong)
+  pools-v3.json:verify                     docs   856 max  253163 >8k   41 >32k   19 >64k    6 >128k    4  tokens>32k  1247175  (of >32k: 0 golden-jlong)
+tr32k-b2-c0                                docs    63 max   32719 >8k   44 >32k    0 >64k    0 >128k    0  tokens>32k        0
+xc8k-b2-c0                                 docs   683 max    8192 >8k    0 >32k    0 >64k    0 >128k    0  tokens>32k        0
+xc8k-b2-c1                                 docs   702 max    8192 >8k    0 >32k    0 >64k    0 >128k    0  tokens>32k        0
+tr32k-b1                                   docs   142 max   32758 >8k  108 >32k    0 >64k    0 >128k    0  tokens>32k        0
+xc8k-b1                                    docs  3389 max    8192 >8k    0 >32k    0 >64k    0 >128k    0  tokens>32k        0
+xc8k-b2-c2                                 docs   741 max    8192 >8k    0 >32k    0 >64k    0 >128k    0  tokens>32k        0

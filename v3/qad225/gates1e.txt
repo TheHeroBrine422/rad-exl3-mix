@@ -1,0 +1,3 @@
+# G2 speed: pipeline two segments ahead (states on the cards); split 32 and 33
+w225-pipe32-a2 A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 4 --split-layers 32 --pipeline --state-card-gb 8
+w225-pipe33-a2 A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 4 --split-layers 33 --pipeline --state-card-gb 8
