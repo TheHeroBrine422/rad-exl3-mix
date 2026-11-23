@@ -219,6 +219,12 @@ class KVView:
         return KVView(k, v, self.n)
 
 
+def kv_room(need, cap):
+    """w226: a KV buffer's capacity for `need` positions: 1/8 headroom in 4,096-position steps, at most the document's length (cap); buffers grow
+    with the document (two 245k documents in flight at once would otherwise hold 2 x 8 GiB a card from their first segment)"""
+    return max(need, min(cap, -(-(need + need // 8) // 4096) * 4096))
+
+
 class SegCacheBuf(SegCache):
     """w225 (--split-layers / --state-card-gb / --depth-test): SegCache with each attention layer's carried K / V in one buffer per document
     (KVView, capacity cap = the document's length): a segment writes its own k / v after the carried prefix in place and attends to
@@ -226,10 +232,7 @@ class SegCacheBuf(SegCache):
     The attention's inputs and the carried values are bitwise SegCache's"""
     def __init__(self, prev=None, cap=0):
         super().__init__(dict(prev) if prev else None); self.cap = cap
-    def room(self, need):
-        """w226: a buffer's capacity grows with the document (1/8 headroom, 4,096-position steps, at most the document's length): two 245k
-        documents in flight at once would otherwise hold 2 x 8 GiB a card from their first segment"""
-        return max(need, min(self.cap, -(-(need + need // 8) // 4096) * 4096))
+    def room(self, need): return kv_room(need, self.cap)
     def update(self, k, v, l, *a, **kw):
         p = self.prev.get(("kv", l)); n = k.shape[2]
         P = p.n if p is not None else 0
@@ -992,12 +995,12 @@ class Trainer:
         return self.stu.dev_of[key[1]] if hasattr(self.stu, "dev_of") else self.stu.devs[0]
 
     def place(self, st):
-        """a stored state on its layers' cards: a KV buffer kept on its card with room for the document is used in place, a parked one is copied
-        into a new buffer of the document's capacity (stu.kv_cap)"""
+        """a stored state on its layers' cards: a KV buffer kept on its card is used in place (SegCacheBuf.update grows it when the segment needs
+        room), a parked one is copied into a buffer with room for the next segment (kv_room, at most the document's capacity stu.kv_cap)"""
         cap = self.stu.kv_cap; out = {}
         for key, v in st.items():
             dev = self.layer_dev(key)
-            if isinstance(v, KVView): out[key] = v if (v.device == dev and v.k.shape[2] >= cap) else v.to(dev, cap)
+            if isinstance(v, KVView): out[key] = v if v.device == dev else v.to(dev, kv_room(v.n + self.a.Q, cap))
             elif isinstance(v, tuple): out[key] = tuple(t.to(dev, non_blocking=True) for t in v)
             else: out[key] = v.to(dev, non_blocking=True)
         return out
@@ -1759,6 +1762,7 @@ def parser():
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
     ap.add_argument("--cap-keep", default=None, help="lead 11-23: JSON list of calib doc ids kept at --cap-keep-len tokens whatever --cap is (the long-context judge golden-jlong's docs, so its positions >= 8192 stay unseen)")
     ap.add_argument("--cap-keep-len", type=int, default=8192)
+    ap.add_argument("--expandable-segments", action="store_true", help="w226: torch's CUDA allocator with expandable segments (growing KV buffers of deep documents fragment the default allocator)")
     ap.add_argument("--lr-layers", default=None, help="lead 11-22: per-layer-range peak lr for the scales, e.g. 0-31:1e-4 (the schedule scales it like --lr; other layers --lr); a fresh run only (a fork's optimizer groups must match)")
     ap.add_argument("--clip-doc", type=float, default=0.0, help="lead 11-22: per-document (segment) gradient clipping at C x the running median per-row segment gradient norm (0 = off)")
     ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")
@@ -1829,6 +1833,7 @@ def main():
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:     # w225: the w225 segment loop covers the plain KL path only
         assert not (a.prompt_weight > 0 or a.local_mse or a.taps or a.lora or a.block_frac or a.make_taps or a.gate or a.profile or a.bench or a.check or a.tapcal), \
             "w225 switches: plain KL training only (no --prompt-weight / --local-mse / --taps / --lora / --block-frac / --make-taps / --gate / --profile / --bench / --check / --tapcal)"
+    if a.expandable_segments: torch.cuda.memory._set_allocator_settings("expandable_segments:True")
     if a.order_seed is not None: a.seed = a.order_seed          # #200: the data order (--seed and --order-seed are one switch)
     d = Dist()
     os.makedirs(a.out, exist_ok=True)
