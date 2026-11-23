@@ -9929,3 +9929,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **Per-document clipping (`--clip-doc 3`): negative** — CD25 0.5M 1.021 [0.996, 1.061] vs I25C, CD30 0.5M 1.037 [1.002, 1.075] vs I30C.
   **32k cap gate (cap32-test, 25 steps):** peak 30.56 GB (8k runs ~28), median 76.5 s / step (no slowdown; late steps 78–86 s) →
   feasible but tight (1.3 GB headroom on 31.86).
+- 11-23 12:05 AM CST: I25-lr1e-4-4M moved from box2 to iceman (after the step fork; extended-plan data is on iceman; iceman would otherwise idle from ~2:30 AM).
