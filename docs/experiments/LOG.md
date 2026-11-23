@@ -9939,3 +9939,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   endpoint at lr 3e-4.** The λ variants (running) finish the joint question; the MSE follow-ups (more taps, λ annealing, weighted MSE)
   lose their case unless the λ arms surprise.
 - 11-23 ~1 AM CST (user): tied front-half scales at lr 3e-4 queued next on box2 (TF25-128, TF25-16: --tie-groups G --tie-layers 0-31, to 2M with snapshots); the old T128 was at lr 1e-3 only. Ideas list: A7 (line search) demoted, A16 (Sophia-style) low.
+- 11-23 ~1:15 AM CST (user): plan — QAD across 2.0 / 2.5 / 3.0 / 3.5 / 4.0 / 4.5 (maybe 5.0) if gains hold; automatic lr drops wanted (CPU replay of a plateau controller on existing runs after the step fork lands; starting lr still from a short per-size screen); larger batches for ≥ 3.5 to test later. Recorded in qad-v31.md.

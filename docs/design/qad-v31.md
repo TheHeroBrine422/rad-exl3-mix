@@ -28,6 +28,12 @@ One page so the plan fits in a head. Details: LOG entries 11-21 / 11-22, BACKLOG
 5. Final recipe: [projected steps or best schedule] → short low-lr plain pass → keep-best floor → full V3.1 run on every size that
    gains, one verify read each.
 
+## Size ladder (user 11-23)
+Target sizes, if the gains hold: 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, maybe 5.0. Per size: a short starting-lr screen (0.25–0.5M at 2–3 lrs; the
+usable lr falls with size: 3e-4 at 2.5 / 3.0, ≤ 1e-4 at 4.0), then one long run with an automatic lr-drop controller (plateau rule on the
+paired fixed monitor + a random-walk detector on scale increments; validated first by CPU replay on existing runs). Open for ≥ 3.5:
+larger batches at equal rows (same compute per row; less noise per step where the signal is weakest).
+
 ## Budget rule (user 11-22)
 Run only as long as the question needs: if 0.5M can settle it, stop at 0.5M (a quarter of a 2M run). Go to 2M+ only for questions that are
 about length (plateaus, long schedules, the final recipe) or whose effect only shows late.
