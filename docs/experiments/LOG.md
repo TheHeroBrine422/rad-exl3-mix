@@ -10016,3 +10016,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   - Step fork's long-context read (JL-I25-step15 4M) landed (to analyse).
   - Long context: the step fork's 4M end (I25-step15) on golden-jlong 0.879 [0.729, 0.949], 72/74 docs better = the 2M control's 0.876 → the 1e-4 tail neither helps nor hurts deep context.
 - 11-23 ~4:05 PM CST (user: #1 priority): **w226 launched (Opus medium, 5b26f7a1, ≤12 h)**: deep-context QAD — (1) calib long docs outside verify and golden-jlong (search: ripgrep ~245k, cobra ~245k; fit: nemotron-swe ~43k / ~37k; other fit / search docs > 8k) added uncapped (V3.1 rule: fit + search may be trained on); (2) full-length (≤ 256k) bf16 goldens of our own session traces (TP4 on box2, never leave our machines); a 2-card queue kind; runs D256-25 (2.50, 3e-4 → 1e-4 at 1.5M, to 4M, cap 262144) and D256-30 with long-context reads. Brief `workers/instr3/w226.md`. Lead's miss: should have pushed the deep-data path while box2 idled from 12:21 PM.
+- 11-23 4:20 PM CST: **I25-step-10M curve (early reads on box2; 3e-4 → 1e-4 at 1.5M, extended plan).** j217 mean: sd-2M 0.849 · raw
+  3M 0.853 · sd-4M 0.867 · raw 5M 0.888 · sd-6M 0.844 · raw 7M 0.841 · sd-8M 0.847 · raw 9M 0.838 (mean noisy, ±2–3 %); **robust
+  columns keep improving slowly to 9M**: w/o blow-ups 0.881 → 0.876 → 0.869 → 0.869; median doc 0.946 → 0.935 → 0.934 → 0.927; share
+  improved 0.91 → 0.93. → the 1e-4 tail is still paying (~2 % on the median doc from 2M to 9M), no clear plateau.
+- 11-23 4:20 PM CST: w226's 3rd gate failure (OOM on card 1, 19.7 GiB by PyTorch + ~12 GB foreign) likely caused by the lead's 8 early
+  R reads: card 0 claimed the T2 gate at 4:09 while card 1 still ran a read until 4:11; w226 told (check that T2 waits for the partner).
