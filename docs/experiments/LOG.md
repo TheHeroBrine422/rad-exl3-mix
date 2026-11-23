@@ -9909,3 +9909,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   groups in parameter order so the optimizer index order is unchanged; fresh runs only; trainer 1f3ff0bf on both machines). Queued on
   box2 after CD30: gate `B lrlayers-test`, then LF25-1e4 (front 1e-4 / back 3e-4) and LF25-3e5 (front 3e-5 / back 3e-4), 2.50 to 2M vs
   I25-lr3e-4-2M (`v3/qadq/jobs.box2.lf.txt`).
+- 11-22 ~11:50 PM CST (user): **lc1 + table-QAD question** → draft brief `rad-local/workers/instr3/w224-draft.md` (value-remap probe: a trainable 64-knot piecewise-linear map per K ≤ 2 tensor / row-block, in-trainer KL vs scale-only; gate ~2 % → plan lc1 + table plane for V4). Not launched (user's go + model). Context: 2.5 container K share ≤ 2.0 = 14.8 % of trunk params; mean K by layer lowest at L10–18 (~1.9–2.2), highest L48–63 (2.6–3.3); lc1 = mad quality at K ≤ 2 (0.955 / 1.934 vs 0.951 / 1.932), decode 1.29 / 1.12× vs mad 1.41 / 1.24×.
