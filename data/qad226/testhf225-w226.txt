@@ -13,7 +13,7 @@ PASS --attn-gqa: pipeline = one card (same attention form) bit for bit  [(161.52
 PASS --depth-test 512: runs (pipeline = naive), KL differs from the default, carried K / V include the 512 synthetic positions  [(161.54793548583984, 167.0, 0.288340873460971, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0); kv n [640, 640, 640, 640]]
 
 ALL PASS
-=== growth forced (4,096 -> 8 position steps)
+=== growth forced (ladder base 4,096 -> 8 positions)
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
 default: [(161.5219268798828, 167.0, 0.28745117952464383, 0.0), (199.66445922851562, 201.0, 0.27604898497202124, 0.0), (174.1399917602539, 170.0, 0.2937400378732509, 0.0)]
 PASS defaults: this qad220 = /data/q27/w226/code/v3/qad220/qad220_prew226.py bit for bit (3 steps: KL sums, rows, gnorm, parameters)  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]

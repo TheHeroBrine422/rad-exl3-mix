@@ -219,10 +219,14 @@ class KVView:
         return KVView(k, v, self.n)
 
 
+KV_LADDER = sorted({-(-int(4096 * 2 ** (k / 2)) // 4096) * 4096 for k in range(40)})   # 4k, 8k, 12k, 16k, 24k, 32k, 48k, 64k, 92k, 128k, 184k, 256k, ..
+
+
 def kv_room(need, cap):
-    """w226: a KV buffer's capacity for `need` positions: 1/8 headroom in 4,096-position steps, at most the document's length (cap); buffers grow
+    """w226: a KV buffer's capacity for `need` positions: the next rung of a sqrt(2) ladder (few distinct sizes, so the caching allocator reuses
+    freed buffers: 1/8-step growth fragmented it; torch's expandable segments fail on ROCm here), at most the document's length (cap). Buffers grow
     with the document (two 245k documents in flight at once would otherwise hold 2 x 8 GiB a card from their first segment)"""
-    return max(need, min(cap, -(-(need + need // 8) // 4096) * 4096))
+    return max(need, min(cap, next(r for r in KV_LADDER if r >= need)))
 
 
 class SegCacheBuf(SegCache):
@@ -1762,7 +1766,7 @@ def parser():
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
     ap.add_argument("--cap-keep", default=None, help="lead 11-23: JSON list of calib doc ids kept at --cap-keep-len tokens whatever --cap is (the long-context judge golden-jlong's docs, so its positions >= 8192 stay unseen)")
     ap.add_argument("--cap-keep-len", type=int, default=8192)
-    ap.add_argument("--expandable-segments", action="store_true", help="w226: torch's CUDA allocator with expandable segments (growing KV buffers of deep documents fragment the default allocator)")
+    ap.add_argument("--expandable-segments", action="store_true", help="w226: torch's CUDA allocator with expandable segments (fails on box2's ROCm: memory mapping OOM while building the student; kept for CUDA)")
     ap.add_argument("--lr-layers", default=None, help="lead 11-22: per-layer-range peak lr for the scales, e.g. 0-31:1e-4 (the schedule scales it like --lr; other layers --lr); a fresh run only (a fork's optimizer groups must match)")
     ap.add_argument("--clip-doc", type=float, default=0.0, help="lead 11-22: per-document (segment) gradient clipping at C x the running median per-row segment gradient norm (0 = off)")
     ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")
