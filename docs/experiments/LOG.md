@@ -9922,3 +9922,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   steps 1–3; lrlayers-test 360 vectors at lr × 1/3, 360 at × 1. cap32-test at step 14: peak 29.1 GB, 70–75 s / step (deep segments
   not reached yet).
 - 11-22 10:45 PM CST: the three long wildchat docs that 3.00 QAD worsens (I30-lin 1M): **uniform degradation, not a derailment** — healed KL ~1.5–3× the unhealed in most eighths of their deep parts (e.g. 16,384-token chat: 0.015/0.038, 0.068/0.089, 0.072/0.178, 0.005/0.012, …). Likely scales tuned on ≤ 8k contexts behaving worse in long conversational context → lifting the cap is the direct fix; golden-jlong becomes a standard read for every finalist.
+- 11-22 11:30 PM CST: **2.50 lr 3e-4 constant to 4M (iceman, extended plan) — plateaus by ~1.5M on the mean.** j217 raw snapshots:
+  0.25 0.988 · 0.5 0.898 · 0.75 0.907 · 1M 0.867 · 1.5M 0.850 · 2M 0.851 · 2.5M 0.844 · 3M 0.855 · 3.5M 0.853; decayed points 0.25 0.968 ·
+  0.5 0.907 · 1M 0.878 · 2M 0.851 · 4M 0.858. Robust columns still creep down (w/o blow-ups 0.885 → 0.871, median doc 0.949 → 0.935
+  from 1.5M to 3.5M); the decay buys nothing at 2M / 4M on j217 here. The step fork (1e-4 from 1.5M to 4M) now runs on iceman.
+  **Per-document clipping (`--clip-doc 3`): negative** — CD25 0.5M 1.021 [0.996, 1.061] vs I25C, CD30 0.5M 1.037 [1.002, 1.075] vs I30C.
+  **32k cap gate (cap32-test, 25 steps):** peak 30.56 GB (8k runs ~28), median 76.5 s / step (no slowdown; late steps 78–86 s) →
+  feasible but tight (1.3 GB headroom on 31.86).
