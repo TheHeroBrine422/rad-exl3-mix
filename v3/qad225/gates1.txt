@@ -1,0 +1,5 @@
+# G0 default identity (one card, new trainer, no new flag) vs I25C steps 1-3; G1 naive split; G2 pipeline (+ speed); the long-context form (gqa, states on the cards)
+w225-def B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 3
+w225-split32 A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 3 --split-layers 32
+w225-pipe32 A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 4 --split-layers 32 --pipeline
+w225-pipe32-gqa A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 4 --split-layers 32 --pipeline --attn-gqa --state-card-gb 6

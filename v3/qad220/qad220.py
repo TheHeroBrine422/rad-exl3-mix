@@ -62,7 +62,7 @@ budget. Ranks hold their streams; grads are summed with gloo; every rank takes t
 OUT/state.pt resumes (main state + step; branches restart from their fork); OUT/train.jsonl per step;
 OUT/ckpt-<T>/params.pt + scales/<key>.safetensors (rxq.swj apply_level's format) + mon.json.
 --gate: decode / segment-carry exactness and timing on one card, then exit."""
-import argparse, hashlib, json, math, os, re, sys, time
+import argparse, collections, contextlib, hashlib, json, math, os, re, sys, time
 from fractions import Fraction
 
 import numpy as np
@@ -203,10 +203,60 @@ class SegCache:
         return k, v
 
 
+class KVView:
+    """w225: an attention layer's carried K / V in a preallocated buffer [1, kv heads, capacity, head dim] shared by a document's segments;
+    the first n positions are valid"""
+    __slots__ = ("k", "v", "n")
+    def __init__(self, k, v, n): self.k, self.v, self.n = k, v, n
+    @property
+    def device(self): return self.k.device
+    def nbytes(self): return 2 * self.k.numel() * self.k.element_size()
+    def to(self, dev, cap=0):
+        """a copy on dev in a buffer of max(cap, n) positions (cap 0: just the valid part, the CPU park)"""
+        sh = list(self.k.shape); sh[2] = max(cap, self.n)
+        k = torch.empty(sh, dtype=self.k.dtype, device=dev); v = torch.empty(sh, dtype=self.v.dtype, device=dev)
+        k[:, :, :self.n].copy_(self.k[:, :, :self.n]); v[:, :, :self.n].copy_(self.v[:, :, :self.n])
+        return KVView(k, v, self.n)
+
+
+class SegCacheBuf(SegCache):
+    """w225 (--split-layers / --state-card-gb / --depth-test): SegCache with each attention layer's carried K / V in one buffer per document
+    (KVView, capacity cap = the document's length): a segment writes its own k / v after the carried prefix in place and attends to
+    cat(buffer[:P], k) (a one-layer transient), so the prefix is held once (SegCache's cat kept it twice: the previous state and the new one).
+    The attention's inputs and the carried values are bitwise SegCache's"""
+    def __init__(self, prev=None, cap=0):
+        super().__init__(dict(prev) if prev else None); self.cap = cap
+    def update(self, k, v, l, *a, **kw):
+        p = self.prev.get(("kv", l)); n = k.shape[2]
+        P = p.n if p is not None else 0
+        if p is None:
+            sh = list(k.shape); sh[2] = max(self.cap, n)
+            p = KVView(torch.empty(sh, dtype=k.dtype, device=k.device), torch.empty(sh, dtype=v.dtype, device=v.device), 0)
+            self.prev[("kv", l)] = p
+        elif p.k.shape[2] < P + n or p.device != k.device:
+            p = p.to(k.device, max(self.cap, P + n)); self.prev[("kv", l)] = p
+        with torch.no_grad():                    # idempotent under the checkpoint's recompute (same positions, same values)
+            p.k[:, :, P:P + n].copy_(k.detach()); p.v[:, :, P:P + n].copy_(v.detach())
+        self.next[("kv", l)] = KVView(p.k, p.v, P + n)
+        if P == 0: return k, v
+        return torch.cat([p.k[:, :, :P], k], -2), torch.cat([p.v[:, :, :P], v], -2)
+
+
+def devctx(dev):
+    """w225: make dev the current device (raw Triton kernels launch on the current device, not their tensors')"""
+    return torch.cuda.device(dev) if dev.type == "cuda" else contextlib.nullcontext()
+
+
+ATTN_GQA = [False]              # w225 --attn-gqa
+
+
 def seg_attention(module, q, k, v, attention_mask, dropout=0.0, scaling=None, **kw):
     """sdpa for a segment after a prefix: query i (absolute P + i) sees keys 0 .. P + i (lower-right causal)"""
     from torch.nn.attention.bias import causal_lower_right
     L, S = q.shape[2], k.shape[2]
+    if ATTN_GQA[0]:             # w225: the KV heads shared in the kernel (no 6x repeated K / V: 2 GiB instead of 12 GiB a layer at 256k; forward bitwise, backward rounding-level)
+        o = F.scaled_dot_product_attention(q, k, v, attn_mask=None if S == L else causal_lower_right(L, S), is_causal=S == L, scale=scaling, enable_gqa=True)
+        return o.transpose(1, 2).contiguous(), None
     rep = q.shape[1] // k.shape[1]
     if rep > 1: k, v = k.repeat_interleave(rep, 1), v.repeat_interleave(rep, 1)
     if S == L: o = F.scaled_dot_product_attention(q, k, v, is_causal=True, scale=scaling)
@@ -228,14 +278,16 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     a SegCache.next of the segment before, or None at a = 0); returns (h, next state); with taps (layer indices) also
     {layer: its output [1, n, H]}; w220 loc (a LocalMSE): the same third value for loc's layers, and in mode "local" those layers
     are cut out of the KL's graph (input and output detached: they train on their own MSE only)"""
+    if getattr(stu, "split", 0): return run_segment_split(stu, ids, a, prev, ckpt, taps, loc)
     q35 = stu.q35
     dev = stu.devs[0]
     assert len(stu.devs) == 1, "qad181: one card a student"
     x = stu.embed(ids)
     n = x.shape[1]
-    pid = torch.arange(a, a + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
+    o = a + getattr(stu, "pos_off", 0)                  # w225 --depth-test: positions after the synthetic prefix
+    pid = torch.arange(o, o + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
     pe = stu.rotary[dev](x, pid[1:])
-    cache = SegCache(prev); tp = {}; lo = {}
+    cache = (SegCacheBuf(prev, getattr(stu, "kv_cap", 0)) if getattr(stu, "kvbuf", False) else SegCache(prev)); tp = {}; lo = {}
     ft = getattr(stu, "first_train", 0)                  # w220: layers before the first trainable one run once, no autograd
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
@@ -251,6 +303,51 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     if taps is not None: return stu.fnorm(x)[0], cache.next, tp
     if loc is not None: return stu.fnorm(x)[0], cache.next, lo
     return stu.fnorm(x)[0], cache.next
+
+
+def run_half(stu, x, a, cache, lo, hi, ckpt=True):
+    """w225 (--split-layers): decoder layers lo .. hi - 1 on x [1, n, H] (on those layers' card) for tokens a .. a + n - 1 (+ the --depth-test
+    offset), as run_segment's loop (layers before the first trainable one under no_grad, the rest checkpointed); returns the last output"""
+    dev = x.device; n = x.shape[1]; o = a + getattr(stu, "pos_off", 0)
+    pid = torch.arange(o, o + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
+    pe = stu.rotary[dev](x, pid[1:])
+    ft = getattr(stu, "first_train", 0)
+    for i in range(lo, hi):
+        ly = stu.layers[i]
+        kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
+        if i < ft and torch.is_grad_enabled():
+            with torch.no_grad(): x = ly(x, **kw)
+        elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+        else: x = ly(x, **kw)
+    return x
+
+
+def run_segment_split(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
+    """w225 --split-layers K: run_segment over two cards as one connected graph (the naive split): the token table and layers 0 .. K - 1 on
+    devs[0], layers K .. end and the final norm on devs[1]; the hidden state crosses once (its gradient once back), each layer's carried
+    state lives on its card. Returns (final-norm hidden states [n, H] on devs[1], next state)"""
+    assert taps is None and loc is None, "--split-layers: no taps / local MSE"
+    A, B, K = stu.devs[0], stu.devs[-1], stu.split
+    cache = SegCacheBuf(prev, getattr(stu, "kv_cap", 0))
+    with devctx(A): x = run_half(stu, stu.embed(ids), a, cache, 0, K, ckpt)
+    with devctx(B):
+        x = run_half(stu, x.to(B), a, cache, K, len(stu.layers), ckpt); h = stu.fnorm(x)[0]
+    return h, cache.next
+
+
+def seg_kl(stu, gold, i, a, b, h, ch=256):
+    """w225 (--pipeline): seg_loss's KL sum and rows from the final-norm hidden states h [n, H] of tokens a .. b - 1 of document i"""
+    j, r = gold.scored(i, a, b)
+    if len(j) == 0: return torch.zeros((), device=h.device), 0
+    dev = h.device
+    h = h[torch.from_numpy(j - a).to(dev)]
+    tid, tlp, ptail = gold.targets(r, dev)
+    if stu.v2row is not None: tid = stu.v2row[tid]
+    tot = 0.0
+    for c in range(0, len(j), ch):
+        args = (h[c:c + ch], stu.head, tid[c:c + ch], tlp[c:c + ch], ptail[c:c + ch])
+        tot = tot + (checkpoint(chunk_kl, *args, use_reentrant=False) if torch.is_grad_enabled() else chunk_kl(*args))
+    return tot, len(j)
 
 
 def tap_mse(tp, tt, jj):
@@ -422,9 +519,9 @@ def to_dev(st, dev): return {k: (tuple(t.to(dev, non_blocking=True) for t in v) 
 
 
 @torch.no_grad()
-def prefix_state(stu, g, it, a, L):
-    """the state after tokens 0 .. a - 1 of a document, by no-grad segments of <= L tokens"""
-    gi, i = it; st = None; p = 0
+def prefix_state(stu, g, it, a, L, st0=None):
+    """the state after tokens 0 .. a - 1 of a document, by no-grad segments of <= L tokens (w225 st0: the state before token 0, --depth-test)"""
+    gi, i = it; st = st0; p = 0
     while p < a:
         q = min(a, p + L); _, st = run_segment(stu, g[gi].ids(i, p, q), p, st, ckpt=False); p = q
     return st
@@ -780,6 +877,7 @@ class Trainer:
             self.fmask = torch.cat(parts)
         self.mine = [s for s in range(a.V) if s % dist.world == dist.rank]
         self.states = {}                                     # stream -> (item index, offset, state on CPU)
+        self.w225 = bool(getattr(stu, "split", 0) or getattr(stu, "kvbuf", False))     # w225: split / buffered-KV segment loop (run_segs_w225)
         tags = sorted(set(C.tags)); self.tags = tags; self.tix = {t: k for k, t in enumerate(tags)}
 
     def step_rows(self, s): return sum(self.rows_of[(it, a_, b_)] for st in self.steps[s] for (it, a_, b_) in st)
@@ -815,7 +913,7 @@ class Trainer:
         acc = torch.zeros(2 * len(self.tags) + 2, dtype=torch.float64)      # per tag (KL, rows), T term sum, prefix tokens
         t0 = time.time()
         self.nclip_doc = 0
-        for s, sid in [(s_, q_) for s_ in ss for q_ in self.mine]:
+        for s, sid in ([] if self.w225 else [(s_, q_) for s_ in ss for q_ in self.mine]):
             for (it, sa, sb) in self.steps[s][sid]:
                 gi, i = self.C.items[it][0], self.C.items[it][1]
                 prev = None
@@ -841,6 +939,7 @@ class Trainer:
                 if sb < n_doc: self.states[sid] = (it, sb, to_cpu(nxt))
                 else: self.states.pop(sid, None)
                 del prev, nxt
+        if self.w225: self.run_segs_w225(ss, N, acc)
         flat = torch.cat([(p.grad if p.grad is not None else torch.zeros_like(p)).reshape(-1).double().cpu() for p in self.P] + [acc])
         self.d.allsum(flat)
         if self.fmask is not None: flat[:len(self.fmask)] *= self.fmask         # w220 --mask: masked scales get gradient 0
@@ -855,7 +954,7 @@ class Trainer:
         for p, il in zip(self.P, self.is_lo):
             n = p.numel()
             if il: p.grad = None; self.lo_m[k].grad = flat[o:o + n].view_as(p).float(); k += 1
-            else: p.grad = flat[o:o + n].view_as(p).to(self.dev, torch.float32)
+            else: p.grad = flat[o:o + n].view_as(p).to(p.device, torch.float32)
             o += n
         accs = flat[o:]
         self.opt.step()
@@ -869,6 +968,150 @@ class Trainer:
         return accs, time.time() - t0
 
     def run_step(self, s, lr): return self.run_group([s], lr)
+
+    # ---------------------------------------------------------------- w225: layer split, buffered KV, depth test
+    def layer_dev(self, key):
+        return self.stu.dev_of[key[1]] if hasattr(self.stu, "dev_of") else self.stu.devs[0]
+
+    def place(self, st):
+        """a stored state on its layers' cards: a KV buffer kept on its card with room for the document is used in place, a parked one is copied
+        into a new buffer of the document's capacity (stu.kv_cap)"""
+        cap = self.stu.kv_cap; out = {}
+        for key, v in st.items():
+            dev = self.layer_dev(key)
+            if isinstance(v, KVView): out[key] = v if (v.device == dev and v.k.shape[2] >= cap) else v.to(dev, cap)
+            elif isinstance(v, tuple): out[key] = tuple(t.to(dev, non_blocking=True) for t in v)
+            else: out[key] = v.to(dev, non_blocking=True)
+        return out
+
+    @staticmethod
+    def st_bytes(st):
+        out = {}
+        for v in st.values():
+            for t in ((v.k, v.v) if isinstance(v, KVView) else v if isinstance(v, tuple) else (v,)):
+                out[t.device] = out.get(t.device, 0) + t.numel() * t.element_size()
+        return out
+
+    def resident(self, skip=None):
+        """bytes of the carried states kept on each card (KV buffers at capacity)"""
+        used = {}
+        for s2, (_, _, st2) in self.states.items():
+            if s2 == skip: continue
+            for d_, b_ in self.st_bytes(st2).items():
+                if d_.type != "cpu": used[d_] = used.get(d_, 0) + b_
+        return used
+
+    def park(self, sid, nxt):
+        """--state-card-gb G: keep a stream's next state on its cards when every card's kept states stay within G GiB, else park it on the CPU
+        (KV compacted to its valid part). G = 0: always park (today's CPU park)"""
+        G = getattr(self.a, "state_card_gb", 0.0) * 2**30
+        if G > 0:
+            used = self.resident(skip=sid)
+            if all(d_.type == "cpu" or used.get(d_, 0) + b_ <= G for d_, b_ in self.st_bytes(nxt).items()): return nxt
+        return {k: (v.to(torch.device("cpu")) if isinstance(v, KVView) else tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu())
+                for k, v in nxt.items()}
+
+    def synth(self):
+        """--depth-test D: the state before a document's token 0 = D synthetic positions: zero K / V in every attention layer (on its card, in a
+        buffer of the document's capacity), the GDN layers empty"""
+        stu = self.stu; cfg = stu.cfg; D_ = stu.pos_off; out = {}
+        for l, t in enumerate(cfg.layer_types[:len(stu.layers)]):
+            if t != "full_attention": continue
+            k = torch.zeros(1, cfg.num_key_value_heads, max(stu.kv_cap, D_), cfg.head_dim, dtype=BF, device=self.layer_dev(("kv", l)))
+            out[("kv", l)] = KVView(k, torch.zeros_like(k), D_)
+        return out
+
+    def state_in(self, sid, it, sa, acc):
+        """the carried state of stream sid's segment starting at sa, on its layers' cards: the stored one, else a no-grad rebuild over the prefix
+        (counted in acc[-1]); at a document's start None (--depth-test: the synthetic prefix)"""
+        stu = self.stu
+        st0 = self.synth() if getattr(stu, "pos_off", 0) else None
+        if sa == 0: return st0
+        k = self.states.get(sid)
+        if k is not None and k[0] == it and k[1] == sa: return self.place(k[2])
+        acc[-1] += sa
+        return prefix_state(stu, self.C.g, tuple(self.C.items[it][:2]), sa, self.a.len, st0)
+
+    def state_out(self, sid, it, sb, n_doc, nxt):
+        if sb < n_doc: self.states[sid] = (it, sb, self.park(sid, nxt))
+        else: self.states.pop(sid, None)
+
+    def run_segs_w225(self, ss, N, acc):
+        """the segment loop of run_group for --split-layers (naive split: one connected graph over both cards), --state-card-gb and --depth-test
+        (buffered KV, states kept on the cards); --pipeline: run_pipe. Same segments, order, losses and state carry as the default loop"""
+        a, stu = self.a, self.stu
+        assert not (a.prompt_weight > 0 or self.loc is not None or self.tap is not None), "w225 loop: no --prompt-weight / --local-mse / taps"
+        work = [(sid, it, sa, sb) for s_ in ss for sid in self.mine for (it, sa, sb) in self.steps[s_][sid]]
+        if getattr(a, "pipeline", False): self.run_pipe(work, N, acc); stu.kv_cap = 0; return
+        for sid, it, sa, sb in work:
+            gi, i, n_doc = self.C.items[it][:3]
+            snap = [None if p.grad is None else p.grad.detach().clone() for p in self.P] if a.clip_doc > 0 else None
+            stu.kv_cap = n_doc + getattr(stu, "pos_off", 0)
+            prev = self.state_in(sid, it, sa, acc)
+            with devctx(stu.devs[-1]):
+                kl, m, nxt = seg_loss(stu, self.C.g, (gi, i), sa, sb, prev)
+                if m: (kl / N).backward()
+            if snap is not None and m: self.clip_seg(snap, m, N)
+            t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+            self.state_out(sid, it, sb, n_doc, nxt)
+            del prev, nxt
+        stu.kv_cap = 0
+
+    def run_pipe(self, work, N, acc):
+        """--pipeline (with --split-layers): the filled two-card pipeline over a step's segments. Card A (this thread) runs segment j's first half
+        forward while card B (a worker thread) runs segment j - 1's second half forward + loss + backward; then A runs j - 1's first-half backward
+        seeded with the hidden-state gradient B sent back. The graph is the naive split's cut at the card boundary (B's input = A's output
+        detached), each card accumulates its parameters' gradients in segment order, and states / losses are booked in segment order, so the
+        step equals the naive split's bit for bit"""
+        import queue, threading
+        stu, a = self.stu, self.a
+        A, B, K, NL = stu.devs[0], stu.devs[-1], stu.split, len(stu.layers)
+        assert a.clip_doc == 0, "--pipeline: no --clip-doc"
+        qb, qg = queue.Queue(), queue.Queue()
+        def side_b():
+            try:
+                if B.type == "cuda": torch.cuda.set_device(B)
+                while True:
+                    job = qb.get()
+                    if job is None: return
+                    j, hA, prevB, gi, i, sa, sb, cap = job
+                    xB = hA.detach().to(B)
+                    if hA.requires_grad: xB.requires_grad_(True)
+                    cache = SegCacheBuf(prevB, cap)
+                    h = stu.fnorm(run_half(stu, xB, sa, cache, K, NL))[0]
+                    kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, h)
+                    if m: (kl / N).backward()
+                    qg.put((j, xB.grad if (m and hA.requires_grad) else None, float(kl), m, cache.next))
+                    del job, hA, xB, h, kl, cache, prevB
+            except BaseException as e:
+                qg.put((None, e))
+        th = threading.Thread(target=side_b, name="w225-card-B", daemon=True); th.start()
+        pend = collections.deque()
+        def finish():
+            j, sid, it, sb, n_doc, gi, hA, cacheA = pend.popleft()
+            r = qg.get()
+            if r[0] is None: raise r[1]
+            assert r[0] == j, (r[0], j)
+            _, gx, kl, m, nxtB = r
+            if gx is not None: hA.backward(gx.to(A))
+            t = self.tix[self.C.tags[gi]]; acc[2 * t] += kl; acc[2 * t + 1] += m
+            self.state_out(sid, it, sb, n_doc, {**cacheA.next, **nxtB})
+        try:
+            with devctx(A):
+                for j, (sid, it, sa, sb) in enumerate(work):
+                    while any(p_[1] == sid for p_ in pend): finish()     # the stream's previous segment (its state) first (--accum, V = 1)
+                    gi, i, n_doc = self.C.items[it][:3]
+                    cap = n_doc + getattr(stu, "pos_off", 0); stu.kv_cap = cap
+                    prev = self.state_in(sid, it, sa, acc) or {}
+                    pa = {k: v for k, v in prev.items() if k[1] < K}; pb = {k: v for k, v in prev.items() if k[1] >= K}
+                    cacheA = SegCacheBuf(pa, cap)
+                    hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
+                    qb.put((j, hA, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA))
+                    del prev, pa, pb, hA, cacheA
+                    if len(pend) > 1: finish()
+                while pend: finish()
+        finally:
+            qb.put(None); th.join()
 
     def snapshot(self):
         import copy
@@ -1080,7 +1323,8 @@ def build_student(a, dev, log, lora=None, layers=None, quant_layers=None, served
         t1 = time.time(); devs = dev if isinstance(dev, list) else [dev]
         stu = qmodel.Student(a.model, a.level, devs, log=log, head_dir=a.head if served else None,
                              head_perm=a.head_perm if served else None, lora=a.lora if lora is None else lora,
-                             layers=layers, quant_layers=quant_layers, head_train={"none": False, "in": "in", "both": True}[getattr(a, "head_train", "none")] if served else False)
+                             layers=layers, quant_layers=quant_layers, head_train={"none": False, "in": "in", "both": True}[getattr(a, "head_train", "none")] if served else False,
+                             split=getattr(a, "split_layers", 0))
         log(f"student built in {time.time() - t1:.0f} s: {len(stu.qlin)} linears ({stu.cb}, {sum(q.exact for q in stu.qlin.values())} "
             f"int8-exact), {sum(p.numel() for p in stu.P.values())} values, alloc {torch.cuda.memory_allocated(devs[0]) / 2**30:.2f} GiB")
     finally:
@@ -1506,6 +1750,11 @@ def parser():
     ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
     ap.add_argument("--no-frozen-prefix", action="store_true", help="w220 (test / benchmark switch): do not skip the backward of the layers before the first trainable one (the old full path, same trainable set)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
+    ap.add_argument("--split-layers", type=int, default=0, help="w225: two cards, one process: the token table and layers 0..K-1 on the first visible card, layers K..63 + final norm + head on the second; carried KV in per-document buffers, each layer's state on its card (0 = off: one card)")
+    ap.add_argument("--pipeline", action="store_true", help="w225 (with --split-layers): the filled pipeline (card A runs segment j's first half while card B runs segment j-1's second half); bit for bit the naive split")
+    ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
+    ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
+    ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")
     return ap
 
 
@@ -1537,6 +1786,10 @@ def gradnoise(a, T, d, log):
 def main():
     a = parser().parse_args()
     if a.a8_int8: a.a8 = True
+    if a.pipeline: assert a.split_layers, "--pipeline needs --split-layers"
+    if a.split_layers or a.state_card_gb > 0 or a.depth_test:     # w225: the w225 segment loop covers the plain KL path only
+        assert not (a.prompt_weight > 0 or a.local_mse or a.taps or a.lora or a.block_frac or a.make_taps or a.gate or a.profile or a.bench or a.check or a.tapcal), \
+            "w225 switches: plain KL training only (no --prompt-weight / --local-mse / --taps / --lora / --block-frac / --make-taps / --gate / --profile / --bench / --check / --tapcal)"
     if a.order_seed is not None: a.seed = a.order_seed          # #200: the data order (--seed and --order-seed are one switch)
     d = Dist()
     os.makedirs(a.out, exist_ok=True)
@@ -1580,10 +1833,19 @@ def main():
                "warmup": a.warmup, "opt_steps": NU, "order_seed": a.seed}, open(os.path.join(a.out, "plan.json"), "w"))
     lr_at = make_lr(a, cum, last, fork_last, k0, N)             # w220: the lr of the optimizer step starting at plan step s
     dev = f"cuda:{d.local}"; torch.cuda.set_device(dev)
+    if a.split_layers:                                          # w225: one process, two cards (the main thread's current card is the second: loss, head)
+        assert d.world == 1 and torch.cuda.device_count() >= 2, "--split-layers: one process with two visible cards"
+        dev = ["cuda:0", "cuda:1"]; torch.cuda.set_device("cuda:1")
     for grp in range(0, d.world, a.build_group):                # ranks build in groups (each build holds the decoded trunk in host RAM once)
         if grp <= d.rank < grp + a.build_group: stu = build_student(a, dev, lambda s: log(s, True))
         d.barrier()
     apply196(a, stu, log)
+    ATTN_GQA[0] = a.attn_gqa                                     # w225
+    if a.split_layers or a.state_card_gb > 0 or a.depth_test:
+        stu.split = a.split_layers; stu.kvbuf = True; stu.pos_off = a.depth_test; stu.kv_cap = 0
+        log(f"w225: split {a.split_layers}" + (f" (layers 0-{a.split_layers - 1} on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB, "
+            f"{a.split_layers}-{len(stu.layers) - 1} + head on {stu.devs[1]}: {torch.cuda.memory_allocated(stu.devs[1]) / 2**30:.2f} GiB)" if a.split_layers else "")
+            + f", pipeline {a.pipeline}, states kept on the cards up to {a.state_card_gb} GiB each, attention gqa {a.attn_gqa}, depth test {a.depth_test}")
     if a.export_only:
         o = os.path.join(a.out, f"ckpt-{budgets[-1]:.0e}")
         if d.rank == 0:
@@ -1669,6 +1931,10 @@ def main():
         if tap is not None: rec["tap_row"] = float(accs[-2]) / max(1, rows)
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
+        if a.split_layers: rec["peak_gib_b"] = round(torch.cuda.max_memory_allocated(stu.devs[1]) / 2**30, 2)    # w225: the second card
+        if T.w225:
+            rec["states_gib"] = {str(k_): round(v_ / 2**30, 2) for k_, v_ in T.resident().items()}
+            rec["rss_gib"] = round(int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30, 2)
         rec["accum"] = N; rec["gnorm"] = round(T.gnorm, 6) if hasattr(T, "gnorm") else None
         if a.clip_doc > 0: rec["clip_doc"] = T.nclip_doc
         if a.clip_gnorm > 0:
@@ -1693,7 +1959,7 @@ def main():
     if forked: st.pop("pema", None)                                   # a fork starts its own averages
     for e_d in ema_ds:
         k = f"{e_d:g}"
-        if st.get("pema") and k in st["pema"]: PE[k] = [st["pema"][k][0], [t.to(T.dev) for t in st["pema"][k][1]]]
+        if st.get("pema") and k in st["pema"]: PE[k] = [st["pema"][k][0], [t.to(p.device) for t, p in zip(st["pema"][k][1], T.P)]]
         else: PE[k] = [0, [torch.zeros(p.shape, dtype=torch.float32, device=p.device) for p in T.P]]
     def ema_ckpt(rows, s_):
         """write each parameter EMA (bias-corrected: the weighted average of the main-run states since the start / fork) as a checkpoint"""

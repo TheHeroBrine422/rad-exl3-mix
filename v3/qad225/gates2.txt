@@ -1,0 +1,4 @@
+# G3 memory at depth (--depth-test: every document after D synthetic positions; documents <= 8k, so depth D .. D + 8k); 2 streams: one kept on the cards, one parked when they do not both fit
+w225-d64k A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 2 --fixed-eval 0 --V 2 --split-layers 32 --pipeline --attn-gqa --state-card-gb 9 --depth-test 65536
+w225-d128k A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 2 --fixed-eval 0 --V 2 --split-layers 32 --pipeline --attn-gqa --state-card-gb 9 --depth-test 131072
+w225-d256k A,B 2.50 2.5e5,5e5,1e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --max-steps 2 --fixed-eval 0 --V 2 --split-layers 32 --pipeline --attn-gqa --state-card-gb 9 --depth-test 253952

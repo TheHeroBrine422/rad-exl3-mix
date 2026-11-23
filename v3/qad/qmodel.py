@@ -180,7 +180,7 @@ class Student:
     the stored order; head_perm (stored row s = vocab head_perm[s], R16.npy) maps the targets' vocab ids to stored rows
     (.v2row); head_train: its r / c trainable (arm H; w222: "in" = only r, the 5,120 hidden-side scales). lora: rank of the adapters on every trunk QLinear (arm L)."""
     def __init__(self, model_dir, level_dir, devs, layers=None, norms=False, gauge=True, teacher=False, quant_layers=None, log=print,
-                 head_dir=None, head_perm=None, head_train=False, lora=0):
+                 head_dir=None, head_perm=None, head_train=False, lora=0, split=0):
         from safetensors import safe_open
         from transformers import AutoConfig
         import transformers.models.qwen3_5.modeling_qwen3_5 as q35
@@ -197,6 +197,9 @@ class Student:
         self.devs = [torch.device(d) for d in devs]
         nd = len(self.devs)
         self.dev_of = [self.devs[min(nd - 1, i * nd // self.NL)] for i in range(self.NL)]
+        if split:                                                       # w225: layers 0 .. split-1 on devs[0], the rest (+ final norm, head) on devs[1]
+            assert nd == 2 and 0 < split < self.NL, (devs, split)
+            self.dev_of = [self.devs[0] if i < split else self.devs[1] for i in range(self.NL)]
         self.lev = deq.Level(level_dir, "cpu")
         self.cb = self.lev.codebook
         self.tables = {d: torch.from_numpy(deq.lut(self.cb)).to(d) for d in self.devs}
