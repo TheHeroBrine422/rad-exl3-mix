@@ -8,23 +8,23 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 
 | # | idea | status | result / note |
 |---|---|---|---|
-| A1 | lr sweep (1e-3 / 3e-4 / 1e-4) | done; 4M curves running | 2.5: 3e-4 best (0.842 @ 2M), 1e-4 0.861–0.866 @ 2M, 1e-3 drifts. 3.0: 3e-4 noisy. 4.0: only 1e-4 is stable (~1 % gain). 3e-4 / 1e-4 to 4M at 2.5 running |
+| A1 | lr sweep (1e-3 / 3e-4 / 1e-4) | done; 4M curves running | 11-23: 3e-4 constant plateaus at ~0.85 from 1.5M (4M run); 1e-4 to 4M and the 1.5M→1e-4 step fork pending.  2.5: 3e-4 best (0.842 @ 2M), 1e-4 0.861–0.866 @ 2M, 1e-3 drifts. 3.0: 3e-4 noisy. 4.0: only 1e-4 is stable (~1 % gain). 3e-4 / 1e-4 to 4M at 2.5 running |
 | A2 | low-rank projected scale steps (GaLore-style) | dead | w218: held-out share ≈ 0 at 100k–500k rows; directions don't transfer |
 | A3 | late layers only (32–63 / 48–63) | dead | worse at 2.5 (0.93 vs 0.89 @ 0.5M), tie at 3.0, null at 4.0 |
 | A4 | signal-masked scales (3-SE mask) | dropped | would freeze the front half, which A3 shows still gains from training |
 | A5 | tied scales in the front half (128-groups) | inconclusive | tested only at lr 1e-3 (0.939 [0.83, 1.02] vs a blow-up control); a 0.5M retest at 3e-4 is cheap |
 | A6 | gradient clipping + β2 0.99 | done, null | clip ties at 2.5 / 3.0 / 4.0; β2 was always 0.99 |
-| A7 | curvature line search (step = −g·d / dᵀHd along Adam's update) | backlog (user: tomorrow) | ~10–30 % per step |
+| A7 | curvature line search (step = −g·d / dᵀHd along Adam's update) | demoted (11-23) | mostly an automatic lr schedule; with noise-dominated gradients the curvature estimate on a small batch is itself noisy; the schedule tests cover the same ground |
 | A8 | low-rank + diagonal Fisher preconditioner | dropped | the low-rank part is dead (A2); the diagonal part is Adam's v |
 | A9 | batch size (1× vs 4×) | done | 4× at equal rows worse by 2M (lr unscaled); √-scaled lr untested; user: not in practice |
 | A10 | rounding-divergence diagnostic | backlog, low | — |
 | A11 | Adam ε | done | keep 1e-8 (ε acts like a smaller lr) |
-| A12 | parameter EMA (Polyak averaging) | done @ 0.5M, null | EMA 0.9 1.010 [0.977, 1.049] vs raw; long view on I30-lr3e-4-2M |
+| A12 | parameter EMA (Polyak averaging) | dead @ 0.5M | EMA 0.9 1.010 [0.977, 1.049] vs raw; long view on I30-lr3e-4-2M |
 | A13 | trust region on scale moves | dropped | no outlier scale moves |
-| A14 | per-document gradient clipping / normalisation | backlog → **promote** | w218: chunk gradient norms vary ~35×; GN: front-half batch gradients heavy-tailed (below-chance significance at 2M) |
-| A15 | **new: robust batch aggregation** (trimmed mean / median-of-means across documents in a step) | new | the heavy-tail fix without picking a clip threshold; per-doc gradients need one backward per doc group (cost ↑) |
-| A16 | **new: Sophia / AdaHessian-style diagonal second-order optimizer** (Hutchinson or Gauss-Newton diagonal, clipped Newton step) | new | the "second derivative" step per scale; Sophia was built for noisy LLM training; ~1 extra Hessian-vector product every k steps |
-| A17 | **new: per-layer-group lr** (front vs back) | new | the front gains slowly under noise; a higher front lr lets the weak drift accumulate (risk: noise grows too) |
+| A14 | per-document gradient clipping / normalisation | **dead** (11-23) | CD25 1.021 [0.996, 1.061], CD30 1.037 [1.002, 1.075] at 0.5M; was:  w218: chunk gradient norms vary ~35×; GN: front-half batch gradients heavy-tailed (below-chance significance at 2M) |
+| A15 | robust batch aggregation (trimmed mean / median-of-means across documents) | dropped (11-23) | same idea as A14, which lost | the heavy-tail fix without picking a clip threshold; per-doc gradients need one backward per doc group (cost ↑) |
+| A16 | Sophia / AdaHessian-style diagonal second-order step | backlog, low | not just a schedule (per-scale step ∝ g / h), but the h estimate is noisy where g is; low priority | the "second derivative" step per scale; Sophia was built for noisy LLM training; ~1 extra Hessian-vector product every k steps |
+| A17 | per-layer-group lr (front 1e-4 / 3e-5, back 3e-4) | running (LF25-1e4, LF25-3e5) | sdelta: the front's 1M→2M movement is a random walk under Adam | the front gains slowly under noise; a higher front lr lets the weak drift accumulate (risk: noise grows too) |
 
 ## B. Schedule and data
 
@@ -39,7 +39,7 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 | B7 | bigger data plan | done | 10.04M rows, one epoch |
 | B8 | self-generated responses (IQR-V4 8 bpw writer, bf16 targets) | backlog, deprioritised | user unsure it's worth it |
 | B9 | 1−√ cooldown shape | backlog | — |
-| B10 | WSD decay at all | done @ 0.25 / 0.5M | buys nothing there (1.000 / 1.002 vs constant lr); longer budgets: from the 4M runs' raw vs decayed points |
+| B10 | WSD decay at all | done | nothing at 0.25 / 0.5M (1.000 / 1.002) nor at 4M on j217 (0.858 vs raw 0.853); training KL drops ~8 % with decay at 2M | buys nothing there (1.000 / 1.002 vs constant lr); longer budgets: from the 4M runs' raw vs decayed points |
 | B11 | **new: skip decay branches in short screens** | new (process) | if B10 holds, raw snapshots replace decayed points ≤ 0.5M: ~20 % cheaper screens |
 
 ## C. What gets trained
@@ -60,15 +60,24 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 
 | # | idea | status | result / note |
 |---|---|---|---|
-| D1 | front-half block-MSE stage → KL | running | MD25 0.868 vs 0.883 at equal KL rows; MD25-2M, MF25 (1M stage) → 2M running |
-| D2 | whole-model block-MSE stage → KL | running | MW25-s1 → MW25-2M; layers 32–55 MSE signal as strong as the front (74 / 67 %) |
-| D3 | joint KL + λ·MSE | done @ 1M; 2M running | 0.976 [0.930, 1.001] @ 1M; MJ25-2M (joint 1M → KL 2M) running |
-| D4 | λ 0.3× / 3× | queued | — |
-| D5 | λ annealing (high → 0 by 1M) | backlog, preferred | gate: D1–D3 beat the 2M control |
-| D6 | more teacher taps (> 1M rows) | backlog | ~80 GB / 1.5 h per 1M rows; front-only / scored-only to stretch |
-| D7 | sensitivity-weighted block MSE (H_out-weighted) | backlog | gate as D5 |
+| D1 | front-half block-MSE stage → KL | **dead** (11-23) | MF25-2M 0.853, MD25-2M w/o blow-ups 0.878 = the plain-KL plateau (~0.85); was:  MD25 0.868 vs 0.883 at equal KL rows; MD25-2M, MF25 (1M stage) → 2M running |
+| D2 | whole-model block-MSE stage → KL | **dead** (11-23) | MW25-2M 0.851 (1.011 [0.998, 1.033]); MSE alone 0.935 @ 1M but only 46 % of docs improve; was:  MW25-s1 → MW25-2M; layers 32–55 MSE signal as strong as the front (74 / 67 %) |
+| D3 | joint KL + λ·MSE | **dead-ish** (11-23) | MJ25-2M 0.852; training KL tracks plain KL ±0.3 %; was:  0.976 [0.930, 1.001] @ 1M; MJ25-2M (joint 1M → KL 2M) running |
+| D4 | λ 0.3× / 3× | running (last word on D3) | — |
+| D5 | λ annealing (high → 0 by 1M) | dropped unless D4 surprises | gate: D1–D3 beat the 2M control |
+| D6 | more teacher taps (> 1M rows) | dropped unless D4 surprises | ~80 GB / 1.5 h per 1M rows; front-only / scored-only to stretch |
+| D7 | sensitivity-weighted block MSE (H_out-weighted) | dropped unless D4 surprises | gate as D5 |
 | D8 | cross-block: MSE-only joint, CBQ windows, sequential | backlog | joint KL + MSE covers most of it |
 | D9 | gradient-noise diagnostics | done | KL front half at chance (5 %), MSE 60–85 %; KL uses up the back half's signal (12 → 7.5 %) |
+
+## G. Long context (new 11-22)
+
+| # | idea | status | result / note |
+|---|---|---|---|
+| G1 | long-context judge golden-jlong (74 qad-pool docs, whole up to 247k, positions ≥ 8k) | done | 2.5 2M 0.876 [0.736, 0.948] (71/74 better); 3.0 ~1.00 (3 long wildchat chats uniformly 1.5–3× worse) |
+| G2 | lift the training cap 8k → 32k (jlong docs excluded / 8k-capped) | next | gate: peak 30.56 GB, no slowdown; 25.5 % of calib's scored positions are beyond 8k |
+| G3 | layer-split filled pipeline on 2 cards for 64k–256k training | brief next session (Opus medium) | 512-token micro-segments with the graph kept across halves |
+| G4 | more calib rows: fit + search (~1.4–1.8M) and deep rows (~0.9M) | with G2 | |
 
 ## E. Blow-up documents
 
