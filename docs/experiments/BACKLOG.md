@@ -849,3 +849,9 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   (chunk norms vary ~35×, the largest holding blow-up doc 3820). Clip or normalise each document's contribution before averaging
   (per-doc loss weighting by its gradient norm, or per-doc gnorm clip). May also bear on the blow-ups. Cheap trainer flag; screen at
   0.5M against the int8 control.
+- **Sensitivity-weighted block MSE for the QAD MSE stage (lead + user 11-22):** the block mode feeds each block the student's own
+  (quantized, detached) state and fits the teacher's end-tap state (BRECQ-style, so it already corrects upstream error), but weights every
+  hidden dimension equally, while the final KL cares about some directions far more. Weight the block error by its downstream effect:
+  (x−x*)ᵀ H_out (x−x*) with the output-side curvature at each tap (YAQA-style H_out, or a cheap diagonal / low-rank estimate from KL
+  gradients at the taps). Closes the "which errors matter" gap in the cheap stage; cross-block cooperation stays with the KL stage.
+  Gate: only if the plain MSE stages (MD / MF / MW25-2M) beat the 2M control. Compare at equal card time vs plain block MSE + KL.
