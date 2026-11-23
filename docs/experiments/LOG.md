@@ -9965,3 +9965,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (twin of I25-lr3e-4-2M at --cap 32768, the 74 golden-jlong docs kept at 8k) and **C32-30** (twin of I30-lin-3e-4), plus JL reads of their
   1M / 2M checkpoints (`v3/qadq/jobs.box2.c32.txt`).
 - 11-23 ~3 AM CST (user): the 2-card layer-split training pipeline (64k–256k context) will likely be built regardless of C32's result, to make sure QAD never damages long context; one card stops at 32k (KV 64 KB/token on top of ~28 GB).
+- 11-23 ~3:20 AM CST (user: queue research on 2.5 until ≥ 6 PM CST; no new students — a lv/2.00 build I had started was stopped and
+  deleted): box2 fill after the current lines: I25-calibdecay (2M, WSD decay on unused calib docs), I25-mix50 (2M, half calib), I25-pw01 /
+  pw03 (prompt-side rows at 0.1 / 0.3, 1M), **C32S-25** (the combined candidate: 32k cap + extended plan + 3e-4 → 1e-4 at 1.5M, to 4M) with
+  its long-context read, and a long-context read of the step fork's 4M end (checkpoint copied to box2 runs-ice/). iceman after
+  I25-lr1e-4-4M: **I25-step-10M** (3e-4 → 1e-4 at 1.5M, to 10M on the whole extended plan). Est. box2 ~45 card-h (~2 PM CST), iceman to
+  ~10 PM CST. **w225 launched (Opus medium, e2dff026, 10 h)**: 2-card layer-split training for 64k–256k (brief `workers/instr3/w225.md`;
+  gates: exact vs one card at 8k, filled pipeline, memory at 64k / 128k / 256k, a short 256k run).

@@ -1,0 +1,2 @@
+# lead 11-23 ~3:10 AM CST (user's 10M curiosity, now the long-tail test): 2.50 3e-4 to 1.5M then 1e-4 to 10M on the extended plan (the whole plan), snapshots every 0.5M
+T I25-step-10M 2.50 1e7 ckpt-sd-2e+06,ckpt-sd-4e+06,ckpt-sd-6e+06,ckpt-sd-8e+06,ckpt-1e+07 --lr 3e-4 --lr-steps 3e-4:1.5e6,1e-4:9.6e6 --short-decay 2e6,4e6,6e6,8e6 --plan-ext {ext}/ext-plan.json --ext-root {ext} --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok
