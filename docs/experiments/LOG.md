@@ -9938,3 +9938,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   40–46 % of docs improve), MF25-s1 0.949 at 1M. **Verdict: the MSE family speeds early progress at most; it doesn't lower the 2M
   endpoint at lr 3e-4.** The λ variants (running) finish the joint question; the MSE follow-ups (more taps, λ annealing, weighted MSE)
   lose their case unless the λ arms surprise.
+- 11-23 ~1 AM CST (user): tied front-half scales at lr 3e-4 queued next on box2 (TF25-128, TF25-16: --tie-groups G --tie-layers 0-31, to 2M with snapshots); the old T128 was at lr 1e-3 only. Ideas list: A7 (line search) demoted, A16 (Sophia-style) low.

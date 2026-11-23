@@ -1,0 +1,3 @@
+# lead 11-23 ~1 AM CST (user): tied front-half scales at a sane lr — one shared log multiplier per G consecutive channels in layers 0-31 (too many noisy parameters for the signal there); 2.50 lr 3e-4 to 2M vs I25-lr3e-4-2M / the 4M run's 2M (~0.85)
+T TF25-128 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --tie-groups 128 --tie-layers 0-31 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
+T TF25-16 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --tie-groups 16 --tie-layers 0-31 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/a8int8.ok @ctl=I25-lr3e-4-2M
