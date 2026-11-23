@@ -28,6 +28,10 @@ One page so the plan fits in a head. Details: LOG entries 11-21 / 11-22, BACKLOG
 5. Final recipe: [projected steps or best schedule] → short low-lr plain pass → keep-best floor → full V3.1 run on every size that
    gains, one verify read each.
 
+## Budget rule (user 11-22)
+Run only as long as the question needs: if 0.5M can settle it, stop at 0.5M (a quarter of a 2M run). Go to 2M+ only for questions that are
+about length (plateaus, long schedules, the final recipe) or whose effect only shows late.
+
 ## Checkpoint rule (user 11-22)
 Every training run takes WSD branch checkpoints (a cheap decay forked off the main run) at 0.25M / 0.5M / 1M / 2M (/ 4M) up to
 its budget, each read on j217, so every run gives a curve. Whole-run cosine / linear decays: at each checkpoint, fork a short linear decay to 0 over ~50k rows (2–3 steps) and read
