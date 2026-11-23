@@ -862,3 +862,12 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   overlap by one block, so every layer trains on its own and the next block's reconstruction (~2× stage compute); (c) sequential
   (GPTQ-order) block training, each block seeing its predecessors' already-trained output. KL remains the final healer. Gate: same as the
   sensitivity-weighted entry (plain MSE stages must beat the 2M control first); (a) is a flag change only.
+- **λ annealing for joint KL + MSE (lead + user 11-22; preferred over the cross-block options):** joint mode already sends every block
+  gradients from all downstream taps and the KL, but the intermediate MSE terms penalise cooperative solutions (an error one block leaves
+  for the next to cancel) that KL alone allows. Start λ high (clean front-half direction), decay it to 0 by the end of the taps (KL takes
+  over, cooperation allowed): a smooth "MSE stage then KL". Small trainer change (`--local-mse-decay`). Inputs: tonight's MJ λ 0.3× / 3×
+  sensitivity; gate as the other MSE entries (plain MSE arms must beat the 2M control).
+- **More teacher taps (user 11-22):** taps8 covers only the first 1M plan rows, which caps MSE / joint runs at 1M. Extending them is the
+  same `M` job along the plan: ~80 GB and ~1.5 h on 2 box2 cards per 1M rows at 8 taps; box2 has room for ~3M more (≥ 100 GB floor).
+  Stretch: front taps only (3 / 7 / 15 / 23 / 31, ~50 GB per 1M) and / or store + fit MSE only on KL-scored positions (~½; trainer change).
+  box2 only (iceman has no taps; box2 → iceman ~2 MB/s). Gate: tonight's MSE results.
