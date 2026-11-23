@@ -12,7 +12,8 @@ for ln in L:
     if len(t) > 5 and t[0] == "T" and t[1] in want and "--snap-at" not in t:
         key = "T-" + t[1]
         if key in claims or key in done: print("SKIP started", t[1]); out.append(ln); continue
-        r = want[t[1]]; t[4] = t[4] + "," + ",".join(nm(x) for x in r)
+        fin = float(t[3].split(",")[-1]); r = [x for x in want[t[1]] if x < fin]      # the trainer writes no snapshot at / after the final budget
+        t[4] = t[4] + "," + ",".join(nm(x) for x in r)
         i = next((k for k, x in enumerate(t) if x.startswith("@")), len(t))
         t = t[:i] + ["--snap-at", ",".join(f"{x:g}" for x in r)] + t[i:]; ln = " ".join(t); hit.add(t[1])
     out.append(ln)
