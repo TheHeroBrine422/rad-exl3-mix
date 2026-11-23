@@ -9940,3 +9940,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   lose their case unless the λ arms surprise.
 - 11-23 ~1 AM CST (user): tied front-half scales at lr 3e-4 queued next on box2 (TF25-128, TF25-16: --tie-groups G --tie-layers 0-31, to 2M with snapshots); the old T128 was at lr 1e-3 only. Ideas list: A7 (line search) demoted, A16 (Sophia-style) low.
 - 11-23 ~1:15 AM CST (user): plan — QAD across 2.0 / 2.5 / 3.0 / 3.5 / 4.0 / 4.5 (maybe 5.0) if gains hold; automatic lr drops wanted (CPU replay of a plateau controller on existing runs after the step fork lands; starting lr still from a short per-size screen); larger batches for ≥ 3.5 to test later. Recorded in qad-v31.md.
+- 11-23 2:20 AM CST: **overnight results (2.50, j217 ratio vs unhealed).**
+  - **Step fork I25-step15-4M (3e-4 to 1.5M, then 1e-4 to 4M):** raw 2M 0.8445 · 2.5M 0.8449 · 3M 0.8440 · 3.5M 0.8424; short-decay 2M
+    0.8455 / 3M 0.8425; end 4M 0.8449 (w/o blow-ups 0.875, median doc 0.944). vs constant 3e-4 at the same rows (0.851 / 0.844 / 0.855 /
+    0.853 / 4M 0.858): **~1 % lower and steadier, but flat — a plateau at ~0.843.**
+  - **Lower front-half lr: slightly worse.** LF25-1e4 2M 0.860, 1.022 [1.010, 1.036] vs I25-lr3e-4-2M; LF25-3e5 2M 0.859, 1.021
+    [0.983, 1.061] (vs the ~0.85 plateau also ~1 % worse). The front's movement matters even though it looks like a random walk per scale
+    (consistent with L32-only losing).
+  - **Joint-MSE λ doesn't matter:** MJ25-l03 / -l3 1M 0.869 / 0.871 vs MJ25 0.867 → the MSE family is closed.
+  - Running: TF25-128 / -16 (tied front scales), MJ30 λ arms, then the 3.0 control and cos / lin 2M; iceman I25-lr1e-4-4M (~9 AM).
