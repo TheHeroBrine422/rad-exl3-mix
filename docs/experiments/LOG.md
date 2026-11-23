@@ -9859,3 +9859,16 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-22 ~7:05 PM CST (user): **budget rule** — go to 2M only when the question needs it; if 0.5M settles it, stop there (qad-v31.md, v3/qadq/README.md). Queue check: the remaining long lines are length questions (lr 1e-4 to 3–4M, cos / lin to 2M, MSE stage → 2M, the 3.0 2M control); the joint-MSE λ variants stay at 1M because MJ's gain only showed by 1M (0.5M: 1.012, 1M: 0.976).
 - 11-22 6:46 PM CST: **iceman sandbox unreachable** since ~6:38 PM CST (ssh :2223 'No route to host'; host up: Qwen :8001 answers 200, ping OK) → the sandbox container is likely down; I25-lr3e-4-4M (card 0, started 5:31 PM, past its 0.5M checkpoint) status unknown; asked the user. Watchdog stopped on the PROBLEM after 4 cycles; relaunched (020d5fb0).
 - 11-22 7:00 PM CST: iceman had rebooted (~6:40 PM CST, cause unknown; user restarted the sandbox). Dispatcher restarted 6:59 PM; it took over the stale claim and I25-lr3e-4-4M resumes from state.pt (0.25M / 0.5M decayed + raw 0.25 / 0.5 / 0.75M checkpoints were on disk; lost ≤ the steps since the last save).
+- 11-22 7:25 PM CST: **front-half signal at trained states (GN25, KL gradient, 40 unseen batches; z 1.96 / z 3, chance 5 / 0.27 %)**:
+  | state | L0–15 | L16–31 | L32–47 | L48–63 |
+  |---|---|---|---|---|
+  | released | 4.7 / 0.27 | 5.2 / 0.27 | 6.2 / 0.67 | 12.1 / 2.29 |
+  | KL 1M (I25C) | 4.0 / 0.17 | 3.8 / 0.15 | 5.3 / 0.32 | 9.1 / 0.99 |
+  | KL 2M (I25-lr3e-4-2M) | 1.3 / 0.01 | 1.9 / 0.03 | 4.2 / 0.17 | 7.5 / 0.66 |
+  | MSE stage 0.5M (MD25-s1) | 5.2 / 0.29 | 5.4 / 0.28 | 6.2 / 0.68 | 12.0 / 2.29 |
+  | MSE stage + KL to 1M (MD25) | 4.2 / 0.24 | 4.0 / 0.20 | 4.9 / 0.34 | 10.5 / 1.39 |
+  KL training uses up the back-half signal (12.1 → 9.1 → 7.5 %). The front falls *below* chance by 2M (1.3 %) while its rms gradient
+  grows (1.1e-5 → 1.2e-5): heavy-tailed batch gradients inflate the std → the per-scale t test is conservative there (a robust / sign
+  test would need per-batch gradients). The MSE stage leaves KL's view unchanged (MD25-s1 ≈ released): it moves the front along
+  directions KL is indifferent to locally; its gain (MD25 0.868 vs 0.883 at equal KL rows) is not "new KL signal". 3.00 passes and
+  GN25-MJ / mseB still running. Raw: box2 `runs/GN25-*/gradnoise.npz`.
