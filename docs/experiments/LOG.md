@@ -9987,3 +9987,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   - Data (`data/qad225/deepdocs.txt`): no training document is deeper than 32k. train214 max 19.8k; the qad pool's 8 documents above 32k are all golden-jlong (capped at 8k); tr32k max 32,758 tokens.
   - Installed in box2 `QROOT/code` 4:58 AM CST (old copies `/data/q27/w225/*.pre-w225`). Cards 1 + 3 back to the queue 4:56 AM CST, ~2.8 card-h.
   - Proposals: two ranks (~1.8–1.9×, ~4–6 h of work); a two-card queue kind (needed for the held C32 lines at cap 256k); long goldens (64k–256k cuts of full traces).
+- 11-23 ~5:20 AM CST: **w225 done (Opus medium, b1e8c967 / 19fcaa4c, ~2.8 card-h): 2-card layer-split training works.** G0 defaults =
+  I25C steps 1–3 bitwise; G1 `--split-layers 32` = one card bitwise; G2 `--pipeline` = one card bitwise, 46–50 s / step vs 72–75 (1.5×;
+  single process host-bound, GPU floor ~40 s); G3 peak per card at depth 64k / 128k / 256k: 14.9 / 17.7, 17.3 / 19.7, 22.0 / 24.3 GiB
+  (needs `--attn-gqa` at 256k); G4 0.25M rows at `--cap 262144`: 51.7 s / step, 22.8 / 24.9 GiB, host 13.4 GB. Command: `--split-layers 32
+  --pipeline --attn-gqa --state-card-gb 8 --cap 262144 --cap-keep …`. **Data: no training document is deeper than 32k** (train214 max
+  19.8k, tr32k 32,758, xc8k 8,192; the qad pool's 8 docs > 32k are all golden-jlong's) → `--cap 262144` reaches 32k at most today
+  (`data/qad225/deepdocs.txt`). Proposals: two-rank version (~1.8–1.9×), a 2-card queue kind, long training goldens (traces cut at
+  64k–256k).
+- 11-23 ~5:20 AM CST (lead, away mode): since today's data stops at 32k, a 32k cap on one card trains on all of it → the held C32 lines
+  (C32-25, C32-30, C32S-25, C32S-30 + JL reads) are released unchanged (one card, 32k); 256k needs new long goldens first (user decision).
