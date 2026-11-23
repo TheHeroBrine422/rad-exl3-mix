@@ -9893,3 +9893,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   YaRN to 1M).
 - 11-22 ~10:40 PM CST (user): training cap is qad220's default `--cap 8192` (no job overrides it). Queued `B cap32-test` (2.50, --cap 32768, 40 steps) behind the JL reads: peak card memory / s per step / host RSS vs the 8k runs (~28 GB, ~77–81 s). Estimate: KV 64 KB/token (16 full-attn layers × 4 KV heads × 256, bf16) → ≤ 2 GB carried per stream at 32k; peak ~30–31 GB worst case. Real 32k plans must exclude or 8k-cap the 74 golden-jlong docs. Tomorrow (user): layer-split (pipeline) training on 2 cards for 64k–256k (Opus medium brief).
 - 11-22 9:15 PM CST: **T-MF25-s1 failed on a read I added**: addsnap.py put ckpt-raw-1e+06 in the read lists of lines whose final budget is 1M (the trainer writes no snapshot at the final budget; qq's auto list already excludes it). Fixed addsnap (drop points ≥ final), removed the read from MF25-s1 / MW25-s1 / MJ25-l03 / -l3 / MJ30-l03 / -l3; MF25-s1 marked done (all other 5 reads scored) → MF25-2M released; MW25-s1 (running, claimed with the old list) gets `fixmw.sh` on box2 (marks it done when it fails only on that read). Watchdog run 020d5fb0 ended on the PROBLEM; relaunched.
+- 11-22 ~11:10 PM CST (user): **scale-movement check (CPU, `v3/qadq/sdelta.py`, 2.50 checkpoints' log multipliers vs release).**
+  rms change ×1e-3 (L0–15 / 16–31 / 32–47 / 48–63): control 0.5M 1.28 / 1.31 / 1.34 / 1.34, 1M 1.97 / 2.05 / 2.04 / 2.10, 2M 2.83 /
+  2.87 / 2.91 / 3.16; MF25-s1 (MSE 1M) 3.40 / 3.96 / – / –; MD25-s1 (MSE 0.5M) 2.34 / 2.53; MD25 (+KL to 1M) 2.73 / 2.91 / 1.28 / 1.29;
+  MJ25 1M 2.10 / 2.09 / 2.03 / 2.10. Cosines (front L0–31 / back L32–63): control 1M vs 2M +0.715 / +0.805 (a pure random walk from 1M
+  to 2M would give |d1M| / |d2M| ≈ 0.70 → **the front's movement 1M→2M is indistinguishable from a random walk, the back's has real
+  drift**); control 0.5M vs 1M +0.816 / +0.845; MSE-stage front vs KL front +0.08 (orthogonal); MD25-s1 vs MD25 front +0.871 (the KL
+  phase keeps the MSE front, adds noise; no erosion); MJ25 vs control +0.644 / +0.968. Reading: **under Adam the front scales move as
+  fast as the back even though their gradient is noise** (Adam normalises step size), so the front mostly accumulates random walk;
+  supports a lower front lr with more data (user) — per-layer-group lr (qad-ideas A17).
