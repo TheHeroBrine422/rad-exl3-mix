@@ -9997,3 +9997,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   64k–256k).
 - 11-23 ~5:20 AM CST (lead, away mode): since today's data stops at 32k, a 32k cap on one card trains on all of it → the held C32 lines
   (C32-25, C32-30, C32S-25, C32S-30 + JL reads) are released unchanged (one card, 32k); 256k needs new long goldens first (user decision).
+- 11-23 8:20 AM CST: **C32-25 died of CUDA OOM** at step 27 (peak 30.9 GiB; 32k cap on one card is at the edge) → resumes from state.pt with `--attn-gqa` (w225's attention form: ~6× less attention scratch, rounding-level vs default); --attn-gqa also added to the unstarted C32S-25 / C32S-30; C32-30 (running, 29.9 GiB) gets fix30.sh (requeue with --attn-gqa on OOM). **I25-calibdecay failed at start**: calib-only cooldown leaves 1.797M rows < 2M budget → budget 1.5M (`--exact-ckpt-names`, ckpt-1.5e+06). Watchdog run ecca4a26 ended on the report; relaunched.
