@@ -10004,3 +10004,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-23 9:20 AM CST: **box2 unreachable** since ~9:15 AM CST (ssh 'Connection timed out during banner exchange'; port 2241 accepts TCP but no banner → half-dead forward or stalled sshd). Its 4 trainers (I25-mix50, I30-lin-2M, I30-lr1e-4-3M, I25-pw01) unverifiable; all restartable. Waiting for the user to check the thanos VPN / reverse forward. iceman healthy (I25-step-10M at 2.19M rows).
 - 11-23 ~11:40 AM CST: **2.50 lr 1e-4 from the start to 4M (iceman, extended plan): slower and lower than 3e-4.** j217 mean: decayed 0.25 0.995 · 0.5 0.977 · 1M 0.886 · 2M 0.887 · 4M 0.890; raw 1M 0.878 · 1.5M 0.880 · 2M 0.924 · 2.5M 0.906 · 3M 0.900 · 3.5M 0.898. Robust columns keep improving (w/o blow-ups 0.923 @ 1M → 0.886 @ 4M; median doc 0.976 → 0.951) but stay behind 3e-4 (0.871 / 0.935 at 3.5M) and the step fork (0.875 / 0.944 at 4M). → 3e-4 then a 1e-4 tail stays the best schedule. box2 still unreachable (since ~9:15 AM CST).
 - 11-23 1:40 PM CST: I25-step-10M (iceman): the fixed monitor rose to +3.3 % over its best at 6.5M (0.03847 → 0.03973), within that 22-doc monitor's noise; left running — the long 1e-4 tail is exactly the drift question, judged by its j217 snapshot reads at the end (~5 PM CST). box2 still unreachable.
+- 11-23 3:50 PM CST: **box2 reachable again** (it kept running while ssh was down 9:15 AM–~3:40 PM CST; uptime 14 days). Its queue
+  finished at 12:21 PM CST (idle since; C32 lines held). Results (j217, raw `data/qad222/results-box2-1123-4pm.tsv`):
+  - **2.50 data / objective arms: all negative.** I25-mix50 (half calib) 2M 0.925 (blow-up doc; w/o 0.891 vs control 0.879), I25-pw01 /
+    pw03 (prompt rows 0.1 / 0.3) 1M 0.933 / 0.912 vs I25C 0.889 (1.050 / 1.026), I25-calibdecay 1M 0.912 (1.027 [1.001, 1.070]), whole-run
+    cosine / linear 2M 0.882 / 0.873 vs 0.842 (1.048 / 1.037).
+  - **3.00:** constant 3e-4 2M 0.971 (noisy; raw 0.932–0.939 at 0.5–1.5M), cosine 2M 0.934, linear 2M 0.937 (1M linear-all 0.919 stays
+    best), lr 1e-4 3M 0.952 (2M 0.936) → 3.0 plateaus ~0.93.
+  - **EMA at 3.0 (long view): mild help** — EMA 0.97 vs raw 0.986 [0.961, 1.004] at 1M, 0.993 [0.978, 1.004] at 1.5M, vs the decayed 2M
+    end 0.965 [0.910, 1.000]; EMA 0.9 ≈ raw; EMA 0.97 1M ties the 1M linear-decay run (1.007). Not decisive.
+  - Step fork's long-context read (JL-I25-step15 4M) landed (to analyse).
