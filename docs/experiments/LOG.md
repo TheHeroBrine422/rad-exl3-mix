@@ -9872,3 +9872,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   test would need per-batch gradients). The MSE stage leaves KL's view unchanged (MD25-s1 ≈ released): it moves the front along
   directions KL is indifferent to locally; its gain (MD25 0.868 vs 0.883 at equal KL rows) is not "new KL signal". 3.00 passes and
   GN25-MJ / mseB still running. Raw: box2 `runs/GN25-*/gradnoise.npz`.
+- 11-22 8:30 PM CST: **EMA ablation (EMA25, 2.50, lr 3e-4 constant to 0.5M, paired on j217): EMA does not help.** EMA 0.9 vs raw:
+  0.25M 0.999 [0.965, 1.026], 0.5M 1.010 [0.977, 1.049]; EMA 0.97 vs raw: 1.010 [0.985, 1.037] / 1.033 [1.003, 1.084] (worse: it still
+  averages in early states). Side result: **the WSD decay buys nothing at 0.25 / 0.5M** — raw constant-lr state vs I25C's decayed branch:
+  1.000 [0.996, 1.004] (0.25M), 1.002 [0.995, 1.012] (0.5M). EMA stays opt-in (off); the long view comes from I30-lr3e-4-2M's EMA reads.
+  Also: GN30 (3.00, unseen batches): released L0–15 / 16–31 / 32–47 / 48–63 = 5.2 / 4.8 / 5.9 / 11.0 % (z 1.96), after KL 1M 3.2 / 2.2 /
+  2.6 / 7.6 % (same picture as 2.50). GN25-mseB: block MSE on layers 32–55 is as strong as on the front (74.0 % / 61.6 % L32–47,
+  66.7 / 52.6 % L48–55 at z 1.96 / 3). 4.00 lr 3e-4: MJ40 and I40-L32 also derail 3820; I40-L48 doesn't but doesn't gain (≈ 1.00–1.02).
