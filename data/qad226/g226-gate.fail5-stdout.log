@@ -1,0 +1,166 @@
+22:28:57 qad191.py {"out": "/data/q27/queue/runs/g226-gate", "model": "/data/q27/models/qwen38-27b-bf16", "level": "/data/q27/w214/lv/2.50/trunk", "chunks": "@/data/q27/w214/chunks214.txt", "calib": "/data/q27/challenge/golden/calib", "pools": "/data/q27/w214/pools214.json", "pool": "train214", "genmask": "/data/q27/w214/genmask", "head": "/data/q27/w214/lv/2.50/head", "head_perm": "/data/q27/w214/lv/2.50/R16.npy", "dynamo_limit": 64, "short_decay": null, "short_decay_rows": 50000.0, "plan_ext": "/data/q27/queue/ext/ext-plan-226b.json", "ext_root": "/data/q27/queue/ext", "head_train": "none", "cap": 262144, "len": 2048, "V": 24, "Q": 1024, "budgets": "2.5e5", "decay_frac": 0.2, "lr": 0.0003, "warmup": 8, "trust": 0.3, "seed": 0, "monitor": 0, "mon_every": 2000000.0, "save_every": 12, "build_group": 2, "gate": false, "profile": false, "bench": false, "a8": true, "a8_int8": true, "compile_scales": true, "lora": 0, "lr_lora": 0.0001, "fixed_eval": 20000, "fe_every": 12, "fe_seed": 2181, "init": null, "conv": "shift", "max_steps": 0, "emb": null, "ab": "/data/q27/w214/lv/2.50/ab.safetensors", "mix50": null, "block_frac": 0.0, "block_lr": 0.001, "block_batch": 4096, "taps": null, "tap_weight": 0.0, "make_taps": null, "tapcal": 0, "check": false, "build_lock": "/data/q27/queue/build.lock", "factors": "all", "norms": false, "unshrink": null, "export_only": false, "eps": 1e-08, "compile_ew": true, "cap_keep": "/data/q27/queue/slices/jlong-ids.json", "cap_keep_len": 8192, "expandable_segments": false, "lr_layers": null, "clip_doc": 0.0, "ema_params": null, "snap_at": "none", "exact_ckpt_names": false, "gradnoise_from": 0, "gradnoise": 0, "wd": 0.0, "accum": 1, "rows": null, "order_seed": null, "warmup_frac": null, "train_layers": null, "train_tensors": null, "tie_groups": 1, "tie_layers": null, "lr_steps": null, "decay_shape": "linear", "fork_from": null, "decay_data": "mix", "save_at": null, "prompt_weight": 0.0, "local_mse": null, "local_taps": null, "tap_layers": null, "clip_gnorm": 0.0, "beta2": 0.99, "no_frozen_prefix": false, "mask": null, "split_layers": 32, "pipeline": true, "state_card_gb": 4.0, "attn_gqa": true, "depth_test": 0} world 1
+22:29:00 shift conv / MLP silu * up compiled
+22:29:00 --cap-keep: 6 base items cut back to 8192 tokens (74 listed calib docs)
+22:29:00 corpus 1858 documents in 0 s: {"calib": {"docs": 416, "tokens": 596597, "rows": 530226}, "tr32k": {"docs": 63, "tokens": 1000886, "rows": 640646}, "xc8k": {"docs": 1379, "tokens": 1955614, "rows": 1684182}}
+22:29:00 chunk list: 3 golden dirs, sha1 e650ee46b4b5 (/data/q27/w214/gold/xc8k-b2-c0 .. /data/q27/w214/gold/tr32k-b2-c0)
+22:29:00 fixed eval: 22 qad-pool docs, 21090 rows (first 2048 tokens), held out of training (22 items removed)
+22:29:00 plan-ext at cap 262144 > the plan's 8192: 1 base items under 16 rows at cap 8192 dropped (not in w214's base)
+22:29:00 plan-ext /data/q27/queue/ext/ext-plan-226b.json: 5328 documents appended to w214's 1835, 24 front (xc8k-b2-c2, xc8k-b1, tr32k-b1 + calib docs): {"calib": {"docs": 1719, "tokens": 3199777, "rows": 2570129}, "tr32k": {"docs": 201, "tokens": 3402132, "rows": 2044032}, "xc8k": {"docs": 5267, "tokens": 7594558, "rows": 6940906}}
+22:29:00 plan: 850 steps of 24 x 1024 (data 11555067 rows); main to step 15 (254583 rows), decay from step 12; branches ; order shuffle seed 0 (sha1 11c091a1b512); gen rows to the budget by corpus {"calib": [226971, 0.8915], "tr32k": [1752, 0.0069], "xc8k": [25860, 0.1016]}
+22:29:00 #200: 1 plan step(s) per optimizer step, 15 optimizer steps, warmup 8, wd 0.0, lr 0.0003, budget 250000 rows
+22:29:33 student built in 32 s: 400 linears (mad, 400 int8-exact), 5668864 values, alloc 11.49 GiB
+22:29:33 GDN a / b: /data/q27/w214/lv/2.50/ab.safetensors (96 tensors, rel diff vs the checkpoint median 0.0735, max 0.0832)
+22:29:33 w225: split 32 (layers 0-31 on cuda:0: 11.49 GiB, 32-63 + head on cuda:1: 13.86 GiB), pipeline True, states kept on the cards up to 4.0 GiB each, attention gqa True, depth test 0
+22:29:33 trainable: 720 vectors / 5668864 values (frozen: 0 vectors / 0 values); first trainable layer 0
+22:29:33 QLinear scales compiled (a8 True, int8 True)
+22:29:33 arm Q: a8g128 fake-quant activations on every trunk linear (STE); GEMM int8 x int8 (w223 --a8-int8)
+22:29:33 {"step": 0, "rows": 0, "mon_kl": null}
+22:30:49 {"what": "main", "step": 1, "rows": 15261, "lr": 3.75e-05, "train_kl": 0.03037298004543334, "ema": 0.03037298004543334, "by": {"calib": 0.03037298004543334}, "n": {"calib": 15261}, "prefix_tok": 0, "wall": 35.62, "pos_s": 428.5, "peak_gib": 17.95, "peak_gib_b": 19.99, "pipe_s": {"a_fwd": 12.4, "a_wait": 6.2, "a_bwd": 13.7, "a_out": 2.9, "b_wait": 2.8, "b_fwd": 9.5, "b_bwd": 10.7}, "states_gib": {"cuda:0": 3.93, "cuda:1": 3.93}, "rss_gib": 11.44, "accum": 1, "gnorm": 0.019788}
+22:31:21 {"what": "main", "step": 2, "rows": 31812, "lr": 7.5e-05, "train_kl": 0.021216390481921282, "ema": 0.029915150567257732, "by": {"calib": 0.021216390481921282}, "n": {"calib": 16551}, "prefix_tok": 0, "wall": 32.4, "pos_s": 510.8, "peak_gib": 18.14, "peak_gib_b": 20.23, "pipe_s": {"a_fwd": 11.6, "a_wait": 4.9, "a_bwd": 12.5, "a_out": 3.2, "b_wait": 1.6, "b_fwd": 8.6, "b_bwd": 10.9}, "states_gib": {"cuda:0": 3.93, "cuda:1": 3.93}, "rss_gib": 11.88, "accum": 1, "gnorm": 0.010963}
+22:31:54 {"what": "main", "step": 3, "rows": 48440, "lr": 0.0001125, "train_kl": 0.020545595062733957, "ema": 0.02944667279203154, "by": {"calib": 0.020545595062733957}, "n": {"calib": 16628}, "prefix_tok": 0, "wall": 32.27, "pos_s": 515.2, "peak_gib": 18.14, "peak_gib_b": 20.23, "pipe_s": {"a_fwd": 12.4, "a_wait": 5.1, "a_bwd": 11.3, "a_out": 3.2, "b_wait": 2.1, "b_fwd": 8.5, "b_bwd": 10.2}, "states_gib": {"cuda:0": 3.93, "cuda:1": 3.93}, "rss_gib": 12.23, "accum": 1, "gnorm": 0.010421}
+22:32:26 {"what": "main", "step": 4, "rows": 64824, "lr": 0.00015, "train_kl": 0.018082330760080367, "ema": 0.02887845569043398, "by": {"calib": 0.018082330760080367}, "n": {"calib": 16384}, "prefix_tok": 0, "wall": 32.65, "pos_s": 501.8, "peak_gib": 18.14, "peak_gib_b": 20.23, "pipe_s": {"a_fwd": 12.7, "a_wait": 5.4, "a_bwd": 10.7, "a_out": 3.6, "b_wait": 2.0, "b_fwd": 9.8, "b_bwd": 9.2}, "states_gib": {"cuda:0": 3.93, "cuda:1": 3.93}, "rss_gib": 12.57, "accum": 1, "gnorm": 0.05247}
+22:33:03 {"what": "main", "step": 5, "rows": 81338, "lr": 0.00018749999999999998, "train_kl": 0.016729420115270035, "ema": 0.028271003911675783, "by": {"calib": 0.016729420115270035}, "n": {"calib": 16514}, "prefix_tok": 0, "wall": 36.17, "pos_s": 456.5, "peak_gib": 18.36, "peak_gib_b": 20.47, "pipe_s": {"a_fwd": 13.5, "a_wait": 1.4, "a_bwd": 11.2, "a_out": 9.7, "b_wait": 2.7, "b_fwd": 11.2, "b_bwd": 12.9}, "states_gib": {"cuda:0": 3.86, "cuda:1": 3.86}, "rss_gib": 16.55, "accum": 1, "gnorm": 0.011651}
+22:33:41 {"what": "main", "step": 6, "rows": 98713, "lr": 0.000225, "train_kl": 0.016801020258622203, "ema": 0.0276975047290231, "by": {"calib": 0.016801020258622203}, "n": {"calib": 17375}, "prefix_tok": 0, "wall": 38.75, "pos_s": 448.4, "peak_gib": 18.36, "peak_gib_b": 20.47, "pipe_s": {"a_fwd": 16.5, "a_wait": 0.9, "a_bwd": 10.6, "a_out": 10.5, "b_wait": 3.2, "b_fwd": 11.8, "b_bwd": 12.2}, "states_gib": {"cuda:0": 3.86, "cuda:1": 3.86}, "rss_gib": 17.39, "accum": 1, "gnorm": 0.009238}
+22:34:21 {"what": "main", "step": 7, "rows": 115340, "lr": 0.0002625, "train_kl": 0.014248555035802486, "ema": 0.027025057244362067, "by": {"calib": 0.014248555035802486}, "n": {"calib": 16627}, "prefix_tok": 0, "wall": 39.52, "pos_s": 420.7, "peak_gib": 18.36, "peak_gib_b": 20.47, "pipe_s": {"a_fwd": 16.5, "a_wait": 0.8, "a_bwd": 11.3, "a_out": 10.7, "b_wait": 3.5, "b_fwd": 12.4, "b_bwd": 13.1}, "states_gib": {"cuda:0": 3.86, "cuda:1": 3.86}, "rss_gib": 18.22, "accum": 1, "gnorm": 0.008624}
+22:35:02 {"what": "main", "step": 8, "rows": 132750, "lr": 0.0003, "train_kl": 0.015053131712503231, "ema": 0.026426460967769124, "by": {"calib": 0.015053131712503231}, "n": {"calib": 17410}, "prefix_tok": 0, "wall": 41.03, "pos_s": 424.3, "peak_gib": 18.36, "peak_gib_b": 20.47, "pipe_s": {"a_fwd": 15.7, "a_wait": 0.5, "a_bwd": 12.1, "a_out": 12.4, "b_wait": 2.7, "b_fwd": 11.8, "b_bwd": 12.4}, "states_gib": {"cuda:0": 3.86, "cuda:1": 3.86}, "rss_gib": 19.05, "accum": 1, "gnorm": 0.009545}
+22:35:46 {"what": "main", "step": 9, "rows": 149601, "lr": 0.0003, "train_kl": 0.01612481090630539, "ema": 0.025911378464695937, "by": {"calib": 0.01612481090630539}, "n": {"calib": 16851}, "prefix_tok": 0, "wall": 43.64, "pos_s": 386.1, "peak_gib": 18.78, "peak_gib_b": 20.89, "pipe_s": {"a_fwd": 15.8, "a_wait": 0.4, "a_bwd": 11.2, "a_out": 15.9, "b_wait": 3.1, "b_fwd": 13.8, "b_bwd": 13.1}, "states_gib": {"cuda:0": 3.95, "cuda:1": 3.95}, "rss_gib": 22.0, "accum": 1, "gnorm": 0.012147}
+22:36:31 {"what": "main", "step": 10, "rows": 166983, "lr": 0.0003, "train_kl": 0.01964967737207752, "ema": 0.025598293410065014, "by": {"calib": 0.01964967737207752}, "n": {"calib": 17382}, "prefix_tok": 0, "wall": 45.76, "pos_s": 379.9, "peak_gib": 18.78, "peak_gib_b": 20.89, "pipe_s": {"a_fwd": 16.2, "a_wait": 0.3, "a_bwd": 11.7, "a_out": 17.2, "b_wait": 3.3, "b_fwd": 15.3, "b_bwd": 13.8}, "states_gib": {"cuda:0": 3.95, "cuda:1": 3.95}, "rss_gib": 23.02, "accum": 1, "gnorm": 0.061828}
+22:37:28 {"what": "main", "step": 11, "rows": 184563, "lr": 0.0003, "train_kl": 0.015319078102860435, "ema": 0.025084332644704787, "by": {"calib": 0.014451179544674978, "xc8k": 0.05121661726250706}, "n": {"calib": 17165, "xc8k": 415}, "prefix_tok": 0, "wall": 56.98, "pos_s": 308.5, "peak_gib": 18.78, "peak_gib_b": 20.89, "pipe_s": {"a_fwd": 23.1, "a_wait": 2.6, "a_bwd": 14.7, "a_out": 16.0, "b_wait": 10.6, "b_fwd": 15.3, "b_bwd": 16.2}, "states_gib": {"cuda:0": 3.64, "cuda:1": 3.64}, "rss_gib": 23.22, "accum": 1, "gnorm": 0.008053}
+22:38:19 {"what": "main", "step": 12, "rows": 202173, "lr": 0.0003, "train_kl": 0.03288141478959435, "ema": 0.025474186751949266, "by": {"calib": 0.02889301369392571, "xc8k": 0.06647233059854032}, "n": {"calib": 15741, "xc8k": 1869}, "prefix_tok": 0, "wall": 51.11, "pos_s": 344.5, "peak_gib": 18.78, "peak_gib_b": 20.89, "pipe_s": {"a_fwd": 18.0, "a_wait": 8.5, "a_bwd": 15.9, "a_out": 8.5, "b_wait": 7.5, "b_fwd": 12.9, "b_bwd": 17.6}, "states_gib": {"cuda:0": 3.88, "cuda:1": 3.88}, "rss_gib": 17.24, "accum": 1, "gnorm": 0.079868}
+Traceback (most recent call last):
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 1147, in run_pipe
+    hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 345, in run_half
+    elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+                                               ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/_compile.py", line 54, in inner
+    return disable_fn(*args, **kwargs)
+  File "/usr/local/lib/python3.14/dist-packages/torch/_dynamo/eval_frame.py", line 1552, in _fn
+    return fn(*args, **kwargs)
+  File "/usr/local/lib/python3.14/dist-packages/torch/utils/checkpoint.py", line 606, in checkpoint
+    return _checkpoint_impl(
+        function,
+    ...<8 lines>...
+        respect_saved_tensors_hooks=respect_saved_tensors_hooks,
+    )
+  File "/usr/local/lib/python3.14/dist-packages/torch/utils/checkpoint.py", line 681, in _checkpoint_impl
+    gen.throw(e)
+    ~~~~~~~~~^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/utils/checkpoint.py", line 2046, in _checkpoint_without_reentrant_generator_impl
+    yield
+  File "/usr/local/lib/python3.14/dist-packages/torch/utils/checkpoint.py", line 678, in _checkpoint_impl
+    ret = function(*args, **kwargs)
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 345, in <lambda>
+    elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+                                                                                  ~~^^^^^^^^^
+  File "/data/q27/venv/lib/python3.14/site-packages/transformers/modeling_layers.py", line 111, in __call__
+    return super().__call__(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/nn/modules/module.py", line 1787, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/nn/modules/module.py", line 1798, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/q27/venv/lib/python3.14/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 876, in forward
+    hidden_states = self.linear_attn(
+        hidden_states=hidden_states,
+    ...<2 lines>...
+        **kwargs,
+    )
+  File "/usr/local/lib/python3.14/dist-packages/torch/nn/modules/module.py", line 1787, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/nn/modules/module.py", line 1798, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/q27/venv/lib/python3.14/site-packages/transformers/integrations/accelerate.py", line 1012, in wrapped
+    output = forward_func(self, *args, **kwargs)
+  File "/data/q27/venv/lib/python3.14/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", line 578, in forward
+    mixed_qkv = causal_conv1d_fn(
+        mixed_qkv,
+    ...<3 lines>...
+        **kwargs,
+    )
+  File "/usr/local/lib/python3.14/dist-packages/torch/_dynamo/eval_frame.py", line 1265, in compile_wrapper
+    result = fn(*args, **kwargs)
+  File "/data/q27/queue/code/v3/qad220/../qad/qmodel.py", line 132, in shift_conv1d
+    def shift_conv1d(hidden_states, weight, bias=None, activation=None, **kwargs):
+  File "/usr/local/lib/python3.14/dist-packages/torch/_dynamo/eval_frame.py", line 1552, in _fn
+    return fn(*args, **kwargs)
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/aot_autograd.py", line 1289, in forward
+    return compiled_fn(full_args)
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 2610, in __call__
+    return self.compiled_fn(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 1204, in runtime_wrapper
+    result = _codegen_runtime_wrapper(
+        _inner_compiled_fn,
+    ...<2 lines>...
+        args,
+    )
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/codegen.py:codegen(runtime_wrapper_orchestration)", line 11, in _runtime_wrapper
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/utils.py", line 118, in g
+    return f(*args)
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 3541, in forward
+    return CompiledFunction._fwd_fn(
+           ~~~~~~~~~~~~~~~~~~~~~~~~^
+        ctx,
+        ^^^^
+    ...<4 lines>...
+        CompiledFunction.compiled_fw,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.14/dist-packages/torch/_functorch/_aot_autograd/codegen.py:codegen(compiled_function_forward)", line 2, in _compiled_forward
+  File "/usr/local/lib/python3.14/dist-packages/torch/_inductor/output_code.py", line 830, in __call__
+    return self.current_callable(inputs)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/tmp/torchinductor_root/3f/c3f32n6pckaxcsrmhzcldgdmxf6gbwdrsdaxcnm74r4airew7jas.py", line 248, in call
+    with torch.cuda._DeviceGuard(0):
+         ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/cuda/__init__.py", line 722, in __enter__
+    self.prev_idx = torch.cuda._exchange_device(self.idx)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+Search for `hipErrorIllegalAddress' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 2085, in <module>
+    main()
+    ~~~~^^
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 2052, in main
+    accs, w = T.run_group(list(range(s, e)), lr); st["step"] = e; s = e - 1
+              ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 967, in run_group
+    if self.w225: self.run_segs_w225(ss, N, acc)
+                  ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 1070, in run_segs_w225
+    if getattr(a, "pipeline", False): self.run_pipe(work, N, acc); stu.kv_cap = 0; return
+                                      ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/data/q27/queue/code/v3/qad220/qad220.py", line 1134, in run_pipe
+    with devctx(A):
+         ~~~~~~^^^
+  File "/usr/local/lib/python3.14/dist-packages/torch/cuda/__init__.py", line 745, in __exit__
+    self.idx = torch.cuda._maybe_exchange_device(self.prev_idx)
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+Search for `hipErrorIllegalAddress' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered
+hipModuleUnload failed: 
+ error: an illegal memory access was encountered

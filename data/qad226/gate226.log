@@ -1,0 +1,7 @@
+11-23 4:44:35 PM CST waiting for cards 2 + 3
+11-23 4:44:35 PM CST cards 2 + 3 held
+11-23 4:44:35 PM CST w226-fe2 start (cards 2,3): 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --split-layers 32 --pipeline --attn-gqa --state-card-gb 4 --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --plan-ext /data/q27/queue/ext/ext-plan-226b.json --ext-root /data/q27/queue/ext --fe-every 2 --max-steps 4
+11-23 4:48:39 PM CST w226-fe2 rc 0 (244 s)
+11-23 4:48:39 PM CST w226-fe2-w214 start (cards 2,3): 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --split-layers 32 --pipeline --attn-gqa --state-card-gb 4 --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --fe-every 2 --max-steps 4
+11-23 4:54:16 PM CST w226-fe2-w214 rc 0 (337 s)
+11-23 4:54:16 PM CST list /data/q27/queue/code/v3/qad226/tests1.txt finished; cards 2 + 3 released
