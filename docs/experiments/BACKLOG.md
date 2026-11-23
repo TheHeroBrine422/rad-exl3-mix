@@ -855,3 +855,10 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   (x−x*)ᵀ H_out (x−x*) with the output-side curvature at each tap (YAQA-style H_out, or a cheap diagonal / low-rank estimate from KL
   gradients at the taps). Closes the "which errors matter" gap in the cheap stage; cross-block cooperation stays with the KL stage.
   Gate: only if the plain MSE stages (MD / MF / MW25-2M) beat the 2M control. Compare at equal card time vs plain block MSE + KL.
+- **Cross-block dependencies in the QAD MSE stage (user 11-22):** block mode trains each block alone (input detached), so no block learns
+  which errors the *next* blocks absorb or amplify. Options, cheapest first: (a) **MSE-only joint stage**: `--local-mse taps,λ,joint`
+  without the KL term (all taps' MSE, gradients through the whole chain: every block sees every downstream tap); (b) **overlapping windows
+  (CBQ, cross-block reconstruction, Ding et al. 2024)**: each window spans two consecutive blocks and fits the tap at the window's end, windows
+  overlap by one block, so every layer trains on its own and the next block's reconstruction (~2× stage compute); (c) sequential
+  (GPTQ-order) block training, each block seeing its predecessors' already-trained output. KL remains the final healer. Gate: same as the
+  sensitivity-weighted entry (plain MSE stages must beat the 2M control first); (a) is a flag change only.
