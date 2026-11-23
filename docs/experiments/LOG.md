@@ -9891,3 +9891,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   skips the results.tsv row) at the top of box2's queue: unhealed 2.50 / 3.00, I25-lr3e-4-2M 1M / 2M, I25C 0.5M, MJ25 / MD25 1M,
   I30C / I30-lin / MJ30 1M (`v3/qadq/jobs.box2.jlong.txt`). User: lift the 8k cap in training either way (never < 64k; model max 256k,
   YaRN to 1M).
+- 11-22 ~10:40 PM CST (user): training cap is qad220's default `--cap 8192` (no job overrides it). Queued `B cap32-test` (2.50, --cap 32768, 40 steps) behind the JL reads: peak card memory / s per step / host RSS vs the 8k runs (~28 GB, ~77–81 s). Estimate: KV 64 KB/token (16 full-attn layers × 4 KV heads × 256, bf16) → ≤ 2 GB carried per stream at 32k; peak ~30–31 GB worst case. Real 32k plans must exclude or 8k-cap the 74 golden-jlong docs. Tomorrow (user): layer-split (pipeline) training on 2 cards for 64k–256k (Opus medium brief).
