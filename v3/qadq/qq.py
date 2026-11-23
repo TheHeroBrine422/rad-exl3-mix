@@ -49,7 +49,11 @@ def auto_snaps(root, j):
             for ln in open(f"{root}/jobs.txt"):
                 t = ln.split()
                 if len(t) > 3 and t[0] == "T" and t[1] == src: start = float(t[3].split(",")[-1])
-    return [raw_name(p) for p in pts if start < p < fin]
+    sn = [p for p in pts if start < p < fin]; out = [raw_name(p) for p in sn]
+    if "--ema-params" in fl:                                  # parameter EMAs at every snapshot point and at the end (qad220 --ema-params)
+        for dk in fl[fl.index("--ema-params") + 1].split(","):
+            out += [raw_name(p).replace("ckpt-raw-", "ckpt-ema%g-" % float(dk)) for p in sn + [fin]]
+    return out
 
 
 def parse(line, root):

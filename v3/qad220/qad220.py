@@ -481,6 +481,12 @@ def snap_grid(spec, final):
     return [p for p in pts if p < float(final)]
 
 
+class EMK(float):
+    """lead 11-22: the key of a parameter-EMA checkpoint (--ema-params): ckpt-ema<decay>-<rows> (exact rows)"""
+    def __new__(cls, x, tag): o = float.__new__(cls, x); o.tag = tag; return o
+    def __format__(self, spec): return f"{self.tag}-" + (_exact(self, float.__format__(float(self), spec)) if spec == ".0e" else float.__format__(float(self), spec))
+
+
 class SD(float):
     """w222: the key of a short-decay branch (--short-decay): formats as `sd-<rows>` so its checkpoint dir is ckpt-sd-2e+05"""
     def __format__(self, spec): return "sd-" + _bfmt(self, spec)
@@ -1413,6 +1419,7 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")
     ap.add_argument("--snap-at", default="auto", help="lead 11-22: undecayed snapshots, the norm: the main run's state as it is (no decay, no branch) written as ckpt-raw-<rows> when the run first passes each row count. auto (default) = 0.25 / 0.5 / 0.75 / 1 M then every 0.5 M before the final budget; a comma list; none = off. A fork skips the points at / before its start")
     ap.add_argument("--exact-ckpt-names", action="store_true", help="lead 11-22: checkpoint labels keep the exact row count when python's %%.0e would round it (1.5e6 -> ckpt-1.5e+06, not ckpt-2e+06); default off = the old names")
     ap.add_argument("--gradnoise-from", type=int, default=0, help="lead 11-22: the gradnoise batches are plan steps FROM..FROM+N-1 (default 0 = #217's first N); use steps a checkpoint never trained on")
@@ -1587,7 +1594,9 @@ def main():
     if not os.path.exists(sp) and not forked: fixed_log(k0, int(cum[k0 - 1]) if k0 else 0, "main")
     save_at = [float(x) for x in a.save_at.split(",")] if a.save_at else []
     snap_at = [RW(x) for x in snap_grid(a.snap_at, budgets[-1])]   # lead 11-22: undecayed snapshots are the norm (grid by default; --snap-at none to turn off)
+    PE = {}                                                           # lead 11-22: parameter EMAs (--ema-params): decay -> [count, [fp32 tensors]]
     def save():
+        if PE: st["pema"] = {k: [n_, [t.cpu() for t in v]] for k, (n_, v) in PE.items()}
         if d.rank == 0: save_atomic({"snap": T.snapshot(), "st": st}, sp)
         d.barrier()
     def logstep(s, lr, accs, wall, what):
@@ -1620,8 +1629,27 @@ def main():
         fixed_log(s, int(cum[s - 1]), f"ckpt {Tb:.0e}")
         log(f"CKPT {Tb:.0e} at step {s} ({cum[s - 1]} rows): monitor KL {v}")
         d.barrier()
+    ema_ds = [float(x) for x in a.ema_params.split(",")] if a.ema_params else []
+    if forked: st.pop("pema", None)                                   # a fork starts its own averages
+    for e_d in ema_ds:
+        k = f"{e_d:g}"
+        if st.get("pema") and k in st["pema"]: PE[k] = [st["pema"][k][0], [t.to(T.dev) for t in st["pema"][k][1]]]
+        else: PE[k] = [0, [torch.zeros(p.shape, dtype=torch.float32, device=p.device) for p in T.P]]
+    def ema_ckpt(rows, s_):
+        """write each parameter EMA (bias-corrected: the weighted average of the main-run states since the start / fork) as a checkpoint"""
+        for k, (n_, v) in PE.items():
+            if n_ == 0: continue
+            key = EMK(rows, f"ema{k}")
+            if os.path.exists(os.path.join(a.out, f"ckpt-{key:.0e}", ".done")): continue
+            bak = [p.detach().clone() for p in T.P]; c = 1.0 - float(k) ** n_
+            with torch.no_grad():
+                for p, e_ in zip(T.P, v): p.copy_((e_ / c).to(p.dtype))
+            ckpt(key, s_)
+            with torch.no_grad():
+                for p, b_ in zip(T.P, bak): p.copy_(b_)
     if d.rank == 0:                                                   # lead 11-22: the snapshot list for the queue's reads (qq.py auto_snaps)
-        json.dump([f"ckpt-{r_:.0e}" for r_ in snap_at if r_ > st.get("fork_rows", 0)], open(os.path.join(a.out, "snaps.json"), "w"))
+        sn = [r_ for r_ in snap_at if r_ > st.get("fork_rows", 0)]
+        json.dump([f"ckpt-{r_:.0e}" for r_ in sn] + [f"ckpt-{EMK(r_, 'ema' + k):.0e}" for k in PE for r_ in sn + [budgets[-1]]], open(os.path.join(a.out, "snaps.json"), "w"))
     while st["step"] < last:
         s = st["step"]
         for Tb, (fk, end) in br.items():                 # a branch forks at this step
@@ -1646,6 +1674,11 @@ def main():
         lr = lr_at(s)                                                 # per optimizer step (N plan steps)
         e = min(s + N, last)
         accs, w = T.run_group(list(range(s, e)), lr); st["step"] = e; s = e - 1
+        if PE:
+            with torch.no_grad():
+                for k, ent in PE.items():
+                    ent[0] += 1
+                    for p, e_ in zip(T.P, ent[1]): e_.mul_(float(k)).add_(p.detach().float(), alpha=1.0 - float(k))
         r = logstep(s, lr, accs, w, "main")
         log(json.dumps(r))
         if cum[s] >= st["next_mon"] and mon:
@@ -1662,10 +1695,13 @@ def main():
                 d.barrier(); log(f"fork point state: {fn} (step {st['step']}, {int(cum[s])} rows)")
         for r_ in snap_at:                                            # lead 11-22: undecayed snapshots (curves for nearly free); a fork skips the points at / before its start
             if cum[s] >= r_ and not r_ <= st.get("fork_rows", 0) and not os.path.exists(os.path.join(a.out, f"ckpt-{r_:.0e}", ".done")): ckpt(r_, st["step"])
+            if PE and cum[s] >= r_ and not r_ <= st.get("fork_rows", 0): ema_ckpt(float(r_), st["step"])
         if a.max_steps and st["step"] >= a.max_steps: save(); log("max steps"); return
         stop = torch.tensor([float(os.path.exists(os.path.join(a.out, "STOP")))]); d.allsum(stop)
         if float(stop) > 0: save(); log(f"STOP file: saved at main step {st['step']}, exiting"); return
-    ckpt(budgets[-1], last); save()
+    ckpt(budgets[-1], last)
+    if PE: ema_ckpt(float(budgets[-1]), last)
+    save()
     log(f"QAD200 DONE {last} plan steps ({NU} optimizer steps), {cum[last - 1]} rows, train wall {st['wall']:.0f} s")
 
 
