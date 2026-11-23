@@ -1,0 +1,3 @@
+# w226: a fixed eval in the middle of a pipelined two-card run (g226-gate crashed at step 13 with an illegal memory access after step 12's fixed eval + save; resumed fine)
+w226-fe2 A,B 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --split-layers 32 --pipeline --attn-gqa --state-card-gb 4 --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --plan-ext /data/q27/queue/ext/ext-plan-226b.json --ext-root /data/q27/queue/ext --fe-every 2 --max-steps 4
+w226-fe2-w214 A,B 2.50 2.5e5 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --snap-at none --split-layers 32 --pipeline --attn-gqa --state-card-gb 4 --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --fe-every 2 --max-steps 4
