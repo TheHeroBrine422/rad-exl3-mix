@@ -1,0 +1,9 @@
+# lead 11-22 ~9:30 PM CST (user): per-document (segment) gradient clipping --clip-doc 3 (C x the running median per-row segment norm); gates first (off-path identity vs I25C steps 1-2; on-path 3 steps)
+B clipoff-test 2.50 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --max-steps 2 --snap-at none
+B clipdoc-test 2.50 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --max-steps 3 --snap-at none --clip-doc 3
+T CD25 2.50 5e5 ckpt-5e+05 --lr 3e-4 --clip-doc 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/clipdoc-test/bench.done @ctl=I25C
+T CD40 4.00 5e5 ckpt-5e+05 --lr 3e-4 --clip-doc 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/clipdoc-test/bench.done @ctl=I40C
+T CD40-1e4 4.00 1e6 ckpt-1e+06 --lr 1e-4 --clip-doc 3 --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/clipdoc-test/bench.done @ctl=I40-lr1e-4
+# lead 11-22 (user): 4.00 MSE first (whole-model block-MSE stage, 1M = the taps), then KL at lr 3e-5 to 2M to heal the rest
+T MW40-s1 4.00 1e6 ckpt-1e+06 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --train-layers 0-55 --local-mse '3+7+15+23+31+39+47+55,{lam},block' --local-taps /data/q27/teacher/taps8 @needs=/data/q27/queue/a8int8.ok,/data/q27/teacher/taps8/.done @ctl=I40C
+T MW40-3e5 4.00 2e6 ckpt-2e+06 --lr 3e-5 --compile-scales --compile-ew --a8-int8 --fork-from {runs}/MW40-s1/state.pt @needs=/data/q27/queue/done/T-MW40-s1 @ctl=I40-lr1e-4

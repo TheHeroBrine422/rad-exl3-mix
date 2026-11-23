@@ -745,6 +745,7 @@ class Trainer:
         self.lo_m = [p.detach().cpu().clone().requires_grad_(True) for p in lo]
         self.opt_lo = torch.optim.Adam([{"params": self.lo_m, "base": a.lr_lora}], lr=a.lr_lora, betas=(0.9, a.beta2)) if lo else None
         self.gn_hist = []                                    # w220 --clip-gnorm: the raw global gradient norms of the earlier steps
+        self.seg_hist = []; self.nclip_doc = 0               # lead 11-22 --clip-doc: recent per-row segment gradient norms
         self.pin = []                                        # w220 --mask: partly masked vectors (mask, start value on the card)
         self.fmask = None
         if getattr(stu, "mask", None):
@@ -760,6 +761,24 @@ class Trainer:
 
     def step_rows(self, s): return sum(self.rows_of[(it, a_, b_)] for st in self.steps[s] for (it, a_, b_) in st)
 
+    def clip_seg(self, snap, m, N):
+        """lead 11-22 (--clip-doc C): per-document (segment) gradient clipping. The segment's own gradient d (grad after its backward minus
+        before) is measured per row (|d| x N / m: the segment loss is its KL sum / N); when that exceeds C x the running median of the
+        recent segments' per-row norms, d is scaled down to the threshold. Bounds the few documents that dominate the step's gradient
+        (w218: chunk norms vary ~35x) without touching the rest. History: the last 2,000 segments; no clipping before 32 are seen."""
+        with torch.no_grad():
+            dl = [p.grad - (s0 if s0 is not None else 0.0) if p.grad is not None else None for p, s0 in zip(self.P, snap)]
+            nrm = math.sqrt(sum(float((x.float() ** 2).sum()) for x in dl if x is not None)); u = nrm * N / max(m, 1)
+            h = self.seg_hist
+            if len(h) >= 32:
+                thr = self.a.clip_doc * float(np.median(h))
+                if u > thr:
+                    f = thr / u; self.nclip_doc += 1
+                    for p, s0, x in zip(self.P, snap, dl):
+                        if x is not None: p.grad = (s0 if s0 is not None else 0.0) + f * x
+            h.append(u)
+            if len(h) > 2000: del h[0]
+
     def run_group(self, ss, lr):
         """one optimizer step over the consecutive plan steps ss (#200: --accum micro-batches) at lr; returns per-tag (KL sum,
         rows) over all ranks and the wall. Each micro-batch's KL is divided by the step's total rows (see the header)"""
@@ -772,10 +791,12 @@ class Trainer:
         N = sum(self.step_rows(s_) for s_ in ss)                # the optimizer step's rows (all its micro-batches)
         acc = torch.zeros(2 * len(self.tags) + 2, dtype=torch.float64)      # per tag (KL, rows), T term sum, prefix tokens
         t0 = time.time()
+        self.nclip_doc = 0
         for s, sid in [(s_, q_) for s_ in ss for q_ in self.mine]:
             for (it, sa, sb) in self.steps[s][sid]:
                 gi, i = self.C.items[it][0], self.C.items[it][1]
                 prev = None
+                snap = [None if p.grad is None else p.grad.detach().clone() for p in self.P] if a.clip_doc > 0 else None
                 if sa > 0:
                     k = self.states.get(sid)
                     if k is not None and k[0] == it and k[1] == sa: prev = to_dev(k[2], self.dev)
@@ -791,6 +812,7 @@ class Trainer:
                 else:
                     kl, m, nxt = seg_loss(stu, self.C.g, (gi, i), sa, sb, prev)
                     if m: (kl / N).backward()
+                if snap is not None and m: self.clip_seg(snap, m, N)
                 t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
                 n_doc = self.C.items[it][2]
                 if sb < n_doc: self.states[sid] = (it, sb, to_cpu(nxt))
@@ -831,7 +853,7 @@ class Trainer:
             sd = o_.state_dict()
             return {"state": {k: {n: (v.detach().cpu().clone() if torch.is_tensor(v) else v) for n, v in s.items()} for k, s in sd["state"].items()},
                     "param_groups": copy.deepcopy(sd["param_groups"])}
-        z = {"cur": self.stu.state(), "opt": cp(self.opt), "gn_hist": list(self.gn_hist), "opt_order": self.opt_order()}
+        z = {"cur": self.stu.state(), "opt": cp(self.opt), "gn_hist": list(self.gn_hist), "seg_hist": list(self.seg_hist), "opt_order": self.opt_order()}
         if self.opt_lo is not None: z["opt_lo"] = cp(self.opt_lo)
         return z
 
@@ -840,7 +862,7 @@ class Trainer:
         return [n for n in self.names if not n.endswith((":la", ":lb", ":g"))] + [n for n in self.names if n.endswith(":g")]
 
     def restore(self, z):
-        self.stu.load_state(z["cur"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", [])); self.partial_restore = False
+        self.stu.load_state(z["cur"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", [])); self.seg_hist = list(z.get("seg_hist", [])); self.partial_restore = False
         if "opt_order" in z and z["opt_order"] != self.opt_order():     # w222: a fork into a different trainable set (staged MSE -> KL): Adam state by name, fresh for the rest
             new = map_opt_state(z["opt"], z["opt_order"], self.opt_order(), self.opt.state_dict()["param_groups"])
             self.opt.load_state_dict(new); self.partial_restore = True
@@ -1419,6 +1441,7 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--clip-doc", type=float, default=0.0, help="lead 11-22: per-document (segment) gradient clipping at C x the running median per-row segment gradient norm (0 = off)")
     ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")
     ap.add_argument("--snap-at", default="auto", help="lead 11-22: undecayed snapshots, the norm: the main run's state as it is (no decay, no branch) written as ckpt-raw-<rows> when the run first passes each row count. auto (default) = 0.25 / 0.5 / 0.75 / 1 M then every 0.5 M before the final budget; a comma list; none = off. A fork skips the points at / before its start")
     ap.add_argument("--exact-ckpt-names", action="store_true", help="lead 11-22: checkpoint labels keep the exact row count when python's %%.0e would round it (1.5e6 -> ckpt-1.5e+06, not ckpt-2e+06); default off = the old names")
@@ -1611,6 +1634,7 @@ def main():
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         rec["accum"] = N; rec["gnorm"] = round(T.gnorm, 6) if hasattr(T, "gnorm") else None
+        if a.clip_doc > 0: rec["clip_doc"] = T.nclip_doc
         if a.clip_gnorm > 0:
             rec["clip"] = None if T.clip is None else round(T.clip[0], 6)
             if T.clip is not None: log(f"CLIP step {s + 1}: gradient norm {T.gnorm:.4e} > {a.clip_gnorm} x median {T.clip[1] / a.clip_gnorm:.4e}: scaled by {T.clip[0]:.4f}")

@@ -1,0 +1,2 @@
+# lead 11-22 (user): 4.00 at lr 3e-5 to 4M on the extended plan (lower-and-longer: same drift as 1e-4 x 1.2M, ~40 % less noise); snapshots every 0.5M
+T I40-3e5-4M 4.00 2.5e5,5e5,1e6,2e6,4e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06,ckpt-4e+06 --lr 3e-5 --plan-ext {ext}/ext-plan.json --ext-root {ext} --compile-scales --compile-ew --a8-int8 @needs=/data/queue/a8int8.ok
