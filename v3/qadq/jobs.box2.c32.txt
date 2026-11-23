@@ -1,0 +1,7 @@
+# lead 11-23 ~2:40 AM CST (user: lift the 8k cap soon): training cap 32k (w214's data and order, long docs now to 32k tokens), the 74 golden-jlong docs kept at 8k (--cap-keep) so the long judge stays unseen; twins of I25-lr3e-4-2M and I30-lin-3e-4; judged on j217 + golden-jlong
+B c32-plan-test 2.50 --lr 3e-4 --cap 32768 --cap-keep /data/q27/queue/slices/jlong-ids.json --compile-scales --compile-ew --a8-int8 --max-steps 2 --snap-at none
+T C32-25 2.50 2.5e5,5e5,1e6,2e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06,ckpt-2e+06 --lr 3e-4 --cap 32768 --cap-keep /data/q27/queue/slices/jlong-ids.json --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/c32-plan-test/bench.done @ctl=I25-lr3e-4-2M
+T C32-30 3.00 1e6 ckpt-sd-2e+05,ckpt-sd-5e+05,ckpt-1e+06 --lr 3e-4 --decay-shape linear-all --short-decay 2.5e5,5e5 --cap 32768 --cap-keep /data/q27/queue/slices/jlong-ids.json --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/c32-plan-test/bench.done @ctl=I30-lin-3e-4
+R JL-C32-25 2.50 C32-25/ckpt-2e+06 @needs=C32-25/ckpt-2e+06/.done
+R JL-C32-25 2.50 C32-25/ckpt-1e+06 @needs=C32-25/ckpt-1e+06/.done
+R JL-C32-30 3.00 C32-30/ckpt-1e+06 @needs=C32-30/ckpt-1e+06/.done

@@ -1128,6 +1128,15 @@ def build_data(a, d, log):
                  cache=os.path.join(a.out, "items.json")) if d.rank == 0 else None
     d.barrier()
     if d.rank: C = D.Corpus(chunks, a.cap, calib=a.calib, pools=a.pools, pool=a.pool, genmask=a.genmask, cache=os.path.join(a.out, "items.json"))
+    keep8 = set(json.load(open(a.cap_keep))) if a.cap_keep else set()    # lead 11-23: calib docs that stay at --cap-keep-len (the long-context judge's docs)
+    calib_gi = len(C.g) - 1 if a.calib else None
+    def capfix(gi, i, n, nr):
+        if gi == calib_gi and i in keep8 and n > a.cap_keep_len:
+            g = C.g[gi]; return (gi, i, a.cap_keep_len, g.nrows(i, a.cap_keep_len))
+        return (gi, i, n, nr)
+    if keep8:
+        nb = sum(1 for x in C.items if x[0] == calib_gi and x[1] in keep8 and x[2] > a.cap_keep_len)
+        C.items = [capfix(*x) for x in C.items]; log(f"--cap-keep: {nb} base items cut back to {a.cap_keep_len} tokens ({len(keep8)} listed calib docs)")
     log(f"corpus {len(C.items)} documents in {time.time() - t0:.0f} s: {json.dumps(C.summary())}")
     log(f"chunk list: {len(chunks)} golden dirs, sha1 {hashlib.sha1(chr(10).join(chunks).encode()).hexdigest()[:12]} ({chunks[0]} .. {chunks[-1]})")
     fe = []
@@ -1147,13 +1156,14 @@ def build_data(a, d, log):
         json.dump([i for _, i in fe], open(os.path.join(a.out, "fixed-eval-docs.json"), "w"))
     if a.plan_ext:                                    # w222 (ledger use qad214-ext): w214's plan + new documents appended after it, w214's order as the prefix of the new order
         px = json.load(open(a.plan_ext)); n_old = len(C.items)
-        assert px["n_base_items"] == n_old and px["cap"] == a.cap, f"--plan-ext: its base has {px['n_base_items']} items (cap {px['cap']}), this run's {n_old} (cap {a.cap}): not w214's data"
+        assert px["n_base_items"] == n_old and (px["cap"] == a.cap or a.cap > px["cap"]), f"--plan-ext: its base has {px['n_base_items']} items (cap {px['cap']}), this run's {n_old} (cap {a.cap}): not w214's data"
+        relen = a.cap != px["cap"]                    # lead 11-23: a larger cap than the plan was built with: same documents and order, rows recounted at this cap
         for nm in px["new_goldens"]:
             C.g.append(D.Gold(os.path.join(a.ext_root, "gold", nm), genfile=os.path.join(a.ext_root, "genmask", nm + ".u8"))); C.tags.append(D.corpus_tag(nm))
         gidx = {g.name: k for k, g in enumerate(C.g)}
         for nm, i, nr in px["items"]:
-            g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert r_ == nr, f"--plan-ext: {nm}:{i} has {r_} rows here, {nr} in the plan"
-            C.items.append((gidx[nm], i, min(a.cap, g.ntok(i)), r_))
+            g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert relen or r_ == nr, f"--plan-ext: {nm}:{i} has {r_} rows here, {nr} in the plan"
+            C.items.append(capfix(gidx[nm], i, min(a.cap, g.ntok(i)), r_))
         log(f"plan-ext {a.plan_ext}: {len(C.items) - n_old} documents appended to w214's {n_old} ({', '.join(px['new_goldens'])} + calib qad docs): {json.dumps(C.summary())}")
         order = np.concatenate([np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(len(C.items) - n_old)])
     else:
@@ -1464,6 +1474,8 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--cap-keep", default=None, help="lead 11-23: JSON list of calib doc ids kept at --cap-keep-len tokens whatever --cap is (the long-context judge golden-jlong's docs, so its positions >= 8192 stay unseen)")
+    ap.add_argument("--cap-keep-len", type=int, default=8192)
     ap.add_argument("--lr-layers", default=None, help="lead 11-22: per-layer-range peak lr for the scales, e.g. 0-31:1e-4 (the schedule scales it like --lr; other layers --lr); a fresh run only (a fork's optimizer groups must match)")
     ap.add_argument("--clip-doc", type=float, default=0.0, help="lead 11-22: per-document (segment) gradient clipping at C x the running median per-row segment gradient norm (0 = off)")
     ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")

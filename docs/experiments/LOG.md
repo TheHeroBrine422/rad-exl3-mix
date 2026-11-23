@@ -9949,3 +9949,18 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
     (consistent with L32-only losing).
   - **Joint-MSE λ doesn't matter:** MJ25-l03 / -l3 1M 0.869 / 0.871 vs MJ25 0.867 → the MSE family is closed.
   - Running: TF25-128 / -16 (tied front scales), MJ30 λ arms, then the 3.0 control and cos / lin 2M; iceman I25-lr1e-4-4M (~9 AM).
+- 11-23 ~2:50 AM CST: **automatic lr-drop replay (CPU, `v3/qadq/replay_monitor.py`, `rwdetect.py`).**
+  (1) **The trainer's fixed monitor is too small to drive it**: 22 qad-pool docs / ~21k rows every 0.25M; paired 0.25M-step ratios have
+  CIs of ±1–20 % and spiky docs (the 4M run's monitor jumps 0.943 → 1.008 at 1.76M, then falls to 0.901 by 3.8M while j217 plateaus at
+  ~0.85 from 1.5M). A "no clear 0.5 % gain over 0.25M" rule fires falsely at 0.5–0.75M in every run (2.5 / 3.0 / 4.0).
+  (2) **Increment-cosine detector (successive raw-snapshot increments of the scales)**: 4M run, front / back: 0.55 / 0.55 (0.25→0.75M),
+  0.39 / 0.43, 0.35 / 0.44, 0.25 / 0.30 (1→2M), then flat 0.28–0.30 / 0.29–0.32 to 3.5M; step fork (1e-4 from 1.5M): 0.31 / 0.34, 0.25 /
+  0.30 with 3× smaller increments. **It flattens at ~1–1.5M, where j217 plateaus**, and is smooth (parameters only, no forward passes);
+  its level stays > 0 (drift persists), so it signals the regime change, not "no more gain". Proposal: drop the lr 3× when the increment
+  cosine has flattened (Δ < ~0.03 over two 0.5M intervals) **and** a bigger robust monitor (~100–150k held-out rows, median per-doc ratio)
+  shows < 0.5 % gain over the last 0.5M; validate on the 3.0 / 4.0 runs once they have dense snapshots. Expected value: the step fork
+  bought ~1 % at 2.5, so automation is about not hand-tuning 6–7 sizes, not a big gain.
+- 11-23 ~2:45 AM CST (user: lift the cap soon): qad220 `--cap-keep FILE` (calib docs kept at `--cap-keep-len` 8192 whatever `--cap`;
+  a larger cap than a `--plan-ext` plan recounts its rows; trainer 28bcc2a6). Queued at the top of box2: `B c32-plan-test`, then **C32-25**
+  (twin of I25-lr3e-4-2M at --cap 32768, the 74 golden-jlong docs kept at 8k) and **C32-30** (twin of I30-lin-3e-4), plus JL reads of their
+  1M / 2M checkpoints (`v3/qadq/jobs.box2.c32.txt`).
