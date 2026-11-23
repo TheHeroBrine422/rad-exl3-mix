@@ -9964,3 +9964,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   a larger cap than a `--plan-ext` plan recounts its rows; trainer 28bcc2a6). Queued at the top of box2: `B c32-plan-test`, then **C32-25**
   (twin of I25-lr3e-4-2M at --cap 32768, the 74 golden-jlong docs kept at 8k) and **C32-30** (twin of I30-lin-3e-4), plus JL reads of their
   1M / 2M checkpoints (`v3/qadq/jobs.box2.c32.txt`).
+- 11-23 ~3 AM CST (user): the 2-card layer-split training pipeline (64k–256k context) will likely be built regardless of C32's result, to make sure QAD never damages long context; one card stops at 32k (KV 64 KB/token on top of ~28 GB).
