@@ -7,3 +7,5 @@ T I25-pw03 2.50 2.5e5,5e5,1e6 ckpt-2e+05,ckpt-5e+05,ckpt-1e+06 --lr 3e-4 --promp
 T C32S-25 2.50 4e6 ckpt-sd-1e+06,ckpt-sd-2e+06,ckpt-sd-3e+06,ckpt-4e+06 --lr 3e-4 --lr-steps 3e-4:1.5e6,1e-4:3.6e6 --short-decay 1e6,2e6,3e6 --cap 32768 --cap-keep /data/q27/queue/slices/jlong-ids.json --plan-ext {ext}/ext-plan.json --ext-root {ext} --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/c32-plan-test/bench.done
 R JL-C32S-25 2.50 C32S-25/ckpt-4e+06 @needs=C32S-25/ckpt-4e+06/.done
 R JL-I25-step15 2.50 /data/q27/queue/runs-ice/I25-step15-4M/ckpt-4e+06 @needs=/data/q27/queue/runs-ice/I25-step15-4M/ckpt-4e+06/.done
+T C32S-30 3.00 3e6 ckpt-sd-1e+06,ckpt-sd-2e+06,ckpt-3e+06 --lr 3e-4 --lr-steps 3e-4:1e6,1e-4:2.6e6 --short-decay 1e6,2e6 --cap 32768 --cap-keep /data/q27/queue/slices/jlong-ids.json --plan-ext {ext}/ext-plan.json --ext-root {ext} --compile-scales --compile-ew --a8-int8 @needs=/data/q27/queue/runs/c32-plan-test/bench.done
+R JL-C32S-30 3.00 C32S-30/ckpt-3e+06 @needs=C32S-30/ckpt-3e+06/.done

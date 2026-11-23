@@ -9972,3 +9972,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   I25-lr1e-4-4M: **I25-step-10M** (3e-4 → 1e-4 at 1.5M, to 10M on the whole extended plan). Est. box2 ~45 card-h (~2 PM CST), iceman to
   ~10 PM CST. **w225 launched (Opus medium, e2dff026, 10 h)**: 2-card layer-split training for 64k–256k (brief `workers/instr3/w225.md`;
   gates: exact vs one card at 8k, filled pipeline, memory at 64k / 128k / 256k, a short 256k run).
+- 11-23 ~3:25 AM CST: + C32S-30 (3.00: 32k cap + extended plan + 3e-4 → 1e-4 at 1M, to 3M) and its long-context read, end of box2's queue (~5 PM CST with w225's card use).
