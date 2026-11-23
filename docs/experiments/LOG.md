@@ -9930,3 +9930,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **32k cap gate (cap32-test, 25 steps):** peak 30.56 GB (8k runs ~28), median 76.5 s / step (no slowdown; late steps 78–86 s) →
   feasible but tight (1.3 GB headroom on 31.86).
 - 11-23 12:05 AM CST: I25-lr1e-4-4M moved from box2 to iceman (after the step fork; extended-plan data is on iceman; iceman would otherwise idle from ~2:30 AM).
+- 11-23 12:50 AM CST: **MSE-then-KL at 2M: every variant lands on the same ~0.85 plateau as plain KL.** j217 at 2M, paired vs
+  I25-lr3e-4-2M (0.842): MF25-2M (front MSE 1M → KL) 0.853, 1.014 [1.003, 1.028]; MW25-2M (whole-model MSE 1M → KL) 0.851, 1.011
+  [0.998, 1.033]; MJ25-2M (joint 1M → KL) 0.852, 1.012 [1.000, 1.030]; MD25-2M (front MSE 0.5M → KL) 0.979 (blow-up doc; w/o blow-ups
+  0.878 = control 0.879). The plain-KL 4M run's own 2M point is 0.851 and its raw curve plateaus at ~0.85 from 1.5M → the 0.842 control
+  is likely ~1 % lucky; robust w/o-blow-up ratios at 2M all 0.878–0.887. MSE stages alone: MW25-s1 0.975 / 0.935 at 0.5 / 1M (only
+  40–46 % of docs improve), MF25-s1 0.949 at 1M. **Verdict: the MSE family speeds early progress at most; it doesn't lower the 2M
+  endpoint at lr 3e-4.** The λ variants (running) finish the joint question; the MSE follow-ups (more taps, λ annealing, weighted MSE)
+  lose their case unless the λ arms surprise.
