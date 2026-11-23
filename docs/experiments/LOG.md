@@ -9911,3 +9911,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   I25-lr3e-4-2M (`v3/qadq/jobs.box2.lf.txt`).
 - 11-22 ~11:50 PM CST (user): **lc1 + table-QAD question** → draft brief `rad-local/workers/instr3/w224-draft.md` (value-remap probe: a trainable 64-knot piecewise-linear map per K ≤ 2 tensor / row-block, in-trainer KL vs scale-only; gate ~2 % → plan lc1 + table plane for V4). Not launched (user's go + model). Context: 2.5 container K share ≤ 2.0 = 14.8 % of trunk params; mean K by layer lowest at L10–18 (~1.9–2.2), highest L48–63 (2.6–3.3); lc1 = mad quality at K ≤ 2 (0.955 / 1.934 vs 0.951 / 1.932), decode 1.29 / 1.12× vs mad 1.41 / 1.24×.
 - 11-22 ~11:58 PM CST (user): **lc1 (format / kernels / quantizer header) goes to the bottom of the list** — lots of work for little gain now; only the w224 value-remap probe stays live. Next for the low sizes: scale-QAD 0.5M screen at 2.0 once the 2.5 recipe settles.
+- 11-22 10:35 PM CST: **long-context reads (golden-jlong, positions ≥ 8,192, 74 docs; paired vs unhealed, per-doc bootstrap).**
+  2.50 (unhealed 0.026050): I25C 0.5M 0.934 [0.835, 0.979] (63/74 docs better, median doc 0.968); I25-lr3e-4-2M 1M 0.940 [0.809, 1.048]
+  (68/74), 2M **0.876 [0.736, 0.948]** (71/74, median 0.931); MJ25 1M 0.918 [0.796, 0.973] (67/74); MD25 1M 0.924 [0.791, 0.989]
+  (63/74). **3.00 (unhealed 0.012764): no gain past 8k** — I30C 1M 0.996 [0.920, 1.087] (57/74, median 0.972), I30-lin 1M 0.996 [0.908,
+  1.081] (64/74, median 0.967; j217 0.919), MJ30 1M 1.003. Most docs improve ~3 %, but **three long wildchat chats get much worse**
+  (I30-lin: 0.0236 → 0.0511, 0.0533 → 0.0681, 0.0505 → 0.0806 KL / gen row; positives 274 vs negatives 300 in summed KL) — the same
+  document type as the short blow-ups; not yet checked whether it is a derailment (onset) or uniform. Gates passed: clipoff-test =
+  I25C steps 1–2 bit for bit (train KL 0.0456230 / 0.0518916, gnorm 0.022495 / 0.02164); clipdoc-test clipped 2 / 5 / 0 segments in
+  steps 1–3; lrlayers-test 360 vectors at lr × 1/3, 360 at × 1. cap32-test at step 14: peak 29.1 GB, 70–75 s / step (deep segments
+  not reached yet).
