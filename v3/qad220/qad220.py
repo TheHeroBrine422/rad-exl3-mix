@@ -226,15 +226,19 @@ class SegCacheBuf(SegCache):
     The attention's inputs and the carried values are bitwise SegCache's"""
     def __init__(self, prev=None, cap=0):
         super().__init__(dict(prev) if prev else None); self.cap = cap
+    def room(self, need):
+        """w226: a buffer's capacity grows with the document (1/8 headroom, 4,096-position steps, at most the document's length): two 245k
+        documents in flight at once would otherwise hold 2 x 8 GiB a card from their first segment"""
+        return max(need, min(self.cap, -(-(need + need // 8) // 4096) * 4096))
     def update(self, k, v, l, *a, **kw):
         p = self.prev.get(("kv", l)); n = k.shape[2]
         P = p.n if p is not None else 0
         if p is None:
-            sh = list(k.shape); sh[2] = max(self.cap, n)
+            sh = list(k.shape); sh[2] = self.room(n)
             p = KVView(torch.empty(sh, dtype=k.dtype, device=k.device), torch.empty(sh, dtype=v.dtype, device=v.device), 0)
             self.prev[("kv", l)] = p
         elif p.k.shape[2] < P + n or p.device != k.device:
-            p = p.to(k.device, max(self.cap, P + n)); self.prev[("kv", l)] = p
+            p = p.to(k.device, self.room(P + n)); self.prev[("kv", l)] = p
         with torch.no_grad():                    # idempotent under the checkpoint's recompute (same positions, same values)
             p.k[:, :, P:P + n].copy_(k.detach()); p.v[:, :, P:P + n].copy_(v.detach())
         self.next[("kv", l)] = KVView(p.k, p.v, P + n)

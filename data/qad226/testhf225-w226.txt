@@ -1,0 +1,31 @@
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+default: [(161.5219268798828, 167.0, 0.28745117952464383, 0.0), (199.66445922851562, 201.0, 0.27604898497202124, 0.0), (174.1399917602539, 170.0, 0.2937400378732509, 0.0)]
+PASS defaults: this qad220 = /data/q27/w226/code/v3/qad220/qad220_prew226.py bit for bit (3 steps: KL sums, rows, gnorm, parameters)  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS buffered KV, parked on the CPU: = default loop bit for bit (KL sums, rows, gnorm, parameters)  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS buffered KV, kept in place (--state-card-gb): = default bit for bit
+PASS --split-layers 4 (naive, connected graph over the two device entries): = default one-card loop bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --pipeline: = naive split bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --pipeline with states kept on the cards: = naive split bit for bit
+PASS first half frozen (train layers 5-7, split 4): default = naive split = pipeline bit for bit  [(161.5219268798828, 167.0, 0.045792677121632396, 0.0) (161.5219268798828, 167.0, 0.045792677121632396, 0.0) (161.5219268798828, 167.0, 0.045792677121632396, 0.0)]
+PASS --accum 2 at V = 1 (a stream's consecutive segments in one pipeline): pipeline = default bit for bit  [(193.8594741821289, 199.0, 0.26525383462201857, 0.0) vs (193.8594741821289, 199.0, 0.26525383462201857, 0.0)]
+PASS --attn-gqa: KL sums within 1e-3 relative of the default (rounding-level), rows equal  [[161.5219268798828, 199.66445922851562, 174.1399917602539] vs [161.5219268798828, 199.66445922851562, 174.1399917602539]]
+PASS --attn-gqa: pipeline = one card (same attention form) bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --depth-test 512: runs (pipeline = naive), KL differs from the default, carried K / V include the 512 synthetic positions  [(161.54793548583984, 167.0, 0.288340873460971, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0); kv n [640, 640, 640, 640]]
+
+ALL PASS
+=== growth forced (4,096 -> 8 position steps)
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+default: [(161.5219268798828, 167.0, 0.28745117952464383, 0.0), (199.66445922851562, 201.0, 0.27604898497202124, 0.0), (174.1399917602539, 170.0, 0.2937400378732509, 0.0)]
+PASS defaults: this qad220 = /data/q27/w226/code/v3/qad220/qad220_prew226.py bit for bit (3 steps: KL sums, rows, gnorm, parameters)  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS buffered KV, parked on the CPU: = default loop bit for bit (KL sums, rows, gnorm, parameters)  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS buffered KV, kept in place (--state-card-gb): = default bit for bit
+PASS --split-layers 4 (naive, connected graph over the two device entries): = default one-card loop bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --pipeline: = naive split bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --pipeline with states kept on the cards: = naive split bit for bit
+PASS first half frozen (train layers 5-7, split 4): default = naive split = pipeline bit for bit  [(161.5219268798828, 167.0, 0.045792677121632396, 0.0) (161.5219268798828, 167.0, 0.045792677121632396, 0.0) (161.5219268798828, 167.0, 0.045792677121632396, 0.0)]
+PASS --accum 2 at V = 1 (a stream's consecutive segments in one pipeline): pipeline = default bit for bit  [(193.8594741821289, 199.0, 0.26525383462201857, 0.0) vs (193.8594741821289, 199.0, 0.26525383462201857, 0.0)]
+PASS --attn-gqa: KL sums within 1e-3 relative of the default (rounding-level), rows equal  [[161.5219268798828, 199.66445922851562, 174.1399917602539] vs [161.5219268798828, 199.66445922851562, 174.1399917602539]]
+PASS --attn-gqa: pipeline = one card (same attention form) bit for bit  [(161.5219268798828, 167.0, 0.28745117952464383, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0)]
+PASS --depth-test 512: runs (pipeline = naive), KL differs from the default, carried K / V include the 512 synthetic positions  [(161.54793548583984, 167.0, 0.288340873460971, 0.0) vs (161.5219268798828, 167.0, 0.28745117952464383, 0.0); kv n [640, 640, 640, 640]]
+
+ALL PASS

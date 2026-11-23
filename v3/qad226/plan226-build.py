@@ -22,7 +22,13 @@ ids = [x if isinstance(x, list) else ["calib", x] for x in json.load(open(idp))]
 have = {(nm, i) for nm, i, _ in px["items"] + px.get("front_items", [])}
 assert not any((nm, i) in have for nm, i in ids), "a deep document is already in the plan"
 ids.sort(key=lambda x: -meta[x[0]][0][x[1]]["tokens"])
-front = [[nm, i, rows(nm, i, CAP)] for nm, i in ids[:NF]]; head = [[nm, i, rows(nm, i, CAP)] for nm, i in ids[NF:]]
+# the k-th longest goes to stream SPREAD[k]: deep streams far apart in the step's stream order, so the pipeline (2 segments ahead) never holds two deep
+# states at once (each is up to ~8 GiB a card at 256k)
+SPREAD = [0, 12, 6, 18, 3, 15, 9, 21, 1, 13, 7, 19, 4, 16, 10, 22, 2, 14, 8, 20, 5, 17, 11, 23]
+slot = [None] * NF
+for k, (nm, i) in enumerate(ids[:NF]): slot[SPREAD[k] if NF == 24 else k] = [nm, i, rows(nm, i, CAP)]
+assert len(ids) >= NF, f"{len(ids)} deep documents < --front {NF}: lower --front"
+front = [x for x in slot if x is not None]; head = [[nm, i, rows(nm, i, CAP)] for nm, i in ids[NF:]]
 out = dict(px); out["front_items"] = px.get("front_items", []) + front; out["items"] = head + px["items"]
 out["ledger_use"] = "qad226-deep"; out["w226"] = {"from": src, "front": len(out["front_items"]), "head": len(head),
                                                  "deep_tokens": {f"{nm}:{i}": meta[nm][0][i]["tokens"] for nm, i in ids},
