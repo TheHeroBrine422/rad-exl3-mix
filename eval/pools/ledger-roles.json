@@ -606,6 +606,12 @@
   "decisions": 0,
   "note": "w222 extended QAD data plan (calib qad-pool docs appended after w214's plan)"
  },
+ "qad226-deep": {
+  "role": "train",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "w226 deep-context QAD plan: calib fit / search docs > 8,192 tokens (not verify / golden-jlong / j217 / train214), trained whole (cap 262144)"
+ },
  "golden-jlong": {
   "role": "check",
   "line": "v3.1",

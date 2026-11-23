@@ -1427,17 +1427,24 @@ def build_data(a, d, log):
         log(f"fixed eval: {len(fe)} qad-pool docs, {tot} rows (first {a.len} tokens), held out of training ({before - len(C.items)} items removed)")
         json.dump([i for _, i in fe], open(os.path.join(a.out, "fixed-eval-docs.json"), "w"))
     if a.plan_ext:                                    # w222 (ledger use qad214-ext): w214's plan + new documents appended after it, w214's order as the prefix of the new order
-        px = json.load(open(a.plan_ext)); n_old = len(C.items)
+        px = json.load(open(a.plan_ext))
+        if a.cap > px["cap"]:                         # w226: a document with < min_rows gen rows in its first cap tokens is not in the plan's base, whatever this run's cap
+            nb = len(C.items); C.items = [x for x in C.items if C.g[x[0]].nrows(x[1], px["cap"]) >= px["min_rows"]]
+            log(f"plan-ext at cap {a.cap} > the plan's {px['cap']}: {nb - len(C.items)} base items under {px['min_rows']} rows at cap {px['cap']} dropped (not in w214's base)")
+        n_old = len(C.items)
         assert px["n_base_items"] == n_old and (px["cap"] == a.cap or a.cap > px["cap"]), f"--plan-ext: its base has {px['n_base_items']} items (cap {px['cap']}), this run's {n_old} (cap {a.cap}): not w214's data"
         relen = a.cap != px["cap"]                    # lead 11-23: a larger cap than the plan was built with: same documents and order, rows recounted at this cap
         for nm in px["new_goldens"]:
             C.g.append(D.Gold(os.path.join(a.ext_root, "gold", nm), genfile=os.path.join(a.ext_root, "genmask", nm + ".u8"))); C.tags.append(D.corpus_tag(nm))
         gidx = {g.name: k for k, g in enumerate(C.g)}
-        for nm, i, nr in px["items"]:
+        for nm, i, nr in px["items"] + px.get("front_items", []):
             g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert relen or r_ == nr, f"--plan-ext: {nm}:{i} has {r_} rows here, {nr} in the plan"
             C.items.append(capfix(gidx[nm], i, min(a.cap, g.ntok(i)), r_))
-        log(f"plan-ext {a.plan_ext}: {len(C.items) - n_old} documents appended to w214's {n_old} ({', '.join(px['new_goldens'])} + calib qad docs): {json.dumps(C.summary())}")
-        order = np.concatenate([np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(len(C.items) - n_old)])
+        n_front = len(px.get("front_items", [])); n_ext = len(C.items) - n_old - n_front
+        log(f"plan-ext {a.plan_ext}: {n_ext} documents appended to w214's {n_old}, {n_front} front ({', '.join(px['new_goldens'])} + calib docs): {json.dumps(C.summary())}")
+        # w226: front_items (stored after the extension in C.items) take the first places of the order, one per stream (deep documents need
+        # the whole run: a stream trains Q tokens a step), then w214's order, then the extension; without front_items the order is w222's
+        order = np.concatenate([n_old + n_ext + np.arange(n_front), np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(n_ext)])
     else:
         order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
     EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))

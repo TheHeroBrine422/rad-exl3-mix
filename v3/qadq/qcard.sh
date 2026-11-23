@@ -18,7 +18,7 @@ while ! stopped; do
   eval "exec {lk}>$(CARDLOCK $CARD)"
   flock -w 60 $lk || { exec {lk}>&-; continue; }
   stopped && break
-  LINE=$($QQ claim $QROOT $CARD $$ --caps M,U) || { exec {lk}>&-; sleep 5; continue; }
+  LINE=$($QQ claim $QROOT $CARD $$ --caps M,U,T2) || { exec {lk}>&-; sleep 5; continue; }
   eval "set -- $LINE"; KIND=$1 KEY=$2 ARM=$3 SIZE=$4 BUD=$5 READS=$6 CKD=$7 CTL=$8 ST=$9; shift 9
   qsay "card $CARD takes $KEY ($KIND $ARM $SIZE; $ST)"
   export QCARD_LOCKED=1
@@ -36,11 +36,19 @@ while ! stopped; do
     qsay "card $CARD+$PARTNER $ARM taps rc $rc"
     if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; elif [ $rc -eq 0 ] && [ -e $CKD/.done ]; then fin ok 0; else fin fail $rc; fi
     exec {lk2}>&-;;
-  T|B)
-    LASTN=$($PY -c "print('%.0e' % float('${BUD##*,}'))")
+  T|B|T2)
+    LASTN=$($PY -c "print('%.0e' % float('${BUD##*,}'))"); TC=$CARD
+    if [ "$KIND" = T2 ]; then PARTNER=${1#partner=}; shift; fi
     if [ "$KIND" = B ] || [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then
-      while true; do $HERE/qrun.sh $MACHINE $ARM $CARD $SIZE $BUD "$@" {inst}>&-; rc=$?; case $rc in 75|76) sleep 120;; *) break;; esac; done
-      qsay "card $CARD train $ARM rc $rc"
+      if [ "$KIND" = T2 ]; then   # w226: two-card training: the partner's lock too (45 min at most, else the claim is released), the trainer sees both cards
+        eval "exec {lk2}>$(CARDLOCK $PARTNER)"; got=0
+        for try in $(seq 45); do flock -w 60 $lk2 && { got=1; break; }; stopped && break; done
+        if [ $got = 0 ]; then qsay "card $CARD $KEY: partner card $PARTNER not free in 45 min, claim released"; $QQ unclaim $QROOT $KEY; exec {lk2}>&-; unset QCARD_LOCKED; exec {lk}>&-; sleep 30; continue; fi
+        TC=$CARD,$PARTNER
+      fi
+      while true; do $HERE/qrun.sh $MACHINE $ARM $TC $SIZE $BUD "$@" {inst}>&-; rc=$?; case $rc in 75|76) sleep 120;; *) break;; esac; done
+      qsay "card $TC train $ARM rc $rc"
+      if [ "$KIND" = T2 ]; then $QQ freepartner $QROOT $KEY; exec {lk2}>&-; qsay "card $CARD $KEY: partner card $PARTNER released"; fi
       if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; ok=0
       elif [ $rc -ne 0 ]; then fin fail $rc; ok=0
       elif [ "$KIND" = T ] && [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then fin fail "0(no-final-checkpoint)"; ok=0
