@@ -10014,3 +10014,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   - **EMA at 3.0 (long view): mild help** — EMA 0.97 vs raw 0.986 [0.961, 1.004] at 1M, 0.993 [0.978, 1.004] at 1.5M, vs the decayed 2M
     end 0.965 [0.910, 1.000]; EMA 0.9 ≈ raw; EMA 0.97 1M ties the 1M linear-decay run (1.007). Not decisive.
   - Step fork's long-context read (JL-I25-step15 4M) landed (to analyse).
+  - Long context: the step fork's 4M end (I25-step15) on golden-jlong 0.879 [0.729, 0.949], 72/74 docs better = the 2M control's 0.876 → the 1e-4 tail neither helps nor hurts deep context.
