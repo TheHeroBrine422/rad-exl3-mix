@@ -10022,3 +10022,36 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   improved 0.91 → 0.93. → the 1e-4 tail is still paying (~2 % on the median doc from 2M to 9M), no clear plateau.
 - 11-23 4:20 PM CST: w226's 3rd gate failure (OOM on card 1, 19.7 GiB by PyTorch + ~12 GB foreign) likely caused by the lead's 8 early
   R reads: card 0 claimed the T2 gate at 4:09 while card 1 still ran a read until 4:11; w226 told (check that T2 waits for the partner).
+- 11-23 ~5:00 PM CST: **w226 (deep-context QAD) status.** Built:
+  - the queue kind **T2** (`qq.py` / `qcard.sh`): a two-card training (@cards / @partner as M; the partner is held for the training only,
+    `freepartner`, then the reads run on the claimant's card; a crashed T2 resumes from state.pt up to 3×);
+  - `--plan-ext` **front_items** (qad220: they take the order's first places, one per stream, on spread streams; default off = old plans
+    bit-identical);
+  - the plan builder `v3/qad226/plan226-build.py` and the CPU checker `plancheck226.py`;
+  - ledger uses `qad226-deep` (26 calib fit / search docs > 8k, not verify / golden-jlong / j217 / train214 / QAD-monitor) and
+    `qad226-trdeep-b1` (non-calib).
+
+  Five gate attempts, each exposing a real problem in w225's deep path (the reason w225's G4 never saw them: no doc > 32k, V = 1
+  depth tests):
+  1. at a cap larger than the plan's, one more base doc passes min_rows → dropped;
+  2. OOM at step 1: KV buffers held the full document length (245k) from the first segment, two deep streams = 16 GiB a card →
+     buffers grow (`kv_room`, √2 ladder) and deep docs go on spread streams;
+  3. OOM at step 3: `place()` re-expanded parked states to the full length, plus fragmentation → fixed (not the lead's reads: the
+     T2 claim waited for card 1's read, which ended 4:11; the trainer started 4:11);
+  4. torch expandable segments fail on ROCm (mapping OOM while building the student) → dropped;
+  5. step 13: CUDA illegal memory access right after step 12's fixed eval + save (async; the stack ends in run_pipe /
+     inductor shift_conv1d `_DeviceGuard(0)`; stdout `/data/q27/w226/g226-gate.fail5-stdout.log`). The resumed run passed it, and
+     two-card tests with a fixed eval every 2 steps pass (`gate226.sh`, tests1) → unexplained one-off; T2 auto-resume added.
+
+  testhf225 ALL PASS after each trainer change (also with the KV growth forced to 8-position steps; `data/qad226/testhf225-w226.txt`).
+- 11-23 ~5:00 PM CST: **w226 gate read: concentrated early batches hurt.** The 24-doc front plan (226b: the first ~15 steps are 89 %
+  calib from 24 docs at lr 3e-4) gave j217 **1.168** vs unhealed at 0.25M (KL 0.0550; w/o blow-ups 1.104; I25C 0.25M ≈ 1.00). →
+  plan **226c**: only the 7 docs > 20k as front (ripgrep 1241 / cobra 4029 on streams 0 / 3, both reach depth 212,992 by 4M; 17 of 24
+  streams start on w214's order); the other 19 at the extension head. D256-25 (226b) / D256-30 (226b) were cancelled at step 1 and
+  restarted on 226c at 4:56 / ~4:58 PM CST (cards 0+1 / 2+3).
+- 11-23 ~5:00 PM CST: **w226 source 2 ready** (lead: option B). trdeep-b1 = 12 of our session pieces (6 main + 6 worker, one a
+  session, 236k–250k tokens, ~2.94M tokens; none holds a tr32k doc: the probe test finds 204 / 205 tr32k docs in the old sessdocs, 1 of
+  218 candidates dropped). Private: VM `rad-local/w226`, box2 `queue/ext/trdeep`. `v3/qad226/chain226.sh` (box2) waits for D256-25 /
+  -30 to finish, then: stop the dispatchers → TP4 bf16 record (top-512, max-model-len 262144; config checked at TP2 on a toy corpus) →
+  dispatchers back → gen mask → plan 226t (front = the 7 calib > 20k + traces 0–2) → the queued T2 D256-25T (5 deep streams; host RAM
+  binds: ~13.4 GiB a parked deep state at 210k).

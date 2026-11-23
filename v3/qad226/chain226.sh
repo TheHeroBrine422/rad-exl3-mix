@@ -7,7 +7,8 @@
 #      QROOT/ext/gold/trdeep-b1 (.part, renamed with .done); all four card locks held (order 0..3, then ram shared)
 #   4. the dispatchers restarted (qwait.sh), whatever step 3 gave
 #   5. gen mask (genmask181.py make) -> QROOT/ext/genmask/trdeep-b1.u8
-#   6. plan ext-plan-226t.json (plan226-build.py: the 26 calib deep docs + traces 0..2 of trdeep-b1; the D256-25T line waits for it)
+#   6. plan ext-plan-226t.json (plan226-build.py --front-min 20000: front = the 7 calib docs > 20k + traces 0..2 of trdeep-b1, the other 19 calib docs at the
+#      extension head; the D256-25T line waits for it)
 # PRIVATE: trdeep-b1 is the user's traces (box2 counts as ours); never copy it or its golden elsewhere.
 set -u
 Q=/data/q27; QROOT=$Q/queue; W=$Q/w226; E=$QROOT/ext; L=$W/chain.log
@@ -15,7 +16,8 @@ log() { echo "$(TZ=America/Chicago date '+%m-%d %-I:%M %p CST') $*" >> $L; }
 source $QROOT/code/v3/qadq/qenv.sh box2
 G=$E/gold/trdeep-b1
 log "chain226 start (pid $$)"
-until [ -e $QROOT/done/T2-D256-25 ] && [ -e $QROOT/done/T2-D256-30 ]; do sleep 120; done
+okdone() { grep -qs "^ok" $QROOT/done/$1; }      # a cancelled job writes done/KEY too ("cancelled ..."): only finished ones count
+until okdone T2-D256-25 && okdone T2-D256-30; do sleep 120; done
 if [ ! -e $G/.done ]; then
   log "D256-25 / D256-30 done: stopping the dispatchers between jobs"
   P=""; for c in 0 1 2 3; do P="$P $(cat $QROOT/dispatch/card$c.pid)"; touch $QROOT/stop-card$c; done
@@ -52,7 +54,7 @@ if [ ! -e $E/genmask/trdeep-b1.u8 ]; then
   log "gen mask rc $?"
 fi
 if [ ! -e $E/ext-plan-226t.json ]; then
-  $PY $QROOT/code/v3/qad226/plan226-build.py $E/ext-plan.json $CALIB $W/deep2-ids.json $E/ext-plan-226t.json.part --gold trdeep-b1=$G:$E/genmask/trdeep-b1.u8 >> $L 2>&1 \
+  $PY $QROOT/code/v3/qad226/plan226-build.py $E/ext-plan.json $CALIB $W/deep2-ids.json $E/ext-plan-226t.json.part --front-min 20000 --gold trdeep-b1=$G:$E/genmask/trdeep-b1.u8 >> $L 2>&1 \
     && mv $E/ext-plan-226t.json.part $E/ext-plan-226t.json; log "plan ext-plan-226t rc $?"
 fi
 log "chain226 done"

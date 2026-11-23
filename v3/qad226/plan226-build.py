@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""plan226-build.py EXT_PLAN.json CALIB_DIR DEEP_IDS.json OUT.json [--front N] [--gold NAME=DIR:GENMASK ...] -- the deep-context QAD plan (w226, ledger use qad226-deep,
+"""plan226-build.py EXT_PLAN.json CALIB_DIR DEEP_IDS.json OUT.json [--front N | --front-min TOKENS] [--gold NAME=DIR:GENMASK ...] -- the deep-context QAD plan (w226, ledger use qad226-deep,
 role train). Takes w222's extended plan (plan222-build.py) unchanged and adds documents deeper than the 8k cap:
   DEEP_IDS.json = list of calib doc ids (fit / search pool, > 8k tokens, outside verify / golden-jlong / train214 / j217), or of [golden, doc] pairs (new long goldens
   given with --gold NAME=DIR:GENMASK).
-The N (default 24 = one per stream) longest become `front_items` (qad220: the first places of the order, one per stream, so they are trained from step 0: a stream
-trains 1,024 tokens a step, ~200 steps in a 4M run); the rest go to the head of the extension's `items`. Rows are counted at the plan's cap (8192), as the trainer checks."""
+The N (default 24 = one per stream; --front-min T: those > T tokens) longest become `front_items` (qad220: the first places of the order, one per stream, so they
+are trained from step 0: a stream trains 1,024 tokens a step, ~200 steps in a 4M run); the rest go to the head of the extension's `items`. The front items take
+the order's first places in a spread (van der Corput over the N places; N = 24: 0, 12, 6, 18, ..), the longest first, so deep documents sit on streams far apart.
+w226: a 24-doc front (ext-plan-226b) made the first ~15 steps 89 % calib from 24 docs and the 0.25M read 1.168 vs unhealed on j217; 226c fronts only the 7 > 20k. Rows are counted at the plan's cap (8192), as the trainer checks."""
 import json, sys
 import numpy as np
 src, cdir, idp, outp = sys.argv[1:5]; a = sys.argv[5:]
 NF = int(a[a.index("--front") + 1]) if "--front" in a else 24
+FMIN = int(a[a.index("--front-min") + 1]) if "--front-min" in a else None
 golds = {"calib": (cdir, f"{cdir}/gen.u8")}
 for k, x in enumerate(a):
     if x == "--gold": nm, rest = a[k + 1].split("=", 1); golds[nm] = tuple(rest.split(":", 1))
@@ -22,11 +25,22 @@ ids = [x if isinstance(x, list) else ["calib", x] for x in json.load(open(idp))]
 have = {(nm, i) for nm, i, _ in px["items"] + px.get("front_items", [])}
 assert not any((nm, i) in have for nm, i in ids), "a deep document is already in the plan"
 ids.sort(key=lambda x: -meta[x[0]][0][x[1]]["tokens"])
+if FMIN is not None: NF = sum(1 for nm, i in ids if meta[nm][0][i]["tokens"] > FMIN)
 # the k-th longest goes to stream SPREAD[k]: deep streams far apart in the step's stream order, so the pipeline (2 segments ahead) never holds two deep
 # states at once (each is up to ~8 GiB a card at 256k)
-SPREAD = [0, 12, 6, 18, 3, 15, 9, 21, 1, 13, 7, 19, 4, 16, 10, 22, 2, 14, 8, 20, 5, 17, 11, 23]
+def spread(n):
+    if n == 24: return [0, 12, 6, 18, 3, 15, 9, 21, 1, 13, 7, 19, 4, 16, 10, 22, 2, 14, 8, 20, 5, 17, 11, 23]     # ext-plan-226b's
+    out, k = [], 0
+    while len(out) < n:
+        x, f, v = k, 0.5, 0.0
+        while x: v += f * (x & 1); x >>= 1; f /= 2
+        p = int(v * n)
+        if p not in out: out.append(p)
+        k += 1
+    return out
+SPREAD = spread(NF)
 slot = [None] * NF
-for k, (nm, i) in enumerate(ids[:NF]): slot[SPREAD[k] if NF == 24 else k] = [nm, i, rows(nm, i, CAP)]
+for k, (nm, i) in enumerate(ids[:NF]): slot[SPREAD[k]] = [nm, i, rows(nm, i, CAP)]
 assert len(ids) >= NF, f"{len(ids)} deep documents < --front {NF}: lower --front"
 front = [x for x in slot if x is not None]; head = [[nm, i, rows(nm, i, CAP)] for nm, i in ids[NF:]]
 out = dict(px); out["front_items"] = px.get("front_items", []) + front; out["items"] = head + px["items"]
