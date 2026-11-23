@@ -53,6 +53,7 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 | C5 | code-changing healing (PV-tuning: shadow weights → re-encode) | dead-ish | same gradient-noise problem as C4 |
 | C6 | per-output bias vectors | backlog | small format addition |
 | C7 | table-QAD on packed CPTC | later (V4) | — |
+| C9 | lc1 codebook at K ≤ 2 + table-QAD (format, kernels, quantizer header) | bottom of the list (user 11-22) | only the w224 value-remap probe is live (draft brief) |
 | C8 | asym ⇄ heal / block coordinate descent (re-encode with healed scales, heal again) | later (V4) | always end on a heal |
 
 ## D. MSE family (local hidden-state targets)
