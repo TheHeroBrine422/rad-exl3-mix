@@ -9879,3 +9879,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Also: GN30 (3.00, unseen batches): released L0–15 / 16–31 / 32–47 / 48–63 = 5.2 / 4.8 / 5.9 / 11.0 % (z 1.96), after KL 1M 3.2 / 2.2 /
   2.6 / 7.6 % (same picture as 2.50). GN25-mseB: block MSE on layers 32–55 is as strong as on the front (74.0 % / 61.6 % L32–47,
   66.7 / 52.6 % L48–55 at z 1.96 / 3). 4.00 lr 3e-4: MJ40 and I40-L32 also derail 3820; I40-L48 doesn't but doesn't gain (≈ 1.00–1.02).
+- 11-22 ~9:10 PM CST: **4.00 on j217 never exceeded ~1 %** — iceman I40-lr1e-4-2M (w214 plan): 1.013 / 1.651 / 2.761 / 1.127 at 0.25 / 0.5 / 1 / 2M (3820 derails at 0.5–1M; w/o blow-ups 0.994 / 1.032 / 1.062 / 1.032; median doc 0.995–0.988); box2 I40-lr1e-4 1M 0.989. The ~5 % recalled is w214's j214 (retired calib-verify judge, read ~15×): 0.948 / 0.950. Proposal: treat 4.0 QAD as not paying yet; per-doc clipping may change it; next sizes after the 2.5 recipe settles: 2.0 / 2.25 (user).

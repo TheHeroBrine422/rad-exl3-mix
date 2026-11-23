@@ -83,5 +83,5 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 |---|---|---|---|
 | F1 | recipe per size: 2.5 3e-4 constant long; 3.0 3e-4 + linear decay; 4.0 1e-4 | proposed | pending the 4M curves and D1–D3 at 2M |
 | F2 | keep-best checkpoint + one verify read per finalist | planned | verify only for finalists |
-| F3 | **new: is 4.0 worth QAD?** | new (decision) | best so far ~1 %; the card time may be better spent on 2.5 / 3.0 (user priority) |
-| F4 | **new: other sizes (2.0, 2.25, 2.75, 3.5)** | new | the recipe is size-specific; the 2.x sizes likely gain like 2.5 |
+| F3 | **new: is 4.0 worth QAD?** | new (decision) | j217: never > ~1 %; lr 1e-4 also derails by 2M (1.127); the ~5 % was on the retired j214. Per-doc clipping (A14) may change it |
+| F4 | **new: other sizes** | next (user) | 2.0 / 2.25 after the 2.5 recipe settles: one 0.5M lr screen each, then one long run |
