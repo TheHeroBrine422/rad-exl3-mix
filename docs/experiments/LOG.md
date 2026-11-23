@@ -9902,3 +9902,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   phase keeps the MSE front, adds noise; no erosion); MJ25 vs control +0.644 / +0.968. Reading: **under Adam the front scales move as
   fast as the back even though their gradient is noise** (Adam normalises step size), so the front mostly accumulates random walk;
   supports a lower front lr with more data (user) — per-layer-group lr (qad-ideas A17).
+- 11-22 ~11:25 PM CST: **first long-context read: the 2.50 QAD gain holds past token 8,192.** golden-jlong (74 qad-pool docs, whole up
+  to 247k tokens, positions ≥ 8,192 only; 247k context fits one card at 2.50): unhealed 2.50 0.026050 KL / gen row; I25-lr3e-4-2M 2M
+  0.022818 = **0.876 [0.736, 0.948]**, 71 of 74 docs better (j217, ≤ 8k: 0.842). Rest of the JL reads running.
+- 11-22 ~11:25 PM CST (user): **per-layer-group lr** — qad220 `--lr-layers 0-31:1e-4` (peak lr per layer range, consecutive parameter
+  groups in parameter order so the optimizer index order is unchanged; fresh runs only; trainer 1f3ff0bf on both machines). Queued on
+  box2 after CD30: gate `B lrlayers-test`, then LF25-1e4 (front 1e-4 / back 3e-4) and LF25-3e5 (front 3e-5 / back 3e-4), 2.50 to 2M vs
+  I25-lr3e-4-2M (`v3/qadq/jobs.box2.lf.txt`).

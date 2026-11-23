@@ -396,6 +396,27 @@ def seg_loss_ext(stu, g, it, a, b, prev, pw=0.0, loc=None, ch=256):
     return tot, gen, int(isg.sum()), len(j), nxt, ls.detach()
 
 
+def lr_groups(a, names, params):
+    """lead 11-22 --lr-layers "0-31:1e-4[,40-47:2e-4]": the peak lr of each scale vector by its layer (others: --lr); returns
+    [(base lr, [params])] as consecutive runs in parameter order (the optimizer's index order stays = opt_order). Without the flag:
+    one group at --lr (unchanged)."""
+    rules = []
+    for x in (a.lr_layers.split(",") if a.lr_layers else []):
+        rg, lr_ = x.split(":"); lo, _, hi = rg.partition("-"); rules.append((int(lo), int(hi or lo), float(lr_)))
+    def lr_of(n):
+        m = re.search(r"\.layers\.(\d+)\.", n)
+        if m:
+            for lo, hi, v in rules:
+                if lo <= int(m.group(1)) <= hi: return v
+        return a.lr
+    out = []
+    for n, p in zip(names, params):
+        b = lr_of(n)
+        if out and out[-1][0] == b: out[-1][1].append(p)
+        else: out.append((b, [p]))
+    return out if out else [(a.lr, [])]
+
+
 def to_cpu(st): return {k: (tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu()) for k, v in st.items()}
 def to_dev(st, dev): return {k: (tuple(t.to(dev, non_blocking=True) for t in v) if isinstance(v, tuple) else v.to(dev, non_blocking=True)) for k, v in st.items()}
 
@@ -733,11 +754,13 @@ class Trainer:
         sc = [p for n, p in zip(self.names, self.P) if not n.endswith((":la", ":lb", ":g"))]
         lo = [p for n, p in zip(self.names, self.P) if n.endswith((":la", ":lb"))]
         self.scal = sc + nrm
+        scg = lr_groups(a, [n for n in self.names if not n.endswith((":la", ":lb", ":g"))], sc)   # lead 11-22 --lr-layers: consecutive runs of scales with one lr (parameter order kept)
+        if a.lr_layers: log(f"--lr-layers {a.lr_layers}: " + ", ".join(f"{len(g_)} vectors at lr x {b_ / a.lr:g}" for b_, g_ in scg))
         if a.wd > 0:       # #200: decoupled weight decay on the log multipliers (toward 0 = the stored scales); not on the norm gains
-            groups = [{"params": sc, "base": a.lr, "weight_decay": a.wd}] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else [])
+            groups = [{"params": g_, "base": b_, "weight_decay": a.wd} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else [])
             self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps, weight_decay=0.0)
         else:              # W = 0: #196's Adam, unchanged
-            groups = [{"params": sc, "base": a.lr}] + ([{"params": nrm, "base": a.lr / 10}] if nrm else [])
+            groups = [{"params": g_, "base": b_} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10}] if nrm else [])
             self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps)
         # L: the adapters' Adam runs on the CPU on f32 master copies (its state, 2 x 0.46 GB at r = 16, does not fit
         # beside a card's training peak); the card's adapters are overwritten with the masters after every step
@@ -1441,6 +1464,7 @@ def parser():
     ap.add_argument("--export-only", action="store_true", help="#196: write the checkpoint of the start state (U arms), no training")
     ap.add_argument("--eps", type=float, default=1e-8, help="#217: Adam's eps on the log multipliers (torch's default 1e-8)")
     ap.add_argument("--compile-ew", action="store_true", help="w215: torch.compile the shift conv and the MLP's silu * up (speed; forward bitwise, backward rounding-level)")
+    ap.add_argument("--lr-layers", default=None, help="lead 11-22: per-layer-range peak lr for the scales, e.g. 0-31:1e-4 (the schedule scales it like --lr; other layers --lr); a fresh run only (a fork's optimizer groups must match)")
     ap.add_argument("--clip-doc", type=float, default=0.0, help="lead 11-22: per-document (segment) gradient clipping at C x the running median per-row segment gradient norm (0 = off)")
     ap.add_argument("--ema-params", default=None, help="lead 11-22: comma list of decays (e.g. 0.9,0.97): keep a bias-corrected EMA of the trainable parameters over the main run's optimizer steps and write it as ckpt-ema<decay>-<rows> at every snapshot point and at the end (training itself unchanged); off by default until its ablation")
     ap.add_argument("--snap-at", default="auto", help="lead 11-22: undecayed snapshots, the norm: the main run's state as it is (no decay, no branch) written as ckpt-raw-<rows> when the run first passes each row count. auto (default) = 0.25 / 0.5 / 0.75 / 1 M then every 0.5 M before the final budget; a comma list; none = off. A fork skips the points at / before its start")
