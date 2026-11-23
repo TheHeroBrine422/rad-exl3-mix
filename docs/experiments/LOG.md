@@ -9921,3 +9921,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   I25C steps 1–2 bit for bit (train KL 0.0456230 / 0.0518916, gnorm 0.022495 / 0.02164); clipdoc-test clipped 2 / 5 / 0 segments in
   steps 1–3; lrlayers-test 360 vectors at lr × 1/3, 360 at × 1. cap32-test at step 14: peak 29.1 GB, 70–75 s / step (deep segments
   not reached yet).
+- 11-22 10:45 PM CST: the three long wildchat docs that 3.00 QAD worsens (I30-lin 1M): **uniform degradation, not a derailment** — healed KL ~1.5–3× the unhealed in most eighths of their deep parts (e.g. 16,384-token chat: 0.015/0.038, 0.068/0.089, 0.072/0.178, 0.005/0.012, …). Likely scales tuned on ≤ 8k contexts behaving worse in long conversational context → lifting the cap is the direct fix; golden-jlong becomes a standard read for every finalist.
