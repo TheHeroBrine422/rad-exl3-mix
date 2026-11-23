@@ -7,7 +7,7 @@ case $MACHINE in
 box2)
   Q=/data/q27; QROOT=$Q/queue; IN=$Q/w214; PY=$Q/venv/bin/python
   MODEL=$Q/models/qwen38-27b-bf16; CALIB=$Q/challenge/golden/calib
-  CHUNKS=$IN/chunks214.txt; J217=$Q/w217/slices/golden-j217; CTLDIR=$Q/w217/scores
+  CHUNKS=$IN/chunks214.txt; J217=$Q/w217/slices/golden-j217; CTLDIR=$Q/w217/scores; JLONG=$QROOT/slices/golden-jlong
   CARDS="0 1 2 3"; CARDLOCK() { echo /data/q27/locks/card$1.lock; }; RAMLOCK=/data/q27/locks/ram.lock; MINRAM=35
   RB=$Q/w206/install/bin/radiance; RH=$Q/w206/install/share/radiance; RLIBS=/opt/rocm-10.1/lib:$Q/ffmpeg-libs
   GPUENV() { echo "ROCR_VISIBLE_DEVICES=$1"; }
@@ -15,7 +15,7 @@ box2)
 iceman)
   QROOT=/data/queue; IN=$QROOT/w214; PY=/data/venv-exl3/bin/python
   MODEL=/data/workspace/models/qwen38-27b-bf16; CALIB=/data/challenge/golden/calib
-  CHUNKS=$IN/chunks214.iceman.txt; J217=$QROOT/slices/golden-j217; CTLDIR=$QROOT/ctl/scores
+  CHUNKS=$IN/chunks214.iceman.txt; J217=$QROOT/slices/golden-j217; CTLDIR=$QROOT/ctl/scores; JLONG=$QROOT/slices/golden-jlong
   CARDS="0"; CARDLOCK() { echo /root/card$1.lock; }; RAMLOCK=/root/ram.lock; MINRAM=30
   RB=/data/w218/rad/install/bin/radiance; RH=/data/w218/rad/home; RLIBS=
   GPUENV() { echo "ROCR_VISIBLE_DEVICES=$1 HIP_VISIBLE_DEVICES=$1"; }

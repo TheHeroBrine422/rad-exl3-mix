@@ -4,7 +4,8 @@
 set -u
 MACHINE=$1 NAME=$2 RAD=$3 CARD=$4
 HERE0=$(dirname "$(readlink -f "$0")"); source $HERE0/qenv.sh $MACHINE
-G=${5:-$J217}; O=$QROOT/scores; mkdir -p $O
+G=${5:-$J217}; O=$QROOT/scores; mkdir -p $O; MML=16448
+case $NAME in JL-*) G=${5:-$JLONG}; MML=262144;; esac          # lead 11-22: JL-* names read the long-context judge (qad-pool long docs, whole, up to 247k tokens; positions >= 8192 scored)
 [ -s $O/$NAME.json ] && { echo "$NAME done"; exit 0; }
 if [ -z "${QCARD_LOCKED:-}" ]; then eval "exec {fd}>$(CARDLOCK $CARD)"; flock $fd; fi
 eval "exec {rf}>$RAMLOCK"; flock -s $rf
@@ -17,7 +18,7 @@ models:
     model: $(readlink -f $RAD)
     tp: 1
     kv-cache-dtype: bf16
-    max-model-len: 16448
+    max-model-len: $MML
     max-num-seqs: 1
     embedding-placement: ram
     kld-ref: $G

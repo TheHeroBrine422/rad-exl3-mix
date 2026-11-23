@@ -605,5 +605,11 @@
   "line": "v3.1",
   "decisions": 0,
   "note": "w222 extended QAD data plan (calib qad-pool docs appended after w214's plan)"
+ },
+ "golden-jlong": {
+  "role": "check",
+  "line": "v3.1",
+  "decisions": 0,
+  "note": "lead 11-22: the QAD long-context judge golden-jlong: the 74 qad-pool docs longer than 8,192 tokens, whole (up to 246,898 tokens), only positions >= 8,192 scored (528,414 gen rows; never trained: every QAD plan caps docs at their first 8,192 tokens), cut from the published calib golden with eval/golden_pick.py (idx:0:8192); served reads JL-* of unhealed 2.50 / 3.00 and QAD checkpoints (report / screening; finalists still read verify)"
  }
 }

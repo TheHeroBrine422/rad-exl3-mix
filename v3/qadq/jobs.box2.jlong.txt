@@ -1,0 +1,11 @@
+# lead 11-22 ~10:15 PM CST (user): long-context judge golden-jlong = the 74 qad-pool docs > 8k tokens, whole (up to 247k), only positions >= 8192 scored (never trained: the plan caps at 8k): 528k gen rows. Unhealed first, then the key checkpoints
+U JL-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad.ok
+R JL-I25-lr3e-4-2M 2.50 I25-lr3e-4-2M/ckpt-2e+06
+R JL-I25C 2.50 I25C/ckpt-5e+05
+U JL-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad.ok
+R JL-I30-lin 3.00 I30-lin-3e-4/ckpt-1e+06
+R JL-I25-lr3e-4-2M 2.50 I25-lr3e-4-2M/ckpt-1e+06
+R JL-MJ25 2.50 MJ25/ckpt-1e+06
+R JL-MD25 2.50 MD25/ckpt-1e+06
+R JL-I30C 3.00 I30C/ckpt-1e+06
+R JL-MJ30 3.00 MJ30/ckpt-1e+06
