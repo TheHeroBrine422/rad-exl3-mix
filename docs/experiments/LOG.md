@@ -10107,3 +10107,7 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   - Trainer installed = cfe28c70 + 864eaff6's w226 hunk (md5 c1e47d74; the repo HEAD also carries w224's --remap commit fe06271a, not
     installed in the queue by w226).
 - 11-23 10:40 PM CST: **D256-25 4M end (2.5, deep 7-doc front, 2 deep streams to ~213k):** j217 0.846 (w/o blow-ups 0.874, median doc 0.941; = step fork 4M 0.845). **golden-jlong 0.862 [0.720, 0.932] vs unhealed (73 / 74, median doc 0.901); paired vs the step fork 4M (8k, same lr steps): 0.981 [0.959, 0.997], 58 / 74 better** — the first significant long-context gain from deep data (~2 %), small; at 2M it was 0.997 (deep docs at ~110k). Unverified until D256-25T (more traces, 10M) shows the same direction; JL reads of I25-step-10M's sd-2/4/6/8M running as its matched controls.
+- 11-23 10:52 PM CST: **w226 D256-25T (10M, plan 226u) started** on box2 cards 0+1 (steps 1–5 normal: 35–53 s, peak 19.9 GiB, RSS 13 GB).
+  ETA: training ~9 AM CST, reads ~10:30 AM CST. **Control for it: I25-step-10M on golden-jlong is flat at 0.880–0.883** vs unhealed
+  (sd-2M 0.881, sd-4M 0.883, sd-6M 0.880, sd-8M 0.880, 10M 0.883; `data/qad226/jl-control-I25-step-10M.md`): the long 1e-4 tail at
+  8k context does not move deep-context KL. The reads of D256-25T at the same points are queued (paired vs these).
