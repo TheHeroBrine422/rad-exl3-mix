@@ -10162,3 +10162,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   golden-jlong vs the 10M end (74 docs): ctl 0.988 [0.962, 0.998], hard1 1.008 [0.979, 1.030], optr 0.995 [0.989, 1.010], opcal 0.996
   [0.991, 1.006], opmix 0.999 [0.989, 1.023]. Only real calib helps, on both judges. stud228 done 3:32 PM (student goldens stud-b1 1.61M,
   stud-calib-b1; cards 1–3 returned); C228-stud / C228-studcal training since 4:00 / 4:10 PM, C228-ctls1 (noise floor) since 3:33 PM.
+- 11-24 4:35 PM CST (user: "check both"): **why teacher data is null.** (1) *Is teacher text easy?* The 10M model's train KL / row over each
+  arm's first 20 steps (≈ the 10M model on that data): real calib (lr3e5) 0.0370, teacher calib cuts 0.0343, teacher traces 0.0447, student
+  traces 0.0407, student calib 0.0342. So no: teacher text is about as hard as calib (traces harder), the "easy rows" explanation fails.
+  (2) *Does it help on teacher text?* New held-out judges from the onpol docs no arm trained on: `slices/golden-jteach` (59 onpol-b1 docs,
+  68,164 rows, JT-* reads) and `golden-jteachc` (64 onpol-calib-b1 docs, 93,256 rows, JU-*), built with eval/golden_pick.py; qscore.sh /
+  qread.sh map the prefixes. 10 reads queued on box2 (10M end, ctl, optr, opcal, opmix on each).
