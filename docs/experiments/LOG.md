@@ -10066,3 +10066,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   sits at ~0.84 from 6M on. iceman idle since 5:38 PM CST (nothing queued). Deep runs on box2: D256-25 at 1.62M rows (one "illegal
   memory access" crash at 6:18 PM, auto-resumed from state.pt, retry 1 of 3), D256-30 at 1.79M; peaks 20.6 / 21.2 GiB per card; their
   reads come at the end (~4M / 3M).
+- 11-23 ~7:05 PM CST (user): **checkpoint soup** queued on iceman (geometric mean of the scales, `v3/qadq/soup.py`): SOUP2 = I25-step-10M 10M + I25-step15-4M 4M, SOUP3 = those + I25-lr3e-4-4M 4M; j217 reads vs the 10M end (0.840). **w224 launched (Sonnet high, 8970cfb8, ≤ 8 h): value-remap probe** (`workers/instr3/w224.md`; iceman card 0 via its queue). Grouped (tied) scales were tested 11-23 (TF25-16 / -128 front half: 0.999 / 1.016, neutral).
