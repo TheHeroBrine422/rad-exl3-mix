@@ -10069,3 +10069,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-23 ~7:05 PM CST (user): **checkpoint soup** queued on iceman (geometric mean of the scales, `v3/qadq/soup.py`): SOUP2 = I25-step-10M 10M + I25-step15-4M 4M, SOUP3 = those + I25-lr3e-4-4M 4M; j217 reads vs the 10M end (0.840). **w224 launched (Sonnet high, 8970cfb8, ≤ 8 h): value-remap probe** (`workers/instr3/w224.md`; iceman card 0 via its queue). Grouped (tied) scales were tested 11-23 (TF25-16 / -128 front half: 0.999 / 1.016, neutral).
 - 11-23 ~6:50 PM CST: **soup null:** SOUP2 0.842 (w/o blow-ups 0.867, median doc 0.937), SOUP3 0.839 (0.865, 0.933) vs the 10M end 0.840 (0.870, 0.930). Averaging plateau runs' scales gives the same plateau: no gain, no loss. Dead as a recipe step. iceman now runs w224's gate.
 - 11-23 8:30 PM CST: **D256-30 trained (3.0, deep 7-doc front, cap 262144, 3M) — j217:** end 0.934 (w/o blow-ups 0.932, median doc 0.969, 83 % improved); sd-2M 0.956; early 1M bump 1.08 (blow-ups; robust columns 0.946). Same as the 8k 3.0 runs (best I30-lin 1M 0.919 / 0.925 / 0.974): deep training costs nothing on j217. JL reads running (box2 card 2).
+- 11-23 ~8:40 PM CST: **w226 D256-30 (3.00, deep plan 226c, cap 262144, 3e-4 to 1M → 1e-4 to 2.7M → decay to 3M) landed.**
+  - j217: 3M end **0.934** [0.879, 0.983] (w/o blow-ups 0.932); sd-2M 0.956; sd-1M 1.091 (blow-up doc; w/o 0.943). Raw: 0.25M 0.981 ·
+    0.5M 0.956 · 0.75M 1.045 · 1M 1.080 · 1.5M 0.991 · 2M 0.957 · 2.5M (row). The 3.00 plateau (~0.93) is unchanged: 1M linear-all
+    0.919, cosine 2M 0.934.
+  - **golden-jlong: 0.949 [0.858, 1.013] vs unhealed, 67 / 74 docs better (median doc 0.958); paired vs I30-lin 1M 0.953 [0.875, 0.990]**.
+    The 3.00 runs so far sat at ~1.00 on jlong (I30-lin 1M 0.996, I30C 0.996). Not yet attributable to the deep data: the 3M budget
+    and schedule differ. Same-size JL controls are queued (I30-lr1e-4-3M 3M, I30-lin-2M 2M). Readout tool `v3/qad226/jl226.py`
+    (reproduces the lead's 0.876 / 0.879). Raw `data/qad226/results-D256.tsv`, `jl-readout-1123-840pm.md`.
+  - D256-25's sd-2M on golden-jlong: 0.874 [0.737, 0.942], 72 / 74 (median doc 0.914). Paired vs I25-lr3e-4-2M 2M: 0.997 [0.990, 1.014]
+    → no long-context gain at 2M (the deep docs are at ~110k depth then). Its 4M end follows (~10 PM CST).

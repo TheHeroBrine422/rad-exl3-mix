@@ -15,3 +15,6 @@ R JL-D256-30 3.00 D256-30/ckpt-sd-2e+06
 T2 D256-25T 2.50 4e6 ckpt-sd-1e+06,ckpt-sd-2e+06,ckpt-sd-3e+06,ckpt-4e+06 --lr 3e-4 --lr-steps 3e-4:1.5e6,1e-4:3.6e6 --short-decay 1e6,2e6,3e6 --compile-scales --compile-ew --a8-int8 --plan-ext {ext}/ext-plan-226t.json --ext-root {ext} --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --split-layers 32 --pipeline --attn-gqa --state-card-gb 4 @cards=0 @partner=1 @needs=/data/q27/queue/ext/ext-plan-226t.json
 R JL-D256-25T 2.50 D256-25T/ckpt-4e+06
 R JL-D256-25T 2.50 D256-25T/ckpt-sd-2e+06
+# w226: same-size controls for the D256-30 long-context read (3.00 runs without deep data: lr 1e-4 3M, linear 2M)
+R JL-I30-lr1e-4-3M 3.00 I30-lr1e-4-3M/ckpt-3e+06
+R JL-I30-lin-2M 3.00 I30-lin-2M/ckpt-2e+06
