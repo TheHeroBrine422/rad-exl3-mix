@@ -10130,3 +10130,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (step 514, 10,001,611 rows; lr 1e-4 then the same 0.4M decay to 11.5M): C228-ctl (plain), C228-hard1 (`--hard-rows 1`); the on-policy arm
   (w228's data) follows on box2. Reads: JC-UN2.50, JC-I25-step-10M (10M end), JC of each arm's end, + j217. Runtime: neither (quantizer
   training only).
+- 11-24 4:20 AM CST: **jc228 judge (738k held-out calib rows) first reads.** 10M end (I25-step-10M ckpt-1e+07) **0.901 [0.873, 0.926]** vs
+  unhealed (609 / 642 docs better, median doc 0.926). **C228-ctl** (+1.55M rows of unused calib from the 10M state, 1e-4 → 0.4M decay):
+  0.895 [0.867, 0.917] vs unhealed; **paired vs the 10M end 0.993 [0.985, 0.998]**, 397 / 642 better, median doc 0.998 — a small but
+  significant gain (~0.7 %) for +15 % more rows of the same kind of data, the reference for the arms. C228-hard1 training (iceman, 4:06 AM);
+  on-policy arms C228-optr / C228-opcal queued on box2 by arm228.sh after w228's goldens (~9 AM CST).
