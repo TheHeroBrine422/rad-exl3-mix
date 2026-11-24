@@ -10183,3 +10183,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   end, 2048-row block bootstrap inside each trace (understates the uncertainty: n = 2 traces): ctl 1.001 / 0.998; hard1 1.014 / 1.009; optr
   **0.987 / 0.988**; opcal 0.993 / 0.989; opmix **0.988 / 0.985**; the other 72 jlong docs: ctl 0.976, optr 1.004, opcal 1.001, opmix 1.013.
   Teacher data helps the real agent traces ~1–1.5 % on both; real calib doesn't help them at all (its gain is all on the non-agent docs).
+- 11-24 6:10 PM CST: **who wrote the scored text.** Calib golden gen rows by source: agent-trace (the 8 Qwen3.8-27B-written sessions,
+  FP8, default sampling) **13.1 %** of 7.73M scored rows; every other assistant / plain text is human- or other-model-written. The
+  leaderboard subset holds 2 of 8 traces but every 8th doc, so traces are ~2× over-weighted there: ≈ 24 % of its 1.05M scored positions
+  (~17 % of the KL at the 10M model's KL levels: traces 0.027, jc228 0.040). jc228 has ~no trace rows (one 8k ripgrep chunk) → it
+  under-weights the self-written part of the score. Leaderboard-weighted composite of the C228 arms vs the 10M end (0.82 × jc228 + 0.18 ×
+  attrs / click mean): ctl 0.994, opmix 0.996, optr 0.998, opcal 0.998 (ctl still ahead at an equal 1.5M budget, gap 0.2 %). Proposal:
+  every finals / screen read reports this composite (jc228 or j217 + the two held-out calib traces), verify traces once at the end.
+  w228 cut audit (lead): sampling = Qwen's thinking defaults (T 1.0, top_p 0.95, top_k 20), as the challenge's traces; trace cuts keep only
+  the ≤ 8k prefix tail in the golden although the turn was written with 8–128k of context (labels consistent, context mismatched);
+  trace prefixes are mostly Claude-written pi turns (only the cut turn is Qwen's), unlike the challenge's fully self-written sessions.
