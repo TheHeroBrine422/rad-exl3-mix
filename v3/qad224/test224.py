@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """test224.py (w224) -- CPU unit checks of qad220.py's --remap (the value map of the table-QAD probe): knots, identity = the plain bf16 weights
-bit for bit, forward vs a float64 reference interpolation, the table's gradient vs finite differences (groups 1 and 3), the rounded (int8
+bit for bit, forward vs a float64 x @ f(m), the table's gradient vs finite differences (groups 1 and 3), the rounded (int8
 table) straight-through variant, apply_remap's selection by K and its off-switch. Functions are taken from qad220.py (AST extraction).
 Run: python3 test224.py   (exit 0 = all pass)"""
 import ast, argparse, os, sys, types
@@ -10,9 +10,9 @@ import torch
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TREE = ast.parse(open(os.path.join(HERE, "..", "qad220", "qad220.py")).read())
-ns = {"np": np, "torch": torch, "BF": torch.bfloat16, "REMAP_M": 127, "os": os, "save_atomic": lambda obj, fn: torch.save(obj, fn)}
+ns = {"np": np, "torch": torch, "BF": torch.bfloat16, "REMAP_M": 127, "os": os, "qmodel": types.SimpleNamespace(i8_to_bf16=lambda w: w.to(torch.bfloat16)), "save_atomic": lambda obj, fn: torch.save(obj, fn)}
 for node in TREE.body:
-    if (isinstance(node, ast.FunctionDef) and node.name in ("remap_knots", "remap_basis", "apply_remap", "write_ckpt")) or (isinstance(node, ast.ClassDef) and node.name in ("_RemapGather", "ValueRemap")):
+    if (isinstance(node, ast.FunctionDef) and node.name in ("remap_knots", "remap_basis", "apply_remap", "write_ckpt")) or (isinstance(node, ast.ClassDef) and node.name in ("_RemapMatmul", "ValueRemap")):
         exec(compile(ast.Module([node], []), "qad220.py", "exec"), ns)
 ValueRemap, remap_knots, remap_basis, apply_remap = ns["ValueRemap"], ns["remap_knots"], ns["remap_basis"], ns["apply_remap"]
 
@@ -33,39 +33,50 @@ check("knots: few distinct values -> few knots", len(remap_knots(np.bincount([0,
 A = remap_basis(xs, 16)
 v = np.arange(int(xs[-1]) + 1); check("basis: identity knot values interpolate to the integers up to the last knot", np.abs(A[v][:, :len(xs)] @ xs.astype(np.float64) - v).max() < 1e-4)
 
+M_ROWS = 6
+xin = torch.from_numpy(rng.integers(-16, 17, (M_ROWS, k)).astype(np.float32) / 8).to(torch.bfloat16)
 for G in (1, 3):
     m = ValueRemap(wq, G, 16)
-    w0 = m(wq)
-    check(f"identity (groups {G}): W' == wq.to(bf16) bit for bit", torch.equal(w0, wq.to(torch.bfloat16)) and w0.dtype == torch.bfloat16)
-    # forward at random d vs a float64 reference interpolation (np.interp per group), bf16-rounded
+    check(f"identity (groups {G}): delta table exactly 0", bool((m.dtab() == 0).all()) and bool((m.table() == m.iden).all()))
+    y0 = m.matmul(xin, wq); yp = xin @ wq.to(torch.bfloat16)
+    check(f"identity (groups {G}): y == the plain x @ m (bf16 GEMM)", y0.dtype == torch.bfloat16 and torch.equal(y0, yp), f"max |diff| {float((y0.float() - yp.float()).abs().max()):.3g}")
     with torch.no_grad(): m.d.copy_(torch.randn(G, 16) * 0.05)
     X = m.X.numpy().astype(np.float64); d = m.d.detach().numpy().astype(np.float64)
     def ref(dd):
         out = np.zeros((k, n))
         for g in range(G):
             r0, r1 = g * k // G, (g + 1) * k // G; nk = int((X[g][1:] > 0).sum()) + 1; kx = X[g][:nk]; ky = kx * (1 + dd[g][:nk])
-            a = np.abs(wq[r0:r1].numpy().astype(np.float64)); out[r0:r1] = np.sign(wq[r0:r1].numpy()) * np.interp(a, kx, ky)
+            a_ = np.abs(wq[r0:r1].numpy().astype(np.float64)); out[r0:r1] = np.sign(wq[r0:r1].numpy()) * np.interp(a_, kx, ky)
         return out
-    w1 = m(wq).detach().float().numpy()
-    check(f"forward vs float64 interpolation (groups {G}): within one bf16 ulp", np.abs(w1 - ref(d)).max() <= 0.5 ** 8 * 130, f"max diff {np.abs(w1 - ref(d)).max():.4f}")
-    # gradient of sum(G * W') vs central finite differences of the float64 reference
-    Gt = torch.from_numpy(rng.integers(-8, 9, (k, n)).astype(np.float32) / 8).to(torch.bfloat16)
-    m.d.grad = None; (m(wq).float() * Gt.float()).sum().backward()
-    gd = m.d.grad.detach().numpy().astype(np.float64); fd = np.zeros_like(gd); Gn = Gt.float().numpy().astype(np.float64)
+    x64 = xin.float().numpy().astype(np.float64)
+    y1 = m.matmul(xin, wq).detach().float().numpy(); yr = x64 @ ref(d)
+    check(f"forward vs the float64 x @ f(m) (groups {G}): within bf16 rounding of y", np.abs(y1 - yr).max() <= 2 ** -8 * np.abs(yr).max(), f"max diff {np.abs(y1 - yr).max():.4f} of max |y| {np.abs(yr).max():.1f}")
+    # a perturbation below bf16's step (the failed first probe's regime) must still move y: relative d ~ 1e-3
+    with torch.no_grad(): m.d.copy_(torch.full((G, 16), 1e-3))
+    ys = m.matmul(xin, wq).detach().float(); yp32 = yp.float()
+    check(f"tiny map (d = 1e-3, groups {G}): y moves by ~ the exact amount (the bf16-rounded W' would not move)", abs(float((ys - yp32).abs().sum()) / float((torch.from_numpy(x64 @ (ref(np.full((G, 16), 1e-3)) - wq.numpy().astype(np.float64)))).abs().sum()) - 1) < 0.25
+          and float((ys - yp32).abs().sum()) > 0)
+    with torch.no_grad(): m.d.copy_(torch.from_numpy(d).float())
+    # gradients of sum(Gy * y): d vs central finite differences of the float64 reference, x vs dy @ m^T
+    Gy = torch.from_numpy(rng.integers(-8, 9, (M_ROWS, n)).astype(np.float32) / 8).to(torch.bfloat16)
+    xg = xin.clone().requires_grad_(True); m.d.grad = None
+    (m.matmul(xg, wq).float() * Gy.float()).sum().backward()
+    gd = m.d.grad.detach().numpy().astype(np.float64); fd = np.zeros_like(gd); Gn = Gy.float().numpy().astype(np.float64)
     for g in range(G):
         nk = int((X[g][1:] > 0).sum()) + 1
         for j in range(nk):
             e = 1e-3; dp, dm = d.copy(), d.copy(); dp[g, j] += e; dm[g, j] -= e
-            fd[g, j] = ((Gn * ref(dp)).sum() - (Gn * ref(dm)).sum()) / (2 * e)
-    check(f"table gradient vs finite differences (groups {G})", np.abs(gd - fd).max() < 1e-3 * max(1.0, np.abs(fd).max()), f"max |diff| {np.abs(gd - fd).max():.2e} of max |fd| {np.abs(fd).max():.2f}; unused knots' grad {np.abs(gd[:, len(xs):]).max(initial=0.0):.1e}")
+            fd[g, j] = ((Gn * (x64 @ ref(dp))).sum() - (Gn * (x64 @ ref(dm))).sum()) / (2 * e)
+    check(f"table gradient vs finite differences (groups {G})", np.abs(gd - fd).max() < 1e-2 * max(1.0, np.abs(fd).max()), f"max |diff| {np.abs(gd - fd).max():.2e} of max |fd| {np.abs(fd).max():.2f}; unused knots' grad {np.abs(gd[:, len(xs):]).max(initial=0.0):.1e}")
+    check(f"dx = dy @ m^T (groups {G})", torch.equal(xg.grad, Gy @ wq.to(torch.bfloat16).t()))
 
-# rounded: integer table, identity unchanged, gradient straight-through (nonzero)
+# rounded: integer delta table, identity unchanged, gradient straight-through (nonzero)
 mr = ValueRemap(wq, 1, 16, rounded=True)
-check("rounded: identity == wq", torch.equal(mr(wq), wq.to(torch.bfloat16)))
+check("rounded: identity y == x @ m", torch.equal(mr.matmul(xin, wq), xin @ wq.to(torch.bfloat16)))
 with torch.no_grad(): mr.d.copy_(torch.randn(1, 16) * 0.05)
-t = mr.table()
-check("rounded: table entries are integers within +-127", bool((t == t.round()).all()) and float(t.abs().max()) <= 127)
-mr.d.grad = None; (mr(wq).float() * 1.0).sum().backward()
+t = mr.dtab().detach()
+check("rounded: delta entries are integers, f(v) within +-127", bool((t == t.round()).all()) and float((mr.iden + t).abs().max()) <= 127)
+mr.d.grad = None; (mr.matmul(xin, wq).float()).sum().backward()
 check("rounded: straight-through gradient reaches d", float(mr.d.grad.abs().sum()) > 0)
 
 # apply_remap: selection by K, int8-only, parameters in stu.P, off switch

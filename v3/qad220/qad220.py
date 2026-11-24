@@ -138,7 +138,7 @@ def use_compiled_scales(stu, a8=False, a8_int8=False, dynamo_limit=0):
         if a8_int8: y = _a8_int8_gemm(self, x)
         else:
             if a8: x = _A8.apply(x)
-            y = x @ (self.remap(self.wq) if getattr(self, "remap", None) is not None else qmodel.i8_to_bf16(self.wq))      # w224: --remap's value map on the tensors it covers
+            y = self.remap.matmul(x, self.wq) if getattr(self, "remap", None) is not None else x @ qmodel.i8_to_bf16(self.wq)      # w224: --remap's value map on the tensors it covers
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         return post(y, self.svh, self.c, self.s).view(*sh[:-1], self.n)
     for q in stu.qlin.values():
@@ -155,7 +155,8 @@ def use_a8(stu, a8_int8=False):
         x = (x0 * self.su()).to(BF)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
         if a8_int8: y = _a8_int8_gemm(self, x)
-        else: y = _A8.apply(x) @ (self.remap(self.wq) if getattr(self, "remap", None) is not None else self.wq.to(BF))      # w224: --remap
+        elif getattr(self, "remap", None) is not None: y = self.remap.matmul(_A8.apply(x), self.wq)      # w224: --remap
+        else: y = _A8.apply(x) @ self.wq.to(BF)
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         y = y * (self.sv() * self.s)
         if self.la is not None: y = y + (x0.float() @ self.la.T) @ self.lb.T            # adapters (arm L) compose, f32 (use_lora32)
@@ -207,29 +208,37 @@ def remap_basis(xs, n_knots):
     return A.astype(np.float32)
 
 
-class _RemapGather(torch.autograd.Function):
-    """W' = bf16(lut)[wq + off] (a gather of the table at the int8 codebook integers; off [k, 1] int32 = group * (2 REMAP_M + 1) + REMAP_M);
-    backward: the table's gradient = the per-entry sum of dL/dW' over the weights that read the entry (a histogram, f32 atomics: the
-    sum's order is not fixed, so the remap's gradient is not bitwise reproducible; the forward is)"""
+class _RemapMatmul(torch.autograd.Function):
+    """y = x @ (m + delta) for the int8 codebook integers m (wq) and the map's delta = f(m) - m, one bf16 GEMM with f32 accumulation and one rounding of y:
+    the K-concatenation [x, x] @ [m; delta] (a perturbation of the weights smaller than bf16's relative step (2^-8) vanishes when the sum m + delta is rounded
+    to bf16 -- m is an integer, exactly on bf16's grid -- so delta is kept as its own bf16 operand; the first probe, W' = bf16(f(m)), trained nothing: steps 1-12
+    of a 3e-4 run identical to the scale-only control to the 6th digit). delta = gather of the table dtab [G, 255] (f32, bf16-rounded: delta's own 8 bits) at
+    wq + off (off [k, 1] int32 = group * 255 + 127). Backward: dx = dy @ m^T (the delta term, <= 0.3 % of the weights, left out); the table's gradient = the
+    per-entry sum of dW = x^T dy over the weights that read the entry (a histogram, `torch.bincount` with f32 atomics: the sum's order is not fixed, so the
+    remap's gradient is not bitwise reproducible, the forward is)"""
     @staticmethod
-    def forward(ctx, lut, wq, off):
-        ctx.save_for_backward(wq, off); ctx.shape = lut.shape
-        return lut.reshape(-1).to(BF).index_select(0, (wq.to(torch.int32) + off).reshape(-1)).view(wq.shape)
+    def forward(ctx, x, dtab, wq, off):
+        ctx.save_for_backward(x, wq, off); ctx.shape = dtab.shape
+        delta = dtab.reshape(-1).to(BF).index_select(0, (wq.to(torch.int32) + off).reshape(-1)).view(wq.shape)
+        return torch.cat([x, x], 1) @ torch.cat([qmodel.i8_to_bf16(wq), delta], 0)
 
     @staticmethod
-    def backward(ctx, dw):
-        wq, off = ctx.saved_tensors
-        idx = (wq.to(torch.int32) + off).reshape(-1)
-        s = torch.bincount(idx, weights=dw.reshape(-1).float(), minlength=ctx.shape.numel())
-        return s.view(ctx.shape), None, None
+    def backward(ctx, dy):
+        x, wq, off = ctx.saved_tensors
+        dx = dy @ qmodel.i8_to_bf16(wq).t() if ctx.needs_input_grad[0] else None
+        s = None
+        if ctx.needs_input_grad[1]:
+            idx = (wq.to(torch.int32) + off).reshape(-1)
+            s = torch.bincount(idx, weights=(x.t() @ dy).reshape(-1).float(), minlength=ctx.shape.numel()).view(ctx.shape)
+        return dx, s, None, None
 
 
 class ValueRemap(torch.nn.Module):
-    """w224: a trainable odd-symmetric piecewise-linear value map f on one trunk tensor's int8 codebook integers (W' = f(m) before the
-    scales, y = ... (x @ W') ...): per group of consecutive input-side rows of W [k, n] (groups = 1: the tensor) n_knots knots at the quantiles
-    of |m| (knot j at the integer xs[j], knot 0 at 0), knot values y_j = xs[j] (1 + d_j), d trainable and 0 at the start = the identity map.
-    Same freedom as a table of n_knots entries per group (per sign: odd symmetry); rounded (--remap-round): the table's entries are rounded to
-    integers (int8, |.| <= 127) in the forward, gradient straight-through"""
+    """w224: a trainable odd-symmetric piecewise-linear value map f on one trunk tensor's int8 codebook integers (W' = f(m) = m + delta(m) in place of the
+    dequantized weight, before the scales): per group of consecutive input-side rows of W [k, n] (groups = 1: the tensor) n_knots knots at the quantiles
+    of |m| (knot j at the integer xs[j], knot 0 at 0), knot values y_j = xs[j] (1 + d_j), d trainable and 0 at the start = the identity map (delta = 0
+    exactly). Same freedom as a table of n_knots entries per group (per sign: odd symmetry); rounded (--remap-round): delta's table entries rounded to
+    integers (so f(m) is an integer: an int8 table) in the forward, gradient straight-through"""
     def __init__(self, wq, groups, n_knots, rounded=False):
         super().__init__()
         k = wq.shape[0]; G = groups
@@ -244,18 +253,22 @@ class ValueRemap(torch.nn.Module):
         self.register_buffer("X", torch.from_numpy(X).to(dev), persistent=False)
         self.register_buffer("A", torch.from_numpy(A).to(dev), persistent=False)
         self.register_buffer("off", (((torch.arange(k, device=dev) * G) // k) * (2 * REMAP_M + 1) + REMAP_M).to(torch.int32).view(-1, 1), persistent=False)
+        self.register_buffer("iden", torch.arange(-REMAP_M, REMAP_M + 1, device=dev, dtype=torch.float32).view(1, -1), persistent=False)
         self.d = torch.nn.Parameter(torch.zeros(G, n_knots, device=dev))
         self.groups, self.n_knots, self.rounded = G, n_knots, rounded
 
-    def table(self):
-        """the map's table [G, 2 REMAP_M + 1] f32 (entry REMAP_M + v = f(v), v = -REMAP_M .. REMAP_M)"""
-        y = self.X * (1.0 + self.d)
-        ab = torch.einsum("gvj,gj->gv", self.A, y)
+    def dtab(self):
+        """delta = f(m) - m as a table [G, 2 REMAP_M + 1] f32 (entry REMAP_M + v = f(v) - v, v = -REMAP_M .. REMAP_M); exactly 0 at d = 0"""
+        ab = torch.einsum("gvj,gj->gv", self.A, self.X * self.d)          # knot value - knot position = x_j d_j, interpolated
         t = torch.cat([-ab.flip(1)[:, :-1], ab], 1)
-        if self.rounded: t = t + (t.round().clamp(-REMAP_M, REMAP_M) - t).detach()
+        if self.rounded: t = t + (torch.minimum(torch.maximum(t.round(), -REMAP_M - self.iden), REMAP_M - self.iden) - t).detach()
         return t
 
-    def forward(self, wq): return _RemapGather.apply(self.table(), wq, self.off)
+    def table(self):
+        """the map's table f(v) [G, 2 REMAP_M + 1] f32"""
+        return self.iden + self.dtab()
+
+    def matmul(self, x, wq): return _RemapMatmul.apply(x, self.dtab(), wq, self.off)
 
 
 def apply_remap(a, stu, log):
