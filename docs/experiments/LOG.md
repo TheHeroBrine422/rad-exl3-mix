@@ -10178,3 +10178,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   wrong, the real text has rare large errors). Caveat: held-out cuts may share sessions with trained cuts (same session prefix, different
   cut); a by-session split would be cleaner. Implication: the scored corpus is real text, but real use is generation (the model reads its own
   text) — teacher / student data is the only data that measures and trains that. Recipe question for the user.
+- 11-24 5:40 PM CST (user): **the calib agent traces (Qwen-written agent sessions) under the C228 arms.** From the golden-jlong reads (whole
+  traces, gen rows only, positions ≥ 8192): agent-trace/attrs (124k scored rows) and click (112k), never trained on (judge). Ratio vs the 10M
+  end, 2048-row block bootstrap inside each trace (understates the uncertainty: n = 2 traces): ctl 1.001 / 0.998; hard1 1.014 / 1.009; optr
+  **0.987 / 0.988**; opcal 0.993 / 0.989; opmix **0.988 / 0.985**; the other 72 jlong docs: ctl 0.976, optr 1.004, opcal 1.001, opmix 1.013.
+  Teacher data helps the real agent traces ~1–1.5 % on both; real calib doesn't help them at all (its gain is all on the non-agent docs).
