@@ -10156,3 +10156,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   moves the scales but carries no signal the judges reward; real calib does (−0.7 %). Pending: opmix, student-gen arms (stud228 goldens
   recording), lr3e5, ctls1 (noise floor), JL reads. box2 JC reads of ctl copied from iceman for pairing (scores/JC-C228-ctl-*).
   **Runtime:** none.
+- 11-24 4:30 PM CST: **C228 arms, more reads.** jc228 vs the 10M end / vs C228-ctl: **C228-opmix** (half teacher traces, half teacher
+  calib) 0.998 [0.996, 1.000] / 1.005 [1.000, 1.014] (null, like optr / opcal); **C228-lr3e5** (ctl data, 3e-5 tail) 0.993 [0.984, 1.000] /
+  1.001 [0.995, 1.007] (= ctl: tail lr doesn't matter at 2.50). j217: opmix 0.835 / 0.867 / 0.927, lr3e5 0.850 / 0.862 / 0.924.
+  golden-jlong vs the 10M end (74 docs): ctl 0.988 [0.962, 0.998], hard1 1.008 [0.979, 1.030], optr 0.995 [0.989, 1.010], opcal 0.996
+  [0.991, 1.006], opmix 0.999 [0.989, 1.023]. Only real calib helps, on both judges. stud228 done 3:32 PM (student goldens stud-b1 1.61M,
+  stud-calib-b1; cards 1–3 returned); C228-stud / C228-studcal training since 4:00 / 4:10 PM, C228-ctls1 (noise floor) since 3:33 PM.
