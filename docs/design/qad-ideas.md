@@ -19,7 +19,7 @@ Numbers are j217 KL ratios vs unhealed unless noted. Details: `docs/experiments/
 | A9 | batch size (1× vs 4×) | done | 4× at equal rows worse by 2M (lr unscaled); √-scaled lr untested; user: not in practice |
 | A10 | rounding-divergence diagnostic | backlog, low | — |
 | A11 | Adam ε | done | keep 1e-8 (ε acts like a smaller lr) |
-| A12 | parameter EMA (Polyak averaging) | dead @ 0.5M | EMA 0.9 1.010 [0.977, 1.049] vs raw; long view on I30-lr3e-4-2M |
+| A12 | parameter EMA (Polyak averaging) | dropped (user 11-24) | EMA 0.9 1.010 vs raw at 0.5M; 0.97 helped 3.0 slightly at 1–2M (0.965–0.993), not worth the complexity |
 | A13 | trust region on scale moves | dropped | no outlier scale moves |
 | A14 | per-document gradient clipping / normalisation | **dead** (11-23) | CD25 1.021 [0.996, 1.061], CD30 1.037 [1.002, 1.075] at 0.5M; was:  w218: chunk gradient norms vary ~35×; GN: front-half batch gradients heavy-tailed (below-chance significance at 2M) |
 | A15 | robust batch aggregation (trimmed mean / median-of-means across documents) | dropped (11-23) | same idea as A14, which lost | the heavy-tail fix without picking a clip threshold; per-doc gradients need one backward per doc group (cost ↑) |
