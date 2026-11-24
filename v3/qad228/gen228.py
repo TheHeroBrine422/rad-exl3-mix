@@ -4,8 +4,8 @@
 on-policy assistant turns at cuts228.py's cuts (RENDER/cuts.jsonl, RENDER/sess/<sidx>.npz) on the radiance servers (IQ6R-V4, TP2,
 i8 KV, prefix cache on, DFlash2 drafter).
 
-Each server gets --slots worker threads; a thread takes the next session not yet started (cuts.jsonl order) and runs that session's
-cuts in depth order on ITS server (so the deeper cut's prompt hits the shallower one's cached prefix). Request: llama-server's
+Each server gets --slots worker threads; a thread takes the next session not yet started (cuts.jsonl order; a cut's `group` when it has
+one, calib228.py: every cut alone) and runs that session's cuts in depth order on ITS server (so the deeper cut's prompt hits the shallower one's cached prefix). Request: llama-server's
 native POST /completion with the prompt as token ids (the session's tokens before the cut + the template's generation prompt
 `<|im_start|>assistant\\n<think>\\n`: exactly what the chat template renders for the conversation up to there, thinking on),
 the model's recommended thinking-mode sampling (temperature 1.0, top_p 0.95, top_k 20, min_p 0: generation_config.json + README),
@@ -36,7 +36,7 @@ def log(s):
 
 cuts = [json.loads(l) for l in open(f"{a.render}/cuts.jsonl")]
 by_s = collections.OrderedDict()
-for c in cuts: by_s.setdefault(c["sidx"], []).append(c)
+for c in cuts: by_s.setdefault(c.get("group", c["sidx"]), []).append(c)   # calib228.py: one group a cut
 sq = queue.Queue()
 for s, cs in by_s.items(): sq.put((s, sorted(cs, key=lambda c: c["p"])))
 lock = threading.Lock()
@@ -61,10 +61,10 @@ def worker(port):
             todo = [c for c in cs if not os.path.exists(f"{a.out}/gen/{c['cut']}.json")]
             if not todo: continue
             st["sessions"] += 1
-        toks = np.load(f"{a.render}/sess/{s}.npz")["tokens"]
+        toks = np.load(f"{a.render}/sess/{cs[0]['sidx']}.npz")["tokens"]
         for c in todo:
-            prompt = toks[:c["p"]].tolist() + GP
-            body = {"prompt": prompt, "n_predict": a.max_new, "temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0,
+            prompt = toks[:c["p"]].tolist() + ([] if c.get("raw") else GP)     # raw: calib text documents, continued as they are
+            body = {"prompt": prompt, "n_predict": c.get("max_new", a.max_new), "temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0,
                     "return_tokens": True, "cache_prompt": True}
             for attempt in range(3):
                 t0 = time.time()
@@ -74,7 +74,7 @@ def worker(port):
             if r is None:
                 with lock: st["failed"] += 1
                 continue
-            d = {"cut": c["cut"], "sidx": s, "p": c["p"], "prompt_len": len(prompt), "gen": r.get("tokens", []), "stop_type": r.get("stop_type"),
+            d = {"cut": c["cut"], "sidx": c["sidx"], "p": c["p"], "prompt_len": len(prompt), "gen": r.get("tokens", []), "stop_type": r.get("stop_type"),
                  "timings": r.get("timings", {}), "wall": time.time() - t0, "port": port}
             fn = f"{a.out}/gen/{c['cut']}.json"
             with open(fn + ".part", "w") as f: json.dump(d, f)
