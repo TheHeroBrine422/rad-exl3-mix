@@ -10201,3 +10201,7 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   golden-jlong reads, categories from corpus/calib.jsonl). w228 checks (user): reasoning effort = the template default xhigh, present in
   all 1,646 trace + 415 calib-chat docs (calib itself: 1,008 docs carry it); generation limit 4,096 truncated 110 / 1,646 trace turns and
   80 / 415 chat turns → raise to 32k (needs the > 8k-cap trainer); calib chat cuts are all ≤ 8k deep (calib chat docs are short).
+- 11-24 6:05 PM CST: **C228-ctls1 (control, new data-order seed) = the noise floor.** jc228 vs the 10M end 0.995 [0.977, 1.014] (ctl 0.993
+  [0.985, 0.998]); ctls1 vs ctl 1.002 [0.989, 1.021], median doc 0.999. j217 mean 0.850 vs ctl 0.824 (bistable blow-up docs: the seed alone
+  moves the j217 mean ~3 %), w/o blow-ups 0.862 vs 0.858, median 0.925 vs 0.925. So the ctl-vs-teacher gap on jc228 (~0.5–0.7 %) is at the
+  seed noise for the mean; robust columns are the ones to read. Student arms finish ~6:30–7 PM.
