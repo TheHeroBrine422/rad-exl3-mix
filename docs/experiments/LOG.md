@@ -10168,3 +10168,13 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (2) *Does it help on teacher text?* New held-out judges from the onpol docs no arm trained on: `slices/golden-jteach` (59 onpol-b1 docs,
   68,164 rows, JT-* reads) and `golden-jteachc` (64 onpol-calib-b1 docs, 93,256 rows, JU-*), built with eval/golden_pick.py; qscore.sh /
   qread.sh map the prefixes. 10 reads queued on box2 (10M end, ctl, optr, opcal, opmix on each).
+- 11-24 5:10 PM CST: **Teacher data DOES help — on teacher-written text.** Held-out judges (docs no arm trained on), paired vs the 10M end:
+  JT (59 teacher-trace docs): optr **0.933 [0.914, 0.950]** (56 / 59 better), opmix 0.960 [0.949, 0.971], opcal 0.997, ctl 0.999.
+  JU (64 teacher-calib-cut docs): opcal **0.975 [0.966, 0.983]**, opmix 0.971 [0.964, 0.979], optr 0.996, ctl 0.999.
+  With the jc228 / jlong nulls: **no transfer either way** — real calib helps real text only, teacher text helps teacher text only (each
+  arm on its own kind; the mix gets most of both). Shape of the per-row KL of the 10M model (same reads): real calib jc228 mean 0.0399,
+  top 1 % of rows = 24 % of the KL, rows > 1 nat 0.27 %, top 5 % of docs = 34 %, worst doc 0.247; teacher calib cuts 0.0354 / 24 % / 0.20 % /
+  26 % / 0.194; teacher traces 0.0366 / **14 % / 0.06 % / 13 % / 0.066** (no spikes, no blow-up docs: the trace text is uniformly mildly
+  wrong, the real text has rare large errors). Caveat: held-out cuts may share sessions with trained cuts (same session prefix, different
+  cut); a by-session split would be cleaner. Implication: the scored corpus is real text, but real use is generation (the model reads its own
+  text) — teacher / student data is the only data that measures and trains that. Recipe question for the user.
