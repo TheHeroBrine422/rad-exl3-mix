@@ -49,9 +49,9 @@ while ! stopped; do
       tries=0
       while true; do $HERE/qrun.sh $MACHINE $ARM $TC $SIZE $BUD "$@" {inst}>&-; rc=$?
         case $rc in 75|76) sleep 120; continue;; esac
-        # w226: a two-card run that crashed after a saved state resumes (up to 3 times): g226-gate hit a one-off illegal memory access at step 13, the resumed run passed it
-        if [ "$KIND" = T2 ] && [ $rc -ne 0 ] && [ $tries -lt 3 ] && [ -e $QROOT/runs/$ARM/state.pt ] && [ ! -e $QROOT/cancel/$KEY ] && [ ! -e $QROOT/runs/$ARM/STOP ]; then
-          tries=$((tries + 1)); qsay "card $TC $ARM rc $rc: resuming from state.pt (retry $tries of 3)"; sleep 30; continue; fi
+        # w226: a two-card run that crashed after a saved state resumes (up to 10 times): w225's pipeline hits a sporadic CUDA illegal memory access (g226-gate step 13, D256-25 step 79; the resumed runs pass the spot)
+        if [ "$KIND" = T2 ] && [ $rc -ne 0 ] && [ $tries -lt 10 ] && [ -e $QROOT/runs/$ARM/state.pt ] && [ ! -e $QROOT/cancel/$KEY ] && [ ! -e $QROOT/runs/$ARM/STOP ]; then
+          tries=$((tries + 1)); qsay "card $TC $ARM rc $rc: resuming from state.pt (retry $tries of 10)"; sleep 30; continue; fi
         break; done
       qsay "card $TC train $ARM rc $rc"
       if [ "$KIND" = T2 ]; then $QQ freepartner $QROOT $KEY; exec {lk2}>&-; qsay "card $CARD $KEY: partner card $PARTNER released"; fi
