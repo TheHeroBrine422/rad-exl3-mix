@@ -10193,3 +10193,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   w228 cut audit (lead): sampling = Qwen's thinking defaults (T 1.0, top_p 0.95, top_k 20), as the challenge's traces; trace cuts keep only
   the ≤ 8k prefix tail in the golden although the turn was written with 8–128k of context (labels consistent, context mismatched);
   trace prefixes are mostly Claude-written pi turns (only the cut turn is Qwen's), unlike the challenge's fully self-written sessions.
+- 11-24 6:45 PM CST: **where the KL comes from (10M 2.50 model, leaderboard weighting** = calib scored rows per category, traces ×2):
+  long-agentic 23.1 % of positions / KL 0.0269 per row / **18.1 % of the KL**; multilingual 7.5 / 0.0608 / 13.3; web 10.3 / 0.0401 / 12.0;
+  code 11.5 / 0.0261 / 8.7; books 6.4 / 0.0437 / 8.1; math 5.8 / 0.0476 / 8.0; chat 4.8 / 0.0508 / 7.1; reasoning 7.7 / 0.0151 / 3.4; rest
+  ≤ 5 % each (long / agentic from < 2.5k judge rows: noisy). Traces are the biggest share only by size; per row they are below average
+  (0.78 × the weighted mean 0.0344), as in the leaderboard's own trace column for every entry. Script `/tmp/share.py` (box2; jc228 +
+  golden-jlong reads, categories from corpus/calib.jsonl). w228 checks (user): reasoning effort = the template default xhigh, present in
+  all 1,646 trace + 415 calib-chat docs (calib itself: 1,008 docs carry it); generation limit 4,096 truncated 110 / 1,646 trace turns and
+  80 / 415 chat turns → raise to 32k (needs the > 8k-cap trainer); calib chat cuts are all ≤ 8k deep (calib chat docs are short).
