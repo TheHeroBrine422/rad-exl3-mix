@@ -10139,3 +10139,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (234 / 642 better) vs the plain control's 0.993 [0.985, 0.998]. α 0.5 / 2 queued on box2 (user) before calling it. Box2 plan v2 (user):
   arm228.sh queues the single-card arms on card 0 (teacher-gen traces / calib / mixed, hard-rows 0.5 / 2, control seed repeat, golden-jlong
   reads); w228 generates STUDENT data (the 10M 2.50 student, same cut points) on cards 1–3, then student arms.
+- 11-24 ~6:15 AM CST (user): hard-rows α 0.5 / 2 dropped (α 1 was −0.8 % vs control); replaced by **C228-lr3e5** (the control's data at 3e-5 from the 10M state, then the same 0.4M decay): does a lower tail lr help the continuation. w228 told to run the student step as a detached restartable script (its run's time limit ~11 AM CST cannot be extended); the script frees cards 1–3 even on failure.
