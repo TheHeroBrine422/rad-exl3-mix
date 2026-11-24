@@ -55,6 +55,7 @@ for k, (nm, i) in enumerate(ids[:NF]): slot[SPREAD[k]] = [nm, i, rows(nm, i, CAP
 assert len(ids) >= NF, f"{len(ids)} deep documents < --front {NF}: lower --front"
 if not STREAMS: front = [x for x in slot if x is not None]; head = [[nm, i, rows(nm, i, CAP)] for nm, i in ids[NF:]]
 out = dict(px); out["front_items"] = px.get("front_items", []) + front; out["items"] = head + px["items"]
+out["new_goldens"] = px["new_goldens"] + [nm for nm in golds if nm != "calib" and nm not in px["new_goldens"]]   # the trainer loads these from --ext-root/gold
 out["ledger_use"] = "qad226-deep"; out["w226"] = {"from": src, "front": len(out["front_items"]), "head": len(head),
                                                  "deep_tokens": {f"{nm}:{i}": meta[nm][0][i]["tokens"] for nm, i in ids},
                                                  "deep_rows_uncapped": sum(rows(nm, i, 1 << 30) for nm, i in ids)}

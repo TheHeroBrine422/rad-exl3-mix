@@ -23,3 +23,15 @@ for k, st in enumerate(steps[:last]):
 for it in sorted(front, key=lambda i: -C.items[i][2]):
     gi, i, ntok, nr = C.items[it]; r = reach.get(it)
     print(f"  {C.g[gi].name}:{i} tokens {ntok} rows {nr}: " + (f"stream {r[1]} from step {r[0]}, depth {r[2]} by the budget" if r else "not reached"))
+# carried KV state (all streams, 64 KB a token: 16 attention layers x 4 KV heads x 256 x bf16 K + V) at the end of each step up to the budget: the host RAM a
+# run needs for parked states (minus <= 2 x --state-card-gb kept on the cards); D256-25 measured RSS ~24 GB + this
+car = []
+for k, st in enumerate(steps[:last]):
+    t = 0
+    for segs in st:
+        if segs:
+            it, sa, sb = segs[-1]
+            if sb < C.items[it][2]: t += sb
+    car.append(t * 65536 / 2**30)
+pk = int(np.argmax(car)); print(f"carried KV state: peak {car[pk]:.1f} GiB at step {pk + 1}; at steps 50 / 100 / 200 / 300 / 400 / 500: " +
+                              " / ".join(f"{car[s - 1]:.1f}" for s in (50, 100, 200, 300, 400, 500) if s <= len(car)))
