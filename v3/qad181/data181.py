@@ -105,11 +105,11 @@ class Corpus:
         return {t: {"docs": v[0], "tokens": v[1], "rows": v[2]} for t, v in sorted(out.items())}
 
 
-def plan(items, order, V, Q, min_tail=128, max_steps=None):
+def plan(items, order, V, Q, min_tail=128, max_steps=None, queues=None):
     """[(step) -> [(stream) -> [(item index, a, b), ...]]] and per step the total rows; item = (gi, doc, n, nrows).
-    Stream s owns order[s::V]; each step it trains Q positions (tokens) of its documents in sequence, a segment ends at
-    the document's end or at the quota, never leaving < min_tail tokens of a document behind (takes them now)."""
-    queues = [list(order[s::V]) for s in range(V)]
+    Stream s owns order[s::V] (or queues[s] when given: w226's per-stream heads); each step it trains Q positions (tokens) of its documents in sequence,
+    a segment ends at the document's end or at the quota, never leaving < min_tail tokens of a document behind (takes them now)."""
+    queues = [list(q) for q in queues] if queues is not None else [list(order[s::V]) for s in range(V)]
     pos = [0] * V; cur = [0] * V          # index into the queue, offset in the current document
     steps = []
     while any(pos[s] < len(queues[s]) for s in range(V)):

@@ -1554,19 +1554,25 @@ def build_data(a, d, log):
         for nm in px["new_goldens"]:
             C.g.append(D.Gold(os.path.join(a.ext_root, "gold", nm), genfile=os.path.join(a.ext_root, "genmask", nm + ".u8"))); C.tags.append(D.corpus_tag(nm))
         gidx = {g.name: k for k, g in enumerate(C.g)}
-        for nm, i, nr in px["items"] + px.get("front_items", []):
+        fr = px.get("front_items", []); fr_u = [x[:3] for x in fr if len(x) < 4]; fr_t = [x for x in fr if len(x) >= 4]
+        for nm, i, nr in px["items"] + fr_u + [x[:3] for x in fr_t]:
             g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert relen or r_ == nr, f"--plan-ext: {nm}:{i} has {r_} rows here, {nr} in the plan"
             C.items.append(capfix(gidx[nm], i, min(a.cap, g.ntok(i)), r_))
-        n_front = len(px.get("front_items", [])); n_ext = len(C.items) - n_old - n_front
+        n_front = len(fr_u); n_ext = len(C.items) - n_old - n_front - len(fr_t)
         log(f"plan-ext {a.plan_ext}: {n_ext} documents appended to w214's {n_old}, {n_front} front ({', '.join(px['new_goldens'])} + calib docs): {json.dumps(C.summary())}")
         # w226: front_items (stored after the extension in C.items) take the first places of the order, one per stream (deep documents need
         # the whole run: a stream trains Q tokens a step), then w214's order, then the extension; without front_items the order is w222's
         order = np.concatenate([n_old + n_ext + np.arange(n_front), np.random.default_rng(a.seed).permutation(n_old), n_old + np.arange(n_ext)])
+        if fr_t:                                      # w226: front items with a stream ([name, doc, rows, stream]) head that stream's queue, in listed order (deep documents
+            queues = [list(order[s_::a.V]) for s_ in range(a.V)]          # chained on a few streams: a 10M run trains ~600k tokens a stream; host RAM caps deep states at once)
+            for k in reversed(range(len(fr_t))): queues[int(fr_t[k][3])].insert(0, n_old + n_ext + n_front + k)
+            log(f"plan-ext: {len(fr_t)} front items at the head of streams " + ", ".join(f"{s_}: {sum(1 for x in fr_t if int(x[3]) == s_)}" for s_ in sorted({int(x[3]) for x in fr_t})))
     else:
         order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
+    if not (a.plan_ext and fr_t): queues = None
     EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))
     budgets = [BK(a.rows)] if a.rows else [BK(x) for x in a.budgets.split(",")]
-    steps = D.plan(C.items, order, a.V, a.Q)
+    steps = D.plan(C.items, order, a.V, a.Q, queues=queues)
     rows_of, cum = rows_cum(C, steps)
     if a.lr_steps or a.decay_shape != "linear" or a.decay_data != "mix":
         assert len(budgets) == 1, "w220 schedule flags: one budget (no WSD branches)"

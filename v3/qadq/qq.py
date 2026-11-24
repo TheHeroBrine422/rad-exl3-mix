@@ -11,6 +11,7 @@ dispatcher, or not ready (a missing `@needs` path / checkpoint). Job lines (shle
                                       other card; the partner's dispatcher takes no new job while the claim is live, so P frees up) and gives the trainer both cards; done when TAPDIR/.done exists
   T2 ARM SIZE BUDGETS READS flags...  two-card training (w226; the trainer's --split-layers / --pipeline flags go in the line): T's outputs and reads, @cards / @partner as M; the partner card is
                                       held for the training only (`qq.py freepartner` after it: the reads run on the claimant's card while the partner's dispatcher takes jobs again)
+  QROOT/only-card<N> (w226): if present, card N takes only the job kinds it lists (whitespace-separated, e.g. "R U").
   directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH[,PATH..] (absolute, or relative to runs/; the job waits until all exist)   @budgets=B (B lines: the trainer's --budgets, default 2.5e5,5e5)   `{lam}` / `{lam*0.3}` in a line = the first number of QROOT/lambda.txt (x the factor; the line also waits for that file)   @ctl=ARM (control arm for the paired column)
   `{runs}` in any field expands to ROOT/runs.
 usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M,U,T2] | freepartner ROOT KEY | unclaim ROOT KEY | finish ROOT KEY ok|fail|cancelled RC | status ROOT | key LINE..."""
@@ -169,10 +170,13 @@ def main():
         card = a[2] if a[0] == "claim" else (a[2] if len(a) > 2 else None)
         caps = set(a[a.index("--caps") + 1].split(",")) if "--caps" in a else set()
         if card is not None and card in reserved(root): return 1
+        only = None                                           # w226: QROOT/only-card<N> = the job kinds card N may take (e.g. "R U" while a deep run needs the host RAM)
+        if card is not None and os.path.exists(f"{root}/only-card{card}"): only = set(open(f"{root}/only-card{card}").read().split())
         for j in jobs(root):
             s, _ = state(root, j)
             if s not in ("ready", "stale"): continue
             if j["cards"] is not None and card is not None and card not in j["cards"]: continue
+            if only is not None and j["kind"] not in only: continue
             if j["kind"] in ("M", "U", "T2") and a[0] == "claim" and j["kind"] not in caps: continue
             if a[0] == "claim":
                 open(f"{root}/claims/{j['key']}", "w").write(f"{a[2]} {a[3]} {socket.gethostname()} {time.strftime('%F %T')}\n")
