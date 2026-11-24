@@ -10083,3 +10083,26 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   lr 1e-4 to 3M, cap 8k, no deep docs) on golden-jlong: 0.012225 = 0.958 vs unhealed. D256-30 3M vs it: **0.991 [0.947, 1.028]**,
   56 / 74 docs better (median doc 0.986) → no significant deep-data effect at 3.00 (the two ~245k calib docs on 2 of 24 streams).
 - 11-23 9:15 PM CST: **I25-step-10M 10M on golden-jlong: 0.883 [0.727, 0.974]** vs unhealed (69 / 74 better, median doc 0.918); paired vs the step fork 4M 1.004 [0.967, 1.069] (53 / 74 better, median doc 0.988). Long context does not get worse past 2M at 8k training; the mean is flat (2M 0.876, 4M 0.879, 10M 0.883), the median doc improves a little (0.931 → 0.924 → 0.918). Tool `v3/qad226/jl226.py`.
+- 11-23 ~10:35 PM CST: **w226 D256-25 (2.50, I25-step15-4M's recipe on the deep plan 226c, cap 262144) landed: j217 unchanged, small
+  long-context gain.**
+  - j217: 4M **0.846** [0.734, 0.944] (I25-step15-4M 0.845). sd-2M 0.849, sd-3M 0.849. Raw: 2M 0.851, 2.5M 0.844, 3M 0.848, 3.5M 0.848;
+    0.75 / 1M raw 0.99 (blow-up docs: w/o 0.914 / 0.907).
+  - golden-jlong: 4M **0.862 [0.720, 0.932], 73 / 74**, median doc 0.901. **Paired vs I25-step15-4M (same schedule, 8k data):
+    0.981 [0.959, 0.997], 58 / 74 docs better** (median doc 0.989). The first significant (small, ~2 %) long-context effect of deep
+    training. ripgrep / cobra were at depth ~213k at the end; 2 of 24 streams were deep. At sd-2M it was still 0.997 [0.990, 1.014]
+    vs the 2M control.
+  - D256-30's 3.00 controls: I30-lin-2M jlong 0.965, I30-lr1e-4-3M 0.958; D256-30 3M vs the latter 0.991 [0.947, 1.028] (n.s.);
+    D256-30 sd-2M vs I30-lin-2M 1.055 [0.968, 1.213].
+  - Raw `data/qad226/results-D256.tsv`, `jl-readout-1123-1035pm.md`.
+- 11-23 10:27 PM CST: **w226 trdeep-b1 golden recorded** on box2 (TP4, bf16 KV, top-512, 33 min). 2,946,770 rows; gen mask 1,472,875
+  (50.0 %, all 12 chat docs); 12 GB, private (`queue/ext/gold/trdeep-b1`). Token counts = traces226.py's.
+- 11-23 ~10:40 PM CST (user via lead: D256-25T as a 10M run): **plan 226u**. The deep docs are chained on 3 spread streams: 0 =
+  ripgrep → trace0, 8 = cobra → trace1, 16 = trace2 → trace3. These are per-stream front items: `front_items` entries with a stream;
+  `data181.plan(queues=)`; plan226-build `--streams`. The other 5 calib > 20k head streams 2 / 4 / 10 / 12 / 20.
+  - plancheck226: every deep doc trains whole by 10M (main end step 530; the second docs start at steps 239–244). The carried KV state
+    peaks at 51.7 GiB at step 233, i.e. host RSS ≈ 17 + 51.7 ≈ 69 GB (D256-25: RSS 50 GB at carried 32.7).
+  - I25-step-10M's schedule (3e-4 → 1e-4 at 1.5M, decay 9.6–10M), auto snapshots.
+  - Guards (`memguard226.sh`): cards 2 / 3 take only R / U (`QROOT/only-card<N>`, new in qq.py), STOP if MemAvailable < 10 GB.
+  - JL reads at sd-2 / 4 / 6 / 8M and 10M plus the control I25-step-10M's JL at sd-2…8M (its 10M: 0.883).
+  - Trainer installed = cfe28c70 + 864eaff6's w226 hunk (md5 c1e47d74; the repo HEAD also carries w224's --remap commit fe06271a, not
+    installed in the queue by w226).
