@@ -10140,3 +10140,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   arm228.sh queues the single-card arms on card 0 (teacher-gen traces / calib / mixed, hard-rows 0.5 / 2, control seed repeat, golden-jlong
   reads); w228 generates STUDENT data (the 10M 2.50 student, same cut points) on cards 1–3, then student arms.
 - 11-24 ~6:15 AM CST (user): hard-rows α 0.5 / 2 dropped (α 1 was −0.8 % vs control); replaced by **C228-lr3e5** (the control's data at 3e-5 from the 10M state, then the same 0.4M decay): does a lower tail lr help the continuation. w228 told to run the student step as a detached restartable script (its run's time limit ~11 AM CST cannot be extended); the script frees cards 1–3 even on failure.
+- 11-24 7:45 AM CST: **w228 done (on-policy teacher data; report `rad-local/workers/out/w228.md`).** IQ6R-V4 (TP2 radiance, i8 KV, DFlash2)
+  wrote `onpol-b1` (pi-session cuts, option B, 8–128k prefixes: 1,646 docs / 1.62M gen tokens, 2.73 h, 162 tok/s; 81 % of request time
+  prefill) and `onpol-calib-b1` (415 chat cuts 541k + 800 raw-text continuations 1.11M, 38 min). Thinking included and scored. bf16 TP4
+  goldens (86 + 22 min), check228 passed; bf16 self-KL 1.4e-5 / 2.1e-5 (batching noise). Re-tokenised boundaries: goldens use canonical
+  tokens (51 / 43 / 111 docs differ from the sampled ids). Arms queued on box2 card 0 at 7:35 AM (arm228.sh v2); student step (`stud228.sh`,
+  detached, EXIT trap frees cards 1–3) generating since 7:36 AM. Ledger: verify / j217 / jlong / jc228 excluded from the cuts.
+  **Runtime:** none (training data).
