@@ -1,0 +1,50 @@
+# v3/qad228: on-policy QAD data from the user's pi sessions (w228, 11-24)
+
+These scripts build near-on-policy assistant turns as 8k training documents with bf16 goldens, for the QAD arm that continues
+I25-step-10M by ~1.6M rows. Lead's choices (11-24): option B (anchor plus the next assistant turn) and a 1.6M generated-token target.
+Report: `rad-local/workers/out/w228.md`.
+
+**PRIVATE.** Everything these scripts read or write holds the user's sessions. It lives on box2 under `/data/q27/onpol/w228` and
+`/data/q27/queue/ext/{onpol,gold/onpol-b1,genmask/onpol-b1.u8}` and never goes into this repo.
+
+| step | script | what |
+|---|---|---|
+| 1+2 | `cuts228.py SRC OUT [--follow]` | Renders each session whole: active branch, `xcorp/pisess.convert`, Qwen3.8 template with tools, then `pisess_redact`. Same files as `xcorp/sessdocs.py`: 2,199 files, 1,955 with candidate cuts. Candidate cut = an assistant turn after a user / tool turn, with prefix 8,192–131,000. Pick: seeded, per session ≤ 4 anchors (one per depth quarter), plus with `--follow` the next candidate after each anchor. Sessions are interleaved by kind; mining / idea runs go every 3rd round. Output: `OUT/cuts.jsonl`. |
+| 3 | `gen228.py RENDER OUT --slots 10 --target 1600000` | Two radiance TP2 servers (`serve.sh` below). Each session's cuts run in depth order on one server, so prefixes are reused. Request: `/completion` with token-id prompts (the prefix plus the template's generation prompt `<|im_start|>assistant\n<think>\n`), temperature 1.0, top-p 0.95, top-k 20, n_predict 4096. The raw ids come back with the reasoning, `</think>`, the answer / tool call and `<|im_end|>`. Restartable: one file per cut, `OUT/gen/<cut>.json`. |
+| 4 | `docs228.py RENDER GEN OUT_PREFIX` | 8k docs: the system turn + the prefix tail from a turn start + the generation prompt + the generated ids. Writes a radiance `--kld-corpus` with `score_from` = first generated token − 1, so the golden rows are exactly the generated tokens. |
+| 5 | `gold228.sh` | TP4 bf16 `--kld-record`, top-512, bf16 KV, into `queue/ext/gold/onpol-b1`, then the gen mask (all ones, one byte per row) `queue/ext/genmask/onpol-b1.u8` and `corpus.meta.jsonl`. `check228.py` checks rows, gen rows and token identity, and the KL of bf16 vs itself. |
+
+## Servers (box2, card locks held by `hold.sh`)
+
+`serve.sh I` runs instance I: I = 0 uses cards 0,1 on port 8020; I = 1 uses cards 2,3 on port 8021. Each runs
+`/data/q27/w216/install/bin/radiance --config genI.yaml` with:
+
+```yaml
+models:
+  iq6r:
+    model: /data/q27/onpol/iq6r/qwen3.8-27b-iq6r-v4.rad   # HF StillDeadcode/qwen3.8-27b-iqr-v4, sha256 35f022d7..., DFlash2 merged
+    tp: 2
+    tp-wire: wht6
+    kv-cache-dtype: i8
+    max-model-len: 135168
+    max-num-seqs: 12
+    checkpoint-slots: 32
+    prefix-cache-mib: 16384
+    mm-max-patches: 0
+```
+
+Speculation is `auto` (DFlash2, depth 7).
+
+## Rerun
+
+```
+cd /data/q27/onpol/w228
+setsid nohup ./hold.sh 0 1 2 3 &     # card locks; release: touch release-0_1_2_3
+./serve.sh 0 & ./serve.sh 1 &
+/data/q27/venv/bin/python -I code/v3/qad228/cuts228.py pi-sessions render --sessions 1955 --follow
+TZ=America/Chicago /data/q27/venv/bin/python -I code/v3/qad228/gen228.py render out --slots 10 --target 1600000
+/data/q27/venv/bin/python -I code/v3/qad228/docs228.py render out corp/onpol-b1
+code/v3/qad228/gold228.sh            # servers stopped first; holds all four card locks
+```
+
+The cut file `render/cuts.jsonl` is deterministic (seed 228), so a student generator can reuse the exact cut points.
