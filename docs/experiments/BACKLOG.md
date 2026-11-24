@@ -871,3 +871,12 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   same `M` job along the plan: ~80 GB and ~1.5 h on 2 box2 cards per 1M rows at 8 taps; box2 has room for ~3M more (≥ 100 GB floor).
   Stretch: front taps only (3 / 7 / 15 / 23 / 31, ~50 GB per 1M) and / or store + fit MSE only on KL-scored positions (~½; trainer change).
   box2 only (iceman has no taps; box2 → iceman ~2 MB/s). Gate: tonight's MSE results.
+
+- **(11-24, from NariQ arXiv:2611.26157) seeded channel permutation before the 128-block Hadamard** (attention / DeltaNet layers, one side,
+  foldable into the neighbour: q/k/v → o, in_proj → out_proj). Spreads clustered outlier channels across Hadamard blocks. Offline test first
+  (~1 h CPU): our quantizer on a handful of attention / DeltaNet tensors with / without the permutation, Hessian-weighted error. ≥ a few % →
+  candidate for the DS4.1-F format (not frozen); V3.x unaffected (format change). Runtime: decode / prefill only if not foldable (a gather).
+- **(11-24, same paper) gradient-based per-module sensitivity** for allocation: ℓ_c ≈ ½⟨G, W_c − W_k⟩ averaged over k, extrapolated by the
+  code's MSE ratio r_k / r_c (~4× / bit), inverse-variance combined over assignments, mean + 2 s.e.; fails at 1 bit (keep ≥ 2 bits). Use: a cheap
+  first pass for DS4.1-F's expert allocation, swaps only to check top candidates. Also: rank head bands by mean bf16 probability (curvature
+  p(1−p)) if our tiers use frequency (check).
