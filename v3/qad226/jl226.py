@@ -7,9 +7,13 @@ import os, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, "..", "qad214"))
 import cmp214                                                    # noqa: E402
-root, ctl = sys.argv[1:3]; G = f"{root}/slices/golden-jlong"
+av = sys.argv[1:]
+G = None
+if "--golden" in av: k = av.index("--golden"); G = av[k + 1]; del av[k:k + 2]       # lead 11-24: any judge slice (e.g. slices/golden-jc228)
+sys.argv[1:] = av
+root, ctl = sys.argv[1:3]; G = G or f"{root}/slices/golden-jlong"
 xc, n = cmp214.doc_sums(G, f"{root}/scores/{ctl}.json.rows")
-print(f"| read | KL / gen row | ratio vs {ctl} [95 % CI] | docs better | median doc ratio |\n|---|---|---|---|---|")
+print(f"| read ({os.path.basename(G)}) | KL / gen row | ratio vs {ctl} [95 % CI] | docs better | median doc ratio |\n|---|---|---|---|---|")
 print(f"| {ctl} | {xc.sum() / n.sum():.6f} | 1 | — | — |")
 for nm in sys.argv[3:]:
     x, nb = cmp214.doc_sums(G, f"{root}/scores/{nm}.json.rows"); assert (nb == n).all(), nm

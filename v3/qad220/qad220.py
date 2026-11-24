@@ -80,6 +80,7 @@ from qad import chunk_kl, save_atomic  # noqa: E402
 import data181 as D  # noqa: E402
 
 BF = torch.bfloat16
+HARD = [0.0, 10.0]            # lead 11-24 --hard-rows ALPHA / --hard-cap (0 = off: plain KL, bit for bit)
 
 
 # ------------------------------------------------------------------ student extensions
@@ -623,7 +624,11 @@ def seg_loss_ext(stu, g, it, a, b, prev, pw=0.0, loc=None, ch=256):
     for c in range(0, len(j), ch):
         args = (h[c:c + ch], stu.head, tid[c:c + ch], tlp[c:c + ch], ptail[c:c + ch])
         v = checkpoint(chunk_kl_rows, *args, use_reentrant=False) if torch.is_grad_enabled() else chunk_kl_rows(*args)
-        tot = tot + (v * wt[c:c + ch]).sum(); gen = gen + (v.detach() * wg[c:c + ch]).sum()
+        w_ = wt[c:c + ch]
+        if HARD[0] > 0:                               # lead 11-24 --hard-rows ALPHA: rows weighted by (their own detached KL)^ALPHA, normalised to mean 1 over the
+            hw = v.detach().clamp_min(1e-6) ** HARD[0]   # chunk (so the step's scale stays that of plain KL), capped at --hard-cap
+            w_ = w_ * (hw / hw.mean()).clamp(max=HARD[1])
+        tot = tot + (v * w_).sum(); gen = gen + (v.detach() * wg[c:c + ch]).sum()
     if loc is not None: tot = tot + loc.lam * ls
     return tot, gen, int(isg.sum()), len(j), nxt, ls.detach()
 
@@ -1059,7 +1064,7 @@ class Trainer:
                     k = self.states.get(sid)
                     if k is not None and k[0] == it and k[1] == sa: prev = to_dev(k[2], self.dev)
                     else: prev = prefix_state(stu, self.C.g, (gi, i), sa, a.len); acc[-1] += sa
-                if self.a.prompt_weight > 0 or self.loc is not None:
+                if self.a.prompt_weight > 0 or self.loc is not None or HARD[0] > 0:
                     loss, kl, m, n_all, nxt, ls = seg_loss_ext(stu, self.C.g, (gi, i), sa, sb, prev, self.a.prompt_weight, self.loc)
                     if n_all: (loss / N).backward()
                     acc[-2] += float(ls)
@@ -1586,6 +1591,23 @@ def build_data(a, d, log):
     EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))
     budgets = [BK(a.rows)] if a.rows else [BK(x) for x in a.budgets.split(",")]
     steps = D.plan(C.items, order, a.V, a.Q, queues=queues)
+    if a.cont:                                        # lead 11-24 (user): a continuation of a finished run on new documents: the fork state's steps as planned,
+        assert a.fork_from, "--cont needs --fork-from"   # then a fresh V x Q plan over --cont's items (seeded shuffle); the fork's plan_sha check still covers the prefix
+        fp = a.fork_from if os.path.isfile(a.fork_from) else os.path.join(a.fork_from, "state.pt")
+        F = int(torch.load(fp, weights_only=False, map_location="cpu")["st"]["step"])
+        cx = json.load(open(a.cont)); gidx = {g.name: k for k, g in enumerate(C.g)}
+        if calib_gi is not None: gidx.setdefault("calib", calib_gi)
+        for nm in cx.get("goldens", []):
+            if nm not in gidx:
+                C.g.append(D.Gold(os.path.join(a.ext_root, "gold", nm), genfile=os.path.join(a.ext_root, "genmask", nm + ".u8"))); C.tags.append(D.corpus_tag(nm)); gidx[nm] = len(C.g) - 1
+        k0 = len(C.items)
+        for nm, i, nr in cx["items"]:
+            g = C.g[gidx[nm]]; r_ = g.nrows(i, a.cap); assert r_ == nr, f"--cont: {nm}:{i} has {r_} rows at cap {a.cap}, {nr} in the file"
+            C.items.append((gidx[nm], i, min(a.cap, g.ntok(i)), r_))
+        new = k0 + np.random.default_rng(int(cx.get("seed", 0))).permutation(len(C.items) - k0)
+        assert F <= len(steps), f"--cont: fork step {F} past the plan's {len(steps)} steps"
+        steps = steps[:F] + D.plan(C.items, new, a.V, a.Q)
+        log(f"--cont {a.cont}: steps 0..{F - 1} as planned, then {len(C.items) - k0} new documents ({sum(x[3] for x in C.items[k0:])} rows) over {len(steps) - F} steps")
     rows_of, cum = rows_cum(C, steps)
     if a.lr_steps or a.decay_shape != "linear" or a.decay_data != "mix":
         assert len(budgets) == 1, "w220 schedule flags: one budget (no WSD branches)"
@@ -1911,6 +1933,9 @@ def parser():
     ap.add_argument("--tie-layers", default=None, help="w220: tie only in layers A-B (inclusive; default all layers)")
     ap.add_argument("--lr-steps", default=None, help='w220: piecewise-constant lr "lr1:rows1,lr2:rows2,..." (rows = cumulative gen rows at each phase end), then the final decay from the last phase\'s lr (starts at the last end)')
     ap.add_argument("--decay-shape", choices=("linear", "sqrt", "cosine-all", "linear-all"), default="linear", help="w220: the final decay's shape (sqrt = 1 - sqrt; *-all = decay over the whole run after warmup, no constant phase)")
+    ap.add_argument("--hard-rows", type=float, default=0.0, help="lead 11-24: weight each gen row's KL by (its own detached KL)^ALPHA, normalised to mean 1 per 256-row chunk, capped at --hard-cap (0 = off)")
+    ap.add_argument("--hard-cap", type=float, default=10.0, help="lead 11-24: cap of a --hard-rows weight (after normalisation)")
+    ap.add_argument("--cont", default=None, help="lead 11-24: with --fork-from: continue a finished run on new documents: JSON {goldens: [names under --ext-root/gold, gen masks in --ext-root/genmask], items: [[golden name or 'calib', doc, rows at --cap], ...], seed}; steps before the fork as planned, then a fresh plan over the items")
     ap.add_argument("--fork-from", default=None, help="w220: start from a saved state (DIR/state.pt or a state-<rows>.pt file: parameters, optimizer, step) in a fresh OUT and run on from its step with this run's schedule (a cooldown)")
     ap.add_argument("--decay-data", choices=("mix", "calib"), default="mix", help="w220: data of the decay phase: the plan's own mix, or unused calib documents only")
     ap.add_argument("--save-at", default=None, help="w220: comma list of gen-row counts: OUT/state-<rows>.pt is written when the run first passes each (fork points for --fork-from)")
@@ -2000,6 +2025,8 @@ def main():
     a = parser().parse_args()
     if a.a8_int8: a.a8 = True
     if a.pipeline: assert a.split_layers, "--pipeline needs --split-layers"
+    HARD[0], HARD[1] = a.hard_rows, a.hard_cap
+    if a.hard_rows > 0: assert not (a.split_layers or a.state_card_gb > 0 or a.depth_test or a.taps), "--hard-rows: the plain one-card KL path only"
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:     # w225: the w225 segment loop covers the plain KL path only
         assert not (a.prompt_weight > 0 or a.local_mse or a.taps or a.lora or a.block_frac or a.make_taps or a.gate or a.profile or a.bench or a.check or a.tapcal), \
             "w225 switches: plain KL training only (no --prompt-weight / --local-mse / --taps / --lora / --block-frac / --make-taps / --gate / --profile / --bench / --check / --tapcal)"

@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "..", "qad"))
 TREE = ast.parse(open(os.path.join(HERE, "qad220.py")).read())
 ns = {"os": os, "re": re, "argparse": argparse, "json": json, "math": math, "Fraction": Fraction, "np": np, "torch": torch, "HERE": HERE,
-      "F": torch.nn.functional, "checkpoint": torch.utils.checkpoint.checkpoint, "types": types, "BF": torch.bfloat16}
+      "F": torch.nn.functional, "checkpoint": torch.utils.checkpoint.checkpoint, "types": types, "BF": torch.bfloat16, "HARD": [0.0, 10.0]}
 
 
 def grab(*names, classes=()):
@@ -340,6 +340,16 @@ st_ = ToyStu2(); tot0, m0, _ = seg_loss(st_, gl, (0, 0), 0, 40, None); g0 = grad
 st_ = ToyStu2(); loss, genkl, mg, n_all, _, ls = seg_loss_ext(st_, gl, (0, 0), 0, 40, None); g1 = grads_of(st_, loss)
 check("seg_loss_ext, prompt weight 0 and no local MSE: loss, gen KL, rows and gradients identical to seg_loss",
       torch.equal(loss, tot0) and torch.equal(genkl, tot0.detach()) and mg == m0 == n_all and same(g0, g1) and float(ls) == 0.0)
+# lead 11-24 --hard-rows: loss = sum KL_i x w_i, w = KL.detach()^alpha / mean (one chunk here: 40 rows < 256), gen KL unweighted
+ns["HARD"][:] = [1.0, 10.0]
+st_ = ToyStu2(); loss_h, genkl_h, mg_h, _, _, _ = seg_loss_ext(st_, gl, (0, 0), 0, 40, None); gh = grads_of(st_, loss_h)
+st_ = ToyStu2(); hh, _ = run_segment(st_, gold.ids(0, 0, 40), 0, None); jg_, rg_ = gold.scored(0, 0, 40)
+t_ = gold.targets(rg_, torch.device("cpu")); kv = ns["chunk_kl"](hh[torch.from_numpy(jg_)], st_.head, *t_, True)
+wv = kv.detach() ** 1.0; wv = (wv / wv.mean()).clamp(max=10.0); want_h = (kv * wv).sum(); gwh = grads_of(st_, want_h)
+ns["HARD"][:] = [0.0, 10.0]
+check("--hard-rows 1: loss = sum KL x KL / mean KL (detached weights), gen KL and rows unweighted, gradients match",
+      torch.allclose(loss_h, want_h, rtol=1e-6) and torch.allclose(genkl_h, kv.detach().sum(), rtol=1e-6) and mg_h == len(jg_) and same(gh, gwh, 1e-5)
+      and float(loss_h) > float(genkl_h))
 # prompt weight W: loss = gen KL + W x prompt KL, from per-row KL
 W = 0.3
 st_ = ToyStu2(); h_, _ = run_segment(st_, gold.ids(0, 0, 40), 0, None)
