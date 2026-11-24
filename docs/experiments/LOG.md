@@ -10082,3 +10082,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
 - 11-23 9:00 PM CST: **w226 control: D256-30's long-context gain is the 3M training, not the deep data.** JL-I30-lr1e-4-3M (3.00,
   lr 1e-4 to 3M, cap 8k, no deep docs) on golden-jlong: 0.012225 = 0.958 vs unhealed. D256-30 3M vs it: **0.991 [0.947, 1.028]**,
   56 / 74 docs better (median doc 0.986) → no significant deep-data effect at 3.00 (the two ~245k calib docs on 2 of 24 streams).
+- 11-23 9:15 PM CST: **I25-step-10M 10M on golden-jlong: 0.883 [0.727, 0.974]** vs unhealed (69 / 74 better, median doc 0.918); paired vs the step fork 4M 1.004 [0.967, 1.069] (53 / 74 better, median doc 0.988). Long context does not get worse past 2M at 8k training; the mean is flat (2M 0.876, 4M 0.879, 10M 0.883), the median doc improves a little (0.931 → 0.924 → 0.918). Tool `v3/qad226/jl226.py`.
