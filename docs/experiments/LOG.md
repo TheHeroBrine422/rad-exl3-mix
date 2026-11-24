@@ -10135,3 +10135,7 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   0.895 [0.867, 0.917] vs unhealed; **paired vs the 10M end 0.993 [0.985, 0.998]**, 397 / 642 better, median doc 0.998 — a small but
   significant gain (~0.7 %) for +15 % more rows of the same kind of data, the reference for the arms. C228-hard1 training (iceman, 4:06 AM);
   on-policy arms C228-optr / C228-opcal queued on box2 by arm228.sh after w228's goldens (~9 AM CST).
+- 11-24 ~6 AM CST: **C228-hard1 (`--hard-rows 1`, same data / schedule as C228-ctl): no gain.** jc228 vs the 10M end 1.001 [0.994, 1.006]
+  (234 / 642 better) vs the plain control's 0.993 [0.985, 0.998]. α 0.5 / 2 queued on box2 (user) before calling it. Box2 plan v2 (user):
+  arm228.sh queues the single-card arms on card 0 (teacher-gen traces / calib / mixed, hard-rows 0.5 / 2, control seed repeat, golden-jlong
+  reads); w228 generates STUDENT data (the 10M 2.50 student, same cut points) on cards 1–3, then student arms.
