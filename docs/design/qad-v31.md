@@ -46,3 +46,5 @@ that ("short-decay"); the run's own end point is the main number.
 ## Judging rules
 j217 (held-out qad pool) for comparisons; ratio with and without the blow-up documents; flag any document whose KL rises > 10×;
 verify only for finalists; never public.
+
+- **EMA: dropped (user 11-24).** Small gain (3.0: 0.965–0.993 at 1–2M), not worth the extra reads and complexity; final runs use raw checkpoints.

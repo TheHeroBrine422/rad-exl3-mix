@@ -10111,3 +10111,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   ETA: training ~9 AM CST, reads ~10:30 AM CST. **Control for it: I25-step-10M on golden-jlong is flat at 0.880–0.883** vs unhealed
   (sd-2M 0.881, sd-4M 0.883, sd-6M 0.880, sd-8M 0.880, 10M 0.883; `data/qad226/jl-control-I25-step-10M.md`): the long 1e-4 tail at
   8k context does not move deep-context KL. The reads of D256-25T at the same points are queued (paired vs these).
+- 11-24 ~12:20 AM CST (user): **EMA dropped from the V3.1 recipe** (gain small: 3.0 0.965–0.993 at 1–2M; not worth the extra reads / complexity). Final runs use raw checkpoints only.
