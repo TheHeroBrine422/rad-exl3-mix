@@ -10147,3 +10147,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   tokens (51 / 43 / 111 docs differ from the sampled ids). Arms queued on box2 card 0 at 7:35 AM (arm228.sh v2); student step (`stud228.sh`,
   detached, EXIT trap frees cards 1–3) generating since 7:36 AM. Ledger: verify / j217 / jlong / jc228 excluded from the cuts.
   **Runtime:** none (training data).
+- 11-24 11 AM CST: box2 JC-I25-step-10M (baseline for the C228 arms) matches iceman's read exactly (same per-category means: box2 / iceman equivalence of the jc228 reads). Queue: C228-optr training on card 0 (step 842 at 11 AM, ~34 s/step). Student gen (stud228): chat done 9:12 AM, text done 10:41 AM (1.11M tok, 0 failed), traces 1,002 cuts / 949k tok at 10:59 AM; cards 1–3 still held for it.
