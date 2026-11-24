@@ -10079,3 +10079,6 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
     (reproduces the lead's 0.876 / 0.879). Raw `data/qad226/results-D256.tsv`, `jl-readout-1123-840pm.md`.
   - D256-25's sd-2M on golden-jlong: 0.874 [0.737, 0.942], 72 / 74 (median doc 0.914). Paired vs I25-lr3e-4-2M 2M: 0.997 [0.990, 1.014]
     → no long-context gain at 2M (the deep docs are at ~110k depth then). Its 4M end follows (~10 PM CST).
+- 11-23 9:00 PM CST: **w226 control: D256-30's long-context gain is the 3M training, not the deep data.** JL-I30-lr1e-4-3M (3.00,
+  lr 1e-4 to 3M, cap 8k, no deep docs) on golden-jlong: 0.012225 = 0.958 vs unhealed. D256-30 3M vs it: **0.991 [0.947, 1.028]**,
+  56 / 74 docs better (median doc 0.986) → no significant deep-data effect at 3.00 (the two ~245k calib docs on 2 of 24 streams).
