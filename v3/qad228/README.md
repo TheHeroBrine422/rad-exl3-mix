@@ -25,6 +25,8 @@ There are two batches, each with its own golden:
 | 4 | `docs228.py OUT_PREFIX --part RENDER GEN SOURCE …` | 8k docs: the system turn + the prefix tail from a turn start + the generation prompt + the generated ids. Writes a radiance `--kld-corpus` with `score_from` = first generated token − 1, so the golden rows are exactly the generated tokens. |
 | 5 | `gold228.sh NAME` | TP4 bf16 `--kld-record`, top-512, bf16 KV, into `queue/ext/gold/NAME`, plus `gen.u8` (all ones), `corpus.meta.jsonl` and the gen mask `queue/ext/genmask/NAME.u8`. `check228.py` checks rows, gen rows and token identity. A 6-document bf16-vs-itself `--kld-ref` (`eval/golden_pick.py` slice) checks KL ≈ 0. |
 | driver | `chain228.sh` | Trace generator end → both calib generators at once → `gold228.sh onpol-b1` → `gold228.sh onpol-calib-b1`. |
+| student | `stud228.sh` | The student writes the turns at exactly the teacher batches' cuts. Student = the 2.50 release with I25-step-10M's 10M scales, built by swap222 `--verify`. Steps: TP1 servers on cards 1–3 (the queue's radiance build, A8, i8 KV, prefix cache, DFlash2) → TP2 bf16 goldens `stud-b1` / `stud-calib-b1` on cards 2,3 → cont files → `C228-stud` / `C228-studcal` jobs. Cards are handed back through `only-card<N>`; an EXIT trap removes them on failure. |
+| report | `stats228.py`, `ledger228.py` | Counts-only generation stats (depth histogram, prefill / decode split) and the ledger lines. |
 
 ## Servers (box2, card locks held by `hold.sh`)
 
