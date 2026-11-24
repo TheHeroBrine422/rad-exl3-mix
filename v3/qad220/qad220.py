@@ -138,7 +138,7 @@ def use_compiled_scales(stu, a8=False, a8_int8=False, dynamo_limit=0):
         if a8_int8: y = _a8_int8_gemm(self, x)
         else:
             if a8: x = _A8.apply(x)
-            y = x @ qmodel.i8_to_bf16(self.wq)
+            y = x @ (self.remap(self.wq) if getattr(self, "remap", None) is not None else qmodel.i8_to_bf16(self.wq))      # w224: --remap's value map on the tensors it covers
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         return post(y, self.svh, self.c, self.s).view(*sh[:-1], self.n)
     for q in stu.qlin.values():
@@ -155,7 +155,7 @@ def use_a8(stu, a8_int8=False):
         x = (x0 * self.su()).to(BF)
         x = (x.view(-1, 128) @ self.Hb).view(-1, self.k)
         if a8_int8: y = _a8_int8_gemm(self, x)
-        else: y = _A8.apply(x) @ self.wq.to(BF)
+        else: y = _A8.apply(x) @ (self.remap(self.wq) if getattr(self, "remap", None) is not None else self.wq.to(BF))      # w224: --remap
         y = (y.view(-1, 128) @ self.Hb).view(-1, self.n)
         y = y * (self.sv() * self.s)
         if self.la is not None: y = y + (x0.float() @ self.la.T) @ self.lb.T            # adapters (arm L) compose, f32 (use_lora32)
@@ -180,6 +180,103 @@ def use_lora32(stu):
         return y.to(BF).view(*sh[:-1], self.n)
     import types
     for q in stu.qlin.values(): q.forward = types.MethodType(fwd, q)
+
+
+# ------------------------------------------------------------------ w224: value remap (table-QAD probe, no format / kernel)
+REMAP_M = 127          # the int8 codebook integers of a trunk tensor: |m| <= 127, so a map's table has 2 * 127 + 1 entries per group
+
+
+def remap_knots(hist, n_knots):
+    """integer knot positions of one group from the histogram of its |m| (hist[v] = count of |m| == v, v = 0 .. REMAP_M): 0, the quantiles
+    of |m| at j / (n_knots - 1), the largest |m| present; strictly increasing, at most n_knots (fewer when the tensor has fewer distinct values)"""
+    h = np.asarray(hist, np.float64); cdf = np.cumsum(h) / h.sum()
+    q = [int(np.searchsorted(cdf, p, side="left")) for p in np.linspace(0.0, 1.0, n_knots)]
+    top = int(np.nonzero(h)[0].max())
+    xs = sorted({0, top, *[min(v, top) for v in q]})
+    return np.array(xs, np.int64)
+
+
+def remap_basis(xs, n_knots):
+    """A [REMAP_M + 1, n_knots] f32: the weights of the piecewise-linear interpolation of the knot values at every integer |m| in 0 .. REMAP_M
+    (|m| above the last knot, which no weight has: the last knot's value). Knot columns past len(xs) are unused (zero)"""
+    A = np.zeros((REMAP_M + 1, n_knots), np.float64)
+    for v in range(REMAP_M + 1):
+        if v >= xs[-1]: A[v, len(xs) - 1] = 1.0; continue
+        j = int(np.searchsorted(xs, v, side="right")) - 1; t = (v - xs[j]) / (xs[j + 1] - xs[j])
+        A[v, j] = 1.0 - t; A[v, j + 1] = t
+    return A.astype(np.float32)
+
+
+class _RemapGather(torch.autograd.Function):
+    """W' = bf16(lut)[wq + off] (a gather of the table at the int8 codebook integers; off [k, 1] int32 = group * (2 REMAP_M + 1) + REMAP_M);
+    backward: the table's gradient = the per-entry sum of dL/dW' over the weights that read the entry (a histogram, f32 atomics: the
+    sum's order is not fixed, so the remap's gradient is not bitwise reproducible; the forward is)"""
+    @staticmethod
+    def forward(ctx, lut, wq, off):
+        ctx.save_for_backward(wq, off); ctx.shape = lut.shape
+        return lut.reshape(-1).to(BF).index_select(0, (wq.to(torch.int32) + off).reshape(-1)).view(wq.shape)
+
+    @staticmethod
+    def backward(ctx, dw):
+        wq, off = ctx.saved_tensors
+        idx = (wq.to(torch.int32) + off).reshape(-1)
+        s = torch.bincount(idx, weights=dw.reshape(-1).float(), minlength=ctx.shape.numel())
+        return s.view(ctx.shape), None, None
+
+
+class ValueRemap(torch.nn.Module):
+    """w224: a trainable odd-symmetric piecewise-linear value map f on one trunk tensor's int8 codebook integers (W' = f(m) before the
+    scales, y = ... (x @ W') ...): per group of consecutive input-side rows of W [k, n] (groups = 1: the tensor) n_knots knots at the quantiles
+    of |m| (knot j at the integer xs[j], knot 0 at 0), knot values y_j = xs[j] (1 + d_j), d trainable and 0 at the start = the identity map.
+    Same freedom as a table of n_knots entries per group (per sign: odd symmetry); rounded (--remap-round): the table's entries are rounded to
+    integers (int8, |.| <= 127) in the forward, gradient straight-through"""
+    def __init__(self, wq, groups, n_knots, rounded=False):
+        super().__init__()
+        k = wq.shape[0]; G = groups
+        assert wq.dtype == torch.int8 and G >= 1 and k >= G, (wq.dtype, k, G)
+        X = np.zeros((G, n_knots), np.float32); A = np.zeros((G, REMAP_M + 1, n_knots), np.float32)
+        for g in range(G):
+            blk = wq[g * k // G:(g + 1) * k // G]
+            hist = torch.bincount(blk.to(torch.int32).abs().reshape(-1), minlength=REMAP_M + 1).cpu().numpy()
+            assert len(hist) == REMAP_M + 1, f"|m| above {REMAP_M}"
+            xs = remap_knots(hist, n_knots); X[g, :len(xs)] = xs; A[g] = remap_basis(xs, n_knots)
+        dev = wq.device
+        self.register_buffer("X", torch.from_numpy(X).to(dev), persistent=False)
+        self.register_buffer("A", torch.from_numpy(A).to(dev), persistent=False)
+        self.register_buffer("off", (((torch.arange(k, device=dev) * G) // k) * (2 * REMAP_M + 1) + REMAP_M).to(torch.int32).view(-1, 1), persistent=False)
+        self.d = torch.nn.Parameter(torch.zeros(G, n_knots, device=dev))
+        self.groups, self.n_knots, self.rounded = G, n_knots, rounded
+
+    def table(self):
+        """the map's table [G, 2 REMAP_M + 1] f32 (entry REMAP_M + v = f(v), v = -REMAP_M .. REMAP_M)"""
+        y = self.X * (1.0 + self.d)
+        ab = torch.einsum("gvj,gj->gv", self.A, y)
+        t = torch.cat([-ab.flip(1)[:, :-1], ab], 1)
+        if self.rounded: t = t + (t.round().clamp(-REMAP_M, REMAP_M) - t).detach()
+        return t
+
+    def forward(self, wq): return _RemapGather.apply(self.table(), wq, self.off)
+
+
+def apply_remap(a, stu, log):
+    """--remap K_MAX[,KNOTS[,GROUPS]]: a ValueRemap on every trunk tensor whose container K (trellis bits per weight) is <= K_MAX (and whose
+    codebook integers are held as int8); its d joins stu.P as <linear key>:m. Off by default (no attribute, no parameter, the forward as before)"""
+    stu.remap = {}; stu.remap_args = a.remap
+    if not a.remap: return
+    f = a.remap.split(","); kmax = float(f[0]); nk = int(f[1]) if len(f) > 1 else 64; G = int(f[2]) if len(f) > 2 else 1
+    assert not a.a8_int8, "--remap with --a8-int8: the remapped weights are not int8 integers (use --a8: fake-quant activations, bf16 GEMM)"
+    assert a.a8 or a.compile_scales, "--remap needs --a8 and / or --compile-scales (the forward it patches)"
+    assert not a.lora and not a.split_layers, "--remap: no adapters / layer split"
+    by_k = {}
+    for k, ql in stu.qlin.items():
+        if ql.K > kmax + 1e-6: continue
+        assert ql.exact and ql.wq.dtype == torch.int8, f"--remap: {k} is not held as int8 codebook integers"
+        ql.remap = ValueRemap(ql.wq, G, nk, a.remap_round); stu.remap[k] = ql.remap; stu.P[k + ":m"] = ql.remap.d
+        b = by_k.setdefault(round(ql.K, 3), [0, 0]); b[0] += 1; b[1] += ql.k * ql.n
+    tot = sum(q.k * q.n for q in stu.qlin.values()); got = sum(v[1] for v in by_k.values())
+    log(f"--remap {a.remap}: {len(stu.remap)} of {len(stu.qlin)} trunk tensors ({got / tot:.4f} of the trunk's {tot} weights) K <= {kmax:g}: "
+        + ", ".join(f"K={k:g}: {v[0]} tensors / {v[1]} weights" for k, v in sorted(by_k.items()))
+        + f"; {nk} knots x {G} group(s) each ({len(stu.remap) * nk * G} parameters), lr {a.remap_lr if a.remap_lr is not None else a.lr}, table rounded to int8 {a.remap_round}")
 
 
 class SegCache:
@@ -873,16 +970,18 @@ class Trainer:
         tr = [(n, p) for n, p in stu.P.items() if p.requires_grad]       # w220: frozen parameters (--train-*, --mask) stay in stu.P (state, export)
         self.P = [p for _, p in tr]; self.names = [n for n, _ in tr]
         nrm = [p for n, p in zip(self.names, self.P) if n.endswith(":g")]          # N: RMSNorm gains at lr / 10
-        sc = [p for n, p in zip(self.names, self.P) if not n.endswith((":la", ":lb", ":g"))]
+        sc = [p for n, p in zip(self.names, self.P) if not n.endswith((":la", ":lb", ":g", ":m"))]
+        rmp = [p for n, p in zip(self.names, self.P) if n.endswith(":m")]          # w224 --remap: the value maps' d (own Adam group at --remap-lr)
+        rm_lr = getattr(a, "remap_lr", None); rm_lr = a.lr if rm_lr is None else rm_lr
         lo = [p for n, p in zip(self.names, self.P) if n.endswith((":la", ":lb"))]
-        self.scal = sc + nrm
-        scg = lr_groups(a, [n for n in self.names if not n.endswith((":la", ":lb", ":g"))], sc)   # lead 11-22 --lr-layers: consecutive runs of scales with one lr (parameter order kept)
+        self.scal = sc + nrm + rmp
+        scg = lr_groups(a, [n for n in self.names if not n.endswith((":la", ":lb", ":g", ":m"))], sc)   # lead 11-22 --lr-layers: consecutive runs of scales with one lr (parameter order kept)
         if a.lr_layers: log(f"--lr-layers {a.lr_layers}: " + ", ".join(f"{len(g_)} vectors at lr x {b_ / a.lr:g}" for b_, g_ in scg))
         if a.wd > 0:       # #200: decoupled weight decay on the log multipliers (toward 0 = the stored scales); not on the norm gains
-            groups = [{"params": g_, "base": b_, "weight_decay": a.wd} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else [])
+            groups = [{"params": g_, "base": b_, "weight_decay": a.wd} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10, "weight_decay": 0.0}] if nrm else []) + ([{"params": rmp, "base": rm_lr, "weight_decay": 0.0}] if rmp else [])
             self.opt = torch.optim.AdamW(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps, weight_decay=0.0)
         else:              # W = 0: #196's Adam, unchanged
-            groups = [{"params": g_, "base": b_} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10}] if nrm else [])
+            groups = [{"params": g_, "base": b_} for b_, g_ in scg] + ([{"params": nrm, "base": a.lr / 10}] if nrm else []) + ([{"params": rmp, "base": rm_lr}] if rmp else [])
             self.opt = torch.optim.Adam(groups, lr=a.lr, betas=(0.9, a.beta2), eps=a.eps)
         # L: the adapters' Adam runs on the CPU on f32 master copies (its state, 2 x 0.46 GB at r = 16, does not fit
         # beside a card's training peak); the card's adapters are overwritten with the masters after every step
@@ -1164,7 +1263,7 @@ class Trainer:
 
     def opt_order(self):
         """the trainable parameter names in the main optimizer's index order (the scale vectors, then the norm gains)"""
-        return [n for n in self.names if not n.endswith((":la", ":lb", ":g"))] + [n for n in self.names if n.endswith(":g")]
+        return [n for n in self.names if not n.endswith((":la", ":lb", ":g", ":m"))] + [n for n in self.names if n.endswith(":g")] + [n for n in self.names if n.endswith(":m")]
 
     def restore(self, z):
         self.stu.load_state(z["cur"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", [])); self.seg_hist = list(z.get("seg_hist", [])); self.partial_restore = False
@@ -1269,6 +1368,13 @@ def write_ckpt(stu, out, meta):
             save_file({"r": hq.r.exp().float().cpu().contiguous(), "c": (hq.c.exp().float().cpu() if hq.c is not None else torch.ones(hq.n)).contiguous()}, f"{sd}/lm_head.safetensors")
     lo = {k: v.detach().to(torch.bfloat16).cpu().contiguous() for k, v in stu.P.items() if k.endswith((":la", ":lb"))}
     if lo: save_file(lo, os.path.join(out, "lora.safetensors"))
+    if getattr(stu, "remap", None):                                         # w224 --remap: the value maps beside the scales (the served read cannot apply them; the trainer's --eval-only does)
+        rz = {}
+        with torch.no_grad():
+            for k, m in stu.remap.items():
+                rz[k + ".knots"] = m.X.cpu().contiguous(); rz[k + ".d"] = m.d.detach().cpu().contiguous(); rz[k + ".table"] = m.table().detach().cpu().contiguous()
+        save_file(rz, os.path.join(out, "remap.safetensors"), metadata={"table": "[groups, 255] f32, entry 127 + v = f(v) for the int8 codebook integer v; knots [groups, n_knots] integer |m| positions (0 = unused past the last); d [groups, n_knots]: knot value = knot x (1 + d)",
+                                                                     "args": str(getattr(stu, "remap_args", ""))})
     if getattr(stu, "norm", None):                                          # N (#196): the trained norm weights, as the checkpoint stores them
         nw = {}
         with torch.no_grad():
@@ -1797,6 +1903,11 @@ def parser():
     ap.add_argument("--beta2", type=float, default=0.99, help="w220: Adam beta2 (the trainer's 0.99)")
     ap.add_argument("--no-frozen-prefix", action="store_true", help="w220 (test / benchmark switch): do not skip the backward of the layers before the first trainable one (the old full path, same trainable set)")
     ap.add_argument("--mask", default=None, help="w220: npz of per-scale 0 / 1 masks (mkmask220.py); a vector it does not list is not masked")
+    ap.add_argument("--remap", default=None, help="w224 (table-QAD probe): K_MAX[,KNOTS[,GROUPS]]: a trainable odd-symmetric piecewise-linear value map (KNOTS knots, default 64, at the quantiles of |m|; GROUPS = row-blocks of the input side, default 1 = one map a tensor) on the int8 codebook integers of every trunk tensor whose container K <= K_MAX (e.g. 2.0,64,32), applied to the dequantized weight before the scales; identity at the start. Needs --a8 and / or --compile-scales, not --a8-int8. The served read cannot apply it: judge with --eval-only. Exported as ckpt-*/remap.safetensors. Off by default (nothing changes)")
+    ap.add_argument("--remap-lr", type=float, default=None, help="w224: peak lr of the --remap parameters (relative knot-value changes; Adam, same schedule as the scales; default = --lr; 0 = frozen at the identity: the equivalence gate)")
+    ap.add_argument("--remap-round", action="store_true", help="w224: with --remap: the map's table entries rounded to integers (int8 table, |.| <= 127) in the forward, straight-through gradient (the deployable-table constraint)")
+    ap.add_argument("--eval-only", default=None, help="w224: GOLDEN dir: score the student (with --init CKPT/params.pt, the --a8 / --compile-scales / --remap flags of its forward) on that golden's gen rows with the trainer's own forward (documents in segments of --Q tokens carrying the state, up to --eval-cap tokens), write OUT/eval.json (per-document KL sums), exit. No data plan is built")
+    ap.add_argument("--eval-cap", type=int, default=0, help="w224: with --eval-only: score only the first N tokens of each document (0 = whole documents)")
     ap.add_argument("--split-layers", type=int, default=0, help="w225: two cards, one process: the token table and layers 0..K-1 on the first visible card, layers K..63 + final norm + head on the second; carried KV in per-document buffers, each layer's state on its card (0 = off: one card)")
     ap.add_argument("--pipeline", action="store_true", help="w225 (with --split-layers): the filled pipeline (card A runs segment j's first half while card B runs segment j-1's second half); bit for bit the naive split")
     ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
@@ -1830,6 +1941,42 @@ def gradnoise(a, T, d, log):
     log(f"gradnoise: {n} batches, {len(P)} scale vectors, {sum(x.numel() for x in s1)} scales")
 
 
+def eval_only(a, d, log):
+    """w224 --eval-only GOLDEN: the trainer's own forward (the --a8 / --compile-scales / --remap flags as the training run used them; --init CKPT/params.pt)
+    over every document of the golden (kld.json order) in segments of --Q tokens carrying the state (a document longer than 16,384 tokens in the
+    w225 KV buffers), KL over the golden's gen rows as the trainer's loss computes it. Writes OUT/eval.json: per-document KL sums and rows (cmp224.py
+    pairs two of them). In-trainer KL, not the served read's: a remapped student cannot be served."""
+    assert d.world == 1 and not a.split_layers and a.tie_groups <= 1, "--eval-only: one card, no ties / split"
+    dev = f"cuda:{d.local}"; torch.cuda.set_device(dev)
+    stu = build_student(a, dev, lambda s_: log(s_, True))
+    apply196(a, stu, log)
+    ATTN_GQA[0] = a.attn_gqa
+    apply_remap(a, stu, log)
+    use_seg_attention(stu)
+    if a.compile_scales: use_compiled_scales(stu, a.a8, a.a8_int8, a.dynamo_limit); log(f"QLinear scales compiled (a8 {a.a8}, int8 {a.a8_int8})")
+    elif a.a8: use_a8(stu, a.a8_int8)
+    if a.init:
+        z = torch.load(a.init, weights_only=False)["state"]
+        extra = sorted(set(z) - set(stu.P)); assert not extra, f"--init {a.init}: {len(extra)} parameters this student does not have (a missing --remap / --norms / --head-train?), e.g. {extra[:3]}"
+        stu.load_state(z); log(f"state from {a.init}: {len(z)} parameters ({sum(1 for n in z if n.endswith(':m'))} remap vectors); the student has {len(stu.P)}")
+    gold = D.Gold(a.eval_only); docs = []; t0 = time.time(); kt = 0.0; nt = 0
+    with torch.no_grad():
+        for i in range(len(gold.docs)):
+            n = gold.ntok(i) if not a.eval_cap else min(a.eval_cap, gold.ntok(i))
+            if len(gold.scored(i, 0, n)[0]) == 0: docs.append({"i": i, "tokens": n, "rows": 0, "kl_sum": 0.0}); continue
+            big = n > 16384; stu.kvbuf = big; stu.kv_cap = n if big else 0
+            prev, p, tot, rows = None, 0, 0.0, 0
+            while p < n:
+                q = min(n, p + a.Q); kl, m, prev = seg_loss(stu, [gold], (0, i), p, q, prev); tot += float(kl); rows += m; p = q
+            del prev; stu.kvbuf = False; stu.kv_cap = 0
+            docs.append({"i": i, "tokens": n, "rows": rows, "kl_sum": tot}); kt += tot; nt += rows
+            if i % 20 == 0 or i == len(gold.docs) - 1: log(f"eval doc {i + 1} / {len(gold.docs)}: running KL {kt / max(nt, 1):.6f} over {nt} rows, {time.time() - t0:.0f} s")
+    rec = {"golden": a.eval_only, "init": a.init, "remap": a.remap, "a8": a.a8, "compile_scales": a.compile_scales, "eval_cap": a.eval_cap, "Q": a.Q,
+           "rows": nt, "kl_row": kt / max(nt, 1), "wall_s": round(time.time() - t0, 1), "docs": docs}
+    fn = os.path.join(a.out, "eval.json"); json.dump(rec, open(fn + ".part", "w")); os.replace(fn + ".part", fn)
+    log(f"EVAL DONE {fn}: KL {rec['kl_row']:.6f} over {nt} gen rows, {len(docs)} documents, {rec['wall_s']} s")
+
+
 def main():
     a = parser().parse_args()
     if a.a8_int8: a.a8 = True
@@ -1849,6 +1996,7 @@ def main():
     mad_int_form()
     if a.conv == "shift": qmodel.use_shift_conv()
     if a.compile_ew: set_dynamo_limit(a.dynamo_limit); qmodel.use_compiled_elementwise(); log("shift conv / MLP silu * up compiled")
+    if a.eval_only: return eval_only(a, d, log)
     P = build_data(a, d, log)
     C, fe, budgets, steps, rows_of, cum, last, br, fork_last = (P[k] for k in ("C", "fe", "budgets", "steps", "rows_of", "cum", "last", "br", "fork_last"))
     if a.make_taps: return make_taps(a, P, log)
@@ -1903,6 +2051,7 @@ def main():
         log(f"export-only (#196): {o}")
         return
     apply_ties(a, stu, log)
+    apply_remap(a, stu, log)
     stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log, a.no_frozen_prefix)
     use_seg_attention(stu)
