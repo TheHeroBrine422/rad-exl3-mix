@@ -10055,3 +10055,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   -30 to finish, then: stop the dispatchers → TP4 bf16 record (top-512, max-model-len 262144; config checked at TP2 on a toy corpus) →
   dispatchers back → gen mask → plan 226t (front = the 7 calib > 20k + traces 0–2) → the queued T2 D256-25T (5 deep streams; host RAM
   binds: ~13.4 GiB a parked deep state at 210k).
+- 11-23 6:18 PM CST: **w226: the pipeline's illegal memory access recurred.** D256-25 crashed at step 79 (main thread, card A forward:
+  run_pipe → run_half → checkpoint → QLinear `pre` (inductor)). Asynchronous, so the stack is not the cause. The T2 retry resumed it
+  from state.pt at step 72. That makes 2 crashes (g226-gate step 13, D256-25 step 79) in ~90 two-card steps; neither run crashed at the
+  same spot after resuming. Suspects (unverified): kernel launches across the two threads / autograd device threads (the a8int8
+  Triton GEMM, inductor's compiled scale functions). The T2 retry limit is raised to 10 (qcard 4acfed12; running dispatchers keep 3).
+  To chase it: AMD_SERIALIZE_KERNEL=3 on a short pipelined run.
