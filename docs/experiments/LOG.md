@@ -10148,3 +10148,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   detached, EXIT trap frees cards 1–3) generating since 7:36 AM. Ledger: verify / j217 / jlong / jc228 excluded from the cuts.
   **Runtime:** none (training data).
 - 11-24 11 AM CST: box2 JC-I25-step-10M (baseline for the C228 arms) matches iceman's read exactly (same per-category means: box2 / iceman equivalence of the jc228 reads). Queue: C228-optr training on card 0 (step 842 at 11 AM, ~34 s/step). Student gen (stud228): chat done 9:12 AM, text done 10:41 AM (1.11M tok, 0 failed), traces 1,002 cuts / 949k tok at 10:59 AM; cards 1–3 still held for it.
+- 11-24 2:20 PM CST: **Teacher on-policy arms (IQ6R-V4-written text, bf16-labelled), 2.50, +1.5M rows from the 10M state: no gain.**
+  jc228 paired (642 docs): vs the 10M end, C228-optr (traces) 1.000 [0.998, 1.001], C228-opcal (calib cuts) 0.999 [0.998, 1.001]; vs
+  C228-ctl (plain unused calib, same schedule) 1.007 [1.002, 1.014] / 1.007 [1.001, 1.015]. j217 (mean / w/o blow-ups / median): optr
+  0.839 / 0.870 / 0.928, opcal 0.839 / 0.870 / 0.929 vs 10M end 0.840 / 0.870 / 0.930 and ctl 0.824 / 0.858 / 0.925. Confounder check: the
+  arms did train (scale rel. change vs the 10M ckpt: optr 1.7e-3, opcal 6.7e-4, ctl 7.0e-4), so the null is real: teacher-written text
+  moves the scales but carries no signal the judges reward; real calib does (−0.7 %). Pending: opmix, student-gen arms (stud228 goldens
+  recording), lr3e5, ctls1 (noise floor), JL reads. box2 JC reads of ctl copied from iceman for pairing (scores/JC-C228-ctl-*).
+  **Runtime:** none.
