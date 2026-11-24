@@ -10061,3 +10061,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   same spot after resuming. Suspects (unverified): kernel launches across the two threads / autograd device threads (the a8int8
   Triton GEMM, inductor's compiled scale functions). The T2 retry limit is raised to 10 (qcard 4acfed12; running dispatchers keep 3).
   To chase it: AMD_SERIALIZE_KERNEL=3 on a short pipelined run.
+- 11-23 6:40 PM CST: **I25-step-10M done (iceman, 5:38 PM CST):** 10M end 0.840 (w/o blow-ups 0.870, median doc 0.930, 93 % docs
+  improved); raw 8.5M 0.845 / 9.5M 0.839 (median 0.931 / 0.928). The median doc improves ~2 % from 2M to 10M (0.946 → 0.930); the mean
+  sits at ~0.84 from 6M on. iceman idle since 5:38 PM CST (nothing queued). Deep runs on box2: D256-25 at 1.62M rows (one "illegal
+  memory access" crash at 6:18 PM, auto-resumed from state.pt, retry 1 of 3), D256-30 at 1.79M; peaks 20.6 / 21.2 GiB per card; their
+  reads come at the end (~4M / 3M).
