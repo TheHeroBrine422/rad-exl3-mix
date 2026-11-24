@@ -1,0 +1,39 @@
+{
+ "status_ok": 2174,
+ "status_no-assistant": 25,
+ "sessions_with_cuts": 1955,
+ "candidates": 26519,
+ "sessions_picked": 1955,
+ "cuts": 8504,
+ "cuts_by_kind": {
+  "main": 141,
+  "sub": 5583,
+  "worker": 1803,
+  "other": 63,
+  "miner": 914
+ },
+ "sessions_by_kind": {
+  "miner": 641,
+  "other": 13,
+  "worker": 234,
+  "main": 19,
+  "sub": 1048
+ },
+ "candidates_by_kind": {
+  "miner": 1673,
+  "other": 141,
+  "worker": 13321,
+  "main": 1227,
+  "sub": 10157
+ },
+ "depth_hist_k": {
+  "0": 2792,
+  "16": 2497,
+  "32": 567,
+  "48": 753,
+  "64": 463,
+  "80": 410,
+  "96": 637,
+  "112": 385
+ }
+}

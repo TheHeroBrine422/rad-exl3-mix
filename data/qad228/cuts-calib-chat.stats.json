@@ -1,0 +1,27 @@
+{
+ "skip_excluded": 217,
+ "skip_pool_verify": 191,
+ "no_cut": 2,
+ "docs": 598,
+ "candidates": 1227,
+ "cuts": 1227,
+ "rounds": 12,
+ "excluded_lists": {
+  "golden-j217": 166,
+  "jlong-ids.json": 74,
+  "contpool.json:judge": 642
+ },
+ "excluded_union": 881,
+ "docs_by_category": {
+  "tools": 323,
+  "chat": 225,
+  "agentic": 3,
+  "reasoning": 46,
+  "long-agentic": 1
+ },
+ "docs_by_pool": {
+  "qad": 429,
+  "fit": 81,
+  "search": 88
+ }
+}

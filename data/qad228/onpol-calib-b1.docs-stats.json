@@ -1,0 +1,40 @@
+{
+ "calib-onpol:render-calib-chat": {
+  "cuts": 415,
+  "gen_sampled": 541349,
+  "retok_same": 372,
+  "prompt_retok_same": 415,
+  "docs": 415,
+  "tokens": 792393,
+  "gen_rows": 541337,
+  "stop_eos": 335,
+  "kind_agentic": 3,
+  "stop_limit": 80,
+  "kind_chat": 183,
+  "kind_long-agentic": 1,
+  "kind_reasoning": 46,
+  "kind_tools": 182,
+  "sessions": 415
+ },
+ "calib-onpol:render-calib-text": {
+  "cuts": 800,
+  "gen_sampled": 1106256,
+  "retok_same": 689,
+  "prompt_retok_same": 800,
+  "docs": 800,
+  "tokens": 1788143,
+  "gen_rows": 1106160,
+  "stop_limit": 419,
+  "kind_books": 106,
+  "stop_eos": 381,
+  "kind_code": 106,
+  "kind_encyclopedic": 106,
+  "kind_legal": 26,
+  "kind_math": 106,
+  "kind_multilingual": 106,
+  "kind_qa": 105,
+  "kind_science": 34,
+  "kind_web": 105,
+  "sessions": 800
+ }
+}

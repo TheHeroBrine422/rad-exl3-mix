@@ -1,0 +1,19 @@
+{
+ "pi-onpol:render-b": {
+  "cuts": 1646,
+  "gen_sampled": 1621241,
+  "retok_same": 1595,
+  "prompt_retok_same": 1646,
+  "docs": 1646,
+  "tokens": 10302566,
+  "gen_rows": 1621219,
+  "stop_eos": 1536,
+  "kind_main": 141,
+  "stop_limit": 110,
+  "kind_sub": 593,
+  "kind_worker": 794,
+  "kind_other": 63,
+  "kind_miner": 55,
+  "sessions": 282
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "cuts": 800,
+ "gen": 1106256,
+ "stop_eos": 381,
+ "follow": 0,
+ "prompt_n": 681983,
+ "cache_n": 0,
+ "prompt_tokens": 681983,
+ "prompt_ms": 256787.03295800005,
+ "pred_ms": 26688014.859477002,
+ "wall_s": 27000.113921642303,
+ "draft_n": 2857470,
+ "draft_acc": 698328,
+ "stop_limit": 419,
+ "sessions_or_docs": 800,
+ "gen_mean": 1382.82,
+ "gen_median": 2048,
+ "prefill_share_of_request_time": 0.009530113970891556,
+ "prefilled_per_generated": 0.6164784642975948,
+ "cache_hit_share": 0.0,
+ "draft_accept": 0.2443868177093723,
+ "depth_hist_k": {
+  "0-16k": 800
+ },
+ "kinds": {
+  "code": 106,
+  "encyclopedic": 106,
+  "math": 106,
+  "books": 106,
+  "multilingual": 106,
+  "qa": 105,
+  "web": 105,
+  "science": 34,
+  "legal": 26
+ }
+}

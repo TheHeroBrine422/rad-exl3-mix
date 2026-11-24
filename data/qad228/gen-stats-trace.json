@@ -1,0 +1,39 @@
+{
+ "cuts": 1646,
+ "gen": 1621241,
+ "stop_eos": 1536,
+ "follow": 663,
+ "prompt_n": 30783745,
+ "cache_n": 62833792,
+ "prompt_tokens": 93617537,
+ "prompt_ms": 159498824.45920134,
+ "pred_ms": 37485024.98154995,
+ "wall_s": 197745.43069958687,
+ "draft_n": 3967257,
+ "draft_acc": 1050021,
+ "stop_limit": 110,
+ "sessions_or_docs": 282,
+ "gen_mean": 984.9580801944107,
+ "gen_median": 413,
+ "prefill_share_of_request_time": 0.809705084513415,
+ "prefilled_per_generated": 18.98776616184762,
+ "cache_hit_share": 0.6711754444041825,
+ "draft_accept": 0.2646717870810991,
+ "depth_hist_k": {
+  "0-16k": 317,
+  "16-32k": 370,
+  "32-48k": 129,
+  "48-64k": 145,
+  "64-80k": 170,
+  "80-96k": 165,
+  "96-112k": 170,
+  "112-128k": 180
+ },
+ "kinds": {
+  "worker": 794,
+  "sub": 593,
+  "main": 141,
+  "other": 63,
+  "miner": 55
+ }
+}

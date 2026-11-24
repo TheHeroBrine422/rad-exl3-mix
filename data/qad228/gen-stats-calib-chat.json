@@ -1,0 +1,32 @@
+{
+ "cuts": 415,
+ "gen": 541349,
+ "stop_eos": 335,
+ "follow": 0,
+ "prompt_n": 270525,
+ "cache_n": 0,
+ "prompt_tokens": 270525,
+ "prompt_ms": 110549.06665200005,
+ "pred_ms": 16315737.242689015,
+ "wall_s": 16463.918283700943,
+ "draft_n": 1300670,
+ "draft_acc": 355274,
+ "stop_limit": 80,
+ "sessions_or_docs": 415,
+ "gen_mean": 1304.455421686747,
+ "gen_median": 467,
+ "prefill_share_of_request_time": 0.006730009727709113,
+ "prefilled_per_generated": 0.499723838041633,
+ "cache_hit_share": 0.0,
+ "draft_accept": 0.27314691658914253,
+ "depth_hist_k": {
+  "0-16k": 415
+ },
+ "kinds": {
+  "chat": 183,
+  "tools": 182,
+  "reasoning": 46,
+  "agentic": 3,
+  "long-agentic": 1
+ }
+}

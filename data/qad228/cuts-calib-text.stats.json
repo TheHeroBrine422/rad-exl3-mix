@@ -1,0 +1,33 @@
+{
+ "text_cut_para": 1310,
+ "skip_pool_verify": 665,
+ "skip_excluded": 664,
+ "text_no_boundary": 94,
+ "text_cut_line": 1048,
+ "docs": 2358,
+ "candidates": 2358,
+ "cuts": 2358,
+ "rounds": 1,
+ "excluded_lists": {
+  "golden-j217": 166,
+  "jlong-ids.json": 74,
+  "contpool.json:judge": 642
+ },
+ "excluded_union": 881,
+ "docs_by_category": {
+  "code": 687,
+  "encyclopedic": 144,
+  "multilingual": 353,
+  "qa": 244,
+  "web": 562,
+  "science": 34,
+  "math": 199,
+  "legal": 26,
+  "books": 109
+ },
+ "docs_by_pool": {
+  "search": 319,
+  "qad": 1738,
+  "fit": 301
+ }
+}
