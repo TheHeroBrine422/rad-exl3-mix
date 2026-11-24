@@ -10112,3 +10112,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (sd-2M 0.881, sd-4M 0.883, sd-6M 0.880, sd-8M 0.880, 10M 0.883; `data/qad226/jl-control-I25-step-10M.md`): the long 1e-4 tail at
   8k context does not move deep-context KL. The reads of D256-25T at the same points are queued (paired vs these).
 - 11-24 ~12:20 AM CST (user): **EMA dropped from the V3.1 recipe** (gain small: 3.0 0.965–0.993 at 1–2M; not worth the extra reads / complexity). Final runs use raw checkpoints only.
+- 11-24 ~1:15 AM CST (user): **V3.1 final decisions read on ~1M rows** (golden-final750 612k + ~400k fresh xcorp; golden-jlong alongside), once per decision; j217 is a screen only. Reason: j217 (179k rows, 166 docs) swings several % on single bistable docs (3820 fixed by 3e-4 QAD, 1893 broken at some checkpoints; at 1e-4 the reverse).
