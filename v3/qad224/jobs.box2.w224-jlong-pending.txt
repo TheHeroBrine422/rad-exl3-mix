@@ -1,0 +1,5 @@
+# w224 (11-24): box2 trainer got the w224 flags (--remap / --eval-only; qad220.py.pre-w224 kept in code/). Gate bg0 = off-path identity vs I25C steps 1-2 (0.045623032379185684 / 0.0518916420615955), then the second judge: in-trainer eval on golden-jlong (first 16,384 tokens of the 74 docs: positions 8,192-16,383) of the three iceman 0.5 M checkpoints (scale-only control, remap G=1, remap G=32).
+B w224-bg0 2.50 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --max-steps 2
+B w224-jl-ctl 2.50 --compile-scales --a8 --eval-only /data/q27/queue/slices/golden-jlong --eval-cap 16384 --init {runs}/w224ck/ctl/params.pt
+B w224-jl-r1 2.50 --compile-scales --a8 --remap 2.0,64,1 --eval-only /data/q27/queue/slices/golden-jlong --eval-cap 16384 --init {runs}/w224ck/r1/params.pt
+B w224-jl-r32 2.50 --compile-scales --a8 --remap 2.0,64,32 --eval-only /data/q27/queue/slices/golden-jlong --eval-cap 16384 --init {runs}/w224ck/r32/params.pt

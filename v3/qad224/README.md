@@ -20,4 +20,18 @@ The first version gathered f(m) into a bf16 weight. m is an integer, exactly on 
 ## Files
 - `test224.py` — CPU unit checks (identity = plain bf16 weights bit for bit, forward vs a float64 interpolation, table gradient vs finite differences for 1 and 3 groups, rounded / straight-through, `apply_remap` selection by K and its off-switch). `python3 test224.py`.
 - `cmp224.py CONTROL/eval.json ARM/eval.json ...` — paired per-document bootstrap of two `--eval-only` passes (cmp214's arithmetic).
-- Queue lines: `jobs.w224.txt` (gates + e0) and `jobs.w224.arms.txt` (arms + evals) — iceman card 0, `/data/queue`.
+- Queue lines (iceman card 0, `/data/queue`): `jobs.iceman.w224-gates.txt` (gates g0-g4 of the first attempt + e0), `jobs.iceman.w224-probe1-cancelled.txt` (first-attempt arms, cancelled), `jobs.iceman.w224-arms.txt` (gates g5 / g6, the arms r1 / r32 / r32hi, their evals); `jobs.box2.w224-jlong-pending.txt` (box2: gate + golden-jlong evals, waiting for box2's cards 2 / 3 to take `B` lines again).
+
+## Results (11-24; iceman card 0; 2.50 student, 0.5 M rows, lr 3e-4, `--a8 --compile-scales --compile-ew`; in-trainer KL, **not served KL**)
+Arms: `R25-ctl` scale-only (same flags, no remap); `R25-r1` `--remap 2.0,64,1`; `R25-r32` `--remap 2.0,64,32`; `R25-r32hi` = r32 with `--remap-lr 3e-3` (10x). Each run: budgets 2.5e5 / 5e5 (0.25 M = a WSD branch). 62 of 400 tensors, 14.96 % of the trunk's weights carry a map.
+
+| judge | | r1 (G=1) | r32 (G=32) | r32hi (G=32, 10x lr) |
+|---|---|---|---|---|
+| j217, 163,534 gen rows, 166 docs (control 0.046515) | 0.25 M | 1.0055 [0.996, 1.021] | 1.0060 [0.997, 1.020] | **0.9843** [0.969, 0.998] |
+| (control 0.042516) | 0.5 M | 1.0051 [0.997, 1.016] | 1.0025 [0.993, 1.015] | 1.0015 [0.984, 1.024] (0.989 [0.978, 0.996] without the 2 blow-up docs) |
+| fixed eval (22 held-out calib qad docs, 21,090 rows, first 2,048 tokens) | 0.25 M / 0.5 M | 1.0038 / 0.9988 | 1.0013 / 0.9964 | 0.9946 / 0.9932 [0.988, 0.9994] |
+| training KL (each batch before its update), mean ratio over the steps | 0.5 M | 0.9983 | 0.9989 | 0.9975 |
+
+Ratios arm / control, paired per-document bootstrap (`cmp224.py`; cmp214's arithmetic). Noise floor: two scale-only controls (R25-ctl vs the a8-int8-trained I25-lr3e-4-4M 0.5 M, same recipe) differ by 0.985 [0.956, 1.003]. The maps move little: max |f(m) - m| 0.43 / 0.50 / 5.2 integer units (of +-127; a level spacing is ~1) at lr 3e-4 / 3e-4 / 3e-3. Cost: 129 / 119 / 119 s per step vs 91 s (K <= 2 tensors run a doubled-K GEMM, a weight-gradient GEMM and a histogram; peak memory +0.07 GiB).
+Fidelity of the in-trainer judge: I25-lr3e-4-4M 0.5 M, in-trainer (a8 fake-quant forward) 0.043181 vs its served read 0.042757 on the same 163,534 rows: 1.0099 [1.004, 1.015] paired.
+**Verdict: no gain beyond noise. Best arm r32hi: -1.6 / +0.2 % (j217 0.25 / 0.5 M), -0.5 / -0.7 % (fixed eval); r1 / r32: +0.3 .. +0.6 % on j217, -0.1 .. -0.4 % on the fixed eval; the pre-set gate was ~2 % (<= 1 % = drop): the table-QAD part of lc1 is not worth planning.** A deployable int8 table would be coarser than this continuous map (the maps moved by < 0.5 integer unit: they would round back to the identity), so this is an upper bound. Not run: the 2 M arm (step 4: gate > 1 % not met), golden-jlong (box2 queue, pending).

@@ -1,0 +1,7 @@
+# w224 (11-24): value-remap probe (qad220 --remap / --eval-only). Gates g0..g4 (2-3 steps, iceman card 0), then e0 (in-trainer eval of an existing scale-only 0.5M checkpoint), then the arms (held by runs/w224.go) and their in-trainer evals on j217.
+B w224-g0 2.50 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --max-steps 2
+B w224-g1 2.50 --lr 3e-4 --compile-scales --compile-ew --a8 --max-steps 2
+B w224-g2 2.50 --lr 3e-4 --compile-scales --compile-ew --a8 --remap 2.0,64,1 --remap-lr 0 --max-steps 2
+B w224-g3 2.50 --lr 3e-4 --compile-scales --compile-ew --a8 --remap 2.0,64,32 --remap-lr 0 --max-steps 2
+B w224-g4 2.50 --lr 3e-4 --compile-scales --compile-ew --a8 --remap 2.0,64,32 --max-steps 3
+B w224-e0 2.50 --compile-scales --a8 --eval-only /data/queue/slices/golden-j217 --init {runs}/I25-lr3e-4-4M/ckpt-5e+05/params.pt
