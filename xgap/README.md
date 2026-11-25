@@ -55,7 +55,7 @@ export XGAP_ROOT=/data/xgap/v1 CALIB_REVISION=2dcf0061cb683152742b904e2965ce7cd9
 python3 /data/xgap/code/xgap/build_index.py                      # dedup index (calib + public hashes + xcorp-v1), ~25 s
 python3 /data/xgap/code/xgap/stackedu_langs.py $XGAP_ROOT/work/stackedu_langs.json   # shard -> language map for the Swift source
 python3 /data/xgap/code/xgap/tag.py                              # calib + xcorp tagging, copies into corpus/
-bash /data/xgap/code/xgap/run.sh SCALE 16 3000 [--pilot]         # all sources (SCALE 1 = the full ~80M tokens; pilot 0.027 with --pilot)
+bash /data/xgap/code/xgap/run.sh SCALE 16 3000 [--pilot]         # all sources (SCALE 1 = the full build, 72.7M xgap tokens; pilot 0.027 with --pilot)
 python3 /data/xgap/code/xgap/assemble.py                         # dedup, holdout, manifest, sources.json, summary.md
 python3 /data/xgap/code/xgap/samples.py 1                        # sample documents per source
 python3 /data/xgap/code/xgap/verify.py 300                       # id / line / token-count / duplicate checks
