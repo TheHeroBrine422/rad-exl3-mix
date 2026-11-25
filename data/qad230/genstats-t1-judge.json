@@ -1,0 +1,57 @@
+{
+ "cuts": 106,
+ "gen": 46304,
+ "stop_eos": 106,
+ "prompt_tokens": 3339793,
+ "prompt_n": 1973905,
+ "cache_n": 1365888,
+ "prompt_ms": 13504654.122686995,
+ "pred_ms": 845984.586838,
+ "draft_n": 91245,
+ "draft_acc": 31667,
+ "sessions_or_docs": 56,
+ "gen_mean": 436.8301886792453,
+ "gen_median": 145,
+ "gen_p90": 1471,
+ "gen_max": 3544,
+ "prefill_share_of_request_time": 0.941048994127593,
+ "prefilled_per_generated": 42.629254492052524,
+ "cache_hit_share": 0.4089738495769049,
+ "draft_accept": 0.3470546331305825,
+ "span_h": 1.409166069759263,
+ "setting": {
+  "off": 31,
+  "xhigh_on": 75
+ },
+ "kind": {
+  "Infatoshi/kernelbench-hard-traces": 2,
+  "Infatoshi/kernelbench-mega-traces": 2,
+  "armand0e/claude-fable-5-claude-code": 6,
+  "championswimmer/pi-coding-sessions": 5,
+  "nemotron-swe": 21,
+  "swe-rebench-openhands": 24,
+  "swe-smith": 34,
+  "thomasmustier/pi-extensions-sessions": 4,
+  "thomasmustier/pi-for-excel-sessions": 2,
+  "thomasmustier/pi-mono-sessions": 4,
+  "thomasmustier/pine-of-glass-sessions": 2
+ },
+ "band": {
+  "0": 26,
+  "1": 40,
+  "2": 26,
+  "3": 14
+ },
+ "origin": {
+  "xcorp-v1": 58,
+  "xgap-v1": 48
+ },
+ "follower": {
+  "False": 56,
+  "True": 50
+ },
+ "gen_by_setting": {
+  "off": 4895,
+  "xhigh_on": 41409
+ }
+}

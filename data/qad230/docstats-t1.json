@@ -1,0 +1,12 @@
+{
+ "cuts": 1616,
+ "gen_sampled": 752290,
+ "retok_same": 1601,
+ "prompt_retok_same": 1616,
+ "docs": 1616,
+ "tokens": 43439519,
+ "gen_rows": 752272,
+ "stop_eos": 1616,
+ "setting_xhigh_on": 1146,
+ "setting_off": 470
+}

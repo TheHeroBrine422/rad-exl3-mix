@@ -1,0 +1,10 @@
+[
+ {
+  "k": 0,
+  "docs": 200,
+  "tokens": 461229,
+  "rows": 336430,
+  "max_tokens": 24585,
+  "file": "t2-judge.c0.jsonl"
+ }
+]

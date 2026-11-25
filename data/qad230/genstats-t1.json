@@ -1,0 +1,61 @@
+{
+ "cuts": 1616,
+ "gen": 752290,
+ "stop_eos": 1616,
+ "prompt_tokens": 42687247,
+ "prompt_n": 17158927,
+ "cache_n": 25528320,
+ "prompt_ms": 77990996.45040296,
+ "pred_ms": 11959331.069978993,
+ "draft_n": 1494073,
+ "draft_acc": 529637,
+ "sessions_or_docs": 379,
+ "gen_mean": 465.5259900990099,
+ "gen_median": 138,
+ "gen_p90": 1048,
+ "gen_max": 25889,
+ "prefill_share_of_request_time": 0.8670451637069457,
+ "prefilled_per_generated": 22.80892607903867,
+ "cache_hit_share": 0.5980315385529547,
+ "draft_accept": 0.3544920495852612,
+ "span_h": 1.757803768383132,
+ "setting": {
+  "off": 470,
+  "xhigh_on": 1146
+ },
+ "kind": {
+  "AlinCiocan/fable-5-claude-code-traces": 41,
+  "Infatoshi/kernelbench-hard-traces": 48,
+  "Infatoshi/kernelbench-mega-traces": 19,
+  "armand0e/claude-fable-5-claude-code": 101,
+  "championswimmer/pi-coding-sessions": 36,
+  "nemotron-swe": 334,
+  "swe-rebench-openhands": 462,
+  "swe-smith": 289,
+  "thomasmustier/pi-extensions-sessions": 42,
+  "thomasmustier/pi-for-excel-sessions": 57,
+  "thomasmustier/pi-mono-sessions": 56,
+  "thomasmustier/pi-nes-sessions": 12,
+  "thomasmustier/pine-of-glass-sessions": 43,
+  "thomasmustier/pinet-sessions": 18,
+  "trace-commons/agent-traces": 58
+ },
+ "band": {
+  "0": 641,
+  "1": 515,
+  "2": 343,
+  "3": 117
+ },
+ "origin": {
+  "xcorp-v1": 873,
+  "xgap-v1": 743
+ },
+ "follower": {
+  "False": 833,
+  "True": 783
+ },
+ "gen_by_setting": {
+  "off": 139660,
+  "xhigh_on": 612630
+ }
+}

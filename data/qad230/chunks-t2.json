@@ -1,0 +1,18 @@
+[
+ {
+  "k": 0,
+  "docs": 96,
+  "tokens": 1438614,
+  "rows": 1271690,
+  "max_tokens": 36093,
+  "file": "t2.c0.jsonl"
+ },
+ {
+  "k": 1,
+  "docs": 952,
+  "tokens": 1433330,
+  "rows": 898390,
+  "max_tokens": 6633,
+  "file": "t2.c1.jsonl"
+ }
+]

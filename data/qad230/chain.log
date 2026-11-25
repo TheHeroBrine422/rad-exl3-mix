@@ -1,0 +1,121 @@
+11-25 2:24 AM CST run230: 4 card locks held
+11-25 2:24 AM CST chain230 start (pid 1693524)
+11-25 2:24 AM CST lane A: generation server starting (pid 1693527, cards 0,1, port 8020)
+11-25 2:24 AM CST lane B: generation server starting (pid 1693983, cards 2,3, port 8021)
+11-25 2:24 AM CST lane A: generation server up after 0.3 min
+11-25 2:24 AM CST lane A: gen230 t2-judge started (slots 3)
+11-25 2:24 AM CST lane A: gen230 t2 started (slots 9)
+11-25 2:25 AM CST lane B: generation server up after 0.3 min
+11-25 2:25 AM CST lane B: gen230 t2-judge started (slots 3)
+11-25 2:25 AM CST lane B: gen230 t2 started (slots 9)
+11-25 2:34 AM CST progress | t2-judge: gen 66/200 cuts 95688 tok | t2: gen 226/2400 cuts 253298 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 2:44 AM CST progress | t2-judge: gen 131/200 cuts 210605 tok | t2: gen 408/2400 cuts 600451 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 2:54 AM CST progress | t2-judge: gen 199/200 cuts 311980 tok | t2: gen 585/2400 cuts 955734 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 3:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok | t2: gen 726/2400 cuts 1235786 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 3:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok | t2: gen 879/2400 cuts 1683163 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 3:24 AM CST lane A: gen230 ended rc {'t2-judge': 0, 't2': 0}
+11-25 3:24 AM CST generation t2-judge complete: 200 cuts, 336482 tokens
+11-25 3:24 AM CST lane A: generation server stopped
+11-25 3:24 AM CST docs230 t2-judge rc 0
+11-25 3:24 AM CST lane A TP2: recording t2-judge chunk 0 (200 docs, 461229 tokens, max 24585, TP2, max-model-len 24832, seqs 1)
+11-25 3:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE | t2: gen 1045/2400 cuts 2080130 tok | t1-judge: gen 0/106 cuts 0 tok | t1: gen 0/1616 cuts 0 tok
+11-25 3:26 AM CST lane B: gen230 ended rc {'t2-judge': 0, 't2': 0}
+11-25 3:26 AM CST generation t2 complete: 1048 cuts, 2170132 tokens
+11-25 3:26 AM CST lane B: gen230 t1-judge started (slots 2)
+11-25 3:26 AM CST lane B: gen230 t1 started (slots 10)
+11-25 3:31 AM CST lane A TP2: record t2-judge chunk 0 rc 0 in 7.2 min (1068 tok/s)
+11-25 3:31 AM CST merge230 t2-judge rc 0: merged t2-judge: 200 docs, 336430 rows, 461229 tokens from 1 chunks -> /data/q27/queue/slices/golden-jt2
+11-25 3:31 AM CST check230 t2-judge rc 0: check230: docs 200 rows 336430 (= gen rows) tokens 461229 top-512 mass mean 0.9995 nll mean 0.3476 sampled gen tokens 336482: OK
+11-25 3:31 AM CST docs230 t2 rc 0
+11-25 3:31 AM CST lane A TP2: recording t2 chunk 0 (96 docs, 1438614 tokens, max 36093, TP2, max-model-len 36352, seqs 1)
+11-25 3:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE | t1-judge: gen 5/106 cuts 336 tok | t1: gen 112/1616 cuts 27173 tok
+11-25 3:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE | t1-judge: gen 9/106 cuts 604 tok | t1: gen 227/1616 cuts 67940 tok
+11-25 3:53 AM CST lane A TP2: record t2 chunk 0 rc 0 in 21.6 min (1108 tok/s)
+11-25 3:53 AM CST lane A TP2: recording t2 chunk 1 (952 docs, 1433330 tokens, max 6633, TP2, max-model-len 6912, seqs 2)
+11-25 3:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE | t1-judge: gen 16/106 cuts 2174 tok | t1: gen 337/1616 cuts 136894 tok
+11-25 4:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE | t1-judge: gen 20/106 cuts 5386 tok | t1: gen 421/1616 cuts 178680 tok
+11-25 4:13 AM CST lane A TP2: record t2 chunk 1 rc 0 in 20.9 min (1145 tok/s)
+11-25 4:13 AM CST lane A: generation server starting (pid 1778967, cards 0,1, port 8020)
+11-25 4:14 AM CST merge230 t2 rc 0: merged t2: 1048 docs, 2170080 rows, 2871944 tokens from 2 chunks -> /data/q27/queue/ext/gold/tset2
+11-25 4:14 AM CST check230 t2 rc 0: check230: docs 1048 rows 2170080 (= gen rows) tokens 2871944 top-512 mass mean 0.9995 nll mean 0.3470 sampled gen tokens 2170132: OK
+11-25 4:14 AM CST lane A: generation server up after 0.3 min
+11-25 4:14 AM CST lane A: gen230 t1-judge started (slots 2)
+11-25 4:14 AM CST lane A: gen230 t1 started (slots 10)
+11-25 4:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 31/106 cuts 7523 tok | t1: gen 520/1616 cuts 221570 tok
+11-25 4:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 41/106 cuts 10461 tok | t1: gen 747/1616 cuts 319107 tok
+11-25 4:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 61/106 cuts 17073 tok | t1: gen 960/1616 cuts 431763 tok
+11-25 4:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 87/106 cuts 35389 tok | t1: gen 1170/1616 cuts 539037 tok
+11-25 4:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok | t1: gen 1415/1616 cuts 652357 tok
+11-25 5:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok | t1: gen 1588/1616 cuts 709256 tok
+11-25 5:06 AM CST lane A: gen230 ended rc {'t1-judge': 0, 't1': 0}
+11-25 5:06 AM CST generation t1-judge complete: 106 cuts, 46304 tokens
+11-25 5:06 AM CST lane A: generation server stopped
+11-25 5:07 AM CST docs230 t1-judge rc 0
+11-25 5:07 AM CST lane A TP2: recording t1-judge chunk 0 (106 docs, 3386095 tokens, max 92770, TP2, max-model-len 92928, seqs 1)
+11-25 5:12 AM CST lane B: gen230 ended rc {'t1-judge': 0, 't1': 0}
+11-25 5:12 AM CST generation t1 complete: 1616 cuts, 752290 tokens
+11-25 5:12 AM CST lane B: generation server stopped
+11-25 5:13 AM CST docs230 t1 rc 0
+11-25 5:13 AM CST lane B TP2: recording t1 chunk 0 (48 docs, 4353401 tokens, max 112371, TP2, max-model-len 112640, seqs 1)
+11-25 5:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 5:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 5:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 5:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 5:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 5:56 AM CST lane A TP2: record t1-judge chunk 0 rc 0 in 49.3 min (1144 tok/s)
+11-25 5:56 AM CST lane A TP2: recording t1 chunk 1 (58 docs, 4349398 tokens, max 82118, TP2, max-model-len 82432, seqs 1)
+11-25 5:56 AM CST merge230 t1-judge rc 0: merged t1-judge: 106 docs, 46302 rows, 3386095 tokens from 1 chunks -> /data/q27/queue/slices/golden-jt1
+11-25 5:56 AM CST check230 t1-judge rc 0: check230: docs 106 rows 46302 (= gen rows) tokens 3386095 top-512 mass mean 0.9998 nll mean 0.4086 sampled gen tokens 46304: OK
+11-25 6:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 6:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 6:20 AM CST lane B TP2: record t1 chunk 0 rc 0 in 67.1 min (1082 tok/s)
+11-25 6:20 AM CST lane B TP2: recording t1 chunk 2 (73 docs, 4378115 tokens, max 69493, TP2, max-model-len 69632, seqs 1)
+11-25 6:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 6:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 6:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 6:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:01 AM CST lane A TP2: record t1 chunk 1 rc 0 in 65.2 min (1112 tok/s)
+11-25 7:01 AM CST lane A TP2: recording t1 chunk 3 (94 docs, 4320842 tokens, max 51131, TP2, max-model-len 51200, seqs 1)
+11-25 7:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:25 AM CST lane B TP2: record t1 chunk 2 rc 0 in 65.2 min (1120 tok/s)
+11-25 7:25 AM CST lane B TP2: recording t1 chunk 4 (113 docs, 4325928 tokens, max 41269, TP2, max-model-len 41472, seqs 1)
+11-25 7:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 7:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:04 AM CST lane A TP2: record t1 chunk 3 rc 0 in 62.7 min (1148 tok/s)
+11-25 8:04 AM CST lane A TP2: recording t1 chunk 5 (130 docs, 4354485 tokens, max 35819, TP2, max-model-len 36096, seqs 1)
+11-25 8:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:28 AM CST lane B TP2: record t1 chunk 4 rc 0 in 63.0 min (1145 tok/s)
+11-25 8:28 AM CST lane B TP2: recording t1 chunk 6 (157 docs, 4347093 tokens, max 30882, TP2, max-model-len 30976, seqs 1)
+11-25 8:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 8:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:07 AM CST lane A TP2: record t1 chunk 5 rc 0 in 62.9 min (1154 tok/s)
+11-25 9:07 AM CST lane A TP2: recording t1 chunk 7 (201 docs, 4340925 tokens, max 24388, TP2, max-model-len 24576, seqs 1)
+11-25 9:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:31 AM CST lane B TP2: record t1 chunk 6 rc 0 in 62.7 min (1156 tok/s)
+11-25 9:31 AM CST lane B TP2: recording t1 chunk 8 (270 docs, 4331315 tokens, max 18691, TP2, max-model-len 18944, seqs 2)
+11-25 9:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 9:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:08 AM CST lane A TP2: record t1 chunk 7 rc 0 in 61.4 min (1178 tok/s)
+11-25 10:08 AM CST lane A TP2: recording t1 chunk 9 (472 docs, 4338017 tokens, max 13582, TP2, max-model-len 13824, seqs 2)
+11-25 10:14 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:24 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:32 AM CST lane B TP2: record t1 chunk 8 rc 0 in 61.4 min (1176 tok/s)
+11-25 10:34 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:44 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 10:54 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 11:04 AM CST progress | t2-judge: gen 200/200 cuts 336482 tok DONE MERGED | t2: gen 1048/2400 cuts 2170132 tok DONE MERGED | t1-judge: gen 106/106 cuts 46304 tok DONE MERGED | t1: gen 1616/1616 cuts 752290 tok DONE
+11-25 11:09 AM CST lane A TP2: record t1 chunk 9 rc 0 in 60.5 min (1195 tok/s)
+11-25 11:09 AM CST merge230 t1 rc 0: merged t1: 1616 docs, 752272 rows, 43439519 tokens from 10 chunks -> /data/q27/queue/ext/gold/tset1
+11-25 11:10 AM CST check230 t1 rc 0: check230: docs 1616 rows 752272 (= gen rows) tokens 43439519 top-512 mass mean 0.9997 nll mean 0.3919 sampled gen tokens 752290: OK
+11-25 11:10 AM CST chain230 done
+11-25 11:10 AM CST run230: chain exited rc 0

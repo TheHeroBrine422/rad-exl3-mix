@@ -1,0 +1,82 @@
+[
+ {
+  "k": 0,
+  "docs": 48,
+  "tokens": 4353401,
+  "rows": 60389,
+  "max_tokens": 112371,
+  "file": "t1.c0.jsonl"
+ },
+ {
+  "k": 1,
+  "docs": 58,
+  "tokens": 4349398,
+  "rows": 23958,
+  "max_tokens": 82118,
+  "file": "t1.c1.jsonl"
+ },
+ {
+  "k": 2,
+  "docs": 73,
+  "tokens": 4378115,
+  "rows": 57170,
+  "max_tokens": 69493,
+  "file": "t1.c2.jsonl"
+ },
+ {
+  "k": 3,
+  "docs": 94,
+  "tokens": 4320842,
+  "rows": 51127,
+  "max_tokens": 51131,
+  "file": "t1.c3.jsonl"
+ },
+ {
+  "k": 4,
+  "docs": 113,
+  "tokens": 4325928,
+  "rows": 66069,
+  "max_tokens": 41269,
+  "file": "t1.c4.jsonl"
+ },
+ {
+  "k": 5,
+  "docs": 130,
+  "tokens": 4354485,
+  "rows": 90742,
+  "max_tokens": 35819,
+  "file": "t1.c5.jsonl"
+ },
+ {
+  "k": 6,
+  "docs": 157,
+  "tokens": 4347093,
+  "rows": 115345,
+  "max_tokens": 30882,
+  "file": "t1.c6.jsonl"
+ },
+ {
+  "k": 7,
+  "docs": 201,
+  "tokens": 4340925,
+  "rows": 99893,
+  "max_tokens": 24388,
+  "file": "t1.c7.jsonl"
+ },
+ {
+  "k": 8,
+  "docs": 270,
+  "tokens": 4331315,
+  "rows": 78446,
+  "max_tokens": 18691,
+  "file": "t1.c8.jsonl"
+ },
+ {
+  "k": 9,
+  "docs": 472,
+  "tokens": 4338017,
+  "rows": 109133,
+  "max_tokens": 13582,
+  "file": "t1.c9.jsonl"
+ }
+]

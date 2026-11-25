@@ -1,0 +1,53 @@
+{
+ "cuts": 1048,
+ "gen": 2170132,
+ "stop_eos": 1040,
+ "prompt_tokens": 701864,
+ "prompt_n": 701864,
+ "cache_n": 0,
+ "prompt_ms": 295790.7123970003,
+ "pred_ms": 62756725.31683497,
+ "draft_n": 4553864,
+ "draft_acc": 1518543,
+ "stop_limit": 8,
+ "sessions_or_docs": 1048,
+ "gen_mean": 2070.736641221374,
+ "gen_median": 668,
+ "gen_p90": 4375,
+ "gen_max": 32768,
+ "prefill_share_of_request_time": 0.004691180162578569,
+ "prefilled_per_generated": 0.32341995786431427,
+ "cache_hit_share": 0.0,
+ "draft_accept": 0.33346252764685114,
+ "span_h": 1.0282605953349007,
+ "setting": {
+  "low": 262,
+  "medium": 262,
+  "off": 262,
+  "xhigh": 262
+ },
+ "kind": {
+  "xc-chat": 150,
+  "xc-reasoning": 149,
+  "xc-tools": 150,
+  "xg-long-chat": 150,
+  "xg-multilingual-chat": 299,
+  "xg-tools-other": 150
+ },
+ "band": {
+  "None": 1048
+ },
+ "origin": {
+  "xcorp-v1": 449,
+  "xgap-v1": 599
+ },
+ "follower": {
+  "False": 1048
+ },
+ "gen_by_setting": {
+  "low": 396466,
+  "medium": 476545,
+  "off": 220349,
+  "xhigh": 1076772
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "cuts": 1048,
+ "gen_sampled": 2170132,
+ "retok_same": 819,
+ "prompt_retok_same": 1048,
+ "docs": 1048,
+ "tokens": 2871944,
+ "gen_rows": 2170080,
+ "stop_eos": 1040,
+ "setting_xhigh": 262,
+ "setting_low": 262,
+ "setting_medium": 262,
+ "setting_off": 262,
+ "stop_limit": 8
+}
