@@ -1,0 +1,670 @@
+{
+ "plan-dry-400000.json": {
+  "steps": 917,
+  "last": 820,
+  "rows_to_last": 8002083,
+  "share_rows": {
+   "calib": 0.421,
+   "teach": 0.2026,
+   "traces": 0.1735,
+   "xgap": 0.203
+  },
+  "share_tokens": {
+   "calib": 0.1879,
+   "teach": 0.5114,
+   "traces": 0.1387,
+   "xgap": 0.1621
+  },
+  "share_cost": {
+   "calib": 0.2168,
+   "teach": 0.306,
+   "traces": 0.3171,
+   "xgap": 0.16
+  },
+  "run_cost_to_last": 17201696,
+  "sources": {
+   "calib": {
+    "docs": 3835,
+    "tokens": 4715111,
+    "rows": 4209631,
+    "rows_per_token": 0.893,
+    "cost_all": 4683898
+   },
+   "teach": {
+    "docs": 1646,
+    "tokens": 10302566,
+    "rows": 1621219,
+    "rows_per_token": 0.157,
+    "cost_all": 5281925
+   },
+   "xgap": {
+    "docs": 2010,
+    "tokens": 3637177,
+    "rows": 1806198,
+    "rows_per_token": 0.497,
+    "cost_all": 3103656
+   },
+   "traces": {
+    "docs": 12,
+    "tokens": 2946782,
+    "rows": 1472875,
+    "rows_per_token": 0.5,
+    "cost_all": 5886695
+   }
+  },
+  "rows_by_phase": {
+   "traces": [
+    431363,
+    956734
+   ],
+   "calib": [
+    1289104,
+    2079532
+   ],
+   "teach": [
+    637002,
+    984217
+   ],
+   "xgap": [
+    643188,
+    980943
+   ]
+  },
+  "trace_rows_by_depth_band_64k_and_phase": {
+   "0k+": [
+    133223,
+    154467
+   ],
+   "64k+": [
+    125965,
+    271703
+   ],
+   "128k+": [
+    99815,
+    308245
+   ],
+   "192k+": [
+    72360,
+    222319
+   ]
+  },
+  "trace_starts": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    52
+   ],
+   [
+    16,
+    143
+   ],
+   [
+    19,
+    198
+   ],
+   [
+    0,
+    290
+   ],
+   [
+    23,
+    330
+   ],
+   [
+    4,
+    397
+   ],
+   [
+    3,
+    435
+   ],
+   [
+    6,
+    518
+   ],
+   [
+    9,
+    556
+   ],
+   [
+    0,
+    636
+   ],
+   [
+    5,
+    673
+   ]
+  ],
+  "trace_ends_by_last": false,
+  "planned_starts": [
+   0,
+   52,
+   104,
+   156,
+   208,
+   260,
+   312,
+   364,
+   416,
+   468,
+   520,
+   572
+  ],
+  "source_exhausted_at_step": {
+   "teach": 810
+  },
+  "step_cost_per_rank": {
+   "mean": 10488.8,
+   "max": 15571.0,
+   "p95": 14034.8,
+   "rank_imbalance_mean": 1.091
+  },
+  "carried_gib_per_rank": {
+   "max": 23.8,
+   "p95": 22.8
+  },
+  "max_deep_streams": 5,
+  "forced_over_bound": 98,
+  "unused_docs": {
+   "calib": 678,
+   "teach": 0,
+   "xgap": 156,
+   "traces": 0
+  },
+  "note": "trace_starts = [stream, step] (doc ids removed)"
+ },
+ "plan-dry-600000.json": {
+  "steps": 835,
+  "last": 821,
+  "rows_to_last": 8003216,
+  "share_rows": {
+   "calib": 0.4104,
+   "teach": 0.2025,
+   "traces": 0.184,
+   "xgap": 0.2031
+  },
+  "share_tokens": {
+   "calib": 0.1831,
+   "teach": 0.5106,
+   "traces": 0.1461,
+   "xgap": 0.1603
+  },
+  "share_cost": {
+   "calib": 0.2074,
+   "teach": 0.3003,
+   "traces": 0.3364,
+   "xgap": 0.1559
+  },
+  "run_cost_to_last": 17542334,
+  "sources": {
+   "calib": {
+    "docs": 3835,
+    "tokens": 4715111,
+    "rows": 4209631,
+    "rows_per_token": 0.893,
+    "cost_all": 4683898
+   },
+   "teach": {
+    "docs": 1646,
+    "tokens": 10302566,
+    "rows": 1621219,
+    "rows_per_token": 0.157,
+    "cost_all": 5281925
+   },
+   "xgap": {
+    "docs": 2010,
+    "tokens": 3637177,
+    "rows": 1806198,
+    "rows_per_token": 0.497,
+    "cost_all": 3103656
+   },
+   "traces": {
+    "docs": 12,
+    "tokens": 2946782,
+    "rows": 1472875,
+    "rows_per_token": 0.5,
+    "cost_all": 5886695
+   }
+  },
+  "rows_by_phase": {
+   "traces": [
+    501009,
+    971866
+   ],
+   "calib": [
+    1253525,
+    2031154
+   ],
+   "teach": [
+    618476,
+    1001991
+   ],
+   "xgap": [
+    627425,
+    997770
+   ]
+  },
+  "trace_rows_by_depth_band_64k_and_phase": {
+   "0k+": [
+    144846,
+    143306
+   ],
+   "64k+": [
+    147401,
+    250594
+   ],
+   "128k+": [
+    126957,
+    309177
+   ],
+   "192k+": [
+    81805,
+    268789
+   ]
+  },
+  "trace_starts": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    52
+   ],
+   [
+    4,
+    105
+   ],
+   [
+    7,
+    157
+   ],
+   [
+    5,
+    209
+   ],
+   [
+    6,
+    261
+   ],
+   [
+    1,
+    314
+   ],
+   [
+    8,
+    366
+   ],
+   [
+    4,
+    418
+   ],
+   [
+    3,
+    470
+   ],
+   [
+    2,
+    523
+   ],
+   [
+    1,
+    575
+   ]
+  ],
+  "trace_ends_by_last": true,
+  "planned_starts": [
+   0,
+   52,
+   105,
+   157,
+   209,
+   261,
+   314,
+   366,
+   418,
+   470,
+   523,
+   575
+  ],
+  "source_exhausted_at_step": {
+   "teach": 815
+  },
+  "step_cost_per_rank": {
+   "mean": 10683.5,
+   "max": 16213.0,
+   "p95": 14221.6,
+   "rank_imbalance_mean": 1.097
+  },
+  "carried_gib_per_rank": {
+   "max": 33.7,
+   "p95": 30.3
+  },
+  "max_deep_streams": 5,
+  "forced_over_bound": 0,
+  "unused_docs": {
+   "calib": 702,
+   "teach": 0,
+   "xgap": 196,
+   "traces": 0
+  },
+  "note": "trace_starts = [stream, step] (doc ids removed)"
+ },
+ "plan-dry8-400000.json": {
+  "steps": 816,
+  "last": 804,
+  "rows_to_last": 8003634,
+  "share_rows": {
+   "calib": 0.4725,
+   "teach": 0.2026,
+   "traces": 0.1218,
+   "xgap": 0.2031
+  },
+  "share_tokens": {
+   "calib": 0.2146,
+   "teach": 0.5216,
+   "traces": 0.1,
+   "xgap": 0.1638
+  },
+  "share_cost": {
+   "calib": 0.2586,
+   "teach": 0.3262,
+   "traces": 0.2454,
+   "xgap": 0.1698
+  },
+  "run_cost_to_last": 16136447,
+  "sources": {
+   "calib": {
+    "docs": 3835,
+    "tokens": 4715111,
+    "rows": 4209631,
+    "rows_per_token": 0.893,
+    "cost_all": 4683898
+   },
+   "teach": {
+    "docs": 1646,
+    "tokens": 10302566,
+    "rows": 1621219,
+    "rows_per_token": 0.157,
+    "cost_all": 5281925
+   },
+   "xgap": {
+    "docs": 2010,
+    "tokens": 3637177,
+    "rows": 1806198,
+    "rows_per_token": 0.497,
+    "cost_all": 3103656
+   },
+   "traces": {
+    "docs": 8,
+    "tokens": 1975231,
+    "rows": 975032,
+    "rows_per_token": 0.494,
+    "cost_all": 3963373
+   }
+  },
+  "rows_by_phase": {
+   "traces": [
+    311462,
+    663570
+   ],
+   "calib": [
+    1346816,
+    2434854
+   ],
+   "teach": [
+    667236,
+    953983
+   ],
+   "xgap": [
+    674646,
+    951067
+   ]
+  },
+  "trace_rows_by_depth_band_64k_and_phase": {
+   "0k+": [
+    53598,
+    127808
+   ],
+   "64k+": [
+    114553,
+    141395
+   ],
+   "128k+": [
+    86539,
+    204133
+   ],
+   "192k+": [
+    56772,
+    190234
+   ]
+  },
+  "trace_starts": [
+   [
+    0,
+    0
+   ],
+   [
+    9,
+    80
+   ],
+   [
+    8,
+    159
+   ],
+   [
+    1,
+    239
+   ],
+   [
+    0,
+    318
+   ],
+   [
+    5,
+    398
+   ],
+   [
+    2,
+    477
+   ],
+   [
+    9,
+    557
+   ]
+  ],
+  "trace_ends_by_last": true,
+  "planned_starts": [
+   0,
+   80,
+   159,
+   239,
+   318,
+   398,
+   477,
+   557
+  ],
+  "source_exhausted_at_step": {
+   "teach": 775
+  },
+  "step_cost_per_rank": {
+   "mean": 10035.1,
+   "max": 15257.5,
+   "p95": 13442.7,
+   "rank_imbalance_mean": 1.085
+  },
+  "carried_gib_per_rank": {
+   "max": 22.4,
+   "p95": 21.0
+  },
+  "max_deep_streams": 4,
+  "forced_over_bound": 0,
+  "unused_docs": {
+   "calib": 253,
+   "teach": 0,
+   "xgap": 196,
+   "traces": 0
+  },
+  "note": "trace_starts = [stream, step] (doc ids removed)"
+ },
+ "plan-dry8-500000.json": {
+  "steps": 815,
+  "last": 804,
+  "rows_to_last": 8010829,
+  "share_rows": {
+   "calib": 0.4736,
+   "teach": 0.2024,
+   "traces": 0.1217,
+   "xgap": 0.2024
+  },
+  "share_tokens": {
+   "calib": 0.2152,
+   "teach": 0.5216,
+   "traces": 0.1,
+   "xgap": 0.1631
+  },
+  "share_cost": {
+   "calib": 0.2595,
+   "teach": 0.3256,
+   "traces": 0.2454,
+   "xgap": 0.1695
+  },
+  "run_cost_to_last": 16140214,
+  "sources": {
+   "calib": {
+    "docs": 3835,
+    "tokens": 4715111,
+    "rows": 4209631,
+    "rows_per_token": 0.893,
+    "cost_all": 4683898
+   },
+   "teach": {
+    "docs": 1646,
+    "tokens": 10302566,
+    "rows": 1621219,
+    "rows_per_token": 0.157,
+    "cost_all": 5281925
+   },
+   "xgap": {
+    "docs": 2010,
+    "tokens": 3637177,
+    "rows": 1806198,
+    "rows_per_token": 0.497,
+    "cost_all": 3103656
+   },
+   "traces": {
+    "docs": 8,
+    "tokens": 1975231,
+    "rows": 975032,
+    "rows_per_token": 0.494,
+    "cost_all": 3963373
+   }
+  },
+  "rows_by_phase": {
+   "traces": [
+    306849,
+    668183
+   ],
+   "calib": [
+    1348551,
+    2444981
+   ],
+   "teach": [
+    669989,
+    951230
+   ],
+   "xgap": [
+    674704,
+    946342
+   ]
+  },
+  "trace_rows_by_depth_band_64k_and_phase": {
+   "0k+": [
+    53683,
+    127619
+   ],
+   "64k+": [
+    112773,
+    142585
+   ],
+   "128k+": [
+    85515,
+    205105
+   ],
+   "192k+": [
+    54878,
+    192874
+   ]
+  },
+  "trace_starts": [
+   [
+    0,
+    0
+   ],
+   [
+    9,
+    80
+   ],
+   [
+    1,
+    159
+   ],
+   [
+    18,
+    240
+   ],
+   [
+    0,
+    318
+   ],
+   [
+    9,
+    398
+   ],
+   [
+    3,
+    477
+   ],
+   [
+    6,
+    557
+   ]
+  ],
+  "trace_ends_by_last": true,
+  "planned_starts": [
+   0,
+   80,
+   159,
+   239,
+   318,
+   398,
+   477,
+   557
+  ],
+  "source_exhausted_at_step": {
+   "teach": 775
+  },
+  "step_cost_per_rank": {
+   "mean": 10037.4,
+   "max": 15120.6,
+   "p95": 14072.0,
+   "rank_imbalance_mean": 1.1
+  },
+  "carried_gib_per_rank": {
+   "max": 27.6,
+   "p95": 25.2
+  },
+  "max_deep_streams": 4,
+  "forced_over_bound": 0,
+  "unused_docs": {
+   "calib": 252,
+   "teach": 0,
+   "xgap": 183,
+   "traces": 0
+  },
+  "note": "trace_starts = [stream, step] (doc ids removed)"
+ }
+}

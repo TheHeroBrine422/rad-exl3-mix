@@ -12,8 +12,8 @@ next document when the stream needs one; the trainer re-runs data181.plan on the
   - deep traces (every document of a `deep: true` source, or its `ids`): their `starts` (step numbers) or spread evenly over [deep_first, end - longest trace]: each trace starts at
     its step on the first stream that needs a document, on the rank with the fewest deep streams, so the depth bands of the traces fall in every lr
     phase (reported per band and phase); a trace waits while the carried budget is full
-  - bounded steps: every rank's carried state (the sum of its streams' current document lengths, the KV a stream holds when the document ends,
-    64 KB a token) stays <= max_carried_tokens; at most max_long documents longer than long_tokens per rank at once. Per-step cost (forward +
+  - bounded steps: every rank's carried state (the sum of its streams' depths, 64 KB a token; predicted at each admission: long documents grow Q a
+    step until they end, short ones count whole) stays <= max_carried_tokens; at most max_long documents longer than long_tokens per rank at once. Per-step cost (forward +
     backward of scored segments, attention ~ 1 + depth / 100k) is reported per rank (max / mean): the data-parallel balance and the step's bound.
 SPEC (JSON):
   {"V": 24, "Q": 1024, "ranks": 2, "seed": 0, "budget_rows": 1e7, "margin": 0.02, "max_carried_tokens": 400000, "long_tokens": 32768, "max_long": 4,
@@ -96,6 +96,8 @@ def build(spec):
     for s in srcs.values():
         for (i, n, nr) in s.items:
             assert (s.golden, i) not in seen, f"{s.golden}:{i} in two sources"; seen.add((s.golden, i))
+    have = sum(nr for s in srcs.values() for (_, _, nr) in s.items)
+    assert have >= stop_rows, f"the sources hold {have} gen rows < budget_rows x (1 + margin) = {stop_rows:.0f} (single epoch): lower the budget or add data"
     # deep trace starts: two passes (the end step is known after the first)
     traces = [(s, it) for s in deep for it in s.items]
     end_est = None; plan = None
@@ -133,10 +135,16 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         return [queues[s][pos[s]] for s in range(V) if rank(s) == r and pos[s] < len(queues[s])]
 
     def fits(r, n):
-        act = active(r)
-        if sum(items[it][2] for it in act) + n > maxc: return False
-        if n > LT and sum(1 for it in act if items[it][2] > LT) >= ML: return False
-        return True
+        """the rank's carried state stays <= maxc from now until the new document ends, predicted: a long document's state grows Q a step
+        from its current depth and is gone when it ends (the stream's next document is checked when it is taken), a short one counts whole"""
+        act = [(items[queues[s][pos[s]]][2], cur[s]) for s in range(V) if rank(s) == r and pos[s] < len(queues[s])]
+        if n > LT and sum(1 for m, _ in act if m > LT) >= ML: return False
+        k = np.arange(-(-n // Q) + 1) * Q
+        tot = np.minimum(k, n) if n > LT else np.full(len(k), n)
+        for m, d in act:
+            if m <= LT: tot = tot + m
+            else: dk = d + k; tot = tot + np.where(dk < m, dk, 0)
+        return int(tot.max()) <= maxc
 
     def take(s, t):
         nonlocal assigned
@@ -259,7 +267,7 @@ def report(spec, plan, tsv=None):
            "run_cost_to_last": round(float(cs.sum())), "sources": pool,
            "rows_by_phase": ph_src, "trace_rows_by_depth_band_64k_and_phase": {f"{b * 64}k+": v for b, v in sorted(band.items())},
            "trace_starts": [(items[it][0], items[it][1], items[it][2], s, t) for it, s, t in plan["trace_log"]],
-           "trace_ends_by_last": all(trace_end(steps, it) < last for it, _, _ in plan["trace_log"]),
+           "trace_ends_by_last": all(trace_end(steps, it) < last for it, _, _ in plan["trace_log"]) and len(plan["trace_log"]) == len(plan["starts"]),
            "planned_starts": plan["starts"], "source_exhausted_at_step": plan["out_at"],
            "step_cost_per_rank": {"mean": round(float(cs.mean()), 1), "max": round(float(cs.max()), 1), "p95": round(float(np.percentile(cs.max(1), 95)), 1),
                                   "rank_imbalance_mean": round(float((cs.max(1) / np.maximum(cs.mean(1), 1e-9)).mean()), 3)},
@@ -295,6 +303,8 @@ def main():
            "budget_rows": spec["budget_rows"], "spec": spec, "summary": summ}
     json.dump(out, open(outp + ".part", "w")); os.replace(outp + ".part", outp)
     print(json.dumps(summ, indent=1, default=str))
+    if not summ["trace_ends_by_last"]: print("WARNING: not every deep trace trains whole by the budget's step (too many / too long for the carried bound and max_long, or starts too late): fewer traces, a larger bound or earlier starts")
+    if summ["forced_over_bound"]: print(f"WARNING: {summ['forced_over_bound']} documents taken over the carried bound (nothing else fitted)")
 
 
 if __name__ == "__main__": main()
