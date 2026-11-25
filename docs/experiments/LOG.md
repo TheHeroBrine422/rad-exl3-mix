@@ -10262,3 +10262,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   agent 250k, multilingual-chat / long-chat / code 220k, tools 110k) and cont-xgc (half xg1, half cont-calib). Arms C229-xg / C229-xgc
   from the 10M state (same schedule as C228), reads JC / JG / JS / JL + j217; baseline JG reads of unhealed 2.50, 10M end, C228-ctl,
   C228-opmix; TP2 reference reads (FP8 container = official weights, IQ8R-V4, EXL3-V3-7.00) on JG and JC. **Runtime:** none.
+- 11-24 9:50 PM CST: #218 goldens done: golden-jgap 259 docs / 658k rows / 413k gen (62.8 %); xg-scr1 2,022 docs / 3.69M rows / 1.81M gen.
+  cont-xg1 1,558,365 rows (cells within quota), cont-xgc 777k xgap + 776k calib. Refs downloaded. **FP8 reference read fails:** our
+  radiance build (w206, 2.1.0 fork) has no block-FP8 kernel ("stored as block fp8, which this build does not serve"); FP8 dropped from
+  this baseline (needs a build with the fp8 kernel library; follow-up). IQ8R JG read rc 0. Early reads added: JG / JC of both arms at
+  ckpt-raw-1.05e+07 (+0.5M rows).
