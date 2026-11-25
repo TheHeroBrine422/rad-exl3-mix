@@ -178,7 +178,7 @@ def ad_swe(r, spec):
     if res[0] is None: return res
     lic = r.get("license") or spec.get("lic")
     if lic and not licence_ok(lic): return None, "licence"
-    return chat_doc(res[1], res[2], spec["category"], lic, "en", repo=r.get("repo"))
+    return chat_doc(res[1], res[2], spec["category"], lic, "en", repo=r.get("repo"), tools_inferred=False)
 
 
 ADAPT = {"commonpile": ad_commonpile, "pg19": ad_pg19, "wikipedia": ad_wikipedia, "fineweb2": ad_fineweb2,

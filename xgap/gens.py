@@ -75,7 +75,7 @@ def g_sessions(spec, rev, rng, state):
     for f in files:
         res, why = sessfmt.load_session(f)
         if res is None: state.skip(f"session-{why}"); continue
-        msgs, tools, model, fmt = res
+        msgs, tools, model, fmt, info = res
         keep = []
         for t in sessfmt.turns(msgs):
             h = hashlib.sha256(json.dumps(t, sort_keys=True).encode()).hexdigest()
@@ -83,7 +83,8 @@ def g_sessions(spec, rev, rng, state):
             seen.add(h); keep.append(t)
         if not keep or not any(m["role"] == "assistant" for t in keep for m in t): state.skip("session-empty"); continue
         yield {"kind": "session", "turns": keep, "tools": tools, "category": spec["category"], "lic": spec["lic"], "lang": "en",
-               "extra": {"session": os.path.basename(f), "model": model, "format": fmt}}
+               "extra": {"session": os.path.basename(f), "model": model, "format": fmt, "tools_inferred": bool(info["inferred"]),
+                                                    "tools_real": info["real"], "tools_inferred_names": info["inferred"]}}
 
 
 GENS = {"stream": g_stream, "oasst": g_oasst, "sessions": g_sessions}

@@ -41,8 +41,9 @@ for lg in ("spa_Latn", "deu_Latn", "fra_Latn", "rus_Cyrl", "por_Latn"):
 CODE_LANGS = [("python", "python"), ("javascript", "javascript"), ("typescript", "typescript"), ("rust", "rust"), ("go", "go"),
               ("c", "c"), ("cpp", "c++"), ("java", "java"), ("csharp", "c-sharp"), ("kotlin", "kotlin"), ("swift", None),
               ("ruby", "ruby"), ("php", "php"), ("shell", "shell"), ("sql", "sql"), ("haskell", "haskell"), ("ocaml", "ocaml"),
-              ("scala", "scala"), ("lua", "lua"), ("zig", "zig"), ("julia", "julia"), ("r", "r")]
-NL = len(CODE_LANGS)
+              ("scala", "scala"), ("lua", "lua"), ("zig", "zig"), ("julia", "julia"), ("r", "r"),
+              ("dart", "dart"), ("elixir", "elixir"), ("perl", "perl"), ("lean", "lean"), ("erlang", "erlang"), ("fortran", "fortran")]
+NL = 22        # per-language budgets are CODE_LANG_TOT / 22 (the first 22 languages); the 6 added ones use the same rule
 for name, d in CODE_LANGS:
     budgets = {"cl": CODE_LANG_TOT // NL, A: int(BAND_TOT * .15) // NL, B: int(BAND_TOT * .10) // NL}    # no 32k+ code: one 32-64k file overshoots a per-language budget
     if d:

@@ -7,7 +7,7 @@ import argparse, collections, glob, json, os, random, re, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
-import sources, gens
+import sources, gens, langnorm
 
 DATASET_LICENCE = {
     "emozilla/pg19": "public domain texts (PG-19, apache-2.0 repack)", "wikimedia/wikipedia": "cc-by-sa-3.0 / gfdl",
@@ -93,7 +93,7 @@ def main():
                 "tokens": n, "prompt": prompt}
         meta = {"id": did, "origin": "xgap-v1", "cell": cell, "category": spec["category"], "source": spec["source"], "dataset": spec["repo"],
                 "config": spec.get("config"), "split": spec.get("split", "train"), "revision": rev, "licence": doc.get("lic") or spec.get("lic") or dlic,
-                "kind": line["kind"], "tokens": n, "length_band": band(n), "lang": doc.get("lang"), "src_id": sid, "budget_key": key}
+                "kind": line["kind"], "tokens": n, "length_band": band(n), "lang": langnorm.norm(spec.get("adapter"), spec["gen"], doc.get("lang")), "lang_src": doc.get("lang"), "src_id": sid, "budget_key": key}
         if think: meta["thinking"] = think
         if has_system is not None: meta["has_system"] = has_system
         if length: meta["length"] = length

@@ -4,7 +4,12 @@ to the public-dataset case (no private-session helpers) and with typed tool sche
 
 msgs: user / assistant (content, reasoning_content, tool_calls) / tool. Tool schemas are not logged by either format:
 each session gets the tools it used, parameters typed from the values passed, `required` = keys present in every call."""
-import json, re
+import json, os, re
+
+_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+REAL = {}       # harness format -> {tool name: {name, description, parameters}}: real definitions of public harnesses
+for _fmt, _f in (("claude-code", "claude-code-tools.json"), ("pi", "pi-tools.json")):
+    REAL[_fmt] = json.load(open(os.path.join(_DATA, _f)))["tools"]
 
 SECRETS = [(re.compile(r"\bhf_[A-Za-z0-9]{30,}\b"), "hf_REDACTED"),
            (re.compile(r"\b(?:sk|pk|rk)-[A-Za-z0-9_-]{20,}\b"), "sk-REDACTED"),
@@ -48,9 +53,17 @@ class Tools:
             d["keys"][k]["n"] += 1
             d["keys"][k]["types"].add(_jt(v))
 
-    def schema(self):
-        out = []
+    def schema(self, fmt):
+        """-> (tool definitions, {"real": [...], "inferred": [...]}). A tool gets its harness's real definition (extract_cc_tools.py /
+        extract_pi_tools.mjs: names, parameter schemas, descriptions) when the harness is known and every argument key seen in the
+        session is one of that definition's parameters; otherwise a definition inferred from the calls."""
+        out, info = [], {"real": [], "inferred": []}
         for name, d in sorted(self.t.items()):
+            r = REAL.get(fmt, {}).get(name)
+            if r and set(d["keys"]) <= set(r["parameters"].get("properties", {})):
+                out.append({"type": "function", "function": {"name": name, "description": r["description"], "parameters": r["parameters"]}})
+                info["real"].append(name); continue
+            info["inferred"].append(name)
             props, req = {}, []
             for k, v in sorted(d["keys"].items()):
                 props[k] = {"type": next(iter(v["types"]))} if len(v["types"]) == 1 else {}
@@ -58,7 +71,7 @@ class Tools:
             fn = {"name": name, "description": f"Tool {name}.", "parameters": {"type": "object", "properties": props}}
             if req: fn["parameters"]["required"] = req
             out.append({"type": "function", "function": fn})
-        return out
+        return out, info
 
 
 def _jt(v):
@@ -122,7 +135,7 @@ def claude_code(E, max_tool):
             msgs.append(a)
     for a in msgs: a.pop("_mid", None)
     model = max(models, key=models.get) if models else None
-    return msgs, tools.schema(), model
+    return msgs, tools, model
 
 
 def pi_active_path(E):
@@ -166,7 +179,7 @@ def pi_session(E, max_tool):
             msgs.append(a)
         elif r == "toolResult":
             msgs.append({"role": "tool", "content": scrub(clip(texts(m.get("content")), max_tool))})
-    return msgs, tools.schema(), model
+    return msgs, tools, model
 
 
 def turns(msgs):
@@ -194,7 +207,7 @@ def merge_assistants(msgs):
 
 
 def load_session(path, max_tool=16000):
-    """-> (msgs, tools, model, format) or (None, reason)"""
+    """-> (msgs, tools, model, format, tool_info) or (None, reason)"""
     try:
         E = [json.loads(l) for l in open(path, encoding="utf-8", errors="replace") if l.strip().startswith("{")]
     except Exception:
@@ -206,4 +219,5 @@ def load_session(path, max_tool=16000):
         msgs, tools, model = claude_code(E, max_tool); fmt = "claude-code"
     else:
         return None, "format"
-    return (merge_assistants(msgs), tools, model, fmt), None
+    schema, info = tools.schema(fmt)
+    return (merge_assistants(msgs), schema, model, fmt, info), None
