@@ -10342,3 +10342,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (tokens a cut 4.1k / 1.8k / 1.5k / 0.84k), judge **golden-jt2** 200 cuts / 336k rows. Chain 2:24–11:10 AM CT; TP2 recording held 112k
   prefixes (30.2 / 30.8 GB); 64–96k band 117 cuts (quota 160). bf16 self-check not run (recorder unchanged from w228's checked one).
   night230 took the cards at 11:10 (w231 DP gate first). **Runtime:** none.
+- 11-25 2:30 PM CST: night230 progress. **w231 DP gate (w231-dp100, 4 cards, 2 ranks × 2-card pipeline) ran 100 steps clean** (12:03 PM,
+  3,130 s, ~32 s/step, peak 22.3 GiB / card); its comparison with deep300's step-100 snapshot waits for deep300. **Branch check (gpu231c)
+  failed on setup, not on branching:** both the branch and the separate arm OOM'd on ONE card (6 streams of ~32k cut docs; 30.7 GiB
+  allocated) → re-run split over 2 cards later. **p2p stress** (10 min p2p + 10 min host) both rc 0 (no fault reproduced). **deep300**
+  (D256-25 recipe, --pipe-xfer host) running on cards 2,3 since 12:33 PM. Screens C230-p502525 / p602515 trained (2:18 PM; j217 rows
+  KLD 0.03906 / 0.03941), reads running; p403030 / p701515 next. iceman was briefly unreachable ~11:30 AM (watchdog cycle 6 failed), back.
