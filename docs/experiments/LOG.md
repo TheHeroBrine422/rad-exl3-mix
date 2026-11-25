@@ -10274,3 +10274,14 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   5–7 % on every cell except long-chat (−36 %). Multilingual (chat 2.4×, text 1.4× calib's per-row KL) and rare code languages
   (2.4× calib code) have the highest ratio to IQ8R → least covered. Long-chat (whole WildChat / oasst threads, thinking-off) is the
   hardest text by far, for IQ8R too. FP8: stock radiance v1.17.0 (has block-FP8 kernels) building on box2 (`/data/q27/r117`).
+- 11-24 10:30 PM CST: **#218 calibration test vs FP8** (official FP8 weights = calibration-free; stock radiance v1.17.0 build on box2,
+  TP2 tp-wire exact; `xgap/fp8cmp.py`). Ratio model / FP8 per category (jc228) and gap cell (JG):
+  - **High bpw, calibrated (IQ8R, our 7.00): flat** 0.09–0.13 on every calib category and 0.10–0.16 on every gap cell → calibration
+    on calib causes no coverage loss at 7–8 bpw. Exceptions: 7.00 on tools-other 0.32 (IQ8R 0.12) and calib agentic 0.22 (1.7k rows):
+    check later (A8 on tool JSON?).
+  - **FP8 itself is worse on the gap text** (multilingual 0.0058–0.0061 vs calib 0.0041, WildChat 0.0155): the model is intrinsically more
+    fragile there.
+  - **2.50 unhealed / FP8:** calib 10.8 overall (7.3–13.1; calib multilingual already 13.1); gap: multilingual chat 16.4, multilingual
+    text 16.0, long chat 17.4 / WildChat 19.0, tools-other 12.6; long docs 10.9, code-langs 10.7, agent 8.5 as calib. So at 2.50 there
+    is an extra ~1.5× on multilingual and long chat beyond the model's own fragility → low-bpw calibration / allocation coverage. After
+    10M QAD: long chat 11.8–12.9 (QAD-fixable), multilingual 15.0–15.7 (not fixed by the current mix).
