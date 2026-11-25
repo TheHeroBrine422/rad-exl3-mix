@@ -1,0 +1,137 @@
+=== agent-sessions | agent--Infatoshi__kernelbench-hard-traces | xg-3030e79465ad84 {"kind": "chat", "tokens": 255152, "length_band": "128k+", "lang": "en", "licence": "mit", "thinking": "on", "has_system": false, "length": "xl", "windowed": null, "holdout": false}
+<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.\n\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"type": "function", "function": {"name": "Bash", "descripti
+  [...]
+ge a lot, let's just rewrite the whole solution.py.\n</think>\n\n<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nNow let me rewrite solution.py with the fast-path design, improved flushed config selector, and raw compiled-kernel launches.<|im_end|>\n
+
+
+=== agent-sessions | agent--armand0e__claude-fable-5-claude-code | xg-fee0b5c6fc78f8 {"kind": "chat", "tokens": 154692, "length_band": "128k+", "lang": "en", "licence": "mit", "thinking": "off", "has_system": false, "length": "xl", "windowed": null, "holdout": false}
+<|im_start|>system\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"type": "function", "function": {"name": "Bash", "description": "Tool Bash.", "parameters": {"type": "object", "properties": {"command": {"type": "string"}, "description": {"type": "string"}, "run_in_background": {"type": "boolean"}, "timeout": {"type": "integer"}}, "
+  [...]
+ition: static` with no background gradient, so there's no floating slice of background during scroll. (The screenshot tool is timing out again — same capture flakiness as before — but the computed-style check confirms the behavior change.)<|im_end|>\n
+
+
+=== agent-sessions | agent--swe-rebench-openhands | xg-9cf3eb6a6011c0 {"kind": "chat", "tokens": 88560, "length_band": "64-128k", "lang": "en", "licence": "cc-by-4.0", "thinking": "off", "has_system": true, "length": null, "windowed": null, "holdout": false}
+<|im_start|>system\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"function": {"description": "Execute a bash command in the terminal within a persistent shell session.\n\n\n### Command Execution\n* One command at a time: You can only execute one bash command at a time. If you need to run multiple commands sequentially, use `&&` or 
+  [...]
+ggestion to "mangle names" while thoughtfully preserving semantic information, providing a robust solution that maintains backward compatibility for data access while enabling NetCDF export capability.\n</parameter>\n</function>\n</tool_call><|im_end|>\n
+
+
+=== agent-sessions | agent--thomasmustier__pi-for-excel-sessions | xg-64e53eef5e9947 {"kind": "chat", "tokens": 36271, "length_band": "32-64k", "lang": "en", "licence": "mit", "thinking": "on", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.\n\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"type": "function", "function": {"name": "read_web_page", "
+  [...]
+ommit. Updating it alone does **not** fix forge; baseline already overrides its Axios dependency to **1.19.0**.\n\nRead-only research only: no installs, implementation, GitHub mutations, or independent execution of upstream regression tests.<|im_end|>\n
+
+
+=== code-langs | code--rust | xg-d12d559d7b4bc3 {"kind": "text", "tokens": 2909, "length_band": "2-4k", "lang": "rust", "licence": "['Apache-2.0', 'MIT']", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+# 12_exceptions_part1_groundwork/src/_arch/aarch64/memory/mmu.rs\n// SPDX-License-Identifier: MIT OR Apache-2.0\n//\n// Copyright (c) 2018-2020 Andre Richter <andre.o.richter@gmail.com>\n\n//! Memory Management Unit Driver.\n//!\n//! Static translation tables, compiled on boot; Everything 64 KiB granule.\n\nuse super::{AccessPermissions, AttributeFields, Me
+  [...]
+a and instruction caching.\n        SCTLR_EL1.modify(SCTLR_EL1::M::Enable + SCTLR_EL1::C::Cacheable + SCTLR_EL1::I::Cacheable);\n\n        // Force MMU init to complete before next instruction.\n        barrier::isb(barrier::SY);\n\n        Ok(())\n    }\n}\n
+
+
+=== code-langs | code--swift | xg-76e555726ab523 {"kind": "text", "tokens": 1128, "length_band": "1-2k", "lang": "Swift", "licence": "MIT", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+import Foundation\nimport RiistaCommon\n\n/**\n * A helper that is able to determine the RiistaCommon.DataField type as an enum.\n */\npublic enum DataFieldType<FieldId : DataFieldId> {\n    /**\n     * Unknown DataField type observed.\n     */\n    case unknown(_ field: DataField<FieldId>)\n\n    // Known DataField types\n\n    case string(_ field: StringField<
+  [...]
+eld as? RiistaCommon.CustomUserInterfaceField<FieldId> {\n            self = .customUserInterface(field)\n        } else {\n            print("Unknown DataField observed (id = \(dataField.id_))")\n            self = .unknown(dataField)\n        }\n    }\n}\n
+
+
+=== code-langs | code--zig | xg-ecdf2a14aed1c5 {"kind": "text", "tokens": 1989, "length_band": "1-2k", "lang": "zig", "licence": "['MIT']", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": true}
+# src/pkg/dns/rdata.zig\n// DNS RDATA understanding (parsing etc)\nconst std = @import("std");\nconst io = std.io;\nconst fmt = std.fmt;\n\nconst dns = @import("../dns.zig");\nconst InError = io.SliceInStream.Error;\nconst OutError = io.SliceOutStream.Error;\nconst Type = dns.Type;\n\npub const SOAData = struct {\n    mname: dns.Name,\n    rname: dns.Name,\n    
+  [...]
+ serializer.serialize(srv.priority);\n            try serializer.serialize(srv.weight);\n            try serializer.serialize(srv.port);\n            try serializer.serialize(srv.target);\n        },\n\n        else => return error.NotImplemented,\n    }\n}\n
+
+
+=== long-chat | lc--wildchat | xg-a4e5ef8348f60f {"kind": "chat", "tokens": 8444, "length_band": "8-16k", "lang": "Russian", "licence": "odc-by", "thinking": "off", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>user\nФормационный и цивилизационный подходы к изучению истории и общества<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nФормационный и цивилизационный подходы являются двумя основными методологическими подходами к изучению истории и общества, которые предлагают разные перспективы относительно развития человеческих обществ.\n\n### Фор
+  [...]
+е\n\n- Открытая платформа для вопросов и дальнейших дискуссий.\n\nЭтот план презентации предоставляет структуру для сравнения и контрастирования двух важнейших подходов в исторической науке и социологии, подчеркнув их сильные и слабые стороны.<|im_end|>\n
+
+
+=== long-docs | arxiv | xg-3357733521a632 {"kind": "text", "tokens": 21597, "length_band": "16-32k", "lang": "en", "licence": "Creative Commons - Attribution - https://creativecommons.org/licenses/by/4.0/", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+# Realizations of Unisingular Representations by Hyperelliptic Jacobians\n\nJohn Cullinan  Department of Mathematics, Bard College, Annandale-On-Hudson,\nNY 12504, USA<EMAIL_ADDRESS>http://faculty.bard.edu/cullinan/\n\n###### Abstract.\n\nA representation of a finite group $G$ on a finite dimensional vector space\n$V$ is called unisingular if every $g\in G
+  [...]
+. Zarhin. Non-isogenous elliptic curves and hyperelliptic jacobians. Preprint https://arxiv.org/pdf/2105.03783.pdf\n  * [19] D. Zywina. Inverse Galois problem for small simple groups.   \nhttp://pi.math.cornell.edu/$\sim$zywina/papers/smallGalois.pdf\n\n
+
+
+=== long-docs | doab | xg-75a01e692257b7 {"kind": "text", "tokens": 39774, "length_band": "32-64k", "lang": "en", "licence": "Creative Commons - Attribution - https://creativecommons.org/licenses/by/3.0/", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+Preface\n\nJoseph Fourier (1770–1830) first introduced the remarkable idea of expansion of a function in terms of trigonometric series without giving any attention to rigorous mathematical analysis. The integral formulas for the coefficients of the Fourier expansion were already known to Leonardo Euler (1707–1783) and others. In fact, Fourier develop
+  [...]
+ offset linear canonical transform. Mathematical Methods in the Applied Sciences. 2019;**42**:466-447\n\n[35] Bhat MY, Dar AH. Octonion spectrum of 3D short-time LCT signals. arXiv:2202.00551 [eess.SP]. 2021\n\nSection 2 Applications\n\n#### **Chapter 4**\n
+
+
+=== long-docs | fineweb2-hq--spa_Latn | xg-27681fa4df96da {"kind": "text", "tokens": 10400, "length_band": "8-16k", "lang": "spa_Latn", "licence": "odc-by", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+Introducción\nEl año 1880 es un año clave en el proceso histórico argentino, se consolida la organización del Estado con la designación de Buenos Aires como capital de la República y con el general Roca como presidente (1880-1886); sin embargo, el proceso organizativo ya había comenzado años atrás. En 1853 se sancionó la constitución cuyo artículo 2
+  [...]
+ conocimiento a disposición de toda su comunidad. Queda bajo la responsabilidad de cada lector el eventual uso que se le de a esta información. Asimismo, es obligatoria la cita del autor del contenido y de Monografias.com como fuentes de información.
+
+
+=== long-docs | gutenberg | xg-151dabf28696cb {"kind": "text", "tokens": 38234, "length_band": "32-64k", "lang": "en", "licence": "Public Domain", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": true}
+Carmilla\n\nby Joseph Sheridan Le Fanu\n\nCopyright 1872\n\n\nContents\n\n PROLOGUE\n CHAPTER I. An Early Fright\n CHAPTER II. A Guest\n CHAPTER III. We Compare Notes\n CHAPTER IV. Her Habits—A Saunter\n CHAPTER V. A Wonderful Likeness\n CHAPTER VI. A Very Strange Agony\n CHAPTER VII. Descending\n CHAPTER VIII. Search\n CHAPTER IX. The Doctor\n CHAPTER X. Bereaved\n C
+  [...]
+st Horror Stories\nThe Vampire Lovers and Other Stories\nGhost Stories and Mysteries\nThe Hours After Midnight\nJ.S. LeFanu: Ghost Stories and Mysteries\nGhost and Horror Stories\nGreen Tea and Other Ghost Stones\nCarmilla and Other Classic Tales of Mystery
+
+
+=== long-docs | pg19 | xg-cb09adccca7678 {"kind": "text", "tokens": 39308, "length_band": "32-64k", "lang": "en", "licence": "public-domain (PG-19, apache-2.0 repack)", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+\n\n\n\nProduced by Melissa McDaniel and the Online Distributed\nProofreading Team at http://www.pgdp.net (This file was\nproduced from images generously made available by The\nInternet Archive)\n\n\n\n\n\n\n\nTranscriber's Note:\n\n  Inconsistent hyphenation and spelling in the original document have\n  been preserved. Obvious typographical errors have been correct
+  [...]
+ DESIGNED BY JOHN SWART, PUBLISHED BY PAUL ELDER AND COMPANY\nAND PRINTED FOR THEM BY THE TOMOYE PRESS, SAN FRANCISCO, NINETEEN\nHUNDRED AND FOURTEEN.\n\n\n\n\n\nEnd of the Project Gutenberg EBook of The Great Small Cat and Others, by\nMay E. Southworth\n\n*** 
+
+
+=== long-docs | wikipedia--en | xg-e3824ce486c6ca {"kind": "text", "tokens": 13691, "length_band": "8-16k", "lang": "en", "licence": "cc-by-sa-3.0 / gfdl", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+2018 Houston Astros season\n\nThe 2018 Houston Astros season was the 57th season for the Major League Baseball (MLB) franchise in Houston, Texas, their 54th as the Astros, sixth in both the American League (AL) and AL West division, and 19th at Minute Maid Park. The Astros were the defending World Series champions, after winning the 2017 World Series
+  [...]
+jor League Baseball single-game hits leaders\n\nReferences\n\nExternal links\nHouston Astros season official site \n2018 Houston Astros season at Baseball Reference\n\nHouston Astros seasons\nHouston Astros\nHouston Astros\nAmerican League West champion seasons
+
+
+=== multilingual-chat | mlc--aya | xg-c275c7f03d439b {"kind": "chat", "tokens": 108, "length_band": "<1k", "lang": "amh", "licence": "apache-2.0", "thinking": "off", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>user\nየኤሌክትሪክ ኃይል ምንድን ነው? ሀ. የውሃ ፍሰት ለ. የአየር ፍሰት ሐ. የኤሌክትሮኖች ፍሰት መ. የአተሞች ፍሰት<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nሐ<|im_end|>\n
+  [...]
+<|im_start|>user\nየኤሌክትሪክ ኃይል ምንድን ነው? ሀ. የውሃ ፍሰት ለ. የአየር ፍሰት ሐ. የኤሌክትሮኖች ፍሰት መ. የአተሞች ፍሰት<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nሐ<|im_end|>\n
+
+
+=== multilingual-chat | mlc--oasst2 | xg-aef59da942d75b {"kind": "chat", "tokens": 260, "length_band": "<1k", "lang": "es", "licence": "apache-2.0", "thinking": "off", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>user\n¿Qué hace que una mujer se pueda considerar elegante?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nHay muchos aspectos que contribuyen a la elegancia de una mujer, pero aquí hay algunos de los más comunes:\n\nConfianza: Una mujer elegante se siente segura de sí misma y de su apariencia, lo que se refleja en su postura y en su a
+  [...]
+cción de accesorios.\n\nEstos son solo algunos de los aspectos que pueden hacer que una mujer sea considerada elegante. En última instancia, la elegancia es una combinación de cualidades personales y de estilo que la hacen única y atractiva.<|im_end|>\n
+
+
+=== multilingual-chat | mlc--wildchat | xg-ffd7af9bf75c69 {"kind": "chat", "tokens": 372, "length_band": "<1k", "lang": "Chinese", "licence": "odc-by", "thinking": "off", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>user\nrandom seed1584， 我想要製作AI Dungeon的遊戲，請幫我生成資料集，範例資料為：{'instruction': '...','input': '...','output': '...'}，主題為海洋冒險故事，instruction請寫故事的完整劇情背景，主角不要有名字，盡量用你，input為動作(不用主詞，請超過五個字)、output為接下來故事的變化，1筆就好，故事劇情內容盡量在200字內 請用繁體中文，直接回覆我json<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n```json\n{\n  "instruction": "在遙遠的未來，人類科技高度發展，他們開始不滿足於陸地的探
+  [...]
+，解開古老的謎團，甚至可能發現超乎想像的寶藏和秘密。你駕駛著你的高科技潛水艇，準備迎接這場驚心動魄的海洋大冒險。",\n  "input": "開啟潛水艇的聲納系統",\n  "output": "聲納系統發出微弱的嗡嗡聲，隨即螢幕上顯示出附近海域的地形圖。在不遠處，你發現了一處異常的能量波動。這可能是那座傳說中的海底城市的所在。興奮的你決定調整航向，緩緩駛向那片神秘的海域。隨著距離的拉近，你的視野中漸漸出現了一座宏偉卻又詭譎的海底建築，隱約能感受到其當年的輝煌。"\n}\n```<|im_end|>\n
+
+
+=== multilingual-text | mlt--fineweb2--kor_Hang | xg-1f685d921889ff {"kind": "text", "tokens": 434, "length_band": "<1k", "lang": "kor_Hang", "licence": "odc-by", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+쾰른은 지난 시즌 승격팀으로, 실점 자체는 많았지만 최전방 코르도바의 맹활약에 힘입어 잔류에 성공했다. 전력규모가 강등권에 있을만한 수준은 아니기 때문에, 이번 시즌에는 좀 더 치고올라갈 필요가 있다. 욘 코르도바를 팔았지만, 세바스티안 앤더슨을 영입했고 온드레이 두다 역시 2선에서 큰 도움이 될 것으로 보인다.\n유니온베를린은 지난 시즌 승격팀으로, 전력규모는 매우 작지만 세트피스의 강점을 앞세워 당당히 11위를 차지했다. 여전히 전력보강은 크지않았기 때문에, 우르스 피셔 체제에서 다시 한 번 똑똑하게 잔류해야만 한다. 지난 시즌 많은 득점을 안겼던 세바스티안 앤더슨의 빈 자리를 채울 수 있을지.\n# 주요 부상자 명단\n
+  [...]
+ 플레이로 어느정도 득점해내고는 있지만, 전반부터 너무 많은 실점을 허용하고있어 승리할 기회를 잡지 못하고있다(현재까지 무승). 반면, 앤더슨을 내준 유니온베를린은 여전히 맥스 크루즈를 중심으로 특유의 측면공격을 잘 살리고있으며, 지난 시즌보다 더 강력해진 수비조직력을 바탕으로 많은 승점을 쌓고있다. 그래도 원정에서는 멀티득점으로 연결시키는 힘이 부족하기 때문에, 선제득점을 올리더라도 쐐기를 박지못하고 쾰른에 기회를 허용할 가능성이 높아보인다.
+
+
+=== multilingual-text | mlt--fineweb2-hq--jpn_Jpan | xg-48735f219768c8 {"kind": "text", "tokens": 553, "length_band": "<1k", "lang": "jpn_Jpan", "licence": "odc-by", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": true}
+ぞうさんよりおもいのに そらをとべるもの な～んだ？\n＊＊＊ヒント＊＊＊\nのりもの＊＊＊＊＊＊＊＊＊\n＜広告＞\n＊＊＊こたえ＊＊＊\nひこうき（へりこぷたーなども◎）＊＊＊＊＊＊＊＊＊\n＜広告＞\n▶つぎのもんだいへ\n＜広告＞\nなぞなぞ文＆URLをコピー\nツイート\n＜広告＞\nブランコにのると いきもかえりもついてくる すずしいもの なあに？ もえていないのに もえていそうなやさいは なあに？ ふねに つまれている いかって な〜んだ？ そらにむかって みずをふきあげる「すい」って な〜んだ？ ねるときに あたまをのせるもの な～んだ？ かみのうえで サイコロふって すすんだり もどったり これな〜んだ？ きょうのおやつは 木（き）でできた たいやだよ な〜んだ？ すなみたいだけど たべられて た
+  [...]
+ な〜んだ？ とにかく みずがほしくてしょうがない いきものって だ〜れだ？ やさいのなかに かくれているどうぶつ な〜んだ？\n＜広告＞\n3月3日（さんがつみっか）にするつりって な～んだ？ おふろがすきな太陽（たいよう） おふろをみると なんていうかな？ クリームのあたまについてるフルーツって なぁに？ ブランコにのると いきもかえりもついてくる すずしいもの なあに？ ぞうさんよりおもいのに そらをとべるもの な～んだ？ あめがだいすきなみどりのあいつ おおきなジャンプがとくいなの だあれ？
+
+
+=== multilingual-text | mlt--wikipedia--hi | xg-40aac77d6c8d0f {"kind": "text", "tokens": 18418, "length_band": "16-32k", "lang": "hi", "licence": "cc-by-sa-3.0 / gfdl", "thinking": null, "has_system": null, "length": null, "windowed": null, "holdout": false}
+मीठड़ी मारवाड़\n\nध्रुवीय निर्देशांक: 27°57'5975"N 74°68'7235"E\n\nमीठड़ी मारवाड़ \nराजस्थान के नागौर जिले की लाडनूं तहसील का एक गाँव है।\n\nपरिचय \n\nमीठड़ी मारवाड़ - यह ग्राम मारवाड़ क्षेत्र तदानुसार नागौर जिले के उत्तरी पूर्वी दिक्कोण (ईशान) में आबाद कस्बाई ग्राम है। यह तहसील एवं पंचायत समिति लाडनूं के परिधीय क्षेत्र का पूर्वी सीमांत स्थित ग्राम पंचायत म
+  [...]
+.राजस्थान के सभी गाँवों तथा उनके अंतर्गत पंचायत समितियों की सूची\n 12. https://web.archive.org/web/20140304044805/http://www.stad.com/index.php?maptype=roadmap&zoomlevel=12&lat=27.574330&lon=74.686775\n\nग्राम स्थिति \n\n \n\nनागौर ज़िला\nनागौर ज़िले के गाँव
+
+
+=== tools-other | tools--glaive | xg-1eaad970f3ef00 {"kind": "chat", "tokens": 623, "length_band": "<1k", "lang": "en", "licence": "apache-2.0", "thinking": "off", "has_system": true, "length": null, "windowed": null, "holdout": true}
+<|im_start|>system\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"type": "function", "function": {"name": "generate_password", "description": "Generate a random password", "parameters": {"type": "object", "properties": {"length": {"type": "integer", "description": "The length of the password"}, "include_symbols": {"type": "boolean"
+  [...]
+tool_call><|im_end|>\n<|im_start|>user\n<tool_response>\n{"password": "4&7j#9@1Q6*"}\n</tool_response><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nHere is your new password: 4&7j#9@1Q6*. Please make sure to save it in a secure location.<|im_end|>\n
+
+
+=== tools-other | tools--hermes-json | xg-4e4f107311d824 {"kind": "chat", "tokens": 369, "length_band": "<1k", "lang": "en", "licence": "apache-2.0", "thinking": "off", "has_system": true, "length": null, "windowed": null, "holdout": false}
+<|im_start|>system\nYou are a helpful assistant that answers in JSON. Here's the json schema you must adhere to:\n<schema>\n{"title": "NewDrugEntry", "type": "object", "properties": {"drugName": {"title": "Drug Name", "type": "string"}, "activeIngredients": {"title": "Active Ingredients", "type": "array", "items": {"type": "string"}}, "dosageForm": {"
+  [...]
+blet', and indicate that the approval status is 'pending'.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n{"drugName": "Relieva", "activeIngredients": ["Ibuprofen", "Acetaminophen"], "dosageForm": "tablet", "approvalStatus": "pending"}<|im_end|>\n
+
+
+=== tools-other | tools--when2call | xg-16d1f2de5c6a59 {"kind": "chat", "tokens": 445, "length_band": "<1k", "lang": "en", "licence": "cc-by-4.0", "thinking": "off", "has_system": false, "length": null, "windowed": null, "holdout": false}
+<|im_start|>system\n# Tools\n\nYou have access to the following functions:\n\n<tools>\n{"type": "function", "function": {"name": "auto_complete", "description": "Fetches auto-complete suggestions for a given word using an external API.", "parameters": {"type": "dict", "properties": {"word": {"description": "The term or phrase for which to get auto-comple
+  [...]
+o-complete suggestions for a phrase in German for a user in Germany using Euros.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\nTo provide the auto-complete suggestions, could you please specify the phrase or term you'd like me to use?<|im_end|>\n
+

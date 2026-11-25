@@ -1,0 +1,55 @@
+{
+ "xgap_sources_docs": 1021,
+ "dropped_in_assembly": {
+  "lines": 16
+ },
+ "per_source": {
+  "code--haskell": {
+   "lines": 1
+  },
+  "tools--hermes-multi": {
+   "lines": 8
+  },
+  "tools--when2call": {
+   "lines": 1
+  },
+  "agent--Infatoshi__kernelbench-hard-traces": {
+   "lines": 1
+  },
+  "agent--Infatoshi__kernelbench-mega-traces": {
+   "lines": 1
+  },
+  "agent--thomasmustier__pi-extensions-sessions": {
+   "lines": 1
+  },
+  "agent--thomasmustier__pinet-sessions": {
+   "lines": 1
+  },
+  "agent--trace-commons__agent-traces": {
+   "lines": 1
+  },
+  "agent--nemotron-swe": {
+   "lines": 1
+  }
+ },
+ "dups_at_build_vs_calib_public_xcorp": {
+  "arxiv": {
+   "lines:calib": 1
+  },
+  "code--zig": {
+   "lines:calib": 1
+  },
+  "tools--glaive": {
+   "lines:xcorp": 5,
+   "lines:calib": 4
+  },
+  "tools--when2call": {
+   "lines:calib": 1,
+   "lines:xcorp": 14
+  },
+  "agent--nemotron-swe": {
+   "lines:xcorp": 8,
+   "lines:calib": 1
+  }
+ }
+}
