@@ -10217,3 +10217,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   web, science, code, encyclopedic, qa); all 0.901. QAD's gains are mostly on assistant-written text; plain text (multilingual included)
   gains 6–8 %. Multilingual is not lagging other plain text in relative terms, but has the highest KL per row (0.061) and 13 % of the
   leaderboard-weighted KL.
+- 11-24 ~7:30 PM CST (user): **w229 launched (Sonnet high, run a3872882): xgap-v1**, a labelled superset corpus on colo
+  `/data/xgap/v1`: calib (pool + judge tags) + xcorp v1 (minus the user's pisess files) + ~70M new tokens (whole long docs 8–128k,
+  public agent sessions incl. Claude Code / pi / kernelbench, non-Latin multilingual text and chat, long chat, other tool schemas).
+  Documents only (no goldens, no model-written text); thinking-off rendering for reasoning-free chats; dedup vs calib / public /
+  xcorp; seeded 10 % holdout of the new docs. Pilot (~2M) stops for lead review. Brief `rad-local/workers/instr3/w229.md`.
+  **Runtime:** none (data).
