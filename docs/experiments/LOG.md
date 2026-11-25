@@ -10336,3 +10336,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (100/0/0), xgc (50/50/0), opmix (0/0/100, onpol teacher). Order: wait for w230's chain to exit (~11:30 AM) → w231 DP gate (4 cards,
   ~1.5 h) + branch check (1 card) → screens on cards 0,1 (queue) while w231 p2p stress + deep300 run on cards 2,3 (~4.6 h).
   Set 1 (deep cuts) is not in these screens (needs the deep trainer). (--cont shuffles, so no tail-ordering arm.)
+- 11-25 11:15 AM CST: **w230 done** (report `rad-local/workers/out/w230.md`; code `v3/qad230/`). Teacher data, IQ6R-V4-written, bf16
+  goldens on box2: **tset1** agent cuts with whole prefixes 1,616 cuts / 752k gen rows (mean 466 tokens a turn, median 138; 43.4M
+  prefix tokens recorded), judge **golden-jt1** 106 cuts / 46k rows; **tset2** chat at xhigh / medium / low / off 1,048 cuts / 2.17M rows
+  (tokens a cut 4.1k / 1.8k / 1.5k / 0.84k), judge **golden-jt2** 200 cuts / 336k rows. Chain 2:24–11:10 AM CT; TP2 recording held 112k
+  prefixes (30.2 / 30.8 GB); 64–96k band 117 cuts (quota 160). bf16 self-check not run (recorder unchanged from w228's checked one).
+  night230 took the cards at 11:10 (w231 DP gate first). **Runtime:** none.
