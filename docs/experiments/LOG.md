@@ -10255,3 +10255,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   teacher edges the real agent traces by ~0.4 %, within noise of n = 2). **Calib cuts: teacher better** (wins the real traces and its own
   text; the student only wins on student text). No sign that student-written text teaches anything teacher text doesn't. C228-stud
   j217 0.836 / 0.868 / 0.930.
+- 11-24 8:57 PM CST (user "test xgap"): **#218 xgap screen 1 started** (`xgap/sel229.py` on colo, `xgap/chain229.sh` on box2, log
+  `/data/q27/xgap/chain.log`). Gap judge `golden-jgap` (JG-*): 259 xgap-v1 HOLDOUT docs, 658k tokens (long-docs 139k, agent-sessions 254k,
+  multilingual text 40k / chat 60k, long-chat 71k, code 41k, tools 52k; docs ≤ 64k). Screen docs `xg-scr1`: 2,022 non-holdout docs cut
+  to ≤ 8.6k, 3.69M tokens. bf16 TP4 goldens + genmask181 masks; cont-xg1 (1,552,745 rows, cell quotas long-docs / multilingual-text 330k,
+  agent 250k, multilingual-chat / long-chat / code 220k, tools 110k) and cont-xgc (half xg1, half cont-calib). Arms C229-xg / C229-xgc
+  from the 10M state (same schedule as C228), reads JC / JG / JS / JL + j217; baseline JG reads of unhealed 2.50, 10M end, C228-ctl,
+  C228-opmix; TP2 reference reads (FP8 container = official weights, IQ8R-V4, EXL3-V3-7.00) on JG and JC. **Runtime:** none.

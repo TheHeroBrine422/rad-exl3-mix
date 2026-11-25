@@ -10,7 +10,9 @@ case $NAME in JL-*) G=${5:-$JLONG}; MML=262144;;              # lead 11-22: JL-*
   JT-*) G=${5:-$QROOT/slices/golden-jteach};;                   # lead 11-24: held-out teacher-written text (59 onpol-b1 docs no arm trained on)
   JU-*) G=${5:-$QROOT/slices/golden-jteachc};;
   JS-*) G=${5:-$QROOT/slices/golden-jstud};;                    # lead 11-24: held-out STUDENT-written traces (59 cuts no arm used)
-  JV-*) G=${5:-$QROOT/slices/golden-jstudc};; esac               # lead 11-24: held-out student-written calib cuts (20)              # lead 11-24: same for onpol-calib-b1 (64 docs)                 # lead 11-24: JC-* names read the continuation judge jc228 (642 unused calib docs, 737,597 rows at cap 8192; v3/qadq/contpool.py)
+  JV-*) G=${5:-$QROOT/slices/golden-jstudc};;
+  JG-*) G=${5:-$QROOT/slices/golden-jgap}; MML=67584;;           # lead 11-25: the gap judge (xgap-v1 holdout, docs <= 64k)
+  esac               # lead 11-24: held-out student-written calib cuts (20)              # lead 11-24: same for onpol-calib-b1 (64 docs)                 # lead 11-24: JC-* names read the continuation judge jc228 (642 unused calib docs, 737,597 rows at cap 8192; v3/qadq/contpool.py)
 [ -s $O/$NAME.json ] && { echo "$NAME done"; exit 0; }
 if [ -z "${QCARD_LOCKED:-}" ]; then eval "exec {fd}>$(CARDLOCK $CARD)"; flock $fd; fi
 eval "exec {rf}>$RAMLOCK"; flock -s $rf
