@@ -125,39 +125,43 @@ def run(stu, a, nsteps=3, kvbuf=False, pos_off=0, gqa=False, train_from=0):
 def same(x, y): return all(torch.equal(x[k], y[k]) for k in x)
 
 
-T0, o0 = run(Tiny(0), targs()); s0 = T0.stu.state()
-print("default:", o0)
-if os.environ.get("Q220_OLD"):                                # the trainer before w225 (e.g. the queue's installed copy): its default loop = this one's
-    import importlib.util
-    sp = importlib.util.spec_from_file_location("qad220_old", os.environ["Q220_OLD"]); QO = importlib.util.module_from_spec(sp); sp.loader.exec_module(QO)
-    QO.use_seg_attention(Tiny(0)); stu = Tiny(0); stu.mask = None; QO.set_first_train(stu, lambda s: None)
-    st_ = D.plan(C.items, np.arange(len(nt)), 2, 128); ro_, _ = QO.rows_cum(C, st_)
-    TO = QO.Trainer(targs(), stu, C, st_, ro_, QO.Dist(), lambda s: None); oo = []
-    for s in range(3):
-        accs, w = TO.run_group([s], 1e-3); oo.append((float(accs[0]), float(accs[1]), TO.gnorm, float(accs[-1])))
-    Q.use_seg_attention(Tiny(0))
-    check(f"defaults: this qad220 = {os.environ['Q220_OLD']} bit for bit (3 steps: KL sums, rows, gnorm, parameters)", oo == o0 and same(stu.state(), s0), f"{oo[0]} vs {o0[0]}")
-Tb, ob = run(Tiny(0), targs(), kvbuf=True)
-check("buffered KV, parked on the CPU: = default loop bit for bit (KL sums, rows, gnorm, parameters)", ob == o0 and same(Tb.stu.state(), s0), f"{ob[0]} vs {o0[0]}")
-Tk, ok_ = run(Tiny(0), targs(state_card_gb=1.0), kvbuf=True)
-check("buffered KV, kept in place (--state-card-gb): = default bit for bit", ok_ == o0 and same(Tk.stu.state(), s0) and any(isinstance(v, Q.KVView) and v.device.type == "cpu" for _, _, st in Tk.states.values() for v in st.values()))
-Ts, os_ = run(Tiny(0, split=4), targs())
-check("--split-layers 4 (naive, connected graph over the two device entries): = default one-card loop bit for bit", os_ == o0 and same(Ts.stu.state(), s0), f"{os_[0]} vs {o0[0]}")
-Tp, op = run(Tiny(0, split=4), targs(pipeline=True))
-check("--pipeline: = naive split bit for bit", op == os_ and same(Tp.stu.state(), Ts.stu.state()), f"{op[0]} vs {os_[0]}")
-Tp2, op2 = run(Tiny(0, split=4), targs(pipeline=True, state_card_gb=1.0))
-check("--pipeline with states kept on the cards: = naive split bit for bit", op2 == os_ and same(Tp2.stu.state(), Ts.stu.state()))
-Tf0, of0 = run(Tiny(0), targs(), train_from=5); Tf1, of1 = run(Tiny(0, split=4), targs()   , train_from=5); Tf2, of2 = run(Tiny(0, split=4), targs(pipeline=True), train_from=5)
-check("first half frozen (train layers 5-7, split 4): default = naive split = pipeline bit for bit", of0 == of1 == of2 and same(Tf1.stu.state(), Tf0.stu.state()) and same(Tf2.stu.state(), Tf0.stu.state()), f"{of0[0]} {of1[0]} {of2[0]}")
-Ta0, oa0 = run(Tiny(0), targs(V=1, accum=2)); Ta1, oa1 = run(Tiny(0, split=4), targs(V=1, accum=2, pipeline=True))
-check("--accum 2 at V = 1 (a stream's consecutive segments in one pipeline): pipeline = default bit for bit", oa0 == oa1 and same(Ta1.stu.state(), Ta0.stu.state()), f"{oa0[0]} vs {oa1[0]}")
-Tg, og = run(Tiny(0), targs(), gqa=True)
-check("--attn-gqa: KL sums within 1e-3 relative of the default (rounding-level), rows equal", all(abs(x[0] / y[0] - 1) < 1e-3 and x[1] == y[1] for x, y in zip(og, o0)), f"{[x[0] for x in og]} vs {[x[0] for x in o0]}")
-Tgs, ogs = run(Tiny(0, split=4), targs(pipeline=True), gqa=True)
-check("--attn-gqa: pipeline = one card (same attention form) bit for bit", ogs == og, f"{ogs[0]} vs {og[0]}")
-Td, od = run(Tiny(0, split=4), targs(pipeline=True), pos_off=512)
-Td1, od1 = run(Tiny(0, split=4), targs(), pos_off=512)
-kv = [v for _, _, st in Td.states.values() for k, v in st.items() if k[0] == "kv"]
-check("--depth-test 512: runs (pipeline = naive), KL differs from the default, carried K / V include the 512 synthetic positions", od == od1 and od[0][0] != o0[0][0] and len(kv) > 0 and all(v.n > 512 for v in kv), f"{od[0]} vs {o0[0]}; kv n {[v.n for v in kv][:4]}")
-print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
-sys.exit(1 if fails else 0)
+def main():
+    T0, o0 = run(Tiny(0), targs()); s0 = T0.stu.state()
+    print("default:", o0)
+    if os.environ.get("Q220_OLD"):                                # the trainer before w225 (e.g. the queue's installed copy): its default loop = this one's
+        import importlib.util
+        sp = importlib.util.spec_from_file_location("qad220_old", os.environ["Q220_OLD"]); QO = importlib.util.module_from_spec(sp); sp.loader.exec_module(QO)
+        QO.use_seg_attention(Tiny(0)); stu = Tiny(0); stu.mask = None; QO.set_first_train(stu, lambda s: None)
+        st_ = D.plan(C.items, np.arange(len(nt)), 2, 128); ro_, _ = QO.rows_cum(C, st_)
+        TO = QO.Trainer(targs(), stu, C, st_, ro_, QO.Dist(), lambda s: None); oo = []
+        for s in range(3):
+            accs, w = TO.run_group([s], 1e-3); oo.append((float(accs[0]), float(accs[1]), TO.gnorm, float(accs[-1])))
+        Q.use_seg_attention(Tiny(0))
+        check(f"defaults: this qad220 = {os.environ['Q220_OLD']} bit for bit (3 steps: KL sums, rows, gnorm, parameters)", oo == o0 and same(stu.state(), s0), f"{oo[0]} vs {o0[0]}")
+    Tb, ob = run(Tiny(0), targs(), kvbuf=True)
+    check("buffered KV, parked on the CPU: = default loop bit for bit (KL sums, rows, gnorm, parameters)", ob == o0 and same(Tb.stu.state(), s0), f"{ob[0]} vs {o0[0]}")
+    Tk, ok_ = run(Tiny(0), targs(state_card_gb=1.0), kvbuf=True)
+    check("buffered KV, kept in place (--state-card-gb): = default bit for bit", ok_ == o0 and same(Tk.stu.state(), s0) and any(isinstance(v, Q.KVView) and v.device.type == "cpu" for _, _, st in Tk.states.values() for v in st.values()))
+    Ts, os_ = run(Tiny(0, split=4), targs())
+    check("--split-layers 4 (naive, connected graph over the two device entries): = default one-card loop bit for bit", os_ == o0 and same(Ts.stu.state(), s0), f"{os_[0]} vs {o0[0]}")
+    Tp, op = run(Tiny(0, split=4), targs(pipeline=True))
+    check("--pipeline: = naive split bit for bit", op == os_ and same(Tp.stu.state(), Ts.stu.state()), f"{op[0]} vs {os_[0]}")
+    Tp2, op2 = run(Tiny(0, split=4), targs(pipeline=True, state_card_gb=1.0))
+    check("--pipeline with states kept on the cards: = naive split bit for bit", op2 == os_ and same(Tp2.stu.state(), Ts.stu.state()))
+    Tf0, of0 = run(Tiny(0), targs(), train_from=5); Tf1, of1 = run(Tiny(0, split=4), targs()   , train_from=5); Tf2, of2 = run(Tiny(0, split=4), targs(pipeline=True), train_from=5)
+    check("first half frozen (train layers 5-7, split 4): default = naive split = pipeline bit for bit", of0 == of1 == of2 and same(Tf1.stu.state(), Tf0.stu.state()) and same(Tf2.stu.state(), Tf0.stu.state()), f"{of0[0]} {of1[0]} {of2[0]}")
+    Ta0, oa0 = run(Tiny(0), targs(V=1, accum=2)); Ta1, oa1 = run(Tiny(0, split=4), targs(V=1, accum=2, pipeline=True))
+    check("--accum 2 at V = 1 (a stream's consecutive segments in one pipeline): pipeline = default bit for bit", oa0 == oa1 and same(Ta1.stu.state(), Ta0.stu.state()), f"{oa0[0]} vs {oa1[0]}")
+    Tg, og = run(Tiny(0), targs(), gqa=True)
+    check("--attn-gqa: KL sums within 1e-3 relative of the default (rounding-level), rows equal", all(abs(x[0] / y[0] - 1) < 1e-3 and x[1] == y[1] for x, y in zip(og, o0)), f"{[x[0] for x in og]} vs {[x[0] for x in o0]}")
+    Tgs, ogs = run(Tiny(0, split=4), targs(pipeline=True), gqa=True)
+    check("--attn-gqa: pipeline = one card (same attention form) bit for bit", ogs == og, f"{ogs[0]} vs {og[0]}")
+    Td, od = run(Tiny(0, split=4), targs(pipeline=True), pos_off=512)
+    Td1, od1 = run(Tiny(0, split=4), targs(), pos_off=512)
+    kv = [v for _, _, st in Td.states.values() for k, v in st.items() if k[0] == "kv"]
+    check("--depth-test 512: runs (pipeline = naive), KL differs from the default, carried K / V include the 512 synthetic positions", od == od1 and od[0][0] != o0[0][0] and len(kv) > 0 and all(v.n > 512 for v in kv), f"{od[0]} vs {o0[0]}; kv n {[v.n for v in kv][:4]}")
+    print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
+    sys.exit(1 if fails else 0)
+
+
+if __name__ == "__main__": main()

@@ -654,6 +654,22 @@ def lr_groups(a, names, params):
     return out if out else [(a.lr, [])]
 
 
+def to_host(x):
+    """w231 --pipe-xfer host: x (detached) into a pinned host buffer, copied asynchronously on x's card, with the event that marks the copy done
+    (the receiver waits on it in from_host); a CPU tensor (the CPU tests) passes as it is"""
+    x = x.detach()
+    if x.device.type != "cuda": return (x, None)
+    h = torch.empty(x.shape, dtype=x.dtype, pin_memory=True); h.copy_(x, non_blocking=True)
+    ev = torch.cuda.Event(); ev.record(torch.cuda.current_stream(x.device)); return (h, ev)
+
+
+def from_host(m, dev):
+    """w231: to_host's buffer on dev (an asynchronous copy on dev's stream after the sender's copy is done); same values as x.to(dev)"""
+    h, ev = m
+    if ev is None: return h.to(dev)
+    ev.synchronize(); return h.to(dev, non_blocking=True)
+
+
 def to_cpu(st): return {k: (tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu()) for k, v in st.items()}
 def to_dev(st, dev): return {k: (tuple(t.to(dev, non_blocking=True) for t in v) if isinstance(v, tuple) else v.to(dev, non_blocking=True)) for k, v in st.items()}
 
@@ -674,7 +690,7 @@ class Dist:
         self.local = int(os.environ.get("LOCAL_RANK", 0))
         if self.world > 1:
             import torch.distributed as dist
-            dist.init_process_group("gloo", timeout=__import__("datetime").timedelta(hours=2))
+            if not dist.is_initialized(): dist.init_process_group("gloo", timeout=__import__("datetime").timedelta(hours=2))
             self.dist = dist
     def allsum(self, t):
         """sum of a CPU f64 / f32 tensor over ranks (in place)"""
@@ -1082,6 +1098,8 @@ class Trainer:
                 else: self.states.pop(sid, None)
                 del prev, nxt
         if self.w225: self.run_segs_w225(ss, N, acc)
+        if self.d.world > 1:                                    # w231: each rank's own segment wall (data-parallel balance; logged as rank_wall)
+            rw = torch.zeros(self.d.world, dtype=torch.float64); rw[self.d.rank] = time.time() - t0; self.rank_wall = self.d.allsum(rw).tolist()
         flat = torch.cat([(p.grad if p.grad is not None else torch.zeros_like(p)).reshape(-1).double().cpu() for p in self.P] + [acc])
         self.d.allsum(flat)
         if self.fmask is not None: flat[:len(self.fmask)] *= self.fmask         # w220 --mask: masked scales get gradient 0
@@ -1209,6 +1227,9 @@ class Trainer:
         stu, a = self.stu, self.a
         A, B, K, NL = stu.devs[0], stu.devs[-1], stu.split, len(stu.layers)
         assert a.clip_doc == 0, "--pipeline: no --clip-doc"
+        host = getattr(a, "pipe_xfer", "p2p") == "host"
+        send = (lambda x: to_host(x)) if host else (lambda x: x)                  # w231: the sender's card copies into pinned host memory
+        recv = (lambda m, d_: from_host(m, d_)) if host else (lambda m, d_: m.detach().to(d_))
         qb, qg = queue.Queue(), queue.Queue()
         tm = self.pipe_s = dict.fromkeys(("a_fwd", "a_wait", "a_bwd", "a_out", "b_wait", "b_fwd", "b_bwd"), 0.0)     # host-side seconds per phase (logged as pipe_s)
         sync = (lambda d_: torch.cuda.synchronize(d_)) if os.environ.get("W225_SYNC") == "1" and A.type == "cuda" else (lambda d_: None)   # profiling: each phase waits for its card (GPU time per phase)
@@ -1219,17 +1240,17 @@ class Trainer:
                     t_ = time.time(); job = qb.get(); tm["b_wait"] += time.time() - t_
                     if job is None: return
                     t_ = time.time()
-                    j, hA, prevB, gi, i, sa, sb, cap = job
-                    xB = hA.detach().to(B)
-                    if hA.requires_grad: xB.requires_grad_(True)
+                    j, mA, rg, prevB, gi, i, sa, sb, cap = job
+                    xB = recv(mA, B)
+                    if rg: xB.requires_grad_(True)
                     cache = SegCacheBuf(prevB, cap)
                     h = stu.fnorm(run_half(stu, xB, sa, cache, K, NL))[0]
                     kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, h)
                     sync(B); t1 = time.time(); tm["b_fwd"] += t1 - t_
                     if m: (kl / N).backward()
                     sync(B); tm["b_bwd"] += time.time() - t1
-                    qg.put((j, xB.grad if (m and hA.requires_grad) else None, float(kl.detach()), m, cache.next))
-                    del job, hA, xB, h, kl, cache, prevB
+                    qg.put((j, send(xB.grad) if (m and rg) else None, float(kl.detach()), m, cache.next))
+                    del job, mA, xB, h, kl, cache, prevB
             except BaseException as e:
                 qg.put((None, e))
         import contextvars                      # torch's dynamo / inductor configs (recompile limit, deterministic, strict numerics) are context variables: the worker runs in a copy of this thread's context
@@ -1242,7 +1263,7 @@ class Trainer:
             assert r[0] == j, (r[0], j)
             _, gx, kl, m, nxtB = r
             t_ = time.time()
-            if gx is not None: hA.backward(gx.to(A))
+            if gx is not None: hA.backward(recv(gx, A))
             sync(A); t1 = time.time(); tm["a_bwd"] += t1 - t_
             t = self.tix[self.C.tags[gi]]; acc[2 * t] += kl; acc[2 * t + 1] += m
             self.state_out(sid, it, sb, n_doc, {**cacheA.next, **nxtB})
@@ -1262,7 +1283,7 @@ class Trainer:
                     pa = {k: v for k, v in prev.items() if k[1] < K}; pb = {k: v for k, v in prev.items() if k[1] >= K}
                     cacheA = SegCacheBuf(pa, cap)
                     hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
-                    qb.put((j, hA, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
+                    qb.put((j, send(hA), hA.requires_grad, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
                     del prev, pa, pb, hA, cacheA
                     if len(pend) > 2: finish()       # A runs two segments ahead: B always has the next one queued (B's work per segment is the larger half)
                 while pend: finish()
@@ -1954,6 +1975,7 @@ def parser():
     ap.add_argument("--eval-cap", type=int, default=0, help="w224: with --eval-only: score only the first N tokens of each document (0 = whole documents)")
     ap.add_argument("--split-layers", type=int, default=0, help="w225: two cards, one process: the token table and layers 0..K-1 on the first visible card, layers K..63 + final norm + head on the second; carried KV in per-document buffers, each layer's state on its card (0 = off: one card)")
     ap.add_argument("--pipeline", action="store_true", help="w225 (with --split-layers): the filled pipeline (card A runs segment j's first half while card B runs segment j-1's second half); bit for bit the naive split")
+    ap.add_argument("--pipe-xfer", choices=("host", "p2p"), default="host", help="w231 (--pipeline): how the hidden state / its gradient cross between the cards: host = through pinned host buffers, each card's copies issued by its own thread (default; the same values); p2p = w225's peer copies (x.to(other card)), suspected in the sporadic illegal memory access")
     ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
     ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
     ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")
@@ -2076,7 +2098,8 @@ def main():
     lr_at = make_lr(a, cum, last, fork_last, k0, N)             # w220: the lr of the optimizer step starting at plan step s
     dev = f"cuda:{d.local}"; torch.cuda.set_device(dev)
     if a.split_layers:                                          # w225: one process, two cards (the main thread's current card is the second: loss, head)
-        assert d.world == 1 and torch.cuda.device_count() >= 2, "--split-layers: one process with two visible cards"
+        assert torch.cuda.device_count() >= 2, "--split-layers: two visible cards a process"
+        assert d.world == 1 or torch.cuda.device_count() == 2, "--split-layers with ranks: each rank sees only its own pair (ROCR_VISIBLE_DEVICES; qadq/qrun.sh A,B+C,D)"   # w231
         dev = ["cuda:0", "cuda:1"]; torch.cuda.set_device("cuda:1")
     for grp in range(0, d.world, a.build_group):                # ranks build in groups (each build holds the decoded trunk in host RAM once)
         if grp <= d.rank < grp + a.build_group: stu = build_student(a, dev, lambda s: log(s, True))
@@ -2176,6 +2199,7 @@ def main():
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         if a.split_layers: rec["peak_gib_b"] = round(torch.cuda.max_memory_allocated(stu.devs[1]) / 2**30, 2)    # w225: the second card
+        if getattr(T, "rank_wall", None): rec["rank_wall"] = [round(x_, 1) for x_ in T.rank_wall]
         if getattr(T, "pipe_s", None): rec["pipe_s"] = {k_: round(v_, 1) for k_, v_ in T.pipe_s.items()}
         if T.w225:
             rec["states_gib"] = {str(k_): round(v_ / 2**30, 2) for k_, v_ in T.resident().items()}
