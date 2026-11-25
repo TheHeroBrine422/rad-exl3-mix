@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+# Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
+"""testplan231.py -- w231: plan231.py + qad220 --plan231 on synthetic goldens (CPU, no model; runs on the VM). Sources: calib (2k-20k, cap 8k, pools
+with a verify pool and qad220's fixed-eval pool), teacher cuts (8k-40k, only the last 25-50 % scored), long docs (10k-40k, cap 32k) and 4 deep traces
+(60k-80k), V 8 x Q 1024, 2 ranks, budget 1M rows. Checks: data181.plan on the queues = the builder (asserted in plan231), single epoch, judges /
+verify / fixed-eval docs absent, source shares within 3 points of the targets, traces start as scheduled on alternating ranks and end before the
+budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps. Exit 0 = all pass."""
+import argparse, importlib.util, json, os, subprocess, sys, tempfile
+import numpy as np
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, "..", "qad181"))
+import data181 as D                                      # noqa: E402
+
+fails = []
+def check(name, ok, info=""):
+    print(("PASS " if ok else "FAIL ") + name + (f"  [{info}]" if info else ""), flush=True)
+    if not ok: fails.append(name)
+
+
+def golden(d, lens, sfrom, gen_frac=1.0, seed=0):
+    """a golden's metadata with sparse token / row files (nrows / scored read only kld.json and the gen mask)"""
+    os.makedirs(d, exist_ok=True); rg = np.random.default_rng(seed)
+    docs, r0 = [], 0
+    for n, s in zip(lens, sfrom): docs.append({"tokens": int(n), "score_from": int(s), "row0": r0}); r0 += int(n) - 1 - int(s)
+    json.dump({"docs": docs, "top": 2, "rows": r0}, open(f"{d}/kld.json", "w"))
+    for fn, sz in (("tokens.i32", 4 * sum(lens)), ("top.bin", 16 * r0), ("rows.f32", 12 * r0)):
+        with open(f"{d}/{fn}", "wb") as f: f.truncate(sz)
+    (rg.random(r0) < gen_frac).astype(np.uint8).tofile(f"{d}/gen.u8")
+    return r0
+
+
+def main():
+    T = tempfile.mkdtemp(); rg = np.random.default_rng(1)
+    nc = 400; cl = rg.integers(2000, 20000, nc); golden(f"{T}/calib", cl, np.zeros(nc, int), 0.8, 1)
+    pools = ["train214" if k % 5 == 0 else ["qad", "fit", "search", "verify"][k % 4] for k in range(nc)]
+    json.dump({"pool": pools}, open(f"{T}/pools.json", "w"))
+    judge = [k for k in range(nc) if k % 7 == 3]; json.dump(judge, open(f"{T}/judge.json", "w"))
+    nt = 80; tl = rg.integers(8000, 40000, nt); gl = (tl * rg.uniform(0.25, 0.5, nt)).astype(int); golden(f"{T}/tset", tl, tl - gl, 1.0, 2)
+    nx = 60; xl = rg.integers(10000, 40000, nx); golden(f"{T}/xgl", xl, np.zeros(nx, int), 1.0, 3)
+    nd = 4; dl = rg.integers(60000, 80000, nd); golden(f"{T}/trd", dl, np.zeros(nd, int), 1.0, 4)
+    golden(f"{T}/xcs", rg.integers(500, 3000, 20), np.zeros(20, int), 1.0, 5)
+    os.makedirs(f"{T}/gm", exist_ok=True); os.link(f"{T}/xcs/gen.u8", f"{T}/gm/xcs.u8")
+    fe = {"pools": f"{T}/pools.json", "pool": "train214", "seed": 2181, "rows": 20000, "len": 2048}
+    spec = {"V": 8, "Q": 1024, "ranks": 2, "seed": 0, "budget_rows": 1e6, "margin": 0.02, "max_carried_tokens": 200000, "long_tokens": 16384, "max_long": 2,
+            "phases_rows": [3e5], "exclude_calib": [f"{T}/judge.json"], "fixed_eval": fe, "deep_first": 5,
+            "sources": {"calib": {"golden": "calib", "dir": f"{T}/calib", "pools": f"{T}/pools.json", "pool": ["qad", "fit", "search", "train214"], "cap": 8192, "share": 0.5},
+                        "teach": {"golden": "tset", "dir": f"{T}/tset", "share": 0.3},
+                        "long": {"golden": "xgl", "dir": f"{T}/xgl", "cap": 32768, "share": 0.2},
+                        "traces": {"golden": "trd", "dir": f"{T}/trd", "deep": True}}}
+    json.dump(spec, open(f"{T}/spec.json", "w"))
+    r = subprocess.run([sys.executable, os.path.join(HERE, "plan231.py"), f"{T}/spec.json", f"{T}/plan.json", "--steps-tsv", f"{T}/steps.tsv"], capture_output=True, text=True)
+    print(r.stdout[-3000:], r.stderr[-3000:])
+    check("plan231 builds (data181.plan on its queues = its simulation)", r.returncode == 0)
+    if r.returncode: return finish()
+    P = json.load(open(f"{T}/plan.json")); S = P["summary"]; items = P["items"]
+    keys = [(x[0], x[1]) for x in items]
+    check("single epoch: no document twice", len(keys) == len(set(keys)))
+    sys.path.insert(0, HERE); import plan231 as PL
+    fed = set(PL.fixed_eval_docs(fe, D.Gold(f"{T}/calib", "calib")))
+    cal = {x[1] for x in items if x[0] == "calib"}
+    check("no judge / verify / fixed-eval calib doc in the plan", not (cal & set(judge)) and not (cal & fed) and all(pools[i] != "verify" for i in cal), f"{len(cal)} calib docs, {len(fed)} fixed-eval")
+    sh = S["share_rows"]; mixed = {k: v for k, v in sh.items() if k != "traces"}; tm = sum(mixed.values())
+    dev = max(abs(mixed[k] / tm - spec["sources"][k]["share"]) for k in mixed)
+    check("source shares (rows to the budget's step, traces aside) within 3 points of the targets", dev < 0.03, f"{sh}")
+    ts = S["trace_starts"]; ps = S["planned_starts"]
+    check("4 traces started, each at its planned step or later (a free stream / carried room), on both ranks", len(ts) == 4 and all(t >= p for (_, _, _, _, t), p in zip(ts, ps)) and {s % 2 for (_, _, _, s, _) in ts} == {0, 1}, f"planned {ps}, started {[(s, t) for (_, _, _, s, t) in ts]}")
+    check("every trace ends before the budget's step", S["trace_ends_by_last"], f"last {S['last']}")
+    check("carried bound held (no forced document over the bound)", S["forced_over_bound"] == 0 and S["carried_gib_per_rank"]["max"] <= spec["max_carried_tokens"] * 65536 / 2**30, json.dumps(S["carried_gib_per_rank"]))
+    # the trainer's own build_data on the plan
+    spec_ = importlib.util.spec_from_file_location("q220", os.path.join(HERE, "..", "qad220", "qad220.py")); Q = importlib.util.module_from_spec(spec_); spec_.loader.exec_module(Q)
+    a = Q.parser().parse_args([f"{T}/run", "--model", "-", "--level", "-", "--chunks", f"{T}/xcs", "--genmask", f"{T}/gm", "--calib", f"{T}/calib", "--pools", f"{T}/pools.json",
+                               "--pool", "train214", "--fixed-eval", "20000", "--V", "8", "--Q", "1024", "--budgets", "1e6", "--plan231", f"{T}/plan.json"])
+    os.makedirs(a.out, exist_ok=True)
+    class D1:
+        rank, world = 0, 2
+        def barrier(self): pass
+    B = Q.build_data(a, D1(), print)
+    sim = D.plan([(0, x[1], x[2], x[3]) for x in items], None, 8, 1024, queues=P["queues"])
+    same_items = [(B["C"].g[gi].name, i, n, nr) for gi, i, n, nr in B["C"].items] == [tuple(x) for x in items]
+    check("qad220 build_data --plan231: the plan's documents and steps", same_items and B["steps"] == sim, f"{len(B['steps'])} steps, last {B['last']}")
+    check("qad220's budget step = the builder's", B["last"] == S["last"], f"{B['last']} vs {S['last']}")
+    finish()
+
+
+def finish():
+    print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
+    sys.exit(1 if fails else 0)
+
+
+if __name__ == "__main__": main()

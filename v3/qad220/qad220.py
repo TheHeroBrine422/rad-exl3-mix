@@ -1098,8 +1098,10 @@ class Trainer:
                 else: self.states.pop(sid, None)
                 del prev, nxt
         if self.w225: self.run_segs_w225(ss, N, acc)
-        if self.d.world > 1:                                    # w231: each rank's own segment wall (data-parallel balance; logged as rank_wall)
-            rw = torch.zeros(self.d.world, dtype=torch.float64); rw[self.d.rank] = time.time() - t0; self.rank_wall = self.d.allsum(rw).tolist()
+        if self.d.world > 1:                                    # w231: each rank's own segment wall and host RSS (data-parallel balance / memory; logged as rank_wall, rank_rss_gib)
+            W_ = self.d.world; rw = torch.zeros(2 * W_, dtype=torch.float64); rw[self.d.rank] = time.time() - t0
+            rw[W_ + self.d.rank] = int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30
+            rw = self.d.allsum(rw).tolist(); self.rank_wall, self.rank_rss = rw[:W_], rw[W_:]
         flat = torch.cat([(p.grad if p.grad is not None else torch.zeros_like(p)).reshape(-1).double().cpu() for p in self.P] + [acc])
         self.d.allsum(flat)
         if self.fmask is not None: flat[:len(self.fmask)] *= self.fmask         # w220 --mask: masked scales get gradient 0
@@ -1582,7 +1584,26 @@ def build_data(a, d, log):
         before = len(C.items); C.items = [x for x in C.items if not (x[0] == gc and x[1] in fes)]
         log(f"fixed eval: {len(fe)} qad-pool docs, {tot} rows (first {a.len} tokens), held out of training ({before - len(C.items)} items removed)")
         json.dump([i for _, i in fe], open(os.path.join(a.out, "fixed-eval-docs.json"), "w"))
-    if a.plan_ext:                                    # w222 (ledger use qad214-ext): w214's plan + new documents appended after it, w214's order as the prefix of the new order
+    queues = None
+    if a.plan231:                                     # w231: the finals' mixed-length plan: its items and per-stream queues (plan231.py; data181.plan gives the builder's steps)
+        assert not (a.plan_ext or a.cont or a.mix50 is not None or a.decay_data != "mix"), "--plan231: no --plan-ext / --cont / --mix50 / --decay-data"
+        px = json.load(open(a.plan231))
+        assert px.get("format") == "plan231" and int(px["V"]) == a.V and int(px["Q"]) == a.Q, f"--plan231 {a.plan231}: built for V {px.get('V')} x Q {px.get('Q')}, this run {a.V} x {a.Q}"
+        gidx = {g.name: k for k, g in enumerate(C.g)}
+        for nm, gd in px["goldens"].items():
+            if nm in gidx:                            # the trainer's own --calib / --chunks golden: the plan must mean the same directory
+                assert os.path.realpath(C.g[gidx[nm]].d) == os.path.realpath(gd["dir"]), f"--plan231: golden {nm} is {gd['dir']} in the plan, {C.g[gidx[nm]].d} here"
+                continue
+            C.g.append(D.Gold(gd["dir"], nm, genfile=gd.get("genmask"))); C.tags.append(D.corpus_tag(nm)); gidx[nm] = len(C.g) - 1
+        fes = {i for _, i in fe}; C.items = []
+        for nm, i, n, nr in px["items"]:
+            assert not (nm == "calib" and i in fes), f"--plan231: calib doc {i} is a fixed-eval doc"
+            r_ = C.g[gidx[nm]].nrows(i, n); assert r_ == nr, f"--plan231: {nm}:{i} has {r_} rows at {n} tokens here, {nr} in the plan"
+            C.items.append((gidx[nm], i, n, nr))
+        queues = px["queues"]; order = np.concatenate([np.asarray(q_, np.int64) for q_ in queues])
+        if int(px.get("ranks", 1)) != d.world: log(f"WARNING: --plan231 balanced for {px.get('ranks')} ranks, this run has {d.world}")
+        log(f"--plan231 {a.plan231}: {len(C.items)} documents in {a.V} stream queues (single epoch), goldens {', '.join(px['goldens'])}: {json.dumps(C.summary())}")
+    elif a.plan_ext:                                  # w222 (ledger use qad214-ext): w214's plan + new documents appended after it, w214's order as the prefix of the new order
         px = json.load(open(a.plan_ext))
         if a.cap > px["cap"]:                         # w226: a document with < min_rows gen rows in its first cap tokens is not in the plan's base, whatever this run's cap
             nb = len(C.items); C.items = [x for x in C.items if C.g[x[0]].nrows(x[1], px["cap"]) >= px["min_rows"]]
@@ -1608,7 +1629,7 @@ def build_data(a, d, log):
             log(f"plan-ext: {len(fr_t)} front items at the head of streams " + ", ".join(f"{s_}: {sum(1 for x in fr_t if int(x[3]) == s_)}" for s_ in sorted({int(x[3]) for x in fr_t})))
     else:
         order = mix50_order(C, a.mix50) if a.mix50 is not None else np.random.default_rng(a.seed).permutation(len(C.items))
-    if not (a.plan_ext and fr_t): queues = None
+    if not (a.plan231 or (a.plan_ext and fr_t)): queues = None
     EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))
     budgets = [BK(a.rows)] if a.rows else [BK(x) for x in a.budgets.split(",")]
     steps = D.plan(C.items, order, a.V, a.Q, queues=queues)
@@ -1892,6 +1913,7 @@ def parser():
     ap.add_argument("--short-decay", default=None, help="w222: comma list of row counts: at each, a branch forks off the main run and decays linearly from the run's lr to ~0 over --short-decay-rows rows (ckpt-sd-<rows>); for runs without a constant phase (cosine-all, linear-all) and --lr-steps runs")
     ap.add_argument("--short-decay-rows", type=float, default=5e4, help="w222: length of the --short-decay branches in rows (default 50,000: the WSD 0.25 M branch's window)")
     ap.add_argument("--plan-ext", default=None, help="w222: the extended data plan (plan222-build.py): w214's documents in w214's order, then these new ones (xcorp / trace goldens under --ext-root/gold, calib qad documents), one epoch; budgets up to ~1e7 rows")
+    ap.add_argument("--plan231", default=None, help="w231: a mixed-length plan (v3/qad231/plan231.py): its documents (calib = --calib, other goldens by the plan's dirs) in its per-stream queues replace the corpus' items and order (single epoch; --plan-ext / --cont off). The fixed-eval docs must not be in it (asserted)")
     ap.add_argument("--ext-root", default=None, help="w222: with --plan-ext: dir holding gold/<name>/ (the new goldens) and genmask/<name>.u8")
     ap.add_argument("--head-train", choices=("none", "in", "both"), default="none", help="w222 (H): train the served head's log multipliers: in = only r (the 5,120 hidden-side scales, suh of output.weight; the per-vocabulary scales stay frozen), both = r and c; none = frozen (default)")
     ap.add_argument("--cap", type=int, default=8192); ap.add_argument("--len", type=int, default=2048, help="max segment for prefix rebuilds / monitor")
@@ -2199,7 +2221,7 @@ def main():
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         if a.split_layers: rec["peak_gib_b"] = round(torch.cuda.max_memory_allocated(stu.devs[1]) / 2**30, 2)    # w225: the second card
-        if getattr(T, "rank_wall", None): rec["rank_wall"] = [round(x_, 1) for x_ in T.rank_wall]
+        if getattr(T, "rank_wall", None): rec["rank_wall"] = [round(x_, 1) for x_ in T.rank_wall]; rec["rank_rss_gib"] = [round(x_, 2) for x_ in T.rank_rss]
         if getattr(T, "pipe_s", None): rec["pipe_s"] = {k_: round(v_, 1) for k_, v_ in T.pipe_s.items()}
         if T.w225:
             rec["states_gib"] = {str(k_): round(v_ / 2**30, 2) for k_, v_ in T.resident().items()}

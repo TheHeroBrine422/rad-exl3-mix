@@ -1,0 +1,80 @@
+/hero/q27/w231/code/v3/qad220/test220.py:352: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  and float(loss_h) > float(genkl_h))
+PASS defaults: everything trainable, no mask, no log
+PASS layer_of
+PASS parse_range
+PASS --train-layers 2-4: layers 2..4 trainable, final norm frozen, first_train 2  [[2, 3, 4] first 2]
+PASS --train-tensors regex
+PASS --no-frozen-prefix: first_train 0 (full path), first_trainable still 2
+PASS --train-layers and --train-tensors intersect
+PASS mkmask: |mean| > Z std / sqrt(n), every vector
+PASS mkmask: all-zero and all-one vectors as built
+PASS --mask: an all-zero vector is frozen, an all-one vector has no partial mask, the rest are partly masked  [1 partly masked]
+PASS mkmask summary kept counts
+PASS --mask with a name not in the student is an error
+PASS masked scales do not move (wd 0.0), kept ones do
+PASS masked scales do not move (wd 20.0), kept ones do
+PASS frozen prefix: loss and the trainable layers' gradients bitwise identical to the full-backward run (same trainable set)
+PASS frozen prefix: layers 0..2 get no gradient, layers 3..5 do
+PASS first_train = 0 is the old loop (bitwise)
+PASS tied: r / c read as the per-channel vectors (group value repeated)
+PASS tied: forward bitwise = the untied linear with the expanded scales
+PASS tied: a tied parameter's gradient = the sum of its members' per-channel gradients  [max rel 0.0e+00]
+PASS tied: only r_t / c_t are parameters (r / c are gone)
+PASS tied: export() (f16 suh / svh) equals the untied one
+PASS tied export round trip: scales/<key>.safetensors {r [k], c [n]} f32, identical to the untied student's with the expanded values
+PASS apply_ties: layers 1-3 tied, layer 0 per channel; the gauge-fixed side (None) stays None; P points at the tied parameters  [tied scales: 5 vectors in layers 1-3 share one multiplier per 64 channels (1664 scales -> 26 parameters)]
+PASS --tie-groups 1 (default) changes nothing
+PASS clip: off (X = 0) and no clipping before 5 steps of history
+PASS clip: threshold = X x the median of the earlier norms, factor = thr / g when above  [thr 9.0 f 0.75]
+PASS clip: g at or below the threshold is untouched
+PASS clip: the median runs over the last 256 norms only
+PASS clip: the clipped gradient has norm X x median
+PASS beta2 0.99 = the old optimizer bitwise; 0.95 differs
+PASS defaults: make_lr is group_lr exactly (N 1 / 4 / 2, block offset)
+PASS sched_lr(linear, no phases) == lr_main bitwise
+PASS parse_lr_steps
+PASS parse_lr_steps: rows must increase
+PASS lr-steps: warmup to 1e-3, 1e-3 until 0.25M rows, 3e-4 to 0.9M, then linear decay from 3e-4 to ~0  [phase1 ends step 295, decay from 1059, last lr 2.542e-06]
+PASS lr-steps: the first row count at which a phase has ended switches the lr (rows seen before the step)
+PASS shape linear: constant to 79, decays monotonically from 1e-3 at 80 to ~0  [last 5.000e-05]
+PASS shape sqrt: constant to 79, decays monotonically from 1e-3 at 80 to ~0  [last 2.532e-05]
+PASS shape sqrt: 1 - sqrt(progress): at mid-decay (g = 90) 1 - sqrt(.5) of the peak, below linear's 0.5 throughout (falls fast, ends gently)  [2.929e-04]
+PASS shape cosine-all: warmup then straight into the decay (peak at g = 8, no constant phase), monotone to ~0  [g=54 5.000e-04 last 2.915e-07]
+PASS shape linear-all: warmup then straight into the decay (peak at g = 8, no constant phase), monotone to ~0  [g=54 5.000e-04 last 1.087e-05]
+PASS cosine-all: half the peak at the middle of the decay
+PASS make_lr: a *-all shape decays from the end of the warmup whatever fork_last is
+PASS rows_cum: cumulative rows, one entry per step, = sum of the segment lengths
+PASS calib cooldown: steps before fork_last unchanged (same plan checksum), the tail reads only unused calib documents
+PASS calib cooldown: every unused calib document is planned once
+PASS plan_sha differs when the plan differs
+PASS parse_layers
+PASS scored_all: every row of the window, gen flags = the golden's gen mask, gen rows = Gold.scored
+PASS scored_all: a mid-document window
+PASS seg_loss_ext, prompt weight 0 and no local MSE: loss, gen KL, rows and gradients identical to seg_loss
+PASS --hard-rows 1: loss = sum KL x KL / mean KL (detached weights), gen KL and rows unweighted, gradients match
+PASS --prompt-weight W: loss = gen KL sum + W x prompt KL sum (per-row recomputation), gradients match, gen KL stays gen-only, rows = gen rows  [loss 22.86278 want 22.86278]
+PASS --prompt-weight changes the gradient (prompt rows contribute)
+PASS TapStore(any_layers): layers from the index, rows at the gen positions
+PASS TapStore (the T arm) still requires the DFlash2 layers
+PASS --local-mse: layers missing from the store are an error
+PASS local mode: the gen KL is the plain run's (forward unchanged)
+PASS local mode: listed layers (1, 2) get exactly their own MSE gradient (no KL), layer 0 none, the layers after (3-5) get exactly the plain KL gradient
+PASS local mode: the KL reaches no listed layer (their gradients differ from the plain KL run's)
+PASS joint mode: gradient of KL + lambda MSE through the whole chain (layer 0 included)
+PASS local MSE term reported = the term's value
+PASS block mode: the gen KL is the plain run's (forward unchanged)
+PASS block mode: layers 0-2 get exactly the gradient of their block's MSE at layer 2 through the chain (layer 0 included)
+PASS block mode: layers 3-4 (second block, input detached) get a gradient that differs from the plain KL's; layer 5 and the head get exactly the plain KL gradient
+PASS branch_lr: unscheduled runs keep the old WSD branch lr exactly
+PASS branch_lr: a scheduled run's branch decays from the schedule's lr at the fork (never above it, to ~0 at the end)
+PASS branch_plan: 5472 (N, warmup, fork, end) cases: fork on an optimizer-step boundary with the standalone lr before it, remaining groups = the standalone's
+PASS map_opt_state: state by name (b, a kept at their new indices), fresh for the new parameter
+PASS LocalMSE.restrict drops layers before the first trainable one
+PASS a8 forward: tied linear bitwise = the untied one with the expanded scales
+PASS a8 backward (STE): the tied gradient is the group sum of the untied one
+PASS parser defaults: no w220 flag is on
+PASS parser: every w220 flag parses (with --a8 and the compile flags)
+
+ALL PASS

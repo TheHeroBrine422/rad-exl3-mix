@@ -1,0 +1,10 @@
+PASS plan231 builds (data181.plan on its queues = its simulation)
+PASS single epoch: no document twice
+PASS no judge / verify / fixed-eval calib doc in the plan  [62 calib docs, 13 fixed-eval]
+PASS source shares (rows to the budget's step, traces aside) within 3 points of the targets  [{'calib': 0.358, 'long': 0.1457, 'teach': 0.1962, 'traces': 0.3001}]
+PASS 4 traces started, each at its planned step or later (a free stream / carried room), on both ranks  [planned [5, 36, 66, 97], started [(0, 7), (3, 37), (1, 68), (6, 97)]]
+PASS every trace ends before the budget's step  [last 179]
+PASS carried bound held (no forced document over the bound)  [{"max": 8.5, "p95": 7.1}]
+PASS qad220 build_data --plan231: the plan's documents and steps  [183 steps, last 179]
+PASS qad220's budget step = the builder's  [179 vs 179]
+ALL PASS
