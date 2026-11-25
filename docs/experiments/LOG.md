@@ -10309,3 +10309,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   gap judge's mean 7–16 % (typical doc 1–2 %), mostly on multilingual chat / tools / WildChat tails, plus a real ~1.4–2.7 % on
   multilingual text; nothing on code languages, long docs (8k-capped here), agent traces. Mixed with calib (xgc): no cost on jc228, j217
   or jlong; xgap alone: ~0.8 % on jc228 and 3.5 % on jlong's other docs. → finals: xgap share mixed through the run, calib-heavy end.
+- 11-25 ~1 AM CST (user): **w230 launched** (Sonnet high, run ffeba79a): teacher sets 1 (public agent cuts, whole prefixes, 32k turns) + 2 (xgap / xcorp chat at xhigh / medium / low / thinking-off), IQ6R-written, bf16 goldens, judges golden-jt1 / jt2 from holdouts; brief `rad-local/workers/instr3/w230.md`. box2 reboot pending (user): queue idle, nothing running; w230 told to prepare on colo and wait.
