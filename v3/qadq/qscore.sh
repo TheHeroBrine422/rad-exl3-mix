@@ -11,7 +11,8 @@ case $NAME in JL-*) G=${5:-$JLONG}; MML=262144;;              # lead 11-22: JL-*
   JU-*) G=${5:-$QROOT/slices/golden-jteachc};;
   JS-*) G=${5:-$QROOT/slices/golden-jstud};;                    # lead 11-24: held-out STUDENT-written traces (59 cuts no arm used)
   JV-*) G=${5:-$QROOT/slices/golden-jstudc};;
-  JG-*) G=${5:-$QROOT/slices/golden-jgap}; MML=67584;;           # lead 11-25: the gap judge (xgap-v1 holdout, docs <= 64k)
+  JG-*) G=${5:-$QROOT/slices/golden-jgap}; MML=67584;;
+  JX-*) G=${5:-$QROOT/slices/golden-jt2}; MML=67584;;           # lead 11-25: teacher set-2 judge (w230; chat at xhigh / medium / low / thinking-off)           # lead 11-25: the gap judge (xgap-v1 holdout, docs <= 64k)
   esac               # lead 11-24: held-out student-written calib cuts (20)              # lead 11-24: same for onpol-calib-b1 (64 docs)                 # lead 11-24: JC-* names read the continuation judge jc228 (642 unused calib docs, 737,597 rows at cap 8192; v3/qadq/contpool.py)
 [ -s $O/$NAME.json ] && { echo "$NAME done"; exit 0; }
 if [ -z "${QCARD_LOCKED:-}" ]; then eval "exec {fd}>$(CARDLOCK $CARD)"; flock $fd; fi

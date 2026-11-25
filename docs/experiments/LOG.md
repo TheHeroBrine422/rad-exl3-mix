@@ -10329,3 +10329,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   gains need more cuts per session. GPU checks queued for when w230 frees the cards: DP gate (0–3), branch check (gpu231c, 1 card,
   ~15 min), p2p stress + deep300 (2,3).
 - 11-25 ~4:40 AM CST: w230 set 1 measurement: mid-trajectory agent turns are short (mean ~0.41k tokens, median ~0.1–0.15k): the full 1,616-cut list yields ~0.65M generated tokens, not 2.0M; generation prefill-bound (~79 tok/s on one lane). Lead: keep the full list, record every cut (real turn-length distribution; reused for every size). Training cost per row for set 1 at ~0.4k turns is high even branched (~12+ units at 0.4k vs calib 1.11): set 1 will be a small, costly share in the finals.
+- 11-25 5:45 AM CST (user going to sleep): **night230 queued on box2** (`v3/qadq/night230.sh`, log q.log). Proportion screens #219 from
+  the 10M state, 1.55M rows each, cap 8192, calib : xgap : teacher (set 2 = tset2, 1.52M rows usable at cap 8192 of 2.17M): C230-p502525
+  (calib 776k / xgap 389k / teacher 388k), p602515 (930k / 389k / 235k), p403030 (619k / 468k / 466k), p701515 (1,084k / 234k / 235k);
+  reads JC / JG / JX (new teacher-set-2 judge golden-jt2) / JL + j217; JX baselines (10M, ctl, xgc, opmix). Existing corners: ctl
+  (100/0/0), xgc (50/50/0), opmix (0/0/100, onpol teacher). Order: wait for w230's chain to exit (~11:30 AM) → w231 DP gate (4 cards,
+  ~1.5 h) + branch check (1 card) → screens on cards 0,1 (queue) while w231 p2p stress + deep300 run on cards 2,3 (~4.6 h).
+  Set 1 (deep cuts) is not in these screens (needs the deep trainer). (--cont shuffles, so no tail-ordering arm.)
