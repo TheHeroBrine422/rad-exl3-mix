@@ -10320,3 +10320,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   T4 in qcard. **Compute per gen row** (calib = 1.11): onpol-style teacher cuts 3.26, xgap 1.72, deep traces 4.06; w230 set 1 (whole
   prefixes) ≈ 9 → can't be trained whole in a 10M run; 8 deep traces = 22 GiB carried / rank (12 → 34). GPU gates (DP gate 4 cards
   ~1.5 h, then p2p stress + deep300 on 2 cards ~4.6 h) wait for w230's cards; the lead runs them from the handoff commands.
+- 11-25 ~3:50 AM CST (user): w231 resumed (run ab05a657) for **branch training**: walk a session's real history once (frozen prefix), snapshot / restore the stream state at each teacher cut, train each cut's turn; must equal separate full-prefix docs; plan231 cost units for set 1 expected ~9 → ~2–3. GPU gates unchanged (+ a branch-vs-separate check).
