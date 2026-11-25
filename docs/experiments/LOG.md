@@ -10205,3 +10205,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   [0.985, 0.998]); ctls1 vs ctl 1.002 [0.989, 1.021], median doc 0.999. j217 mean 0.850 vs ctl 0.824 (bistable blow-up docs: the seed alone
   moves the j217 mean ~3 %), w/o blow-ups 0.862 vs 0.858, median 0.925 vs 0.925. So the ctl-vs-teacher gap on jc228 (~0.5–0.7 %) is at the
   seed noise for the mean; robust columns are the ones to read. Student arms finish ~6:30–7 PM.
+- 11-24 6:20 PM CST: queue race: stud228 queued an `R C228-studcal` that duplicated the T line's own final read; both ran swap222 onto
+  one `patched/...rad.part` (card 2 failed rc 4; card 0's read rc 0 but its container may have been rewritten under it). Fix:
+  swap222.py writes a per-process `.part<pid>` (deployed); the duplicate `R C228-stud` line commented out; studcal's j217 read
+  repeated as `C228-studcalx` to confirm card 0's numbers (0.840 / 0.870 / 0.931). JC / JT / JU reads used distinct names (no race).
+  **C228-studcal (student-written calib cuts) first reads:** jc228 vs the 10M end 1.002 [0.999, 1.005] (vs ctl 1.010); held-out
+  teacher-calib text (JU) **0.985 [0.977, 0.992]** (teacher-written opcal 0.975); teacher traces (JT) 1.008. So student-written calib
+  text helps generated text less than teacher-written text at an equal budget; JL (agent traces) and C228-stud (traces) pending.

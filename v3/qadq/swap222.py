@@ -50,7 +50,7 @@ def main():
     a = ap.parse_args()
     rad = Rad(a.rad)
     mp = json.load(open(f"{a.lv}/map214.json"))["weights"]
-    part = a.out + ".part"
+    part = a.out + f".part{os.getpid()}"                 # lead 11-24: per-process part (two reads of one ckpt raced on a shared .part)
     shutil.copyfile(a.rad, part)
     changed = 0; extra = set()
     with open(part, "r+b") as f:
