@@ -10212,3 +10212,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **C228-studcal (student-written calib cuts) first reads:** jc228 vs the 10M end 1.002 [0.999, 1.005] (vs ctl 1.010); held-out
   teacher-calib text (JU) **0.985 [0.977, 0.992]** (teacher-written opcal 0.975); teacher traces (JT) 1.008. So student-written calib
   text helps generated text less than teacher-written text at an equal budget; JL (agent traces) and C228-stud (traces) pending.
+- 11-24 6:40 PM CST: **what 10M rows of QAD fixed, by category** (jc228, 2.50, 10M end / unhealed; `v3/qad228/catgain.py`, iceman):
+  tools 0.636, chat 0.742, agentic 0.823 (1.7k rows), reasoning 0.831; plain text 0.915–0.945 (legal, books, math, multilingual 0.924,
+  web, science, code, encyclopedic, qa); all 0.901. QAD's gains are mostly on assistant-written text; plain text (multilingual included)
+  gains 6–8 %. Multilingual is not lagging other plain text in relative terms, but has the highest KL per row (0.061) and 13 % of the
+  leaderboard-weighted KL.
