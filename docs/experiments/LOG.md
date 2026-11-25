@@ -10321,3 +10321,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   prefixes) ≈ 9 → can't be trained whole in a 10M run; 8 deep traces = 22 GiB carried / rank (12 → 34). GPU gates (DP gate 4 cards
   ~1.5 h, then p2p stress + deep300 on 2 cards ~4.6 h) wait for w230's cards; the lead runs them from the handoff commands.
 - 11-25 ~3:50 AM CST (user): w231 resumed (run ab05a657) for **branch training**: walk a session's real history once (frozen prefix), snapshot / restore the stream state at each teacher cut, train each cut's turn; must equal separate full-prefix docs; plan231 cost units for set 1 expected ~9 → ~2–3. GPU gates unchanged (+ a branch-vs-separate check).
+- 11-25 ~4:30 AM CST: **w231 branch training done (CPU)** (b924c28d; report `rad-local/workers/out/w231.md`, data `data/qad231/`):
+  history walked once (no grad), state snapshot (KV + GDN / conv) at each cut, branch at prefix rounded down to 1024; branch = separate
+  bit for bit on the tiny model in 1-card / 2-card / pipeline / 2-rank DP; lost snapshot → prefix rebuild fallback. Cost on w230's set-1
+  list (1,616 cuts, 379 sessions, 4.3 cuts / session, median deepest prefix ~34k): at ~1.24k-token turns 10.2 → **4.6** units / gen row
+  (2.2×); at 3k-token turns 5.0 → 2.7 (calib 1.11, onpol-style 3.26). Snapshot memory 2.2 / 4.2 / 6.2 GiB at 32k / 64k / 96k. Further
+  gains need more cuts per session. GPU checks queued for when w230 frees the cards: DP gate (0–3), branch check (gpu231c, 1 card,
+  ~15 min), p2p stress + deep300 (2,3).
