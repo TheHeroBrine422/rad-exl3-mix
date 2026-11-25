@@ -10223,3 +10223,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Documents only (no goldens, no model-written text); thinking-off rendering for reasoning-free chats; dedup vs calib / public /
   xcorp; seeded 10 % holdout of the new docs. Pilot (~2M) stops for lead review. Brief `rad-local/workers/instr3/w229.md`.
   **Runtime:** none (data).
+- 11-24 ~8:40 PM CST: **w229 pilot reviewed** (report `rad-local/workers/out/w229.md`, code `xgap/` 20c6cf8d, tables `data/xgap/pilot/`):
+  calib (rev 2dcf0061cb, 4,789 docs, pools + judge tags) + xcorp v1 (53,587 docs; no pisess files, asserted) tagged; pilot 1,005 new
+  docs / 4.99M tokens, 7 cells, 103 sources, licences per record; dedup 0 exact, line-rule 27 vs xcorp / 8 vs calib / 0 vs public.
+  Thinking-off rendering checked; real system prompts kept (calib actually has 35 / 1,008 chats with system text, not 8). Lead
+  decisions: exclusive xl-vs-pieces, keep 16.8M agent budget, skip gated xlam, fineweb-2 for 13 extra languages, add 6 code languages,
+  normalize `lang`, real tool schemas for known harnesses (Claude Code, pi, OpenHands). Full build started (~2–4 h, colo).
