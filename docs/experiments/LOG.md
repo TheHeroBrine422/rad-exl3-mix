@@ -10294,3 +10294,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   text xg 0.991, xgc 0.996; long docs 0.998; code 0.999; agent 1.00); chat cells swing both ways with huge CIs (xg long-chat 0.75,
   multilingual chat 0.83, tools 0.67; xgc long-chat 1.65, multilingual chat 1.11): bistable blow-up docs at a mid-run snapshot, read the
   finals with medians. Finals ~2 AM.
+- 11-25 12:15 AM CST: **#218 C229-xgc (half xgap, half calib, +1.55M rows from the 10M state) final** (`xgap/fin229.py`; ratio [95% CI]
+  med = median-doc ratio). jc228 vs 10M 0.994 [0.987, 1.000] med 0.999; vs C228-ctl 1.002 [0.995, 1.008] → **no calib cost**.
+  Gap judge vs the 10M end: ALL 0.865 [0.746, 0.960] med 0.989; w/o WildChat 0.934 [0.881, 0.972] med 0.990; multilingual chat 0.748
+  [0.625, 0.898] med 0.993; tools 0.734 [0.677, 0.902] med 0.890; WildChat long chat 0.647 [0.477, 0.997] med 0.808; multilingual text 0.986
+  [0.977, 0.991] med 0.994; long docs 0.997; code-langs 1.000; agent 0.995. Vs C228-ctl similar (ALL 0.856, w/o WC 0.936). Teacher mix
+  (C228-opmix) on the gap judge: ALL 0.990, w/o WC 0.995 (≈ no effect). So xgap data cuts the gap judge's MEAN 7–14 % at no calib cost,
+  mostly by fixing high-KL documents (multilingual chat, tools, WildChat: medians move 1–11 %); typical docs gain ~1 %; code languages 0.
