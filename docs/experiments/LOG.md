@@ -10328,3 +10328,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (2.2×); at 3k-token turns 5.0 → 2.7 (calib 1.11, onpol-style 3.26). Snapshot memory 2.2 / 4.2 / 6.2 GiB at 32k / 64k / 96k. Further
   gains need more cuts per session. GPU checks queued for when w230 frees the cards: DP gate (0–3), branch check (gpu231c, 1 card,
   ~15 min), p2p stress + deep300 (2,3).
+- 11-25 ~4:40 AM CST: w230 set 1 measurement: mid-trajectory agent turns are short (mean ~0.41k tokens, median ~0.1–0.15k): the full 1,616-cut list yields ~0.65M generated tokens, not 2.0M; generation prefill-bound (~79 tok/s on one lane). Lead: keep the full list, record every cut (real turn-length distribution; reused for every size). Training cost per row for set 1 at ~0.4k turns is high even branched (~12+ units at 0.4k vs calib 1.11): set 1 will be a small, costly share in the finals.
