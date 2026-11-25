@@ -18,12 +18,12 @@ a = ap.parse_args()
 
 
 def fnv1a64(path):
-    h = 14695981039346656037
-    with open(path, "rb") as f:
-        while True:
-            b = f.read(1 << 20)
-            if not b: break
-            for c in b: h = ((h ^ c) * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF
+    """radiance's corpus hash (core/kld.cpp): FNV-1a 64 chained over every getline() line without its newline, offset basis 1469598103934665603"""
+    h = 1469598103934665603
+    lines = open(path, "rb").read().split(b"\n")
+    if lines and lines[-1] == b"": lines.pop()
+    for l in lines:
+        for c in l: h = ((h ^ c) * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF
     return h
 
 
