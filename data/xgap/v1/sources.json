@@ -1,0 +1,3259 @@
+{
+ "calib": {
+  "dataset": "StillDeadcode/qwen3.8-27b-quant-challenge",
+  "file": "corpus/calib.jsonl",
+  "revision": "2dcf0061cb683152742b904e2965ce7cd92b2da6",
+  "note": "the public split is never included (hash-only dedup)"
+ },
+ "xcorp-v1": {
+  "dir": "/data/xcorp/v1",
+  "files": [
+   "arxiv-long.jsonl",
+   "arxiv.jsonl",
+   "caselaw.jsonl",
+   "doab.jsonl",
+   "finemath-4plus.jsonl",
+   "fineweb-edu.jsonl",
+   "fineweb2-hq__arb_Arab.jsonl",
+   "fineweb2-hq__ces_Latn.jsonl",
+   "fineweb2-hq__cmn_Hani.jsonl",
+   "fineweb2-hq__dan_Latn.jsonl",
+   "fineweb2-hq__deu_Latn.jsonl",
+   "fineweb2-hq__ell_Grek.jsonl",
+   "fineweb2-hq__fas_Arab.jsonl",
+   "fineweb2-hq__fra_Latn.jsonl",
+   "fineweb2-hq__hun_Latn.jsonl",
+   "fineweb2-hq__ind_Latn.jsonl",
+   "fineweb2-hq__ita_Latn.jsonl",
+   "fineweb2-hq__jpn_Jpan.jsonl",
+   "fineweb2-hq__nld_Latn.jsonl",
+   "fineweb2-hq__pol_Latn.jsonl",
+   "fineweb2-hq__por_Latn.jsonl",
+   "fineweb2-hq__rus_Cyrl.jsonl",
+   "fineweb2-hq__spa_Latn.jsonl",
+   "fineweb2-hq__swe_Latn.jsonl",
+   "fineweb2-hq__tur_Latn.jsonl",
+   "fineweb2-hq__vie_Latn.jsonl",
+   "glaive-fc-v2.jsonl",
+   "gutenberg.jsonl",
+   "hermes-fc.jsonl",
+   "libretexts.jsonl",
+   "nemotron-swe.jsonl",
+   "openthoughts3.jsonl",
+   "peS2o.jsonl",
+   "pg19-long.jsonl",
+   "pg19.jsonl",
+   "pubmed.jsonl",
+   "smoltalk2__everyday.jsonl",
+   "smoltalk2__longalign.jsonl",
+   "smoltalk2__multi-turn-reasoning.jsonl",
+   "smoltalk2__multilingual.jsonl",
+   "smoltalk2__s1k.jsonl",
+   "smoltalk2__systemchats.jsonl",
+   "smoltalk2__table-gpt.jsonl",
+   "stackexchange.jsonl",
+   "stackv2-edu.jsonl",
+   "swe-rebench-openhands.jsonl",
+   "swe-smith.jsonl",
+   "the-stack-smol-xl.jsonl",
+   "when2call.jsonl",
+   "wikimedia.jsonl",
+   "wikipedia__bn.jsonl",
+   "wikipedia__fi.jsonl",
+   "wikipedia__he.jsonl",
+   "wikipedia__hi.jsonl",
+   "wikipedia__ko.jsonl",
+   "wikipedia__th.jsonl",
+   "wikipedia__uk.jsonl",
+   "wildchat.jsonl"
+  ],
+  "note": "every pisess* file refused"
+ },
+ "xgap-v1": [
+  {
+   "id": "pg19",
+   "source": "pg19",
+   "cell": "long-docs",
+   "dataset": "emozilla/pg19",
+   "config": null,
+   "split": "train",
+   "revision": "d2f3c93e25bc848bd62bec2aa27a6bec14f4faf4",
+   "licence": [
+    "public-domain (PG-19, apache-2.0 repack)"
+   ],
+   "budgets": {
+    "64-128k": 1875000,
+    "32-64k": 937500,
+    "16-32k": 312500
+   },
+   "built": 3134233,
+   "docs_final": 49,
+   "tokens_final": 3134233,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 15,
+    "lines:calib": 15
+   },
+   "skips": {
+    "no-budget:8-16k": 12,
+    "short": 4,
+    "full:64-128k": 80,
+    "full:32-64k": 16
+   }
+  },
+  {
+   "id": "gutenberg",
+   "source": "gutenberg",
+   "cell": "long-docs",
+   "dataset": "common-pile/project_gutenberg_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "3cdf6879c807f4e4e063f2ceb23bc268d8c29ab7",
+   "licence": [
+    "Public Domain"
+   ],
+   "budgets": {
+    "64-128k": 1562500,
+    "32-64k": 937500,
+    "16-32k": 625000
+   },
+   "built": 3190588,
+   "docs_final": 60,
+   "tokens_final": 3190588,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 12,
+    "lines:public": 1,
+    "lines:calib": 1
+   },
+   "skips": {
+    "short": 14,
+    "no-budget:8-16k": 22,
+    "full:64-128k": 91,
+    "full:32-64k": 29
+   }
+  },
+  {
+   "id": "doab",
+   "source": "doab",
+   "cell": "long-docs",
+   "dataset": "common-pile/doab_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "defb24ca72ef6aba6ce0228b669eec06dcfbffbc",
+   "licence": [
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/3.0/",
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/4.0/",
+    "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/4.0/"
+   ],
+   "budgets": {
+    "64-128k": 1562500,
+    "32-64k": 1562500,
+    "16-32k": 625000,
+    "8-16k": 312500
+   },
+   "built": 4009314,
+   "docs_final": 102,
+   "tokens_final": 3956717,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 40
+   },
+   "skips": {
+    "short": 2404,
+    "full:8-16k": 92,
+    "full:16-32k": 5,
+    "full:64-128k": 1
+   }
+  },
+  {
+   "id": "arxiv",
+   "source": "arxiv",
+   "cell": "long-docs",
+   "dataset": "common-pile/arxiv_papers_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "033cf7f53f9b348deec868c1a5a48484f3ee9e52",
+   "licence": [
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/3.0/",
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/4.0/",
+    "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/4.0/",
+    "Creative Commons Zero - Public Domain - https://creativecommons.org/publicdomain/zero/1.0/",
+    "Public Domain"
+   ],
+   "budgets": {
+    "64-128k": 625000,
+    "32-64k": 1250000,
+    "16-32k": 1250000,
+    "8-16k": 625000
+   },
+   "built": 3733506,
+   "docs_final": 140,
+   "tokens_final": 3733506,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 7,
+    "exact:xcorp": 86,
+    "lines:xcorp": 152
+   },
+   "skips": {
+    "short": 61,
+    "special-token": 1,
+    "full:8-16k": 54,
+    "full:16-32k": 30,
+    "full:64-128k": 1
+   }
+  },
+  {
+   "id": "libretexts",
+   "source": "libretexts",
+   "cell": "long-docs",
+   "dataset": "common-pile/libretexts_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "70388bca52b4a93515e14b1d56618fd7944988fd",
+   "licence": [
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/3.0/",
+    "Creative Commons - Attribution - https://creativecommons.org/licenses/by/4.0/",
+    "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/3.0/",
+    "Creative Commons - Attribution Share-Alike - https://creativecommons.org/licenses/by-sa/4.0/"
+   ],
+   "budgets": {
+    "64-128k": 312500,
+    "32-64k": 625000,
+    "16-32k": 625000,
+    "8-16k": 625000
+   },
+   "built": 2233502,
+   "docs_final": 108,
+   "tokens_final": 2186127,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 37,
+    "lines:calib": 2,
+    "lines:public": 1
+   },
+   "skips": {
+    "short": 23409,
+    "repetitive": 422,
+    "too-long": 4,
+    "full:8-16k": 560,
+    "adapt:empty": 3,
+    "band": 2,
+    "full:16-32k": 32,
+    "full:64-128k": 2
+   }
+  },
+  {
+   "id": "caselaw",
+   "source": "caselaw",
+   "cell": "long-docs",
+   "dataset": "common-pile/caselaw_access_project_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "50e1961a5ed8fdddcee64c9e66e1338de8953b63",
+   "licence": [
+    "Public Domain"
+   ],
+   "budgets": {
+    "64-128k": 312500,
+    "32-64k": 312500,
+    "16-32k": 625000,
+    "8-16k": 625000
+   },
+   "built": 1867288,
+   "docs_final": 102,
+   "tokens_final": 1867288,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 265120,
+    "full:8-16k": 17449,
+    "full:16-32k": 3030,
+    "full:32-64k": 325,
+    "full:64-128k": 40,
+    "band": 5,
+    "repetitive": 4,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "peS2o",
+   "source": "peS2o",
+   "cell": "long-docs",
+   "dataset": "common-pile/peS2o_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "297747513bfb0ff1fbf61ddad3b03319d0f04597",
+   "licence": [
+    "openly licensed (Common Pile; per-record licence)"
+   ],
+   "budgets": {
+    "32-64k": 625000,
+    "16-32k": 937500,
+    "8-16k": 937500
+   },
+   "built": 2499677,
+   "docs_final": 149,
+   "tokens_final": 2499677,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 19076,
+    "full:8-16k": 6770,
+    "band": 4,
+    "repetitive": 6,
+    "full:16-32k": 465
+   }
+  },
+  {
+   "id": "wikipedia--en",
+   "source": "wikipedia/en",
+   "cell": "long-docs",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.en",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "16-32k": 625000,
+    "8-16k": 1250000
+   },
+   "built": 1845943,
+   "docs_final": 140,
+   "tokens_final": 1845943,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 50456,
+    "repetitive": 29,
+    "full:16-32k": 7
+   }
+  },
+  {
+   "id": "fineweb2-hq--spa_Latn",
+   "source": "fineweb2-hq/spa_Latn",
+   "cell": "long-docs",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "spa_Latn",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "8-16k": 187500
+   },
+   "built": 188702,
+   "docs_final": 18,
+   "tokens_final": 188702,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2245,
+    "no-budget:16-32k": 5,
+    "adapt:lang-score": 4,
+    "no-budget:64-128k": 1
+   }
+  },
+  {
+   "id": "fineweb2-hq--deu_Latn",
+   "source": "fineweb2-hq/deu_Latn",
+   "cell": "long-docs",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "deu_Latn",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "8-16k": 187500
+   },
+   "built": 190501,
+   "docs_final": 18,
+   "tokens_final": 190501,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2716,
+    "adapt:lang-score": 18,
+    "no-budget:16-32k": 3,
+    "full:8-16k": 1
+   }
+  },
+  {
+   "id": "fineweb2-hq--fra_Latn",
+   "source": "fineweb2-hq/fra_Latn",
+   "cell": "long-docs",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "fra_Latn",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "8-16k": 187500
+   },
+   "built": 182155,
+   "docs_final": 14,
+   "tokens_final": 182155,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 579,
+    "adapt:lang-score": 3,
+    "no-budget:16-32k": 1
+   }
+  },
+  {
+   "id": "fineweb2-hq--rus_Cyrl",
+   "source": "fineweb2-hq/rus_Cyrl",
+   "cell": "long-docs",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "rus_Cyrl",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "8-16k": 187500
+   },
+   "built": 184732,
+   "docs_final": 17,
+   "tokens_final": 184732,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 993,
+    "no-budget:32-64k": 3,
+    "no-budget:16-32k": 8
+   }
+  },
+  {
+   "id": "fineweb2-hq--por_Latn",
+   "source": "fineweb2-hq/por_Latn",
+   "cell": "long-docs",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "por_Latn",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "8-16k": 187500
+   },
+   "built": 183478,
+   "docs_final": 17,
+   "tokens_final": 183478,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 3910,
+    "adapt:lang-score": 12,
+    "no-budget:64-128k": 1,
+    "no-budget:32-64k": 3,
+    "no-budget:16-32k": 2
+   }
+  },
+  {
+   "id": "code--python",
+   "source": "the-stack-smol-xl/python",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-2-Clause-Patent']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-Clear']",
+    "['BSD-3-Clause-LBNL']",
+    "['CC0-1.0']",
+    "['MIT']",
+    "['PSF-2.0', 'BSD-3-Clause']",
+    "['PostgreSQL']",
+    "['Zlib', 'Unlicense', 'Apache-2.0', 'BSD-2-Clause', 'MIT', 'ECL-2.0']",
+    "['bzip2-1.0.6']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 298089,
+   "docs_final": 90,
+   "tokens_final": 298089,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 3
+   },
+   "skips": {
+    "short": 2207,
+    "repetitive": 60,
+    "no-budget:64-128k": 5,
+    "full:cl": 1205,
+    "full:8-16k": 83,
+    "no-budget:32-64k": 9,
+    "full:16-32k": 40
+   }
+  },
+  {
+   "id": "code--javascript",
+   "source": "the-stack-smol-xl/javascript",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0']",
+    "['ISC']",
+    "['MIT', 'Ruby', 'Apache-2.0', 'BSD-3-Clause']",
+    "['MIT']",
+    "['RSA-MD']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 295787,
+   "docs_final": 93,
+   "tokens_final": 295787,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2317,
+    "repetitive": 64,
+    "no-budget:64-128k": 22,
+    "no-budget:32-64k": 31,
+    "too-long": 19,
+    "full:16-32k": 40,
+    "full:8-16k": 62,
+    "full:cl": 611
+   }
+  },
+  {
+   "id": "code--typescript",
+   "source": "the-stack-smol-xl/typescript",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-3-Clause']",
+    "['CC-BY-3.0', 'CC0-1.0', 'CC-BY-4.0']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['ISC']",
+    "['Info-ZIP']",
+    "['MIT', 'BSD-3-Clause']",
+    "['MIT']",
+    "['Net-SNMP', 'Xnet']",
+    "['OpenSSL', 'MIT']",
+    "['RSA-MD']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 299649,
+   "docs_final": 113,
+   "tokens_final": 299649,
+   "stopped": "exhausted",
+   "dups": {
+    "exact:calib": 3
+   },
+   "skips": {
+    "short": 7634,
+    "repetitive": 497,
+    "full:16-32k": 25,
+    "full:8-16k": 78,
+    "full:cl": 1624,
+    "too-long": 4,
+    "no-budget:64-128k": 11,
+    "no-budget:32-64k": 11
+   }
+  },
+  {
+   "id": "code--rust",
+   "source": "the-stack-smol-xl/rust",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0', 'MIT']",
+    "['ECL-2.0', 'Apache-2.0', 'MIT-0', 'MIT']",
+    "['ISC']",
+    "['MIT', 'Unlicense']",
+    "['MIT']",
+    "['MIT-0', 'MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 305538,
+   "docs_final": 80,
+   "tokens_final": 304140,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 61,
+    "no-budget:32-64k": 2,
+    "repetitive": 11,
+    "no-budget:64-128k": 1,
+    "full:8-16k": 3,
+    "full:cl": 3
+   }
+  },
+  {
+   "id": "code--go",
+   "source": "the-stack-smol-xl/go",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'BSD-2-Clause']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['ISC']",
+    "['MIT', 'BSD-3-Clause']",
+    "['MIT']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 292591,
+   "docs_final": 89,
+   "tokens_final": 292591,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 1
+   },
+   "skips": {
+    "short": 2276,
+    "repetitive": 288,
+    "no-budget:32-64k": 17,
+    "full:8-16k": 83,
+    "full:cl": 1535,
+    "full:16-32k": 40,
+    "too-long": 5,
+    "no-budget:64-128k": 10
+   }
+  },
+  {
+   "id": "code--c",
+   "source": "the-stack-smol-xl/c",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['0BSD']",
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-2-Clause-Patent']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-No-Nuclear-License-2014', 'BSD-3-Clause']",
+    "['CNRI-Python']",
+    "['DOC']",
+    "['Intel']",
+    "['MIT']",
+    "['MIT-0']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 295370,
+   "docs_final": 80,
+   "tokens_final": 295370,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 1,
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 111,
+    "repetitive": 6,
+    "no-budget:64-128k": 2,
+    "full:16-32k": 4,
+    "too-long": 2,
+    "full:8-16k": 3
+   }
+  },
+  {
+   "id": "code--cpp",
+   "source": "the-stack-smol-xl/cpp",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause', 'BSD-3-Clause']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-No-Nuclear-License-2014', 'BSD-3-Clause']",
+    "['BSD-Source-Code']",
+    "['BSL-1.0', 'BSD-3-Clause']",
+    "['BSL-1.0']",
+    "['Beerware']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['MIT', 'Apache-2.0', 'CC-BY-4.0', 'Unlicense']",
+    "['MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 294069,
+   "docs_final": 84,
+   "tokens_final": 289817,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 774,
+    "repetitive": 49,
+    "full:8-16k": 85,
+    "no-budget:32-64k": 21,
+    "full:16-32k": 40,
+    "full:cl": 678,
+    "no-budget:64-128k": 6,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "code--java",
+   "source": "the-stack-smol-xl/java",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'CC0-1.0']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0', 'MIT']",
+    "['CNRI-Python', 'Apache-1.1']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['ECL-2.0']",
+    "['MIT', 'Apache-2.0', 'BSD-3-Clause']",
+    "['MIT']",
+    "['OML']",
+    "['Ruby', 'Apache-2.0']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 309885,
+   "docs_final": 100,
+   "tokens_final": 305370,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 2,
+    "lines:public": 1,
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 230,
+    "repetitive": 13,
+    "no-budget:32-64k": 1,
+    "full:16-32k": 3,
+    "full:cl": 13
+   }
+  },
+  {
+   "id": "code--csharp",
+   "source": "the-stack-smol-xl/csharp",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-3-Clause']",
+    "['BSD-Source-Code']",
+    "['CC0-1.0']",
+    "['MIT']",
+    "['MIT-0', 'MIT']",
+    "['MS-PL']",
+    "['Net-SNMP', 'NBPL-1.0', 'Xnet', 'Info-ZIP']",
+    "['Unlicense']",
+    "['blessing', 'Apache-2.0', 'MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 301944,
+   "docs_final": 94,
+   "tokens_final": 287810,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 348,
+    "repetitive": 20,
+    "full:16-32k": 2,
+    "no-budget:64-128k": 1
+   }
+  },
+  {
+   "id": "code--kotlin",
+   "source": "the-stack-smol-xl/kotlin",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-3-Clause']",
+    "['CC0-1.0']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['MIT', 'BSD-2-Clause', 'Apache-2.0']",
+    "['MIT']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 300834,
+   "docs_final": 101,
+   "tokens_final": 291104,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 1
+   },
+   "skips": {
+    "short": 700,
+    "repetitive": 5,
+    "too-long": 1,
+    "full:cl": 15
+   }
+  },
+  {
+   "id": "code--swift",
+   "source": "stackv2-edu/swift",
+   "cell": "code-langs",
+   "dataset": "common-pile/stackv2_edu_filtered",
+   "config": null,
+   "split": "train",
+   "revision": "c354dbe88469a1153e97c6a63ac50591849654de",
+   "licence": [
+    "Apache-2.0",
+    "Apache-2.0,MIT",
+    "BSD-3-Clause",
+    "MIT",
+    "MIT,Apache-2.0",
+    "[]"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 305761,
+   "docs_final": 117,
+   "tokens_final": 304669,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 1,
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 17176,
+    "repetitive": 327,
+    "no-budget:32-64k": 6,
+    "full:cl": 4118,
+    "full:8-16k": 40,
+    "no-budget:64-128k": 2,
+    "full:16-32k": 5
+   }
+  },
+  {
+   "id": "code--ruby",
+   "source": "the-stack-smol-xl/ruby",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'BSD-3-Clause']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause', 'BSD-3-Clause']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSL-1.0']",
+    "['CC-BY-3.0']",
+    "['CC0-1.0']",
+    "['ISC']",
+    "['MIT', 'Unlicense']",
+    "['MIT']",
+    "['RSA-MD']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 296700,
+   "docs_final": 96,
+   "tokens_final": 254474,
+   "stopped": "budgets-full",
+   "dups": {
+    "exact:calib": 3
+   },
+   "skips": {
+    "short": 5401,
+    "repetitive": 107,
+    "full:8-16k": 40,
+    "full:16-32k": 7,
+    "full:cl": 947,
+    "no-budget:32-64k": 6,
+    "no-budget:64-128k": 1
+   }
+  },
+  {
+   "id": "code--php",
+   "source": "the-stack-smol-xl/php",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['MIT']",
+    "['PHP-3.01']",
+    "['RSA-MD']",
+    "['Xnet', 'X11']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 298337,
+   "docs_final": 99,
+   "tokens_final": 298337,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 3
+   },
+   "skips": {
+    "repetitive": 338,
+    "short": 6762,
+    "full:16-32k": 40,
+    "full:8-16k": 73,
+    "full:cl": 1968,
+    "no-budget:32-64k": 10,
+    "too-long": 10,
+    "no-budget:64-128k": 5
+   }
+  },
+  {
+   "id": "code--shell",
+   "source": "the-stack-smol-xl/shell",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0', 'MIT']",
+    "['CC0-1.0']",
+    "['ECL-2.0']",
+    "['MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 294116,
+   "docs_final": 104,
+   "tokens_final": 287897,
+   "stopped": "exhausted",
+   "dups": {
+    "exact:public": 1,
+    "exact:calib": 1,
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 8437,
+    "repetitive": 56,
+    "full:16-32k": 16,
+    "no-budget:64-128k": 6,
+    "no-budget:32-64k": 8,
+    "full:cl": 1328,
+    "full:8-16k": 38,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "code--sql",
+   "source": "the-stack-smol-xl/sql",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-Open-MPI', 'PSF-2.0', 'Apache-2.0', 'BSD-2-Clause', 'MIT', 'MIT-0', 'BSD-3-Clause-No-Nuclear-License-2014', 'BSD-3-Clause-Clear', 'PostgreSQL', 'BSD-3-Clause']",
+    "['Info-ZIP', 'ImageMagick']",
+    "['MIT']",
+    "['MulanPSL-1.0']",
+    "['PostgreSQL']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 299843,
+   "docs_final": 79,
+   "tokens_final": 292644,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2225,
+    "repetitive": 74,
+    "no-budget:32-64k": 32,
+    "too-long": 42,
+    "full:8-16k": 91,
+    "no-budget:64-128k": 20,
+    "full:16-32k": 40,
+    "full:cl": 512
+   }
+  },
+  {
+   "id": "code--haskell",
+   "source": "the-stack-smol-xl/haskell",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-4-Clause']",
+    "['MIT']",
+    "['OpenSSL']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 297059,
+   "docs_final": 92,
+   "tokens_final": 287310,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 1
+   },
+   "skips": {
+    "short": 714,
+    "full:8-16k": 40,
+    "full:cl": 300,
+    "full:16-32k": 12,
+    "no-budget:64-128k": 5,
+    "repetitive": 2,
+    "no-budget:32-64k": 2
+   }
+  },
+  {
+   "id": "code--ocaml",
+   "source": "the-stack-smol-xl/ocaml",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['0BSD']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-2-Clause-FreeBSD']",
+    "['BSD-3-Clause']",
+    "['CC0-1.0']",
+    "['CECILL-B']",
+    "['ISC']",
+    "['MIT']",
+    "['PHP-3.01', 'Zend-2.0']",
+    "['Zlib']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 289132,
+   "docs_final": 75,
+   "tokens_final": 264908,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 1156,
+    "full:16-32k": 40,
+    "repetitive": 29,
+    "no-budget:32-64k": 17,
+    "full:8-16k": 92,
+    "full:cl": 718,
+    "no-budget:64-128k": 8,
+    "too-long": 3
+   }
+  },
+  {
+   "id": "code--scala",
+   "source": "the-stack-smol-xl/scala",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause', 'Apache-2.0', 'CC0-1.0', 'MIT', 'MIT-0', 'ECL-2.0', 'BSD-3-Clause-No-Nuclear-License-2014', 'BSD-3-Clause']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-Open-MPI', 'PSF-2.0', 'Apache-2.0', 'BSD-2-Clause', 'MIT', 'MIT-0', 'BSD-3-Clause-No-Nuclear-License-2014', 'BSD-3-Clause-Clear', 'PostgreSQL', 'BSD-3-Clause']",
+    "['BSL-1.0']",
+    "['CC0-1.0']",
+    "['MIT', 'Apache-2.0', 'BSD-3-Clause']",
+    "['MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 301873,
+   "docs_final": 95,
+   "tokens_final": 301873,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 4631,
+    "repetitive": 125,
+    "no-budget:32-64k": 11,
+    "full:8-16k": 101,
+    "full:cl": 1787,
+    "full:16-32k": 40,
+    "no-budget:64-128k": 3
+   }
+  },
+  {
+   "id": "code--lua",
+   "source": "the-stack-smol-xl/lua",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['0BSD']",
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0']",
+    "['CC0-1.0']",
+    "['ECL-2.0', 'Apache-2.0']",
+    "['IJG']",
+    "['MIT']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 303395,
+   "docs_final": 92,
+   "tokens_final": 284781,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 2
+   },
+   "skips": {
+    "short": 1383,
+    "repetitive": 76,
+    "too-long": 5,
+    "no-budget:32-64k": 12,
+    "full:8-16k": 40,
+    "full:cl": 524,
+    "full:16-32k": 18,
+    "no-budget:64-128k": 1
+   }
+  },
+  {
+   "id": "code--zig",
+   "source": "the-stack-smol-xl/zig",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['MIT', 'Unlicense']",
+    "['MIT']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 302333,
+   "docs_final": 75,
+   "tokens_final": 288021,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 3,
+    "exact:calib": 1
+   },
+   "skips": {
+    "short": 233,
+    "repetitive": 21,
+    "full:8-16k": 67,
+    "no-budget:32-64k": 31,
+    "full:16-32k": 40,
+    "no-budget:64-128k": 12,
+    "full:cl": 182
+   }
+  },
+  {
+   "id": "code--julia",
+   "source": "the-stack-smol-xl/julia",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['MIT']",
+    "['Zlib']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 292635,
+   "docs_final": 93,
+   "tokens_final": 292635,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1609,
+    "repetitive": 57,
+    "full:16-32k": 40,
+    "full:cl": 982,
+    "full:8-16k": 78,
+    "no-budget:32-64k": 12,
+    "no-budget:64-128k": 4,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "code--r",
+   "source": "the-stack-smol-xl/r",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['Artistic-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['CC-BY-4.0']",
+    "['CC0-1.0']",
+    "['ISC']",
+    "['MIT']",
+    "['MS-PL']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 303871,
+   "docs_final": 97,
+   "tokens_final": 303871,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 191,
+    "full:8-16k": 6,
+    "repetitive": 2,
+    "no-budget:32-64k": 1
+   }
+  },
+  {
+   "id": "code--dart",
+   "source": "the-stack-smol-xl/dart",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-Source-Code']",
+    "['FTL']",
+    "['MIT']",
+    "['Unlicense']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 313069,
+   "docs_final": 103,
+   "tokens_final": 311991,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "short": 380,
+    "repetitive": 24,
+    "no-budget:32-64k": 1,
+    "full:16-32k": 1,
+    "full:8-16k": 7,
+    "no-budget:64-128k": 1,
+    "full:cl": 19
+   }
+  },
+  {
+   "id": "code--elixir",
+   "source": "the-stack-smol-xl/elixir",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['0BSD']",
+    "['Apache-2.0']",
+    "['BSD-3-Clause']",
+    "['CC0-1.0']",
+    "['MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 300478,
+   "docs_final": 103,
+   "tokens_final": 299349,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 444,
+    "repetitive": 11,
+    "full:8-16k": 3,
+    "full:16-32k": 1
+   }
+  },
+  {
+   "id": "code--perl",
+   "source": "the-stack-smol-xl/perl",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0', 'MIT']",
+    "['Apache-2.0']",
+    "['Artistic-1.0', 'MIT']",
+    "['Artistic-1.0']",
+    "['Artistic-1.0-cl8']",
+    "['Artistic-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-Clear']",
+    "['BSD-3-Clause-No-Nuclear-Warranty']",
+    "['CC-BY-4.0']",
+    "['ClArtistic']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 296180,
+   "docs_final": 83,
+   "tokens_final": 296180,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 2
+   },
+   "skips": {
+    "short": 141,
+    "no-budget:32-64k": 4,
+    "no-budget:64-128k": 1,
+    "full:16-32k": 4,
+    "full:8-16k": 2,
+    "repetitive": 2
+   }
+  },
+  {
+   "id": "code--lean",
+   "source": "the-stack-smol-xl/lean",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['MIT']",
+    "['OML']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 313067,
+   "docs_final": 70,
+   "tokens_final": 306522,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 71,
+    "full:8-16k": 25,
+    "full:16-32k": 14,
+    "no-budget:32-64k": 6,
+    "repetitive": 1,
+    "full:cl": 42
+   }
+  },
+  {
+   "id": "code--erlang",
+   "source": "the-stack-smol-xl/erlang",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['0BSD']",
+    "['Apache-2.0', 'BSD-3-Clause']",
+    "['Apache-2.0']",
+    "['BSD-3-Clause']",
+    "['ISC']",
+    "['MIT']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 310577,
+   "docs_final": 70,
+   "tokens_final": 307227,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 2
+   },
+   "skips": {
+    "short": 95,
+    "no-budget:32-64k": 2,
+    "no-budget:64-128k": 1,
+    "full:8-16k": 8,
+    "repetitive": 1,
+    "full:16-32k": 1,
+    "full:cl": 10
+   }
+  },
+  {
+   "id": "code--fortran",
+   "source": "the-stack-smol-xl/fortran",
+   "cell": "code-langs",
+   "dataset": "bigcode/the-stack-smol-xl",
+   "config": null,
+   "split": "train",
+   "revision": "e782ebf35c7e4cafccb08ca680b0a76706533067",
+   "licence": [
+    "['Apache-2.0']",
+    "['BSD-2-Clause']",
+    "['BSD-3-Clause']",
+    "['BSD-3-Clause-LBNL']",
+    "['BSD-3-Clause-Open-MPI', 'Apache-2.0']",
+    "['BSD-3-Clause-Open-MPI', 'BSD-3-Clause']",
+    "['BSD-3-Clause-Open-MPI']",
+    "['BSD-4-Clause-UC']",
+    "['CC-BY-4.0']",
+    "['CC0-1.0']",
+    "['CECILL-B']",
+    "['DOC']"
+   ],
+   "budgets": {
+    "cl": 227272,
+    "8-16k": 42613,
+    "16-32k": 28409
+   },
+   "built": 314405,
+   "docs_final": 78,
+   "tokens_final": 312009,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 99,
+    "no-budget:32-64k": 2,
+    "repetitive": 7,
+    "full:8-16k": 15,
+    "no-budget:64-128k": 1,
+    "full:cl": 46,
+    "full:16-32k": 3
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--cmn_Hani",
+   "source": "fineweb2-hq/cmn_Hani",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "cmn_Hani",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 700000
+   },
+   "built": 681702,
+   "docs_final": 703,
+   "tokens_final": 681085,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 1
+   },
+   "skips": {
+    "adapt:lang-score": 17,
+    "short": 50,
+    "repetitive": 1
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--jpn_Jpan",
+   "source": "fineweb2-hq/jpn_Jpan",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "jpn_Jpan",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 700000
+   },
+   "built": 679148,
+   "docs_final": 818,
+   "tokens_final": 678719,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 87
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--rus_Cyrl",
+   "source": "fineweb2-hq/rus_Cyrl",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "rus_Cyrl",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 600000
+   },
+   "built": 582355,
+   "docs_final": 406,
+   "tokens_final": 582355,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 38,
+    "too-long": 2
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--arb_Arab",
+   "source": "fineweb2-hq/arb_Arab",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "arb_Arab",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 600000
+   },
+   "built": 582276,
+   "docs_final": 554,
+   "tokens_final": 582276,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 2
+   },
+   "skips": {
+    "short": 88,
+    "adapt:lang-score": 356,
+    "too-long": 2
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--fas_Arab",
+   "source": "fineweb2-hq/fas_Arab",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "fas_Arab",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 500000
+   },
+   "built": 485257,
+   "docs_final": 619,
+   "tokens_final": 485257,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 50,
+    "too-long": 1,
+    "adapt:lang-score": 1
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--ell_Grek",
+   "source": "fineweb2-hq/ell_Grek",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "ell_Grek",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 500000
+   },
+   "built": 485245,
+   "docs_final": 417,
+   "tokens_final": 485245,
+   "stopped": "budgets-full",
+   "dups": {
+    "exact:calib": 1
+   },
+   "skips": {
+    "short": 23
+   }
+  },
+  {
+   "id": "mlt--fineweb2-hq--vie_Latn",
+   "source": "fineweb2-hq/vie_Latn",
+   "cell": "multilingual-text",
+   "dataset": "epfml/FineWeb2-HQ",
+   "config": "vie_Latn",
+   "split": "train",
+   "revision": "c0c06e94fd3a44ae9e802b2b0fc533817601eb5e",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 500000
+   },
+   "built": 486197,
+   "docs_final": 426,
+   "tokens_final": 486197,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 24
+   }
+  },
+  {
+   "id": "mlt--fineweb2--kor_Hang",
+   "source": "fineweb-2/kor_Hang",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "kor_Hang",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291134,
+   "docs_final": 354,
+   "tokens_final": 290123,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 33,
+    "adapt:lang-score": 1
+   }
+  },
+  {
+   "id": "mlt--fineweb2--hin_Deva",
+   "source": "fineweb-2/hin_Deva",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "hin_Deva",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291105,
+   "docs_final": 381,
+   "tokens_final": 291105,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "adapt:lang-score": 463,
+    "short": 6
+   }
+  },
+  {
+   "id": "mlt--fineweb2--tha_Thai",
+   "source": "fineweb-2/tha_Thai",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "tha_Thai",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291484,
+   "docs_final": 363,
+   "tokens_final": 291484,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "adapt:lang-score": 2,
+    "short": 36
+   }
+  },
+  {
+   "id": "mlt--fineweb2--heb_Hebr",
+   "source": "fineweb-2/heb_Hebr",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "heb_Hebr",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291531,
+   "docs_final": 217,
+   "tokens_final": 288354,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--fineweb2--ukr_Cyrl",
+   "source": "fineweb-2/ukr_Cyrl",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "ukr_Cyrl",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291137,
+   "docs_final": 181,
+   "tokens_final": 291137,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1
+   }
+  },
+  {
+   "id": "mlt--fineweb2--ben_Beng",
+   "source": "fineweb-2/ben_Beng",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "ben_Beng",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291648,
+   "docs_final": 238,
+   "tokens_final": 291648,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--fineweb2--tam_Taml",
+   "source": "fineweb-2/tam_Taml",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "tam_Taml",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291034,
+   "docs_final": 204,
+   "tokens_final": 287926,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--fineweb2--urd_Arab",
+   "source": "fineweb-2/urd_Arab",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "urd_Arab",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291493,
+   "docs_final": 242,
+   "tokens_final": 291493,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "adapt:lang-score": 54,
+    "short": 5
+   }
+  },
+  {
+   "id": "mlt--fineweb2--kat_Geor",
+   "source": "fineweb-2/kat_Geor",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "kat_Geor",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 291040,
+   "docs_final": 146,
+   "tokens_final": 288822,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--fineweb2--hye_Armn",
+   "source": "fineweb-2/hye_Armn",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "hye_Armn",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 295408,
+   "docs_final": 161,
+   "tokens_final": 295408,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "too-long": 4
+   }
+  },
+  {
+   "id": "mlt--fineweb2--bul_Cyrl",
+   "source": "fineweb-2/bul_Cyrl",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "bul_Cyrl",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 306065,
+   "docs_final": 256,
+   "tokens_final": 304903,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 6
+   }
+  },
+  {
+   "id": "mlt--fineweb2--srp_Cyrl",
+   "source": "fineweb-2/srp_Cyrl",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "srp_Cyrl",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 293699,
+   "docs_final": 244,
+   "tokens_final": 293699,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2
+   }
+  },
+  {
+   "id": "mlt--fineweb2--kaz_Cyrl",
+   "source": "fineweb-2/kaz_Cyrl",
+   "cell": "multilingual-text",
+   "dataset": "HuggingFaceFW/fineweb-2",
+   "config": "kaz_Cyrl",
+   "split": "train",
+   "revision": "af9c13333eb981300149d5ca60a8e9d659b276b9",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 300000
+   },
+   "built": 293729,
+   "docs_final": 170,
+   "tokens_final": 293729,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--wikipedia--zh",
+   "source": "wikipedia/zh",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.zh",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 173616,
+   "docs_final": 285,
+   "tokens_final": 173616,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 89,
+    "repetitive": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ja",
+   "source": "wikipedia/ja",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ja",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 175069,
+   "docs_final": 167,
+   "tokens_final": 175069,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 5,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ko",
+   "source": "wikipedia/ko",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ko",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171704,
+   "docs_final": 174,
+   "tokens_final": 171704,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 76
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ru",
+   "source": "wikipedia/ru",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ru",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171714,
+   "docs_final": 391,
+   "tokens_final": 171714,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 39
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ar",
+   "source": "wikipedia/ar",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ar",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172162,
+   "docs_final": 225,
+   "tokens_final": 172162,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 80
+   }
+  },
+  {
+   "id": "mlt--wikipedia--hi",
+   "source": "wikipedia/hi",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.hi",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172652,
+   "docs_final": 128,
+   "tokens_final": 172652,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 13
+   }
+  },
+  {
+   "id": "mlt--wikipedia--fa",
+   "source": "wikipedia/fa",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.fa",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171841,
+   "docs_final": 611,
+   "tokens_final": 171631,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 617
+   }
+  },
+  {
+   "id": "mlt--wikipedia--th",
+   "source": "wikipedia/th",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.th",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171838,
+   "docs_final": 157,
+   "tokens_final": 171838,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 8
+   }
+  },
+  {
+   "id": "mlt--wikipedia--he",
+   "source": "wikipedia/he",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.he",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172570,
+   "docs_final": 97,
+   "tokens_final": 172570,
+   "stopped": "budgets-full",
+   "dups": {
+    "exact:calib": 1
+   },
+   "skips": {
+    "short": 6
+   }
+  },
+  {
+   "id": "mlt--wikipedia--el",
+   "source": "wikipedia/el",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.el",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172097,
+   "docs_final": 121,
+   "tokens_final": 172097,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 11
+   }
+  },
+  {
+   "id": "mlt--wikipedia--uk",
+   "source": "wikipedia/uk",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.uk",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172300,
+   "docs_final": 174,
+   "tokens_final": 171790,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 9
+   }
+  },
+  {
+   "id": "mlt--wikipedia--bn",
+   "source": "wikipedia/bn",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.bn",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172370,
+   "docs_final": 42,
+   "tokens_final": 171972,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "mlt--wikipedia--vi",
+   "source": "wikipedia/vi",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.vi",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172037,
+   "docs_final": 219,
+   "tokens_final": 172037,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 61275
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ta",
+   "source": "wikipedia/ta",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ta",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171760,
+   "docs_final": 267,
+   "tokens_final": 171760,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ur",
+   "source": "wikipedia/ur",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ur",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 177702,
+   "docs_final": 86,
+   "tokens_final": 177702,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 12,
+    "too-long": 3
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ka",
+   "source": "wikipedia/ka",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ka",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172165,
+   "docs_final": 225,
+   "tokens_final": 172165,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--hy",
+   "source": "wikipedia/hy",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.hy",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 171972,
+   "docs_final": 185,
+   "tokens_final": 171274,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "too-long": 1,
+    "short": 4
+   }
+  },
+  {
+   "id": "mlt--wikipedia--kk",
+   "source": "wikipedia/kk",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.kk",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 174802,
+   "docs_final": 19,
+   "tokens_final": 174802,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1,
+    "full:all": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--ml",
+   "source": "wikipedia/ml",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.ml",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 173525,
+   "docs_final": 25,
+   "tokens_final": 173525,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1,
+    "too-long": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--te",
+   "source": "wikipedia/te",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.te",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172020,
+   "docs_final": 75,
+   "tokens_final": 172020,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 7
+   }
+  },
+  {
+   "id": "mlt--wikipedia--mr",
+   "source": "wikipedia/mr",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.mr",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 172592,
+   "docs_final": 32,
+   "tokens_final": 172592,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1
+   }
+  },
+  {
+   "id": "mlt--wikipedia--sr",
+   "source": "wikipedia/sr",
+   "cell": "multilingual-text",
+   "dataset": "wikimedia/wikipedia",
+   "config": "20231101.sr",
+   "split": "train",
+   "revision": "b04c8d1ceb2f5cd4588862100d08de323dccfbaa",
+   "licence": [
+    "cc-by-sa-3.0 / gfdl"
+   ],
+   "budgets": {
+    "all": 177000
+   },
+   "built": 175649,
+   "docs_final": 367,
+   "tokens_final": 175649,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 36
+   }
+  },
+  {
+   "id": "mlc--aya",
+   "source": "aya_dataset",
+   "cell": "multilingual-chat",
+   "dataset": "CohereLabs/aya_dataset",
+   "config": null,
+   "split": "train",
+   "revision": "f9ea04583f02a8f86404ff6c58bf75fe637df8a2",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 1000000
+   },
+   "built": 970188,
+   "docs_final": 3255,
+   "tokens_final": 969277,
+   "stopped": "budgets-full",
+   "dups": {
+    "xgap-in-source": 3
+   },
+   "skips": {
+    "short": 91,
+    "adapt:english": 76,
+    "too-long": 2
+   }
+  },
+  {
+   "id": "mlc--oasst2",
+   "source": "oasst2",
+   "cell": "multilingual-chat",
+   "dataset": "OpenAssistant/oasst2",
+   "config": null,
+   "split": "train",
+   "revision": "179dd21fc55192153d94adb0e0ce8f69e222bf75",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 1200000
+   },
+   "built": 1164352,
+   "docs_final": 3548,
+   "tokens_final": 1164352,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "english": 2279,
+    "too-long": 58,
+    "short": 37
+   }
+  },
+  {
+   "id": "mlc--wildchat",
+   "source": "wildchat",
+   "cell": "multilingual-chat",
+   "dataset": "allenai/WildChat-4.8M",
+   "config": null,
+   "split": "train",
+   "revision": "c827c6df8fcf008219ffaffa4d1dd77491099367",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 2800000
+   },
+   "built": 2716249,
+   "docs_final": 4066,
+   "tokens_final": 2692381,
+   "stopped": "budgets-full",
+   "dups": {
+    "xgap-in-source": 2
+   },
+   "skips": {
+    "adapt:thin": 5949,
+    "adapt:english": 12260,
+    "adapt:toxic-or-redacted": 167,
+    "too-long": 1809,
+    "short": 86
+   }
+  },
+  {
+   "id": "lc--wildchat",
+   "source": "wildchat",
+   "cell": "long-chat",
+   "dataset": "allenai/WildChat-4.8M",
+   "config": null,
+   "split": "train",
+   "revision": "c827c6df8fcf008219ffaffa4d1dd77491099367",
+   "licence": [
+    "odc-by"
+   ],
+   "budgets": {
+    "all": 4500000
+   },
+   "built": 4430166,
+   "docs_final": 686,
+   "tokens_final": 4342374,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "adapt:few-turns": 13489,
+    "adapt:toxic-or-redacted": 265,
+    "adapt:thin": 2633,
+    "short": 4009
+   }
+  },
+  {
+   "id": "lc--oasst2",
+   "source": "oasst2",
+   "cell": "long-chat",
+   "dataset": "OpenAssistant/oasst2",
+   "config": null,
+   "split": "train",
+   "revision": "179dd21fc55192153d94adb0e0ce8f69e222bf75",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 500000
+   },
+   "built": 461098,
+   "docs_final": 289,
+   "tokens_final": 459072,
+   "stopped": "exhausted",
+   "dups": {},
+   "skips": {
+    "short": 13561,
+    "shape": 1
+   }
+  },
+  {
+   "id": "tools--glaive",
+   "source": "glaive-fc-v2",
+   "cell": "tools-other",
+   "dataset": "glaiveai/glaive-function-calling-v2",
+   "config": null,
+   "split": "train",
+   "revision": "e7f4b6456019f5d8bcb991ef0dd67d8ff23221ac",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 1000000
+   },
+   "built": 970193,
+   "docs_final": 1454,
+   "tokens_final": 959089,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:xcorp": 80,
+    "lines:calib": 78,
+    "xgap-in-source": 18,
+    "lines:public": 7
+   },
+   "skips": {
+    "adapt:tool-call": 3
+   }
+  },
+  {
+   "id": "tools--hermes-func",
+   "source": "hermes-fc/func_calling_singleturn",
+   "cell": "tools-other",
+   "dataset": "NousResearch/hermes-function-calling-v1",
+   "config": "func_calling_singleturn",
+   "split": "train",
+   "revision": "dae3e1d28cfbcf4b915c04ea1e072030529b4bda",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 600000
+   },
+   "built": 501902,
+   "docs_final": 505,
+   "tokens_final": 501902,
+   "stopped": "exhausted",
+   "dups": {
+    "lines:calib": 99,
+    "lines:public": 17,
+    "lines:xcorp": 479
+   },
+   "skips": {
+    "adapt:malformed": 793
+   }
+  },
+  {
+   "id": "tools--hermes-multi",
+   "source": "hermes-fc/func_calling",
+   "cell": "tools-other",
+   "dataset": "NousResearch/hermes-function-calling-v1",
+   "config": "func_calling",
+   "split": "train",
+   "revision": "dae3e1d28cfbcf4b915c04ea1e072030529b4bda",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 400000
+   },
+   "built": 388818,
+   "docs_final": 114,
+   "tokens_final": 201885,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 27,
+    "lines:public": 4
+   },
+   "skips": {}
+  },
+  {
+   "id": "tools--hermes-json",
+   "source": "hermes-fc/json_mode_singleturn",
+   "cell": "tools-other",
+   "dataset": "NousResearch/hermes-function-calling-v1",
+   "config": "json_mode_singleturn",
+   "split": "train",
+   "revision": "dae3e1d28cfbcf4b915c04ea1e072030529b4bda",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 500000
+   },
+   "built": 485496,
+   "docs_final": 1196,
+   "tokens_final": 485496,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "tools--hermes-json-agentic",
+   "source": "hermes-fc/json_mode_agentic",
+   "cell": "tools-other",
+   "dataset": "NousResearch/hermes-function-calling-v1",
+   "config": "json_mode_agentic",
+   "split": "train",
+   "revision": "dae3e1d28cfbcf4b915c04ea1e072030529b4bda",
+   "licence": [
+    "apache-2.0"
+   ],
+   "budgets": {
+    "all": 200000
+   },
+   "built": 194677,
+   "docs_final": 294,
+   "tokens_final": 194677,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {}
+  },
+  {
+   "id": "tools--when2call",
+   "source": "when2call",
+   "cell": "tools-other",
+   "dataset": "nvidia/When2Call",
+   "config": "train_sft",
+   "split": "train",
+   "revision": "0582f7749df63a96fdc3070932e83e72396ace53",
+   "licence": [
+    "cc-by-4.0"
+   ],
+   "budgets": {
+    "all": 600000
+   },
+   "built": 582633,
+   "docs_final": 913,
+   "tokens_final": 558884,
+   "stopped": "budgets-full",
+   "dups": {
+    "lines:calib": 45,
+    "lines:xcorp": 1765,
+    "lines:public": 6,
+    "xgap-in-source": 1
+   },
+   "skips": {
+    "adapt:shape": 502
+   }
+  },
+  {
+   "id": "agent--Infatoshi__kernelbench-hard-traces",
+   "source": "Infatoshi/kernelbench-hard-traces",
+   "cell": "agent-sessions",
+   "dataset": "Infatoshi/kernelbench-hard-traces",
+   "config": null,
+   "split": "train",
+   "revision": "c2c764c8b5a5fdad493592a2fde1055684e0f064",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 2200000,
+    "xl": 550000
+   },
+   "built": 2787274,
+   "docs_final": 23,
+   "tokens_final": 2787274,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "session-no-user-start": 2,
+    "full:all": 1
+   }
+  },
+  {
+   "id": "agent--Infatoshi__kernelbench-mega-traces",
+   "source": "Infatoshi/kernelbench-mega-traces",
+   "cell": "agent-sessions",
+   "dataset": "Infatoshi/kernelbench-mega-traces",
+   "config": null,
+   "split": "train",
+   "revision": "3f86d538839844437c95b5ce45874ce362f7ce54",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 1100000,
+    "xl": 275000
+   },
+   "built": 1563234,
+   "docs_final": 14,
+   "tokens_final": 1563234,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 1,
+    "full:all": 3
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pi-for-excel-sessions",
+   "source": "thomasmustier/pi-for-excel-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pi-for-excel-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "c56d6623ec2f558737ad804dd9f36163dbd0860d",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 1100000,
+    "xl": 275000
+   },
+   "built": 1352759,
+   "docs_final": 19,
+   "tokens_final": 1352759,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "full:xl": 40,
+    "short": 7,
+    "session-empty": 2,
+    "full:all": 101,
+    "turn-over-128k": 3
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pi-mono-sessions",
+   "source": "thomasmustier/pi-mono-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pi-mono-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "c69a50cb9b94463768ae94eda88d946c5d0be937",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 800000,
+    "xl": 200000
+   },
+   "built": 973884,
+   "docs_final": 19,
+   "tokens_final": 973884,
+   "stopped": "exhausted",
+   "dups": {},
+   "skips": {
+    "session-empty": 26,
+    "short": 38,
+    "session-format": 1,
+    "full:xl": 12,
+    "full:all": 55
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pi-extensions-sessions",
+   "source": "thomasmustier/pi-extensions-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pi-extensions-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "d72eff68eac647517921989b250bb0b9475e2968",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 600000,
+    "xl": 150000
+   },
+   "built": 799080,
+   "docs_final": 13,
+   "tokens_final": 799080,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 7,
+    "session-empty": 2,
+    "session-format": 1,
+    "full:all": 3
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pine-of-glass-sessions",
+   "source": "thomasmustier/pine-of-glass-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pine-of-glass-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "6a335bccb1b5558ed48f11af5f3bd6c36ab4aa87",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 800000,
+    "xl": 200000
+   },
+   "built": 1104298,
+   "docs_final": 12,
+   "tokens_final": 1104298,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "full:all": 1
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pinet-sessions",
+   "source": "thomasmustier/pinet-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pinet-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "687928bb07eb417a048a90a4e4e9a93cd2683ec7",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 500000,
+    "xl": 125000
+   },
+   "built": 670009,
+   "docs_final": 5,
+   "tokens_final": 522899,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "full:all": 6,
+    "full:xl": 1
+   }
+  },
+  {
+   "id": "agent--thomasmustier__pi-nes-sessions",
+   "source": "thomasmustier/pi-nes-sessions",
+   "cell": "agent-sessions",
+   "dataset": "thomasmustier/pi-nes-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "47d55a2545e0db79909b74f61e3a5dd06fcf8680",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 100000,
+    "xl": 25000
+   },
+   "built": 101922,
+   "docs_final": 4,
+   "tokens_final": 101922,
+   "stopped": "exhausted",
+   "dups": {},
+   "skips": {
+    "session-format": 1,
+    "full:all": 5,
+    "session-empty": 1,
+    "short": 2
+   }
+  },
+  {
+   "id": "agent--championswimmer__pi-coding-sessions",
+   "source": "championswimmer/pi-coding-sessions",
+   "cell": "agent-sessions",
+   "dataset": "championswimmer/pi-coding-sessions",
+   "config": null,
+   "split": "train",
+   "revision": "f655c6c2aabf742c19217ce4de180e9124799901",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 300000,
+    "xl": 75000
+   },
+   "built": 455275,
+   "docs_final": 11,
+   "tokens_final": 455275,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "short": 2,
+    "session-format": 1
+   }
+  },
+  {
+   "id": "agent--AlinCiocan__fable-5-claude-code-traces",
+   "source": "AlinCiocan/fable-5-claude-code-traces",
+   "cell": "agent-sessions",
+   "dataset": "AlinCiocan/fable-5-claude-code-traces",
+   "config": null,
+   "split": "train",
+   "revision": "e33ebbca230ae258b2c28aeee9fe3429e7fbeab6",
+   "licence": [
+    "cc-by-4.0"
+   ],
+   "budgets": {
+    "all": 500000,
+    "xl": 125000
+   },
+   "built": 510460,
+   "docs_final": 12,
+   "tokens_final": 510460,
+   "stopped": "exhausted",
+   "dups": {},
+   "skips": {
+    "session-no-user-start": 1,
+    "short": 1,
+    "full:all": 4
+   }
+  },
+  {
+   "id": "agent--armand0e__claude-fable-5-claude-code",
+   "source": "armand0e/claude-fable-5-claude-code",
+   "cell": "agent-sessions",
+   "dataset": "armand0e/claude-fable-5-claude-code",
+   "config": null,
+   "split": "train",
+   "revision": "7388ef96f3179f23b6b3618b96572f1aa9b84510",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 1600000,
+    "xl": 400000
+   },
+   "built": 1993398,
+   "docs_final": 33,
+   "tokens_final": 1993398,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "special-token": 3,
+    "session-no-user-start": 4,
+    "short": 3,
+    "session-empty": 8
+   }
+  },
+  {
+   "id": "agent--trace-commons__agent-traces",
+   "source": "trace-commons/agent-traces",
+   "cell": "agent-sessions",
+   "dataset": "trace-commons/agent-traces",
+   "config": null,
+   "split": "train",
+   "revision": "112ebd4d03ce852b00e935d523107c3d0c9a65bf",
+   "licence": [
+    "cc-by-4.0"
+   ],
+   "budgets": {
+    "all": 1200000,
+    "xl": 300000
+   },
+   "built": 1621901,
+   "docs_final": 15,
+   "tokens_final": 1621901,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "session-no-user-start": 2,
+    "full:all": 1
+   }
+  },
+  {
+   "id": "agent--swe-rebench-openhands",
+   "source": "swe-rebench-openhands",
+   "cell": "agent-sessions",
+   "dataset": "nebius/SWE-rebench-openhands-trajectories",
+   "config": null,
+   "split": "train",
+   "revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
+   "licence": [
+    "cc-by-4.0"
+   ],
+   "budgets": {
+    "all": 1000000,
+    "xl": 100000
+   },
+   "built": 1027683,
+   "docs_final": 19,
+   "tokens_final": 1027683,
+   "stopped": "budgets-full (xl not reached)",
+   "dups": {
+    "lines:calib": 1
+   },
+   "skips": {
+    "full:all": 301
+   }
+  },
+  {
+   "id": "agent--nemotron-swe",
+   "source": "nemotron-swe",
+   "cell": "agent-sessions",
+   "dataset": "nvidia/Nemotron-SWE-v1",
+   "config": null,
+   "split": "r2e_gym",
+   "revision": "0fe17a965b297a9c943a59050a14c42d5f0083ce",
+   "licence": [
+    "Apache-2.0",
+    "BSD-3-Clause",
+    "https://github.com/Pylons/pyramid?tab=License-1-ov-file#readme",
+    "https://github.com/aio-libs/aiohttp?tab=License-1-ov-file#readme",
+    "https://github.com/datalad/datalad?tab=License-1-ov-file#readme",
+    "https://github.com/numpy/numpy?tab=License-1-ov-file#readme",
+    "https://github.com/python-pillow/Pillow?tab=License-1-ov-file#readme"
+   ],
+   "budgets": {
+    "all": 1000000,
+    "xl": 100000
+   },
+   "built": 1196474,
+   "docs_final": 23,
+   "tokens_final": 1196474,
+   "stopped": "budgets-full",
+   "dups": {},
+   "skips": {
+    "full:all": 152
+   }
+  },
+  {
+   "id": "agent--swe-smith",
+   "source": "swe-smith",
+   "cell": "agent-sessions",
+   "dataset": "SWE-bench/SWE-smith-trajectories",
+   "config": null,
+   "split": "tool",
+   "revision": "08e109b4a59eaeebf80e4675cd125d42e7ac99a4",
+   "licence": [
+    "mit"
+   ],
+   "budgets": {
+    "all": 1000000,
+    "xl": 100000
+   },
+   "built": 1005734,
+   "docs_final": 41,
+   "tokens_final": 984301,
+   "stopped": "budgets-full (xl not reached)",
+   "dups": {
+    "lines:xcorp": 18,
+    "lines:calib": 1,
+    "lines:public": 2
+   },
+   "skips": {
+    "adapt:no-tool-calls": 3167,
+    "short": 2,
+    "full:all": 299
+   }
+  }
+ ],
+ "skipped": [
+  {
+   "source": "Salesforce/xlam-function-calling-60k",
+   "why": "gated dataset (CC BY 4.0, auto-approval after accepting terms): the colo login has no access; not worked around"
+  },
+  {
+   "source": "fineweb-2 'HQ' languages beyond epfml/FineWeb2-HQ's 20",
+   "why": "FineWeb2-HQ only ships 20 languages (all already in calib); ko/hi/th/he/uk/bn/ta/... come from HuggingFaceFW/fineweb-2 (odc-by) with language_score >= 0.95"
+  },
+  {
+   "source": "whole small repos (the-stack-smol-xl / stackv2-edu)",
+   "why": "neither dataset groups files by repository (files are shuffled; stack-edu shards are per language): whole files only"
+  }
+ ]
+}

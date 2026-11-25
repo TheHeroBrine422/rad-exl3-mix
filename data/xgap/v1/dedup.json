@@ -1,0 +1,260 @@
+{
+ "xgap_sources_docs": 31506,
+ "dropped_in_assembly": {
+  "lines": 272
+ },
+ "per_source": {
+  "doab": {
+   "lines": 1
+  },
+  "libretexts": {
+   "lines": 1
+  },
+  "code--rust": {
+   "lines": 1
+  },
+  "code--cpp": {
+   "lines": 3
+  },
+  "code--java": {
+   "lines": 2
+  },
+  "code--csharp": {
+   "lines": 5
+  },
+  "code--kotlin": {
+   "lines": 1
+  },
+  "code--swift": {
+   "lines": 1
+  },
+  "code--ruby": {
+   "lines": 4
+  },
+  "code--shell": {
+   "lines": 3
+  },
+  "code--sql": {
+   "lines": 2
+  },
+  "code--haskell": {
+   "lines": 1
+  },
+  "code--ocaml": {
+   "lines": 4
+  },
+  "code--lua": {
+   "lines": 1
+  },
+  "code--zig": {
+   "lines": 3
+  },
+  "code--dart": {
+   "lines": 1
+  },
+  "code--elixir": {
+   "lines": 1
+  },
+  "code--lean": {
+   "lines": 2
+  },
+  "code--erlang": {
+   "lines": 2
+  },
+  "code--fortran": {
+   "lines": 2
+  },
+  "mlt--fineweb2-hq--cmn_Hani": {
+   "lines": 1
+  },
+  "mlt--fineweb2-hq--jpn_Jpan": {
+   "lines": 1
+  },
+  "mlt--fineweb2--kor_Hang": {
+   "lines": 2
+  },
+  "mlt--fineweb2--heb_Hebr": {
+   "lines": 2
+  },
+  "mlt--fineweb2--tam_Taml": {
+   "lines": 1
+  },
+  "mlt--fineweb2--kat_Geor": {
+   "lines": 2
+  },
+  "mlt--fineweb2--bul_Cyrl": {
+   "lines": 1
+  },
+  "mlt--wikipedia--fa": {
+   "lines": 1
+  },
+  "mlt--wikipedia--uk": {
+   "lines": 1
+  },
+  "mlt--wikipedia--bn": {
+   "lines": 1
+  },
+  "mlt--wikipedia--hy": {
+   "lines": 2
+  },
+  "mlc--aya": {
+   "lines": 2
+  },
+  "mlc--wildchat": {
+   "lines": 18
+  },
+  "lc--wildchat": {
+   "lines": 10
+  },
+  "lc--oasst2": {
+   "lines": 1
+  },
+  "tools--glaive": {
+   "lines": 21
+  },
+  "tools--hermes-multi": {
+   "lines": 130
+  },
+  "tools--when2call": {
+   "lines": 31
+  },
+  "agent--thomasmustier__pinet-sessions": {
+   "lines": 1
+  },
+  "agent--swe-smith": {
+   "lines": 2
+  }
+ },
+ "dups_at_build_vs_calib_public_xcorp": {
+  "pg19": {
+   "lines:xcorp": 15,
+   "lines:calib": 15
+  },
+  "gutenberg": {
+   "lines:xcorp": 12,
+   "lines:public": 1,
+   "lines:calib": 1
+  },
+  "doab": {
+   "lines:xcorp": 40
+  },
+  "arxiv": {
+   "lines:calib": 7,
+   "exact:xcorp": 86,
+   "lines:xcorp": 152
+  },
+  "libretexts": {
+   "lines:xcorp": 37,
+   "lines:calib": 2,
+   "lines:public": 1
+  },
+  "code--python": {
+   "lines:xcorp": 3
+  },
+  "code--typescript": {
+   "exact:calib": 3
+  },
+  "code--go": {
+   "lines:calib": 1
+  },
+  "code--c": {
+   "lines:calib": 1,
+   "lines:xcorp": 1
+  },
+  "code--java": {
+   "lines:calib": 2,
+   "lines:public": 1,
+   "lines:xcorp": 1
+  },
+  "code--csharp": {
+   "lines:xcorp": 1
+  },
+  "code--kotlin": {
+   "lines:calib": 1
+  },
+  "code--swift": {
+   "lines:calib": 1,
+   "lines:xcorp": 1
+  },
+  "code--ruby": {
+   "exact:calib": 3
+  },
+  "code--php": {
+   "lines:xcorp": 3
+  },
+  "code--shell": {
+   "exact:public": 1,
+   "exact:calib": 1,
+   "lines:xcorp": 1
+  },
+  "code--haskell": {
+   "lines:calib": 1
+  },
+  "code--ocaml": {
+   "lines:xcorp": 1
+  },
+  "code--lua": {
+   "lines:xcorp": 2
+  },
+  "code--zig": {
+   "lines:calib": 3,
+   "exact:calib": 1
+  },
+  "code--dart": {
+   "lines:xcorp": 1
+  },
+  "code--perl": {
+   "lines:xcorp": 2
+  },
+  "code--erlang": {
+   "lines:xcorp": 2
+  },
+  "mlt--fineweb2-hq--cmn_Hani": {
+   "lines:xcorp": 1
+  },
+  "mlt--fineweb2-hq--arb_Arab": {
+   "lines:xcorp": 2
+  },
+  "mlt--fineweb2-hq--ell_Grek": {
+   "exact:calib": 1
+  },
+  "mlt--wikipedia--he": {
+   "exact:calib": 1
+  },
+  "mlc--aya": {
+   "xgap-in-source": 3
+  },
+  "mlc--wildchat": {
+   "xgap-in-source": 2
+  },
+  "tools--glaive": {
+   "lines:xcorp": 80,
+   "lines:calib": 78,
+   "xgap-in-source": 18,
+   "lines:public": 7
+  },
+  "tools--hermes-func": {
+   "lines:calib": 99,
+   "lines:public": 17,
+   "lines:xcorp": 479
+  },
+  "tools--hermes-multi": {
+   "lines:calib": 27,
+   "lines:public": 4
+  },
+  "tools--when2call": {
+   "lines:calib": 45,
+   "lines:xcorp": 1765,
+   "lines:public": 6,
+   "xgap-in-source": 1
+  },
+  "agent--swe-rebench-openhands": {
+   "lines:calib": 1
+  },
+  "agent--swe-smith": {
+   "lines:xcorp": 18,
+   "lines:calib": 1,
+   "lines:public": 2
+  }
+ }
+}

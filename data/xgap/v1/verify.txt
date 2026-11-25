@@ -1,0 +1,9 @@
+manifest rows 89610 Counter({'xcorp-v1': 53587, 'xgap-v1': 31234, 'calib': 4789})
+duplicate ids: 0
+pisess files under corpus root: []
+id/line mismatches 0, token-count mismatches 0 of 900 sampled docs
+xgap docs 31234: exact duplicates of calib/public/xcorp {}, of another xgap doc 0
+calib docs: 4789 (public split is never included)
+41M	/data/xgap/v1/corpus/calib
+381M	/data/xgap/v1/corpus/xcorp-v1
+290M	/data/xgap/v1/corpus/xgap-v1
