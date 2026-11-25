@@ -10301,3 +10301,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   [0.977, 0.991] med 0.994; long docs 0.997; code-langs 1.000; agent 0.995. Vs C228-ctl similar (ALL 0.856, w/o WC 0.936). Teacher mix
   (C228-opmix) on the gap judge: ALL 0.990, w/o WC 0.995 (≈ no effect). So xgap data cuts the gap judge's MEAN 7–14 % at no calib cost,
   mostly by fixing high-KL documents (multilingual chat, tools, WildChat: medians move 1–11 %); typical docs gain ~1 %; code languages 0.
+- 11-25 12:45 AM CST: **#218 done. C229-xg (xgap only)**: jc228 vs 10M 1.001, vs ctl **1.008 [1.001, 1.018]** (small calib cost); gap
+  judge vs 10M ALL 0.838 [0.703, 0.945] med 0.981, w/o WildChat 0.924 med 0.983, multilingual chat 0.743 med 0.979, multilingual text
+  **0.973 [0.961, 0.983]** med 0.988, tools 0.670 med 0.874, long docs 0.996, code 0.999, agent 0.997; jlong other docs 1.035 (worse);
+  agent traces attrs / click 1.001 / 1.000; student-written traces JS 1.001; j217 0.819 / 0.862 / 0.928. **C229-xgc**: agent traces
+  1.000 / 0.997, jlong other docs 0.964 (better than ctl 0.976), JS 1.001, j217 0.823 / 0.862 / 0.926. **Verdict:** xgap data cuts the
+  gap judge's mean 7–16 % (typical doc 1–2 %), mostly on multilingual chat / tools / WildChat tails, plus a real ~1.4–2.7 % on
+  multilingual text; nothing on code languages, long docs (8k-capped here), agent traces. Mixed with calib (xgc): no cost on jc228, j217
+  or jlong; xgap alone: ~0.8 % on jc228 and 3.5 % on jlong's other docs. → finals: xgap share mixed through the run, calib-heavy end.
