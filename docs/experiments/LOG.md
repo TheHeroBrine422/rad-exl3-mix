@@ -10348,3 +10348,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   allocated) → re-run split over 2 cards later. **p2p stress** (10 min p2p + 10 min host) both rc 0 (no fault reproduced). **deep300**
   (D256-25 recipe, --pipe-xfer host) running on cards 2,3 since 12:33 PM. Screens C230-p502525 / p602515 trained (2:18 PM; j217 rows
   KLD 0.03906 / 0.03941), reads running; p403030 / p701515 next. iceman was briefly unreachable ~11:30 AM (watchdog cycle 6 failed), back.
+- 11-25 5:15 PM CST: **box2 rebooted ~2:49 PM CST** (donor; up 2:16 h at 5:06 PM) and the old /data disk was not remounted: /data was
+  an empty dir on root, so every symlink into /hero was gone and the queue / gates died (~2 h 20 min of card time lost). Fixed: /data/<x>
+  → /hero/<x> symlinks recreated on the root fs (data intact on /hero, 2.2 TB); stale claims cleared; dispatchers 0,1 restarted
+  (only-card2/3 kept); deep300 resumed from state.pt (NOWIPE=1, was at step 130 clean, step-100 snapshot kept) on cards 2,3; two patched
+  containers written at the reboot were truncated (JL / JX reads of p602515 failed or suspect) → deleted, both reads re-queued
+  (JX as JX-C230-p602515r). Scores written before the reboot checked: JSON parses, rows files complete, no zero rows. DP gate reads
+  queued (JC + j217 of the step-100 snapshots of dp100 and deep300). Screens p403030 / p701515 restarted on cards 0,1.
