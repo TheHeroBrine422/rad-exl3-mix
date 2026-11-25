@@ -10229,3 +10229,7 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Thinking-off rendering checked; real system prompts kept (calib actually has 35 / 1,008 chats with system text, not 8). Lead
   decisions: exclusive xl-vs-pieces, keep 16.8M agent budget, skip gated xlam, fineweb-2 for 13 extra languages, add 6 code languages,
   normalize `lang`, real tool schemas for known harnesses (Claude Code, pi, OpenHands). Full build started (~2–4 h, colo).
+- 11-24 7:55 PM CST: C228-studcalx re-read = C228-studcal exactly (0.8404 / 0.8704 / 0.9314): the swap race didn't corrupt card 0's read.
+  **C228-studcal on the held-out calib agent traces:** attrs 1.005 [1.003, 1.007], click 1.002 (teacher calib opcal 0.993 / 0.989, ctl
+  1.001 / 0.998). Student-written calib cuts: no gain on real agent traces, smaller gain than teacher text on generated calib text
+  (JU 0.985 vs 0.975). C228-stud (student-written traces) finishing training (~8:15 PM), reads after.
