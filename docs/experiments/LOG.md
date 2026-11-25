@@ -10285,3 +10285,12 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
     text 16.0, long chat 17.4 / WildChat 19.0, tools-other 12.6; long docs 10.9, code-langs 10.7, agent 8.5 as calib. So at 2.50 there
     is an extra ~1.5× on multilingual and long chat beyond the model's own fragility → low-bpw calibration / allocation coverage. After
     10M QAD: long chat 11.8–12.9 (QAD-fixable), multilingual 15.0–15.7 (not fixed by the current mix).
+- 11-24 11:30 PM CST: **#218 allocation / drift checks.** Drift = (model / FP8 on a gap cell) / (model / FP8 on jc228). 7.00 vs IQ8R
+  (uniform 8-bit, no allocation): ALL 1.21 vs 1.23 (ours / IQ8R 0.99 [0.84, 1.13]) → no general allocation problem; code-langs 1.19
+  [1.04, 1.22] (small real excess); tools 2.35 [0.92, 3.98]. **Released 4.50:** jc228 0.831 × FP8; drift ALL 1.19; tools 1.13 (= IQ8R's
+  1.16: **the tools excess is a 7.00-only quirk**); code-langs 1.52, multilingual text 1.46, multilingual chat 1.28, long chat 1.40 →
+  calibration drift grows below 8 bits on code languages and multilingual.
+  **Mid-run arms (+0.5M rows) vs the 10M end:** jc228 xg 1.021 [1.005, 1.040], xgc 1.001; gap judge robust cells tiny (multilingual
+  text xg 0.991, xgc 0.996; long docs 0.998; code 0.999; agent 1.00); chat cells swing both ways with huge CIs (xg long-chat 0.75,
+  multilingual chat 0.83, tools 0.67; xgc long-chat 1.65, multilingual chat 1.11): bistable blow-up docs at a mid-run snapshot, read the
+  finals with medians. Finals ~2 AM.
