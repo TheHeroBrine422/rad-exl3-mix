@@ -10267,3 +10267,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   radiance build (w206, 2.1.0 fork) has no block-FP8 kernel ("stored as block fp8, which this build does not serve"); FP8 dropped from
   this baseline (needs a build with the fp8 kernel library; follow-up). IQ8R JG read rc 0. Early reads added: JG / JC of both arms at
   ckpt-raw-1.05e+07 (+0.5M rows).
+- 11-24 10:00 PM CST: **#218 first gap-judge picture** (KL / gen row; `xgap/jgcell.py`): cell | unhealed 2.50 | 10M | IQ8R-V4 | 10M / IQ8R:
+  long-docs 0.0371 / 0.0349 / 0.0004 / 87×; agent-sessions 0.0275 / 0.0257 / 0.0004 / 64×; **long-chat 0.2334 / 0.1493 / 0.0019 / 79×**;
+  multilingual-chat 0.1005 / 0.0960 / 0.0007 / 137×; code-langs 0.0670 / 0.0626 / 0.0006 / 104×; multilingual-text 0.0921 / 0.0865 /
+  0.0007 / 124×; tools 0.0289 / 0.0269 / 0.0003 / 90×; all 0.0740 / 0.0611 / 0.0006. (calib jc228: 10M 0.0399.) QAD's 10M gain is
+  5–7 % on every cell except long-chat (−36 %). Multilingual (chat 2.4×, text 1.4× calib's per-row KL) and rare code languages
+  (2.4× calib code) have the highest ratio to IQ8R → least covered. Long-chat (whole WildChat / oasst threads, thinking-off) is the
+  hardest text by far, for IQ8R too. FP8: stock radiance v1.17.0 (has block-FP8 kernels) building on box2 (`/data/q27/r117`).
