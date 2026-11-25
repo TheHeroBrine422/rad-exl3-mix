@@ -1,0 +1,14 @@
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+/hero/q27/w231/code/v3/qad225/../qad220/qad220.py:1137: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
+PASS branch = separate (one card): KL sum / rows equal, reduced gradient within 1e-6 (bit for bit: True); no snapshot left  [KL 694.4714741706848 vs 694.4714741706848, rows 705.0 vs 705.0, grad rel 0.00e+00, prefix-rebuild tokens 0 vs 0]
+PASS branch = separate (naive split): KL sum / rows equal, reduced gradient within 1e-6 (bit for bit: True); no snapshot left  [KL 694.4714741706848 vs 694.4714741706848, rows 705.0 vs 705.0, grad rel 0.00e+00, prefix-rebuild tokens 0 vs 0]
+PASS branch = separate (pipeline): KL sum / rows equal, reduced gradient within 1e-6 (bit for bit: True); no snapshot left  [KL 694.4714741706848 vs 694.4714741706848, rows 705.0 vs 705.0, grad rel 0.00e+00, prefix-rebuild tokens 0 vs 0]
+PASS lost snapshots (a resume): = the existing resume path (each cut's prefix rebuilt from its own tokens) bit for bit  [KL 694.5020217895508 vs 694.5020217895508; rebuilt 3712 vs 2560 tokens (vs the walked branch: KL rel 4.4e-05, grad rel 1.4e-02: the rebuild's 96-token segments round differently on this tiny bf16 model)]
+PASS history pieces alone: no tensor saved for backward (no grad)  [0 saved]
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+PASS 2 data-parallel ranks (pipeline each): branch = separate (gradient within 1e-6), and = the one-rank branch run within 1e-6  [grad rel 0.00e+00 (vs one rank 6.82e-08); KL 694.4714741706848 vs 694.4714741706848]
+
+ALL PASS

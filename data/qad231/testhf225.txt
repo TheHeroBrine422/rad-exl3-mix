@@ -1,5 +1,5 @@
 [transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
-/hero/q27/w231/code/v3/qad225/../qad220/qad220.py:1095: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+/hero/q27/w231/code/v3/qad225/../qad220/qad220.py:1137: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
 Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
   t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
 default: [(161.5219268798828, 167.0, 0.28745117952464383, 0.0), (199.66445922851562, 201.0, 0.27604898497202124, 0.0), (174.1399917602539, 170.0, 0.2937400378732509, 0.0)]

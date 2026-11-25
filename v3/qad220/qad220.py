@@ -670,6 +670,16 @@ def from_host(m, dev):
     ev.synchronize(); return h.to(dev, non_blocking=True)
 
 
+def clone_state(st):
+    """w231: an independent copy of a carried state (a cut trains on it while the session's history keeps the original); KV buffers copied at their valid length"""
+    out = {}
+    for k, v in st.items():
+        if isinstance(v, KVView): out[k] = v.to(v.device, 0)
+        elif isinstance(v, tuple): out[k] = tuple(t.clone() for t in v)
+        else: out[k] = v.clone()
+    return out
+
+
 def to_cpu(st): return {k: (tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu()) for k, v in st.items()}
 def to_dev(st, dev): return {k: (tuple(t.to(dev, non_blocking=True) for t in v) if isinstance(v, tuple) else v.to(dev, non_blocking=True)) for k, v in st.items()}
 
@@ -1035,8 +1045,36 @@ class Trainer:
             self.fmask = torch.cat(parts)
         self.mine = [s for s in range(a.V) if s % dist.world == dist.rank]
         self.states = {}                                     # stream -> (item index, offset, state on CPU)
+        self.snaps = {}                                      # w231 branch plans: stream -> ((golden, doc, offset), state) = the session history's state at a branch point
         self.w225 = bool(getattr(stu, "split", 0) or getattr(stu, "kvbuf", False))     # w225: split / buffered-KV segment loop (run_segs_w225)
         tags = sorted(set(C.tags)); self.tags = tags; self.tix = {t: k for k, t in enumerate(tags)}
+
+    # ---------------------------------------------------------------- w231: branch plans (a session's real history walked once, each cut branched off it)
+    def br(self, it):
+        """(role, start, source golden index, source doc) of a branch-plan item, else None. Roles: "hist" (a piece of the session's real history that
+        ends at a branch point: no grad, its end state becomes the stream's snapshot), "cut" (a cut's teacher turn from its branch point: starts on a
+        COPY of the snapshot), "cut_last" (the session's last cut: takes the snapshot itself); a "hist" piece with start > 0 continues from the snapshot"""
+        b = getattr(self.C, "branch", None)
+        return b.get(it) if b else None
+
+    def is_hist(self, it):
+        b = self.br(it); return b is not None and b[0] == "hist"
+
+    def branch_in(self, sid, it, sa):
+        """the start state of a branch-plan item at its start offset from the stream's snapshot; None when there is none (no branch role, or lost on a
+        resume: the caller rebuilds the prefix from the item's own tokens, which the plan checked equal to the history's)"""
+        b = self.br(it)
+        if b is None or sa == 0 or sa != b[1]: return None
+        z = self.snaps.get(sid)
+        if z is None or z[0] != (b[2], b[3], sa): return None
+        if b[0] == "cut": return clone_state(z[1])
+        del self.snaps[sid]; return z[1]
+
+    def branch_out(self, sid, it, sb, n_doc, keep):
+        """a history piece ending at its branch point: its state (keep(): parked / to the CPU as the loop stores states) becomes the stream's snapshot"""
+        b = self.br(it)
+        if b is None or b[0] != "hist" or sb < n_doc: return False
+        self.states.pop(sid, None); gi, i = self.C.items[it][:2]; self.snaps[sid] = ((gi, i, sb), keep()); return True
 
     def step_rows(self, s): return sum(self.rows_of[(it, a_, b_)] for st in self.steps[s] for (it, a_, b_) in st)
 
@@ -1077,9 +1115,12 @@ class Trainer:
                 prev = None
                 snap = [None if p.grad is None else p.grad.detach().clone() for p in self.P] if a.clip_doc > 0 else None
                 if sa > 0:
-                    k = self.states.get(sid)
-                    if k is not None and k[0] == it and k[1] == sa: prev = to_dev(k[2], self.dev)
+                    k = self.states.get(sid); z_ = self.branch_in(sid, it, sa)
+                    if z_ is not None: prev = to_dev(z_, self.dev)
+                    elif k is not None and k[0] == it and k[1] == sa: prev = to_dev(k[2], self.dev)
                     else: prev = prefix_state(stu, self.C.g, (gi, i), sa, a.len); acc[-1] += sa
+                gctx = torch.no_grad() if self.is_hist(it) else contextlib.nullcontext()   # w231: a session's real history runs without grad (no scored rows)
+                gctx.__enter__()
                 if self.a.prompt_weight > 0 or self.loc is not None or HARD[0] > 0:
                     loss, kl, m, n_all, nxt, ls = seg_loss_ext(stu, self.C.g, (gi, i), sa, sb, prev, self.a.prompt_weight, self.loc)
                     if n_all: (loss / N).backward()
@@ -1091,10 +1132,12 @@ class Trainer:
                 else:
                     kl, m, nxt = seg_loss(stu, self.C.g, (gi, i), sa, sb, prev)
                     if m: (kl / N).backward()
+                gctx.__exit__(None, None, None)
                 if snap is not None and m: self.clip_seg(snap, m, N)
                 t = self.tix[self.C.tags[gi]]; acc[2 * t] += float(kl); acc[2 * t + 1] += m
                 n_doc = self.C.items[it][2]
-                if sb < n_doc: self.states[sid] = (it, sb, to_cpu(nxt))
+                if self.branch_out(sid, it, sb, n_doc, lambda: to_cpu(nxt)): pass
+                elif sb < n_doc: self.states[sid] = (it, sb, to_cpu(nxt))
                 else: self.states.pop(sid, None)
                 del prev, nxt
         if self.w225: self.run_segs_w225(ss, N, acc)
@@ -1155,10 +1198,10 @@ class Trainer:
         return out
 
     def resident(self, skip=None):
-        """bytes of the carried states kept on each card (KV buffers at capacity)"""
+        """bytes of the carried states kept on each card (KV buffers at capacity; w231: the branch snapshots too)"""
         used = {}
-        for s2, (_, _, st2) in self.states.items():
-            if s2 == skip: continue
+        for s2, (_, _, st2) in list(self.states.items()) + [(None, (None, None, z[1])) for z in self.snaps.values()]:
+            if s2 is not None and s2 == skip: continue
             for d_, b_ in self.st_bytes(st2).items():
                 if d_.type != "cpu": used[d_] = used.get(d_, 0) + b_
         return used
@@ -1189,12 +1232,15 @@ class Trainer:
         stu = self.stu
         st0 = lambda: self.synth() if getattr(stu, "pos_off", 0) else None       # built only when used (a 256k synthetic prefix is 8 GiB a card)
         if sa == 0: return st0()
+        z_ = self.branch_in(sid, it, sa)
+        if z_ is not None: return self.place(z_)
         k = self.states.get(sid)
         if k is not None and k[0] == it and k[1] == sa: return self.place(k[2])
         acc[-1] += sa
         return prefix_state(stu, self.C.g, tuple(self.C.items[it][:2]), sa, self.a.len, st0())
 
     def state_out(self, sid, it, sb, n_doc, nxt):
+        if self.branch_out(sid, it, sb, n_doc, lambda: self.park(sid, nxt)): return
         if sb < n_doc: self.states[sid] = (it, sb, self.park(sid, nxt))
         else: self.states.pop(sid, None)
 
@@ -1210,7 +1256,7 @@ class Trainer:
             snap = [None if p.grad is None else p.grad.detach().clone() for p in self.P] if a.clip_doc > 0 else None
             stu.kv_cap = n_doc + getattr(stu, "pos_off", 0)
             prev = self.state_in(sid, it, sa, acc)
-            with devctx(stu.devs[-1]):
+            with devctx(stu.devs[-1]), torch.set_grad_enabled(torch.is_grad_enabled() and not self.is_hist(it)):
                 kl, m, nxt = seg_loss(stu, self.C.g, (gi, i), sa, sb, prev)
                 if m: (kl / N).backward()
             if snap is not None and m: self.clip_seg(snap, m, N)
@@ -1242,7 +1288,8 @@ class Trainer:
                     t_ = time.time(); job = qb.get(); tm["b_wait"] += time.time() - t_
                     if job is None: return
                     t_ = time.time()
-                    j, mA, rg, prevB, gi, i, sa, sb, cap = job
+                    j, mA, rg, prevB, gi, i, sa, sb, cap, hist = job
+                    gm_ = torch.set_grad_enabled(not hist); gm_.__enter__()            # w231: a session's history runs without grad on both cards
                     xB = recv(mA, B)
                     if rg: xB.requires_grad_(True)
                     cache = SegCacheBuf(prevB, cap)
@@ -1251,6 +1298,7 @@ class Trainer:
                     sync(B); t1 = time.time(); tm["b_fwd"] += t1 - t_
                     if m: (kl / N).backward()
                     sync(B); tm["b_bwd"] += time.time() - t1
+                    gm_.__exit__(None, None, None)
                     qg.put((j, send(xB.grad) if (m and rg) else None, float(kl.detach()), m, cache.next))
                     del job, mA, xB, h, kl, cache, prevB
             except BaseException as e:
@@ -1284,8 +1332,9 @@ class Trainer:
                     while pend and sum(p_[-1] for p_ in pend) + nb > PIPE_INFLIGHT: finish()   # deep states: few in flight (a 256k stream's KV is 16 GiB)
                     pa = {k: v for k, v in prev.items() if k[1] < K}; pb = {k: v for k, v in prev.items() if k[1] >= K}
                     cacheA = SegCacheBuf(pa, cap)
-                    hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
-                    qb.put((j, send(hA), hA.requires_grad, pb, gi, i, sa, sb, cap)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
+                    hist = self.is_hist(it)
+                    with torch.set_grad_enabled(not hist): hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
+                    qb.put((j, send(hA), hA.requires_grad, pb, gi, i, sa, sb, cap, hist)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
                     del prev, pa, pb, hA, cacheA
                     if len(pend) > 2: finish()       # A runs two segments ahead: B always has the next one queued (B's work per segment is the larger half)
                 while pend: finish()
@@ -1307,7 +1356,7 @@ class Trainer:
         return [n for n in self.names if not n.endswith((":la", ":lb", ":g", ":m"))] + [n for n in self.names if n.endswith(":g")] + [n for n in self.names if n.endswith(":m")]
 
     def restore(self, z):
-        self.stu.load_state(z["cur"]); self.states = {}; self.gn_hist = list(z.get("gn_hist", [])); self.seg_hist = list(z.get("seg_hist", [])); self.partial_restore = False
+        self.stu.load_state(z["cur"]); self.states = {}; self.snaps = {}; self.gn_hist = list(z.get("gn_hist", [])); self.seg_hist = list(z.get("seg_hist", [])); self.partial_restore = False
         if "opt_order" in z and z["opt_order"] != self.opt_order():     # w222: a fork into a different trainable set (staged MSE -> KL): Adam state by name, fresh for the rest
             new = map_opt_state(z["opt"], z["opt_order"], self.opt_order(), self.opt.state_dict()["param_groups"])
             self.opt.load_state_dict(new); self.partial_restore = True
@@ -1600,6 +1649,15 @@ def build_data(a, d, log):
             assert not (nm == "calib" and i in fes), f"--plan231: calib doc {i} is a fixed-eval doc"
             r_ = C.g[gidx[nm]].nrows(i, n); assert r_ == nr, f"--plan231: {nm}:{i} has {r_} rows at {n} tokens here, {nr} in the plan"
             C.items.append((gidx[nm], i, n, nr))
+        if px.get("branch"):                          # w231: session branch units: item -> [role, start, source golden, source doc]; a cut's tokens before its start = the history's
+            C.branch, C.starts = {}, {}
+            for k_, (role, st_, sg, sdoc) in px["branch"].items():
+                it_ = int(k_); C.branch[it_] = (role, int(st_), gidx[sg], int(sdoc))
+                if int(st_): C.starts[it_] = int(st_)
+                if role != "hist" and int(st_):
+                    g_, i_ = C.g[C.items[it_][0]], C.items[it_][1]
+                    assert np.array_equal(g_.ids(i_, 0, int(st_)), C.g[gidx[sg]].ids(int(sdoc), 0, int(st_))), f"--plan231: branch item {it_} ({g_.name}:{i_}) differs from its history before {st_}"
+            log(f"--plan231: {sum(1 for v in C.branch.values() if v[0] != 'hist')} cuts branched off {len({(v[2], v[3]) for v in C.branch.values()})} session histories")
         queues = px["queues"]; order = np.concatenate([np.asarray(q_, np.int64) for q_ in queues])
         if int(px.get("ranks", 1)) != d.world: log(f"WARNING: --plan231 balanced for {px.get('ranks')} ranks, this run has {d.world}")
         log(f"--plan231 {a.plan231}: {len(C.items)} documents in {a.V} stream queues (single epoch), goldens {', '.join(px['goldens'])}: {json.dumps(C.summary())}")
@@ -1632,7 +1690,7 @@ def build_data(a, d, log):
     if not (a.plan231 or (a.plan_ext and fr_t)): queues = None
     EXACT_NAMES[0] = bool(getattr(a, "exact_ckpt_names", False))
     budgets = [BK(a.rows)] if a.rows else [BK(x) for x in a.budgets.split(",")]
-    steps = D.plan(C.items, order, a.V, a.Q, queues=queues)
+    steps = D.plan(C.items, order, a.V, a.Q, queues=queues, starts=getattr(C, "starts", None))
     if a.cont:                                        # lead 11-24 (user): a continuation of a finished run on new documents: the fork state's steps as planned,
         assert a.fork_from, "--cont needs --fork-from"   # then a fresh V x Q plan over --cont's items (seeded shuffle); the fork's plan_sha check still covers the prefix
         fp = a.fork_from if os.path.isfile(a.fork_from) else os.path.join(a.fork_from, "state.pt")

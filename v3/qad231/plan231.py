@@ -25,6 +25,11 @@ SPEC (JSON):
      "tset1":  {"golden": "tset1", "dir": "QROOT/ext/gold/tset1", "genmask": "QROOT/ext/genmask/tset1.u8", "share": 0.3},
      "xgap":   {"golden": "xgl1", "dir": ..., "cap": 131072, "share": 0.3, "ids": "optional ids.json"},
      "traces": {"golden": "trdeep-b1", "dir": ..., "genmask": ..., "deep": true, "ids": "8 trace ids.json"}}, "deep_first": 0}
+  w231 `"branch": true` (+ "session_key": the corpus.meta.jsonl field naming the session, e.g. "sidx"; "align", default 1024): a multi-cut source (teacher
+  cuts = a real session's prefix + a generated turn). Each session becomes one unit on one stream: its real history (the deepest cut's prefix) walked once
+  without grad, each cut trained from its branch point (prefix rounded down to align) on a copy of the history state (qad220 branch roles hist / cut /
+  cut_last). A cut whose tokens before its branch point differ from the history's stays a separate full-prefix document. The unit's carried need = the
+  cut's state + the snapshot held meanwhile (m_eff, counted whole against max_carried_tokens). Summary: cost per row branched vs full-prefix.
   dir / genmask: the golden's directory and gen mask (default DIR/gen.u8 if it exists, else every row is gen); cap: tokens a document is cut at
   (rows recounted); min_rows (16): documents with fewer gen rows are skipped. The plan stores each golden's name with dir / genmask: qad220 loads
   them (the calib golden named "calib" is the trainer's own --calib).
@@ -38,6 +43,16 @@ sys.path.insert(0, os.path.join(HERE, "..", "qad181"))
 import data181 as D                                      # noqa: E402
 
 KV_BYTES = 65536                                         # 16 attention layers x 4 KV heads x 256 x bf16 K + V, a token
+
+
+class Unit:
+    """w231 branch source: one session = its real history walked once (no grad) + each cut's teacher turn trained from its branch point (the cut's
+    prefix length rounded down to `align`) on a copy of the history state. parts = [(doc, end, rows, start, role, history doc)] in queue order;
+    m_eff = the carried tokens it needs at most (a cut's state + the history snapshot held meanwhile)"""
+    def __init__(self, parts, cuts):
+        self.parts, self.cuts = parts, cuts
+        self.tokens = sum(e - st for _, e, _, st, _, _ in parts); self.rows = sum(r for _, _, r, _, _, _ in parts)
+        self.m_eff = max(e + (st if role == "cut" else 0) for _, e, _, st, role, _ in parts)
 
 
 class Src:
@@ -54,10 +69,43 @@ class Src:
             pl = json.load(open(sp["pools"]))["pool"]; want = set(sp["pool"] if isinstance(sp["pool"], list) else [sp["pool"]])
             ids = [i for i in ids if pl[i] in want]
         ids = [int(i) for i in ids if not (self.golden == "calib" and int(i) in excl)]
-        self.items = []
+        self.items = []; self.branch = None
+        if sp.get("branch"):
+            assert "cap" not in sp, f"{name}: a branch source takes whole cuts (no cap)"
+            ids = self.sessions(ids, sp)
         for i in ids:
             n = min(self.cap, self.g.ntok(i)); nr = self.g.nrows(i, n)
             if nr >= int(sp.get("min_rows", 16)): self.items.append((i, n, nr))
+
+    def sessions(self, ids, sp):
+        """w231 (`branch: true`): group the cuts into sessions (corpus.meta.jsonl's session key when given, else the first 256 tokens), check each cut's
+        prefix tokens against the session's longest prefix (the history), and make one Unit a session. Returns the cuts that stay separate full-prefix
+        documents (prefix differs from the history, e.g. re-tokenised at the cut; or shorter than one align step)"""
+        g = self.g; align = int(sp.get("align", 1024)); key = {}
+        mp = sp.get("meta") or os.path.join(self.dir, "corpus.meta.jsonl"); sk = sp.get("session_key")
+        meta = [json.loads(l) for l in open(mp)] if sk and os.path.exists(mp) else None
+        for i in ids:
+            P = g.docs[i]["score_from"]
+            key.setdefault(meta[i][sk] if meta else g.ids(i, 0, min(256, P)).tobytes(), []).append(i)
+        sep, units, nb = [], [], 0
+        for k, cs in key.items():
+            cs = sorted(cs, key=lambda i: g.docs[i]["score_from"]); hist = cs[-1]; Ph = g.docs[hist]["score_from"]; H = g.ids(hist, 0, Ph)
+            ok = []
+            for i in cs:
+                P = g.docs[i]["score_from"]
+                a0 = P // align * align                         # the state at a0 is all the cut takes from the history (its own tokens from a0 on)
+                if a0 > 0 and np.array_equal(g.ids(i, 0, a0), H[:a0]): ok.append(i)
+                else: sep.append(i)
+            if not ok: continue
+            parts, prev = [], 0
+            for j, i in enumerate(ok):
+                a0 = g.docs[i]["score_from"] // align * align
+                if a0 > prev: parts.append((hist, a0, 0, prev, "hist", hist))
+                parts.append((i, g.ntok(i), g.nrows(i, g.ntok(i)), a0, "cut_last" if j == len(ok) - 1 else "cut", hist)); prev = a0
+            u = Unit(parts, ok); nb += len(ok)
+            if u.rows >= int(sp.get("min_rows", 16)): self.items.append((u, u.m_eff, u.rows))
+        self.branch = {"sessions": len(key), "units": len(self.items), "cuts_branched": nb, "cuts_separate": len(sep), "align": align}
+        return sep
 
 
 def fixed_eval_docs(fe, calib):
@@ -95,7 +143,8 @@ def build(spec):
     seen = set()
     for s in srcs.values():
         for (i, n, nr) in s.items:
-            assert (s.golden, i) not in seen, f"{s.golden}:{i} in two sources"; seen.add((s.golden, i))
+            for i_ in ([p[0] for p in i.parts if p[4] != "hist"] if isinstance(i, Unit) else [i]):
+                assert (s.golden, i_) not in seen, f"{s.golden}:{i_} in two sources"; seen.add((s.golden, i_))
     have = sum(nr for s in srcs.values() for (_, _, nr) in s.items)
     assert have >= stop_rows, f"the sources hold {have} gen rows < budget_rows x (1 + margin) = {stop_rows:.0f} (single epoch): lower the budget or add data"
     # deep trace starts: two passes (the end step is known after the first)
@@ -112,7 +161,8 @@ def build(spec):
 def trace_starts(spec, traces, end_est, Q):
     if not traces: return []
     longest = max(n for _, (_, n, _) in traces)
-    hi = max(0, (end_est or 10 ** 9) - -(-longest // Q) - 2); lo = min(hi, int(spec.get("deep_first", 0)))
+    slack = int(float(spec.get("deep_slack", 0.05)) * (end_est or 0))       # w231: room for starts delayed by a full carried budget / max_long
+    hi = max(0, (end_est or 10 ** 9) - -(-longest // Q) - 2 - slack); lo = min(hi, int(spec.get("deep_first", 0)))
     given = None
     for s, _ in traces:
         if "starts" in s.sp: given = s.sp["starts"]
@@ -125,6 +175,7 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
     pend = list(zip(starts, traces))                       # (start step, (source, (doc, n, rows))) in start order
     nxt = {s.name: 0 for s in mix}                         # next unused item per source (single epoch)
     items, queues = [], [[] for _ in range(V)]
+    bstart, binfo, unit_m = {}, {}, {}                     # w231 branch units: item -> start offset / [role, start, golden, history doc] / the unit's m_eff
     cur_item = [None] * V; pos = [0] * V; cur = [0] * V; done = [False] * V
     rows_by = {s.name: 0 for s in srcs.values()}; out_at = {}; assigned = 0
     trace_log = []                                         # (item, stream, start step)
@@ -134,15 +185,28 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
     def active(r):
         return [queues[s][pos[s]] for s in range(V) if rank(s) == r and pos[s] < len(queues[s])]
 
-    def fits(r, n):
+    def emit(m, i, n, nr):
+        """the item(s) of a source entry: a plain document, or a branch unit's pieces in order"""
+        nonlocal assigned
+        rows_by[m.name] += nr; assigned += nr
+        if not isinstance(i, Unit):
+            items.append((m.golden, i, n, nr, False, m.name)); return [len(items) - 1]
+        out = []
+        for doc, e, r_, st, role, hdoc in i.parts:
+            items.append((m.golden, doc, e, r_, False, m.name)); k = len(items) - 1; out.append(k)
+            binfo[k] = [role, st, m.golden, hdoc]; unit_m[k] = i.m_eff
+            if st: bstart[k] = st
+        return out
+
+    def fits(r, n, dur=None):
         """the rank's carried state stays <= maxc from now until the new document ends, predicted: a long document's state grows Q a step
         from its current depth and is gone when it ends (the stream's next document is checked when it is taken), a short one counts whole"""
-        act = [(items[queues[s][pos[s]]][2], cur[s]) for s in range(V) if rank(s) == r and pos[s] < len(queues[s])]
-        if n > LT and sum(1 for m, _ in act if m > LT) >= ML: return False
-        k = np.arange(-(-n // Q) + 1) * Q
-        tot = np.minimum(k, n) if n > LT else np.full(len(k), n)
-        for m, d in act:
-            if m <= LT: tot = tot + m
+        act = [(unit_m.get(queues[s][pos[s]], items[queues[s][pos[s]]][2]), cur[s], queues[s][pos[s]] in unit_m) for s in range(V) if rank(s) == r and pos[s] < len(queues[s])]
+        if n > LT and sum(1 for m, _, _ in act if m > LT) >= ML: return False
+        k = np.arange(-(-(dur or n) // Q) + 1) * Q
+        tot = np.minimum(k, n) if n > LT and dur is None else np.full(len(k), n)     # a branch unit (dur = its tokens) counts its m_eff whole
+        for m, d, u in act:
+            if m <= LT or u: tot = tot + m
             else: dk = d + k; tot = tot + np.where(dk < m, dk, 0)
         return int(tot.max()) <= maxc
 
@@ -155,7 +219,7 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
             src, (i, n, nr) = pend[0][1]
             if dcnt[r] == min(dcnt) and fits(r, n):
                 pend.pop(0); items.append((src.golden, i, n, nr, True, src.name)); rows_by[src.name] += nr; assigned += nr
-                trace_log.append((len(items) - 1, s, t)); return len(items) - 1
+                trace_log.append((len(items) - 1, s, t)); return [len(items) - 1]
         if assigned >= stop_rows: return None if not pend else take_short(s, r)
         tot = sum(rows_by[m.name] for m in mix) or 1
         live = [m for m in mix if nxt[m.name] < len(m.items)]
@@ -168,14 +232,13 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
             L = m.items
             for k in range(nxt[m.name], min(len(L), nxt[m.name] + 64)):
                 i, n, nr = L[k]
-                if fits(r, n):
+                if fits(r, n, i.tokens if isinstance(i, Unit) else None):
                     L[nxt[m.name]], L[k] = L[k], L[nxt[m.name]]; nxt[m.name] += 1
-                    items.append((m.golden, i, n, nr, False, m.name)); rows_by[m.name] += nr; assigned += nr; return len(items) - 1
+                    return emit(m, i, n, nr)
         return take_short(s, r, force=True)
 
     def take_short(s, r, force=False):
         """a stream that must not idle (a trace is still pending, or nothing fits): the shortest unused document of any mixed source"""
-        nonlocal assigned
         best = None
         for m in mix:
             for k in range(nxt[m.name], len(m.items)):
@@ -183,9 +246,8 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         if best is None: return None
         m, k, (i, n, nr) = best; L = m.items
         L[nxt[m.name]], L[k] = L[k], L[nxt[m.name]]; nxt[m.name] += 1
-        items.append((m.golden, i, n, nr, False, m.name)); rows_by[m.name] += nr; assigned += nr
         if force: over.append((len(steps), s))
-        return len(items) - 1
+        return emit(m, i, n, nr)
 
     over = []
     t = 0
@@ -195,10 +257,12 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
             segs, q = [], Q
             while q > 0 and not done[s]:
                 if pos[s] == len(queues[s]):
-                    it = take(s, t)
-                    if it is None: done[s] = True; break
-                    queues[s].append(it)
-                it = queues[s][pos[s]]; n = items[it][2]; a = cur[s]
+                    its = take(s, t)
+                    if its is None: done[s] = True; break
+                    queues[s].extend(its)
+                it = queues[s][pos[s]]; n = items[it][2]
+                if cur[s] == 0: cur[s] = bstart.get(it, 0)
+                a = cur[s]
                 b = min(n, a + q)
                 if n - b < min_tail: b = n
                 segs.append((it, a, b)); q -= b - a
@@ -209,7 +273,7 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         if any(st): steps.append(st)
         t += 1
         assert t < 10 ** 6, "plan does not end"
-    return dict(items=items, queues=queues, steps=steps, rows_by=rows_by, out_at=out_at, trace_log=trace_log, starts=starts, over=over, srcs=srcs,
+    return dict(items=items, queues=queues, steps=steps, bstart=bstart, binfo=binfo, nxt=nxt, rows_by=rows_by, out_at=out_at, trace_log=trace_log, starts=starts, over=over, srcs=srcs,
                 last=last_step(items, steps, budget, srcs))
 
 
@@ -246,6 +310,8 @@ def report(spec, plan, tsv=None):
                 cum += m
             if segs:
                 it, a, b = segs[-1]; car[s % R] += b if b < items[it][2] else 0
+                bi = plan["binfo"].get(it)                      # w231: a cut in progress also holds the history snapshot (its start depth); a history piece just ended holds it
+                if bi is not None and (bi[0] == "cut" and b < items[it][2] or bi[0] == "hist" and b >= items[it][2]): car[s % R] += bi[1] if bi[0] == "cut" else b
                 dn += any(items[it_][4] for it_, _, _ in segs)
         cost.append(c); carried.append(car); deepn.append(dn)
     cs = np.array(cost[:last]); cr = np.array(carried[:last])
@@ -256,9 +322,17 @@ def report(spec, plan, tsv=None):
                 src = items[it][5]; tok_src[src] = tok_src.get(src, 0) + b - a; cost_src[src] = cost_src.get(src, 0.0) + seg_cost(a, b, seg_rows(byg, items, it, a, b))
     pool = {}
     for s in srcs.values():                                 # the whole source (all its usable documents): rows a token, and the cost of training all of it
-        t_ = sum(n for _, n, _ in s.items); r_ = sum(nr for _, _, nr in s.items)
-        c_ = sum(seg_cost(a_, min(n, a_ + Q), len(s.g.scored(i, a_, min(n, a_ + Q))[0])) for i, n, _ in s.items for a_ in range(0, n, Q))
-        pool[s.name] = {"docs": len(s.items), "tokens": t_, "rows": r_, "rows_per_token": round(r_ / max(1, t_), 3), "cost_all": round(c_)}
+        def dcost(i, a0, n): return sum(seg_cost(a_, min(n, a_ + Q), len(s.g.scored(i, a_, min(n, a_ + Q))[0])) for a_ in range(a0, n, Q))
+        t_ = r_ = 0; c_ = cf = 0.0; nd = 0
+        for i, n, nr in s.items:
+            if isinstance(i, Unit):                         # w231: the session's history once + each cut from its branch point
+                t_ += i.tokens; r_ += i.rows; nd += len(i.cuts)
+                c_ += sum(dcost(doc, st, e) for doc, e, _, st, _, _ in i.parts); cf += sum(dcost(c, 0, s.g.ntok(c)) for c in i.cuts)
+            else:
+                t_ += n; r_ += nr; nd += 1; x = dcost(i, 0, n); c_ += x; cf += x
+        pool[s.name] = {"docs": nd, "tokens": t_, "rows": r_, "rows_per_token": round(r_ / max(1, t_), 3), "cost_all": round(c_), "cost_per_row": round(c_ / max(1, r_), 2)}
+        if s.branch is not None:
+            pool[s.name]["branch"] = dict(s.branch, cost_all_full_prefix=round(cf), cost_per_row_full_prefix=round(cf / max(1, r_), 2))
     tot = sum(rows_src.values())
     out = {"steps": len(steps), "last": last, "rows_to_last": int(sum(rows_src.values())),
            "share_rows": {k: round(v / tot, 4) for k, v in sorted(rows_src.items())},
@@ -273,7 +347,7 @@ def report(spec, plan, tsv=None):
                                   "rank_imbalance_mean": round(float((cs.max(1) / np.maximum(cs.mean(1), 1e-9)).mean()), 3)},
            "carried_gib_per_rank": {"max": round(float(cr.max()) * KV_BYTES / 2**30, 1), "p95": round(float(np.percentile(cr.max(1), 95)) * KV_BYTES / 2**30, 1)},
            "max_deep_streams": int(max(deepn[:last] or [0])), "forced_over_bound": len(plan["over"]),
-           "unused_docs": {s.name: len(s.items) - sum(1 for x in items if x[5] == s.name) for s in srcs.values()}}
+           "unused_entries": {s.name: len(s.items) - (plan["nxt"][s.name] if s.name in plan["nxt"] else len(plan["trace_log"])) for s in srcs.values()}}
     if tsv:
         with open(tsv, "w") as f:
             f.write("step\t" + "\t".join(f"cost_r{r}" for r in range(R)) + "\t" + "\t".join(f"carried_tok_r{r}" for r in range(R)) + "\tdeep_streams\n")
@@ -295,12 +369,12 @@ def main():
     spec = json.load(open(a[0])); outp = a[1]; tsv = a[a.index("--steps-tsv") + 1] if "--steps-tsv" in a else None
     plan = build(spec)
     items = [[x[0], x[1], x[2], x[3]] for x in plan["items"]]
-    chk = D.plan([(0, x[1], x[2], x[3]) for x in items], None, spec["V"], spec["Q"], queues=plan["queues"])
+    chk = D.plan([(0, x[1], x[2], x[3]) for x in items], None, spec["V"], spec["Q"], queues=plan["queues"], starts=plan["bstart"])
     assert chk == plan["steps"], "data181.plan on the queues differs from the simulation"
     summ = report(spec, plan, tsv)
     gold = {s.golden: {"dir": s.dir, "genmask": s.genmask} for s in plan["srcs"].values()}
     out = {"format": "plan231", "V": spec["V"], "Q": spec["Q"], "ranks": spec.get("ranks", 1), "goldens": gold, "items": items, "queues": plan["queues"],
-           "budget_rows": spec["budget_rows"], "spec": spec, "summary": summ}
+           "budget_rows": spec["budget_rows"], "spec": spec, "summary": summ, "branch": {str(k): v for k, v in plan["binfo"].items()}}
     json.dump(out, open(outp + ".part", "w")); os.replace(outp + ".part", outp)
     print(json.dumps(summ, indent=1, default=str))
     if not summ["trace_ends_by_last"]: print("WARNING: not every deep trace trains whole by the budget's step (too many / too long for the carried bound and max_long, or starts too late): fewer traces, a larger bound or earlier starts")

@@ -1,0 +1,4 @@
+# gate231.sh gpu231c.txt A -- w231 branch-vs-separate on one card: 6 sessions x 3 cuts cut from tr32k-b1 (mkcuts231.py, /data/q27/w231/br), every plan step in ONE optimizer step (--accum 1000):
+# branch plan (history walked once, cuts branched) vs each cut a full-prefix document; same rows, same segment boundaries -> train_kl and gnorm of step 1 equal within rounding
+w231-brB A 2.50 16210 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --dynamo-limit 64 --V 6 --accum 1000 --snap-at none --plan231 /data/q27/w231/br/plan-true.json
+w231-brS A 2.50 16210 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --dynamo-limit 64 --V 6 --accum 1000 --snap-at none --plan231 /data/q27/w231/br/plan-false.json

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """testplan231.py -- w231: plan231.py + qad220 --plan231 on synthetic goldens (CPU, no model; runs on the VM). Sources: calib (2k-20k, cap 8k, pools
-with a verify pool and qad220's fixed-eval pool), teacher cuts (8k-40k, only the last 25-50 % scored), long docs (10k-40k, cap 32k) and 4 deep traces
+with a verify pool and qad220's fixed-eval pool), teacher cuts (8k-40k, only the last 25-50 % scored), long docs (10k-40k, cap 32k), w231 multi-cut sessions (branch units) and 4 deep traces
 (60k-80k), V 8 x Q 1024, 2 ranks, budget 1M rows. Checks: data181.plan on the queues = the builder (asserted in plan231), single epoch, judges /
 verify / fixed-eval docs absent, source shares within 3 points of the targets, traces start as scheduled on alternating ranks and end before the
 budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps. Exit 0 = all pass."""
@@ -30,6 +30,29 @@ def golden(d, lens, sfrom, gen_frac=1.0, seed=0):
     return r0
 
 
+def sessions(d, rg, ns=30):
+    """w231: a cut golden with REAL tokens: ns sessions (history 10k-40k), 2-4 cuts each = history[:P] + a generated turn (1-3k, scored);
+    plus one cut whose prefix differs from its history at one token (re-tokenised) and one cut shorter than 1024 tokens: both must stay separate docs"""
+    os.makedirs(d, exist_ok=True); docs, toks, meta = [], [], []
+    for s_ in range(ns):
+        L = int(rg.integers(10000, 40000)); hist = rg.integers(1, 1000, L)
+        Ps = sorted(rg.choice(np.arange(2000, L), int(rg.integers(2, 5)), replace=False))
+        if s_ == 0: Ps = [600] + list(Ps)
+        for k, P in enumerate(Ps):
+            h = hist[:P].copy()
+            if s_ == 1 and k == 0: h[P // 2] += 1
+            g = rg.integers(1, 1000, int(rg.integers(1000, 3000))); t = np.concatenate([h, g])
+            docs.append((len(t), int(P))); toks.append(t); meta.append({"session": f"s{s_}", "cut": k})
+    r0, js = 0, []
+    for n, P in docs: js.append({"tokens": n, "score_from": P, "row0": r0}); r0 += n - 1 - P
+    json.dump({"docs": js, "top": 2, "rows": r0}, open(f"{d}/kld.json", "w")); np.concatenate(toks).astype(np.int32).tofile(f"{d}/tokens.i32")
+    for fn, sz in (("top.bin", 16 * r0), ("rows.f32", 12 * r0)):
+        with open(f"{d}/{fn}", "wb") as f: f.truncate(sz)
+    np.ones(r0, np.uint8).tofile(f"{d}/gen.u8")
+    with open(f"{d}/corpus.meta.jsonl", "w") as f: f.writelines(json.dumps(m) + "\n" for m in meta)
+    return docs, meta
+
+
 def main():
     T = tempfile.mkdtemp(); rg = np.random.default_rng(1)
     nc = 400; cl = rg.integers(2000, 20000, nc); golden(f"{T}/calib", cl, np.zeros(nc, int), 0.8, 1)
@@ -39,13 +62,15 @@ def main():
     nt = 80; tl = rg.integers(8000, 40000, nt); gl = (tl * rg.uniform(0.25, 0.5, nt)).astype(int); golden(f"{T}/tset", tl, tl - gl, 1.0, 2)
     nx = 60; xl = rg.integers(10000, 40000, nx); golden(f"{T}/xgl", xl, np.zeros(nx, int), 1.0, 3)
     nd = 4; dl = rg.integers(60000, 80000, nd); golden(f"{T}/trd", dl, np.zeros(nd, int), 1.0, 4)
+    sdocs, smeta = sessions(f"{T}/tses", rg)
     golden(f"{T}/xcs", rg.integers(500, 3000, 20), np.zeros(20, int), 1.0, 5)
     os.makedirs(f"{T}/gm", exist_ok=True); os.link(f"{T}/xcs/gen.u8", f"{T}/gm/xcs.u8")
     fe = {"pools": f"{T}/pools.json", "pool": "train214", "seed": 2181, "rows": 20000, "len": 2048}
     spec = {"V": 8, "Q": 1024, "ranks": 2, "seed": 0, "budget_rows": 1e6, "margin": 0.02, "max_carried_tokens": 200000, "long_tokens": 16384, "max_long": 2,
             "phases_rows": [3e5], "exclude_calib": [f"{T}/judge.json"], "fixed_eval": fe, "deep_first": 5,
-            "sources": {"calib": {"golden": "calib", "dir": f"{T}/calib", "pools": f"{T}/pools.json", "pool": ["qad", "fit", "search", "train214"], "cap": 8192, "share": 0.5},
-                        "teach": {"golden": "tset", "dir": f"{T}/tset", "share": 0.3},
+            "sources": {"calib": {"golden": "calib", "dir": f"{T}/calib", "pools": f"{T}/pools.json", "pool": ["qad", "fit", "search", "train214"], "cap": 8192, "share": 0.45},
+                        "teach": {"golden": "tset", "dir": f"{T}/tset", "share": 0.2},
+                        "sess": {"golden": "tses", "dir": f"{T}/tses", "branch": True, "session_key": "session", "share": 0.15},
                         "long": {"golden": "xgl", "dir": f"{T}/xgl", "cap": 32768, "share": 0.2},
                         "traces": {"golden": "trd", "dir": f"{T}/trd", "deep": True}}}
     json.dump(spec, open(f"{T}/spec.json", "w"))
@@ -54,8 +79,29 @@ def main():
     check("plan231 builds (data181.plan on its queues = its simulation)", r.returncode == 0)
     if r.returncode: return finish()
     P = json.load(open(f"{T}/plan.json")); S = P["summary"]; items = P["items"]
-    keys = [(x[0], x[1]) for x in items]
-    check("single epoch: no document twice", len(keys) == len(set(keys)))
+    BR = {int(k): v for k, v in P.get("branch", {}).items()}
+    keys = [(x[0], x[1]) for k, x in enumerate(items) if BR.get(k, [""])[0] != "hist"]
+    check("single epoch: no document twice (session history pieces aside)", len(keys) == len(set(keys)))
+    # w231 branch units
+    used = {x[1] for k, x in enumerate(items) if x[0] == "tses" and BR.get(k, [""])[0] != "hist"}
+    bad = []
+    for q in P["queues"]:
+        for j, it in enumerate(q):
+            b = BR.get(it)
+            if b is None: continue
+            role, st, _, hdoc = b; doc = items[it][1]
+            if role == "hist" and not (j + 1 < len(q) and BR.get(q[j + 1], [""])[0].startswith("cut") and BR[q[j + 1]][1] == items[it][2] and doc == hdoc): bad.append(("hist", it))
+            if role.startswith("cut") and st != sdocs[doc][1] // 1024 * 1024: bad.append(("start", it))
+            if role == "cut" and not (j + 1 < len(q) and q[j + 1] in BR): bad.append(("unit broken", it))
+    sep = [k for k, x in enumerate(items) if x[0] == "tses" and k not in BR]
+    sepdocs = {items[k][1] for k in sep}; tok = lambda i: smeta[i]
+    check("branch units: each history piece ends where the next cut starts (same stream, in order), cuts start at their prefix rounded down to 1024",
+          not bad and len(BR) > 0, f"{sum(1 for v in BR.values() if v[0] != 'hist')} cuts branched, {len(sep)} separate; problems {bad[:3]}")
+    check("the re-tokenised cut and the < 1024-token-prefix cut stay separate full-prefix documents (if used)",
+          all(not (smeta[i]["session"] == "s1" and smeta[i]["cut"] == 0) or i in sepdocs for i in used) and all(not (smeta[i]["session"] == "s0" and smeta[i]["cut"] == 0) or i in sepdocs for i in used),
+          f"separate docs {sorted(sepdocs)}")
+    bs = S["sources"]["sess"]["branch"]
+    check("branch units cost less a row than full-prefix documents", S["sources"]["sess"]["cost_per_row"] < bs["cost_per_row_full_prefix"], json.dumps(S["sources"]["sess"]))
     sys.path.insert(0, HERE); import plan231 as PL
     fed = set(PL.fixed_eval_docs(fe, D.Gold(f"{T}/calib", "calib")))
     cal = {x[1] for x in items if x[0] == "calib"}
@@ -76,10 +122,11 @@ def main():
         rank, world = 0, 2
         def barrier(self): pass
     B = Q.build_data(a, D1(), print)
-    sim = D.plan([(0, x[1], x[2], x[3]) for x in items], None, 8, 1024, queues=P["queues"])
+    sim = D.plan([(0, x[1], x[2], x[3]) for x in items], None, 8, 1024, queues=P["queues"], starts={k: v[1] for k, v in BR.items() if v[1]})
     same_items = [(B["C"].g[gi].name, i, n, nr) for gi, i, n, nr in B["C"].items] == [tuple(x) for x in items]
     check("qad220 build_data --plan231: the plan's documents and steps", same_items and B["steps"] == sim, f"{len(B['steps'])} steps, last {B['last']}")
     check("qad220's budget step = the builder's", B["last"] == S["last"], f"{B['last']} vs {S['last']}")
+    check("qad220 loads the branch roles (history / cut / last cut, starts, source docs)", {k: (v[0], v[1], v[3]) for k, v in B["C"].branch.items()} == {k: (v[0], v[1], v[3]) for k, v in BR.items()} and B["C"].starts == {k: v[1] for k, v in BR.items() if v[1]})
     finish()
 
 

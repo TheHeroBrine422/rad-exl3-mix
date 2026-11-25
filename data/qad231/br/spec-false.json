@@ -1,0 +1,1 @@
+{"V": 6, "Q": 1024, "ranks": 1, "seed": 0, "budget_rows": 16210, "margin": 0.0, "max_carried_tokens": 10000000, "long_tokens": 1000000, "max_long": 99, "sources": {"brcuts": {"golden": "brcuts", "dir": "/data/q27/w231/br/brcuts", "share": 1.0, "branch": false, "session_key": "session"}}}

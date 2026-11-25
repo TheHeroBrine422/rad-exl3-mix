@@ -28,3 +28,13 @@ T4 ARM 2.50 BUDGETS READS --split-layers 32 --pipeline --attn-gqa --state-card-g
    --lr ... --compile-scales --compile-ew --a8-int8 @cards=0 @partner=1,2,3
 ```
 Dispatchers need a restart from the new `qcard.sh` to claim T4 (`touch QROOT/stop-card<N>` + `qwait.sh`). Start `memguard231.sh ARM ckpt-<final> 10` beside it.
+
+## Branch training for multi-cut sessions (w231 follow-up)
+A session's real history is walked once (no grad) and each cut's teacher turn is trained from its branch point (prefix rounded down to 1024) on a copy of
+the history state; the history continues from the snapshot (qad220 `Trainer.branch_in` / `branch_out`, roles hist / cut / cut_last from the plan's
+`branch` map; `data181.plan(starts=)`). Same rows, losses and gradients as each cut as its own full-prefix document with the same segment boundaries
+(`testbranch231.py`: bit for bit on one card, naive split, pipeline and 2 ranks). A lost snapshot (resume) falls back to the old prefix rebuild.
+plan231 source option `"branch": true, "session_key": "sidx"` (cuts whose tokens before the branch point differ from the history stay separate documents).
+GPU check: `mkcuts231.py` (a multi-cut golden cut from tr32k-b1) + `gate231.sh gpu231c.txt A` (branch vs separate in one optimizer step).
+Memory: one extra state copy per stream while a cut trains = 64 KB a token of KV + ~0.15 GiB GDN / conv state: 2.2 / 4.2 / 6.2 GiB at 32k / 64k / 96k
+(counted in plan231's carried cap via the unit's m_eff).

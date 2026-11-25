@@ -1,0 +1,7 @@
+w231 set-1 cost estimate (11-25 ~4 AM CST) from w230's cut list (box2 /data/q27/teach230/render-t1/cuts.jsonl: 1616 cuts, 379 sessions, 4.26 cuts/session,
+prefix p50 19,964 / p90 53,389 / max 95,932; deepest per session p50 33,991 / p90 75,831), plan231's cost model (scored token 1, unscored 1/3, x (1 + depth/100k)),
+branch point = prefix rounded down to 1024, generation length G per cut (189 finished gens so far: mean 245, median 124 -- early finishers, biased short):
+gen   245: cost/row full-prefix 46.40, branched 18.29 (x2.54); set-1 rows 0.40M, cost full 18.4M, branched 7.2M
+gen  1240: cost/row full-prefix 10.19, branched 4.63 (x2.20); set-1 rows 2.00M, cost full 20.4M, branched 9.3M   (w230's target: ~2.0M gen tokens)
+gen  3000: cost/row full-prefix 4.97, branched 2.67 (x1.86); set-1 rows 4.85M, cost full 24.1M, branched 12.9M
+calib: 1.11 units / row.

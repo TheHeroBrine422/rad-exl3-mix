@@ -1,10 +1,189 @@
+{
+ "steps": 234,
+ "last": 195,
+ "rows_to_last": 1002234,
+ "share_rows": {
+  "calib": 0.3294,
+  "long": 0.1563,
+  "sess": 0.0929,
+  "teach": 0.1212,
+  "traces": 0.3003
+ },
+ "share_tokens": {
+  "calib": 0.2597,
+  "long": 0.0986,
+  "sess": 0.2422,
+  "teach": 0.2101,
+  "traces": 0.1895
+ },
+ "share_cost": {
+  "calib": 0.2937,
+  "long": 0.1155,
+  "sess": 0.1542,
+  "teach": 0.1521,
+  "traces": 0.2845
+ },
+ "run_cost_to_last": 1457877,
+ "sources": {
+  "calib": {
+   "docs": 264,
+   "tokens": 1904534,
+   "rows": 1524148,
+   "rows_per_token": 0.8,
+   "cost_all": 1977015,
+   "cost_per_row": 1.3
+  },
+  "teach": {
+   "docs": 80,
+   "tokens": 1930787,
+   "rows": 681652,
+   "rows_per_token": 0.353,
+   "cost_all": 1321966,
+   "cost_per_row": 1.94
+  },
+  "sess": {
+   "docs": 94,
+   "tokens": 808856,
+   "rows": 186608,
+   "rows_per_token": 0.231,
+   "cost_all": 477270,
+   "cost_per_row": 2.56,
+   "branch": {
+    "sessions": 30,
+    "units": 30,
+    "cuts_branched": 92,
+    "cuts_separate": 2,
+    "align": 1024,
+    "cost_all_full_prefix": 727223,
+    "cost_per_row_full_prefix": 3.9
+   }
+  },
+  "long": {
+   "docs": 60,
+   "tokens": 1344420,
+   "rows": 1344373,
+   "rows_per_token": 1.0,
+   "cost_all": 1511978,
+   "cost_per_row": 1.12
+  },
+  "traces": {
+   "docs": 4,
+   "tokens": 300962,
+   "rows": 300958,
+   "rows_per_token": 1.0,
+   "cost_all": 414812,
+   "cost_per_row": 1.38
+  }
+ },
+ "rows_by_phase": {
+  "calib": [
+   105774,
+   224347
+  ],
+  "teach": [
+   40826,
+   80623
+  ],
+  "long": [
+   50549,
+   106065
+  ],
+  "sess": [
+   28395,
+   64697
+  ],
+  "traces": [
+   74752,
+   226206
+  ]
+ },
+ "trace_rows_by_depth_band_64k_and_phase": {
+  "0k+": [
+   74752,
+   188467
+  ],
+  "64k+": [
+   0,
+   37739
+  ]
+ },
+ "trace_starts": [
+  [
+   "trd",
+   1,
+   65556,
+   6,
+   5
+  ],
+  [
+   "trd",
+   3,
+   78253,
+   1,
+   40
+  ],
+  [
+   "trd",
+   2,
+   78985,
+   2,
+   74
+  ],
+  [
+   "trd",
+   0,
+   78168,
+   1,
+   116
+  ]
+ ],
+ "trace_ends_by_last": true,
+ "planned_starts": [
+  5,
+  39,
+  74,
+  108
+ ],
+ "source_exhausted_at_step": {},
+ "step_cost_per_rank": {
+  "mean": 3738.1,
+  "max": 5180.8,
+  "p95": 4808.0,
+  "rank_imbalance_mean": 1.133
+ },
+ "carried_gib_per_rank": {
+  "max": 7.3,
+  "p95": 6.1
+ },
+ "max_deep_streams": 2,
+ "forced_over_bound": 0,
+ "unused_entries": {
+  "calib": 207,
+  "teach": 56,
+  "sess": 14,
+  "long": 49,
+  "traces": 0
+ }
+}
+ 
 PASS plan231 builds (data181.plan on its queues = its simulation)
-PASS single epoch: no document twice
-PASS no judge / verify / fixed-eval calib doc in the plan  [62 calib docs, 13 fixed-eval]
-PASS source shares (rows to the budget's step, traces aside) within 3 points of the targets  [{'calib': 0.358, 'long': 0.1457, 'teach': 0.1962, 'traces': 0.3001}]
-PASS 4 traces started, each at its planned step or later (a free stream / carried room), on both ranks  [planned [5, 36, 66, 97], started [(0, 7), (3, 37), (1, 68), (6, 97)]]
-PASS every trace ends before the budget's step  [last 179]
-PASS carried bound held (no forced document over the bound)  [{"max": 8.5, "p95": 7.1}]
-PASS qad220 build_data --plan231: the plan's documents and steps  [183 steps, last 179]
-PASS qad220's budget step = the builder's  [179 vs 179]
+PASS single epoch: no document twice (session history pieces aside)
+PASS branch units: each history piece ends where the next cut starts (same stream, in order), cuts start at their prefix rounded down to 1024  [47 cuts branched, 2 separate; problems []]
+PASS the re-tokenised cut and the < 1024-token-prefix cut stay separate full-prefix documents (if used)  [separate docs [0, 5]]
+PASS branch units cost less a row than full-prefix documents  [{"docs": 94, "tokens": 808856, "rows": 186608, "rows_per_token": 0.231, "cost_all": 477270, "cost_per_row": 2.56, "branch": {"sessions": 30, "units": 30, "cuts_branched": 92, "cuts_separate": 2, "align": 1024, "cost_all_full_prefix": 727223, "cost_per_row_full_prefix": 3.9}}]
+PASS no judge / verify / fixed-eval calib doc in the plan  [57 calib docs, 13 fixed-eval]
+PASS source shares (rows to the budget's step, traces aside) within 3 points of the targets  [{'calib': 0.3294, 'long': 0.1563, 'sess': 0.0929, 'teach': 0.1212, 'traces': 0.3003}]
+PASS 4 traces started, each at its planned step or later (a free stream / carried room), on both ranks  [planned [5, 39, 74, 108], started [(6, 5), (1, 40), (2, 74), (1, 116)]]
+PASS every trace ends before the budget's step  [last 195]
+PASS carried bound held (no forced document over the bound)  [{"max": 7.3, "p95": 6.1}]
+corpus 100 documents in 0 s: {"calib": {"docs": 80, "tokens": 581330, "rows": 465181}, "xcs": {"docs": 20, "tokens": 32147, "rows": 32127}}
+chunk list: 1 golden dirs, sha1 fdff3d5e17c5 (/tmp/tmp3jpkuaz0/xcs .. /tmp/tmp3jpkuaz0/xcs)
+fixed eval: 13 qad-pool docs, 21319 rows (first 2048 tokens), held out of training (13 items removed)
+--plan231: 47 cuts branched off 16 session histories
+--plan231 /tmp/tmp3jpkuaz0/plan.json: 190 documents in 8 stream queues (single epoch), goldens calib, tset, tses, xgl, trd: {"calib": {"docs": 57, "tokens": 414493, "rows": 331763}, "trd": {"docs": 4, "tokens": 300962, "rows": 300958}, "tses": {"docs": 94, "tokens": 1415414, "rows": 99476}, "tset": {"docs": 24, "tokens": 351556, "rows": 131352}, "xgl": {"docs": 11, "tokens": 158751, "rows": 158740}}
+plan: 234 steps of 8 x 1024 (data 1022289 rows); main to step 195 (1002234 rows), decay from step 152; branches ; order shuffle seed 0 (sha1 b324c53ca5e7); gen rows to the budget by corpus {"calib": [330121, 0.3294], "trd": [300958, 0.3003], "tses": [93092, 0.0929], "tset": [121449, 0.1212], "xgl": [156614, 0.1563]}
+PASS qad220 build_data --plan231: the plan's documents and steps  [234 steps, last 195]
+PASS qad220's budget step = the builder's  [195 vs 195]
+PASS qad220 loads the branch roles (history / cut / last cut, starts, source docs)
+
 ALL PASS

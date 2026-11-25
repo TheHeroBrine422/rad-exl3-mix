@@ -1,0 +1,19 @@
+{
+ "brcuts": {
+  "docs": 18,
+  "tokens": 172032,
+  "rows": 16210,
+  "rows_per_token": 0.094,
+  "cost_all": 86713,
+  "cost_per_row": 5.35,
+  "branch": {
+   "sessions": 6,
+   "units": 6,
+   "cuts_branched": 18,
+   "cuts_separate": 0,
+   "align": 1024,
+   "cost_all_full_prefix": 136909,
+   "cost_per_row_full_prefix": 8.45
+  }
+ }
+}
