@@ -18,7 +18,7 @@ while ! stopped; do
   eval "exec {lk}>$(CARDLOCK $CARD)"
   flock -w 60 $lk || { exec {lk}>&-; continue; }
   stopped && break
-  LINE=$($QQ claim $QROOT $CARD $$ --caps M,U,T2) || { exec {lk}>&-; sleep 5; continue; }
+  LINE=$($QQ claim $QROOT $CARD $$ --caps M,U,T2,T4) || { exec {lk}>&-; sleep 5; continue; }
   eval "set -- $LINE"; KIND=$1 KEY=$2 ARM=$3 SIZE=$4 BUD=$5 READS=$6 CKD=$7 CTL=$8 ST=$9; shift 9
   qsay "card $CARD takes $KEY ($KIND $ARM $SIZE; $ST)"
   export QCARD_LOCKED=1
@@ -36,28 +36,33 @@ while ! stopped; do
     qsay "card $CARD+$PARTNER $ARM taps rc $rc"
     if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; elif [ $rc -eq 0 ] && [ -e $CKD/.done ]; then fin ok 0; else fin fail $rc; fi
     exec {lk2}>&-;;
-  T|B|T2)
+  T|B|T2|T4)
     LASTN=$($PY -c "print('%.0e' % float('${BUD##*,}'))"); TC=$CARD
-    if [ "$KIND" = T2 ]; then PARTNER=${1#partner=}; shift; fi
+    MULTI=0; [ "$KIND" = T2 ] || [ "$KIND" = T4 ] && MULTI=1
+    if [ $MULTI = 1 ]; then PARTNER=${1#partner=}; shift; fi
     if [ "$KIND" = B ] || [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then
-      if [ "$KIND" = T2 ]; then   # w226: two-card training: the partner's lock too (45 min at most, else the claim is released), the trainer sees both cards
-        eval "exec {lk2}>$(CARDLOCK $PARTNER)"; got=0
-        for try in $(seq 45); do flock -w 60 $lk2 && { got=1; break; }; stopped && break; done
-        if [ $got = 0 ]; then qsay "card $CARD $KEY: partner card $PARTNER not free in 45 min, claim released"; $QQ unclaim $QROOT $KEY; exec {lk2}>&-; unset QCARD_LOCKED; exec {lk}>&-; sleep 30; continue; fi
-        TC=$CARD,$PARTNER
+      if [ $MULTI = 1 ]; then   # w226 / w231: the partners' locks too (45 min at most each, else all are released with the claim); T2: the trainer sees both cards, T4: two ranks A,B+C,D
+        PFDS=(); got=1
+        for P in ${PARTNER//,/ }; do
+          eval "exec {lk2}>$(CARDLOCK $P)"; PFDS+=($lk2); ok_p=0
+          for try in $(seq 45); do flock -w 60 $lk2 && { ok_p=1; break; }; stopped && break; done
+          [ $ok_p = 1 ] || { got=0; break; }
+        done
+        if [ $got = 0 ]; then qsay "card $CARD $KEY: partner cards $PARTNER not free in 45 min, claim released"; $QQ unclaim $QROOT $KEY; for f in "${PFDS[@]}"; do eval "exec $f>&-"; done; unset QCARD_LOCKED; exec {lk}>&-; sleep 30; continue; fi
+        if [ "$KIND" = T2 ]; then TC=$CARD,$PARTNER; else PS=(${PARTNER//,/ }); TC=$CARD,${PS[0]}+${PS[1]},${PS[2]}; fi
       fi
       tries=0
       while true; do $HERE/qrun.sh $MACHINE $ARM $TC $SIZE $BUD "$@" {inst}>&-; rc=$?
         case $rc in 75|76) sleep 120; continue;; esac
         # w226: a two-card run that crashed after a saved state resumes (up to 10 times): w225's pipeline hits a sporadic CUDA illegal memory access (g226-gate step 13, D256-25 step 79; the resumed runs pass the spot)
-        if [ "$KIND" = T2 ] && [ $rc -ne 0 ] && [ $tries -lt 10 ] && [ -e $QROOT/runs/$ARM/state.pt ] && [ ! -e $QROOT/cancel/$KEY ] && [ ! -e $QROOT/runs/$ARM/STOP ]; then
+        if [ $MULTI = 1 ] && [ $rc -ne 0 ] && [ $tries -lt 10 ] && [ -e $QROOT/runs/$ARM/state.pt ] && [ ! -e $QROOT/cancel/$KEY ] && [ ! -e $QROOT/runs/$ARM/STOP ]; then
           tries=$((tries + 1)); qsay "card $TC $ARM rc $rc: resuming from state.pt (retry $tries of 10)"; sleep 30; continue; fi
         break; done
       qsay "card $TC train $ARM rc $rc"
-      if [ "$KIND" = T2 ]; then $QQ freepartner $QROOT $KEY; exec {lk2}>&-; qsay "card $CARD $KEY: partner card $PARTNER released"; fi
+      if [ $MULTI = 1 ]; then $QQ freepartner $QROOT $KEY; for f in "${PFDS[@]}"; do eval "exec $f>&-"; done; qsay "card $CARD $KEY: partner cards $PARTNER released"; fi
       if [ -e $QROOT/cancel/$KEY ]; then fin cancelled $rc; ok=0
       elif [ $rc -ne 0 ]; then fin fail $rc; ok=0
-      elif [ "$KIND" = T ] && [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then fin fail "0(no-final-checkpoint)"; ok=0
+      elif [ "$KIND" != B ] && [ ! -e $QROOT/runs/$ARM/ckpt-$LASTN/.done ]; then fin fail "0(no-final-checkpoint)"; ok=0
       fi
     fi
     if [ $ok = 1 ] && [ "$KIND" = B ]; then touch $QROOT/runs/$ARM/bench.done; fin ok $rc; ok=0; fi

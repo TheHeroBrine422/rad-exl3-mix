@@ -11,10 +11,12 @@ dispatcher, or not ready (a missing `@needs` path / checkpoint). Job lines (shle
                                       other card; the partner's dispatcher takes no new job while the claim is live, so P frees up) and gives the trainer both cards; done when TAPDIR/.done exists
   T2 ARM SIZE BUDGETS READS flags...  two-card training (w226; the trainer's --split-layers / --pipeline flags go in the line): T's outputs and reads, @cards / @partner as M; the partner card is
                                       held for the training only (`qq.py freepartner` after it: the reads run on the claimant's card while the partner's dispatcher takes jobs again)
+  T4 ARM SIZE BUDGETS READS flags...  four-card training (w231): T2 with @partner=B,C,D (three cards, all held for the training); the trainer runs as two data-parallel ranks, rank 0 on
+                                      cards A,B and rank 1 on C,D (qrun.sh A,B+C,D: each a --split-layers / --pipeline pair, gradients summed over the ranks every step)
   QROOT/only-card<N> (w226): if present, card N takes only the job kinds it lists (whitespace-separated, e.g. "R U").
   directives anywhere after the fixed fields:  @cards=N,N  @partner=N  (M jobs)  @needs=PATH[,PATH..] (absolute, or relative to runs/; the job waits until all exist)   @budgets=B (B lines: the trainer's --budgets, default 2.5e5,5e5)   `{lam}` / `{lam*0.3}` in a line = the first number of QROOT/lambda.txt (x the factor; the line also waits for that file)   @ctl=ARM (control arm for the paired column)
   `{runs}` in any field expands to ROOT/runs.
-usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M,U,T2] | freepartner ROOT KEY | unclaim ROOT KEY | finish ROOT KEY ok|fail|cancelled RC | status ROOT | key LINE..."""
+usage: qq.py peek ROOT [CARD] | claim ROOT CARD PID [--caps M,U,T2,T4] | freepartner ROOT KEY | unclaim ROOT KEY | finish ROOT KEY ok|fail|cancelled RC | status ROOT | key LINE..."""
 import fcntl, os, shlex, socket, sys, time
 
 
@@ -69,11 +71,12 @@ def parse(line, root):
     kind, rest = t[0], t[1:]
     dirs = [x for x in rest if x.startswith("@")]; rest = [x for x in rest if not x.startswith("@")]
     d = dict(x[1:].split("=", 1) for x in dirs if "=" in x)
-    if kind in ("T", "T2"):
+    if kind in ("T", "T2", "T4"):
         assert len(rest) >= 4, f"{kind} needs ARM SIZE BUDGETS READS: {line}"
         arm, size, bud, reads = rest[:4]; j = dict(kind=kind, arm=arm, size=size, budgets=bud, reads=[] if reads == "-" else reads.split(","), flags=rest[4:], key=f"{kind}-{arm}")
         j["reads"] += [x for x in auto_snaps(root, j) if x not in j["reads"]]
-        if kind == "T2": assert "cards" in d and "partner" in d, f"T2 needs @cards= and @partner=: {line}"
+        if kind == "T2": assert "cards" in d and "partner" in d and "," not in d["partner"], f"T2 needs @cards= and @partner=N: {line}"
+        if kind == "T4": assert "cards" in d and "partner" in d and len(d["partner"].split(",")) == 3, f"T4 needs @cards= and @partner=B,C,D: {line}"
     elif kind == "R":
         assert len(rest) == 3, f"R needs ARM SIZE CKPT: {line}"
         arm, size, ck = rest; ck = ck if ck.startswith("/") else f"{root}/runs/{ck}"
@@ -143,15 +146,15 @@ def state(root, j):
 
 
 def reserved(root):
-    """cards held for a live M / T2 claim's partner: their dispatchers take no new job (a T2 claim marked `freepartner` after its training holds none)"""
+    """cards held for a live M / T2 / T4 claim's partners: their dispatchers take no new job (a claim marked `freepartner` after its training holds none)"""
     out = set()
     for j in jobs(root):
-        if j["kind"] in ("M", "T2"):
+        if j["kind"] in ("M", "T2", "T4"):
             cf = f"{root}/claims/{j['key']}"
             if os.path.exists(cf):
                 c = open(cf).read().split()
                 if "freepartner" in c: continue
-                if len(c) >= 3 and not (c[2] == socket.gethostname() and not alive(int(c[1]))): out.add(j["partner"])
+                if len(c) >= 3 and not (c[2] == socket.gethostname() and not alive(int(c[1]))): out.update(j["partner"].split(","))
     return out
 
 
@@ -177,14 +180,14 @@ def main():
             if s not in ("ready", "stale"): continue
             if j["cards"] is not None and card is not None and card not in j["cards"]: continue
             if only is not None and j["kind"] not in only: continue
-            if j["kind"] in ("M", "U", "T2") and a[0] == "claim" and j["kind"] not in caps: continue
+            if j["kind"] in ("M", "U", "T2", "T4") and a[0] == "claim" and j["kind"] not in caps: continue
             if a[0] == "claim":
                 open(f"{root}/claims/{j['key']}", "w").write(f"{a[2]} {a[3]} {socket.gethostname()} {time.strftime('%F %T')}\n")
-                line = [j["kind"], j["key"], j["arm"], j["size"], j.get("budgets") or "-", ",".join(j.get("reads", [])) or "-", j.get("ckptdir") or "-", j["ctl"] or "-", s] + (["partner=" + j["partner"]] if j["kind"] in ("M", "T2") else []) + j["flags"]
+                line = [j["kind"], j["key"], j["arm"], j["size"], j.get("budgets") or "-", ",".join(j.get("reads", [])) or "-", j.get("ckptdir") or "-", j["ctl"] or "-", s] + (["partner=" + j["partner"]] if j["kind"] in ("M", "T2", "T4") else []) + j["flags"]
                 print(" ".join(shlex.quote(x) for x in line))
             return 0
         return 1
-    if a[0] == "freepartner":                                 # T2: training done, the partner card is free again (the claim stays for the reads)
+    if a[0] == "freepartner":                                 # T2 / T4: training done, the partner card is free again (the claim stays for the reads)
         lk = locked(root); cf = f"{root}/claims/{a[2]}"
         if os.path.exists(cf):
             c = open(cf).read().rstrip("\n")
