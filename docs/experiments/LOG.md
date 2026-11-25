@@ -10241,3 +10241,17 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   Lead checks: manifest origins / tokens match, 0 pisess mentions. Dedup: chats / sessions at 50 % line overlap (shared repo files),
   text at 20 % / 25 lines, public strict. Caveat: Claude Code tool descriptions are one-line summaries (schemas real). #216 row added
   for the C228 arms. **Runtime:** none.
+- 11-24 8:45 PM CST: **#216 teacher vs student writer, full table** (vs the 10M end, 2.50, +1.55M rows each; `v3/qad228/full228.py`).
+  Judges on cuts no arm trained on: JT teacher traces 59 docs, JU teacher calib 20 (restricted from 64), JS student traces 59, JV
+  student calib 20; agent traces = held-out calib attrs / click (jlong gen rows).
+  | arm | jc228 | JT | JU | JS | JV | attrs / click |
+  | ctl | 0.993 | 0.999 | 0.998 | 0.999 | 0.997 | 1.001 / 0.998 |
+  | optr (teacher traces) | 1.000 | **0.933** | 1.000 | **0.937** | 1.001 | 0.987 / 0.988 |
+  | stud (student traces) | 0.999 | **0.934** | 1.003 | **0.933** | 1.000 | 0.992 / 0.990 |
+  | opcal (teacher calib) | 0.999 | 0.997 | **0.967** | 1.001 | 0.992 | 0.993 / 0.989 |
+  | studcal (student calib) | 1.002 | 1.008 | 0.977 | 1.006 | **0.980** | 1.005 / 1.002 |
+  | opmix | 0.998 | 0.960 | 0.969 | 0.966 | 0.988 | 0.988 / 0.985 |
+  CIs ±0.015 on JT / JS, ±0.02 on JU / JV. **Traces: writer doesn't matter** (teacher and student arms tie on both writers' text; the
+  teacher edges the real agent traces by ~0.4 %, within noise of n = 2). **Calib cuts: teacher better** (wins the real traces and its own
+  text; the student only wins on student text). No sign that student-written text teaches anything teacher text doesn't. C228-stud
+  j217 0.836 / 0.868 / 0.930.
