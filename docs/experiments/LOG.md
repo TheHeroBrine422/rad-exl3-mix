@@ -10233,3 +10233,11 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **C228-studcal on the held-out calib agent traces:** attrs 1.005 [1.003, 1.007], click 1.002 (teacher calib opcal 0.993 / 0.989, ctl
   1.001 / 0.998). Student-written calib cuts: no gain on real agent traces, smaller gain than teacher text on generated calib text
   (JU 0.985 vs 0.975). C228-stud (student-written traces) finishing training (~8:15 PM), reads after.
+- 11-25 ~12:30 AM CST: **#217 xgap-v1 done (w229; report `rad-local/workers/out/w229.md`).** colo `/data/xgap/v1`, 1.2 GB: calib 4,789
+  docs (10.3M), xcorp v1 53,587 (96.1M), xgap-v1 31,234 new docs (72.7M Qwen tokens, 109 sources): long-docs 25.3M (four bands 6.2–6.5M),
+  code-langs 6.3M (28 languages), agent-sessions 17.0M (210 whole ≤ 128k + 39 pieces + 14 xl sessions; real Claude Code / pi / OpenHands /
+  SWE-smith tool schemas on 138 sessions, inferred + tagged on 125), multilingual-text 11.6M, multilingual-chat 4.8M, long-chat 4.8M,
+  tools-other 2.9M. Holdout 3,120 docs. Underfills: hermes-func 84 %, hermes-multi 50 %, when2call 93 %, oasst2 92 %, ruby 85 %, ocaml 89 %.
+  Lead checks: manifest origins / tokens match, 0 pisess mentions. Dedup: chats / sessions at 50 % line overlap (shared repo files),
+  text at 20 % / 25 lines, public strict. Caveat: Claude Code tool descriptions are one-line summaries (schemas real). #216 row added
+  for the C228 arms. **Runtime:** none.
