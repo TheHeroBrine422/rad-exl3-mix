@@ -1,0 +1,4 @@
+# gate231.sh gpu231a.txt A B -- (1) the transfer stress test, peer copies then host buffers, 10 min each; (2) the done-criterion run: D256-25 recipe (226c plan, cap 262144) with --pipe-xfer host, 300 steps; its step-100 snapshot (ckpt-raw at 1,854,897 rows) is the 2-card reference of the DP gate
+p2p231 p2p 600
+p2p231 host 600
+w231-deep300 A,B 2.50 6e6 --lr 3e-4 --compile-scales --compile-ew --a8-int8 --dynamo-limit 64 --cap 262144 --cap-keep /data/q27/queue/slices/jlong-ids.json --plan-ext /data/q27/queue/ext/ext-plan-226c.json --ext-root /data/q27/queue/ext --lr-steps 3e-4:1.5e6,1e-4:5.6e6 --split-layers 32 --pipeline --state-card-gb 4 --attn-gqa --pipe-xfer host --snap-at 1854897 --max-steps 300
