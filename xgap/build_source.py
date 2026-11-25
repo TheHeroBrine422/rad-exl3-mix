@@ -83,7 +83,7 @@ def main():
             if streak[key] >= 40: done.add(key)                     # 40 in a row bounced: the key is as full as it gets
             return False
         streak[key] = 0
-        d = idx.check(prompt)
+        d = idx.check(prompt, "chat" if doc["kind"] in ("chat", "session") else "text")
         if d: dups[f"{d[0]}:{d[1]}"] += 1; return False
         h = norm_hash(prompt)
         if h in seen: dups["xgap-in-source"] += 1; return False
@@ -121,7 +121,13 @@ def main():
         if n > spec["max_tok"]:
             if not spec.get("window"): st.skip("too-long"); return
             orig = n
-            text, n = window(text, n, spec["max_tok"], rng)
+            # a window of a book longer than 128k: aimed at the band with the most budget left (random length inside it)
+            open_keys = [k for k in budgets if k in KS and used[k] + KS[k][0] < budgets[k]]
+            tgt = spec["max_tok"]
+            if open_keys:
+                k = max(open_keys, key=lambda k: (budgets[k] - used[k]) / budgets[k])
+                tgt = min(int(rng.uniform(KS[k][0] * 1.15, KS[k][1] * 0.97)), spec["max_tok"])
+            text, n = window(text, n, tgt, rng)
             if text is None: st.skip("window-fail"); return
             extra.update(windowed=True, orig_tokens=orig)
         key, cell = keyer(n)

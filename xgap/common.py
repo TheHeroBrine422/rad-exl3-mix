@@ -112,8 +112,10 @@ class Index:
         self.docs, self.lines, self.ndocs = docs, lines, ndocs
         self.boiler = {h for h, v in lines.items() if (v >> 3) >= 3}
 
-    def check(self, text):
-        """-> None (fresh) or (kind, origin) for the first reason the document is already represented."""
+    def check(self, text, kind="text"):
+        """-> None (fresh) or (kind, origin) for the first reason the document is already represented. Line rule: text documents
+        >= 20 % or >= 25 of their non-boilerplate long lines (a whole original containing an earlier 8k window); chats and agent
+        sessions >= 50 % of them, except against public (always the text rule) (different trajectories over the same repository legitimately share file contents and tool schemas)."""
         o = self.docs.get(norm_hash(text))
         if o: return ("exact", BIT_ORIGIN[o & -o])
         ll = [h for h in map(lhash, long_lines(text)) if h not in self.boiler]
@@ -123,10 +125,9 @@ class Index:
             if v:
                 for b, name in BIT_ORIGIN.items():
                     if v & b: hits[name] = hits.get(name, 0) + 1
-        if not hits: return None
-        n = max(hits.values()); dom = max(hits, key=hits.get)
-        # >= 20 % of its long lines, or >= 25 of them: a whole original that contains an earlier 8k window
-        if n >= 2 and (n >= 0.2 * len(ll) or n >= 25): return ("lines", dom)
+        for o in sorted(hits, key=hits.get, reverse=True):
+            n = hits[o]; loose = kind != "chat" or o == "public"       # public is held-out: its near-duplicates are always dropped
+            if n >= 2 and (n >= 0.2 * len(ll) or n >= 25 if loose else n >= 0.5 * len(ll)): return ("lines", o)
         return None
 
 

@@ -5,7 +5,7 @@ corpus files, manifest.jsonl, sources.json, summary.md.
   in : work/src/*.jsonl|.meta.jsonl|.stats.json (build_source.py), work/tags-calib.jsonl, work/tags-xcorp.jsonl (tag.py)
   out: corpus/xgap-v1/<cell>/<src_id>.jsonl (lines {id, source, category, kind, tokens, prompt}), manifest.jsonl,
        sources.json, summary.md, dedup.json
-Dedup inside xgap: exact (normalized content hash), then the line rule (>= 20 % or >= 25 of a document's long lines, not
+Dedup inside xgap: exact (normalized content hash), then the line rule (text: >= 20 % or >= 25 of a document's long lines, chat / session: >= 50 %, not
 boilerplate, already in an earlier document of ANOTHER session / source record). Sources are visited in registry order, so
 a duplicate is dropped from the later source. Holdout: per (cell, length band) stratum, documents ranked by
 sha256(seed:id); the first round(10 %) are `holdout: true` (>= 1 when the stratum has >= 6 documents)."""
@@ -46,7 +46,7 @@ def main():
             key = meta.get("session") or meta["id"]
             ll = [x for x in map(lhash, long_lines(p)) if x not in boiler]
             hits = sum(1 for x in ll if x in owner and owner[x] != key)
-            if hits >= 2 and (hits >= 0.2 * len(ll) or hits >= 25): drops["lines"] += 1; per_src_drop[s["id"]]["lines"] += 1; continue
+            if hits >= 2 and (hits >= 0.5 * len(ll) if meta["kind"] == "chat" else (hits >= 0.2 * len(ll) or hits >= 25)): drops["lines"] += 1; per_src_drop[s["id"]]["lines"] += 1; continue
             seen[h] = 1
             for x in ll: owner.setdefault(x, key)
             kept.append((s, d, meta))

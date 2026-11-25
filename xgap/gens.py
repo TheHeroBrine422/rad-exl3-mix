@@ -16,21 +16,33 @@ def list_files(repo, config, split, rev):
 
 
 def records(spec, rev, rng, state):
-    """(record) over the source's files in shuffled order; at most spec['per_file'] tokens accepted per file."""
+    """(record) over the source's files in shuffled order. Pass 1 takes at most spec['per_file'] accepted tokens per file (every
+    source draws from several shards); when the files are exhausted by that cap, pass 2 continues each file where pass 1 stopped
+    without a cap, so the cap never limits the total."""
     from datasets import load_dataset
     repo, config, split = spec["repo"], spec.get("config"), spec.get("split", "train")
     files = spec.get("data_files") or list_files(repo, config, split, rev) or [None]
     files = list(files); rng.shuffle(files)
-    for f in files[: spec.get("max_files", 1000)]:
-        kw = dict(split=split, streaming=True, revision=rev)
-        if f is not None: kw["data_files"] = {split: [f]}
-        ds = load_dataset(repo, config, **kw)
-        if spec.get("columns"): ds = ds.select_columns(spec["columns"])
-        t0 = state.tok
-        state.files += 1
-        for r in ds:
-            yield r
-            if spec.get("per_file") and state.tok - t0 >= spec["per_file"]: break
+    files = files[: spec.get("max_files", 1000)]
+    consumed = {}
+    for pass_no in (1, 2):
+        cap = spec.get("per_file") if pass_no == 1 else None
+        if pass_no == 2 and not spec.get("per_file"): break
+        for f in files:
+            if consumed.get(f) == -1: continue                      # read to its end in pass 1
+            kw = dict(split=split, streaming=True, revision=rev)
+            if f is not None: kw["data_files"] = {split: [f]}
+            ds = load_dataset(repo, config, **kw)
+            if spec.get("columns"): ds = ds.select_columns(spec["columns"])
+            skip = consumed.get(f, 0)
+            if skip: ds = ds.skip(skip)
+            t0 = state.tok; state.files += 1; n = 0; capped = False
+            for r in ds:
+                n += 1
+                yield r
+                if cap and state.tok - t0 >= cap: capped = True; break
+            consumed[f] = skip + n if capped else -1
+        if all(consumed.get(f) == -1 for f in files): break
 
 
 def g_stream(spec, rev, rng, state):
