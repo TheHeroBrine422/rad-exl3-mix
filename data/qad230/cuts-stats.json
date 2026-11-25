@@ -1,0 +1,214 @@
+{
+ "set1": {
+  "t1": {
+   "cuts": 1616,
+   "sessions": 371,
+   "docs": 379,
+   "quota": [
+    640,
+    480,
+    320,
+    160
+   ],
+   "got_by_band": [
+    641,
+    515,
+    343,
+    117
+   ],
+   "followers": 783,
+   "thinking_on": 1146,
+   "prefill_tokens": 42678227,
+   "by_origin": {
+    "xgap-v1": 743,
+    "xcorp-v1": 873
+   },
+   "by_source": {
+    "thomasmustier/pi-for-excel-sessions": 57,
+    "swe-rebench-openhands": 462,
+    "armand0e/claude-fable-5-claude-code": 101,
+    "thomasmustier/pi-mono-sessions": 56,
+    "nemotron-swe": 334,
+    "swe-smith": 289,
+    "thomasmustier/pine-of-glass-sessions": 43,
+    "Infatoshi/kernelbench-mega-traces": 19,
+    "thomasmustier/pi-extensions-sessions": 42,
+    "trace-commons/agent-traces": 58,
+    "championswimmer/pi-coding-sessions": 36,
+    "Infatoshi/kernelbench-hard-traces": 48,
+    "AlinCiocan/fable-5-claude-code-traces": 41,
+    "thomasmustier/pi-nes-sessions": 12,
+    "thomasmustier/pinet-sessions": 18
+   },
+   "cuts_per_session": {
+    "2": 97,
+    "6": 130,
+    "4": 78,
+    "8": 22,
+    "3": 19,
+    "1": 10,
+    "5": 9,
+    "7": 6
+   }
+  },
+  "t1-judge": {
+   "cuts": 106,
+   "sessions": 56,
+   "docs": 56,
+   "quota": [
+    52,
+    39,
+    26,
+    13
+   ],
+   "got_by_band": [
+    26,
+    40,
+    26,
+    14
+   ],
+   "followers": 50,
+   "thinking_on": 75,
+   "prefill_tokens": 3339201,
+   "by_origin": {
+    "xgap-v1": 48,
+    "xcorp-v1": 58
+   },
+   "by_source": {
+    "nemotron-swe": 21,
+    "swe-smith": 34,
+    "swe-rebench-openhands": 24,
+    "armand0e/claude-fable-5-claude-code": 6,
+    "thomasmustier/pi-mono-sessions": 4,
+    "thomasmustier/pine-of-glass-sessions": 2,
+    "championswimmer/pi-coding-sessions": 5,
+    "thomasmustier/pi-for-excel-sessions": 2,
+    "Infatoshi/kernelbench-mega-traces": 2,
+    "Infatoshi/kernelbench-hard-traces": 2,
+    "thomasmustier/pi-extensions-sessions": 4
+   },
+   "cuts_per_session": {
+    "1": 6,
+    "2": 50
+   }
+  },
+  "t1_thinking_check": {
+   "('on', True)": 400,
+   "('off', False)": 163
+  }
+ },
+ "set2": {
+  "t2": {
+   "cuts": 2400,
+   "by_group": {
+    "xg-multilingual-chat": 685,
+    "xg-long-chat": 343,
+    "xg-tools-other": 343,
+    "xc-chat": 343,
+    "xc-tools": 343,
+    "xc-reasoning": 343
+   },
+   "by_setting": {
+    "xhigh": 600,
+    "low": 600,
+    "medium": 600,
+    "off": 600
+   },
+   "by_origin": {
+    "xgap-v1": 1371,
+    "xcorp-v1": 1029
+   },
+   "skipped": {
+    "xg-long-chat:no_cut_le_32k": 1
+   },
+   "prefill_tokens": 1636141,
+   "depth_hist": {
+    "<1k": 2043,
+    "1-4k": 311,
+    "4-16k": 41,
+    "16-32k": 5
+   },
+   "group_x_setting": {
+    "xg-multilingual-chat|xhigh": 171,
+    "xg-multilingual-chat|low": 171,
+    "xg-multilingual-chat|medium": 172,
+    "xg-multilingual-chat|off": 171,
+    "xg-long-chat|xhigh": 86,
+    "xg-long-chat|low": 86,
+    "xg-long-chat|medium": 85,
+    "xg-long-chat|off": 86,
+    "xg-tools-other|xhigh": 86,
+    "xg-tools-other|low": 86,
+    "xg-tools-other|medium": 86,
+    "xg-tools-other|off": 85,
+    "xc-chat|xhigh": 85,
+    "xc-chat|low": 86,
+    "xc-chat|medium": 86,
+    "xc-chat|off": 86,
+    "xc-tools|xhigh": 86,
+    "xc-tools|low": 85,
+    "xc-tools|medium": 86,
+    "xc-tools|off": 86,
+    "xc-reasoning|xhigh": 86,
+    "xc-reasoning|low": 86,
+    "xc-reasoning|medium": 85,
+    "xc-reasoning|off": 86
+   }
+  },
+  "t2-judge": {
+   "cuts": 200,
+   "by_group": {
+    "xg-multilingual-chat": 57,
+    "xg-long-chat": 29,
+    "xg-tools-other": 29,
+    "xc-chat": 29,
+    "xc-tools": 28,
+    "xc-reasoning": 28
+   },
+   "by_setting": {
+    "xhigh": 50,
+    "low": 50,
+    "medium": 50,
+    "off": 50
+   },
+   "by_origin": {
+    "xgap-v1": 115,
+    "xcorp-v1": 85
+   },
+   "skipped": {},
+   "prefill_tokens": 123699,
+   "depth_hist": {
+    "<1k": 175,
+    "1-4k": 21,
+    "4-16k": 4,
+    "16-32k": 0
+   },
+   "group_x_setting": {
+    "xg-multilingual-chat|xhigh": 15,
+    "xg-multilingual-chat|low": 14,
+    "xg-multilingual-chat|medium": 14,
+    "xg-multilingual-chat|off": 14,
+    "xg-long-chat|xhigh": 7,
+    "xg-long-chat|low": 8,
+    "xg-long-chat|medium": 7,
+    "xg-long-chat|off": 7,
+    "xg-tools-other|xhigh": 7,
+    "xg-tools-other|low": 7,
+    "xg-tools-other|medium": 8,
+    "xg-tools-other|off": 7,
+    "xc-chat|xhigh": 7,
+    "xc-chat|low": 7,
+    "xc-chat|medium": 7,
+    "xc-chat|off": 8,
+    "xc-tools|xhigh": 7,
+    "xc-tools|low": 7,
+    "xc-tools|medium": 7,
+    "xc-tools|off": 7,
+    "xc-reasoning|xhigh": 7,
+    "xc-reasoning|low": 7,
+    "xc-reasoning|medium": 7,
+    "xc-reasoning|off": 7
+   }
+  }
+ }
+}
