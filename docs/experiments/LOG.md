@@ -10400,3 +10400,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   **xg-fin** (xgap finals goldens): 4,973 whole docs, 7.88M tokens, 5,429,048 scored rows, cells within 0.1 pp of the shares; recording
   on cards 0,1 since 9 PM, ETA ~11:15 PM. **golden-final750's xcorp part is lost** (only on ds8); replaced by a fresh **golden-v31x**:
   ~400k rows of xgap holdout docs not in the gap judge (w232 resumed, run 0e63a4fb, records after xg-fin).
+- 11-25 ~10:20 PM CST: deep300 gate-e (memory fix: --state-budget-gb 8 --card-mem-gb 28.5, unserialized) resumed at 192, ran clean to 218, then **crashed again with illegal memory access** (9:04 PM): the memory budget alone doesn't fix it. The serialized resume (from 216, gpu231g) is past 222. w232's hung pre-arbitration chain cleared (chunk 3 recording on cards 0,1 since 10:16 PM).
