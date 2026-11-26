@@ -18,21 +18,22 @@ ap = argparse.ArgumentParser()
 ap.add_argument("xgap"); ap.add_argument("tok"); ap.add_argument("out")
 ap.add_argument("--exclude", nargs="+", required=True); ap.add_argument("--seed", type=int, default=232)
 ap.add_argument("--total", type=int, default=5_400_000); ap.add_argument("--maxtok", type=int, default=131072)
-ap.add_argument("--chunk-tokens", type=int, default=2_000_000); ap.add_argument("--genmask-dir", default=os.path.dirname(os.path.abspath(__file__)))
+ap.add_argument("--chunk-tokens", type=int, default=2_000_000); ap.add_argument("--holdout", action="store_true", help="draw the xgap HOLDOUT docs instead (the V3.1 final-read x part)"); ap.add_argument("--mix", help="JSON {gen_rows: {cell: n}} whose cell mix replaces SHARE (golden-jgap's, by scored rows)"); ap.add_argument("--genmask-dir", default=os.path.dirname(os.path.abspath(__file__)))
 a = ap.parse_args()
 sys.path.insert(0, a.genmask_dir)
 import genmask181 as G
 
 DEEP = 100_000
 SHARE = {"long-docs": 30, "multilingual-text": 20, "agent-sessions": 15, "multilingual-chat": 12, "long-chat": 8, "code-langs": 10, "tools-other": 5}
+if a.mix: SHARE = {c: v for c, v in json.load(open(a.mix))["gen_rows"].items()}
 tk = AutoTokenizer.from_pretrained(a.tok); S, E, A, NL = G.ids(tk)
 excl = set()
 for p in a.exclude:
     for l in open(p):
         if l.strip(): excl.add(json.loads(l)["xg_id"])
 man = [json.loads(l) for l in open(f"{a.xgap}/manifest.jsonl")]
-xg = [m for m in man if m["origin"] == "xgap-v1" and not m.get("holdout") and m["id"] not in excl]
-print(f"xgap non-holdout docs {sum(1 for m in man if m['origin'] == 'xgap-v1' and not m.get('holdout'))}, excluded {len(excl)} ids, candidates {len(xg)}", flush=True)
+xg = [m for m in man if m["origin"] == "xgap-v1" and bool(m.get("holdout")) == a.holdout and m["id"] not in excl]
+print(f"xgap {'holdout' if a.holdout else 'non-holdout'} docs {sum(1 for m in man if m['origin'] == 'xgap-v1' and bool(m.get('holdout')) == a.holdout)}, excluded {len(excl)} ids, candidates {len(xg)}", flush=True)
 files = {}
 def text(m):
     f = m["file"]

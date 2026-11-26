@@ -1,0 +1,118 @@
+{
+ "tokens": 707494,
+ "gen_rows": 401991,
+ "docs": 270,
+ "notes": [],
+ "cells": {
+  "long-docs": {
+   "docs": 9,
+   "tokens": 135248,
+   "gen_rows": 135239,
+   "target": 134794,
+   "share_pct": 33.64,
+   "left_out_over_maxtok": 0,
+   "pool_left": 82
+  },
+  "agent-sessions": {
+   "docs": 11,
+   "tokens": 312578,
+   "gen_rows": 80778,
+   "target": 80312,
+   "share_pct": 20.09,
+   "left_out_over_maxtok": 2,
+   "pool_left": 0
+  },
+  "multilingual-text": {
+   "docs": 27,
+   "tokens": 39390,
+   "gen_rows": 39363,
+   "target": 39122,
+   "share_pct": 9.79,
+   "left_out_over_maxtok": 0,
+   "pool_left": 1056
+  },
+  "multilingual-chat": {
+   "docs": 109,
+   "tokens": 60468,
+   "gen_rows": 42899,
+   "target": 42852,
+   "share_pct": 10.67,
+   "left_out_over_maxtok": 0,
+   "pool_left": 842
+  },
+  "long-chat": {
+   "docs": 18,
+   "tokens": 59735,
+   "gen_rows": 49725,
+   "target": 48908,
+   "share_pct": 12.37,
+   "left_out_over_maxtok": 0,
+   "pool_left": 57
+  },
+  "code-langs": {
+   "docs": 16,
+   "tokens": 39529,
+   "gen_rows": 39513,
+   "target": 39638,
+   "share_pct": 9.83,
+   "left_out_over_maxtok": 0,
+   "pool_left": 168
+  },
+  "tools-other": {
+   "docs": 80,
+   "tokens": 60546,
+   "gen_rows": 14474,
+   "target": 14370,
+   "share_pct": 3.6,
+   "left_out_over_maxtok": 0,
+   "pool_left": 307
+  }
+ },
+ "length_hist": {
+  "0-1023": {
+   "docs": 178,
+   "tokens": 76088,
+   "gen_rows": 37743
+  },
+  "1024-2047": {
+   "docs": 39,
+   "tokens": 54422,
+   "gen_rows": 36107
+  },
+  "2048-4095": {
+   "docs": 24,
+   "tokens": 64219,
+   "gen_rows": 51130
+  },
+  "4096-8191": {
+   "docs": 8,
+   "tokens": 42681,
+   "gen_rows": 36444
+  },
+  "8192-16383": {
+   "docs": 11,
+   "tokens": 140458,
+   "gen_rows": 121618
+  },
+  "16384-32767": {
+   "docs": 5,
+   "tokens": 108154,
+   "gen_rows": 70305
+  },
+  "32768-65535": {
+   "docs": 5,
+   "tokens": 221472,
+   "gen_rows": 48644
+  },
+  "65536-98303": {
+   "docs": 0,
+   "tokens": 0,
+   "gen_rows": 0
+  },
+  "98304-131072": {
+   "docs": 0,
+   "tokens": 0,
+   "gen_rows": 0
+  }
+ }
+}

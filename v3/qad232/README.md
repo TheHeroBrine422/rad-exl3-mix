@@ -10,7 +10,11 @@ Part A: `xg-fin` = xgap-v1 training documents, WHOLE (<= 131,072 tokens), bf16 g
 | B | `mkv31.sh IDX` (box2), `checkv31.py` | `slices/golden-v31ver` (422 non-trace `verify_v31` docs), `slices/golden-v31tr` (traces 905 / 2675), cut with `eval/golden_pick.py` (whole docs); `checkv31.py` compares every byte with the calib golden. |
 | tests | `selftest232.py`, `chaintest232.py`, `fake_radiance232.py` | no GPU (colo): merge + check incl. corruption detection; the whole chain with a fake radiance (TP2 fails above 20k -> TP4 fallback; both lanes). |
 
-Score prefixes (`v3/qadq/qscore.sh`, `qread.sh`): `JV31-*` -> golden-v31ver (MML 101376), `JT31-*` -> golden-v31tr (262144), `JX31-*` -> golden-v31x (not built: golden-final750 is gone).
+Part C (lead 11-26, replaces golden-final750's lost x part): `slices/golden-v31x` = FRESH non-calib verification part from xgap-v1 HOLDOUT docs not in the gap judge, whole docs <= 64k tokens, ~400k scored rows in the gap judge's cell mix by scored rows
+(`sel232.py ... --holdout --mix data/qad232/jgap-mix.json --total 400000 --maxtok 65536`, counts `data/qad232/v31x.*`), recorded by the same chain (`run232x.sh`, own root `/data/q27/w232x`, cards 0,1 only), gen mask by genmask181 (inside the slice as gen.u8).
+Cards 2,3: lane B is OFF by default (`W232_LANE_B=1` enables it; lead arbitration 11-26, w233 needs 2,3). `after232.sh PID` = the hand-off that restarted the xg-fin chain with lane B off and then ran part C.
+
+Score prefixes (`v3/qadq/qscore.sh`, `qread.sh`): `JV31-*` -> golden-v31ver (MML 101376), `JT31-*` -> golden-v31tr (262144), `JX31-*` -> golden-v31x (MML 67584; max doc 62,104 tokens).
 Read each ONCE per final decision.
 
 Rerun (box2): `cd /data/q27/w232; setsid nohup code/v3/qad232/run232.sh < /dev/null > /dev/null 2>&1 &`; log `/data/q27/w232/chain.log`; done = `chain232 done`.

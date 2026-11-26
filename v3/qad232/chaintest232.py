@@ -16,7 +16,7 @@ for ch in chunks:
     allL += L; allM += M
 json.dump(out, open(f"{work}/docs/xg-fin.chunks.json", "w"))
 open(f"{work}/docs/xg-fin.jsonl", "w").write("\n".join(allL) + "\n"); open(f"{work}/docs/xg-fin.jsonl.meta.jsonl", "w").write("".join(json.dumps(m) + "\n" for m in allM))
-env = dict(os.environ, W232_ROOT=work, W232_QROOT=f"{work}/queue", W232_CODE=here, W232_PY=sys.executable, W232_MODEL=tkp, W232_LOCKS=f"{work}/locks", W232_MIN_GB="1",
+env = dict(os.environ, W232_ROOT=work, W232_QROOT=f"{work}/queue", W232_CODE=here, W232_PY=sys.executable, W232_MODEL=tkp, W232_LOCKS=f"{work}/locks", W232_MIN_GB="1", W232_LANE_B="1",
            W232_RB=f"{work}/fakerad.sh", FAKE_TP2_MAX_MML="20000", FAKE_TOK=tkp)
 open(f"{work}/fakerad.sh", "w").write(f"#!/bin/bash\nexec {sys.executable} -I {here}/fake_radiance232.py \"$@\"\n"); os.chmod(f"{work}/fakerad.sh", 0o755)
 os.makedirs(f"{work}/code/v3"); shutil.copytree(here, f"{work}/code/v3/qad232"); os.makedirs(f"{work}/code/v3/qad181"); shutil.copy(f"{here}/../qad181/genmask181.py", f"{work}/code/v3/qad181/")

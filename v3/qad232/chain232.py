@@ -3,9 +3,10 @@
 """chain232.py (box2; run232.sh starts it) -- w232 part A: record the bf16 goldens (top-512, bf16 KV) of the xg-fin chunks (sel232.py's
 W/docs/xg-fin.c<k>.jsonl, deepest first) as TP2 lanes, then merge them into QROOT/ext/gold/xg-fin with the gen mask (genmask181) and check them.
   lane A = cards 0,1: its two card locks are taken (blocking, polled) and held for the whole run; chunks are claimed by mkdir.
-  lane B = cards 2,3: opportunistic -- only when BOTH locks can be taken without waiting and MemAvailable >= 25 GB, one chunk at a time, the locks
+  lane B = cards 2,3 (ONLY with W232_LANE_B=1; default off since 11-26): opportunistic -- only when BOTH locks can be taken without waiting and MemAvailable >= 25 GB, one chunk at a time, the locks
            released between chunks (another job may hold cards 2,3 for hours; nothing is preempted).
   A chunk that fails on TP2 (a deep document that does not fit 2 x 32 GB) is retried at the end on all four cards (TP4, the four locks polled).
+Env overrides (the v31x run, run232x.sh): W232_ROOT / W232_CODE / W232_FINAL / W232_CORPUS_OUT / W232_MASK_OUT / W232_POLL / W232_LANE_B; the chunk files keep the names xg-fin.*.
 Restartable: a recorded chunk is W/rec/c<k> with .done (written after the radiance run, as .part then renamed); a restart clears claims and
 the .part directories. Log W/chain.log (CT)."""
 import fcntl, json, os, shutil, subprocess, sys, threading, time
@@ -14,9 +15,9 @@ Q = "/data/q27"; E = os.environ.get
 QROOT = E("W232_QROOT", Q + "/queue"); W = E("W232_ROOT", Q + "/w232"); C = E("W232_CODE", W + "/code/v3/qad232"); PY = E("W232_PY", Q + "/venv/bin/python")
 LIBS = "/opt/rocm-10.1/lib:/data/q27/ffmpeg-libs"; MODEL = E("W232_MODEL", Q + "/models/qwen38-27b-bf16")
 REC_RB, REC_RH = E("W232_RB", Q + "/w206/install/bin/radiance"), Q + "/w206/install/share/radiance"      # the queue's recording build (qenv.sh box2)
-LOCKS = E("W232_LOCKS", Q + "/locks"); DOCS = W + "/docs"; FINAL = QROOT + "/ext/gold/xg-fin"
+LOCKS = E("W232_LOCKS", Q + "/locks"); DOCS = W + "/docs"; FINAL = E("W232_FINAL", QROOT + "/ext/gold/xg-fin")
 LOCK = threading.Lock(); ABORT = threading.Event(); MERGE = []
-MIN_GB = int(E("W232_MIN_GB", 300))
+MIN_GB = int(E("W232_MIN_GB", 300)); POLL = int(E("W232_POLL", 30))      # seconds between card-lock attempts
 
 
 def log(s):
@@ -56,7 +57,7 @@ class CardLocks:
         while not self.try_take():
             if ABORT.is_set(): raise RuntimeError("abort")
             if not said and time.time() - t0 > 60: log(f"{what}: waiting for the card locks {self.cards}"); said = True
-            time.sleep(30)
+            time.sleep(POLL)
 
     def release(self):
         for f in self.fds: os.close(f)
@@ -147,8 +148,8 @@ def sh(cmd, logfile):
 
 def finish():
     if exists(f"{FINAL}/.done"): return
-    os.makedirs(f"{QROOT}/ext/xg-fin", exist_ok=True); os.makedirs(f"{QROOT}/ext/genmask", exist_ok=True)
-    corpus_out = f"{QROOT}/ext/xg-fin/xg-fin.jsonl"; mask = f"{QROOT}/ext/genmask/xg-fin.u8"
+    corpus_out = E("W232_CORPUS_OUT", f"{QROOT}/ext/xg-fin/xg-fin.jsonl"); mask = E("W232_MASK_OUT", f"{QROOT}/ext/genmask/xg-fin.u8")
+    for p in (corpus_out, mask, FINAL): os.makedirs(os.path.dirname(p), exist_ok=True)
     rc = sh([PY, "-I", f"{C}/merge232.py", DOCS, f"{W}/rec", FINAL, corpus_out, mask, MODEL], f"{W}/logs/merge.out")
     log(f"merge232 rc {rc}: {open(f'{W}/logs/merge.out').read().strip().splitlines()[-1][:300]}")
     if rc: raise RuntimeError("merge failed")
@@ -164,7 +165,8 @@ def main():
         if f.endswith(".part"): shutil.rmtree(f"{W}/rec/{f}", ignore_errors=True)
     log(f"chain232 start (pid {os.getpid()}); chunks {[(c['k'], c['docs'], c['tokens'], c['max_tokens']) for c in chunks()]}")
     if not exists(f"{FINAL}/.done"):
-        ths = [threading.Thread(target=lane, args=("A", [0, 1], False)), threading.Thread(target=lane, args=("B", [2, 3], True))]
+        ths = [threading.Thread(target=lane, args=("A", [0, 1], False))]
+        if E("W232_LANE_B", "0") == "1": ths.append(threading.Thread(target=lane, args=("B", [2, 3], True)))      # off since the lead's arbitration 11-26 (w233 needs cards 2,3)
         for t in ths: t.start(); time.sleep(5)
         for t in ths: t.join()
         if ABORT.is_set(): log("chain232 aborted"); sys.exit(1)
