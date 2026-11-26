@@ -10411,3 +10411,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   allocator settings (garbage_collection_threshold 0.9, max_split_size_mb 256), per-step memory logs, plan231 depth check. Open:
   fragmentation under the cap (step-224 OOM, 4.4 GiB unusable cache). **Branch check passed on 2 cards** (identical step-1 train_kl /
   gnorm; branch 116 s vs separate 170 s). Report passed to w233.
+- 11-26 (user): w233 steered — static allocation (buffers sized from the plan at startup, reused; prefix KV read in place) and **stage processes generic in N** (--stages 2 / 4; DP ranks × stages = cards); validation compares 2 ranks × 2 stages vs 1 rank × 4 stages on the deep mix (throughput, idle, memory headroom, recompute / swapping).
