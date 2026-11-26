@@ -37,6 +37,9 @@ def main():
     Tq, oq = H.run(H.Tiny(0, split=4), H.targs(pipeline=True, state_card_gb=1.0))
     Tq1, oq1 = H.run(keep(H.Tiny(0, split=4), range(8)), H.targs(pipeline=True, state_card_gb=1.0))
     check("--keep-act all, pipeline with states kept on the cards: = checkpointed bit for bit", oq1 == oq and H.same(Tq1.stu.state(), Tq.stu.state()))
+    H.Q.KL_KEEP[0] = True                                     # w233 --kl-keep: seg_kl without the checkpoint around the head + KL chunks
+    Tk, ok_ = H.run(H.Tiny(0, split=4), H.targs(pipeline=True)); H.Q.KL_KEEP[0] = False
+    check("--kl-keep, pipeline: = checkpointed head / KL bit for bit", ok_ == op and H.same(Tk.stu.state(), Tp.stu.state()), f"{ok_[0]} vs {op[0]}")
     print("\n" + ("ALL PASS" if not fails else f"FAILED: {fails}"))
     sys.exit(1 if fails else 0)
 

@@ -335,6 +335,7 @@ class KVView:
 KV_LADDER = sorted({-(-int(4096 * 2 ** (k / 2)) // 4096) * 4096 for k in range(40)})   # 4k, 8k, 12k, 16k, 24k, 32k, 48k, 64k, 92k, 128k, 184k, 256k, ..
 
 
+KL_KEEP = [False]                # w233 --kl-keep: the head + KL chunks keep their activations (no checkpoint recompute of the head GEMM) in seg_kl
 KV_FULL = [False]                # w233 --kv-full: a document's KV buffers at its full length from its first segment (no growth copies)
 
 
@@ -593,7 +594,7 @@ def seg_kl(stu, gold, i, a, b, h, ch=256):
     tot = 0.0
     for c in range(0, len(j), ch):
         args = (h[c:c + ch], stu.head, tid[c:c + ch], tlp[c:c + ch], ptail[c:c + ch])
-        tot = tot + (checkpoint(chunk_kl, *args, use_reentrant=False) if torch.is_grad_enabled() else chunk_kl(*args))
+        tot = tot + (checkpoint(chunk_kl, *args, use_reentrant=False) if torch.is_grad_enabled() and not KL_KEEP[0] else chunk_kl(*args))
     return tot, len(j)
 
 
@@ -2632,6 +2633,7 @@ def parser():
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
     ap.add_argument("--park-pool-gb", type=float, default=0.0, help="w233 (--pipe-procs): parked states live in one pinned host buffer of this many GiB a process, allocated at the start (fixed host memory, exact sizes); a park that does not fit goes to pageable memory (synchronous, counted as pool misses). 0 = torch's pinned caching allocator")
+    ap.add_argument("--kl-keep", action="store_true", help="w233 (split / --pipe-procs loss path): the head + top-K KL chunks keep their activations for the backward instead of the checkpoint recompute (one head GEMM less a segment; ~1 GB a 256-row chunk held until the backward); the same values")
     ap.add_argument("--kv-full", action="store_true", help="w233 (static allocation): every document's carried KV buffers at its full length (its cap) from its first segment: no growth copies (the sqrt(2) ladder copies the whole prefix at each rung, 2x transient), sizes fixed per document; costs the full size from the start (counted by --state-budget-gb). The same values")
     ap.add_argument("--state-early", action="store_true", help="w233 (--pipe-procs): a stage stores a segment's carried state right after its forward (it is final then: the backward's recompute writes the same values), so the stream's next segment need not wait for the backward (a stream with several segments in a step no longer drains the pipeline); the same values")
     ap.add_argument("--pipe-ahead", type=int, default=0, help="w233 (--pipe-procs): segments a stage keeps in flight beyond S - stage (the default depth); more = fewer bubbles, more activation memory")
@@ -2778,7 +2780,7 @@ def main():
         d.barrier()
     apply196(a, stu, log)
     ATTN_GQA[0] = a.attn_gqa                                     # w225
-    KV_FULL[0] = a.kv_full                                       # w233
+    KV_FULL[0] = a.kv_full; KL_KEEP[0] = a.kl_keep                # w233
     if a.card_mem_gb > 0:                                        # w231: PyTorch's share of each card (the HIP runtime keeps the rest)
         for d_ in dict.fromkeys(str(x) for x in stu.devs):
             tot = torch.cuda.get_device_properties(torch.device(d_)).total_memory
