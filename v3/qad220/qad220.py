@@ -433,6 +433,7 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     cache = (SegCacheBuf(prev, getattr(stu, "kv_cap", 0), share=REBUILD[0] > 0) if getattr(stu, "kvbuf", False) else SegCache(prev)); tp = {}; lo = {}
     if REBUILD[0] and isinstance(cache, SegCacheBuf): cache.room0 = REBUILD[0]
     ft = getattr(stu, "first_train", 0)                  # w220: layers before the first trainable one run once, no autograd
+    keep = getattr(stu, "keep_act", ())                  # w233 --keep-act: these layers keep their activations for the backward (no checkpoint recompute)
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
         if loc is not None and i in loc.set:
@@ -441,7 +442,7 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
             lo[i] = o; x = o.detach() if loc.mode in ("local", "block") else o
         elif i < ft and torch.is_grad_enabled():
             with torch.no_grad(): x = ly(x, **kw)
-        elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+        elif ckpt and torch.is_grad_enabled() and i not in keep: x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
         else: x = ly(x, **kw)
         if taps is not None and i in taps: tp[i] = x
     if taps is not None: return stu.fnorm(x)[0], cache.next, tp
@@ -455,13 +456,13 @@ def run_half(stu, x, a, cache, lo, hi, ckpt=True):
     dev = x.device; n = x.shape[1]; o = a + getattr(stu, "pos_off", 0)
     pid = torch.arange(o, o + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
     pe = stu.rotary[dev](x, pid[1:])
-    ft = getattr(stu, "first_train", 0)
+    ft = getattr(stu, "first_train", 0); keep = getattr(stu, "keep_act", ())       # w233 --keep-act
     for i in range(lo, hi):
         ly = stu.layers[i]
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
         if i < ft and torch.is_grad_enabled():
             with torch.no_grad(): x = ly(x, **kw)
-        elif ckpt and torch.is_grad_enabled(): x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
+        elif ckpt and torch.is_grad_enabled() and i not in keep: x = checkpoint(lambda h, _l=ly, _k=kw: _l(h, **_k), x, use_reentrant=False)
         else: x = ly(x, **kw)
     return x
 
@@ -2163,6 +2164,7 @@ def parser():
     ap.add_argument("--card-mem-gb", type=float, default=0.0, help="w231: cap PyTorch's memory (allocated + cached) at this many GiB a card (torch.cuda.set_per_process_memory_fraction): the HIP runtime keeps the rest; near the cap the allocator frees its cache and retries, else a clean OOM. 0 = off")
     ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
     ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
+    ap.add_argument("--keep-act", default=None, help="w233: decoder layers (parse_layers syntax: 48-63, 32-63+0-3) that keep their activations for the backward instead of the checkpoint recompute: less work, more memory a segment in flight; the same arithmetic (bit for bit). Default none")
     ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")
     return ap
 
@@ -2313,6 +2315,8 @@ def main():
     apply_remap(a, stu, log)
     stu.mask = apply_trainable(a, stu, log)
     set_first_train(stu, log, a.no_frozen_prefix)
+    if a.keep_act:
+        stu.keep_act = frozenset(parse_layers(a.keep_act)); log(f"w233 --keep-act: layers {a.keep_act} keep their activations (no checkpoint recompute)")
     use_seg_attention(stu)
     if a.compile_scales: use_compiled_scales(stu, a.a8, a.a8_int8, a.dynamo_limit); log(f"QLinear scales compiled (a8 {a.a8}, int8 {a.a8_int8})")
     elif a.a8 and not a.check: use_a8(stu, a.a8_int8)
