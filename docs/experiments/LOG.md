@@ -10355,3 +10355,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   containers written at the reboot were truncated (JL / JX reads of p602515 failed or suspect) → deleted, both reads re-queued
   (JX as JX-C230-p602515r). Scores written before the reboot checked: JSON parses, rows files complete, no zero rows. DP gate reads
   queued (JC + j217 of the step-100 snapshots of dp100 and deep300). Screens p403030 / p701515 restarted on cards 0,1.
+- 11-25 6:45 PM CST: **w231-deep300 crashed at step 188** (6:34 PM) with the same "illegal memory access" (hipErrorIllegalAddress),
+  surfaced in a torch-inductor compiled forward of the pipeline (run_pipe → run_half on card A) — **with --pipe-xfer host**, so the
+  host-transfer change does NOT fix it (steps 1–187 clean; the old rate was ~1 per 200–300 steps). The p2p stress tests passed: peer
+  copies alone don't fault. Cards 2/3 usable afterwards (KFD shows zombie entries, allocation works). Logs kept
+  (`/data/q27/w231/crash-step188-*`). Re-run from state.pt (~step 183) with AMD_SERIALIZE_KERNEL=3 + HIP_LAUNCH_BLOCKING=1 to catch the
+  faulting kernel (gate-a3.out). Screens p403030 / p701515 unaffected (cards 0,1).
