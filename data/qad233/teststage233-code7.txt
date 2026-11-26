@@ -1,0 +1,20 @@
+PASS --pipe-procs = --pipeline bit for bit (plain: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [stages (
+PASS --pipe-procs = --pipeline bit for bit (budget: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [stages 
+PASS --pipe-procs = --pipeline bit for bit (budget_ef: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [stag
+PASS --pipe-procs = --pipeline bit for bit (accum: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [stages (
+PASS --pipe-procs = --pipeline bit for bit (depth: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [stages (
+PASS --pipe-procs = --pipeline bit for bit (early_plain: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [st
+PASS --pipe-procs = --pipeline bit for bit (early_budget: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [s
+PASS --pipe-procs = --pipeline bit for bit (early_accum: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)  [st
+PASS resume: the merged two-stage state file restored in fresh stages (every stream's state rebuilt through prefix_stage) = the one-process 
+PASS resume: a one-process run restores the two-stage state file (Adam state by name) = the one-process resume bit for bit
+PASS resume: stage processes restore a one-process state file (e.g. --fork-from a one-card state) = the one-process resume bit for bit
+PASS fixed eval through the stages = the one-process fixed eval bit for bit (both stages return the reduced values)  [[[60.39866638183594, 6
+PASS checkpoint: scales files byte-identical (stage 1 writes its own), params.pt holds both stages' tensors equal to the one-process file  [
+PASS 2 dp ranks x 2 stages (4 processes) = 2 one-process dp ranks bit for bit (KL, rows, gnorm, parameters; streams s % 2 on dp rank r)  [(3
+PASS branch training (sessions: history walked once, cuts on state copies): stages = one-process pipeline bit for bit  [[(694.4714741706848,
+PASS --pipe-procs 4 = --pipeline bit for bit (plain: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)  [4 stages (161.
+PASS --pipe-procs 4 = --pipeline bit for bit (budget: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)  [4 stages (335
+PASS --pipe-procs 4 = --pipeline bit for bit (accum: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)  [4 stages (193.
+PASS --pipe-procs 4 = --pipeline bit for bit (early_accum: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)  [4 stages
+PASS --pipe-procs 4 = --pipeline bit for bit (early_budget: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)  [4 stage

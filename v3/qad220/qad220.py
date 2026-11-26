@@ -373,6 +373,39 @@ def devctx(dev):
 
 
 ATTN_GQA = [False]              # w225 --attn-gqa
+class ParkPool:
+    """w233 --park-pool-gb G: one pinned host buffer of G GiB a process, allocated at the start, that holds the parked states (the static form of the
+    park: exact sizes, no caching-allocator power-of-two rounding or growth, so the process's host memory is fixed). First-fit byte ranges (256-byte
+    aligned); a parked state's ranges go back when the state is dropped (weakref.finalize). Reuse needs no event: one card a process, and every park
+    (D2H into a range) and place (H2D out of it) runs on that card's stream in order; a CPU-side read (clone_state) waits for the park's event first"""
+    def __init__(self, gib):
+        self.n = int(gib * 2**30) // 256 * 256
+        self.buf = torch.empty(self.n, dtype=torch.uint8)     # pageable, exact size, then page-locked (hipHostRegister): the caching host allocator would round it up to a power of two
+        rc = torch.cuda.cudart().cudaHostRegister(self.buf.data_ptr(), self.n, 0)
+        if int(getattr(rc, "value", rc)) != 0: self.buf = torch.empty(self.n, dtype=torch.uint8, pin_memory=True)
+        assert self.buf.is_pinned(), "park pool: not page-locked"
+        self.free = [(0, self.n)]; self.misses = 0; self.peak = 0
+    def used(self): return self.n - sum(z for _, z in self.free)
+    def alloc(self, nbytes):
+        n = -(-nbytes // 256) * 256
+        for k, (st, z) in enumerate(self.free):
+            if z >= n:
+                self.free[k:k + 1] = [] if z == n else [(st + n, z - n)]
+                self.peak = max(self.peak, self.used()); return (st, n)
+        return None
+    def give(self, rngs):
+        for st, n in rngs:
+            self.free.append((st, n))
+        self.free.sort(); out = []
+        for st, n in self.free:
+            if out and out[-1][0] + out[-1][1] == st: out[-1] = (out[-1][0], out[-1][1] + n)
+            else: out.append((st, n))
+        self.free = out
+    def view(self, rng, shape, dtype):
+        n = int(np.prod(shape)) * torch.empty(0, dtype=dtype).element_size()
+        return self.buf[rng[0]:rng[0] + n].view(dtype).view(shape)
+
+
 class Parked(dict):
     """w231: a stream state parked on the CPU (KV compacted); not counted as kept on a card"""
 
@@ -493,6 +526,21 @@ def h2d(x, dev):
     return x.pin_memory().to(dev, non_blocking=True)
 
 
+def host_mem():
+    """w233: this process's host memory in GiB: RSS split into anonymous / file-backed / shared memory (/proc/self/status) and the pinned host
+    allocator's reserved / in-use bytes (torch.cuda.host_memory_stats)"""
+    z = {}
+    for l in open("/proc/self/status"):
+        k = l.split(":")[0]
+        if k in ("VmRSS", "RssAnon", "RssFile", "RssShmem"): z[k] = round(int(l.split()[1]) / 2**20, 2)
+    if torch.cuda.is_available():
+        try:
+            hs = torch.cuda.host_memory_stats()
+            z["pinned_res"] = round(hs.get("reserved_bytes.current", 0) / 2**30, 2); z["pinned_use"] = round(hs.get("allocated_bytes.current", 0) / 2**30, 2)
+        except Exception: pass
+    return z
+
+
 def gold_targets(gold, r, dev):
     """data181.Gold.targets (top ids [m, K] long, top log-probs [m, K] f32, tail mass [m] f32 on dev) through h2d (w233): the same values, no host wait"""
     t = np.asarray(gold.top[r[0]:r[-1] + 1])[r - r[0]]
@@ -502,12 +550,26 @@ def gold_targets(gold, r, dev):
     return tid, tlp, ptail
 
 
+def shared_table(mm):
+    """w233: a read-only int16 memmap (the token table) as a bf16 tensor in host RAM, ONE copy a machine: a file in /dev/shm named by the source
+    (path, offset, shape, mtime), written once (atomic rename) and mapped shared by every process (stage processes, ranks); a private copy when
+    /dev/shm lacks room"""
+    import hashlib, shutil
+    key = hashlib.sha1(f"{os.path.realpath(mm.filename)}:{mm.offset}:{mm.shape}:{os.path.getmtime(mm.filename)}".encode()).hexdigest()[:16]
+    path = f"/dev/shm/qad233-table-{key}.i16"; nb = int(np.prod(mm.shape)) * 2
+    if not (os.path.exists(path) and os.path.getsize(path) == nb):
+        if not os.path.isdir("/dev/shm") or shutil.disk_usage("/dev/shm").free < nb + 2**30: return torch.from_numpy(np.array(mm)).view(BF)
+        tmp = f"{path}.{os.getpid()}.part"; np.asarray(mm).tofile(tmp); os.replace(tmp, path)
+    return torch.from_file(path, shared=True, size=int(np.prod(mm.shape)), dtype=torch.int16).view(BF).view(*mm.shape)
+
+
 def use_ram_embed(stu):
-    """w233: the student's token table (stu.emb: the checkpoint's or --emb's served table, a memmap) copied into host RAM once (2.5 GB); embed() gathers
+    """w233: the student's token table (stu.emb: the checkpoint's or --emb's served table, a memmap) in host RAM, one shared copy a machine
+    (shared_table: 2.5 GB in /dev/shm for every process and run of that table); embed() gathers
     the rows with torch (no page faults on the table file, the GIL released) into pinned memory and copies them asynchronously (h2d). Rows bitwise =
     Student.embed's"""
     import types
-    stu.emb_ram = torch.from_numpy(np.array(stu.emb)).view(BF)
+    stu.emb_ram = shared_table(stu.emb)
     def embed(self, ids):
         dev = self.devs[0]; idx = torch.from_numpy(np.asarray(ids, np.int64))
         rows = torch.empty((len(idx), self.emb_ram.shape[1]), dtype=BF, pin_memory=dev.type == "cuda")
@@ -792,7 +854,7 @@ class Chan:
     def __init__(self, d, group, peer, sending):
         import queue, threading
         self.d, self.g, self.peer, self.sending = d, group, peer, sending
-        self.q = queue.Queue(); self.err = None
+        self.q = queue.Queue(maxsize=32); self.err = None              # bounded: a burst (a deep prefix rebuild) waits instead of piling up pinned buffers
         self.t = threading.Thread(target=self._sender if sending else self._receiver, name="w233-" + ("send" if sending else "recv"), daemon=True); self.t.start()
 
     def send(self, x, flag=0):
@@ -1194,6 +1256,7 @@ class Trainer:
         if self.stage_mode:
             assert a.clip_doc == 0 and not self.lo, "--pipe-procs: no --clip-doc / LoRA"
             self.comm = StageLinks(dist); self.lo_l, self.hi_l = stu.only[0], min(stu.only[1], len(stu.layers))     # this stage's layers lo_l .. hi_l - 1
+            if getattr(a, "park_pool_gb", 0) > 0 and stu.devs[0].type == "cuda": self.park_pool = ParkPool(a.park_pool_gb)
         self.states = {}                                     # stream -> (item index, offset, state on CPU)
         self.snaps = {}                                      # w231 branch plans: stream -> ((golden, doc, offset), state) = the session history's state at a branch point
         self.w225 = bool(getattr(stu, "split", 0) or getattr(stu, "kvbuf", False))     # w225: split / buffered-KV segment loop (run_segs_w225)
@@ -1392,13 +1455,25 @@ class Trainer:
         one event per card on the Parked dict (.ev): place() orders the copies back after it on the card, clone_state waits for it on the host"""
         if not getattr(self, "park_async", False) or all(t.device.type != "cuda" for v in nxt.values() for t in ((v.k,) if isinstance(v, KVView) else v if isinstance(v, tuple) else (v,))):
             return self.to_cpu_state(nxt)
-        def pin(t):
-            h = torch.empty(t.shape, dtype=t.dtype, pin_memory=True); h.copy_(t, non_blocking=True); return h
+        pool = getattr(self, "park_pool", None); rngs = []
+        if pool is not None:                                     # --park-pool-gb: every tensor of the state into the fixed pinned pool, else all pageable (counted)
+            sizes = [(t.numel() if not isinstance(v, KVView) else t[:, :, :v.n].numel()) * t.element_size()
+                     for v in nxt.values() for t in ((v.k, v.v) if isinstance(v, KVView) else v if isinstance(v, tuple) else (v,))]
+            for b_ in sizes:
+                r_ = pool.alloc(b_)
+                if r_ is None: pool.give(rngs); pool.misses += 1; return self.to_cpu_state(nxt)
+                rngs.append(r_)
+        it_ = iter(rngs)
+        def pin(t, n=None):
+            src = t if n is None else t[:, :, :n]
+            h = pool.view(next(it_), src.shape, src.dtype) if pool is not None else torch.empty(src.shape, dtype=src.dtype, pin_memory=True)
+            h.copy_(src, non_blocking=True); return h
         out = Parked(); devs = set()
         for k, v in nxt.items():
-            if isinstance(v, KVView): out[k] = v.to(torch.device("cpu"), 0, pinned=True); devs.add(v.device)
+            if isinstance(v, KVView): out[k] = KVView(pin(v.k, v.n), pin(v.v, v.n), v.n); devs.add(v.device)
             elif isinstance(v, tuple): out[k] = tuple(pin(t) for t in v); devs.update(t.device for t in v)
             else: out[k] = pin(v); devs.add(v.device)
+        if rngs: __import__("weakref").finalize(out, pool.give, rngs)
         out.ev = []
         for d_ in devs:
             e = torch.cuda.Event(); e.record(torch.cuda.current_stream(d_)); e.dev = d_; out.ev.append(e)
@@ -1778,6 +1853,9 @@ class Trainer:
         own["pipe_s"] = {k_: round(v_, 1) for k_, v_ in (getattr(self, "pipe_s", None) or {}).items()}
         own["states"] = round(sum(self.resident().values()) / 2**30, 2)
         own["rss"] = round(int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30, 2)
+        own["host"] = host_mem(); own["host"]["parked"] = round(sum(sum(self.st_bytes(st2[2]).values()) for st2 in self.states.values() if isinstance(st2[2], Parked)) / 2**30, 2)
+        pp_ = getattr(self, "park_pool", None)
+        if pp_ is not None: own["host"].update(pool_peak=round(pp_.peak / 2**30, 2), pool_misses=pp_.misses)
         al = self.gather_head(own)
         if al is None: return {}
         out = {}
@@ -1785,6 +1863,7 @@ class Trainer:
         out["state_peak_gib"] = {f"cuda:{k}": z["state_peak"] for k, z in enumerate(al)}; out["evicted"] = sum(z["evicted"] for z in al)
         out["pipe_s"] = {f"{'abcdefgh'[k]}_{k_}": v_ for k, z in enumerate(al) for k_, v_ in z["pipe_s"].items()}
         out["states_gib"] = {f"cuda:{k}": z["states"] for k, z in enumerate(al)}; out["rss_gib"] = own["rss"]; out["rss_gib_stages"] = [z["rss"] for z in al]
+        out["host_stages"] = [z["host"] for z in al]
         return out
 
     def snapshot_all(self):
@@ -2548,6 +2627,7 @@ def parser():
     ap.add_argument("--pipe-procs", type=int, nargs="?", const=2, default=0, help="w233: the pipeline as S processes, one a card (default S = 2; qrun.sh launches them for a card group A,B[,C,D], QAD_STAGES=S): stage 0 = token table + its layers, the last = its layers + head + loss; the same arithmetic as --pipeline (bit for bit), no shared interpreter between the cards, states parked asynchronously. Stage boundaries: --split-layers K (S = 2) or --stage-bounds")
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
+    ap.add_argument("--park-pool-gb", type=float, default=0.0, help="w233 (--pipe-procs): parked states live in one pinned host buffer of this many GiB a process, allocated at the start (fixed host memory, exact sizes); a park that does not fit goes to pageable memory (synchronous, counted as pool misses). 0 = torch's pinned caching allocator")
     ap.add_argument("--state-early", action="store_true", help="w233 (--pipe-procs): a stage stores a segment's carried state right after its forward (it is final then: the backward's recompute writes the same values), so the stream's next segment need not wait for the backward (a stream with several segments in a step no longer drains the pipeline); the same values")
     ap.add_argument("--pipe-ahead", type=int, default=0, help="w233 (--pipe-procs): segments a stage keeps in flight beyond S - stage (the default depth); more = fewer bubbles, more activation memory")
     ap.add_argument("--keep-act", default=None, help="w233: decoder layers (parse_layers syntax: 48-63, 32-63+0-3) that keep their activations for the backward instead of the checkpoint recompute: less work, more memory a segment in flight; the same arithmetic (bit for bit). Default none")
@@ -2701,6 +2781,7 @@ def main():
     if a.pipeline: triton_autotune_lock()
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:
         stu.split = a.split_layers; stu.kvbuf = True; stu.pos_off = a.depth_test; stu.kv_cap = 0
+        if a.pipe_procs: log(f"w233 host memory after the build (GiB): {json.dumps(host_mem())}", True)
         if a.pipe_procs: log(f"w233 --pipe-procs: stage {d.stage} of {d.stages} of dp rank {d.dp_rank} ({d.dp_world} dp ranks): layers {only[0]}-{min(only[1], len(stu.layers)) - 1}"
                              + (" + token table" if d.stage == 0 else "") + (" + head" if d.stage == d.stages - 1 else "") + f" on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB", True)
         log(f"w225: split {a.split_layers}" + (f" (layers 0-{a.split_layers - 1} on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB, "
