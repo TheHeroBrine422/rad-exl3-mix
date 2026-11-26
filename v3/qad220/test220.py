@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "..", "qad"))
 TREE = ast.parse(open(os.path.join(HERE, "qad220.py")).read())
 ns = {"os": os, "re": re, "argparse": argparse, "json": json, "math": math, "Fraction": Fraction, "np": np, "torch": torch, "HERE": HERE,
-      "F": torch.nn.functional, "checkpoint": torch.utils.checkpoint.checkpoint, "types": types, "BF": torch.bfloat16, "HARD": [0.0, 10.0]}
+      "F": torch.nn.functional, "checkpoint": torch.utils.checkpoint.checkpoint, "types": types, "BF": torch.bfloat16, "HARD": [0.0, 10.0], "REBUILD": [0], "BUDGET_CPU": [False]}
 
 
 def grab(*names, classes=()):
