@@ -37,6 +37,14 @@ def main():
     H.check("--pipe-xfer host = --pipe-xfer p2p = naive split, bit for bit (KL sums, rows, gnorm, parameters)",
             oh == op == os_ and H.same(Th.stu.state(), Ts.stu.state()) and H.same(Tp.stu.state(), Ts.stu.state()), f"{oh[0]} vs {os_[0]}")
 
+    H.Q.BUDGET_CPU[0] = True                                   # w231 --state-budget-gb on the CPU "cards"
+    res = {}
+    for S in (0.0, 3e-4, 2e-3):
+        T_, o_ = H.run(H.Tiny(0, split=4), H.targs(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=S)); res[S] = (o_, T_.stu.state(), getattr(T_, "n_evict", 0), dict(getattr(T_, "state_peak", {})))
+    H.Q.BUDGET_CPU[0] = False
+    H.check("--state-budget-gb: same values with a budget that evicts (parks kept states / finishes in-flight segments) bit for bit; evictions happen at the small budget",
+            all(res[S][0] == res[0.0][0] and H.same(res[S][1], res[0.0][1]) for S in res) and res[3e-4][2] > 0,
+            f"evictions {[res[S][2] for S in res]}; state peaks (bytes) {[max(res[S][3].values()) if res[S][3] else 0 for S in res]}")
     one = {}
     for lr in (LR0, 1e-3):
         T1, o1 = H.run(H.Tiny(0, split=4), H.targs(pipeline=True, pipe_xfer="host", V=4, lr=lr)); one[lr] = (o1, T1.stu.state(), grads(T1))

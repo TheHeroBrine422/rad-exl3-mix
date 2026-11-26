@@ -345,8 +345,8 @@ class SegCacheBuf(SegCache):
     (KVView, capacity cap = the document's length): a segment writes its own k / v after the carried prefix in place and attends to
     cat(buffer[:P], k) (a one-layer transient), so the prefix is held once (SegCache's cat kept it twice: the previous state and the new one).
     The attention's inputs and the carried values are bitwise SegCache's"""
-    def __init__(self, prev=None, cap=0):
-        super().__init__(dict(prev) if prev else None); self.cap = cap
+    def __init__(self, prev=None, cap=0, share=False):
+        super().__init__(prev if share and prev is not None else dict(prev) if prev else None); self.cap = cap    # w231 share: grow in the caller's dict (the old buffer is freed at once)
     def room(self, need): return kv_room(need, self.cap)
     def update(self, k, v, l, *a, **kw):
         p = self.prev.get(("kv", l)); n = k.shape[2]
@@ -370,6 +370,11 @@ def devctx(dev):
 
 
 ATTN_GQA = [False]              # w225 --attn-gqa
+class Parked(dict):
+    """w231: a stream state parked on the CPU (KV compacted); not counted as kept on a card"""
+
+
+BUDGET_CPU = [False]            # w231 test switch: --state-budget-gb also counts CPU "cards" (the CPU tests' two device entries)
 PIPE_INFLIGHT = 4 * 2**30       # w225 --pipeline: bytes of carried states brought onto the cards (parked / rebuilt) that the segments in flight may hold
 
 
@@ -1201,9 +1206,9 @@ class Trainer:
         """bytes of the carried states kept on each card (KV buffers at capacity; w231: the branch snapshots too)"""
         used = {}
         for s2, (_, _, st2) in list(self.states.items()) + [(None, (None, None, z[1])) for z in self.snaps.values()]:
-            if s2 is not None and s2 == skip: continue
+            if s2 is not None and s2 == skip or isinstance(st2, Parked): continue
             for d_, b_ in self.st_bytes(st2).items():
-                if d_.type != "cpu": used[d_] = used.get(d_, 0) + b_
+                if d_.type != "cpu" or BUDGET_CPU[0]: used[d_] = used.get(d_, 0) + b_
         return used
 
     def park(self, sid, nxt):
@@ -1213,8 +1218,12 @@ class Trainer:
         if G > 0:
             used = self.resident(skip=sid)
             if all(d_.type == "cpu" or used.get(d_, 0) + b_ <= G for d_, b_ in self.st_bytes(nxt).items()): return nxt
-        return {k: (v.to(torch.device("cpu")) if isinstance(v, KVView) else tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu())
-                for k, v in nxt.items()}
+        return self.to_cpu_state(nxt)
+
+    @staticmethod
+    def to_cpu_state(nxt):
+        return Parked({k: (v.to(torch.device("cpu")) if isinstance(v, KVView) else tuple(t.cpu() for t in v) if isinstance(v, tuple) else v.cpu())
+                       for k, v in nxt.items()})
 
     def synth(self):
         """--depth-test D: the state before a document's token 0 = D synthetic positions: zero K / V in every attention layer (on its card, in a
@@ -1265,6 +1274,32 @@ class Trainer:
             del prev, nxt
         stu.kv_cap = 0
 
+    def proj_bytes(self, st, sb, cap):
+        """w231 --state-budget-gb: the bytes a stream's state will hold on each card while its segment ending at sb runs (KV buffers at the capacity
+        place() / SegCacheBuf give them, other state as stored); st None = built for this segment (rebuilt prefix / first segment: KV for sb positions)"""
+        out = {}
+        if st is None:
+            for d_, b_ in self.kv_tok.items(): out[d_] = b_ * kv_room(sb, cap) + self.gdn_bytes[d_]
+            return out
+        for key, v in st.items():
+            d_ = self.layer_dev(key)
+            if isinstance(v, KVView):
+                c_ = v.k.shape[2] if v.device == d_ else kv_room(v.n + self.a.Q, cap)
+                if c_ < sb: c_ = kv_room(sb, cap)
+                b_ = 2 * c_ * v.k[:, :, :1].numel() * v.k.element_size()
+            else: b_ = sum(t.numel() * t.element_size() for t in (v if isinstance(v, tuple) else (v,)))
+            out[d_] = out.get(d_, 0) + b_
+        return out
+
+    def budget_setup(self):
+        """per-card KV bytes a position (attention layers on the card) and GDN / conv state bytes, for proj_bytes"""
+        stu, cfg = self.stu, self.stu.cfg; self.kv_tok, self.gdn_bytes = {}, {}
+        for l, t in enumerate(cfg.layer_types[:len(stu.layers)]):
+            d_ = self.layer_dev(("kv", l))
+            if t == "full_attention": self.kv_tok[d_] = self.kv_tok.get(d_, 0) + 2 * cfg.num_key_value_heads * cfg.head_dim * 2
+            else: self.gdn_bytes[d_] = self.gdn_bytes.get(d_, 0) + cfg.linear_num_value_heads * cfg.linear_key_head_dim * cfg.linear_value_head_dim * 4 + (2 * cfg.linear_num_key_heads * cfg.linear_key_head_dim + cfg.linear_num_value_heads * cfg.linear_value_head_dim) * (cfg.linear_conv_kernel_dim - 1) * 2
+        for d_ in self.kv_tok: self.gdn_bytes.setdefault(d_, 0)
+
     def run_pipe(self, work, N, acc):
         """--pipeline (with --split-layers): the filled two-card pipeline over a step's segments. Card A (this thread) runs segment j's first half
         forward while card B (a worker thread) runs segment j - 2's second half forward + loss + backward; then A runs j - 2's first-half backward
@@ -1292,7 +1327,7 @@ class Trainer:
                     gm_ = torch.set_grad_enabled(not hist); gm_.__enter__()            # w231: a session's history runs without grad on both cards
                     xB = recv(mA, B)
                     if rg: xB.requires_grad_(True)
-                    cache = SegCacheBuf(prevB, cap)
+                    cache = SegCacheBuf(prevB, cap, share=S_ > 0)
                     h = stu.fnorm(run_half(stu, xB, sa, cache, K, NL))[0]
                     kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, h)
                     sync(B); t1 = time.time(); tm["b_fwd"] += t1 - t_
@@ -1306,8 +1341,16 @@ class Trainer:
         import contextvars                      # torch's dynamo / inductor configs (recompile limit, deterministic, strict numerics) are context variables: the worker runs in a copy of this thread's context
         th = threading.Thread(target=contextvars.copy_context().run, args=(side_b,), name="w225-card-B", daemon=True); th.start()
         pend = collections.deque()
+        S_ = getattr(a, "state_budget_gb", 0.0) * 2**30          # w231: hard per-card bytes for carried states (kept + in flight)
+        if S_ > 0 and not hasattr(self, "kv_tok"): self.budget_setup()
+        self.state_peak = {}; self.n_evict = 0
+        def infl():
+            out = {}
+            for p_ in pend:
+                for d_, b_ in p_[9].items(): out[d_] = out.get(d_, 0) + b_
+            return out
         def finish():
-            j, sid, it, sb, n_doc, gi, hA, cacheA, _ = pend.popleft()
+            j, sid, it, sb, n_doc, gi, hA, cacheA, _, _ = pend.popleft()
             t_ = time.time(); r = qg.get(); tm["a_wait"] += time.time() - t_
             if r[0] is None: raise r[1]
             assert r[0] == j, (r[0], j)
@@ -1327,15 +1370,36 @@ class Trainer:
                     t_ = time.time()
                     k_ = self.states.get(sid)
                     kept = sa > 0 and k_ is not None and k_[0] == it and k_[1] == sa and all(d_.type != "cpu" for d_ in self.st_bytes(k_[2]))
+                    need = {}
+                    if S_ > 0:                                # w231: this segment's state + the kept states + those in flight stay within the budget on every card:
+                        own = k_[2] if (sa > 0 and k_ is not None and k_[0] == it and k_[1] == sa) else None     # finish in-flight segments first, then park
+                        if own is None and sa > 0 and sid in self.snaps: own = self.snaps[sid][1]                 # other streams' kept states (largest first)
+                        need = self.proj_bytes(own, sb, cap)
+                        while True:
+                            used = self.resident(skip=sid); fl = infl()
+                            over = [d_ for d_, b_ in need.items() if (d_.type != "cpu" or BUDGET_CPU[0]) and used.get(d_, 0) + fl.get(d_, 0) + b_ > S_]
+                            if not over: break
+                            if pend: finish(); continue
+                            vic = [(sum(b_ for d_, b_ in self.st_bytes(st2[2]).items() if d_ in over), s2) for s2, st2 in self.states.items() if s2 != sid and not isinstance(st2[2], Parked)]
+                            vic = [x for x in vic if x[0] > 0]
+                            if not vic: break                 # this state alone is over the budget: run it anyway (logged as state_peak)
+                            _, s2 = max(vic); it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_cpu_state(st2)); self.n_evict += 1
                     prev = self.state_in(sid, it, sa, acc) or {}
+                    if S_ > 0: self.states.pop(sid, None)     # consumed: its buffers are referenced by this segment only (grown in place, the old one freed)
                     nb = 0 if kept else sum(self.st_bytes(prev).values())         # a state brought to the cards for this segment (parked / rebuilt / synthetic)
-                    while pend and sum(p_[-1] for p_ in pend) + nb > PIPE_INFLIGHT: finish()   # deep states: few in flight (a 256k stream's KV is 16 GiB)
+                    while pend and sum(p_[8] for p_ in pend) + nb > PIPE_INFLIGHT: finish()   # deep states: few in flight (a 256k stream's KV is 16 GiB)
                     pa = {k: v for k, v in prev.items() if k[1] < K}; pb = {k: v for k, v in prev.items() if k[1] >= K}
-                    cacheA = SegCacheBuf(pa, cap)
+                    if S_ > 0:
+                        del prev
+                        u_ = self.resident(); fl = infl()
+                        for d_, b_ in need.items():
+                            if d_.type != "cpu" or BUDGET_CPU[0]: self.state_peak[d_] = max(self.state_peak.get(d_, 0), u_.get(d_, 0) + fl.get(d_, 0) + b_)
+                    cacheA = SegCacheBuf(pa, cap, share=S_ > 0)
                     hist = self.is_hist(it)
                     with torch.set_grad_enabled(not hist): hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cacheA, 0, K)
-                    qb.put((j, send(hA), hA.requires_grad, pb, gi, i, sa, sb, cap, hist)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb)); sync(A); tm["a_fwd"] += time.time() - t_
-                    del prev, pa, pb, hA, cacheA
+                    qb.put((j, send(hA), hA.requires_grad, pb, gi, i, sa, sb, cap, hist)); pend.append((j, sid, it, sb, n_doc, gi, hA, cacheA, nb, need)); sync(A); tm["a_fwd"] += time.time() - t_
+                    if S_ == 0: del prev
+                    del pa, pb, hA, cacheA
                     if len(pend) > 2: finish()       # A runs two segments ahead: B always has the next one queued (B's work per segment is the larger half)
                 while pend: finish()
         finally:
@@ -2056,6 +2120,8 @@ def parser():
     ap.add_argument("--split-layers", type=int, default=0, help="w225: two cards, one process: the token table and layers 0..K-1 on the first visible card, layers K..63 + final norm + head on the second; carried KV in per-document buffers, each layer's state on its card (0 = off: one card)")
     ap.add_argument("--pipeline", action="store_true", help="w225 (with --split-layers): the filled pipeline (card A runs segment j's first half while card B runs segment j-1's second half); bit for bit the naive split")
     ap.add_argument("--pipe-xfer", choices=("host", "p2p"), default="host", help="w231 (--pipeline): how the hidden state / its gradient cross between the cards: host = through pinned host buffers, each card's copies issued by its own thread (default; the same values); p2p = w225's peer copies (x.to(other card)), suspected in the sporadic illegal memory access")
+    ap.add_argument("--state-budget-gb", type=float, default=0.0, help="w231 (--pipeline): a hard per-card budget for carried states: the kept ones + those of the segments in flight + the next segment's (KV at the capacity it will grow to) stay within this many GiB; over it, in-flight segments finish first, then other streams' kept states are parked on the CPU (largest first). Same values (only where states live); 0 = off")
+    ap.add_argument("--card-mem-gb", type=float, default=0.0, help="w231: cap PyTorch's memory (allocated + cached) at this many GiB a card (torch.cuda.set_per_process_memory_fraction): the HIP runtime keeps the rest; near the cap the allocator frees its cache and retries, else a clean OOM. 0 = off")
     ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
     ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
     ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")
@@ -2186,6 +2252,11 @@ def main():
         d.barrier()
     apply196(a, stu, log)
     ATTN_GQA[0] = a.attn_gqa                                     # w225
+    if a.card_mem_gb > 0:                                        # w231: PyTorch's share of each card (the HIP runtime keeps the rest)
+        for d_ in dict.fromkeys(str(x) for x in stu.devs):
+            tot = torch.cuda.get_device_properties(torch.device(d_)).total_memory
+            torch.cuda.set_per_process_memory_fraction(min(1.0, a.card_mem_gb * 2**30 / tot), torch.device(d_))
+        log(f"w231: PyTorch capped at {a.card_mem_gb} GiB a card (of {tot / 2**30:.2f})")
     if a.pipeline: triton_autotune_lock()
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:
         stu.split = a.split_layers; stu.kvbuf = True; stu.pos_off = a.depth_test; stu.kv_cap = 0
@@ -2279,6 +2350,14 @@ def main():
         if loc is not None: rec["loc_row"] = float(accs[-2]) / max(1, rows)
         rec["peak_gib"] = round(torch.cuda.max_memory_allocated(T.dev) / 2**30, 2)
         if a.split_layers: rec["peak_gib_b"] = round(torch.cuda.max_memory_allocated(stu.devs[1]) / 2**30, 2)    # w225: the second card
+        if T.w225 and torch.cuda.is_available():         # w231: memory per card this step: reserved peak, free now (hipMemGetInfo), allocator cache flushes (alloc retries, cumulative), OOMs, inactive split bytes (fragmentation)
+            mm = {}
+            for d_ in dict.fromkeys(stu.devs):
+                ms = torch.cuda.memory_stats(d_)
+                mm[str(d_)] = {"res_peak": round(ms.get("reserved_bytes.all.peak", 0) / 2**30, 2), "free": round(torch.cuda.mem_get_info(d_)[0] / 2**30, 2),
+                               "retries": ms.get("num_alloc_retries", 0), "ooms": ms.get("num_ooms", 0), "frag": round(ms.get("inactive_split_bytes.all.current", 0) / 2**30, 2)}
+            rec["mem"] = mm
+            if getattr(T, "state_peak", None): rec["state_peak_gib"] = {str(k_): round(v_ / 2**30, 2) for k_, v_ in T.state_peak.items()}; rec["evicted"] = T.n_evict
         if getattr(T, "rank_wall", None): rec["rank_wall"] = [round(x_, 1) for x_ in T.rank_wall]; rec["rank_rss_gib"] = [round(x_, 2) for x_ in T.rank_rss]
         if getattr(T, "pipe_s", None): rec["pipe_s"] = {k_: round(v_, 1) for k_, v_ in T.pipe_s.items()}
         if T.w225:

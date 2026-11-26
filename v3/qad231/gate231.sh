@@ -4,7 +4,8 @@
 #                                       "A,B+C,D" = two data-parallel ranks (qrun.sh), "p2p231 MODE SECONDS" = the transfer stress test on A,B (no trainer)
 # through the queue's runner (qrun.sh: w214's data / student paths) with w231's trainer copy (/data/q27/w231/code). Outputs QROOT/runs/<ARM> (ARM must start with
 # w231-); a line is skipped when runs/<ARM>/gate231.done exists, else its run dir is wiped (NOWIPE=1: resumed from state.pt). A crash is logged, not retried.
-# Extra environment for the trainer (e.g. AMD_SERIALIZE_KERNEL=3) passes through. Log: /data/q27/w231/gate231.log
+# Extra environment for the trainer (e.g. AMD_SERIALIZE_KERNEL=3) passes through; `@env:K=V` words in a line set it for that line only.
+# GATE_ONCE_DONE=0: a line's gate231.done does not skip it (resume lines that repeat an arm). Log: /data/q27/w231/gate231.log
 set -u
 LIST=$1; shift; CARDSL=("$@")
 W=/data/q27/w231; QROOT=/data/q27/queue; CODE=$W/code
@@ -22,12 +23,13 @@ while read -r ARM CARDS SIZE BUD FLAGS; do
     log "p2p231 $CARDS rc $? (log $W/p2p231-$CARDS.log)"; continue
   fi
   case "$ARM" in w231-*) ;; *) log "skip $ARM: not a w231- arm"; continue;; esac
-  [ -e $QROOT/runs/$ARM/gate231.done ] && { log "$ARM done before"; continue; }
+  [ "${GATE_ONCE_DONE:-1}" = 1 ] && [ -e $QROOT/runs/$ARM/gate231.done ] && { log "$ARM done before"; continue; }
   CARDS=$(sub $CARDS)
   [ -n "${NOWIPE:-}" ] || rm -rf $QROOT/runs/$ARM
   log "$ARM start (cards $CARDS): $SIZE $BUD $FLAGS"
   t0=$(date +%s)
-  while true; do eval "$CODE/v3/qadq/qrun.sh box2 $ARM $CARDS $SIZE $BUD $FLAGS" < /dev/null; rc=$?; [ $rc = 76 ] || break; log "$ARM: RAM floor, waiting"; sleep 120; done
+  ENVS=""; F2=""; for w in $FLAGS; do case $w in @env:*) ENVS="$ENVS ${w#@env:}";; *) F2="$F2 $w";; esac; done   # @env:K=V words: environment for this line only
+  while true; do eval "env $ENVS $CODE/v3/qadq/qrun.sh box2 $ARM $CARDS $SIZE $BUD $F2" < /dev/null; rc=$?; [ $rc = 76 ] || break; log "$ARM: RAM floor, waiting"; sleep 120; done
   log "$ARM rc $rc ($(( $(date +%s) - t0 )) s)"
   [ $rc = 0 ] && touch $QROOT/runs/$ARM/gate231.done
 done < $LIST
