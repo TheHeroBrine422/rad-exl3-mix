@@ -180,7 +180,7 @@ class Student:
     the stored order; head_perm (stored row s = vocab head_perm[s], R16.npy) maps the targets' vocab ids to stored rows
     (.v2row); head_train: its r / c trainable (arm H; w222: "in" = only r, the 5,120 hidden-side scales). lora: rank of the adapters on every trunk QLinear (arm L)."""
     def __init__(self, model_dir, level_dir, devs, layers=None, norms=False, gauge=True, teacher=False, quant_layers=None, log=print,
-                 head_dir=None, head_perm=None, head_train=False, lora=0, split=0):
+                 head_dir=None, head_perm=None, head_train=False, lora=0, split=0, only=None):
         from safetensors import safe_open
         from transformers import AutoConfig
         import transformers.models.qwen3_5.modeling_qwen3_5 as q35
@@ -207,7 +207,13 @@ class Student:
         self.quant_layers = set(range(self.NL)) if quant_layers is None else set(quant_layers)
         self.P, self.qlin, self.norm, self.layers, self.tlayers = {}, {}, {}, [], []
         self._fh = {}
+        self.only = only                                                # w233 (qad220 --pipe-procs): build layers only[0] .. only[1]-1 (the others None); the head only with the last layer
+        last_stage = only is None or only[1] >= self.NL
         for i in range(self.NL):
+            if only is not None and not only[0] <= i < only[1]:
+                self.layers.append(None)
+                if teacher: self.tlayers.append(None)
+                continue
             dev = self.dev_of[i]
             pre = f"{self.L}.{i}."
             keys = [k for k in idx if k.startswith(pre)]
@@ -238,7 +244,7 @@ class Student:
             if dev.type == "cuda":
                 with torch.cuda.device(dev): torch.cuda.empty_cache()
         self.hq, self.v2row = None, None
-        if head_dir:                                                    # decoded on the last card while it is still empty
+        if head_dir and last_stage:                                                    # decoded on the last card while it is still empty
             hl = deq.Level(head_dir, "cpu"); hcb = hl.codebook
             ht = self.tables[self.devs[-1]] if hcb == self.cb else torch.from_numpy(deq.lut(hcb)).to(self.devs[-1])
             self.hq = QLinear("lm_head", hl.raw("lm_head"), hcb, ht, self.devs[-1], bool(head_train), head_train is True, hold_bf16=True)   # w222: head_train "in" = the input-side r only; True = r and c (arm H)
@@ -255,6 +261,7 @@ class Student:
         # self.P is rebuilt from the placed modules (whatever Module.to does with Parameter identity)
         self.P = {}
         for i, ly in enumerate(self.layers):
+            if ly is None: continue
             ly.to(self.dev_of[i])
             for k, ql in self.qlin.items():
                 if not k.startswith(f"{self.L}.{i}."): continue
@@ -275,9 +282,10 @@ class Student:
             self.hq.to(last); self.head = self.hq
             for nm in ("r", "c"):
                 if getattr(self.hq, nm) is not None: self.P[f"lm_head:{nm}"] = getattr(self.hq, nm)
-        else:
+        elif last_stage:
             hk = "lm_head.weight" if "lm_head.weight" in idx else f"{self.LP}embed_tokens.weight"
             self.head = self._load([hk], "")[hk].to(last)
+        else: self.head = None
         self.emb = self._embed_memmap()
         self.rotary = {d: q35.Qwen3_5TextRotaryEmbedding(config=cfg).to(d) for d in self.devs}
         for f in self._fh.values(): f.__exit__(None, None, None)

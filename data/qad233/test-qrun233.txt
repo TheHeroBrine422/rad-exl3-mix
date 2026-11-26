@@ -1,0 +1,6 @@
+PASS --pipe-procs on 0,1: two processes (rank 0 card 0, rank 1 card 1, world 2, QAD_STAGES=2)
+PASS --pipe-procs on 0,1+2,3: four processes, rank 2 x group + stage on cards 0..3
+PASS without --pipe-procs: 0,1+2,3 = two dp processes on card pairs (QAD_STAGES=1)
+PASS without --pipe-procs: 0,1 = one process on both cards (no RANK / QAD_STAGES set)
+PASS --pipe-procs with a 3-card group: refused (rc 2)
+ALL PASS
