@@ -1,0 +1,5 @@
+steps compared: 8 (1..8)
+train_kl: identical at 8 / 8 steps, max rel diff 0.000e+00; rows equal: True
+gnorm (logged to 6 digits): identical at 8 / 8, max rel diff 0.000e+00
+wall s / step (median of steps >= 3): 10.30 vs 8.65 -> 1.191x; total 62.0 vs 52.6 s
+parameters: 720 tensors, 720 bit for bit, max |diff| 0.000e+00 (exp(r) scale: 0.000e+00)
