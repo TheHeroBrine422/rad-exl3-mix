@@ -1,0 +1,8 @@
+w231 memory follow-up probes (11-25/26)
+starve231.py, dad1 9070 XT (torch 2.15+rocm7.14), card filled by PyTorch to 1016 / 256 / 56 / 4 MiB free: a NEW Triton kernel (module load), a Triton
+kernel with scratch, an inductor-compiled function on a new shape and sdpa all ran fine down to 4 MiB free; the only failures were clean OutOfMemoryError
+(bf16 matmul at 56 MiB free, a tensor alloc at 4 MiB). No illegal address from runtime starvation.
+sdpa231.py, dad1, deep-segment attention alone (q 1x24x1024x256, KV 4 heads, S 120k..250k as SegCacheBuf's cat, enable_gqa, lower-right causal, fwd+bwd,
+allocator churn): 20 min with the caching allocator 4,244 iterations, 20 min with PYTORCH_NO_HIP_MEMORY_CACHING=1 4,229 iterations: no error.
+PYTORCH_HIP_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:256 accepted on box2 (unknown keys raise ValueError).
+deep300-mem-tail.txt: train.jsonl steps >= 182 of every deep300 attempt (step, wall, alloc peak A / B, per-card mem telemetry, state peak, evictions).

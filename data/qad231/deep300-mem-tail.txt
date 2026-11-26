@@ -1,0 +1,50 @@
+182 81.72 23.45 25.84 null None None
+183 82.04 23.45 25.84 null None None
+184 80.33 23.45 25.84 null None None
+185 75.76 24.92 27.29 null None None
+186 84.91 25.11 27.46 null None None
+187 77.3 25.11 27.49 null None None
+182 128.48 23.41 25.82 null None None
+183 126.73 23.43 25.82 null None None
+184 128.21 23.43 25.82 null None None
+185 128.05 24.92 27.27 null None None
+186 140.26 25.12 27.47 null None None
+187 125.23 25.14 27.48 null None None
+188 131.02 25.38 27.75 null None None
+189 121.38 25.38 27.75 null None None
+190 129.73 25.38 27.75 null None None
+191 126.61 25.38 27.75 null None None
+192 105.54 25.38 27.75 null None None
+193 370.82 20.2 22.56 {"cuda:0": {"res_peak": 26.0, "free": 11.69, "retries": 0, "ooms": 0, "frag": 2.22}, "cuda:1": {"res_peak": 25.95, "free": 9.52, "retries": 0, "ooms": 0, "frag": 2.16}} {'cuda:0': 7.75, 'cuda:1': 7.75} 1
+194 79.16 21.82 24.15 {"cuda:0": {"res_peak": 26.0, "free": 11.8, "retries": 0, "ooms": 0, "frag": 1.92}, "cuda:1": {"res_peak": 28.48, "free": 9.7, "retries": 1, "ooms": 0, "frag": 1.32}} {'cuda:0': 7.83, 'cuda:1': 7.83} 13
+195 78.53 21.93 24.25 {"cuda:0": {"res_peak": 26.0, "free": 12.4, "retries": 0, "ooms": 0, "frag": 2.22}, "cuda:1": {"res_peak": 28.48, "free": 9.84, "retries": 1, "ooms": 0, "frag": 1.36}} {'cuda:0': 7.91, 'cuda:1': 7.91} 12
+196 79.34 21.93 24.25 {"cuda:0": {"res_peak": 26.1, "free": 12.01, "retries": 0, "ooms": 0, "frag": 1.99}, "cuda:1": {"res_peak": 28.48, "free": 9.51, "retries": 1, "ooms": 0, "frag": 1.14}} {'cuda:0': 7.84, 'cuda:1': 7.84} 11
+197 87.29 21.93 24.25 {"cuda:0": {"res_peak": 26.1, "free": 12.22, "retries": 0, "ooms": 0, "frag": 2.08}, "cuda:1": {"res_peak": 28.48, "free": 9.5, "retries": 1, "ooms": 0, "frag": 1.64}} {'cuda:0': 7.9, 'cuda:1': 7.9} 10
+198 86.13 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.7, "retries": 0, "ooms": 0, "frag": 2.56}, "cuda:1": {"res_peak": 28.48, "free": 9.59, "retries": 2, "ooms": 0, "frag": 1.78}} {'cuda:0': 7.89, 'cuda:1': 7.89} 9
+199 79.86 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.9, "retries": 0, "ooms": 0, "frag": 1.8}, "cuda:1": {"res_peak": 28.48, "free": 9.74, "retries": 2, "ooms": 0, "frag": 1.32}} {'cuda:0': 7.9, 'cuda:1': 7.9} 11
+200 74.99 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.65, "retries": 0, "ooms": 0, "frag": 1.71}, "cuda:1": {"res_peak": 28.48, "free": 9.45, "retries": 2, "ooms": 0, "frag": 1.38}} {'cuda:0': 7.94, 'cuda:1': 7.94} 10
+201 82.89 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.64, "retries": 0, "ooms": 0, "frag": 1.84}, "cuda:1": {"res_peak": 28.48, "free": 9.59, "retries": 2, "ooms": 0, "frag": 1.21}} {'cuda:0': 7.9, 'cuda:1': 7.9} 10
+202 77.53 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.43, "retries": 0, "ooms": 0, "frag": 2.29}, "cuda:1": {"res_peak": 28.48, "free": 9.42, "retries": 2, "ooms": 0, "frag": 1.81}} {'cuda:0': 7.92, 'cuda:1': 7.92} 9
+203 78.02 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.87, "retries": 0, "ooms": 0, "frag": 2.11}, "cuda:1": {"res_peak": 28.48, "free": 8.71, "retries": 2, "ooms": 0, "frag": 1.98}} {'cuda:0': 8.0, 'cuda:1': 8.0} 12
+204 83.88 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.59, "retries": 0, "ooms": 0, "frag": 2.62}, "cuda:1": {"res_peak": 28.48, "free": 9.65, "retries": 2, "ooms": 0, "frag": 2.27}} {'cuda:0': 7.94, 'cuda:1': 7.94} 12
+205 79.15 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.72, "retries": 0, "ooms": 0, "frag": 2.06}, "cuda:1": {"res_peak": 28.48, "free": 9.34, "retries": 2, "ooms": 0, "frag": 2.28}} {'cuda:0': 7.82, 'cuda:1': 7.82} 11
+206 83.06 22.04 24.37 {"cuda:0": {"res_peak": 26.1, "free": 11.29, "retries": 0, "ooms": 0, "frag": 1.63}, "cuda:1": {"res_peak": 28.48, "free": 8.42, "retries": 2, "ooms": 0, "frag": 2.11}} {'cuda:0': 7.92, 'cuda:1': 7.92} 9
+207 82.21 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 11.48, "retries": 0, "ooms": 0, "frag": 2.23}, "cuda:1": {"res_peak": 28.48, "free": 8.53, "retries": 2, "ooms": 0, "frag": 1.24}} {'cuda:0': 7.99, 'cuda:1': 7.99} 9
+208 84.53 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 11.34, "retries": 0, "ooms": 0, "frag": 1.83}, "cuda:1": {"res_peak": 28.48, "free": 8.72, "retries": 2, "ooms": 0, "frag": 1.54}} {'cuda:0': 7.87, 'cuda:1': 7.87} 8
+209 84.81 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 11.05, "retries": 0, "ooms": 0, "frag": 2.12}, "cuda:1": {"res_peak": 28.48, "free": 8.68, "retries": 2, "ooms": 0, "frag": 1.24}} {'cuda:0': 7.91, 'cuda:1': 7.91} 8
+210 78.69 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 12.09, "retries": 0, "ooms": 0, "frag": 2.13}, "cuda:1": {"res_peak": 28.48, "free": 9.52, "retries": 2, "ooms": 0, "frag": 1.71}} {'cuda:0': 7.95, 'cuda:1': 7.95} 7
+211 86.49 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 12.33, "retries": 0, "ooms": 0, "frag": 1.63}, "cuda:1": {"res_peak": 28.48, "free": 10.1, "retries": 2, "ooms": 0, "frag": 1.35}} {'cuda:0': 8.0, 'cuda:1': 8.0} 7
+212 75.39 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 12.43, "retries": 0, "ooms": 0, "frag": 1.73}, "cuda:1": {"res_peak": 28.48, "free": 10.37, "retries": 2, "ooms": 0, "frag": 0.98}} {'cuda:0': 7.94, 'cuda:1': 7.94} 8
+213 75.26 22.09 24.41 {"cuda:0": {"res_peak": 26.12, "free": 12.27, "retries": 0, "ooms": 0, "frag": 1.88}, "cuda:1": {"res_peak": 28.48, "free": 10.19, "retries": 2, "ooms": 0, "frag": 1.39}} {'cuda:0': 7.89, 'cuda:1': 7.89} 7
+214 76.59 22.14 24.47 {"cuda:0": {"res_peak": 26.12, "free": 12.02, "retries": 0, "ooms": 0, "frag": 1.71}, "cuda:1": {"res_peak": 28.48, "free": 9.71, "retries": 2, "ooms": 0, "frag": 1.05}} {'cuda:0': 7.96, 'cuda:1': 7.96} 6
+215 82.56 22.14 24.49 {"cuda:0": {"res_peak": 26.12, "free": 11.92, "retries": 0, "ooms": 0, "frag": 2.36}, "cuda:1": {"res_peak": 28.48, "free": 9.89, "retries": 2, "ooms": 0, "frag": 1.34}} {'cuda:0': 7.98, 'cuda:1': 7.98} 6
+216 80.65 22.14 24.49 {"cuda:0": {"res_peak": 26.12, "free": 12.17, "retries": 0, "ooms": 0, "frag": 1.76}, "cuda:1": {"res_peak": 28.48, "free": 9.73, "retries": 2, "ooms": 0, "frag": 1.58}} {'cuda:0': 7.95, 'cuda:1': 7.95} 9
+217 86.72 22.14 24.49 {"cuda:0": {"res_peak": 26.12, "free": 12.25, "retries": 0, "ooms": 0, "frag": 2.0}, "cuda:1": {"res_peak": 28.49, "free": 10.15, "retries": 3, "ooms": 0, "frag": 1.13}} {'cuda:0': 7.94, 'cuda:1': 7.94} 9
+218 80.18 22.14 24.49 {"cuda:0": {"res_peak": 26.12, "free": 11.91, "retries": 0, "ooms": 0, "frag": 1.97}, "cuda:1": {"res_peak": 28.49, "free": 9.84, "retries": 3, "ooms": 0, "frag": 1.08}} {'cuda:0': 7.94, 'cuda:1': 7.94} 8
+217 845.39 20.95 23.3 {"cuda:0": {"res_peak": 25.99, "free": 11.98, "retries": 0, "ooms": 0, "frag": 1.67}, "cuda:1": {"res_peak": 26.05, "free": 10.12, "retries": 0, "ooms": 0, "frag": 1.1}} {'cuda:0': 7.85, 'cuda:1': 7.85} 0
+218 122.39 21.96 24.29 {"cuda:0": {"res_peak": 26.07, "free": 11.92, "retries": 0, "ooms": 0, "frag": 2.13}, "cuda:1": {"res_peak": 27.53, "free": 9.87, "retries": 0, "ooms": 0, "frag": 1.86}} {'cuda:0': 7.89, 'cuda:1': 7.89} 11
+219 125.64 21.96 24.32 {"cuda:0": {"res_peak": 26.07, "free": 12.47, "retries": 0, "ooms": 0, "frag": 1.99}, "cuda:1": {"res_peak": 27.97, "free": 10.02, "retries": 0, "ooms": 0, "frag": 1.46}} {'cuda:0': 7.89, 'cuda:1': 7.89} 8
+220 122.62 22.05 24.37 {"cuda:0": {"res_peak": 26.07, "free": 12.45, "retries": 0, "ooms": 0, "frag": 1.92}, "cuda:1": {"res_peak": 27.97, "free": 9.68, "retries": 0, "ooms": 0, "frag": 1.16}} {'cuda:0': 7.95, 'cuda:1': 7.95} 10
+221 128.03 22.09 24.43 {"cuda:0": {"res_peak": 26.07, "free": 12.4, "retries": 0, "ooms": 0, "frag": 2.09}, "cuda:1": {"res_peak": 27.97, "free": 10.26, "retries": 0, "ooms": 0, "frag": 1.65}} {'cuda:0': 7.91, 'cuda:1': 7.91} 10
+222 135.97 22.1 24.43 {"cuda:0": {"res_peak": 26.07, "free": 12.83, "retries": 0, "ooms": 0, "frag": 2.09}, "cuda:1": {"res_peak": 28.37, "free": 10.47, "retries": 0, "ooms": 0, "frag": 1.25}} {'cuda:0': 7.91, 'cuda:1': 7.91} 10
+223 130.43 22.12 24.48 {"cuda:0": {"res_peak": 26.07, "free": 12.46, "retries": 0, "ooms": 0, "frag": 1.84}, "cuda:1": {"res_peak": 28.37, "free": 10.25, "retries": 0, "ooms": 0, "frag": 1.64}} {'cuda:0': 7.92, 'cuda:1': 7.92} 12
