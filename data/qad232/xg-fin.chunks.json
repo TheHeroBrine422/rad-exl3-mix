@@ -1,0 +1,47 @@
+[
+ {
+  "k": 0,
+  "file": "xg-fin.c0.jsonl",
+  "docs": 8,
+  "tokens": 949607,
+  "max_tokens": 129285,
+  "rows": 949599,
+  "gen_rows": 640008
+ },
+ {
+  "k": 1,
+  "file": "xg-fin.c1.jsonl",
+  "docs": 57,
+  "tokens": 2005440,
+  "max_tokens": 92483,
+  "rows": 2005383,
+  "gen_rows": 1307175
+ },
+ {
+  "k": 2,
+  "file": "xg-fin.c2.jsonl",
+  "docs": 286,
+  "tokens": 2000746,
+  "max_tokens": 18418,
+  "rows": 2000460,
+  "gen_rows": 1824174
+ },
+ {
+  "k": 3,
+  "file": "xg-fin.c3.jsonl",
+  "docs": 1753,
+  "tokens": 2000413,
+  "max_tokens": 3054,
+  "rows": 1998660,
+  "gen_rows": 1177972
+ },
+ {
+  "k": 4,
+  "file": "xg-fin.c4.jsonl",
+  "docs": 2869,
+  "tokens": 927777,
+  "max_tokens": 606,
+  "rows": 924908,
+  "gen_rows": 479719
+ }
+]

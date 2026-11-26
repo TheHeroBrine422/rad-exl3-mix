@@ -1,0 +1,118 @@
+{
+ "tokens": 7883983,
+ "gen_rows": 5429048,
+ "docs": 4973,
+ "notes": [],
+ "cells": {
+  "long-docs": {
+   "docs": 86,
+   "tokens": 1627011,
+   "gen_rows": 1626925,
+   "target": 1620000,
+   "share_pct": 29.97,
+   "left_out_over_maxtok": 0,
+   "pool_left": 844
+  },
+  "multilingual-text": {
+   "docs": 669,
+   "tokens": 1084156,
+   "gen_rows": 1083487,
+   "target": 1080000,
+   "share_pct": 19.96,
+   "left_out_over_maxtok": 0,
+   "pool_left": 9154
+  },
+  "agent-sessions": {
+   "docs": 34,
+   "tokens": 1746533,
+   "gen_rows": 815182,
+   "target": 810000,
+   "share_pct": 15.02,
+   "left_out_over_maxtok": 0,
+   "pool_left": 14
+  },
+  "multilingual-chat": {
+   "docs": 1976,
+   "tokens": 923343,
+   "gen_rows": 648036,
+   "target": 648000,
+   "share_pct": 11.94,
+   "left_out_over_maxtok": 0,
+   "pool_left": 6605
+  },
+  "long-chat": {
+   "docs": 168,
+   "tokens": 714330,
+   "gen_rows": 438437,
+   "target": 432000,
+   "share_pct": 8.08,
+   "left_out_over_maxtok": 0,
+   "pool_left": 588
+  },
+  "code-langs": {
+   "docs": 191,
+   "tokens": 547005,
+   "gen_rows": 546814,
+   "target": 540000,
+   "share_pct": 10.07,
+   "left_out_over_maxtok": 0,
+   "pool_left": 1889
+  },
+  "tools-other": {
+   "docs": 1849,
+   "tokens": 1241605,
+   "gen_rows": 270167,
+   "target": 270000,
+   "share_pct": 4.98,
+   "left_out_over_maxtok": 0,
+   "pool_left": 1730
+  }
+ },
+ "length_hist": {
+  "0-1023": {
+   "docs": 3812,
+   "tokens": 1667798,
+   "gen_rows": 802658
+  },
+  "1024-2047": {
+   "docs": 672,
+   "tokens": 923182,
+   "gen_rows": 594439
+  },
+  "2048-4095": {
+   "docs": 228,
+   "tokens": 653868,
+   "gen_rows": 535609
+  },
+  "4096-8191": {
+   "docs": 101,
+   "tokens": 564342,
+   "gen_rows": 500056
+  },
+  "8192-16383": {
+   "docs": 89,
+   "tokens": 1012989,
+   "gen_rows": 946103
+  },
+  "16384-32767": {
+   "docs": 45,
+   "tokens": 1078809,
+   "gen_rows": 904376
+  },
+  "32768-65535": {
+   "docs": 13,
+   "tokens": 601078,
+   "gen_rows": 327143
+  },
+  "65536-98303": {
+   "docs": 5,
+   "tokens": 432310,
+   "gen_rows": 178656
+  },
+  "98304-131072": {
+   "docs": 8,
+   "tokens": 949607,
+   "gen_rows": 640008
+  }
+ }
+}

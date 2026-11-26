@@ -15,6 +15,6 @@ if [ ! -s $QROOT/scores/$N.json ]; then
   [ $rc -eq 0 ] || exit $rc
   rm -f $P
 fi
-case $N in JL-*|JC-*|JT-*|JU-*|JS-*|JV-*|JG-*|JX-*) echo "$N: JL / JC judge read (no results.tsv row; lead readout: qad226/jl226.py [--golden DIR])"; exit 0;; esac
+case $N in JL-*|JC-*|JT-*|JU-*|JS-*|JV-*|JG-*|JX-*|JV31-*|JT31-*|JX31-*) echo "$N: JL / JC judge read (no results.tsv row; lead readout: qad226/jl226.py [--golden DIR])"; exit 0;; esac
 ARM=${N%-ckpt-*}; CK=ckpt-${N##*-ckpt-}
 $PY $HERE/qrow.py add $QROOT --machine $MACHINE --card $CARD --name $N --arm $ARM --ckpt $CK --size $SIZE --golden $J217 --ctldir $CTLDIR --ctl $CTLN --run $(dirname $CKD)
