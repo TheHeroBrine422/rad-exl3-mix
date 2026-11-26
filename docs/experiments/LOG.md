@@ -10412,3 +10412,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   fragmentation under the cap (step-224 OOM, 4.4 GiB unusable cache). **Branch check passed on 2 cards** (identical step-1 train_kl /
   gnorm; branch 116 s vs separate 170 s). Report passed to w233.
 - 11-26 (user): w233 steered — static allocation (buffers sized from the plan at startup, reused; prefix KV read in place) and **stage processes generic in N** (--stages 2 / 4; DP ranks × stages = cards); validation compares 2 ranks × 2 stages vs 1 rank × 4 stages on the deep mix (throughput, idle, memory headroom, recompute / swapping).
+- 11-25 11:01 PM CST: **xg-fin recorded** (w232 chain232 done rc 0: 4,973 docs, 5.43M scored rows, merged + checked); golden-v31x (fresh xgap-holdout final-read part) recording next on cards 0,1.
