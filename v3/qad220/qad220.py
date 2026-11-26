@@ -480,13 +480,44 @@ def run_segment_split(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     return h, cache.next
 
 
+def h2d(x, dev):
+    """w233: a host tensor on dev without the host waiting: to a card through pinned memory, asynchronously (a pageable host -> card copy over
+    ~1 MB waits for the card's queue to drain, so the thread cannot launch ahead of its card: w215 / h2d231); the values are x's. CPU: x.to(dev)"""
+    dev = torch.device(dev)
+    if dev.type != "cuda": return x.to(dev)
+    return x.pin_memory().to(dev, non_blocking=True)
+
+
+def gold_targets(gold, r, dev):
+    """data181.Gold.targets (top ids [m, K] long, top log-probs [m, K] f32, tail mass [m] f32 on dev) through h2d (w233): the same values, no host wait"""
+    t = np.asarray(gold.top[r[0]:r[-1] + 1])[r - r[0]]
+    tid = h2d(torch.from_numpy(np.ascontiguousarray(t["id"])), dev).long()
+    tlp = h2d(torch.from_numpy(np.ascontiguousarray(t["lp"])), dev).float()
+    ptail = h2d(torch.from_numpy(np.ascontiguousarray(gold.rows[r[0]:r[-1] + 1, 2][r - r[0]])), dev).float()
+    return tid, tlp, ptail
+
+
+def use_ram_embed(stu):
+    """w233: the student's token table (stu.emb: the checkpoint's or --emb's served table, a memmap) copied into host RAM once (2.5 GB); embed() gathers
+    the rows with torch (no page faults on the table file, the GIL released) into pinned memory and copies them asynchronously (h2d). Rows bitwise =
+    Student.embed's"""
+    import types
+    stu.emb_ram = torch.from_numpy(np.array(stu.emb)).view(BF)
+    def embed(self, ids):
+        dev = self.devs[0]; idx = torch.from_numpy(np.asarray(ids, np.int64))
+        rows = torch.empty((len(idx), self.emb_ram.shape[1]), dtype=BF, pin_memory=dev.type == "cuda")
+        torch.index_select(self.emb_ram, 0, idx, out=rows)
+        return rows[None].to(dev, non_blocking=True)
+    stu.embed = types.MethodType(embed, stu)
+
+
 def seg_kl(stu, gold, i, a, b, h, ch=256):
     """w225 (--pipeline): seg_loss's KL sum and rows from the final-norm hidden states h [n, H] of tokens a .. b - 1 of document i"""
     j, r = gold.scored(i, a, b)
     if len(j) == 0: return torch.zeros((), device=h.device), 0
     dev = h.device
     h = h[torch.from_numpy(j - a).to(dev)]
-    tid, tlp, ptail = gold.targets(r, dev)
+    tid, tlp, ptail = gold_targets(gold, r, dev)
     if stu.v2row is not None: tid = stu.v2row[tid]
     tot = 0.0
     for c in range(0, len(j), ch):
@@ -519,7 +550,7 @@ def seg_loss(stu, g, it, a, b, prev, ch=256, per_row=False, tap=None):
     dev = h.device
     ts = tap_mse(tp, tap.rows(gold, i, j, dev), torch.from_numpy(j - a).to(dev)) if tap is not None else None
     h = h[torch.from_numpy(j - a).to(dev)]
-    tid, tlp, ptail = gold.targets(r, dev)
+    tid, tlp, ptail = gold_targets(gold, r, dev)
     if stu.v2row is not None: tid = stu.v2row[tid]
     if per_row:
         return torch.cat([chunk_kl(h[c:c + ch], stu.head, tid[c:c + ch], tlp[c:c + ch], ptail[c:c + ch], True)
@@ -626,7 +657,7 @@ def seg_loss_ext(stu, g, it, a, b, prev, pw=0.0, loc=None, ch=256):
     ls = z
     if loc is not None and len(jg): ls = loc.term(outs, loc.store.rows(gold, i, jg, dev), torch.from_numpy(jg - a).to(dev))
     h = h[torch.from_numpy(j - a).to(dev)]
-    tid, tlp, ptail = gold.targets(r, dev)
+    tid, tlp, ptail = gold_targets(gold, r, dev)
     if stu.v2row is not None: tid = stu.v2row[tid]
     wg = torch.from_numpy(isg).to(dev).float(); wt = torch.where(wg > 0, torch.ones_like(wg), torch.full_like(wg, pw))
     tot = 0.0; gen = z
@@ -1653,6 +1684,7 @@ def build_student(a, dev, log, lora=None, layers=None, quant_layers=None, served
                     rel.append(float((w.float() - p.float()).norm() / p.float().norm())); p.data.copy_(w)
         assert max(rel) < 0.2, f"a / b weights far from the checkpoint's (max rel {max(rel):.3f}): wrong mapping?"
         log(f"GDN a / b: {a.ab} ({len(rel)} tensors, rel diff vs the checkpoint median {np.median(rel):.4f}, max {max(rel):.4f})")
+    use_ram_embed(stu)                                        # w233: token table in host RAM, rows to the card asynchronously
     return stu
 
 

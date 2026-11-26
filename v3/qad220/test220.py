@@ -297,7 +297,7 @@ check("plan_sha differs when the plan differs", plan_sha(st2, fl + 5) != plan_sh
 
 # ---------------------------------------------------------------- item 6: prompt weight, local MSE
 ns["chunk_kl"] = __import__("qad").chunk_kl
-parse_layers, scored_all, chunk_kl_rows, seg_loss, seg_loss_ext = grab("parse_layers", "scored_all", "chunk_kl_rows", "seg_loss", "seg_loss_ext", classes=("LocalMSE", "TapStore"))[:5]
+parse_layers, scored_all, chunk_kl_rows, seg_loss, seg_loss_ext = grab("parse_layers", "scored_all", "chunk_kl_rows", "seg_loss", "seg_loss_ext", "h2d", "gold_targets", classes=("LocalMSE", "TapStore"))[:5]
 LocalMSE, TapStore = ns["LocalMSE"], ns["TapStore"]
 ns["TAPS"] = (5, 19, 33, 47, 61)
 check("parse_layers", parse_layers("0-3") == [0, 1, 2, 3] and parse_layers("5+19+33") == [5, 19, 33] and parse_layers("0-1+4") == [0, 1, 4])
