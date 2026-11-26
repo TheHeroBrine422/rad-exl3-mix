@@ -10361,3 +10361,9 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   copies alone don't fault. Cards 2/3 usable afterwards (KFD shows zombie entries, allocation works). Logs kept
   (`/data/q27/w231/crash-step188-*`). Re-run from state.pt (~step 183) with AMD_SERIALIZE_KERNEL=3 + HIP_LAUNCH_BLOCKING=1 to catch the
   faulting kernel (gate-a3.out). Screens p403030 / p701515 unaffected (cards 0,1).
+- 11-25 7:40 PM CST: deep300 re-run from step 180 with AMD_SERIALIZE_KERNEL=3 + HIP_LAUNCH_BLOCKING=1 got past 188 and hit a clean
+  **OOM at ~193 on card B** (482 MiB request, 168 MiB free; 24.7 GiB allocated + 4.7 GiB reserved) in the pipeline KV placement; peaks had
+  crept 23.4 / 25.8 → 25.1 / 27.5 GiB as the late-mix docs grew. Lead hypothesis: the illegal-address crashes are allocation failures
+  at memory peaks surfacing as illegal addresses. w231 resumed (run 5b36e000): test the hypothesis, add a hard per-card memory budget
+  (≤ ~26 GiB peak) / chunking / allocator settings, re-run deep300 past 300 and the branch check on 2 cards. Cards 2,3 back to the queue
+  meanwhile (DP-gate reads running).
