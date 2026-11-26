@@ -4,7 +4,8 @@
 
 Builds the student as qad220's main does (same flags: --a8-int8 --compile-scales --compile-ew ...), then on one document with >= P + 2 Q tokens:
   base     a Q-token segment after a P-token prefix: forward (layers checkpointed) + KL + backward  [trainer default]
-  nockpt   the same with no checkpointing (activations kept): time, peak memory, and the gradient vs base (max abs / rel norm diff)
+  nockpt   the same with the layers W233_KEEP (default 56-63) not checkpointed (activations kept): time, peak memory (per kept layer = the
+           difference to base / their count), and the gradient vs base (max abs / rel norm diff)
   fwd      forward only (no grad): one pass
   headkl   the head + top-512 KL forward + backward on fixed final hidden states (checkpointed chunks, as seg_kl)
   prof     torch.profiler over one base rep: device time by kernel family (int8 GEMM, quant, bf16 GEMMs, i8->bf16, attention, GDN, elementwise)
@@ -61,12 +62,25 @@ def main():
     params = [p for p in stu.P.values() if p.requires_grad]
     out = {"doc": [C.g[gi].name, int(i), int(n)], "Q": Q, "runs": {}}
 
+    keep = set(T.parse_layers(os.environ.get("W233_KEEP", "56-63")))       # "nockpt" mode: these layers keep their activations (the rest checkpointed)
+
     def seg(pre, prev, ckpt, grad=True):
         ids = C.g[gi].ids(i, pre, pre + Q)
         with torch.set_grad_enabled(grad):
-            h, _ = T.run_segment(stu, ids, pre, prev, ckpt=ckpt)
+            if ckpt or not grad: h, _ = T.run_segment(stu, ids, pre, prev, ckpt=ckpt)
+            else: h = seg_keep(ids, pre, prev)
             kl, m = T.seg_kl(stu, C.g[gi], i, pre, pre + Q, h)
         return kl, m
+
+    def seg_keep(ids, pre, prev):
+        """run_segment's one-card loop with the layers in `keep` not checkpointed (qad220 --keep-act's form, for the baseline trainer too)"""
+        x = stu.embed(ids); n = x.shape[1]
+        pid = torch.arange(pre, pre + n, device=dev).view(1, 1, -1).expand(4, 1, -1); pe = stu.rotary[stu.devs[0]](x, pid[1:])
+        cache = T.SegCache(prev)
+        for li, ly in enumerate(stu.layers):
+            kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
+            x = ly(x, **kw) if li in keep else T.checkpoint(lambda h_, _l=ly, _k=kw: _l(h_, **_k), x, use_reentrant=False)
+        return stu.fnorm(x)[0]
 
     def grads():
         g = torch.cat([p.grad.reshape(-1).float() for p in params]); [setattr(p, "grad", None) for p in params]; return g
