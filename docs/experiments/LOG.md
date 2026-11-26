@@ -10383,3 +10383,10 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   (−0.5–0.8 %); the trace-cut teacher data (opmix, onpol) gave −1.3 %: set 1 is the trace lever. → the most diverse mix tested (40/30/30)
   is best on every breadth judge at no measured calib cost.
 - 11-25 ~9 PM CST: **calib accounting (correction):** 7.73M scored rows (10.26M tokens). Trainable (qad / fit / search minus judges) **3.60M** (incl. 0.16M ripgrep / cobra trace rows); verify 2.09M (0.51M from its 4 traces); jc228 0.89M; golden-jlong 0.97M (incl. attrs / click 0.24M); j217 0.16M. The earlier '5.47M whole' predates the jc228 split. Calib whole = ~24 % of a 15M final (~30 % if jc228 is folded back for the finals; proposal to the user).
+- 11-26 ~9:30 PM CST (user, rule change): **V3.1 finals data split.** Verification set = 424 calib docs / 1.03M scored rows:
+  golden-final750's calib part (ver4 90 + final-c3 123 docs, 412k), the 209 verify docs never used to select / fit (340k), and the
+  whole verify traces rich + express (275k); its xcorp part (210 pieces) stays with golden-final750. Released into the finals' training:
+  the other 432 verify docs (1.06M rows, incl. lua 95k + requests 141k traces) + jc228 (0.89M) + golden-jlong (0.97M, incl. attrs / click)
+  + j217 (0.16M); judges remain usable for screens until the finals start. Trainable calib for the finals ≈ **6.68M rows** (was 3.60M).
+  15M finals plan (user): all teacher (set 1 0.75M + set 2 2.17M = 2.92M), all calib (6.68M), xgap fills the rest (~5.4M) → ~45 / 36 /
+  19. List `eval/pools/v31-verify-split.json`; AGENTS.md updated.
