@@ -2,7 +2,7 @@
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
 """pipe233.py OUT <qad220 flags> -- w233: qad220.main() with the optimizer steps listed in W233_PROF_STEPS (logged step numbers, comma list) run under
 torch.profiler (device activity only): per card the kernel busy time (union of kernel intervals), the step's span, and device time by kernel family
--> OUT/prof233-step<N>.json. Other steps run unchanged (qad220's own train.jsonl wall / pipe_s)."""
+-> OUT/prof233-step<N>[-r<rank>].json. Other steps run unchanged (qad220's own train.jsonl wall / pipe_s)."""
 import json, os, sys, time
 import torch
 
@@ -43,7 +43,8 @@ def run_group(self, ss, lr):
         s0 = min(a for a, _ in z["iv"]); s1 = max(b for _, b in z["iv"])
         out["devices"][str(k)] = {"busy_s": busy(z["iv"]) / 1e6, "span_s": (s1 - s0) / 1e6, "kernels": len(z["iv"]),
                                   "family_s": {f: round(v / 1e6, 2) for f, v in sorted(z["fam"].items(), key=lambda x: -x[1])}}
-    json.dump(out, open(os.path.join(self.a.out, f"prof233-step{step}.json"), "w"), indent=1)
+    out["rank"] = self.d.rank
+    json.dump(out, open(os.path.join(self.a.out, f"prof233-step{step}" + (f"-r{self.d.rank}" if self.d.world > 1 else "") + ".json"), "w"), indent=1)
     self.log(f"w233 profile step {step}: wall {wall:.1f} s, " + ", ".join(f"card {k}: busy {v['busy_s']:.1f} s of span {v['span_s']:.1f}" for k, v in out["devices"].items()))
     return r
 

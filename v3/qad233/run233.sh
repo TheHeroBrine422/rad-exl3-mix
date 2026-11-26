@@ -13,7 +13,18 @@ log "$NAME cards $MYCARDS held"
 case $SCRIPT in prof233.py) S=$W233CODE/v3/qad233/prof233.py;; qad220.py) S=$W233CODE/v3/qad220/qad220.py;; *) S=$SCRIPT;; esac
 export MALLOC_MMAP_THRESHOLD_=1048576 MALLOC_TRIM_THRESHOLD_=67108864
 t0=$(date +%s)
-env ROCR_VISIBLE_DEVICES=$MYCARDS $PY $S $OUT --model $MODEL --level $IN/lv/2.50/trunk --chunks @$CHUNKS \
+ARGS=(--model $MODEL --level $IN/lv/2.50/trunk --chunks @$CHUNKS \
   --calib $CALIB --pools $IN/pools214.json --pool train214 --genmask $IN/genmask --head $IN/lv/2.50/head --head-perm $IN/lv/2.50/R16.npy --ab $IN/lv/2.50/ab.safetensors \
-  --fixed-eval 20000 --fe-every 12 --monitor 0 --build-lock $BUILD_LOCK --save-every 12 "$@" >> $OUT/stdout.log 2>&1 < /dev/null
-log "$NAME rc $? ($(( $(date +%s) - t0 )) s)"
+  --fixed-eval 20000 --fe-every 12 --monitor 0 --build-lock $BUILD_LOCK --save-every 12 "$@")
+if [[ " $* " == *" --pipe-procs "* ]]; then      # w233: one stage process a card (MYCARDS = A,B), as qrun.sh launches them
+  IFS=, read -ra CC <<< "$MYCARDS"; PORT=$((29600 + 10 * ${CC[0]})); pids=()
+  for r in 0 1; do
+    lg=$OUT/stdout.log; [ $r = 1 ] && lg=$OUT/stdout-r1.log
+    env ROCR_VISIBLE_DEVICES=${CC[$r]} RANK=$r WORLD_SIZE=2 LOCAL_RANK=0 QAD_STAGES=2 MASTER_ADDR=127.0.0.1 MASTER_PORT=$PORT $PY $S $OUT "${ARGS[@]}" >> $lg 2>&1 < /dev/null &
+    pids+=($!)
+  done
+  rc=0; for k in 0 1; do wait -n "${pids[@]}"; r_=$?; if [ $r_ != 0 ] && [ $rc = 0 ]; then rc=$r_; kill "${pids[@]}" 2>/dev/null; fi; done
+else
+  env ROCR_VISIBLE_DEVICES=$MYCARDS $PY $S $OUT "${ARGS[@]}" >> $OUT/stdout.log 2>&1 < /dev/null; rc=$?
+fi
+log "$NAME rc $rc ($(( $(date +%s) - t0 )) s)"
