@@ -10417,3 +10417,8 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   scored rows (cells on target within 0.1 pp), all chunks on TP2 (incl. 129k docs). **golden-v31x** 270 xgap-holdout docs not in the gap
   judge, ≤ 64k (max 62k), 401,991 scored rows, cell mix = golden-jgap's; prefix JX31 (MML 67584). Final-read set complete: JV31 (752k
   calib rows) + JT31 (rich / express whole, 275k) + JX31 (402k xgap). Nothing read on them.
+- 11-25 11:45 PM CST (user): **#222 per-size lr screens started** on the current trainer, cards 0,1 (only-card2/3 = NONE: reserved for w233).
+  New student levels lv/2.00, lv/3.50 built from the released containers (rad2level214, checks OK). Arms from each released pick, w214
+  plan data, cap 8192: L20-a 3e-4 → 1.5M → 1e-4 to 3M; L20-b 3e-4 → 2.5M → 1e-4 to 3M; L30-a 3e-4 → 0.5M → 1e-4 to 2M; L30-b flat 1e-4
+  2M; L35-a flat 1e-4 2M; L35-b 3e-4 → 0.5M → 1e-4 2M; L40-a flat 1e-4 2M; L40-b flat 5e-5 2M. Reads: j217 at each 1M + JC / JG at the
+  end; unhealed baselines (UN / JC-UN / JG-UN) for each size. ~25 card-h, ~13 h on 2 cards.
