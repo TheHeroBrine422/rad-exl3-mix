@@ -70,6 +70,7 @@ def case_args(case):
     if case == "budget": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4), {}
     if case == "budget_ef": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4, budget_evict_first=True), {}
     if case == "accum": return dict(pipeline=True, pipe_xfer="host", V=1, accum=2), {}
+    if case == "fit_budget": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4, state_early=True, evict_fit=True), {}
     if case.startswith("early_"):                                  # --state-early on another case (accum at V = 1: every segment is the same stream's)
         ak, kw = case_args(case[6:]); return dict(ak, state_early=True), kw
     if case == "depth": return dict(pipeline=True, pipe_xfer="host"), {"pos_off": 512}
@@ -122,7 +123,7 @@ def merged4(z): return merged(z, (0, 1, 2, 3))
 
 def main():
     # 1-4: one dp rank, two stages, vs the one-process pipeline
-    for case in ("plain", "budget", "budget_ef", "accum", "depth", "early_plain", "early_budget", "early_accum"):
+    for case in ("plain", "budget", "budget_ef", "accum", "depth", "early_plain", "early_budget", "early_accum", "fit_budget"):
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
         if "budget" in case: Q.BUDGET_CPU[0] = True
         Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
@@ -175,7 +176,7 @@ def main():
     H.check("branch training (sessions: history walked once, cuts on state copies): stages = one-process pipeline bit for bit", z[0]["res"] == refb and H.same(merged(z), Tb.stu.state()),
             f"{z[0]['res']} vs {refb}")
     # 9: four stages (layers 0-1 / 2-3 / 4-5 / 6-7) on one dp rank, against the same one-process references
-    for case in ("plain", "budget", "accum", "early_accum", "early_budget"):
+    for case in ("plain", "budget", "accum", "early_accum", "early_budget", "fit_budget"):
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
         if "budget" in case: Q.BUDGET_CPU[0] = True
         Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False

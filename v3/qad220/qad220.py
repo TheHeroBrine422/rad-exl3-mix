@@ -1726,7 +1726,7 @@ class Trainer:
         stu, a, d = self.stu, self.a, self.d
         lo, hi, dev, first, last = self.lo_l, self.hi_l, stu.devs[0], d.stage == 0, d.stage == d.stages - 1
         ahead = d.stages - d.stage + getattr(a, "pipe_ahead", 0)
-        evict_first = getattr(a, "budget_evict_first", False); early = getattr(a, "state_early", False)
+        evict_first = getattr(a, "budget_evict_first", False); early = getattr(a, "state_early", False); fit_evict = getattr(a, "evict_fit", False)
         S_ = getattr(a, "state_budget_gb", 0.0) * 2**30
         if S_ > 0 and not hasattr(self, "kv_tok"): self.budget_setup()
         self.state_peak = {}; self.n_evict = 0
@@ -1779,11 +1779,15 @@ class Trainer:
                     if evict_first and vic: pass                   # --budget-evict-first: park an idle stream's state (asynchronous) before stalling the pipeline
                     elif pend: finish_early(); continue
                     if not vic: break
-                    _, s2 = max(vic); it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_host_state(st2)); self.n_evict += 1
+                    if fit_evict:                                   # --evict-fit: the smallest state that alone covers the overflow (else the largest): a deep
+                        ov = max(used.get(d_, 0) + fl_.get(d_, 0) + need.get(d_, 0) - S_ for d_ in over)      # document's state is not parked to make room for a small one
+                        fit = [x for x in vic if x[0] >= ov]; _, s2 = min(fit) if fit else max(vic)
+                    else: _, s2 = max(vic)
+                    it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_host_state(st2)); self.n_evict += 1
             prev = self.state_in(sid, it, sa, acc) or {}
             if S_ > 0: self.states.pop(sid, None)
             nb = 0 if kept else sum(self.st_bytes(prev).values())
-            while pend and sum(p_[7] for p_ in pend) + nb > PIPE_INFLIGHT: finish_early()
+            while pend and not (S_ > 0 and fit_evict) and sum(p_[7] for p_ in pend) + nb > PIPE_INFLIGHT: finish_early()     # (--evict-fit with a budget: the budget counts in-flight states)
             if S_ > 0:
                 u_ = self.resident(); fl_ = infl()
                 for d_, b_ in need.items():
@@ -2639,6 +2643,7 @@ def parser():
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
     ap.add_argument("--park-pool-gb", type=float, default=0.0, help="w233 (--pipe-procs): parked states live in one pinned host buffer of this many GiB a process, allocated at the start (fixed host memory, exact sizes); a park that does not fit goes to pageable memory (synchronous, counted as pool misses). 0 = torch's pinned caching allocator")
+    ap.add_argument("--evict-fit", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park the smallest other state that covers the overflow (not the largest: that was the deep trace, brought back every step), and drop the 4 GiB cap on states brought in by in-flight segments (PIPE_INFLIGHT: the budget counts them): a deep state no longer stalls the stage; placement only, the same values")
     ap.add_argument("--kl-keep", action="store_true", help="w233 (split / --pipe-procs loss path): the head + top-K KL chunks keep their activations for the backward instead of the checkpoint recompute (one head GEMM less a segment; ~1 GB a 256-row chunk held until the backward); the same values")
     ap.add_argument("--kv-full", action="store_true", help="w233 (static allocation): every document's carried KV buffers at its full length (its cap) from its first segment: no growth copies (the sqrt(2) ladder copies the whole prefix at each rung, 2x transient), sizes fixed per document; costs the full size from the start (counted by --state-budget-gb). The same values")
     ap.add_argument("--state-early", action="store_true", help="w233 (--pipe-procs): a stage stores a segment's carried state right after its forward (it is final then: the backward's recompute writes the same values), so the stream's next segment need not wait for the backward (a stream with several segments in a step no longer drains the pipeline); the same values")
