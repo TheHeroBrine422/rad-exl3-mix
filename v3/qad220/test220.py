@@ -456,7 +456,7 @@ check("a8 backward (STE): the tied gradient is the group sum of the untied one",
 
 # ---------------------------------------------------------------- parser: every w220 flag defaults to today's behaviour
 ns["__doc__"] = ast.get_docstring(TREE)
-parser, = grab("parser")
+parser, = grab("parser", "per_stage_gb")[:1]
 d = parser().parse_args(["OUT", "--model", "m", "--level", "l", "--chunks", "c"])
 check("parser defaults: no w220 flag is on", d.train_layers is None and d.train_tensors is None and d.mask is None and d.tie_groups == 1 and d.tie_layers is None
       and d.clip_gnorm == 0.0 and d.beta2 == 0.99 and d.lr_steps is None and d.decay_shape == "linear" and d.fork_from is None and d.decay_data == "mix"

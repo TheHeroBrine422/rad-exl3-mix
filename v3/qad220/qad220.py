@@ -2526,6 +2526,12 @@ def check(a, stu, P, tap, log):
 
 
 # ------------------------------------------------------------------ main
+def per_stage_gb(x):
+    """w233: a GiB flag as one float, or a comma list of floats (one a stage with --pipe-procs; main() keeps this process's)"""
+    v = [float(t) for t in str(x).split(",")]
+    return v[0] if len(v) == 1 else v
+
+
 def parser():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("out")
@@ -2625,9 +2631,9 @@ def parser():
     ap.add_argument("--split-layers", type=int, default=0, help="w225: two cards, one process: the token table and layers 0..K-1 on the first visible card, layers K..63 + final norm + head on the second; carried KV in per-document buffers, each layer's state on its card (0 = off: one card)")
     ap.add_argument("--pipeline", action="store_true", help="w225 (with --split-layers): the filled pipeline (card A runs segment j's first half while card B runs segment j-1's second half); bit for bit the naive split")
     ap.add_argument("--pipe-xfer", choices=("host", "p2p"), default="host", help="w231 (--pipeline): how the hidden state / its gradient cross between the cards: host = through pinned host buffers, each card's copies issued by its own thread (default; the same values); p2p = w225's peer copies (x.to(other card)), suspected in the sporadic illegal memory access")
-    ap.add_argument("--state-budget-gb", type=float, default=0.0, help="w231 (--pipeline): a hard per-card budget for carried states: the kept ones + those of the segments in flight + the next segment's (KV at the capacity it will grow to) stay within this many GiB; over it, in-flight segments finish first, then other streams' kept states are parked on the CPU (largest first). Same values (only where states live); 0 = off")
+    ap.add_argument("--state-budget-gb", type=per_stage_gb, default=0.0, help="w233: one value, or with --pipe-procs a comma list = one value a stage (e.g. 10.5,9.5); w231 (--pipeline): a hard per-card budget for carried states: the kept ones + those of the segments in flight + the next segment's (KV at the capacity it will grow to) stay within this many GiB; over it, in-flight segments finish first, then other streams' kept states are parked on the CPU (largest first). Same values (only where states live); 0 = off")
     ap.add_argument("--card-mem-gb", type=float, default=0.0, help="w231: cap PyTorch's memory (allocated + cached) at this many GiB a card (torch.cuda.set_per_process_memory_fraction): the HIP runtime keeps the rest; near the cap the allocator frees its cache and retries, else a clean OOM. 0 = off")
-    ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
+    ap.add_argument("--state-card-gb", type=per_stage_gb, default=0.0, help="w233: one value, or with --pipe-procs a comma list = one value a stage (e.g. 10.5,9.5); w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
     ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
     ap.add_argument("--pipe-procs", type=int, nargs="?", const=2, default=0, help="w233: the pipeline as S processes, one a card (default S = 2; qrun.sh launches them for a card group A,B[,C,D], QAD_STAGES=S): stage 0 = token table + its layers, the last = its layers + head + loss; the same arithmetic as --pipeline (bit for bit), no shared interpreter between the cards, states parked asynchronously. Stage boundaries: --split-layers K (S = 2) or --stage-bounds")
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
@@ -2706,6 +2712,11 @@ def eval_only(a, d, log):
 def main():
     a = parser().parse_args()
     if a.a8_int8: a.a8 = True
+    for k_ in ("state_budget_gb", "state_card_gb"):               # w233: per-stage lists (--pipe-procs) -> this stage's value
+        v_ = getattr(a, k_)
+        if isinstance(v_, list):
+            assert len(v_) == a.pipe_procs, f"--{k_.replace('_', '-')}: {len(v_)} values need --pipe-procs {len(v_)}"
+            setattr(a, k_, v_[int(os.environ.get("RANK", 0)) % a.pipe_procs])
     if a.pipeline: assert a.split_layers, "--pipeline needs --split-layers"
     HARD[0], HARD[1] = a.hard_rows, a.hard_cap
     if a.hard_rows > 0: assert not (a.split_layers or a.state_card_gb > 0 or a.depth_test or a.taps), "--hard-rows: the plain one-card KL path only"
@@ -2717,6 +2728,7 @@ def main():
         a.stage_bounds = [int(x) for x in a.stage_bounds.split(",")] if a.stage_bounds else [a.split_layers]
         assert len(a.stage_bounds) == a.pipe_procs - 1 and all(0 < x < y for x, y in zip(a.stage_bounds, a.stage_bounds[1:] + [1 << 20])), f"--pipe-procs {a.pipe_procs}: --stage-bounds (or --split-layers for 2) must give {a.pipe_procs - 1} increasing boundaries: {a.stage_bounds}"
         a.split_layers = a.stage_bounds[0]
+
         assert not (a.norms or a.unshrink or a.remap or a.ema_params or a.lora or a.gradnoise or a.clip_doc or a.block_frac or a.taps or a.make_taps or a.local_mse
                     or a.prompt_weight > 0 or a.eval_only or a.export_only or a.head_train != "none"), \
             "--pipe-procs: plain KL training of the trunk scales (no --norms / --unshrink / --remap / --ema-params / --lora / --gradnoise / --clip-doc / --block-frac / taps / local MSE / prompt weight / --eval-only / --export-only / --head-train)"
