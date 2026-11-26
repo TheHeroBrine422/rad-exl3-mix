@@ -30,6 +30,7 @@ SPEC (JSON):
   without grad, each cut trained from its branch point (prefix rounded down to align) on a copy of the history state (qad220 branch roles hist / cut /
   cut_last). A cut whose tokens before its branch point differ from the history's stays a separate full-prefix document. The unit's carried need = the
   cut's state + the snapshot held meanwhile (m_eff, counted whole against max_carried_tokens). Summary: cost per row branched vs full-prefix.
+  "state_budget_gb" (optional): qad220's --state-budget-gb; the deepest document's state (32 KB a token a card + ~0.1 GiB) must fit it (asserted).
   dir / genmask: the golden's directory and gen mask (default DIR/gen.u8 if it exists, else every row is gen); cap: tokens a document is cut at
   (rows recounted); min_rows (16): documents with fewer gen rows are skipped. The plan stores each golden's name with dir / genmask: qad220 loads
   them (the calib golden named "calib" is the trainer's own --calib).
@@ -145,6 +146,9 @@ def build(spec):
         for (i, n, nr) in s.items:
             for i_ in ([p[0] for p in i.parts if p[4] != "hist"] if isinstance(i, Unit) else [i]):
                 assert (s.golden, i_) not in seen, f"{s.golden}:{i_} in two sources"; seen.add((s.golden, i_))
+    if spec.get("state_budget_gb"):                     # w231: qad220 --state-budget-gb S must hold the deepest single document's state on a card (32 KB a token of KV on each of the two cards + ~0.1 GiB GDN)
+        deepest = max(n for s in srcs.values() for (_, n, _) in s.items)
+        assert deepest * 32768 / 2**30 + 0.1 <= float(spec["state_budget_gb"]), f"a {deepest}-token document needs {deepest * 32768 / 2**30 + 0.1:.1f} GiB a card > state_budget_gb {spec['state_budget_gb']}"
     have = sum(nr for s in srcs.values() for (_, _, nr) in s.items)
     assert have >= stop_rows, f"the sources hold {have} gen rows < budget_rows x (1 + margin) = {stop_rows:.0f} (single epoch): lower the budget or add data"
     # deep trace starts: two passes (the end step is known after the first)

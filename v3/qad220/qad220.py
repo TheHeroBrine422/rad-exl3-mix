@@ -347,7 +347,8 @@ class SegCacheBuf(SegCache):
     The attention's inputs and the carried values are bitwise SegCache's"""
     def __init__(self, prev=None, cap=0, share=False):
         super().__init__(prev if share and prev is not None else dict(prev) if prev else None); self.cap = cap    # w231 share: grow in the caller's dict (the old buffer is freed at once)
-    def room(self, need): return kv_room(need, self.cap)
+    room0 = 0                                                # w231: a minimum capacity (prefix_state presizes to the rebuilt prefix + a segment: no growth copies)
+    def room(self, need): return max(kv_room(need, self.cap), min(self.room0, self.cap) if self.cap else self.room0)
     def update(self, k, v, l, *a, **kw):
         p = self.prev.get(("kv", l)); n = k.shape[2]
         P = p.n if p is not None else 0
@@ -374,7 +375,8 @@ class Parked(dict):
     """w231: a stream state parked on the CPU (KV compacted); not counted as kept on a card"""
 
 
-BUDGET_CPU = [False]            # w231 test switch: --state-budget-gb also counts CPU "cards" (the CPU tests' two device entries)
+BUDGET_CPU = [False]
+REBUILD = [0]                   # w231: set by prefix_state (main thread): the rebuilt prefix's KV capacity; its SegCacheBufs share the state dict (old buffers freed at once)            # w231 test switch: --state-budget-gb also counts CPU "cards" (the CPU tests' two device entries)
 PIPE_INFLIGHT = 4 * 2**30       # w225 --pipeline: bytes of carried states brought onto the cards (parked / rebuilt) that the segments in flight may hold
 
 
@@ -428,7 +430,8 @@ def run_segment(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     o = a + getattr(stu, "pos_off", 0)                  # w225 --depth-test: positions after the synthetic prefix
     pid = torch.arange(o, o + n, device=dev).view(1, 1, -1).expand(4, 1, -1)
     pe = stu.rotary[dev](x, pid[1:])
-    cache = (SegCacheBuf(prev, getattr(stu, "kv_cap", 0)) if getattr(stu, "kvbuf", False) else SegCache(prev)); tp = {}; lo = {}
+    cache = (SegCacheBuf(prev, getattr(stu, "kv_cap", 0), share=REBUILD[0] > 0) if getattr(stu, "kvbuf", False) else SegCache(prev)); tp = {}; lo = {}
+    if REBUILD[0] and isinstance(cache, SegCacheBuf): cache.room0 = REBUILD[0]
     ft = getattr(stu, "first_train", 0)                  # w220: layers before the first trainable one run once, no autograd
     for i, ly in enumerate(stu.layers):
         kw = dict(position_embeddings=pe, attention_mask=None, position_ids=pid[0], past_key_values=cache)
@@ -469,7 +472,8 @@ def run_segment_split(stu, ids, a, prev=None, ckpt=True, taps=None, loc=None):
     state lives on its card. Returns (final-norm hidden states [n, H] on devs[1], next state)"""
     assert taps is None and loc is None, "--split-layers: no taps / local MSE"
     A, B, K = stu.devs[0], stu.devs[-1], stu.split
-    cache = SegCacheBuf(prev, getattr(stu, "kv_cap", 0))
+    cache = SegCacheBuf(prev, getattr(stu, "kv_cap", 0), share=REBUILD[0] > 0)
+    if REBUILD[0]: cache.room0 = REBUILD[0]
     with devctx(A): x = run_half(stu, stu.embed(ids), a, cache, 0, K, ckpt)
     with devctx(B):
         x = run_half(stu, x.to(B), a, cache, K, len(stu.layers), ckpt); h = stu.fnorm(x)[0]
@@ -693,8 +697,11 @@ def to_dev(st, dev): return {k: (tuple(t.to(dev, non_blocking=True) for t in v) 
 def prefix_state(stu, g, it, a, L, st0=None):
     """the state after tokens 0 .. a - 1 of a document, by no-grad segments of <= L tokens (w225 st0: the state before token 0, --depth-test)"""
     gi, i = it; st = st0; p = 0
-    while p < a:
-        q = min(a, p + L); _, st = run_segment(stu, g[gi].ids(i, p, q), p, st, ckpt=False); p = q
+    if getattr(stu, "kvbuf", False): REBUILD[0] = a + getattr(stu, "pos_off", 0) + 1024    # w231: KV buffers sized once for the prefix + the next segment, grown in place
+    try:
+        while p < a:
+            q = min(a, p + L); _, st = run_segment(stu, g[gi].ids(i, p, q), p, st, ckpt=False); p = q
+    finally: REBUILD[0] = 0
     return st
 
 
