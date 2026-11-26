@@ -379,7 +379,8 @@ class Parked(dict):
 
 BUDGET_CPU = [False]
 REBUILD = [0]                   # w231: set by prefix_state (main thread): the rebuilt prefix's KV capacity; its SegCacheBufs share the state dict (old buffers freed at once)            # w231 test switch: --state-budget-gb also counts CPU "cards" (the CPU tests' two device entries)
-FLAG_SEG, FLAG_REBUILD, FLAG_EVAL = 10, 20, 30   # w233 --pipe-procs: Chan message kinds (a segment's hidden state: FLAG_SEG + 1 when it requires grad)
+FLAG_SEG, FLAG_REBUILD, FLAG_EVAL, FLAG_FLUSH = 10, 20, 30, 40   # w233 --pipe-procs: Chan message kinds (a segment's hidden state: FLAG_SEG + 1 when it requires grad;
+                                                 # FLUSH: the sender will wait for its in-flight gradients, so the stages after it finish theirs)
 PIPE_INFLIGHT = 4 * 2**30       # w225 --pipeline: bytes of carried states brought onto the cards (parked / rebuilt) that the segments in flight may hold
 
 
@@ -1590,9 +1591,20 @@ class Trainer:
 
     # ---------------------------------------------------------------- w233: stage processes (--pipe-procs)
     def stage_in(self, flag_ok):
-        """the hidden state entering this stage: stage 0 none (it embeds); else the previous stage's message on the card -> (x, requires grad)"""
-        m_, fl = self.comm.h_in.recv(); assert fl in flag_ok, (fl, flag_ok)
+        """the hidden state entering this stage: stage 0 none (it embeds); else the previous stage's message on the card -> (x, requires grad). A FLUSH
+        on the way (the previous stage is about to wait for its in-flight gradients before sending more) is passed on and this stage's in-flight
+        segments are finished first: a middle stage would otherwise hold them waiting for more input (a deadlock with >= 3 stages)"""
+        while True:
+            m_, fl = self.comm.h_in.recv()
+            if fl != FLAG_FLUSH: break
+            self.flush_down()
+        assert fl in flag_ok, (fl, flag_ok)
         return h2d(m_, self.stu.devs[0]), fl
+
+    def flush_down(self):
+        """before this stage waits for in-flight gradients out of turn: tell the stages after it (FLUSH) and finish its own in-flight segments (FIFO)"""
+        if self.comm.h_out is not None: self.comm.h_out.send(None, FLAG_FLUSH)
+        while getattr(self, "_pend", None): self._finish()
 
     def prefix_stage(self, it, a_, st0=None):
         """prefix_state for a stage process: the same no-grad pieces of <= --len tokens over this stage's layers (stage 0 embeds, the others receive
@@ -1634,28 +1646,40 @@ class Trainer:
         stu, a, d = self.stu, self.a, self.d
         lo, hi, dev, first, last = self.lo_l, self.hi_l, stu.devs[0], d.stage == 0, d.stage == d.stages - 1
         ahead = d.stages - d.stage + getattr(a, "pipe_ahead", 0)
-        evict_first = getattr(a, "budget_evict_first", False)
+        evict_first = getattr(a, "budget_evict_first", False); early = getattr(a, "state_early", False)
         S_ = getattr(a, "state_budget_gb", 0.0) * 2**30
         if S_ > 0 and not hasattr(self, "kv_tok"): self.budget_setup()
         self.state_peak = {}; self.n_evict = 0
         tm = self.pipe_s = dict.fromkeys(("in", "fwd", "wait", "bwd", "out"), 0.0)
         pend = cl.deque(); kls = []
+        TL = os.environ.get("W233_TL") == "1" and dev.type == "cuda"     # w233 profiling: per-segment GPU / host timeline of this stage -> OUT/tl233-r<rank>.jsonl
+        def mark():
+            if not TL: return None
+            e = torch.cuda.Event(enable_timing=True); e.record(); return (e, time.time())
+        tl, ref = {}, mark()
         def infl():
             out = {}
             for p_ in pend:
                 for d_, b_ in p_[8].items(): out[d_] = out.get(d_, 0) + b_
             return out
         def finish():                                               # not the last stage: the oldest segment's gradient from the next stage, its backward
-            sid, it, sb, n_doc, x, x_in, cache, nb, need = pend.popleft()
+            sid, it, sb, n_doc, x, x_in, cache, nb, need, key = pend.popleft()
             t_ = time.time(); gx, fl = self.comm.g_in.recv(); tm["wait"] += time.time() - t_
             assert fl == FLAG_SEG, fl
-            t_ = time.time()
+            t_ = time.time(); b0 = mark()
             if gx is not None: x.backward(h2d(gx, dev))
             if self.comm.g_out is not None: self.comm.g_out.send(x_in.grad if (gx is not None and x_in.requires_grad) else None, FLAG_SEG)
-            tm["bwd"] += time.time() - t_; t_ = time.time()
-            self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_
+            tm["bwd"] += time.time() - t_
+            if TL: tl[key][1] = (b0, mark())
+            if not early:
+                t_ = time.time(); self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_
+        flushed = [-1]                                              # the segment count when the last FLUSH went down
+        def finish_early():                                         # a finish out of turn (budget / in-flight bytes / the stream's previous segment)
+            if not last and pend and pend[0][9] >= flushed[0]: self.comm.h_out.send(None, FLAG_FLUSH); flushed[0] = nsent[0]
+            finish()
+        nsent = [0]; self._pend, self._finish = pend, finish
         for sid, it, sa, sb in work:
-            while not last and any(p_[0] == sid for p_ in pend): finish()     # the stream's previous segment (its state) first
+            while not last and not early and any(p_[0] == sid for p_ in pend): finish_early()     # the stream's previous segment (its state) first
             gi, i, n_doc = self.C.items[it][:3]
             cap = n_doc + getattr(stu, "pos_off", 0); stu.kv_cap = cap
             t_ = time.time()
@@ -1673,13 +1697,13 @@ class Trainer:
                     vic = [(sum(b_ for d_, b_ in self.st_bytes(st2[2]).items() if d_ in over), s2) for s2, st2 in self.states.items() if s2 != sid and not isinstance(st2[2], Parked)]
                     vic = [x for x in vic if x[0] > 0]
                     if evict_first and vic: pass                   # --budget-evict-first: park an idle stream's state (asynchronous) before stalling the pipeline
-                    elif pend: finish(); continue
+                    elif pend: finish_early(); continue
                     if not vic: break
                     _, s2 = max(vic); it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_host_state(st2)); self.n_evict += 1
             prev = self.state_in(sid, it, sa, acc) or {}
             if S_ > 0: self.states.pop(sid, None)
             nb = 0 if kept else sum(self.st_bytes(prev).values())
-            while pend and sum(p_[7] for p_ in pend) + nb > PIPE_INFLIGHT: finish()
+            while pend and sum(p_[7] for p_ in pend) + nb > PIPE_INFLIGHT: finish_early()
             if S_ > 0:
                 u_ = self.resident(); fl_ = infl()
                 for d_, b_ in need.items():
@@ -1688,25 +1712,37 @@ class Trainer:
             hist = self.is_hist(it); tm["in"] += time.time() - t_; t_ = time.time()
             if first: x_in, fl = stu.embed(self.C.g[gi].ids(i, sa, sb)), FLAG_SEG
             else: x_in, fl = self.stage_in((FLAG_SEG, FLAG_SEG + 1)); tm["wait"] += time.time() - t_; t_ = time.time()
+            f0 = mark()
             with torch.set_grad_enabled(not hist):
                 if fl == FLAG_SEG + 1: x_in.requires_grad_(True)
                 x = run_half(stu, x_in, sa, cache, lo, hi)
+                key = nsent[0]; nsent[0] += 1                       # this stage's segment number (timeline key; FLUSH bookkeeping)
+                if TL: tl[key] = [(f0, mark()), None, (sid, it, sa, sb, bool(hist))]
                 if not last:
                     self.comm.h_out.send(x, FLAG_SEG + int(x.requires_grad)); tm["fwd"] += time.time() - t_
-                    pend.append((sid, it, sb, n_doc, x, x_in, cache, nb, need)); del x, x_in, cache
+                    if early:                                       # --state-early: the state is final after the forward (the backward's recompute rewrites the
+                        t_ = time.time(); self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_     # same values): the stream's next segment need not wait
+                        need = {}                                   # (counted with the kept states now)
+                    pend.append((sid, it, sb, n_doc, x, x_in, cache, nb, need, key)); del x, x_in, cache
                     if len(pend) > ahead: finish()
                     continue
                 kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, stu.fnorm(x)[0])
-                tm["fwd"] += time.time() - t_; t_ = time.time()
+                tm["fwd"] += time.time() - t_; t_ = time.time(); b0 = mark()
                 if m: (kl / N).backward()
+                if TL: tl[key][1] = (b0, mark())
             if self.comm.g_out is not None: self.comm.g_out.send(x_in.grad if (m and x_in.requires_grad) else None, FLAG_SEG)
             tm["bwd"] += time.time() - t_; t_ = time.time()
             kls.append((self.tix[self.C.tags[gi]], kl.detach())); acc[2 * kls[-1][0] + 1] += m
             self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_
             del x_in, x, kl, cache
         while pend: finish()
+        self._pend = None
         for t, k in kls: acc[2 * t] += float(k)                    # the same additions in the same order as run_pipe's per-segment float(kl)
         stu.kv_cap = 0
+        if TL:                                                      # GPU times relative to the step's first event, host times relative to its record
+            torch.cuda.synchronize(dev); e0, h0 = ref; g = lambda m_: (round(e0.elapsed_time(m_[0]) / 1e3, 4), round(m_[1] - h0, 4))
+            segs = [[*v[2], *g(v[0][0]), *g(v[0][1])] + ([*g(v[1][0]), *g(v[1][1])] if v[1] else [None] * 4) for v in tl.values()]
+            with open(os.path.join(a.out, f"tl233-r{d.rank}.jsonl"), "a") as f_: f_.write(json.dumps({"stage": d.stage, "t_host": h0, "segs": segs}) + "\n")
 
     def snapshot(self):
         import copy
@@ -2512,6 +2548,7 @@ def parser():
     ap.add_argument("--pipe-procs", type=int, nargs="?", const=2, default=0, help="w233: the pipeline as S processes, one a card (default S = 2; qrun.sh launches them for a card group A,B[,C,D], QAD_STAGES=S): stage 0 = token table + its layers, the last = its layers + head + loss; the same arithmetic as --pipeline (bit for bit), no shared interpreter between the cards, states parked asynchronously. Stage boundaries: --split-layers K (S = 2) or --stage-bounds")
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
+    ap.add_argument("--state-early", action="store_true", help="w233 (--pipe-procs): a stage stores a segment's carried state right after its forward (it is final then: the backward's recompute writes the same values), so the stream's next segment need not wait for the backward (a stream with several segments in a step no longer drains the pipeline); the same values")
     ap.add_argument("--pipe-ahead", type=int, default=0, help="w233 (--pipe-procs): segments a stage keeps in flight beyond S - stage (the default depth); more = fewer bubbles, more activation memory")
     ap.add_argument("--keep-act", default=None, help="w233: decoder layers (parse_layers syntax: 48-63, 32-63+0-3) that keep their activations for the backward instead of the checkpoint recompute: less work, more memory a segment in flight; the same arithmetic (bit for bit). Default none")
     ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")

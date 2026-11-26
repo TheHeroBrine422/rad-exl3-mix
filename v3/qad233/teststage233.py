@@ -4,6 +4,7 @@
 stack (8 layers, split 4), through the real Trainer.run_group, against today's one-process --pipeline (the reference), bit for bit:
   1. plain (2 processes, 3 steps): KL sums, rows, gnorm, prefix tokens, parameters;
   2. --state-card-gb + --state-budget-gb at a budget that evicts (each stage budgets its own card), also with --budget-evict-first;
+     --state-early (a segment's state stored after its forward) on plain / budget / accum at V = 1;
   3. --accum 2 at V = 1;  4. --depth-test 512;
   5. a resume after step 1: the merged state file (snapshot_all) restored in fresh stage processes, every stream's state rebuilt by the pipelined
      prefix rebuild (prefix_stage) = the one-process resume (restore + prefix_state);
@@ -69,6 +70,8 @@ def case_args(case):
     if case == "budget": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4), {}
     if case == "budget_ef": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4, budget_evict_first=True), {}
     if case == "accum": return dict(pipeline=True, pipe_xfer="host", V=1, accum=2), {}
+    if case.startswith("early_"):                                  # --state-early on another case (accum at V = 1: every segment is the same stream's)
+        ak, kw = case_args(case[6:]); return dict(ak, state_early=True), kw
     if case == "depth": return dict(pipeline=True, pipe_xfer="host"), {"pos_off": 512}
     if case == "dp": return dict(pipeline=True, pipe_xfer="host", V=4), {}
     raise KeyError(case)
@@ -118,14 +121,14 @@ def merged4(z): return merged(z, (0, 1, 2, 3))
 
 def main():
     # 1-4: one dp rank, two stages, vs the one-process pipeline
-    for case in ("plain", "budget", "budget_ef", "accum", "depth"):
+    for case in ("plain", "budget", "budget_ef", "accum", "depth", "early_plain", "early_budget", "early_accum"):
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
-        if case.startswith("budget"): Q.BUDGET_CPU[0] = True
+        if "budget" in case: Q.BUDGET_CPU[0] = True
         Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
-        _, z = spawn(2, case, {"budget_cpu": case.startswith("budget")})
+        _, z = spawn(2, case, {"budget_cpu": "budget" in case})
         ok = z[0]["res"] == ref and z[1]["res"] == ref and H.same(merged(z), Tr.stu.state()) and set(merged(z)) == set(Tr.stu.state())
         info = f"stages {z[0]['res'][0]} vs one process {ref[0]}"
-        if case.startswith("budget"): ok = ok and z[0]["evict"] + z[1]["evict"] > 0; info += f"; evictions stage 0 / 1: {z[0]['evict']} / {z[1]['evict']}"
+        if "budget" in case: ok = ok and z[0]["evict"] + z[1]["evict"] > 0; info += f"; evictions stage 0 / 1: {z[0]['evict']} / {z[1]['evict']}"
         H.check(f"--pipe-procs = --pipeline bit for bit ({case}: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)", ok, info)
     # 5: resume from the merged state after step 1
     a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
@@ -166,14 +169,14 @@ def main():
     H.check("branch training (sessions: history walked once, cuts on state copies): stages = one-process pipeline bit for bit", z[0]["res"] == refb and H.same(merged(z), Tb.stu.state()),
             f"{z[0]['res']} vs {refb}")
     # 9: four stages (layers 0-1 / 2-3 / 4-5 / 6-7) on one dp rank, against the same one-process references
-    for case in ("plain", "budget", "accum"):
+    for case in ("plain", "budget", "accum", "early_accum", "early_budget"):
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
-        if case == "budget": Q.BUDGET_CPU[0] = True
+        if "budget" in case: Q.BUDGET_CPU[0] = True
         Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
-        _, z = spawn(4, case, {"stages": 4, "budget_cpu": case == "budget"})
+        _, z = spawn(4, case, {"stages": 4, "budget_cpu": "budget" in case})
         ok = all(z[r]["res"] == ref for r in range(4)) and H.same(merged4(z), Tr.stu.state()) and set(merged4(z)) == set(Tr.stu.state())
-        info = f"4 stages {z[0]['res'][0]} vs one process {ref[0]}" + (f"; evictions {[z[r]['evict'] for r in range(4)]}" if case == "budget" else "")
-        H.check(f"--pipe-procs 4 = --pipeline bit for bit ({case}: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)", ok and (case != "budget" or sum(z[r]["evict"] for r in range(4)) > 0), info)
+        info = f"4 stages {z[0]['res'][0]} vs one process {ref[0]}" + (f"; evictions {[z[r]['evict'] for r in range(4)]}" if "budget" in case else "")
+        H.check(f"--pipe-procs 4 = --pipeline bit for bit ({case}: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)", ok and ("budget" not in case or sum(z[r]["evict"] for r in range(4)) > 0), info)
     a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
     Tr, ref = run(H.Tiny(0, split=K), a, C, steps, restore=f"{out1}/snap.pt")
     _, z = spawn(4, "plain", {"stages": 4, "restore": f"{outs}/snap.pt"})
