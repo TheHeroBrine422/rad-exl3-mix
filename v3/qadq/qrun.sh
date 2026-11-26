@@ -5,7 +5,7 @@
 # w231: CARD = A,B+C,D (groups joined by +) = data-parallel ranks, one process a group with only its cards visible (rank r = group r, gloo on
 # 127.0.0.1:QDP_PORT, default 29400 + 10 x the first card); rank r > 0 logs to stdout-r<r>.log. When one rank fails the others are killed (they would
 # wait in the gradient all-reduce for gloo's 2 h timeout); the rc is the first failing rank's. Without + it is the old single process.
-# w233: with --pipe-procs each group A,B runs as two stage processes (one card each): A,B = 2 processes, A,B+C,D = 4 (rank = 2 x group + stage).
+# w233: with --pipe-procs each group of S cards runs as S stage processes (one card each): A,B = 2, A,B+C,D = 2 x 2, A,B,C,D = 4 stages (rank = S x group + stage).
 set -u
 MACHINE=$1 ARM=$2 CARD=$3 SIZE=$4 BUDGETS=$5; shift 5
 HERE0=$(dirname "$(readlink -f "$0")"); source $HERE0/qenv.sh $MACHINE
@@ -20,18 +20,18 @@ export MALLOC_MMAP_THRESHOLD_=1048576 MALLOC_TRIM_THRESHOLD_=67108864
 ARGS=(--model $MODEL --level $IN/lv/$SIZE/trunk --chunks @$CHUNKS \
   --calib $CALIB --pools $IN/pools214.json --pool train214 --genmask $IN/genmask --head $IN/lv/$SIZE/head --head-perm $IN/lv/$SIZE/R16.npy --ab $IN/lv/$SIZE/ab.safetensors \
   --budgets $BUDGETS --fixed-eval 20000 --fe-every 12 --monitor 0 --build-lock $BUILD_LOCK --save-every 12 "$@")
-# w233: with --pipe-procs every group A,B is two processes (stage 0 on card A, stage 1 on card B; rank = 2 x group + stage, QAD_STAGES=2)
+# w233: with --pipe-procs every group of S cards (A,B or A,B,C,D) is S processes, stage s on the group's s-th card (rank = S x group + stage, QAD_STAGES=S)
 PROCS=(); STAGES=1
 if [[ " $* " == *" --pipe-procs "* ]]; then
-  STAGES=2; IFS=+ read -ra GRP <<< "$CARD"
-  for g in "${GRP[@]}"; do IFS=, read -ra CC <<< "$g"; [ ${#CC[@]} = 2 ] || { echo "--pipe-procs: each group must be two cards (A,B): $g"; exit 2; }; PROCS+=(${CC[0]} ${CC[1]}); done
+  IFS=+ read -ra GRP <<< "$CARD"; IFS=, read -ra CC <<< "${GRP[0]}"; STAGES=${#CC[@]}
+  for g in "${GRP[@]}"; do IFS=, read -ra CC <<< "$g"; [ ${#CC[@]} = $STAGES ] && [ $STAGES -ge 2 ] || { echo "--pipe-procs: every group must be the same >= 2 cards: $CARD"; exit 2; }; PROCS+=("${CC[@]}"); done
 fi
 if [ $STAGES = 1 ] && [[ $CARD != *+* ]]; then
   env $(GPUENV $CARD) nice -n 5 $PY $TRAINER $OUT "${ARGS[@]}" >> $OUT/stdout.log 2>&1
   rc=$?
 else
   IFS=+ read -ra GRP <<< "$CARD"; c0=${GRP[0]%%,*}; PORT=${QDP_PORT:-$((29400 + 10 * c0))}
-  [ $STAGES = 2 ] && GRP=("${PROCS[@]}"); W=${#GRP[@]}
+  [ $STAGES -ge 2 ] && GRP=("${PROCS[@]}"); W=${#GRP[@]}
   declare -A RANK_OF=(); pids=()
   for r in $(seq 0 $((W - 1))); do
     log=$OUT/stdout.log; [ $r -gt 0 ] && log=$OUT/stdout-r$r.log

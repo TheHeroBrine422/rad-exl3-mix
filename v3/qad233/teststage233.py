@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # Copyright 2026 Hero422. Licensed under the Apache License, Version 2.0 (see LICENSE).
-"""teststage233.py -- CPU checks of qad220 --pipe-procs (w233: the two-card pipeline as two stage processes, gloo) on testhf225's tiny REAL Qwen3.5
+"""teststage233.py -- CPU checks of qad220 --pipe-procs (w233: the pipeline as S stage processes, gloo; S = 2 and 4) on testhf225's tiny REAL Qwen3.5
 stack (8 layers, split 4), through the real Trainer.run_group, against today's one-process --pipeline (the reference), bit for bit:
   1. plain (2 processes, 3 steps): KL sums, rows, gnorm, prefix tokens, parameters;
-  2. --state-card-gb + --state-budget-gb at a budget that evicts (each stage budgets its own card);
+  2. --state-card-gb + --state-budget-gb at a budget that evicts (each stage budgets its own card), also with --budget-evict-first;
   3. --accum 2 at V = 1;  4. --depth-test 512;
   5. a resume after step 1: the merged state file (snapshot_all) restored in fresh stage processes, every stream's state rebuilt by the pipelined
      prefix rebuild (prefix_stage) = the one-process resume (restore + prefix_state);
   6. fixed eval (Trainer.fixed through eval_stage) and the checkpoint (write_ckpt_all: scales files byte-identical, params.pt tensors equal);
   7. 2 data-parallel ranks x 2 stages (4 processes, V = 4) = the 2-rank one-process pipeline (testhf231's DP run);
-  8. branch training (testbranch231's sessions: history walked once, cuts on state copies) = the one-process pipeline on the same arrangement.
+  8. branch training (testbranch231's sessions: history walked once, cuts on state copies) = the one-process pipeline on the same arrangement;
+  9. four stages (layers 2 / 2 / 2 / 2): plain, budget, accum, restore of the 2-stage file, --pipe-ahead 2 + fixed eval + checkpoint, branch.
 Run like testhf225 (box2: HIP_VISIBLE_DEVICES= ROCR_VISIBLE_DEVICES= QAD_PIPELINE=CODE/pipeline /data/q27/venv/bin/python teststage233.py). Exit 0 = all pass."""
 import hashlib, os, sys, tempfile
 import numpy as np
@@ -22,15 +23,18 @@ Q, D = H.Q, H.D
 K = 4
 
 
-def stage_tiny(stage, seed=0):
-    """Tiny(seed, split 4) cut to one stage's layers (the others None), the head only on stage 1: what qmodel.Student(only=) builds"""
-    stu = H.Tiny(seed, split=K); own = range(0, K) if stage == 0 else range(K, H.NL)
+BOUNDS = {2: [K], 4: [2, 4, 6]}
+
+
+def stage_tiny(stage, S=2, seed=0):
+    """Tiny(seed, split 4) cut to one stage's layers (the others None), the head only on the last stage: what qmodel.Student(only=) builds"""
+    stu = H.Tiny(seed, split=K); b = [0] + BOUNDS[S] + [H.NL]; own = range(b[stage], b[stage + 1])
     for i in range(H.NL):
         if i not in own: stu.layers[i] = None
     stu.P = {n: p for n, p in stu.P.items() if Q.layer_of(stu, n) in own}
     stu.qlin = {k: q for k, q in stu.qlin.items() if Q.layer_of(stu, k + ":r") in own}
-    if stage == 0: stu.head = None
-    stu.devs = [H.CPU]
+    if stage < S - 1: stu.head = None
+    stu.devs = [H.CPU]; stu.only = (b[stage], b[stage + 1])
     return stu
 
 
@@ -63,6 +67,7 @@ def plain_plan(a): return H.C, D.plan(H.C.items, np.arange(len(H.nt)), a.V, a.Q)
 def case_args(case):
     if case == "plain": return dict(pipeline=True, pipe_xfer="host"), {}
     if case == "budget": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4), {}
+    if case == "budget_ef": return dict(pipeline=True, pipe_xfer="host", V=4, state_card_gb=1.0, state_budget_gb=3e-4, budget_evict_first=True), {}
     if case == "accum": return dict(pipeline=True, pipe_xfer="host", V=1, accum=2), {}
     if case == "depth": return dict(pipeline=True, pipe_xfer="host"), {"pos_off": 512}
     if case == "dp": return dict(pipeline=True, pipe_xfer="host", V=4), {}
@@ -78,7 +83,7 @@ def branch_setup():
 
 def proc_main(r, world, port, out, case, extra):
     """one process of a stage run (QAD_STAGES=2: rank r = 2 dp + stage) or of a one-process DP reference (QAD_STAGES=1)"""
-    stages = extra.get("stages", 2)
+    stages = extra.get("stages", 2)                               # 1 = a one-process dp reference rank; else the stages a pipeline
     os.environ.update(RANK=str(r), WORLD_SIZE=str(world), LOCAL_RANK="0", MASTER_ADDR="127.0.0.1", MASTER_PORT=str(port), QAD_STAGES=str(stages))
     torch.set_num_threads(2)
     if extra.get("budget_cpu"): Q.BUDGET_CPU[0] = True
@@ -86,7 +91,8 @@ def proc_main(r, world, port, out, case, extra):
         C, steps, QT = branch_setup(); a = H.targs(pipeline=True, pipe_xfer="host", V=2, Q=QT); nsteps = 1; kw = {}
     else:
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a); nsteps = 3
-    stu = stage_tiny(r % 2) if stages == 2 else H.Tiny(0, split=K)
+    stu = stage_tiny(r % stages, stages) if stages > 1 else H.Tiny(0, split=K)
+    a.pipe_ahead = extra.get("ahead", 0)
     T, res = run(stu, a, C, steps, nsteps=nsteps, restore=extra.get("restore"), snap_after=extra.get("snap_after"), out=out, **kw)
     z = {"res": res, "state": T.stu.state(), "evict": getattr(T, "n_evict", 0), "mine": T.mine}
     if extra.get("fixed"):
@@ -107,16 +113,19 @@ def spawn(world, case, extra=None):
 def merged(z, ranks=(0, 1)): return {k: v for r in ranks for k, v in z[r]["state"].items()}
 
 
+def merged4(z): return merged(z, (0, 1, 2, 3))
+
+
 def main():
     # 1-4: one dp rank, two stages, vs the one-process pipeline
-    for case in ("plain", "budget", "accum", "depth"):
+    for case in ("plain", "budget", "budget_ef", "accum", "depth"):
         ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
-        if case == "budget": Q.BUDGET_CPU[0] = True
+        if case.startswith("budget"): Q.BUDGET_CPU[0] = True
         Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
-        _, z = spawn(2, case, {"budget_cpu": case == "budget"})
+        _, z = spawn(2, case, {"budget_cpu": case.startswith("budget")})
         ok = z[0]["res"] == ref and z[1]["res"] == ref and H.same(merged(z), Tr.stu.state()) and set(merged(z)) == set(Tr.stu.state())
         info = f"stages {z[0]['res'][0]} vs one process {ref[0]}"
-        if case == "budget": ok = ok and z[0]["evict"] + z[1]["evict"] > 0; info += f"; evictions stage 0 / 1: {z[0]['evict']} / {z[1]['evict']}"
+        if case.startswith("budget"): ok = ok and z[0]["evict"] + z[1]["evict"] > 0; info += f"; evictions stage 0 / 1: {z[0]['evict']} / {z[1]['evict']}"
         H.check(f"--pipe-procs = --pipeline bit for bit ({case}: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)", ok, info)
     # 5: resume from the merged state after step 1
     a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
@@ -156,6 +165,27 @@ def main():
     _, z = spawn(2, "branch")
     H.check("branch training (sessions: history walked once, cuts on state copies): stages = one-process pipeline bit for bit", z[0]["res"] == refb and H.same(merged(z), Tb.stu.state()),
             f"{z[0]['res']} vs {refb}")
+    # 9: four stages (layers 0-1 / 2-3 / 4-5 / 6-7) on one dp rank, against the same one-process references
+    for case in ("plain", "budget", "accum"):
+        ak, kw = case_args(case); a = H.targs(**ak); C, steps = plain_plan(a)
+        if case == "budget": Q.BUDGET_CPU[0] = True
+        Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
+        _, z = spawn(4, case, {"stages": 4, "budget_cpu": case == "budget"})
+        ok = all(z[r]["res"] == ref for r in range(4)) and H.same(merged4(z), Tr.stu.state()) and set(merged4(z)) == set(Tr.stu.state())
+        info = f"4 stages {z[0]['res'][0]} vs one process {ref[0]}" + (f"; evictions {[z[r]['evict'] for r in range(4)]}" if case == "budget" else "")
+        H.check(f"--pipe-procs 4 = --pipeline bit for bit ({case}: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)", ok and (case != "budget" or sum(z[r]["evict"] for r in range(4)) > 0), info)
+    a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
+    Tr, ref = run(H.Tiny(0, split=K), a, C, steps, restore=f"{out1}/snap.pt")
+    _, z = spawn(4, "plain", {"stages": 4, "restore": f"{outs}/snap.pt"})
+    H.check("4 stages restore the 2-stage state file (another layout: Adam state by name; prefixes rebuilt through 4 stages) = the one-process resume bit for bit",
+            z[0]["res"] == ref and H.same(merged4(z), Tr.stu.state()), f"{z[0]['res']} vs {ref}")
+    Tr, ref = run(H.Tiny(0, split=K), a, C, steps); fr = Tr.fixed(fe).tolist()
+    outs4, z = spawn(4, "plain", {"stages": 4, "fixed": True, "ahead": 2})
+    pb = torch.load(f"{outs4}/ckpt/params.pt", weights_only=False)
+    H.check("4 stages with --pipe-ahead 2 (deeper in flight): = one process bit for bit; fixed eval equal; checkpoint scales byte-identical, params.pt equal",
+            all(z[r]["res"] == ref for r in range(4)) and z[0]["fixed"] == fr and z[3]["fixed"] == fr and files(oref) == files(f"{outs4}/ckpt") and H.same(pa["state"], pb["state"]))
+    _, z = spawn(4, "branch", {"stages": 4})
+    H.check("4 stages, branch training = one-process pipeline bit for bit", z[0]["res"] == refb and H.same(merged4(z), Tb.stu.state()), f"{z[0]['res']} vs {refb}")
     print("\n" + ("ALL PASS" if not H.fails else f"FAILED: {H.fails}"))
     sys.exit(1 if H.fails else 0)
 

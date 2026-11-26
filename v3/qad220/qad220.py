@@ -379,7 +379,7 @@ class Parked(dict):
 
 BUDGET_CPU = [False]
 REBUILD = [0]                   # w231: set by prefix_state (main thread): the rebuilt prefix's KV capacity; its SegCacheBufs share the state dict (old buffers freed at once)            # w231 test switch: --state-budget-gb also counts CPU "cards" (the CPU tests' two device entries)
-FLAG_SEG, FLAG_REBUILD, FLAG_EVAL = 10, 20, 30   # w233 --pipe-procs: PairComm message kinds (a segment's hidden state: FLAG_SEG + 1 when it requires grad)
+FLAG_SEG, FLAG_REBUILD, FLAG_EVAL = 10, 20, 30   # w233 --pipe-procs: Chan message kinds (a segment's hidden state: FLAG_SEG + 1 when it requires grad)
 PIPE_INFLIGHT = 4 * 2**30       # w225 --pipeline: bytes of carried states brought onto the cards (parked / rebuilt) that the segments in flight may hold
 
 
@@ -743,23 +743,31 @@ def prefix_state(stu, g, it, a, L, st0=None):
 
 # ------------------------------------------------------------------ distributed
 class Dist:
-    """ranks (gloo). w233 --pipe-procs (env QAD_STAGES=2, set by qrun.sh): every data-parallel rank is two processes, stage 0 (token table + the
-    first --split-layers layers, card A) and stage 1 (the rest + head + loss, card B); global rank = 2 dp_rank + stage. Groups: stage_group = the
-    same stage of every dp rank (gradient sums), fwd / bwd = the pair's channels (stage 0 -> 1: hidden states, 1 -> 0: their gradients)"""
+    """ranks (gloo). w233 --pipe-procs S (env QAD_STAGES=S, set by qrun.sh): every data-parallel rank is S processes, one a card, stage s holding a
+    contiguous range of layers (stage 0 also the token table, the last stage the head and the loss); global rank = S dp_rank + stage. Groups:
+    stage_group = the same stage of every dp rank (gradient sums); fwd_in / fwd_out / bwd_in / bwd_out = the chain's one-way channels to the neighbours
+    (hidden states forward, their gradients backward); prev / next = the neighbours' ranks"""
     def __init__(self):
         self.rank = int(os.environ.get("RANK", 0)); self.world = int(os.environ.get("WORLD_SIZE", 1))
         self.local = int(os.environ.get("LOCAL_RANK", 0))
-        self.stages = int(os.environ.get("QAD_STAGES", 1)); assert self.stages in (1, 2) and self.world % self.stages == 0, (self.stages, self.world)
+        self.stages = int(os.environ.get("QAD_STAGES", 1)); assert self.stages >= 1 and self.world % self.stages == 0, (self.stages, self.world)
         self.stage, self.dp_rank, self.dp_world = self.rank % self.stages, self.rank // self.stages, self.world // self.stages
         if self.world > 1:
             import torch.distributed as dist
             if not dist.is_initialized(): dist.init_process_group("gloo", timeout=__import__("datetime").timedelta(hours=2))
             self.dist = dist
         if self.stages > 1:                       # every rank creates every group, in the same order
-            sg = [dist.new_group([r for r in range(self.world) if r % self.stages == st]) for st in range(self.stages)]
-            pf = [dist.new_group([2 * p, 2 * p + 1]) for p in range(self.dp_world)]; pb = [dist.new_group([2 * p, 2 * p + 1]) for p in range(self.dp_world)]
-            self.stage_group, self.fwd, self.bwd = sg[self.stage], pf[self.dp_rank], pb[self.dp_rank]
-            self.peer = self.rank ^ 1
+            S = self.stages
+            sg = [dist.new_group([r for r in range(self.world) if r % S == st]) for st in range(S)]
+            link = {}
+            for p in range(self.dp_world):
+                for st in range(S - 1):
+                    for kind in ("fwd", "bwd"): link[(p, st, kind)] = dist.new_group([p * S + st, p * S + st + 1])
+            p, st = self.dp_rank, self.stage
+            self.stage_group = sg[st]; self.head0 = p * S              # the pipeline's stage-0 rank
+            self.prev = self.rank - 1 if st > 0 else None; self.next = self.rank + 1 if st < S - 1 else None
+            self.fwd_in = link[(p, st - 1, "fwd")] if st > 0 else None; self.bwd_out = link[(p, st - 1, "bwd")] if st > 0 else None
+            self.fwd_out = link[(p, st, "fwd")] if st < S - 1 else None; self.bwd_in = link[(p, st, "bwd")] if st < S - 1 else None
     def allsum(self, t):
         """sum of a CPU f64 / f32 tensor over ranks (in place)"""
         if self.world > 1: self.dist.all_reduce(t)
@@ -774,37 +782,36 @@ class Dist:
         if self.world > 1: self.dist.barrier()
 
 
-class PairComm:
-    """w233 --pipe-procs: a stage pair's two one-way channels (gloo point to point on the pair's groups, one thread each, so the compute thread never
-    blocks on a transfer). send(x, flag): x (a card / CPU tensor or None) goes into pinned host memory (asynchronous D2H, event); the sender thread waits
-    for the event and sends a header [d0, d1, d2, has x, flag] and the data. recv() -> (host tensor or None, flag): the next message in order (the
-    receiver thread posts the receives as they come). Each direction is FIFO: both stages walk the same segment list, so messages match by order"""
+class Chan:
+    """w233 --pipe-procs: one way of a link between neighbouring stages (gloo point to point on the link's own group, on its own thread, so the compute
+    thread never blocks on a transfer). Sending end: send(x, flag) puts x (a card / CPU tensor, or None) into pinned host memory (asynchronous D2H,
+    event); the thread waits for the event and sends a header [d0, d1, d2, has x, flag] and the data. Receiving end: the thread posts the receives in
+    order; recv() -> (host tensor or None, flag). Every link is FIFO: all stages walk the same segment list, so messages match by order"""
     STOP = -7
-    def __init__(self, d, out_group, in_group):
+    def __init__(self, d, group, peer, sending):
         import queue, threading
-        self.d, self.og, self.ig = d, out_group, in_group
-        self.sq, self.rq = queue.Queue(), queue.Queue()
-        self.ts = threading.Thread(target=self._sender, name="w233-send", daemon=True); self.ts.start()
-        self.tr = threading.Thread(target=self._receiver, name="w233-recv", daemon=True); self.tr.start()
+        self.d, self.g, self.peer, self.sending = d, group, peer, sending
+        self.q = queue.Queue(); self.err = None
+        self.t = threading.Thread(target=self._sender if sending else self._receiver, name="w233-" + ("send" if sending else "recv"), daemon=True); self.t.start()
 
     def send(self, x, flag=0):
-        if x is None: self.sq.put((None, None, flag)); return
-        x = x.detach()
+        assert self.sending
+        if x is None: self.q.put((None, None, flag)); return
+        x = x.detach(); assert x.dim() == 3 and x.dtype == BF, (x.shape, x.dtype)
         if x.device.type == "cuda":
             h = torch.empty(x.shape, dtype=x.dtype, pin_memory=True); h.copy_(x, non_blocking=True)
             ev = torch.cuda.Event(); ev.record(torch.cuda.current_stream(x.device))
         else: h, ev = x.clone(), None
-        self.sq.put((h, ev, flag))
+        self.q.put((h, ev, flag))
 
     def _sender(self):
         try:
             while True:
-                h, ev, flag = self.sq.get()
+                h, ev, flag = self.q.get()
                 if ev is not None: ev.synchronize()
                 sh = list(h.shape) if h is not None else [0, 0, 0]
-                assert len(sh) == 3, sh
-                self.d.dist.send(torch.tensor(sh + [int(h is not None), flag], dtype=torch.int64), dst=self.d.peer, group=self.og)
-                if h is not None: self.d.dist.send(h.view(torch.int16) if h.dtype == BF else h, dst=self.d.peer, group=self.og)
+                self.d.dist.send(torch.tensor(sh + [int(h is not None), flag], dtype=torch.int64), dst=self.peer, group=self.g)
+                if h is not None: self.d.dist.send(h.view(torch.int16), dst=self.peer, group=self.g)
                 if flag == self.STOP: return
         except BaseException as e:
             self.err = e; raise
@@ -812,23 +819,38 @@ class PairComm:
     def _receiver(self):
         try:
             while True:
-                hd = torch.empty(5, dtype=torch.int64); self.d.dist.recv(hd, src=self.d.peer, group=self.ig); hd = hd.tolist()
-                if hd[4] == self.STOP: self.rq.put((None, self.STOP)); return
+                hd = torch.empty(5, dtype=torch.int64); self.d.dist.recv(hd, src=self.peer, group=self.g); hd = hd.tolist()
+                if hd[4] == self.STOP: self.q.put((None, self.STOP)); return
                 x = None
                 if hd[3]:
-                    x = torch.empty(hd[:3], dtype=torch.int16, pin_memory=torch.cuda.is_available()); self.d.dist.recv(x, src=self.d.peer, group=self.ig); x = x.view(BF)
-                self.rq.put((x, hd[4]))
+                    x = torch.empty(hd[:3], dtype=torch.int16, pin_memory=torch.cuda.is_available()); self.d.dist.recv(x, src=self.peer, group=self.g); x = x.view(BF)
+                self.q.put((x, hd[4]))
         except BaseException as e:
-            self.rq.put((None, e)); raise
+            self.q.put((None, e)); raise
 
     def recv(self):
-        x, flag = self.rq.get()
-        if isinstance(flag, BaseException): raise RuntimeError("w233 PairComm: the receive failed") from flag
+        assert not self.sending
+        x, flag = self.q.get()
+        if isinstance(flag, BaseException): raise RuntimeError("w233 Chan: the receive failed") from flag
         return x, flag
 
     def close(self):
-        """both stages call it at the end: the STOP messages end the peer's receiver and this sender"""
-        self.send(None, self.STOP); self.ts.join(timeout=120); self.tr.join(timeout=120)
+        """the sending end sends STOP (ends the peer's receiver) and ends; the receiving end waits for the peer's STOP"""
+        if self.sending: self.send(None, self.STOP)
+        self.t.join(timeout=120)
+
+
+class StageLinks:
+    """w233: a stage process's four channel ends (None where there is no neighbour): h_in (hidden states from the previous stage), h_out (to the
+    next), g_in (gradients from the next), g_out (to the previous)"""
+    def __init__(self, d):
+        self.h_in = Chan(d, d.fwd_in, d.prev, False) if d.prev is not None else None
+        self.g_out = Chan(d, d.bwd_out, d.prev, True) if d.prev is not None else None
+        self.h_out = Chan(d, d.fwd_out, d.next, True) if d.next is not None else None
+        self.g_in = Chan(d, d.bwd_in, d.next, False) if d.next is not None else None
+    def close(self):
+        for c in (self.h_out, self.g_out, self.h_in, self.g_in):
+            if c is not None: c.close()
 
 
 # ------------------------------------------------------------------ schedule
@@ -1166,11 +1188,11 @@ class Trainer:
                 if m is not None: self.pin.append((p, m, p.detach().clone()))
             self.fmask = torch.cat(parts)
         self.mine = [s for s in range(a.V) if s % dist.dp_world == dist.dp_rank]      # w233: data-parallel ranks (= ranks without stage processes)
-        self.stage_mode = dist.stages > 1                    # w233 --pipe-procs: this process is one stage of a two-card pipeline
+        self.stage_mode = dist.stages > 1                    # w233 --pipe-procs: this process is one stage of a pipeline over the cards
         self.park_async = self.stage_mode                    # w233: parks into pinned memory without a host wait (to_host_state)
         if self.stage_mode:
             assert a.clip_doc == 0 and not self.lo, "--pipe-procs: no --clip-doc / LoRA"
-            self.comm = PairComm(dist, dist.fwd if dist.stage == 0 else dist.bwd, dist.bwd if dist.stage == 0 else dist.fwd)
+            self.comm = StageLinks(dist); self.lo_l, self.hi_l = stu.only[0], min(stu.only[1], len(stu.layers))     # this stage's layers lo_l .. hi_l - 1
         self.states = {}                                     # stream -> (item index, offset, state on CPU)
         self.snaps = {}                                      # w231 branch plans: stream -> ((golden, doc, offset), state) = the session history's state at a branch point
         self.w225 = bool(getattr(stu, "split", 0) or getattr(stu, "kvbuf", False))     # w225: split / buffered-KV segment loop (run_segs_w225)
@@ -1304,14 +1326,18 @@ class Trainer:
     def run_step(self, s, lr): return self.run_group([s], lr)
 
     def stage_gnorm(self, g):
-        """w233 --pipe-procs: the norm of the whole model's gradient vector (stage 0's then stage 1's: the one-process order, so bit for bit): stage 1
-        sends its part to its pair's stage 0 (the default group, main thread), which returns the norm"""
+        """w233 --pipe-procs: the norm of the whole model's gradient vector in the one-process order (stage 0's part, then 1's, ...: bit for bit): every
+        stage s > 0 sends its part to its pipeline's stage 0 (default group, main thread), which returns the norm to each"""
         d = self.d
-        if d.stage == 1:
-            d.dist.send(torch.tensor([len(g)], dtype=torch.int64), dst=d.peer); d.dist.send(g.contiguous(), dst=d.peer)
-            t = torch.zeros(1, dtype=torch.float64); d.dist.recv(t, src=d.peer); return float(t)
-        n = torch.zeros(1, dtype=torch.int64); d.dist.recv(n, src=d.peer); o = torch.empty(int(n), dtype=torch.float64); d.dist.recv(o, src=d.peer)
-        v = float(torch.cat([g, o]).norm()); d.dist.send(torch.tensor([v], dtype=torch.float64), dst=d.peer); return v
+        if d.stage > 0:
+            d.dist.send(torch.tensor([len(g)], dtype=torch.int64), dst=d.head0); d.dist.send(g.contiguous(), dst=d.head0)
+            t = torch.zeros(1, dtype=torch.float64); d.dist.recv(t, src=d.head0); return float(t)
+        parts = [g]
+        for st in range(1, d.stages):
+            n = torch.zeros(1, dtype=torch.int64); d.dist.recv(n, src=d.head0 + st); o = torch.empty(int(n), dtype=torch.float64); d.dist.recv(o, src=d.head0 + st); parts.append(o)
+        v = float(torch.cat(parts).norm())
+        for st in range(1, d.stages): d.dist.send(torch.tensor([v], dtype=torch.float64), dst=d.head0 + st)
+        return v
 
     # ---------------------------------------------------------------- w225: layer split, buffered KV, depth test
     def layer_dev(self, key):
@@ -1563,10 +1589,15 @@ class Trainer:
             qb.put(None); th.join()
 
     # ---------------------------------------------------------------- w233: stage processes (--pipe-procs)
+    def stage_in(self, flag_ok):
+        """the hidden state entering this stage: stage 0 none (it embeds); else the previous stage's message on the card -> (x, requires grad)"""
+        m_, fl = self.comm.h_in.recv(); assert fl in flag_ok, (fl, flag_ok)
+        return h2d(m_, self.stu.devs[0]), fl
+
     def prefix_stage(self, it, a_, st0=None):
-        """prefix_state for a stage process: the no-grad pieces of <= --len tokens over this stage's layers; stage 0 sends each piece's hidden state
-        (flag REBUILD), stage 1 receives it. The same pieces, caches and values as prefix_state's naive split"""
-        stu, K, NL = self.stu, self.stu.split, len(self.stu.layers)
+        """prefix_state for a stage process: the same no-grad pieces of <= --len tokens over this stage's layers (stage 0 embeds, the others receive
+        the previous stage's output, flag REBUILD; every stage but the last sends its output on). The pieces, caches and values of prefix_state"""
+        stu, lo, hi = self.stu, self.lo_l, self.hi_l
         gi, i = it; st = st0; p = 0
         REBUILD[0] = a_ + getattr(stu, "pos_off", 0) + 1024
         try:
@@ -1574,36 +1605,36 @@ class Trainer:
                 while p < a_:
                     q = min(a_, p + self.a.len)
                     cache = SegCacheBuf(st, getattr(stu, "kv_cap", 0), share=True); cache.room0 = REBUILD[0]
-                    if self.d.stage == 0: self.comm.send(run_half(stu, stu.embed(self.C.g[gi].ids(i, p, q)), p, cache, 0, K, ckpt=False), FLAG_REBUILD)
-                    else:
-                        m_, fl = self.comm.recv(); assert fl == FLAG_REBUILD, fl
-                        run_half(stu, h2d(m_, stu.devs[0]), p, cache, K, NL, ckpt=False)
+                    x = stu.embed(self.C.g[gi].ids(i, p, q)) if self.d.stage == 0 else self.stage_in((FLAG_REBUILD,))[0]
+                    x = run_half(stu, x, p, cache, lo, hi, ckpt=False)
+                    if self.comm.h_out is not None: self.comm.h_out.send(x, FLAG_REBUILD)
                     st = cache.next; p = q
         finally: REBUILD[0] = 0
         return st
 
     @torch.no_grad()
     def eval_stage(self, gi, i, n):
-        """seg_loss(.., 0, n, None)'s (KL sum, rows) for a stage process (monitor / fixed eval): stage 0 runs its half and sends (flag EVAL), stage 1
-        returns the values, stage 0 (0.0, 0)"""
-        stu, K, NL = self.stu, self.stu.split, len(self.stu.layers)
-        stu.kv_cap = 0; cache = SegCacheBuf(None, 0)
-        if self.d.stage == 0:
-            self.comm.send(run_half(stu, stu.embed(self.C.g[gi].ids(i, 0, n)), 0, cache, 0, K, ckpt=False), FLAG_EVAL); return 0.0, 0
-        m_, fl = self.comm.recv(); assert fl == FLAG_EVAL, fl
-        h = stu.fnorm(run_half(stu, h2d(m_, stu.devs[0]), 0, cache, K, NL, ckpt=False))[0]
-        kl, m = seg_kl(stu, self.C.g[gi], i, 0, n, h)
+        """seg_loss(.., 0, n, None)'s (KL sum, rows) for a stage process (monitor / fixed eval): the stages run their layers in turn (flag EVAL); the
+        last returns the values, the others (0.0, 0)"""
+        stu = self.stu; stu.kv_cap = 0; cache = SegCacheBuf(None, 0)
+        x = stu.embed(self.C.g[gi].ids(i, 0, n)) if self.d.stage == 0 else self.stage_in((FLAG_EVAL,))[0]
+        x = run_half(stu, x, 0, cache, self.lo_l, self.hi_l, ckpt=False)
+        if self.comm.h_out is not None: self.comm.h_out.send(x, FLAG_EVAL); return 0.0, 0
+        kl, m = seg_kl(stu, self.C.g[gi], i, 0, n, stu.fnorm(x)[0])
         return float(kl), m
 
     def run_stage(self, work, N, acc):
-        """--pipe-procs: this process's stage of the two-card pipeline over a step's segments (run_pipe's schedule split in two processes).
-        Stage 0 (embed + layers 0 .. K-1): forward, send the hidden state (flag SEG + requires grad), keep <= 2 segments in flight, then receive the
-        gradient (or none) and run the backward. Stage 1 (K .. end + head): receive, forward + KL, backward, send the input gradient. Each stage carries,
-        parks (asynchronously) and budgets its own layers' states; the loss sums stay on the card until the step's end (no per-segment host sync).
-        Same segments, order and arithmetic as the naive split: bit for bit (testhf233)"""
+        """--pipe-procs: this process's stage of the pipeline over a step's segments (run_pipe's schedule over S processes). A stage runs each
+        segment's forward over its layers (stage 0 from the token table, the others from the previous stage's hidden state: flag SEG + requires grad),
+        then: the last stage the KL + backward, sending the input gradient back; the others send their output on and keep the segment in flight
+        (at most S - s + --pipe-ahead segments) until the next stage's gradient (or none) comes back, then run their backward and send theirs on. Each
+        stage carries, parks (asynchronously) and budgets its own layers' states; the loss sums stay on the card until the step's end. Same
+        segments, order and arithmetic as the naive split: bit for bit (teststage233)"""
         import collections as cl
-        stu, a, st = self.stu, self.a, self.d.stage
-        K, NL, dev = stu.split, len(stu.layers), stu.devs[0]
+        stu, a, d = self.stu, self.a, self.d
+        lo, hi, dev, first, last = self.lo_l, self.hi_l, stu.devs[0], d.stage == 0, d.stage == d.stages - 1
+        ahead = d.stages - d.stage + getattr(a, "pipe_ahead", 0)
+        evict_first = getattr(a, "budget_evict_first", False)
         S_ = getattr(a, "state_budget_gb", 0.0) * 2**30
         if S_ > 0 and not hasattr(self, "kv_tok"): self.budget_setup()
         self.state_peak = {}; self.n_evict = 0
@@ -1612,18 +1643,19 @@ class Trainer:
         def infl():
             out = {}
             for p_ in pend:
-                for d_, b_ in p_[7].items(): out[d_] = out.get(d_, 0) + b_
+                for d_, b_ in p_[8].items(): out[d_] = out.get(d_, 0) + b_
             return out
-        def finish():                                               # stage 0: the oldest segment's gradient from stage 1, its backward, its state
-            sid, it, sb, n_doc, hA, cacheA, nb, need = pend.popleft()
-            t_ = time.time(); gx, fl = self.comm.recv(); tm["wait"] += time.time() - t_
+        def finish():                                               # not the last stage: the oldest segment's gradient from the next stage, its backward
+            sid, it, sb, n_doc, x, x_in, cache, nb, need = pend.popleft()
+            t_ = time.time(); gx, fl = self.comm.g_in.recv(); tm["wait"] += time.time() - t_
             assert fl == FLAG_SEG, fl
             t_ = time.time()
-            if gx is not None: hA.backward(h2d(gx, dev))
+            if gx is not None: x.backward(h2d(gx, dev))
+            if self.comm.g_out is not None: self.comm.g_out.send(x_in.grad if (gx is not None and x_in.requires_grad) else None, FLAG_SEG)
             tm["bwd"] += time.time() - t_; t_ = time.time()
-            self.state_out(sid, it, sb, n_doc, cacheA.next); tm["out"] += time.time() - t_
+            self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_
         for sid, it, sa, sb in work:
-            while st == 0 and any(p_[0] == sid for p_ in pend): finish()      # the stream's previous segment (its state) first
+            while not last and any(p_[0] == sid for p_ in pend): finish()     # the stream's previous segment (its state) first
             gi, i, n_doc = self.C.items[it][:3]
             cap = n_doc + getattr(stu, "pos_off", 0); stu.kv_cap = cap
             t_ = time.time()
@@ -1638,40 +1670,40 @@ class Trainer:
                     used = self.resident(skip=sid); fl_ = infl()
                     over = [d_ for d_, b_ in need.items() if (d_.type != "cpu" or BUDGET_CPU[0]) and used.get(d_, 0) + fl_.get(d_, 0) + b_ > S_]
                     if not over: break
-                    if pend: finish(); continue
                     vic = [(sum(b_ for d_, b_ in self.st_bytes(st2[2]).items() if d_ in over), s2) for s2, st2 in self.states.items() if s2 != sid and not isinstance(st2[2], Parked)]
                     vic = [x for x in vic if x[0] > 0]
+                    if evict_first and vic: pass                   # --budget-evict-first: park an idle stream's state (asynchronous) before stalling the pipeline
+                    elif pend: finish(); continue
                     if not vic: break
                     _, s2 = max(vic); it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_host_state(st2)); self.n_evict += 1
             prev = self.state_in(sid, it, sa, acc) or {}
             if S_ > 0: self.states.pop(sid, None)
             nb = 0 if kept else sum(self.st_bytes(prev).values())
-            while pend and sum(p_[6] for p_ in pend) + nb > PIPE_INFLIGHT: finish()
+            while pend and sum(p_[7] for p_ in pend) + nb > PIPE_INFLIGHT: finish()
             if S_ > 0:
                 u_ = self.resident(); fl_ = infl()
                 for d_, b_ in need.items():
                     if d_.type != "cpu" or BUDGET_CPU[0]: self.state_peak[d_] = max(self.state_peak.get(d_, 0), u_.get(d_, 0) + fl_.get(d_, 0) + b_)
             cache = SegCacheBuf(prev, cap, share=S_ > 0); del prev
             hist = self.is_hist(it); tm["in"] += time.time() - t_; t_ = time.time()
-            if st == 0:
-                with torch.set_grad_enabled(not hist): hA = run_half(stu, stu.embed(self.C.g[gi].ids(i, sa, sb)), sa, cache, 0, K)
-                self.comm.send(hA, FLAG_SEG + int(hA.requires_grad)); tm["fwd"] += time.time() - t_
-                pend.append((sid, it, sb, n_doc, hA, cache, nb, need)); del hA, cache
-                if len(pend) > 2: finish()                          # two segments ahead (run_pipe's)
-                continue
-            m_, fl = self.comm.recv(); tm["wait"] += time.time() - t_; t_ = time.time()
-            assert fl in (FLAG_SEG, FLAG_SEG + 1), fl
+            if first: x_in, fl = stu.embed(self.C.g[gi].ids(i, sa, sb)), FLAG_SEG
+            else: x_in, fl = self.stage_in((FLAG_SEG, FLAG_SEG + 1)); tm["wait"] += time.time() - t_; t_ = time.time()
             with torch.set_grad_enabled(not hist):
-                xB = h2d(m_, dev)
-                if fl == FLAG_SEG + 1: xB.requires_grad_(True)
-                h = stu.fnorm(run_half(stu, xB, sa, cache, K, NL))[0]
-                kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, h)
+                if fl == FLAG_SEG + 1: x_in.requires_grad_(True)
+                x = run_half(stu, x_in, sa, cache, lo, hi)
+                if not last:
+                    self.comm.h_out.send(x, FLAG_SEG + int(x.requires_grad)); tm["fwd"] += time.time() - t_
+                    pend.append((sid, it, sb, n_doc, x, x_in, cache, nb, need)); del x, x_in, cache
+                    if len(pend) > ahead: finish()
+                    continue
+                kl, m = seg_kl(stu, self.C.g[gi], i, sa, sb, stu.fnorm(x)[0])
                 tm["fwd"] += time.time() - t_; t_ = time.time()
                 if m: (kl / N).backward()
-            self.comm.send(xB.grad if (m and fl == FLAG_SEG + 1) else None, FLAG_SEG); tm["bwd"] += time.time() - t_; t_ = time.time()
+            if self.comm.g_out is not None: self.comm.g_out.send(x_in.grad if (m and x_in.requires_grad) else None, FLAG_SEG)
+            tm["bwd"] += time.time() - t_; t_ = time.time()
             kls.append((self.tix[self.C.tags[gi]], kl.detach())); acc[2 * kls[-1][0] + 1] += m
             self.state_out(sid, it, sb, n_doc, cache.next); tm["out"] += time.time() - t_
-            del xB, h, kl, cache, m_
+            del x_in, x, kl, cache
         while pend: finish()
         for t, k in kls: acc[2 * t] += float(k)                    # the same additions in the same order as run_pipe's per-segment float(kl)
         stu.kv_cap = 0
@@ -1686,10 +1718,20 @@ class Trainer:
         if self.opt_lo is not None: z["opt_lo"] = cp(self.opt_lo)
         return z
 
+    def gather_head(self, obj):
+        """w233: dp rank 0's stages s > 0 send obj to rank 0 (default group, main thread); rank 0 returns [its own, stage 1's, ...], the others None"""
+        d = self.d
+        if d.dp_rank != 0: return None
+        if d.stage > 0: d.dist.send_object_list([obj], dst=0); return None
+        out = [obj]
+        for st in range(1, d.stages):
+            lst = [None]; d.dist.recv_object_list(lst, src=st); out.append(lst[0])
+        return out
+
     def stage_telemetry(self):
-        """w233 --pipe-procs: this stage's per-step record (card memory, carried-state peak / evictions, host seconds per phase, kept states, RSS); dp rank
-        0's stage 1 sends its record to rank 0, which returns both merged in the one-process names (cuda:0 = card A = stage 0, cuda:1 = card B; pipe_s
-        a_* / b_*). Every rank calls it; the others get {}"""
+        """w233 --pipe-procs: this stage's per-step record (card memory, carried-state peak / evictions, host seconds per phase, kept states, RSS); rank 0
+        merges dp rank 0's stages in the one-process names (cuda:<stage> = that stage's card; pipe_s a_* / b_* / c_* / d_* per stage; peak_gib_b =
+        the last stage's). Every rank calls it; the others get {}"""
         dev = self.dev; own = {}
         if dev.type == "cuda":
             ms = torch.cuda.memory_stats(dev); own["peak"] = round(torch.cuda.max_memory_allocated(dev) / 2**30, 2)
@@ -1700,39 +1742,37 @@ class Trainer:
         own["pipe_s"] = {k_: round(v_, 1) for k_, v_ in (getattr(self, "pipe_s", None) or {}).items()}
         own["states"] = round(sum(self.resident().values()) / 2**30, 2)
         own["rss"] = round(int(open("/proc/self/statm").read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 2**30, 2)
-        d = self.d
-        if d.dp_rank != 0: return {}
-        if d.stage == 1: d.dist.send_object_list([own], dst=d.peer); return {}
-        lst = [None]; d.dist.recv_object_list(lst, src=d.peer); b = lst[0]; out = {}
-        if "peak" in own: out["peak_gib"] = own["peak"]; out["peak_gib_b"] = b.get("peak")
-        if "mem" in own: out["mem"] = {"cuda:0": own["mem"], "cuda:1": b.get("mem")}
-        out["state_peak_gib"] = {"cuda:0": own["state_peak"], "cuda:1": b["state_peak"]}; out["evicted"] = own["evicted"] + b["evicted"]
-        out["pipe_s"] = {**{"a_" + k_: v_ for k_, v_ in own["pipe_s"].items()}, **{"b_" + k_: v_ for k_, v_ in b["pipe_s"].items()}}
-        out["states_gib"] = {"cuda:0": own["states"], "cuda:1": b["states"]}; out["rss_gib"] = own["rss"]; out["rss_gib_b"] = b["rss"]
+        al = self.gather_head(own)
+        if al is None: return {}
+        out = {}
+        if "peak" in own: out["peak_gib"] = own["peak"]; out["peak_gib_b"] = al[-1].get("peak"); out["mem"] = {f"cuda:{k}": z.get("mem") for k, z in enumerate(al)}
+        out["state_peak_gib"] = {f"cuda:{k}": z["state_peak"] for k, z in enumerate(al)}; out["evicted"] = sum(z["evicted"] for z in al)
+        out["pipe_s"] = {f"{'abcdefgh'[k]}_{k_}": v_ for k, z in enumerate(al) for k_, v_ in z["pipe_s"].items()}
+        out["states_gib"] = {f"cuda:{k}": z["states"] for k, z in enumerate(al)}; out["rss_gib"] = own["rss"]; out["rss_gib_stages"] = [z["rss"] for z in al]
         return out
 
     def snapshot_all(self):
-        """the snapshot a state file holds: this process's; w233 --pipe-procs: every rank calls it, dp rank 0's stage 1 sends its snapshot to its pair's
-        stage 0 (rank 0), which returns both merged (cur = both stages' parameters by name; opt / opt_order = stage 0's, opt_s1 / opt_order_s1 =
-        stage 1's; stages = 2); the other ranks get None"""
+        """the snapshot a state file holds: this process's; w233 --pipe-procs: every rank calls it; rank 0 returns dp rank 0's stages merged: cur =
+        every stage's parameters by name, opt / opt_order = stage 0's, opt_s<k> / opt_order_s<k> = stage k's, stages = S; the others get None"""
         if not self.stage_mode: return self.snapshot()
-        d = self.d
-        if d.dp_rank != 0: return None
-        z = self.snapshot()
-        if d.stage == 1: d.dist.send_object_list([z], dst=d.peer); return None
-        lst = [None]; d.dist.recv_object_list(lst, src=d.peer); z1 = lst[0]
-        return {**z, "cur": {**z["cur"], **z1["cur"]}, "opt_s1": z1["opt"], "opt_order_s1": z1["opt_order"], "stages": 2}
+        al = self.gather_head(self.snapshot() if self.d.dp_rank == 0 else None)
+        if al is None: return None
+        z = dict(al[0]); z["cur"] = {k: v for z_ in al for k, v in z_["cur"].items()}; z["stages"] = len(al)
+        for k, z_ in enumerate(al[1:], 1): z[f"opt_s{k}"], z[f"opt_order_s{k}"] = z_["opt"], z_["opt_order"]
+        return z
 
     def write_ckpt_all(self, o, meta):
-        """write_ckpt on rank 0; w233 --pipe-procs: dp rank 0's stage 1 writes its scales and sends its state / norms to stage 0, which writes the
-        rest (the one-process checkpoint's files). Every rank calls it"""
+        """write_ckpt on rank 0; w233 --pipe-procs: dp rank 0's stages s > 0 write their own scales and send their state / norms to rank 0, which writes
+        the rest (the one-process checkpoint's files). Every rank calls it"""
         d = self.d
         if not self.stage_mode:
             if d.rank == 0: write_ckpt(self.stu, o, meta)
             return
         if d.dp_rank != 0: return
-        if d.stage == 1: d.dist.send_object_list([write_ckpt(self.stu, o, None, params=False)], dst=d.peer); return
-        lst = [None]; d.dist.recv_object_list(lst, src=d.peer); write_ckpt(self.stu, o, meta, extra=lst[0])
+        al = self.gather_head(write_ckpt(self.stu, o, None, params=False) if d.stage > 0 else None)
+        if al is None: return
+        ex = {"state": {k: v for z_ in al[1:] for k, v in z_["state"].items()}, "norms": {k: v for z_ in al[1:] for k, v in z_["norms"].items()}}
+        write_ckpt(self.stu, o, meta, extra=ex)
 
     def opt_order(self):
         """the trainable parameter names in the main optimizer's index order (the scale vectors, then the norm gains)"""
@@ -1740,19 +1780,23 @@ class Trainer:
 
     def restore(self, z):
         self.stu.load_state(z["cur"]); self.states = {}; self.snaps = {}; self.gn_hist = list(z.get("gn_hist", [])); self.seg_hist = list(z.get("seg_hist", [])); self.partial_restore = False
-        if z.get("stages") == 2 or self.stage_mode:              # w233: a two-stage state file (snapshot_all), or a stage process: Adam state by name
-            if z.get("stages") == 2 and self.stage_mode:
-                k_ = "" if self.d.stage == 0 else "_s1"; oo, on = z["opt" + k_], z["opt_order" + k_]
-            elif z.get("stages") == 2:                               # a one-process run from a two-stage file: both stages' Adam state in one name order
-                n0 = len(z["opt_order"]); on = z["opt_order"] + z["opt_order_s1"]
-                oo = {"state": {**z["opt"]["state"], **{n0 + j: v for j, v in z["opt_s1"]["state"].items()}}}
+        S_ = int(z.get("stages", 1))
+        if S_ > 1 or self.stage_mode:                            # w233: a stage state file (snapshot_all), or a stage process: Adam state by name
+            if S_ > 1 and self.stage_mode and S_ == self.d.stages:
+                k_ = "" if self.d.stage == 0 else f"_s{self.d.stage}"; oo, on = z["opt" + k_], z["opt_order" + k_]
+            elif S_ > 1:                                             # another layout (one process, or another stage count): every stage's Adam state in one name order
+                on, st_ = [], {}
+                for k in range(S_):
+                    k_ = "" if k == 0 else f"_s{k}"; n0 = len(on); on = on + z["opt_order" + k_]
+                    st_.update({n0 + j: v for j, v in z["opt" + k_]["state"].items()})
+                oo = {"state": st_}
             else: oo, on = z["opt"], z["opt_order"]                  # a stage process from a one-process file (e.g. --fork-from a 1-card state)
             if on == self.opt_order(): self.opt.load_state_dict(oo if "param_groups" in oo else {**oo, "param_groups": self.opt.state_dict()["param_groups"]})
             else:
                 self.opt.load_state_dict(map_opt_state(oo, on, self.opt_order(), self.opt.state_dict()["param_groups"]))
                 miss = [n for n in self.opt_order() if n not in set(on)]; self.partial_restore = bool(miss)
                 if miss: self.log(f"partial restore: Adam state for {len(self.opt_order()) - len(miss)} of {len(self.opt_order())} parameters, fresh for the rest")
-            assert self.opt_lo is None, "w233: no LoRA with a two-stage state"
+            assert self.opt_lo is None, "w233: no LoRA with stage processes / a stage state file"
             return
         if "opt_order" in z and z["opt_order"] != self.opt_order():     # w222: a fork into a different trainable set (staged MSE -> KL): Adam state by name, fresh for the rest
             new = map_opt_state(z["opt"], z["opt_order"], self.opt_order(), self.opt.state_dict()["param_groups"])
@@ -2465,7 +2509,10 @@ def parser():
     ap.add_argument("--card-mem-gb", type=float, default=0.0, help="w231: cap PyTorch's memory (allocated + cached) at this many GiB a card (torch.cuda.set_per_process_memory_fraction): the HIP runtime keeps the rest; near the cap the allocator frees its cache and retries, else a clean OOM. 0 = off")
     ap.add_argument("--state-card-gb", type=float, default=0.0, help="w225: keep carried stream states on their cards while each card's kept states stay within this many GiB, park the rest on the CPU (0 = park all, as before); implies the buffered KV")
     ap.add_argument("--attn-gqa", action="store_true", help="w225: segment attention with sdpa's enable_gqa (no 6x repeated K / V: the long-context memory); forward bitwise, backward rounding-level vs the default")
-    ap.add_argument("--pipe-procs", action="store_true", help="w233 (with --split-layers K): the two-card pipeline as two processes, one a card (stage 0: token table + layers 0..K-1, stage 1: the rest + head + loss), launched by qrun.sh with QAD_STAGES=2; the same arithmetic as --pipeline (bit for bit), no shared interpreter between the cards; states parked asynchronously")
+    ap.add_argument("--pipe-procs", type=int, nargs="?", const=2, default=0, help="w233: the pipeline as S processes, one a card (default S = 2; qrun.sh launches them for a card group A,B[,C,D], QAD_STAGES=S): stage 0 = token table + its layers, the last = its layers + head + loss; the same arithmetic as --pipeline (bit for bit), no shared interpreter between the cards, states parked asynchronously. Stage boundaries: --split-layers K (S = 2) or --stage-bounds")
+    ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
+    ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
+    ap.add_argument("--pipe-ahead", type=int, default=0, help="w233 (--pipe-procs): segments a stage keeps in flight beyond S - stage (the default depth); more = fewer bubbles, more activation memory")
     ap.add_argument("--keep-act", default=None, help="w233: decoder layers (parse_layers syntax: 48-63, 32-63+0-3) that keep their activations for the backward instead of the checkpoint recompute: less work, more memory a segment in flight; the same arithmetic (bit for bit). Default none")
     ap.add_argument("--depth-test", type=int, default=0, help="w225 test switch: every document starts after D synthetic positions (zero K / V in the attention layers, positions offset by D): memory / speed at depth D on any data; not for training")
     return ap
@@ -2541,8 +2588,11 @@ def main():
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:     # w225: the w225 segment loop covers the plain KL path only
         assert not (a.prompt_weight > 0 or a.local_mse or a.taps or a.lora or a.block_frac or a.make_taps or a.gate or a.profile or a.bench or a.check or a.tapcal), \
             "w225 switches: plain KL training only (no --prompt-weight / --local-mse / --taps / --lora / --block-frac / --make-taps / --gate / --profile / --bench / --check / --tapcal)"
-    if a.pipe_procs:                                             # w233: one process per card (stage processes); qrun.sh sets QAD_STAGES=2 and one card a process
-        assert a.split_layers and int(os.environ.get("QAD_STAGES", 1)) == 2, "--pipe-procs needs --split-layers K and QAD_STAGES=2 (qrun.sh launches the stage processes)"
+    if a.pipe_procs:                                             # w233: one process per card (stage processes); qrun.sh sets QAD_STAGES=S and one card a process
+        assert a.pipe_procs >= 2 and int(os.environ.get("QAD_STAGES", 1)) == a.pipe_procs, f"--pipe-procs {a.pipe_procs} needs QAD_STAGES={a.pipe_procs} (qrun.sh launches the stage processes: a group of that many cards)"
+        a.stage_bounds = [int(x) for x in a.stage_bounds.split(",")] if a.stage_bounds else [a.split_layers]
+        assert len(a.stage_bounds) == a.pipe_procs - 1 and all(0 < x < y for x, y in zip(a.stage_bounds, a.stage_bounds[1:] + [1 << 20])), f"--pipe-procs {a.pipe_procs}: --stage-bounds (or --split-layers for 2) must give {a.pipe_procs - 1} increasing boundaries: {a.stage_bounds}"
+        a.split_layers = a.stage_bounds[0]
         assert not (a.norms or a.unshrink or a.remap or a.ema_params or a.lora or a.gradnoise or a.clip_doc or a.block_frac or a.taps or a.make_taps or a.local_mse
                     or a.prompt_weight > 0 or a.eval_only or a.export_only or a.head_train != "none"), \
             "--pipe-procs: plain KL training of the trunk scales (no --norms / --unshrink / --remap / --ema-params / --lora / --gradnoise / --clip-doc / --block-frac / taps / local MSE / prompt weight / --eval-only / --export-only / --head-train)"
@@ -2596,7 +2646,7 @@ def main():
     only = None
     if a.pipe_procs:                                            # w233: this process's card and layers (stage 0: 0 .. K-1 + token table; stage 1: K .. end + head)
         assert torch.cuda.device_count() == 1, "--pipe-procs: one visible card a process (qrun.sh)"
-        only = (0, a.split_layers) if d.stage == 0 else (a.split_layers, 1 << 20)
+        b_ = [0] + a.stage_bounds + [1 << 20]; only = (b_[d.stage], b_[d.stage + 1])
     elif a.split_layers:                                        # w225: one process, two cards (the main thread's current card is the second: loss, head)
         assert torch.cuda.device_count() >= 2, "--split-layers: two visible cards a process"
         assert d.world == 1 or torch.cuda.device_count() == 2, "--split-layers with ranks: each rank sees only its own pair (ROCR_VISIBLE_DEVICES; qadq/qrun.sh A,B+C,D)"   # w231
@@ -2614,8 +2664,8 @@ def main():
     if a.pipeline: triton_autotune_lock()
     if a.split_layers or a.state_card_gb > 0 or a.depth_test:
         stu.split = a.split_layers; stu.kvbuf = True; stu.pos_off = a.depth_test; stu.kv_cap = 0
-        if a.pipe_procs: log(f"w233 --pipe-procs: stage {d.stage} of dp rank {d.dp_rank} ({d.dp_world} dp ranks): layers {only[0]}-{min(only[1], len(stu.layers)) - 1}"
-                             + (" + head" if d.stage else " + token table") + f" on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB", True)
+        if a.pipe_procs: log(f"w233 --pipe-procs: stage {d.stage} of {d.stages} of dp rank {d.dp_rank} ({d.dp_world} dp ranks): layers {only[0]}-{min(only[1], len(stu.layers)) - 1}"
+                             + (" + token table" if d.stage == 0 else "") + (" + head" if d.stage == d.stages - 1 else "") + f" on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB", True)
         log(f"w225: split {a.split_layers}" + (f" (layers 0-{a.split_layers - 1} on {stu.devs[0]}: {torch.cuda.memory_allocated(stu.devs[0]) / 2**30:.2f} GiB, "
             f"{a.split_layers}-{len(stu.layers) - 1} + head on {stu.devs[1]}: {torch.cuda.memory_allocated(stu.devs[1]) / 2**30:.2f} GiB)" if a.split_layers and not a.pipe_procs else "")
             + f", pipeline {a.pipeline}, states kept on the cards up to {a.state_card_gb} GiB each, attention gqa {a.attn_gqa}, depth test {a.depth_test}")

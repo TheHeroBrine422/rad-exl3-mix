@@ -1,7 +1,7 @@
 #!/bin/bash
 # test-qrun233.sh (VM or any box, no GPU) -- w233: qrun.sh with --pipe-procs launches the stage processes (qenv's `test` machine, a fake trainer that logs
 # its rank / world / card / QAD_STAGES): A,B = 2 processes (cards A, B), A,B+C,D = 4 (rank 2 x group + stage), without the flag A,B+C,D = 2 processes
-# and A,B = 1 (unchanged). Exit 0 = all pass.
+# and A,B = 1 (unchanged); A,B,C,D = 4 stages. Exit 0 = all pass.
 set -u
 HERE=$(dirname "$(readlink -f "$0")"); QQD=$HERE/../qadq
 R=$(mktemp -d); export QROOT_OVERRIDE=$R QTEST_CARDS="0 1 2 3" QCARD_LOCKED=1
@@ -24,6 +24,8 @@ $QQD/qrun.sh test d2 0,1+2,3 2.50 5e5 --split-layers 32 --pipeline > /dev/null 2
 check "without --pipe-procs: 0,1+2,3 = two dp processes on card pairs (QAD_STAGES=1)" "[ \"\$(got d2)\" = '{\"rank\":0,\"world\":2,\"cards\":\"0,1\",\"stages\":\"1\"} {\"rank\":1,\"world\":2,\"cards\":\"2,3\",\"stages\":\"1\"} ' ]" d2
 $QQD/qrun.sh test s1 0,1 2.50 5e5 --split-layers 32 --pipeline > /dev/null 2>&1
 check "without --pipe-procs: 0,1 = one process on both cards (no RANK / QAD_STAGES set)" "[ \"\$(got s1)\" = '{\"rank\":0,\"world\":1,\"cards\":\"0,1\",\"stages\":null} ' ]" s1
-$QQD/qrun.sh test bad 0,1,2 2.50 5e5 --pipe-procs > $R/bad.out 2>&1; rc=$?
-check "--pipe-procs with a 3-card group: refused (rc 2)" "[ $rc = 2 ] && [ ! -e $R/runs/bad/ranks.txt ]" bad
+$QQD/qrun.sh test p4s 0,1,2,3 2.50 5e5 --pipe-procs 4 --stage-bounds 16,32,48 > /dev/null 2>&1
+check "--pipe-procs 4 on 0,1,2,3: four stage processes of one dp rank (QAD_STAGES=4)" "[ \"\$(got p4s)\" = '{\"rank\":0,\"world\":4,\"cards\":\"0\",\"stages\":\"4\"} {\"rank\":1,\"world\":4,\"cards\":\"1\",\"stages\":\"4\"} {\"rank\":2,\"world\":4,\"cards\":\"2\",\"stages\":\"4\"} {\"rank\":3,\"world\":4,\"cards\":\"3\",\"stages\":\"4\"} ' ]" p4s
+$QQD/qrun.sh test bad 0,1,2+3 2.50 5e5 --pipe-procs > $R/bad.out 2>&1; rc=$?
+check "--pipe-procs with unequal groups: refused (rc 2)" "[ $rc = 2 ] && [ ! -e $R/runs/bad/ranks.txt ]" bad
 [ $fails = 0 ] && { echo ALL PASS; rm -rf $R; exit 0; } || { echo "FAILED ($fails), dir $R"; exit 1; }

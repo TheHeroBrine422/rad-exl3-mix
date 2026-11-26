@@ -1,0 +1,32 @@
+{
+ "step": 124,
+ "wall_s": 23.379611253738403,
+ "devices": {
+  "1": {
+   "busy_s": 0.15972708700002636,
+   "span_s": 18.013146195,
+   "kernels": 426,
+   "family_s": {
+    "copy": 0.16
+   }
+  },
+  "3": {
+   "busy_s": 14.124812834999483,
+   "span_s": 22.488785360999998,
+   "kernels": 127200,
+   "family_s": {
+    "bf16_gemm": 3.8,
+    "int8_gemm": 2.95,
+    "other": 2.21,
+    "gdn_fla": 1.11,
+    "elementwise": 1.1,
+    "copy": 1.03,
+    "attention": 0.83,
+    "triton_inductor": 0.8,
+    "reduce": 0.18,
+    "a8_quant": 0.1
+   }
+  }
+ },
+ "rank": 1
+}
