@@ -10367,3 +10367,18 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   at memory peaks surfacing as illegal addresses. w231 resumed (run 5b36e000): test the hypothesis, add a hard per-card memory budget
   (≤ ~26 GiB peak) / chunking / allocator settings, re-run deep300 past 300 and the branch check on 2 cards. Cards 2,3 back to the queue
   meanwhile (DP-gate reads running).
+- 11-25 8:30 PM CST: **#219 proportion screens (calib : xgap : teacher set 2, cap 8192, +1.55M rows from the 10M state), vs the 10M end**
+  (ratio [95 % CI] m = median-doc; `xgap/sh219.py`, `xgap/traces229.py`):
+  | arm | jc228 | gap judge w/o WildChat | gap multilingual text | teacher judge JX | agent traces attrs / click | j217 mean / w/o / med |
+  | ctl 100/0/0 | 0.993 m0.998 | 0.998 m0.997 | 0.997 | 0.999 | 1.001 / 0.998 | 0.824 / 0.858 / 0.925 |
+  | p701515 | 1.006 m0.999 | 0.963 m0.994 | 0.987 | 0.989 | 0.998 / 0.995 | 0.829 / 0.870 / 0.927 |
+  | p602515 | 1.003 m0.999 | 0.953 m0.992 | 0.985 | 0.988 | (JL pending) | 0.828 / 0.864 / 0.926 |
+  | p502525 | 0.994 m0.999 | 0.952 m0.989 | 0.988 | 0.985 | 0.997 / 0.993 | 0.826 / 0.866 / 0.925 |
+  | p403030 | 0.997 m0.999 | **0.932** m0.989 | 0.985 | **0.982** | 0.995 / 0.992 | 0.829 / 0.864 / 0.924 |
+  | xgc 50/50/0 | 0.994 m0.999 | 0.934 m0.990 | 0.986 | 0.997 | 1.000 / 0.997 | 0.823 / 0.862 / 0.926 |
+  | opmix 0/0/100 (onpol traces + calib cuts) | 0.998 | 0.995 | 0.997 | 0.975 | 0.988 / 0.985 | 0.835 / 0.867 / 0.927 |
+  **No calib cost at any share** (jc228 means 0.993–1.006 inside seed noise; medians all 0.998–0.999; j217 robust columns flat). Gap
+  judge improves with the xgap share (15 % → −4 %, 30–50 % → −7 %); multilingual text saturates at ~−1.5 % from 15 %; the teacher judge
+  improves with the teacher share (15 % → −1.1 %, 30 % → −1.8 %). Agent traces: set-2 chat teacher data helps them only slightly
+  (−0.5–0.8 %); the trace-cut teacher data (opmix, onpol) gave −1.3 %: set 1 is the trace lever. → the most diverse mix tested (40/30/30)
+  is best on every breadth judge at no measured calib cost.
