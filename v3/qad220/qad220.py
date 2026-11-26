@@ -335,10 +335,14 @@ class KVView:
 KV_LADDER = sorted({-(-int(4096 * 2 ** (k / 2)) // 4096) * 4096 for k in range(40)})   # 4k, 8k, 12k, 16k, 24k, 32k, 48k, 64k, 92k, 128k, 184k, 256k, ..
 
 
+KV_FULL = [False]                # w233 --kv-full: a document's KV buffers at its full length from its first segment (no growth copies)
+
+
 def kv_room(need, cap):
     """w226: a KV buffer's capacity for `need` positions: the next rung of a sqrt(2) ladder (few distinct sizes, so the caching allocator reuses
     freed buffers: 1/8-step growth fragmented it; torch's expandable segments fail on ROCm here), at most the document's length (cap). Buffers grow
     with the document (two 245k documents in flight at once would otherwise hold 2 x 8 GiB a card from their first segment)"""
+    if KV_FULL[0] and cap: return max(need, cap)
     return max(need, min(cap, next(r for r in KV_LADDER if r >= need)))
 
 
@@ -2628,6 +2632,7 @@ def parser():
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
     ap.add_argument("--park-pool-gb", type=float, default=0.0, help="w233 (--pipe-procs): parked states live in one pinned host buffer of this many GiB a process, allocated at the start (fixed host memory, exact sizes); a park that does not fit goes to pageable memory (synchronous, counted as pool misses). 0 = torch's pinned caching allocator")
+    ap.add_argument("--kv-full", action="store_true", help="w233 (static allocation): every document's carried KV buffers at its full length (its cap) from its first segment: no growth copies (the sqrt(2) ladder copies the whole prefix at each rung, 2x transient), sizes fixed per document; costs the full size from the start (counted by --state-budget-gb). The same values")
     ap.add_argument("--state-early", action="store_true", help="w233 (--pipe-procs): a stage stores a segment's carried state right after its forward (it is final then: the backward's recompute writes the same values), so the stream's next segment need not wait for the backward (a stream with several segments in a step no longer drains the pipeline); the same values")
     ap.add_argument("--pipe-ahead", type=int, default=0, help="w233 (--pipe-procs): segments a stage keeps in flight beyond S - stage (the default depth); more = fewer bubbles, more activation memory")
     ap.add_argument("--keep-act", default=None, help="w233: decoder layers (parse_layers syntax: 48-63, 32-63+0-3) that keep their activations for the backward instead of the checkpoint recompute: less work, more memory a segment in flight; the same arithmetic (bit for bit). Default none")
@@ -2773,6 +2778,7 @@ def main():
         d.barrier()
     apply196(a, stu, log)
     ATTN_GQA[0] = a.attn_gqa                                     # w225
+    KV_FULL[0] = a.kv_full                                       # w233
     if a.card_mem_gb > 0:                                        # w231: PyTorch's share of each card (the HIP runtime keeps the rest)
         for d_ in dict.fromkeys(str(x) for x in stu.devs):
             tot = torch.cuda.get_device_properties(torch.device(d_)).total_memory

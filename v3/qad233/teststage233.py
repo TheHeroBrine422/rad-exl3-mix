@@ -4,7 +4,7 @@
 stack (8 layers, split 4), through the real Trainer.run_group, against today's one-process --pipeline (the reference), bit for bit:
   1. plain (2 processes, 3 steps): KL sums, rows, gnorm, prefix tokens, parameters;
   2. --state-card-gb + --state-budget-gb at a budget that evicts (each stage budgets its own card), also with --budget-evict-first;
-     --state-early (a segment's state stored after its forward) on plain / budget / accum at V = 1;
+     --state-early (a segment's state stored after its forward) on plain / budget / accum at V = 1; --kv-full;
   3. --accum 2 at V = 1;  4. --depth-test 512;
   5. a resume after step 1: the merged state file (snapshot_all) restored in fresh stage processes, every stream's state rebuilt by the pipelined
      prefix rebuild (prefix_stage) = the one-process resume (restore + prefix_state);
@@ -90,6 +90,7 @@ def proc_main(r, world, port, out, case, extra):
     os.environ.update(RANK=str(r), WORLD_SIZE=str(world), LOCAL_RANK="0", MASTER_ADDR="127.0.0.1", MASTER_PORT=str(port), QAD_STAGES=str(stages))
     torch.set_num_threads(2)
     if extra.get("budget_cpu"): Q.BUDGET_CPU[0] = True
+    if extra.get("kv_full"): Q.KV_FULL[0] = True
     if case == "branch":
         C, steps, QT = branch_setup(); a = H.targs(pipeline=True, pipe_xfer="host", V=2, Q=QT); nsteps = 1; kw = {}
     else:
@@ -130,17 +131,22 @@ def main():
         info = f"stages {z[0]['res'][0]} vs one process {ref[0]}"
         if "budget" in case: ok = ok and z[0]["evict"] + z[1]["evict"] > 0; info += f"; evictions stage 0 / 1: {z[0]['evict']} / {z[1]['evict']}"
         H.check(f"--pipe-procs = --pipeline bit for bit ({case}: KL sums, rows, gnorm, prefix tokens on both stages; parameters of both stages)", ok, info)
+    # 4b: --kv-full (static KV buffers at the document's length) in the stages with --state-early and a budget = the one-process default values
+    ak, kw = case_args("early_budget"); a = H.targs(**ak); C, steps = plain_plan(a); Q.BUDGET_CPU[0] = True
+    Tr, ref = run(H.Tiny(0, split=K), a, C, steps, **kw); Q.BUDGET_CPU[0] = False
+    _, z = spawn(2, "early_budget", {"budget_cpu": True, "kv_full": True})
+    H.check("--kv-full + --state-early + budget (2 stages) = the one-process pipeline bit for bit", z[0]["res"] == ref and H.same(merged(z), Tr.stu.state()), f"{z[0]['res'][0]} vs {ref[0]}")
     # 5: resume from the merged state after step 1
     a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
     out1 = tempfile.mkdtemp(prefix="ts233-ref-")
     run(H.Tiny(0, split=K), a, C, steps, snap_after=1, out=out1)
     Tr, ref = run(H.Tiny(0, split=K), a, C, steps, restore=f"{out1}/snap.pt")
-    outs, _ = spawn(2, "plain", {"snap_after": 1})
-    zs = torch.load(f"{outs}/snap.pt", weights_only=False)
-    _, z = spawn(2, "plain", {"restore": f"{outs}/snap.pt"})
+    snapdir, _ = spawn(2, "plain", {"snap_after": 1})
+    zs = torch.load(f"{snapdir}/snap.pt", weights_only=False)
+    _, z = spawn(2, "plain", {"restore": f"{snapdir}/snap.pt"})
     H.check("resume: the merged two-stage state file restored in fresh stages (every stream's state rebuilt through prefix_stage) = the one-process resume bit for bit",
             z[0]["res"] == ref and H.same(merged(z), Tr.stu.state()) and zs["snap"].get("stages") == 2 and ref[0][3] > 0, f"{z[0]['res']} vs {ref}")
-    Tx, refx = run(H.Tiny(0, split=K), a, C, steps, restore=f"{outs}/snap.pt")
+    Tx, refx = run(H.Tiny(0, split=K), a, C, steps, restore=f"{snapdir}/snap.pt")
     H.check("resume: a one-process run restores the two-stage state file (Adam state by name) = the one-process resume bit for bit", refx == ref and H.same(Tx.stu.state(), Tr.stu.state()))
     _, z = spawn(2, "plain", {"restore": f"{out1}/snap.pt"})
     H.check("resume: stage processes restore a one-process state file (e.g. --fork-from a one-card state) = the one-process resume bit for bit",
@@ -179,7 +185,7 @@ def main():
         H.check(f"--pipe-procs 4 = --pipeline bit for bit ({case}: KL, rows, gnorm, prefix tokens on every stage; parameters of all four)", ok and ("budget" not in case or sum(z[r]["evict"] for r in range(4)) > 0), info)
     a = H.targs(pipeline=True, pipe_xfer="host"); C, steps = plain_plan(a)
     Tr, ref = run(H.Tiny(0, split=K), a, C, steps, restore=f"{out1}/snap.pt")
-    _, z = spawn(4, "plain", {"stages": 4, "restore": f"{outs}/snap.pt"})
+    _, z = spawn(4, "plain", {"stages": 4, "restore": f"{snapdir}/snap.pt"})
     H.check("4 stages restore the 2-stage state file (another layout: Adam state by name; prefixes rebuilt through 4 stages) = the one-process resume bit for bit",
             z[0]["res"] == ref and H.same(merged4(z), Tr.stu.state()), f"{z[0]['res']} vs {ref}")
     Tr, ref = run(H.Tiny(0, split=K), a, C, steps); fr = Tr.fixed(fe).tolist()

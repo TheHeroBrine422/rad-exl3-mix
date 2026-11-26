@@ -88,3 +88,11 @@ run220.sh 25F 0 2.50 5e5 --lr 3e-4 --local-mse 15+31,0.1 --local-taps runs/taps
   **b** `gb-pre` / `gb-full` (`--gradnoise 2 --train-layers 32-63` with and without `--no-frozen-prefix`; `gbc-*` compiled; `*-r` repeats = run-to-run floor): mean gradients of the first 2 plan steps; **c** `sp-*` speed table (5 steps; wall of steps 3-5; `sp-eager`, `sp-comp`, `sp-comp-32`, `sp-comp-48`, `sp-eager-32`);
   **d** `d200` / `d220` (qad200.py vs qad220.py defaults, 2 steps, eager: step records and parameters bit for bit).
 - Readout: `python3 code/v3/qad220/readout220.py` (box2; writes `/data/q27/w220/readout220.md`): summary table of the verdicts, then the details; `cmp220.py` has the pieces (`steps`, `state`, `grad`, `speed`).
+
+## w233: stage processes, host-side syncs, host memory
+`--pipe-procs [S]` runs the pipeline as S processes, one card each. qrun.sh launches a card group `A,B` / `A,B+C,D` / `A,B,C,D` as stage
+processes. It is bit for bit `--pipeline` (CPU tests and a 20-step GPU check).
+
+Also added: `--stage-bounds`, `--state-early`, `--park-pool-gb`, `--kv-full`, `--pipe-ahead`, `--budget-evict-first`, `--keep-act`. Two
+exact host-side changes are on by default: the token table in /dev/shm with pinned async rows, and pinned async KL targets. Details, tests and
+tools: `../qad233/README.md`; report `rad-local/workers/out/w233.md`.
