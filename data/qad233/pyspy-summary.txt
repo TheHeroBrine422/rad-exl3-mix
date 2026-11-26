@@ -1,0 +1,38 @@
+fin-w1: GIL held in 586 of ~2000 samples (py-spy --gil, 50 s at 40 Hz) = 0.29
+  thread  MainThread (1670 samples, --idle):
+     0.37 Queue.get (queue.py);Condition.wait (threading.py)
+     0.16 backward (__init__.py);_engine_run_backward (graph.py)
+     0.12 Trainer.park (qad220.py);Trainer.to_cpu_state (qad220.py)
+     0.11 Trainer.to_cpu_state (qad220.py);KVView.to (qad220.py)
+     0.06 Trainer.run_pipe (qad220.py);Student.embed (qmodel.py)
+     0.03 Module._call_impl (module.py);use_compiled_scales.<locals>.fwd (qad220.py)
+     0.01 use_compiled_scales.<locals>.fwd (qad220.py);_TorchDynamoContext.__call__.<locals>.compile_wrapper (eval_frame.py)
+     0.01 run_group (pipe233.py);Trainer.run_group (qad220.py)
+  thread  w225-card-B (1650 samples, --idle):
+     0.35 Queue.get (queue.py);Condition.wait (threading.py)
+     0.30 Thread.run (threading.py);Trainer.run_pipe.<locals>.side_b (qad220.py)
+     0.16 backward (__init__.py);_engine_run_backward (graph.py)
+     0.04 Module._call_impl (module.py);use_compiled_scales.<locals>.fwd (qad220.py)
+     0.03 from_host (qad220.py);Event.synchronize (streams.py)
+     0.01 force_accelerate_hooks.<locals>.decorator.<locals>.wrapped (accelerate.py);Qwen3_5GatedDeltaNet.forward (modeling_qwen3_5.py)
+     0.01 Qwen3_5RMSNorm.forward (modeling_qwen3_5.py);Qwen3_5RMSNorm._norm (modeling_qwen3_5.py)
+     0.01 Trainer.run_pipe.<locals>.side_b (qad220.py);seg_kl (qad220.py)
+fin-w2: GIL held in 462 of ~2000 samples (py-spy --gil, 50 s at 40 Hz) = 0.23
+  thread  w225-card-B (1762 samples, --idle):
+     0.49 Queue.get (queue.py);Condition.wait (threading.py)
+     0.22 Thread.run (threading.py);Trainer.run_pipe.<locals>.side_b (qad220.py)
+     0.14 backward (__init__.py);_engine_run_backward (graph.py)
+     0.04 from_host (qad220.py);Event.synchronize (streams.py)
+     0.02 Module._call_impl (module.py);use_compiled_scales.<locals>.fwd (qad220.py)
+     0.02 Trainer.run_pipe.<locals>.side_b (qad220.py);seg_kl (qad220.py)
+     0.01 Module._call_impl (module.py);Qwen3_5RMSNorm.forward (modeling_qwen3_5.py)
+     0.01 use_compiled_scales.<locals>.fwd (qad220.py);_TorchDynamoContext.__call__.<locals>.compile_wrapper (eval_frame.py)
+  thread  MainThread (1798 samples, --idle):
+     0.32 Queue.get (queue.py);Condition.wait (threading.py)
+     0.17 Trainer.to_cpu_state (qad220.py);KVView.to (qad220.py)
+     0.15 Trainer.park (qad220.py);Trainer.to_cpu_state (qad220.py)
+     0.12 backward (__init__.py);_engine_run_backward (graph.py)
+     0.05 Trainer.run_pipe (qad220.py);Student.embed (qmodel.py)
+     0.04 Trainer.state_in (qad220.py);Trainer.place (qad220.py)
+     0.02 Module._call_impl (module.py);use_compiled_scales.<locals>.fwd (qad220.py)
+     0.02 run_group (pipe233.py);Trainer.run_group (qad220.py)

@@ -1,4 +1,4 @@
-# w233 design note: stage processes for the two-card pipeline (`--pipe-procs`, proposal, not built)
+# w233 design note: stage processes for the two-card pipeline (`--pipe-procs`; approved by the user 11-25 ~10:40 PM CT, building)
 
 ## Why
 The two-card pipeline (`--split-layers K --pipeline`, w225) runs both cards from one Python process: the main thread (card A), a thread for
@@ -8,6 +8,26 @@ one GIL. The venv's Python 3.14 has the GIL on.
 - w233 fin12 W0 (one finals rank on a pair, finals flags): each card is busy 6.4 / 6.7 s of a 12.7 s step (~50 %). Card A's thread spends
   8.3 s launching 6.4 s of GPU work, plus 4.1 s waiting.
 - One process per card gives each card its own interpreter, as in the one-card trainer (GPU-bound, w215).
+
+## Measured since the proposal (fin12 W1 / W2: deep traces at ~120k / ~200k, branch sessions, mixed lengths; `data/qad233/`)
+| window | s / step | GPU busy card A / B | GIL held | card A's thread | card B's thread |
+|---|---|---|---|---|---|
+| W1 (~120k) | 29.8 | 13.3 / 13.9 s (45 %) | 29 % | 37 % waits for B, 23 % parks states (synchronous D2H), 16 % backward launch, 6 % embed | 35 % waits for A, 30 % C++ in side_b (the per-segment `float(kl)` sync, copies), 16 % backward |
+| W2 (~200k) | 45.4 | 17.0 / 17.4 s (38 %) | 23 % | 32 % waits for B, 32 % parks states, 12 % backward, 5 % embed, 4 % places states | 44-57 % waits for A, 21-23 % side_b C++, 9 % `from_host` sync |
+
+So the GIL is not saturated in the deep windows. The cards idle because both threads block on synchronous host work:
+- the state parking (a pageable `.to("cpu")` of GiBs of KV, which drains the card's queue);
+- the embed and target copies (pageable);
+- B's per-segment `float(kl)`;
+- each thread waiting for the other's results.
+
+The stage processes remove the cross-thread coupling (and the suspected cross-thread race behind the deep300 crashes). Each stage process
+must also avoid those host syncs, so the build includes:
+- **(i)** the w233 pinned asynchronous embed / targets (done, 08e1cd32);
+- **(ii)** the loss sums kept on the card until the step's end (no per-segment sync);
+- **(iii)** asynchronous parking: D2H into pinned memory with an event, and the H2D back on the same card's stream after it (no host wait);
+  a CPU-side read (branch clone) waits on the event first;
+- **(iv)** sends / receives on per-process comm threads (D2H + event + gloo send off the compute thread).
 
 ## What changes (all behind `--pipe-procs`; default off, so today's pipeline stays as it is)
 1. **Processes.** Each data-parallel rank r gets two processes: stage 0 on card A (token table, layers 0..K-1) and stage 1 on card B

@@ -1,0 +1,80 @@
+{
+ "doc": [
+  "xc8k-b2-c0",
+  0,
+  8192
+ ],
+ "Q": 1024,
+ "runs": {
+  "0": {
+   "base": {
+    "s": 2.758865783691406,
+    "fwd_s": 0.6333921356201171,
+    "bwd_s": 2.1254735717773436,
+    "kl_row": 0.040729738771915436,
+    "peak_extra_gib": 2.1168785095214844
+   },
+   "nockpt": {
+    "oom": "CUDA out of memory. Tried to allocate 80.00 MiB. GPU 0 has a total capacity of 31.86 GiB of which 0 bytes is free. Of the allocated memory 31.12 GiB is allocated by PyTorch, and 112.83 MiB is reserved"
+   },
+   "fwd": {
+    "s": 0.6374360046386719,
+    "fwd_s": 0.637431381225586,
+    "bwd_s": 4.609999945387244e-06,
+    "kl_row": 0.040729738771915436,
+    "peak_extra_gib": 0.961738109588623
+   },
+   "headkl": {
+    "s": 0.1958687629699707
+   },
+   "families_ms": {
+    "bf16_gemm": 952.9,
+    "int8_gemm": 605.1,
+    "gdn_fla": 327.2,
+    "elementwise": 245.0,
+    "triton_inductor": 188.6,
+    "other": 147.7,
+    "copy": 142.5,
+    "reduce": 36.7,
+    "a8_quant": 21.0,
+    "attention": 8.8
+   },
+   "device_total_ms": 2675.4
+  },
+  "7168": {
+   "base": {
+    "s": 3.0618900756835936,
+    "fwd_s": 0.7003334655761719,
+    "bwd_s": 2.3615565185546874,
+    "kl_row": 0.02554566839223733,
+    "peak_extra_gib": 2.54359769821167
+   },
+   "nockpt": {
+    "oom": "CUDA out of memory. Tried to allocate 80.00 MiB. GPU 0 has a total capacity of 31.86 GiB of which 0 bytes is free. Of the allocated memory 30.98 GiB is allocated by PyTorch, and 265.75 MiB is reserved"
+   },
+   "fwd": {
+    "s": 0.7025219116210937,
+    "fwd_s": 0.7025169067382813,
+    "bwd_s": 4.979999968782067e-06,
+    "kl_row": 0.02554566839223733,
+    "peak_extra_gib": 1.3920550346374512
+   },
+   "headkl": {
+    "s": 0.19269575500488284
+   },
+   "families_ms": {
+    "bf16_gemm": 959.8,
+    "int8_gemm": 608.4,
+    "other": 318.2,
+    "gdn_fla": 296.4,
+    "elementwise": 245.7,
+    "copy": 194.1,
+    "triton_inductor": 191.7,
+    "attention": 83.0,
+    "reduce": 42.0,
+    "a8_quant": 20.9
+   },
+   "device_total_ms": 2960.3
+  }
+ }
+}

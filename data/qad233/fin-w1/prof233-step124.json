@@ -1,0 +1,48 @@
+{
+ "step": 124,
+ "wall_s": 31.58562731742859,
+ "devices": {
+  "1": {
+   "busy_s": 0.321891102000033,
+   "span_s": 28.188183513000002,
+   "kernels": 1081,
+   "family_s": {
+    "copy": 0.32
+   }
+  },
+  "2": {
+   "busy_s": 13.349076209999676,
+   "span_s": 29.775571459,
+   "kernels": 123034,
+   "family_s": {
+    "bf16_gemm": 3.28,
+    "int8_gemm": 2.8,
+    "other": 2.21,
+    "attention": 1.33,
+    "gdn_fla": 1.1,
+    "copy": 0.86,
+    "triton_inductor": 0.79,
+    "elementwise": 0.79,
+    "a8_quant": 0.09,
+    "reduce": 0.09
+   }
+  },
+  "3": {
+   "busy_s": 13.928802265000417,
+   "span_s": 29.5903977,
+   "kernels": 127303,
+   "family_s": {
+    "bf16_gemm": 3.75,
+    "int8_gemm": 2.78,
+    "other": 2.2,
+    "gdn_fla": 1.1,
+    "elementwise": 1.1,
+    "copy": 1.02,
+    "attention": 0.86,
+    "triton_inductor": 0.84,
+    "reduce": 0.18,
+    "a8_quant": 0.09
+   }
+  }
+ }
+}
