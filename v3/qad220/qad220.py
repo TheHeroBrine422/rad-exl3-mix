@@ -1831,7 +1831,7 @@ class Trainer:
         stu.kv_cap = 0
         if TL:                                                      # GPU times relative to the step's first event, host times relative to its record
             torch.cuda.synchronize(dev); e0, h0 = ref; g = lambda m_: (round(e0.elapsed_time(m_[0]) / 1e3, 4), round(m_[1] - h0, 4))
-            segs = [[*v[2], *g(v[0][0]), *g(v[0][1])] + ([*g(v[1][0]), *g(v[1][1])] if v[1] else [None] * 4) for v in tl.values()]
+            segs = [[int(v[2][0]), int(v[2][1]), int(v[2][2]), int(v[2][3]), v[2][4], *g(v[0][0]), *g(v[0][1])] + ([*g(v[1][0]), *g(v[1][1])] if v[1] else [None] * 4) for v in tl.values()]
             with open(os.path.join(a.out, f"tl233-r{d.rank}.jsonl"), "a") as f_: f_.write(json.dumps({"stage": d.stage, "t_host": h0, "segs": segs}) + "\n")
 
     def snapshot(self):
