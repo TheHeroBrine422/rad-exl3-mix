@@ -10413,3 +10413,7 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   gnorm; branch 116 s vs separate 170 s). Report passed to w233.
 - 11-26 (user): w233 steered — static allocation (buffers sized from the plan at startup, reused; prefix KV read in place) and **stage processes generic in N** (--stages 2 / 4; DP ranks × stages = cards); validation compares 2 ranks × 2 stages vs 1 rank × 4 stages on the deep mix (throughput, idle, memory headroom, recompute / swapping).
 - 11-25 11:01 PM CST: **xg-fin recorded** (w232 chain232 done rc 0: 4,973 docs, 5.43M scored rows, merged + checked); golden-v31x (fresh xgap-holdout final-read part) recording next on cards 0,1.
+- 11-25 11:15 PM CST: **w232 done** (report `rad-local/workers/out/w232.md`; commits 38365955, cd8dd88b). xg-fin 4,973 docs / 5,429,048
+  scored rows (cells on target within 0.1 pp), all chunks on TP2 (incl. 129k docs). **golden-v31x** 270 xgap-holdout docs not in the gap
+  judge, ≤ 64k (max 62k), 401,991 scored rows, cell mix = golden-jgap's; prefix JX31 (MML 67584). Final-read set complete: JV31 (752k
+  calib rows) + JT31 (rich / express whole, 275k) + JX31 (402k xgap). Nothing read on them.
