@@ -10390,3 +10390,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   + j217 (0.16M); judges remain usable for screens until the finals start. Trainable calib for the finals ≈ **6.68M rows** (was 3.60M).
   15M finals plan (user): all teacher (set 1 0.75M + set 2 2.17M = 2.92M), all calib (6.68M), xgap fills the rest (~5.4M) → ~45 / 36 /
   19. List `eval/pools/v31-verify-split.json`; AGENTS.md updated.
+- 11-26 (user): **overfit audit waived for the V3.1 finals** (decisions since the last audit were broad data-mix choices; non-KL tricks were null; the 1.03M verify set is untouched by any V3.1 decision and still decides / reports the finals).
