@@ -1,0 +1,8 @@
+{"V": 12, "Q": 1024, "ranks": 1, "seed": 0, "budget_rows": 3000000.0, "margin": 0.02, "max_carried_tokens": 400000, "long_tokens": 32768, "max_long": 4,
+ "exclude_calib": ["/data/q27/queue/slices/jlong-ids.json"],
+ "fixed_eval": {"pools": "/data/q27/w214/pools214.json", "pool": "train214", "seed": 2181, "rows": 20000, "len": 2048},
+ "sources": {
+  "calib": {"golden": "calib", "dir": "/data/q27/challenge/golden/calib", "pools": "/data/q27/w217/pools-v3.json", "pool": ["qad", "fit", "search"], "cap": 8192, "share": 0.4},
+  "tset1": {"golden": "tset1", "dir": "/data/q27/queue/ext/gold/tset1", "genmask": "/data/q27/queue/ext/genmask/tset1.u8", "share": 0.3, "branch": true, "session_key": "sidx"},
+  "xgap": {"golden": "xg-scr1", "dir": "/data/q27/queue/ext/gold/xg-scr1", "genmask": "/data/q27/queue/ext/genmask/xg-scr1.u8", "cap": 131072, "share": 0.3},
+  "traces": {"golden": "trdeep-b1", "dir": "/data/q27/queue/ext/gold/trdeep-b1", "genmask": "/data/q27/queue/ext/genmask/trdeep-b1.u8", "deep": true, "ids": "/data/q27/w233/tr2.json", "starts": [0, 0]}}}

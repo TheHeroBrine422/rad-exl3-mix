@@ -8,7 +8,7 @@ source /data/q27/w233/code/v3/qadq/qenv.sh box2      # sets CARDS / CODE (the qu
 W=/data/q27/w233; W233CODE=$W/code; OUT=$W/runs/$NAME; mkdir -p $OUT
 log() { echo "$(TZ=America/Chicago date '+%m-%d %-I:%M:%S %p CST') $*" | tee -a $W/run233.log; }
 log "$NAME waiting for cards $MYCARDS"
-for c in ${MYCARDS//,/ }; do eval "exec {l}>/data/q27/locks/card$c.lock"; flock $l; done
+if [ "${W233_LOCKED:-}" != 1 ]; then for c in ${MYCARDS//,/ }; do eval "exec {l}>/data/q27/locks/card$c.lock"; flock $l; done; fi   # W233_LOCKED=1: the caller holds them
 log "$NAME cards $MYCARDS held"
 case $SCRIPT in prof233.py) S=$W233CODE/v3/qad233/prof233.py;; qad220.py) S=$W233CODE/v3/qad220/qad220.py;; *) S=$SCRIPT;; esac
 export MALLOC_MMAP_THRESHOLD_=1048576 MALLOC_TRIM_THRESHOLD_=67108864
