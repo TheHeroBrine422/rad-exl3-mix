@@ -10382,3 +10382,4 @@ flat concurrency scaling — it was the launch setting, requests were queueing, 
   improves with the teacher share (15 % → −1.1 %, 30 % → −1.8 %). Agent traces: set-2 chat teacher data helps them only slightly
   (−0.5–0.8 %); the trace-cut teacher data (opmix, onpol) gave −1.3 %: set 1 is the trace lever. → the most diverse mix tested (40/30/30)
   is best on every breadth judge at no measured calib cost.
+- 11-25 ~9 PM CST: **calib accounting (correction):** 7.73M scored rows (10.26M tokens). Trainable (qad / fit / search minus judges) **3.60M** (incl. 0.16M ripgrep / cobra trace rows); verify 2.09M (0.51M from its 4 traces); jc228 0.89M; golden-jlong 0.97M (incl. attrs / click 0.24M); j217 0.16M. The earlier '5.47M whole' predates the jc228 split. Calib whole = ~24 % of a 15M final (~30 % if jc228 is folded back for the finals; proposal to the user).
