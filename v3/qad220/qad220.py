@@ -1448,7 +1448,8 @@ class Trainer:
         if G > 0:
             used = self.resident(skip=sid)
             if all(d_.type == "cpu" or used.get(d_, 0) + b_ <= G for d_, b_ in self.st_bytes(nxt).items()): return nxt
-        return self.to_host_state(nxt)
+        h = self.to_host_state(nxt)
+        return nxt if h is None else h                           # w233 --pool-strict: the pool is full: stays on the card
 
     @staticmethod
     def to_cpu_state(nxt):
@@ -1466,7 +1467,10 @@ class Trainer:
                      for v in nxt.values() for t in ((v.k, v.v) if isinstance(v, KVView) else v if isinstance(v, tuple) else (v,))]
             for b_ in sizes:
                 r_ = pool.alloc(b_)
-                if r_ is None: pool.give(rngs); pool.misses += 1; return self.to_cpu_state(nxt)
+                if r_ is None:
+                    pool.give(rngs); pool.misses += 1
+                    if getattr(self.a, "pool_strict", False): return None       # --pool-strict: the caller keeps the state on the card (host memory stays at the pool)
+                    return self.to_cpu_state(nxt)
                 rngs.append(r_)
         it_ = iter(rngs)
         def pin(t, n=None):
@@ -1769,12 +1773,12 @@ class Trainer:
             need = {}
             if S_ > 0:                                              # run_pipe's per-card budget, on this stage's card
                 if own is None and sa > 0 and sid in self.snaps: own = self.snaps[sid][1]
-                need = self.proj_bytes(own, sb, cap)
+                need = self.proj_bytes(own, sb, cap); nopark = set()
                 while True:
                     used = self.resident(skip=sid); fl_ = infl()
                     over = [d_ for d_, b_ in need.items() if (d_.type != "cpu" or BUDGET_CPU[0]) and used.get(d_, 0) + fl_.get(d_, 0) + b_ > S_]
                     if not over: break
-                    vic = [(sum(b_ for d_, b_ in self.st_bytes(st2[2]).items() if d_ in over), s2) for s2, st2 in self.states.items() if s2 != sid and not isinstance(st2[2], Parked)]
+                    vic = [(sum(b_ for d_, b_ in self.st_bytes(st2[2]).items() if d_ in over), s2) for s2, st2 in self.states.items() if s2 != sid and not isinstance(st2[2], Parked) and s2 not in nopark]
                     vic = [x for x in vic if x[0] > 0]
                     if evict_first and vic: pass                   # --budget-evict-first: park an idle stream's state (asynchronous) before stalling the pipeline
                     elif pend: finish_early(); continue
@@ -1783,7 +1787,9 @@ class Trainer:
                         ov = max(used.get(d_, 0) + fl_.get(d_, 0) + need.get(d_, 0) - S_ for d_ in over)      # document's state is not parked to make room for a small one
                         fit = [x for x in vic if x[0] >= ov]; _, s2 = min(fit) if fit else max(vic)
                     else: _, s2 = max(vic)
-                    it2, o2, st2 = self.states[s2]; self.states[s2] = (it2, o2, self.to_host_state(st2)); self.n_evict += 1
+                    it2, o2, st2 = self.states[s2]; h_ = self.to_host_state(st2)
+                    if h_ is None: nopark.add(s2); continue             # --pool-strict: the pool is full for it: try another victim, else finish / run over
+                    self.states[s2] = (it2, o2, h_); self.n_evict += 1
             prev = self.state_in(sid, it, sa, acc) or {}
             if S_ > 0: self.states.pop(sid, None)
             nb = 0 if kept else sum(self.st_bytes(prev).values())
@@ -2643,6 +2649,7 @@ def parser():
     ap.add_argument("--stage-bounds", default=None, help="w233 (--pipe-procs S): the S - 1 layer boundaries, e.g. 16,32,48 (stage s = layers b[s-1] .. b[s]-1); S = 2 defaults to --split-layers K")
     ap.add_argument("--budget-evict-first", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park other streams' kept states (asynchronously) before finishing in-flight segments (the default order finishes first: it stalls the pipeline when deep states fill the budget); placement only, the same values")
     ap.add_argument("--park-pool-gb", type=float, default=0.0, help="w233 (--pipe-procs): parked states live in one pinned host buffer of this many GiB a process, allocated at the start (fixed host memory, exact sizes); a park that does not fit goes to pageable memory (synchronous, counted as pool misses). 0 = torch's pinned caching allocator")
+    ap.add_argument("--pool-strict", action="store_true", help="w233 (--park-pool-gb): a state that does not fit the pool stays on the card (another victim is tried, else in-flight segments finish first) instead of going to pageable host memory: host memory is the pool, never more; placement only")
     ap.add_argument("--evict-fit", action="store_true", help="w233 (--pipe-procs with --state-budget-gb): over the budget, park the smallest other state that covers the overflow (not the largest: that was the deep trace, brought back every step), and drop the 4 GiB cap on states brought in by in-flight segments (PIPE_INFLIGHT: the budget counts them): a deep state no longer stalls the stage; placement only, the same values")
     ap.add_argument("--kl-keep", action="store_true", help="w233 (split / --pipe-procs loss path): the head + top-K KL chunks keep their activations for the backward instead of the checkpoint recompute (one head GEMM less a segment; ~1 GB a 256-row chunk held until the backward); the same values")
     ap.add_argument("--kv-full", action="store_true", help="w233 (static allocation): every document's carried KV buffers at its full length (its cap) from its first segment: no growth copies (the sqrt(2) ladder copies the whole prefix at each rung, 2x transient), sizes fixed per document; costs the full size from the start (counted by --state-budget-gb). The same values")
