@@ -330,3 +330,4 @@ Next free number: **216**.
 | 223 | lr grid for the pooled fit (flat lr + 20% decay, 2M; 2.0–4.0, 3–4 points / size; r6 stress arms on pairs) | QAD | none | running | 11-26 | 11-26 | — |
 | 224 | K-grid spacing vs continuous allocation (model-predicted, CPU) | search | none | done | 11-26 | 11-26 | shipped menu within 0.16 % of continuous; not worth building |
 | 225 | Code-update probe (gradient-targeted trellis re-encode, PV-tuning style) on 2.50 QAD 10M, layers 40–55 MLP | QAD | none | cancelled | 11-27 | 11-27 | repeats w218 (negative); compute too high for practice (user) |
+| 226 | HEPH grid-aligned trellis vs mad + Hadamard on DS4.1-F MXFP4 experts (CPU, H-weighted error, K 1–3) | DS | none | running | 11-27 | 11-27 | — |
