@@ -30,6 +30,9 @@ SPEC (JSON):
   without grad, each cut trained from its branch point (prefix rounded down to align) on a copy of the history state (qad220 branch roles hist / cut /
   cut_last). A cut whose tokens before its branch point differ from the history's stays a separate full-prefix document. The unit's carried need = the
   cut's state + the snapshot held meanwhile (m_eff, counted whole against max_carried_tokens). Summary: cost per row branched vs full-prefix.
+  "share_windows" (optional, w236): [[rows_from, {source: share, ..}], ..]: from the point the assigned gen rows reach rows_from, the mixed sources' shares
+  are these (a source not listed: 0) and count the rows taken since the window started (e.g. a calib-heavy end: [[12.5e6, {"calib": 0.8, "xgap": 0.2}]]).
+  Before the first window the sources' own `share`. A window whose live sources all have share 0 falls back to the sources' own shares.
   "state_budget_gb" (optional): qad220's --state-budget-gb; the deepest document's state (32 KB a token a card + ~0.1 GiB) must fit it (asserted).
   dir / genmask: the golden's directory and gen mask (default DIR/gen.u8 if it exists, else every row is gen); cap: tokens a document is cut at
   (rows recounted); min_rows (16): documents with fewer gen rows are skipped. The plan stores each golden's name with dir / genmask: qad220 loads
@@ -225,13 +228,19 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
                 pend.pop(0); items.append((src.golden, i, n, nr, True, src.name)); rows_by[src.name] += nr; assigned += nr
                 trace_log.append((len(items) - 1, s, t)); return [len(items) - 1]
         if assigned >= stop_rows: return None if not pend else take_short(s, r)
-        tot = sum(rows_by[m.name] for m in mix) or 1
+        wi = sum(1 for r0, _ in wins if assigned >= r0) - 1          # w236: the share window in effect (-1: the sources' own shares)
+        if wi >= 0 and wi not in wbase: wbase[wi] = dict(rows_by)
+        base = wbase.get(wi, {})
+        share = {m.name: (wins[wi][1].get(m.name, 0.0) if wi >= 0 else m.share) for m in mix}
+        got = {m.name: rows_by[m.name] - base.get(m.name, 0) for m in mix}
+        tot = sum(got.values()) or 1
         live = [m for m in mix if nxt[m.name] < len(m.items)]
         for m in mix:
             if nxt[m.name] >= len(m.items) and m.name not in out_at: out_at[m.name] = t
         if not live: return None if not pend else take_short(s, r)
-        sh = sum(m.share for m in live)
-        order = sorted(live, key=lambda m: -(m.share / sh * tot - rows_by[m.name]))
+        sh = sum(share[m.name] for m in live)
+        if sh <= 0: share = {m.name: m.share for m in mix}; sh = sum(m.share for m in live)
+        order = sorted(live, key=lambda m: -(share[m.name] / sh * tot - got[m.name]))
         for m in order:
             L = m.items
             for k in range(nxt[m.name], min(len(L), nxt[m.name] + 64)):
@@ -252,6 +261,9 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         L[nxt[m.name]], L[k] = L[k], L[nxt[m.name]]; nxt[m.name] += 1
         if force: over.append((len(steps), s))
         return emit(m, i, n, nr)
+
+    wins = sorted(([float(r0), {k: float(v) for k, v in w.items()}] for r0, w in spec.get("share_windows", [])), key=lambda w: w[0])
+    wbase = {}                                             # w236: share window -> rows_by when its first document was taken
 
     over = []
     t = 0

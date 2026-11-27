@@ -4,7 +4,7 @@
 with a verify pool and qad220's fixed-eval pool), teacher cuts (8k-40k, only the last 25-50 % scored), long docs (10k-40k, cap 32k), w231 multi-cut sessions (branch units) and 4 deep traces
 (60k-80k), V 8 x Q 1024, 2 ranks, budget 1M rows. Checks: data181.plan on the queues = the builder (asserted in plan231), single epoch, judges /
 verify / fixed-eval docs absent, source shares within 3 points of the targets, traces start as scheduled on alternating ranks and end before the
-budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps. Exit 0 = all pass."""
+budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps; w236: share_windows (a calib-heavy end). Exit 0 = all pass."""
 import argparse, importlib.util, json, os, subprocess, sys, tempfile
 import numpy as np
 
@@ -127,7 +127,27 @@ def main():
     check("qad220 build_data --plan231: the plan's documents and steps", same_items and B["steps"] == sim, f"{len(B['steps'])} steps, last {B['last']}")
     check("qad220's budget step = the builder's", B["last"] == S["last"], f"{B['last']} vs {S['last']}")
     check("qad220 loads the branch roles (history / cut / last cut, starts, source docs)", {k: (v[0], v[1], v[3]) for k, v in B["C"].branch.items()} == {k: (v[0], v[1], v[3]) for k, v in BR.items()} and B["C"].starts == {k: v[1] for k, v in BR.items() if v[1]})
+    share_windows(T, spec)
     finish()
+
+
+def share_windows(T, spec):
+    """w236: "share_windows": a calib-heavy end (calib 0.8 / long 0.2 from 0.75M assigned rows) after a calib-light start: the rows trained after 0.8M
+    (to the budget's step) are mostly calib, the rows before 0.7M follow the sources' own shares, and the plan still builds and checks"""
+    sp = json.loads(json.dumps(spec)); sp["share_windows"] = [[7.5e5, {"calib": 0.8, "long": 0.2}]]; sp["phases_rows"] = [7e5, 8e5]
+    sp["sources"]["calib"]["share"] = 0.3; sp["sources"]["teach"]["share"] = 0.3
+    json.dump(sp, open(f"{T}/spec-w.json", "w"))
+    r = subprocess.run([sys.executable, os.path.join(HERE, "plan231.py"), f"{T}/spec-w.json", f"{T}/plan-w.json"], capture_output=True, text=True)
+    check("plan231 builds with share_windows", r.returncode == 0, r.stderr[-500:])
+    if r.returncode: return
+    S = json.load(open(f"{T}/plan-w.json"))["summary"]; ph = S["rows_by_phase"]
+    mix = [k for k in ph if k != "traces"]
+    part = lambda p: {k: ph[k][p] / max(1, sum(ph[m][p] for m in mix)) for k in mix}
+    a, z = part(0), part(2)
+    check("share_windows: the end (after 0.8M rows) is >= 70 % calib, teacher / sessions ~0", z["calib"] >= 0.7 and z.get("teach", 0) + z.get("sess", 0) <= 0.05, f"end {json.dumps({k: round(v, 3) for k, v in z.items()})}")
+    want = {k: sp["sources"][k]["share"] / sum(sp["sources"][m]["share"] for m in mix) for k in mix}
+    check("share_windows: before 0.7M rows the sources' own shares (within 5 points; small synthetic plan, training order)", all(abs(a[k] - want[k]) < 0.05 for k in mix),
+          f"start {json.dumps({k: round(v, 3) for k, v in a.items()})}, own {json.dumps({k: round(v, 3) for k, v in want.items()})}")
 
 
 def finish():
