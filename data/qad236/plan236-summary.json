@@ -1,0 +1,162 @@
+{
+ "steps": 1368,
+ "last": 1183,
+ "rows_to_last": 14800829,
+ "share_rows": {
+  "calib": 0.4008,
+  "calibdeep": 0.0497,
+  "tset1": 0.0362,
+  "tset2": 0.1466,
+  "xgap": 0.3522,
+  "xgdeep": 0.0146
+ },
+ "step_cost_per_rank": {
+  "mean": 10884.5,
+  "max": 16484.7,
+  "p95": 14381.5,
+  "rank_imbalance_mean": 1.081
+ },
+ "carried_gib_per_rank": {
+  "max": 27.3,
+  "p95": 22.6
+ },
+ "forced_over_bound": 185,
+ "source_exhausted_at_step": {
+  "tset2": 1108,
+  "calib": 1128,
+  "xgap": 1130
+ },
+ "planned_starts": [
+  0,
+  126,
+  251,
+  377,
+  503,
+  629,
+  754,
+  880
+ ],
+ "trace_ends_by_last": true,
+ "max_deep_per_rank": 2,
+ "max_deep_total": 3,
+ "rows_by_phase": {
+  "xgdeep": [
+   215555,
+   0,
+   0
+  ],
+  "xgap": [
+   4715493,
+   198301,
+   299699
+  ],
+  "calib": [
+   3921791,
+   259357,
+   1750363
+  ],
+  "tset2": [
+   1904802,
+   98572,
+   166673
+  ],
+  "tset1": [
+   456259,
+   8181,
+   70852
+  ],
+  "calibdeep": [
+   626922,
+   43116,
+   64893
+  ]
+ },
+ "phases_rows": [
+  11840000.0,
+  12448000.0
+ ],
+ "trace_rows_by_depth_band_64k_and_phase": {
+  "0k+": [
+   177912,
+   0,
+   0
+  ],
+  "64k+": [
+   289606,
+   24803,
+   0
+  ],
+  "128k+": [
+   221922,
+   3860,
+   41084
+  ],
+  "192k+": [
+   153037,
+   14453,
+   23809
+  ]
+ },
+ "unused_entries": {
+  "xgdeep": -6,
+  "calibdeep": -2,
+  "calib": 0,
+  "xgap": 0,
+  "tset1": 24,
+  "tset2": 0
+ },
+ "calib_share_by_phase": [
+  0.384,
+  0.498,
+  0.772
+ ],
+ "wall_proxy_sum_max_rank_cost_to_last": 13894757,
+ "carried_tok_rank_max": 448030,
+ "deepest_20_step_window": {
+  "from_step": 632,
+  "mean_max_trace_depth": 238436,
+  "cost_max_rank_mean": 12760.0
+ },
+ "trace_starts_tokens_rank_step": [
+  [
+   129285,
+   0,
+   0
+  ],
+  [
+   127512,
+   0,
+   126
+  ],
+  [
+   245120,
+   1,
+   266
+  ],
+  [
+   248066,
+   0,
+   409
+  ],
+  [
+   245667,
+   1,
+   503
+  ],
+  [
+   245199,
+   0,
+   629
+  ],
+  [
+   245774,
+   1,
+   761
+  ],
+  [
+   246898,
+   0,
+   881
+  ]
+ ]
+}

@@ -1,0 +1,104 @@
+{
+ "V": 24,
+ "Q": 1024,
+ "ranks": 2,
+ "seed": 0,
+ "margin": 0.01,
+ "max_carried_tokens": 500000,
+ "long_tokens": 32768,
+ "max_long": 8,
+ "trace_hold": true,
+ "state_budget_gb": 9.5,
+ "deep_first": 0,
+ "exclude_calib": [
+  "inv/verify_v31.json",
+  "inv/calib-exclude.json"
+ ],
+ "fixed_eval": {
+  "pools": "/data/q27/w214/pools214.json",
+  "pool": "train214",
+  "seed": 2181,
+  "rows": 20000,
+  "len": 2048
+ },
+ "sources": {
+  "xgdeep": {
+   "golden": "xg-fin",
+   "dir": "/data/q27/queue/ext/gold/xg-fin",
+   "genmask": "/data/q27/queue/ext/genmask/xg-fin.u8",
+   "deep": true,
+   "ids": "inv/xg-deep.json",
+   "starts": [
+    0,
+    126,
+    251,
+    377,
+    503,
+    629,
+    754,
+    880
+   ]
+  },
+  "calibdeep": {
+   "golden": "calib",
+   "dir": "/data/q27/challenge/golden/calib",
+   "deep": true,
+   "ids": "inv/calib-deep.json",
+   "starts": [
+    0,
+    126,
+    251,
+    377,
+    503,
+    629,
+    754,
+    880
+   ]
+  },
+  "calib": {
+   "golden": "calib",
+   "dir": "/data/q27/challenge/golden/calib",
+   "ids": "inv/ids-calib.json",
+   "cap": 131072,
+   "share": 0.3461
+  },
+  "xgap": {
+   "golden": "xg-fin",
+   "dir": "/data/q27/queue/ext/gold/xg-fin",
+   "genmask": "/data/q27/queue/ext/genmask/xg-fin.u8",
+   "ids": "inv/ids-xgap.json",
+   "cap": 131072,
+   "share": 0.4247
+  },
+  "tset1": {
+   "golden": "tset1",
+   "dir": "/data/q27/queue/ext/gold/tset1",
+   "genmask": "/data/q27/queue/ext/genmask/tset1.u8",
+   "ids": "inv/ids-tset1.json",
+   "branch": true,
+   "session_key": "sidx",
+   "share": 0.0642
+  },
+  "tset2": {
+   "golden": "tset2",
+   "dir": "/data/q27/queue/ext/gold/tset2",
+   "genmask": "/data/q27/queue/ext/genmask/tset2.u8",
+   "share": 0.1651
+  }
+ },
+ "budget_rows": 14800000.0,
+ "share_windows": [
+  [
+   12448000.0,
+   {
+    "calib": 0.8,
+    "xgap": 0.1,
+    "tset2": 0.1
+   }
+  ]
+ ],
+ "phases_rows": [
+  11840000.0,
+  12448000.0
+ ]
+}

@@ -1,0 +1,53 @@
+# w236 (11-27): the V3.1 finals, one T4 line a size + the final reads. NOT queued: append to QROOT/jobs.txt on the user's go (order = run order 2.5 -> 3.0 -> 2.0 -> 3.5 -> 4.0).
+# Plan: /data/q27/w236/plan236.json (plan231, spec v3/qad236/mkspec236.py; one plan for every size, same seed 0): 14.8M gen rows (all trainable calib + all xg-fin
+#   + tset2 + 92 % of tset1, branch-trained), calib 45 / xgap 37 / teacher 18 %, 8 staggered deep traces, calib-heavy last 2.5M rows; 1183 steps, decay from step 977.
+# Student = the unhealed release pick (w214/lv/SIZE via qrun.sh). Flat lr + the default 20 % linear decay (--decay-frac 0.2). Snapshots ckpt-raw-* every 0.5M (ckpt-raw-1e+07 = 10M).
+# The LAST checkpoint ships: ckpt-1e+07 = the 14.8M-row end (qcard / qad220 label budgets with '%.0e'; not the 10M snapshot, which is ckpt-raw-1e+07).
+# No j217 / jc228 / jlong reads: their docs are trained on in the finals. Final reads JV31 / JT31 / JX31 once each, after the last checkpoint (R lines wait for its .done);
+#   the unhealed release's reads on the same sets (U lines) are the paired controls, one a size, also only after that size's final checkpoint.
+# Env: w233 measured r6 with PYTORCH_HIP_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:256; qenv.sh does not export it (the w236 smoke did): deploy it first or accept the default.
+
+# FIN25: V3.1 final 2.50, flat lr 2.5e-4
+T4 FIN25 2.50 14.8e6 - --lr 2.5e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+R JV31-FIN25 2.50 FIN25/ckpt-1e+07 @needs=FIN25/ckpt-1e+07/.done
+R JT31-FIN25 2.50 FIN25/ckpt-1e+07 @needs=FIN25/ckpt-1e+07/.done
+R JX31-FIN25 2.50 FIN25/ckpt-1e+07 @needs=FIN25/ckpt-1e+07/.done
+U JV31-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad.ok,FIN25/ckpt-1e+07/.done
+U JT31-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad.ok,FIN25/ckpt-1e+07/.done
+U JX31-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad.ok,FIN25/ckpt-1e+07/.done
+
+# FIN30: V3.1 final 3.00, flat lr 1.2e-4
+T4 FIN30 3.00 14.8e6 - --lr 1.2e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+R JV31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
+R JT31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
+R JX31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
+U JV31-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad.ok,FIN30/ckpt-1e+07/.done
+U JT31-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad.ok,FIN30/ckpt-1e+07/.done
+U JX31-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad.ok,FIN30/ckpt-1e+07/.done
+
+# FIN20: V3.1 final 2.00, flat lr 5e-4
+T4 FIN20 2.00 14.8e6 - --lr 5e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+R JV31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
+R JT31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
+R JX31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
+U JV31-UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad.ok,FIN20/ckpt-1e+07/.done
+U JT31-UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad.ok,FIN20/ckpt-1e+07/.done
+U JX31-UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad.ok,FIN20/ckpt-1e+07/.done
+
+# FIN35: V3.1 final 3.50, flat lr 6e-5
+T4 FIN35 3.50 14.8e6 - --lr 6e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+R JV31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
+R JT31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
+R JX31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
+U JV31-UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad.ok,FIN35/ckpt-1e+07/.done
+U JT31-UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad.ok,FIN35/ckpt-1e+07/.done
+U JX31-UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad.ok,FIN35/ckpt-1e+07/.done
+
+# FIN40: V3.1 final 4.00, flat lr 3e-5
+T4 FIN40 4.00 14.8e6 - --lr 3e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+R JV31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
+R JT31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
+R JX31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
+U JV31-UN4.00 4.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-4.00bpw.rad.ok,FIN40/ckpt-1e+07/.done
+U JT31-UN4.00 4.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-4.00bpw.rad.ok,FIN40/ckpt-1e+07/.done
+U JX31-UN4.00 4.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-4.00bpw.rad.ok,FIN40/ckpt-1e+07/.done
