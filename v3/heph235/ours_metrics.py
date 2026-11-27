@@ -41,6 +41,7 @@ def main():
     def quad(Dm, H32): return float(torch.einsum("ij,ij->", Dm @ H32, Dm).double())
     den_own = quad(Wr32, Hown32)
     den_diag = float((W0 ** 2 @ hdiag).sum()); den_mse = float((W0 ** 2).sum())
+    den_full0 = float(torch.einsum("ij,jk,ik->", W0, H0, W0))        # unrotated full-H denominator (same evaluation as heph_check.py)
     pre = D.prep_ldlq(Hown, 0.01)
     # inverse of the rotation: Wr = rk(W0) is orthogonal, so W0 = rk^T(Wr); apply it via the dense 128-block matrix
     h = torch.tensor([[1.0]], dtype=torch.float64)
@@ -67,7 +68,7 @@ def main():
         What = unrot((Q[i].double() * (rms * f)))
         Dm = W0 - What
         rec = {"layer": layer, "e": e, "kind": kind, "K": K, "rows": nrows, "slice": sl, "R": N, "Kd": Kd, "factor": f,
-               "rel": best[0], "allf": allf, "rel_diag": float((Dm ** 2 @ hdiag).sum()) / den_diag, "rel_mse": float((Dm ** 2).sum()) / den_mse,
+               "rel": best[0], "rel_unrot": float(torch.einsum("ij,jk,ik->", Dm, H0, Dm)) / den_full0, "allf": allf, "rel_diag": float((Dm ** 2 @ hdiag).sum()) / den_diag, "rel_mse": float((Dm ** 2).sum()) / den_mse,
                "setup_sec": round(t_setup, 1), "sec": round(time.time() - tk, 1)}
         print(json.dumps(rec), flush=True)
         with open(out, "a") as fh: fh.write(json.dumps(rec) + "\n")

@@ -47,46 +47,61 @@ def fmt(x):
 
 
 def interp_ours(curve, x):
-    """curve {K: value} at integer K; x = bits (K-equivalent); log-linear, extrapolating from the end segments."""
-    ks = sorted(curve); k0 = min(max(int(math.floor(x)), ks[0]), ks[-1] - 1)
-    a, b = math.log(curve[k0]), math.log(curve[k0 + 1])
-    return math.exp(a + (x - k0) * (b - a))
+    """curve {K: value} (any K points); x = bits (K-equivalent); log-linear between neighbouring points, end segments extrapolated."""
+    ks = sorted(curve); i = 0
+    while i < len(ks) - 2 and x > ks[i + 1]: i += 1
+    k0, k1 = ks[i], ks[i + 1]
+    a, b = math.log(curve[k0]), math.log(curve[k1])
+    return math.exp(a + (x - k0) / (k1 - k0) * (b - a))
+
+
+def eq_bits(curve, val):
+    """K-equivalent bits at which ours' error (log-linear curve through its points, end segments extrapolated) equals val."""
+    ks = sorted(curve); lv = math.log(val)
+    pts = [(k, math.log(curve[k])) for k in ks]
+    i = 0
+    while i < len(pts) - 2 and lv < pts[i + 1][1]: i += 1
+    (k0, a), (k1, b) = pts[i], pts[i + 1]
+    return k0 + (lv - a) / (b - a) * (k1 - k0)
 
 
 mats = sorted({(r["layer"], r["e"], r["kind"]) for r in heph})
 Ocurve = {}   # (matrix) -> {K: rel}
 for m in mats:
-    Ocurve[m] = {K: w211_base(m[0], m[1], m[2], K) for K in (1, 2, 3, 4)}
+    Ocurve[m] = {float(K): w211_base(m[0], m[1], m[2], K) for K in (1, 2, 3, 4)}
 Ometr = {}    # (matrix, K) -> ours_metrics line
-for r in ours: Ometr[((r["layer"], r["e"], r["kind"]), r["K"])] = r
+for r in ours: Ometr[((r["layer"], r["e"], r["kind"]), float(r["K"]))] = r
+OcurveF = {m: {**Ocurve[m], **{k: Ometr[(m, k)]["rel"] for k in (1.5, 2.5) if (m, k) in Ometr}} for m in mats}   # + measured fractional points
 Hl = {}       # (matrix, variant, K, L, seed) -> line
 for r in heph: Hl[((r["layer"], r["e"], r["kind"]), r["variant"], r["K"], r["L"], r["seed"], 0)] = r   # one row subset per tag (TAG=allrows for the all-rows runs)
 
 print(f"# w235 tables (tag {TAG}; {len(mats)} matrices with HEPH results, {len(ours)} ours_metrics lines)\n")
 # --- cross-check
-d = [abs(r["rel"] / Ocurve[m][int(K)] - 1) for (m, K), r in Ometr.items() if m in Ocurve and float(K).is_integer() and Ocurve[m].get(int(K))]
+d = [abs(r["rel"] / Ocurve[m][K] - 1) for (m, K), r in Ometr.items() if m in Ocurve and K in (1.0, 2.0, 3.0, 4.0)]
 if d: print(f"**Cross-check** ours_metrics rel vs w211 base (min over F3): {len(d)} lines, max |rel diff| {max(d):.2e}\n")
 
 
-def table(variant="std", L=12, seed=1, rows_sel=0, offs=OFFS, title=""):
+def table(variant="std", L=12, seed=1, rows_sel=0, offs=OFFS, title="", Ks=(1.0, 2.0, 3.0)):
     print(f"### {title or f'HEPH {variant} L={L} seed={seed}'}  (rate = K + Huffman exponents + {offs})\n")
-    print("| K | HEPH rate (mean) | ours rate | geo ratio HEPH/ours same K | geo ratio rate-matched [95% CI over matrices] | hot | medium | cold | gate_up | down | # matrices HEPH wins (rate-matched) |")
-    print("|---|---|---|---|---|---|---|---|---|---|---|")
+    print("| K | HEPH rate (mean) | ours rate | geo ratio HEPH/ours same K | geo ratio rate-matched [95% CI over matrices] | hot | medium | cold | gate_up | down | # matrices HEPH wins (rate-matched) | bits ours saves at equal error (mean) |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|---|")
     res = {}
-    for K in (1.0, 2.0, 3.0):
-        rm, same, rate_h = {}, {}, []
+    curves = OcurveF if any(k % 1 for k in Ks) else Ocurve      # integer-K tables interpolate ours between its integer points only (TB, conservative for ours)
+    for K in Ks:
+        rm, same, rate_h, saved = {}, {}, [], []
         for m in mats:
             h = Hl.get((m, variant, K, L, seed, rows_sel))
-            if h is None or Ocurve[m][1] is None: continue
+            if h is None or Ocurve[m][1.0] is None or (K not in curves[m]): continue
             rh = K + h["exp"]["huff_bpw"] + offs; rate_h.append(rh)
-            o_at = interp_ours(Ocurve[m], rh - 16 / h["Kd"])
-            rm[m] = h["rel"] / o_at; same[m] = h["rel"] / Ocurve[m][int(K)]
+            o_at = interp_ours(curves[m], rh - 16 / h["Kd"])
+            rm[m] = h["rel"] / o_at; same[m] = h["rel"] / curves[m][K]
+            saved.append(rh - 16 / h["Kd"] - eq_bits(curves[m], h["rel"]))
         if not rm: continue
         sel = lambda f: [v for m, v in rm.items() if f(m)]
         cl = lambda c: fmt(sel(lambda m: CLS[(m[0], m[1])] == c)) if sel(lambda m: CLS[(m[0], m[1])] == c) else "-"
         kd = lambda k: fmt(sel(lambda m: m[2] == k)) if sel(lambda m: m[2] == k) else "-"
         wins = sum(v < 1 for v in rm.values())
-        print(f"| {K:g} | {np.mean(rate_h):.3f} | {K + 0.003:.3f} | {fmt(list(same.values()))} | **{fmt(list(rm.values()))}** | {cl('hot')} | {cl('medium')} | {cl('cold')} | {kd('gate_up')} | {kd('down')} | {wins}/{len(rm)} |")
+        print(f"| {K:g} | {np.mean(rate_h):.3f} | {K + 0.003:.3f} | {fmt(list(same.values()))} | **{fmt(list(rm.values()))}** | {cl('hot')} | {cl('medium')} | {cl('cold')} | {kd('gate_up')} | {kd('down')} | {wins}/{len(rm)} | {np.mean(saved):+.2f} |")
         res[K] = geo(list(rm.values()))
     print()
     return res
@@ -96,7 +111,8 @@ main_res = table("std", 12, 1, 0)
 table("std", 12, 1, 0, offs=0.0, title="HEPH std L=12 without the 0.022 random-access offsets (Huffman exponents only)")
 table("std", 16, 1, 0, title="HEPH std L=16 (K = 2 only is run)")
 table("std", 12, 2, 0, title="HEPH std L=12, codebook seed 2")
-table("sw", 12, 1, 0, title="HEPH sw (diag H x s_g^2 weights) L=12")
+table("std", 12, 1, 0, title="HEPH std L=12, fractional K (ours measured at K = 1.5 / 2.5, non-tail-biting legacy pattern search; interpolation uses all of ours' measured points)", Ks=(1.5, 2.5))
+table("sw", 12, 1, 0, title="HEPH sw (diag H x s_g^2 weights) L=12", Ks=(1.5, 2.0, 2.5, 3.0))
 table("h1", 12, 1, 0, title="HEPH h1 (no calibration, h = 1) L=12")
 if main_res:
     ks = sorted(main_res)
@@ -122,6 +138,17 @@ for met in ("rel_diag", "rel_mse"):
         print(f"| {K:g} | {fmt(same) if same else '-'} | {fmt(rm) if rm else '-'} |")
     print()
 
+# --- how much of the error is off-diagonal: rel(full H) / rel(diag H), geo mean over matrices
+print("### rel(full H) / rel(diag H) per method (geo mean over matrices; < 1: error sits in directions the full H weights less than its diagonal says)\n")
+print("| K | HEPH gate_up | ours gate_up | HEPH down | ours down |"); print("|---|---|---|---|---|")
+for K in (1.0, 2.0, 3.0):
+    cells = []
+    for k in ("gate_up", "down"):
+        hv = [Hl[(m, "std", K, 12, 1, 0)]["rel"] / Hl[(m, "std", K, 12, 1, 0)]["rel_diag"] for m in mats if m[2] == k and (m, "std", K, 12, 1, 0) in Hl]
+        ov = [Ometr[(m, K)]["rel"] / Ometr[(m, K)]["rel_diag"] for m in mats if m[2] == k and (m, K) in Ometr]
+        cells += [f"{geo(hv):.3f}" if hv else "-", f"{geo(ov):.3f}" if ov else "-"]
+    print(f"| {K:g} | {cells[0]} | {cells[1]} | {cells[2]} | {cells[3]} |")
+print()
 # --- bit-exactness, on-grid, exponent cost, timings
 print("### Exactness / on-grid / exponent cost / encode time (HEPH std L=12 seed 1)\n")
 print("| K | % bit-exact (mean, min..max) | on-grid all | infeasible seqs | enc ms per row gate_up / down |"); print("|---|---|---|---|---|")
@@ -147,4 +174,34 @@ for m in mats:
         h = Hl.get((m, "std", K, 12, 1, 0))
         if h is None: continue
         o_at = interp_ours(Ocurve[m], K + h["exp"]["huff_bpw"] + OFFS - 16 / h["Kd"])
-        print(f"| L{m[0]} e{m[1]} {m[2]} | {CLS[(m[0], m[1])]} | {K:g} | {h['rel']:.5f} | {Ocurve[m][int(K)]:.5f} | {o_at:.5f} | {h['rel'] / o_at:.3f} |")
+        print(f"| L{m[0]} e{m[1]} {m[2]} | {CLS[(m[0], m[1])]} | {K:g} | {h['rel']:.5f} | {Ocurve[m][K]:.5f} | {o_at:.5f} | {h['rel'] / o_at:.3f} |")
+
+# --- interpolation check: ours measured at K = 1.5 / 2.5 vs the log-linear interpolation of its integer points
+chk = {k: [] for k in (1.5, 2.5)}
+for m in mats:
+    for k in (1.5, 2.5):
+        if (m, k) in Ometr:
+            chk[k].append(Ometr[(m, k)]["rel"] / interp_ours(Ocurve[m], k))
+if any(chk.values()):
+    print("\n### Interpolation check: ours measured (fractional K, non-TB) / log-linear interpolation of ours' integer K points\n")
+    for k, v in chk.items():
+        if v: print(f"- K = {k:g}: geo {fmt(v)} over {len(v)} matrices")
+# --- all-rows HEPH vs the 1/16 subset
+ALL = {(r["layer"], r["e"], r["kind"], r["variant"], r["K"], r["L"], r["seed"]): r for r in rows(f"{DATA}/heph-allrows/*.jsonl")}
+if ALL:
+    print("\n### HEPH on ALL rows vs the 288 / 320-row subset (std L=12 seed 1; all-rows rel / subset rel per matrix, geo [CI]); all-rows frac_exact, time\n")
+    print("| K | n | rel all / subset | gate_up | down | % bit-exact (all rows) | enc s per matrix gate_up / down |"); print("|---|---|---|---|---|---|---|")
+    for K in (1.0, 2.0, 3.0):
+        pr = [(m, ALL[(*m, "std", K, 12, 1)], Hl[(m, "std", K, 12, 1, 0)]) for m in mats if (*m, "std", K, 12, 1) in ALL and (m, "std", K, 12, 1, 0) in Hl]
+        if not pr: continue
+        rr = lambda f: [a["rel"] / b["rel"] for m, a, b in pr if f(m)]
+        tm = lambda k: np.mean([a["enc_sec"] for m, a, b in pr if m[2] == k]) if any(m[2] == k for m, _, _ in pr) else float("nan")
+        print(f"| {K:g} | {len(pr)} | {fmt(rr(lambda m: True))} | {fmt(rr(lambda m: m[2] == 'gate_up'))} | {fmt(rr(lambda m: m[2] == 'down'))} | {np.mean([a['frac_exact'] * 100 for _, a, _ in pr]):.1f} | {tm('gate_up'):.0f} / {tm('down'):.0f} |")
+    # all-rows rate-matched ratio vs ours subset (unpaired rows; ours' absolute rel is good to ~+-4% per gate_up matrix, w211)
+    print("\nAll-rows HEPH vs ours (ours on the subset; rows unpaired), rate-matched geo ratio [CI]:\n")
+    for K in (1.0, 2.0, 3.0):
+        v = []
+        for m in mats:
+            a = ALL.get((*m, "std", K, 12, 1))
+            if a and Ocurve[m][1.0]: v.append(a["rel"] / interp_ours(Ocurve[m], K + a["exp"]["huff_bpw"] + OFFS - 16 / a["Kd"]))
+        if v: print(f"- K = {K:g}: {fmt(v)} (n = {len(v)})")
