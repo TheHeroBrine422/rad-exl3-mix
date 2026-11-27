@@ -31,3 +31,4 @@ BUILD_LOCK=$QROOT/build.lock
 export PYTHONPATH=$FLA QAD_PIPELINE=$CODE/pipeline TRITON_DEFAULT_FP_FUSION=1 OMP_NUM_THREADS=6 PYTHONDONTWRITEBYTECODE=1
 export TORCHINDUCTOR_COMPILE_THREADS=1        # w233: compile in the trainer process: the default pool is 32 worker processes per trainer (~16 GB host RAM each trainer)
 qsay() { echo "$(TZ=America/Chicago date '+%m-%d %-I:%M %p CST') $*" >> $QROOT/q.log; }
+export PYTORCH_HIP_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:256   # w233 / w236 (11-27): the r6 finals were measured with this allocator setting
