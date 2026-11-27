@@ -1,0 +1,4 @@
+10:51:25 student built in 14 s: 200 linears (mad, 200 int8-exact), 2834432 values, alloc 11.49 GiB
+10:51:25 GDN a / b: /data/q27/w214/lv/2.50/ab.safetensors (48 tensors, rel diff vs the checkpoint median 0.0744, max 0.0832)
+10:51:25 w233 host memory after the build (GiB): {"VmRSS": 4.7, "RssAnon": 3.97, "RssFile": 0.64, "RssShmem": 0.08, "pinned_res": 0.0, "pinned_use": 0.0}
+10:51:25 w233 --pipe-procs: stage 0 of 2 of dp rank 1 (2 dp ranks): layers 0-31 + token table on cuda:0: 11.49 GiB

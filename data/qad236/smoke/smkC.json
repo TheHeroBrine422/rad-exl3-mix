@@ -1,0 +1,61 @@
+{
+ "run": "deep25",
+ "steps": [
+  633,
+  652
+ ],
+ "n": 20,
+ "wall_mean": 33.31,
+ "wall_median": 23.09,
+ "wall_max": 230.28,
+ "wall_mean_after2": 22.98,
+ "elapsed_mean_after2": 23.53,
+ "elapsed_mean": 23.53,
+ "rows_per_s": 576.5,
+ "rank_wall_mean": [
+  31.0,
+  30.2,
+  26.6,
+  26.5
+ ],
+ "rank_imbalance_mean": 1.113,
+ "rank_imbalance_max": 1.251,
+ "rank0_cards": {
+  "cuda:0": {
+   "res_peak": 27.93,
+   "free_min": 4.15,
+   "ooms": 0,
+   "retries": 0,
+   "state_peak": 10.49
+  },
+  "cuda:1": {
+   "res_peak": 28.86,
+   "free_min": 2.81,
+   "ooms": 0,
+   "retries": 0,
+   "state_peak": 9.5
+  }
+ },
+ "rank_rss_gib_max": [
+  19.17,
+  19.93,
+  19.15,
+  20.05
+ ],
+ "pool_peak_gib_max": 11.98,
+ "pool_misses_max": 12,
+ "parked_gib_max": 10.4,
+ "evicted_sum": 70,
+ "prefix_tok_sum": 574259,
+ "train_kl_first_last": [
+  0.04519,
+  0.04193
+ ],
+ "memavail_gb_min": 37,
+ "vram_gib_max_gpu0_3": [
+  28.74,
+  28.61,
+  29.61,
+  28.25
+ ]
+}

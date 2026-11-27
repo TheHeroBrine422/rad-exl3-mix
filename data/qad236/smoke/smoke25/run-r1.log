@@ -1,0 +1,8 @@
+10:11:11 student built in 17 s: 200 linears (mad, 200 int8-exact), 2834432 values, alloc 13.86 GiB
+10:11:12 GDN a / b: /data/q27/w214/lv/2.50/ab.safetensors (48 tensors, rel diff vs the checkpoint median 0.0728, max 0.0754)
+10:11:56 w233 host memory after the build (GiB): {"VmRSS": 5.48, "RssAnon": 4.77, "RssFile": 0.64, "RssShmem": 0.08, "pinned_res": 0.0, "pinned_use": 0.0}
+10:11:56 w233 --pipe-procs: stage 1 of 2 of dp rank 0 (2 dp ranks): layers 32-63 + head on cuda:0: 13.86 GiB
+10:44:09 student built in 17 s: 200 linears (mad, 200 int8-exact), 2834432 values, alloc 13.86 GiB
+10:44:09 GDN a / b: /data/q27/w214/lv/2.50/ab.safetensors (48 tensors, rel diff vs the checkpoint median 0.0728, max 0.0754)
+10:44:39 w233 host memory after the build (GiB): {"VmRSS": 5.49, "RssAnon": 4.77, "RssFile": 0.64, "RssShmem": 0.08, "pinned_res": 0.0, "pinned_use": 0.0}
+10:44:39 w233 --pipe-procs: stage 1 of 2 of dp rank 0 (2 dp ranks): layers 32-63 + head on cuda:0: 13.86 GiB

@@ -1,0 +1,61 @@
+{
+ "run": "smoke25",
+ "steps": [
+  1,
+  110
+ ],
+ "n": 110,
+ "wall_mean": 16.16,
+ "wall_median": 15.39,
+ "wall_max": 41.54,
+ "wall_mean_after2": 15.88,
+ "elapsed_mean_after2": 16.53,
+ "elapsed_mean": 16.59,
+ "rows_per_s": 605.8,
+ "rank_wall_mean": [
+  14.4,
+  14.3,
+  13.0,
+  12.8
+ ],
+ "rank_imbalance_mean": 1.132,
+ "rank_imbalance_max": 1.454,
+ "rank0_cards": {
+  "cuda:0": {
+   "res_peak": 28.32,
+   "free_min": 2.8,
+   "ooms": 0,
+   "retries": 0,
+   "state_peak": 10.46
+  },
+  "cuda:1": {
+   "res_peak": 28.94,
+   "free_min": 2.14,
+   "ooms": 0,
+   "retries": 0,
+   "state_peak": 9.47
+  }
+ },
+ "rank_rss_gib_max": [
+  19.54,
+  21.17,
+  19.69,
+  21.12
+ ],
+ "pool_peak_gib_max": 10.11,
+ "pool_misses_max": 0,
+ "parked_gib_max": 7.69,
+ "evicted_sum": 1,
+ "prefix_tok_sum": 0,
+ "train_kl_first_last": [
+  0.05976,
+  0.03246
+ ],
+ "memavail_gb_min": 39,
+ "vram_gib_max_gpu0_3": [
+  27.19,
+  27.31,
+  29.74,
+  29.08
+ ]
+}

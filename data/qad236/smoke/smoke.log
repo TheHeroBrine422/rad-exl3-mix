@@ -1,0 +1,12 @@
+11-27 2:42:23 AM CST smoke236 waiting for an idle queue (deadline 7:00 AM CST)
+11-27 2:44:42 AM CST smoke236 waiting for an idle queue (deadline 7:00 AM CST)
+11-27 4:10:47 AM CST cards 0-3 held
+11-27 4:10:47 AM CST MemAvailable 110 GB
+11-27 4:10:47 AM CST A: smoke25 steps 0 -> 110
+11-27 4:43:32 AM CST A rc 0
+11-27 4:43:32 AM CST B: smoke25 resumed -> 120
+11-27 4:50:17 AM CST B rc 0
+11-27 4:50:17 AM CST C: deep25 at plan step 632, 20 steps
+11-27 5:02:50 AM CST C rc 0
+11-27 5:02:50 AM CST smoke236 done (52 min on the cards)
+11-27 5:02:50 AM CST cards released
