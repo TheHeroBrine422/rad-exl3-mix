@@ -329,3 +329,4 @@ Next free number: **216**.
 | 222 | Per-size lr screens (2.0 / 3.0 / 3.5 / 4.0; 2 schedules each, 2–3M rows from the released pick, current trainer, cards 0,1) | QAD | none | running | 11-25 | 11-25 | — |
 | 223 | lr grid for the pooled fit (flat lr + 20% decay, 2M; 2.0–4.0, 3–4 points / size; r6 stress arms on pairs) | QAD | none | running | 11-26 | 11-26 | — |
 | 224 | K-grid spacing vs continuous allocation (model-predicted, CPU) | search | none | done | 11-26 | 11-26 | shipped menu within 0.16 % of continuous; not worth building |
+| 225 | Code-update probe (gradient-targeted trellis re-encode, PV-tuning style) on 2.50 QAD 10M, layers 40–55 MLP | QAD | none | running | 11-27 | 11-27 | — |
