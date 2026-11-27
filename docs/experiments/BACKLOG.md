@@ -880,3 +880,7 @@ Caveat: thin data for 336 tensors; expect a few reliable group-level flags, not 
   code's MSE ratio r_k / r_c (~4× / bit), inverse-variance combined over assignments, mean + 2 s.e.; fails at 1 bit (keep ≥ 2 bits). Use: a cheap
   first pass for DS4.1-F's expert allocation, swaps only to check top candidates. Also: rank head bands by mean bf16 probability (curvature
   p(1−p)) if our tiers use frequency (check).
+- **HEPH grid-aligned trellis for DS4.1-F MXFP4 experts (user 11-27):** no Hadamard, UE8M0 exponents reused as exact scales, E2M1-atom
+  trellis codebook, diag-H Viterbi; gpt-oss-20b 3.07 bpw within 0.76 pts of the 4.25-bpw source, +2.3 over QTIP. Decodes to MXFP4 →
+  feeds the planned moe_gemm_mxfp4 A8 kernel and the offload engine (3.07-bpw stream). First test: CPU H-weighted error vs our mad trellis
+  at K 2 / 3 on sampled DS experts. Notes in docs/design/dsv4.1f.md; paper /workspace/references/heph/.

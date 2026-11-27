@@ -232,6 +232,26 @@ K4-vs-MXFP4 KLD test (user 11-22, first DS experiment once exl3i experts serve):
 ~240 GiB, MXFP4 269 GiB vs ~128 GiB VRAM + 113 GB RAM) → paired partial swap: most layers' experts at K2, a block of ~8–10 layers at K4
 vs native MXFP4 (two blocks: early / late), same container otherwise, verify slice.
 
+## Grid-aligned trellis for the MXFP4 experts: HEPH (user 11-27; paper in `/workspace/references/heph/`)
+"HEPH: 3-bit grid-aligned trellis quantization of MXFP4 MoE" (ICLR 2027 submission, anonymous; OpenReview Mt7JawGQgl). Answers the
+point above that a Hadamard trellis can't exploit the source's fp4 grid. Method: **no rotation**; reuse each 32-block's UE8M0 exponent
+as an exact power-of-two scale, so the targets z = w / 2^e are exactly E2M1 atoms; a bitshift trellis (L = 12, K = 3, T = 64 =
+two 32-groups of a row, tail-biting) whose codebook is the atom set ("MagStrat": per-history random permutation of the 8 magnitudes
+{0, .5, 1, 1.5, 2, 3, 4, 6} with seeded signs), so every decoded weight is a valid MXFP4 element; Viterbi branch cost h_i (c − z)²
+with h = diag of the routed input second moment (additive, so exact inside the Viterbi; no LDLQ); exponents Huffman-coded as row deltas
+(0.073 bpw). gpt-oss-20b experts: 3.07 bpw five-task mean 80.03 vs source 80.79 (4.25 bpw) vs rate-matched QTIP 77.72; AIME +8.8 vs
+QTIP; ~76 % of weights bit-exact to the source; K = 2 (2.07 bpw) +4.9 over QTIP on 3 tasks; encode 6.4 s / expert. Ablations: the atom
+codebook carries most of the gain; diag-H weighting +1.07; no calibration (h = 1) still +1.24 over QTIP.
+**Fit for us:** (1) accuracy: a direct candidate against our Hadamard + mad trellis for routed experts at K 2–3 (the codebook frontier);
+(2) serving: a HEPH expert decodes to exactly the MXFP4 layout, so it can feed the planned `moe_gemm_mxfp4` A8 path (int8 2·code ×
+2^(e−1) per 32-block) — one expert kernel for native and re-encoded experts; (3) offload: the paper's decode-on-demand (keep the
+3.07-bpw stream, decode the routed experts per layer into one staging buffer) is our offload engine's shape — host RAM / PCIe carry
+3.07 bpw instead of 4.25. **Caveats:** only gpt-oss; zero-shot accuracies (no KL); our competitor is mad + LDLQ + QAD, not plain QTIP;
+fractional / sub-2 K untested; per-32 exponents along k need a per-block rescale in the int8 GEMM (the MXFP4 A8 design has it).
+**Proposed first test (not started; needs the user's go):** CPU, a sample of DS4.1-F routed experts with their routed diag-H: HEPH
+encoder at K 2 / 3 vs our mad + Hadamard trellis at the same rate, H-weighted output error; if HEPH wins, a paired partial-swap KLD
+test on box2 (a block of layers' experts) like the K4-vs-MXFP4 plan.
+
 ## Competitor field (user 11-22; numbers on THEIR corpora — not comparable across rows or to ours)
 | who | quant | size | published KLD |
 |---|---|---|---|
