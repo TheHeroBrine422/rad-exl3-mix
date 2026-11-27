@@ -331,3 +331,4 @@ Next free number: **216**.
 | 224 | K-grid spacing vs continuous allocation (model-predicted, CPU) | search | none | done | 11-26 | 11-26 | shipped menu within 0.16 % of continuous; not worth building |
 | 225 | Code-update probe (gradient-targeted trellis re-encode, PV-tuning style) on 2.50 QAD 10M, layers 40–55 MLP | QAD | none | cancelled | 11-27 | 11-27 | repeats w218 (negative); compute too high for practice (user) |
 | 226 | HEPH grid-aligned trellis vs mad + Hadamard on DS4.1-F MXFP4 experts (CPU, H-weighted error, K 1–3) | DS | none | done | 11-27 | 11-27 | HEPH 2.3–3.1× worse full-H error at every K (no LDLQ); atom grid inside LDLQ = possible follow-up |
+| 227 | V3.1 finals (2.5 / 3.0 / 2.0 / 3.5 / 4.0; plan236 14.8M, r6 2×2, flat lr ladder; final reads JV31 / JT31 / JX31) | QAD | none | running | 11-27 | 11-27 | — |
