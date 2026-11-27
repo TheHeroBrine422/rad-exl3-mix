@@ -17,7 +17,7 @@ U JT31-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50b
 U JX31-UN2.50 2.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.50bpw.rad.ok,FIN25/ckpt-1e+07/.done
 
 # FIN30: V3.1 final 3.00, flat lr 1e-4 (lead 11-27: 1.5e-4 blew up in #223, so 1e-4)
-T4 FIN30 3.00 14.8e6 - --lr 1e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+T4 FIN30 3.00 14.8e6 - --lr 1e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 5.5,4.5 --card-mem-gb 29.5 --park-pool-gb 16 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
 R JV31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
 R JT31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
 R JX31-FIN30 3.00 FIN30/ckpt-1e+07 @needs=FIN30/ckpt-1e+07/.done
@@ -26,7 +26,7 @@ U JT31-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00b
 U JX31-UN3.00 3.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.00bpw.rad.ok,FIN30/ckpt-1e+07/.done
 
 # FIN20: V3.1 final 2.00, flat lr 5e-4
-T4 FIN20 2.00 14.8e6 - --lr 5e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+T4 FIN20 2.00 14.8e6 - --lr 5e-4 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 5.5,4.5 --card-mem-gb 29.5 --park-pool-gb 16 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
 R JV31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
 R JT31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
 R JX31-FIN20 2.00 FIN20/ckpt-1e+07 @needs=FIN20/ckpt-1e+07/.done
@@ -35,7 +35,7 @@ U JT31-UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00b
 U JX31-UN2.00 2.00 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-2.00bpw.rad.ok,FIN20/ckpt-1e+07/.done
 
 # FIN35: V3.1 final 3.50, flat lr 6e-5
-T4 FIN35 3.50 14.8e6 - --lr 6e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+T4 FIN35 3.50 14.8e6 - --lr 6e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 5.5,4.5 --card-mem-gb 29.5 --park-pool-gb 16 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
 R JV31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
 R JT31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
 R JX31-FIN35 3.50 FIN35/ckpt-1e+07 @needs=FIN35/ckpt-1e+07/.done
@@ -44,7 +44,7 @@ U JT31-UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50b
 U JX31-UN3.50 3.50 @needs=/data/q27/queue/rel/host-emb/qwen3.8-27b-exl3-v3-3.50bpw.rad.ok,FIN35/ckpt-1e+07/.done
 
 # FIN40: V3.1 final 4.00, flat lr 3e-5
-T4 FIN40 4.00 14.8e6 - --lr 3e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 6.5,5.5 --card-mem-gb 29.5 --park-pool-gb 12 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
+T4 FIN40 4.00 14.8e6 - --lr 3e-5 --V 24 --plan231 /data/q27/w236/plan236.json --pipe-procs --split-layers 32 --state-early --evict-fit --pipe-ahead 4 --state-budget-gb 10.5,9.5 --state-card-gb 5.5,4.5 --card-mem-gb 29.5 --park-pool-gb 16 --pool-strict --a8-int8 --compile-scales --compile-ew --attn-gqa --cap 262144 --snap-at auto @cards=0 @partner=1,2,3 @needs=/data/q27/w236/plan236.json
 R JV31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
 R JT31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
 R JX31-FIN40 4.00 FIN40/ckpt-1e+07 @needs=FIN40/ckpt-1e+07/.done
