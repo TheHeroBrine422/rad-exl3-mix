@@ -33,6 +33,8 @@ SPEC (JSON):
   "share_windows" (optional, w236): [[rows_from, {source: share, ..}], ..]: from the point the assigned gen rows reach rows_from, the mixed sources' shares
   are these (a source not listed: 0) and count the rows taken since the window started (e.g. a calib-heavy end: [[12.5e6, {"calib": 0.8, "xgap": 0.2}]]).
   Before the first window the sources' own `share`. A window whose live sources all have share 0 falls back to the sources' own shares.
+  "trace_hold" (optional, w236, default false): while a deep trace is due and waits for room (carried bound / max_long), the ranks it may go to take no new
+  document longer than long_tokens, so the room frees up and the trace starts near its step instead of after every long document in the way.
   "state_budget_gb" (optional): qad220's --state-budget-gb; the deepest document's state (32 KB a token a card + ~0.1 GiB) must fit it (asserted).
   dir / genmask: the golden's directory and gen mask (default DIR/gen.u8 if it exists, else every row is gen); cap: tokens a document is cut at
   (rows recounted); min_rows (16): documents with fewer gen rows are skipped. The plan stores each golden's name with dir / genmask: qad220 loads
@@ -221,12 +223,14 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         nonlocal assigned
         r = rank(s)
         if assigned >= stop_rows and not pend: return None
+        hold = False
         if pend and pend[0][0] <= t:                       # a trace is due: the rank with the fewest deep streams takes it
             dcnt = [sum(1 for it in active(q) if items[it][4]) for q in range(R)]
             src, (i, n, nr) = pend[0][1]
             if dcnt[r] == min(dcnt) and fits(r, n):
                 pend.pop(0); items.append((src.golden, i, n, nr, True, src.name)); rows_by[src.name] += nr; assigned += nr
                 trace_log.append((len(items) - 1, s, t)); return [len(items) - 1]
+            hold = trace_hold and dcnt[r] == min(dcnt)     # w236: this rank waits for the due trace: it takes no new long document meanwhile
         if assigned >= stop_rows: return None if not pend else take_short(s, r)
         wi = sum(1 for r0, _ in wins if assigned >= r0) - 1          # w236: the share window in effect (-1: the sources' own shares)
         if wi >= 0 and wi not in wbase: wbase[wi] = dict(rows_by)
@@ -245,6 +249,7 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
             L = m.items
             for k in range(nxt[m.name], min(len(L), nxt[m.name] + 64)):
                 i, n, nr = L[k]
+                if hold and n > LT: continue
                 if fits(r, n, i.tokens if isinstance(i, Unit) else None):
                     L[nxt[m.name]], L[k] = L[k], L[nxt[m.name]]; nxt[m.name] += 1
                     return emit(m, i, n, nr)
@@ -262,6 +267,7 @@ def simulate(spec, V, Q, R, srcs, mix, deep, traces, budget, stop_rows, maxc, LT
         if force: over.append((len(steps), s))
         return emit(m, i, n, nr)
 
+    trace_hold = bool(spec.get("trace_hold", False))
     wins = sorted(([float(r0), {k: float(v) for k, v in w.items()}] for r0, w in spec.get("share_windows", [])), key=lambda w: w[0])
     wbase = {}                                             # w236: share window -> rows_by when its first document was taken
 

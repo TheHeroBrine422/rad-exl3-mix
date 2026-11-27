@@ -4,7 +4,7 @@
 with a verify pool and qad220's fixed-eval pool), teacher cuts (8k-40k, only the last 25-50 % scored), long docs (10k-40k, cap 32k), w231 multi-cut sessions (branch units) and 4 deep traces
 (60k-80k), V 8 x Q 1024, 2 ranks, budget 1M rows. Checks: data181.plan on the queues = the builder (asserted in plan231), single epoch, judges /
 verify / fixed-eval docs absent, source shares within 3 points of the targets, traces start as scheduled on alternating ranks and end before the
-budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps; w236: share_windows (a calib-heavy end). Exit 0 = all pass."""
+budget's step, the carried bound held, and qad220's own build_data with --plan231 gives the same steps; w236: share_windows (a calib-heavy end), trace_hold. Exit 0 = all pass."""
 import argparse, importlib.util, json, os, subprocess, sys, tempfile
 import numpy as np
 
@@ -128,7 +128,23 @@ def main():
     check("qad220's budget step = the builder's", B["last"] == S["last"], f"{B['last']} vs {S['last']}")
     check("qad220 loads the branch roles (history / cut / last cut, starts, source docs)", {k: (v[0], v[1], v[3]) for k, v in B["C"].branch.items()} == {k: (v[0], v[1], v[3]) for k, v in BR.items()} and B["C"].starts == {k: v[1] for k, v in BR.items() if v[1]})
     share_windows(T, spec)
+    trace_hold(T, spec, S)
     finish()
+
+
+def trace_hold(T, spec, S0):
+    """w236: "trace_hold": a due trace's rank takes no new long document while the trace waits: the plan builds (data181 = simulation), every trace
+    starts and ends by the budget's step (the wait itself is reported, not judged: in this small plan it is a few steps either way; on the finals
+    plan it cut the late traces' waits by 50-280 steps, w236 report)"""
+    sp = json.loads(json.dumps(spec)); sp["trace_hold"] = True; sp["sources"]["traces"]["starts"] = S0["planned_starts"]
+    json.dump(sp, open(f"{T}/spec-h.json", "w"))
+    r = subprocess.run([sys.executable, os.path.join(HERE, "plan231.py"), f"{T}/spec-h.json", f"{T}/plan-h.json"], capture_output=True, text=True)
+    check("plan231 builds with trace_hold", r.returncode == 0, r.stderr[-500:])
+    if r.returncode: return
+    S = json.load(open(f"{T}/plan-h.json"))["summary"]
+    wait = lambda z: sum(t - p for (_, _, _, _, t), p in zip(z["trace_starts"], z["planned_starts"]))
+    check("trace_hold: every trace starts and ends by the budget's step", len(S["trace_starts"]) == len(S0["trace_starts"]) and S["trace_ends_by_last"],
+          f"wait {wait(S)} steps ({wait(S0)} without)")
 
 
 def share_windows(T, spec):
